@@ -1,5 +1,10 @@
+import { AppProvider } from '@/context/AppContext';
 import HomePage from '@/pages/Home';
 
 export default function App() {
-  return <HomePage />;
+  return (
+    <AppProvider>
+      <HomePage />
+    </AppProvider>
+  );
 }

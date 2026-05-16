@@ -178,6 +178,9 @@ importers:
       '@workspace/db':
         specifier: workspace:*
         version: link:../../lib/db
+      '@workspace/triage-engine':
+        specifier: workspace:*
+        version: link:../../lib/triage-engine
       cookie-parser:
         specifier: ^1.4.7
         version: 1.4.7
@@ -202,6 +205,9 @@ importers:
       twilio:
         specifier: ^6.0.2
         version: 6.0.2
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
     devDependencies:
       '@types/cookie-parser':
         specifier: ^1.4.10
