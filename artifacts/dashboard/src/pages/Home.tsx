@@ -69,6 +69,7 @@ export default function HomePage() {
       {/* ── Sticky header ── */}
       <header className="app-header">
         <div className="header-brand">Amise Medical</div>
+        <span className="proto-pill">⚗ PROTOTYPE</span>
         <div className="header-patient">
           <span className="header-name">{patientLabel}</span>
           {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}

@@ -108,6 +108,20 @@ textarea { resize: vertical; }
   background: var(--accent);
   color: #fff;
 }
+.proto-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  background: rgba(251,191,36,.12);
+  border: 1px solid rgba(251,191,36,.3);
+  color: #fbbf24;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 .acuity-badge {
   display: flex;
   flex-direction: column;
