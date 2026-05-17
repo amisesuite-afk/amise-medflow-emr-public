@@ -97,24 +97,76 @@ export default function SummaryTab() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  function print() {
-    if (!document) return;
-    const w = window.open('', '_blank');
-    if (!w) return;
-    w.document.write(`<!DOCTYPE html>
+  function buildPrintHtml(text: string): string {
+    const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `<!DOCTYPE html>
 <html><head>
+<meta charset="utf-8">
 <title>Clinical Summary — Amise Medical Services</title>
 <style>
-  body { font-family: 'Georgia', serif; max-width: 720px; margin: 40px auto; line-height: 1.7; color: #111; }
-  pre { white-space: pre-wrap; font-family: inherit; font-size: 14px; }
-  @media print { body { margin: 0; } }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, 'Times New Roman', serif; max-width: 720px; margin: 32px auto; padding: 0 24px; line-height: 1.75; color: #111; font-size: 13px; }
+  pre { white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: 13px; }
+  h1 { font-size: 15px; margin-bottom: 6px; }
+  .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #ccc; font-size: 11px; color: #555; }
+  @page { margin: 20mm; }
+  @media print { body { margin: 0; padding: 0; } }
 </style>
 </head><body>
-<pre>${document.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>
-</body></html>`);
-    w.document.close();
-    w.focus();
-    w.print();
+<pre>${escaped}</pre>
+<div class="footer">DRAFT — FOR REVIEW — Amise Medical Services, Saint Lucia. Clinical decisions remain with Dr Kabiye.</div>
+</body></html>`;
+  }
+
+  function printDoc() {
+    if (!document) return;
+    const html = buildPrintHtml(document);
+
+    // Inject a hidden iframe into the current page — avoids popup-blocker entirely
+    const iframe = window.document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;';
+    iframe.setAttribute('title', 'print-frame');
+    window.document.body.appendChild(iframe);
+
+    const iDoc = iframe.contentDocument ?? iframe.contentWindow?.document;
+    if (!iDoc) { iframe.remove(); return; }
+
+    iDoc.open();
+    iDoc.write(html);
+    iDoc.close();
+
+    // Wait for resources, then print; remove iframe after dialog closes
+    const doprint = () => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } finally {
+        setTimeout(() => iframe.remove(), 2000);
+      }
+    };
+
+    if (iframe.contentDocument?.readyState === 'complete') {
+      doprint();
+    } else {
+      iframe.onload = doprint;
+    }
+  }
+
+  function downloadDoc() {
+    if (!document) return;
+    const patientSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const filename = `clinical-summary-${patientSlug}-${dateStr}.txt`;
+
+    const blob = new Blob([document], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = window.document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+    window.document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
   }
 
   const hasData = ctx.symptoms.length > 0 || ctx.patientName.trim() || ctx.freeText.trim();
@@ -135,8 +187,11 @@ export default function SummaryTab() {
               <button className="summary-btn summary-btn--ghost" onClick={() => void copy()}>
                 {copied ? '✓ Copied' : '⎘ Copy'}
               </button>
-              <button className="summary-btn summary-btn--ghost" onClick={print}>
-                🖨 Print
+              <button className="summary-btn summary-btn--ghost" onClick={downloadDoc}>
+                ↓ Download
+              </button>
+              <button className="summary-btn summary-btn--ghost" onClick={printDoc}>
+                🖨 Print / Save PDF
               </button>
               <button className="summary-btn summary-btn--ghost" onClick={() => setDocument('')}>
                 × Clear
