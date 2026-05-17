@@ -1,7 +1,7 @@
 // @refresh reset
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { supabase, supabaseConfigured, UserProfile, UserRole, serializeError } from '@/lib/supabase';
+import { supabase, supabaseConfigured, configIssues, UserProfile, UserRole, serializeError } from '@/lib/supabase';
 
 interface AuthCtx {
   session: Session | null;
@@ -123,7 +123,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signIn(email: string, password: string): Promise<{ error: string | null; detail?: string }> {
-    if (!supabase) return { error: 'Supabase not configured — VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing.' };
+    if (!supabase) {
+      if (configIssues.length > 0) {
+        const first = configIssues[0];
+        return { error: `${first.variable}: ${first.message}` };
+      }
+      return { error: 'Supabase client not initialised — check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.' };
+    }
     console.log('[auth] signIn attempt for:', email);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
