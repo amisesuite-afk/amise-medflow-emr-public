@@ -19,12 +19,12 @@ export function triage(
 
   if (flagged) {
     const order: Severity[] = ['urgent', 'priority', 'review'];
-    const highest = order.find(s => matches.some(m => m.severity === s))!;
+    const highest = order.find(s => matches.some((m: { severity: string }) => m.severity === s))!;
 
     return {
       flagged: true,
       severity: highest,
-      reasons: matches.map(m => m.reason),
+      reasons: matches.map((m: { reason: string }) => m.reason),
       recommendedAction:
         highest === 'urgent'   ? 'escalate_urgent' :
         highest === 'priority' ? 'escalate_priority' :

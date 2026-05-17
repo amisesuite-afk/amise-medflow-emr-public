@@ -1,13 +1,36 @@
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { AppProvider } from '@/context/AppContext';
 import HomePage from '@/pages/Home';
-import PasswordGate from '@/components/PasswordGate';
+import LoginPage from '@/components/LoginPage';
+
+function AuthGuard() {
+  const { session, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div style={{
+        height: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: '#0d2520', color: '#4db8ad', fontSize: 13, fontWeight: 700,
+        letterSpacing: '.06em', fontFamily: '-apple-system, sans-serif',
+      }}>
+        Loading…
+      </div>
+    );
+  }
+
+  if (!session) return <LoginPage />;
+
+  return (
+    <AppProvider>
+      <HomePage />
+    </AppProvider>
+  );
+}
 
 export default function App() {
   return (
-    <PasswordGate>
-      <AppProvider>
-        <HomePage />
-      </AppProvider>
-    </PasswordGate>
+    <AuthProvider>
+      <AuthGuard />
+    </AuthProvider>
   );
 }

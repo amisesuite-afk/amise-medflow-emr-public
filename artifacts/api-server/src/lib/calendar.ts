@@ -33,6 +33,7 @@ export function calendarIdFor(location: Location): string {
     case 'castries':   return process.env.CALENDAR_ID_CASTRIES!;
     case 'tapion':     return process.env.CALENDAR_ID_TAPION_ERCP!;
     case 'remote':     return process.env.CALENDAR_ID_RODNEY_BAY!;
+    default:           return process.env.CALENDAR_ID_RODNEY_BAY!;
   }
 }
 

@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppContext, AppMode, Section } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { ROLE_LABELS } from '@/lib/supabase';
 import NavSidebar, { TopSection } from '@/components/NavSidebar';
 import IntakeTab from './tabs/IntakeTab';
 import TriageTab from './tabs/TriageTab';
@@ -30,6 +32,7 @@ function StubPanel({ title, description }: { title: string; description: string 
 }
 
 export default function HomePage() {
+  const { profile, signOut } = useAuth();
   const {
     mode, setMode,
     activeSection, setActiveSection,
@@ -37,8 +40,17 @@ export default function HomePage() {
     triageResult,
   } = useAppContext();
 
-  const [collapsed, setCollapsed]     = useState(false);
-  const [topSection, setTopSection]   = useState<TopSection>('intake');
+  const [collapsed, setCollapsed]   = useState(false);
+  const [topSection, setTopSection] = useState<TopSection>('intake');
+
+  const canUseDocMode = profile?.role === 'doctor' || profile?.role === 'admin';
+
+  // Sync mode to role on login — doctors start in doctor mode
+  useEffect(() => {
+    if (canUseDocMode) setMode('doctor');
+    else setMode('front_desk');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.role]);
 
   const urgentCount = triageResult.vitalRedFlags.filter(f => f.severity === 'urgent').length
     + triageResult.reasons.length;
@@ -65,21 +77,32 @@ export default function HomePage() {
           {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
         </div>
         <div className="header-right">
-          <div className="mode-toggle">
-            <button
-              className={mode === 'front_desk' ? 'active' : ''}
-              onClick={() => setMode('front_desk')}
-            >Front Desk</button>
-            <button
-              className={mode === 'doctor' ? 'active' : ''}
-              onClick={() => setMode('doctor')}
-            >Doctor</button>
-          </div>
+          {/* Mode toggle — only for doctor / admin */}
+          {canUseDocMode && (
+            <div className="mode-toggle">
+              <button
+                className={mode === 'front_desk' ? 'active' : ''}
+                onClick={() => setMode('front_desk')}
+              >Front Desk</button>
+              <button
+                className={mode === 'doctor' ? 'active' : ''}
+                onClick={() => setMode('doctor')}
+              >Doctor</button>
+            </div>
+          )}
           <div className={`acuity-badge ${acuityClass(triageResult.acuity)}`}>
             <span className="ab-label">Acuity</span>
             <span className="ab-level">{triageResult.acuity.toUpperCase()}</span>
             <span className="ab-score">Score {triageResult.score}</span>
           </div>
+          {/* User chip */}
+          {profile && (
+            <div className="user-chip">
+              <span className="user-chip__name">{profile.full_name ?? profile.email ?? 'User'}</span>
+              <span className="user-chip__role">{ROLE_LABELS[profile.role]}</span>
+              <button className="user-chip__logout" onClick={() => void signOut()} title="Sign out">↩</button>
+            </div>
+          )}
         </div>
       </header>
 
