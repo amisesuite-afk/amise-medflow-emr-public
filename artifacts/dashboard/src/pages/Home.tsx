@@ -17,6 +17,8 @@ import ProceduresTab from './tabs/ProceduresTab';
 import BillingTab from './tabs/BillingTab';
 import DocumentsTab from './tabs/DocumentsTab';
 import PatientSearchTab from './tabs/PatientSearchTab';
+import ScalesTab from './tabs/ScalesTab';
+import SummaryTab from './tabs/SummaryTab';
 import FloatingActions from '@/components/FloatingActions';
 
 function acuityClass(a: string) {
@@ -132,10 +134,12 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'medications' && <MedicationsTab />}
         {topSection === 'consultation'  && activeSection === 'allergies'   && <AllergiesTab />}
         {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
+        {topSection === 'consultation'  && activeSection === 'scales'      && <ScalesTab />}
         {topSection === 'consultation'  && activeSection === 'examination' && mode === 'doctor' && <ExaminationTab />}
         {topSection === 'consultation'  && activeSection === 'assessment'  && mode === 'doctor' && <AssessmentTab />}
         {topSection === 'consultation'  && activeSection === 'plan'        && mode === 'doctor' && <PlanTab />}
         {topSection === 'procedures'    && <ProceduresTab />}
+        {topSection === 'summary'       && <SummaryTab />}
         {topSection === 'billing'       && activeSection === 'billing'     && <BillingTab />}
         {topSection === 'billing'       && activeSection === 'documents'   && <DocumentsTab />}
 

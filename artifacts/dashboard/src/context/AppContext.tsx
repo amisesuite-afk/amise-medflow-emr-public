@@ -4,7 +4,7 @@ import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSi
 export type AppMode = 'front_desk' | 'doctor';
 export type Section =
   | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
-  | 'allergies' | 'toxic' | 'examination' | 'assessment' | 'plan'
+  | 'allergies' | 'toxic' | 'scales' | 'examination' | 'assessment' | 'plan'
   | 'procedures' | 'billing' | 'documents';
 
 export type VitalsState = Record<keyof VitalSigns, string>;

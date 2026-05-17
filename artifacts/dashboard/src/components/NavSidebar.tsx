@@ -9,7 +9,7 @@ import type { Section, AppMode } from '@/context/AppContext';
 
 export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
-  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings';
+  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary';
 
 interface NavSidebarProps {
   collapsed: boolean;
@@ -31,6 +31,7 @@ const CLINICAL_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?:
   { id: 'medications', icon: Pill,             label: 'Medications' },
   { id: 'allergies',   icon: ShieldAlert,      label: 'Allergies' },
   { id: 'toxic',       icon: Cigarette,        label: 'Toxic Habits' },
+  { id: 'scales',      icon: ClipboardCheck,   label: 'Scales' },
   { id: 'examination', icon: Stethoscope,      label: 'Examination', doctorOnly: true },
   { id: 'assessment',  icon: ClipboardCheck,   label: 'Assessment',  doctorOnly: true },
   { id: 'plan',        icon: FileEdit,         label: 'Plan',        doctorOnly: true },
@@ -54,6 +55,7 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'consultation', icon: Stethoscope,     label: 'Consultation' },
   { id: 'procedures',   icon: Scissors,        label: 'Procedures' },
   { id: 'scheduling',   icon: CalendarDays,    label: 'Scheduling' },
+  { id: 'summary',      icon: FileEdit,        label: 'Summary' },
   { id: 'billing',      icon: Receipt,         label: 'Billing' },
   { id: 'analytics',    icon: BarChart2,       label: 'Analytics' },
   { id: 'settings',     icon: Settings,        label: 'Settings' },
