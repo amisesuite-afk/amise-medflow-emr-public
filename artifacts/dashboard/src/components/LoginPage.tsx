@@ -2,12 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
-  const { signIn, configured } = useAuth();
+  const { signIn, configured, profileError } = useAuth();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw]     = useState(false);
   const [error, setError]       = useState<string | null>(null);
   const [busy, setBusy]         = useState(false);
+  const [signingIn, setSigningIn] = useState(false);
   const emailRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { emailRef.current?.focus(); }, []);
@@ -30,13 +31,39 @@ export default function LoginPage() {
     );
   }
 
+  // Show spinner while profile is being fetched after a successful sign-in
+  if (signingIn) {
+    return (
+      <div style={shell}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          <Spinner />
+          <div style={{ color: '#4db8ad', fontSize: 13, fontWeight: 700, letterSpacing: '.06em' }}>
+            Loading your profile…
+          </div>
+          {profileError && (
+            <div style={{ ...errorBox, maxWidth: 360, textAlign: 'center' }}>
+              <strong>Profile warning:</strong> {profileError}<br />
+              <span style={{ opacity: .8 }}>You have been signed in with a default role. Contact your administrator to update your profile.</span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (busy) return;
     setBusy(true);
     setError(null);
     const { error: err } = await signIn(email.trim(), password);
-    if (err) { setError(err); setBusy(false); }
+    if (err) {
+      setError(err);
+      setBusy(false);
+    } else {
+      // Sign-in succeeded — show spinner while AuthContext loads the profile
+      setSigningIn(true);
+    }
   }
 
   return (
@@ -93,7 +120,7 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div style={{ background: 'rgba(185,28,28,.15)', border: '1px solid rgba(185,28,28,.4)', borderRadius: 8, padding: '8px 12px', color: '#fca5a5', fontSize: 12, marginBottom: 16 }}>
+          <div style={{ ...errorBox, marginBottom: 16 }}>
             {error}
           </div>
         )}
@@ -101,9 +128,9 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={busy}
-          style={{ width: '100%', padding: '11px', borderRadius: 10, background: busy ? '#064a43' : '#0b8278', color: '#fff', border: 'none', fontSize: 14, fontWeight: 800, cursor: busy ? 'default' : 'pointer', transition: 'background .15s' }}
+          style={{ width: '100%', padding: '11px', borderRadius: 10, background: busy ? '#064a43' : '#0b8278', color: '#fff', border: 'none', fontSize: 14, fontWeight: 800, cursor: busy ? 'default' : 'pointer', transition: 'background .15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
         >
-          {busy ? 'Signing in…' : 'Sign in'}
+          {busy ? <><Spinner size={14} /><span>Signing in…</span></> : 'Sign in'}
         </button>
       </form>
 
@@ -112,6 +139,20 @@ export default function LoginPage() {
         This tool is a supervised clinical prototype. All recommendations require clinical review.
       </p>
     </div>
+  );
+}
+
+function Spinner({ size = 20 }: { size?: number }) {
+  return (
+    <svg
+      width={size} height={size}
+      viewBox="0 0 24 24" fill="none"
+      style={{ animation: 'spin 0.8s linear infinite' }}
+    >
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <circle cx="12" cy="12" r="10" stroke="rgba(77,184,173,.3)" strokeWidth="3" />
+      <path d="M12 2a10 10 0 0 1 10 10" stroke="#4db8ad" strokeWidth="3" strokeLinecap="round" />
+    </svg>
   );
 }
 
@@ -141,4 +182,8 @@ const inputStyle: React.CSSProperties = {
   border: '1px solid rgba(255,255,255,.15)', background: 'rgba(0,0,0,.3)',
   color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box', marginBottom: 0,
   transition: 'border-color .15s',
+};
+const errorBox: React.CSSProperties = {
+  background: 'rgba(185,28,28,.15)', border: '1px solid rgba(185,28,28,.4)',
+  borderRadius: 8, padding: '8px 12px', color: '#fca5a5', fontSize: 12,
 };
