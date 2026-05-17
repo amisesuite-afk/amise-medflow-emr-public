@@ -46,9 +46,8 @@ function validateConfig(): ConfigIssue[] {
     } else if (isNewOpaque) {
       issues.push({
         variable: 'VITE_SUPABASE_ANON_KEY',
-        severity: 'error',
-        message: `Opaque "sb_publishable_…" format key (${trimmed.length} chars) is not supported by supabase-js v2. `
-          + 'Copy the JWT anon key from Supabase Dashboard → Settings → API → anon public (starts with eyJ, ~200+ chars).',
+        severity: 'warning',
+        message: `New opaque format key detected (sb_publishable_…, ${trimmed.length} chars). Using it — if sign-in fails, also try the legacy JWT key from Supabase Dashboard → Settings → API → anon public.`,
       });
     } else if (!isJWT) {
       issues.push({
@@ -79,11 +78,10 @@ if (configIssues.length === 0) {
   );
 }
 
-// In dev mode, route all Supabase requests through the Vite proxy (/sb-proxy)
-// to avoid browser CORS restrictions. In production, direct to Supabase.
-const effectiveUrl: string | undefined = import.meta.env.DEV && supabaseUrl
-  ? `${window.location.origin}/sb-proxy`
-  : supabaseUrl;
+// Always use the Supabase URL directly — Supabase sets permissive CORS headers
+// so browser requests work without a proxy. Proxying through the dev server
+// caused server-side DNS failures in the Replit environment.
+const effectiveUrl: string | undefined = supabaseUrl;
 
 export const supabaseConfigured = Boolean(supabaseUrl && supabaseAnon);
 
