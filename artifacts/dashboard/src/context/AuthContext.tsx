@@ -1,6 +1,7 @@
+// @refresh reset
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { supabase, supabaseConfigured, UserProfile, UserRole } from '@/lib/supabase';
+import { supabase, supabaseConfigured, UserProfile, UserRole, serializeError } from '@/lib/supabase';
 
 interface AuthCtx {
   session: Session | null;
@@ -8,16 +9,20 @@ interface AuthCtx {
   loading: boolean;
   profileError: string | null;
   configured: boolean;
-  signIn(email: string, password: string): Promise<{ error: string | null }>;
+  signIn(email: string, password: string): Promise<{ error: string | null; detail?: string }>;
   signOut(): Promise<void>;
 }
 
-const Ctx = createContext<AuthCtx | null>(null);
+// Persist the context object on window so HMR module re-evaluations reuse
+// the same reference — prevents "useAuth must be inside AuthProvider" crashes.
+declare global { interface Window { __authCtx?: React.Context<AuthCtx | null> } }
+const Ctx: React.Context<AuthCtx | null> =
+  window.__authCtx ?? (window.__authCtx = createContext<AuthCtx | null>(null));
 
 function friendlyError(raw: string): string {
   const msg = raw.toLowerCase();
-  if (msg.includes('load failed') || msg.includes('failed to fetch') || msg.includes('networkerror')) {
-    return 'Could not reach the authentication server. Check your internet connection and try again.';
+  if (msg.includes('load failed') || msg.includes('failed to fetch') || msg.includes('networkerror') || msg.includes('network request failed')) {
+    return 'Network error — could not reach Supabase. Check CORS settings or internet connection.';
   }
   if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
     return 'Incorrect email or password.';
@@ -32,21 +37,28 @@ function friendlyError(raw: string): string {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession]       = useState<Session | null>(null);
-  const [profile, setProfile]       = useState<UserProfile | null>(null);
-  const [loading, setLoading]       = useState(true);
+  const [session, setSession]           = useState<Session | null>(null);
+  const [profile, setProfile]           = useState<UserProfile | null>(null);
+  const [loading, setLoading]           = useState(true);
   const [profileError, setProfileError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!supabase) { setLoading(false); return; }
+    if (!supabase) {
+      console.warn('[auth] Supabase client is null — not configured');
+      setLoading(false);
+      return;
+    }
 
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
+    supabase.auth.getSession().then(({ data: { session: s }, error }) => {
+      if (error) console.error('[auth] getSession error:', serializeError(error));
+      else console.log('[auth] getSession OK, session:', s ? 'active' : 'none');
       setSession(s);
       if (s) fetchProfile(s.user.id, s.user.email ?? null);
       else setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_evt, s) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((evt, s) => {
+      console.log('[auth] onAuthStateChange event:', evt, 'session:', s ? 'active' : 'none');
       setSession(s);
       if (s) fetchProfile(s.user.id, s.user.email ?? null);
       else { setProfile(null); setProfileError(null); setLoading(false); }
@@ -57,6 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function fetchProfile(userId: string, email: string | null) {
     if (!supabase) return;
     setProfileError(null);
+    console.log('[auth] fetchProfile start, userId:', userId);
 
     try {
       const { data, error } = await supabase
@@ -66,16 +79,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .maybeSingle();
 
       if (error) {
-        // Surface the real error; fall back to a safe default so the user can still access the app
-        console.error('[auth] profile fetch error:', error.code, error.message);
-        setProfileError(`Profile load error (${error.code}): ${error.message}`);
+        const detail = `code=${error.code} msg="${error.message}" hint="${error.hint}" details="${error.details}"`;
+        console.error('[auth] profile fetch error:', detail);
+        setProfileError(`Profile query failed — ${detail}`);
         setProfile({ id: userId, full_name: email, role: 'front_desk', email });
         setLoading(false);
         return;
       }
 
       if (!data) {
-        // No profile row — create one automatically with a safe default role
+        console.warn('[auth] no profile row found — attempting upsert');
         const { data: created, error: insertErr } = await supabase
           .from('user_profiles')
           .upsert({ id: userId, full_name: email, role: 'front_desk' }, { onConflict: 'id' })
@@ -83,11 +96,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .maybeSingle();
 
         if (insertErr) {
-          console.error('[auth] profile create error:', insertErr.code, insertErr.message);
-          setProfileError(`Could not create profile (${insertErr.code}): ${insertErr.message}. Contact your administrator.`);
-          // Still allow access with an in-memory profile
+          const detail = `code=${insertErr.code} msg="${insertErr.message}"`;
+          console.error('[auth] profile upsert error:', detail);
+          setProfileError(`Profile create failed — ${detail}`);
           setProfile({ id: userId, full_name: email, role: 'front_desk', email });
         } else {
+          console.log('[auth] profile created:', created);
           setProfile(
             created
               ? { id: created.id, full_name: created.full_name ?? email, role: created.role as UserRole, email }
@@ -95,27 +109,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           );
         }
       } else {
+        console.log('[auth] profile loaded:', data.role);
         setProfile({ id: data.id, full_name: data.full_name ?? email, role: data.role as UserRole, email });
       }
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
-      console.error('[auth] unexpected profile error:', msg);
-      setProfileError(`Unexpected error loading profile: ${friendlyError(msg)}`);
+      const detail = JSON.stringify(serializeError(e));
+      console.error('[auth] fetchProfile threw unexpectedly:', detail);
+      setProfileError(`Unexpected profile error — ${detail}`);
       setProfile({ id: userId, full_name: email, role: 'front_desk', email });
     } finally {
       setLoading(false);
     }
   }
 
-  async function signIn(email: string, password: string): Promise<{ error: string | null }> {
-    if (!supabase) return { error: 'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.' };
+  async function signIn(email: string, password: string): Promise<{ error: string | null; detail?: string }> {
+    if (!supabase) return { error: 'Supabase not configured — VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY missing.' };
+    console.log('[auth] signIn attempt for:', email);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return { error: friendlyError(error.message) };
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        const detail = `name="${error.name}" status=${error.status} msg="${error.message}"`;
+        console.error('[auth] signInWithPassword error:', detail, serializeError(error));
+        return { error: friendlyError(error.message), detail };
+      }
+      console.log('[auth] signInWithPassword OK, user:', data.user?.id);
       return { error: null };
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e);
-      return { error: friendlyError(msg) };
+      const ser = serializeError(e);
+      const detail = JSON.stringify(ser);
+      console.error('[auth] signInWithPassword threw:', detail);
+      return { error: friendlyError(ser.message as string ?? detail), detail };
     }
   }
 

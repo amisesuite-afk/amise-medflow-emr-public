@@ -1,5 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { checkSupabaseReachable } from '@/lib/supabase';
+
+// Read env at module level so the panel can show real values
+const ENV_URL   = import.meta.env.VITE_SUPABASE_URL   as string | undefined;
+const ENV_ANON  = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
 export default function LoginPage() {
   const { signIn, configured, profileError } = useAuth();
@@ -7,45 +12,55 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPw, setShowPw]     = useState(false);
   const [error, setError]       = useState<string | null>(null);
+  const [errorDetail, setErrorDetail] = useState<string | null>(null);
   const [busy, setBusy]         = useState(false);
   const [signingIn, setSigningIn] = useState(false);
+  const [showDiag, setShowDiag] = useState(false);
+  const [reachable, setReachable] = useState<{ ok: boolean; status?: number; error?: string } | null>(null);
+  const [testing, setTesting]   = useState(false);
   const emailRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { emailRef.current?.focus(); }, []);
+  useEffect(() => {
+    emailRef.current?.focus();
+    // Auto-run connectivity check so diagnostics are ready immediately
+    runNetworkTest();
+  }, []);
 
+  async function runNetworkTest() {
+    setTesting(true);
+    const result = await checkSupabaseReachable();
+    console.log('[diag] reachability test:', result);
+    setReachable(result);
+    setTesting(false);
+  }
+
+  // Show spinner while profile is loading post-sign-in
+  if (signingIn) {
+    return (
+      <div style={shell}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          <Spinner size={28} />
+          <div style={{ color: '#4db8ad', fontSize: 13, fontWeight: 700, letterSpacing: '.06em' }}>
+            Loading your profile…
+          </div>
+          {profileError && (
+            <div style={{ ...errorBox, maxWidth: 380, textAlign: 'center' }}>
+              <strong>Profile warning:</strong> {profileError}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Not configured at all
   if (!configured) {
     return (
       <div style={shell}>
         <div style={card}>
           <div style={brand}>Amise Medical Services</div>
           <div style={title}>Configuration Required</div>
-          <p style={{ color: '#8fc4b9', fontSize: 13, lineHeight: 1.6, marginTop: 8 }}>
-            Set the following Replit secrets to enable authentication:
-          </p>
-          <ul style={{ color: '#5df0e0', fontSize: 12, margin: '12px 0 0 0', padding: '0 0 0 18px', lineHeight: 2 }}>
-            <li><code>VITE_SUPABASE_URL</code></li>
-            <li><code>VITE_SUPABASE_ANON_KEY</code></li>
-          </ul>
-        </div>
-      </div>
-    );
-  }
-
-  // Show spinner while profile is being fetched after a successful sign-in
-  if (signingIn) {
-    return (
-      <div style={shell}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-          <Spinner />
-          <div style={{ color: '#4db8ad', fontSize: 13, fontWeight: 700, letterSpacing: '.06em' }}>
-            Loading your profile…
-          </div>
-          {profileError && (
-            <div style={{ ...errorBox, maxWidth: 360, textAlign: 'center' }}>
-              <strong>Profile warning:</strong> {profileError}<br />
-              <span style={{ opacity: .8 }}>You have been signed in with a default role. Contact your administrator to update your profile.</span>
-            </div>
-          )}
+          <DiagPanel envUrl={ENV_URL} envAnon={ENV_ANON} reachable={reachable} testing={testing} onTest={runNetworkTest} />
         </div>
       </div>
     );
@@ -56,12 +71,13 @@ export default function LoginPage() {
     if (busy) return;
     setBusy(true);
     setError(null);
-    const { error: err } = await signIn(email.trim(), password);
+    setErrorDetail(null);
+    const { error: err, detail } = await signIn(email.trim(), password);
     if (err) {
       setError(err);
+      setErrorDetail(detail ?? null);
       setBusy(false);
     } else {
-      // Sign-in succeeded — show spinner while AuthContext loads the profile
       setSigningIn(true);
     }
   }
@@ -120,8 +136,13 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div style={{ ...errorBox, marginBottom: 16 }}>
-            {error}
+          <div style={{ ...errorBox, marginBottom: 12 }}>
+            <div style={{ fontWeight: 700, marginBottom: errorDetail ? 4 : 0 }}>{error}</div>
+            {errorDetail && (
+              <div style={{ fontSize: 10, opacity: .75, fontFamily: 'monospace', wordBreak: 'break-all', marginTop: 4 }}>
+                {errorDetail}
+              </div>
+            )}
           </div>
         )}
 
@@ -132,9 +153,24 @@ export default function LoginPage() {
         >
           {busy ? <><Spinner size={14} /><span>Signing in…</span></> : 'Sign in'}
         </button>
+
+        {/* Diagnostics toggle */}
+        <button
+          type="button"
+          onClick={() => { setShowDiag(d => !d); if (!showDiag) runNetworkTest(); }}
+          style={{ marginTop: 14, width: '100%', background: 'none', border: 'none', color: 'rgba(77,184,173,.5)', fontSize: 10, cursor: 'pointer', letterSpacing: '.06em', fontWeight: 600 }}
+        >
+          {showDiag ? 'hide diagnostics ▲' : 'connection diagnostics ▼'}
+        </button>
       </form>
 
-      <p style={{ marginTop: 24, fontSize: 11, color: '#3d6056', textAlign: 'center', lineHeight: 1.6 }}>
+      {showDiag && (
+        <div style={{ width: '100%', maxWidth: 340, marginTop: 10 }}>
+          <DiagPanel envUrl={ENV_URL} envAnon={ENV_ANON} reachable={reachable} testing={testing} onTest={runNetworkTest} />
+        </div>
+      )}
+
+      <p style={{ marginTop: 16, fontSize: 11, color: '#3d6056', textAlign: 'center', lineHeight: 1.6 }}>
         Amise Medical Services · Verdance Software Division<br />
         This tool is a supervised clinical prototype. All recommendations require clinical review.
       </p>
@@ -142,13 +178,60 @@ export default function LoginPage() {
   );
 }
 
+function DiagPanel({ envUrl, envAnon, reachable, testing, onTest }: {
+  envUrl: string | undefined;
+  envAnon: string | undefined;
+  reachable: { ok: boolean; status?: number; error?: string } | null;
+  testing: boolean;
+  onTest: () => void;
+}) {
+  const rows: { label: string; value: string; ok: boolean }[] = [
+    {
+      label: 'VITE_SUPABASE_URL',
+      value: envUrl ? `${envUrl.slice(0, 30)}… (${envUrl.length} chars)` : 'NOT SET',
+      ok: Boolean(envUrl),
+    },
+    {
+      label: 'VITE_SUPABASE_ANON_KEY',
+      value: envAnon ? `${envAnon.slice(0, 14)}… (${envAnon.length} chars)` : 'NOT SET',
+      ok: Boolean(envAnon),
+    },
+    ...(reachable ? [{
+      label: 'Supabase reachable',
+      value: reachable.ok
+        ? `✓ HTTP ${reachable.status}`
+        : `✗ ${reachable.error ?? `HTTP ${reachable.status}`}`,
+      ok: reachable.ok,
+    }] : []),
+  ];
+
+  return (
+    <div style={{ background: 'rgba(0,0,0,.35)', border: '1px solid rgba(255,255,255,.08)', borderRadius: 10, padding: '12px 14px', marginTop: 12 }}>
+      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.1em', textTransform: 'uppercase', color: '#4db8ad', marginBottom: 10 }}>
+        Connection Diagnostics
+      </div>
+      {rows.map(r => (
+        <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 6, fontSize: 11 }}>
+          <span style={{ color: '#8fc4b9', fontFamily: 'monospace' }}>{r.label}</span>
+          <span style={{ color: r.ok ? '#4ade80' : '#f87171', fontFamily: 'monospace', textAlign: 'right', maxWidth: 180, wordBreak: 'break-all' }}>{r.value}</span>
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={onTest}
+        disabled={testing}
+        style={{ marginTop: 8, padding: '5px 10px', borderRadius: 6, background: 'rgba(11,130,120,.3)', border: '1px solid rgba(11,130,120,.5)', color: '#4db8ad', fontSize: 10, fontWeight: 700, cursor: testing ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+      >
+        {testing ? <><Spinner size={10} /><span>Testing…</span></> : '↻ Test connection'}
+      </button>
+    </div>
+  );
+}
+
 function Spinner({ size = 20 }: { size?: number }) {
   return (
-    <svg
-      width={size} height={size}
-      viewBox="0 0 24 24" fill="none"
-      style={{ animation: 'spin 0.8s linear infinite' }}
-    >
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      style={{ animation: 'spin 0.8s linear infinite', flexShrink: 0 }}>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       <circle cx="12" cy="12" r="10" stroke="rgba(77,184,173,.3)" strokeWidth="3" />
       <path d="M12 2a10 10 0 0 1 10 10" stroke="#4db8ad" strokeWidth="3" strokeLinecap="round" />

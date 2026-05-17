@@ -66,6 +66,17 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    // Proxy Supabase requests through the dev server to avoid CORS blocks.
+    // All browser requests to /sb-proxy/* are forwarded server-side to Supabase.
+    proxy: process.env.VITE_SUPABASE_URL
+      ? {
+          '/sb-proxy': {
+            target: process.env.VITE_SUPABASE_URL,
+            changeOrigin: true,
+            rewrite: (path: string) => path.replace(/^\/sb-proxy/, ''),
+          },
+        }
+      : undefined,
   },
   preview: {
     port,
