@@ -1,17 +1,8 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
-import ChipGroup from '@/components/ChipGroup';
 import PathwaySuggestions from '@/components/PathwaySuggestions';
-import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
+import SmartSymptomPicker from '@/components/SmartSymptomPicker';
 import { VitalSigns } from '@/lib/adaptive-triage';
-
-const SYMPTOM_OPTIONS = [
-  'abdominal pain', 'jaundice', 'dark urine', 'pale stool', 'vomiting',
-  'rectal bleeding', 'black stool', 'dysphagia', 'weight loss',
-  'breast lump', 'breast pain', 'nipple discharge', 'hernia',
-  'wound discharge', 'fever after surgery', 'shortness of breath',
-  'chest pain', 'diabetic foot infection', 'admin enquiry',
-];
 
 const VITAL_KEYS: { key: keyof VitalSigns; label: string; placeholder: string }[] = [
   { key: 'systolicBp',     label: 'SBP',      placeholder: '120' },
@@ -43,12 +34,10 @@ export default function IntakeTab() {
     isPostOp, setIsPostOp, postOpDays, setPostOpDays,
     pregnancyPossible, setPregnancyPossible,
     vitals, updateVital,
-    symptoms, toggleSymptom, symptomDetails, toggleSymptomDetail,
+    symptoms,
     freeText, setFreeText,
     triageResult,
   } = useAppContext();
-
-  const activeBranches = symptoms.filter(s => SYMPTOM_BRANCHES[s]);
 
   return (
     <div className="gap-y">
@@ -133,28 +122,15 @@ export default function IntakeTab() {
         )}
       </CollapsibleCard>
 
-      {/* Symptoms */}
-      <CollapsibleCard title="Symptoms / reason for visit" badge={symptoms.length || undefined}>
-        <ChipGroup options={SYMPTOM_OPTIONS} selected={symptoms} onToggle={toggleSymptom} />
-        {activeBranches.map(sym => (
-          <div key={sym} className="branch-panel">
-            <div className="branch-q">↳ {sym}</div>
-            {SYMPTOM_BRANCHES[sym].map(branch => (
-              <div key={branch.question} style={{ marginBottom: 6 }}>
-                <div className="branch-q">{branch.question}</div>
-                <ChipGroup
-                  options={branch.options}
-                  selected={symptomDetails[sym] || []}
-                  onToggle={opt => toggleSymptomDetail(sym, opt)}
-                  compact
-                />
-              </div>
-            ))}
-          </div>
-        ))}
+      {/* Smart adaptive symptom picker + differential inference */}
+      <CollapsibleCard
+        title="Symptoms / reason for visit"
+        badge={symptoms.length || undefined}
+      >
+        <SmartSymptomPicker />
       </CollapsibleCard>
 
-      {/* Clinical pathway suggestions — auto-expand when relevant symptoms selected */}
+      {/* Clinical pathway suggestions — shown when specific combos detected */}
       <PathwaySuggestions />
 
       {/* Free text */}

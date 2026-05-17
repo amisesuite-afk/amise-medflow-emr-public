@@ -1,0 +1,934 @@
+// =============================================================
+// MedFlow Caribbean - Phase 5 Lite (frontend only)
+// clinical-ui.js
+//
+// Two clinical UI components for the encounter editor:
+//   1. BackgroundCard - longitudinal patient context (PMH, PSH,
+//      Allergies, Medications, Toxic Habits) with chip-driven
+//      structured input.
+//   2. SystemsExam - by-system physical examination with chips
+//      per system, abnormal toggle, free-text overflow, and
+//      dynamic ordering by chief complaint.
+//
+// No backend. Works on synthetic data passed via props. All
+// state changes flow up through onUpdate callbacks.
+//
+// Install: drop this file into src/ alongside App.js, then follow
+// INTEGRATION-PHASE5.md for wiring instructions.
+// =============================================================
+
+import React, { useState, useMemo } from "react";
+import {
+  ChevronDown, ChevronRight, Plus, X, Check, AlertTriangle,
+  Pill, ClipboardList, Stethoscope, Activity, Brain,
+  HeartPulse, Wind, Bone, Eye, Droplet, Cigarette,
+} from "lucide-react";
+
+// =============================================================
+// 1. CHIP DICTIONARIES - Longitudinal patient data
+// =============================================================
+
+export const PMH_CHIPS = [
+  "Hypertension",
+  "Type 2 Diabetes Mellitus",
+  "Type 1 Diabetes Mellitus",
+  "Atrial Fibrillation",
+  "Ischaemic Heart Disease",
+  "Heart Failure",
+  "COPD",
+  "Asthma",
+  "CKD",
+  "Hypothyroidism",
+  "Hyperlipidaemia",
+  "Stroke / TIA",
+  "Hepatitis B",
+  "Hepatitis C",
+  "HIV",
+  "Sickle Cell Disease",
+  "Sickle Cell Trait",
+  "Lupus (SLE)",
+  "Rheumatoid Arthritis",
+  "Depression",
+  "Anxiety",
+  "GORD",
+  "Peptic Ulcer Disease",
+  "Cancer (specify)",
+  "Anaemia",
+];
+
+export const PSH_CHIPS = [
+  "Laparoscopic Cholecystectomy",
+  "Open Cholecystectomy",
+  "Appendicectomy",
+  "Inguinal Hernia Repair",
+  "Umbilical Hernia Repair",
+  "Caesarean Section",
+  "Hysterectomy",
+  "Thyroidectomy",
+  "Tonsillectomy",
+  "Mastectomy",
+  "Lumpectomy",
+  "ERCP with Sphincterotomy",
+  "Colectomy (specify)",
+  "Hip Replacement",
+  "Knee Replacement",
+  "Cataract Surgery",
+  "Coronary Bypass (CABG)",
+  "Coronary Stent",
+  "Endoscopy (OGD)",
+  "Colonoscopy",
+];
+
+export const ALLERGY_CHIPS = [
+  "Penicillin",
+  "Sulfonamides",
+  "Cephalosporins",
+  "NSAIDs",
+  "Aspirin",
+  "Codeine",
+  "Morphine",
+  "Latex",
+  "Iodine / Contrast",
+  "Adhesive Tape",
+  "Peanuts",
+  "Tree Nuts",
+  "Shellfish",
+  "Eggs",
+  "Dairy",
+];
+
+export const MEDICATION_CHIPS = [
+  // Cardiac / vascular
+  "Amlodipine",
+  "Losartan",
+  "Lisinopril",
+  "Bisoprolol",
+  "Atenolol",
+  "Carvedilol",
+  "Hydrochlorothiazide",
+  "Furosemide",
+  "Spironolactone",
+  // Antithrombotic
+  "Aspirin",
+  "Clopidogrel",
+  "Apixaban (Eliquis)",
+  "Rivaroxaban",
+  "Warfarin",
+  "Enoxaparin",
+  // Diabetes
+  "Metformin",
+  "Gliclazide",
+  "Insulin (specify type)",
+  "Empagliflozin",
+  // Lipid
+  "Atorvastatin",
+  "Rosuvastatin",
+  "Simvastatin",
+  // GI
+  "Omeprazole",
+  "Pantoprazole",
+  "Ranitidine",
+  // Respiratory
+  "Salbutamol inhaler",
+  "Beclomethasone inhaler",
+  "Montelukast",
+  // Thyroid
+  "Levothyroxine",
+  // Analgesia
+  "Paracetamol",
+  "Ibuprofen",
+  "Tramadol",
+  // Mental health
+  "Sertraline",
+  "Fluoxetine",
+];
+
+export const SMOKING_OPTIONS = [
+  { value: "never", label: "Never smoker" },
+  { value: "current", label: "Current smoker" },
+  { value: "former", label: "Former smoker" },
+];
+
+export const ALCOHOL_OPTIONS = [
+  { value: "never", label: "Non-drinker" },
+  { value: "occasional", label: "Occasional" },
+  { value: "regular", label: "Regular" },
+  { value: "heavy", label: "Heavy" },
+];
+
+// =============================================================
+// 2. CHIP DICTIONARIES - Examination findings by system
+// =============================================================
+
+export const EXAM_CHIPS = {
+  general: [
+    "Alert", "Oriented", "Comfortable", "In distress", "Pale", "Diaphoretic",
+    "Cyanosed", "Jaundiced", "Dehydrated", "Cachexic", "Well-nourished",
+  ],
+  cvs: [
+    "Regular rhythm", "Irregular rhythm", "Murmur (specify)", "S3 gallop", "S4 gallop",
+    "Raised JVP", "Peripheral oedema", "Pulse deficit", "Capillary refill >2s",
+    "Carotid bruit", "Cool peripheries",
+  ],
+  resp: [
+    "Clear bilaterally", "Reduced air entry", "Wheeze", "Crackles", "Bronchial breathing",
+    "Dullness to percussion", "Hyper-resonance", "Accessory muscle use", "SpO2 abnormal",
+    "Tracheal deviation",
+  ],
+  abdomen: [
+    "Soft", "Tender RUQ", "Tender LUQ", "Tender RIF", "Tender LIF", "Epigastric tenderness",
+    "Murphy positive", "Rebound tenderness", "Guarding", "Distended", "Palpable mass",
+    "Hepatomegaly", "Splenomegaly", "Bowel sounds present", "Bowel sounds absent",
+    "Bowel sounds hyperactive", "Inguinal hernia", "Scars (specify)",
+  ],
+  msk: [
+    "Full ROM", "Restricted ROM (specify)", "Swelling", "Deformity", "Tenderness (specify)",
+    "Gait normal", "Gait antalgic", "Weakness", "Joint warmth", "Joint effusion",
+  ],
+  neuro: [
+    "GCS 15", "GCS reduced (specify)", "Cranial nerves intact", "Focal deficit (specify)",
+    "Sensation intact", "Sensation reduced", "Reflexes normal", "Reflexes brisk",
+    "Reflexes diminished", "Plantar down-going", "Plantar up-going",
+    "Romberg negative", "Romberg positive",
+  ],
+  gu: [
+    "No costovertebral tenderness", "Costovertebral tenderness", "Suprapubic tenderness",
+    "Palpable bladder", "Testicular mass", "Hernia present", "PR exam normal",
+    "PR exam abnormal (specify)",
+  ],
+  skin: [
+    "Intact", "Pale", "Jaundiced", "Cyanosed", "Rash (specify)", "Ulcer (specify)",
+    "Surgical wound clean", "Surgical wound dehiscent", "Surgical wound infected",
+    "Cellulitis", "Stoma healthy", "Stoma issues",
+  ],
+  local: [
+    // Pre-populated based on chief complaint
+    "Tender (specify)", "Mass (specify)", "Swelling", "Deformity", "Discharge",
+    "Erythema", "Warmth", "Normal appearance",
+  ],
+  breast: [
+    "No mass", "Mass (specify quadrant)", "Skin changes", "Nipple discharge",
+    "Nipple retraction", "Lymphadenopathy axillary", "Lymphadenopathy supraclavicular",
+    "Tenderness", "Symmetric", "Asymmetric",
+  ],
+};
+
+// Display order and labels for each system
+export const SYSTEM_INFO = {
+  local:   { label: "Local exam",        icon: Eye,         color: "#A48451" },
+  general: { label: "General",           icon: Activity,    color: "#6B6B6B" },
+  cvs:     { label: "Cardiovascular",    icon: HeartPulse,  color: "#C5303A" },
+  resp:    { label: "Respiratory",       icon: Wind,        color: "#5BA3A6" },
+  abdomen: { label: "Abdomen",           icon: Stethoscope, color: "#A48451" },
+  msk:     { label: "Musculoskeletal",   icon: Bone,        color: "#3A6B7A" },
+  neuro:   { label: "Neurological",      icon: Brain,       color: "#6B3A6B" },
+  gu:      { label: "Genitourinary",     icon: Droplet,     color: "#4F7A4F" },
+  skin:    { label: "Skin",              icon: Activity,    color: "#7A4B3A" },
+  breast:  { label: "Breast",            icon: Stethoscope, color: "#A48451" },
+};
+
+// =============================================================
+// 3. CHIEF COMPLAINT -> SYSTEM PRIORITY
+// =============================================================
+
+export const CC_PRIORITY = {
+  "ruq pain":         ["local", "abdomen", "general", "cvs"],
+  "luq pain":         ["local", "abdomen", "general"],
+  "rif pain":         ["local", "abdomen", "general", "gu"],
+  "lif pain":         ["local", "abdomen", "general", "gu"],
+  "epigastric pain":  ["local", "abdomen", "cvs", "general"],
+  "chest pain":       ["local", "cvs", "resp", "general"],
+  "shortness of breath": ["resp", "cvs", "general"],
+  "palpitations":     ["cvs", "general", "neuro"],
+  "headache":         ["neuro", "general", "cvs"],
+  "back pain":        ["local", "msk", "neuro", "gu"],
+  "breast lump":      ["breast", "general"],
+  "jaundice":         ["abdomen", "general", "skin"],
+  "vomiting":         ["abdomen", "general", "neuro"],
+  "wound review":     ["local", "skin"],
+  "lump":             ["local", "general", "skin"],
+  "rectal bleeding":  ["local", "abdomen", "general"],
+  "hernia":           ["local", "abdomen", "general"],
+  "thyroid":          ["local", "general", "cvs"],
+  "leg pain":         ["local", "msk", "cvs"],
+  "leg swelling":     ["local", "cvs", "msk"],
+};
+
+const DEFAULT_SYSTEM_ORDER = [
+  "general", "cvs", "resp", "abdomen", "msk", "neuro", "gu", "skin",
+];
+
+export function getSystemsForComplaint(complaint) {
+  if (!complaint) return ["local", ...DEFAULT_SYSTEM_ORDER];
+  const key = complaint.toLowerCase().trim();
+  const exact = CC_PRIORITY[key];
+  if (exact) return [...exact, ...DEFAULT_SYSTEM_ORDER.filter((s) => !exact.includes(s))];
+  // Fuzzy match: any priority key contained in the complaint
+  for (const [pkey, systems] of Object.entries(CC_PRIORITY)) {
+    if (key.includes(pkey)) {
+      return [...systems, ...DEFAULT_SYSTEM_ORDER.filter((s) => !systems.includes(s))];
+    }
+  }
+  return ["local", ...DEFAULT_SYSTEM_ORDER];
+}
+
+// =============================================================
+// 4. EMPTY-STATE HELPERS
+// =============================================================
+
+export function emptyPatientBackground() {
+  return {
+    pmh: [],
+    psh: [],
+    allergies: [],
+    medications: [],
+    social: { smoking: null, alcohol: null, notes: "" },
+  };
+}
+
+export function emptyExamination() {
+  return {};
+}
+
+// =============================================================
+// 5. STYLING
+// =============================================================
+
+const T = {
+  navy: "#0F2147",
+  navySoft: "#3A4A6B",
+  gold: "#C5A572",
+  goldSoft: "#A48451",
+  teal: "#5BA3A6",
+  tealSoft: "#EEF6F2",
+  ink: "#1A1A1A",
+  mute: "#6B6B6B",
+  line: "#D8D2C4",
+  card: "#FAF7F1",
+  white: "#FFFFFF",
+  crit: "#C5303A",
+  warnBg: "#FFF8E8",
+  normalGreen: "#4F7A4F",
+  abnormalAmber: "#C8743A",
+};
+
+const cardStyle = {
+  background: T.white,
+  border: "1px solid " + T.line,
+  borderRadius: 6,
+  padding: 14,
+  marginBottom: 12,
+  fontFamily: "system-ui, sans-serif",
+};
+
+const headerRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  cursor: "pointer",
+  userSelect: "none",
+};
+
+const sectionTitleStyle = {
+  fontSize: 11,
+  fontWeight: 700,
+  color: T.goldSoft,
+  letterSpacing: 1.2,
+  textTransform: "uppercase",
+};
+
+const labelStyle = {
+  fontSize: 10,
+  color: T.mute,
+  textTransform: "uppercase",
+  letterSpacing: 0.5,
+  width: 90,
+  flexShrink: 0,
+  paddingTop: 6,
+};
+
+const chipBaseStyle = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 4,
+  fontSize: 11,
+  padding: "3px 8px",
+  borderRadius: 12,
+  border: "1px solid " + T.line,
+  background: T.card,
+  color: T.ink,
+  cursor: "default",
+};
+
+const chipRemovableStyle = {
+  ...chipBaseStyle,
+  background: T.tealSoft,
+  borderColor: T.teal,
+};
+
+const chipSuggestionStyle = {
+  ...chipBaseStyle,
+  background: "transparent",
+  borderColor: T.line,
+  color: T.mute,
+  cursor: "pointer",
+};
+
+const btnSmall = {
+  fontSize: 11,
+  padding: "3px 8px",
+  borderRadius: 3,
+  border: "1px solid " + T.line,
+  background: T.white,
+  cursor: "pointer",
+  color: T.navySoft,
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 4,
+};
+
+const btnPrimarySmall = {
+  ...btnSmall,
+  background: T.navy,
+  color: T.white,
+  border: "none",
+};
+
+const inputStyle = {
+  padding: "4px 8px",
+  border: "1px solid " + T.line,
+  borderRadius: 3,
+  fontSize: 12,
+  fontFamily: "inherit",
+};
+
+// =============================================================
+// 6. CHIP COMPONENT
+// =============================================================
+
+function Chip({ label, onRemove, style: extraStyle }) {
+  return (
+    <span style={{ ...chipRemovableStyle, ...(extraStyle || {}) }}>
+      {label}
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          style={{
+            border: "none", background: "transparent",
+            cursor: "pointer", padding: 0, marginLeft: 2,
+            display: "inline-flex", alignItems: "center",
+            color: T.mute,
+          }}
+          aria-label="Remove"
+        >
+          <X size={10} />
+        </button>
+      )}
+    </span>
+  );
+}
+
+function SuggestionChip({ label, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        ...chipSuggestionStyle,
+        border: "1px dashed " + T.line,
+      }}
+    >
+      <Plus size={9} /> {label}
+    </button>
+  );
+}
+
+// =============================================================
+// 7. BACKGROUND CARD
+// =============================================================
+
+export function BackgroundCard({ patient, onUpdate }) {
+  const [expanded, setExpanded] = useState(true);
+  const [editingSection, setEditingSection] = useState(null);
+  const bg = patient || emptyPatientBackground();
+
+  const updateSection = (section, items) => {
+    onUpdate({ ...bg, [section]: items });
+  };
+
+  const updateSocial = (changes) => {
+    onUpdate({ ...bg, social: { ...(bg.social || {}), ...changes } });
+  };
+
+  return (
+    <div style={cardStyle}>
+      <div style={headerRowStyle} onClick={() => setExpanded(!expanded)}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {expanded ? <ChevronDown size={16} color={T.navySoft} /> : <ChevronRight size={16} color={T.navySoft} />}
+          <span style={sectionTitleStyle}>Background</span>
+          <span style={{ fontSize: 11, color: T.mute, marginLeft: 6 }}>
+            (longitudinal, inherited from patient record)
+          </span>
+        </div>
+        <BackgroundSummary bg={bg} />
+      </div>
+
+      {expanded && (
+        <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
+          <BackgroundRow
+            label="PMH"
+            icon={ClipboardList}
+            items={bg.pmh || []}
+            suggestions={PMH_CHIPS}
+            emptyText="None recorded"
+            placeholder="e.g. Hypertension"
+            isEditing={editingSection === "pmh"}
+            onEdit={() => setEditingSection(editingSection === "pmh" ? null : "pmh")}
+            onAdd={(item) => {
+              updateSection("pmh", [...(bg.pmh || []), item]);
+            }}
+            onRemove={(i) => {
+              updateSection("pmh", (bg.pmh || []).filter((_, idx) => idx !== i));
+            }}
+          />
+
+          <BackgroundRow
+            label="PSH"
+            icon={Stethoscope}
+            items={bg.psh || []}
+            suggestions={PSH_CHIPS}
+            emptyText="No surgical history"
+            placeholder="e.g. Cholecystectomy"
+            isEditing={editingSection === "psh"}
+            onEdit={() => setEditingSection(editingSection === "psh" ? null : "psh")}
+            onAdd={(item) => {
+              updateSection("psh", [...(bg.psh || []), item]);
+            }}
+            onRemove={(i) => {
+              updateSection("psh", (bg.psh || []).filter((_, idx) => idx !== i));
+            }}
+          />
+
+          <BackgroundRow
+            label="Allergies"
+            icon={AlertTriangle}
+            items={bg.allergies || []}
+            suggestions={ALLERGY_CHIPS}
+            emptyText="NKDA"
+            emptyColor={T.normalGreen}
+            placeholder="e.g. Penicillin"
+            isEditing={editingSection === "allergies"}
+            onEdit={() => setEditingSection(editingSection === "allergies" ? null : "allergies")}
+            onAdd={(item) => {
+              updateSection("allergies", [...(bg.allergies || []), item]);
+            }}
+            onRemove={(i) => {
+              updateSection("allergies", (bg.allergies || []).filter((_, idx) => idx !== i));
+            }}
+            chipStyle={{ background: "#FFF0F0", borderColor: T.crit }}
+          />
+
+          <BackgroundRow
+            label="Medications"
+            icon={Pill}
+            items={bg.medications || []}
+            suggestions={MEDICATION_CHIPS}
+            emptyText="No regular medications"
+            placeholder="e.g. Metformin 500mg BD"
+            isEditing={editingSection === "medications"}
+            onEdit={() => setEditingSection(editingSection === "medications" ? null : "medications")}
+            onAdd={(item) => {
+              updateSection("medications", [...(bg.medications || []), item]);
+            }}
+            onRemove={(i) => {
+              updateSection("medications", (bg.medications || []).filter((_, idx) => idx !== i));
+            }}
+          />
+
+          <SocialRow social={bg.social || {}} onUpdate={updateSocial} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BackgroundSummary({ bg }) {
+  const counts = [
+    (bg.pmh || []).length && (bg.pmh.length + " PMH"),
+    (bg.psh || []).length && (bg.psh.length + " PSH"),
+    (bg.allergies || []).length ? (bg.allergies.length + " allergies") : "NKDA",
+    (bg.medications || []).length && (bg.medications.length + " meds"),
+  ].filter(Boolean);
+  if (counts.length === 0) return null;
+  return (
+    <span style={{ fontSize: 11, color: T.mute }}>
+      {counts.join(" \u2022 ")}
+    </span>
+  );
+}
+
+function BackgroundRow({
+  label, icon: Icon, items, suggestions, emptyText, emptyColor,
+  placeholder, isEditing, onEdit, onAdd, onRemove, chipStyle,
+}) {
+  const [newItemText, setNewItemText] = useState("");
+  const filteredSuggestions = useMemo(() => {
+    if (!newItemText) return suggestions.slice(0, 6);
+    const t = newItemText.toLowerCase();
+    return suggestions.filter((s) => s.toLowerCase().includes(t)).slice(0, 6);
+  }, [newItemText, suggestions]);
+
+  const commit = (item) => {
+    const v = (item || newItemText).trim();
+    if (!v) return;
+    onAdd(v);
+    setNewItemText("");
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+      <div style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 4 }}>
+        {Icon && <Icon size={11} color={T.goldSoft} />}
+        <span>{label}</span>
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, alignItems: "center" }}>
+          {(items || []).length === 0 && !isEditing && (
+            <span style={{ fontSize: 11, color: emptyColor || T.mute, fontStyle: "italic" }}>
+              {emptyText}
+            </span>
+          )}
+          {(items || []).map((it, i) => (
+            <Chip
+              key={i}
+              label={typeof it === "string" ? it : (it.label || JSON.stringify(it))}
+              onRemove={() => onRemove(i)}
+              style={chipStyle}
+            />
+          ))}
+          {!isEditing ? (
+            <button onClick={onEdit} style={btnSmall}>
+              <Plus size={10} /> Add
+            </button>
+          ) : (
+            <button onClick={onEdit} style={btnSmall}>
+              <Check size={10} /> Done
+            </button>
+          )}
+        </div>
+
+        {isEditing && (
+          <div style={{ marginTop: 6 }}>
+            <div style={{ display: "flex", gap: 4, alignItems: "center", marginBottom: 6 }}>
+              <input
+                type="text"
+                value={newItemText}
+                onChange={(e) => setNewItemText(e.target.value)}
+                placeholder={placeholder}
+                style={{ ...inputStyle, flex: 1 }}
+                onKeyDown={(e) => { if (e.key === "Enter") commit(); }}
+              />
+              <button onClick={() => commit()} style={btnPrimarySmall}>
+                <Plus size={10} /> Add
+              </button>
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+              {filteredSuggestions.map((s, i) => (
+                <SuggestionChip key={i} label={s} onClick={() => commit(s)} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SocialRow({ social, onUpdate }) {
+  return (
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+      <div style={{ ...labelStyle, display: "flex", alignItems: "center", gap: 4 }}>
+        <Cigarette size={11} color={T.goldSoft} />
+        <span>Habits</span>
+      </div>
+      <div style={{ flex: 1, display: "flex", flexWrap: "wrap", gap: 8 }}>
+        <SelectGroup
+          label="Smoking"
+          value={social.smoking}
+          options={SMOKING_OPTIONS}
+          onChange={(v) => onUpdate({ smoking: v })}
+        />
+        <SelectGroup
+          label="Alcohol"
+          value={social.alcohol}
+          options={ALCOHOL_OPTIONS}
+          onChange={(v) => onUpdate({ alcohol: v })}
+        />
+      </div>
+    </div>
+  );
+}
+
+function SelectGroup({ label, value, options, onChange }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <span style={{ fontSize: 9, color: T.mute, letterSpacing: 0.5 }}>
+        {label.toUpperCase()}
+      </span>
+      <div style={{ display: "flex", gap: 2 }}>
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => onChange(value === opt.value ? null : opt.value)}
+            style={{
+              ...btnSmall,
+              padding: "2px 6px",
+              fontSize: 10,
+              background: value === opt.value ? T.navy : T.white,
+              color: value === opt.value ? T.white : T.navySoft,
+              border: value === opt.value ? "none" : "1px solid " + T.line,
+            }}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// =============================================================
+// 8. SYSTEMS EXAM
+// =============================================================
+
+export function SystemsExam({ examination, chiefComplaint, onUpdate }) {
+  const exam = examination || {};
+
+  const orderedSystems = useMemo(
+    () => getSystemsForComplaint(chiefComplaint),
+    [chiefComplaint]
+  );
+
+  // Initial expanded state: local + first priority system + any abnormal
+  const [expandedSystems, setExpandedSystems] = useState(() => {
+    const s = new Set();
+    s.add("local");
+    if (orderedSystems[1]) s.add(orderedSystems[1]);
+    Object.entries(exam).forEach(([sys, data]) => {
+      if (data && data.isNormal === false) s.add(sys);
+    });
+    return s;
+  });
+
+  const toggleSystem = (sys) => {
+    setExpandedSystems((prev) => {
+      const next = new Set(prev);
+      if (next.has(sys)) next.delete(sys);
+      else next.add(sys);
+      return next;
+    });
+  };
+
+  const updateSystem = (sys, updates) => {
+    const current = exam[sys] || { isNormal: true, chips: [], freeText: "" };
+    onUpdate({ ...exam, [sys]: { ...current, ...updates } });
+  };
+
+  return (
+    <div style={cardStyle}>
+      <div style={{ ...headerRowStyle, marginBottom: 12, cursor: "default" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Stethoscope size={14} color={T.navySoft} />
+          <span style={sectionTitleStyle}>Physical examination</span>
+          <span style={{ fontSize: 11, color: T.mute, marginLeft: 6 }}>
+            (by system, ordered by chief complaint)
+          </span>
+        </div>
+        <ExamSummary exam={exam} />
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {orderedSystems.map((sys) => (
+          <SystemCard
+            key={sys}
+            system={sys}
+            data={exam[sys] || { isNormal: true, chips: [], freeText: "" }}
+            expanded={expandedSystems.has(sys)}
+            onToggle={() => toggleSystem(sys)}
+            onUpdate={(updates) => updateSystem(sys, updates)}
+            availableChips={EXAM_CHIPS[sys] || []}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ExamSummary({ exam }) {
+  const abnormalCount = Object.values(exam).filter((d) => d && d.isNormal === false).length;
+  const totalDocumented = Object.values(exam).filter(
+    (d) => d && (d.isNormal === false || (d.chips || []).length > 0 || (d.freeText || "").trim().length > 0)
+  ).length;
+  if (totalDocumented === 0) return null;
+  return (
+    <span style={{ fontSize: 11, color: T.mute }}>
+      {totalDocumented} documented
+      {abnormalCount > 0 && (
+        <span style={{ color: T.abnormalAmber }}>
+          {" \u2022 "}{abnormalCount} abnormal
+        </span>
+      )}
+    </span>
+  );
+}
+
+function SystemCard({ system, data, expanded, onToggle, onUpdate, availableChips }) {
+  const info = SYSTEM_INFO[system] || { label: system, icon: Activity, color: T.navySoft };
+  const { icon: Icon } = info;
+
+  const selectedChips = data.chips || [];
+  const remainingSuggestions = availableChips.filter((c) => !selectedChips.includes(c));
+
+  const documented = !data.isNormal || selectedChips.length > 0 || (data.freeText || "").trim().length > 0;
+  const indicatorColor = data.isNormal === false ? T.abnormalAmber : (documented ? T.normalGreen : T.line);
+
+  const handleToggleNormal = () => {
+    onUpdate({ isNormal: !data.isNormal });
+  };
+
+  const handleAddChip = (chip) => {
+    onUpdate({ chips: [...selectedChips, chip] });
+  };
+
+  const handleRemoveChip = (chip) => {
+    onUpdate({ chips: selectedChips.filter((c) => c !== chip) });
+  };
+
+  const handleFreeTextChange = (e) => {
+    onUpdate({ freeText: e.target.value });
+  };
+
+  return (
+    <div style={{
+      border: "1px solid " + T.line,
+      borderLeft: "3px solid " + indicatorColor,
+      borderRadius: 4,
+      background: T.card,
+    }}>
+      <div
+        onClick={onToggle}
+        style={{
+          ...headerRowStyle,
+          padding: "8px 10px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {expanded ? <ChevronDown size={14} color={T.navySoft} /> : <ChevronRight size={14} color={T.navySoft} />}
+          <Icon size={13} color={info.color} />
+          <span style={{ fontSize: 13, fontWeight: 600, color: T.navy }}>
+            {info.label}
+          </span>
+          {data.isNormal === false && (
+            <span style={{
+              fontSize: 9, fontWeight: 700,
+              color: T.abnormalAmber,
+              textTransform: "uppercase",
+              letterSpacing: 0.8,
+              background: T.warnBg,
+              padding: "1px 5px",
+              borderRadius: 2,
+            }}>
+              Abnormal
+            </span>
+          )}
+        </div>
+        <span style={{ fontSize: 10, color: T.mute }}>
+          {selectedChips.length > 0 && (selectedChips.length + " findings")}
+          {selectedChips.length === 0 && data.isNormal && "Normal"}
+        </span>
+      </div>
+
+      {expanded && (
+        <div style={{
+          padding: "0 10px 10px 10px",
+          display: "flex", flexDirection: "column", gap: 8,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <button
+              onClick={handleToggleNormal}
+              style={{
+                ...btnSmall,
+                background: data.isNormal ? T.normalGreen : T.white,
+                color: data.isNormal ? T.white : T.navySoft,
+                border: data.isNormal ? "none" : "1px solid " + T.line,
+              }}
+            >
+              <Check size={10} /> Normal
+            </button>
+            <button
+              onClick={handleToggleNormal}
+              style={{
+                ...btnSmall,
+                background: data.isNormal === false ? T.abnormalAmber : T.white,
+                color: data.isNormal === false ? T.white : T.navySoft,
+                border: data.isNormal === false ? "none" : "1px solid " + T.line,
+              }}
+            >
+              <AlertTriangle size={10} /> Abnormal
+            </button>
+          </div>
+
+          {/* Selected findings */}
+          {selectedChips.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+              {selectedChips.map((chip, i) => (
+                <Chip key={i} label={chip} onRemove={() => handleRemoveChip(chip)} />
+              ))}
+            </div>
+          )}
+
+          {/* Available chips */}
+          {remainingSuggestions.length > 0 && (
+            <div>
+              <div style={{
+                fontSize: 9, color: T.mute,
+                textTransform: "uppercase", letterSpacing: 0.5,
+                marginBottom: 4,
+              }}>
+                Common findings
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                {remainingSuggestions.map((chip, i) => (
+                  <SuggestionChip key={i} label={chip} onClick={() => handleAddChip(chip)} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Free text overflow */}
+          <div>
+            <div style={{
+              fontSize: 9, color: T.mute,
+              textTransform: "uppercase", letterSpacing: 0.5,
+              marginBottom: 4,
+            }}>
+              Additional notes
+            </div>
+            <textarea
+              value={data.freeText || ""}
+              onChange={handleFreeTextChange}
+              placeholder="Free text for findings not covered by chips above..."
+              rows={2}
+              style={{
+                ...inputStyle,
+                width: "100%",
+                resize: "vertical",
+                fontFamily: "inherit",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
