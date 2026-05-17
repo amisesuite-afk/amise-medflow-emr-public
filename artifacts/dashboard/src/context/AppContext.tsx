@@ -19,7 +19,7 @@ function csv(v: string): string[] {
   return v.split(',').map(s => s.trim()).filter(Boolean);
 }
 
-export function toggleList(list: string[], value: string): string[] {
+function toggleList(list: string[], value: string): string[] {
   return list.includes(value) ? list.filter(item => item !== value) : [...list, value];
 }
 
