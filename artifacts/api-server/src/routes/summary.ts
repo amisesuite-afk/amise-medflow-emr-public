@@ -135,16 +135,20 @@ ${d.history.familyHistory.join(', ') || 'Not documented'}
 SOCIAL / TOXIC HABITS
 ${d.history.toxicHabits.join(', ') || 'Nil significant'}
 
-${Object.values(d.examination ?? {}).some(v => v.trim()) ? `CLINICAL EXAMINATION FINDINGS
-${Object.entries(d.examination ?? {}).filter(([, v]) => v.trim()).map(([k, v]) => `  ${k}: ${v}`).join('\n')}` : ''}
+CLINICAL EXAMINATION FINDINGS
+${Object.entries(d.examination ?? {})
+    .filter(([, v]) => v.trim())
+    .map(([k, v]) => `  ${k}: ${v}`)
+    .join('\n') || '  Not documented — pending clinical review'}
 
-${scaleLines.length ? `CLINICAL SCORING TOOLS\n${scaleLines.join('\n')}` : ''}
+${scaleLines.length ? `CLINICAL SCORING TOOLS\n${scaleLines.join('\n')}\n` : ''}PROVISIONAL ASSESSMENT
+${d.assessment?.trim() || 'Not documented — pending clinician input'}
 
-${d.assessment ? `PROVISIONAL ASSESSMENT\n${d.assessment}` : ''}
+DIFFERENTIALS CONSIDERED
+${d.differentials?.trim() || 'Not documented — pending clinician input'}
 
-${d.differentials ? `DIFFERENTIALS CONSIDERED\n${d.differentials}` : ''}
-
-${d.plan ? `INITIAL PLAN\n${d.plan}` : ''}
+INITIAL MANAGEMENT PLAN
+${d.plan?.trim() || 'Not documented — pending clinician input'}
 
 ---
 Prepared by front desk for review by: Dr Dawit Daniel Kabiye, MD, DM

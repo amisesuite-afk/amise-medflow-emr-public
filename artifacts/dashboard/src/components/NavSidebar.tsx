@@ -32,7 +32,7 @@ const CLINICAL_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?:
   { id: 'allergies',   icon: ShieldAlert,      label: 'Allergies' },
   { id: 'toxic',       icon: Cigarette,        label: 'Toxic Habits' },
   { id: 'scales',      icon: ClipboardCheck,   label: 'Scales' },
-  { id: 'examination', icon: Stethoscope,      label: 'Examination', doctorOnly: true },
+  { id: 'examination', icon: Stethoscope,      label: 'Examination' },
   { id: 'assessment',  icon: ClipboardCheck,   label: 'Assessment',  doctorOnly: true },
   { id: 'plan',        icon: FileEdit,         label: 'Plan',        doctorOnly: true },
 ];

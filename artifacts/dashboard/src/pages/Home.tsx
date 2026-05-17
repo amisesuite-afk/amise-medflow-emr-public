@@ -135,7 +135,7 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'allergies'   && <AllergiesTab />}
         {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
         {topSection === 'consultation'  && activeSection === 'scales'      && <ScalesTab />}
-        {topSection === 'consultation'  && activeSection === 'examination' && mode === 'doctor' && <ExaminationTab />}
+        {topSection === 'consultation'  && activeSection === 'examination' && <ExaminationTab />}
         {topSection === 'consultation'  && activeSection === 'assessment'  && mode === 'doctor' && <AssessmentTab />}
         {topSection === 'consultation'  && activeSection === 'plan'        && mode === 'doctor' && <PlanTab />}
         {topSection === 'procedures'    && <ProceduresTab />}
