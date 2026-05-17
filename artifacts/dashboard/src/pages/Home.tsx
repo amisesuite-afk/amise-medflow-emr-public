@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useAppContext, AppMode, Section } from '@/context/AppContext';
+import NavSidebar, { TopSection } from '@/components/NavSidebar';
 import IntakeTab from './tabs/IntakeTab';
 import TriageTab from './tabs/TriageTab';
 import PmhTab from './tabs/PmhTab';
@@ -13,38 +15,18 @@ import ProceduresTab from './tabs/ProceduresTab';
 import BillingTab from './tabs/BillingTab';
 import DocumentsTab from './tabs/DocumentsTab';
 
-interface NavItem {
-  id: Section;
-  icon: string;
-  label: string;
-  group: string;
-  doctorOnly?: boolean;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { id: 'intake',      icon: '📋', label: 'Intake',          group: 'clinical' },
-  { id: 'triage',      icon: '🔺', label: 'Triage',          group: 'clinical' },
-  { id: 'pmh',         icon: '🏥', label: 'PMH',             group: 'clinical' },
-  { id: 'surgical',    icon: '✂️',  label: 'Surgical Hx',    group: 'clinical' },
-  { id: 'medications', icon: '💊', label: 'Medications',     group: 'clinical' },
-  { id: 'allergies',   icon: '⚠️',  label: 'Allergies',      group: 'clinical' },
-  { id: 'toxic',       icon: '🚬', label: 'Toxic Habits',    group: 'clinical' },
-  { id: 'examination', icon: '🩺', label: 'Examination',     group: 'doctor', doctorOnly: true },
-  { id: 'assessment',  icon: '📊', label: 'Assessment',      group: 'doctor', doctorOnly: true },
-  { id: 'plan',        icon: '📝', label: 'Plan',            group: 'doctor', doctorOnly: true },
-  { id: 'procedures',  icon: '🔬', label: 'Procedures',      group: 'admin' },
-  { id: 'billing',     icon: '💰', label: 'Billing',         group: 'admin' },
-  { id: 'documents',   icon: '📁', label: 'Documents',       group: 'admin' },
-];
-
-const GROUPS = [
-  { id: 'clinical', label: 'Clinical' },
-  { id: 'doctor',   label: 'Doctor' },
-  { id: 'admin',    label: 'Admin' },
-];
-
 function acuityClass(a: string) {
   return a === 'urgent' ? 'urgent' : a === 'priority' ? 'priority' : a === 'review' ? 'review' : '';
+}
+
+function StubPanel({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="stub-panel">
+      <div className="stub-panel__icon">🚧</div>
+      <div className="stub-panel__title">{title}</div>
+      <div className="stub-panel__desc">{description}</div>
+    </div>
+  );
 }
 
 export default function HomePage() {
@@ -55,6 +37,9 @@ export default function HomePage() {
     triageResult,
   } = useAppContext();
 
+  const [collapsed, setCollapsed]     = useState(false);
+  const [topSection, setTopSection]   = useState<TopSection>('intake');
+
   const urgentCount = triageResult.vitalRedFlags.filter(f => f.severity === 'urgent').length
     + triageResult.reasons.length;
   const hasUrgentRedFlag = triageResult.acuity === 'urgent';
@@ -64,8 +49,13 @@ export default function HomePage() {
   if (age) metaParts.push(`Age ${age}`);
   if (sex && sex !== 'unknown') metaParts.push(sex);
 
+  const sidebarWidth = collapsed ? 52 : 182;
+
   return (
-    <div className="app">
+    <div
+      className="app"
+      style={{ gridTemplateColumns: `${sidebarWidth}px 1fr` }}
+    >
       {/* ── Sticky header ── */}
       <header className="app-header">
         <div className="header-brand">Amise Medical</div>
@@ -93,51 +83,43 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* ── Sidebar ── */}
-      <nav className="sidebar" aria-label="Sections">
-        {GROUPS.map(group => {
-          const items = NAV_ITEMS.filter(n => n.group === group.id);
-          if (group.id === 'doctor' && mode === 'front_desk') return null;
-          return (
-            <div key={group.id}>
-              <div className="sidebar-section">{group.label}</div>
-              {items.map(item => {
-                const isBadge = item.id === 'triage' && hasUrgentRedFlag;
-                return (
-                  <button
-                    key={item.id}
-                    className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-                    onClick={() => setActiveSection(item.id)}
-                    aria-current={activeSection === item.id ? 'page' : undefined}
-                  >
-                    <span className="nav-icon">{item.icon}</span>
-                    <span>{item.label}</span>
-                    {isBadge && (
-                      <span className={`nav-badge ${triageResult.acuity}`}>{urgentCount}</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          );
-        })}
-      </nav>
+      {/* ── Collapsible sidebar ── */}
+      <NavSidebar
+        collapsed={collapsed}
+        onToggle={() => setCollapsed(c => !c)}
+        topSection={topSection}
+        onTopSection={setTopSection}
+        activeSection={activeSection}
+        onSection={setActiveSection}
+        mode={mode}
+        hasUrgentRedFlag={hasUrgentRedFlag}
+        urgentCount={urgentCount}
+        acuity={triageResult.acuity}
+      />
 
       {/* ── Main content ── */}
       <main className="main-content">
-        {activeSection === 'intake'      && <IntakeTab />}
-        {activeSection === 'triage'      && <TriageTab />}
-        {activeSection === 'pmh'         && <PmhTab />}
-        {activeSection === 'surgical'    && <SurgicalHistoryTab />}
-        {activeSection === 'medications' && <MedicationsTab />}
-        {activeSection === 'allergies'   && <AllergiesTab />}
-        {activeSection === 'toxic'       && <ToxicHabitsTab />}
-        {activeSection === 'examination' && mode === 'doctor' && <ExaminationTab />}
-        {activeSection === 'assessment'  && mode === 'doctor' && <AssessmentTab />}
-        {activeSection === 'plan'        && mode === 'doctor' && <PlanTab />}
-        {activeSection === 'procedures'  && <ProceduresTab />}
-        {activeSection === 'billing'     && <BillingTab />}
-        {activeSection === 'documents'   && <DocumentsTab />}
+        {/* Clinical sections */}
+        {topSection === 'intake'        && <IntakeTab />}
+        {topSection === 'consultation'  && activeSection === 'triage'      && <TriageTab />}
+        {topSection === 'consultation'  && activeSection === 'pmh'         && <PmhTab />}
+        {topSection === 'consultation'  && activeSection === 'surgical'    && <SurgicalHistoryTab />}
+        {topSection === 'consultation'  && activeSection === 'medications' && <MedicationsTab />}
+        {topSection === 'consultation'  && activeSection === 'allergies'   && <AllergiesTab />}
+        {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
+        {topSection === 'consultation'  && activeSection === 'examination' && mode === 'doctor' && <ExaminationTab />}
+        {topSection === 'consultation'  && activeSection === 'assessment'  && mode === 'doctor' && <AssessmentTab />}
+        {topSection === 'consultation'  && activeSection === 'plan'        && mode === 'doctor' && <PlanTab />}
+        {topSection === 'procedures'    && <ProceduresTab />}
+        {topSection === 'billing'       && activeSection === 'billing'     && <BillingTab />}
+        {topSection === 'billing'       && activeSection === 'documents'   && <DocumentsTab />}
+
+        {/* Stub sections */}
+        {topSection === 'dashboard'  && <StubPanel title="Dashboard" description="Overview of today's schedule, triage queue, and pending actions — coming soon." />}
+        {topSection === 'patients'   && <StubPanel title="Patient Records" description="Patient registry, history search, and demographic management — coming soon." />}
+        {topSection === 'scheduling' && <StubPanel title="Scheduling" description="Calendar view, appointment booking, and slot management across all sites — coming soon." />}
+        {topSection === 'analytics'  && <StubPanel title="Analytics" description="Volume trends, acuity distributions, wait-time reports, and outcome tracking — coming soon." />}
+        {topSection === 'settings'   && <StubPanel title="Settings" description="Practice configuration, user roles, notification preferences, and system settings — coming soon." />}
       </main>
     </div>
   );
