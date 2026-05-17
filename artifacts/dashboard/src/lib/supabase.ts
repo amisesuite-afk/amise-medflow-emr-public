@@ -86,9 +86,20 @@ const effectiveUrl: string | undefined = supabaseUrl;
 export const supabaseConfigured = Boolean(supabaseUrl && supabaseAnon);
 
 // ─── Singleton client (window-persisted so HMR re-evaluations reuse it) ──────
-declare global { interface Window { __supabase?: SupabaseClient } }
+declare global {
+  interface Window {
+    __supabase?: SupabaseClient;
+    __supabaseUrl?: string;
+  }
+}
 
 export function getSupabase(): SupabaseClient | null {
+  // Invalidate the cached client if the URL has changed (e.g. .env edit + restart)
+  if (window.__supabase && window.__supabaseUrl !== effectiveUrl) {
+    console.log('[supabase-init] URL changed, resetting client singleton');
+    window.__supabase = undefined;
+    window.__supabaseUrl = undefined;
+  }
   if (window.__supabase) return window.__supabase;
   if (!supabaseConfigured) return null;
   // Only create the client when config looks valid to avoid SDK-level parse errors
@@ -101,6 +112,7 @@ export function getSupabase(): SupabaseClient | null {
     window.__supabase = createClient(effectiveUrl!, supabaseAnon!, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
     });
+    window.__supabaseUrl = effectiveUrl;
     console.log('[supabase-init] client created, effectiveUrl:', effectiveUrl);
   } catch (e: unknown) {
     console.error('[supabase-init] createClient threw:', serializeError(e));

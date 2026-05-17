@@ -42,5 +42,5 @@ externalPort = 3000
 [userenv]
 
 [userenv.shared]
-VITE_SUPABASE_URL = "https://nornhfzfrlmfzaqmrrzzp.supabase.co"
-SUPABASE_URL = "https://nornhfzfrlmfzaqmrrzzp.supabase.co"
+VITE_SUPABASE_URL = "https://nornhfzfrlmfzaqmrzzp.supabase.co"
+SUPABASE_URL = "https://nornhfzfrlmfzaqmrzzp.supabase.co"
