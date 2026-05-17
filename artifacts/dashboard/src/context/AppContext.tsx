@@ -47,12 +47,16 @@ interface CtxValue {
 
   comorbidities: string[]; toggleComorbidity(v: string): void;
   pmhNotes: string; setPmhNotes(v: string): void;
+  familyHistory: string[]; toggleFamilyHistory(v: string): void;
+  familyHistoryNotes: string; setFamilyHistoryNotes(v: string): void;
   surgicalHistory: string[]; toggleSurgical(v: string): void;
   surgicalNotes: string; setSurgicalNotes(v: string): void;
   medications: string[]; toggleMedication(v: string): void;
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
   toxicHabits: string[]; toggleToxicHabit(v: string): void;
+
+  clearPatient(): void;
 
   examGeneral: string; setExamGeneral(v: string): void;
   examCardio: string; setExamCardio(v: string): void;
@@ -99,6 +103,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [comorbidities, setComorbidities] = useState<string[]>([]);
   const [pmhNotes, setPmhNotes] = useState('');
+  const [familyHistory, setFamilyHistory] = useState<string[]>([]);
+  const [familyHistoryNotes, setFamilyHistoryNotes] = useState('');
   const [surgicalHistory, setSurgicalHistory] = useState<string[]>([]);
   const [surgicalNotes, setSurgicalNotes] = useState('');
   const [medications, setMedications] = useState<string[]>([]);
@@ -131,9 +137,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }
   function updateVital(k: keyof VitalSigns, v: string) { setVitals(c => ({ ...c, [k]: v })); }
   function toggleComorbidity(v: string) { setComorbidities(c => toggleList(c, v)); }
+  function toggleFamilyHistory(v: string) { setFamilyHistory(c => toggleList(c, v)); }
   function toggleSurgical(v: string) { setSurgicalHistory(c => toggleList(c, v)); }
   function toggleMedication(v: string) { setMedications(c => toggleList(c, v)); }
   function toggleToxicHabit(v: string) { setToxicHabits(c => toggleList(c, v)); }
+
+  function clearPatient() {
+    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone('');
+    setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
+    setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
+    setVitals({ systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '' });
+    setComorbidities([]); setPmhNotes(''); setFamilyHistory([]); setFamilyHistoryNotes('');
+    setSurgicalHistory([]); setSurgicalNotes(''); setMedications([]); setMedicationsText('');
+    setAllergies(''); setToxicHabits([]);
+    setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
+    setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
+    setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
+  }
 
   const triageInput: AdaptiveTriageInput = useMemo(() => ({
     age: toNum(age),
@@ -183,12 +203,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     vitals, updateVital,
     comorbidities, toggleComorbidity,
     pmhNotes, setPmhNotes,
+    familyHistory, toggleFamilyHistory,
+    familyHistoryNotes, setFamilyHistoryNotes,
     surgicalHistory, toggleSurgical,
     surgicalNotes, setSurgicalNotes,
     medications, toggleMedication,
     medicationsText, setMedicationsText,
     allergies, setAllergies,
     toxicHabits, toggleToxicHabit,
+    clearPatient,
     examGeneral, setExamGeneral,
     examCardio, setExamCardio,
     examResp, setExamResp,

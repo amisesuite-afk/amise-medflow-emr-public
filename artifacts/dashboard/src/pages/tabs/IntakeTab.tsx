@@ -1,6 +1,7 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
+import PathwaySuggestions from '@/components/PathwaySuggestions';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 import { VitalSigns } from '@/lib/adaptive-triage';
 
@@ -152,6 +153,9 @@ export default function IntakeTab() {
           </div>
         ))}
       </CollapsibleCard>
+
+      {/* Clinical pathway suggestions — auto-expand when relevant symptoms selected */}
+      <PathwaySuggestions />
 
       {/* Free text */}
       <CollapsibleCard title="Patient message / notes" defaultOpen={false}>

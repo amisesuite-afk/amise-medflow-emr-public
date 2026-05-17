@@ -16,6 +16,8 @@ import PlanTab from './tabs/PlanTab';
 import ProceduresTab from './tabs/ProceduresTab';
 import BillingTab from './tabs/BillingTab';
 import DocumentsTab from './tabs/DocumentsTab';
+import PatientSearchTab from './tabs/PatientSearchTab';
+import FloatingActions from '@/components/FloatingActions';
 
 function acuityClass(a: string) {
   return a === 'urgent' ? 'urgent' : a === 'priority' ? 'priority' : a === 'review' ? 'review' : '';
@@ -139,11 +141,13 @@ export default function HomePage() {
 
         {/* Stub sections */}
         {topSection === 'dashboard'  && <StubPanel title="Dashboard" description="Overview of today's schedule, triage queue, and pending actions — coming soon." />}
-        {topSection === 'patients'   && <StubPanel title="Patient Records" description="Patient registry, history search, and demographic management — coming soon." />}
+        {topSection === 'patients'   && <PatientSearchTab />}
         {topSection === 'scheduling' && <StubPanel title="Scheduling" description="Calendar view, appointment booking, and slot management across all sites — coming soon." />}
         {topSection === 'analytics'  && <StubPanel title="Analytics" description="Volume trends, acuity distributions, wait-time reports, and outcome tracking — coming soon." />}
         {topSection === 'settings'   && <StubPanel title="Settings" description="Practice configuration, user roles, notification preferences, and system settings — coming soon." />}
       </main>
+
+      <FloatingActions />
     </div>
   );
 }

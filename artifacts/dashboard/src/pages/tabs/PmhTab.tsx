@@ -19,17 +19,37 @@ const FAMILY_HISTORY_OPTIONS = [
 ];
 
 export default function PmhTab() {
-  const { comorbidities, toggleComorbidity, pmhNotes, setPmhNotes } = useAppContext();
+  const {
+    comorbidities, toggleComorbidity, pmhNotes, setPmhNotes,
+    familyHistory, toggleFamilyHistory, familyHistoryNotes, setFamilyHistoryNotes,
+  } = useAppContext();
 
   return (
     <div className="gap-y">
       <CollapsibleCard title="Past medical history" badge={comorbidities.length || undefined}>
         <ChipGroup options={COMORBIDITY_OPTIONS} selected={comorbidities} onToggle={toggleComorbidity} />
+        {comorbidities.length > 0 && (
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--muted)' }}>
+            Selected: {comorbidities.join(', ')}
+          </div>
+        )}
       </CollapsibleCard>
 
-      <CollapsibleCard title="Family history" defaultOpen={false}>
-        <ChipGroup options={FAMILY_HISTORY_OPTIONS} selected={[]} onToggle={() => {}} />
-        <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 6 }}>Family history chips are for documentation only and do not feed into the triage score in this build.</p>
+      <CollapsibleCard
+        title="Family history"
+        badge={familyHistory.length || undefined}
+        defaultOpen={false}
+      >
+        <ChipGroup options={FAMILY_HISTORY_OPTIONS} selected={familyHistory} onToggle={toggleFamilyHistory} />
+        <div className="fld" style={{ marginTop: 10 }}>
+          <label>Family history notes</label>
+          <textarea
+            value={familyHistoryNotes}
+            onChange={e => setFamilyHistoryNotes(e.target.value)}
+            placeholder="e.g. Mother — colorectal cancer age 58; Father — type 2 diabetes…"
+            style={{ minHeight: 70 }}
+          />
+        </div>
       </CollapsibleCard>
 
       <CollapsibleCard title="PMH notes / additional history" defaultOpen={false}>

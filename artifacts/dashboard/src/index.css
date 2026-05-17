@@ -604,6 +604,265 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   margin-left: 8px;
 }
 
+/* ── Clinical pathway suggestions ───────────────── */
+.ps-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ps-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0 2px;
+}
+.ps-heading-icon { font-size: 15px; }
+.ps-heading-text {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+.ps-heading-count {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--accent-lt);
+  color: var(--accent);
+}
+.ps-card {
+  border: 1px solid;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.ps-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  gap: 8px;
+}
+.ps-card-title { font-size: 13px; font-weight: 800; flex: 1; }
+.ps-urgency {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.ps-body {
+  padding: 8px 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+.ps-section { display: flex; flex-direction: column; gap: 4px; }
+.ps-section-lbl {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+}
+.ps-section-lbl--danger { color: var(--urgent); }
+.ps-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.ps-chip {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255,255,255,.7);
+  border: 1px solid rgba(0,0,0,.1);
+  color: var(--ink);
+  line-height: 1.3;
+}
+.ps-chip--lab {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0369a1;
+}
+.ps-redflags {
+  margin: 0;
+  padding-left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--urgent);
+}
+.ps-redflags li { line-height: 1.4; }
+.ps-referral-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ps-referral-value {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--accent2);
+}
+.ps-note {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+/* ── Floating action bar ─────────────────────────── */
+.floating-actions {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  gap: 6px;
+  z-index: 50;
+}
+.fa-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+  transition: transform .12s, box-shadow .12s;
+  white-space: nowrap;
+}
+.fa-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.22); }
+.fa-btn:active { transform: translateY(0); }
+.fa-btn--primary  { background: var(--accent); color: #fff; }
+.fa-btn--secondary {
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.fa-icon { font-size: 14px; line-height: 1; }
+.fa-label { line-height: 1; }
+
+/* ── Patient search tab ──────────────────────────── */
+.psearch-header { padding: 0 0 4px; }
+.psearch-title { font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 2px; }
+.psearch-sub { font-size: 12px; color: var(--muted); }
+.psearch-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  transition: border-color .15s;
+}
+.psearch-bar:focus-within { border-color: var(--accent); }
+.psearch-icon { font-size: 16px; flex-shrink: 0; }
+.psearch-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  color: var(--ink);
+}
+.psearch-spinner {
+  font-size: 16px;
+  color: var(--muted);
+  animation: spin .8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.psearch-clear {
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.psearch-clear:hover { background: #f0f6f4; color: var(--ink); }
+.psearch-error {
+  padding: 10px 14px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--urgent);
+}
+.psearch-error-hint { color: var(--muted); }
+.psearch-results {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.psearch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  gap: 12px;
+  transition: border-color .12s, background .12s;
+}
+.psearch-row:hover { border-color: var(--accent); background: #f8fcfb; }
+.psearch-row--loaded { border-color: var(--accent); background: var(--accent-lt); }
+.psearch-row-main { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.psearch-row-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.psearch-row-meta { font-size: 11px; color: var(--muted); }
+.psearch-row-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+.psearch-loaded-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent);
+  background: var(--accent-lt);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.psearch-load-hint { font-size: 12px; color: var(--muted); }
+.psearch-row-dob { font-size: 10px; color: var(--muted); }
+.psearch-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.psearch-hint-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 24px;
+  text-align: center;
+}
+.psearch-hint-icon { font-size: 32px; }
+.psearch-hint-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+.psearch-hint-body { font-size: 13px; color: var(--muted); max-width: 380px; line-height: 1.6; }
+
 /* ── Responsive ─────────────────────────────────── */
 @media (max-width: 900px) {
   .app { grid-template-columns: 48px 1fr; }
