@@ -428,3 +428,25 @@ create index if not exists idx_appt_patient       on appointments(patient_id);
 create index if not exists idx_appt_datetime      on appointments(appointment_datetime);
 create index if not exists idx_audit_user         on audit_logs(user_id);
 create index if not exists idx_audit_created      on audit_logs(created_at desc);
+
+-- ─────────────────────────────────────────────────────────────
+-- GRANTS
+-- PostgreSQL-level grants are required in addition to RLS policies.
+-- Without these, the authenticated role receives permission denied
+-- even if an RLS policy would otherwise allow the operation.
+-- ─────────────────────────────────────────────────────────────
+grant usage on schema public to anon, authenticated;
+
+grant select, insert, update        on public.user_profiles   to authenticated;
+grant select, insert, update        on public.patients         to authenticated;
+grant select, insert, update        on public.encounters       to authenticated;
+grant select, insert, update        on public.vitals           to authenticated;
+grant select, insert, update        on public.symptoms         to authenticated;
+grant select, insert, update        on public.medications      to authenticated;
+grant select, insert, update        on public.allergies        to authenticated;
+grant select, insert, update        on public.assessments      to authenticated;
+grant select, insert, update        on public.plans            to authenticated;
+grant select, insert, update        on public.procedures       to authenticated;
+grant select, insert, update        on public.referrals        to authenticated;
+grant select, insert, update        on public.appointments     to authenticated;
+grant select, insert               on public.audit_logs       to authenticated;
