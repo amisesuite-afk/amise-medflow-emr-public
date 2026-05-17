@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { checkSupabaseReachable } from '@/lib/supabase';
+import { checkSupabaseReachable, configIssues } from '@/lib/supabase';
 
 // Read env at module level so the panel can show real values
 const ENV_URL   = import.meta.env.VITE_SUPABASE_URL   as string | undefined;
@@ -185,22 +185,20 @@ function DiagPanel({ envUrl, envAnon, reachable, testing, onTest }: {
   testing: boolean;
   onTest: () => void;
 }) {
-  const rows: { label: string; value: string; ok: boolean }[] = [
+  const envRows: { label: string; value: string; ok: boolean }[] = [
     {
       label: 'VITE_SUPABASE_URL',
-      value: envUrl ? `${envUrl.slice(0, 30)}… (${envUrl.length} chars)` : 'NOT SET',
-      ok: Boolean(envUrl),
+      value: envUrl ? `${envUrl.slice(0, 36)}${envUrl.length > 36 ? '…' : ''} (${envUrl.length} chars)` : 'NOT SET',
+      ok: Boolean(envUrl) && configIssues.filter(i => i.variable === 'VITE_SUPABASE_URL').length === 0,
     },
     {
       label: 'VITE_SUPABASE_ANON_KEY',
-      value: envAnon ? `${envAnon.slice(0, 14)}… (${envAnon.length} chars)` : 'NOT SET',
-      ok: Boolean(envAnon),
+      value: envAnon ? `${envAnon.slice(0, 6)}… (${envAnon.length} chars, starts: ${envAnon.slice(0, 10)})` : 'NOT SET',
+      ok: Boolean(envAnon) && configIssues.filter(i => i.variable === 'VITE_SUPABASE_ANON_KEY').length === 0,
     },
-    ...(reachable ? [{
-      label: 'Supabase reachable',
-      value: reachable.ok
-        ? `✓ HTTP ${reachable.status}`
-        : `✗ ${reachable.error ?? `HTTP ${reachable.status}`}`,
+    ...(reachable !== null ? [{
+      label: 'Server reachable',
+      value: reachable.ok ? `✓ HTTP ${reachable.status}` : `✗ ${reachable.error ?? `HTTP ${reachable.status}`}`,
       ok: reachable.ok,
     }] : []),
   ];
@@ -210,19 +208,41 @@ function DiagPanel({ envUrl, envAnon, reachable, testing, onTest }: {
       <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.1em', textTransform: 'uppercase', color: '#4db8ad', marginBottom: 10 }}>
         Connection Diagnostics
       </div>
-      {rows.map(r => (
-        <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 6, fontSize: 11 }}>
-          <span style={{ color: '#8fc4b9', fontFamily: 'monospace' }}>{r.label}</span>
-          <span style={{ color: r.ok ? '#4ade80' : '#f87171', fontFamily: 'monospace', textAlign: 'right', maxWidth: 180, wordBreak: 'break-all' }}>{r.value}</span>
+
+      {/* Env var status rows */}
+      {envRows.map(r => (
+        <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 5, fontSize: 11 }}>
+          <span style={{ color: '#8fc4b9', fontFamily: 'monospace', flexShrink: 0 }}>{r.label}</span>
+          <span style={{ color: r.ok ? '#4ade80' : '#f87171', fontFamily: 'monospace', textAlign: 'right', wordBreak: 'break-all' }}>{r.value}</span>
         </div>
       ))}
+
+      {/* Validation issues */}
+      {configIssues.length > 0 && (
+        <div style={{ marginTop: 10, borderTop: '1px solid rgba(255,255,255,.08)', paddingTop: 10 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 6 }}>
+            Configuration errors
+          </div>
+          {configIssues.map((issue, i) => (
+            <div key={i} style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 10, fontWeight: 800, fontFamily: 'monospace', color: issue.severity === 'error' ? '#f87171' : '#fbbf24' }}>
+                {issue.variable}
+              </div>
+              <div style={{ fontSize: 11, color: '#fca5a5', lineHeight: 1.5, marginTop: 2 }}>
+                {issue.message}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       <button
         type="button"
         onClick={onTest}
         disabled={testing}
-        style={{ marginTop: 8, padding: '5px 10px', borderRadius: 6, background: 'rgba(11,130,120,.3)', border: '1px solid rgba(11,130,120,.5)', color: '#4db8ad', fontSize: 10, fontWeight: 700, cursor: testing ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+        style={{ marginTop: 10, padding: '5px 10px', borderRadius: 6, background: 'rgba(11,130,120,.3)', border: '1px solid rgba(11,130,120,.5)', color: '#4db8ad', fontSize: 10, fontWeight: 700, cursor: testing ? 'default' : 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
       >
-        {testing ? <><Spinner size={10} /><span>Testing…</span></> : '↻ Test connection'}
+        {testing ? <><Spinner size={10} /><span>Testing…</span></> : '↻ Re-test connection'}
       </button>
     </div>
   );

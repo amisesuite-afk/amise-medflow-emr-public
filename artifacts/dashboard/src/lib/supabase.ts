@@ -4,36 +4,106 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 const supabaseUrl  = import.meta.env.VITE_SUPABASE_URL  as string | undefined;
 const supabaseAnon = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
+// ─── Validation ───────────────────────────────────────────────────────────────
+
+export interface ConfigIssue {
+  variable: string;
+  severity: 'error' | 'warning';
+  message: string;
+}
+
+function validateConfig(): ConfigIssue[] {
+  const issues: ConfigIssue[] = [];
+
+  // ── URL ──
+  if (!supabaseUrl) {
+    issues.push({ variable: 'VITE_SUPABASE_URL', severity: 'error', message: 'Not set.' });
+  } else if (!supabaseUrl.startsWith('https://')) {
+    issues.push({ variable: 'VITE_SUPABASE_URL', severity: 'error', message: 'Must start with https://' });
+  } else if (!supabaseUrl.match(/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/i)) {
+    issues.push({
+      variable: 'VITE_SUPABASE_URL',
+      severity: 'error',
+      message: `Expected https://<ref>.supabase.co — got "${supabaseUrl.slice(0, 30)}${supabaseUrl.length > 30 ? '…' : ''}" (${supabaseUrl.length} chars)`,
+    });
+  }
+
+  // ── Anon key ──
+  if (!supabaseAnon) {
+    issues.push({ variable: 'VITE_SUPABASE_ANON_KEY', severity: 'error', message: 'Not set.' });
+  } else {
+    const trimmed = supabaseAnon.trim();
+    const hasQuotes    = supabaseAnon !== trimmed || /^['"]|['"]$/.test(supabaseAnon);
+    const hasNewlines  = /[\r\n]/.test(supabaseAnon);
+    const isJWT        = /^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(trimmed);
+    const isNewOpaque  = trimmed.startsWith('sb_publishable_');
+    const isServiceKey = trimmed.startsWith('sb_secret_') || (isJWT && trimmed.includes('"role":"service_role"'));
+
+    if (hasQuotes || hasNewlines) {
+      issues.push({ variable: 'VITE_SUPABASE_ANON_KEY', severity: 'error', message: 'Contains surrounding quotes, spaces, or line breaks — paste the raw value only.' });
+    } else if (isServiceKey) {
+      issues.push({ variable: 'VITE_SUPABASE_ANON_KEY', severity: 'error', message: 'Looks like a service_role key — use the anon / public key instead.' });
+    } else if (isNewOpaque) {
+      issues.push({
+        variable: 'VITE_SUPABASE_ANON_KEY',
+        severity: 'error',
+        message: `Opaque "sb_publishable_…" format key (${trimmed.length} chars) is not supported by supabase-js v2. `
+          + 'Copy the JWT anon key from Supabase Dashboard → Settings → API → anon public (starts with eyJ, ~200+ chars).',
+      });
+    } else if (!isJWT) {
+      issues.push({
+        variable: 'VITE_SUPABASE_ANON_KEY',
+        severity: 'error',
+        message: `Unrecognised format (${trimmed.length} chars, starts with "${trimmed.slice(0, 10)}…"). Expected a JWT starting with eyJ.`,
+      });
+    } else if (trimmed.length < 100) {
+      issues.push({
+        variable: 'VITE_SUPABASE_ANON_KEY',
+        severity: 'warning',
+        message: `Key is ${trimmed.length} chars — JWT anon keys are typically 200+ chars. It may be truncated.`,
+      });
+    }
+  }
+
+  return issues;
+}
+
+export const configIssues = validateConfig();
+
+// Log summary to console
+if (configIssues.length === 0) {
+  console.log('[supabase-config] ✓ URL and anon key both look valid');
+} else {
+  configIssues.forEach(i =>
+    console.error(`[supabase-config] ${i.severity.toUpperCase()} ${i.variable}: ${i.message}`)
+  );
+}
+
 // In dev mode, route all Supabase requests through the Vite proxy (/sb-proxy)
-// so they're made server-side — bypassing browser CORS restrictions entirely.
-// In production the browser connects to Supabase directly (add your domain to
-// Supabase → Auth → URL Configuration if CORS errors recur there).
+// to avoid browser CORS restrictions. In production, direct to Supabase.
 const effectiveUrl: string | undefined = import.meta.env.DEV && supabaseUrl
   ? `${window.location.origin}/sb-proxy`
   : supabaseUrl;
 
-// Diagnostic: log env state at module load so we can see it in the console
-console.log('[supabase-init] VITE_SUPABASE_URL present:', Boolean(supabaseUrl), '| length:', supabaseUrl?.length ?? 0);
-console.log('[supabase-init] VITE_SUPABASE_ANON_KEY present:', Boolean(supabaseAnon), '| length:', supabaseAnon?.length ?? 0, '| prefix:', supabaseAnon?.slice(0, 12) ?? '(none)');
-console.log('[supabase-init] effectiveUrl (dev proxy):', effectiveUrl);
-
 export const supabaseConfigured = Boolean(supabaseUrl && supabaseAnon);
 
-// Use window-level singleton so HMR module reloads reuse the same client
+// ─── Singleton client (window-persisted so HMR re-evaluations reuse it) ──────
 declare global { interface Window { __supabase?: SupabaseClient } }
 
 export function getSupabase(): SupabaseClient | null {
   if (window.__supabase) return window.__supabase;
   if (!supabaseConfigured) return null;
+  // Only create the client when config looks valid to avoid SDK-level parse errors
+  const hasErrors = configIssues.some(i => i.severity === 'error');
+  if (hasErrors) {
+    console.warn('[supabase-config] Skipping client creation due to config errors above.');
+    return null;
+  }
   try {
     window.__supabase = createClient(effectiveUrl!, supabaseAnon!, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: false,
-      },
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
     });
-    console.log('[supabase-init] client created OK, url:', supabaseUrl);
+    console.log('[supabase-init] client created, effectiveUrl:', effectiveUrl);
   } catch (e: unknown) {
     console.error('[supabase-init] createClient threw:', serializeError(e));
   }
@@ -42,6 +112,7 @@ export function getSupabase(): SupabaseClient | null {
 
 export const supabase = getSupabase();
 
+// ─── Types ────────────────────────────────────────────────────────────────────
 export type UserRole = 'front_desk' | 'nurse' | 'doctor' | 'admin';
 
 export const ROLE_LABELS: Record<UserRole, string> = {
@@ -58,26 +129,17 @@ export interface UserProfile {
   email: string | null;
 }
 
-/** Safely serialise any error for console output */
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 export function serializeError(e: unknown): Record<string, unknown> {
   if (e instanceof Error) {
-    return {
-      name: e.name,
-      message: e.message,
-      stack: e.stack?.split('\n').slice(0, 4).join(' | '),
-    };
+    return { name: e.name, message: e.message, stack: e.stack?.split('\n').slice(0, 4).join(' | ') };
   }
   if (typeof e === 'object' && e !== null) {
-    try {
-      return JSON.parse(JSON.stringify(e));
-    } catch {
-      return { raw: String(e) };
-    }
+    try { return JSON.parse(JSON.stringify(e)); } catch { return { raw: String(e) }; }
   }
   return { raw: String(e) };
 }
 
-/** Run a lightweight network check against the Supabase health endpoint */
 export async function checkSupabaseReachable(): Promise<{ ok: boolean; status?: number; error?: string }> {
   if (!effectiveUrl) return { ok: false, error: 'VITE_SUPABASE_URL not set' };
   try {
@@ -87,7 +149,6 @@ export async function checkSupabaseReachable(): Promise<{ ok: boolean; status?: 
     });
     return { ok: res.ok, status: res.status };
   } catch (e: unknown) {
-    const err = e instanceof Error ? e.message : String(e);
-    return { ok: false, error: err };
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }
 }
