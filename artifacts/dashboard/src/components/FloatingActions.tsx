@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Save } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
 import { saveNewPatient, createEncounter } from '@/lib/db';
@@ -83,7 +84,7 @@ export default function FloatingActions() {
         >
           {saving
             ? <><span className="fa-spinner" /> <span className="fa-label">Saving…</span></>
-            : <><span className="fa-icon">💾</span> <span className="fa-label">Save patient</span></>
+            : <><Save size={14} strokeWidth={2} /> <span className="fa-label">Save patient</span></>
           }
         </button>
       )}
