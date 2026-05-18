@@ -132,6 +132,117 @@ export async function listPatients(): Promise<
   return { patients: (data ?? []) as PatientListRow[], error: null };
 }
 
+// ─── loadPMH ─────────────────────────────────────────────────────────────────
+
+export async function loadPMH(
+  patientId: string,
+): Promise<{ conditions: string[]; error: string | null }> {
+  if (!supabase) return { conditions: [], error: notConfigured('loadPMH') };
+
+  const { data, error } = await supabase
+    .from('pmh_items')
+    .select('condition')
+    .eq('patient_id', patientId)
+    .eq('status', 'active');
+
+  if (error) {
+    // Table does not exist yet (PG code 42P01) — warn silently, return empty
+    if ((error as { code?: string }).code === '42P01') {
+      console.warn('[db] loadPMH: pmh_items table does not exist yet — skipping');
+      return { conditions: [], error: null };
+    }
+    console.error('[db] loadPMH:', error);
+    return { conditions: [], error: error.message };
+  }
+
+  return {
+    conditions: (data ?? []).map((r: { condition: string }) => r.condition),
+    error: null,
+  };
+}
+
+// ─── savePMHItem ──────────────────────────────────────────────────────────────
+
+/**
+ * Upserts on (patient_id, condition). If a 'resolved' row already exists it
+ * becomes 'active' again; if 'active' already it's a no-op.
+ * Requires a UNIQUE constraint on (patient_id, condition) in pmh_items.
+ */
+export async function savePMHItem(
+  patientId: string,
+  encounterId: string | null,
+  condition: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('savePMHItem') };
+
+  const row: Record<string, unknown> = {
+    patient_id: patientId,
+    condition,
+    status: 'active',
+  };
+  if (encounterId) row.encounter_id = encounterId;
+
+  const { error } = await supabase
+    .from('pmh_items')
+    .upsert(row, { onConflict: 'patient_id,condition' });
+
+  if (error) {
+    console.error('[db] savePMHItem:', error);
+    return { error: error.message };
+  }
+
+  return { error: null };
+}
+
+// ─── removePMHItem ────────────────────────────────────────────────────────────
+
+/** Soft-delete: sets status = 'resolved'. Does not delete the row. */
+export async function removePMHItem(
+  patientId: string,
+  condition: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('removePMHItem') };
+
+  const { error } = await supabase
+    .from('pmh_items')
+    .update({ status: 'resolved' })
+    .eq('patient_id', patientId)
+    .eq('condition', condition);
+
+  if (error) {
+    console.error('[db] removePMHItem:', error);
+    return { error: error.message };
+  }
+
+  return { error: null };
+}
+
+// ─── savePmhNotes ─────────────────────────────────────────────────────────────
+
+/** Writes pmh_notes and family_history_notes to the patients row. */
+export async function savePmhNotes(
+  patientId: string,
+  pmhNotes: string,
+  familyHistoryNotes: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('savePmhNotes') };
+
+  const { error } = await supabase
+    .from('patients')
+    .update({
+      pmh_notes: pmhNotes || null,
+      family_history_notes: familyHistoryNotes || null,
+    })
+    .eq('id', patientId);
+
+  if (error) {
+    console.error('[db] savePmhNotes:', error);
+    return { error: error.message };
+  }
+
+  return { error: null };
+}
+
 // ─── getLatestOpenEncounter ───────────────────────────────────────────────────
 
 export async function getLatestOpenEncounter(

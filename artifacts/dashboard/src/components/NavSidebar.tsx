@@ -22,6 +22,7 @@ interface NavSidebarProps {
   hasUrgentRedFlag: boolean;
   urgentCount: number;
   acuity: string;
+  pmhCount?: number;
 }
 
 const CLINICAL_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string; doctorOnly?: boolean }[] = [
@@ -66,6 +67,7 @@ export default function NavSidebar({
   topSection, onTopSection,
   activeSection, onSection,
   mode, hasUrgentRedFlag, urgentCount, acuity,
+  pmhCount = 0,
 }: NavSidebarProps) {
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
@@ -132,7 +134,11 @@ export default function NavSidebar({
                         onClick={() => onSection(sub.id)}
                       >
                         <SubIcon size={13} strokeWidth={2} />
-                        <span>{sub.label}</span>
+                        <span>
+                          {sub.id === 'pmh' && pmhCount > 0
+                            ? `${sub.label} (${pmhCount})`
+                            : sub.label}
+                        </span>
                       </button>
                     );
                   })}

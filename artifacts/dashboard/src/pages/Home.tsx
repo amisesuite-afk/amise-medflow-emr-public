@@ -41,6 +41,7 @@ export default function HomePage() {
     mode, setMode,
     activeSection, setActiveSection,
     patientName, age, sex,
+    comorbidities,
     triageResult,
   } = useAppContext();
 
@@ -122,6 +123,7 @@ export default function HomePage() {
         hasUrgentRedFlag={hasUrgentRedFlag}
         urgentCount={urgentCount}
         acuity={triageResult.acuity}
+        pmhCount={comorbidities.length}
       />
 
       {/* ── Main content ── */}

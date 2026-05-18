@@ -1,4 +1,7 @@
+import { useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useToast } from '@/components/ToastProvider';
+import { savePMHItem, removePMHItem, savePmhNotes } from '@/lib/db';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
 
@@ -20,17 +23,85 @@ const FAMILY_HISTORY_OPTIONS = [
 
 export default function PmhTab() {
   const {
-    comorbidities, toggleComorbidity, pmhNotes, setPmhNotes,
-    familyHistory, toggleFamilyHistory, familyHistoryNotes, setFamilyHistoryNotes,
+    patientId, encounterId,
+    comorbidities, toggleComorbidity,
+    pmhNotes, setPmhNotes,
+    familyHistory, toggleFamilyHistory,
+    familyHistoryNotes, setFamilyHistoryNotes,
   } = useAppContext();
+  const { showToast } = useToast();
+
+  // Debounce timers for notes save-on-blur
+  const pmhNotesTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fhNotesTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Track notes at last save to avoid redundant calls
+  const savedPmhNotes  = useRef(pmhNotes);
+  const savedFhNotes   = useRef(familyHistoryNotes);
+
+  // ── Chip toggle — optimistic UI + DB sync ──────────────────────────────────
+
+  async function handleToggleComorbidity(condition: string) {
+    const wasSelected = comorbidities.includes(condition);
+
+    // 1. Optimistic update
+    toggleComorbidity(condition);
+
+    // 2. If no patient saved yet, skip DB silently
+    if (!patientId) return;
+
+    // 3. DB call
+    const { error } = wasSelected
+      ? await removePMHItem(patientId, condition)
+      : await savePMHItem(patientId, encounterId, condition);
+
+    if (error) {
+      // Revert optimistic update
+      toggleComorbidity(condition);
+      showToast(`Failed to update PMH: ${error}`, 'error');
+    }
+  }
+
+  // ── Notes — save on blur, debounced 1 s ───────────────────────────────────
+
+  function scheduleSave() {
+    if (!patientId) return;
+    // Cancel any pending timer and start fresh from the later of the two changes
+    if (pmhNotesTimer.current)  clearTimeout(pmhNotesTimer.current);
+    if (fhNotesTimer.current)   clearTimeout(fhNotesTimer.current);
+
+    const timer = setTimeout(async () => {
+      if (!patientId) return;
+      if (pmhNotes === savedPmhNotes.current && familyHistoryNotes === savedFhNotes.current) return;
+
+      const { error } = await savePmhNotes(patientId, pmhNotes, familyHistoryNotes);
+      if (error) {
+        showToast(`Failed to save PMH notes: ${error}`, 'error');
+      } else {
+        savedPmhNotes.current = pmhNotes;
+        savedFhNotes.current  = familyHistoryNotes;
+      }
+    }, 1000);
+
+    pmhNotesTimer.current = timer;
+    fhNotesTimer.current  = timer;
+  }
 
   return (
     <div className="gap-y">
       <CollapsibleCard title="Past medical history" badge={comorbidities.length || undefined}>
-        <ChipGroup options={COMORBIDITY_OPTIONS} selected={comorbidities} onToggle={toggleComorbidity} />
+        <ChipGroup
+          options={COMORBIDITY_OPTIONS}
+          selected={comorbidities}
+          onToggle={condition => void handleToggleComorbidity(condition)}
+        />
         {comorbidities.length > 0 && (
           <div style={{ marginTop: 8, fontSize: 11, color: 'var(--muted)' }}>
             Selected: {comorbidities.join(', ')}
+          </div>
+        )}
+        {!patientId && comorbidities.length > 0 && (
+          <div style={{ marginTop: 6, fontSize: 11, color: 'var(--muted)', fontStyle: 'italic' }}>
+            Save the patient first to persist PMH selections to the database.
           </div>
         )}
       </CollapsibleCard>
@@ -46,6 +117,7 @@ export default function PmhTab() {
           <textarea
             value={familyHistoryNotes}
             onChange={e => setFamilyHistoryNotes(e.target.value)}
+            onBlur={scheduleSave}
             placeholder="e.g. Mother — colorectal cancer age 58; Father — type 2 diabetes…"
             style={{ minHeight: 70 }}
           />
@@ -58,6 +130,7 @@ export default function PmhTab() {
           <textarea
             value={pmhNotes}
             onChange={e => setPmhNotes(e.target.value)}
+            onBlur={scheduleSave}
             placeholder="Any additional past medical history, relevant diagnoses, social history, or chronic conditions…"
             style={{ minHeight: 120 }}
           />

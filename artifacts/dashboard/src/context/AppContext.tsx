@@ -50,7 +50,7 @@ interface CtxValue {
   pregnancyPossible: boolean; setPregnancyPossible(v: boolean): void;
   vitals: VitalsState; updateVital(k: keyof VitalSigns, v: string): void;
 
-  comorbidities: string[]; toggleComorbidity(v: string): void;
+  comorbidities: string[]; toggleComorbidity(v: string): void; setComorbidities(list: string[]): void;
   pmhNotes: string; setPmhNotes(v: string): void;
   familyHistory: string[]; toggleFamilyHistory(v: string): void;
   familyHistoryNotes: string; setFamilyHistoryNotes(v: string): void;
@@ -212,7 +212,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     postOpDays, setPostOpDays,
     pregnancyPossible, setPregnancyPossible,
     vitals, updateVital,
-    comorbidities, toggleComorbidity,
+    comorbidities, toggleComorbidity, setComorbidities,
     pmhNotes, setPmhNotes,
     familyHistory, toggleFamilyHistory,
     familyHistoryNotes, setFamilyHistoryNotes,

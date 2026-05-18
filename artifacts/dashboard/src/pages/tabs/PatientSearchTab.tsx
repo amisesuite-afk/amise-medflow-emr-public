@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, getLatestOpenEncounter, type PatientListRow } from '@/lib/db';
+import { listPatients, getLatestOpenEncounter, loadPMH, type PatientListRow } from '@/lib/db';
 import { supabase } from '@/lib/supabase';
 
 export default function PatientSearchTab() {
@@ -13,7 +13,7 @@ export default function PatientSearchTab() {
   const [selected, setSelected] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { setPatientName, setAge, setSex, setDob, setPhone, setPatientId, setEncounterId } = useAppContext();
+  const { setPatientName, setAge, setSex, setDob, setPhone, setPatientId, setEncounterId, setComorbidities } = useAppContext();
   const { showToast } = useToast();
 
   // Load full patient list on mount
@@ -83,17 +83,32 @@ export default function PatientSearchTab() {
     // Set patient ID
     setPatientId(p.id);
 
-    // Look up the most recent open encounter for this patient
-    const { encounterId, error } = await getLatestOpenEncounter(p.id);
-    if (error) {
-      showToast(`Loaded patient, but could not fetch encounter: ${error}`, 'error');
+    // Load PMH and encounter in parallel
+    const [pmhResult, encResult] = await Promise.all([
+      loadPMH(p.id),
+      getLatestOpenEncounter(p.id),
+    ]);
+
+    // Apply PMH conditions
+    if (pmhResult.error) {
+      showToast(`Loaded patient, but could not fetch PMH: ${pmhResult.error}`, 'error');
+    } else {
+      setComorbidities(pmhResult.conditions);
+    }
+
+    // Apply encounter
+    if (encResult.error) {
+      showToast(`Loaded patient, but could not fetch encounter: ${encResult.error}`, 'error');
       setEncounterId(null);
     } else {
-      setEncounterId(encounterId);
-      if (encounterId) {
-        showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open.`, 'success');
+      setEncounterId(encResult.encounterId);
+      const pmhSuffix = pmhResult.conditions.length > 0
+        ? ` · ${pmhResult.conditions.length} PMH condition${pmhResult.conditions.length !== 1 ? 's' : ''} loaded`
+        : '';
+      if (encResult.encounterId) {
+        showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
       } else {
-        showToast(`Loaded: ${p.full_name ?? 'patient'} — no open encounter found.`, 'info');
+        showToast(`Loaded: ${p.full_name ?? 'patient'} — no open encounter${pmhSuffix}.`, 'info');
       }
     }
   }
