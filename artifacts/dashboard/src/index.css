@@ -1163,6 +1163,100 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   gap: 5px;
 }
 
+/* ── Toast notifications ─────────────────────────── */
+.toast-stack {
+  position: fixed;
+  bottom: 80px;
+  right: 18px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 380px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+  pointer-events: all;
+  animation: toast-in .2s ease;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+.toast--success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.toast--error   { background: #fef2f2; color: #991b1b; border: 1px solid #fca5a5; }
+.toast--info    { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+.toast-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.toast-msg  { flex: 1; }
+.toast-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  color: inherit;
+  opacity: .5;
+  padding: 0 0 0 4px;
+  flex-shrink: 0;
+}
+.toast-close:hover { opacity: 1; }
+
+/* ── FloatingActions save/status additions ──────── */
+.fa-btn--save {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0 14px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .12s;
+}
+.fa-btn--save:hover:not(:disabled) { background: #15803d; }
+.fa-btn--save:disabled { opacity: .6; cursor: not-allowed; }
+.fa-btn--loading { opacity: .7; }
+
+.fa-spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 2px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+.fa-saved-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  white-space: nowrap;
+}
+.fa-saved-badge--enc { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+
 /* ── Clinical Scales ─────────────────────────────── */
 .scales-intro {
   font-size: 12px;

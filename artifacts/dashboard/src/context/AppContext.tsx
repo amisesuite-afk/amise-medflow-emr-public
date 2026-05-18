@@ -29,6 +29,11 @@ interface CtxValue {
   activeSection: Section;
   setActiveSection(s: Section): void;
 
+  /** UUID of the persisted patient row, null if unsaved. */
+  patientId: string | null; setPatientId(v: string | null): void;
+  /** UUID of the current open encounter, null if none. */
+  encounterId: string | null; setEncounterId(v: string | null): void;
+
   patientName: string; setPatientName(v: string): void;
   age: string; setAge(v: string): void;
   sex: Sex; setSex(v: Sex): void;
@@ -82,6 +87,9 @@ const AppContext = createContext<CtxValue | null>(null);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useState<AppMode>('front_desk');
   const [activeSection, setActiveSection] = useState<Section>('intake');
+
+  const [patientId, setPatientId] = useState<string | null>(null);
+  const [encounterId, setEncounterId] = useState<string | null>(null);
 
   const [patientName, setPatientName] = useState('');
   const [age, setAge] = useState('');
@@ -143,6 +151,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   function toggleToxicHabit(v: string) { setToxicHabits(c => toggleList(c, v)); }
 
   function clearPatient() {
+    setPatientId(null); setEncounterId(null);
     setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone('');
     setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
     setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
@@ -187,6 +196,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const value: CtxValue = {
     mode, setMode,
     activeSection, setActiveSection,
+    patientId, setPatientId,
+    encounterId, setEncounterId,
     patientName, setPatientName,
     age, setAge,
     sex, setSex,
