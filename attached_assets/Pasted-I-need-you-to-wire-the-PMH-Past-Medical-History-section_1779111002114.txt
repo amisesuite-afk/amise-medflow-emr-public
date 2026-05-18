@@ -1,0 +1,51 @@
+I need you to wire the PMH (Past Medical History) section to Supabase. Same pattern as the Patient form. Here's exactly what to do:
+
+CONTEXT
+- The Patient form already writes to Supabase patients and encounters tables successfully.
+- Current encounter ID is in app context as encounterId.
+- Current patient ID is in app context as patientId.
+- We need PMH selections to write to a new table called pmh_items (we will create it now in a database migration step in Supabase, do not create it from your end).
+
+DATA MODEL CLARIFICATION
+- PMH is patient-level, not encounter-level. A patient's diabetes does not reset between visits.
+- However, when first captured during an encounter, log the encounter_id for traceability.
+- Conditions are selected from the existing PMH chip palette: Type 1 diabetes, Type 2 diabetes, Hypertension, Ischaemic heart disease, Atrial fibrillation, Heart failure, Chronic kidney disease, Dialysis, Stroke/TIA, COPD/asthma, Active cancer, Prior cancer, Chemotherapy/immunotherapy, Steroid use, Immunosuppressed, Liver cirrhosis, Hepatitis B/C, HIV, Thyroid disease, Peripheral vascular disease, DVT/PE history, Obesity, Sleep apnoea, Anxiety/depression, Sickle cell disease.
+
+WHAT TO BUILD
+
+1. Add a function loadPMH(patientId) that:
+  - Fetches all rows from pmh_items where patient_id matches and status = 'active'
+  - Returns array of condition strings
+  - Called when a patient is loaded (alongside the existing patient load)
+
+2. Add a function savePMHItem(condition) that:
+  - Inserts into pmh_items with patient_id, encounter_id, condition (the string), status = 'active'
+  - Called when a PMH chip is tapped/selected
+  - Should be idempotent: if the condition is already active for this patient, do nothing (use Supabase upsert with onConflict on patient_id+condition)
+
+3. Add a function removePMHItem(condition) that:
+  - Updates the row to status = 'resolved' rather than deleting (soft delete)
+  - Called when a selected PMH chip is tapped to deselect
+
+4. Wire the existing PMH chip UI:
+  - On patient load: call loadPMH and pre-select chips that are active
+  - On chip tap (select): call savePMHItem with optimistic UI update + error toast on failure
+  - On chip tap (deselect): call removePMHItem with optimistic UI update + error toast on failure
+  - Family history and PMH notes textareas: save to a single pmh_notes column on patients table (we'll add it). Save on blur, debounced, with toast on failure.
+
+5. Update the encounter status indicator:
+  - Show count of active PMH conditions next to the PMH menu item: "PMH (3)" if 3 selected
+
+CONSTRAINTS
+- Do NOT touch any other section (Surgical Hx, Medications, Allergies, etc.) — those come next.
+- Do NOT change the chip styling or layout.
+- All Supabase calls must go through the existing supabase client in src/lib/supabase.js (do not create a new one).
+- Error handling: show toast on any failure, log to console with the full error object.
+- Use optimistic UI: update the chip state immediately, revert on error.
+
+DELIVERABLES BEFORE YOU MAKE CHANGES
+- List the exact files you will create or modify.
+- Show me the loadPMH, savePMHItem, removePMHItem function signatures.
+- Confirm you understand that pmh_items table does not exist yet — I will create it manually in Supabase BEFORE running your code, so include a check that handles the "relation does not exist" error gracefully on first run.
+
+Do not start coding yet. Show me your plan first.
