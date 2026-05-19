@@ -134,6 +134,21 @@ export async function listPatients(): Promise<
   return { patients: (data ?? []) as PatientListRow[], error: null };
 }
 
+// ─── updateDefaultSite ───────────────────────────────────────────────────────
+
+/**
+ * Writes the user's chosen site back to user_profiles.default_site.
+ * Called by AppContext on an explicit site switch (debounced).
+ */
+export async function updateDefaultSite(userId: string, site: SiteCode): Promise<void> {
+  if (!supabase) return;
+  const { error } = await supabase
+    .from('user_profiles')
+    .update({ default_site: site })
+    .eq('id', userId);
+  if (error) console.error('[db] updateDefaultSite:', error.message);
+}
+
 // ─── listPatientsBySite ───────────────────────────────────────────────────────
 
 /**

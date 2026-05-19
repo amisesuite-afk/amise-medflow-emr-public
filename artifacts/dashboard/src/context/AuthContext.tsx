@@ -1,7 +1,7 @@
 // @refresh reset
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { supabase, supabaseConfigured, configIssues, UserProfile, UserRole, serializeError } from '@/lib/supabase';
+import { supabase, supabaseConfigured, configIssues, UserProfile, UserRole, SiteCode, serializeError } from '@/lib/supabase';
 
 interface AuthCtx {
   session: Session | null;
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('id, full_name, role')
+        .select('id, full_name, role, default_site')
         .eq('id', userId)
         .maybeSingle();
 
@@ -92,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: created, error: insertErr } = await supabase
           .from('user_profiles')
           .upsert({ id: userId, full_name: email, role: 'front_desk' }, { onConflict: 'id' })
-          .select('id, full_name, role')
+          .select('id, full_name, role, default_site')
           .maybeSingle();
 
         if (insertErr) {
@@ -104,13 +104,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.log('[auth] profile created:', created);
           setProfile(
             created
-              ? { id: created.id, full_name: created.full_name ?? email, role: created.role as UserRole, email }
+              ? { id: created.id, full_name: created.full_name ?? email, role: created.role as UserRole, email, default_site: (created.default_site as SiteCode | null) ?? undefined }
               : { id: userId, full_name: email, role: 'front_desk', email }
           );
         }
       } else {
-        console.log('[auth] profile loaded:', data.role);
-        setProfile({ id: data.id, full_name: data.full_name ?? email, role: data.role as UserRole, email });
+        console.log('[auth] profile loaded:', data.role, 'default_site:', data.default_site);
+        setProfile({ id: data.id, full_name: data.full_name ?? email, role: data.role as UserRole, email, default_site: (data.default_site as SiteCode | null) ?? undefined });
       }
     } catch (e: unknown) {
       const detail = JSON.stringify(serializeError(e));

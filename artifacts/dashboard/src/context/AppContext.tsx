@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@/lib/adaptive-triage';
 import { type SiteCode } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
+import { updateDefaultSite } from '@/lib/db';
 
 export type AppMode = 'front_desk' | 'doctor';
 export { type SiteCode } from '@/lib/supabase';
@@ -100,13 +102,34 @@ interface CtxValue {
 const AppContext = createContext<CtxValue | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const { profile } = useAuth();
+
   const [mode, setMode] = useState<AppMode>('front_desk');
   const [activeSection, setActiveSection] = useState<Section>('intake');
 
+  // localStorage provides the fast initial value while the profile loads from DB.
   const [currentSite, _setCurrentSite] = useState<SiteCode>(readSiteFromStorage);
+  const seededForUserRef  = useRef<string | null>(null); // tracks which userId we seeded
+  const siteDebounceRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Seed currentSite from user_profiles.default_site once per sign-in.
+  useEffect(() => {
+    if (!profile?.id || !profile.default_site) return;
+    if (seededForUserRef.current === profile.id) return; // already seeded for this user
+    seededForUserRef.current = profile.id;
+    _setCurrentSite(profile.default_site);
+    try { localStorage.setItem(SITE_STORAGE_KEY, profile.default_site); } catch { /* ignore */ }
+  }, [profile]);
+
   function setCurrentSite(site: SiteCode) {
     _setCurrentSite(site);
     try { localStorage.setItem(SITE_STORAGE_KEY, site); } catch { /* ignore */ }
+    // Debounce write-back to user_profiles.default_site (explicit switch only).
+    if (siteDebounceRef.current) clearTimeout(siteDebounceRef.current);
+    siteDebounceRef.current = setTimeout(() => {
+      if (!profile?.id) return;
+      void updateDefaultSite(profile.id, site);
+    }, 600);
   }
 
   const [patientId, setPatientId] = useState<string | null>(null);

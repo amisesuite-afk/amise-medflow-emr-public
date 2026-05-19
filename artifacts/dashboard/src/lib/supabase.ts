@@ -146,6 +146,7 @@ export interface UserProfile {
   full_name: string | null;
   role: UserRole;
   email: string | null;
+  default_site?: SiteCode;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
