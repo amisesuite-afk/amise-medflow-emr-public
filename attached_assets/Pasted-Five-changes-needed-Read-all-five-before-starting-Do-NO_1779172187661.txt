@@ -1,0 +1,122 @@
+Five changes needed. Read all five before starting. Do NOT begin coding until I approve your plan.
+
+CHANGE 1 — FOUR-TIER ROLE SUPPORT
+
+user_profiles.role now has four values: 'front_desk', 'nurse', 'doctor', 'admin'.
+
+Permission matrix:
+
+  Module                       front_desk  nurse  doctor  admin
+  -----------------------------|----------|------|--------|-------
+  Patient demographics         |   RW     |  RW  |   RW   |   R
+  Appointments                 |   RW     |  RW  |   RW   |   R
+  Triage                       |   R      |  RW  |   RW   |   R
+  Vitals                       |   R      |  RW  |   RW   |   R
+  Symptoms                     |   R      |  RW  |   RW   |   R
+  PMH                          |   R      |  RW  |   RW   |   R
+  Surgical Hx                  |   R      |  RW  |   RW   |   R
+  Allergies                    |   R      |  RW  |   RW   |   R
+  Toxic Habits                 |   R      |  RW  |   RW   |   R
+  Examination                  |   R      |  RW  |   RW   |   R
+  Scales                       |   R      |  RW  |   RW   |   R
+  Medications                  |  hidden  |  R   |   RW   |   R
+  Assessment                   |  hidden  |  R   |   RW   |   R
+  Plan                         |  hidden  |  R   |   RW   |   R
+  Procedures                   |  hidden  |  R   |   RW   |   R
+  Referrals                    |  hidden  |  R   |   RW   |   R
+  Summary                      |   R      |  R   |   RW   |   R
+  Billing                      |   RW     |  R   |   R    |   RW
+  Scheduling                   |   RW     |  RW  |   RW   |   R
+  Analytics                    |   R      |  R   |   R    |   RW
+  Settings                     |  hidden  | hidden|  R    |   RW
+  Admin (user mgmt, audit)     |  hidden  | hidden| hidden|   RW
+
+UI requirements:
+
+- Sidebar menu items marked 'hidden' should not render for that role.
+- Inputs/chips/buttons that the current role cannot write should render in read-only mode (visible, no save attempts, small 'Read only' label).
+- Role badge in top header shows uppercase role: 'FRONT DESK', 'NURSE', 'DOCTOR', 'ADMIN'. Use distinct colours: front_desk green (existing), nurse teal/cyan, doctor blue (existing), admin amber.
+- The existing Front Desk / Doctor toggle in the header should become a four-way toggle (Front Desk | Nurse | Doctor | Admin) but ONLY render in development. Gate on import.meta.env.DEV. Hide entirely in production builds.
+- Admin role gets a new sidebar section called 'Administration' containing: User Management (list users, change roles, deactivate), Audit Log Viewer (filterable table of all writes), System Settings (clinic site display names, default site preferences, formulary stubs).
+
+CHANGE 2 — UNIVERSAL AUTOSAVE
+
+Replace the manual Save button on the Patient demographics form with autosave matching the PMH pattern:
+
+- Text inputs: save on blur, 800ms debounce. Show small 'Saving…' / 'Saved' / 'Save failed' indicator near the form header (not a toast).
+- Date pickers, sex/gender radio, dropdowns: save on change, immediate.
+- Remove the Save patient button entirely. The form is always live.
+- New patient creation: save a draft row to the patients table 800ms after the user starts typing in the name field. Subsequent edits update the same draft row. Add a 'status' column to the patients table if it doesn't exist (text, default 'active', allowed values 'draft' | 'active' | 'archived').
+- Apply the same autosave pattern to every form already wired (PMH already has it) and every form wired going forward. Pattern: debounce text 800ms, save selections immediately, optimistic UI, revert on error with toast.
+
+CHANGE 3 — TWO-LOCATION SUPPORT
+
+Amise operates from two locations:
+  - Rodney Bay (Providence Building) — internal code: 'rodney_bay', display: 'Rodney Bay'
+  - Tapion Hospital Office — internal code: 'tapion', display: 'Tapion'
+
+encounters, appointments tables have clinic_site columns. user_profiles has default_site. Both accept 'rodney_bay' or 'tapion'.
+
+UI:
+- Site selector pill in top header, next to the role badge. Two options. Tapping switches the active site for the current session (held in context as currentSite). On first sign-in, defaults to user_profiles.default_site.
+- New encounters get clinic_site = currentSite automatically.
+- New appointments default to currentSite but the field is editable in the appointment form.
+- The site pill is visible to all roles. Switching does not require re-sign-in.
+- Patient banner shows '… Last seen at Rodney Bay' (most recent encounter's site).
+- Patient list: site filter chip ('All locations | Rodney Bay | Tapion'), default 'All locations'.
+- Dashboard shows 'Today at Rodney Bay — N patients' / 'Today at Tapion — N patients'.
+- Display strings are exactly 'Rodney Bay' and 'Tapion'. Use 'Tapion Hospital Office' only on official documents (referrals, prescriptions). Use 'site' or 'location' as the noun, never 'branch'.
+
+CHANGE 4 — PATIENT OVERVIEW PAGE (NEW PRIMARY VIEW)
+
+Add a new tab at the top of the Consultation sidebar section called 'Overview'. This becomes the default tab when a patient is loaded (currently it's Patients/search).
+
+Layout: responsive three-column grid on iPad/desktop, single column on phone.
+
+Left column (25%) — Patient context:
+- Identity block: full name (large), age + sex + MRN, current location, last seen date
+- Acuity badge (existing component, reused)
+- Allergies — always rendered in red; 'No known allergies' if empty
+- Active problems — top 5 PMH items with status='active', sorted by most recently added; show count badge if more than 5 exist
+- Active medications — top 5 with status='active', alphabetical; placeholder until Medications form is wired ('No medications recorded')
+
+Middle column (50%) — Encounter timeline:
+- Vertical timeline of all encounters, most recent at top
+- Each entry: date · site · presenting complaint (1 line) · final assessment (1 line) · clinician name
+- Most recent encounter is expanded by default showing 2-3 more lines
+- Tapping an entry navigates to that encounter's full record
+
+Right column (25%) — Trends & pending:
+- Vitals sparkline strip: BP, HR, weight, BMI — last 5 readings each, mini-charts; placeholder if vitals not yet wired
+- Pending items: open referrals, ordered investigations not back, follow-ups due
+- Care team: list of clinicians who have seen this patient with last contact date
+
+Behaviour:
+- Read-only view; no data entry on Overview. Editing happens in the section-specific tabs.
+- Loads asynchronously: skeleton shimmer while fetching, individual blocks render as their data arrives (don't block the whole page on slow queries).
+- Refreshing the page should restore the Overview tab if a patient was loaded.
+
+This page is read-only for ALL roles. It's a reference view, not a working surface.
+
+CHANGE 5 — WIRE SURGICAL HISTORY FORM
+
+After Changes 1–4 are done, wire the Surgical History form to Supabase, same pattern as PMH:
+
+- Table: 'procedures' (already exists). Insert rows with patient_id, encounter_id, procedure_name (text), procedure_date (date, nullable), notes (text, nullable), status ('active' / 'resolved').
+- Idempotent upsert on (patient_id, procedure_name) for chip-style quick picks: cholecystectomy, appendicectomy, hysterectomy, C-section, hernia repair, thyroidectomy, mastectomy, knee/hip replacement, cardiac surgery, CABG, prostatectomy.
+- Free-text 'Other procedures' textarea saves to a new patients.surgical_history_notes column on blur.
+- Pre-load active procedures into the form when a patient loads.
+- Soft delete on chip deselect.
+
+Note: procedures table currently has doctor-only write per RLS. For surgical HISTORY (intake data, not procedures performed at Amise), nurse should also be able to write. Tell me if you need RLS adjusted — do NOT modify RLS yourself. I will run the SQL if needed.
+
+DELIVERABLES BEFORE CODING
+
+List the files you will create or modify for each of the five changes. Explicitly identify which change is most coupled to others (so we don't break things). Confirm:
+1. You will NOT modify any SQL or Supabase schema yourself.
+2. You will use existing supabase client in src/lib/supabase.js.
+3. The Overview page is read-only across all roles.
+4. The admin sidebar section is hidden for all non-admin roles.
+5. All forms autosave; the manual Save button on Patient demographics is removed.
+
+Show me the plan. Do not begin coding until I reply 'Proceed'.
