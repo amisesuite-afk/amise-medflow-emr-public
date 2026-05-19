@@ -152,18 +152,20 @@ export async function updateDefaultSite(userId: string, site: SiteCode): Promise
 // ─── listPatientsBySite ───────────────────────────────────────────────────────
 
 /**
- * Returns patients who have at least one encounter at the given site.
- * Two-step: fetch distinct patient_ids from encounters, then fetch those patients.
+ * Returns patients who have at least one encounter at the given site,
+ * PLUS patients whose encounters have a null site (legacy / pre-site-tracking data).
+ * Patients with no encounters at all only appear under "All locations".
  */
 export async function listPatientsBySite(
   site: SiteCode,
 ): Promise<{ patients: PatientListRow[]; error: null } | { patients: null; error: string }> {
   if (!supabase) return { patients: null, error: notConfigured('listPatientsBySite') };
 
+  // Include: encounters tagged to this site, OR encounters with no site set (legacy rows).
   const { data: encRows, error: encErr } = await supabase
     .from('encounters')
     .select('patient_id')
-    .eq('site', site);
+    .or(`site.eq.${site},site.is.null`);
 
   if (encErr) {
     console.error('[db] listPatientsBySite encounters:', encErr);
