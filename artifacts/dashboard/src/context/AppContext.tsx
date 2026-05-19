@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@/lib/adaptive-triage';
+import { type SiteCode } from '@/lib/supabase';
 
 export type AppMode = 'front_desk' | 'doctor';
+export { type SiteCode } from '@/lib/supabase';
 export type Section =
   | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
   | 'allergies' | 'toxic' | 'scales' | 'examination' | 'assessment' | 'plan'
@@ -23,11 +25,24 @@ function toggleList(list: string[], value: string): string[] {
   return list.includes(value) ? list.filter(item => item !== value) : [...list, value];
 }
 
+const SITE_STORAGE_KEY = 'amise_current_site';
+function readSiteFromStorage(): SiteCode {
+  try {
+    const v = localStorage.getItem(SITE_STORAGE_KEY);
+    if (v === 'rodney_bay' || v === 'tapion') return v;
+  } catch { /* ignore */ }
+  return 'rodney_bay';
+}
+
 interface CtxValue {
   mode: AppMode;
   setMode(m: AppMode): void;
   activeSection: Section;
   setActiveSection(s: Section): void;
+
+  /** Active clinic site for the current session. */
+  currentSite: SiteCode;
+  setCurrentSite(site: SiteCode): void;
 
   /** UUID of the persisted patient row, null if unsaved. */
   patientId: string | null; setPatientId(v: string | null): void;
@@ -87,6 +102,12 @@ const AppContext = createContext<CtxValue | null>(null);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useState<AppMode>('front_desk');
   const [activeSection, setActiveSection] = useState<Section>('intake');
+
+  const [currentSite, _setCurrentSite] = useState<SiteCode>(readSiteFromStorage);
+  function setCurrentSite(site: SiteCode) {
+    _setCurrentSite(site);
+    try { localStorage.setItem(SITE_STORAGE_KEY, site); } catch { /* ignore */ }
+  }
 
   const [patientId, setPatientId] = useState<string | null>(null);
   const [encounterId, setEncounterId] = useState<string | null>(null);
@@ -196,6 +217,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const value: CtxValue = {
     mode, setMode,
     activeSection, setActiveSection,
+    currentSite, setCurrentSite,
     patientId, setPatientId,
     encounterId, setEncounterId,
     patientName, setPatientName,

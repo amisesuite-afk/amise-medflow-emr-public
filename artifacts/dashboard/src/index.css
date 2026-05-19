@@ -1163,6 +1163,59 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   gap: 5px;
 }
 
+/* ── Site pill ───────────────────────────────────── */
+.site-pill {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.site-pill__btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,.65);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .03em;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background .12s, color .12s;
+  white-space: nowrap;
+  height: 28px;
+}
+.site-pill__btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+.site-pill__btn--active {
+  background: var(--accent, #4db8ad);
+  color: #fff;
+}
+
+/* ── Patient list site filter chips ─────────────── */
+.psearch-site-filter {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.psearch-site-chip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border, rgba(255,255,255,.12));
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.psearch-site-chip:hover { background: rgba(255,255,255,.07); color: var(--fg); }
+.psearch-site-chip--active {
+  background: var(--accent, #4db8ad);
+  color: #fff;
+  border-color: transparent;
+}
+
 /* ── Toast notifications ─────────────────────────── */
 .toast-stack {
   position: fixed;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAppContext, AppMode, Section } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
-import { ROLE_LABELS } from '@/lib/supabase';
+import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import NavSidebar, { TopSection } from '@/components/NavSidebar';
 import IntakeTab from './tabs/IntakeTab';
 import TriageTab from './tabs/TriageTab';
@@ -43,6 +43,7 @@ export default function HomePage() {
     patientName, age, sex,
     comorbidities,
     triageResult,
+    currentSite, setCurrentSite,
   } = useAppContext();
 
   const [collapsed, setCollapsed]   = useState(false);
@@ -82,6 +83,20 @@ export default function HomePage() {
           {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
         </div>
         <div className="header-right">
+          {/* Site selector pill — all roles */}
+          <div className="site-pill" aria-label="Active clinic site">
+            {SITE_CODES.map(site => (
+              <button
+                key={site}
+                className={`site-pill__btn${currentSite === site ? ' site-pill__btn--active' : ''}`}
+                onClick={() => setCurrentSite(site)}
+                title={`Switch to ${SITE_LABELS[site]}`}
+              >
+                {SITE_LABELS[site]}
+              </button>
+            ))}
+          </div>
+
           {/* Mode toggle — only for doctor / admin */}
           {canUseDocMode && (
             <div className="mode-toggle">

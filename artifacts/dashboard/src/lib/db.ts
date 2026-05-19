@@ -3,7 +3,7 @@
  * Never imported by triage/scoring logic — only by UI components.
  */
 
-import { supabase } from './supabase';
+import { supabase, type SiteCode } from './supabase';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -37,6 +37,7 @@ export interface SavedPatient {
 export interface NewEncounterInput {
   patient_id: string;
   chief_complaint?: string;
+  site?: SiteCode;
 }
 
 export interface SavedEncounter {
@@ -96,6 +97,7 @@ export async function createEncounter(
   };
 
   if (input.chief_complaint?.trim()) row.chief_complaint = input.chief_complaint.trim();
+  if (input.site) row.site = input.site;
 
   const { data, error } = await supabase
     .from('encounters')
@@ -126,6 +128,45 @@ export async function listPatients(): Promise<
 
   if (error) {
     console.error('[db] listPatients:', error);
+    return { patients: null, error: error.message };
+  }
+
+  return { patients: (data ?? []) as PatientListRow[], error: null };
+}
+
+// ─── listPatientsBySite ───────────────────────────────────────────────────────
+
+/**
+ * Returns patients who have at least one encounter at the given site.
+ * Two-step: fetch distinct patient_ids from encounters, then fetch those patients.
+ */
+export async function listPatientsBySite(
+  site: SiteCode,
+): Promise<{ patients: PatientListRow[]; error: null } | { patients: null; error: string }> {
+  if (!supabase) return { patients: null, error: notConfigured('listPatientsBySite') };
+
+  const { data: encRows, error: encErr } = await supabase
+    .from('encounters')
+    .select('patient_id')
+    .eq('site', site);
+
+  if (encErr) {
+    console.error('[db] listPatientsBySite encounters:', encErr);
+    return { patients: null, error: encErr.message };
+  }
+
+  const ids = [...new Set((encRows ?? []).map((r: { patient_id: string }) => r.patient_id))];
+  if (ids.length === 0) return { patients: [], error: null };
+
+  const { data, error } = await supabase
+    .from('patients')
+    .select('id, full_name, sex, phone, date_of_birth, created_at')
+    .in('id', ids)
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  if (error) {
+    console.error('[db] listPatientsBySite patients:', error);
     return { patients: null, error: error.message };
   }
 

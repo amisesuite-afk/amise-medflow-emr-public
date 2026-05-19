@@ -1,48 +1,65 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, getLatestOpenEncounter, loadPMH, type PatientListRow } from '@/lib/db';
-import { supabase } from '@/lib/supabase';
+import { listPatients, listPatientsBySite, getLatestOpenEncounter, loadPMH, type PatientListRow } from '@/lib/db';
+import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
+
+type SiteFilter = 'all' | SiteCode;
+
+const SITE_FILTER_OPTIONS: { value: SiteFilter; label: string }[] = [
+  { value: 'all',        label: 'All locations' },
+  { value: 'rodney_bay', label: 'Rodney Bay' },
+  { value: 'tapion',     label: 'Tapion' },
+];
 
 export default function PatientSearchTab() {
-  const [query, setQuery] = useState('');
-  const [allPatients, setAllPatients] = useState<PatientListRow[]>([]);
-  const [loadingAll, setLoadingAll] = useState(true);
-  const [searching, setSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState<PatientListRow[] | null>(null); // null = not searching
-  const [selected, setSelected] = useState<string | null>(null);
+  const [query,         setQuery]         = useState('');
+  const [siteFilter,    setSiteFilter]    = useState<SiteFilter>('all');
+  const [allPatients,   setAllPatients]   = useState<PatientListRow[]>([]);
+  const [loadingAll,    setLoadingAll]    = useState(true);
+  const [searching,     setSearching]     = useState(false);
+  const [searchResults, setSearchResults] = useState<PatientListRow[] | null>(null);
+  const [selected,      setSelected]      = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { setPatientName, setAge, setSex, setDob, setPhone, setPatientId, setEncounterId, setComorbidities } = useAppContext();
   const { showToast } = useToast();
 
-  // Load full patient list on mount
+  // Reload patient list whenever site filter changes
   useEffect(() => {
     void (async () => {
       setLoadingAll(true);
-      const { patients, error } = await listPatients();
-      if (error) {
-        showToast(`Could not load patient list: ${error}`, 'error');
-        console.error('[PatientSearchTab] listPatients:', error);
+      setSearchResults(null);
+      setQuery('');
+
+      const result = siteFilter === 'all'
+        ? await listPatients()
+        : await listPatientsBySite(siteFilter);
+
+      if (result.error) {
+        showToast(`Could not load patient list: ${result.error}`, 'error');
+        console.error('[PatientSearchTab] list:', result.error);
       } else {
-        setAllPatients(patients ?? []);
+        setAllPatients(result.patients ?? []);
       }
       setLoadingAll(false);
     })();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [siteFilter]);
 
   async function search(q: string) {
     if (!q.trim()) { setSearchResults(null); return; }
     setSearching(true);
     try {
       if (!supabase) throw new Error('Supabase not configured — check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
-      const { data, error: err } = await supabase
+      let query = supabase
         .from('patients')
         .select('id, full_name, sex, phone, date_of_birth, created_at')
         .ilike('full_name', `%${q}%`)
         .order('created_at', { ascending: false })
         .limit(30);
+
+      const { data, error: err } = await query;
       if (err) throw err;
       setSearchResults((data ?? []) as PatientListRow[]);
     } catch (e: unknown) {
@@ -65,11 +82,9 @@ export default function PatientSearchTab() {
   async function loadPatient(p: PatientListRow) {
     setSelected(p.id);
 
-    // Populate context fields
     if (p.full_name) setPatientName(p.full_name);
     if (p.date_of_birth) {
       setDob(p.date_of_birth);
-      // Derive age from DOB
       const dob = new Date(p.date_of_birth);
       const today = new Date();
       let age = today.getFullYear() - dob.getFullYear();
@@ -79,24 +94,19 @@ export default function PatientSearchTab() {
     }
     if (p.sex) setSex(p.sex as Parameters<typeof setSex>[0]);
     if (p.phone) setPhone(p.phone);
-
-    // Set patient ID
     setPatientId(p.id);
 
-    // Load PMH and encounter in parallel
     const [pmhResult, encResult] = await Promise.all([
       loadPMH(p.id),
       getLatestOpenEncounter(p.id),
     ]);
 
-    // Apply PMH conditions
     if (pmhResult.error) {
       showToast(`Loaded patient, but could not fetch PMH: ${pmhResult.error}`, 'error');
     } else {
       setComorbidities(pmhResult.conditions);
     }
 
-    // Apply encounter
     if (encResult.error) {
       showToast(`Loaded patient, but could not fetch encounter: ${encResult.error}`, 'error');
       setEncounterId(null);
@@ -131,13 +141,29 @@ export default function PatientSearchTab() {
     return `Age ${age}`;
   }
 
+  const siteLabel = siteFilter === 'all' ? '' : ` at ${SITE_LABELS[siteFilter]}`;
+  const countLabel = loadingAll
+    ? 'Loading patient registry…'
+    : `${allPatients.length} patient${allPatients.length !== 1 ? 's' : ''}${siteLabel} — click to load`;
+
   return (
     <div className="gap-y">
       <div className="psearch-header">
         <div className="psearch-title">Patients</div>
-        <div className="psearch-sub">
-          {loadingAll ? 'Loading patient registry…' : `${allPatients.length} patient${allPatients.length !== 1 ? 's' : ''} — click to load into intake form`}
-        </div>
+        <div className="psearch-sub">{countLabel}</div>
+      </div>
+
+      {/* Site filter chips */}
+      <div className="psearch-site-filter">
+        {SITE_FILTER_OPTIONS.map(opt => (
+          <button
+            key={opt.value}
+            className={`psearch-site-chip${siteFilter === opt.value ? ' psearch-site-chip--active' : ''}`}
+            onClick={() => setSiteFilter(opt.value)}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
 
       <div className="psearch-bar">
@@ -192,9 +218,13 @@ export default function PatientSearchTab() {
       {!loadingAll && allPatients.length === 0 && !isSearching && (
         <div className="psearch-hint-box">
           <div className="psearch-hint-icon">👤</div>
-          <div className="psearch-hint-title">No patients yet</div>
+          <div className="psearch-hint-title">
+            {siteFilter === 'all' ? 'No patients yet' : `No patients at ${SITE_LABELS[siteFilter]} yet`}
+          </div>
           <div className="psearch-hint-body">
-            Click <strong>+ New patient</strong> to start an intake, then <strong>Save patient</strong> to add them to the registry.
+            {siteFilter === 'all'
+              ? 'Click + New patient to start an intake, then Save patient to add them to the registry.'
+              : `No encounters recorded at ${SITE_LABELS[siteFilter]}. Switch to All locations to see all patients.`}
           </div>
         </div>
       )}

@@ -132,6 +132,15 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   admin: 'Admin',
 };
 
+export type SiteCode = 'rodney_bay' | 'tapion';
+
+export const SITE_LABELS: Record<SiteCode, string> = {
+  rodney_bay: 'Rodney Bay',
+  tapion: 'Tapion',
+};
+
+export const SITE_CODES: SiteCode[] = ['rodney_bay', 'tapion'];
+
 export interface UserProfile {
   id: string;
   full_name: string | null;

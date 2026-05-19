@@ -11,6 +11,7 @@ export default function FloatingActions() {
     patientId, setPatientId,
     encounterId, setEncounterId,
     symptoms,
+    currentSite,
   } = useAppContext();
   const { showToast } = useToast();
   const [saving, setSaving] = useState(false);
@@ -40,6 +41,7 @@ export default function FloatingActions() {
       const { encounter, error: encErr } = await createEncounter({
         patient_id: patient.id,
         chief_complaint: chiefComplaint,
+        site: currentSite,
       });
       if (encErr || !encounter) {
         // Patient saved but encounter failed — still commit the patient ID
