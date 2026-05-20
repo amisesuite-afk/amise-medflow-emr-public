@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useAppContext, AppMode, Section } from '@/context/AppContext';
+import { useState } from 'react';
+import { useAppContext, Section } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
+import { hasRole, roleIn } from '@/lib/roles';
 import NavSidebar, { TopSection } from '@/components/NavSidebar';
 import IntakeTab from './tabs/IntakeTab';
 import TriageTab from './tabs/TriageTab';
@@ -38,7 +39,6 @@ function StubPanel({ title, description }: { title: string; description: string 
 export default function HomePage() {
   const { profile, signOut } = useAuth();
   const {
-    mode, setMode,
     activeSection, setActiveSection,
     patientName, age, sex,
     comorbidities,
@@ -49,14 +49,7 @@ export default function HomePage() {
   const [collapsed, setCollapsed]   = useState(false);
   const [topSection, setTopSection] = useState<TopSection>('intake');
 
-  const canUseDocMode = profile?.role === 'doctor' || profile?.role === 'admin';
-
-  // Sync mode to role on login — doctors start in doctor mode
-  useEffect(() => {
-    if (canUseDocMode) setMode('doctor');
-    else setMode('front_desk');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile?.role]);
+  const userRole = profile?.role ?? 'front_desk';
 
   const urgentCount = triageResult.vitalRedFlags.filter(f => f.severity === 'urgent').length
     + triageResult.reasons.length;
@@ -97,24 +90,12 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Mode toggle — only for doctor / admin */}
-          {canUseDocMode && (
-            <div className="mode-toggle">
-              <button
-                className={mode === 'front_desk' ? 'active' : ''}
-                onClick={() => setMode('front_desk')}
-              >Front Desk</button>
-              <button
-                className={mode === 'doctor' ? 'active' : ''}
-                onClick={() => setMode('doctor')}
-              >Doctor</button>
-            </div>
-          )}
           <div className={`acuity-badge ${acuityClass(triageResult.acuity)}`}>
             <span className="ab-label">Acuity</span>
             <span className="ab-level">{triageResult.acuity.toUpperCase()}</span>
             <span className="ab-score">Score {triageResult.score}</span>
           </div>
+
           {/* User chip */}
           {profile && (
             <div className="user-chip">
@@ -134,7 +115,7 @@ export default function HomePage() {
         onTopSection={setTopSection}
         activeSection={activeSection}
         onSection={setActiveSection}
-        mode={mode}
+        userRole={userRole}
         hasUrgentRedFlag={hasUrgentRedFlag}
         urgentCount={urgentCount}
         acuity={triageResult.acuity}
@@ -152,20 +133,20 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'allergies'   && <AllergiesTab />}
         {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
         {topSection === 'consultation'  && activeSection === 'scales'      && <ScalesTab />}
-        {topSection === 'consultation'  && activeSection === 'examination' && <ExaminationTab />}
-        {topSection === 'consultation'  && activeSection === 'assessment'  && mode === 'doctor' && <AssessmentTab />}
-        {topSection === 'consultation'  && activeSection === 'plan'        && mode === 'doctor' && <PlanTab />}
-        {topSection === 'procedures'    && <ProceduresTab />}
+        {topSection === 'consultation'  && activeSection === 'examination' && hasRole(userRole, 'nurse')  && <ExaminationTab />}
+        {topSection === 'consultation'  && activeSection === 'assessment'  && hasRole(userRole, 'doctor') && <AssessmentTab />}
+        {topSection === 'consultation'  && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
+        {topSection === 'procedures'    && hasRole(userRole, 'doctor')     && <ProceduresTab />}
         {topSection === 'summary'       && <SummaryTab />}
-        {topSection === 'billing'       && activeSection === 'billing'     && <BillingTab />}
-        {topSection === 'billing'       && activeSection === 'documents'   && <DocumentsTab />}
+        {topSection === 'billing'       && activeSection === 'billing'   && roleIn(userRole, 'front_desk', 'admin') && <BillingTab />}
+        {topSection === 'billing'       && activeSection === 'documents' && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
 
         {/* Stub sections */}
         {topSection === 'dashboard'  && <StubPanel title="Dashboard" description="Overview of today's schedule, triage queue, and pending actions — coming soon." />}
         {topSection === 'patients'   && <PatientSearchTab />}
         {topSection === 'scheduling' && <StubPanel title="Scheduling" description="Calendar view, appointment booking, and slot management across all sites — coming soon." />}
-        {topSection === 'analytics'  && <StubPanel title="Analytics" description="Volume trends, acuity distributions, wait-time reports, and outcome tracking — coming soon." />}
-        {topSection === 'settings'   && <StubPanel title="Settings" description="Practice configuration, user roles, notification preferences, and system settings — coming soon." />}
+        {topSection === 'analytics'  && hasRole(userRole, 'doctor') && <StubPanel title="Analytics" description="Volume trends, acuity distributions, wait-time reports, and outcome tracking — coming soon." />}
+        {topSection === 'settings'   && hasRole(userRole, 'admin')  && <StubPanel title="Settings" description="Practice configuration, user roles, notification preferences, and system settings — coming soon." />}
       </main>
 
       <FloatingActions />

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { hasRole } from '@/lib/roles';
 import CollapsibleCard from '@/components/CollapsibleCard';
 
 function actionLabel(action: string): string {
@@ -17,7 +19,9 @@ function acuityColor(a: string): string {
 }
 
 export default function TriageTab() {
-  const { triageResult, mode } = useAppContext();
+  const { triageResult } = useAppContext();
+  const { profile } = useAuth();
+  const isDoctor = hasRole(profile?.role, 'doctor');
   const [expandedPathway, setExpandedPathway] = useState<string | null>(null);
   const r = triageResult;
 
@@ -104,7 +108,7 @@ export default function TriageTab() {
                         <span>Contact: </span>{pw.contacts.join(' · ')}
                       </div>
                     )}
-                    {pw.doctorNotes && mode === 'doctor' && (
+                    {pw.doctorNotes && isDoctor && (
                       <div className="pathway-note">{pw.doctorNotes}</div>
                     )}
                   </div>
@@ -155,7 +159,7 @@ export default function TriageTab() {
       )}
 
       {/* Front-desk script */}
-      <CollapsibleCard title={mode === 'doctor' ? 'Clinical summary script' : 'Safe front-desk script'}>
+      <CollapsibleCard title={isDoctor ? 'Clinical summary script' : 'Safe front-desk script'}>
         <div className="script-box">{r.frontDeskScript}</div>
         <p className="safety-note">Do not add clinical advice, diagnoses, medication instructions, fees, or results interpretation to this script.</p>
       </CollapsibleCard>

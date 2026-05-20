@@ -4,7 +4,6 @@ import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite } from '@/lib/db';
 
-export type AppMode = 'front_desk' | 'doctor';
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
   | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
@@ -37,8 +36,6 @@ function readSiteFromStorage(): SiteCode {
 }
 
 interface CtxValue {
-  mode: AppMode;
-  setMode(m: AppMode): void;
   activeSection: Section;
   setActiveSection(s: Section): void;
 
@@ -104,7 +101,6 @@ const AppContext = createContext<CtxValue | null>(null);
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const { profile } = useAuth();
 
-  const [mode, setMode] = useState<AppMode>('front_desk');
   const [activeSection, setActiveSection] = useState<Section>('intake');
 
   // localStorage provides the fast initial value while the profile loads from DB.
@@ -238,7 +234,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const triageResult = useMemo(() => adaptiveTriage(triageInput), [triageInput]);
 
   const value: CtxValue = {
-    mode, setMode,
     activeSection, setActiveSection,
     currentSite, setCurrentSite,
     patientId, setPatientId,
