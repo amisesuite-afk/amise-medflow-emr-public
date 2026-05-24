@@ -8,6 +8,7 @@ const TriagePreviewBody = z.object({
   age: z.number().nullable().optional(),
   sex: z.enum(['female', 'male', 'other', 'unknown']).optional(),
   symptoms: z.array(z.string()).default([]),
+  symptomDetails: z.record(z.array(z.string())).optional(),
   freeText: z.string().optional(),
   comorbidities: z.array(z.string()).optional(),
   surgicalHistory: z.array(z.string()).optional(),

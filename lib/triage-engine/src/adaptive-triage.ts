@@ -1,4 +1,4 @@
-import { scanRedFlags, Severity, AppointmentType } from './rules.js';
+import { scanRedFlags, Severity, AppointmentType, PATHWAY_DEFINITIONS, PathwayPanel } from './rules.js';
 
 export type Sex = 'female' | 'male' | 'other' | 'unknown';
 
@@ -16,6 +16,7 @@ export interface AdaptiveTriageInput {
   age?: number | null;
   sex?: Sex;
   symptoms: string[];
+  symptomDetails?: Record<string, string[]>;
   freeText?: string;
   comorbidities?: string[];
   surgicalHistory?: string[];
@@ -30,10 +31,18 @@ export interface AdaptiveTriageInput {
   pregnancyPossible?: boolean;
 }
 
+export interface VitalRedFlag {
+  label: string;
+  severity: Severity;
+  value: string;
+}
+
 export interface AdaptiveTriageResult {
   acuity: Severity | 'routine';
   score: number;
   reasons: string[];
+  vitalRedFlags: VitalRedFlag[];
+  activePathways: PathwayPanel[];
   recommendedAction: 'emergency_now' | 'same_day_call' | 'priority_24_48h' | 'routine_booking' | 'admin_review';
   appointmentType: AppointmentType;
   questionsToAsk: string[];
@@ -48,6 +57,9 @@ const BREAST_TERMS = /(breast|nipple|areola|mastitis|lump in breast|breast lump|
 const POST_OP_TERMS = /(post.?op|after surgery|after operation|wound|stitches|drain|procedure|incision|suture)/i;
 const HERNIA_TERMS = /(hernia|groin swelling|umbilical swelling|incisional bulge)/i;
 const ENDOSCOPY_TERMS = /(colonoscopy|gastroscopy|ogd|endoscopy|occult blood|change in bowel|rectal bleed|dysphagia|reflux)/i;
+const DIABETIC_FOOT_TERMS = /(diabetic foot|foot ulcer|foot wound|gangrene|foot infection|osteomyelitis|exposed bone|spreading redness)/i;
+const GI_BLEED_TERMS = /(haematemesis|hematemesis|melaena|melena|rectal bleed|vomiting blood|black stool|blood in stool)/i;
+const CHEST_PAIN_TERMS = /(chest pain|crushing pain|left arm|jaw pain|tearing pain)/i;
 
 interface NormalizedInput {
   age: number | null;
@@ -78,10 +90,11 @@ function boundedNumber(value: unknown, min: number, max: number): number | null 
 
 function normalise(input: AdaptiveTriageInput): NormalizedInput {
   const vitals = input.vitalSigns || {};
+  const detailFlat = Object.values(input.symptomDetails || {}).flat();
   return {
     age: boundedNumber(input.age, 0, 120),
     sex: input.sex || 'unknown',
-    symptoms: cleanList(input.symptoms),
+    symptoms: [...cleanList(input.symptoms), ...cleanList(detailFlat)],
     freeText: input.freeText?.trim() || '',
     comorbidities: cleanList(input.comorbidities),
     surgicalHistory: cleanList(input.surgicalHistory),
@@ -115,6 +128,38 @@ function addScore(condition: boolean, points: number, reason: string, state: { s
   state.reasons.push(reason);
 }
 
+function computeVitalRedFlags(v: Required<VitalSigns>): VitalRedFlag[] {
+  const flags: VitalRedFlag[] = [];
+  if (v.systolicBp !== null && v.systolicBp < 90) flags.push({ label: 'Hypotension', severity: 'urgent', value: `SBP ${v.systolicBp} mmHg` });
+  if (v.heartRate !== null && v.heartRate > 120) flags.push({ label: 'Tachycardia', severity: 'urgent', value: `HR ${v.heartRate} bpm` });
+  if (v.respiratoryRate !== null && v.respiratoryRate > 24) flags.push({ label: 'Tachypnoea', severity: 'urgent', value: `RR ${v.respiratoryRate}/min` });
+  if (v.temperatureC !== null && v.temperatureC >= 38) flags.push({ label: 'Fever', severity: 'priority', value: `Temp ${v.temperatureC}°C` });
+  if (v.temperatureC !== null && v.temperatureC >= 39.5) flags.push({ label: 'High fever', severity: 'urgent', value: `Temp ${v.temperatureC}°C` });
+  if (v.spo2 !== null && v.spo2 < 94) flags.push({ label: 'Low SpO₂', severity: 'urgent', value: `SpO₂ ${v.spo2}%` });
+  if (v.spo2 !== null && v.spo2 < 90) flags.push({ label: 'Critical hypoxia', severity: 'urgent', value: `SpO₂ ${v.spo2}%` });
+  if (v.glucoseMmol !== null && v.glucoseMmol > 20) flags.push({ label: 'Hyperglycaemia', severity: 'urgent', value: `RBS ${v.glucoseMmol} mmol/L` });
+  if (v.glucoseMmol !== null && v.glucoseMmol < 3.5) flags.push({ label: 'Hypoglycaemia', severity: 'urgent', value: `RBS ${v.glucoseMmol} mmol/L` });
+  return flags;
+}
+
+function detectPathways(combined: string, v: Required<VitalSigns>): PathwayPanel[] {
+  const result: PathwayPanel[] = [];
+  const vSummary = { sbp: v.systolicBp, hr: v.heartRate, temp: v.temperatureC, spo2: v.spo2 };
+  for (const def of PATHWAY_DEFINITIONS) {
+    if (!def.trigger.test(combined)) continue;
+    if (def.compositeCheck && !def.compositeCheck(vSummary)) continue;
+    result.push({
+      id: def.id,
+      title: def.title,
+      severity: def.severity,
+      checklist: def.checklist,
+      contacts: def.contacts,
+      doctorNotes: def.doctorNotes,
+    });
+  }
+  return result;
+}
+
 export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult {
   const data = normalise(input);
   const combined = [
@@ -126,12 +171,18 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     ...data.toxicHabits,
   ].join(' ');
   const redFlags = scanRedFlags(combined);
+  const vitalRedFlags = computeVitalRedFlags(data.vitalSigns);
 
   const state = { score: 0, reasons: [] as string[] };
 
   for (const match of redFlags.matches) {
     state.score += match.severity === 'urgent' ? 40 : match.severity === 'priority' ? 25 : 12;
     state.reasons.push(match.reason);
+  }
+
+  for (const vf of vitalRedFlags) {
+    state.score += vf.severity === 'urgent' ? 30 : 15;
+    state.reasons.push(vf.label);
   }
 
   addScore(data.age !== null && data.age >= 70, 12, 'Age 70 or older', state);
@@ -147,13 +198,6 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
   addScore(data.painScore !== null && data.painScore >= 8, 20, 'Severe pain score', state);
   addScore(data.painScore !== null && data.painScore >= 5 && data.painScore < 8, 8, 'Moderate pain score', state);
 
-  const v = data.vitalSigns;
-  addScore(v.temperatureC !== null && v.temperatureC >= 38, 20, 'Fever recorded', state);
-  addScore(v.spo2 !== null && v.spo2 < 94, 30, 'Low oxygen saturation', state);
-  addScore(v.heartRate !== null && v.heartRate >= 120, 20, 'Marked tachycardia', state);
-  addScore(v.systolicBp !== null && v.systolicBp < 90, 30, 'Low systolic blood pressure', state);
-  addScore(v.glucoseMmol !== null && (v.glucoseMmol < 3.5 || v.glucoseMmol > 20), 18, 'Concerning blood glucose value', state);
-
   if (data.isPostOp || POST_OP_TERMS.test(combined)) {
     addScore(true, data.postOpDays !== null && data.postOpDays <= 14 ? 25 : 15, 'Post-operative or recent-procedure concern', state);
   }
@@ -161,7 +205,19 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
   addScore(data.pregnancyPossible, 12, 'Pregnancy possibility requires clinical review', state);
   addScore(/(fever|chills|rigors)/i.test(combined) && ERCP_TERMS.test(combined), 35, 'Possible cholangitis pattern', state);
   addScore(/(vomiting|unable to keep fluids|dehydrated)/i.test(combined), 15, 'Vomiting or possible dehydration', state);
-  addScore(/(black stool|melena|melaena|rectal bleeding|blood in stool)/i.test(combined), 25, 'Possible gastrointestinal bleeding', state);
+  addScore(GI_BLEED_TERMS.test(combined), 25, 'Possible gastrointestinal bleeding', state);
+
+  // Composite vital + symptom checks
+  const v = data.vitalSigns;
+  const hasFever = v.temperatureC !== null && v.temperatureC >= 38;
+  const hasHypotension = v.systolicBp !== null && v.systolicBp < 90;
+  const hasTachycardia = v.heartRate !== null && v.heartRate > 120;
+
+  addScore(CHEST_PAIN_TERMS.test(combined) && (v.spo2 !== null && v.spo2 < 95), 50, 'Chest pain with hypoxia — possible ACS / PE', state);
+  addScore(ERCP_TERMS.test(combined) && hasFever, 35, 'Jaundice with fever — cholangitis pattern', state);
+  addScore(GI_BLEED_TERMS.test(combined) && (hasHypotension || hasTachycardia), 60, 'GI bleed with haemodynamic instability — emergency', state);
+  addScore(DIABETIC_FOOT_TERMS.test(combined) && hasFever, 40, 'Diabetic foot infection with systemic fever', state);
+  addScore(POST_OP_TERMS.test(combined) && hasFever && (data.postOpDays === null || data.postOpDays <= 30), 35, 'Post-op fever — source must be identified', state);
 
   let appointmentType: AppointmentType = 'new_consult';
   if (/follow.?up|review/i.test(combined)) appointmentType = 'follow_up';
@@ -169,14 +225,15 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
   if (BREAST_TERMS.test(combined)) appointmentType = 'breast';
   if (data.isPostOp || POST_OP_TERMS.test(combined)) appointmentType = 'post_op';
   if (/telephone|phone call|call me/i.test(combined)) appointmentType = 'telephone';
+  if (DIABETIC_FOOT_TERMS.test(combined)) appointmentType = 'diabetic_foot';
 
   let acuity: AdaptiveTriageResult['acuity'] = 'routine';
   let recommendedAction: AdaptiveTriageResult['recommendedAction'] = 'routine_booking';
 
-  if (state.score >= 45 || redFlags.matches.some(m => m.severity === 'urgent')) {
+  if (state.score >= 45 || redFlags.matches.some(m => m.severity === 'urgent') || vitalRedFlags.some(f => f.severity === 'urgent')) {
     acuity = 'urgent';
     recommendedAction = 'emergency_now';
-  } else if (state.score >= 28 || redFlags.matches.some(m => m.severity === 'priority')) {
+  } else if (state.score >= 28 || redFlags.matches.some(m => m.severity === 'priority') || vitalRedFlags.some(f => f.severity === 'priority')) {
     acuity = 'priority';
     recommendedAction = 'same_day_call';
   } else if (state.score >= 14 || redFlags.matches.some(m => m.severity === 'review')) {
@@ -184,6 +241,7 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     recommendedAction = 'priority_24_48h';
   }
 
+  const activePathways = detectPathways(combined, data.vitalSigns);
   const missingCriticalFields = buildMissingFields(data, combined);
   const questionsToAsk = buildQuestions(data, combined, missingCriticalFields);
   const suggestedBlocks = buildSuggestedBlocks(data, combined, appointmentType);
@@ -192,6 +250,8 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     acuity,
     score: state.score,
     reasons: uniq(state.reasons),
+    vitalRedFlags,
+    activePathways,
     recommendedAction,
     appointmentType,
     questionsToAsk,
@@ -230,6 +290,7 @@ function buildQuestions(data: NormalizedInput, combined: string, missing: string
   if (data.isPostOp || POST_OP_TERMS.test(combined)) questions.push('Operation/procedure date and any fever, discharge, bleeding, or wound opening?');
   if (HERNIA_TERMS.test(combined)) questions.push('Is the hernia painful, irreducible, red, or associated with vomiting?');
   if (ENDOSCOPY_TERMS.test(combined)) questions.push('Any weight loss, dysphagia, black stool, rectal bleeding, or anticoagulant use?');
+  if (DIABETIC_FOOT_TERMS.test(combined)) questions.push('Wound appearance, peripheral pulses, fever, and spreading redness?');
   return uniq(questions).slice(0, 10);
 }
 
@@ -238,6 +299,7 @@ function buildSuggestedBlocks(data: NormalizedInput, combined: string, appointme
   if (appointmentType === 'breast') blocks.push('Breast symptoms', 'Family history', 'Prior imaging/biopsy');
   if (appointmentType === 'ercp_workup') blocks.push('LFT/imaging summary', 'Anticoagulants', 'Previous ERCP/surgery');
   if (appointmentType === 'post_op' || data.isPostOp) blocks.push('Operation details', 'Wound/drain status', 'Temperature/vitals');
+  if (appointmentType === 'diabetic_foot') blocks.push('Wound assessment', 'Peripheral pulses', 'HbA1c / glucose', 'Vascular referral');
   if (ENDOSCOPY_TERMS.test(combined)) blocks.push('GI alarm symptoms', 'Bowel habit', 'Anticoagulants');
   if (HERNIA_TERMS.test(combined)) blocks.push('Hernia reducibility', 'Obstruction symptoms', 'Prior repairs');
   if (data.vitalSigns.temperatureC || data.vitalSigns.spo2 || data.vitalSigns.heartRate) blocks.push('Vital signs trend');
