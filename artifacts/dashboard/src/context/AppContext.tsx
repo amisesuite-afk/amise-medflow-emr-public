@@ -93,6 +93,11 @@ interface CtxValue {
   billing: string; setBilling(v: string): void;
   documents: string; setDocuments(v: string): void;
 
+  insuranceProvider: string; setInsuranceProvider(v: string): void;
+  policyNumber: string; setPolicyNumber(v: string): void;
+  nhiNumber: string; setNhiNumber(v: string): void;
+  preAuthStatus: string; setPreAuthStatus(v: string): void;
+
   triageResult: AdaptiveTriageResult;
 }
 
@@ -175,6 +180,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [procedures, setProcedures] = useState('');
   const [billing, setBilling] = useState('');
   const [documents, setDocuments] = useState('');
+  const [insuranceProvider, setInsuranceProvider] = useState('');
+  const [policyNumber, setPolicyNumber] = useState('');
+  const [nhiNumber, setNhiNumber] = useState('');
+  const [preAuthStatus, setPreAuthStatus] = useState('');
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -202,6 +211,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
     setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
+    setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
   }
 
   const triageInput: AdaptiveTriageInput = useMemo(() => ({
@@ -277,6 +287,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     procedures, setProcedures,
     billing, setBilling,
     documents, setDocuments,
+    insuranceProvider, setInsuranceProvider,
+    policyNumber, setPolicyNumber,
+    nhiNumber, setNhiNumber,
+    preAuthStatus, setPreAuthStatus,
     triageResult,
   };
 

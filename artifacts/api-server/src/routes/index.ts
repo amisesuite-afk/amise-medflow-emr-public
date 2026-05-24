@@ -4,6 +4,7 @@ import intakeRouter from "./intake";
 import triagePreviewRouter from "./triage-preview";
 import cronRouter from "./cron";
 import summaryRouter from "./summary";
+import schedulingRouter from "./scheduling";
 
 const router: IRouter = Router();
 
@@ -12,5 +13,6 @@ router.use(intakeRouter);
 router.use(triagePreviewRouter);
 router.use(cronRouter);
 router.use(summaryRouter);
+router.use(schedulingRouter);
 
 export default router;

@@ -327,9 +327,10 @@ export default function SummaryTab() {
     if (!document) return;
     const patientSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const dateStr = new Date().toISOString().slice(0, 10);
-    const filename = `clinical-summary-${patientSlug}-${dateStr}.txt`;
+    const filename = `clinical-summary-${patientSlug}-${dateStr}.html`;
 
-    const blob = new Blob([document], { type: 'text/plain;charset=utf-8' });
+    const html = buildPrintHtml(document, makePrintMeta());
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = window.document.createElement('a');
     a.href = url;

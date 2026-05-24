@@ -177,13 +177,14 @@ export async function createEvent(args: CreateEventArgs): Promise<{ eventId: str
 
 function labelFor(t: AppointmentType): string {
   return ({
-    new_consult: 'New consultation',
-    follow_up: 'Follow-up',
-    post_op: 'Post-op review',
-    ercp_workup: 'ERCP work-up',
-    ercp: 'ERCP procedure',
-    breast: 'Breast clinic',
-    telephone: 'Telephone review',
+    new_consult:   'New consultation',
+    follow_up:     'Follow-up',
+    post_op:       'Post-op review',
+    ercp_workup:   'ERCP work-up',
+    ercp:          'ERCP procedure',
+    breast:        'Breast clinic',
+    telephone:     'Telephone review',
+    diabetic_foot: 'Diabetic foot clinic',
   } as Record<AppointmentType, string>)[t];
 }
 

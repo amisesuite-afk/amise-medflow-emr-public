@@ -20,6 +20,8 @@ import DocumentsTab from './tabs/DocumentsTab';
 import PatientSearchTab from './tabs/PatientSearchTab';
 import ScalesTab from './tabs/ScalesTab';
 import SummaryTab from './tabs/SummaryTab';
+import DashboardTab from './tabs/DashboardTab';
+import SchedulingTab from './tabs/SchedulingTab';
 import FloatingActions from '@/components/FloatingActions';
 
 function acuityClass(a: string) {
@@ -141,10 +143,10 @@ export default function HomePage() {
         {topSection === 'billing'       && activeSection === 'billing'   && roleIn(userRole, 'front_desk', 'admin') && <BillingTab />}
         {topSection === 'billing'       && activeSection === 'documents' && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
 
-        {/* Stub sections */}
-        {topSection === 'dashboard'  && <StubPanel title="Dashboard" description="Overview of today's schedule, triage queue, and pending actions — coming soon." />}
+        {/* Previously-stub sections */}
+        {topSection === 'dashboard'  && <DashboardTab />}
         {topSection === 'patients'   && <PatientSearchTab />}
-        {topSection === 'scheduling' && <StubPanel title="Scheduling" description="Calendar view, appointment booking, and slot management across all sites — coming soon." />}
+        {topSection === 'scheduling' && <SchedulingTab />}
         {topSection === 'analytics'  && hasRole(userRole, 'doctor') && <StubPanel title="Analytics" description="Volume trends, acuity distributions, wait-time reports, and outcome tracking — coming soon." />}
         {topSection === 'settings'   && hasRole(userRole, 'admin')  && <StubPanel title="Settings" description="Practice configuration, user roles, notification preferences, and system settings — coming soon." />}
       </main>
