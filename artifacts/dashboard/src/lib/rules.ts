@@ -10,6 +10,40 @@ export type AppointmentType =
   | 'telephone'
   | 'diabetic_foot';
 
+export type Location = 'rodney_bay' | 'castries' | 'tapion' | 'remote';
+
+export interface SlotRule {
+  durationMin: number;
+  location: Location;
+  days: number[];
+  windowStart: string;
+  windowEnd: string;
+  bufferAfterMin: number;
+  maxPerSession: number;
+}
+
+export const SLOT_RULES: Record<AppointmentType, SlotRule> = {
+  new_consult:  { durationMin: 45, location: 'rodney_bay', days: [1, 4, 5], windowStart: '10:00', windowEnd: '17:00', bufferAfterMin: 5,  maxPerSession: 8  },
+  follow_up:    { durationMin: 15, location: 'castries',   days: [2, 4],    windowStart: '09:00', windowEnd: '12:00', bufferAfterMin: 5,  maxPerSession: 12 },
+  post_op:      { durationMin: 20, location: 'castries',   days: [2, 4],    windowStart: '09:00', windowEnd: '12:00', bufferAfterMin: 5,  maxPerSession: 6  },
+  ercp_workup:  { durationMin: 30, location: 'rodney_bay', days: [1],       windowStart: '14:00', windowEnd: '16:00', bufferAfterMin: 10, maxPerSession: 4  },
+  ercp:         { durationMin: 90, location: 'tapion',     days: [],        windowStart: '08:00', windowEnd: '12:00', bufferAfterMin: 15, maxPerSession: 4  },
+  breast:       { durationMin: 45, location: 'rodney_bay', days: [3],       windowStart: '14:00', windowEnd: '17:00', bufferAfterMin: 15, maxPerSession: 4  },
+  telephone:    { durationMin: 10, location: 'remote',     days: [5],       windowStart: '15:00', windowEnd: '16:30', bufferAfterMin: 0,  maxPerSession: 8  },
+  diabetic_foot:{ durationMin: 45, location: 'rodney_bay', days: [1, 3],    windowStart: '09:00', windowEnd: '12:00', bufferAfterMin: 10, maxPerSession: 4  },
+};
+
+export const PUBLIC_HOLIDAYS_SLU: string[] = [
+  '2026-01-01', '2026-01-02', '2026-02-22', '2026-04-03', '2026-04-06',
+  '2026-05-01', '2026-05-25', '2026-06-04', '2026-08-03', '2026-10-05',
+  '2026-12-13', '2026-12-25', '2026-12-26',
+];
+
+export function isPublicHoliday(date: Date): boolean {
+  const iso = date.toISOString().slice(0, 10);
+  return PUBLIC_HOLIDAYS_SLU.includes(iso);
+}
+
 export type Severity = 'urgent' | 'priority' | 'review';
 
 export interface RedFlag {
