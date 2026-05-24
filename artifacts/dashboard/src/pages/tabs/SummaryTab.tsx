@@ -331,7 +331,29 @@ export default function SummaryTab() {
 
     const html = buildPrintHtml(document, makePrintMeta());
     const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+
+    // Web Share API — works on iOS Safari 15+ and mobile Chrome; preferred on mobile
+    if ('share' in navigator && 'canShare' in navigator) {
+      const file = new File([blob], filename, { type: 'text/html' });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((navigator as any).canShare({ files: [file] })) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        void (navigator as any).share({ files: [file], title: `Clinical Summary — ${ctx.patientName || 'Patient'}` });
+        return;
+      }
+    }
+
+    // iOS Safari: blob <a download> silently yields 0-byte files — open in new tab instead
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const url = URL.createObjectURL(blob);
+    if (isIOS) {
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 30_000);
+      return;
+    }
+
+    // Desktop: standard anchor-click download
     const a = window.document.createElement('a');
     a.href = url;
     a.download = filename;
