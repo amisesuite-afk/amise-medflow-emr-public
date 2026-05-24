@@ -82,80 +82,88 @@ function buildPrompt(d: SummaryRequest): string {
     });
 
   const detailLines = Object.entries(d.complaint.symptomDetails ?? {})
-    .map(([sym, dets]) => dets.length ? `  • ${sym}: ${dets.join(', ')}` : null)
+    .map(([sym, dets]) => dets.length ? `• ${sym}: ${dets.join(', ')}` : null)
     .filter(Boolean);
 
   const scaleLines = (d.scaleResults ?? []).map(s =>
-    `  • ${s.name}: ${s.band} (score ${s.score}) → ${s.action}`,
+    `• ${s.name}: ${s.band} (score ${s.score}) → ${s.action}`,
   );
 
-  return `Generate a clinical intake summary document using EXACTLY this structure and headings. Populate each section from the data below. Where a section is empty, write "Not documented." Do not add sections not listed.
-
----
-CLINICAL INTAKE SUMMARY
-Amise Medical Services — Saint Lucia
-Date: ${d.date}
-
-PATIENT
-Name: ${d.patient.name || 'Not provided'}
-Age / DOB: ${d.patient.age || '—'} ${d.patient.dob ? `/ ${d.patient.dob}` : ''}
-Sex: ${d.patient.sex}
-Contact: ${d.patient.phone || 'Not provided'}
-
-PRESENTING COMPLAINT
-Primary symptoms: ${d.complaint.symptoms.join(', ') || 'Not specified'}
-${detailLines.length ? `Symptom details:\n${detailLines.join('\n')}` : ''}
-Duration: ${d.complaint.duration ? `${d.complaint.duration} day(s)` : 'Not specified'}
-Pain score: ${d.complaint.painScore ? `${d.complaint.painScore}/10` : 'Not recorded'}
-${d.complaint.isPostOp ? `Post-operative: Yes${d.complaint.postOpDays ? ` (${d.complaint.postOpDays} days post-op)` : ''}` : ''}
-${d.complaint.pregnancyPossible ? 'Pregnancy possible: Yes' : ''}
-Patient's own account: ${d.complaint.freeText || 'None provided'}
-
-VITAL SIGNS
-${vitalLines.length ? vitalLines.join(' | ') : 'Not recorded'}
-Triage acuity: ${d.triageAcuity.toUpperCase()} (score ${d.triageScore})
-
-PAST MEDICAL HISTORY
-${d.history.pmh.join(', ') || 'Nil significant'}
-${d.history.pmhNotes ? `Notes: ${d.history.pmhNotes}` : ''}
-
-SURGICAL HISTORY
-${d.history.surgicalHistory.join(', ') || 'No prior surgery'}
-${d.history.surgicalNotes ? `Notes: ${d.history.surgicalNotes}` : ''}
-
-MEDICATIONS
-${[...d.history.medications, d.history.medicationsText].filter(Boolean).join(', ') || 'None recorded'}
-
-ALLERGIES
-${d.history.allergies || 'NKDA'}
-
-FAMILY HISTORY
-${d.history.familyHistory.join(', ') || 'Not documented'}
-
-SOCIAL / TOXIC HABITS
-${d.history.toxicHabits.join(', ') || 'Nil significant'}
-
-CLINICAL EXAMINATION FINDINGS
-${Object.entries(d.examination ?? {})
+  const examLines = Object.entries(d.examination ?? {})
     .filter(([, v]) => v.trim())
-    .map(([k, v]) => `  ${k}: ${v}`)
-    .join('\n') || '  Not documented — pending clinical review'}
+    .map(([k, v]) => `${k}: ${v}`);
 
-${scaleLines.length ? `CLINICAL SCORING TOOLS\n${scaleLines.join('\n')}\n` : ''}PROVISIONAL ASSESSMENT
-${d.assessment?.trim() || 'Not documented — pending clinician input'}
+  const vitalsStr = vitalLines.length ? vitalLines.join(' | ') : 'Not recorded';
 
-DIFFERENTIALS CONSIDERED
-${d.differentials?.trim() || 'Not documented — pending clinician input'}
+  return `Generate a clinical consultation summary in SOAP format using EXACTLY the headings and structure below. Write coherent prose for narrative sections. Flag clinically significant findings with [!]. Use British spelling throughout. Do not add sections not listed.
 
-INITIAL MANAGEMENT PLAN
-${d.plan?.trim() || 'Not documented — pending clinician input'}
+PROVIDED DATA:
+- Patient: ${d.patient.name || 'Not provided'}, ${d.patient.age || '—'} yrs, ${d.patient.sex}, DOB ${d.patient.dob || '—'}, ${d.patient.phone || '—'}
+- Symptoms: ${d.complaint.symptoms.join(', ') || 'Not specified'}
+${detailLines.length ? `- Symptom details:\n${detailLines.join('\n')}` : ''}
+- Duration: ${d.complaint.duration ? `${d.complaint.duration} day(s)` : 'Not specified'}
+- Pain score: ${d.complaint.painScore ? `${d.complaint.painScore}/10` : 'Not recorded'}
+${d.complaint.isPostOp ? `- Post-operative: Yes${d.complaint.postOpDays ? ` (${d.complaint.postOpDays} days post-op)` : ''}` : ''}
+${d.complaint.pregnancyPossible ? '- Pregnancy possible: Yes' : ''}
+- Patient account: ${d.complaint.freeText || 'None provided'}
+- Vitals: ${vitalsStr} | Triage: ${d.triageAcuity.toUpperCase()} (score ${d.triageScore})
+- PMH: ${d.history.pmh.join(', ') || 'Nil significant'}${d.history.pmhNotes ? ` — ${d.history.pmhNotes}` : ''}
+- Surgical history: ${d.history.surgicalHistory.join(', ') || 'None'}${d.history.surgicalNotes ? ` — ${d.history.surgicalNotes}` : ''}
+- Medications: ${[...d.history.medications, d.history.medicationsText].filter(Boolean).join(', ') || 'None reported'}
+- Allergies: ${d.history.allergies || 'NKDA'}
+- Family history: ${d.history.familyHistory.join(', ') || 'Not documented'}
+- Social/habits: ${d.history.toxicHabits.join(', ') || 'Nil significant'}
+- Examination: ${examLines.join('; ') || 'Not documented'}
+${scaleLines.length ? `- Clinical scales:\n${scaleLines.join('\n')}` : ''}
+- Assessment: ${d.assessment?.trim() || 'Not documented'}
+- Differentials: ${d.differentials?.trim() || 'Not documented'}
+- Plan: ${d.plan?.trim() || 'Not documented'}
 
----
-Prepared by front desk for review by: Dr Dawit Daniel Kabiye, MD, DM
-This is an administrative intake summary only. Clinical decisions remain the responsibility of the attending clinician.
----
+REQUIRED OUTPUT — follow this structure exactly (use these exact headings):
 
-Now write the final formatted summary. Use the sections above as your structure. Where you have enough data, write coherent prose rather than repeating raw lists. Flag any clinically significant items with [!].`;
+SUBJECTIVE
+
+Chief Complaint
+Chief Complaint: [1–2 sentences — reason for visit]
+
+History of Present Illness
+HPI: [2–4 sentence narrative synthesising symptoms, timeline, relevant context, and patient's own account]
+
+Past Medical History
+Past Medical History: [concise relevant PMH; "Nil significant" if none]
+
+Medications
+Current Medications: [list or "None reported"]
+Allergies: [list or "NKDA"]
+
+Social History
+Social History: [brief social and habit history; "Not reported" if none]
+
+OBJECTIVE
+
+Physical Examination
+Physical Exam:
+[findings, each system on its own line; or "Not documented — pending clinical review"]
+
+Laboratory/Diagnostic Results
+Laboratory/Diagnostics:
+• [each investigation, imaging, or result as a separate bullet with date if known; or "• Not documented"]
+
+ASSESSMENT
+
+Primary Diagnosis
+Primary Diagnosis: [assessment; "Pending clinician assessment" if none]
+
+PLAN
+
+Treatment Plan
+Therapeutic: [management actions and therapeutic interventions from the plan]
+
+Patient Education
+Patient Education: [2–3 sentences in plain language, past tense, explaining the condition and treatment to the patient. No diagnoses, drug doses, or clinical jargon.]
+
+Follow-up
+Follow-up: [next steps, timing, referrals, results expected; "To be arranged by Dr Kabiye" if not specified]`;
 }
 
 router.post('/api/summary/generate', async (req, res) => {
