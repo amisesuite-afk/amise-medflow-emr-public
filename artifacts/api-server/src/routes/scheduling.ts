@@ -4,6 +4,9 @@ import { SLOT_RULES, AppointmentType, SlotRule, Location } from '@workspace/tria
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
+// Resolves correctly in both ts-node (src/routes/) and esbuild bundle (dist/)
+const CACHE_PATH = join(process.cwd(), 'src/data/calendar-cache.json');
+
 const router = Router();
 
 function generateMockSlots(
@@ -82,11 +85,7 @@ router.post('/api/scheduling/sync', async (_req, res) => {
       timeZone: 'America/St_Lucia',
       events,
     };
-    writeFileSync(
-      join(__dirname, '../data/calendar-cache.json'),
-      JSON.stringify(cache, null, 2),
-      'utf-8'
-    );
+    writeFileSync(CACHE_PATH, JSON.stringify(cache, null, 2), 'utf-8');
     res.json({ synced: true, eventCount: events.length, syncedAt: cache.fetchedAt });
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
@@ -116,7 +115,7 @@ interface CalendarCache {
 
 function loadCache(): CalendarCache | null {
   try {
-    const raw = readFileSync(join(__dirname, '../data/calendar-cache.json'), 'utf-8');
+    const raw = readFileSync(CACHE_PATH, 'utf-8');
     return JSON.parse(raw) as CalendarCache;
   } catch {
     return null;
