@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAppContext, Section } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
+import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import { hasRole, roleIn } from '@/lib/roles';
 import NavSidebar, { TopSection } from '@/components/NavSidebar';
@@ -72,7 +73,10 @@ export default function HomePage() {
       {/* ── Sticky header ── */}
       <header className="app-header">
         <div className="header-brand">Amise Medical</div>
-        <span className="proto-pill">⚗ PROTOTYPE</span>
+        {DEMO_MODE
+          ? <span className="proto-pill" style={{ background: 'rgba(251,191,36,.15)', border: '1px solid rgba(251,191,36,.35)', color: '#fbbf24' }}>⚗ DEMO MODE — local trial only</span>
+          : <span className="proto-pill">⚗ PROTOTYPE</span>
+        }
         <div className="header-patient">
           <span className="header-name">{patientLabel}</span>
           {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}

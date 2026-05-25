@@ -3,6 +3,15 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase, supabaseConfigured, configIssues, UserProfile, UserRole, SiteCode, serializeError } from '@/lib/supabase';
 
+export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true';
+export const DEMO_PROFILE: UserProfile = {
+  id: 'demo',
+  full_name: 'Dr Demo',
+  role: 'doctor' as UserRole,
+  email: 'demo@localhost',
+  default_site: 'rodney_bay' as SiteCode,
+};
+
 interface AuthCtx {
   session: Session | null;
   profile: UserProfile | null;
@@ -38,11 +47,13 @@ function friendlyError(raw: string): string {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession]           = useState<Session | null>(null);
-  const [profile, setProfile]           = useState<UserProfile | null>(null);
-  const [loading, setLoading]           = useState(true);
+  const [profile, setProfile]           = useState<UserProfile | null>(DEMO_MODE ? DEMO_PROFILE : null);
+  const [loading, setLoading]           = useState(!DEMO_MODE);
   const [profileError, setProfileError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (DEMO_MODE) return;
+
     if (!supabase) {
       console.warn('[auth] Supabase client is null — not configured');
       setLoading(false);
@@ -123,6 +134,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signIn(email: string, password: string): Promise<{ error: string | null; detail?: string }> {
+    if (DEMO_MODE) return { error: null };
     if (!supabase) {
       if (configIssues.length > 0) {
         const first = configIssues[0];
@@ -149,12 +161,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signOut() {
+    if (DEMO_MODE) return;
     if (!supabase) return;
     await supabase.auth.signOut();
   }
 
   return (
-    <Ctx.Provider value={{ session, profile, loading, profileError, configured: supabaseConfigured, signIn, signOut }}>
+    <Ctx.Provider value={{ session, profile, loading, profileError, configured: DEMO_MODE ? true : supabaseConfigured, signIn, signOut }}>
       {children}
     </Ctx.Provider>
   );

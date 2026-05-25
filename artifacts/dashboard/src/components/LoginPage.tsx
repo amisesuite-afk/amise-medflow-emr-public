@@ -1,10 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { DEMO_MODE } from '@/context/AuthContext';
 import { checkSupabaseReachable, configIssues } from '@/lib/supabase';
 
 // Read env at module level so the panel can show real values
 const ENV_URL   = import.meta.env.VITE_SUPABASE_URL   as string | undefined;
 const ENV_ANON  = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+
+const DEMO_ROLES = ['front_desk', 'nurse', 'doctor', 'admin'] as const;
+type DemoRole = typeof DEMO_ROLES[number];
+const DEMO_ROLE_LABELS: Record<DemoRole, string> = {
+  front_desk: 'Front Desk',
+  nurse: 'Nurse',
+  doctor: 'Doctor',
+  admin: 'Administrator',
+};
 
 export default function LoginPage() {
   const { signIn, configured, profileError } = useAuth();
@@ -18,9 +28,11 @@ export default function LoginPage() {
   const [showDiag, setShowDiag] = useState(false);
   const [reachable, setReachable] = useState<{ ok: boolean; status?: number; error?: string } | null>(null);
   const [testing, setTesting]   = useState(false);
+  const [demoRole, setDemoRole] = useState<DemoRole>('doctor');
   const emailRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (DEMO_MODE) return;
     emailRef.current?.focus();
     // Auto-run connectivity check so diagnostics are ready immediately
     runNetworkTest();
@@ -32,6 +44,48 @@ export default function LoginPage() {
     console.log('[diag] reachability test:', result);
     setReachable(result);
     setTesting(false);
+  }
+
+  // Demo mode: show a simple entry card
+  if (DEMO_MODE) {
+    return (
+      <div style={shell}>
+        <div style={{ textAlign: 'center', marginBottom: 28 }}>
+          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase', color: '#4db8ad', marginBottom: 8 }}>
+            Amise Medical Services
+          </div>
+          <div style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-.02em' }}>
+            Front Desk Triage
+          </div>
+          <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 12px', borderRadius: 999, background: 'rgba(255,180,0,.1)', border: '1px solid rgba(255,180,0,.28)', color: '#fbbf24', fontSize: 10, fontWeight: 800, letterSpacing: '.08em' }}>
+            ⚗ DEMO MODE — local trial only
+          </div>
+        </div>
+        <div style={card}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Demo mode active</div>
+          <div style={{ fontSize: 12, color: '#8fc4b9', marginBottom: 18, lineHeight: 1.5 }}>
+            No Supabase account required. Select a role and enter the app.
+          </div>
+          <label style={labelStyle}>Enter as</label>
+          <select
+            value={demoRole}
+            onChange={e => setDemoRole(e.target.value as DemoRole)}
+            style={{ ...inputStyle, marginBottom: 20, cursor: 'pointer' }}
+          >
+            {DEMO_ROLES.map(r => (
+              <option key={r} value={r}>{DEMO_ROLE_LABELS[r]}</option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => { void signIn('', '').then(() => setSigningIn(true)); }}
+            style={{ width: '100%', padding: '11px', borderRadius: 10, background: '#0b8278', color: '#fff', border: 'none', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
+          >
+            Enter as {DEMO_ROLE_LABELS[demoRole]}
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Show spinner while profile is loading post-sign-in
