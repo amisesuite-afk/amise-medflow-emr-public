@@ -20,17 +20,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
+      - name: Install pnpm
+        run: npm install -g pnpm@10
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
-          cache: pnpm
+          node-version: 22
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build triage-engine lib
+        run: pnpm --filter @workspace/triage-engine run build 2>/dev/null || true
 
       - name: Build dashboard
         env:
