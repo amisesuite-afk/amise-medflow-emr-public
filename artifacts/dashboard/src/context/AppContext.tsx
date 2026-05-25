@@ -10,6 +10,10 @@ export type Section =
   | 'allergies' | 'toxic' | 'scales' | 'examination' | 'assessment' | 'plan'
   | 'procedures' | 'billing' | 'documents';
 
+export type TopSection =
+  | 'dashboard' | 'patients' | 'intake' | 'consultation'
+  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary';
+
 export type VitalsState = Record<keyof VitalSigns, string>;
 
 function toNum(v: string): number | null {
@@ -38,6 +42,10 @@ function readSiteFromStorage(): SiteCode {
 interface CtxValue {
   activeSection: Section;
   setActiveSection(s: Section): void;
+
+  /** Top-level navigation section (mirrors Home.tsx topSection state). */
+  topSection: TopSection;
+  setTopSection(s: TopSection): void;
 
   /** Active clinic site for the current session. */
   currentSite: SiteCode;
@@ -107,6 +115,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const { profile } = useAuth();
 
   const [activeSection, setActiveSection] = useState<Section>('intake');
+  const [topSection, setTopSection] = useState<TopSection>('intake');
 
   // localStorage provides the fast initial value while the profile loads from DB.
   const [currentSite, _setCurrentSite] = useState<SiteCode>(readSiteFromStorage);
@@ -328,6 +337,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value: CtxValue = {
     activeSection, setActiveSection,
+    topSection, setTopSection,
     currentSite, setCurrentSite,
     patientId, setPatientId,
     encounterId, setEncounterId,

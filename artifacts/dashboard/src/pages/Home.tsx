@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useAppContext, Section } from '@/context/AppContext';
+import { useAppContext, Section, TopSection } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import { hasRole, roleIn } from '@/lib/roles';
-import NavSidebar, { TopSection } from '@/components/NavSidebar';
+import NavSidebar from '@/components/NavSidebar';
 import IntakeTab from './tabs/IntakeTab';
 import TriageTab from './tabs/TriageTab';
 import PmhTab from './tabs/PmhTab';
@@ -43,14 +43,14 @@ export default function HomePage() {
   const { profile, signOut } = useAuth();
   const {
     activeSection, setActiveSection,
+    topSection, setTopSection,
     patientName, age, sex,
     comorbidities,
     triageResult,
     currentSite, setCurrentSite,
   } = useAppContext();
 
-  const [collapsed, setCollapsed]   = useState(false);
-  const [topSection, setTopSection] = useState<TopSection>('intake');
+  const [collapsed, setCollapsed] = useState(false);
 
   const userRole = profile?.role ?? 'front_desk';
 

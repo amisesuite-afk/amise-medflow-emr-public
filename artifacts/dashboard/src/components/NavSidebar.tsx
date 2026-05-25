@@ -6,12 +6,10 @@ import {
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
-import type { Section } from '@/context/AppContext';
+import type { Section, TopSection } from '@/context/AppContext';
 import { hasRole } from '@/lib/roles';
 
-export type TopSection =
-  | 'dashboard' | 'patients' | 'intake' | 'consultation'
-  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary';
+export type { TopSection };
 
 interface NavSidebarProps {
   collapsed: boolean;
