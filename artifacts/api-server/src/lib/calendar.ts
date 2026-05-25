@@ -7,8 +7,25 @@ import {
 const TZ = 'America/St_Lucia';
 
 function getAuth() {
+  // OAuth2 path — personal account (amisesuite@gmail.com), no service account needed
+  if (
+    process.env.GOOGLE_OAUTH_CLIENT_ID &&
+    process.env.GOOGLE_OAUTH_CLIENT_SECRET &&
+    process.env.GOOGLE_OAUTH_REFRESH_TOKEN
+  ) {
+    const client = new google.auth.OAuth2(
+      process.env.GOOGLE_OAUTH_CLIENT_ID,
+      process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      'urn:ietf:wg:oauth:2.0:oob'
+    );
+    client.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN });
+    return client;
+  }
+  // Service account fallback
   if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-    throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON must be set');
+    throw new Error(
+      'No Google credentials. Set GOOGLE_OAUTH_CLIENT_ID/SECRET/REFRESH_TOKEN or GOOGLE_SERVICE_ACCOUNT_JSON.'
+    );
   }
   const creds = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
   return new google.auth.JWT({
@@ -202,4 +219,64 @@ export function formatSlotForDisplay(slot: AvailableSlot): { day: string; date: 
 
 function pad(n: number): string {
   return n.toString().padStart(2, '0');
+}
+
+export interface CalendarEvent {
+  id: string;
+  summary: string;
+  start: string;   // ISO string
+  end: string;     // ISO string
+  type: 'clinic' | 'theatre' | 'endoscopy' | 'break' | 'other';
+}
+
+export async function fetchUpcomingEvents(daysAhead = 30): Promise<CalendarEvent[]> {
+  const cal = getCalendar();
+  const now = new Date();
+  const timeMin = now.toISOString();
+  const timeMax = new Date(now.getTime() + daysAhead * 86400_000).toISOString();
+
+  const calIds = [
+    process.env.CALENDAR_ID_RODNEY_BAY,
+    process.env.CALENDAR_ID_CASTRIES,
+    process.env.CALENDAR_ID_TAPION_ERCP,
+  ].filter(Boolean) as string[];
+
+  const seen = new Set<string>();
+  const events: CalendarEvent[] = [];
+
+  for (const calId of calIds) {
+    const { data } = await cal.events.list({
+      calendarId: calId,
+      timeMin,
+      timeMax,
+      singleEvents: true,
+      orderBy: 'startTime',
+      maxResults: 500,
+    });
+    for (const e of data.items ?? []) {
+      if (!e.id || seen.has(e.id) || e.status === 'cancelled') continue;
+      seen.add(e.id);
+      const startVal = e.start?.dateTime ?? e.start?.date ?? '';
+      const endVal   = e.end?.dateTime   ?? e.end?.date   ?? '';
+      const summary  = e.summary ?? '(No title)';
+      events.push({
+        id: e.id,
+        summary,
+        start: startVal,
+        end:   endVal,
+        type:  classifyEvent(summary),
+      });
+    }
+  }
+
+  events.sort((a, b) => a.start.localeCompare(b.start));
+  return events;
+}
+
+function classifyEvent(summary: string): CalendarEvent['type'] {
+  const s = summary.toLowerCase();
+  if (/theatre|hernia|\bga\b|\bla theatre\b|rectal|port placement|excision.*ga|excision.*la/.test(s)) return 'theatre';
+  if (/endoscop|colonoscop|ercp|scope/.test(s)) return 'endoscopy';
+  if (/^\s*lunch\s*$|^\s*break\s*$/.test(s)) return 'break';
+  return 'clinic';
 }

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { findSlots, formatSlotForDisplay, AvailableSlot } from '../lib/calendar';
+import { findSlots, formatSlotForDisplay, fetchUpcomingEvents, AvailableSlot } from '../lib/calendar';
 import { SLOT_RULES, AppointmentType, SlotRule, Location } from '@workspace/triage-engine';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 const router = Router();
@@ -15,7 +15,7 @@ function generateMockSlots(
   const slots: AvailableSlot[] = [];
   const twoHoursFromNow = new Date(fromDate.getTime() + 2 * 60 * 60_000);
   const cursor = new Date(fromDate);
-  cursor.setSeconds(0, 0, 0);
+  cursor.setSeconds(0, 0);
 
   const [startH, startM] = rule.windowStart.split(':').map(Number);
 
@@ -67,6 +67,30 @@ router.get('/api/scheduling/slots', async (req, res) => {
       display: formatSlotForDisplay(s),
     }));
     res.json({ slots: result, rule, mock: true });
+  }
+});
+
+// ── /api/scheduling/sync ─────────────────────────────────────────────────────
+// Fetches live events from Google Calendar and writes calendar-cache.json.
+
+router.post('/api/scheduling/sync', async (_req, res) => {
+  try {
+    const events = await fetchUpcomingEvents(45);
+    const cache = {
+      calendarId: process.env.CALENDAR_ID_RODNEY_BAY ?? 'amisesuite@gmail.com',
+      fetchedAt: new Date().toISOString(),
+      timeZone: 'America/St_Lucia',
+      events,
+    };
+    writeFileSync(
+      join(__dirname, '../data/calendar-cache.json'),
+      JSON.stringify(cache, null, 2),
+      'utf-8'
+    );
+    res.json({ synced: true, eventCount: events.length, syncedAt: cache.fetchedAt });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.json({ synced: false, error: msg });
   }
 });
 

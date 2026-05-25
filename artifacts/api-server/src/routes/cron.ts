@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { sb, audit } from '../lib/supabase.js';
+import { sb, getSupabaseAdmin, audit } from '../lib/supabase.js';
 import { sendSms, smsBody48h, smsBody2h } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { draftReply } from '../lib/claude.js';
@@ -151,6 +151,53 @@ router.post('/api/cron/daily-summary', async (req, res) => {
 
   req.log.info('[cron/daily-summary] complete');
   res.json({ summary: summaryBody });
+});
+
+// POST /api/cron/booking-reminders
+// Finds staff_confirmed requests in the 47–50 hr window and sends patient confirmation SMS.
+// Non-response is detected by the /api/booking/lapse endpoint (run daily at T-24h).
+router.post('/api/cron/booking-reminders', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const now = new Date();
+  const windowStart = new Date(now.getTime() + 47 * 3600_000);
+  const windowEnd   = new Date(now.getTime() + 50 * 3600_000);
+
+  const supa = getSupabaseAdmin();
+  const { data: requests, error } = await supa
+    .from('appointment_requests')
+    .select('*')
+    .eq('status', 'staff_confirmed')
+    .gte('confirmed_slot', windowStart.toISOString())
+    .lte('confirmed_slot', windowEnd.toISOString())
+    .is('reminder_sent_at', null);
+
+  if (error) {
+    logger.error({ error }, '[cron/booking-reminders] db error');
+    res.status(502).json({ error: 'DB error' });
+    return;
+  }
+
+  const results: { id: string; action: string }[] = [];
+
+  for (const req of requests ?? []) {
+    if (req.patient_phone) {
+      const slotDate = new Date(req.confirmed_slot);
+      const body = `Hi ${req.patient_name.split(' ')[0]}, this is Amise Medical Services. You have an appointment on ${slotDate.toLocaleString('en-LC', { timeZone: 'America/St_Lucia', weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit', hour12: true })}. Reply YES to confirm or call us to reschedule. Thank you.`;
+      const result = await sendSms({ to: req.patient_phone, body });
+      if (result.action === 'sent' || result.action === 'skipped') {
+        await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', req.id);
+        await audit({ action: 'remind', entityType: 'appointment_request', entityId: req.id, payload: { kind: 'sms_48h_confirmation' } });
+        results.push({ id: req.id, action: result.action === 'sent' ? 'sms_sent' : 'sms_dry_run' });
+      }
+    } else {
+      await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', req.id);
+      results.push({ id: req.id, action: 'no_phone' });
+    }
+  }
+
+  logger.info({ count: results.length }, '[cron/booking-reminders] done');
+  res.json({ processed: results.length, results });
 });
 
 export default router;

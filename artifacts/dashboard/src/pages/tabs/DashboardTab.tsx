@@ -113,14 +113,23 @@ export default function DashboardTab() {
   const [upcoming, setUpcoming] = useState<CalEvent[]>([]);
   const [calLoading, setCalLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(today);
+  const [syncStatus, setSyncStatus] = useState<'live' | 'cached' | 'loading'>('loading');
 
   useEffect(() => {
     setCalLoading(true);
-    fetch(apiUrl('/api/scheduling/upcoming?days=14'))
+    setSyncStatus('loading');
+    // Fire-and-forget sync, then load cache (works even if sync fails / no credentials)
+    fetch(apiUrl('/api/scheduling/sync'), { method: 'POST' })
       .then(r => r.json())
-      .then((d: { events?: CalEvent[] }) => { setUpcoming(d.events ?? []); })
-      .catch(() => {})
-      .finally(() => setCalLoading(false));
+      .then((d: { synced?: boolean }) => { setSyncStatus(d.synced ? 'live' : 'cached'); })
+      .catch(() => { setSyncStatus('cached'); })
+      .finally(() => {
+        fetch(apiUrl('/api/scheduling/upcoming?days=14'))
+          .then(r => r.json())
+          .then((d: { events?: CalEvent[] }) => setUpcoming(d.events ?? []))
+          .catch(() => {})
+          .finally(() => setCalLoading(false));
+      });
   }, []);
 
   // Group by date
@@ -252,7 +261,19 @@ export default function DashboardTab() {
       {/* Card 6 — Upcoming schedule browser */}
       <div style={cardStyle(true)}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-          <div style={titleStyle}>Upcoming appointments</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={titleStyle}>Upcoming appointments</div>
+            {syncStatus === 'live' && (
+              <span style={{ fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 10, background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Live
+              </span>
+            )}
+            {syncStatus === 'cached' && (
+              <span style={{ fontSize: 9, fontWeight: 800, padding: '2px 6px', borderRadius: 10, background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Cached
+              </span>
+            )}
+          </div>
           {calLoading && <span style={{ fontSize: 11, color: 'var(--muted)' }}>Loading…</span>}
         </div>
 
