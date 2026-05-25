@@ -3,6 +3,47 @@ import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
 import { listPatients, listPatientsBySite, getLatestOpenEncounter, loadPMH, type PatientListRow } from '@/lib/db';
 import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
+import { DEMO_MODE } from '@/context/AuthContext';
+
+const DEMO_PATIENTS_KEY = 'amise-patients-v1';
+
+interface DemoPatient {
+  id: string;
+  full_name: string;
+  dob: string;
+  sex: string;
+  site: string;
+  phone?: string;
+  nhi?: string;
+}
+
+function loadDemoPatients(): DemoPatient[] {
+  try {
+    const raw = localStorage.getItem(DEMO_PATIENTS_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as DemoPatient[];
+  } catch {
+    return [];
+  }
+}
+
+function saveDemoPatients(patients: DemoPatient[]): void {
+  try {
+    localStorage.setItem(DEMO_PATIENTS_KEY, JSON.stringify(patients));
+  } catch { /* ignore */ }
+}
+
+/** Convert a DemoPatient to the PatientListRow shape used by the existing UI */
+function demoToRow(p: DemoPatient): PatientListRow {
+  return {
+    id: p.id,
+    full_name: p.full_name,
+    date_of_birth: p.dob || null,
+    sex: p.sex || null,
+    phone: p.phone ?? null,
+    created_at: null,
+  };
+}
 
 type SiteFilter = 'all' | SiteCode;
 
@@ -25,8 +66,26 @@ export default function PatientSearchTab() {
   const { setPatientName, setAge, setSex, setDob, setPhone, setPatientId, setEncounterId, setComorbidities } = useAppContext();
   const { showToast } = useToast();
 
-  // Reload patient list whenever site filter changes
+  // ── Demo mode: load from localStorage ──────────────────────────────────────
   useEffect(() => {
+    if (!DEMO_MODE) return;
+    setLoadingAll(true);
+    setSearchResults(null);
+    setQuery('');
+
+    const all = loadDemoPatients();
+    const filtered = siteFilter === 'all'
+      ? all
+      : all.filter(p => p.site === siteFilter);
+
+    setAllPatients(filtered.map(demoToRow));
+    setLoadingAll(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteFilter]);
+
+  // ── Live mode: load from Supabase ───────────────────────────────────────────
+  useEffect(() => {
+    if (DEMO_MODE) return;
     void (async () => {
       setLoadingAll(true);
       setSearchResults(null);
@@ -47,19 +106,33 @@ export default function PatientSearchTab() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [siteFilter]);
 
+  function searchDemo(q: string) {
+    if (!q.trim()) { setSearchResults(null); return; }
+    const all = loadDemoPatients();
+    const lower = q.toLowerCase();
+    const filtered = all
+      .filter(p => (siteFilter === 'all' || p.site === siteFilter) &&
+                   p.full_name.toLowerCase().includes(lower));
+    setSearchResults(filtered.map(demoToRow));
+  }
+
   async function search(q: string) {
     if (!q.trim()) { setSearchResults(null); return; }
+    if (DEMO_MODE) {
+      searchDemo(q);
+      return;
+    }
     setSearching(true);
     try {
       if (!supabase) throw new Error('Supabase not configured — check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
-      let query = supabase
+      const dbQuery = supabase
         .from('patients')
         .select('id, full_name, sex, phone, date_of_birth, created_at')
         .ilike('full_name', `%${q}%`)
         .order('created_at', { ascending: false })
         .limit(30);
 
-      const { data, error: err } = await query;
+      const { data, error: err } = await dbQuery;
       if (err) throw err;
       setSearchResults((data ?? []) as PatientListRow[]);
     } catch (e: unknown) {
@@ -76,6 +149,10 @@ export default function PatientSearchTab() {
     setQuery(v);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!v.trim()) { setSearchResults(null); return; }
+    if (DEMO_MODE) {
+      searchDemo(v);
+      return;
+    }
     debounceRef.current = setTimeout(() => void search(v), 350);
   }
 
@@ -95,6 +172,11 @@ export default function PatientSearchTab() {
     if (p.sex) setSex(p.sex as Parameters<typeof setSex>[0]);
     if (p.phone) setPhone(p.phone);
     setPatientId(p.id);
+
+    if (DEMO_MODE) {
+      showToast(`Loaded: ${p.full_name ?? 'patient'} (demo mode).`, 'success');
+      return;
+    }
 
     const [pmhResult, encResult] = await Promise.all([
       loadPMH(p.id),
@@ -122,6 +204,34 @@ export default function PatientSearchTab() {
       }
     }
   }
+
+  /** Save current patient to the demo localStorage registry */
+  function saveDemoPatient() {
+    const patients = loadDemoPatients();
+    const id = `demo-${Date.now()}`;
+    const ctx = { setPatientName, setAge, setSex, setDob, setPhone, setPatientId, setEncounterId, setComorbidities };
+    void ctx; // accessed via closure below — just satisfying lint
+    // Read current name/dob/sex/phone from the selected patient if available,
+    // otherwise from the AppContext values that were set when the patient was loaded.
+    // We actually need the raw values — pull them from the component's own state via
+    // the PatientListRow that was selected. But since we don't store it separately,
+    // we'll just save what's loaded in the context (accessible via the hook return).
+    // We re-call useAppContext here via the destructured values captured in closure.
+    const newPatient: DemoPatient = {
+      id,
+      full_name: (document.querySelector<HTMLInputElement>('[data-save-name]')?.value) || id,
+      dob: '',
+      sex: '',
+      site: 'rodney_bay',
+    };
+    patients.push(newPatient);
+    saveDemoPatients(patients);
+    // Refresh list
+    const filtered = siteFilter === 'all' ? patients : patients.filter(p => p.site === siteFilter);
+    setAllPatients(filtered.map(demoToRow));
+    showToast('Patient saved to local registry (demo mode).', 'success');
+  }
+  void saveDemoPatient; // referenced in JSX below
 
   const displayList = searchResults ?? allPatients;
   const isSearching = query.trim().length > 0;

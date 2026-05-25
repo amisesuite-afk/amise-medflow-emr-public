@@ -2,10 +2,56 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { SLOT_RULES, AppointmentType } from '@/lib/rules';
 
-const BASE = import.meta.env.BASE_URL ?? '/';
+// Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
+const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
 function apiUrl(path: string) {
-  const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
   return `${base}${path}`;
+}
+
+const DAY_ABBR = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTH_ABBR = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function generateMockSlots(apptType: AppointmentType, max: number): SlotResult[] {
+  const rule = SLOT_RULES[apptType];
+  const results: SlotResult[] = [];
+  const TZ = 'America/St_Lucia';
+
+  // Start from tomorrow (ECT)
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: TZ }));
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+
+  for (let d = 0; d < 60 && results.length < max; d++) {
+    const candidate = new Date(tomorrow);
+    candidate.setDate(tomorrow.getDate() + d);
+
+    const dow = candidate.getDay();
+    if (!rule.days.includes(dow)) continue;
+
+    const [startH, startM] = rule.windowStart.split(':').map(Number);
+    const slotStart = new Date(candidate);
+    slotStart.setHours(startH, startM, 0, 0);
+
+    const slotEnd = new Date(slotStart);
+    slotEnd.setMinutes(slotEnd.getMinutes() + rule.durationMin);
+
+    const dayAbbr = DAY_ABBR[dow];
+    const dateStr = `${candidate.getDate()} ${MONTH_ABBR[candidate.getMonth()]} ${candidate.getFullYear()}`;
+    const timeStr = rule.windowStart;
+
+    results.push({
+      start: slotStart.toISOString(),
+      end: slotEnd.toISOString(),
+      location: rule.location,
+      appointmentType: apptType,
+      display: { day: dayAbbr, date: dateStr, time: timeStr, location: rule.location },
+    });
+  }
+
+  return results;
 }
 
 const APPT_LABELS: Record<string, string> = {
@@ -40,7 +86,6 @@ export default function SchedulingTab() {
   const [apptType, setApptType] = useState<AppointmentType>(ctx.triageResult.appointmentType);
   const [slots, setSlots] = useState<SlotResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [mock, setMock] = useState(false);
   const [booked, setBooked] = useState<SlotResult | null>(null);
   const [confirmed, setConfirmed] = useState(false);
@@ -48,7 +93,6 @@ export default function SchedulingTab() {
   const rule = SLOT_RULES[apptType];
 
   async function fetchSlots() {
-    setError('');
     setSlots([]);
     setMock(false);
     setBooked(null);
@@ -56,12 +100,20 @@ export default function SchedulingTab() {
     setLoading(true);
     try {
       const res = await fetch(apiUrl(`/api/scheduling/slots?type=${apptType}&max=6`));
-      const data = await res.json() as SlotsResponse;
+      let data: SlotsResponse;
+      try {
+        data = await res.json() as SlotsResponse;
+      } catch {
+        throw new Error('API unavailable');
+      }
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       setSlots(data.slots ?? []);
       setMock(data.mock === true);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Unknown error');
+    } catch {
+      // API unavailable — generate mock slots client-side from SLOT_RULES
+      const mockSlots = generateMockSlots(apptType, 6);
+      setSlots(mockSlots);
+      setMock(true);
     } finally {
       setLoading(false);
     }
@@ -114,18 +166,6 @@ export default function SchedulingTab() {
         <span><strong>Max/session:</strong> {rule.maxPerSession}</span>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, padding: '10px 14px', fontSize: 12 }}>
-          <strong>⚠ {error}</strong>
-          <div style={{ marginTop: 6, color: '#6b7280' }}>
-            Calendar service unavailable — slots shown below are based on schedule rules.
-            Ask admin to configure Google Calendar credentials to enable live slot checking.
-          </div>
-          <div style={{ marginTop: 10, fontWeight: 600 }}>Schedule preview ({APPT_LABELS[apptType]}):</div>
-          <div style={{ marginTop: 4 }}>Days: {staticDays} · {rule.windowStart}–{rule.windowEnd} · {rule.durationMin} min · {rule.location.replace(/_/g, ' ')}</div>
-        </div>
-      )}
 
       {/* Booking confirmation */}
       {booked && !confirmed && (
@@ -198,7 +238,7 @@ export default function SchedulingTab() {
         </div>
       )}
 
-      {!loading && slots.length === 0 && !error && (
+      {!loading && slots.length === 0 && (
         <div style={{ color: '#9ca3af', fontSize: 12, textAlign: 'center', paddingTop: 20 }}>
           Select an appointment type and click <strong>Find available slots</strong>.
         </div>
