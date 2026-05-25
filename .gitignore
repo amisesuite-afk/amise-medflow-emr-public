@@ -48,5 +48,12 @@ Thumbs.db
 .cache/
 .local/
 
+# Environment files with secrets — never commit these
+.env
+.env.local
+.env.*.local
+**/.env.local
+**/.env.*.local
+
 # Claude Code agent working directories
 .claude/
