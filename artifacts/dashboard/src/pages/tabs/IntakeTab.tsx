@@ -45,7 +45,22 @@ export default function IntakeTab() {
     freeText, setFreeText,
     triageResult,
     currentSite,
+    weightKg, setWeightKg,
+    heightCm, setHeightCm,
   } = useAppContext();
+
+  function calcBmi(): { bmi: number; class: string; color: string; rec: string } | null {
+    const w = parseFloat(weightKg);
+    const h = parseFloat(heightCm);
+    if (!w || !h || h < 50) return null;
+    const bmi = w / Math.pow(h / 100, 2);
+    if (bmi < 18.5) return { bmi, class: 'Underweight',    color: '#3b82f6', rec: 'Nutritional support pre-op. Increased wound healing risk.' };
+    if (bmi < 25)   return { bmi, class: 'Normal',         color: '#16a34a', rec: 'Standard surgical risk.' };
+    if (bmi < 30)   return { bmi, class: 'Overweight',     color: '#ca8a04', rec: 'Consider VTE prophylaxis. Monitor wound healing.' };
+    if (bmi < 35)   return { bmi, class: 'Obese class I',  color: '#ea580c', rec: 'High VTE risk — LMWH + TED stockings. Difficult laparoscopic access. Prone to SSI.' };
+    if (bmi < 40)   return { bmi, class: 'Obese class II', color: '#dc2626', rec: 'Very high anaesthetic risk. Airway assessment mandatory. Bariatric equipment required.' };
+    return           { bmi, class: 'Obese class III',      color: '#7f1d1d', rec: 'Extreme surgical risk. Senior anaesthetic review required. HDU bed post-op.' };
+  }
 
   const { showToast } = useToast();
   const [saving, setSaving] = useState(false);
@@ -117,6 +132,8 @@ export default function IntakeTab() {
         site: currentSite,
         acuity: triageResult.acuity,
         score: triageResult.score,
+        weightKg,
+        heightCm,
         savedAt: new Date().toISOString(),
       };
       const idx = existing.findIndex(p => (p as { full_name?: string }).full_name?.toLowerCase() === patientName.trim().toLowerCase());
@@ -333,6 +350,26 @@ export default function IntakeTab() {
             ))}
           </div>
         )}
+        <div className="form-grid cols-2" style={{ marginTop: 10 }}>
+          <div className="fld">
+            <label>Weight (kg)</label>
+            <input inputMode="decimal" value={weightKg} onChange={e => setWeightKg(e.target.value)} placeholder="e.g. 72" />
+          </div>
+          <div className="fld">
+            <label>Height (cm)</label>
+            <input inputMode="decimal" value={heightCm} onChange={e => setHeightCm(e.target.value)} placeholder="e.g. 165" />
+          </div>
+        </div>
+        {calcBmi() && (() => {
+          const b = calcBmi()!;
+          return (
+            <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 8, background: `${b.color}15`, border: `1px solid ${b.color}40`, display: 'flex', gap: 12, alignItems: 'center' }}>
+              <span style={{ fontWeight: 700, fontSize: 15, color: b.color }}>BMI {b.bmi.toFixed(1)}</span>
+              <span style={{ fontWeight: 600, color: b.color, fontSize: 13 }}>{b.class}</span>
+              <span style={{ color: '#6b7280', fontSize: 12, flex: 1 }}>{b.rec}</span>
+            </div>
+          );
+        })()}
       </CollapsibleCard>
 
       {/* Smart adaptive symptom picker + differential inference */}

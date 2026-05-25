@@ -39,6 +39,13 @@ function readSiteFromStorage(): SiteCode {
   return 'rodney_bay';
 }
 
+export interface AnatomicalFinding {
+  zone: string;
+  subLocation?: string;
+  findings: string[];
+  notes: string;
+}
+
 interface CtxValue {
   activeSection: Section;
   setActiveSection(s: Section): void;
@@ -102,6 +109,11 @@ interface CtxValue {
   orderedInvestigations: string[]; setOrderedInvestigations(v: string[]): void;
   investigationResults: Record<string, string>; setInvestigationResults(v: Record<string, string>): void;
   icdCodes: string[]; setIcdCodes(v: string[]): void;
+
+  weightKg: string; setWeightKg(v: string): void;
+  heightCm: string; setHeightCm(v: string): void;
+
+  anatomicalFindings: AnatomicalFinding[]; setAnatomicalFindings(v: AnatomicalFinding[]): void;
 
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
@@ -201,6 +213,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [investigationResults, setInvestigationResults] = useState<Record<string, string>>({});
   const [icdCodes, setIcdCodes] = useState<string[]>([]);
 
+  const [weightKg, setWeightKg] = useState('');
+  const [heightCm, setHeightCm] = useState('');
+  const [anatomicalFindings, setAnatomicalFindings] = useState<AnatomicalFinding[]>([]);
+
   const [assessment, setAssessment] = useState('');
   const [differentials, setDifferentials] = useState('');
   const [plan, setPlan] = useState('');
@@ -270,6 +286,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.orderedInvestigations)) setOrderedInvestigations(d.orderedInvestigations as string[]);
       if (d.investigationResults && typeof d.investigationResults === 'object') setInvestigationResults(d.investigationResults as Record<string, string>);
       if (Array.isArray(d.icdCodes)) setIcdCodes(d.icdCodes as string[]);
+      if (typeof d.weightKg === 'string') setWeightKg(d.weightKg);
+      if (typeof d.heightCm === 'string') setHeightCm(d.heightCm);
+      if (Array.isArray(d.anatomicalFindings)) setAnatomicalFindings(d.anatomicalFindings as AnatomicalFinding[]);
     } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -293,6 +312,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       medications, medicationsText, allergies, familyHistory, toxicHabits,
       patientName, age, sex, dob, phone, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes,
+      weightKg, heightCm, anatomicalFindings,
     });
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
@@ -304,7 +324,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
     medications, medicationsText, allergies, familyHistory, toxicHabits,
     patientName, age, sex, dob, phone, address, quarter, referredBy,
-    orderedInvestigations, investigationResults, icdCodes]);
+    orderedInvestigations, investigationResults, icdCodes,
+    weightKg, heightCm, anatomicalFindings]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -334,6 +355,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setExamFindings({}); setExamNotes({});
     setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]);
     setAddress(''); setQuarter(''); setReferredBy('');
+    setWeightKg(''); setHeightCm(''); setAnatomicalFindings([]);
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     try { localStorage.removeItem(ENC_KEY); } catch { /* ignore */ }
@@ -425,6 +447,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     policyNumber, setPolicyNumber,
     nhiNumber, setNhiNumber,
     preAuthStatus, setPreAuthStatus,
+    weightKg, setWeightKg,
+    heightCm, setHeightCm,
+    anatomicalFindings, setAnatomicalFindings,
     triageResult,
   };
 
