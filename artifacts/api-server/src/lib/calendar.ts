@@ -275,8 +275,8 @@ export async function fetchUpcomingEvents(daysAhead = 30): Promise<CalendarEvent
 
 function classifyEvent(summary: string): CalendarEvent['type'] {
   const s = summary.toLowerCase();
-  if (/theatre|hernia|\bga\b|\bla theatre\b|rectal|port placement|excision.*ga|excision.*la/.test(s)) return 'theatre';
-  if (/endoscop|colonoscop|ercp|scope/.test(s)) return 'endoscopy';
-  if (/^\s*lunch\s*$|^\s*break\s*$/.test(s)) return 'break';
+  if (/theatre|\bhernia repair\b|\bla theatre\b|rectal.*excision|excision.*ga|excision.*la|laparotomy|cholecystectomy|appendicectomy|colostomy/.test(s)) return 'theatre';
+  if (/endoscop|colonoscop|ercp|gastroscop|deep sedation/.test(s)) return 'endoscopy';
+  if (/^\s*lunch(\s|$)|^\s*break\s*$/.test(s.trim())) return 'break';
   return 'clinic';
 }
