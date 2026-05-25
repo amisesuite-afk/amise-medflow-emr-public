@@ -47,7 +47,7 @@ function friendlyError(raw: string): string {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession]           = useState<Session | null>(null);
-  const [profile, setProfile]           = useState<UserProfile | null>(DEMO_MODE ? DEMO_PROFILE : null);
+  const [profile, setProfile]           = useState<UserProfile | null>(null);
   const [loading, setLoading]           = useState(!DEMO_MODE);
   const [profileError, setProfileError] = useState<string | null>(null);
 
@@ -134,7 +134,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function signIn(email: string, password: string): Promise<{ error: string | null; detail?: string }> {
-    if (DEMO_MODE) return { error: null };
+    if (DEMO_MODE) {
+      const validRoles: UserRole[] = ['front_desk', 'nurse', 'doctor', 'admin'];
+      const role: UserRole = validRoles.includes(email as UserRole) ? (email as UserRole) : 'doctor';
+      setProfile({ ...DEMO_PROFILE, role });
+      return { error: null };
+    }
     if (!supabase) {
       if (configIssues.length > 0) {
         const first = configIssues[0];

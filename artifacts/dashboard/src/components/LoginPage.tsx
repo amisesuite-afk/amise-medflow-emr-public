@@ -78,7 +78,7 @@ export default function LoginPage() {
           </select>
           <button
             type="button"
-            onClick={() => { void signIn('', '').then(() => setSigningIn(true)); }}
+            onClick={() => { void signIn(demoRole, ''); }}
             style={{ width: '100%', padding: '11px', borderRadius: 10, background: '#0b8278', color: '#fff', border: 'none', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}
           >
             Enter as {DEMO_ROLE_LABELS[demoRole]}
