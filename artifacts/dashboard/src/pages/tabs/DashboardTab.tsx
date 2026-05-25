@@ -3,6 +3,7 @@ import { useAuth } from '@/context/AuthContext';
 import { SITE_LABELS } from '@/lib/supabase';
 import { PUBLIC_HOLIDAYS_SLU } from '@/lib/rules';
 import { useState, useEffect } from 'react';
+import bundledCache from '@/data/calendar-cache.json';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -97,9 +98,11 @@ function typeChip(type: string): React.CSSProperties {
   return { background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0' };
 }
 
-const BASE = import.meta.env.BASE_URL ?? '/';
+// Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
+const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
 function apiUrl(path: string) {
-  const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
   return `${base}${path}`;
 }
 
@@ -118,16 +121,35 @@ export default function DashboardTab() {
   useEffect(() => {
     setCalLoading(true);
     setSyncStatus('loading');
-    // Fire-and-forget sync, then load cache (works even if sync fails / no credentials)
+
+    // Load bundled calendar data immediately (works on GitHub Pages with no API server)
+    const now = new Date();
+    const cutoff = new Date(now.getTime() + 45 * 86400_000);
+    const bundledEvents = (bundledCache.events as CalEvent[]).filter(e => {
+      const start = new Date(e.start);
+      return start >= now && start < cutoff;
+    });
+
+    // Try live API sync — if available, override bundled data
     fetch(apiUrl('/api/scheduling/sync'), { method: 'POST' })
       .then(r => r.json())
       .then((d: { synced?: boolean }) => { setSyncStatus(d.synced ? 'live' : 'cached'); })
       .catch(() => { setSyncStatus('cached'); })
       .finally(() => {
-        fetch(apiUrl('/api/scheduling/upcoming?days=14'))
+        fetch(apiUrl('/api/scheduling/upcoming?days=45'))
           .then(r => r.json())
-          .then((d: { events?: CalEvent[] }) => setUpcoming(d.events ?? []))
-          .catch(() => {})
+          .then((d: { events?: CalEvent[] }) => {
+            if (d.events && d.events.length > 0) {
+              setUpcoming(d.events);
+            } else {
+              setUpcoming(bundledEvents);
+              setSyncStatus('cached');
+            }
+          })
+          .catch(() => {
+            setUpcoming(bundledEvents);
+            setSyncStatus('cached');
+          })
           .finally(() => setCalLoading(false));
       });
   }, []);
