@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { SLOT_RULES, AppointmentType } from '@/lib/rules';
 
@@ -81,6 +81,20 @@ interface SlotsResponse {
   mock?: boolean;
 }
 
+const ACUITY_BANNER_STYLES: Record<string, React.CSSProperties> = {
+  urgent:   { background: '#fee2e2', border: '1px solid #fca5a5', color: '#991b1b' },
+  priority: { background: '#ffedd5', border: '1px solid #fdba74', color: '#9a3412' },
+  review:   { background: '#fefce8', border: '1px solid #fde047', color: '#854d0e' },
+  routine:  { background: '#dcfce7', border: '1px solid #86efac', color: '#166534' },
+};
+
+const ACUITY_PATHWAY_LABEL: Record<string, string> = {
+  urgent:   'emergency pathway — book within same day',
+  priority: 'priority pathway — book within 24–48 hours',
+  review:   'review pathway — book within 1 week',
+  routine:  'routine pathway',
+};
+
 export default function SchedulingTab() {
   const ctx = useAppContext();
   const [apptType, setApptType] = useState<AppointmentType>(ctx.triageResult.appointmentType);
@@ -90,7 +104,14 @@ export default function SchedulingTab() {
   const [booked, setBooked] = useState<SlotResult | null>(null);
   const [confirmed, setConfirmed] = useState(false);
 
+  // Sync appointment type when triage result changes (e.g. navigating from TriageTab)
+  useEffect(() => {
+    setApptType(ctx.triageResult.appointmentType);
+  }, [ctx.triageResult.appointmentType]);
+
   const rule = SLOT_RULES[apptType];
+  const acuity = ctx.triageResult.acuity;
+  const score = ctx.triageResult.score;
 
   async function fetchSlots() {
     setSlots([]);
@@ -130,6 +151,23 @@ export default function SchedulingTab() {
 
   return (
     <div className="gap-y" style={{ maxWidth: 720 }}>
+      {/* Acuity banner */}
+      {ctx.patientName.trim() && (
+        <div style={{
+          ...ACUITY_BANNER_STYLES[acuity] ?? ACUITY_BANNER_STYLES.routine,
+          borderRadius: 8, padding: '10px 14px',
+          fontSize: 13, fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+        }}>
+          <span style={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            {acuity} · Score {score}
+          </span>
+          <span style={{ fontWeight: 400 }}>
+            {ctx.patientName} — {ACUITY_PATHWAY_LABEL[acuity] ?? 'standard pathway'}
+          </span>
+        </div>
+      )}
+
       {/* Controls */}
       <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap' }}>
         <div className="fld" style={{ minWidth: 200, marginBottom: 0 }}>

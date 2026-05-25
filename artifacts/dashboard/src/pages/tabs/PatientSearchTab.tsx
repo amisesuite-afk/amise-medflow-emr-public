@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
 import { listPatients, listPatientsBySite, getLatestOpenEncounter, loadPMH, type PatientListRow } from '@/lib/db';
@@ -15,6 +15,30 @@ interface DemoPatient {
   site: string;
   phone?: string;
   nhi?: string;
+  acuity?: string;
+  score?: number;
+  age?: string;
+  savedAt?: string;
+}
+
+const ACUITY_ORDER: Record<string, number> = { urgent: 0, priority: 1, review: 2, routine: 3 };
+
+function acuityBadgeStyle(acuity?: string): React.CSSProperties {
+  switch (acuity) {
+    case 'urgent':   return { background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' };
+    case 'priority': return { background: '#ffedd5', color: '#9a3412', border: '1px solid #fdba74' };
+    case 'review':   return { background: '#fefce8', color: '#854d0e', border: '1px solid #fde047' };
+    case 'routine':  return { background: '#dcfce7', color: '#166534', border: '1px solid #86efac' };
+    default:         return { background: '#f3f4f6', color: '#6b7280', border: '1px solid #e5e7eb' };
+  }
+}
+
+function sortByAcuity(patients: DemoPatient[]): DemoPatient[] {
+  return [...patients].sort((a, b) => {
+    const aOrder = ACUITY_ORDER[a.acuity ?? 'routine'] ?? 3;
+    const bOrder = ACUITY_ORDER[b.acuity ?? 'routine'] ?? 3;
+    return aOrder - bOrder;
+  });
 }
 
 function loadDemoPatients(): DemoPatient[] {
@@ -33,15 +57,25 @@ function saveDemoPatients(patients: DemoPatient[]): void {
   } catch { /* ignore */ }
 }
 
-/** Convert a DemoPatient to the PatientListRow shape used by the existing UI */
-function demoToRow(p: DemoPatient): PatientListRow {
+/** Extended row that carries acuity/score for demo patients */
+interface PatientListRowEx extends PatientListRow {
+  acuity?: string;
+  score?: number;
+  age?: string;
+}
+
+/** Convert a DemoPatient to the extended PatientListRow shape */
+function demoToRow(p: DemoPatient): PatientListRowEx {
   return {
     id: p.id,
     full_name: p.full_name,
     date_of_birth: p.dob || null,
     sex: p.sex || null,
     phone: p.phone ?? null,
-    created_at: null,
+    created_at: p.savedAt ?? null,
+    acuity: p.acuity,
+    score: p.score,
+    age: p.age,
   };
 }
 
@@ -56,10 +90,10 @@ const SITE_FILTER_OPTIONS: { value: SiteFilter; label: string }[] = [
 export default function PatientSearchTab() {
   const [query,         setQuery]         = useState('');
   const [siteFilter,    setSiteFilter]    = useState<SiteFilter>('all');
-  const [allPatients,   setAllPatients]   = useState<PatientListRow[]>([]);
+  const [allPatients,   setAllPatients]   = useState<PatientListRowEx[]>([]);
   const [loadingAll,    setLoadingAll]    = useState(true);
   const [searching,     setSearching]     = useState(false);
-  const [searchResults, setSearchResults] = useState<PatientListRow[] | null>(null);
+  const [searchResults, setSearchResults] = useState<PatientListRowEx[] | null>(null);
   const [selected,      setSelected]      = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -78,7 +112,7 @@ export default function PatientSearchTab() {
       ? all
       : all.filter(p => p.site === siteFilter);
 
-    setAllPatients(filtered.map(demoToRow));
+    setAllPatients(sortByAcuity(filtered).map(demoToRow));
     setLoadingAll(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [siteFilter]);
@@ -99,7 +133,7 @@ export default function PatientSearchTab() {
         showToast(`Could not load patient list: ${result.error}`, 'error');
         console.error('[PatientSearchTab] list:', result.error);
       } else {
-        setAllPatients(result.patients ?? []);
+        setAllPatients((result.patients ?? []) as PatientListRowEx[]);
       }
       setLoadingAll(false);
     })();
@@ -113,7 +147,7 @@ export default function PatientSearchTab() {
     const filtered = all
       .filter(p => (siteFilter === 'all' || p.site === siteFilter) &&
                    p.full_name.toLowerCase().includes(lower));
-    setSearchResults(filtered.map(demoToRow));
+    setSearchResults(sortByAcuity(filtered).map(demoToRow));
   }
 
   async function search(q: string) {
@@ -134,7 +168,7 @@ export default function PatientSearchTab() {
 
       const { data, error: err } = await dbQuery;
       if (err) throw err;
-      setSearchResults((data ?? []) as PatientListRow[]);
+      setSearchResults((data ?? []) as PatientListRowEx[]);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Search failed';
       showToast(`Search error: ${msg}`, 'error');
@@ -156,7 +190,7 @@ export default function PatientSearchTab() {
     debounceRef.current = setTimeout(() => void search(v), 350);
   }
 
-  async function loadPatient(p: PatientListRow) {
+  async function loadPatient(p: PatientListRowEx) {
     setSelected(p.id);
 
     if (p.full_name) setPatientName(p.full_name);
@@ -311,8 +345,17 @@ export default function PatientSearchTab() {
             >
               <div className="psearch-row-main">
                 <span className="psearch-row-name">{p.full_name ?? '—'}</span>
+                {p.acuity && (
+                  <span style={{
+                    ...acuityBadgeStyle(p.acuity),
+                    fontSize: 10, fontWeight: 700, borderRadius: 4,
+                    padding: '1px 6px', marginLeft: 6, textTransform: 'uppercase', letterSpacing: 0.4,
+                  }}>
+                    {p.acuity}{p.score !== undefined ? ` · ${p.score}` : ''}
+                  </span>
+                )}
                 <span className="psearch-row-meta">
-                  {[ageFromDob(p.date_of_birth), p.sex, p.phone].filter(Boolean).join(' · ')}
+                  {[p.age ? `Age ${p.age}` : ageFromDob(p.date_of_birth), p.sex, p.phone].filter(Boolean).join(' · ')}
                 </span>
               </div>
               <div className="psearch-row-right">

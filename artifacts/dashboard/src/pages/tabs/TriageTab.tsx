@@ -19,7 +19,7 @@ function acuityColor(a: string): string {
 }
 
 export default function TriageTab() {
-  const { triageResult } = useAppContext();
+  const { triageResult, setTopSection } = useAppContext();
   const { profile } = useAuth();
   const isDoctor = hasRole(profile?.role, 'doctor');
   const [expandedPathway, setExpandedPathway] = useState<string | null>(null);
@@ -163,6 +163,19 @@ export default function TriageTab() {
         <div className="script-box">{r.frontDeskScript}</div>
         <p className="safety-note">Do not add clinical advice, diagnoses, medication instructions, fees, or results interpretation to this script.</p>
       </CollapsibleCard>
+
+      {/* Book appointment — shown for non-routine acuity or non-admin actions */}
+      {(r.acuity !== 'routine' || r.recommendedAction !== 'admin_review') && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: 8 }}>
+          <button
+            className="summary-btn summary-btn--primary"
+            style={{ height: 38, minWidth: 180, background: 'var(--accent)', borderColor: 'var(--accent)', fontSize: 13 }}
+            onClick={() => setTopSection('scheduling')}
+          >
+            📅 Book appointment
+          </button>
+        </div>
+      )}
     </div>
   );
 }

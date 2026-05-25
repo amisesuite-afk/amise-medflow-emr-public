@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PathwaySuggestions from '@/components/PathwaySuggestions';
 import SmartSymptomPicker from '@/components/SmartSymptomPicker';
 import { VitalSigns } from '@/lib/adaptive-triage';
+
+const DEMO_PATIENTS_KEY = 'amise-patients-v1';
 
 const VITAL_KEYS: { key: keyof VitalSigns; label: string; placeholder: string }[] = [
   { key: 'systolicBp',     label: 'SBP',      placeholder: '120' },
@@ -37,7 +41,44 @@ export default function IntakeTab() {
     symptoms,
     freeText, setFreeText,
     triageResult,
+    currentSite,
   } = useAppContext();
+
+  const { showToast } = useToast();
+  const [saving, setSaving] = useState(false);
+
+  function savePatient() {
+    if (!patientName.trim()) return;
+    setSaving(true);
+    try {
+      const raw = localStorage.getItem(DEMO_PATIENTS_KEY);
+      const existing: Array<Record<string, unknown>> = raw ? (JSON.parse(raw) as Array<Record<string, unknown>>) : [];
+      const newRecord = {
+        id: crypto.randomUUID(),
+        full_name: patientName.trim(),
+        age,
+        sex,
+        dob,
+        phone,
+        site: currentSite,
+        acuity: triageResult.acuity,
+        score: triageResult.score,
+        savedAt: new Date().toISOString(),
+      };
+      const idx = existing.findIndex(p => (p as { full_name?: string }).full_name?.toLowerCase() === patientName.trim().toLowerCase());
+      if (idx >= 0) {
+        existing[idx] = { ...existing[idx], ...newRecord, id: existing[idx].id as string };
+      } else {
+        existing.push(newRecord);
+      }
+      localStorage.setItem(DEMO_PATIENTS_KEY, JSON.stringify(existing));
+      showToast('Patient saved to local registry', 'success');
+    } catch {
+      showToast('Could not save patient', 'error');
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="gap-y">
@@ -145,6 +186,20 @@ export default function IntakeTab() {
           />
         </div>
       </CollapsibleCard>
+
+      {/* Save patient to local registry */}
+      {patientName.trim() && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: 8 }}>
+          <button
+            className="summary-btn summary-btn--primary"
+            onClick={savePatient}
+            disabled={saving}
+            style={{ height: 36, minWidth: 160 }}
+          >
+            {saving ? 'Saving…' : '💾 Save patient'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
