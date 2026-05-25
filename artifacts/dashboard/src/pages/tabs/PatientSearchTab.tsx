@@ -263,6 +263,16 @@ export default function PatientSearchTab() {
         <div className="psearch-sub">{countLabel}</div>
       </div>
 
+      {/* Demo mode notice */}
+      {DEMO_MODE && (
+        <div style={{
+          background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 8,
+          padding: '7px 12px', fontSize: 12, color: '#92400e',
+        }}>
+          Demo mode — patients saved locally on this device
+        </div>
+      )}
+
       {/* Site filter chips */}
       <div className="psearch-site-filter">
         {SITE_FILTER_OPTIONS.map(opt => (

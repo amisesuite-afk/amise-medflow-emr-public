@@ -180,11 +180,79 @@ ${bodyHtml}
 </body></html>`;
 }
 
-const BASE = import.meta.env.BASE_URL ?? '/';
-
+// Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
+const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
 function apiUrl(path: string) {
-  const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
   return `${base}${path}`;
+}
+
+const ANTHROPIC_API_KEY = (import.meta.env.VITE_ANTHROPIC_API_KEY as string | undefined) ?? '';
+
+const SUMMARY_SYSTEM_PROMPT =
+  'You are a clinical documentation assistant for Amise Medical Services, Saint Lucia. ' +
+  'Generate a professional SOAP-format clinical summary. ' +
+  'Never include fees, diagnoses beyond what the clinician provides, medication doses, or test results. ' +
+  'Output plain text with headings: SUBJECTIVE, OBJECTIVE, ASSESSMENT, PLAN.';
+
+const FEE_RE   = /\$[\d,]+|EC\$[\d,]+|\bXCD\b|\bfee\b|\bcharge\b|\bcost\b/gi;
+const DOSE_RE  = /\b\d+\s*mg\b|\b\d+\s*mcg\b/gi;
+
+function redactForbidden(text: string): string {
+  // Replace any sentence containing a forbidden pattern with a redaction notice.
+  return text
+    .split('\n')
+    .map(line => {
+      if (FEE_RE.test(line) || DOSE_RE.test(line)) {
+        // Reset lastIndex for global regexes
+        FEE_RE.lastIndex = 0;
+        DOSE_RE.lastIndex = 0;
+        return '[REDACTED — requires clinical review]';
+      }
+      FEE_RE.lastIndex = 0;
+      DOSE_RE.lastIndex = 0;
+      return line;
+    })
+    .join('\n');
+}
+
+interface AnthropicMessage {
+  id: string;
+  content: { type: string; text: string }[];
+}
+
+async function callAnthropicDirect(body: Record<string, unknown>): Promise<string> {
+  const userContent = JSON.stringify(body, null, 2);
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2048,
+      system: SUMMARY_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: 'user',
+          content: `Please generate a SOAP clinical summary for the following patient intake data:\n\n${userContent}`,
+        },
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: { message?: string } };
+    throw new Error(err.error?.message ?? `Anthropic API error: HTTP ${res.status}`);
+  }
+
+  const data = await res.json() as AnthropicMessage;
+  const text = data.content.find(b => b.type === 'text')?.text ?? '';
+  return redactForbidden(text);
 }
 
 export default function SummaryTab() {
@@ -249,19 +317,52 @@ export default function SummaryTab() {
         }),
       };
 
-      const res = await fetch(apiUrl('/api/summary/generate'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+      // If VITE_API_URL is set, use the API server directly; otherwise try same-origin
+      // proxy but fall back to direct Anthropic call if the server is unavailable.
+      let summaryText: string | null = null;
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
+      if (API_ORIGIN) {
+        // Deployed with explicit API URL — call server, no fallback needed
+        const res = await fetch(apiUrl('/api/summary/generate'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
+        }
+        const data = await res.json() as { document: string };
+        summaryText = data.document;
+      } else {
+        // No API_ORIGIN — try same-origin proxy, fall back to direct Anthropic call
+        let apiSucceeded = false;
+        try {
+          const res = await fetch(apiUrl('/api/summary/generate'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          if (res.ok) {
+            const data = await res.json() as { document: string };
+            summaryText = data.document;
+            apiSucceeded = true;
+          }
+        } catch {
+          // API server not available — fall through to direct call
+        }
+
+        if (!apiSucceeded) {
+          if (!ANTHROPIC_API_KEY) {
+            throw new Error(
+              'Add VITE_ANTHROPIC_API_KEY to your .env.local to enable AI summaries, or connect to the API server.',
+            );
+          }
+          summaryText = await callAnthropicDirect(body);
+        }
       }
 
-      const data = await res.json() as { document: string };
-      setDocument(data.document);
+      setDocument(summaryText ?? '');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error');
     } finally {
@@ -413,7 +514,8 @@ export default function SummaryTab() {
       {error && (
         <div className="summary-error">
           ⚠ {error}
-          {error.includes('ANTHROPIC') || error.includes('API') ? (
+          {(error.includes('ANTHROPIC') || error.includes('API')) &&
+           !error.includes('VITE_ANTHROPIC_API_KEY') ? (
             <span> — Check that ANTHROPIC_API_KEY is set in environment secrets.</span>
           ) : null}
         </div>
