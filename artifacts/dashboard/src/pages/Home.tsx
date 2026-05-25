@@ -13,6 +13,7 @@ import MedicationsTab from './tabs/MedicationsTab';
 import AllergiesTab from './tabs/AllergiesTab';
 import ToxicHabitsTab from './tabs/ToxicHabitsTab';
 import ExaminationTab from './tabs/ExaminationTab';
+import InvestigationsTab from './tabs/InvestigationsTab';
 import AssessmentTab from './tabs/AssessmentTab';
 import PlanTab from './tabs/PlanTab';
 import ProceduresTab from './tabs/ProceduresTab';
@@ -139,8 +140,9 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'allergies'   && <AllergiesTab />}
         {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
         {topSection === 'consultation'  && activeSection === 'scales'      && <ScalesTab />}
-        {topSection === 'consultation'  && activeSection === 'examination' && hasRole(userRole, 'nurse')  && <ExaminationTab />}
-        {topSection === 'consultation'  && activeSection === 'assessment'  && hasRole(userRole, 'doctor') && <AssessmentTab />}
+        {topSection === 'consultation'  && activeSection === 'examination'     && hasRole(userRole, 'nurse')  && <ExaminationTab />}
+        {topSection === 'consultation'  && activeSection === 'investigations' && hasRole(userRole, 'nurse')  && <InvestigationsTab />}
+        {topSection === 'consultation'  && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
         {topSection === 'consultation'  && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
         {topSection === 'procedures'    && hasRole(userRole, 'doctor')     && <ProceduresTab />}
         {topSection === 'summary'       && <SummaryTab />}

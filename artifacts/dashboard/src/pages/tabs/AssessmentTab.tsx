@@ -1,5 +1,6 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import IcdPicker from '@/components/IcdPicker';
 
 const DIFFERENTIAL_PROMPTS: Record<string, string[]> = {
   'ercp_workup': ['Choledocholithiasis', 'Cholangiocarcinoma', 'Pancreatic head carcinoma', 'Primary sclerosing cholangitis', 'Acute cholangitis', 'Acute hepatitis'],
@@ -63,6 +64,10 @@ export default function AssessmentTab() {
             style={{ minHeight: 120 }}
           />
         </div>
+      </CollapsibleCard>
+
+      <CollapsibleCard title="ICD-10 codes" defaultOpen={false}>
+        <IcdPicker />
       </CollapsibleCard>
     </div>
   );

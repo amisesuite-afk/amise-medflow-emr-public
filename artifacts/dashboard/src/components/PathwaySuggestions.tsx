@@ -8,10 +8,18 @@ const URGENCY_META = {
 };
 
 export default function PathwaySuggestions() {
-  const { symptoms, symptomDetails } = useAppContext();
+  const { symptoms, symptomDetails, orderedInvestigations, setOrderedInvestigations } = useAppContext();
   const pathways = getActivePathways(symptoms, symptomDetails);
 
   if (pathways.length === 0) return null;
+
+  function toggleInvestigation(item: string) {
+    if (orderedInvestigations.includes(item)) {
+      setOrderedInvestigations(orderedInvestigations.filter(i => i !== item));
+    } else {
+      setOrderedInvestigations([...orderedInvestigations, item]);
+    }
+  }
 
   return (
     <div className="ps-wrapper">
@@ -54,11 +62,34 @@ export default function PathwaySuggestions() {
               )}
 
               <div className="ps-section">
-                <div className="ps-section-lbl">Labs / Imaging</div>
+                <div className="ps-section-lbl">
+                  Labs / Imaging
+                  <span style={{ fontSize: 11, fontWeight: 400, marginLeft: 6, color: '#6b7280' }}>
+                    — click to order
+                  </span>
+                </div>
                 <div className="ps-chips">
-                  {p.labsImaging.map(l => (
-                    <span key={l} className="ps-chip ps-chip--lab">{l}</span>
-                  ))}
+                  {p.labsImaging.map(l => {
+                    const ordered = orderedInvestigations.includes(l);
+                    return (
+                      <button
+                        key={l}
+                        type="button"
+                        className={`ps-chip ps-chip--lab${ordered ? ' ps-chip--lab-ordered' : ''}`}
+                        onClick={() => toggleInvestigation(l)}
+                        title={ordered ? 'Click to remove from orders' : 'Click to add to investigations'}
+                        style={{
+                          cursor: 'pointer',
+                          background: ordered ? '#d1fae5' : undefined,
+                          borderColor: ordered ? '#10b981' : undefined,
+                          color: ordered ? '#065f46' : undefined,
+                          fontWeight: ordered ? 600 : undefined,
+                        }}
+                      >
+                        {ordered ? '✓ ' : ''}{l}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

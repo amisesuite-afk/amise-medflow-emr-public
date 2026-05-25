@@ -7,14 +7,9 @@ import {
   getLeadingDiagnosis,
   type RankedDifferential,
 } from '@/lib/symptom-inference';
+import { ALL_SYMPTOMS_FLAT } from '@/data/symptoms-db';
 
-const ALL_SYMPTOMS = [
-  'abdominal pain', 'jaundice', 'dark urine', 'pale stool', 'vomiting',
-  'rectal bleeding', 'black stool', 'dysphagia', 'weight loss',
-  'breast lump', 'breast pain', 'nipple discharge', 'hernia',
-  'wound discharge', 'fever after surgery', 'shortness of breath',
-  'chest pain', 'diabetic foot infection', 'admin enquiry',
-];
+const ALL_SYMPTOMS = ALL_SYMPTOMS_FLAT;
 
 const URGENCY_COLOR: Record<string, string> = {
   urgent:   '#b91c1c',
@@ -83,6 +78,7 @@ function WorkingDxBanner({ name, confidence, urgency }: { name: string; confiden
 export default function SmartSymptomPicker() {
   const { symptoms, toggleSymptom, symptomDetails, toggleSymptomDetail, age, sex } = useAppContext();
   const [showAll, setShowAll] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const ageNum = age ? Number(age) : null;
 
@@ -107,8 +103,45 @@ export default function SmartSymptomPicker() {
 
   const activeBranches = symptoms.filter(s => SYMPTOM_BRANCHES[s]);
 
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    return ALL_SYMPTOMS.filter(s =>
+      s.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
+
   return (
     <div className="ssp-wrapper">
+
+      {/* ── Symptom search box ── */}
+      <div style={{ marginBottom: 10 }}>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="Search symptoms…"
+          style={{ width: '100%', fontSize: 13, borderRadius: 6 }}
+        />
+        {searchQuery.trim().length > 0 && (
+          <div style={{ marginTop: 8 }}>
+            {searchResults.length === 0 ? (
+              <span style={{ fontSize: 12, color: '#9ca3af' }}>No symptoms match "{searchQuery}"</span>
+            ) : (
+              <div className="ssp-chips">
+                {searchResults.map(sym => (
+                  <button
+                    key={sym}
+                    className={`ssp-chip ssp-chip--t2 ${symptoms.includes(sym) ? 'ssp-chip--on' : ''}`}
+                    onClick={() => toggleSymptom(sym)}
+                  >
+                    {sym}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* ── Working dx banner ── */}
       {leadingDx && (

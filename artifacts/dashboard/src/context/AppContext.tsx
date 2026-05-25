@@ -7,7 +7,7 @@ import { updateDefaultSite } from '@/lib/db';
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
   | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
-  | 'allergies' | 'toxic' | 'scales' | 'examination' | 'assessment' | 'plan'
+  | 'allergies' | 'toxic' | 'scales' | 'examination' | 'investigations' | 'assessment' | 'plan'
   | 'procedures' | 'billing' | 'documents';
 
 export type TopSection =
@@ -61,6 +61,9 @@ interface CtxValue {
   sex: Sex; setSex(v: Sex): void;
   dob: string; setDob(v: string): void;
   phone: string; setPhone(v: string): void;
+  address: string; setAddress(v: string): void;
+  quarter: string; setQuarter(v: string): void;
+  referredBy: string; setReferredBy(v: string): void;
 
   durationDays: string; setDurationDays(v: string): void;
   painScore: string; setPainScore(v: string): void;
@@ -93,6 +96,12 @@ interface CtxValue {
   examExtremities: string; setExamExtremities(v: string): void;
   examBreast: string; setExamBreast(v: string): void;
   examWound: string; setExamWound(v: string): void;
+  examFindings: Record<string, string[]>; setExamFindings(v: Record<string, string[]>): void;
+  examNotes: Record<string, string>; setExamNotes(v: Record<string, string>): void;
+
+  orderedInvestigations: string[]; setOrderedInvestigations(v: string[]): void;
+  investigationResults: Record<string, string>; setInvestigationResults(v: Record<string, string>): void;
+  icdCodes: string[]; setIcdCodes(v: string[]): void;
 
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
@@ -150,6 +159,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [sex, setSex] = useState<Sex>('unknown');
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [quarter, setQuarter] = useState('');
+  const [referredBy, setReferredBy] = useState('');
 
   const [durationDays, setDurationDays] = useState('');
   const [painScore, setPainScore] = useState('');
@@ -182,6 +194,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [examExtremities, setExamExtremities] = useState('');
   const [examBreast, setExamBreast] = useState('');
   const [examWound, setExamWound] = useState('');
+  const [examFindings, setExamFindings] = useState<Record<string, string[]>>({});
+  const [examNotes, setExamNotes] = useState<Record<string, string>>({});
+
+  const [orderedInvestigations, setOrderedInvestigations] = useState<string[]>([]);
+  const [investigationResults, setInvestigationResults] = useState<Record<string, string>>({});
+  const [icdCodes, setIcdCodes] = useState<string[]>([]);
 
   const [assessment, setAssessment] = useState('');
   const [differentials, setDifferentials] = useState('');
@@ -244,6 +262,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.sex === 'string') setSex(d.sex as Sex);
       if (typeof d.dob === 'string') setDob(d.dob);
       if (typeof d.phone === 'string') setPhone(d.phone);
+      if (typeof d.address === 'string') setAddress(d.address);
+      if (typeof d.quarter === 'string') setQuarter(d.quarter);
+      if (typeof d.referredBy === 'string') setReferredBy(d.referredBy);
+      if (d.examFindings && typeof d.examFindings === 'object') setExamFindings(d.examFindings as Record<string, string[]>);
+      if (d.examNotes && typeof d.examNotes === 'object') setExamNotes(d.examNotes as Record<string, string>);
+      if (Array.isArray(d.orderedInvestigations)) setOrderedInvestigations(d.orderedInvestigations as string[]);
+      if (d.investigationResults && typeof d.investigationResults === 'object') setInvestigationResults(d.investigationResults as Record<string, string>);
+      if (Array.isArray(d.icdCodes)) setIcdCodes(d.icdCodes as string[]);
     } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -260,21 +286,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
       isPostOp, postOpDays, pregnancyPossible,
       examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+      examFindings, examNotes,
       assessment, differentials, plan, procedures, billing, documents,
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
       medications, medicationsText, allergies, familyHistory, toxicHabits,
-      patientName, age, sex, dob, phone,
+      patientName, age, sex, dob, phone, address, quarter, referredBy,
+      orderedInvestigations, investigationResults, icdCodes,
     });
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
     isPostOp, postOpDays, pregnancyPossible,
     examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+    examFindings, examNotes,
     assessment, differentials, plan, procedures, billing, documents,
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
     medications, medicationsText, allergies, familyHistory, toxicHabits,
-    patientName, age, sex, dob, phone]);
+    patientName, age, sex, dob, phone, address, quarter, referredBy,
+    orderedInvestigations, investigationResults, icdCodes]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -301,6 +331,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAllergies(''); setToxicHabits([]);
     setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
     setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
+    setExamFindings({}); setExamNotes({});
+    setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]);
+    setAddress(''); setQuarter(''); setReferredBy('');
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     try { localStorage.removeItem(ENC_KEY); } catch { /* ignore */ }
@@ -346,6 +379,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     sex, setSex,
     dob, setDob,
     phone, setPhone,
+    address, setAddress,
+    quarter, setQuarter,
+    referredBy, setReferredBy,
     durationDays, setDurationDays,
     painScore, setPainScore,
     symptoms, toggleSymptom,
@@ -374,6 +410,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     examExtremities, setExamExtremities,
     examBreast, setExamBreast,
     examWound, setExamWound,
+    examFindings, setExamFindings,
+    examNotes, setExamNotes,
+    orderedInvestigations, setOrderedInvestigations,
+    investigationResults, setInvestigationResults,
+    icdCodes, setIcdCodes,
     assessment, setAssessment,
     differentials, setDifferentials,
     plan, setPlan,
