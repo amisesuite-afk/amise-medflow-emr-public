@@ -1,0 +1,64 @@
+{
+  "calendarId": "amisesuite@gmail.com",
+  "fetchedAt": "2026-05-25T00:00:00-04:00",
+  "timeZone": "America/St_Lucia",
+  "events": [
+    { "id": "2a49dltk95i1ln8l8nif72lrg7", "summary": "Linus Bienert — Hernia Repair LA Theatre", "start": "2026-05-26T08:15:00-04:00", "end": "2026-05-26T11:45:00-04:00", "type": "theatre" },
+    { "id": "6ike960e0rdar83588u90rhaes", "summary": "Nilka Gonzague — Old pt review", "start": "2026-05-26T12:00:00-04:00", "end": "2026-05-26T12:45:00-04:00", "type": "clinic" },
+    { "id": "6p8oage73cplr482loo3c9n655", "summary": "Floyd Watson — Follow-up 6 weeks", "start": "2026-05-26T12:45:00-04:00", "end": "2026-05-26T13:15:00-04:00", "type": "clinic" },
+    { "id": "2h2vu6uuer0cf7kv38ui73p41d", "summary": "Fendly Espehane — New pt (Dr Mills)", "start": "2026-05-26T13:15:00-04:00", "end": "2026-05-26T13:45:00-04:00", "type": "clinic" },
+    { "id": "7p2aocp1334ak5h5p5hdmfk2lf", "summary": "Martha Henry — New pt Core Biopsy", "start": "2026-05-26T13:45:00-04:00", "end": "2026-05-26T14:45:00-04:00", "type": "clinic" },
+    { "id": "2tc20lsc32q5vnbn7tdoull33k", "summary": "Dionysia Sealy-Compton — New pt chemo port", "start": "2026-05-26T14:45:00-04:00", "end": "2026-05-26T15:30:00-04:00", "type": "clinic" },
+    { "id": "4svm2rjnbulfkvpatmreskphnf", "summary": "Lunch", "start": "2026-05-26T15:30:00-04:00", "end": "2026-05-26T16:00:00-04:00", "type": "break" },
+    { "id": "1635eu70ss8ejsv3t663seuk7j", "summary": "Agnes Maynard — New scopes results", "start": "2026-05-26T16:00:00-04:00", "end": "2026-05-26T16:45:00-04:00", "type": "clinic" },
+    { "id": "2gen4149e6bhfu8c579mtflpm7", "summary": "Lyndel Archibald — New pt scopes results", "start": "2026-05-26T16:45:00-04:00", "end": "2026-05-26T17:45:00-04:00", "type": "clinic" },
+
+    { "id": "0f3609bctak9b4726v474hs1t6", "summary": "Jahim Raveneau — Excision & Biopsy", "start": "2026-05-27T10:30:00-04:00", "end": "2026-05-27T11:15:00-04:00", "type": "clinic" },
+    { "id": "23ofkqvkqts5jhblv2oaietr5u", "summary": "Andrea De Matteis — Old pt consult", "start": "2026-05-27T11:15:00-04:00", "end": "2026-05-27T11:45:00-04:00", "type": "clinic" },
+    { "id": "75o70eudv2925kne1ur8b6j99d", "summary": "Shanadonne Charlemagne — Old pt consult", "start": "2026-05-27T11:45:00-04:00", "end": "2026-05-27T12:15:00-04:00", "type": "clinic" },
+    { "id": "0kehkg3cb0pscass8u233cf5av", "summary": "Rohan Lubon — Old pt consult", "start": "2026-05-27T12:15:00-04:00", "end": "2026-05-27T13:00:00-04:00", "type": "clinic" },
+    { "id": "6q8kv1som5udsbfoai5er89leh", "summary": "Lunch", "start": "2026-05-27T13:00:00-04:00", "end": "2026-05-27T13:45:00-04:00", "type": "break" },
+    { "id": "0v97slfncbt24foh69sdtqurca", "summary": "Paul Solomon — New pt consult", "start": "2026-05-27T13:45:00-04:00", "end": "2026-05-27T14:30:00-04:00", "type": "clinic" },
+    { "id": "6v58d564cn7g2fn4duhja69dkg", "summary": "Darmane Cenac — Review", "start": "2026-05-27T14:30:00-04:00", "end": "2026-05-27T15:15:00-04:00", "type": "clinic" },
+    { "id": "1pb5kgnl5ktjgmqnahqiteer5c", "summary": "Marcellina Laporte — New pt scopes", "start": "2026-05-27T15:15:00-04:00", "end": "2026-05-27T16:00:00-04:00", "type": "clinic" },
+
+    { "id": "4434l7ai1pqidppdv7s9a1d3i9", "summary": "Cera Eudovic — Clinic", "start": "2026-05-28T10:30:00-04:00", "end": "2026-05-28T11:15:00-04:00", "type": "clinic" },
+    { "id": "3iigt90qjonla49o1eggina31k", "summary": "Mervin Fatal — Excision", "start": "2026-05-28T11:15:00-04:00", "end": "2026-05-28T12:15:00-04:00", "type": "clinic" },
+    { "id": "62dtkt1fs6pd4ibv6glppqag0t", "summary": "Julianette Glasgow — Excision & Biopsy", "start": "2026-05-28T12:15:00-04:00", "end": "2026-05-28T13:45:00-04:00", "type": "clinic" },
+    { "id": "3rmpldvbp0ufv3brvmm698tc9o", "summary": "Cletus Eleodore — Old pt", "start": "2026-05-28T13:45:00-04:00", "end": "2026-05-28T14:45:00-04:00", "type": "clinic" },
+
+    { "id": "52k885c6o8vugl4okgujsiql51", "summary": "Sherry Ephraim Lacompte — Endoscopy & Colonoscopy Deep Sedation", "start": "2026-05-29T08:30:00-04:00", "end": "2026-05-29T10:00:00-04:00", "type": "endoscopy" },
+    { "id": "3oujglkja6d1l6a2pioh1aij12", "summary": "Ruthella Desir — Old pt AP Companies", "start": "2026-05-29T11:00:00-04:00", "end": "2026-05-29T11:45:00-04:00", "type": "clinic" },
+    { "id": "01hu2ikqrvmre6mmu0ihk60uhn", "summary": "Beverley Hawthorne — New pt", "start": "2026-05-29T11:45:00-04:00", "end": "2026-05-29T12:30:00-04:00", "type": "clinic" },
+    { "id": "7vefc76c0hvf1m0sa69k1iiecn", "summary": "John Joseph — New pt (Dr Brathwaite)", "start": "2026-05-29T12:30:00-04:00", "end": "2026-05-29T13:15:00-04:00", "type": "clinic" },
+    { "id": "79o9bc360d4fnh4rso54b4g7j5", "summary": "Micheil Georgeos — New pt consult", "start": "2026-05-29T13:15:00-04:00", "end": "2026-05-29T14:00:00-04:00", "type": "clinic" },
+    { "id": "017i5dtdae5kfqv792lvgstp3n", "summary": "Lunch", "start": "2026-05-29T14:00:00-04:00", "end": "2026-05-29T14:45:00-04:00", "type": "break" },
+    { "id": "0pc8o3dhurcsookeiceejl400u", "summary": "Christiana Estophile — New pt", "start": "2026-05-29T14:45:00-04:00", "end": "2026-05-29T15:30:00-04:00", "type": "clinic" },
+    { "id": "0qkc0m9epfr1rs9h0hneia25gq", "summary": "Janer Fontenell — Old pt follow-up", "start": "2026-05-29T15:30:00-04:00", "end": "2026-05-29T16:15:00-04:00", "type": "clinic" },
+    { "id": "52do7g0o8ldv9g915q69j6v861", "summary": "Allan George — Old pt", "start": "2026-05-29T18:30:00-04:00", "end": "2026-05-29T19:30:00-04:00", "type": "clinic" },
+
+    { "id": "65fnf0e26n94e786srvbk7isip", "summary": "Clara McLean — Left Inguinal Hernia Repair LA", "start": "2026-06-01T09:00:00-04:00", "end": "2026-06-01T12:00:00-04:00", "type": "theatre" },
+    { "id": "43d2uv5cp0q99jfl3jprievl69", "summary": "Father Cecil Goodman — Excision of Rectal Mass GA", "start": "2026-06-01T12:45:00-04:00", "end": "2026-06-01T15:45:00-04:00", "type": "theatre" },
+
+    { "id": "7gn5p5q85ffd2lgqelfsr3bose", "summary": "Leonne Mathurin — Old pt follow-up", "start": "2026-06-02T10:00:00-04:00", "end": "2026-06-02T10:45:00-04:00", "type": "clinic" },
+    { "id": "113qhni71cpfh27580nk5irrae", "summary": "Levi Richard — New pt", "start": "2026-06-02T10:45:00-04:00", "end": "2026-06-02T11:30:00-04:00", "type": "clinic" },
+    { "id": "2r4j8i4piq4a47jntms0hrq45e", "summary": "Faustin — New pt", "start": "2026-06-02T11:30:00-04:00", "end": "2026-06-02T12:15:00-04:00", "type": "clinic" },
+    { "id": "3olvottrokq7v4cqls4afp0k2c", "summary": "Lunch", "start": "2026-06-02T12:15:00-04:00", "end": "2026-06-02T13:15:00-04:00", "type": "break" },
+    { "id": "64d3p5k6noutfhav851senub4h", "summary": "Mya Mitchelle — New pt", "start": "2026-06-02T13:15:00-04:00", "end": "2026-06-02T14:15:00-04:00", "type": "clinic" },
+    { "id": "572ro1g77b7nl777g6ac588e46", "summary": "Francis Louis — Old pt", "start": "2026-06-02T14:15:00-04:00", "end": "2026-06-02T15:15:00-04:00", "type": "clinic" },
+
+    { "id": "275o6jv94ktdlk8f6b7tc26mdl", "summary": "Cheriann S. Peter — Follow-up consult", "start": "2026-06-03T10:45:00-04:00", "end": "2026-06-03T11:30:00-04:00", "type": "clinic" },
+    { "id": "7mni3annp40m3ene15f0c27mm8", "summary": "Anthonius Constantine — New pt surgical consult", "start": "2026-06-03T11:30:00-04:00", "end": "2026-06-03T12:15:00-04:00", "type": "clinic" },
+    { "id": "2ng4m8ggthj1j9u9oo15lfvigs", "summary": "Thomas Peter — Old pt consult", "start": "2026-06-03T12:15:00-04:00", "end": "2026-06-03T13:00:00-04:00", "type": "clinic" },
+    { "id": "57kr6o2mg96l2m2la1tmqb3bka", "summary": "Lunch", "start": "2026-06-03T13:00:00-04:00", "end": "2026-06-03T13:45:00-04:00", "type": "break" },
+    { "id": "4jbs4jt5ctthd6t4nqafpq71sk", "summary": "Clifford Oculien — Old pt annual check-up", "start": "2026-06-03T13:45:00-04:00", "end": "2026-06-03T14:30:00-04:00", "type": "clinic" },
+    { "id": "3j5nv0o8go9j4e92qkflnn8til", "summary": "Ricky Reid — New pt consult", "start": "2026-06-03T14:30:00-04:00", "end": "2026-06-03T15:15:00-04:00", "type": "clinic" },
+    { "id": "6rtjpk76rsjs2kemjep7e2sapc", "summary": "Kim Eugene — Old pt follow-up", "start": "2026-06-03T15:15:00-04:00", "end": "2026-06-03T16:00:00-04:00", "type": "clinic" },
+    { "id": "68ikbqs5ed2595077al8o1ql0v", "summary": "Yendi — Old pt review", "start": "2026-06-03T16:00:00-04:00", "end": "2026-06-03T16:45:00-04:00", "type": "clinic" },
+
+    { "id": "5qiqbjum3g2uj7je4beid7qts9", "summary": "Sancha McLaurent — Old pt", "start": "2026-06-05T10:30:00-04:00", "end": "2026-06-05T11:30:00-04:00", "type": "clinic" },
+    { "id": "2j2u0ah5ct6sa4oc4hfeb09d2o", "summary": "Christine Jn. Baptiste — Old pt", "start": "2026-06-05T11:30:00-04:00", "end": "2026-06-05T12:15:00-04:00", "type": "clinic" },
+    { "id": "69gj2d1k70rj4b9mclj3eb9kc5gm6bb269ijabb464qj8d1pclj6acppck", "summary": "Allan George — Old pt follow-up", "start": "2026-06-05T12:15:00-04:00", "end": "2026-06-05T13:15:00-04:00", "type": "clinic" },
+    { "id": "ccs64cb3chi64b9k68s3cb9k69hjgb9p61i3gbb36cp32d9pccpj6c31cc", "summary": "Lola Anthony — New pt consult", "start": "2026-06-05T13:15:00-04:00", "end": "2026-06-05T14:15:00-04:00", "type": "clinic" }
+  ]
+}

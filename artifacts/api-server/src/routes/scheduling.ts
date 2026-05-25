@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { findSlots, formatSlotForDisplay, AvailableSlot } from '../lib/calendar';
 import { SLOT_RULES, AppointmentType, SlotRule, Location } from '@workspace/triage-engine';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 const router = Router();
 
@@ -66,6 +68,59 @@ router.get('/api/scheduling/slots', async (req, res) => {
     }));
     res.json({ slots: result, rule, mock: true });
   }
+});
+
+// ── /api/scheduling/upcoming ─────────────────────────────────────────────────
+// Returns events from the local calendar cache (calendar-cache.json).
+// The cache is populated from the real amisesuite@gmail.com Google Calendar.
+// Optionally filter to a specific date with ?date=YYYY-MM-DD (ECT).
+
+interface CachedEvent {
+  id: string;
+  summary: string;
+  start: string;
+  end: string;
+  type: string;
+}
+
+interface CalendarCache {
+  calendarId: string;
+  fetchedAt: string;
+  timeZone: string;
+  events: CachedEvent[];
+}
+
+function loadCache(): CalendarCache | null {
+  try {
+    const raw = readFileSync(join(__dirname, '../data/calendar-cache.json'), 'utf-8');
+    return JSON.parse(raw) as CalendarCache;
+  } catch {
+    return null;
+  }
+}
+
+router.get('/api/scheduling/upcoming', (req, res) => {
+  const cache = loadCache();
+  if (!cache) {
+    res.status(503).json({ error: 'Calendar cache not available' });
+    return;
+  }
+
+  const dateFilter = req.query.date as string | undefined;
+  const daysAhead = Math.min(Number(req.query.days ?? 14), 60);
+  const now = new Date();
+  const cutoff = new Date(now.getTime() + daysAhead * 86400_000);
+
+  let events = cache.events.filter(e => {
+    const start = new Date(e.start);
+    return start >= now && start < cutoff;
+  });
+
+  if (dateFilter) {
+    events = events.filter(e => e.start.startsWith(dateFilter));
+  }
+
+  res.json({ events, fetchedAt: cache.fetchedAt, calendarId: cache.calendarId });
 });
 
 export default router;

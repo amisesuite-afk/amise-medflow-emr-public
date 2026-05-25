@@ -1,20 +1,11 @@
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { SITE_LABELS } from '@/lib/supabase';
-import { SLOT_RULES, PUBLIC_HOLIDAYS_SLU } from '@/lib/rules';
+import { PUBLIC_HOLIDAYS_SLU } from '@/lib/rules';
+import { useState, useEffect } from 'react';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-const APPT_LABELS: Record<string, string> = {
-  new_consult:   'New Consultation',
-  follow_up:     'Follow-up',
-  post_op:       'Post-operative Review',
-  ercp_workup:   'ERCP Work-up',
-  ercp:          'ERCP Procedure',
-  breast:        'Breast Clinic',
-  telephone:     'Telephone Consultation',
-  diabetic_foot: 'Diabetic Foot Clinic',
-};
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 const ACTION_LABELS: Record<string, string> = {
   emergency_now:    'Escalate now — emergency pathway',
@@ -37,6 +28,19 @@ function todayInECT(): string {
 
 function isHolidayToday(): boolean {
   return PUBLIC_HOLIDAYS_SLU.includes(todayInECT());
+}
+
+function formatTime(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'America/St_Lucia' });
+}
+
+function formatDateHeading(iso: string): string {
+  const d = new Date(iso);
+  const dow = DAY_NAMES[d.getDay()];
+  const date = d.getDate();
+  const month = MONTH_NAMES[d.getMonth()];
+  return `${dow} ${date} ${month}`;
 }
 
 function cardStyle(accent?: boolean): React.CSSProperties {
@@ -68,12 +72,9 @@ const emptyStyle: React.CSSProperties = {
 
 function AcuityBadge({ acuity, score }: { acuity: string; score: number }) {
   return (
-    <span
-      className={`acuity-badge ${acuity}`}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 6, color: '#fff', background: acuityColor(acuity), fontSize: 12, fontWeight: 800 }}
-    >
-      <span className="ab-level">{acuity.toUpperCase()}</span>
-      <span className="ab-score" style={{ opacity: 0.85 }}>· {score}</span>
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 6, color: '#fff', background: acuityColor(acuity), fontSize: 12, fontWeight: 800 }}>
+      <span>{acuity.toUpperCase()}</span>
+      <span style={{ opacity: 0.85 }}>· {score}</span>
     </span>
   );
 }
@@ -87,13 +88,51 @@ function SeverityBadge({ severity }: { severity: string }) {
   );
 }
 
+interface CalEvent { id: string; summary: string; start: string; end: string; type: string }
+
+function typeChip(type: string): React.CSSProperties {
+  if (type === 'theatre')   return { background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' };
+  if (type === 'endoscopy') return { background: '#ede9fe', color: '#5b21b6', border: '1px solid #c4b5fd' };
+  if (type === 'break')     return { background: '#f1f5f9', color: '#94a3b8', border: '1px solid #e2e8f0' };
+  return { background: '#ecfdf5', color: '#065f46', border: '1px solid #a7f3d0' };
+}
+
+const BASE = import.meta.env.BASE_URL ?? '/';
+function apiUrl(path: string) {
+  const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
+  return `${base}${path}`;
+}
+
 export default function DashboardTab() {
   const ctx = useAppContext();
   const { profile } = useAuth();
   const r = ctx.triageResult;
   const holiday = isHolidayToday();
+  const today = todayInECT();
 
-  const allRules = Object.entries(SLOT_RULES);
+  const [upcoming, setUpcoming] = useState<CalEvent[]>([]);
+  const [calLoading, setCalLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(today);
+
+  useEffect(() => {
+    setCalLoading(true);
+    fetch(apiUrl('/api/scheduling/upcoming?days=14'))
+      .then(r => r.json())
+      .then((d: { events?: CalEvent[] }) => { setUpcoming(d.events ?? []); })
+      .catch(() => {})
+      .finally(() => setCalLoading(false));
+  }, []);
+
+  // Group by date
+  const byDate: Record<string, CalEvent[]> = {};
+  for (const ev of upcoming) {
+    const dateKey = ev.start.slice(0, 10);
+    (byDate[dateKey] ??= []).push(ev);
+  }
+  const dates = Object.keys(byDate).sort();
+
+  const selectedEvents = byDate[selectedDate] ?? [];
+  const todayEvents = byDate[today] ?? [];
 
   return (
     <div className="gap-y">
@@ -151,7 +190,7 @@ export default function DashboardTab() {
           {r.vitalRedFlags.length === 0 ? (
             <div style={emptyStyle}>No vital sign alerts</div>
           ) : (
-            <div className="vital-flags" style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {r.vitalRedFlags.map(f => (
                 <span key={f.label} className={`vflag ${f.severity}`}>
                   <strong>{f.label}</strong>: {f.value}
@@ -178,36 +217,98 @@ export default function DashboardTab() {
         )}
       </div>
 
-      {/* Card 5 — Today's schedule */}
-      <div style={cardStyle(true)}>
-        <div style={titleStyle}>
-          Today's schedule — {SITE_LABELS[ctx.currentSite as keyof typeof SITE_LABELS] ?? ctx.currentSite}
+      {/* Card 5 — Today at a glance */}
+      {!calLoading && todayEvents.length > 0 && (
+        <div style={{ ...cardStyle(), borderColor: '#0b8278', borderWidth: 2 }}>
+          <div style={{ ...titleStyle, color: '#0b8278' }}>
+            Today — {new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/St_Lucia' }).format(new Date())}
+          </div>
+          {holiday && (
+            <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 6, padding: '6px 10px', fontSize: 12, color: '#92400e', fontWeight: 700 }}>
+              Public holiday — clinic may be modified
+            </div>
+          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {todayEvents.map(ev => (
+              <div key={ev.id} style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '6px 8px', borderRadius: 5, background: '#f8fffe' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', whiteSpace: 'nowrap', minWidth: 80 }}>
+                  {formatTime(ev.start)}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: ev.type === 'break' ? 400 : 600, color: ev.type === 'break' ? 'var(--muted)' : '#1a2e2b', flex: 1 }}>
+                  {ev.summary}
+                </span>
+                <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, fontWeight: 700, ...typeChip(ev.type) }}>
+                  {ev.type}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 4 }}>
+            {SITE_LABELS[ctx.currentSite as keyof typeof SITE_LABELS] ?? ctx.currentSite} · amisesuite@gmail.com
+          </div>
         </div>
-        {holiday && (
-          <div style={{ background: '#fffbeb', border: '1px solid #fcd34d', borderRadius: 6, padding: '8px 12px', fontSize: 12, color: 'var(--priority)', fontWeight: 700 }}>
-            Today is a public holiday — no routine clinics scheduled
+      )}
+
+      {/* Card 6 — Upcoming schedule browser */}
+      <div style={cardStyle(true)}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+          <div style={titleStyle}>Upcoming appointments</div>
+          {calLoading && <span style={{ fontSize: 11, color: 'var(--muted)' }}>Loading…</span>}
+        </div>
+
+        {!calLoading && dates.length === 0 && (
+          <div style={emptyStyle}>
+            No upcoming appointments in cache — start the API server to load schedule
           </div>
         )}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {allRules.map(([type, rule]) => {
-            const days = rule.days.map(d => DAY_NAMES[d]).join(', ') || 'By arrangement';
-            return (
-              <div key={type} style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '8px 10px', background: '#f8fffe', borderRadius: 6, border: '1px solid var(--accent-lt)' }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent2)' }}>
-                  {APPT_LABELS[type] ?? type.replace(/_/g, ' ')}
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--muted)', display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  <span>{days}</span>
-                  <span>{rule.windowStart}–{rule.windowEnd}</span>
-                  <span>{rule.durationMin} min</span>
-                  <span>Max {rule.maxPerSession}/session</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+
+        {dates.length > 0 && (
+          <>
+            {/* Date tabs */}
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+              {dates.map(d => (
+                <button
+                  key={d}
+                  onClick={() => setSelectedDate(d)}
+                  style={{
+                    padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                    border: '1px solid',
+                    borderColor: selectedDate === d ? 'var(--accent)' : '#e2e8f0',
+                    background: selectedDate === d ? 'var(--accent)' : '#fff',
+                    color: selectedDate === d ? '#fff' : (d === today ? 'var(--accent)' : '#374151'),
+                  }}
+                >
+                  {d === today ? 'Today' : formatDateHeading(byDate[d][0].start)}
+                  <span style={{ marginLeft: 4, opacity: 0.7 }}>·{byDate[d].filter(e => e.type !== 'break').length}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Event list for selected date */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {selectedEvents.length === 0 ? (
+                <div style={emptyStyle}>No appointments</div>
+              ) : (
+                selectedEvents.map(ev => (
+                  <div key={ev.id} style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '6px 8px', borderRadius: 5, background: '#f8fffe' }}>
+                    <span style={{ fontSize: 11, color: 'var(--muted)', whiteSpace: 'nowrap', minWidth: 80 }}>
+                      {formatTime(ev.start)}–{formatTime(ev.end)}
+                    </span>
+                    <span style={{ fontSize: 12, fontWeight: ev.type === 'break' ? 400 : 600, color: ev.type === 'break' ? 'var(--muted)' : '#1a2e2b', flex: 1 }}>
+                      {ev.summary}
+                    </span>
+                    <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 4, fontWeight: 700, flexShrink: 0, ...typeChip(ev.type) }}>
+                      {ev.type}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
+
         {profile && (
-          <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 4 }}>
             Logged in as {profile.full_name ?? profile.email} · {profile.role}
           </div>
         )}
