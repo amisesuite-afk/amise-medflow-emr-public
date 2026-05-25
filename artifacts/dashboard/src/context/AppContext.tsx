@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@/lib/adaptive-triage';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
@@ -185,6 +185,88 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [nhiNumber, setNhiNumber] = useState('');
   const [preAuthStatus, setPreAuthStatus] = useState('');
 
+  const ENC_KEY = 'amise-enc-v1';
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ENC_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw) as Record<string, unknown>;
+      if (!d.patientName && !(Array.isArray(d.symptoms) && (d.symptoms as string[]).length > 0)) return;
+      if (d.vitals && typeof d.vitals === 'object') setVitals(d.vitals as VitalsState);
+      if (Array.isArray(d.symptoms)) setSymptoms(d.symptoms as string[]);
+      if (d.symptomDetails && typeof d.symptomDetails === 'object') setSymptomDetails(d.symptomDetails as Record<string, string[]>);
+      if (typeof d.freeText === 'string') setFreeText(d.freeText);
+      if (typeof d.durationDays === 'string') setDurationDays(d.durationDays);
+      if (typeof d.painScore === 'string') setPainScore(d.painScore);
+      if (typeof d.isPostOp === 'boolean') setIsPostOp(d.isPostOp);
+      if (typeof d.postOpDays === 'string') setPostOpDays(d.postOpDays);
+      if (typeof d.pregnancyPossible === 'boolean') setPregnancyPossible(d.pregnancyPossible);
+      if (typeof d.examGeneral === 'string') setExamGeneral(d.examGeneral);
+      if (typeof d.examCardio === 'string') setExamCardio(d.examCardio);
+      if (typeof d.examResp === 'string') setExamResp(d.examResp);
+      if (typeof d.examAbdomen === 'string') setExamAbdomen(d.examAbdomen);
+      if (typeof d.examNeuro === 'string') setExamNeuro(d.examNeuro);
+      if (typeof d.examExtremities === 'string') setExamExtremities(d.examExtremities);
+      if (typeof d.examBreast === 'string') setExamBreast(d.examBreast);
+      if (typeof d.examWound === 'string') setExamWound(d.examWound);
+      if (typeof d.assessment === 'string') setAssessment(d.assessment);
+      if (typeof d.differentials === 'string') setDifferentials(d.differentials);
+      if (typeof d.plan === 'string') setPlan(d.plan);
+      if (typeof d.procedures === 'string') setProcedures(d.procedures);
+      if (typeof d.billing === 'string') setBilling(d.billing);
+      if (typeof d.documents === 'string') setDocuments(d.documents);
+      if (typeof d.insuranceProvider === 'string') setInsuranceProvider(d.insuranceProvider);
+      if (typeof d.policyNumber === 'string') setPolicyNumber(d.policyNumber);
+      if (typeof d.nhiNumber === 'string') setNhiNumber(d.nhiNumber);
+      if (typeof d.preAuthStatus === 'string') setPreAuthStatus(d.preAuthStatus);
+      if (Array.isArray(d.comorbidities)) setComorbidities(d.comorbidities as string[]);
+      if (typeof d.pmhNotes === 'string') setPmhNotes(d.pmhNotes);
+      if (Array.isArray(d.surgicalHistory)) setSurgicalHistory(d.surgicalHistory as string[]);
+      if (typeof d.surgicalNotes === 'string') setSurgicalNotes(d.surgicalNotes);
+      if (Array.isArray(d.medications)) setMedications(d.medications as string[]);
+      if (typeof d.medicationsText === 'string') setMedicationsText(d.medicationsText);
+      if (typeof d.allergies === 'string') setAllergies(d.allergies);
+      if (Array.isArray(d.familyHistory)) setFamilyHistory(d.familyHistory as string[]);
+      if (Array.isArray(d.toxicHabits)) setToxicHabits(d.toxicHabits as string[]);
+      if (typeof d.patientName === 'string') setPatientName(d.patientName);
+      if (typeof d.age === 'string') setAge(d.age);
+      if (typeof d.sex === 'string') setSex(d.sex as Sex);
+      if (typeof d.dob === 'string') setDob(d.dob);
+      if (typeof d.phone === 'string') setPhone(d.phone);
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const scheduleSave = useCallback((data: Record<string, unknown>) => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      try { localStorage.setItem(ENC_KEY, JSON.stringify(data)); } catch { /* ignore */ }
+    }, 500);
+  }, []);
+
+  useEffect(() => {
+    scheduleSave({
+      vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
+      isPostOp, postOpDays, pregnancyPossible,
+      examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+      assessment, differentials, plan, procedures, billing, documents,
+      insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
+      comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
+      medications, medicationsText, allergies, familyHistory, toxicHabits,
+      patientName, age, sex, dob, phone,
+    });
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
+  }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
+    isPostOp, postOpDays, pregnancyPossible,
+    examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+    assessment, differentials, plan, procedures, billing, documents,
+    insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
+    comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
+    medications, medicationsText, allergies, familyHistory, toxicHabits,
+    patientName, age, sex, dob, phone]);
+
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
     setSymptomDetails(c => {
@@ -212,6 +294,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
+    try { localStorage.removeItem(ENC_KEY); } catch { /* ignore */ }
   }
 
   const triageInput: AdaptiveTriageInput = useMemo(() => ({

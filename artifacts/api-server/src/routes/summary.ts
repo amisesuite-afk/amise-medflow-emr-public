@@ -166,6 +166,100 @@ Follow-up
 Follow-up: [next steps, timing, referrals, results expected; "To be arranged by Dr Kabiye" if not specified]`;
 }
 
+function buildTemplateSoap(body: unknown): string {
+  const d = (body && typeof body === 'object' ? body : {}) as Record<string, unknown>;
+  const patient = (d.patient && typeof d.patient === 'object' ? d.patient : {}) as Record<string, unknown>;
+  const complaint = (d.complaint && typeof d.complaint === 'object' ? d.complaint : {}) as Record<string, unknown>;
+  const history = (d.history && typeof d.history === 'object' ? d.history : {}) as Record<string, unknown>;
+  const vitals = (d.vitals && typeof d.vitals === 'object' ? d.vitals : {}) as Record<string, unknown>;
+  const examination = (d.examination && typeof d.examination === 'object' ? d.examination : {}) as Record<string, unknown>;
+
+  const str = (v: unknown): string => (typeof v === 'string' ? v.trim() : '');
+  const arr = (v: unknown): string[] => (Array.isArray(v) ? v.filter(x => typeof x === 'string') as string[] : []);
+
+  const symptoms = arr(complaint.symptoms);
+  const pmh = arr(history.pmh);
+  const meds = arr(history.medications);
+  const surgHx = arr(history.surgicalHistory);
+  const famHx = arr(history.familyHistory);
+  const toxic = arr(history.toxicHabits);
+
+  const vitalLabels: Record<string, [string, string]> = {
+    systolicBp: ['SBP', 'mmHg'], diastolicBp: ['DBP', 'mmHg'], heartRate: ['HR', 'bpm'],
+    temperatureC: ['Temp', '°C'], respiratoryRate: ['RR', '/min'], spo2: ['SpO₂', '%'], glucoseMmol: ['RBS', 'mmol/L'],
+  };
+  const vitalLines = Object.entries(vitals)
+    .filter(([, v]) => typeof v === 'string' && (v as string).trim())
+    .map(([k, v]) => {
+      const [label, unit] = vitalLabels[k] ?? [k, ''];
+      return `${label}: ${v}${unit}`;
+    });
+
+  const examEntries = Object.entries(examination)
+    .filter(([, v]) => typeof v === 'string' && (v as string).trim())
+    .map(([k, v]) => `${k}: ${v}`);
+
+  const chiefComplaint = symptoms.length
+    ? `Patient presents with ${symptoms.join(', ')}.`
+    : 'Chief complaint not specified.';
+
+  const hpi = str(complaint.freeText)
+    || (symptoms.length
+      ? `Patient reports ${symptoms.join(', ')}${str(complaint.duration) ? ` for ${complaint.duration} day(s)` : ''}${str(complaint.painScore) ? `, pain score ${complaint.painScore}/10` : ''}.`
+      : 'History of present illness not documented.');
+
+  const postOpNote = complaint.isPostOp
+    ? ` Patient is post-operative${str(complaint.postOpDays) ? ` (${complaint.postOpDays} days post-op)` : ''}.`
+    : '';
+  const pregnancyNote = complaint.pregnancyPossible ? ' Pregnancy possible.' : '';
+
+  return `SUBJECTIVE
+
+Chief Complaint
+Chief Complaint: ${chiefComplaint}${postOpNote}${pregnancyNote}
+
+History of Present Illness
+HPI: ${hpi}
+
+Past Medical History
+Past Medical History: ${pmh.length ? pmh.join(', ') : 'Nil significant'}${str(history.pmhNotes) ? ` — ${str(history.pmhNotes)}` : ''}
+
+Medications
+Current Medications: ${[...meds, str(history.medicationsText)].filter(Boolean).join(', ') || 'None reported'}
+Allergies: ${str(history.allergies) || 'NKDA'}
+
+Social History
+Social History: ${[...toxic, ...famHx.map(f => `Family: ${f}`)].join('; ') || 'Not reported'}
+
+OBJECTIVE
+
+Physical Examination
+Physical Exam:
+${examEntries.length ? examEntries.join('\n') : 'Not documented — pending clinical review'}
+
+Laboratory/Diagnostic Results
+Laboratory/Diagnostics:
+• ${str(d.differentials) || 'Not documented'}
+Vitals: ${vitalLines.length ? vitalLines.join(' | ') : 'Not recorded'}
+Surgical history: ${surgHx.length ? surgHx.join(', ') : 'None'}${str(history.surgicalNotes) ? ` — ${str(history.surgicalNotes)}` : ''}
+
+ASSESSMENT
+
+Primary Diagnosis
+Primary Diagnosis: ${str(d.assessment) || 'Pending clinician assessment'}
+
+PLAN
+
+Treatment Plan
+Therapeutic: ${str(d.plan) || 'To be determined by Dr Kabiye'}
+
+Patient Education
+Patient Education: The patient has been reviewed and the relevant clinical findings explained. A management plan has been discussed in plain language. The patient is advised to follow up as directed and to return if symptoms worsen.
+
+Follow-up
+Follow-up: ${str(d.plan)?.toLowerCase().includes('follow') ? str(d.plan) : 'As arranged with clinic'}`;
+}
+
 router.post('/api/summary/generate', async (req, res) => {
   const parsed = SummaryRequestSchema.safeParse(req.body);
   if (!parsed.success) {
@@ -173,22 +267,31 @@ router.post('/api/summary/generate', async (req, res) => {
     return;
   }
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    res.json({ document: buildTemplateSoap(req.body) });
+    return;
+  }
+
   const prompt = buildPrompt(parsed.data);
 
-  const response = await client.messages.create({
-    model: MODEL,
-    max_tokens: 1800,
-    system: SUMMARY_SYSTEM,
-    messages: [{ role: 'user', content: prompt }],
-  });
+  try {
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 1800,
+      system: SUMMARY_SYSTEM,
+      messages: [{ role: 'user', content: prompt }],
+    });
 
-  const document = response.content
-    .filter(b => b.type === 'text')
-    .map(b => (b as { type: 'text'; text: string }).text)
-    .join('')
-    .trim();
+    const document = response.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('')
+      .trim();
 
-  res.json({ document });
+    res.json({ document });
+  } catch {
+    res.json({ document: buildTemplateSoap(req.body) });
+  }
 });
 
 export default router;

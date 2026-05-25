@@ -1,8 +1,38 @@
 import { Router } from 'express';
-import { findSlots, formatSlotForDisplay } from '../lib/calendar';
-import { SLOT_RULES, AppointmentType } from '@workspace/triage-engine';
+import { findSlots, formatSlotForDisplay, AvailableSlot } from '../lib/calendar';
+import { SLOT_RULES, AppointmentType, SlotRule, Location } from '@workspace/triage-engine';
 
 const router = Router();
+
+function generateMockSlots(
+  appointmentType: AppointmentType,
+  rule: SlotRule,
+  max = 3,
+  fromDate: Date = new Date(),
+): AvailableSlot[] {
+  const slots: AvailableSlot[] = [];
+  const twoHoursFromNow = new Date(fromDate.getTime() + 2 * 60 * 60_000);
+  const cursor = new Date(fromDate);
+  cursor.setSeconds(0, 0, 0);
+
+  const [startH, startM] = rule.windowStart.split(':').map(Number);
+
+  while (slots.length < max && cursor.getTime() < fromDate.getTime() + 60 * 86400_000) {
+    const dow = cursor.getDay();
+    if (rule.days.includes(dow)) {
+      const slotStart = new Date(cursor);
+      slotStart.setHours(startH, startM, 0, 0);
+      const slotEnd = new Date(slotStart.getTime() + rule.durationMin * 60_000);
+      if (slotStart > twoHoursFromNow) {
+        slots.push({ start: slotStart, end: slotEnd, location: rule.location as Location, appointmentType });
+      }
+    }
+    cursor.setDate(cursor.getDate() + 1);
+    cursor.setHours(0, 0, 0, 0);
+  }
+
+  return slots;
+}
 
 router.get('/api/scheduling/slots', async (req, res) => {
   const type = req.query.type as AppointmentType;
@@ -24,8 +54,17 @@ router.get('/api/scheduling/slots', async (req, res) => {
       display: formatSlotForDisplay(s),
     }));
     res.json({ slots: result, rule: SLOT_RULES[type] });
-  } catch (err) {
-    res.status(503).json({ error: 'Calendar service unavailable', detail: String(err) });
+  } catch {
+    const rule = SLOT_RULES[type];
+    const mockSlots = generateMockSlots(type, rule, max);
+    const result = mockSlots.map(s => ({
+      start: s.start.toISOString(),
+      end: s.end.toISOString(),
+      location: s.location,
+      appointmentType: s.appointmentType,
+      display: formatSlotForDisplay(s),
+    }));
+    res.json({ slots: result, rule, mock: true });
   }
 });
 

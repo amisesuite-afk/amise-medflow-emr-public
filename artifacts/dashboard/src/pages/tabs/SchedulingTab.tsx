@@ -29,12 +29,19 @@ interface SlotResult {
   display: SlotDisplay;
 }
 
+interface SlotsResponse {
+  slots?: SlotResult[];
+  error?: string;
+  mock?: boolean;
+}
+
 export default function SchedulingTab() {
   const ctx = useAppContext();
   const [apptType, setApptType] = useState<AppointmentType>(ctx.triageResult.appointmentType);
   const [slots, setSlots] = useState<SlotResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mock, setMock] = useState(false);
   const [booked, setBooked] = useState<SlotResult | null>(null);
   const [confirmed, setConfirmed] = useState(false);
 
@@ -43,14 +50,16 @@ export default function SchedulingTab() {
   async function fetchSlots() {
     setError('');
     setSlots([]);
+    setMock(false);
     setBooked(null);
     setConfirmed(false);
     setLoading(true);
     try {
       const res = await fetch(apiUrl(`/api/scheduling/slots?type=${apptType}&max=6`));
-      const data = await res.json() as { slots?: SlotResult[]; error?: string };
+      const data = await res.json() as SlotsResponse;
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       setSlots(data.slots ?? []);
+      setMock(data.mock === true);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error');
     } finally {
@@ -152,6 +161,13 @@ export default function SchedulingTab() {
           <div>This would create a calendar event for <strong>{ctx.patientName || 'the patient'}</strong> on <strong>{booked.display.day} {booked.display.date}</strong> at <strong>{formatTime(booked.start)}</strong>.</div>
           <div style={{ marginTop: 6, color: '#6b7280' }}>Set <code>MODE=supervised</code> or <code>MODE=auto</code> in environment to send live calendar invitations.</div>
           <button className="summary-btn summary-btn--ghost" style={{ marginTop: 10, height: 32 }} onClick={() => { setBooked(null); setConfirmed(false); }}>Done</button>
+        </div>
+      )}
+
+      {/* Mock calendar notice */}
+      {mock && slots.length > 0 && !confirmed && (
+        <div style={{ background: '#fffbeb', border: '1px solid rgba(251,191,36,.5)', borderRadius: 8, padding: '8px 14px', fontSize: 12, color: '#92400e' }}>
+          Calendar service not connected — slots shown are based on clinic schedule and subject to confirmation
         </div>
       )}
 
