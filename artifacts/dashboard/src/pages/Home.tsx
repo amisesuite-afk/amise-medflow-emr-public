@@ -5,6 +5,8 @@ import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import { hasRole, roleIn } from '@/lib/roles';
 import NavSidebar from '@/components/NavSidebar';
+import ReceptionistView from './ReceptionistView';
+import NursePreVisitView from './NursePreVisitView';
 import IntakeTab from './tabs/IntakeTab';
 import TriageTab from './tabs/TriageTab';
 import PmhTab from './tabs/PmhTab';
@@ -50,6 +52,7 @@ export default function HomePage() {
     comorbidities,
     triageResult,
     currentSite, setCurrentSite,
+    preVisitStatus,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -66,6 +69,9 @@ export default function HomePage() {
   if (sex && sex !== 'unknown') metaParts.push(sex);
 
   const sidebarWidth = collapsed ? 52 : 182;
+
+  if (userRole === 'front_desk') return <ReceptionistView />;
+  if (userRole === 'nurse') return <NursePreVisitView />;
 
   return (
     <div
@@ -132,6 +138,19 @@ export default function HomePage() {
 
       {/* ── Main content ── */}
       <main className="main-content">
+        {/* Pre-visit status banner for doctor/admin */}
+        {preVisitStatus === 'registered' && (
+          <div style={{ margin: '0 0 12px', padding: '10px 16px', borderRadius: 8, background: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 16 }}>⏳</span>
+            Patient registered — awaiting nurse vitals
+          </div>
+        )}
+        {preVisitStatus === 'vitals_done' && (
+          <div style={{ margin: '0 0 12px', padding: '10px 16px', borderRadius: 8, background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 16 }}>✓</span>
+            Vitals recorded — patient ready for consultation
+          </div>
+        )}
         {/* Clinical sections */}
         {topSection === 'intake'        && <IntakeTab />}
         {topSection === 'consultation'  && activeSection === 'triage'      && <TriageTab />}

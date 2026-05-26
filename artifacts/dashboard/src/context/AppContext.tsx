@@ -39,6 +39,8 @@ function readSiteFromStorage(): SiteCode {
   return 'rodney_bay';
 }
 
+export type PreVisitStatus = 'new' | 'registered' | 'vitals_done';
+
 export interface AnatomicalFinding {
   zone: string;
   subLocation?: string;
@@ -124,6 +126,8 @@ interface CtxValue {
   rosFindings: Record<string, RosFinding>; setRosFindings(v: Record<string, RosFinding>): void;
 
   procedureData: Record<string, unknown>; setProcedureData(v: Record<string, unknown>): void;
+
+  preVisitStatus: PreVisitStatus; setPreVisitStatus(v: PreVisitStatus): void;
 
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
@@ -229,6 +233,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [anatomicalFindings, setAnatomicalFindings] = useState<AnatomicalFinding[]>([]);
   const [rosFindings, setRosFindings] = useState<Record<string, RosFinding>>({});
   const [procedureData, setProcedureData] = useState<Record<string, unknown>>({});
+  const [preVisitStatus, setPreVisitStatus] = useState<PreVisitStatus>('new');
 
   const [assessment, setAssessment] = useState('');
   const [differentials, setDifferentials] = useState('');
@@ -305,6 +310,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.anatomicalFindings)) setAnatomicalFindings(d.anatomicalFindings as AnatomicalFinding[]);
       if (d.rosFindings && typeof d.rosFindings === 'object') setRosFindings(d.rosFindings as Record<string, RosFinding>);
       if (d.procedureData && typeof d.procedureData === 'object') setProcedureData(d.procedureData as Record<string, unknown>);
+      if (d.preVisitStatus === 'registered' || d.preVisitStatus === 'vitals_done') setPreVisitStatus(d.preVisitStatus);
     } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -328,7 +334,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       medications, medicationsText, allergies, familyHistory, toxicHabits,
       patientName, age, sex, dob, phone, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
-      weightKg, heightCm, anatomicalFindings, rosFindings, procedureData,
+      weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
     });
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
@@ -341,7 +347,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     medications, medicationsText, allergies, familyHistory, toxicHabits,
     patientName, age, sex, dob, phone, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
-    weightKg, heightCm, anatomicalFindings, rosFindings, procedureData]);
+    weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -372,7 +378,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]); setCptCodes([]);
     setAddress(''); setQuarter(''); setReferredBy('');
     setWeightKg(''); setHeightCm(''); setAnatomicalFindings([]);
-    setRosFindings({}); setProcedureData({});
+    setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     try { localStorage.removeItem(ENC_KEY); } catch { /* ignore */ }
@@ -470,6 +476,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     anatomicalFindings, setAnatomicalFindings,
     rosFindings, setRosFindings,
     procedureData, setProcedureData,
+    preVisitStatus, setPreVisitStatus,
     triageResult,
   };
 
