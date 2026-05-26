@@ -653,6 +653,121 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
   );
 }
 
+// ── Procedure PDF export ──────────────────────────────────────────────────────
+
+function buildProcHtml(type: ProcType, ogd: OgdData, colon: ColonData, ercp: ErcpData, preop: PreopData, postop: PostopData, freeText: string, patientName: string): string {
+  const now = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+  const row = (label: string, val: string | string[]) => {
+    const v = Array.isArray(val) ? val.join(', ') : val;
+    if (!v) return '';
+    return `<tr><td style="padding:4px 10px 4px 0;font-weight:600;color:#374151;white-space:nowrap;vertical-align:top">${label}</td><td style="padding:4px 0 4px 10px;color:#111">${v}</td></tr>`;
+  };
+  const section = (title: string, rows: string) =>
+    `<h3 style="margin:16px 0 6px;font-size:13px;color:#0d9488;border-bottom:1px solid #d1fae5;padding-bottom:4px">${title}</h3><table style="border-collapse:collapse;width:100%;font-size:12px">${rows}</table>`;
+
+  let body = '';
+  if (type === 'ogd') {
+    body = section('Upper GI Endoscopy (OGD)', [
+      row('Indication', ogd.indication),
+      row('Sedation', ogd.sedationType),
+      row('Oesophagus', ogd.oesophagus),
+      row('Z-line / GEJ', ogd.zLine),
+      row('Stomach', ogd.stomach),
+      row('Hiatal hernia', ogd.hiatalHernia),
+      row('Duodenum', ogd.duodenum),
+      row('Biopsy taken', ogd.biopsy),
+      row('Biopsy site', ogd.biopsySite),
+      row('CLO test', ogd.cloTest),
+      row('H. pylori', ogd.hpylori),
+      row('Complications', ogd.complications),
+      row('Notes', ogd.additionalNotes),
+    ].join(''));
+  } else if (type === 'colonoscopy') {
+    body = section('Colonoscopy', [
+      row('Indication', colon.indication),
+      row('Bowel prep quality', colon.prepQuality),
+      row('Cecal intubation', colon.cecalIntubation),
+      row('Intubation time', colon.intubationTimeMin ? `${colon.intubationTimeMin} min` : ''),
+      row('Withdrawal time', colon.withdrawalTimeMin ? `${colon.withdrawalTimeMin} min` : ''),
+      row('Findings', colon.findings),
+      row('Polyps', colon.polyps.length ? colon.polyps.map(p => `${p.site} — ${p.size}mm, ${p.morphology}, ${p.intervention}`).join('; ') : ''),
+      row('Tattoo placed', colon.tattoo),
+      row('Complications', colon.complications),
+      row('Notes', colon.additionalNotes),
+    ].join(''));
+  } else if (type === 'ercp') {
+    body = section('ERCP', [
+      row('Indication', ercp.indication),
+      row('Cannulation', ercp.cannulation),
+      row('Contrast injection', ercp.contrastInjection),
+      row('CBD diameter', ercp.cbdDiameter ? `${ercp.cbdDiameter} mm` : ''),
+      row('Cholangiogram findings', ercp.cholangiogramFindings),
+      row('Sphincterotomy', ercp.sphincterotomy),
+      row('Stone extraction', ercp.stoneExtraction && ercp.stoneExtraction !== 'Not applicable' ? `${ercp.stoneCount || ''} stone(s), max ${ercp.stoneSizeMm || ''}mm — ${ercp.stoneExtraction}` : ercp.stoneExtraction),
+      row('Stent', ercp.stent === 'Yes' ? `${ercp.stentType} ${ercp.stentSizeFr}Fr ${ercp.stentLengthCm}cm` : ercp.stent),
+      row('Biliary sweep', ercp.biliarySweep),
+      row('Fluoroscopy time', ercp.fluoroscopyTimeMin ? `${ercp.fluoroscopyTimeMin} min` : ''),
+      row('Complications', ercp.complications),
+      row('Notes', ercp.additionalNotes),
+    ].join(''));
+  } else if (type === 'preop') {
+    body = section('Pre-operative Assessment', [
+      row('Planned procedure', preop.plannedProcedure),
+      row('Urgency', preop.urgency),
+      row('ASA grade', preop.asaGrade),
+      row('Airway (Mallampati)', preop.airway),
+      row('Dentition', preop.dentition),
+      row('Cardiac risk', preop.cardiacRisk),
+      row('Respiratory risk', preop.respiratoryRisk),
+      row('Investigations', [preop.bloodsOk && `Bloods: ${preop.bloodsOk}`, preop.crossmatch && `X-match: ${preop.crossmatch}`, preop.ecg && `ECG: ${preop.ecg}`, preop.cxr && `CXR: ${preop.cxr}`, preop.imaging && `Imaging: ${preop.imaging}`].filter(Boolean).join(', ')),
+      row('Consent obtained', preop.consentObtained),
+      row('Consent notes', preop.consentNotes),
+      row('Prophylaxis', preop.prophylaxis),
+      row('Notes', preop.additionalNotes),
+    ].join(''));
+  } else if (type === 'postop') {
+    body = section('Post-operative Note', [
+      row('Procedure performed', postop.procedurePerformed),
+      row('Approach', postop.approach),
+      row('Anaesthesia', postop.anaesthesiaType),
+      row('Duration', postop.duration ? `${postop.duration} min` : ''),
+      row('Surgeon', postop.surgeon),
+      row('Intraoperative findings', postop.findings),
+      row('EBL', postop.ebl ? `${postop.ebl} mL` : ''),
+      row('Fluid in', postop.fluidIn ? `${postop.fluidIn} mL` : ''),
+      row('Urine out', postop.urineOut ? `${postop.urineOut} mL` : ''),
+      row('Specimen', postop.specimenSent + (postop.specimenSite ? ` — ${postop.specimenSite}` : '')),
+      row('Drain', postop.drain + (postop.drainType ? ` (${postop.drainType})` : '') + (postop.drainSite ? `, ${postop.drainSite}` : '')),
+      row('Wound closure', postop.closure),
+      row('Dressing', postop.dressing),
+      row('Post-op orders', postop.postopOrders),
+      row('Complications', postop.complications),
+      row('Notes', postop.additionalNotes),
+    ].join(''));
+  } else {
+    body = `<p style="font-size:13px;white-space:pre-wrap">${freeText.replace(/</g, '&lt;')}</p>`;
+  }
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Procedure Note</title>
+<style>body{font-family:Arial,sans-serif;max-width:700px;margin:32px auto;color:#111;font-size:13px}
+h1{font-size:16px;margin:0 0 4px}h2{font-size:13px;color:#6b7280;font-weight:400;margin:0 0 16px}
+@media print{body{margin:16px}}</style></head><body>
+<h1>Procedure Note — ${type.toUpperCase()}</h1>
+<h2>${patientName} &nbsp;|&nbsp; ${now}</h2>
+${body}
+<p style="margin-top:32px;font-size:10px;color:#9ca3af">Amise Medical Services · Dr Dawit Daniel Kabiye MD DM · Printed ${now}</p>
+</body></html>`;
+}
+
+function printProcNote(html: string) {
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:0;height:0';
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument!;
+  doc.open(); doc.write(html); doc.close();
+  setTimeout(() => { iframe.contentWindow?.print(); setTimeout(() => document.body.removeChild(iframe), 1000); }, 400);
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 const PROC_TABS: { id: ProcType; label: string }[] = [
@@ -665,7 +780,7 @@ const PROC_TABS: { id: ProcType; label: string }[] = [
 ];
 
 export default function ProceduresTab() {
-  const { procedureData, setProcedureData, procedures, setProcedures } = useAppContext();
+  const { procedureData, setProcedureData, procedures, setProcedures, patientName } = useAppContext();
   const [activeType, setActiveType] = useState<ProcType>('ogd');
 
   function getTyped<T>(key: string, empty: T): T {
@@ -683,8 +798,8 @@ export default function ProceduresTab() {
 
   return (
     <div className="gap-y">
-      {/* Procedure type selector */}
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      {/* Procedure type selector + print button */}
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
         {PROC_TABS.map(tab => (
           <button key={tab.id} type="button" onClick={() => setActiveType(tab.id)}
             style={{
@@ -698,6 +813,17 @@ export default function ProceduresTab() {
             {tab.label}
           </button>
         ))}
+        <button
+          type="button"
+          onClick={() => printProcNote(buildProcHtml(activeType, ogd, colon, ercp, preop, postop, procedures, patientName || 'Patient'))}
+          style={{
+            marginLeft: 'auto',
+            padding: '6px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+            border: '1px solid #0d9488', background: '#fff', color: '#0d9488', cursor: 'pointer',
+          }}
+        >
+          Print / Export PDF
+        </button>
       </div>
 
       {activeType === 'ogd' && (

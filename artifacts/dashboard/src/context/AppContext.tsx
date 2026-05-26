@@ -115,6 +115,7 @@ interface CtxValue {
   orderedInvestigations: string[]; setOrderedInvestigations(v: string[]): void;
   investigationResults: Record<string, string>; setInvestigationResults(v: Record<string, string>): void;
   icdCodes: string[]; setIcdCodes(v: string[]): void;
+  cptCodes: string[]; setCptCodes(v: string[]): void;
 
   weightKg: string; setWeightKg(v: string): void;
   heightCm: string; setHeightCm(v: string): void;
@@ -221,6 +222,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [orderedInvestigations, setOrderedInvestigations] = useState<string[]>([]);
   const [investigationResults, setInvestigationResults] = useState<Record<string, string>>({});
   const [icdCodes, setIcdCodes] = useState<string[]>([]);
+  const [cptCodes, setCptCodes] = useState<string[]>([]);
 
   const [weightKg, setWeightKg] = useState('');
   const [heightCm, setHeightCm] = useState('');
@@ -297,6 +299,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.orderedInvestigations)) setOrderedInvestigations(d.orderedInvestigations as string[]);
       if (d.investigationResults && typeof d.investigationResults === 'object') setInvestigationResults(d.investigationResults as Record<string, string>);
       if (Array.isArray(d.icdCodes)) setIcdCodes(d.icdCodes as string[]);
+      if (Array.isArray(d.cptCodes)) setCptCodes(d.cptCodes as string[]);
       if (typeof d.weightKg === 'string') setWeightKg(d.weightKg);
       if (typeof d.heightCm === 'string') setHeightCm(d.heightCm);
       if (Array.isArray(d.anatomicalFindings)) setAnatomicalFindings(d.anatomicalFindings as AnatomicalFinding[]);
@@ -324,7 +327,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
       medications, medicationsText, allergies, familyHistory, toxicHabits,
       patientName, age, sex, dob, phone, address, quarter, referredBy,
-      orderedInvestigations, investigationResults, icdCodes,
+      orderedInvestigations, investigationResults, icdCodes, cptCodes,
       weightKg, heightCm, anatomicalFindings, rosFindings, procedureData,
     });
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
@@ -337,7 +340,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
     medications, medicationsText, allergies, familyHistory, toxicHabits,
     patientName, age, sex, dob, phone, address, quarter, referredBy,
-    orderedInvestigations, investigationResults, icdCodes,
+    orderedInvestigations, investigationResults, icdCodes, cptCodes,
     weightKg, heightCm, anatomicalFindings, rosFindings, procedureData]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
@@ -366,7 +369,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
     setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
     setExamFindings({}); setExamNotes({});
-    setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]);
+    setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]); setCptCodes([]);
     setAddress(''); setQuarter(''); setReferredBy('');
     setWeightKg(''); setHeightCm(''); setAnatomicalFindings([]);
     setRosFindings({}); setProcedureData({});
@@ -451,6 +454,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     orderedInvestigations, setOrderedInvestigations,
     investigationResults, setInvestigationResults,
     icdCodes, setIcdCodes,
+    cptCodes, setCptCodes,
     assessment, setAssessment,
     differentials, setDifferentials,
     plan, setPlan,
