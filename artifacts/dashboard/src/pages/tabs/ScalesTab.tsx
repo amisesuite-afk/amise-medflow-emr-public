@@ -8,6 +8,9 @@ import {
   abcd2Score,    interpretAbcd2,    type Abcd2Inputs,
   tg18CholangitisGrade, interpretTg18Cholangitis, type Tg18CholangitisInputs,
   asgeCbdProbability,   interpretAsgeCbd,          type AsgeCbdInputs,
+  interpretWagner, WAGNER_GRADES, type WagnerGrade,
+  news2Score, interpretNews2, type News2Inputs,
+  curb65Score, interpretCurb65, type Curb65Inputs,
   type ScaleResult,
 } from '@/lib/clinical-scales';
 
@@ -378,30 +381,159 @@ function AsgeCbdCard() {
   );
 }
 
+// ─── Wagner ───────────────────────────────────────────────────────────────────
+
+function WagnerCard() {
+  const [grade, setGrade] = useState<WagnerGrade>(0);
+  const result = useMemo(() => interpretWagner(grade), [grade]);
+
+  return (
+    <CollapsibleCard
+      title="Wagner — Diabetic Foot Ulcer Grade"
+      badge={`Grade ${grade}`}
+      badgeVariant={grade >= 3 ? 'danger' : grade >= 2 ? 'warn' : 'default'}
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {WAGNER_GRADES.map(w => (
+          <label
+            key={w.grade}
+            style={{
+              display: 'flex', alignItems: 'flex-start', gap: 10,
+              padding: '10px 12px', borderRadius: 8, cursor: 'pointer',
+              border: grade === w.grade ? '2px solid #0d9488' : '1px solid #e5e7eb',
+              background: grade === w.grade ? '#f0fdfa' : '#fafafa',
+            }}
+          >
+            <input
+              type="radio" name="wagner" value={w.grade}
+              checked={grade === w.grade}
+              onChange={() => setGrade(w.grade as WagnerGrade)}
+              style={{ marginTop: 3, accentColor: '#0d9488' }}
+            />
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 13, color: grade === w.grade ? '#0d9488' : '#111827' }}>{w.label}</div>
+              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{w.description}</div>
+            </div>
+          </label>
+        ))}
+      </div>
+      <ResultBadge result={result} />
+    </CollapsibleCard>
+  );
+}
+
+// ─── NEWS2 ────────────────────────────────────────────────────────────────────
+
+function News2Card() {
+  const { vitals } = useAppContext();
+  const rrAuto   = vitals.respiratoryRate ? parseFloat(vitals.respiratoryRate) : null;
+  const spo2Auto = vitals.spo2           ? parseFloat(vitals.spo2)            : null;
+  const sbpAuto  = vitals.systolicBp     ? parseFloat(vitals.systolicBp)      : null;
+  const hrAuto   = vitals.heartRate      ? parseFloat(vitals.heartRate)       : null;
+  const tempAuto = vitals.temperatureC   ? parseFloat(vitals.temperatureC)    : null;
+
+  const [suppO2, setSuppO2] = useState(false);
+  const [avpu, setAvpu]     = useState<News2Inputs['consciousnessAvpu']>('A');
+
+  const inputs: News2Inputs = { respiratoryRate: rrAuto, spo2: spo2Auto, supplementalO2: suppO2, systolicBp: sbpAuto, heartRate: hrAuto, temperatureC: tempAuto, consciousnessAvpu: avpu };
+  const score  = useMemo(() => news2Score(inputs),  [suppO2, avpu, rrAuto, spo2Auto, sbpAuto, hrAuto, tempAuto]);
+  const result = useMemo(() => interpretNews2(score), [score]);
+
+  const autoTxt = (v: number | null, unit: string) => v !== null ? `${v} ${unit} ✓ auto` : '— (enter in Intake)';
+
+  return (
+    <CollapsibleCard
+      title="NEWS2 — National Early Warning Score"
+      badge={`${score} / 20`}
+      badgeVariant={score >= 7 ? 'danger' : score >= 5 ? 'warn' : 'default'}
+    >
+      <div className="scale-grid">
+        <div className="scale-field"><label className="scale-field__label">Respiratory rate <span className="scale-field__unit">{autoTxt(rrAuto, '/min')}</span></label><input className="scale-field__input" readOnly value={rrAuto != null ? (rrAuto <= 8 ? '+3' : rrAuto <= 11 ? '+1' : rrAuto <= 20 ? '+0' : rrAuto <= 24 ? '+2' : '+3') + ' pts' : '—'} /></div>
+        <div className="scale-field"><label className="scale-field__label">SpO₂ <span className="scale-field__unit">{autoTxt(spo2Auto, '%')}</span></label><input className="scale-field__input" readOnly value={spo2Auto != null ? (spo2Auto <= 91 ? '+3' : spo2Auto <= 93 ? '+2' : spo2Auto <= 95 ? '+1' : '+0') + ' pts' : '—'} /></div>
+        <div className="scale-field"><label className="scale-field__label">Systolic BP <span className="scale-field__unit">{autoTxt(sbpAuto, 'mmHg')}</span></label><input className="scale-field__input" readOnly value={sbpAuto != null ? (sbpAuto <= 90 ? '+3' : sbpAuto <= 100 ? '+2' : sbpAuto <= 110 ? '+1' : sbpAuto >= 220 ? '+3' : '+0') + ' pts' : '—'} /></div>
+        <div className="scale-field"><label className="scale-field__label">Heart rate <span className="scale-field__unit">{autoTxt(hrAuto, 'bpm')}</span></label><input className="scale-field__input" readOnly value={hrAuto != null ? (hrAuto <= 40 ? '+3' : hrAuto <= 50 ? '+1' : hrAuto <= 90 ? '+0' : hrAuto <= 110 ? '+1' : hrAuto <= 130 ? '+2' : '+3') + ' pts' : '—'} /></div>
+        <div className="scale-field"><label className="scale-field__label">Temperature <span className="scale-field__unit">{autoTxt(tempAuto, '°C')}</span></label><input className="scale-field__input" readOnly value={tempAuto != null ? (tempAuto <= 35 ? '+3' : tempAuto <= 36 ? '+1' : tempAuto <= 38 ? '+0' : tempAuto <= 39 ? '+1' : '+2') + ' pts' : '—'} /></div>
+        <Toggle label="Supplemental O₂" checked={suppO2} onChange={setSuppO2} sub="+2 if yes" />
+        <SelectInput label="Consciousness (AVPU)" value={avpu} onChange={v => setAvpu(v as News2Inputs['consciousnessAvpu'])} options={[
+          { value: 'A', label: 'A — Alert (0 pts)' },
+          { value: 'C', label: 'C — New confusion (+3 pts)' },
+          { value: 'V', label: 'V — Voice response (+3 pts)' },
+          { value: 'P', label: 'P — Pain response (+3 pts)' },
+          { value: 'U', label: 'U — Unresponsive (+3 pts)' },
+        ]} />
+      </div>
+      <ResultBadge result={result} />
+    </CollapsibleCard>
+  );
+}
+
+// ─── CURB-65 ──────────────────────────────────────────────────────────────────
+
+function Curb65Card() {
+  const { age, vitals } = useAppContext();
+  const ageNum = age ? parseInt(age) : null;
+  const rrNum  = vitals.respiratoryRate ? parseFloat(vitals.respiratoryRate) : null;
+  const sbpNum = vitals.systolicBp      ? parseFloat(vitals.systolicBp)      : null;
+  const dbpNum = vitals.diastolicBp     ? parseFloat(vitals.diastolicBp)     : null;
+
+  const autoAge65  = ageNum != null && ageNum >= 65;
+  const autoRr30   = rrNum  != null && rrNum  >= 30;
+  const autoBpLow  = sbpNum != null && dbpNum != null && (sbpNum < 90 || dbpNum <= 60);
+
+  const [inputs, setInputs] = useState<Curb65Inputs>({ confusion: false, ureaMmolAbove7: false, respiratoryRateAbove30: autoRr30, bpLow: autoBpLow, age65orAbove: autoAge65 });
+  const upd = (k: keyof Curb65Inputs) => (v: boolean) => setInputs(c => ({ ...c, [k]: v }));
+
+  const score  = useMemo(() => curb65Score(inputs),    [inputs]);
+  const result = useMemo(() => interpretCurb65(score), [score]);
+
+  return (
+    <CollapsibleCard
+      title="CURB-65 — Pneumonia Severity"
+      badge={`${score} / 5`}
+      badgeVariant={score >= 3 ? 'danger' : score === 2 ? 'warn' : 'default'}
+    >
+      <div className="scale-grid">
+        <Toggle label="Confusion (new onset)" checked={inputs.confusion} onChange={upd('confusion')} sub="1 pt" />
+        <Toggle label="Urea > 7 mmol/L" checked={inputs.ureaMmolAbove7} onChange={upd('ureaMmolAbove7')} sub="1 pt (lab required)" />
+        <Toggle label={`RR ≥ 30/min${autoRr30 ? ' ✓ auto' : ''}`} checked={inputs.respiratoryRateAbove30} onChange={upd('respiratoryRateAbove30')} sub="1 pt" />
+        <Toggle label={`BP low (SBP < 90 or DBP ≤ 60)${autoBpLow ? ' ✓ auto' : ''}`} checked={inputs.bpLow} onChange={upd('bpLow')} sub="1 pt" />
+        <Toggle label={`Age ≥ 65${autoAge65 ? ` ✓ auto (${ageNum} yrs)` : ''}`} checked={inputs.age65orAbove} onChange={upd('age65orAbove')} sub="1 pt" />
+      </div>
+      <ResultBadge result={result} />
+    </CollapsibleCard>
+  );
+}
+
 // ─── Main tab ────────────────────────────────────────────────────────────────
 
 export default function ScalesTab() {
   const { symptoms } = useAppContext();
 
-  const hasBiliary = symptoms.some(s => ['jaundice', 'dark urine', 'pale stool', 'abdominal pain'].includes(s));
+  const hasBiliary  = symptoms.some(s => ['jaundice', 'dark urine', 'pale stool', 'abdominal pain', 'biliary colic', 'right upper quadrant pain'].includes(s));
   const hasChestPain = symptoms.includes('chest pain');
-  const hasSob = symptoms.includes('shortness of breath');
-  const hasAbdPain = symptoms.includes('abdominal pain');
+  const hasSob      = symptoms.some(s => ['shortness of breath', 'cough', 'productive cough', 'dyspnoea on exertion'].includes(s));
+  const hasAbdPain  = symptoms.some(s => ['abdominal pain', 'epigastric pain', 'right upper quadrant pain'].includes(s));
+  const hasDiabFoot = symptoms.some(s => ['diabetic foot infection', 'foot ulcer', 'leg ulcer'].includes(s));
+  const hasPneumonia = symptoms.some(s => ['cough', 'shortness of breath', 'productive cough', 'pleuritic chest pain'].includes(s));
 
   return (
     <div className="gap-y">
       <div className="scales-intro">
-        <strong>Clinical Decision Tools</strong> — Deterministic scoring; no AI. Items are auto-populated where intake data is available. Enter lab results below to complete scores.
+        <strong>Clinical Decision Tools</strong> — Deterministic scoring; no AI. Parameters auto-populate from intake vitals where available.
       </div>
 
-      {/* Show most relevant scales first based on symptoms */}
+      <News2Card />
+
+      {hasDiabFoot && <WagnerCard />}
       {hasBiliary && <Tg18CholangitisCard />}
       {hasBiliary && <AsgeCbdCard />}
       {hasAbdPain && !hasBiliary && <AlvaradoCard />}
       {hasChestPain && <HeartCard />}
       {(hasChestPain || hasSob) && <WellsPeCard />}
+      {hasPneumonia && <Curb65Card />}
 
-      {/* Always show all */}
+      {!hasDiabFoot && <WagnerCard />}
+      {!hasPneumonia && <Curb65Card />}
       {!hasAbdPain && !hasBiliary && <AlvaradoCard />}
       {!hasChestPain && <HeartCard />}
       {!hasChestPain && !hasSob && <WellsPeCard />}

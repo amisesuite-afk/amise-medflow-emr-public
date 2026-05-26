@@ -317,3 +317,115 @@ export function interpretAsgeCbd(prob: AsgeProbability): ScaleResult {
     evidence,
   };
 }
+
+// ─── Wagner Diabetic Foot Ulcer Grade ────────────────────────────────────────
+
+export type WagnerGrade = 0 | 1 | 2 | 3 | 4 | 5;
+
+export interface WagnerDescription {
+  grade: WagnerGrade;
+  label: string;
+  description: string;
+  management: string;
+}
+
+export const WAGNER_GRADES: WagnerDescription[] = [
+  { grade: 0, label: 'Grade 0 — Pre-ulcerative', description: 'Intact skin. High-risk foot: callus, blisters, dry fissures, nail deformity.', management: 'Preventive podiatry. Custom footwear and pressure offloading. Glycaemic optimisation. Patient education. Monthly review.' },
+  { grade: 1, label: 'Grade 1 — Superficial ulcer', description: 'Full-thickness skin loss. Ulcer through epidermis and dermis. No subcutaneous involvement.', management: 'Wound care (moist dressings). Offloading device (total contact cast / CROW boot). Weekly review. Glycaemic control. Exclude infection.' },
+  { grade: 2, label: 'Grade 2 — Deep ulcer', description: 'Ulcer extends to tendon, joint capsule, or bone. No abscess or osteomyelitis.', management: 'Debridement and wound care. IV antibiotics if infection signs. Vascular assessment (ABI, Doppler). Consider admission. Surgical team review.' },
+  { grade: 3, label: 'Grade 3 — Deep ulcer + infection', description: 'Deep ulcer with abscess, osteomyelitis, or septic arthritis.', management: 'ADMIT. IV broad-spectrum antibiotics (pip-tazo 4.5g TDS). Surgical drainage and debridement. X-ray ± MRI for osteomyelitis. Vascular surgery referral. MDT review.' },
+  { grade: 4, label: 'Grade 4 — Forefoot gangrene', description: 'Gangrene limited to toes or forefoot.', management: 'Urgent surgical assessment. Vascular team — consider revascularisation. Debridement vs partial amputation. IV antibiotics. HDU monitoring.' },
+  { grade: 5, label: 'Grade 5 — Whole foot gangrene', description: 'Extensive gangrene involving the whole foot.', management: 'Major amputation likely. Vascular surgery and surgical MDT. Discuss goals of care. Palliative care involvement if appropriate.' },
+];
+
+export function interpretWagner(grade: WagnerGrade): ScaleResult {
+  const colors: Record<WagnerGrade, ScaleResult['color']> = { 0: 'green', 1: 'green', 2: 'amber', 3: 'red', 4: 'red', 5: 'red' };
+  const w = WAGNER_GRADES[grade];
+  return {
+    score: grade,
+    band: w.label,
+    description: w.description,
+    action: w.management,
+    evidence: 'Wagner FW. The dysvascular foot: a system for diagnosis and treatment. Foot Ankle 1981.',
+    color: colors[grade],
+  };
+}
+
+// ─── NEWS2 ────────────────────────────────────────────────────────────────────
+
+export interface News2Inputs {
+  respiratoryRate: number | null;
+  spo2: number | null;
+  supplementalO2: boolean;
+  systolicBp: number | null;
+  heartRate: number | null;
+  temperatureC: number | null;
+  consciousnessAvpu: 'A' | 'C' | 'V' | 'P' | 'U';
+}
+
+export function news2Score(i: News2Inputs): number {
+  let s = 0;
+  if (i.respiratoryRate !== null) {
+    if (i.respiratoryRate <= 8) s += 3;
+    else if (i.respiratoryRate <= 11) s += 1;
+    else if (i.respiratoryRate <= 20) s += 0;
+    else if (i.respiratoryRate <= 24) s += 2;
+    else s += 3;
+  }
+  if (i.spo2 !== null) {
+    if (i.spo2 <= 91) s += 3;
+    else if (i.spo2 <= 93) s += 2;
+    else if (i.spo2 <= 95) s += 1;
+  }
+  if (i.supplementalO2) s += 2;
+  if (i.systolicBp !== null) {
+    if (i.systolicBp <= 90) s += 3;
+    else if (i.systolicBp <= 100) s += 2;
+    else if (i.systolicBp <= 110) s += 1;
+    else if (i.systolicBp >= 220) s += 3;
+  }
+  if (i.heartRate !== null) {
+    if (i.heartRate <= 40) s += 3;
+    else if (i.heartRate <= 50) s += 1;
+    else if (i.heartRate <= 90) s += 0;
+    else if (i.heartRate <= 110) s += 1;
+    else if (i.heartRate <= 130) s += 2;
+    else s += 3;
+  }
+  if (i.consciousnessAvpu !== 'A') s += 3;
+  if (i.temperatureC !== null) {
+    if (i.temperatureC <= 35.0) s += 3;
+    else if (i.temperatureC <= 36.0) s += 1;
+    else if (i.temperatureC <= 38.0) s += 0;
+    else if (i.temperatureC <= 39.0) s += 1;
+    else s += 2;
+  }
+  return s;
+}
+
+export function interpretNews2(score: number): ScaleResult {
+  if (score === 0) return { score, band: 'Score 0 — Low Risk', description: 'All parameters within normal range.', action: 'Routine assessment. Reassess within 12 hours.', evidence: 'Royal College of Physicians. NEWS2 (2017).', color: 'green' };
+  if (score <= 4) return { score, band: `Score ${score} — Low Risk`, description: 'Minor physiological derangement.', action: 'Minimum 4–6 hourly monitoring. Consider increasing frequency if any single parameter scores 3.', evidence: 'Royal College of Physicians. NEWS2 (2017).', color: 'green' };
+  if (score <= 6) return { score, band: `Score ${score} — Medium Risk`, description: 'Urgent clinical review required.', action: 'Urgent nurse/doctor review. Increase monitoring to at least hourly. Escalate to senior clinician.', evidence: 'Royal College of Physicians. NEWS2 (2017).', color: 'amber' };
+  return { score, band: `Score ${score} — HIGH Risk`, description: 'Emergency response required.', action: 'EMERGENCY: Continuous monitoring. Immediate senior clinician review. Activate rapid response team. Consider ICU/HDU.', evidence: 'Royal College of Physicians. NEWS2 (2017).', color: 'red' };
+}
+
+// ─── CURB-65 ──────────────────────────────────────────────────────────────────
+
+export interface Curb65Inputs {
+  confusion: boolean;
+  ureaMmolAbove7: boolean;
+  respiratoryRateAbove30: boolean;
+  bpLow: boolean;
+  age65orAbove: boolean;
+}
+
+export function curb65Score(i: Curb65Inputs): number {
+  return [i.confusion, i.ureaMmolAbove7, i.respiratoryRateAbove30, i.bpLow, i.age65orAbove].filter(Boolean).length;
+}
+
+export function interpretCurb65(score: number): ScaleResult {
+  if (score <= 1) return { score, band: `CURB-65: ${score} — Low Risk`, description: '30-day mortality < 3%. Likely suitable for outpatient treatment.', action: 'Outpatient oral antibiotics. Safety-net advice. Return if not improving at 48h or any deterioration.', evidence: 'Lim et al., Thorax 2003. BTS guidelines.', color: 'green' };
+  if (score === 2) return { score, band: 'CURB-65: 2 — Moderate Risk', description: '30-day mortality ~9%. Short-stay or closely supervised outpatient.', action: 'Consider admission for IV antibiotics and monitoring. Reassess at 24h.', evidence: 'Lim et al., Thorax 2003. BTS guidelines.', color: 'amber' };
+  return { score, band: `CURB-65: ${score} — High Risk`, description: `30-day mortality ${score === 3 ? '~17%' : score === 4 ? '~42%' : '>50%'}. Severe pneumonia.`, action: 'Hospital admission. IV antibiotics (dual therapy). Consider ITU/HDU if score ≥ 4. Urgent senior review.', evidence: 'Lim et al., Thorax 2003. BTS guidelines.', color: 'red' };
+}

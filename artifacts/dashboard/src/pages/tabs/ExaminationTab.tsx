@@ -61,9 +61,10 @@ const EXAM_SYSTEMS: ExamSystem[] = [
     icon: '🩹',
     legacyKey: 'examWound',
     chips: [
-      'Wagner 0', 'Wagner 1', 'Wagner 2', 'Wagner 3', 'Wagner 4', 'Wagner 5',
-      'Granulating', 'Sloughy', 'Necrotic', 'Cellulitis', 'Abscess',
-      'Osteomyelitis suspected', 'Pulses absent', 'Sensation reduced',
+      'Granulating', 'Sloughy', 'Necrotic', 'Dry gangrene', 'Wet gangrene',
+      'Cellulitis', 'Abscess', 'Osteomyelitis suspected',
+      'Exposed tendon', 'Exposed bone', 'Pulses absent', 'Sensation reduced',
+      'Malodorous', 'Undermining present',
     ],
   },
   {

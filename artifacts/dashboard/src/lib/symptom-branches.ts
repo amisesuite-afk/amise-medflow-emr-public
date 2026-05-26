@@ -83,4 +83,45 @@ export const SYMPTOM_BRANCHES: Record<string, SymptomBranch[]> = {
     { question: 'Location', options: ['Toe / digit', 'Forefoot', 'Heel', 'Dorsum', 'Sole', 'Multiple areas'] },
     { question: 'Associated', options: ['Fever', 'Spreading redness', 'Loss of sensation', 'Foul odour', 'Exposed bone / tendon', 'Purulent discharge', 'Poor peripheral pulses'] },
   ],
+  'headache': [
+    { question: 'Location', options: ['Frontal', 'Temporal (L)', 'Temporal (R)', 'Occipital', 'Vertex', 'Hemicranial', 'Generalised'] },
+    { question: 'Character', options: ['Throbbing / pulsating', 'Pressure / band-like', 'Stabbing / lancinating', 'Dull ache', 'Thunderclap (sudden worst-ever)'] },
+    { question: 'Associated', options: ['Nausea / vomiting', 'Photophobia', 'Phonophobia', 'Visual aura', 'Neck stiffness', 'Fever', 'Worsened by movement', 'Facial pain', 'Watering eye'] },
+    { question: 'Pattern', options: ['First / worst ever', 'Recurrent episodes', 'Constant', 'Progressive worsening', 'Morning headache', 'Wakes from sleep', 'Worsened by lying flat'] },
+  ],
+  'dizziness': [
+    { question: 'Type', options: ['True vertigo (room spinning)', 'Lightheadedness / pre-syncope', 'Disequilibrium', 'Presyncope on standing'] },
+    { question: 'Trigger', options: ['Positional (BPPV?)', 'Spontaneous', 'On standing', 'With head movement', 'Continuous'] },
+    { question: 'Associated', options: ['Hearing loss', 'Tinnitus', 'Nausea / vomiting', 'Palpitations', 'Unsteady gait', 'Ear fullness', 'Facial numbness'] },
+  ],
+  'back pain': [
+    { question: 'Location', options: ['Cervical (neck)', 'Thoracic (upper back)', 'Lumbar (lower back)', 'Sacral', 'Coccygeal'] },
+    { question: 'Radiation', options: ['Down leg (sciatica)', 'To groin', 'To arm / shoulder', 'Bilateral legs', 'No radiation'] },
+    { question: 'Red flags', options: ['Bladder / bowel dysfunction', 'Saddle anaesthesia', 'Progressive weakness', 'Night pain', 'Known malignancy', 'IV drug use', 'Fever'] },
+    { question: 'Character', options: ['Mechanical (better with rest)', 'Inflammatory (worse at rest)', 'Colicky', 'Constant', 'Sharp', 'Dull ache'] },
+  ],
+  'lower back pain': [
+    { question: 'Radiation', options: ['Down leg (sciatica)', 'To groin / testicle', 'Bilateral', 'No radiation'] },
+    { question: 'Red flags', options: ['Bladder / bowel dysfunction', 'Saddle anaesthesia', 'Progressive weakness', 'Night sweats', 'Weight loss', 'Known cancer'] },
+    { question: 'Character', options: ['Mechanical (better with rest)', 'Constant', 'Colicky (renal colic?)', 'Worse at night'] },
+  ],
+  'joint pain': [
+    { question: 'Which joint', options: ['Knee', 'Hip', 'Shoulder', 'Ankle', 'Wrist', 'Elbow', 'Small hand joints', 'Multiple joints'] },
+    { question: 'Characteristics', options: ['Swollen', 'Hot / erythematous', 'Morning stiffness > 1 hr', 'Worse with activity', 'Locked', 'Giving way', 'Bilateral / symmetrical'] },
+    { question: 'Associated', options: ['Fever', 'Rash', 'Eye involvement', 'Bowel symptoms', 'Skin psoriasis', 'Recent infection', 'Trauma'] },
+  ],
+  'rash': [
+    { question: 'Distribution', options: ['Face', 'Trunk', 'Limbs', 'Generalised', 'Flexural', 'Sun-exposed areas', 'Palms and soles', 'Dermatomal (unilateral strip)'] },
+    { question: 'Character', options: ['Maculopapular', 'Vesicular / blistering', 'Urticarial (wheals)', 'Purpuric (non-blanching)', 'Scaly / plaque', 'Erosions / ulcers'] },
+    { question: 'Associated', options: ['Pruritus', 'Fever', 'Joint pain', 'Recent medication', 'Recent illness', 'Contact exposure'] },
+  ],
+  'syncope': [
+    { question: 'Setting', options: ['Prolonged standing', 'On exertion', 'Sudden emotional trigger', 'On standing from lying', 'During micturition / defaecation', 'No identifiable trigger'] },
+    { question: 'Features', options: ['Warning (sweating / nausea)', 'No warning', 'Witnessed convulsions', 'Tongue bite', 'Incontinence', 'Rapid recovery', 'Prolonged confusion after'] },
+    { question: 'Associated', options: ['Palpitations', 'Chest pain', 'Shortness of breath', 'Headache afterwards'] },
+  ],
+  'pelvic pain': [
+    { question: 'Timing', options: ['Cyclical (related to period)', 'Constant', 'Mid-cycle', 'Post-coital', 'With urination', 'With bowel movement'] },
+    { question: 'Associated', options: ['Vaginal discharge', 'Abnormal bleeding', 'Fever', 'Urinary symptoms', 'Bowel symptoms', 'Shoulder tip pain'] },
+  ],
 };
