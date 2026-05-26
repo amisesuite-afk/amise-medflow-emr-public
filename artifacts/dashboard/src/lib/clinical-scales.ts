@@ -429,3 +429,258 @@ export function interpretCurb65(score: number): ScaleResult {
   if (score === 2) return { score, band: 'CURB-65: 2 — Moderate Risk', description: '30-day mortality ~9%. Short-stay or closely supervised outpatient.', action: 'Consider admission for IV antibiotics and monitoring. Reassess at 24h.', evidence: 'Lim et al., Thorax 2003. BTS guidelines.', color: 'amber' };
   return { score, band: `CURB-65: ${score} — High Risk`, description: `30-day mortality ${score === 3 ? '~17%' : score === 4 ? '~42%' : '>50%'}. Severe pneumonia.`, action: 'Hospital admission. IV antibiotics (dual therapy). Consider ITU/HDU if score ≥ 4. Urgent senior review.', evidence: 'Lim et al., Thorax 2003. BTS guidelines.', color: 'red' };
 }
+
+// ─── Wells DVT Score ──────────────────────────────────────────────────────────
+
+export interface WellsDvtInputs {
+  activeCancer: boolean;           // 1 pt
+  paralysisParesis: boolean;       // 1 pt — paralysis, paresis, or recent plaster immobilisation
+  bedridden3Days: boolean;         // 1 pt — recently bedridden ≥3 days or major surgery <12 wks
+  localTenderness: boolean;        // 1 pt — localised tenderness along deep venous system
+  entireLegSwollen: boolean;       // 1 pt
+  calfSwelling3cm: boolean;        // 1 pt — calf swelling >3 cm vs asymptomatic side
+  pittingOedema: boolean;          // 1 pt — symptomatic leg only
+  collateralVeins: boolean;        // 1 pt — non-varicose collateral superficial veins
+  previousDvt: boolean;            // 1 pt — previously documented DVT
+  alternativeDx: boolean;          // -2 pts — alternative diagnosis at least as likely
+}
+
+export function wellsDvtScore(i: WellsDvtInputs): number {
+  return (
+    (i.activeCancer ? 1 : 0) +
+    (i.paralysisParesis ? 1 : 0) +
+    (i.bedridden3Days ? 1 : 0) +
+    (i.localTenderness ? 1 : 0) +
+    (i.entireLegSwollen ? 1 : 0) +
+    (i.calfSwelling3cm ? 1 : 0) +
+    (i.pittingOedema ? 1 : 0) +
+    (i.collateralVeins ? 1 : 0) +
+    (i.previousDvt ? 1 : 0) +
+    (i.alternativeDx ? -2 : 0)
+  );
+}
+
+export function interpretWellsDvt(score: number): ScaleResult {
+  const evidence = 'Wells et al., Lancet 1997; modified Wells 2003. Validated in Caribbean / tropical settings.';
+  if (score <= 0) return {
+    score, band: 'LOW PROBABILITY', color: 'green',
+    description: 'DVT unlikely. D-dimer recommended to exclude.',
+    action: 'D-dimer: if negative, DVT excluded. If positive, proceed to compression ultrasound.',
+    evidence,
+  };
+  if (score <= 2) return {
+    score, band: 'MODERATE PROBABILITY', color: 'amber',
+    description: 'Moderate pre-test probability of DVT.',
+    action: 'Compression duplex ultrasound. If negative and high clinical suspicion, repeat USS in 1 week. Anticoagulate while awaiting.',
+    evidence,
+  };
+  return {
+    score, band: 'HIGH PROBABILITY', color: 'red',
+    description: 'High pre-test probability. DVT likely.',
+    action: 'Compression duplex ultrasound urgently. Start therapeutic anticoagulation (LMWH) without waiting for USS result unless contraindicated.',
+    evidence,
+  };
+}
+
+// ─── Glasgow-Blatchford Score (pre-endoscopy GI bleed) ───────────────────────
+
+export interface GlasgowBlatchfordInputs {
+  ureaMmol: number | null;         // blood urea nitrogen (lab)
+  haemoglobinMale: number | null;  // if male (g/dL, lab)
+  haemoglobinFemale: number | null; // if female (g/dL, lab)
+  isMale: boolean;
+  systolicBp: number | null;       // auto from vitals
+  heartRateAbove100: boolean;      // auto from vitals
+  melaena: boolean;                // clinical
+  syncope: boolean;                // clinical
+  liverDisease: boolean;           // clinical history
+  cardiacFailure: boolean;         // clinical history
+}
+
+export function glasgowBlatchfordScore(i: GlasgowBlatchfordInputs): number {
+  let s = 0;
+  // Blood urea
+  if (i.ureaMmol !== null) {
+    if (i.ureaMmol >= 25) s += 6;
+    else if (i.ureaMmol >= 10) s += 4;
+    else if (i.ureaMmol >= 8) s += 3;
+    else if (i.ureaMmol >= 6.5) s += 2;
+  }
+  // Haemoglobin
+  const hb = i.isMale ? i.haemoglobinMale : i.haemoglobinFemale;
+  if (hb !== null) {
+    if (i.isMale) {
+      if (hb < 10) s += 6;
+      else if (hb < 12) s += 3;
+      else if (hb < 13) s += 1;
+    } else {
+      if (hb < 10) s += 6;
+      else if (hb < 12) s += 1;
+    }
+  }
+  // Systolic BP
+  if (i.systolicBp !== null) {
+    if (i.systolicBp < 90) s += 3;
+    else if (i.systolicBp < 100) s += 2;
+    else if (i.systolicBp < 110) s += 1;
+  }
+  if (i.heartRateAbove100) s += 1;
+  if (i.melaena) s += 1;
+  if (i.syncope) s += 2;
+  if (i.liverDisease) s += 2;
+  if (i.cardiacFailure) s += 2;
+  return s;
+}
+
+export function interpretGlasgowBlatchford(score: number): ScaleResult {
+  const evidence = 'Blatchford et al., Lancet 2000. Validated for pre-endoscopy risk stratification of UGIB.';
+  if (score === 0) return {
+    score, band: 'Score 0 — Very Low Risk', color: 'green',
+    description: 'Very low risk of requiring intervention. Safe for outpatient management.',
+    action: 'Outpatient management appropriate. Arrange elective OGD. Clear safety-net advice.',
+    evidence,
+  };
+  if (score <= 2) return {
+    score, band: `Score ${score} — Low Risk`, color: 'green',
+    description: 'Low risk of requiring blood transfusion or endoscopic intervention.',
+    action: 'Early outpatient endoscopy or 24-h assessment ward. Avoid immediate admission if clinically stable.',
+    evidence,
+  };
+  if (score <= 6) return {
+    score, band: `Score ${score} — Moderate Risk`, color: 'amber',
+    description: 'Moderate risk. Likely to need endoscopic intervention.',
+    action: 'Admit for urgent endoscopy within 24 hours. IV access, cross-match, resuscitate as needed.',
+    evidence,
+  };
+  return {
+    score, band: `Score ${score} — High Risk`, color: 'red',
+    description: 'High risk of requiring transfusion, endoscopic therapy, or surgery.',
+    action: 'Immediate resuscitation. Urgent OGD within 12h. Senior surgical review. Activate major haemorrhage protocol if haemodynamically unstable.',
+    evidence,
+  };
+}
+
+// ─── Revised Cardiac Risk Index (RCRI) — Pre-operative ───────────────────────
+
+export interface RcriInputs {
+  highRiskSurgery: boolean;      // intraperitoneal, intrathoracic, or suprainguinal vascular
+  ischemicHeartDisease: boolean; // Hx of MI, positive stress test, angina, nitrate use, Q waves
+  congestiveHeartFailure: boolean;
+  cerebrovascularDisease: boolean; // Hx of stroke or TIA
+  insulinDependentDiabetes: boolean;
+  creatinineAbove177: boolean;   // serum Cr > 177 µmol/L (2 mg/dL)
+}
+
+export function rcriScore(i: RcriInputs): number {
+  return [
+    i.highRiskSurgery, i.ischemicHeartDisease, i.congestiveHeartFailure,
+    i.cerebrovascularDisease, i.insulinDependentDiabetes, i.creatinineAbove177,
+  ].filter(Boolean).length;
+}
+
+export function interpretRcri(score: number): ScaleResult {
+  const evidence = 'Lee et al., Circulation 1999. Endorsed by ACC/AHA guidelines for pre-operative cardiac risk.';
+  if (score === 0) return {
+    score, band: 'RCRI 0 — Very Low Risk', color: 'green',
+    description: 'Major cardiac event risk < 1%. Proceed with planned surgery.',
+    action: 'No additional cardiac workup required. Standard pre-operative assessment sufficient.',
+    evidence,
+  };
+  if (score === 1) return {
+    score, band: 'RCRI 1 — Low Risk', color: 'green',
+    description: 'Major cardiac event risk ~1%.',
+    action: 'Proceed with planned surgery. Optimise modifiable risk factors. Consider pre-op ECG.',
+    evidence,
+  };
+  if (score === 2) return {
+    score, band: 'RCRI 2 — Moderate Risk', color: 'amber',
+    description: 'Major cardiac event risk ~7%.',
+    action: 'Consider cardiology referral for high-risk patients. Optimise medical therapy. Beta-blocker if indicated. Peri-operative monitoring.',
+    evidence,
+  };
+  return {
+    score, band: `RCRI ${score} — High Risk`, color: 'red',
+    description: `Major cardiac event risk ${score === 3 ? '~11%' : '>15%'}.`,
+    action: 'Cardiology referral recommended. Consider further non-invasive testing. Weigh surgical risk vs benefit. Discuss with patient.',
+    evidence,
+  };
+}
+
+// ─── Pre-endoscopy Rockall Score (clinical criteria only) ────────────────────
+
+export interface PreRockallInputs {
+  age: number | null;             // 0: <60 | 1: 60-79 | 2: ≥80
+  haemodynamicShock: 'none' | 'tachycardia' | 'hypotension'; // 0 | 1 | 2
+  comorbidity: 'none' | 'cardiac_renal' | 'liver_cancer'; // 0 | 2 | 3
+}
+
+export function preRockallScore(i: PreRockallInputs): number {
+  let s = 0;
+  if (i.age !== null) {
+    if (i.age >= 80) s += 2;
+    else if (i.age >= 60) s += 1;
+  }
+  if (i.haemodynamicShock === 'tachycardia') s += 1;
+  else if (i.haemodynamicShock === 'hypotension') s += 2;
+  if (i.comorbidity === 'cardiac_renal') s += 2;
+  else if (i.comorbidity === 'liver_cancer') s += 3;
+  return s;
+}
+
+export function interpretPreRockall(score: number): ScaleResult {
+  const evidence = 'Rockall et al., Gut 1996. Pre-endoscopy score (clinical criteria only). Full Rockall adds endoscopic findings.';
+  if (score <= 1) return {
+    score, band: `Pre-Rockall ${score} — Low Risk`, color: 'green',
+    description: 'Low risk of re-bleeding or death. Suitable for outpatient/early discharge pathway.',
+    action: 'Early discharge or outpatient endoscopy appropriate. Clear safety-net instructions.',
+    evidence,
+  };
+  if (score <= 3) return {
+    score, band: `Pre-Rockall ${score} — Moderate Risk`, color: 'amber',
+    description: 'Moderate risk. Inpatient endoscopy warranted.',
+    action: 'Admit for urgent endoscopy. Resuscitate. Senior review.',
+    evidence,
+  };
+  return {
+    score, band: `Pre-Rockall ${score} — High Risk`, color: 'red',
+    description: 'High risk of re-bleeding or in-hospital death.',
+    action: 'Emergency endoscopy after resuscitation. Senior gastroenterology/surgical review. ICU consideration.',
+    evidence,
+  };
+}
+
+// ─── Ranson's Criteria (pancreatitis — at admission, clinical + basic labs) ──
+
+export interface RansonAdmissionInputs {
+  age55orAbove: boolean;          // clinical
+  wbcAbove16: boolean;            // lab: WBC > 16,000
+  glucoseAbove11: boolean;        // semi-lab: glucose > 11.1 mmol/L (blood glucose monitor)
+  ldhAbove350: boolean;           // lab
+  astAbove250: boolean;           // lab
+}
+
+export function ransonAdmissionScore(i: RansonAdmissionInputs): number {
+  return [i.age55orAbove, i.wbcAbove16, i.glucoseAbove11, i.ldhAbove350, i.astAbove250].filter(Boolean).length;
+}
+
+export function interpretRansonAdmission(score: number): ScaleResult {
+  const evidence = 'Ranson et al., Surg Gynecol Obstet 1974. Admission criteria only (full score requires 48h labs).';
+  if (score <= 1) return {
+    score, band: `Ranson ${score} — Low Severity`, color: 'green',
+    description: 'Mild acute pancreatitis likely. Mortality < 1%.',
+    action: 'IV fluids, analgesia, NPO. Monitor closely. Consider CT if clinical deterioration.',
+    evidence,
+  };
+  if (score <= 2) return {
+    score, band: `Ranson ${score} — Moderate`, color: 'amber',
+    description: 'Moderate severity. Mortality ~15%.',
+    action: 'Admit. IV fluids (aggressive early hydration). Monitor for local/systemic complications. Early CT consideration. HDU if available.',
+    evidence,
+  };
+  return {
+    score, band: `Ranson ${score} — Severe`, color: 'red',
+    description: `Severe acute pancreatitis. Mortality ${score <= 4 ? '~40%' : '>50%'}.`,
+    action: 'ICU admission. Aggressive fluid resuscitation. Early CT with contrast (>72h). Multidisciplinary team. Consider ERCP if gallstone pancreatitis.',
+    evidence,
+  };
+}
