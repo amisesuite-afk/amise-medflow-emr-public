@@ -7,7 +7,7 @@ import { updateDefaultSite } from '@/lib/db';
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
   | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
-  | 'allergies' | 'toxic' | 'scales' | 'examination' | 'investigations' | 'assessment' | 'plan'
+  | 'allergies' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations' | 'assessment' | 'plan'
   | 'procedures' | 'billing' | 'documents';
 
 export type TopSection =
@@ -43,6 +43,12 @@ export interface AnatomicalFinding {
   zone: string;
   subLocation?: string;
   findings: string[];
+  notes: string;
+}
+
+export interface RosFinding {
+  status: 'normal' | 'positive' | 'negative' | 'not-asked';
+  details: string[];
   notes: string;
 }
 
@@ -114,6 +120,9 @@ interface CtxValue {
   heightCm: string; setHeightCm(v: string): void;
 
   anatomicalFindings: AnatomicalFinding[]; setAnatomicalFindings(v: AnatomicalFinding[]): void;
+  rosFindings: Record<string, RosFinding>; setRosFindings(v: Record<string, RosFinding>): void;
+
+  procedureData: Record<string, unknown>; setProcedureData(v: Record<string, unknown>): void;
 
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
@@ -216,6 +225,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [weightKg, setWeightKg] = useState('');
   const [heightCm, setHeightCm] = useState('');
   const [anatomicalFindings, setAnatomicalFindings] = useState<AnatomicalFinding[]>([]);
+  const [rosFindings, setRosFindings] = useState<Record<string, RosFinding>>({});
+  const [procedureData, setProcedureData] = useState<Record<string, unknown>>({});
 
   const [assessment, setAssessment] = useState('');
   const [differentials, setDifferentials] = useState('');
@@ -289,6 +300,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.weightKg === 'string') setWeightKg(d.weightKg);
       if (typeof d.heightCm === 'string') setHeightCm(d.heightCm);
       if (Array.isArray(d.anatomicalFindings)) setAnatomicalFindings(d.anatomicalFindings as AnatomicalFinding[]);
+      if (d.rosFindings && typeof d.rosFindings === 'object') setRosFindings(d.rosFindings as Record<string, RosFinding>);
+      if (d.procedureData && typeof d.procedureData === 'object') setProcedureData(d.procedureData as Record<string, unknown>);
     } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -312,7 +325,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       medications, medicationsText, allergies, familyHistory, toxicHabits,
       patientName, age, sex, dob, phone, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes,
-      weightKg, heightCm, anatomicalFindings,
+      weightKg, heightCm, anatomicalFindings, rosFindings, procedureData,
     });
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
@@ -325,7 +338,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     medications, medicationsText, allergies, familyHistory, toxicHabits,
     patientName, age, sex, dob, phone, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes,
-    weightKg, heightCm, anatomicalFindings]);
+    weightKg, heightCm, anatomicalFindings, rosFindings, procedureData]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -356,6 +369,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]);
     setAddress(''); setQuarter(''); setReferredBy('');
     setWeightKg(''); setHeightCm(''); setAnatomicalFindings([]);
+    setRosFindings({}); setProcedureData({});
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     try { localStorage.removeItem(ENC_KEY); } catch { /* ignore */ }
@@ -450,6 +464,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     weightKg, setWeightKg,
     heightCm, setHeightCm,
     anatomicalFindings, setAnatomicalFindings,
+    rosFindings, setRosFindings,
+    procedureData, setProcedureData,
     triageResult,
   };
 

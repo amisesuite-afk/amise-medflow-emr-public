@@ -3,7 +3,7 @@ import {
   Scissors, CalendarDays, Receipt, BarChart2, Settings,
   PanelLeftClose, PanelLeftOpen, AlertTriangle, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
-  FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical,
+  FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -38,6 +38,7 @@ const CLINICAL_SUB: {
   { id: 'allergies',   icon: ShieldAlert,    label: 'Allergies' },
   { id: 'toxic',       icon: Cigarette,      label: 'Toxic Habits' },
   { id: 'scales',      icon: ClipboardCheck, label: 'Scales' },
+  { id: 'ros',         icon: ListChecks,     label: 'Review of Systems' },
   { id: 'examination',     icon: Stethoscope,    label: 'Examination',    minRole: 'nurse' },
   { id: 'investigations', icon: FlaskConical,   label: 'Investigations', minRole: 'nurse' },
   { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },

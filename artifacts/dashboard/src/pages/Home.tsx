@@ -21,6 +21,7 @@ import BillingTab from './tabs/BillingTab';
 import DocumentsTab from './tabs/DocumentsTab';
 import PatientSearchTab from './tabs/PatientSearchTab';
 import ScalesTab from './tabs/ScalesTab';
+import RosTab from './tabs/RosTab';
 import SummaryTab from './tabs/SummaryTab';
 import DashboardTab from './tabs/DashboardTab';
 import SchedulingTab from './tabs/SchedulingTab';
@@ -140,6 +141,7 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'allergies'   && <AllergiesTab />}
         {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
         {topSection === 'consultation'  && activeSection === 'scales'      && <ScalesTab />}
+        {topSection === 'consultation'  && activeSection === 'ros'         && <RosTab />}
         {topSection === 'consultation'  && activeSection === 'examination'     && hasRole(userRole, 'nurse')  && <ExaminationTab />}
         {topSection === 'consultation'  && activeSection === 'investigations' && hasRole(userRole, 'nurse')  && <InvestigationsTab />}
         {topSection === 'consultation'  && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
