@@ -1579,9 +1579,66 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   .exam-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 660px) {
-  .app { grid-template-columns: 1fr; grid-template-rows: 58px 42px 1fr; }
-  .sidebar { grid-row: 2; grid-column: 1; display: flex; overflow-x: auto; overflow-y: hidden; padding: 0 4px; height: 42px; border-right: none; border-bottom: 1px solid #1c3e37; }
-  .nav-item { padding: 4px 10px; white-space: nowrap; }
+  /* Horizontal nav bar layout */
+  .app { grid-template-columns: 1fr !important; grid-template-rows: 58px auto 1fr; }
+  .nav-sidebar {
+    grid-row: 2 !important; grid-column: 1 !important;
+    flex-direction: column !important;
+    width: 100% !important; height: auto !important;
+    border-right: none; border-bottom: 1px solid #1c3e37;
+  }
+  .nav-sidebar__body {
+    flex-direction: row !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    overflow-x: visible; overflow-y: visible;
+    height: auto; padding: 0; align-items: stretch;
+  }
+  .nav-sidebar__body::-webkit-scrollbar { height: 0; width: 0; }
+  /* Top-level items — first row, scrollable */
+  .nsb-section { display: contents; }
+  .nsb-section-label { display: none !important; }
+  /* Wrap individual item divs into a scrollable first row */
+  .nav-sidebar__body > div:not(.nsb-toggle) {
+    display: contents;
+  }
+  .nsb-item {
+    flex-shrink: 0;
+    flex-direction: row !important;
+    width: auto !important;
+    height: 40px !important; padding: 0 12px !important;
+    white-space: nowrap; border-radius: 0;
+    font-size: 12px;
+  }
+  .nsb-icon { display: none !important; }
+  .nsb-chevron { display: none !important; }
+  /* Sub-item strip — second full-width row */
+  .nsb-sub {
+    flex: 0 0 100% !important;
+    flex-direction: row !important;
+    display: flex !important;
+    overflow-x: auto; overflow-y: hidden;
+    border-top: 1px solid #1c3e37; background: rgba(0,0,0,.3);
+    padding: 0 4px; order: 999;
+  }
+  .nsb-sub::-webkit-scrollbar { height: 0; }
+  .nsb-subitem {
+    flex-shrink: 0;
+    flex-direction: row !important;
+    height: 34px !important; padding: 0 10px !important;
+    white-space: nowrap; min-width: max-content; border-radius: 0;
+    font-size: 11px;
+  }
+  .nsb-toggle { display: none !important; }
+  .main-content { grid-row: 3 !important; grid-column: 1 !important; }
+  /* Header compact */
+  .header-brand { display: none; }
+  .header-patient { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .header-right { gap: 4px; }
+  .acuity-badge { font-size: 10px; padding: 4px 6px; }
+  .site-pill__btn { padding: 4px 6px; font-size: 10px; }
+  /* Content grids */
   .form-grid, .form-grid.cols-7 { grid-template-columns: 1fr 1fr; }
   .two-col, .three-col { grid-template-columns: 1fr; }
+  .scale-grid { grid-template-columns: 1fr; }
 }
