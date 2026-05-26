@@ -2,16 +2,27 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import WheelPicker from '@/components/WheelPicker';
 import type { VitalSigns } from '@/lib/adaptive-triage';
 
-const VITAL_FIELDS: { key: keyof VitalSigns; label: string; unit: string; placeholder: string }[] = [
-  { key: 'systolicBp',      label: 'SBP',        unit: 'mmHg',        placeholder: '120' },
-  { key: 'diastolicBp',     label: 'DBP',        unit: 'mmHg',        placeholder: '80'  },
-  { key: 'heartRate',       label: 'HR',         unit: 'bpm',         placeholder: '88'  },
-  { key: 'temperatureC',    label: 'Temperature', unit: '°C',          placeholder: '37.0' },
-  { key: 'respiratoryRate', label: 'RR',         unit: 'breaths/min', placeholder: '16'  },
-  { key: 'spo2',            label: 'SpO₂',       unit: '%',           placeholder: '98'  },
-  { key: 'glucoseMmol',     label: 'Blood glucose', unit: 'mmol/L',   placeholder: '6.4' },
+interface VitalField {
+  key: keyof VitalSigns;
+  label: string;
+  unit: string;
+  placeholder: string;
+  min: number; max: number; step: number; decimals: number;
+  defaultVal: number;
+  normalRange: [number, number];
+}
+
+const VITAL_FIELDS: VitalField[] = [
+  { key: 'systolicBp',      label: 'SBP',    unit: 'mmHg',   placeholder: '120', min: 60,  max: 260, step: 1,   decimals: 0, defaultVal: 120, normalRange: [90,  140] },
+  { key: 'diastolicBp',     label: 'DBP',    unit: 'mmHg',   placeholder: '80',  min: 40,  max: 160, step: 1,   decimals: 0, defaultVal: 80,  normalRange: [60,  90]  },
+  { key: 'heartRate',       label: 'HR',     unit: 'bpm',    placeholder: '88',  min: 30,  max: 220, step: 1,   decimals: 0, defaultVal: 80,  normalRange: [60,  100] },
+  { key: 'temperatureC',    label: 'Temp',   unit: '°C',     placeholder: '37.0',min: 34.0,max: 43.0,step: 0.1, decimals: 1, defaultVal: 37.0,normalRange: [36.1,37.5]},
+  { key: 'respiratoryRate', label: 'RR',     unit: '/min',   placeholder: '16',  min: 8,   max: 60,  step: 1,   decimals: 0, defaultVal: 16,  normalRange: [12,  20]  },
+  { key: 'spo2',            label: 'SpO₂',   unit: '%',      placeholder: '98',  min: 70,  max: 100, step: 1,   decimals: 0, defaultVal: 98,  normalRange: [95,  100] },
+  { key: 'glucoseMmol',     label: 'BGL',    unit: 'mmol/L', placeholder: '6.4', min: 1.0, max: 35.0,step: 0.1, decimals: 1, defaultVal: 6.0, normalRange: [4.0, 7.8] },
 ];
 
 const CHIEF_COMPLAINTS = [
@@ -164,20 +175,62 @@ export default function NursePreVisitView() {
 
           {/* Card 1: Vital signs */}
           <CollapsibleCard title="Vital Signs">
-            <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))' }}>
-              {VITAL_FIELDS.map(({ key, label, unit, placeholder }) => (
-                <div className="fld" key={key}>
-                  <label>{label}</label>
-                  <input
-                    inputMode="decimal"
-                    value={vitals[key]}
-                    onChange={e => updateVital(key, e.target.value)}
-                    placeholder={placeholder}
-                    style={{ fontSize: 16, padding: '10px 11px', textAlign: 'center' }}
-                  />
-                  <span style={{ fontSize: 10, color: 'var(--muted)', textAlign: 'center', marginTop: 1 }}>{unit}</span>
-                </div>
-              ))}
+            <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 10px' }}>
+              Scroll wheel to set value · or type directly below each wheel
+            </p>
+            <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
+              <div style={{ display: 'flex', gap: 14, minWidth: 'max-content' }}>
+                {VITAL_FIELDS.map(({ key, label, unit, placeholder, min, max, step, decimals, defaultVal, normalRange }) => {
+                  const val = vitals[key];
+                  const isAbnormal = val.trim() !== '' && Number.isFinite(parseFloat(val)) &&
+                    (parseFloat(val) < normalRange[0] || parseFloat(val) > normalRange[1]);
+                  return (
+                    <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 82 }}>
+                      <span style={{
+                        fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+                        textTransform: 'uppercase',
+                        color: isAbnormal ? '#dc2626' : 'var(--muted)',
+                      }}>
+                        {label}
+                      </span>
+
+                      <WheelPicker
+                        value={val}
+                        onChange={v => updateVital(key, v)}
+                        min={min} max={max} step={step}
+                        decimals={decimals}
+                        defaultVal={defaultVal}
+                        normalRange={normalRange}
+                      />
+
+                      <input
+                        inputMode="decimal"
+                        value={val}
+                        onChange={e => updateVital(key, e.target.value)}
+                        placeholder={placeholder}
+                        style={{
+                          width: 74,
+                          fontSize: 13,
+                          padding: '5px 6px',
+                          textAlign: 'center',
+                          borderRadius: 6,
+                          border: `1.5px solid ${isAbnormal ? '#fca5a5' : '#d1d5db'}`,
+                          background: isAbnormal ? '#fff5f5' : 'var(--bg)',
+                          color: isAbnormal ? '#dc2626' : 'var(--ink)',
+                          outline: 'none',
+                        }}
+                      />
+
+                      <span style={{
+                        fontSize: 9, color: isAbnormal ? '#dc2626' : 'var(--muted)',
+                        fontWeight: isAbnormal ? 700 : 400,
+                      }}>
+                        {isAbnormal ? '⚠ ' : ''}{unit}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </CollapsibleCard>
 
