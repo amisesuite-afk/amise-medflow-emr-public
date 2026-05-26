@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { savePatientFull } from '@/lib/db';
 import type { Sex } from '@/lib/adaptive-triage';
 
 export default function ReceptionistView() {
@@ -21,16 +23,38 @@ export default function ReceptionistView() {
     clearPatient,
     currentSite, setCurrentSite,
     preVisitStatus, setPreVisitStatus,
+    patientId, setPatientId,
   } = useAppContext();
 
   const { profile, signOut } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  function handleCheckIn() {
+  async function handleCheckIn() {
+    setSaving(true);
+    setSaveError(null);
+    const { patient, error } = await savePatientFull({
+      full_name: patientName, age, dob, sex, phone,
+      address, referredBy, insuranceProvider,
+      policyNumber, nhiNumber, preAuthStatus,
+    });
+    setSaving(false);
+    if (error) {
+      // If Supabase not configured (demo mode) — proceed anyway
+      if (error.includes('not configured')) {
+        setPreVisitStatus('registered');
+        return;
+      }
+      setSaveError(error);
+      return;
+    }
+    if (patient) setPatientId(patient.id);
     setPreVisitStatus('registered');
   }
 
   function handleNewPatient() {
     clearPatient();
+    setSaveError(null);
   }
 
   return (
@@ -236,6 +260,11 @@ export default function ReceptionistView() {
           </CollapsibleCard>
 
           {/* Action row */}
+          {saveError && (
+            <div style={{ padding: '9px 14px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12, marginBottom: 4 }}>
+              Save failed: {saveError} — record saved locally only.
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 4 }}>
             <button
               type="button"
@@ -256,21 +285,21 @@ export default function ReceptionistView() {
 
             <button
               type="button"
-              onClick={handleCheckIn}
-              disabled={!patientName.trim()}
+              onClick={() => void handleCheckIn()}
+              disabled={!patientName.trim() || saving}
               style={{
                 padding: '11px 28px',
                 borderRadius: 8,
                 border: 'none',
-                background: patientName.trim() ? 'var(--accent)' : '#9ca3af',
+                background: patientName.trim() && !saving ? 'var(--accent)' : '#9ca3af',
                 color: '#fff',
                 fontWeight: 800,
                 fontSize: 14,
-                cursor: patientName.trim() ? 'pointer' : 'not-allowed',
+                cursor: patientName.trim() && !saving ? 'pointer' : 'not-allowed',
                 transition: 'background .15s',
               }}
             >
-              Check In ✓
+              {saving ? 'Saving…' : 'Check In ✓'}
             </button>
           </div>
         </div>

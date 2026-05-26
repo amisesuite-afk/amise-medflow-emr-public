@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@/lib/adaptive-triage';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan } from '@/lib/db';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
@@ -412,6 +412,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }), [age, sex, symptoms, symptomDetails, freeText, comorbidities, surgicalHistory, medications, medicationsText, allergies, toxicHabits, vitals, durationDays, painScore, isPostOp, postOpDays, pregnancyPossible]);
 
   const triageResult = useMemo(() => adaptiveTriage(triageInput), [triageInput]);
+
+  // ── Autosave doctor clinical data to Supabase (debounced 2 s) ────────────
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => {
+      void saveAssessment({
+        encounter_id:  encounterId,
+        patient_id:    patientId,
+        diagnosis:     assessment,
+        differentials,
+        icdCodes,
+        cptCodes,
+        acuity:        triageResult.acuity,
+        triageScore:   triageResult.score,
+      });
+      void savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan });
+    }, 2000);
+    return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score]);
 
   const value: CtxValue = {
     activeSection, setActiveSection,

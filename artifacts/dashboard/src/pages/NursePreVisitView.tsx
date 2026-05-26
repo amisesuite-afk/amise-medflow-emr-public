@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import WheelPicker from '@/components/WheelPicker';
+import { createEncounter, saveVitals, saveSymptoms, saveAllergyFreeText } from '@/lib/db';
 import type { VitalSigns } from '@/lib/adaptive-triage';
 
 interface VitalField {
@@ -73,9 +75,51 @@ export default function NursePreVisitView() {
     medicationsText, setMedicationsText,
     currentSite, setCurrentSite,
     preVisitStatus, setPreVisitStatus,
+    patientId, encounterId, setEncounterId,
   } = useAppContext();
 
   const { profile, signOut } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  async function handleMarkReady() {
+    setSaving(true);
+    setSaveError(null);
+    let eid = encounterId;
+
+    if (patientId) {
+      // Create or reuse encounter
+      if (!eid) {
+        const { encounter, error } = await createEncounter({
+          patient_id:       patientId,
+          chief_complaint:  symptoms.join(', ') || freeText || undefined,
+          site:             currentSite,
+        });
+        if (error && !error.includes('not configured')) {
+          setSaveError(error);
+          setSaving(false);
+          setPreVisitStatus('vitals_done');
+          return;
+        }
+        if (encounter) {
+          eid = encounter.id;
+          setEncounterId(encounter.id);
+        }
+      }
+
+      if (eid) {
+        await saveVitals({
+          encounter_id: eid, patient_id: patientId,
+          ...vitals, weightKg, heightCm,
+        });
+        await saveSymptoms(eid, patientId, symptoms, freeText);
+        if (allergies.trim()) await saveAllergyFreeText(patientId, allergies);
+      }
+    }
+
+    setSaving(false);
+    setPreVisitStatus('vitals_done');
+  }
 
   const hasPatient = patientName.trim().length > 0;
   const hasAnyVital = Object.values(vitals).some(v => v.trim().length > 0);
@@ -342,24 +386,29 @@ export default function NursePreVisitView() {
           </CollapsibleCard>
 
           {/* Bottom action */}
+          {saveError && (
+            <div style={{ padding: '9px 14px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+              Save failed: {saveError} — status saved locally only.
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 4 }}>
             <button
               type="button"
-              onClick={() => setPreVisitStatus('vitals_done')}
-              disabled={!hasAnyVital}
+              onClick={() => void handleMarkReady()}
+              disabled={!hasAnyVital || saving}
               style={{
                 padding: '13px 32px',
                 borderRadius: 8,
                 border: 'none',
-                background: hasAnyVital ? 'var(--accent)' : '#9ca3af',
+                background: hasAnyVital && !saving ? 'var(--accent)' : '#9ca3af',
                 color: '#fff',
                 fontWeight: 800,
                 fontSize: 15,
-                cursor: hasAnyVital ? 'pointer' : 'not-allowed',
+                cursor: hasAnyVital && !saving ? 'pointer' : 'not-allowed',
                 transition: 'background .15s',
               }}
             >
-              Mark Ready for Doctor ✓
+              {saving ? 'Saving…' : 'Mark Ready for Doctor ✓'}
             </button>
           </div>
 
