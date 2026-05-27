@@ -2,6 +2,11 @@ import { useState, useRef, useEffect } from 'react';
 import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { useAppContext } from '@/context/AppContext';
 
+function splitLabel(label: string): { code: string; desc: string } {
+  const idx = label.indexOf(' — ');
+  return idx === -1 ? { code: label, desc: '' } : { code: label.slice(0, idx), desc: label.slice(idx + 3) };
+}
+
 export default function IcdPicker() {
   const { icdCodes, setIcdCodes } = useAppContext();
   const [query, setQuery] = useState('');
@@ -51,41 +56,62 @@ export default function IcdPicker() {
       {/* Selected codes */}
       {icdCodes.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
-          {icdCodes.map(label => (
-            <span
-              key={label}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '3px 10px',
-                borderRadius: 14,
-                background: '#e0f2fe',
-                border: '1px solid #7dd3fc',
-                color: '#0369a1',
-                fontSize: 12,
-                fontWeight: 500,
-              }}
-            >
-              {label}
-              <button
-                type="button"
-                onClick={() => remove(label)}
+          {icdCodes.map(label => {
+            const { code, desc } = splitLabel(label);
+            return (
+              <span
+                key={label}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#0369a1',
-                  padding: 0,
-                  lineHeight: 1,
-                  fontSize: 14,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0,
+                  borderRadius: 6,
+                  border: '1px solid #7dd3fc',
+                  overflow: 'hidden',
+                  fontSize: 12,
                 }}
-                title="Remove"
               >
-                ×
-              </button>
-            </span>
-          ))}
+                <span style={{
+                  padding: '4px 8px',
+                  background: '#0369a1',
+                  color: '#fff',
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
+                  fontSize: 11,
+                  letterSpacing: '0.04em',
+                  whiteSpace: 'nowrap',
+                }}>
+                  {code}
+                </span>
+                <span style={{
+                  padding: '4px 8px',
+                  background: '#e0f2fe',
+                  color: '#0c4a6e',
+                  fontWeight: 500,
+                }}>
+                  {desc}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => remove(label)}
+                  style={{
+                    padding: '0 8px',
+                    background: '#bae6fd',
+                    border: 'none',
+                    borderLeft: '1px solid #7dd3fc',
+                    cursor: 'pointer',
+                    color: '#0369a1',
+                    fontSize: 15,
+                    lineHeight: '24px',
+                    alignSelf: 'stretch',
+                  }}
+                  title="Remove"
+                >
+                  ×
+                </button>
+              </span>
+            );
+          })}
         </div>
       )}
 
