@@ -13,6 +13,129 @@ function cleanLabel(lab: string): string {
   return lab.replace(/\s*\([MF]\)/g, '').trim();
 }
 
+// ── Laboratory Services Ltd — Saint Lucia ─────────────────────────────────────
+const LSL_CATALOGUE: { category: string; tests: string[] }[] = [
+  {
+    category: 'Haematology',
+    tests: [
+      'Full Blood Count (FBC)', 'Peripheral Blood Film', 'Reticulocyte Count',
+      'ESR', 'D-Dimer', 'Prothrombin Time (PT/INR)', 'APTT',
+      'Blood Group & Type', 'Crossmatch',
+    ],
+  },
+  {
+    category: 'Biochemistry',
+    tests: [
+      'Urea & Electrolytes (U&E)', 'Creatinine + eGFR', 'Liver Function Tests (LFTs)',
+      'Amylase', 'Lipase', 'Lipid Profile', 'HbA1c',
+      'Fasting Glucose', 'Random Glucose', 'Uric Acid',
+      'Calcium', 'Magnesium', 'Phosphate',
+      'Ferritin', 'Serum Iron / TIBC', 'Vitamin B12', 'Folate',
+      'TSH', 'Free T4', 'CRP', 'Albumin', 'Troponin I', 'BNP',
+    ],
+  },
+  {
+    category: 'Tumour Markers',
+    tests: ['PSA (M)', 'CA-125 (F)', 'CEA', 'AFP', 'CA 19-9'],
+  },
+  {
+    category: 'Microbiology',
+    tests: [
+      'Blood Culture ×2', 'Urine MCS', 'Wound Swab MCS',
+      'Stool MCS', 'Throat Swab MCS', 'Sputum MCS', 'High Vaginal Swab (F)',
+    ],
+  },
+  {
+    category: 'Serology',
+    tests: [
+      'HBsAg (Hepatitis B)', 'Hepatitis C Antibody', 'HIV Combo (4th gen)',
+      'Syphilis (RPR)', 'H. pylori Antigen',
+    ],
+  },
+  {
+    category: 'Urine',
+    tests: [
+      'Urine Dipstick + Microscopy', 'Urine Pregnancy Test (F)',
+      '24-hr Urine Protein', 'Urine Albumin:Creatinine Ratio',
+    ],
+  },
+];
+
+function LslPanel({
+  sex, orderedInvestigations, setOrderedInvestigations,
+}: {
+  sex: string;
+  orderedInvestigations: string[];
+  setOrderedInvestigations: (v: string[]) => void;
+}) {
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const categories = LSL_CATALOGUE.map(g => g.category);
+  const shown = activeCategory
+    ? LSL_CATALOGUE.filter(g => g.category === activeCategory)
+    : LSL_CATALOGUE;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {/* Category filter chips */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+        <button type="button" onClick={() => setActiveCategory(null)} style={{
+          padding: '4px 11px', borderRadius: 999, fontSize: 11, cursor: 'pointer',
+          border: activeCategory === null ? '1.5px solid #1a3a5c' : '1px solid #d1d5db',
+          background: activeCategory === null ? '#1a3a5c' : '#f9fafb',
+          color: activeCategory === null ? '#fff' : '#374151',
+          fontWeight: activeCategory === null ? 700 : 400,
+        }}>All</button>
+        {categories.map(cat => (
+          <button key={cat} type="button" onClick={() => setActiveCategory(cat === activeCategory ? null : cat)} style={{
+            padding: '4px 11px', borderRadius: 999, fontSize: 11, cursor: 'pointer',
+            border: activeCategory === cat ? '1.5px solid #1a3a5c' : '1px solid #d1d5db',
+            background: activeCategory === cat ? '#1a3a5c' : '#f9fafb',
+            color: activeCategory === cat ? '#fff' : '#374151',
+            fontWeight: activeCategory === cat ? 700 : 400,
+          }}>{cat}</button>
+        ))}
+      </div>
+
+      {/* Test grid by category */}
+      {shown.map(group => {
+        const available = group.tests.filter(t =>
+          filterBySex(t, sex) && !orderedInvestigations.includes(cleanLabel(t))
+        );
+        if (available.length === 0) return null;
+        return (
+          <div key={group.category}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#6b7280', marginBottom: 5 }}>
+              {group.category}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+              {available.map(test => {
+                const label = cleanLabel(test);
+                return (
+                  <button key={test} type="button"
+                    onClick={() => {
+                      if (!orderedInvestigations.includes(label))
+                        setOrderedInvestigations([...orderedInvestigations, label]);
+                    }}
+                    style={{
+                      padding: '5px 12px', borderRadius: 999, fontSize: 12,
+                      border: '1px solid #c7d2fe', background: '#eef2ff',
+                      color: '#3730a3', cursor: 'pointer', fontWeight: 500,
+                    }}
+                  >+ {label}</button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+
+      <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 2 }}>
+        Laboratory Services Ltd · Tapion, Saint Lucia · Tel: (758) 459-2000
+      </div>
+    </div>
+  );
+}
+
 export default function InvestigationsTab() {
   const {
     orderedInvestigations, setOrderedInvestigations,
@@ -231,6 +354,18 @@ export default function InvestigationsTab() {
           </CollapsibleCard>
         );
       })()}
+
+      {/* Laboratory Services Ltd catalogue */}
+      <CollapsibleCard title="Laboratory Services Ltd — Order Tests" defaultOpen={false}>
+        <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>
+          Tap any test to add it to the ordered list. Filtered by patient sex.
+        </p>
+        <LslPanel
+          sex={sex}
+          orderedInvestigations={orderedInvestigations}
+          setOrderedInvestigations={setOrderedInvestigations}
+        />
+      </CollapsibleCard>
     </div>
   );
 }
