@@ -1,5 +1,6 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import CptPicker from '@/components/CptPicker';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -92,6 +93,13 @@ export default function PlanTab() {
             style={{ minHeight: 100 }}
           />
         </div>
+      </CollapsibleCard>
+
+      <CollapsibleCard title="Planned procedure / CPT codes">
+        <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 8px' }}>
+          Select planned or performed procedures for coding and billing.
+        </p>
+        <CptPicker />
       </CollapsibleCard>
 
       <CollapsibleCard title="Referrals" defaultOpen={false}>

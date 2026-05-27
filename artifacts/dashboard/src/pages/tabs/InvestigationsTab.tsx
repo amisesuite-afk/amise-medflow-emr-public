@@ -1,11 +1,23 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { getActivePathways } from '@/lib/clinical-pathways';
+
+function filterBySex(lab: string, sex: string): boolean {
+  if (lab.includes('(M)') && sex === 'female') return false;
+  if (lab.includes('(F)') && sex === 'male')   return false;
+  return true;
+}
+
+function cleanLabel(lab: string): string {
+  return lab.replace(/\s*\([MF]\)/g, '').trim();
+}
 
 export default function InvestigationsTab() {
   const {
     orderedInvestigations, setOrderedInvestigations,
     investigationResults, setInvestigationResults,
+    symptoms, symptomDetails, sex,
   } = useAppContext();
 
   const [manualInput, setManualInput] = useState('');
@@ -169,6 +181,56 @@ export default function InvestigationsTab() {
           </button>
         </div>
       </CollapsibleCard>
+
+      {/* Clinical pathway suggestions — sex-filtered */}
+      {(() => {
+        const pathways = getActivePathways(symptoms, symptomDetails);
+        if (pathways.length === 0) return null;
+
+        const allLabs = [...new Set(pathways.flatMap(p => p.labsImaging))];
+        const filtered = allLabs.filter(lab => filterBySex(lab, sex));
+        const available = filtered.filter(lab => !orderedInvestigations.includes(cleanLabel(lab)));
+
+        if (available.length === 0) return null;
+
+        return (
+          <CollapsibleCard title={`Pathway suggestions — ${available.length} available`}>
+            <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>
+              Based on active clinical pathways. Tap to add to the ordered list.
+              {sex === 'female' && <span style={{ color: '#be185d', marginLeft: 6 }}>♀ PSA excluded</span>}
+              {sex === 'male'   && <span style={{ color: '#1d4ed8', marginLeft: 6 }}>♂ CA-125 excluded</span>}
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {available.map(lab => {
+                const label = cleanLabel(lab);
+                return (
+                  <button
+                    key={lab}
+                    type="button"
+                    onClick={() => {
+                      if (!orderedInvestigations.includes(label)) {
+                        setOrderedInvestigations([...orderedInvestigations, label]);
+                      }
+                    }}
+                    style={{
+                      padding: '5px 11px',
+                      borderRadius: 999,
+                      border: '1px solid #d1d5db',
+                      background: '#f9fafb',
+                      color: '#374151',
+                      fontSize: 12,
+                      cursor: 'pointer',
+                      fontWeight: 500,
+                    }}
+                  >
+                    + {label}
+                  </button>
+                );
+              })}
+            </div>
+          </CollapsibleCard>
+        );
+      })()}
     </div>
   );
 }

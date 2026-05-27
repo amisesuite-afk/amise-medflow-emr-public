@@ -63,17 +63,19 @@ const APPT_LABELS: Record<string, string> = {
   diabetic_foot: 'Diabetic Foot Clinic',
 };
 
-const LOGO_SVG = `<svg width="130" height="46" viewBox="0 0 130 46" xmlns="http://www.w3.org/2000/svg">
-  <g fill="#1a5276">
-    <ellipse cx="17" cy="12" rx="7" ry="8"/>
-    <path d="M10 19 C9 26 10 34 16 38 C20 40 24 38 24 35 C20 33 17 29 17 23 C17 19 19 18 21 18 C16 16 11 17 10 19Z"/>
-  </g>
-  <g fill="#c0392b">
-    <ellipse cx="31" cy="12" rx="7" ry="8"/>
-    <path d="M38 19 C39 26 38 34 32 38 C28 40 24 38 24 35 C28 33 31 29 31 23 C31 19 29 18 27 18 C32 16 37 17 38 19Z"/>
-  </g>
-  <text x="52" y="23" font-family="Arial,Helvetica,sans-serif" font-size="18" font-weight="bold" fill="#1a5276">AMISE</text>
-  <text x="52" y="37" font-family="Arial,Helvetica,sans-serif" font-size="8" fill="#555" letter-spacing="1.5">MEDICAL SERVICES</text>
+const LOGO_SVG = `<svg width="150" height="52" viewBox="0 0 150 52" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left figure — navy -->
+  <ellipse cx="15" cy="11" rx="6.5" ry="7.5" fill="#1a3a5c"/>
+  <path d="M8.5 19 C7 28 8 37 14 41 C17.5 43 21 41 21 38 C17.5 36 14.5 31 14.5 24.5 C14.5 20.5 16.5 19.5 18.5 19 C14 17 8.5 17.5 8.5 19Z" fill="#1a3a5c"/>
+  <!-- Right figure — crimson -->
+  <ellipse cx="29" cy="11" rx="6.5" ry="7.5" fill="#922b21"/>
+  <path d="M35.5 19 C37 28 36 37 30 41 C26.5 43 23 41 23 38 C26.5 36 29.5 31 29.5 24.5 C29.5 20.5 27.5 19.5 25.5 19 C30 17 35.5 17.5 35.5 19Z" fill="#922b21"/>
+  <!-- Divider -->
+  <line x1="48" y1="6" x2="48" y2="46" stroke="#ddd" stroke-width="1"/>
+  <!-- Practice name -->
+  <text x="56" y="24" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="bold" fill="#1a3a5c" letter-spacing="1.2">AMISE</text>
+  <text x="56" y="37" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#666" letter-spacing="2.5">MEDICAL SERVICES</text>
+  <text x="56" y="47" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#999" letter-spacing="0.5">Saint Lucia</text>
 </svg>`;
 
 interface PrintMeta {
@@ -121,62 +123,78 @@ function buildPrintHtml(text: string, meta: PrintMeta): string {
 <title>Clinical Summary — ${escHtml(meta.patientName || 'Patient')}</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#111;line-height:1.55}
-  .hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:10px;border-bottom:1.5px solid #222;margin-bottom:10px}
-  .hdr-left{font-size:10px;line-height:1.7}
-  .hdr-office{font-size:11px;font-weight:600}
-  .pt-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0;border-bottom:1px solid #ccc;margin-bottom:14px;font-size:10px}
-  .pt-col-hdr{font-weight:bold;font-size:11px;margin-bottom:4px}
-  .pt-line{margin-bottom:2px}
-  .s-section{margin-bottom:14px}
-  .s-main-hdr{font-size:11.5px;font-weight:bold;text-transform:uppercase;background:#f0f0f0;padding:3px 8px;margin-bottom:8px;border-left:3px solid #1a5276;letter-spacing:.5px}
-  .s-sub-hdr{font-weight:bold;font-size:11px;margin:8px 0 3px}
-  .s-line{font-size:11px;margin-bottom:2px}
-  .s-bullet{font-size:11px;padding-left:14px;position:relative;margin-bottom:2px}
-  .s-bullet::before{content:"•";position:absolute;left:4px}
-  .s-gap{height:5px}
-  .ftr{margin-top:24px;padding-top:8px;border-top:1px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end;font-size:10px}
-  .ftr-gen{color:#888}
-  .ftr-doc{text-align:right;font-weight:bold;font-size:11px;line-height:1.5}
-  .ftr-doc-sub{font-weight:normal;font-size:10px;color:#444}
-  .licence{text-align:right;margin-top:8px;padding-top:6px;border-top:1px solid #ccc;font-size:10px;color:#555}
+  body{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#1a1a1a;line-height:1.6;background:#fff}
+  /* ── Header ── */
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:2.5px solid #1a3a5c;margin-bottom:14px}
+  .hdr-brand{font-size:11px;font-weight:700;color:#1a3a5c;letter-spacing:.3px}
+  .hdr-addr{font-size:9.5px;color:#555;line-height:1.6;margin-top:2px}
+  /* ── Patient strip ── */
+  .pt-strip{background:#f4f6f9;border:1px solid #d8dde6;border-radius:4px;padding:10px 14px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pt-label{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:3px}
+  .pt-val{font-size:11px;color:#1a1a1a;font-weight:600}
+  .pt-sub{font-size:9.5px;color:#555;font-weight:400}
+  /* ── Document title ── */
+  .doc-title{font-size:13px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;margin-bottom:16px;text-transform:uppercase;border-bottom:1px solid #e5e9ef;padding-bottom:6px}
+  /* ── SOAP sections ── */
+  .s-section{margin-bottom:16px}
+  .s-main-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:4px 10px;margin-bottom:8px;border-left:3.5px solid #1a3a5c}
+  .s-sub-hdr{font-weight:700;font-size:11px;color:#333;margin:10px 0 3px}
+  .s-line{font-size:11px;margin-bottom:3px;color:#222}
+  .s-bullet{font-size:11px;padding-left:16px;position:relative;margin-bottom:3px;color:#222}
+  .s-bullet::before{content:"•";position:absolute;left:5px;color:#1a3a5c}
+  .s-gap{height:6px}
+  /* ── Signature block ── */
+  .sig-block{margin-top:40px;padding-top:12px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
+  .sig-left{min-width:220px}
+  .sig-line{border-bottom:1px solid #333;width:200px;margin-bottom:4px;height:22px}
+  .sig-name{font-size:11px;font-weight:700;color:#1a1a1a}
+  .sig-title{font-size:9.5px;color:#555;margin-top:1px}
+  .sig-lic{font-size:9px;color:#888;margin-top:2px}
+  .sig-right{font-size:9px;color:#aaa;text-align:right}
   @page{margin:18mm 20mm;size:A4}
-  @media print{body{margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 </head><body>
 
+<!-- Letterhead -->
 <div class="hdr">
-  <div class="hdr-left">
-    <div class="hdr-office">${escHtml(site.name)}</div>
-    <div>${escHtml(site.address)}</div>
-    <div>1 (758) 720 7111, amisesuite@gmail.com</div>
+  <div>
+    <div class="hdr-brand">${escHtml(site.name)}</div>
+    <div class="hdr-addr">${escHtml(site.address)}<br>Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
   </div>
   <div>${LOGO_SVG}</div>
 </div>
 
-<div class="pt-row">
+<!-- Patient strip -->
+<div class="pt-strip">
   <div>
-    <div class="pt-col-hdr">Patient Details</div>
-    <div class="pt-line">${escHtml(meta.patientName || '—')}</div>
-    <div class="pt-line">PID : ${escHtml(pidDisplay)}</div>
-    <div class="pt-line">${escHtml(ageLine || '—')}</div>
-    <div class="pt-line">${escHtml(meta.phone || '—')}</div>
+    <div class="pt-label">Patient</div>
+    <div class="pt-val">${escHtml(meta.patientName || '—')}</div>
+    <div class="pt-sub">${escHtml(ageLine || '')}${meta.phone ? ' &nbsp;·&nbsp; ' + escHtml(meta.phone) : ''}</div>
+    ${meta.patientId ? `<div class="pt-sub" style="margin-top:2px">ID: ${escHtml(pidDisplay)}</div>` : ''}
   </div>
   <div>
-    <div class="pt-col-hdr">Consultation Details</div>
-    <div class="pt-line">${escHtml(consultType)} at ${escHtml(site.name)}</div>
-    <div class="pt-line">Dr. Dawit D Kabiye</div>
-    <div class="pt-line">${escHtml(consultDate)}</div>
+    <div class="pt-label">Consultation</div>
+    <div class="pt-val">${escHtml(consultType)}</div>
+    <div class="pt-sub">Dr. Dawit D Kabiye &nbsp;·&nbsp; ${escHtml(site.name)}</div>
+    <div class="pt-sub">${escHtml(consultDate)}</div>
   </div>
 </div>
+
+<div class="doc-title">Clinical Summary</div>
 
 ${bodyHtml}
 
-<div class="ftr">
-  <div class="ftr-gen">Generated on ${generatedDate}</div>
-  <div class="ftr-doc">Dr. Dawit D Kabiye<br><span class="ftr-doc-sub">MD,DM in General Surgery</span></div>
+<!-- Signature — bottom left -->
+<div class="sig-block">
+  <div class="sig-left">
+    <div class="sig-line"></div>
+    <div class="sig-name">Dr. Dawit D Kabiye</div>
+    <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
+    <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ${generatedDate}</div>
+  </div>
+  <div class="sig-right">Generated ${generatedDate}</div>
 </div>
-<div class="licence">Licence #: ............</div>
 
 </body></html>`;
 }
@@ -263,20 +281,27 @@ type DirectCtx = ReturnType<typeof useAppContext>;
 function sharedHead(title: string): string {
   return `<style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#111;line-height:1.6}
-  .hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:10px;border-bottom:2px solid #222;margin-bottom:12px}
-  .hdr-office{font-size:11px;font-weight:700}
-  .hdr-sub{font-size:10px;color:#444;line-height:1.5}
-  .title{font-size:14px;font-weight:700;text-align:center;margin:14px 0 6px;letter-spacing:.5px}
-  .pt-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0;border-bottom:1px solid #ccc;border-top:1px solid #ccc;margin-bottom:14px;font-size:10px}
-  .pt-lbl{font-weight:700;font-size:11px;margin-bottom:4px}
-  .section{margin:12px 0}
-  .sec-hdr{font-weight:700;font-size:11px;text-transform:uppercase;background:#f0f0f0;padding:3px 8px;border-left:3px solid #1a5276;margin-bottom:6px}
-  .sec-body{font-size:11px;padding:0 6px}
-  .item{margin-bottom:3px}
-  .item::before{content:"• ";color:#1a5276}
-  .sig{margin-top:24px;padding-top:8px;border-top:1px solid #ccc;display:flex;justify-content:space-between;font-size:10px}
-  .sig-right{text-align:right;font-weight:700;font-size:11px;line-height:1.6}
+  body{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#1a1a1a;line-height:1.6;background:#fff}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:2.5px solid #1a3a5c;margin-bottom:14px}
+  .hdr-office{font-size:11px;font-weight:700;color:#1a3a5c;letter-spacing:.3px}
+  .hdr-sub{font-size:9.5px;color:#555;line-height:1.6;margin-top:2px}
+  .title{font-size:13px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;margin:0 0 14px;text-transform:uppercase;border-bottom:1px solid #e5e9ef;padding-bottom:6px}
+  .pt-row{background:#f4f6f9;border:1px solid #d8dde6;border-radius:4px;padding:10px 14px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:10px}
+  .pt-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:3px}
+  .pt-val{font-size:11px;color:#1a1a1a;font-weight:600}
+  .pt-sub{font-size:9.5px;color:#555}
+  .section{margin:14px 0}
+  .sec-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:4px 10px;border-left:3.5px solid #1a3a5c;margin-bottom:8px}
+  .sec-body{font-size:11px;padding:0 4px;line-height:1.65}
+  .item{margin-bottom:4px;padding-left:14px;position:relative}
+  .item::before{content:"•";position:absolute;left:3px;color:#1a3a5c}
+  .sig{margin-top:40px;padding-top:12px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
+  .sig-left{min-width:220px}
+  .sig-line{border-bottom:1px solid #333;width:200px;height:22px;margin-bottom:4px}
+  .sig-name{font-weight:700;font-size:11px;color:#1a1a1a}
+  .sig-title{font-size:9.5px;color:#555;margin-top:1px}
+  .sig-lic{font-size:9px;color:#888;margin-top:2px}
+  .sig-right{font-size:9px;color:#aaa;text-align:right}
   @page{margin:18mm 20mm;size:A4}
   @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
@@ -288,8 +313,8 @@ function sharedHeader(site: { name: string; address: string }, consultDate: stri
   <div>
     <div class="hdr-office">${escHtml(site.name)}</div>
     <div class="hdr-sub">${escHtml(site.address)}</div>
-    <div class="hdr-sub">1 (758) 720 7111 · amisesuite@gmail.com</div>
-    <div class="hdr-sub">${escHtml(consultDate)}</div>
+    <div class="hdr-sub">Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
+    <div class="hdr-sub" style="margin-top:2px;color:#1a3a5c">${escHtml(consultDate)}</div>
   </div>
   <div>${LOGO_SVG}</div>
 </div>`;
@@ -411,8 +436,13 @@ ${ctx.plan ? `<div class="section">
 </div>` : ''}
 
 <div class="sig">
-<div style="font-size:10px;color:#888">Generated ${consultDate}</div>
-<div class="sig-right">Dr. Dawit D Kabiye<br><span style="font-weight:400;font-size:10px">MD, DM — General &amp; Endoscopic Surgery</span><br><span style="font-weight:400;font-size:10px">Licence #: ............</span></div>
+<div class="sig-left">
+  <div class="sig-line"></div>
+  <div class="sig-name">Dr. Dawit D Kabiye</div>
+  <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
+  <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ..................</div>
+</div>
+<div class="sig-right">Generated ${consultDate}</div>
 </div>
 </body></html>`;
 }
@@ -478,9 +508,15 @@ ${referNotes ? `<div class="section">
   <div>Kind regards,</div>
 </div>
 
-<div style="margin-top:40px" class="sig">
-<div></div>
-<div class="sig-right">Dr. Dawit D Kabiye<br><span style="font-weight:400;font-size:10px">MD, DM — General &amp; Endoscopic Surgery</span><br><span style="font-weight:400;font-size:10px">${escHtml(site.name)}</span><br><span style="font-weight:400;font-size:10px">1 (758) 720 7111</span><br><span style="font-weight:400;font-size:10px">Licence #: ............</span></div>
+<div class="sig">
+<div class="sig-left">
+  <div class="sig-line"></div>
+  <div class="sig-name">Dr. Dawit D Kabiye</div>
+  <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
+  <div class="sig-lic">${escHtml(site.name)} &nbsp;·&nbsp; 1 (758) 720 7111</div>
+  <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ..................</div>
+</div>
+<div class="sig-right"></div>
 </div>
 </body></html>`;
 }
@@ -543,8 +579,13 @@ ${followUp ? `<div class="section">
   <div>Seen by:</div>
 </div>
 <div class="sig">
-<div style="font-size:10px;color:#888">Issued: ${consultDate}</div>
-<div class="sig-right">Dr. Dawit D Kabiye<br><span style="font-weight:400;font-size:10px">MD, DM — General &amp; Endoscopic Surgery</span><br><span style="font-weight:400;font-size:10px">Licence #: ............</span></div>
+<div class="sig-left">
+  <div class="sig-line"></div>
+  <div class="sig-name">Dr. Dawit D Kabiye</div>
+  <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
+  <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ..................</div>
+</div>
+<div class="sig-right">Issued: ${consultDate}</div>
 </div>
 </body></html>`;
 }

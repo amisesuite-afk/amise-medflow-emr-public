@@ -1,7 +1,6 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import IcdPicker from '@/components/IcdPicker';
-import CptPicker from '@/components/CptPicker';
 import { useSpeechInput } from '@/hooks/useSpeechInput';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
 
@@ -139,6 +138,14 @@ export default function AssessmentTab() {
             style={{ minHeight: 100 }}
           />
         </div>
+
+        {/* ICD-10 inline — directly below diagnosis */}
+        <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #f3f4f6' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#6b7280', marginBottom: 6 }}>
+            ICD-10 code(s)
+          </div>
+          <IcdPicker />
+        </div>
       </CollapsibleCard>
 
       <CollapsibleCard title="Differential diagnoses">
@@ -181,23 +188,6 @@ export default function AssessmentTab() {
         </div>
       </CollapsibleCard>
 
-      <CollapsibleCard title="Investigations ordered / results" defaultOpen={false}>
-        <div className="fld">
-          <label>Lab / imaging results or requests</label>
-          <textarea
-            placeholder="FBC: Hb 9.2, WBC 14.3, CRP 180…&#10;USS abdomen: CBD 12mm, multiple gallstones…"
-            style={{ minHeight: 120 }}
-          />
-        </div>
-      </CollapsibleCard>
-
-      <CollapsibleCard title="ICD-10 codes" defaultOpen={false}>
-        <IcdPicker />
-      </CollapsibleCard>
-
-      <CollapsibleCard title="CPT procedure codes" defaultOpen={false}>
-        <CptPicker />
-      </CollapsibleCard>
     </div>
   );
 }
