@@ -1,5 +1,8 @@
 import { useState, useId } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import {
+  wrapDoc, masthead, metaGrid, sec, kvTable, bulList, inlineText, callout, footer, signoff, escH as escHDoc, T,
+} from './lib/docTemplate';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -422,17 +425,16 @@ function MedTable({ rows, onChange }: { rows: MedRow[]; onChange: (r: MedRow[]) 
 
 // ── Print helpers ─────────────────────────────────────────────────────────────
 
-function escH(s: string) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
+// escH is imported from docTemplate as escHDoc — alias for local use
+const escH = escHDoc;
 
 const LOGO_SVG = `<svg width="120" height="42" viewBox="0 0 150 52" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="15" cy="11" rx="6.5" ry="7.5" fill="#1a3a5c"/>
-  <path d="M8.5 19 C7 28 8 37 14 41 C17.5 43 21 41 21 38 C17.5 36 14.5 31 14.5 24.5 C14.5 20.5 16.5 19.5 18.5 19 C14 17 8.5 17.5 8.5 19Z" fill="#1a3a5c"/>
+  <ellipse cx="15" cy="11" rx="6.5" ry="7.5" fill="#0B2545"/>
+  <path d="M8.5 19 C7 28 8 37 14 41 C17.5 43 21 41 21 38 C17.5 36 14.5 31 14.5 24.5 C14.5 20.5 16.5 19.5 18.5 19 C14 17 8.5 17.5 8.5 19Z" fill="#0B2545"/>
   <ellipse cx="29" cy="11" rx="6.5" ry="7.5" fill="#922b21"/>
   <path d="M35.5 19 C37 28 36 37 30 41 C26.5 43 23 41 23 38 C26.5 36 29.5 31 29.5 24.5 C29.5 20.5 27.5 19.5 25.5 19 C30 17 35.5 17.5 35.5 19Z" fill="#922b21"/>
   <line x1="48" y1="6" x2="48" y2="46" stroke="#ddd" stroke-width="1"/>
-  <text x="56" y="24" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="bold" fill="#1a3a5c" letter-spacing="1.2">AMISE</text>
+  <text x="56" y="24" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="bold" fill="#0B2545" letter-spacing="1.2">AMISE</text>
   <text x="56" y="37" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#666" letter-spacing="2.5">MEDICAL SERVICES</text>
   <text x="56" y="47" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#999" letter-spacing="0.5">Saint Lucia</text>
 </svg>`;
@@ -468,70 +470,142 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
   const los = (st.dateAdmission && st.dateDischarge)
     ? (() => { const d = Math.round((new Date(st.dateDischarge).getTime() - new Date(st.dateAdmission).getTime()) / 86_400_000); return d >= 0 ? `${d} day${d === 1 ? '' : 's'}` : ''; })()
     : '';
-
-  function sec(title: string, content: string, accent = '#1a3a5c', bg = '#fff', bdr = '#d1d9e0'): string {
-    return `<div style="border:1px solid ${bdr};border-radius:5px;margin-top:8px;overflow:hidden;page-break-inside:avoid"><div style="background:${accent};color:#fff;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px">${escH(title)}</div><div style="background:${bg};padding:7px 10px;font-size:11px;line-height:1.5;color:#111">${content}</div></div>`;
-  }
-
-  function labTableHtml(rows: LabRow[]): string {
-    if (rows.every(r => !r.result)) return '<p style="color:#888;font-size:10px;font-style:italic">No results entered</p>';
-    const filled = rows.filter(r => r.result);
-    return `<table style="width:100%;border-collapse:collapse;font-size:10.5px">
-      <tr style="background:#f4f6f9"><th style="padding:3px 6px;text-align:left;font-size:9.5px;color:#555">Test</th><th style="padding:3px 6px;text-align:right;font-size:9.5px;color:#555">Result</th><th style="padding:3px 4px;text-align:center;width:22px"></th><th style="padding:3px 6px;font-size:9.5px;color:#555">Reference</th><th style="padding:3px 6px;font-size:9.5px;color:#555">Unit</th></tr>
-      ${filled.map(r => `<tr style="border-top:1px solid #eee;background:${r.flag==='H'?'#fff5f5':r.flag==='L'?'#eff6ff':'transparent'}"><td style="padding:3px 6px;font-weight:600">${escH(r.test)}</td><td style="padding:3px 6px;text-align:right;font-weight:700">${escH(r.result)}</td><td style="padding:3px 4px;text-align:center">${r.flag==='H'?'<span style="color:#b91c1c;font-size:10px;font-weight:800">↑</span>':r.flag==='L'?'<span style="color:#1d4ed8;font-size:10px;font-weight:800">↓</span>':'<span style="color:#16a34a;font-size:10px">→</span>'}</td><td style="padding:3px 6px;color:#666">${escH(r.reference)}</td><td style="padding:3px 6px;color:#666">${escH(r.unit)}</td></tr>`).join('')}
-    </table>`;
-  }
-
-  function trendTableHtml(rows: TrendRow[], l1: string, l2: string): string {
-    if (rows.every(r => !r.result1 && !r.result2)) return '<p style="color:#888;font-size:10px;font-style:italic">No results entered</p>';
-    const filled = rows.filter(r => r.result1 || r.result2);
-    const flag = (f: '' | 'H' | 'L' | 'N', v: string) => !v ? '' : f === 'H' ? '<span style="color:#b91c1c;font-size:10px;font-weight:800">↑</span>' : f === 'L' ? '<span style="color:#1d4ed8;font-size:10px;font-weight:800">↓</span>' : '<span style="color:#16a34a;font-size:10px">→</span>';
-    return `<table style="width:100%;border-collapse:collapse;font-size:10.5px">
-      <tr style="background:#f4f6f9"><th style="padding:3px 6px;text-align:left;font-size:9.5px;color:#555">Test</th><th style="padding:3px 6px;text-align:right;font-size:9.5px;color:#555">${escH(l1)}</th><th style="padding:3px 6px;text-align:right;font-size:9.5px;color:#555">${escH(l2)}</th><th style="padding:3px 6px;font-size:9.5px;color:#555">Reference</th><th style="padding:3px 6px;font-size:9.5px;color:#555">Unit</th></tr>
-      ${filled.map(r => `<tr style="border-top:1px solid #eee"><td style="padding:3px 6px;font-weight:600">${escH(r.test)}</td><td style="padding:3px 6px;text-align:right;font-weight:700">${escH(r.result1)}${flag(r.flag1, r.result1)}</td><td style="padding:3px 6px;text-align:right;font-weight:700">${escH(r.result2)}${flag(r.flag2, r.result2)}</td><td style="padding:3px 6px;color:#666">${escH(r.reference)}</td><td style="padding:3px 6px;color:#666">${escH(r.unit)}</td></tr>`).join('')}
-    </table>`;
-  }
-
-  const alerts = runLabAlerts(st.haem, st.lft, st.amylase, st.tumour);
-  const alertHtml = alerts.length
-    ? alerts.map(a => `<div style="background:${a.color}12;border:1px solid ${a.color}40;border-radius:4px;padding:5px 9px;margin-top:5px;font-size:10.5px;color:${a.color};font-weight:600">⚑ ${escH(a.text)}</div>`).join('')
-    : '';
-
   const ageLine = [ctx.age ? `${ctx.age} yrs` : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(', ');
 
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Inpatient Summary — ${escH(ctx.patientName || 'Patient')}</title>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#111;background:#fff}.lhd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #1a3a5c;padding-bottom:8px;margin-bottom:8px}.hl{font-size:12.5px;font-weight:700;color:#1a3a5c}.hs{font-size:10px;color:#555;margin-top:2px}.ttl{font-size:15px;font-weight:700;text-align:center;letter-spacing:.5px;text-transform:uppercase;color:#1a3a5c;border-bottom:2px solid #0b7e72;padding-bottom:5px;margin-bottom:8px}.pt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px 10px;background:#f5ede0;border:1px solid #e2d9cf;border-radius:6px;padding:8px 12px;margin-bottom:8px}.pt-lbl{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#8b6a50;margin-bottom:1px}.pt-val{font-size:11.5px;font-weight:700;color:#1a1a1a}.pt-sub{font-size:10px;color:#555}.sig{margin-top:18px;padding-top:8px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}@page{margin:10mm 12mm;size:A4}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}</style>
-</head><body>
-<div class="lhd"><div><div class="hl">${escH(site.name)}</div><div class="hs">${escH(site.address)}</div><div class="hs">Tel: 1 (758) 720 7111 · amisesuite@gmail.com</div><div class="hs" style="color:#1a3a5c;margin-top:2px">${escH(now)}</div></div><div>${LOGO_SVG}</div></div>
-<div class="ttl">Inpatient / Procedural Discharge Summary</div>
-<div class="pt-grid">
-  <div><div class="pt-lbl">Patient</div><div class="pt-val">${escH(ctx.patientName||'—')}</div>${ageLine?`<div class="pt-sub">${escH(ageLine)}</div>`:''}</div>
-  <div><div class="pt-lbl">MR #</div><div class="pt-val">${escH(st.mrNumber||'—')}</div>${ctx.dob?`<div class="pt-sub">DOB: ${escH(ctx.dob)}</div>`:''}</div>
-  <div><div class="pt-lbl">Blood Group</div><div class="pt-val">${escH(st.bloodGroup||'—')}</div>${st.insurance?`<div class="pt-sub">${escH(st.insurance)}</div>`:''}</div>
-  <div><div class="pt-lbl">Ward / Unit</div><div class="pt-val">${escH(st.ward||'—')}</div>${los?`<div class="pt-sub">LOS: ${escH(los)}</div>`:''}</div>
-  <div><div class="pt-lbl">Admission</div><div class="pt-val">${escH(st.dateAdmission||'—')}</div></div>
-  <div><div class="pt-lbl">Discharge</div><div class="pt-val">${escH(st.dateDischarge||'—')}</div></div>
-  <div><div class="pt-lbl">Admitting Surgeon</div><div class="pt-val">${escH(st.admittingSurgeon||'Dr. Dawit D Kabiye')}</div></div>
-  <div><div class="pt-lbl">Referring Physician</div><div class="pt-val">${escH(st.referringPhysician||'—')}</div></div>
-  ${st.nokName?`<div><div class="pt-lbl">Next of Kin</div><div class="pt-val">${escH(st.nokName)}</div><div class="pt-sub">${escH(st.nokRelation)} · ${escH(st.nokTel)}</div></div>`:''}
-</div>
-${st.primaryDx.filter(d=>d.text).length ? sec('Primary Diagnosis', st.primaryDx.filter(d=>d.text).map(d=>`<div style="font-weight:700;font-size:12px;margin:1px 0">${escH(d.text)}</div>`).join(''), '#0b7e72', '#f0fdf9', '#6ee7b7') : ''}
-${st.backgroundDx.filter(d=>d.text).length ? sec('Background Diagnoses', `<ul style="margin:0 0 0 12px;padding:0">${st.backgroundDx.filter(d=>d.text).map(d=>`<li style="margin:1px 0">${escH(d.text)}</li>`).join('')}</ul>`) : ''}
-${st.historyProse ? sec('Clinical History', `<p>${escH(st.historyProse).replace(/\n/g,'<br>')}</p>`) : ''}
-${sec('Investigations — Haematology', labTableHtml(st.haem), '#1e40af', '#f0f4ff', '#bfdbfe')}
-${sec('Investigations — Liver Function (Trend)', trendTableHtml(st.lft, st.lftLabel1||'Day 1', st.lftLabel2||'Day 2'), '#1e40af', '#f0f4ff', '#bfdbfe')}
-${(st.tumour.some(r=>r.result)||st.amylase.some(r=>r.result)) ? `${sec('Investigations — Metabolic / Renal / Inflammatory', labTableHtml(st.amylase), '#075985', '#f0f9ff', '#bae6fd')}${sec('Investigations — Tumour Markers', labTableHtml(st.tumour), '#075985', '#f0f9ff', '#bae6fd')}` : ''}
-${st.imaging.filter(r=>r.findings).length ? sec('Imaging', st.imaging.filter(r=>r.findings).map(r=>`<p style="margin:2px 0"><strong>${escH(r.modality)}${r.region?' — '+escH(r.region):''}${r.date?' ('+escH(r.date)+')':''}:</strong> ${escH(r.findings)}</p>`).join(''), '#854d0e', '#fefce8', '#fde68a') : ''}
-${alertHtml ? `<div style="margin-top:8px"><div style="font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#7c3aed;margin-bottom:4px">Clinical Algorithm Alerts</div>${alertHtml}</div>` : ''}
-${(st.procedureNarrative||st.procedureDate) ? sec('Operative / Procedural Record', `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 12px;font-size:10.5px;margin-bottom:6px">${[['Date',st.procedureDate],['Operator',st.operator],['Instrument',st.instrument],['Anaesthesia',st.anaesthesia],['Indication',st.indication],['Discharge Dx',st.dischargeDx]].filter(([,v])=>v).map(([l,v])=>`<div><span style="color:#666;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em">${escH(l as string)}</span><div style="font-weight:600">${escH(v as string)}</div></div>`).join('')}</div>${st.procedureNarrative?`<p style="margin-top:6px">${escH(st.procedureNarrative).replace(/\n/g,'<br>')}</p>`:''}${st.complications?`<p style="margin-top:4px;color:#b91c1c"><strong>Complications:</strong> ${escH(st.complications)}</p>`:''}${st.postProcCourse?`<p style="margin-top:4px">${escH(st.postProcCourse).replace(/\n/g,'<br>')}</p>`:''}`, '#5b21b6', '#fdf4ff', '#e9d5ff') : ''}
-${st.medications.filter(m=>m.name).length ? sec('Medications on Discharge', `<table style="width:100%;border-collapse:collapse;font-size:10.5px"><tr style="background:#f4f6f9"><th style="padding:3px 8px;text-align:left;font-size:9.5px;color:#555">Drug</th><th style="padding:3px 8px;font-size:9.5px;color:#555">Dose</th><th style="padding:3px 8px;font-size:9.5px;color:#555">Route</th><th style="padding:3px 8px;font-size:9.5px;color:#555">Frequency</th></tr>${st.medications.filter(m=>m.name).map(m=>`<tr style="border-top:1px solid #eee"><td style="padding:3px 8px;font-weight:600">${escH(m.name)}</td><td style="padding:3px 8px">${escH(m.dose)}</td><td style="padding:3px 8px">${escH(m.route)}</td><td style="padding:3px 8px">${escH(m.frequency)}</td></tr>`).join('')}</table>`, '#6d28d9', '#fdf4ff', '#e9d5ff') : ''}
-${(st.followupHeading||st.followupBody) ? `<div style="background:linear-gradient(135deg,#0b7e72,#1a3a5c);color:#fff;border-radius:6px;padding:10px 14px;margin-top:8px"><div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;opacity:.85;margin-bottom:3px">${escH(st.followupHeading||'Follow-up')}</div><div style="font-size:12px;line-height:1.6">${escH(st.followupBody).replace(/\n/g,'<br>')}</div></div>` : ''}
-${st.lifestyle.filter(l=>l.text).length ? sec('Lifestyle Advice', `<ul style="margin:0 0 0 14px;padding:0">${st.lifestyle.filter(l=>l.text).map(l=>`<li style="margin:2px 0">${escH(l.text)}</li>`).join('')}</ul>`) : ''}
-${st.followupPlan.filter(l=>l.text).length ? sec('Follow-up Plan', `<ul style="margin:0 0 0 14px;padding:0">${st.followupPlan.filter(l=>l.text).map(l=>`<li style="margin:2px 0">${escH(l.text)}</li>`).join('')}</ul>`, '#0b7e72', '#f0fdf9', '#6ee7b7') : ''}
-${st.redFlags.filter(l=>l.text).length ? sec('Return Immediately If', `<ul style="margin:0 0 0 14px;padding:0;color:#b91c1c">${st.redFlags.filter(l=>l.text).map(l=>`<li style="margin:2px 0;font-weight:600">${escH(l.text)}</li>`).join('')}</ul>`, '#b91c1c', '#fff5f5', '#fca5a5') : ''}
-${st.pendingInv.filter(d=>d.text).length ? sec('Pending Investigations', `<ul style="margin:0 0 0 14px;padding:0">${st.pendingInv.filter(d=>d.text).map(d=>`<li style="margin:1px 0">${escH(d.text)}</li>`).join('')}</ul>`, '#854d0e', '#fefce8', '#fde68a') : ''}
-<div class="sig"><div><div style="border-bottom:1px solid #333;width:200px;height:22px;margin-bottom:3px"></div><div style="font-weight:700;font-size:11.5px">${escH(st.signoffName||'Dr. Dawit D Kabiye')}</div><div style="font-size:10px;color:#555">${escH(st.signoffRole||'MD, DM · General & Endoscopic Surgery')}</div><div style="font-size:9px;color:#888">${escH(st.signoffContact||site.name+' · 1 (758) 720 7111')}</div><div style="font-size:9px;color:#888">Date: ${escH(st.signoffDate||now)}</div></div><div style="font-size:8.5px;color:#aaa;text-align:right">Generated ${escH(now)}</div></div>
-</body></html>`;
+  // ── Lab table renderers (spec: no filled header bar; hairline rows) ──
+  const flagMark = (f: '' | 'H' | 'L' | 'N', v: string) =>
+    !v ? '' : f === 'H' ? `<span style="color:#b91c1c;font-weight:800"> ↑</span>`
+            : f === 'L' ? `<span style="color:#1d4ed8;font-weight:800"> ↓</span>`
+            : `<span style="color:#16a34a"> →</span>`;
+
+  const labTbl = (rows: LabRow[]): string => {
+    const filled = rows.filter(r => r.result);
+    if (!filled.length) return `<p style="color:${T.mute};font-size:10px;font-style:italic;margin:4px 0">No results recorded</p>`;
+    return `<table style="width:100%;border-collapse:collapse;font-size:10.5px">
+      <tr><th style="text-align:left;font-size:9.5px;font-weight:700;color:${T.navy};padding:3px 6px 3px 0;border-bottom:.5pt solid #E5E7EB">Test</th>
+          <th style="text-align:right;font-size:9.5px;font-weight:700;color:${T.navy};padding:3px 6px;border-bottom:.5pt solid #E5E7EB">Result</th>
+          <th style="font-size:9.5px;font-weight:700;color:${T.mute};padding:3px 6px;border-bottom:.5pt solid #E5E7EB">Reference</th>
+          <th style="font-size:9.5px;font-weight:700;color:${T.mute};padding:3px 6px;border-bottom:.5pt solid #E5E7EB">Unit</th></tr>
+      ${filled.map(r => `<tr style="border-top:.25pt solid #E5E7EB">
+        <td style="padding:3px 6px 3px 0;font-weight:600;color:${T.ink}">${escH(r.test)}</td>
+        <td style="padding:3px 6px;text-align:right;font-weight:700;color:${T.ink}">${escH(r.result)}${flagMark(r.flag, r.result)}</td>
+        <td style="padding:3px 6px;color:${T.mute}">${escH(r.reference)}</td>
+        <td style="padding:3px 6px;color:${T.mute}">${escH(r.unit)}</td>
+      </tr>`).join('')}
+    </table>`;
+  };
+
+  const trendTbl = (rows: TrendRow[], l1: string, l2: string): string => {
+    const filled = rows.filter(r => r.result1 || r.result2);
+    if (!filled.length) return `<p style="color:${T.mute};font-size:10px;font-style:italic;margin:4px 0">No results recorded</p>`;
+    return `<table style="width:100%;border-collapse:collapse;font-size:10.5px">
+      <tr><th style="text-align:left;font-size:9.5px;font-weight:700;color:${T.navy};padding:3px 6px 3px 0;border-bottom:.5pt solid #E5E7EB">Test</th>
+          <th style="text-align:right;font-size:9.5px;font-weight:700;color:${T.navy};padding:3px 6px;border-bottom:.5pt solid #E5E7EB">${escH(l1)}</th>
+          <th style="text-align:right;font-size:9.5px;font-weight:700;color:${T.navy};padding:3px 6px;border-bottom:.5pt solid #E5E7EB">${escH(l2)}</th>
+          <th style="font-size:9.5px;font-weight:700;color:${T.mute};padding:3px 6px;border-bottom:.5pt solid #E5E7EB">Reference</th>
+          <th style="font-size:9.5px;font-weight:700;color:${T.mute};padding:3px 6px;border-bottom:.5pt solid #E5E7EB">Unit</th></tr>
+      ${filled.map(r => `<tr style="border-top:.25pt solid #E5E7EB">
+        <td style="padding:3px 6px 3px 0;font-weight:600;color:${T.ink}">${escH(r.test)}</td>
+        <td style="padding:3px 6px;text-align:right;font-weight:700;color:${T.ink}">${escH(r.result1)}${flagMark(r.flag1, r.result1)}</td>
+        <td style="padding:3px 6px;text-align:right;font-weight:700;color:${T.ink}">${escH(r.result2)}${flagMark(r.flag2, r.result2)}</td>
+        <td style="padding:3px 6px;color:${T.mute}">${escH(r.reference)}</td>
+        <td style="padding:3px 6px;color:${T.mute}">${escH(r.unit)}</td>
+      </tr>`).join('')}
+    </table>`;
+  };
+
+  // ── Algorithm alerts → gold-border callout ──
+  const alerts = runLabAlerts(st.haem, st.lft, st.amylase, st.tumour);
+  const alertHtml = alerts.length
+    ? callout('Clinical algorithm alerts', alerts.map(a => `<p style="margin:2px 0;font-size:10.5px;color:${T.ink}">⚑ ${escH(a.text)}</p>`).join(''))
+    : '';
+
+  // ── Medications table ──
+  const medRows = st.medications.filter(m => m.name);
+  const medTbl = medRows.length
+    ? `<table style="width:100%;border-collapse:collapse;font-size:10.5px">
+        <tr><th style="text-align:left;font-size:9.5px;font-weight:700;color:${T.navy};padding:3px 8px 3px 0;border-bottom:.5pt solid #E5E7EB">Drug</th>
+            <th style="font-size:9.5px;font-weight:700;color:${T.navy};padding:3px 8px;border-bottom:.5pt solid #E5E7EB">Dose</th>
+            <th style="font-size:9.5px;font-weight:700;color:${T.navy};padding:3px 8px;border-bottom:.5pt solid #E5E7EB">Route</th>
+            <th style="font-size:9.5px;font-weight:700;color:${T.navy};padding:3px 8px;border-bottom:.5pt solid #E5E7EB">Frequency</th></tr>
+        ${medRows.map(m => `<tr style="border-top:.25pt solid #E5E7EB">
+          <td style="padding:3px 8px 3px 0;font-weight:600">${escH(m.name)}</td>
+          <td style="padding:3px 8px;color:${T.ink}">${escH(m.dose)}</td>
+          <td style="padding:3px 8px;color:${T.ink}">${escH(m.route)}</td>
+          <td style="padding:3px 8px;color:${T.ink}">${escH(m.frequency)}</td>
+        </tr>`).join('')}
+      </table>`
+    : '';
+
+  const meta = metaGrid([
+    { label: 'Patient',           value: ctx.patientName || '—', sub: ageLine || undefined },
+    { label: 'MR Number',         value: st.mrNumber || '—', sub: ctx.dob ? `DOB: ${ctx.dob}` : undefined },
+    { label: 'Blood group',       value: st.bloodGroup || '—', sub: st.insurance || undefined },
+    { label: 'Ward / Unit',       value: st.ward || '—', sub: los ? `LOS: ${los}` : undefined },
+    { label: 'Admission',         value: st.dateAdmission || '—' },
+    { label: 'Discharge',         value: st.dateDischarge || '—' },
+    { label: 'Admitting surgeon', value: st.admittingSurgeon || 'Dr Dawit Daniel Kabiye, MD, DM' },
+    { label: 'Referring physician', value: st.referringPhysician || '—' },
+    ...(st.nokName ? [{ label: 'Next of kin', value: st.nokName, sub: [st.nokRelation, st.nokTel].filter(Boolean).join(' · ') }] : []),
+  ]);
+
+  const pxDx = st.primaryDx.filter(d => d.text);
+  const bgDx = st.backgroundDx.filter(d => d.text);
+  const pending = st.pendingInv.filter(d => d.text);
+
+  let body = masthead('Inpatient / Procedural Discharge Summary', site.name, site.address, now, LOGO_SVG);
+  body += meta;
+
+  if (pxDx.length) body += sec('Primary diagnosis', pxDx.map(d => `<p style="font-weight:700;font-size:11px;margin:1px 0">${escH(d.text)}</p>`).join(''));
+  if (bgDx.length)  body += sec('Background diagnoses', bulList(bgDx.map(d => d.text)));
+  if (st.historyProse) body += sec('Clinical history', inlineText(st.historyProse));
+
+  body += sec('Investigations — haematology', labTbl(st.haem));
+  body += sec(`Investigations — liver function (${escH(st.lftLabel1 || 'Day 1')} vs ${escH(st.lftLabel2 || 'Day 2')})`, trendTbl(st.lft, st.lftLabel1 || 'Day 1', st.lftLabel2 || 'Day 2'));
+  if (st.amylase.some(r => r.result)) body += sec('Investigations — metabolic / renal / inflammatory', labTbl(st.amylase));
+  if (st.tumour.some(r => r.result))  body += sec('Investigations — tumour markers', labTbl(st.tumour));
+
+  if (st.imaging.filter(r => r.findings).length) {
+    body += sec('Imaging', st.imaging.filter(r => r.findings).map(r =>
+      `<p style="margin:3px 0"><strong>${escH(r.modality)}${r.region ? ` — ${escH(r.region)}` : ''}${r.date ? ` (${escH(r.date)})` : ''}:</strong> ${escH(r.findings)}</p>`
+    ).join(''));
+  }
+
+  body += alertHtml;
+
+  if (st.procedureNarrative || st.procedureDate) {
+    const procMeta = kvTable([
+      ['Date', st.procedureDate], ['Operator', st.operator],
+      ['Instrument', st.instrument], ['Anaesthesia', st.anaesthesia],
+      ['Indication', st.indication], ['Discharge diagnosis', st.dischargeDx],
+    ]);
+    body += sec('Operative / procedural record',
+      procMeta +
+      (st.procedureNarrative ? `<div style="margin-top:6px">${inlineText(st.procedureNarrative)}</div>` : '') +
+      (st.complications ? `<p style="margin-top:4px"><strong>Complications:</strong> ${escH(st.complications)}</p>` : '') +
+      (st.postProcCourse ? `<div style="margin-top:4px">${inlineText(st.postProcCourse)}</div>` : '')
+    );
+  }
+
+  if (medTbl) body += sec('Medications on discharge', medTbl);
+
+  if (st.followupHeading || st.followupBody) {
+    body += callout(st.followupHeading || 'Follow-up', `<p style="font-size:10.5px">${escH(st.followupBody)}</p>`);
+  }
+
+  if (st.lifestyle.filter(l => l.text).length) body += sec('Lifestyle advice', bulList(st.lifestyle.map(l => l.text)));
+  if (st.followupPlan.filter(l => l.text).length) body += sec('Follow-up plan', bulList(st.followupPlan.map(l => l.text)));
+  if (st.redFlags.filter(l => l.text).length) body += callout('Return immediately if any of the following occur', bulList(st.redFlags.map(l => l.text)));
+  if (pending.length) body += sec('Pending investigations', bulList(pending.map(d => d.text)));
+
+  body += signoff(
+    st.signoffName || 'Dr Dawit Daniel Kabiye, MD, DM',
+    st.signoffRole || 'General & Endoscopic Surgery · Amise Medical Services',
+    `${st.signoffContact || site.name + ' · 1 (758) 720 7111'}   Date: ${st.signoffDate || '..................'}`,
+  );
+  body += footer('Prepared from clinical data recorded at the time of admission and discharge. Please verify all details before acting on this summary.');
+
+  return wrapDoc(`Inpatient Summary — ${ctx.patientName || 'Patient'}`, body);
 }
 
 function printHtml(html: string) {
