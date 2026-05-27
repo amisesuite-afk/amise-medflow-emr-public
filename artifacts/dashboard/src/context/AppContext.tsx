@@ -14,7 +14,7 @@ export type Section =
 
 export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
-  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc';
+  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient';
 
 export type VitalsState = Record<keyof VitalSigns, string>;
 

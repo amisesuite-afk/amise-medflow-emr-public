@@ -28,6 +28,7 @@ import ScalesTab from './tabs/ScalesTab';
 import RosTab from './tabs/RosTab';
 import SummaryTab from './tabs/SummaryTab';
 import FinalDocTab from './tabs/FinalDocTab';
+import InpatientTab from './tabs/InpatientTab';
 import DashboardTab from './tabs/DashboardTab';
 import SchedulingTab from './tabs/SchedulingTab';
 import FloatingActions from '@/components/FloatingActions';
@@ -246,6 +247,7 @@ export default function HomePage() {
         {topSection === 'procedures'    && hasRole(userRole, 'doctor')     && <ProceduresTab />}
         {topSection === 'summary'       && <SummaryTab />}
         {topSection === 'finaldoc'      && <FinalDocTab />}
+        {topSection === 'inpatient'     && <InpatientTab />}
         {topSection === 'billing'       && activeSection === 'billing'   && roleIn(userRole, 'front_desk', 'admin') && <BillingTab />}
         {topSection === 'billing'       && activeSection === 'documents' && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
 
