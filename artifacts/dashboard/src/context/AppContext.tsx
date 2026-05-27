@@ -7,12 +7,14 @@ import { updateDefaultSite, saveAssessment, savePlan } from '@/lib/db';
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
   | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
-  | 'allergies' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations' | 'assessment' | 'plan'
+  | 'allergies' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations'
+  | 'radiology' | 'attachments'
+  | 'assessment' | 'plan'
   | 'procedures' | 'billing' | 'documents';
 
 export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
-  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary';
+  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc';
 
 export type VitalsState = Record<keyof VitalSigns, string>;
 
@@ -52,6 +54,34 @@ export interface RosFinding {
   status: 'normal' | 'positive' | 'negative' | 'not-asked';
   details: string[];
   notes: string;
+}
+
+export interface ClinicalAttachment {
+  id: string;
+  name: string;
+  dataUrl: string;
+  mimeType: string;
+  anatomicalArea: string;
+  dimensions: string;
+  description: string;
+  dateAdded: string;
+}
+
+export interface RadiologyRequest {
+  id: string;
+  modality: string;
+  anatomicalRegion: string;
+  laterality: string;
+  urgency: string;
+  indication: string;
+  clinicalQuestion: string;
+  ctContrast: string;
+  ctEgfr: string;
+  mriProtocol: string;
+  scopeType: string;
+  functionalType: string;
+  resultReceived: boolean;
+  resultNotes: string;
 }
 
 interface CtxValue {
@@ -142,6 +172,10 @@ interface CtxValue {
   preAuthStatus: string; setPreAuthStatus(v: string): void;
 
   triageResult: AdaptiveTriageResult;
+
+  attachments: ClinicalAttachment[]; setAttachments(v: ClinicalAttachment[]): void;
+  radiologyRequests: RadiologyRequest[]; setRadiologyRequests(v: RadiologyRequest[]): void;
+  finalDocument: string; setFinalDocument(v: string): void;
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -246,6 +280,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [nhiNumber, setNhiNumber] = useState('');
   const [preAuthStatus, setPreAuthStatus] = useState('');
 
+  const [attachments, setAttachments] = useState<ClinicalAttachment[]>([]);
+  const [radiologyRequests, setRadiologyRequests] = useState<RadiologyRequest[]>([]);
+  const [finalDocument, setFinalDocument] = useState('');
+
   const ENC_KEY = 'amise-enc-v1';
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -311,6 +349,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (d.rosFindings && typeof d.rosFindings === 'object') setRosFindings(d.rosFindings as Record<string, RosFinding>);
       if (d.procedureData && typeof d.procedureData === 'object') setProcedureData(d.procedureData as Record<string, unknown>);
       if (d.preVisitStatus === 'registered' || d.preVisitStatus === 'vitals_done') setPreVisitStatus(d.preVisitStatus);
+      if (Array.isArray(d.radiologyRequests)) setRadiologyRequests(d.radiologyRequests as RadiologyRequest[]);
+      if (typeof d.finalDocument === 'string') setFinalDocument(d.finalDocument);
+      // Attachments stored separately (can be large base64)
+      try {
+        const ar = localStorage.getItem('amise-attachments-v1');
+        if (ar) setAttachments(JSON.parse(ar) as ClinicalAttachment[]);
+      } catch { /* ignore */ }
     } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -335,7 +380,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       patientName, age, sex, dob, phone, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
       weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
+      radiologyRequests, finalDocument,
     });
+    // Attachments saved separately — avoids 5 MB localStorage limit on the main key
+    try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { /* ignore */ }
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
     isPostOp, postOpDays, pregnancyPossible,
@@ -347,7 +395,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     medications, medicationsText, allergies, familyHistory, toxicHabits,
     patientName, age, sex, dob, phone, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
-    weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus]);
+    weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
+    radiologyRequests, finalDocument, attachments]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -381,7 +430,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
-    try { localStorage.removeItem(ENC_KEY); } catch { /* ignore */ }
+    setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
+    try {
+      localStorage.removeItem(ENC_KEY);
+      localStorage.removeItem('amise-attachments-v1');
+    } catch { /* ignore */ }
   }
 
   const triageInput: AdaptiveTriageInput = useMemo(() => ({
@@ -500,6 +553,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     procedureData, setProcedureData,
     preVisitStatus, setPreVisitStatus,
     triageResult,
+    attachments, setAttachments,
+    radiologyRequests, setRadiologyRequests,
+    finalDocument, setFinalDocument,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -16,6 +16,8 @@ import AllergiesTab from './tabs/AllergiesTab';
 import ToxicHabitsTab from './tabs/ToxicHabitsTab';
 import ExaminationTab from './tabs/ExaminationTab';
 import InvestigationsTab from './tabs/InvestigationsTab';
+import RadiologyTab from './tabs/RadiologyTab';
+import AttachmentsTab from './tabs/AttachmentsTab';
 import AssessmentTab from './tabs/AssessmentTab';
 import PlanTab from './tabs/PlanTab';
 import ProceduresTab from './tabs/ProceduresTab';
@@ -25,6 +27,7 @@ import PatientSearchTab from './tabs/PatientSearchTab';
 import ScalesTab from './tabs/ScalesTab';
 import RosTab from './tabs/RosTab';
 import SummaryTab from './tabs/SummaryTab';
+import FinalDocTab from './tabs/FinalDocTab';
 import DashboardTab from './tabs/DashboardTab';
 import SchedulingTab from './tabs/SchedulingTab';
 import FloatingActions from '@/components/FloatingActions';
@@ -236,10 +239,13 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'ros'         && <RosTab />}
         {topSection === 'consultation'  && activeSection === 'examination'     && hasRole(userRole, 'nurse')  && <ExaminationTab />}
         {topSection === 'consultation'  && activeSection === 'investigations' && hasRole(userRole, 'nurse')  && <InvestigationsTab />}
+        {topSection === 'consultation'  && activeSection === 'radiology'     && hasRole(userRole, 'nurse')  && <RadiologyTab />}
+        {topSection === 'consultation'  && activeSection === 'attachments'   && hasRole(userRole, 'nurse')  && <AttachmentsTab />}
         {topSection === 'consultation'  && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
         {topSection === 'consultation'  && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
         {topSection === 'procedures'    && hasRole(userRole, 'doctor')     && <ProceduresTab />}
         {topSection === 'summary'       && <SummaryTab />}
+        {topSection === 'finaldoc'      && <FinalDocTab />}
         {topSection === 'billing'       && activeSection === 'billing'   && roleIn(userRole, 'front_desk', 'admin') && <BillingTab />}
         {topSection === 'billing'       && activeSection === 'documents' && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
 

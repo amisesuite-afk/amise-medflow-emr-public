@@ -4,6 +4,7 @@ import {
   PanelLeftClose, PanelLeftOpen, AlertTriangle, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
+  ScanLine, Paperclip, FileCheck2,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -41,6 +42,8 @@ const CLINICAL_SUB: {
   { id: 'ros',         icon: ListChecks,     label: 'Review of Systems' },
   { id: 'examination',     icon: Stethoscope,    label: 'Examination',    minRole: 'nurse' },
   { id: 'investigations', icon: FlaskConical,   label: 'Investigations', minRole: 'nurse' },
+  { id: 'radiology',      icon: ScanLine,       label: 'Radiology',      minRole: 'nurse' },
+  { id: 'attachments',    icon: Paperclip,      label: 'Attachments',    minRole: 'nurse' },
   { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },
   { id: 'plan',           icon: FileEdit,       label: 'Plan',           minRole: 'doctor' },
 ];
@@ -66,6 +69,7 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'procedures',   icon: Scissors,        label: 'Procedures',   roles: ['doctor', 'admin'] },
   { id: 'scheduling',   icon: CalendarDays,    label: 'Scheduling',   roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'summary',      icon: FileEdit,        label: 'Summary',      roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
+  { id: 'finaldoc',     icon: FileCheck2,      label: 'Final Doc',    roles: ['nurse', 'doctor', 'admin'] },
   { id: 'billing',      icon: Receipt,         label: 'Billing',      roles: ['front_desk', 'admin'] },
   { id: 'analytics',    icon: BarChart2,       label: 'Analytics',    roles: ['doctor', 'admin'] },
   { id: 'settings',     icon: Settings,        label: 'Settings',     roles: ['admin'] },
