@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 
 // ── Local types ───────────────────────────────────────────────────────────────
@@ -548,6 +548,129 @@ async function callAiRefine(text: string): Promise<string> {
   return data.content.find(b => b.type === 'text')?.text ?? '';
 }
 
+// ── Section parser / serialiser ───────────────────────────────────────────────
+
+interface DocSection { title: string; body: string }
+
+function parseDocSections(text: string): { header: string; sections: DocSection[] } {
+  const re = /\n([A-Z][A-Z\s\/\-\.]+)\n─{10,}/g;
+  const breaks: { title: string; pos: number; bodyStart: number }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    breaks.push({ title: m[1].trim(), pos: m.index, bodyStart: m.index + m[0].length });
+  }
+  if (breaks.length === 0) return { header: text, sections: [] };
+  const header = text.slice(0, breaks[0].pos).trim();
+  const sections = breaks.map((b, i) => ({
+    title: b.title,
+    body: text.slice(b.bodyStart, i + 1 < breaks.length ? breaks[i + 1].pos : text.length).trim(),
+  }));
+  return { header, sections };
+}
+
+function serializeDocSections(header: string, sections: DocSection[]): string {
+  const SEP = '─'.repeat(48);
+  return [header, ...sections.map(s => `\n${s.title}\n${SEP}\n${s.body}`)].join('\n');
+}
+
+// ── Section colour map ────────────────────────────────────────────────────────
+
+const SECTION_COLORS: Record<string, { bg: string; border: string; hdr: string }> = {
+  'PATIENT':                          { bg: '#eff6ff', border: '#bfdbfe', hdr: '#1e40af' },
+  'ENCOUNTER':                        { bg: '#eff6ff', border: '#bfdbfe', hdr: '#1e40af' },
+  'PRESENTING COMPLAINT':             { bg: '#fff7ed', border: '#fed7aa', hdr: '#9a3412' },
+  'VITAL SIGNS':                      { bg: '#fef2f2', border: '#fecaca', hdr: '#991b1b' },
+  'TRIAGE':                           { bg: '#fef2f2', border: '#fecaca', hdr: '#991b1b' },
+  'REVIEW OF SYSTEMS':                { bg: '#f0f9ff', border: '#bae6fd', hdr: '#0369a1' },
+  'SCALES':                           { bg: '#f0f9ff', border: '#bae6fd', hdr: '#0369a1' },
+  'PAST MEDICAL HISTORY':             { bg: '#f9fafb', border: '#e5e7eb', hdr: '#374151' },
+  'SURGICAL HISTORY':                 { bg: '#f9fafb', border: '#e5e7eb', hdr: '#374151' },
+  'FAMILY HISTORY':                   { bg: '#f9fafb', border: '#e5e7eb', hdr: '#374151' },
+  'SOCIAL / HABITS':                  { bg: '#f9fafb', border: '#e5e7eb', hdr: '#374151' },
+  'MEDICATIONS':                      { bg: '#fdf4ff', border: '#e9d5ff', hdr: '#6d28d9' },
+  'ALLERGIES':                        { bg: '#fdf4ff', border: '#e9d5ff', hdr: '#6d28d9' },
+  'PHYSICAL EXAMINATION':             { bg: '#f0fdf4', border: '#bbf7d0', hdr: '#166534' },
+  'INVESTIGATIONS':                   { bg: '#f0f9ff', border: '#bae6fd', hdr: '#075985' },
+  'RADIOLOGY':                        { bg: '#f0f9ff', border: '#bae6fd', hdr: '#075985' },
+  'CLINICAL IMAGES / ATTACHMENTS':    { bg: '#fefce8', border: '#fde68a', hdr: '#854d0e' },
+  'ASSESSMENT':                       { bg: '#ecfdf5', border: '#6ee7b7', hdr: '#065f46' },
+  'MANAGEMENT PLAN':                  { bg: '#f5f3ff', border: '#c4b5fd', hdr: '#5b21b6' },
+};
+const DEF_COLOR = { bg: '#f9fafb', border: '#e5e7eb', hdr: '#374151' };
+
+// ── SectionCard ───────────────────────────────────────────────────────────────
+
+function SectionCard({
+  title, body, onChange, defaultOpen = true,
+}: { title: string; body: string; onChange: (v: string) => void; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const c = SECTION_COLORS[title] ?? DEF_COLOR;
+  const hintCount = (body.match(/▸ \[/g) ?? []).length;
+  const lineCount = body.split('\n').length;
+
+  return (
+    <div style={{ border: `1.5px solid ${c.border}`, borderRadius: 10, overflow: 'hidden', marginBottom: 8 }}>
+      {/* Header */}
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          width: '100%', padding: '9px 14px',
+          background: c.bg, border: 'none', cursor: 'pointer', textAlign: 'left',
+          gap: 8,
+        }}
+      >
+        <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.07em', color: c.hdr }}>
+          {title}
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexShrink: 0 }}>
+          {hintCount > 0 && (
+            <span style={{ fontSize: 9.5, color: '#b45309', background: '#fef3c7', padding: '2px 7px', borderRadius: 999, fontWeight: 700, border: '1px solid #fde68a' }}>
+              {hintCount} to complete
+            </span>
+          )}
+          <span style={{
+            fontSize: 13, color: c.hdr, lineHeight: 1,
+            display: 'inline-block',
+            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform .15s',
+          }}>▾</span>
+        </div>
+      </button>
+
+      {/* Body */}
+      {open && (
+        <div style={{ background: '#fff', borderTop: `1px solid ${c.border}`, padding: '10px 14px 12px' }}>
+          <textarea
+            value={body}
+            onChange={e => onChange(e.target.value)}
+            spellCheck
+            style={{
+              width: '100%',
+              minHeight: Math.max(72, lineCount * 22),
+              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif',
+              fontSize: 13,
+              lineHeight: 1.65,
+              color: '#1a1a1a',
+              border: 'none',
+              outline: 'none',
+              resize: 'vertical',
+              background: 'transparent',
+              padding: 0,
+            }}
+          />
+          {hintCount > 0 && (
+            <div style={{ marginTop: 4, fontSize: 10.5, color: '#d97706', fontStyle: 'italic' }}>
+              Lines starting with ▸ [ADD:] are fill-in prompts — edit or delete before printing.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const BTN_BASE: React.CSSProperties = {
@@ -562,6 +685,67 @@ const BTN_WARN: React.CSSProperties = { ...BTN_BASE, background: '#7c3aed', colo
 
 function btnDisabled(base: React.CSSProperties): React.CSSProperties {
   return { ...base, opacity: 0.4, cursor: 'default' };
+}
+
+function DocSectionView({ doc, onChange }: { doc: string; onChange: (v: string) => void }) {
+  const { header, sections } = parseDocSections(doc);
+
+  const updateSection = useCallback((idx: number, body: string) => {
+    const next = sections.map((s, i) => i === idx ? { ...s, body } : s);
+    onChange(serializeDocSections(header, next));
+  }, [header, sections, onChange]);
+
+  if (sections.length === 0) {
+    // Fallback: plain textarea if format doesn't parse
+    return (
+      <textarea
+        value={doc}
+        onChange={e => onChange(e.target.value)}
+        spellCheck
+        style={{
+          width: '100%', flex: 1, minHeight: 'calc(100vh - 220px)',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif',
+          fontSize: 13, lineHeight: 1.65, color: '#1a1a1a',
+          background: '#fff', border: '1px solid #e5e7eb', borderRadius: 10,
+          padding: '14px 16px', resize: 'vertical', outline: 'none',
+        }}
+      />
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      {/* Document header (site + timestamp) */}
+      <div style={{
+        padding: '8px 14px 10px', marginBottom: 8,
+        background: '#1a3a5c', borderRadius: 10, color: '#e0eaf5',
+        fontSize: 12, lineHeight: 1.6,
+      }}>
+        {header.split('\n').filter(Boolean).map((line, i) => (
+          <div key={i} style={{ fontWeight: i === 0 ? 700 : 400, letterSpacing: i === 0 ? '0.04em' : 0 }}>
+            {line}
+          </div>
+        ))}
+      </div>
+
+      {/* Clinical sections */}
+      {sections.map((s, i) => (
+        <SectionCard
+          key={s.title + i}
+          title={s.title}
+          body={s.body}
+          onChange={v => updateSection(i, v)}
+          defaultOpen={true}
+        />
+      ))}
+
+      {/* Key */}
+      <div style={{ marginTop: 4, fontSize: 11, color: '#9ca3af', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+        <span><code style={{ background: '#f3f4f6', padding: '1px 4px', borderRadius: 3 }}>▸ [ADD: …]</code> fill-in prompt — edit or delete before printing</span>
+        <span><code>✓</code> result &nbsp;<code>○</code> pending &nbsp;<code>→</code> ordered</span>
+      </div>
+    </div>
+  );
 }
 
 export default function FinalDocTab() {
@@ -771,37 +955,8 @@ export default function FinalDocTab() {
         </div>
       )}
 
-      {/* ── Editable note ── */}
-      {hasFinal && (
-        <textarea
-          value={finalDocument}
-          onChange={e => setFinalDocument(e.target.value)}
-          spellCheck
-          style={{
-            width: '100%',
-            flex: 1,
-            minHeight: 'calc(100vh - 220px)',
-            fontFamily: '"Courier New", Courier, monospace',
-            fontSize: 12.5,
-            lineHeight: 1.55,
-            color: '#111',
-            background: '#fafafa',
-            border: '1px solid #d1d5db',
-            borderRadius: 10,
-            padding: '14px 16px',
-            resize: 'vertical',
-            outline: 'none',
-          }}
-        />
-      )}
-
-      {/* ── Hint key ── */}
-      {hasFinal && (
-        <div style={{ marginTop: 6, fontSize: 11, color: '#9ca3af', display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <span><code style={{ background: '#f3f4f6', padding: '1px 4px', borderRadius: 3 }}>▸ [ADD: …]</code> — improvement prompt, edit or delete before printing</span>
-          <span><code>✓</code> result received&nbsp;&nbsp;<code>○</code> pending&nbsp;&nbsp;<code>→</code> ordered</span>
-        </div>
-      )}
+      {/* ── Section cards ── */}
+      {hasFinal && <DocSectionView doc={finalDocument} onChange={setFinalDocument} />}
 
       {/* ── Referral / Discharge quick buttons when doc is empty ── */}
       {!hasFinal && (
