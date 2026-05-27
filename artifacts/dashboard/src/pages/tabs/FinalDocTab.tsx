@@ -295,39 +295,64 @@ function buildDocument(ctx: Ctx): string {
 function buildPrintHtml(text: string, ctx: Ctx): string {
   const site = SITE_INFO[ctx.currentSite] ?? SITE_INFO.rodney_bay;
   const now = ectNow();
-  const clean = escHtml(cleanForPrint(text));
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
-<title>Clinical Note — ${escHtml(ctx.patientName || 'Patient')}</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;line-height:1.42;background:#fff;max-width:182mm;margin:0 auto;padding:14px 16px}
-  .hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1a3a5c;padding-bottom:10px;margin-bottom:12px}
-  .hdr-l{font-size:12px;font-weight:700;color:#1a3a5c} .hdr-s{font-size:10px;color:#555;margin-top:2px}
-  pre{font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.42;white-space:pre-wrap;word-break:break-word;color:#111}
-  .sig{margin-top:28px;padding-top:10px;border-top:1px solid #bbb;display:flex;justify-content:space-between;align-items:flex-end}
-  .sl{min-width:220px} .sl-line{border-bottom:1px solid #333;width:200px;height:22px;margin-bottom:4px}
-  .sl-name{font-weight:700;font-size:12px} .sl-sub{font-size:10px;color:#555;margin-top:1px} .sl-lic{font-size:9px;color:#888;margin-top:2px}
-  .sr{font-size:9px;color:#aaa;text-align:right}
-  @page{margin:12mm 14mm;size:A4}
-  @media print{body{max-width:100%;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-</style></head><body>
-<div class="hdr">
-  <div><div class="hdr-l">${escHtml(site.name)}</div>
-    <div class="hdr-s">${escHtml(site.address)}</div>
-    <div class="hdr-s">Tel: 1 (758) 720 7111 · amisesuite@gmail.com</div>
-    <div class="hdr-s" style="color:#1a3a5c;margin-top:2px">${escHtml(now)}</div>
-  </div>
-  <div>${LOGO_SVG}</div>
-</div>
-<pre>${clean}</pre>
-<div class="sig">
-  <div class="sl"><div class="sl-line"></div>
-    <div class="sl-name">Dr. Dawit D Kabiye</div>
-    <div class="sl-sub">MD, DM · General &amp; Endoscopic Surgery</div>
-    <div class="sl-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp;Date: ..................</div>
-  </div>
-  <div class="sr">Generated ${escHtml(now)}</div>
-</div>
+  const { sections } = parseDocSections(cleanForPrint(text));
+
+  function getPC(title: string): [string, string, string] {
+    const m: Record<string, [string, string, string]> = {
+      'PATIENT':                       ['#eff6ff','#bfdbfe','#1e40af'],
+      'ENCOUNTER':                     ['#eff6ff','#bfdbfe','#1e40af'],
+      'PRESENTING COMPLAINT':          ['#fff7ed','#fed7aa','#9a3412'],
+      'VITAL SIGNS':                   ['#fef9f9','#fecaca','#991b1b'],
+      'PAST MEDICAL HISTORY':          ['#f9fafb','#d1d5db','#374151'],
+      'SURGICAL HISTORY':              ['#f9fafb','#d1d5db','#374151'],
+      'FAMILY HISTORY':                ['#f9fafb','#d1d5db','#4b5563'],
+      'SOCIAL / HABITS':               ['#f9fafb','#d1d5db','#4b5563'],
+      'MEDICATIONS':                   ['#fdf4ff','#e9d5ff','#6d28d9'],
+      'ALLERGIES':                     ['#fdf4ff','#e9d5ff','#6d28d9'],
+      'PHYSICAL EXAMINATION':          ['#f0fdf4','#bbf7d0','#166534'],
+      'REVIEW OF SYSTEMS':             ['#f0f9ff','#bae6fd','#0369a1'],
+      'INVESTIGATIONS ORDERED':        ['#f0f9ff','#bae6fd','#075985'],
+      'RADIOLOGY / IMAGING':           ['#f0f9ff','#bae6fd','#075985'],
+      'ASSESSMENT':                    ['#ecfdf5','#6ee7b7','#065f46'],
+      'MANAGEMENT PLAN':               ['#f5f3ff','#c4b5fd','#5b21b6'],
+      'CLINICAL IMAGES / ATTACHMENTS': ['#fefce8','#fde68a','#854d0e'],
+    };
+    return m[title] ?? ['#f9fafb','#d1d5db','#374151'];
+  }
+
+  function sHtml(title: string, body: string): string {
+    const [bg, bdr, hdr] = getPC(title);
+    return `<div style="border:1px solid ${bdr};border-radius:4px;margin-bottom:4px;overflow:hidden;page-break-inside:avoid"><div style="background:${hdr};color:#fff;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:3px 7px">${escHtml(title)}</div><div style="background:${bg};font-size:10.5px;line-height:1.45;color:#111;padding:5px 7px;white-space:pre-wrap">${escHtml(body)}</div></div>`;
+  }
+
+  const PAIRS: [string, string][] = [
+    ['PATIENT', 'ENCOUNTER'],
+    ['PAST MEDICAL HISTORY', 'SURGICAL HISTORY'],
+    ['MEDICATIONS', 'ALLERGIES'],
+    ['FAMILY HISTORY', 'SOCIAL / HABITS'],
+  ];
+
+  const rendered = new Set<string>();
+  let sectHtml = '';
+  for (const s of sections) {
+    if (rendered.has(s.title)) continue;
+    const pair = PAIRS.find(p => p[0] === s.title);
+    if (pair) {
+      const partner = sections.find(x => x.title === pair[1]);
+      if (partner && !rendered.has(partner.title)) {
+        sectHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:0">${sHtml(s.title, s.body)}${sHtml(partner.title, partner.body)}</div>`;
+        rendered.add(s.title); rendered.add(partner.title); continue;
+      }
+    }
+    sectHtml += sHtml(s.title, s.body);
+    rendered.add(s.title);
+  }
+
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Clinical Note — ${escHtml(ctx.patientName || 'Patient')}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:#111;background:#fff}.lhd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1a3a5c;padding-bottom:7px;margin-bottom:7px}.hl{font-size:12px;font-weight:700;color:#1a3a5c}.hs{font-size:10px;color:#555;margin-top:2px}.sig{margin-top:14px;padding-top:7px;border-top:1px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}@page{margin:10mm 12mm;size:A4}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}</style>
+</head><body>
+<div class="lhd"><div><div class="hl">${escHtml(site.name)}</div><div class="hs">${escHtml(site.address)}</div><div class="hs">Tel: 1 (758) 720 7111 · amisesuite@gmail.com</div><div class="hs" style="color:#1a3a5c;margin-top:2px">${escHtml(now)}</div></div><div>${LOGO_SVG}</div></div>
+${sectHtml}<div class="sig"><div><div style="border-bottom:1px solid #333;width:185px;height:20px;margin-bottom:3px"></div><div style="font-weight:700;font-size:11px">Dr. Dawit D Kabiye</div><div style="font-size:9.5px;color:#555">MD, DM · General &amp; Endoscopic Surgery</div><div style="font-size:9px;color:#888">Licence #: ............&nbsp;&nbsp;Date: ..................</div></div><div style="font-size:8.5px;color:#aaa;text-align:right">Generated ${escHtml(now)}</div></div>
 </body></html>`;
 }
 
@@ -340,76 +365,49 @@ function buildReferralHtml(ctx: Ctx, referTo: string, referNotes: string): strin
   const meds = [...ctx.medications, ...(ctx.medicationsText ? [ctx.medicationsText] : [])];
   const allergy = ctx.allergies || 'NKDA';
 
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
-<title>Referral — ${escHtml(ctx.patientName || 'Patient')}</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;font-size:12.5px;color:#111;line-height:1.6;background:#fff;max-width:175mm;margin:0 auto;padding:18px 20px}
-  .hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #1a3a5c;padding-bottom:12px;margin-bottom:14px}
-  .h-l{font-size:13px;font-weight:700;color:#1a3a5c} .h-s{font-size:10.5px;color:#555;margin-top:2px}
-  .title{font-size:14px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;text-transform:uppercase;margin:0 0 14px;border-bottom:1px solid #e0e4ea;padding-bottom:7px}
-  .sec-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:#1a3a5c;background:#eef1f6;padding:4px 10px;border-left:3px solid #1a3a5c;margin:12px 0 7px}
-  .body-text{font-size:12.5px;line-height:1.6;color:#111}
-  ul{margin:0 0 0 16px;padding:0} li{margin:2px 0;font-size:12.5px}
-  .sig{margin-top:40px;padding-top:12px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
-  .sl{min-width:230px} .sl-line{border-bottom:1px solid #333;width:210px;height:24px;margin-bottom:4px}
-  .sl-name{font-weight:700;font-size:12.5px} .sl-sub{font-size:10.5px;color:#555;margin-top:1px} .sl-lic{font-size:9.5px;color:#888;margin-top:2px}
-  .sr{font-size:9px;color:#aaa;text-align:right}
-  @page{margin:15mm 17mm;size:A4} @media print{body{max-width:100%;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-</style></head><body>
-<div class="hdr">
-  <div><div class="h-l">${escHtml(site.name)}</div>
-    <div class="h-s">${escHtml(site.address)}</div>
-    <div class="h-s">Tel: 1 (758) 720 7111 · amisesuite@gmail.com</div>
-    <div class="h-s" style="color:#1a3a5c;margin-top:2px">${escHtml(now)}</div>
-  </div>
-  <div>${LOGO_SVG}</div>
-</div>
-<div class="title">Referral Letter</div>
-<div class="body-text">
-  <p>Dear Colleague${referTo ? ` / ${escHtml(referTo)}` : ''},</p>
-  <br>
-  <p>I am writing to refer <strong>${escHtml(ctx.patientName || 'this patient')}</strong>${ageLine ? `, ${escHtml(ageLine)},` : ''} who was seen at ${escHtml(site.name)} on ${escHtml(now)}.</p>
-</div>
+  function sc(title: string, content: string, accent = '#1a3a5c', bdr = '#d1d9e0'): string {
+    return `<div style="border:1px solid ${bdr};border-radius:5px;margin-top:9px;overflow:hidden"><div style="background:${accent};color:#fff;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px">${escHtml(title)}</div><div style="padding:8px 10px;font-size:12px;line-height:1.6;color:#111">${content}</div></div>`;
+  }
 
-${ctx.symptoms.length || ctx.freeText ? `<div class="sec-hdr">Presenting History</div>
-<div class="body-text">
-  ${ctx.symptoms.length ? `<p>Presenting with: ${escHtml(ctx.symptoms.join(', '))}</p>` : ''}
-  ${ctx.freeText ? `<p style="margin-top:4px">${escHtml(ctx.freeText)}</p>` : ''}
-  ${ctx.durationDays ? `<p>Duration: ${escHtml(ctx.durationDays)} days</p>` : ''}
-</div>` : ''}
+  let sectHtml = '';
+  if (ctx.symptoms.length || ctx.freeText) {
+    const parts: string[] = [];
+    if (ctx.symptoms.length) parts.push(`<p>Presenting with: ${escHtml(ctx.symptoms.join(', '))}</p>`);
+    if (ctx.freeText) parts.push(`<p style="margin-top:4px">${escHtml(ctx.freeText)}</p>`);
+    if (ctx.durationDays) parts.push(`<p>Duration: ${escHtml(ctx.durationDays)} days</p>`);
+    sectHtml += sc('Presenting History', parts.join(''), '#9a3412', '#fed7aa');
+  }
+  if (ctx.comorbidities.length || ctx.pmhNotes) {
+    const parts: string[] = [];
+    if (ctx.comorbidities.length) parts.push(`<ul style="margin:0 0 0 14px;padding:0">${ctx.comorbidities.map(c => `<li style="margin:2px 0">${escHtml(c)}</li>`).join('')}</ul>`);
+    if (ctx.pmhNotes) parts.push(`<p style="margin-top:4px">${escHtml(ctx.pmhNotes)}</p>`);
+    sectHtml += sc('Past Medical History', parts.join(''));
+  }
+  if (meds.length) {
+    sectHtml += sc('Current Medications', `<ul style="margin:0 0 0 14px;padding:0">${meds.map(m => `<li style="margin:2px 0">${escHtml(m)}</li>`).join('')}</ul>`, '#6d28d9', '#e9d5ff');
+  }
+  sectHtml += sc('Allergies', `<p>${escHtml(allergy)}</p>`, '#6d28d9', '#e9d5ff');
+  if (ctx.assessment || ctx.icdCodes.length) {
+    const parts: string[] = [];
+    if (ctx.assessment) parts.push(`<p>${escHtml(ctx.assessment)}</p>`);
+    if (ctx.icdCodes.length) parts.push(`<p style="margin-top:4px;font-size:11px;color:#555">ICD-10: ${escHtml(ctx.icdCodes.join(', '))}</p>`);
+    sectHtml += sc('Clinical Assessment', parts.join(''), '#065f46', '#6ee7b7');
+  }
+  if (referNotes) {
+    sectHtml += sc('Reason for Referral', `<p>${escHtml(referNotes).replace(/\n/g, '<br>')}</p>`, '#5b21b6', '#c4b5fd');
+  }
 
-${ctx.comorbidities.length || ctx.pmhNotes ? `<div class="sec-hdr">Past Medical History</div>
-<ul>${ctx.comorbidities.map(c => `<li>${escHtml(c)}</li>`).join('')}</ul>
-${ctx.pmhNotes ? `<div class="body-text"><p>${escHtml(ctx.pmhNotes)}</p></div>` : ''}` : ''}
-
-${meds.length ? `<div class="sec-hdr">Current Medications</div>
-<ul>${meds.map(m => `<li>${escHtml(m)}</li>`).join('')}</ul>` : ''}
-
-<div class="sec-hdr">Allergies</div>
-<div class="body-text"><p>${escHtml(allergy)}</p></div>
-
-${ctx.assessment ? `<div class="sec-hdr">Clinical Assessment</div>
-<div class="body-text"><p>${escHtml(ctx.assessment)}</p>
-${ctx.icdCodes.length ? `<p style="margin-top:4px;font-size:11px;color:#555">ICD-10: ${escHtml(ctx.icdCodes.join(', '))}</p>` : ''}
-</div>` : ''}
-
-${referNotes ? `<div class="sec-hdr">Reason for Referral</div>
-<div class="body-text"><p>${escHtml(referNotes).replace(/\n/g, '<br>')}</p></div>` : ''}
-
-<div class="body-text" style="margin-top:16px">
-  <p>I would be grateful for your review and further management. Please do not hesitate to contact our office if you require further information.</p>
-  <br><p>Kind regards,</p>
-</div>
-<div class="sig">
-  <div class="sl"><div class="sl-line"></div>
-    <div class="sl-name">Dr. Dawit D Kabiye</div>
-    <div class="sl-sub">MD, DM · General &amp; Endoscopic Surgery</div>
-    <div class="sl-lic">${escHtml(site.name)} · 1 (758) 720 7111</div>
-    <div class="sl-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp;Date: ..................</div>
-  </div>
-  <div class="sr"></div>
-</div>
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Referral — ${escHtml(ctx.patientName || 'Patient')}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:12.5px;color:#111;line-height:1.6;background:#fff}.lhd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1a3a5c;padding-bottom:10px;margin-bottom:12px}.hl{font-size:13px;font-weight:700;color:#1a3a5c}.hs{font-size:10.5px;color:#555;margin-top:2px}.ttl{font-size:15px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;text-transform:uppercase;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid #e0e4ea}.sig{margin-top:32px;padding-top:10px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}@page{margin:14mm 16mm;size:A4}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}</style>
+</head><body>
+<div class="lhd"><div><div class="hl">${escHtml(site.name)}</div><div class="hs">${escHtml(site.address)}</div><div class="hs">Tel: 1 (758) 720 7111 · amisesuite@gmail.com</div><div class="hs" style="color:#1a3a5c;margin-top:2px">${escHtml(now)}</div></div><div>${LOGO_SVG}</div></div>
+<div class="ttl">Referral Letter</div>
+<p>Dear Colleague${referTo ? ` / ${escHtml(referTo)}` : ''},</p>
+<p style="margin-top:8px">I am writing to refer <strong>${escHtml(ctx.patientName || 'this patient')}</strong>${ageLine ? `, ${escHtml(ageLine)},` : ''} who was seen at ${escHtml(site.name)} on ${escHtml(now)}.</p>
+${sectHtml}
+<p style="margin-top:14px">I would be grateful for your review and further management. Please do not hesitate to contact our office if you require further information.</p>
+<p style="margin-top:8px">Kind regards,</p>
+<div class="sig"><div><div style="border-bottom:1px solid #333;width:200px;height:22px;margin-bottom:3px"></div><div style="font-weight:700;font-size:12.5px">Dr. Dawit D Kabiye</div><div style="font-size:10.5px;color:#555">MD, DM · General &amp; Endoscopic Surgery</div><div style="font-size:9.5px;color:#888">${escHtml(site.name)} · 1 (758) 720 7111</div><div style="font-size:9.5px;color:#888">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp;Date: ..................</div></div><div></div></div>
 </body></html>`;
 }
 
@@ -421,81 +419,43 @@ function buildDischargeHtml(ctx: Ctx, dischargeNotes: string, followUp: string, 
   const ageLine = [ctx.age ? `${ctx.age} yrs` : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(', ');
   const meds = [...ctx.medications, ...(ctx.medicationsText ? [ctx.medicationsText] : [])];
 
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
-<title>Discharge — ${escHtml(ctx.patientName || 'Patient')}</title>
-<style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;font-size:12.5px;color:#111;line-height:1.6;background:#fff;max-width:175mm;margin:0 auto;padding:18px 20px}
-  .hdr{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid #1a3a5c;padding-bottom:12px;margin-bottom:14px}
-  .h-l{font-size:13px;font-weight:700;color:#1a3a5c} .h-s{font-size:10.5px;color:#555;margin-top:2px}
-  .title{font-size:14px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;text-transform:uppercase;margin:0 0 14px;border-bottom:1px solid #e0e4ea;padding-bottom:7px}
-  .pt-row{background:#f4f6f9;border:1px solid #d8dde6;border-radius:4px;padding:10px 14px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .pt-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:3px}
-  .pt-val{font-size:12px;font-weight:700} .pt-sub{font-size:10.5px;color:#555;margin-top:1px}
-  .sec-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:#1a3a5c;background:#eef1f6;padding:4px 10px;border-left:3px solid #1a3a5c;margin:12px 0 7px}
-  .body-text{font-size:12.5px;line-height:1.6;color:#111;padding:0 2px}
-  ul{margin:0 0 0 16px;padding:0} li{margin:2px 0;font-size:12.5px}
-  .warn{background:#fff5f5;border:1px solid #fca5a5;border-radius:4px;padding:8px 12px;color:#b91c1c;font-size:12px}
-  .sig{margin-top:40px;padding-top:12px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
-  .sl{min-width:230px} .sl-line{border-bottom:1px solid #333;width:210px;height:24px;margin-bottom:4px}
-  .sl-name{font-weight:700;font-size:12.5px} .sl-sub{font-size:10.5px;color:#555;margin-top:1px} .sl-lic{font-size:9.5px;color:#888;margin-top:2px}
-  .sr{font-size:9px;color:#aaa;text-align:right}
-  @page{margin:15mm 17mm;size:A4} @media print{body{max-width:100%;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-</style></head><body>
-<div class="hdr">
-  <div><div class="h-l">${escHtml(site.name)}</div>
-    <div class="h-s">${escHtml(site.address)}</div>
-    <div class="h-s">Tel: 1 (758) 720 7111 · amisesuite@gmail.com</div>
-    <div class="h-s" style="color:#1a3a5c;margin-top:2px">${escHtml(now)}</div>
-  </div>
-  <div>${LOGO_SVG}</div>
-</div>
-<div class="title">Discharge / Clinic Summary</div>
-<div class="pt-row">
-  <div><div class="pt-lbl">Patient</div>
-    <div class="pt-val">${escHtml(ctx.patientName || '—')}</div>
-    ${ageLine ? `<div class="pt-sub">${escHtml(ageLine)}</div>` : ''}
-    ${ctx.phone ? `<div class="pt-sub">${escHtml(ctx.phone)}</div>` : ''}
-  </div>
-  <div><div class="pt-lbl">Clinician</div>
-    <div class="pt-val">Dr. Dawit D Kabiye</div>
-    <div class="pt-sub">MD, DM · General &amp; Endoscopic Surgery</div>
-    <div class="pt-sub">${escHtml(now)}</div>
-  </div>
-</div>
+  function sc(title: string, content: string, accent = '#1a3a5c', bg = '#fff', bdr = '#d1d9e0'): string {
+    return `<div style="border:1px solid ${bdr};border-radius:5px;margin-top:8px;overflow:hidden"><div style="background:${accent};color:#fff;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:4px 10px">${escHtml(title)}</div><div style="background:${bg};padding:8px 10px;font-size:12px;line-height:1.6;color:#111">${content}</div></div>`;
+  }
 
-${ctx.assessment || ctx.icdCodes.length ? `<div class="sec-hdr">Diagnosis</div>
-<div class="body-text">
-  ${ctx.assessment ? `<p>${escHtml(ctx.assessment)}</p>` : ''}
-  ${ctx.icdCodes.length ? `<p style="font-size:11px;color:#555;margin-top:3px">ICD-10: ${escHtml(ctx.icdCodes.join(', '))}</p>` : ''}
-</div>` : ''}
+  let sectHtml = '';
+  if (ctx.assessment || ctx.icdCodes.length) {
+    const parts: string[] = [];
+    if (ctx.assessment) parts.push(`<p>${escHtml(ctx.assessment)}</p>`);
+    if (ctx.icdCodes.length) parts.push(`<p style="font-size:11px;color:#555;margin-top:3px">ICD-10: ${escHtml(ctx.icdCodes.join(', '))}</p>`);
+    sectHtml += sc('Diagnosis', parts.join(''), '#065f46', '#f0fdf4', '#bbf7d0');
+  }
+  if (ctx.plan || ctx.procedures) {
+    const parts: string[] = [];
+    if (ctx.procedures) parts.push(`<p>${escHtml(ctx.procedures)}</p>`);
+    if (ctx.plan) parts.push(`<p style="margin-top:4px">${escHtml(ctx.plan).replace(/\n/g, '<br>')}</p>`);
+    sectHtml += sc('Treatment / Procedures', parts.join(''), '#1a3a5c', '#eff6ff', '#bfdbfe');
+  }
+  if (meds.length) {
+    sectHtml += sc('Medications on Discharge', `<ul style="margin:0 0 0 14px;padding:0">${meds.map(m => `<li style="margin:2px 0">${escHtml(m)}</li>`).join('')}</ul>`, '#6d28d9', '#fdf4ff', '#e9d5ff');
+  }
+  if (dischargeNotes) {
+    sectHtml += sc('Discharge Instructions', `<p>${escHtml(dischargeNotes).replace(/\n/g, '<br>')}</p>`, '#075985', '#f0f9ff', '#bae6fd');
+  }
+  if (warnings) {
+    sectHtml += sc('Warning Signs — Return Immediately If', `<p style="color:#b91c1c">${escHtml(warnings).replace(/\n/g, '<br>')}</p>`, '#b91c1c', '#fff5f5', '#fca5a5');
+  }
+  if (followUp) {
+    sectHtml += sc('Follow-up Plan', `<p>${escHtml(followUp).replace(/\n/g, '<br>')}</p>`);
+  }
 
-${ctx.plan || ctx.procedures ? `<div class="sec-hdr">Treatment / Procedures</div>
-<div class="body-text">
-  ${ctx.procedures ? `<p>${escHtml(ctx.procedures)}</p>` : ''}
-  ${ctx.plan ? `<p style="margin-top:4px">${escHtml(ctx.plan).replace(/\n/g, '<br>')}</p>` : ''}
-</div>` : ''}
-
-${meds.length ? `<div class="sec-hdr">Medications on Discharge</div>
-<ul>${meds.map(m => `<li>${escHtml(m)}</li>`).join('')}</ul>` : ''}
-
-${dischargeNotes ? `<div class="sec-hdr">Discharge Instructions</div>
-<div class="body-text"><p>${escHtml(dischargeNotes).replace(/\n/g, '<br>')}</p></div>` : ''}
-
-${warnings ? `<div class="sec-hdr">Warning Signs — Return Immediately If:</div>
-<div class="warn">${escHtml(warnings).replace(/\n/g, '<br>')}</div>` : ''}
-
-${followUp ? `<div class="sec-hdr">Follow-up</div>
-<div class="body-text"><p>${escHtml(followUp).replace(/\n/g, '<br>')}</p></div>` : ''}
-
-<div class="sig">
-  <div class="sl"><div class="sl-line"></div>
-    <div class="sl-name">Dr. Dawit D Kabiye</div>
-    <div class="sl-sub">MD, DM · General &amp; Endoscopic Surgery</div>
-    <div class="sl-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp;Date: ..................</div>
-  </div>
-  <div class="sr">Issued: ${escHtml(now)}</div>
-</div>
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Discharge — ${escHtml(ctx.patientName || 'Patient')}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;line-height:1.6;background:#fff}.lhd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1a3a5c;padding-bottom:10px;margin-bottom:12px}.hl{font-size:13px;font-weight:700;color:#1a3a5c}.hs{font-size:10.5px;color:#555;margin-top:2px}.ttl{font-size:15px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;text-transform:uppercase;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid #e0e4ea}.ptg{background:#f4f6f9;border:1px solid #d8dde6;border-radius:5px;padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}.ptl{font-size:8.5px;text-transform:uppercase;letter-spacing:.08em;color:#888;font-weight:700;margin-bottom:2px}.ptv{font-size:12px;font-weight:700}.pts{font-size:10.5px;color:#555;margin-top:1px}.sig{margin-top:28px;padding-top:8px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}@page{margin:14mm 16mm;size:A4}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}</style>
+</head><body>
+<div class="lhd"><div><div class="hl">${escHtml(site.name)}</div><div class="hs">${escHtml(site.address)}</div><div class="hs">Tel: 1 (758) 720 7111 · amisesuite@gmail.com</div><div class="hs" style="color:#1a3a5c;margin-top:2px">${escHtml(now)}</div></div><div>${LOGO_SVG}</div></div>
+<div class="ttl">Discharge / Clinic Summary</div>
+<div class="ptg"><div><div class="ptl">Patient</div><div class="ptv">${escHtml(ctx.patientName || '—')}</div>${ageLine ? `<div class="pts">${escHtml(ageLine)}</div>` : ''}${ctx.phone ? `<div class="pts">${escHtml(ctx.phone)}</div>` : ''}</div><div><div class="ptl">Clinician</div><div class="ptv">Dr. Dawit D Kabiye</div><div class="pts">MD, DM · General &amp; Endoscopic Surgery</div><div class="pts">${escHtml(now)}</div></div></div>
+${sectHtml}<div class="sig"><div><div style="border-bottom:1px solid #333;width:200px;height:22px;margin-bottom:3px"></div><div style="font-weight:700;font-size:12px">Dr. Dawit D Kabiye</div><div style="font-size:10.5px;color:#555">MD, DM · General &amp; Endoscopic Surgery</div><div style="font-size:9.5px;color:#888">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp;Date: ..................</div></div><div style="font-size:9px;color:#aaa;text-align:right">Issued: ${escHtml(now)}</div></div>
 </body></html>`;
 }
 
