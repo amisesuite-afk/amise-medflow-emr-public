@@ -297,50 +297,73 @@ function buildPrintHtml(text: string, ctx: Ctx): string {
   const now = ectNow();
   const { sections } = parseDocSections(cleanForPrint(text));
 
-  function getPC(title: string): [string, string, string] {
-    const m: Record<string, [string, string, string]> = {
-      'PATIENT':                       ['#eff6ff','#bfdbfe','#1e40af'],
-      'ENCOUNTER':                     ['#eff6ff','#bfdbfe','#1e40af'],
-      'PRESENTING COMPLAINT':          ['#fff7ed','#fed7aa','#9a3412'],
-      'VITAL SIGNS':                   ['#fef9f9','#fecaca','#991b1b'],
-      'PAST MEDICAL HISTORY':          ['#f9fafb','#d1d5db','#374151'],
-      'SURGICAL HISTORY':              ['#f9fafb','#d1d5db','#374151'],
-      'FAMILY HISTORY':                ['#f9fafb','#d1d5db','#4b5563'],
-      'SOCIAL / HABITS':               ['#f9fafb','#d1d5db','#4b5563'],
-      'MEDICATIONS':                   ['#fdf4ff','#e9d5ff','#6d28d9'],
-      'ALLERGIES':                     ['#fdf4ff','#e9d5ff','#6d28d9'],
-      'PHYSICAL EXAMINATION':          ['#f0fdf4','#bbf7d0','#166534'],
-      'REVIEW OF SYSTEMS':             ['#f0f9ff','#bae6fd','#0369a1'],
-      'INVESTIGATIONS ORDERED':        ['#f0f9ff','#bae6fd','#075985'],
-      'RADIOLOGY / IMAGING':           ['#f0f9ff','#bae6fd','#075985'],
-      'ASSESSMENT':                    ['#ecfdf5','#6ee7b7','#065f46'],
-      'MANAGEMENT PLAN':               ['#f5f3ff','#c4b5fd','#5b21b6'],
-      'CLINICAL IMAGES / ATTACHMENTS': ['#fefce8','#fde68a','#854d0e'],
-    };
-    return m[title] ?? ['#f9fafb','#d1d5db','#374151'];
+  // ── Caribbean palette: navy · teal · terracotta — no rainbow ──
+  const NAVY  = '#1a3a5c';
+  const TEAL  = '#0b7e72';
+  const TERRA = '#9a3412';  // terracotta — acute/complaint
+  const CREAM = '#fefcf8';
+  const BDR   = '#e2d9cf';
+
+  function accentFor(title: string): string {
+    if (/ASSESSMENT|MANAGEMENT|PLAN/.test(title))                    return TEAL;
+    if (/COMPLAINT|VITAL|TRIAGE/.test(title))                        return TERRA;
+    return NAVY;
   }
 
-  function sHtml(title: string, body: string): string {
-    const [bg, bdr, hdr] = getPC(title);
-    return `<div style="border:1px solid ${bdr};border-radius:4px;margin-bottom:4px;overflow:hidden;page-break-inside:avoid"><div style="background:${hdr};color:#fff;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:3px 7px">${escHtml(title)}</div><div style="background:${bg};font-size:10.5px;line-height:1.45;color:#111;padding:5px 7px;white-space:pre-wrap">${escHtml(body)}</div></div>`;
+  // Build a plain key-value grid cell from one line like "Name:  Marie Joseph"
+  function kvCell(line: string): string {
+    const colon = line.indexOf(':');
+    if (colon < 0) return `<div><div class="pv">${escHtml(line.trim())}</div></div>`;
+    const lbl = line.slice(0, colon).trim();
+    const val = line.slice(colon + 1).trim();
+    return `<div><div class="pl">${escHtml(lbl)}</div><div class="pv">${escHtml(val) || '—'}</div></div>`;
   }
 
-  const PAIRS: [string, string][] = [
-    ['PATIENT', 'ENCOUNTER'],
-    ['PAST MEDICAL HISTORY', 'SURGICAL HISTORY'],
-    ['MEDICATIONS', 'ALLERGIES'],
-    ['FAMILY HISTORY', 'SOCIAL / HABITS'],
+  // Demographics grid from PATIENT + ENCOUNTER sections
+  const patSec  = sections.find(s => s.title === 'PATIENT');
+  const encSec  = sections.find(s => s.title === 'ENCOUNTER');
+  const demoLines = [
+    ...(patSec  ? patSec.body.split('\n').filter(l => l.trim()) : []),
+    ...(encSec  ? encSec.body.split('\n').filter(l => l.trim()) : []),
   ];
+  const demoGrid = demoLines.length
+    ? `<div class="ptg">${demoLines.map(kvCell).join('')}</div>`
+    : '';
 
+  // Section card renderer — uniform style, accent header only
+  function sHtml(title: string, body: string): string {
+    const acc = accentFor(title);
+    // Render bullet lines with a coloured dot; leave prose as-is
+    const bodyHtml = body.split('\n').map(line => {
+      if (/^\s*[•·\-]\s/.test(line)) {
+        return `<div style="display:flex;gap:6px;margin:1px 0"><span style="color:${acc};font-weight:700;flex-shrink:0">·</span><span>${escHtml(line.replace(/^\s*[•·\-]\s*/,''))}</span></div>`;
+      }
+      return `<div style="margin:1px 0">${escHtml(line) || '<br>'}</div>`;
+    }).join('');
+    return `<div style="border:1px solid ${BDR};border-radius:5px;margin-top:7px;overflow:hidden;page-break-inside:avoid"><div style="background:${acc};color:#fff;font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px">${escHtml(title)}</div><div style="background:${CREAM};font-size:10.5px;line-height:1.5;color:#111;padding:6px 10px">${bodyHtml}</div></div>`;
+  }
+
+  // Two-column layout for paired sections
+  function pair2(a: string, bdy_a: string, b: string, bdy_b: string): string {
+    return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px">${sHtml(a,bdy_a).replace('margin-top:7px','margin-top:0')}${sHtml(b,bdy_b).replace('margin-top:7px','margin-top:0')}</div>`;
+  }
+
+  const SKIP = new Set(['PATIENT','ENCOUNTER']);
+  const PAIRS: [string,string][] = [
+    ['PAST MEDICAL HISTORY','SURGICAL HISTORY'],
+    ['MEDICATIONS','ALLERGIES'],
+    ['FAMILY HISTORY','SOCIAL / HABITS'],
+  ];
   const rendered = new Set<string>();
   let sectHtml = '';
+
   for (const s of sections) {
-    if (rendered.has(s.title)) continue;
+    if (SKIP.has(s.title) || rendered.has(s.title)) continue;
     const pair = PAIRS.find(p => p[0] === s.title);
     if (pair) {
       const partner = sections.find(x => x.title === pair[1]);
       if (partner && !rendered.has(partner.title)) {
-        sectHtml += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:0">${sHtml(s.title, s.body)}${sHtml(partner.title, partner.body)}</div>`;
+        sectHtml += pair2(s.title, s.body, partner.title, partner.body);
         rendered.add(s.title); rendered.add(partner.title); continue;
       }
     }
@@ -349,10 +372,11 @@ function buildPrintHtml(text: string, ctx: Ctx): string {
   }
 
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Clinical Note — ${escHtml(ctx.patientName || 'Patient')}</title>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:#111;background:#fff}.lhd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1a3a5c;padding-bottom:7px;margin-bottom:7px}.hl{font-size:12px;font-weight:700;color:#1a3a5c}.hs{font-size:10px;color:#555;margin-top:2px}.sig{margin-top:14px;padding-top:7px;border-top:1px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}@page{margin:10mm 12mm;size:A4}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}</style>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:#111;background:#fff}.lhd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2.5px solid ${NAVY};padding-bottom:8px;margin-bottom:8px}.hl{font-size:12px;font-weight:700;color:${NAVY}}.hs{font-size:10px;color:#555;margin-top:2px}.ptg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px 10px;background:#f5ede0;border:1px solid #e2d9cf;border-radius:6px;padding:8px 12px;margin-bottom:2px}.pl{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#8b6a50;margin-bottom:1px}.pv{font-size:11px;font-weight:700;color:#1a1a1a}.sig{margin-top:16px;padding-top:8px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}@page{margin:10mm 12mm;size:A4}@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}</style>
 </head><body>
-<div class="lhd"><div><div class="hl">${escHtml(site.name)}</div><div class="hs">${escHtml(site.address)}</div><div class="hs">Tel: 1 (758) 720 7111 · amisesuite@gmail.com</div><div class="hs" style="color:#1a3a5c;margin-top:2px">${escHtml(now)}</div></div><div>${LOGO_SVG}</div></div>
-${sectHtml}<div class="sig"><div><div style="border-bottom:1px solid #333;width:185px;height:20px;margin-bottom:3px"></div><div style="font-weight:700;font-size:11px">Dr. Dawit D Kabiye</div><div style="font-size:9.5px;color:#555">MD, DM · General &amp; Endoscopic Surgery</div><div style="font-size:9px;color:#888">Licence #: ............&nbsp;&nbsp;Date: ..................</div></div><div style="font-size:8.5px;color:#aaa;text-align:right">Generated ${escHtml(now)}</div></div>
+<div class="lhd"><div><div class="hl">${escHtml(site.name)}</div><div class="hs">${escHtml(site.address)}</div><div class="hs">Tel: 1 (758) 720 7111 · amisesuite@gmail.com</div><div class="hs" style="color:${NAVY};margin-top:2px">${escHtml(now)}</div></div><div>${LOGO_SVG}</div></div>
+${demoGrid}${sectHtml}
+<div class="sig"><div><div style="border-bottom:1px solid #333;width:185px;height:20px;margin-bottom:3px"></div><div style="font-weight:700;font-size:11px">Dr. Dawit D Kabiye</div><div style="font-size:9.5px;color:#555">MD, DM · General &amp; Endoscopic Surgery</div><div style="font-size:9px;color:#888">Licence #: ............&nbsp;&nbsp;Date: ..................</div></div><div style="font-size:8.5px;color:#aaa;text-align:right">Generated ${escHtml(now)}</div></div>
 </body></html>`;
 }
 
