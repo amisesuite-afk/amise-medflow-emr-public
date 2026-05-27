@@ -123,36 +123,36 @@ function buildPrintHtml(text: string, meta: PrintMeta): string {
 <title>Clinical Summary — ${escHtml(meta.patientName || 'Patient')}</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#1a1a1a;line-height:1.6;background:#fff}
+  body{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1a1a1a;line-height:1.65;background:#fff;max-width:175mm;margin:0 auto;padding:20px 24px}
   /* ── Header ── */
-  .hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:2.5px solid #1a3a5c;margin-bottom:14px}
-  .hdr-brand{font-size:11px;font-weight:700;color:#1a3a5c;letter-spacing:.3px}
-  .hdr-addr{font-size:9.5px;color:#555;line-height:1.6;margin-top:2px}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:2.5px solid #1a3a5c;margin-bottom:16px}
+  .hdr-brand{font-size:13px;font-weight:700;color:#1a3a5c;letter-spacing:.3px}
+  .hdr-addr{font-size:11px;color:#555;line-height:1.7;margin-top:3px}
   /* ── Patient strip ── */
-  .pt-strip{background:#f4f6f9;border:1px solid #d8dde6;border-radius:4px;padding:10px 14px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .pt-label{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:3px}
-  .pt-val{font-size:11px;color:#1a1a1a;font-weight:600}
-  .pt-sub{font-size:9.5px;color:#555;font-weight:400}
+  .pt-strip{background:#f4f6f9;border:1px solid #d8dde6;border-radius:6px;padding:12px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pt-label{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:4px}
+  .pt-val{font-size:12.5px;color:#1a1a1a;font-weight:700}
+  .pt-sub{font-size:11px;color:#555;font-weight:400;margin-top:2px}
   /* ── Document title ── */
-  .doc-title{font-size:13px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;margin-bottom:16px;text-transform:uppercase;border-bottom:1px solid #e5e9ef;padding-bottom:6px}
+  .doc-title{font-size:15px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;margin-bottom:18px;text-transform:uppercase;border-bottom:1px solid #e5e9ef;padding-bottom:8px}
   /* ── SOAP sections ── */
-  .s-section{margin-bottom:16px}
-  .s-main-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:4px 10px;margin-bottom:8px;border-left:3.5px solid #1a3a5c}
-  .s-sub-hdr{font-weight:700;font-size:11px;color:#333;margin:10px 0 3px}
-  .s-line{font-size:11px;margin-bottom:3px;color:#222}
-  .s-bullet{font-size:11px;padding-left:16px;position:relative;margin-bottom:3px;color:#222}
+  .s-section{margin-bottom:18px}
+  .s-main-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:5px 12px;margin-bottom:10px;border-left:3.5px solid #1a3a5c}
+  .s-sub-hdr{font-weight:700;font-size:12px;color:#333;margin:12px 0 4px}
+  .s-line{font-size:12.5px;margin-bottom:4px;color:#222}
+  .s-bullet{font-size:12.5px;padding-left:18px;position:relative;margin-bottom:4px;color:#222}
   .s-bullet::before{content:"•";position:absolute;left:5px;color:#1a3a5c}
-  .s-gap{height:6px}
+  .s-gap{height:8px}
   /* ── Signature block ── */
-  .sig-block{margin-top:40px;padding-top:12px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
-  .sig-left{min-width:220px}
-  .sig-line{border-bottom:1px solid #333;width:200px;margin-bottom:4px;height:22px}
-  .sig-name{font-size:11px;font-weight:700;color:#1a1a1a}
-  .sig-title{font-size:9.5px;color:#555;margin-top:1px}
-  .sig-lic{font-size:9px;color:#888;margin-top:2px}
-  .sig-right{font-size:9px;color:#aaa;text-align:right}
-  @page{margin:18mm 20mm;size:A4}
-  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  .sig-block{margin-top:48px;padding-top:14px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
+  .sig-left{min-width:240px}
+  .sig-line{border-bottom:1px solid #333;width:210px;margin-bottom:5px;height:26px}
+  .sig-name{font-size:12.5px;font-weight:700;color:#1a1a1a}
+  .sig-title{font-size:11px;color:#555;margin-top:2px}
+  .sig-lic{font-size:10px;color:#888;margin-top:3px}
+  .sig-right{font-size:10px;color:#aaa;text-align:right}
+  @page{margin:16mm 18mm;size:A4}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;max-width:100%;padding:0}}
 </style>
 </head><body>
 
@@ -281,29 +281,29 @@ type DirectCtx = ReturnType<typeof useAppContext>;
 function sharedHead(title: string): string {
   return `<style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Arial,Helvetica,sans-serif;font-size:11.5px;color:#1a1a1a;line-height:1.6;background:#fff}
-  .hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:2.5px solid #1a3a5c;margin-bottom:14px}
-  .hdr-office{font-size:11px;font-weight:700;color:#1a3a5c;letter-spacing:.3px}
-  .hdr-sub{font-size:9.5px;color:#555;line-height:1.6;margin-top:2px}
-  .title{font-size:13px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;margin:0 0 14px;text-transform:uppercase;border-bottom:1px solid #e5e9ef;padding-bottom:6px}
-  .pt-row{background:#f4f6f9;border:1px solid #d8dde6;border-radius:4px;padding:10px 14px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:10px}
-  .pt-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:3px}
-  .pt-val{font-size:11px;color:#1a1a1a;font-weight:600}
-  .pt-sub{font-size:9.5px;color:#555}
-  .section{margin:14px 0}
-  .sec-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:4px 10px;border-left:3.5px solid #1a3a5c;margin-bottom:8px}
-  .sec-body{font-size:11px;padding:0 4px;line-height:1.65}
-  .item{margin-bottom:4px;padding-left:14px;position:relative}
-  .item::before{content:"•";position:absolute;left:3px;color:#1a3a5c}
-  .sig{margin-top:40px;padding-top:12px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
-  .sig-left{min-width:220px}
-  .sig-line{border-bottom:1px solid #333;width:200px;height:22px;margin-bottom:4px}
-  .sig-name{font-weight:700;font-size:11px;color:#1a1a1a}
-  .sig-title{font-size:9.5px;color:#555;margin-top:1px}
-  .sig-lic{font-size:9px;color:#888;margin-top:2px}
-  .sig-right{font-size:9px;color:#aaa;text-align:right}
-  @page{margin:18mm 20mm;size:A4}
-  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  body{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1a1a1a;line-height:1.65;background:#fff;max-width:175mm;margin:0 auto;padding:20px 24px}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:2.5px solid #1a3a5c;margin-bottom:16px}
+  .hdr-office{font-size:13px;font-weight:700;color:#1a3a5c;letter-spacing:.3px}
+  .hdr-sub{font-size:11px;color:#555;line-height:1.7;margin-top:3px}
+  .title{font-size:15px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;margin:0 0 18px;text-transform:uppercase;border-bottom:1px solid #e5e9ef;padding-bottom:8px}
+  .pt-row{background:#f4f6f9;border:1px solid #d8dde6;border-radius:6px;padding:12px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pt-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:4px}
+  .pt-val{font-size:12.5px;color:#1a1a1a;font-weight:700}
+  .pt-sub{font-size:11px;color:#555;margin-top:2px}
+  .section{margin:16px 0}
+  .sec-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:5px 12px;border-left:3.5px solid #1a3a5c;margin-bottom:10px}
+  .sec-body{font-size:12.5px;padding:0 4px;line-height:1.65}
+  .item{margin-bottom:5px;padding-left:16px;position:relative}
+  .item::before{content:"•";position:absolute;left:4px;color:#1a3a5c}
+  .sig{margin-top:48px;padding-top:14px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
+  .sig-left{min-width:240px}
+  .sig-line{border-bottom:1px solid #333;width:210px;height:26px;margin-bottom:5px}
+  .sig-name{font-weight:700;font-size:12.5px;color:#1a1a1a}
+  .sig-title{font-size:11px;color:#555;margin-top:2px}
+  .sig-lic{font-size:10px;color:#888;margin-top:3px}
+  .sig-right{font-size:10px;color:#aaa;text-align:right}
+  @page{margin:16mm 18mm;size:A4}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;max-width:100%;padding:0}}
 </style>
 <title>${escHtml(title)}</title>`;
 }
@@ -591,15 +591,18 @@ ${followUp ? `<div class="section">
 }
 
 function printHtml(html: string) {
-  const iframe = window.document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;';
-  iframe.setAttribute('title', 'print-frame');
-  window.document.body.appendChild(iframe);
-  const iDoc = iframe.contentDocument ?? iframe.contentWindow?.document;
-  if (!iDoc) { iframe.remove(); return; }
-  iDoc.open(); iDoc.write(html); iDoc.close();
-  const doprint = () => { try { iframe.contentWindow?.focus(); iframe.contentWindow?.print(); } finally { setTimeout(() => iframe.remove(), 2000); } };
-  if (iframe.contentDocument?.readyState === 'complete') doprint(); else iframe.onload = doprint;
+  const win = window.open('', '_blank');
+  if (win) {
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    // Small delay so browser can lay out content before print dialog
+    setTimeout(() => { try { win.print(); } catch { /* ignore */ } }, 450);
+  } else {
+    // Popup blocked — fall back to download
+    downloadHtml(html, 'document.html');
+  }
 }
 
 function downloadHtml(html: string, filename: string) {
@@ -855,36 +858,7 @@ export default function SummaryTab() {
 
   function printDoc() {
     if (!document) return;
-    const html = buildPrintHtml(document, makePrintMeta());
-
-    // Inject a hidden iframe into the current page — avoids popup-blocker entirely
-    const iframe = window.document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;';
-    iframe.setAttribute('title', 'print-frame');
-    window.document.body.appendChild(iframe);
-
-    const iDoc = iframe.contentDocument ?? iframe.contentWindow?.document;
-    if (!iDoc) { iframe.remove(); return; }
-
-    iDoc.open();
-    iDoc.write(html);
-    iDoc.close();
-
-    // Wait for resources, then print; remove iframe after dialog closes
-    const doprint = () => {
-      try {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-      } finally {
-        setTimeout(() => iframe.remove(), 2000);
-      }
-    };
-
-    if (iframe.contentDocument?.readyState === 'complete') {
-      doprint();
-    } else {
-      iframe.onload = doprint;
-    }
+    printHtml(buildPrintHtml(document, makePrintMeta()));
   }
 
   function downloadDoc() {
@@ -931,109 +905,101 @@ export default function SummaryTab() {
 
   return (
     <div className="summary-tab">
-      {/* Header */}
-      <div className="summary-header">
-        <div>
-          <div className="summary-title">Clinical Intake Summary</div>
-          <div className="summary-sub">
-            AI-drafted from all collected data — review and edit before sending to Dr Kabiye
+
+      {/* ── Print / Export — primary, always open ── */}
+      <CollapsibleCard title="Print / Export — Clinical Documents" defaultOpen={true}>
+        <DirectExportPanel />
+      </CollapsibleCard>
+
+      {/* ── AI Summary — secondary, collapsed by default ── */}
+      <CollapsibleCard title="AI Clinical Summary (optional)" defaultOpen={false}>
+        {/* Sub-header */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 10 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+            Claude drafts a structured SOAP note from all entered data — review before forwarding.
           </div>
-        </div>
-        <div className="summary-actions">
-          {document && (
-            <>
-              <button className="summary-btn summary-btn--ghost" onClick={() => void copy()}>
-                {copied ? '✓ Copied' : '⎘ Copy'}
-              </button>
-              <button className="summary-btn summary-btn--ghost" onClick={downloadDoc}>
-                ↓ Download
-              </button>
-              <button className="summary-btn summary-btn--ghost" onClick={printDoc}>
-                🖨 Print / Save PDF
-              </button>
-              <button className="summary-btn summary-btn--ghost" onClick={() => setDocument('')}>
-                × Clear
-              </button>
-            </>
-          )}
-          <button
-            className="summary-btn summary-btn--primary"
-            onClick={() => void generate()}
-            disabled={loading || !hasData}
-            title={!hasData ? 'Enter at least a patient name or symptom first' : ''}
-          >
-            {loading ? (
-              <><span className="summary-spinner" /> Drafting…</>
-            ) : document ? (
-              '↻ Regenerate'
-            ) : (
-              '✦ Draft clinical summary'
+          <div className="summary-actions">
+            {document && (
+              <>
+                <button className="summary-btn summary-btn--ghost" onClick={() => void copy()}>
+                  {copied ? '✓ Copied' : '⎘ Copy'}
+                </button>
+                <button className="summary-btn summary-btn--ghost" onClick={downloadDoc}>
+                  ↓ Download
+                </button>
+                <button className="summary-btn summary-btn--ghost" onClick={printDoc}>
+                  🖨 Print
+                </button>
+                <button className="summary-btn summary-btn--ghost" onClick={() => setDocument('')}>
+                  × Clear
+                </button>
+              </>
             )}
-          </button>
-        </div>
-      </div>
-
-      {/* Error */}
-      {error && (
-        <div className="summary-error">
-          ⚠ {error}
-          {(error.includes('ANTHROPIC') || error.includes('API')) &&
-           !error.includes('VITE_ANTHROPIC_API_KEY') ? (
-            <span> — Check that ANTHROPIC_API_KEY is set in environment secrets.</span>
-          ) : null}
-        </div>
-      )}
-
-      {/* Empty state */}
-      {!document && !loading && (
-        <div className="summary-empty">
-          <div className="summary-empty-icon">📋</div>
-          <div className="summary-empty-title">No summary yet</div>
-          <div className="summary-empty-body">
-            Fill in the patient intake, then click <strong>Draft clinical summary</strong> above.
-            Claude will compose a structured document from all collected data, which you can edit
-            before sending for Dr Kabiye's review.
+            <button
+              className="summary-btn summary-btn--primary"
+              onClick={() => void generate()}
+              disabled={loading || !hasData}
+              title={!hasData ? 'Enter at least a patient name or symptom first' : ''}
+            >
+              {loading ? (
+                <><span className="summary-spinner" /> Drafting…</>
+              ) : document ? (
+                '↻ Regenerate'
+              ) : (
+                '✦ Draft AI summary'
+              )}
+            </button>
           </div>
-          <div className="summary-checklist">
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="summary-error" style={{ marginBottom: 10 }}>
+            ⚠ {error}
+            {(error.includes('ANTHROPIC') || error.includes('API')) &&
+             !error.includes('VITE_ANTHROPIC_API_KEY') ? (
+              <span> — Check that ANTHROPIC_API_KEY is set in environment secrets.</span>
+            ) : null}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!document && !loading && (
+          <div className="summary-checklist" style={{ padding: '10px 0' }}>
             <div className={`summary-check ${ctx.patientName ? 'ok' : ''}`}>
               {ctx.patientName ? '✓' : '○'} Patient name
             </div>
             <div className={`summary-check ${ctx.symptoms.length ? 'ok' : ''}`}>
-              {ctx.symptoms.length ? '✓' : '○'} At least one symptom selected
+              {ctx.symptoms.length ? '✓' : '○'} At least one symptom
             </div>
             <div className={`summary-check ${Object.values(ctx.vitals).some(v => v.trim()) ? 'ok' : ''}`}>
               {Object.values(ctx.vitals).some(v => v.trim()) ? '✓' : '○'} Vital signs (optional)
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Generated document */}
-      {(document || loading) && (
-        <div className="summary-doc-wrap">
-          <div className="summary-doc-bar">
-            <span className="summary-doc-badge">DRAFT — FOR REVIEW</span>
-            <span className="summary-doc-note">
-              This is an AI-drafted administrative summary. Edit freely before forwarding.
-              Clinical decisions remain with Dr Kabiye.
-            </span>
+        {/* Generated document */}
+        {(document || loading) && (
+          <div className="summary-doc-wrap">
+            <div className="summary-doc-bar">
+              <span className="summary-doc-badge">DRAFT — FOR REVIEW</span>
+              <span className="summary-doc-note">
+                AI-drafted administrative summary. Edit freely before forwarding.
+              </span>
+            </div>
+            <textarea
+              ref={textRef}
+              className="summary-doc"
+              value={document}
+              onChange={e => setDocument(e.target.value)}
+              placeholder={loading ? 'Composing summary…' : ''}
+              readOnly={loading}
+              spellCheck
+            />
           </div>
-          <textarea
-            ref={textRef}
-            className="summary-doc"
-            value={document}
-            onChange={e => setDocument(e.target.value)}
-            placeholder={loading ? 'Composing summary…' : ''}
-            readOnly={loading}
-            spellCheck
-          />
-        </div>
-      )}
-
-      {/* Direct export — no AI required */}
-      <CollapsibleCard title="Print / Export (direct — no AI)" defaultOpen={false}>
-        <DirectExportPanel />
+        )}
       </CollapsibleCard>
+
     </div>
   );
 }

@@ -29,6 +29,8 @@ export default function ReceptionistView() {
   const { profile, signOut } = useAuth();
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [savedName, setSavedName] = useState('');
 
   async function handleCheckIn() {
     setSaving(true);
@@ -40,19 +42,24 @@ export default function ReceptionistView() {
     });
     setSaving(false);
     if (error) {
-      // If Supabase not configured (demo mode) — proceed anyway
       if (error.includes('not configured')) {
+        setSavedName(patientName);
         setPreVisitStatus('registered');
+        setSaved(true);
         return;
       }
       setSaveError(error);
       return;
     }
     if (patient) setPatientId(patient.id);
+    setSavedName(patientName);
     setPreVisitStatus('registered');
+    setSaved(true);
   }
 
   function handleNewPatient() {
+    setSaved(false);
+    setSavedName('');
     clearPatient();
     setSaveError(null);
   }
@@ -100,27 +107,48 @@ export default function ReceptionistView() {
       <main style={{ flex: 1, overflowY: 'auto', padding: '16px 12px 32px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <div style={{ width: '100%', maxWidth: 720, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-          {/* Status banner */}
-          {(preVisitStatus === 'registered' || preVisitStatus === 'vitals_done') && (
+          {/* ── Success state ── */}
+          {saved && (
             <div style={{
-              padding: '12px 16px',
-              borderRadius: 10,
-              background: '#f0fdf4',
-              border: '1px solid #86efac',
-              color: '#166534',
-              fontWeight: 700,
-              fontSize: 14,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              gap: 18, padding: '48px 24px 40px', textAlign: 'center',
+              background: '#f0fdf4', borderRadius: 14, border: '1px solid #86efac',
             }}>
-              <span style={{ fontSize: 18 }}>✓</span>
-              Patient registered — awaiting nurse
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 30, color: '#fff' }}>✓</span>
+              </div>
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: '#166534', marginBottom: 4 }}>
+                  Checked In Successfully
+                </div>
+                <div style={{ fontSize: 15, color: '#374151' }}>
+                  <strong>{savedName || 'Patient'}</strong> has been registered and is awaiting the nurse.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleNewPatient}
+                style={{
+                  marginTop: 6,
+                  padding: '13px 34px',
+                  borderRadius: 10,
+                  border: 'none',
+                  background: 'var(--accent)',
+                  color: '#fff',
+                  fontWeight: 800,
+                  fontSize: 15,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+                }}
+              >
+                + Register Next Patient
+              </button>
             </div>
           )}
 
+          {/* ── Registration form — hidden after save ── */}
           {/* Card 1: Patient details */}
-          <CollapsibleCard title="Patient Details">
+          {!saved && <CollapsibleCard title="Patient Details">
             <div className="form-grid cols-2" style={{ gap: 12 }}>
               <div className="fld" style={{ gridColumn: '1 / -1' }}>
                 <label>Full name</label>
@@ -205,10 +233,10 @@ export default function ReceptionistView() {
                 />
               </div>
             </div>
-          </CollapsibleCard>
+          </CollapsibleCard>}
 
           {/* Card 2: Insurance & billing */}
-          <CollapsibleCard title="Insurance &amp; Billing">
+          {!saved && <CollapsibleCard title="Insurance &amp; Billing">
             <div className="form-grid cols-2" style={{ gap: 12 }}>
               <div className="fld" style={{ gridColumn: '1 / -1' }}>
                 <label>Insurance provider</label>
@@ -257,51 +285,52 @@ export default function ReceptionistView() {
                 </select>
               </div>
             </div>
-          </CollapsibleCard>
+          </CollapsibleCard>}
 
-          {/* Action row */}
-          {saveError && (
-            <div style={{ padding: '9px 14px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12, marginBottom: 4 }}>
+          {/* Action row — only shown when registering */}
+          {!saved && saveError && (
+            <div style={{ padding: '9px 14px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
               Save failed: {saveError} — record saved locally only.
             </div>
           )}
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 4 }}>
-            <button
-              type="button"
-              onClick={handleNewPatient}
-              style={{
-                padding: '11px 22px',
-                borderRadius: 8,
-                border: '1.5px solid var(--accent)',
-                background: 'transparent',
-                color: 'var(--accent)',
-                fontWeight: 700,
-                fontSize: 14,
-                cursor: 'pointer',
-              }}
-            >
-              + New Patient
-            </button>
-
-            <button
-              type="button"
-              onClick={() => void handleCheckIn()}
-              disabled={!patientName.trim() || saving}
-              style={{
-                padding: '11px 28px',
-                borderRadius: 8,
-                border: 'none',
-                background: patientName.trim() && !saving ? 'var(--accent)' : '#9ca3af',
-                color: '#fff',
-                fontWeight: 800,
-                fontSize: 14,
-                cursor: patientName.trim() && !saving ? 'pointer' : 'not-allowed',
-                transition: 'background .15s',
-              }}
-            >
-              {saving ? 'Saving…' : 'Check In ✓'}
-            </button>
-          </div>
+          {!saved && (
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-start', paddingTop: 8, paddingLeft: 2 }}>
+              <button
+                type="button"
+                onClick={() => void handleCheckIn()}
+                disabled={!patientName.trim() || saving}
+                style={{
+                  padding: '12px 30px',
+                  borderRadius: 8,
+                  border: 'none',
+                  background: patientName.trim() && !saving ? 'var(--accent)' : '#9ca3af',
+                  color: '#fff',
+                  fontWeight: 800,
+                  fontSize: 15,
+                  cursor: patientName.trim() && !saving ? 'pointer' : 'not-allowed',
+                  transition: 'background .15s',
+                }}
+              >
+                {saving ? 'Saving…' : 'Check In ✓'}
+              </button>
+              <button
+                type="button"
+                onClick={handleNewPatient}
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: 8,
+                  border: '1.5px solid #d1d5db',
+                  background: 'transparent',
+                  color: '#6b7280',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: 'pointer',
+                }}
+              >
+                Clear form
+              </button>
+            </div>
+          )}
         </div>
       </main>
     </div>
