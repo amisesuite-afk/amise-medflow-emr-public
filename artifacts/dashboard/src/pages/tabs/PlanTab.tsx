@@ -95,9 +95,9 @@ export default function PlanTab() {
         </div>
       </CollapsibleCard>
 
-      <CollapsibleCard title="Planned procedure / CPT codes">
-        <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 8px' }}>
-          Select planned or performed procedures for coding and billing.
+      <CollapsibleCard title="CPT codes — Insurance & billing">
+        <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 10px' }}>
+          Select procedures performed or planned. CPT codes are required for insurance pre-authorisation, claims, and reimbursement.
         </p>
         <CptPicker />
       </CollapsibleCard>
