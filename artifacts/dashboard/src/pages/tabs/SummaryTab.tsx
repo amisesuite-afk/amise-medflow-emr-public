@@ -137,7 +137,7 @@ function buildPrintHtml(text: string, meta: PrintMeta): string {
   .doc-title{font-size:15px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;margin-bottom:18px;text-transform:uppercase;border-bottom:1px solid #e5e9ef;padding-bottom:8px}
   /* ── SOAP sections ── */
   .s-section{margin-bottom:18px}
-  .s-main-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:5px 12px;margin-bottom:10px;border-left:3.5px solid #1a3a5c}
+  .s-main-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:5px 12px;margin-bottom:10px;border-radius:4px}
   .s-sub-hdr{font-weight:700;font-size:12px;color:#333;margin:12px 0 4px}
   .s-line{font-size:12.5px;margin-bottom:4px;color:#222}
   .s-bullet{font-size:12.5px;padding-left:18px;position:relative;margin-bottom:4px;color:#222}
@@ -291,7 +291,7 @@ function sharedHead(title: string): string {
   .pt-val{font-size:12.5px;color:#1a1a1a;font-weight:700}
   .pt-sub{font-size:11px;color:#555;margin-top:2px}
   .section{margin:16px 0}
-  .sec-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:5px 12px;border-left:3.5px solid #1a3a5c;margin-bottom:10px}
+  .sec-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:5px 12px;border-radius:4px;margin-bottom:10px}
   .sec-body{font-size:12.5px;padding:0 4px;line-height:1.65}
   .item{margin-bottom:5px;padding-left:16px;position:relative}
   .item::before{content:"•";position:absolute;left:4px;color:#1a3a5c}
@@ -575,9 +575,6 @@ ${followUp ? `<div class="section">
 <div class="sec-body">${escHtml(followUp).replace(/\n/g, '<br>')}</div>
 </div>` : ''}
 
-<div style="margin-top:32px;font-size:11px">
-  <div>Seen by:</div>
-</div>
 <div class="sig">
 <div class="sig-left">
   <div class="sig-line"></div>

@@ -42,11 +42,6 @@ const ANTHROPIC_KEY = (import.meta.env.VITE_ANTHROPIC_API_KEY as string | undefi
 function ectNow() {
   return new Date().toLocaleString('en-GB', { timeZone: 'America/St_Lucia' });
 }
-function ectDate() {
-  return new Date().toLocaleDateString('en-GB', {
-    timeZone: 'America/St_Lucia', day: '2-digit', month: 'short', year: 'numeric',
-  }).replace(/ /g, '.');
-}
 function escHtml(s: string) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
@@ -289,15 +284,8 @@ function buildDocument(ctx: Ctx): string {
     });
   }
 
-  // Signature
   lines.push('');
-  lines.push('═'.repeat(48));
-  lines.push('Dr. Dawit D Kabiye, MD, DM');
-  lines.push('General & Endoscopic Surgery · Amise Medical Services');
-  lines.push('');
-  lines.push('Signature:  ________________________________');
-  lines.push(`Licence #:  ________________   Date: ${ectDate()}`);
-  lines.push(`Generated:  ${now} (ECT)`);
+  lines.push(`Generated: ${now} (ECT)`);
 
   return lines.join('\n');
 }
