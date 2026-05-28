@@ -26,18 +26,21 @@ export const T = {
 // ── Shared print CSS ──────────────────────────────────────────────────────────
 export const DOC_CSS = `
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:${T.ink};line-height:1.25;background:#fff}
+/* Page container — A4-width centered card in the browser */
+body{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:${T.ink};line-height:1.25;background:#e8e8e8}
+.page{max-width:210mm;margin:0 auto;background:#fff;padding:18mm 20mm;min-height:297mm}
 /* Masthead */
-.mast-wrap{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0}
+.mast-wrap{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
 .mast-org{font-size:15px;font-weight:700;color:${T.navy};text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
-.mast-doc{font-size:11px;color:${T.ink};margin-bottom:5px}
+.mast-doc{font-size:11px;color:${T.ink};margin-bottom:4px}
 .mast-meta{font-size:8.5px;color:${T.mute};margin-top:1px}
-.gold-rule{border:none;border-top:.75pt solid ${T.gold};margin:6px 0 10px}
+/* Gold rule spans FULL width — sits below the flex row, not inside it */
+.gold-rule{border:none;border-top:.75pt solid ${T.gold};margin:8px 0 10px;display:block;width:100%}
 /* Meta / patient block */
-.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin-bottom:12px}
-.meta-lbl{font-size:10px;font-weight:700;color:${T.navy};margin-bottom:1px}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 24px;margin-bottom:14px}
+.meta-lbl{font-size:9.5px;font-weight:700;color:${T.navy};margin-bottom:1px;text-transform:uppercase;letter-spacing:.04em}
 .meta-val{font-size:10.5px;color:${T.ink};line-height:1.3}
-.meta-sub{font-size:9.5px;color:${T.mute}}
+.meta-sub{font-size:9px;color:${T.mute}}
 /* Section headers — plain bold navy, no bar */
 .sec-hdr{font-size:11px;font-weight:700;color:${T.navy};margin:14px 0 4px;padding:0}
 /* Two-column key-value table */
@@ -60,15 +63,19 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:${T.ink};line
 .sig-name{font-weight:700;font-size:11px;color:${T.ink}}
 .sig-role{font-size:9.5px;color:${T.mute};margin-top:1px}
 /* Footer */
-.footer-rule{border:none;border-top:.5pt solid ${T.navy};margin:18px 0 5px}
+.footer-rule{border:none;border-top:.5pt solid ${T.navy};margin:18px 0 5px;display:block;width:100%}
 .footer-note{font-size:8.5px;font-style:italic;color:${T.mute};line-height:1.4}
 .footer-row{display:flex;justify-content:space-between;align-items:flex-start;margin-top:3px}
 /* Pair columns */
 .col2{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}
 /* Utility */
 p{margin:3px 0}
-@page{margin:18mm 20mm;size:A4}
-@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}}
+@page{margin:0;size:A4}
+@media print{
+  body{background:#fff}
+  .page{padding:18mm 20mm;max-width:none;min-height:auto;margin:0}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
 `;
 
 // ── HTML escape ───────────────────────────────────────────────────────────────
@@ -84,16 +91,17 @@ export function masthead(
   now: string,
   logoSvg: string,
 ): string {
+  // Gold rule is OUTSIDE the flex row so it spans the full page width
   return `<div class="mast-wrap">
   <div>
     <div class="mast-org">Amise Medical Services</div>
     <div class="mast-doc">${escH(docType)}</div>
-    <hr class="gold-rule">
     <div class="mast-meta">${escH(siteName)} · ${escH(siteAddress)}</div>
     <div class="mast-meta">Tel: 1 (758) 720 7111 · amisesuite@gmail.com · ${escH(now)}</div>
   </div>
   <div style="flex-shrink:0;margin-left:14px">${logoSvg}</div>
-</div>`;
+</div>
+<hr class="gold-rule">`;
 }
 
 // ── Patient / meta block ──────────────────────────────────────────────────────
@@ -181,7 +189,9 @@ export function signoff(name: string, role: string, licenceLine: string): string
 
 // ── Full document wrapper ─────────────────────────────────────────────────────
 export function wrapDoc(titleText: string, bodyHtml: string): string {
-  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>${escH(titleText)}</title>
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escH(titleText)}</title>
 <style>${DOC_CSS}</style>
-</head><body>${bodyHtml}</body></html>`;
+</head><body><div class="page">${bodyHtml}</div></body></html>`;
 }
