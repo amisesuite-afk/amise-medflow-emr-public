@@ -9,8 +9,24 @@ export type Section =
   | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
   | 'allergies' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations'
   | 'radiology' | 'attachments'
-  | 'assessment' | 'plan'
+  | 'assessment' | 'plan' | 'progress'
   | 'procedures' | 'billing' | 'documents';
+
+export interface ProgressNote {
+  id: string;
+  date: string;
+  author: string;
+  type: 'SOAP' | 'Ward Round' | 'Follow-up';
+  interval: string;
+  chiefComplaint: string;
+  symptoms: string[];
+  intervalHistory: string;
+  vitals: Partial<Record<string, string>>;
+  examGeneral: string; examCvs: string; examRs: string;
+  examAbdomen: string; examWound: string; examLimbs: string; examOther: string;
+  assessment: string;
+  plan: string;
+}
 
 export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
@@ -176,6 +192,7 @@ interface CtxValue {
   attachments: ClinicalAttachment[]; setAttachments(v: ClinicalAttachment[]): void;
   radiologyRequests: RadiologyRequest[]; setRadiologyRequests(v: RadiologyRequest[]): void;
   finalDocument: string; setFinalDocument(v: string): void;
+  progressNotes: ProgressNote[]; setProgressNotes(v: ProgressNote[]): void;
 
   encounterMode: 'outpatient' | 'inpatient'; setEncounterMode(v: 'outpatient' | 'inpatient'): void;
   mrNumber: string; setMrNumber(v: string): void;
@@ -295,6 +312,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [attachments, setAttachments] = useState<ClinicalAttachment[]>([]);
   const [radiologyRequests, setRadiologyRequests] = useState<RadiologyRequest[]>([]);
   const [finalDocument, setFinalDocument] = useState('');
+  const [progressNotes, setProgressNotes] = useState<ProgressNote[]>([]);
 
   const [encounterMode, setEncounterMode] = useState<'outpatient' | 'inpatient'>('outpatient');
   const [mrNumber, setMrNumber] = useState('');
@@ -375,6 +393,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (d.preVisitStatus === 'registered' || d.preVisitStatus === 'vitals_done') setPreVisitStatus(d.preVisitStatus);
       if (Array.isArray(d.radiologyRequests)) setRadiologyRequests(d.radiologyRequests as RadiologyRequest[]);
       if (typeof d.finalDocument === 'string') setFinalDocument(d.finalDocument);
+      if (Array.isArray(d.progressNotes)) setProgressNotes(d.progressNotes as ProgressNote[]);
       if (d.encounterMode === 'inpatient') setEncounterMode('inpatient');
       if (typeof d.mrNumber === 'string') setMrNumber(d.mrNumber);
       if (typeof d.ward === 'string') setWard(d.ward);
@@ -415,7 +434,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       patientName, age, sex, dob, phone, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
       weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
-      radiologyRequests, finalDocument,
+      radiologyRequests, finalDocument, progressNotes,
       encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
     });
@@ -433,7 +452,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     patientName, age, sex, dob, phone, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
     weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
-    radiologyRequests, finalDocument, attachments,
+    radiologyRequests, finalDocument, progressNotes, attachments,
     encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
     nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician]);
 
@@ -470,6 +489,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
+    setProgressNotes([]);
     setEncounterMode('outpatient');
     setMrNumber(''); setWard(''); setDateAdmission(''); setDateDischarge('');
     setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
@@ -599,6 +619,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     attachments, setAttachments,
     radiologyRequests, setRadiologyRequests,
     finalDocument, setFinalDocument,
+    progressNotes, setProgressNotes,
     encounterMode, setEncounterMode,
     mrNumber, setMrNumber,
     ward, setWard,

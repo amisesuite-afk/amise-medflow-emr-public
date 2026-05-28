@@ -4,7 +4,7 @@ import {
   PanelLeftClose, PanelLeftOpen, AlertTriangle, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
-  ScanLine, Paperclip, FileCheck2, BedDouble,
+  ScanLine, Paperclip, FileCheck2,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -47,6 +47,7 @@ const CLINICAL_SUB: {
   { id: 'attachments',    icon: Paperclip,      label: 'Attachments',    minRole: 'nurse' },
   { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },
   { id: 'plan',           icon: FileEdit,       label: 'Plan',           minRole: 'doctor' },
+  { id: 'progress',       icon: FileText,       label: 'Progress Notes' },
 ];
 
 const BILLING_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string }[] = [
@@ -70,7 +71,6 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'procedures',   icon: Scissors,        label: 'Procedures',   roles: ['doctor', 'admin'] },
   { id: 'scheduling',   icon: CalendarDays,    label: 'Scheduling',   roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'finaldoc',     icon: FileCheck2,      label: 'Summary',      roles: ['nurse', 'doctor', 'admin'] },
-  { id: 'inpatient',    icon: BedDouble,       label: 'Inpatient',    roles: ['nurse', 'doctor', 'admin'] },
   { id: 'billing',      icon: Receipt,         label: 'Billing',      roles: ['front_desk', 'admin'] },
   { id: 'analytics',    icon: BarChart2,       label: 'Analytics',    roles: ['doctor', 'admin'] },
   { id: 'settings',     icon: Settings,        label: 'Settings',     roles: ['admin'] },
@@ -102,11 +102,7 @@ export default function NavSidebar({
     return topSection === 'billing' && activeSection === id;
   }
 
-  const visibleItems = TOP_ITEMS.filter(item => {
-    if (!item.roles.includes(userRole)) return false;
-    if (item.id === 'inpatient' && encounterMode !== 'inpatient') return false;
-    return true;
-  });
+  const visibleItems = TOP_ITEMS.filter(item => item.roles.includes(userRole));
 
   return (
     <nav className={`nav-sidebar${collapsed ? ' nav-sidebar--collapsed' : ''}`} aria-label="Navigation">

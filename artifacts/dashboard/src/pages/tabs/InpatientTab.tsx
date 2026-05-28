@@ -1,5 +1,5 @@
 import { useState, useId } from 'react';
-import { useAppContext } from '@/context/AppContext';
+import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import IcdPicker from '@/components/IcdPicker';
 import {
   wrapDoc, masthead, metaGrid, sec, kvTable, bulList, inlineText, callout, footer, signoff, escH as escHDoc, T,
@@ -25,7 +25,6 @@ interface TrendRow {
   unit: string;
 }
 interface ImagingRow { modality: string; region: string; date: string; findings: string; }
-interface ProgressNote { date: string; author: string; type: 'SOAP' | 'Progress' | 'Ward Round'; note: string; }
 interface MedRow { name: string; dose: string; route: string; frequency: string; }
 interface ListItem { text: string; }
 
@@ -640,6 +639,23 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
   }
   if (ctx.procedures.trim()) body += sec('Procedure notes', inlineText(ctx.procedures));
 
+  // ── Progress / ward round notes ──
+  const renderedNotes = st.progressNotes.filter(n => n.assessment || n.plan || n.chiefComplaint);
+  if (renderedNotes.length) {
+    const notesHtml = renderedNotes.map(n => {
+      const lines: string[] = [];
+      if (n.interval) lines.push(`<strong>${escH(n.interval)}</strong> — ${escH(n.date)} · ${escH(n.author)}`);
+      else lines.push(`${escH(n.date)} · ${escH(n.author)}`);
+      if (n.chiefComplaint) lines.push(`<em>CC:</em> ${escH(n.chiefComplaint)}`);
+      const vitalsStr = Object.entries(n.vitals).filter(([,v]) => v).map(([k,v]) => `${k.toUpperCase()} ${v}`).join(' · ');
+      if (vitalsStr) lines.push(`<em>Vitals:</em> ${escH(vitalsStr)}`);
+      if (n.assessment) lines.push(`<em>A:</em> ${escH(n.assessment)}`);
+      if (n.plan) lines.push(`<em>P:</em> ${escH(n.plan.split('\n')[0])}${n.plan.includes('\n') ? '…' : ''}`);
+      return `<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:.25pt solid #e5e7eb;font-size:10.5px;line-height:1.5">${lines.join('<br>')}</div>`;
+    }).join('');
+    body += sec(`Progress Notes (${renderedNotes.length})`, notesHtml);
+  }
+
   if (medTbl) body += sec('Medications on discharge', medTbl);
 
   if (st.followupHeading || st.followupBody) {
@@ -715,10 +731,6 @@ export default function InpatientTab() {
   const [signoffContact, setSignoffContact] = useState('');
   const [signoffDate, setSignoffDate] = useState('');
 
-  // Progress notes
-  const [progressNotes, setProgressNotes] = useState<ProgressNote[]>([]);
-  const [noteType, setNoteType] = useState<'SOAP' | 'Progress' | 'Ward Round'>('SOAP');
-  const [noteText, setNoteText] = useState('');
 
   const los = (ctx.dateAdmission && ctx.dateDischarge)
     ? (() => { const d = Math.round((new Date(ctx.dateDischarge).getTime() - new Date(ctx.dateAdmission).getTime()) / 86_400_000); return d >= 0 ? `${d} day${d === 1 ? '' : 's'}` : ''; })()
@@ -735,7 +747,7 @@ export default function InpatientTab() {
       followupHeading, followupBody,
       medications, lifestyle, followupPlan, redFlags,
       signoffName, signoffRole, signoffContact, signoffDate,
-      progressNotes, lftLabel1, lftLabel2,
+      progressNotes: ctx.progressNotes, lftLabel1, lftLabel2,
     };
   }
 
@@ -908,64 +920,30 @@ export default function InpatientTab() {
         </div>
       </Sec>
 
-      {/* 6. Progress notes */}
-      <Sec title="Progress Notes / SOAP" accent={C.teal} defaultOpen={false}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
-          {progressNotes.map((note, i) => (
-            <div key={i} style={{ border: `1.5px solid #d6cfc8`, borderRadius: 8, overflow: 'hidden' }}>
-              <div style={{ background: C.teal + '18', padding: '5px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: C.teal }}>{note.type} · {note.date} · {note.author}</span>
-                <button type="button" onClick={() => setProgressNotes(progressNotes.filter((_,idx) => idx!==i))}
-                  style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', fontSize: 14 }}>×</button>
-              </div>
-              <div style={{ padding: '6px 10px', fontSize: 12, whiteSpace: 'pre-wrap', color: '#1a1a1a' }}>{note.note}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ background: '#f9f5f0', border: `1px solid #e2d9cf`, borderRadius: 8, padding: '10px 12px' }}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-            {(['SOAP', 'Progress', 'Ward Round'] as const).map(t => (
-              <button key={t} type="button" onClick={() => setNoteType(t)}
-                style={{ padding: '4px 12px', borderRadius: 5, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: `1.5px solid ${noteType === t ? C.teal : '#d6cfc8'}`, background: noteType === t ? C.teal : '#fff', color: noteType === t ? '#fff' : C.muted }}>
-                {t}
-              </button>
-            ))}
-            <span style={{ color: '#9ca3af', fontSize: 11 }}>—</span>
-            <input type="text"
-              defaultValue="Dr. Dawit D Kabiye"
-              id={uid+'noteauthor'}
-              placeholder="Author"
-              style={{ ...INP, width: 180, fontSize: 12 }}
-            />
-            <input type="date" id={uid+'notedate'} style={{ ...INP, width: 140, fontSize: 12 }} />
+      {/* 6. Progress notes — read-only view; editing in Consultation → Progress Notes */}
+      <Sec title={`Progress Notes (${ctx.progressNotes.length})`} accent={C.teal} defaultOpen={false}>
+        {ctx.progressNotes.length === 0 ? (
+          <div style={{ color: C.muted, fontSize: 12, fontStyle: 'italic', padding: '6px 0' }}>
+            No progress notes yet — add notes in Consultation → Progress Notes.
           </div>
-          {noteType === 'SOAP' && (
-            <div style={{ fontSize: 10.5, color: C.muted, marginBottom: 4 }}>
-              Format: <strong>S</strong> Subjective · <strong>O</strong> Objective · <strong>A</strong> Assessment · <strong>P</strong> Plan
-            </div>
-          )}
-          <textarea
-            value={noteText}
-            onChange={e => setNoteText(e.target.value)}
-            placeholder={noteType === 'SOAP' ? 'S: Patient reports…\nO: Temp 37.2 · BP 118/76 · Abdomen soft…\nA: Post-op day 1, recovering well\nP: Continue current management…' : 'Enter note…'}
-            style={{ ...TA, minHeight: 100 }}
-          />
-          <button type="button"
-            onClick={() => {
-              const authorEl = document.getElementById(uid+'noteauthor') as HTMLInputElement;
-              const dateEl   = document.getElementById(uid+'notedate')   as HTMLInputElement;
-              if (!noteText.trim()) return;
-              setProgressNotes([...progressNotes, {
-                date: dateEl?.value || new Date().toLocaleDateString('en-GB'),
-                author: authorEl?.value || 'Dr. Dawit D Kabiye',
-                type: noteType, note: noteText.trim(),
-              }]);
-              setNoteText('');
-            }}
-            style={{ ...BTN, background: C.teal, color: '#fff', marginTop: 8 }}>
-            + Add Note
-          </button>
-        </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {ctx.progressNotes.map(note => (
+              <div key={note.id} style={{ border: `1.5px solid #d6cfc8`, borderRadius: 8, overflow: 'hidden' }}>
+                <div style={{ background: C.teal + '18', padding: '5px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: C.teal }}>
+                    {note.type}{note.interval ? ` · ${note.interval}` : ''} · {note.date} · {note.author}
+                  </span>
+                </div>
+                <div style={{ padding: '6px 10px', fontSize: 12, color: '#1a1a1a' }}>
+                  {note.chiefComplaint && <div><strong>CC:</strong> {note.chiefComplaint}</div>}
+                  {note.assessment && <div style={{ marginTop: 2 }}><strong>A:</strong> {note.assessment}</div>}
+                  {note.plan && <div style={{ marginTop: 2, whiteSpace: 'pre-wrap' }}><strong>P:</strong> {note.plan.slice(0, 200)}{note.plan.length > 200 ? '…' : ''}</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </Sec>
 
       {/* 7. Discharge plan */}
