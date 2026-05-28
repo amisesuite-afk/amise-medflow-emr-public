@@ -17,13 +17,15 @@
 // ── Brand logo SVG ────────────────────────────────────────────────────────────
 // Two facing-profile silhouettes (blue left, red right) + logotype.
 // width/height attrs keep the rendered size small; viewBox defines coordinate space.
-export const AMISE_LOGO_SVG = `<svg width="120" height="28" viewBox="0 0 200 46" xmlns="http://www.w3.org/2000/svg">
-  <path d="M12,2 C16,0 22,2 24,7 C25,10 24,12 23,13 C24,13 27,15 29,17 C30,18 30,20 29,21 C28,23 25,23 25,25 C24,27 23,30 21,32 C19,34 16,35 13,35 C10,35 8,33 7,31 C5,29 4,25 4,20 C4,15 5,9 7,5 C8,3 10,2 12,2Z" fill="#0B2545"/>
-  <path d="M54,2 C50,0 44,2 42,7 C41,10 42,12 43,13 C42,13 39,15 37,17 C36,18 36,20 37,21 C38,23 41,23 41,25 C42,27 43,30 45,32 C47,34 50,35 53,35 C56,35 58,33 59,31 C61,29 62,25 62,20 C62,15 61,9 59,5 C58,3 56,2 54,2Z" fill="#922b21"/>
-  <line x1="70" y1="4" x2="70" y2="42" stroke="#d1d5db" stroke-width="0.8"/>
-  <text x="78" y="22" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="900" fill="#0B2545" letter-spacing="1.2">AMISE</text>
-  <text x="78" y="32" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#555" letter-spacing="2">MEDICAL SERVICES</text>
-  <text x="78" y="41" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#888" letter-spacing="0.5">Saint Lucia</text>
+export const AMISE_LOGO_SVG = `<svg width="130" height="52" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+  <path d="M18,3 C22,1 26,4 27,10 C29,13 26,15 24,16 C24,16 28,19 32,21 C33,22 33,24 31,26 C30,28 28,28 27,30 C26,32 25,35 23,37 C21,39 18,41 15,41 C12,41 10,39 9,37 C8,35 8,31 9,28 C10,25 11,21 10,16 C9,12 9,7 11,4 C12,2 15,1 18,3Z" fill="#0B2545"/>
+  <path d="M9,34 C7,38 6,44 5,50 C4,56 5,62 8,66 C11,70 15,70 17,67 C18,64 18,60 17,56 C16,52 15,48 14,45 C13,42 11,38 9,34Z" fill="#0B2545"/>
+  <path d="M56,3 C52,1 48,4 47,10 C45,13 48,15 50,16 C50,16 46,19 42,21 C41,22 41,24 43,26 C44,28 46,28 47,30 C48,32 49,35 51,37 C53,39 56,41 59,41 C62,41 64,39 65,37 C66,35 66,31 65,28 C64,25 63,21 64,16 C65,12 65,7 63,4 C62,2 59,1 56,3Z" fill="#922b21"/>
+  <path d="M65,34 C67,38 68,44 69,50 C70,56 69,62 66,66 C63,70 59,70 57,67 C56,64 56,60 57,56 C58,52 59,48 60,45 C61,42 63,38 65,34Z" fill="#922b21"/>
+  <line x1="77" y1="5" x2="77" y2="66" stroke="#d1d5db" stroke-width="0.8"/>
+  <text x="85" y="26" font-family="Arial,Helvetica,sans-serif" font-size="22" font-weight="900" fill="#0B2545" letter-spacing="1.2">AMISE</text>
+  <text x="85" y="38" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#555" letter-spacing="2">MEDICAL SERVICES</text>
+  <text x="85" y="48" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#888" letter-spacing="0.5">Saint Lucia</text>
 </svg>`;
 
 // ── Colour tokens ─────────────────────────────────────────────────────────────
