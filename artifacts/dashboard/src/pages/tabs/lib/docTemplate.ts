@@ -17,17 +17,13 @@
 // ── Brand logo SVG ────────────────────────────────────────────────────────────
 // Two facing-profile silhouettes (blue left, red right) + logotype.
 // width/height attrs keep the rendered size small; viewBox defines coordinate space.
-export const AMISE_LOGO_SVG = `<svg width="96" height="34" viewBox="0 0 150 52" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="15" cy="11" rx="7" ry="8" fill="#0B2545"/>
-  <polygon points="22,13 27,17 22,19" fill="#0B2545"/>
-  <path d="M8,19 C7,28 8,38 13,42 C16.5,44 20,42 20,39 C17,37 14,31 14,24 C14,21 16,20 18,19 C14,18 8,18 8,19Z" fill="#0B2545"/>
-  <ellipse cx="39" cy="11" rx="7" ry="8" fill="#922b21"/>
-  <polygon points="32,13 27,17 32,19" fill="#922b21"/>
-  <path d="M46,19 C47,28 46,38 41,42 C37.5,44 34,42 34,39 C37,37 40,31 40,24 C40,21 38,20 36,19 C40,18 46,18 46,19Z" fill="#922b21"/>
-  <line x1="53" y1="6" x2="53" y2="46" stroke="#d1d5db" stroke-width="0.8"/>
-  <text x="60" y="24" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="900" fill="#0B2545" letter-spacing="1.2">AMISE</text>
-  <text x="60" y="37" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#555" letter-spacing="2">MEDICAL SERVICES</text>
-  <text x="60" y="47" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#888" letter-spacing="0.5">Saint Lucia</text>
+export const AMISE_LOGO_SVG = `<svg width="120" height="28" viewBox="0 0 200 46" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12,2 C16,0 22,2 24,7 C25,10 24,12 23,13 C24,13 27,15 29,17 C30,18 30,20 29,21 C28,23 25,23 25,25 C24,27 23,30 21,32 C19,34 16,35 13,35 C10,35 8,33 7,31 C5,29 4,25 4,20 C4,15 5,9 7,5 C8,3 10,2 12,2Z" fill="#0B2545"/>
+  <path d="M54,2 C50,0 44,2 42,7 C41,10 42,12 43,13 C42,13 39,15 37,17 C36,18 36,20 37,21 C38,23 41,23 41,25 C42,27 43,30 45,32 C47,34 50,35 53,35 C56,35 58,33 59,31 C61,29 62,25 62,20 C62,15 61,9 59,5 C58,3 56,2 54,2Z" fill="#922b21"/>
+  <line x1="70" y1="4" x2="70" y2="42" stroke="#d1d5db" stroke-width="0.8"/>
+  <text x="78" y="22" font-family="Arial,Helvetica,sans-serif" font-size="21" font-weight="900" fill="#0B2545" letter-spacing="1.2">AMISE</text>
+  <text x="78" y="32" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#555" letter-spacing="2">MEDICAL SERVICES</text>
+  <text x="78" y="41" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#888" letter-spacing="0.5">Saint Lucia</text>
 </svg>`;
 
 // ── Colour tokens ─────────────────────────────────────────────────────────────
