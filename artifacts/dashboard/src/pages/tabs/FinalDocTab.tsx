@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import {
-  wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, inlineText, callout, footer, signoff, escH,
+  wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, inlineText, callout, footer, signoff, escH, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
 import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
 
@@ -28,16 +28,6 @@ const APPT_LABELS: Record<string, string> = {
   breast: 'Breast Clinic', telephone: 'Telephone Consultation', diabetic_foot: 'Diabetic Foot Clinic',
 };
 
-const LOGO_SVG = `<svg width="130" height="46" viewBox="0 0 150 52" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="15" cy="11" rx="6.5" ry="7.5" fill="#1a3a5c"/>
-  <path d="M8.5 19 C7 28 8 37 14 41 C17.5 43 21 41 21 38 C17.5 36 14.5 31 14.5 24.5 C14.5 20.5 16.5 19.5 18.5 19 C14 17 8.5 17.5 8.5 19Z" fill="#1a3a5c"/>
-  <ellipse cx="29" cy="11" rx="6.5" ry="7.5" fill="#922b21"/>
-  <path d="M35.5 19 C37 28 36 37 30 41 C26.5 43 23 41 23 38 C26.5 36 29.5 31 29.5 24.5 C29.5 20.5 27.5 19.5 25.5 19 C30 17 35.5 17.5 35.5 19Z" fill="#922b21"/>
-  <line x1="48" y1="6" x2="48" y2="46" stroke="#ddd" stroke-width="1"/>
-  <text x="56" y="24" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="bold" fill="#1a3a5c" letter-spacing="1.2">AMISE</text>
-  <text x="56" y="37" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#666" letter-spacing="2.5">MEDICAL SERVICES</text>
-  <text x="56" y="47" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#999" letter-spacing="0.5">Saint Lucia</text>
-</svg>`;
 
 const ANTHROPIC_KEY = (import.meta.env.VITE_ANTHROPIC_API_KEY as string | undefined) ?? '';
 
@@ -347,7 +337,7 @@ function buildPrintHtml(text: string, ctx: Ctx): string {
   }
 
   const body =
-    masthead('Encounter Record', site.name, site.address, now, LOGO_SVG) +
+    masthead('Encounter Record', site.name, site.address, now, AMISE_LOGO_SVG) +
     meta + sectHtml +
     signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', 'Licence #: ............   Date: ..................') +
     footer('Prepared from the clinical encounter data entered at time of consultation. Verify all details before issuing.');
@@ -401,7 +391,7 @@ function buildReferralHtml(ctx: Ctx, referTo: string, referNotes: string): strin
 <p style="margin-top:6px">Kind regards,</p>`;
 
   const body =
-    masthead('Referral Letter', site.name, site.address, now, LOGO_SVG) +
+    masthead('Referral Letter', site.name, site.address, now, AMISE_LOGO_SVG) +
     meta + salutation + sectHtml + closing +
     signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', `${escH(site.name)} · 1 (758) 720 7111`) +
     footer('Prepared at time of consultation. Please verify clinical details before acting on this referral.');
@@ -443,7 +433,7 @@ function buildDischargeHtml(ctx: Ctx, dischargeNotes: string, followUp: string, 
   if (followUp) sectHtml += docSec('Follow-up plan', inlineText(followUp));
 
   const body =
-    masthead('Discharge / Clinic Summary', site.name, site.address, now, LOGO_SVG) +
+    masthead('Discharge / Clinic Summary', site.name, site.address, now, AMISE_LOGO_SVG) +
     meta + sectHtml +
     signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', 'Licence #: ............   Date: ..................') +
     footer('Please keep this summary for your records. Contact our office if you have questions about your care.');

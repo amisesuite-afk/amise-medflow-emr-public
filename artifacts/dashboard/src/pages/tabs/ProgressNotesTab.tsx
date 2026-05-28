@@ -3,7 +3,7 @@ import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
-import { escH as escHDoc, T } from './lib/docTemplate';
+import { escH as escHDoc, T, AMISE_LOGO_SVG } from './lib/docTemplate';
 
 // ── Symptom chips (follow-up / post-op focused) ──────────────────────────────
 const FU_SYMPTOMS = [
@@ -196,7 +196,10 @@ function buildNoteHtml(note: ProgressNote, patientName: string, siteName: string
       <h1>${esc(patientName || 'Patient')} — ${esc(note.type)}</h1>
       <div style="font-size:10.5px;color:${T.mute};margin-top:2px">${esc(siteName)} · ${esc(note.date)} · ${esc(note.author)}${note.interval ? ` · <strong>${esc(note.interval)}</strong>` : ''}</div>
     </div>
-    <span class="chip">${esc(note.type)}</span>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      ${AMISE_LOGO_SVG}
+      <span class="chip">${esc(note.type)}</span>
+    </div>
   </div>
 
   ${note.chiefComplaint || note.symptoms.length || note.intervalHistory ? `

@@ -2,7 +2,7 @@ import { useState, useId } from 'react';
 import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import IcdPicker from '@/components/IcdPicker';
 import {
-  wrapDoc, masthead, metaGrid, sec, kvTable, bulList, inlineText, callout, footer, signoff, escH as escHDoc, T,
+  wrapDoc, masthead, metaGrid, sec, kvTable, bulList, inlineText, callout, footer, signoff, escH as escHDoc, T, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
 import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
 
@@ -429,16 +429,6 @@ function MedTable({ rows, onChange }: { rows: MedRow[]; onChange: (r: MedRow[]) 
 // escH is imported from docTemplate as escHDoc — alias for local use
 const escH = escHDoc;
 
-const LOGO_SVG = `<svg width="120" height="42" viewBox="0 0 150 52" xmlns="http://www.w3.org/2000/svg">
-  <ellipse cx="15" cy="11" rx="6.5" ry="7.5" fill="#0B2545"/>
-  <path d="M8.5 19 C7 28 8 37 14 41 C17.5 43 21 41 21 38 C17.5 36 14.5 31 14.5 24.5 C14.5 20.5 16.5 19.5 18.5 19 C14 17 8.5 17.5 8.5 19Z" fill="#0B2545"/>
-  <ellipse cx="29" cy="11" rx="6.5" ry="7.5" fill="#922b21"/>
-  <path d="M35.5 19 C37 28 36 37 30 41 C26.5 43 23 41 23 38 C26.5 36 29.5 31 29.5 24.5 C29.5 20.5 27.5 19.5 25.5 19 C30 17 35.5 17.5 35.5 19Z" fill="#922b21"/>
-  <line x1="48" y1="6" x2="48" y2="46" stroke="#ddd" stroke-width="1"/>
-  <text x="56" y="24" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="bold" fill="#0B2545" letter-spacing="1.2">AMISE</text>
-  <text x="56" y="37" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#666" letter-spacing="2.5">MEDICAL SERVICES</text>
-  <text x="56" y="47" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#999" letter-spacing="0.5">Saint Lucia</text>
-</svg>`;
 
 interface PrintState {
   pendingInv: ListItem[];
@@ -583,7 +573,7 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
     ? ctx.cptCodes.map(c => `<span style="font-family:monospace;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;padding:1px 7px;font-size:10px;margin-right:5px">${escH(c)}</span>`).join('')
     : '';
 
-  let body = masthead('Inpatient / Procedural Discharge Summary', site.name, site.address, now, LOGO_SVG);
+  let body = masthead('Inpatient / Procedural Discharge Summary', site.name, site.address, now, AMISE_LOGO_SVG);
   body += meta;
 
   if (diagBody) body += sec('Diagnoses', diagBody + (cptHtml ? `<div style="margin-top:6px"><span style="font-size:9.5px;font-weight:700;color:${T.mute};text-transform:uppercase;letter-spacing:.04em">CPT: </span>${cptHtml}</div>` : ''));
