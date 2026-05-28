@@ -3,6 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, inlineText, callout, footer, signoff, escH,
 } from './lib/docTemplate';
+import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
 
 // ── Local types ───────────────────────────────────────────────────────────────
 
@@ -450,23 +451,7 @@ function buildDischargeHtml(ctx: Ctx, dischargeNotes: string, followUp: string, 
   return wrapDoc(`Discharge — ${ctx.patientName || 'Patient'}`, body);
 }
 
-// ── Print / download helpers ──────────────────────────────────────────────────
-
-function printHtml(html: string) {
-  const win = window.open('', '_blank');
-  if (win) { win.document.open(); win.document.write(html); win.document.close(); win.focus(); setTimeout(() => { try { win.print(); } catch { /* */ } }, 450); }
-}
-
-function downloadHtml(html: string, filename: string) {
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const url = URL.createObjectURL(blob);
-  if (isIOS) { window.open(url, '_blank'); setTimeout(() => URL.revokeObjectURL(url), 30_000); return; }
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.style.display = 'none';
-  document.body.appendChild(a); a.click();
-  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
-}
+// printHtml / downloadHtml → now provided by pdfExport (printDoc / saveBlobAsPDF)
 
 // ── AI Refine ─────────────────────────────────────────────────────────────────
 
@@ -757,14 +742,14 @@ export default function FinalDocTab() {
 
         <button type="button" style={hasFinal ? BTN_GHOST : btnDisabled(BTN_GHOST)}
           disabled={!hasFinal}
-          onClick={() => printHtml(buildPrintHtml(finalDocument, ctx))}>
-          🖨 Print Clinical Note
+          onClick={() => printDoc(buildPrintHtml(finalDocument, ctx))}>
+          🖨 Print
         </button>
 
         <button type="button" style={hasFinal ? BTN_GHOST : btnDisabled(BTN_GHOST)}
           disabled={!hasFinal}
-          onClick={() => downloadHtml(buildPrintHtml(finalDocument, ctx), `note-${patSlug}-${dateStr}.html`)}>
-          ↓ Download
+          onClick={() => void saveBlobAsPDF(buildPrintHtml(finalDocument, ctx), `note-${patSlug}-${dateStr}.pdf`)}>
+          ↓ PDF
         </button>
 
         <div style={{ width: 1, height: 20, background: '#e5e7eb', margin: '0 2px' }} />
@@ -822,12 +807,12 @@ export default function FinalDocTab() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="button" style={BTN_ACCENT}
-              onClick={() => printHtml(buildReferralHtml(ctx, referTo, referNotes))}>
-              🖨 Print Referral
+              onClick={() => printDoc(buildReferralHtml(ctx, referTo, referNotes))}>
+              🖨 Print
             </button>
             <button type="button" style={BTN_GHOST}
-              onClick={() => downloadHtml(buildReferralHtml(ctx, referTo, referNotes), `referral-${patSlug}-${dateStr}.html`)}>
-              ↓ Download
+              onClick={() => void saveBlobAsPDF(buildReferralHtml(ctx, referTo, referNotes), `referral-${patSlug}-${dateStr}.pdf`)}>
+              ↓ PDF
             </button>
             <button type="button" style={{ ...BTN_GHOST, marginLeft: 'auto' }} onClick={() => setShowReferral(false)}>× Close</button>
           </div>
@@ -857,12 +842,12 @@ export default function FinalDocTab() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="button" style={BTN_ACCENT}
-              onClick={() => printHtml(buildDischargeHtml(ctx, dischargeNotes, followUp, warnings))}>
-              🖨 Print Discharge
+              onClick={() => printDoc(buildDischargeHtml(ctx, dischargeNotes, followUp, warnings))}>
+              🖨 Print
             </button>
             <button type="button" style={BTN_GHOST}
-              onClick={() => downloadHtml(buildDischargeHtml(ctx, dischargeNotes, followUp, warnings), `discharge-${patSlug}-${dateStr}.html`)}>
-              ↓ Download
+              onClick={() => void saveBlobAsPDF(buildDischargeHtml(ctx, dischargeNotes, followUp, warnings), `discharge-${patSlug}-${dateStr}.pdf`)}>
+              ↓ PDF
             </button>
             <button type="button" style={{ ...BTN_GHOST, marginLeft: 'auto' }} onClick={() => setShowDischarge(false)}>× Close</button>
           </div>

@@ -3,6 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import {
   wrapDoc, masthead, metaGrid, sec, kvTable, bulList, inlineText, callout, footer, signoff, escH as escHDoc, T,
 } from './lib/docTemplate';
+import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -608,10 +609,7 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
   return wrapDoc(`Inpatient Summary — ${ctx.patientName || 'Patient'}`, body);
 }
 
-function printHtml(html: string) {
-  const win = window.open('', '_blank');
-  if (win) { win.document.open(); win.document.write(html); win.document.close(); win.focus(); setTimeout(() => { try { win.print(); } catch { /* */ } }, 450); }
-}
+
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -715,8 +713,12 @@ export default function InpatientTab() {
           {los && <span style={{ background: C.teal, color: '#fff', borderRadius: 999, padding: '2px 9px', fontSize: 11, fontWeight: 700 }}>LOS {los}</span>}
         </div>
         <button type="button" style={{ ...BTN, background: C.navy, color: '#fff' }}
-          onClick={() => printHtml(buildInpatientHtml(getState(), ctx))}>
-          🖨 Print Summary
+          onClick={() => printDoc(buildInpatientHtml(getState(), ctx))}>
+          🖨 Print
+        </button>
+        <button type="button" style={{ ...BTN, background: C.teal, color: '#fff' }}
+          onClick={() => void saveBlobAsPDF(buildInpatientHtml(getState(), ctx), `AmiseSuite_${ctx.patientName || 'Report'}.pdf`)}>
+          ↓ PDF
         </button>
       </div>
 
