@@ -1,12 +1,15 @@
 /**
  * PDF export utilities for Amise clinical documents.
  *
- * Uses jsPDF + html2canvas to convert the rendered HTML document
- * (including the `.page` container) into a real .pdf blob and
- * trigger a file download — no print dialog required.
+ * saveBlobAsPDF renders the full HTML document (including <head> styles)
+ * inside a hidden same-origin iframe so CSS applies correctly, then
+ * captures with html2canvas and converts to a jsPDF blob download.
  *
- * Falls back gracefully: if jsPDF fails, opens the print dialog so
- * the user can still Save as PDF via the browser.
+ * Root cause of the previous failure: host.innerHTML = html on a <div>
+ * strips <html>/<head>/<style> tags, so the document CSS was never applied
+ * and html2canvas captured unstyled content.
+ *
+ * Falls back to printDoc (browser print dialog) if jsPDF or canvas fails.
  */
 
 // ── Browser print (fallback / quick preview) ─────────────────────────────────
@@ -35,33 +38,47 @@ export async function saveBlobAsPDF(html: string, filename: string): Promise<voi
     ?? (jsPDFModule as { default?: unknown }).default as never;
   if (!JsPDF) throw new Error('[pdfExport] jsPDF not found in module');
 
-  // Mount HTML off-screen at A4 pixel width (794 px ≈ 210 mm @ 96 dpi).
-  // No z-index so html2canvas can capture the off-screen element reliably.
-  const host = document.createElement('div');
-  host.style.cssText =
-    'position:fixed;left:-9999px;top:0;width:794px;background:#fff;overflow:visible';
-  host.innerHTML = html;
-  document.body.appendChild(host);
+  // Hidden iframe — document.write() correctly parses the full HTML document
+  // including <head><style> tags, so all CSS classes apply to the rendered page.
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText =
+    'position:fixed;left:-9999px;top:0;width:794px;height:5000px;border:none;visibility:hidden';
+  document.body.appendChild(iframe);
 
   try {
-    const pageEl = host.querySelector<HTMLElement>('.page') ?? host;
+    const iDoc = iframe.contentDocument!;
+    iDoc.open();
+    iDoc.write(html);
+    iDoc.close();
 
-    // Capture at 2× for retina sharpness.
+    // Two rAF ticks: first for layout, second for paint.
+    await new Promise<void>(r => requestAnimationFrame(() => requestAnimationFrame(() => r())));
+
+    // Expand iframe to the full rendered height so nothing is clipped.
+    const pageEl = iDoc.querySelector<HTMLElement>('.page') ?? iDoc.body;
+    const totalH = Math.max(pageEl.scrollHeight, pageEl.offsetHeight, 200);
+    iframe.style.height = `${totalH + 40}px`;
+
+    // One more tick after resize.
+    await new Promise<void>(r => requestAnimationFrame(() => r()));
+
     const canvas = await html2canvas(pageEl, {
       scale: 2,
       useCORS: true,
       backgroundColor: '#ffffff',
       logging: false,
       windowWidth: 794,
+      scrollX: 0,
+      scrollY: 0,
     });
 
     const A4_W_MM = 210;
     const A4_H_MM = 297;
     const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-    const imgData   = canvas.toDataURL('image/png');
-    const imgW      = A4_W_MM;
-    const imgH      = (canvas.height / canvas.width) * A4_W_MM;
+    const imgData  = canvas.toDataURL('image/png');
+    const imgW     = A4_W_MM;
+    const imgH     = (canvas.height / canvas.width) * A4_W_MM;
     const pageCount = Math.ceil(imgH / A4_H_MM);
 
     for (let i = 0; i < pageCount; i++) {
@@ -69,13 +86,12 @@ export async function saveBlobAsPDF(html: string, filename: string): Promise<voi
       doc.addImage(imgData, 'PNG', 0, -(i * A4_H_MM), imgW, imgH);
     }
 
-    const pdfBlob = doc.output('blob') as Blob;
-    _triggerDownload(pdfBlob, filename);
+    _triggerDownload(doc.output('blob') as Blob, filename);
   } catch (err) {
     console.error('[pdfExport] jsPDF render failed, falling back to print dialog', err);
     printDoc(html);
   } finally {
-    document.body.removeChild(host);
+    document.body.removeChild(iframe);
   }
 }
 
