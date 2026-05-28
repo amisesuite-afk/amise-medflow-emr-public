@@ -32,6 +32,7 @@ import InpatientTab from './tabs/InpatientTab';
 import DashboardTab from './tabs/DashboardTab';
 import SchedulingTab from './tabs/SchedulingTab';
 import ProgressNotesTab from './tabs/ProgressNotesTab';
+import VitalsMonitoringTab from './tabs/VitalsMonitoringTab';
 import FloatingActions from '@/components/FloatingActions';
 
 function getAdaptivePath(
@@ -270,6 +271,7 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
         {topSection === 'consultation'  && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
         {topSection === 'consultation'  && activeSection === 'progress'    && <ProgressNotesTab />}
+        {topSection === 'consultation'  && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
         {topSection === 'procedures'    && hasRole(userRole, 'doctor')     && <ProceduresTab />}
         {topSection === 'summary'       && <SummaryTab />}
         {topSection === 'finaldoc'      && encounterMode === 'outpatient' && <FinalDocTab />}

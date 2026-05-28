@@ -283,6 +283,16 @@ export default function ProgressNotesTab() {
 
   // O — Objective
   const [vitals, setVitals] = useState<Record<string, string>>({});
+
+  function pullLatestVitals() {
+    const latest = ctx.vitalRecords.at(-1);
+    if (!latest) return;
+    setVitals({
+      bp: latest.sbp ? (latest.dbp ? `${latest.sbp}/${latest.dbp}` : latest.sbp) : '',
+      hr: latest.hr ?? '', temp: latest.temp ?? '', spo2: latest.spo2 ?? '',
+      rr: latest.rr ?? '', weight: latest.weight ?? '',
+    });
+  }
   const [examChips, setExamChips] = useState<Record<string, string[]>>({
     general: [], cvs: [], rs: [], abdomen: [], wound: [], limbs: [],
   });
@@ -477,7 +487,15 @@ export default function ProgressNotesTab() {
 
         {/* O — Objective */}
         <div style={{ background: '#f0fdf4', border: `1px solid #bbf7d0`, borderRadius: 8, padding: '10px 14px', marginBottom: 10 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: '#166534', marginBottom: 8 }}>O — Objective</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#166534', flex: 1 }}>O — Objective</div>
+            {ctx.vitalRecords.length > 0 && (
+              <button type="button" onClick={pullLatestVitals}
+                style={{ padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #86efac', background: '#f0fdf4', color: '#166534' }}>
+                ↓ Pull latest vitals ({ctx.vitalRecords.at(-1)?.timestamp.slice(11, 16)})
+              </button>
+            )}
+          </div>
 
           {/* Vitals grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px 12px', marginBottom: 12 }}>

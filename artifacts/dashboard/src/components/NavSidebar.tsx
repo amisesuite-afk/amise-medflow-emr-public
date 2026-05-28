@@ -4,7 +4,7 @@ import {
   PanelLeftClose, PanelLeftOpen, AlertTriangle, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
-  ScanLine, Paperclip, FileCheck2,
+  ScanLine, Paperclip, FileCheck2, Activity,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -48,6 +48,7 @@ const CLINICAL_SUB: {
   { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },
   { id: 'plan',           icon: FileEdit,       label: 'Plan',           minRole: 'doctor' },
   { id: 'progress',       icon: FileText,       label: 'Progress Notes' },
+  { id: 'monitoring',    icon: Activity,       label: 'Monitoring' },
 ];
 
 const BILLING_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string }[] = [
