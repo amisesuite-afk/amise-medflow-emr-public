@@ -441,10 +441,6 @@ const LOGO_SVG = `<svg width="120" height="42" viewBox="0 0 150 52" xmlns="http:
 </svg>`;
 
 interface PrintState {
-  mrNumber: string; bloodGroup: string;
-  nokName: string; nokRelation: string; nokTel: string; insurance: string;
-  admittingSurgeon: string; referringPhysician: string;
-  dateAdmission: string; dateDischarge: string; ward: string;
   primaryDx: ListItem[]; backgroundDx: ListItem[]; pendingInv: ListItem[];
   historyProse: string;
   haem: LabRow[]; lft: TrendRow[]; tumour: LabRow[]; amylase: LabRow[];
@@ -468,8 +464,8 @@ const SITE_INFO: Record<string, { name: string; address: string }> = {
 function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext>): string {
   const site = SITE_INFO[ctx.currentSite] ?? SITE_INFO.rodney_bay;
   const now = new Date().toLocaleString('en-GB', { timeZone: 'America/St_Lucia' });
-  const los = (st.dateAdmission && st.dateDischarge)
-    ? (() => { const d = Math.round((new Date(st.dateDischarge).getTime() - new Date(st.dateAdmission).getTime()) / 86_400_000); return d >= 0 ? `${d} day${d === 1 ? '' : 's'}` : ''; })()
+  const los = (ctx.dateAdmission && ctx.dateDischarge)
+    ? (() => { const d = Math.round((new Date(ctx.dateDischarge).getTime() - new Date(ctx.dateAdmission).getTime()) / 86_400_000); return d >= 0 ? `${d} day${d === 1 ? '' : 's'}` : ''; })()
     : '';
   const ageLine = [ctx.age ? `${ctx.age} yrs` : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(', ');
 
@@ -538,16 +534,17 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
       </table>`
     : '';
 
+  const insuranceLine = [ctx.insuranceProvider, ctx.policyNumber].filter(Boolean).join(' · ');
   const meta = metaGrid([
     { label: 'Patient',           value: ctx.patientName || '—', sub: ageLine || undefined },
-    { label: 'MR Number',         value: st.mrNumber || '—', sub: ctx.dob ? `DOB: ${ctx.dob}` : undefined },
-    { label: 'Blood group',       value: st.bloodGroup || '—', sub: st.insurance || undefined },
-    { label: 'Ward / Unit',       value: st.ward || '—', sub: los ? `LOS: ${los}` : undefined },
-    { label: 'Admission',         value: st.dateAdmission || '—' },
-    { label: 'Discharge',         value: st.dateDischarge || '—' },
-    { label: 'Admitting surgeon', value: st.admittingSurgeon || 'Dr Dawit Daniel Kabiye, MD, DM' },
-    { label: 'Referring physician', value: st.referringPhysician || '—' },
-    ...(st.nokName ? [{ label: 'Next of kin', value: st.nokName, sub: [st.nokRelation, st.nokTel].filter(Boolean).join(' · ') }] : []),
+    { label: 'MR Number',         value: ctx.mrNumber || '—', sub: ctx.dob ? `DOB: ${ctx.dob}` : undefined },
+    { label: 'Blood group',       value: ctx.bloodGroup || '—', sub: insuranceLine || undefined },
+    { label: 'Ward / Unit',       value: ctx.ward || '—', sub: los ? `LOS: ${los}` : undefined },
+    { label: 'Admission',         value: ctx.dateAdmission || '—' },
+    { label: 'Discharge',         value: ctx.dateDischarge || '—' },
+    { label: 'Admitting surgeon', value: ctx.admittingSurgeon || 'Dr Dawit Daniel Kabiye, MD, DM' },
+    { label: 'Referring physician', value: ctx.referringPhysician || '—' },
+    ...(ctx.nokName ? [{ label: 'Next of kin', value: ctx.nokName, sub: [ctx.nokRelation, ctx.nokTel].filter(Boolean).join(' · ') }] : []),
   ]);
 
   const pxDx = st.primaryDx.filter(d => d.text);
@@ -617,24 +614,23 @@ export default function InpatientTab() {
   const ctx = useAppContext();
   const uid = useId();
 
-  // Patient extras
-  const [mrNumber, setMrNumber] = useState('');
-  const [bloodGroup, setBloodGroup] = useState('');
-  const [nokName, setNokName] = useState('');
-  const [nokRelation, setNokRelation] = useState('');
-  const [nokTel, setNokTel] = useState('');
-  const [insurance, setInsurance] = useState('');
-  const [admittingSurgeon, setAdmittingSurgeon] = useState('Dr. Dawit D Kabiye');
-  const [referringPhysician, setReferringPhysician] = useState('');
-  const [dateAdmission, setDateAdmission] = useState('');
-  const [dateDischarge, setDateDischarge] = useState('');
-  const [ward, setWard] = useState('');
-
-  // Diagnoses
-  const [primaryDx, setPrimaryDx] = useState<ListItem[]>([{ text: '' }]);
-  const [backgroundDx, setBackgroundDx] = useState<ListItem[]>([{ text: '' }]);
-  const [pendingInv, setPendingInv] = useState<ListItem[]>([{ text: '' }]);
-  const [historyProse, setHistoryProse] = useState('');
+  // Diagnoses — auto-populated from consultation tabs on mount, editable here
+  const [primaryDx, setPrimaryDx] = useState<ListItem[]>(() =>
+    ctx.assessment.trim()
+      ? ctx.assessment.trim().split('\n').filter(Boolean).map(t => ({ text: t }))
+      : [{ text: '' }]
+  );
+  const [backgroundDx, setBackgroundDx] = useState<ListItem[]>(() =>
+    ctx.comorbidities.length > 0
+      ? ctx.comorbidities.map(c => ({ text: c }))
+      : [{ text: '' }]
+  );
+  const [pendingInv, setPendingInv] = useState<ListItem[]>(() =>
+    ctx.orderedInvestigations.length > 0
+      ? ctx.orderedInvestigations.map(i => ({ text: i }))
+      : [{ text: '' }]
+  );
+  const [historyProse, setHistoryProse] = useState(() => ctx.freeText || '');
 
   // Labs
   const [haem, setHaem] = useState<LabRow[]>(DEFAULT_HAEM);
@@ -679,16 +675,14 @@ export default function InpatientTab() {
   const [noteType, setNoteType] = useState<'SOAP' | 'Progress' | 'Ward Round'>('SOAP');
   const [noteText, setNoteText] = useState('');
 
-  const los = (dateAdmission && dateDischarge)
-    ? (() => { const d = Math.round((new Date(dateDischarge).getTime() - new Date(dateAdmission).getTime()) / 86_400_000); return d >= 0 ? `${d} day${d === 1 ? '' : 's'}` : ''; })()
+  const los = (ctx.dateAdmission && ctx.dateDischarge)
+    ? (() => { const d = Math.round((new Date(ctx.dateDischarge).getTime() - new Date(ctx.dateAdmission).getTime()) / 86_400_000); return d >= 0 ? `${d} day${d === 1 ? '' : 's'}` : ''; })()
     : '';
 
   const alerts = runLabAlerts(haem, lft, amylase, tumour);
 
   function getState(): PrintState {
     return {
-      mrNumber, bloodGroup, nokName, nokRelation, nokTel, insurance,
-      admittingSurgeon, referringPhysician, dateAdmission, dateDischarge, ward,
       primaryDx, backgroundDx, pendingInv, historyProse,
       haem, lft, tumour, amylase, imaging,
       procedureDate, operator, instrument, anaesthesia, indication,
@@ -733,32 +727,34 @@ export default function InpatientTab() {
         </div>
       )}
 
-      {/* 1. Patient header */}
-      <Sec title="Patient Details" accent={C.navy}>
-        <div style={{ ...GRID3, marginBottom: 8 }}>
-          <div style={FLD}><label style={LBL} htmlFor={uid+'mr'}>MR Number</label><input id={uid+'mr'} style={INP} value={mrNumber} onChange={e => setMrNumber(e.target.value)} placeholder="MR-2024-001" /></div>
-          <div style={FLD}><label style={LBL}>Patient Name</label><input style={{ ...INP, background: '#f3f4f6' }} value={ctx.patientName} readOnly /></div>
-          <div style={FLD}><label style={LBL}>Age / Sex / DOB</label><input style={{ ...INP, background: '#f3f4f6' }} value={[ctx.age ? ctx.age + ' yrs' : '', ctx.sex !== 'unknown' ? ctx.sex : '', ctx.dob].filter(Boolean).join(' · ')} readOnly /></div>
-          <div style={FLD}><label style={LBL}>Blood Group</label>
-            <select style={{ ...INP }} value={bloodGroup} onChange={e => setBloodGroup(e.target.value)}>
-              <option value="">— select —</option>
-              {['A+','A−','B+','B−','AB+','AB−','O+','O−'].map(g => <option key={g}>{g}</option>)}
-            </select>
-          </div>
-          <div style={FLD}><label style={LBL}>Insurance</label><input style={INP} value={insurance} onChange={e => setInsurance(e.target.value)} placeholder="CLICO / GEL / Self-pay" /></div>
-          <div style={FLD}><label style={LBL}>Ward / Unit</label><input style={INP} value={ward} onChange={e => setWard(e.target.value)} placeholder="Surgical Ward B" /></div>
-          <div style={FLD}><label style={LBL}>Date Admission</label><input type="date" style={INP} value={dateAdmission} onChange={e => setDateAdmission(e.target.value)} /></div>
-          <div style={FLD}><label style={LBL}>Date Discharge</label><input type="date" style={INP} value={dateDischarge} onChange={e => setDateDischarge(e.target.value)} /></div>
-          <div style={FLD}><label style={LBL}>Length of Stay</label><input style={{ ...INP, background: '#f3f4f6' }} readOnly value={los || '—'} /></div>
-          <div style={FLD}><label style={LBL}>Admitting Surgeon</label><input style={INP} value={admittingSurgeon} onChange={e => setAdmittingSurgeon(e.target.value)} /></div>
-          <div style={FLD}><label style={LBL}>Referring Physician</label><input style={INP} value={referringPhysician} onChange={e => setReferringPhysician(e.target.value)} /></div>
+      {/* 1. Patient header — read-only, sourced from Intake tab */}
+      <div style={{ border: `1.5px solid #d1d5db`, borderRadius: 8, padding: '10px 14px', marginBottom: 10, background: '#f8fafc' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <span style={{ fontSize: 11, fontWeight: 700, color: C.navy, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Patient · Inpatient Details</span>
+          <span style={{ fontSize: 10.5, color: C.muted, fontStyle: 'italic' }}>Edit in Intake tab</span>
         </div>
-        <div style={GRID3}>
-          <div style={FLD}><label style={LBL}>Next of Kin</label><input style={INP} value={nokName} onChange={e => setNokName(e.target.value)} placeholder="Full name" /></div>
-          <div style={FLD}><label style={LBL}>Relationship</label><input style={INP} value={nokRelation} onChange={e => setNokRelation(e.target.value)} placeholder="Spouse / Child / Sibling" /></div>
-          <div style={FLD}><label style={LBL}>NOK Contact</label><input style={INP} value={nokTel} onChange={e => setNokTel(e.target.value)} placeholder="+1 758 …" /></div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px 16px', fontSize: 12 }}>
+          {[
+            ['Patient', ctx.patientName || '—'],
+            ['Age / Sex', [ctx.age ? ctx.age + ' yrs' : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(', ') || '—'],
+            ['MR Number', ctx.mrNumber || '—'],
+            ['Blood Group', ctx.bloodGroup || '—'],
+            ['Ward', ctx.ward || '—'],
+            ['Admission', ctx.dateAdmission || '—'],
+            ['Discharge', ctx.dateDischarge || '—'],
+            ['LOS', los || '—'],
+            ['Admitting Surgeon', ctx.admittingSurgeon || '—'],
+            ['Referring Physician', ctx.referringPhysician || '—'],
+            ['Insurance', [ctx.insuranceProvider, ctx.policyNumber].filter(Boolean).join(' · ') || '—'],
+            ['Next of Kin', ctx.nokName ? `${ctx.nokName}${ctx.nokRelation ? ` (${ctx.nokRelation})` : ''}` : '—'],
+          ].map(([label, val]) => (
+            <div key={label}>
+              <div style={{ fontSize: 9.5, fontWeight: 700, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>{label}</div>
+              <div style={{ color: '#1a1a1a', fontWeight: val === '—' ? 400 : 600 }}>{val}</div>
+            </div>
+          ))}
         </div>
-      </Sec>
+      </div>
 
       {/* 2. Diagnoses */}
       <Sec title="Diagnoses & History" accent={C.teal}>

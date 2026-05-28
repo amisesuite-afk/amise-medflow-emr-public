@@ -105,6 +105,7 @@ export default function HomePage() {
     preVisitStatus,
     symptoms,
     vitals,
+    encounterMode, setEncounterMode,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -142,6 +143,23 @@ export default function HomePage() {
           {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
         </div>
         <div className="header-right">
+          {/* Encounter mode pill — outpatient / inpatient */}
+          <div className="site-pill" aria-label="Encounter mode">
+            {(['outpatient', 'inpatient'] as const).map(mode => (
+              <button
+                key={mode}
+                className={`site-pill__btn${encounterMode === mode ? ' site-pill__btn--active' : ''}`}
+                onClick={() => {
+                  setEncounterMode(mode);
+                  if (mode === 'inpatient') setTopSection('inpatient');
+                }}
+                title={mode === 'inpatient' ? 'Switch to inpatient / ward encounter' : 'Switch to outpatient encounter'}
+              >
+                {mode === 'outpatient' ? 'Outpatient' : '🏥 Inpatient'}
+              </button>
+            ))}
+          </div>
+
           {/* Site selector pill — all roles */}
           <div className="site-pill" aria-label="Active clinic site">
             {SITE_CODES.map(site => (
@@ -186,6 +204,7 @@ export default function HomePage() {
         urgentCount={urgentCount}
         acuity={triageResult.acuity}
         pmhCount={comorbidities.length}
+        encounterMode={encounterMode}
       />
 
       {/* ── Main content ── */}

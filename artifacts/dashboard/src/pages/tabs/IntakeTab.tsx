@@ -47,6 +47,19 @@ export default function IntakeTab() {
     currentSite,
     weightKg, setWeightKg,
     heightCm, setHeightCm,
+    encounterMode,
+    mrNumber, setMrNumber,
+    ward, setWard,
+    dateAdmission, setDateAdmission,
+    dateDischarge, setDateDischarge,
+    bloodGroup, setBloodGroup,
+    nokName, setNokName,
+    nokRelation, setNokRelation,
+    nokTel, setNokTel,
+    admittingSurgeon, setAdmittingSurgeon,
+    referringPhysician, setReferringPhysician,
+    insuranceProvider, setInsuranceProvider,
+    policyNumber, setPolicyNumber,
   } = useAppContext();
 
   function calcBmi(): { bmi: number; class: string; color: string; rec: string } | null {
@@ -395,6 +408,67 @@ export default function IntakeTab() {
           />
         </div>
       </CollapsibleCard>
+
+      {/* Inpatient admission details — only in inpatient mode */}
+      {encounterMode === 'inpatient' && (
+        <CollapsibleCard title="Inpatient Admission Details" badge="Inpatient" badgeVariant="warn">
+          <div className="form-grid">
+            <div className="fld">
+              <label>MR Number</label>
+              <input value={mrNumber} onChange={e => setMrNumber(e.target.value)} placeholder="MR-2024-001" />
+            </div>
+            <div className="fld">
+              <label>Blood Group</label>
+              <select value={bloodGroup} onChange={e => setBloodGroup(e.target.value)}>
+                <option value="">— select —</option>
+                {['A+','A−','B+','B−','AB+','AB−','O+','O−'].map(g => <option key={g}>{g}</option>)}
+              </select>
+            </div>
+            <div className="fld">
+              <label>Ward / Unit</label>
+              <input value={ward} onChange={e => setWard(e.target.value)} placeholder="Surgical Ward B" />
+            </div>
+            <div className="fld">
+              <label>Date of Admission</label>
+              <input type="date" value={dateAdmission} onChange={e => setDateAdmission(e.target.value)} />
+            </div>
+            <div className="fld">
+              <label>Date of Discharge</label>
+              <input type="date" value={dateDischarge} onChange={e => setDateDischarge(e.target.value)} />
+            </div>
+            <div className="fld">
+              <label>Admitting Surgeon</label>
+              <input value={admittingSurgeon} onChange={e => setAdmittingSurgeon(e.target.value)} placeholder="Dr Dawit Daniel Kabiye" />
+            </div>
+            <div className="fld">
+              <label>Referring Physician</label>
+              <input value={referringPhysician} onChange={e => setReferringPhysician(e.target.value)} placeholder="Name / facility" />
+            </div>
+            <div className="fld">
+              <label>Insurance Provider</label>
+              <input value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="CLICO / GEL / Self-pay" />
+            </div>
+            <div className="fld">
+              <label>Policy / NHI Number</label>
+              <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
+            </div>
+          </div>
+          <div className="form-grid" style={{ marginTop: 8 }}>
+            <div className="fld">
+              <label>Next of Kin</label>
+              <input value={nokName} onChange={e => setNokName(e.target.value)} placeholder="Full name" />
+            </div>
+            <div className="fld">
+              <label>Relationship</label>
+              <input value={nokRelation} onChange={e => setNokRelation(e.target.value)} placeholder="Spouse / Child / Sibling" />
+            </div>
+            <div className="fld">
+              <label>NOK Contact</label>
+              <input value={nokTel} onChange={e => setNokTel(e.target.value)} placeholder="+1 758 …" />
+            </div>
+          </div>
+        </CollapsibleCard>
+      )}
 
       {/* Save patient to local registry */}
       {patientName.trim() && (

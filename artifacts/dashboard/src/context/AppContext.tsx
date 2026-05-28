@@ -176,6 +176,18 @@ interface CtxValue {
   attachments: ClinicalAttachment[]; setAttachments(v: ClinicalAttachment[]): void;
   radiologyRequests: RadiologyRequest[]; setRadiologyRequests(v: RadiologyRequest[]): void;
   finalDocument: string; setFinalDocument(v: string): void;
+
+  encounterMode: 'outpatient' | 'inpatient'; setEncounterMode(v: 'outpatient' | 'inpatient'): void;
+  mrNumber: string; setMrNumber(v: string): void;
+  ward: string; setWard(v: string): void;
+  dateAdmission: string; setDateAdmission(v: string): void;
+  dateDischarge: string; setDateDischarge(v: string): void;
+  bloodGroup: string; setBloodGroup(v: string): void;
+  nokName: string; setNokName(v: string): void;
+  nokRelation: string; setNokRelation(v: string): void;
+  nokTel: string; setNokTel(v: string): void;
+  admittingSurgeon: string; setAdmittingSurgeon(v: string): void;
+  referringPhysician: string; setReferringPhysician(v: string): void;
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -284,6 +296,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [radiologyRequests, setRadiologyRequests] = useState<RadiologyRequest[]>([]);
   const [finalDocument, setFinalDocument] = useState('');
 
+  const [encounterMode, setEncounterMode] = useState<'outpatient' | 'inpatient'>('outpatient');
+  const [mrNumber, setMrNumber] = useState('');
+  const [ward, setWard] = useState('');
+  const [dateAdmission, setDateAdmission] = useState('');
+  const [dateDischarge, setDateDischarge] = useState('');
+  const [bloodGroup, setBloodGroup] = useState('');
+  const [nokName, setNokName] = useState('');
+  const [nokRelation, setNokRelation] = useState('');
+  const [nokTel, setNokTel] = useState('');
+  const [admittingSurgeon, setAdmittingSurgeon] = useState('Dr Dawit Daniel Kabiye, MD, DM');
+  const [referringPhysician, setReferringPhysician] = useState('');
+
   const ENC_KEY = 'amise-enc-v1';
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -351,6 +375,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (d.preVisitStatus === 'registered' || d.preVisitStatus === 'vitals_done') setPreVisitStatus(d.preVisitStatus);
       if (Array.isArray(d.radiologyRequests)) setRadiologyRequests(d.radiologyRequests as RadiologyRequest[]);
       if (typeof d.finalDocument === 'string') setFinalDocument(d.finalDocument);
+      if (d.encounterMode === 'inpatient') setEncounterMode('inpatient');
+      if (typeof d.mrNumber === 'string') setMrNumber(d.mrNumber);
+      if (typeof d.ward === 'string') setWard(d.ward);
+      if (typeof d.dateAdmission === 'string') setDateAdmission(d.dateAdmission);
+      if (typeof d.dateDischarge === 'string') setDateDischarge(d.dateDischarge);
+      if (typeof d.bloodGroup === 'string') setBloodGroup(d.bloodGroup);
+      if (typeof d.nokName === 'string') setNokName(d.nokName);
+      if (typeof d.nokRelation === 'string') setNokRelation(d.nokRelation);
+      if (typeof d.nokTel === 'string') setNokTel(d.nokTel);
+      if (typeof d.admittingSurgeon === 'string') setAdmittingSurgeon(d.admittingSurgeon);
+      if (typeof d.referringPhysician === 'string') setReferringPhysician(d.referringPhysician);
       // Attachments stored separately (can be large base64)
       try {
         const ar = localStorage.getItem('amise-attachments-v1');
@@ -381,6 +416,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
       weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
       radiologyRequests, finalDocument,
+      encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
+      nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
     });
     // Attachments saved separately — avoids 5 MB localStorage limit on the main key
     try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { /* ignore */ }
@@ -396,7 +433,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     patientName, age, sex, dob, phone, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
     weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
-    radiologyRequests, finalDocument, attachments]);
+    radiologyRequests, finalDocument, attachments,
+    encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
+    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -431,6 +470,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
+    setEncounterMode('outpatient');
+    setMrNumber(''); setWard(''); setDateAdmission(''); setDateDischarge('');
+    setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
+    setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
@@ -556,6 +599,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     attachments, setAttachments,
     radiologyRequests, setRadiologyRequests,
     finalDocument, setFinalDocument,
+    encounterMode, setEncounterMode,
+    mrNumber, setMrNumber,
+    ward, setWard,
+    dateAdmission, setDateAdmission,
+    dateDischarge, setDateDischarge,
+    bloodGroup, setBloodGroup,
+    nokName, setNokName,
+    nokRelation, setNokRelation,
+    nokTel, setNokTel,
+    admittingSurgeon, setAdmittingSurgeon,
+    referringPhysician, setReferringPhysician,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

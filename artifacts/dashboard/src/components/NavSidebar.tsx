@@ -24,6 +24,7 @@ interface NavSidebarProps {
   urgentCount: number;
   acuity: string;
   pmhCount?: number;
+  encounterMode?: 'outpatient' | 'inpatient';
 }
 
 const CLINICAL_SUB: {
@@ -82,6 +83,7 @@ export default function NavSidebar({
   activeSection, onSection,
   userRole, hasUrgentRedFlag, urgentCount, acuity,
   pmhCount = 0,
+  encounterMode = 'outpatient',
 }: NavSidebarProps) {
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
@@ -101,7 +103,11 @@ export default function NavSidebar({
     return topSection === 'billing' && activeSection === id;
   }
 
-  const visibleItems = TOP_ITEMS.filter(item => item.roles.includes(userRole));
+  const visibleItems = TOP_ITEMS.filter(item => {
+    if (!item.roles.includes(userRole)) return false;
+    if (item.id === 'inpatient' && encounterMode !== 'inpatient') return false;
+    return true;
+  });
 
   return (
     <nav className={`nav-sidebar${collapsed ? ' nav-sidebar--collapsed' : ''}`} aria-label="Navigation">
