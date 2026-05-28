@@ -69,8 +69,7 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'consultation', icon: Stethoscope,     label: 'Consultation', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'procedures',   icon: Scissors,        label: 'Procedures',   roles: ['doctor', 'admin'] },
   { id: 'scheduling',   icon: CalendarDays,    label: 'Scheduling',   roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
-  { id: 'summary',      icon: FileEdit,        label: 'Summary',      roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
-  { id: 'finaldoc',     icon: FileCheck2,      label: 'Final Doc',    roles: ['nurse', 'doctor', 'admin'] },
+  { id: 'finaldoc',     icon: FileCheck2,      label: 'Summary',      roles: ['nurse', 'doctor', 'admin'] },
   { id: 'inpatient',    icon: BedDouble,       label: 'Inpatient',    roles: ['nurse', 'doctor', 'admin'] },
   { id: 'billing',      icon: Receipt,         label: 'Billing',      roles: ['front_desk', 'admin'] },
   { id: 'analytics',    icon: BarChart2,       label: 'Analytics',    roles: ['doctor', 'admin'] },
@@ -131,7 +130,13 @@ export default function NavSidebar({
                   <Icon size={16} strokeWidth={2} />
                   {isTriage && <span className="nsb-dot" />}
                 </span>
-                {!collapsed && <span className="nsb-label">{item.label}</span>}
+                {!collapsed && (
+                  <span className="nsb-label">
+                    {item.id === 'finaldoc' && encounterMode === 'inpatient'
+                      ? 'Summary (Inpatient)'
+                      : item.label}
+                  </span>
+                )}
                 {!collapsed && hasChevron && (
                   isActive
                     ? <ChevronDown size={12} strokeWidth={2.5} className="nsb-chevron" />

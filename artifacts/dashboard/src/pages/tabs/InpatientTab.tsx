@@ -1,5 +1,6 @@
 import { useState, useId } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import IcdPicker from '@/components/IcdPicker';
 import {
   wrapDoc, masthead, metaGrid, sec, kvTable, bulList, inlineText, callout, footer, signoff, escH as escHDoc, T,
 } from './lib/docTemplate';
@@ -441,7 +442,7 @@ const LOGO_SVG = `<svg width="120" height="42" viewBox="0 0 150 52" xmlns="http:
 </svg>`;
 
 interface PrintState {
-  primaryDx: ListItem[]; backgroundDx: ListItem[]; pendingInv: ListItem[];
+  pendingInv: ListItem[];
   historyProse: string;
   haem: LabRow[]; lft: TrendRow[]; tumour: LabRow[]; amylase: LabRow[];
   imaging: ImagingRow[];
@@ -534,6 +535,12 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
       </table>`
     : '';
 
+  // ── ICD diagnosis helpers ──
+  const splitIcdLabel = (label: string) => {
+    const idx = label.indexOf(' — ');
+    return idx === -1 ? { code: label, desc: '' } : { code: label.slice(0, idx), desc: label.slice(idx + 3) };
+  };
+
   const insuranceLine = [ctx.insuranceProvider, ctx.policyNumber].filter(Boolean).join(' · ');
   const meta = metaGrid([
     { label: 'Patient',           value: ctx.patientName || '—', sub: ageLine || undefined },
@@ -547,15 +554,42 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
     ...(ctx.nokName ? [{ label: 'Next of kin', value: ctx.nokName, sub: [ctx.nokRelation, ctx.nokTel].filter(Boolean).join(' · ') }] : []),
   ]);
 
-  const pxDx = st.primaryDx.filter(d => d.text);
-  const bgDx = st.backgroundDx.filter(d => d.text);
   const pending = st.pendingInv.filter(d => d.text);
+
+  // ── Diagnoses from shared ICD codes ──
+  const icdList = ctx.icdCodes;
+  let diagBody = '';
+  if (icdList.length > 0) {
+    const [primaryLabel, ...secondaryLabels] = icdList;
+    const { code: pCode, desc: pDesc } = splitIcdLabel(primaryLabel);
+    diagBody = `<p style="font-weight:700;font-size:11px;margin:2px 0">
+      <span style="font-family:monospace;background:#0369a1;color:#fff;padding:1px 6px;border-radius:3px;font-size:10px">${escH(pCode)}</span>
+      <span style="margin-left:6px;color:${T.ink}">${escH(pDesc)}</span>
+    </p>`;
+    if (secondaryLabels.length > 0) {
+      diagBody += `<div style="margin-top:4px">` + secondaryLabels.map(label => {
+        const { code, desc } = splitIcdLabel(label);
+        return `<div class="bul-item"><span class="bul-dot">•</span><span class="bul-text">
+          <span style="font-family:monospace;color:#0369a1;font-weight:600;font-size:10px">${escH(code)}</span>
+          <span style="margin-left:4px">${escH(desc)}</span>
+        </span></div>`;
+      }).join('') + `</div>`;
+    }
+  } else if (ctx.assessment.trim()) {
+    diagBody = `<p style="font-weight:700;font-size:11px;margin:1px 0">${escH(ctx.assessment.trim().split('\n')[0])}</p>`;
+  }
+
+  // ── CPT codes ──
+  const cptHtml = ctx.cptCodes.length
+    ? ctx.cptCodes.map(c => `<span style="font-family:monospace;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;padding:1px 7px;font-size:10px;margin-right:5px">${escH(c)}</span>`).join('')
+    : '';
 
   let body = masthead('Inpatient / Procedural Discharge Summary', site.name, site.address, now, LOGO_SVG);
   body += meta;
 
-  if (pxDx.length) body += sec('Primary diagnosis', pxDx.map(d => `<p style="font-weight:700;font-size:11px;margin:1px 0">${escH(d.text)}</p>`).join(''));
-  if (bgDx.length)  body += sec('Background diagnoses', bulList(bgDx.map(d => d.text)));
+  if (diagBody) body += sec('Diagnoses', diagBody + (cptHtml ? `<div style="margin-top:6px"><span style="font-size:9.5px;font-weight:700;color:${T.mute};text-transform:uppercase;letter-spacing:.04em">CPT: </span>${cptHtml}</div>` : ''));
+  if (ctx.comorbidities.length) body += sec('Background diagnoses', bulList(ctx.comorbidities));
+  if (ctx.assessment.trim() && icdList.length > 0) body += sec('Assessment notes', inlineText(ctx.assessment));
   if (st.historyProse) body += sec('Clinical history', inlineText(st.historyProse));
 
   body += sec('Investigations — haematology', labTbl(st.haem));
@@ -584,6 +618,27 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
       (st.postProcCourse ? `<div style="margin-top:4px">${inlineText(st.postProcCourse)}</div>` : '')
     );
   }
+
+  // ── Endoscopic/operative procedures from ProceduresTab ──
+  const procTypeMap: Array<{ key: string; label: string; indicationField: string }> = [
+    { key: 'ogd', label: 'OGD (Upper Endoscopy)', indicationField: 'indication' },
+    { key: 'colonoscopy', label: 'Colonoscopy', indicationField: 'indication' },
+    { key: 'ercp', label: 'ERCP', indicationField: 'indication' },
+    { key: 'postop', label: 'Post-operative Record', indicationField: 'procedurePerformed' },
+  ];
+  const completedProcs = procTypeMap.filter(p => {
+    const d = ctx.procedureData[p.key] as Record<string, string> | undefined;
+    return d && d[p.indicationField];
+  });
+  if (completedProcs.length) {
+    const procListHtml = bulList(completedProcs.map(p => {
+      const d = ctx.procedureData[p.key] as Record<string, string>;
+      const detail = d[p.indicationField] ? `: ${d[p.indicationField]}` : '';
+      return `${p.label}${detail}`;
+    }));
+    body += sec('Endoscopic / Operative Procedures', procListHtml);
+  }
+  if (ctx.procedures.trim()) body += sec('Procedure notes', inlineText(ctx.procedures));
 
   if (medTbl) body += sec('Medications on discharge', medTbl);
 
@@ -614,17 +669,7 @@ export default function InpatientTab() {
   const ctx = useAppContext();
   const uid = useId();
 
-  // Diagnoses — auto-populated from consultation tabs on mount, editable here
-  const [primaryDx, setPrimaryDx] = useState<ListItem[]>(() =>
-    ctx.assessment.trim()
-      ? ctx.assessment.trim().split('\n').filter(Boolean).map(t => ({ text: t }))
-      : [{ text: '' }]
-  );
-  const [backgroundDx, setBackgroundDx] = useState<ListItem[]>(() =>
-    ctx.comorbidities.length > 0
-      ? ctx.comorbidities.map(c => ({ text: c }))
-      : [{ text: '' }]
-  );
+  // Inpatient-specific fields — pre-populated from consultation tabs on mount
   const [pendingInv, setPendingInv] = useState<ListItem[]>(() =>
     ctx.orderedInvestigations.length > 0
       ? ctx.orderedInvestigations.map(i => ({ text: i }))
@@ -683,7 +728,7 @@ export default function InpatientTab() {
 
   function getState(): PrintState {
     return {
-      primaryDx, backgroundDx, pendingInv, historyProse,
+      pendingInv, historyProse,
       haem, lft, tumour, amylase, imaging,
       procedureDate, operator, instrument, anaesthesia, indication,
       procedureNarrative, dischargeDx, complications, postProcCourse,
@@ -756,23 +801,46 @@ export default function InpatientTab() {
         </div>
       </div>
 
-      {/* 2. Diagnoses */}
-      <Sec title="Diagnoses & History" accent={C.teal}>
-        <div style={{ marginBottom: 10 }}>
-          <div style={{ ...LBL, marginBottom: 6 }}>Primary Diagnosis</div>
-          <EditList items={primaryDx} onChange={setPrimaryDx} placeholder="Enter primary diagnosis (+ ICD-10 if available)" />
+      {/* 2. Diagnoses, Assessment & History — live-synced from Consultation tabs */}
+      <Sec title="Diagnoses, Assessment & History" accent={C.teal}>
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ ...LBL, marginBottom: 6 }}>ICD-10 Diagnoses
+            <span style={{ fontWeight: 400, color: C.muted, marginLeft: 8, textTransform: 'none', letterSpacing: 0 }}>— shared with Assessment tab</span>
+          </div>
+          <IcdPicker />
         </div>
-        <div style={{ marginBottom: 10 }}>
-          <div style={{ ...LBL, marginBottom: 6 }}>Background / Co-morbid Diagnoses</div>
-          <EditList items={backgroundDx} onChange={setBackgroundDx} placeholder="Co-morbidity" />
+
+        {/* CPT codes */}
+        {ctx.cptCodes.length > 0 && (
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ ...LBL, marginBottom: 5 }}>CPT Codes</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {ctx.cptCodes.map(c => (
+                <span key={c} style={{ display: 'inline-flex', alignItems: 'center', gap: 0, borderRadius: 6, border: '1px solid #d1d5db', overflow: 'hidden', fontSize: 12 }}>
+                  <span style={{ padding: '3px 8px', background: '#374151', color: '#fff', fontFamily: 'monospace', fontWeight: 700, fontSize: 11 }}>{c.split(' — ')[0]}</span>
+                  {c.includes(' — ') && <span style={{ padding: '3px 8px', background: '#f3f4f6', color: '#374151' }}>{c.split(' — ').slice(1).join(' — ')}</span>}
+                  <button type="button" onClick={() => ctx.setCptCodes(ctx.cptCodes.filter(x => x !== c))} style={{ padding: '0 8px', background: '#e5e7eb', border: 'none', borderLeft: '1px solid #d1d5db', cursor: 'pointer', color: '#6b7280', fontSize: 15, lineHeight: '24px', alignSelf: 'stretch' }}>×</button>
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div style={{ ...FLD, marginBottom: 10 }}>
+          <label style={LBL}>Assessment Notes
+            <span style={{ fontWeight: 400, color: C.muted, marginLeft: 8, textTransform: 'none', letterSpacing: 0 }}>— shared with Assessment tab</span>
+          </label>
+          <textarea style={TA} value={ctx.assessment} onChange={e => ctx.setAssessment(e.target.value)} placeholder="Clinical assessment / impression…" />
         </div>
-        <div style={FLD}>
+
+        <div style={{ ...FLD, marginBottom: 10 }}>
           <label style={LBL}>History of Presenting Illness</label>
           <textarea style={TA} value={historyProse} onChange={e => setHistoryProse(e.target.value)} placeholder="Onset, character, duration, associated symptoms, relevant background…" />
         </div>
-        <div style={{ marginTop: 8 }}>
-          <div style={{ ...LBL, marginBottom: 6 }}>Pending Investigations</div>
-          <EditList items={pendingInv} onChange={setPendingInv} placeholder="e.g. CT abdomen / histology" />
+
+        <div style={{ marginTop: 4 }}>
+          <div style={{ ...LBL, marginBottom: 6 }}>Pending Investigations at Discharge</div>
+          <EditList items={pendingInv} onChange={setPendingInv} placeholder="e.g. CT abdomen / histology result" />
         </div>
       </Sec>
 

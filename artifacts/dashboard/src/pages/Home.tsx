@@ -151,28 +151,33 @@ export default function HomePage() {
                 className={`site-pill__btn${encounterMode === mode ? ' site-pill__btn--active' : ''}`}
                 onClick={() => {
                   setEncounterMode(mode);
-                  if (mode === 'inpatient') setTopSection('inpatient');
+                  if (mode === 'inpatient') {
+                    setCurrentSite('tapion');
+                    setTopSection('finaldoc');
+                  }
                 }}
-                title={mode === 'inpatient' ? 'Switch to inpatient / ward encounter' : 'Switch to outpatient encounter'}
+                title={mode === 'inpatient' ? 'Inpatient ward encounter — Tapion Hospital' : 'Outpatient clinic encounter'}
               >
                 {mode === 'outpatient' ? 'Outpatient' : '🏥 Inpatient'}
               </button>
             ))}
           </div>
 
-          {/* Site selector pill — all roles */}
-          <div className="site-pill" aria-label="Active clinic site">
-            {SITE_CODES.map(site => (
-              <button
-                key={site}
-                className={`site-pill__btn${currentSite === site ? ' site-pill__btn--active' : ''}`}
-                onClick={() => setCurrentSite(site)}
-                title={`Switch to ${SITE_LABELS[site]}`}
-              >
-                {SITE_LABELS[site]}
-              </button>
-            ))}
-          </div>
+          {/* Site selector pill — outpatient only (inpatient = Tapion always) */}
+          {encounterMode === 'outpatient' && (
+            <div className="site-pill" aria-label="Active clinic site">
+              {SITE_CODES.map(site => (
+                <button
+                  key={site}
+                  className={`site-pill__btn${currentSite === site ? ' site-pill__btn--active' : ''}`}
+                  onClick={() => setCurrentSite(site)}
+                  title={`Switch to ${SITE_LABELS[site]}`}
+                >
+                  {SITE_LABELS[site]}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className={`acuity-badge ${acuityClass(triageResult.acuity)}`}>
             <span className="ab-label">Acuity</span>
@@ -265,8 +270,8 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
         {topSection === 'procedures'    && hasRole(userRole, 'doctor')     && <ProceduresTab />}
         {topSection === 'summary'       && <SummaryTab />}
-        {topSection === 'finaldoc'      && <FinalDocTab />}
-        {topSection === 'inpatient'     && <InpatientTab />}
+        {topSection === 'finaldoc'      && encounterMode === 'outpatient' && <FinalDocTab />}
+        {topSection === 'finaldoc'      && encounterMode === 'inpatient'  && <InpatientTab />}
         {topSection === 'billing'       && activeSection === 'billing'   && roleIn(userRole, 'front_desk', 'admin') && <BillingTab />}
         {topSection === 'billing'       && activeSection === 'documents' && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
 

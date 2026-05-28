@@ -24,22 +24,27 @@ export function printDoc(html: string): void {
 // ── PDF blob via jsPDF + html2canvas ─────────────────────────────────────────
 
 export async function saveBlobAsPDF(html: string, filename: string): Promise<void> {
-  // Dynamic import keeps jsPDF out of the initial bundle.
-  const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+  // jsPDF v4+ uses named export `jsPDF`; v2/v3 used default export — handle both.
+  const [jsPDFModule, { default: html2canvas }] = await Promise.all([
     import('jspdf'),
     import('html2canvas'),
   ]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const JsPDF: new (opts: object) => any =
+    (jsPDFModule as { jsPDF?: unknown }).jsPDF as never
+    ?? (jsPDFModule as { default?: unknown }).default as never;
+  if (!JsPDF) throw new Error('[pdfExport] jsPDF not found in module');
 
   // Mount HTML off-screen at A4 pixel width (794 px ≈ 210 mm @ 96 dpi).
+  // No z-index so html2canvas can capture the off-screen element reliably.
   const host = document.createElement('div');
   host.style.cssText =
-    'position:fixed;left:-9999px;top:0;width:794px;background:#fff;overflow:visible;z-index:-1';
+    'position:fixed;left:-9999px;top:0;width:794px;background:#fff;overflow:visible';
   host.innerHTML = html;
   document.body.appendChild(host);
 
   try {
-    const pageEl =
-      host.querySelector<HTMLElement>('.page') ?? host;
+    const pageEl = host.querySelector<HTMLElement>('.page') ?? host;
 
     // Capture at 2× for retina sharpness.
     const canvas = await html2canvas(pageEl, {
@@ -52,7 +57,7 @@ export async function saveBlobAsPDF(html: string, filename: string): Promise<voi
 
     const A4_W_MM = 210;
     const A4_H_MM = 297;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
     const imgData   = canvas.toDataURL('image/png');
     const imgW      = A4_W_MM;
@@ -64,7 +69,7 @@ export async function saveBlobAsPDF(html: string, filename: string): Promise<voi
       doc.addImage(imgData, 'PNG', 0, -(i * A4_H_MM), imgW, imgH);
     }
 
-    const pdfBlob = doc.output('blob');
+    const pdfBlob = doc.output('blob') as Blob;
     _triggerDownload(pdfBlob, filename);
   } catch (err) {
     console.error('[pdfExport] jsPDF render failed, falling back to print dialog', err);
