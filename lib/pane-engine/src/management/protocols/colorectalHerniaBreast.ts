@@ -1,0 +1,700 @@
+import type { ManagementProtocol } from '../types.js';
+
+export const colorectalProtocols: ManagementProtocol[] = [
+  {
+    diseaseId: 'haemorrhoids',
+    icd10Prefixes: ['K64'],
+    label: 'Haemorrhoids',
+    keyPoints: [
+      'Grade I–II: conservative management and rubber band ligation (RBL) first-line.',
+      'Grade III–IV: haemorrhoidectomy (Milligan-Morgan or stapled) or HALO-RAR.',
+      'PR bleeding — always exclude colorectal cancer before attributing to haemorrhoids in >40s.',
+    ],
+    redFlags: [
+      'Anaemia from chronic PR bleeding — colonoscopy to exclude proximal pathology.',
+      'Acutely thrombosed external haemorrhoid (<72 h) — surgical excision under LA.',
+    ],
+    investigations: [
+      { label: 'FBC (exclude iron deficiency anaemia)', urgency: 'routine' },
+      { label: 'Proctoscopy / rigid sigmoidoscopy (confirm grade)', urgency: 'routine' },
+      { label: 'Colonoscopy if age >40, weight loss, or change in bowel habit', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'High-fibre diet, adequate hydration, topical local anaesthetic / steroid cream.' },
+      { phase: 'conservative', step: 'Rubber band ligation (Grade I–II) — outpatient procedure.' },
+      { phase: 'surgical', step: 'Haemorrhoidectomy: Milligan-Morgan or Ferguson (Grade III–IV).' },
+      { phase: 'surgical', step: 'HALO-RAR (haemorrhoidal artery ligation) — lower pain, suitable Grade II–III.' },
+      { phase: 'followup', step: 'Review at 4–6 weeks; encourage dietary compliance.' },
+    ],
+    referral: 'Colorectal surgery outpatient.',
+  },
+  {
+    diseaseId: 'anal_fissure',
+    icd10Prefixes: ['K60'],
+    label: 'Anal Fissure',
+    keyPoints: [
+      'Posterior midline fissure in 90% — lateral fissure suggests Crohn\'s, TB, or syphilis.',
+      'Internal anal sphincter spasm perpetuates the fissure; treatment targets sphincter relaxation.',
+      'GTN (0.2%) or diltiazem (2%) cream heals 60–70%; Botox injection for failures before surgery.',
+    ],
+    redFlags: [
+      'Lateral or multiple fissures — investigate for Crohn\'s disease or STI.',
+      'Non-healing after 8 weeks of treatment — biopsy to exclude malignancy.',
+    ],
+    investigations: [
+      { label: 'Clinical examination (proctoscopy after topical anaesthetic)', urgency: 'routine' },
+      { label: 'Anal manometry if internal sphincterotomy planned', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'GTN 0.2% topical BD for 8 weeks or diltiazem 2% BD (less headaches).' },
+      { phase: 'conservative', step: 'High-fibre diet, stool softeners (lactulose / docusate), sitz baths.' },
+      { phase: 'surgical', step: 'Botulinum toxin injection into internal sphincter (if GTN/diltiazem fails).' },
+      { phase: 'surgical', step: 'Lateral internal sphincterotomy (LIS) — highly effective but 1–2% incontinence risk.' },
+      { phase: 'followup', step: 'Review at 8 weeks; repeat course if partial response.' },
+    ],
+  },
+  {
+    diseaseId: 'perianal_abscess',
+    icd10Prefixes: ['K61'],
+    label: 'Perianal Abscess / Fistula',
+    keyPoints: [
+      'Cryptoglandular origin in 90% — incision and drainage is the treatment.',
+      'Park\'s classification defines fistula tract anatomy (inter-, trans-, supra-, extra-sphincteric).',
+      'MRI pelvis is gold standard for complex fistula — defines relationship to sphincter.',
+    ],
+    redFlags: [
+      'Necrotising fasciitis / Fournier\'s gangrene — emergency wide debridement.',
+      'Horseshoe abscess — complex bilateral involvement; senior colorectal surgeon.',
+    ],
+    investigations: [
+      { label: 'FBC, CRP, glucose (diabetes predisposes)', urgency: 'urgent' },
+      { label: 'MRI pelvis (complex fistula, horseshoe, Crohn\'s)', urgency: 'urgent' },
+      { label: 'Pus C&S', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Incision and drainage under GA — cruciate or elliptical incision, pack wound.' },
+      { phase: 'surgical', step: 'Lay-open simple fistula-in-ano (low intersphincteric/transsphincteric) at same sitting if clearly identified.' },
+      { phase: 'surgical', step: 'Complex fistula: seton placement (loose or cutting) or advancement flap.' },
+      { phase: 'conservative', step: 'Crohn\'s fistula: infliximab + long-term seton; fistula plug or advancement flap.' },
+      { phase: 'followup', step: 'Wound check at 1–2 weeks; MRI fistula at 3–6 months.' },
+    ],
+    referral: 'Colorectal surgery — urgent if abscess, elective for fistula.',
+  },
+  {
+    diseaseId: 'crohns_disease',
+    icd10Prefixes: ['K50'],
+    label: "Crohn's Disease",
+    keyPoints: [
+      'Transmural inflammation can affect any segment from mouth to anus; skip lesions are characteristic.',
+      'Harvey-Bradshaw Index or CDAI quantifies disease activity.',
+      'Up to 70% require surgery within 10 years — bowel-sparing resection is the principle.',
+    ],
+    redFlags: [
+      'Acute severe Crohn\'s colitis (ASCC) — Oxford criteria; IV hydrocortisone + urgent gastroenterology.',
+      'Perforation or haemorrhage — emergency surgery.',
+      'Abscess or fistula (especially with sepsis) — urgent imaging and intervention.',
+    ],
+    investigations: [
+      { label: 'FBC, CRP, albumin, B12, iron studies', urgency: 'urgent' },
+      { label: 'Faecal calprotectin (disease activity)', urgency: 'routine' },
+      { label: 'MRI enterography (small bowel, fistula, abscess)', urgency: 'urgent' },
+      { label: 'Colonoscopy + ileoscopy + biopsies', urgency: 'urgent' },
+      { label: 'CT if perforation / abscess suspected', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Mild-moderate: budesonide (ileal) or prednisolone 40 mg OD tapering.' },
+      { phase: 'conservative', step: 'Maintenance: azathioprine or 6-mercaptopurine ± infliximab / adalimumab (biologic).' },
+      { phase: 'conservative', step: 'Nutritional support: elemental / polymeric enteral nutrition (equal to steroids in children).' },
+      { phase: 'surgical', step: 'Ileocolic resection for terminal ileal disease refractory to medical therapy.' },
+      { phase: 'surgical', step: 'Stricturoplasty for short non-inflamed strictures — bowel-preserving.' },
+      { phase: 'followup', step: 'Post-operative colonoscopy at 6–12 months; anti-TNF to prevent recurrence.' },
+    ],
+    referral: 'Gastroenterology + colorectal surgery IBD MDT.',
+  },
+  {
+    diseaseId: 'ulcerative_colitis',
+    icd10Prefixes: ['K51'],
+    label: 'Ulcerative Colitis',
+    keyPoints: [
+      'Extends proximally from rectum in a continuous pattern — pancolitis in 20%.',
+      'Truelove-Witts criteria classify acute severe UC: HR >90, temp >37.8°C, WBC >10.5, >6 stools/day.',
+      'Colectomy is curative; risk of colonic dysplasia increases after 10 years of extensive disease.',
+    ],
+    redFlags: [
+      'Acute severe UC (Truelove-Witts) — IV hydrocortisone 100 mg QDS; if no response at 3 days, escalate (infliximab or colectomy).',
+      'Toxic megacolon (colon >6 cm on AXR) — emergency subtotal colectomy.',
+      'PR haemorrhage not settling — urgent colonoscopy or surgery.',
+    ],
+    investigations: [
+      { label: 'FBC, CRP, albumin, LFTs', urgency: 'urgent' },
+      { label: 'AXR (colonic diameter, mucosal islands)', urgency: 'urgent' },
+      { label: 'Stool C&S + C. difficile toxin', urgency: 'urgent' },
+      { label: 'Flexible sigmoidoscopy / colonoscopy + biopsies', urgency: 'urgent' },
+      { label: 'CT colon if perforation or toxic megacolon suspected', urgency: 'stat' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Mild proctitis / left-sided: mesalazine suppositories or enema.' },
+      { phase: 'conservative', step: 'Moderate-severe: oral prednisolone + mesalazine; step-up to azathioprine / biologic (infliximab, vedolizumab).' },
+      { phase: 'immediate', step: 'Acute severe: IV hydrocortisone, VTE prophylaxis, IV fluids, NBM.' },
+      { phase: 'surgical', step: 'Emergency: subtotal colectomy + end ileostomy (Hartmann\'s pouch).' },
+      { phase: 'surgical', step: 'Elective curative: proctocolectomy + ileal pouch-anal anastomosis (IPAA).' },
+      { phase: 'followup', step: 'Surveillance colonoscopy from year 10 (pancolitis) or year 15 (left-sided), 3–5 yearly.' },
+    ],
+    referral: 'Gastroenterology; surgical if severe or refractory.',
+  },
+  {
+    diseaseId: 'rectal_carcinoma',
+    icd10Prefixes: ['C20'],
+    label: 'Rectal Carcinoma',
+    keyPoints: [
+      'MRI rectum defines CRM involvement — positive CRM is the key driver of neoadjuvant therapy.',
+      'Total mesorectal excision (TME) is the standard surgical technique — nerve-sparing reduces sexual/urinary morbidity.',
+      'Low rectal tumours (<5 cm from anal verge) may require APR — counsel for permanent stoma.',
+    ],
+    redFlags: [
+      'Complete obstruction — emergency Hartmann\'s or stenting as bridge to surgery.',
+      'Pelvic sepsis / perforation — emergency surgery.',
+    ],
+    investigations: [
+      { label: 'MRI pelvis (T-stage, N-stage, CRM, EMVI)', urgency: 'urgent' },
+      { label: 'CT chest/abdomen/pelvis (distant staging)', urgency: 'urgent' },
+      { label: 'Colonoscopy + biopsy', urgency: 'urgent' },
+      { label: 'CEA baseline', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'T1 (low risk): transanal endoscopic microsurgery (TEM) alone.' },
+      { phase: 'conservative', step: 'T3/T4 or N+: neoadjuvant long-course CRT (50 Gy + capecitabine) then 8-week wait.' },
+      { phase: 'surgical', step: 'Anterior resection (upper/mid rectum) + TME; anastomosis with defunctioning loop ileostomy.' },
+      { phase: 'surgical', step: 'APR (low rectum / anal involvement): permanent end colostomy.' },
+      { phase: 'conservative', step: 'Adjuvant chemotherapy: CAPOX × 6 months for pT3–4 or N+.' },
+      { phase: 'followup', step: 'CT + CEA at 6-monthly × 3 years; colonoscopy at 1 and 5 years.' },
+    ],
+    referral: 'Colorectal MDT — urgent 2-week wait.',
+  },
+  {
+    diseaseId: 'ischaemic_colitis',
+    icd10Prefixes: ['K55'],
+    label: 'Ischaemic Colitis',
+    keyPoints: [
+      'Watershed areas (splenic flexure, sigmoid) most vulnerable due to collateral supply.',
+      'Triggered by hypotension, vascular disease, post-aortic surgery, or thromboembolism.',
+      'CT abdomen with IV contrast shows bowel wall thickening, thumbprinting, and pneumatosis.',
+    ],
+    redFlags: [
+      'Peritonitis — colonic infarction; emergency laparotomy.',
+      'Haemodynamic instability with colonic ischaemia — resuscitate and urgent surgical review.',
+    ],
+    investigations: [
+      { label: 'FBC, CRP, lactate, U&E', urgency: 'stat' },
+      { label: 'CT abdomen/pelvis with IV contrast', urgency: 'stat' },
+      { label: 'Flexible sigmoidoscopy (within 48 h if stable)', urgency: 'urgent' },
+      { label: 'AXR (pneumatosis coli, free air)', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'immediate', step: 'IV fluids, NBM, broad-spectrum IV antibiotics (piperacillin-tazobactam).' },
+      { phase: 'conservative', step: 'Optimise cardiovascular status; review and adjust vasopressors / anticoagulants.' },
+      { phase: 'surgical', step: 'Gangrenous / perforated colon: emergency colectomy + end colostomy.' },
+      { phase: 'followup', step: 'Colonoscopy at 4–6 weeks (confirm resolution or stricture formation).' },
+    ],
+    referral: 'Emergency surgical admission.',
+  },
+  {
+    diseaseId: 'rectal_prolapse',
+    icd10Prefixes: ['K62.3'],
+    label: 'Rectal Prolapse',
+    keyPoints: [
+      'True (full-thickness) prolapse vs mucosal prolapse — distinguish by radial folds (full) vs smooth (mucosal).',
+      'Biofeedback and pelvic floor physiotherapy for internal prolapse and obstructed defaecation.',
+      'Laparoscopic resection rectopexy (Frykman-Goldberg) has lower recurrence than perineal approaches.',
+    ],
+    redFlags: [
+      'Irreducible prolapse — strangulation; emergency reduction under GA or urgent surgery.',
+    ],
+    investigations: [
+      { label: 'Clinical examination', urgency: 'routine' },
+      { label: 'Defaecating proctogram (internal or occult prolapse)', urgency: 'routine' },
+      { label: 'Colonoscopy (exclude lead-point mass)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Pelvic floor physiotherapy, stool softeners, avoid straining.' },
+      { phase: 'surgical', step: 'Young/fit: laparoscopic resection rectopexy (± sigmoid resection for constipation).' },
+      { phase: 'surgical', step: 'Elderly/unfit: perineal procedure (Delorme or Altemeier).' },
+      { phase: 'followup', step: 'Continence assessment post-operatively; pelvic floor PT.' },
+    ],
+    referral: 'Colorectal surgery.',
+  },
+  {
+    diseaseId: 'pilonidal_disease',
+    icd10Prefixes: ['L05'],
+    label: 'Pilonidal Disease',
+    keyPoints: [
+      'Pilonidal abscess: incision and drainage is first-line — do not attempt excision acutely.',
+      'Chronic sinus: wide local excision with primary closure (Karydakis or Bascom) preferred over open healing.',
+      'High recurrence rate with open healing — off-midline closure techniques reduce recurrence to <5%.',
+    ],
+    redFlags: [
+      'Extensive cellulitis or spreading infection — IV antibiotics + surgical review.',
+    ],
+    investigations: [
+      { label: 'Clinical diagnosis', urgency: 'routine' },
+      { label: 'FBC, CRP if systemically unwell', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Acute abscess: I&D under LA / GA, leave wound open, dressings.' },
+      { phase: 'surgical', step: 'Chronic sinus: wide excision + Karydakis or Bascom flap repair (off-midline).' },
+      { phase: 'surgical', step: 'Recurrent / complex: rhomboid flap (Limberg) for tissue coverage.' },
+      { phase: 'followup', step: 'Wound review at 1 and 2 weeks; hair removal / laser to prevent recurrence.' },
+    ],
+    referral: 'General / colorectal surgery.',
+  },
+  {
+    diseaseId: 'appendix_mass',
+    icd10Prefixes: ['K35.3'],
+    label: 'Appendix Mass / Phlegmon',
+    keyPoints: [
+      'Delayed presentation >72 h — walled-off appendix mass (phlegmon or abscess).',
+      'Non-operative management (antibiotics ± drain) successful in 80–90% — avoids difficult right hemicolectomy.',
+      'Interval appendicectomy at 6–8 weeks; colonoscopy in over-40s to exclude caecal carcinoma.',
+    ],
+    redFlags: [
+      'Peritonitis or septic shock — emergency surgery despite mass.',
+      'Failure to resolve on antibiotics at 48–72 h — CT-guided drain or surgery.',
+    ],
+    investigations: [
+      { label: 'CT abdomen with IV contrast (mass vs abscess)', urgency: 'urgent' },
+      { label: 'FBC, CRP', urgency: 'urgent' },
+      { label: 'Blood cultures', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'IV antibiotics: co-amoxiclav or piperacillin-tazobactam; IV fluids, NBM.' },
+      { phase: 'surgical', step: 'Abscess >4 cm: CT-guided percutaneous drainage.' },
+      { phase: 'surgical', step: 'Interval appendicectomy at 6–8 weeks after recovery.' },
+      { phase: 'followup', step: 'Colonoscopy at 6–8 weeks (age >40) to exclude caecal cancer.' },
+    ],
+    referral: 'General surgery.',
+  },
+];
+
+export const herniaProtocols: ManagementProtocol[] = [
+  {
+    diseaseId: 'femoral_hernia',
+    icd10Prefixes: ['K41'],
+    label: 'Femoral Hernia',
+    keyPoints: [
+      'Femoral hernias have the highest strangulation risk of any hernia — urgent elective repair.',
+      'Arise below and lateral to the pubic tubercle (distinguish from inguinal — above and medial).',
+      'McEvedy or Lockwood approach for elective; low threshold for bowel resection if strangulated.',
+    ],
+    redFlags: [
+      'Irreducible painful lump — strangulation; emergency surgery within 4–6 h.',
+      'Obstructive symptoms — bowel obstruction secondary to Richter\'s hernia.',
+    ],
+    investigations: [
+      { label: 'Clinical diagnosis', urgency: 'routine' },
+      { label: 'USS if diagnosis unclear', urgency: 'routine' },
+      { label: 'FBC, U&E if emergency', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Elective: mesh plug repair (Lockwood) or laparoscopic TEP.' },
+      { phase: 'surgical', step: 'Emergency: McEvedy approach (high inguinal) for access and bowel inspection.' },
+      { phase: 'followup', step: 'Review at 2 weeks; counsel on recurrence and groin numbness.' },
+    ],
+    referral: 'General surgery — urgent elective or emergency.',
+  },
+  {
+    diseaseId: 'umbilical_hernia',
+    icd10Prefixes: ['K42'],
+    label: 'Umbilical Hernia',
+    keyPoints: [
+      'In adults, repair is recommended even if asymptomatic due to strangulation risk.',
+      'Para-umbilical hernias (through linea alba adjacent to umbilicus) are distinct but managed similarly.',
+      'Mayo overlap repair (fascial duplication) without mesh for small defects; mesh for >2 cm.',
+    ],
+    redFlags: [
+      'Irreducible or tender — strangulation risk; emergency repair.',
+    ],
+    investigations: [
+      { label: 'Clinical diagnosis', urgency: 'routine' },
+      { label: 'USS if large hernia / complex anatomy', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Elective open: Mayo repair or mesh repair (sublay / onlay) depending on defect size.' },
+      { phase: 'surgical', step: 'Laparoscopic IPOM (intra-peritoneal on-lay mesh) for large defects.' },
+      { phase: 'followup', step: 'Review at 2 weeks; wound check and lifting restrictions.' },
+    ],
+    referral: 'General surgery.',
+  },
+  {
+    diseaseId: 'incisional_hernia',
+    icd10Prefixes: ['K43.2', 'K43.0', 'K43.1'],
+    label: 'Incisional Hernia',
+    keyPoints: [
+      'Occurs in 10–15% of laparotomy wounds; risk factors: obesity, infection, steroids, COPD.',
+      'EHS classification by width (W1 <4 cm, W2 4–10 cm, W3 >10 cm) guides mesh choice.',
+      'Component separation allows tension-free closure of large defects without bridging.',
+    ],
+    redFlags: [
+      'Acute irreducibility — strangulation; emergency surgery.',
+      'Skin changes / ulceration — risk of spontaneous rupture.',
+    ],
+    investigations: [
+      { label: 'CT abdomen (defect size, content, adherence)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Small (W1): open mesh sublay / onlay repair.' },
+      { phase: 'surgical', step: 'Medium-large (W2–3): laparoscopic IPOM or open component separation + retromuscular mesh (Rives-Stoppa).' },
+      { phase: 'conservative', step: 'Optimise modifiable risk factors pre-op (BMI, smoking, diabetes control).' },
+      { phase: 'followup', step: 'Review at 2–4 weeks; abdominal support belt for large repairs.' },
+    ],
+    referral: 'General surgery — complex cases to hernia centre.',
+  },
+  {
+    diseaseId: 'epigastric_hernia',
+    icd10Prefixes: ['K43.6'],
+    label: 'Epigastric Hernia',
+    keyPoints: [
+      'Arise through defects in the linea alba between xiphoid and umbilicus.',
+      'Usually small (extraperitoneal fat) — pain out of proportion to size is characteristic.',
+      'Simple repair (suture or small mesh) gives excellent results.',
+    ],
+    redFlags: ['Irreducibility or acute pain — strangulated preperitoneal fat.'],
+    investigations: [{ label: 'Clinical diagnosis; USS to confirm defect', urgency: 'routine' }],
+    management: [
+      { phase: 'surgical', step: 'Open repair: excision of fat pad, fascial closure ± small mesh.' },
+      { phase: 'followup', step: 'Wound review at 2 weeks.' },
+    ],
+    referral: 'General surgery.',
+  },
+  {
+    diseaseId: 'spigelian_hernia',
+    icd10Prefixes: ['K43.7'],
+    label: 'Spigelian Hernia',
+    keyPoints: [
+      'Occurs at the semilunar line, lateral to the rectus; often occult — diagnosis missed clinically.',
+      'USS or CT is frequently required for diagnosis.',
+      'High strangulation risk due to narrow defect — elective repair advised.',
+    ],
+    redFlags: ['Acute pain at the semilunar line — strangulated fat or bowel.'],
+    investigations: [
+      { label: 'USS or CT abdomen (confirm diagnosis)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Open or laparoscopic mesh repair (TEP / TAPP).' },
+      { phase: 'followup', step: 'Wound check at 2 weeks.' },
+    ],
+    referral: 'General surgery.',
+  },
+  {
+    diseaseId: 'parastomal_hernia',
+    icd10Prefixes: ['K43.5'],
+    label: 'Parastomal Hernia',
+    keyPoints: [
+      'Occurs in up to 50% of colostomies and 30% of ileostomies at 5 years.',
+      'Prophylactic mesh at primary stoma formation reduces incidence.',
+      'Repair only when symptomatic — high recurrence rate (30–50%).',
+    ],
+    redFlags: ['Strangulated parastomal hernia — emergency repair.'],
+    investigations: [
+      { label: 'CT abdomen (hernia content, complications)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Local repair with mesh reinforcement (keyhole or Sugarbaker technique).' },
+      { phase: 'surgical', step: 'Stoma relocation for recurrent cases.' },
+      { phase: 'followup', step: 'Stoma nurse review; support belt.' },
+    ],
+    referral: 'Colorectal / general surgery.',
+  },
+  {
+    diseaseId: 'internal_hernia',
+    icd10Prefixes: ['K56.2'],
+    label: 'Internal Hernia',
+    keyPoints: [
+      'Increasingly seen post-Roux-en-Y gastric bypass (Petersen\'s hernia) — intermittent, may have normal CT.',
+      'Presents as recurrent postprandial pain; diagnosis often made at laparoscopy.',
+      'Can cause closed-loop obstruction with rapid progression to bowel ischaemia.',
+    ],
+    redFlags: ['Acute abdominal pain with SBO signs post-bariatric surgery — emergency laparoscopy.'],
+    investigations: [
+      { label: 'CT abdomen with IV contrast (swirl sign, mesenteric oedema)', urgency: 'urgent' },
+      { label: 'FBC, U&E, lactate', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Urgent laparoscopy — closure of mesenteric defect and reduction of hernia.' },
+      { phase: 'surgical', step: 'Bowel resection if ischaemic segment.' },
+      { phase: 'followup', step: 'Dietary counselling post-bariatric surgery.' },
+    ],
+    referral: 'Bariatric / general surgery — urgent.',
+  },
+  {
+    diseaseId: 'sportsmans_hernia',
+    icd10Prefixes: ['M79.3'],
+    label: "Sportsman's Hernia (Athletic Pubalgia)",
+    keyPoints: [
+      'Not a true hernia — disruption of posterior inguinal wall / conjoint tendon causing groin pain in athletes.',
+      'Diagnosis largely clinical; MRI pelvis helps exclude hip pathology and adductor tears.',
+      'Physiotherapy 6–8 weeks first; surgery (laparoscopic mesh or open reinforcement) for persistent cases.',
+    ],
+    redFlags: ['Exclude hip labral tear and osteitis pubis before surgical referral.'],
+    investigations: [
+      { label: 'MRI pelvis (posterior wall, adductors, labrum)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Physiotherapy: core strengthening, adductor rehabilitation × 6–8 weeks.' },
+      { phase: 'surgical', step: 'Laparoscopic TEP reinforcement or open Bassini-type repair.' },
+      { phase: 'followup', step: 'Graduated return to sport at 6–8 weeks post-op.' },
+    ],
+    referral: 'Sports medicine then general surgery if conservative fails.',
+  },
+  {
+    diseaseId: 'obturator_hernia',
+    icd10Prefixes: ['K45.8'],
+    label: 'Obturator Hernia',
+    keyPoints: [
+      'Rare; classically thin, elderly women — bowel protrudes through obturator foramen.',
+      'Howship-Romberg sign: pain along medial thigh (obturator nerve compression) on hip medial rotation.',
+      'Diagnosis often confirmed on CT — mistaken for SBO.',
+    ],
+    redFlags: ['SBO with no prior surgery and no groin hernia — consider obturator hernia.'],
+    investigations: [
+      { label: 'CT abdomen/pelvis (identify hernia sac and content)', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Emergency repair via laparotomy (McEvedy approach) or laparoscopy; bowel resection if strangulated.' },
+      { phase: 'followup', step: 'Post-operative physiotherapy — groin neuralgia may resolve over weeks.' },
+    ],
+    referral: 'Emergency general surgery.',
+  },
+];
+
+export const breastProtocols: ManagementProtocol[] = [
+  {
+    diseaseId: 'fibroadenoma',
+    icd10Prefixes: ['D24'],
+    label: 'Fibroadenoma',
+    keyPoints: [
+      'Commonest breast tumour in <30s — smooth, mobile, rubbery ("breast mouse").',
+      'Triple assessment: clinical examination + USS (or mammography in >35s) + core biopsy.',
+      'Conservative management for <3 cm with benign triple assessment — 10–15% regress spontaneously.',
+    ],
+    redFlags: ['Rapid growth, irregular margins, or atypical features — core biopsy mandatory.'],
+    investigations: [
+      { label: 'Clinical breast examination', urgency: 'routine' },
+      { label: 'USS breast (in <35s) / mammography + USS (≥35s)', urgency: 'routine' },
+      { label: 'Core needle biopsy (B2 or better to confirm)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Observe with USS at 6-monthly intervals if <3 cm and benign triple assessment.' },
+      { phase: 'surgical', step: 'Excision if >3 cm, growing, patient preference, or atypical features (B3–5).' },
+      { phase: 'followup', step: 'USS review at 12 months to confirm stability.' },
+    ],
+    referral: 'Breast surgery outpatient (two-week wait if suspicious features).',
+  },
+  {
+    diseaseId: 'invasive_ductal_carcinoma',
+    icd10Prefixes: ['C50'],
+    label: 'Invasive Ductal Carcinoma',
+    keyPoints: [
+      'Triple assessment mandatory: clinical exam + imaging + core biopsy (B5b).',
+      'Tumour grade (Nottingham), ER/PR/HER2 receptor status guide systemic therapy.',
+      'Sentinel lymph node biopsy (SLNB) is standard axillary staging for clinically node-negative disease.',
+    ],
+    redFlags: [
+      'Inflammatory breast cancer (skin erythema, peau d\'orange, no palpable mass) — urgent biopsy.',
+      'Fixed, hard, axillary adenopathy — advanced locoregional disease; urgent MDT.',
+    ],
+    investigations: [
+      { label: 'Bilateral mammography + USS', urgency: 'urgent' },
+      { label: 'Core needle biopsy (histology, ER/PR/HER2)', urgency: 'urgent' },
+      { label: 'USS axilla + FNA of suspicious nodes', urgency: 'urgent' },
+      { label: 'CT chest/abdomen/pelvis (staging if T3/T4 or N+)', urgency: 'urgent' },
+      { label: 'Bone scan (if bone pain)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Wide local excision (breast-conserving) + SLNB or axillary clearance.' },
+      { phase: 'surgical', step: 'Mastectomy ± immediate reconstruction if large tumour, multifocal, or BRCA carrier.' },
+      { phase: 'conservative', step: 'Radiotherapy post-conservative surgery; post-mastectomy RT if T3/T4 or ≥4 nodes.' },
+      { phase: 'conservative', step: 'Hormone therapy: tamoxifen (premenopausal) or aromatase inhibitor (postmenopausal) × 5–10 years.' },
+      { phase: 'conservative', step: 'HER2+: trastuzumab × 1 year; chemotherapy (FEC-T or AC-T).' },
+      { phase: 'followup', step: 'Annual mammography × 5 years; clinical review every 6 months × 5 years then annually.' },
+    ],
+    referral: 'Urgent 2-week wait breast MDT referral.',
+  },
+  {
+    diseaseId: 'mastitis',
+    icd10Prefixes: ['N61.0'],
+    label: 'Mastitis',
+    keyPoints: [
+      'Lactational mastitis: Staphylococcus aureus commonest — early antibiotics prevent abscess.',
+      'Non-lactational mastitis (periductal): associated with smoking — Bacteroides and anaerobes involved.',
+      'Continue breastfeeding / express — milk stasis worsens mastitis.',
+    ],
+    redFlags: ['Fluctuant mass not resolving with antibiotics — abscess formation; USS + aspiration.'],
+    investigations: [
+      { label: 'Clinical diagnosis', urgency: 'routine' },
+      { label: 'USS breast (exclude abscess)', urgency: 'urgent' },
+      { label: 'Pus C&S if drainage performed', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Lactational: flucloxacillin 500 mg QDS × 10–14 days; co-amoxiclav if not improving.' },
+      { phase: 'conservative', step: 'Encourage continued breastfeeding / regular expression.' },
+      { phase: 'surgical', step: 'Abscess: USS-guided needle aspiration (repeat if needed) or I&D under GA for large abscess.' },
+      { phase: 'followup', step: 'Review at 5–7 days; USS at 2 weeks to confirm resolution.' },
+    ],
+  },
+  {
+    diseaseId: 'dcis',
+    icd10Prefixes: ['D05'],
+    label: 'DCIS (Ductal Carcinoma In Situ)',
+    keyPoints: [
+      'Non-invasive — confined to ducts; detected predominantly on screening mammography.',
+      'Van Nuys prognostic index (grade, size, margin) guides extent of surgery.',
+      'If untreated, 25–50% progress to invasive carcinoma over 10 years.',
+    ],
+    redFlags: ['High-grade DCIS with microinvasion on biopsy — treat as invasive carcinoma.'],
+    investigations: [
+      { label: 'Mammography + magnification views (microcalcifications)', urgency: 'urgent' },
+      { label: 'Core biopsy / vacuum-assisted biopsy', urgency: 'urgent' },
+      { label: 'MRI breast (extent of disease)', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Wide local excision with 2 mm clear margins + adjuvant whole-breast radiotherapy.' },
+      { phase: 'surgical', step: 'Mastectomy if widespread / multifocal / unable to achieve clear margins.' },
+      { phase: 'conservative', step: 'Hormone therapy: tamoxifen 20 mg OD × 5 years (ER+ DCIS) — reduces recurrence by ~50%.' },
+      { phase: 'followup', step: 'Annual mammography × 5 years then every 3 years.' },
+    ],
+    referral: 'Breast MDT.',
+  },
+  {
+    diseaseId: 'fibrocystic_change',
+    icd10Prefixes: ['N60'],
+    label: 'Fibrocystic Breast Disease',
+    keyPoints: [
+      'Commonest benign breast condition in 20–50s — hormonally driven, regresses post-menopause.',
+      'Simple cysts — USS + aspiration if symptomatic; no biopsy required for clear fluid.',
+      'Atypical ductal hyperplasia (ADH) on biopsy — 4× relative risk of breast cancer; MDT discussion.',
+    ],
+    redFlags: ['Bloody aspirate or recurrent cyst — biopsy to exclude intracystic carcinoma.'],
+    investigations: [
+      { label: 'USS breast (cyst characterisation)', urgency: 'routine' },
+      { label: 'Mammography if ≥35 years', urgency: 'routine' },
+      { label: 'FNA / core biopsy if solid component or atypical cyst', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Reassurance and analgesia (evening primrose oil, gamolenic acid — limited evidence).' },
+      { phase: 'conservative', step: 'USS-guided cyst aspiration for large symptomatic cysts.' },
+      { phase: 'conservative', step: 'Oral contraceptive pill or danazol for severe cyclical mastalgia (limited use).' },
+      { phase: 'followup', step: 'Annual mammography if ADH on biopsy.' },
+    ],
+  },
+  {
+    diseaseId: 'phyllodes_tumour',
+    icd10Prefixes: ['D48.60'],
+    label: 'Phyllodes Tumour',
+    keyPoints: [
+      'Classified benign, borderline, or malignant — malignant phyllodes behaves like sarcoma (haematogenous spread).',
+      'Wide local excision with 1 cm margins minimum — positive margins drive recurrence.',
+      'Lymph node involvement is rare — sentinel node biopsy not routinely performed.',
+    ],
+    redFlags: ['Rapid growth or large (>5 cm) phyllodes — higher malignant potential; HPB/sarcoma MDT.'],
+    investigations: [
+      { label: 'USS + mammography', urgency: 'urgent' },
+      { label: 'Core biopsy (may underestimate grade)', urgency: 'urgent' },
+      { label: 'CT chest if malignant (pulmonary metastases)', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Wide local excision with 1 cm clear margins (benign / borderline).' },
+      { phase: 'surgical', step: 'Mastectomy for large or recurrent tumours.' },
+      { phase: 'conservative', step: 'Malignant phyllodes: adjuvant radiotherapy may reduce local recurrence.' },
+      { phase: 'followup', step: 'Annual USS/mammography × 10 years; CT chest annually if malignant.' },
+    ],
+    referral: 'Breast MDT; sarcoma MDT for malignant phyllodes.',
+  },
+  {
+    diseaseId: 'breast_abscess',
+    icd10Prefixes: ['N61.1'],
+    label: 'Breast Abscess',
+    keyPoints: [
+      'USS confirms abscess and guides aspiration — preferred over open I&D (better cosmesis, equal efficacy).',
+      'Lactational abscesses: central / subareolar; non-lactational: peripheral and more often polymicrobial.',
+      'Repeat aspirations (2–3) successful in 80% — open drainage reserved for failures or large abscesses.',
+    ],
+    redFlags: ['Skin necrosis over abscess — emergency I&D and debridement.'],
+    investigations: [
+      { label: 'USS breast (confirm abscess, guide drainage)', urgency: 'urgent' },
+      { label: 'Pus C&S + MRSA swab', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'USS-guided needle aspiration (18G) under LA — repeat at 48–72 h if recollection.' },
+      { phase: 'surgical', step: 'Open I&D for large (>5 cm) or multiloculated abscesses under GA.' },
+      { phase: 'conservative', step: 'IV flucloxacillin / co-amoxiclav; continue breastfeeding if lactational.' },
+      { phase: 'followup', step: 'USS at 1 week; mammography at 3 months (exclude underlying carcinoma).' },
+    ],
+  },
+  {
+    diseaseId: 'fat_necrosis_breast',
+    icd10Prefixes: ['N64.1'],
+    label: 'Fat Necrosis of Breast',
+    keyPoints: [
+      'History of trauma or prior surgery (especially reconstruction) is key diagnostic clue.',
+      'Can mimic carcinoma clinically and on imaging (skin tethering, spiculated lesion) — biopsy mandatory if doubt.',
+      'Core biopsy showing fat necrosis in the right clinical context is reassuring — no further action.',
+    ],
+    redFlags: ['Radiologically suspicious or B3+ on biopsy — discuss at MDT.'],
+    investigations: [
+      { label: 'Mammography + USS', urgency: 'urgent' },
+      { label: 'Core biopsy if imaging equivocal', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Reassurance and analgesia once benign diagnosis confirmed.' },
+      { phase: 'surgical', step: 'Excision if symptomatic (pain, skin tethering affecting quality of life) or for definitive histology.' },
+      { phase: 'followup', step: 'Annual mammography for 2 years to confirm stability.' },
+    ],
+  },
+  {
+    diseaseId: 'duct_ectasia',
+    icd10Prefixes: ['N60.4'],
+    label: 'Duct Ectasia / Nipple Papilloma',
+    keyPoints: [
+      'Duct ectasia: dilated subareolar ducts, thick cheesy discharge; benign — reassurance if bilateral.',
+      'Intraductal papilloma: commonest cause of unilateral bloody nipple discharge in 40–50s.',
+      'Microdochectomy (excision of single duct) is curative for papilloma and diagnostic.',
+    ],
+    redFlags: ['Unilateral bloody discharge — exclude papilloma and DCIS; urgent OGD equivalent = ductoscopy or microdochectomy.'],
+    investigations: [
+      { label: 'USS subareolar ducts', urgency: 'urgent' },
+      { label: 'Mammography (if ≥35)', urgency: 'urgent' },
+      { label: 'Discharge cytology (low sensitivity — not diagnostic)', urgency: 'routine' },
+      { label: 'MRI if papilloma not identified on USS', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Duct ectasia: reassurance; evening primrose oil; avoid nipple manipulation.' },
+      { phase: 'surgical', step: 'Microdochectomy for papilloma — excision of affected duct via periareolar incision.' },
+      { phase: 'surgical', step: 'Major duct excision (Hadfield procedure) for bilateral / multiduct ectasia causing troublesome discharge.' },
+      { phase: 'followup', step: 'Histology review; USS at 6 months post-op.' },
+    ],
+    referral: 'Breast surgery.',
+  },
+  {
+    diseaseId: 'gynaecomastia',
+    icd10Prefixes: ['N62'],
+    label: 'Gynaecomastia',
+    keyPoints: [
+      'Pubertal gynaecomastia resolves spontaneously in 80% within 2 years.',
+      'Drug causes: spironolactone, cimetidine, anabolic steroids, anti-androgens — review medications.',
+      'Testicular tumour produces hCG / oestradiol — examine testes; USS testes mandatory.',
+    ],
+    redFlags: ['Hard, eccentric, or unilateral breast lump in male — exclude male breast cancer (0.5% of all breast cancers).'],
+    investigations: [
+      { label: 'LH, FSH, testosterone, oestradiol, hCG, prolactin, LFTs, TFTs', urgency: 'routine' },
+      { label: 'USS testes (exclude testicular tumour)', urgency: 'urgent' },
+      { label: 'Mammography ± core biopsy if carcinoma suspected', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Treat underlying cause (stop offending drug, treat testicular tumour).' },
+      { phase: 'conservative', step: 'Tamoxifen 20 mg OD × 3–6 months if symptomatic and <2 years duration.' },
+      { phase: 'surgical', step: 'Subcutaneous mastectomy (pull-through or Webster technique) for established fibrotic gynaecomastia or cosmetic concern.' },
+      { phase: 'followup', step: 'LFTs, hormones at 3 months; USS testes if no cause found.' },
+    ],
+    referral: 'Endocrinology + breast surgery.',
+  },
+];
