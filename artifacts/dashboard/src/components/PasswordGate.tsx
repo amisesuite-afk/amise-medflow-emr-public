@@ -40,7 +40,7 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
           Amise Medical Services
         </div>
         <div style={{ fontSize: 26, fontWeight: 900, color: '#ffffff', letterSpacing: '-.02em', marginBottom: 4 }}>
-          Front Desk Triage
+          MedFlow EMR
         </div>
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,

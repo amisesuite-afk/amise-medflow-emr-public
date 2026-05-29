@@ -55,7 +55,7 @@ export default function LoginPage() {
             Amise Medical Services
           </div>
           <div style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-.02em' }}>
-            Front Desk Triage
+            MedFlow EMR
           </div>
           <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 12px', borderRadius: 999, background: 'rgba(255,180,0,.1)', border: '1px solid rgba(255,180,0,.28)', color: '#fbbf24', fontSize: 10, fontWeight: 800, letterSpacing: '.08em' }}>
             ⚗ DEMO MODE — local trial only
@@ -143,7 +143,7 @@ export default function LoginPage() {
           Amise Medical Services
         </div>
         <div style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-.02em' }}>
-          Front Desk Triage
+          MedFlow EMR
         </div>
         <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 12px', borderRadius: 999, background: 'rgba(255,180,0,.1)', border: '1px solid rgba(255,180,0,.28)', color: '#fbbf24', fontSize: 10, fontWeight: 800, letterSpacing: '.08em' }}>
           ⚗ INTERNAL PROTOTYPE — NOT FOR CLINICAL USE
