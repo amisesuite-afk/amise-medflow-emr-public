@@ -4,6 +4,7 @@ import { colorectalProtocols, herniaProtocols, breastProtocols } from './protoco
 import { endocrineProtocols } from './protocols/endocrine.js';
 import { vascularProtocols } from './protocols/vascular.js';
 import { gynaecologyProtocols } from './protocols/gynaecology.js';
+import { traumaProtocols } from './protocols/trauma.js';
 
 export type { ManagementProtocol, InvestigationItem, ManagementStep } from './types.js';
 
@@ -16,6 +17,7 @@ const ALL_PROTOCOLS = [
   ...endocrineProtocols,
   ...vascularProtocols,
   ...gynaecologyProtocols,
+  ...traumaProtocols,
 ];
 
 const _byDiseaseId = new Map(ALL_PROTOCOLS.map(p => [p.diseaseId, p]));

@@ -10,9 +10,9 @@ describe('vademecum registry', () => {
     FEATURES = mod.FEATURES as unknown as typeof FEATURES;
   });
 
-  it('registers at least 79 diseases (80 specialties × 10 + _other_)', async () => {
+  it('registers at least 89 diseases (9 specialties × 10 + _other_ + 10 trauma)', async () => {
     const { DISEASES: D } = await import('../vademecum/index.js');
-    expect(D.length).toBeGreaterThanOrEqual(79);
+    expect(D.length).toBeGreaterThanOrEqual(89);
   });
 
   it('includes _other_ catch-all', async () => {

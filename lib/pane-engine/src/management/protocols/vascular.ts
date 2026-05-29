@@ -244,11 +244,11 @@ export const vascularProtocols: ManagementProtocol[] = [
     ],
     investigations: [
       { label: 'Clinical diagnosis in most cases; lymphoscintigraphy to confirm and classify', urgency: 'routine' },
-      { phase: 'routine', label: 'MRI limb (if malignant obstruction suspected or atypical presentation)', urgency: 'routine' },
+      { label: 'MRI limb (if malignant obstruction suspected or atypical presentation)', urgency: 'routine' },
       { label: 'Duplex ultrasound (exclude DVT in acute presentation)', urgency: 'urgent' },
       { label: 'FBC, CRP (during acute cellulitis episodes)', urgency: 'urgent' },
       { label: 'Filarial serology (ELISA) in endemic areas', urgency: 'routine' },
-    ] as any,
+    ],
     management: [
       { phase: 'conservative', step: 'Complete decongestive therapy (CDT): manual lymphatic drainage + multilayer bandaging daily during intensive phase.' },
       { phase: 'conservative', step: 'Maintenance: compression garments (flat-knit, class 3–4) fitted after decongestion; worn lifelong.' },

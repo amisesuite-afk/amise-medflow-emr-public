@@ -8,6 +8,7 @@ import './specialties/breast.js';
 import './specialties/endocrine.js';
 import './specialties/vascular.js';
 import './specialties/gynaecology.js';
+import './specialties/trauma.js';
 
 import { getRegisteredDiseases, getRegisteredFeatures } from './registry.js';
 

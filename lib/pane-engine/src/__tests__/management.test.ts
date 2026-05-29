@@ -62,10 +62,24 @@ describe('management protocol lookup', () => {
       'varicose_veins', 'deep_vein_thrombosis',
       // Gynaecology
       'ovarian_torsion', 'endometriosis',
+      // Trauma
+      'traumatic_brain_injury', 'thermal_burn_major',
     ];
     for (const id of ids) {
       expect(getProtocol(id), `missing protocol for ${id}`).not.toBeNull();
     }
+  });
+
+  it('getProtocol returns non-null for traumatic_brain_injury', () => {
+    const p = getProtocol('traumatic_brain_injury');
+    expect(p).not.toBeNull();
+    expect(p!.diseaseId).toBe('traumatic_brain_injury');
+  });
+
+  it('getProtocol returns non-null for thermal_burn_major', () => {
+    const p = getProtocol('thermal_burn_major');
+    expect(p).not.toBeNull();
+    expect(p!.diseaseId).toBe('thermal_burn_major');
   });
 
   it('urgency values are valid', () => {
