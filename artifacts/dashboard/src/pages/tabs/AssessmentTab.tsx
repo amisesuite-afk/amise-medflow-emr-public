@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import PaneDifferential from '@/components/PaneDifferential';
 import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
 import { useSpeechInput } from '@/hooks/useSpeechInput';
@@ -418,6 +419,12 @@ export default function AssessmentTab() {
           </div>
         </CollapsibleCard>
       )}
+
+      {/* ── PANE probabilistic differential ── */}
+      <PaneDifferential onAddDifferential={name => {
+        const line = differentials.trim() ? `${differentials.trim()}\n${name}` : name;
+        setDifferentials(line);
+      }} />
 
       {/* ── Working Diagnosis ── */}
       <CollapsibleCard title="Working diagnosis">

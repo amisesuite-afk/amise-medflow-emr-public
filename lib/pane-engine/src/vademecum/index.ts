@@ -2,21 +2,38 @@ import type { DiseaseNode, Feature } from '../types.js';
 import { appendicitis } from './appendicitis.js';
 import { cholecystitis } from './cholecystitis.js';
 import { pepticUlcer } from './pepticUlcer.js';
+import { pancreatitis } from './pancreatitis.js';
+import { cholangitis } from './cholangitis.js';
+import { gord } from './gord.js';
+import { diverticulitis } from './diverticulitis.js';
+import { inguinalHernia } from './inguinalHernia.js';
+import { colorectalCancer } from './colorectalCancer.js';
 
-// Catch-all node ensuring posteriors always sum to 1.
-// Prior = 1 − sum(seed priors) = 1 − 0.08 − 0.15 − 0.10 = 0.67.
-// All features default to DEFAULT_SENSITIVITY (0.30) — neutral evidence.
+// Named-disease priors sum = 0.08+0.15+0.10+0.05+0.04+0.12+0.06+0.07+0.03 = 0.70
+// _other_ captures the remaining 0.30 of the surgical OPD distribution.
 const other: DiseaseNode = {
   id: '_other_',
   label: 'Other / undetermined',
   icd10: 'R69',
-  prior: 0.67,
+  prior: 0.30,
   features: {},
 };
 
-export const DISEASES: DiseaseNode[] = [appendicitis, cholecystitis, pepticUlcer, other];
+export const DISEASES: DiseaseNode[] = [
+  appendicitis,
+  cholecystitis,
+  pepticUlcer,
+  pancreatitis,
+  cholangitis,
+  gord,
+  diverticulitis,
+  inguinalHernia,
+  colorectalCancer,
+  other,
+];
 
 export const FEATURES: Feature[] = [
+  // ── Abdominal pain location ────────────────────────────────────────────────
   {
     id: 'rlq_pain',
     label: 'RLQ / right iliac fossa pain',
@@ -36,16 +53,67 @@ export const FEATURES: Feature[] = [
     category: 'symptom',
   },
   {
-    id: 'pain_migration',
-    label: 'Pain migration (periumbilical → RIF)',
-    question: 'Did the pain start centrally or around the navel and migrate to the right lower abdomen?',
+    id: 'lif_pain',
+    label: 'LIF / left iliac fossa pain',
+    question: 'Is the pain localised to the left lower quadrant / left iliac fossa?',
     category: 'symptom',
   },
+  {
+    id: 'radiation_to_back',
+    label: 'Radiation to back',
+    question: 'Does the pain radiate through to the back?',
+    category: 'symptom',
+  },
+  // ── Pain character ─────────────────────────────────────────────────────────
+  {
+    id: 'pain_migration',
+    label: 'Pain migration (periumbilical → RIF)',
+    question: 'Did the pain start centrally / around the navel and migrate to the right lower abdomen?',
+    category: 'symptom',
+  },
+  {
+    id: 'colicky_pain',
+    label: 'Colicky / wave-like pain',
+    question: 'Is the pain colicky or wave-like rather than constant?',
+    category: 'symptom',
+  },
+  // ── Upper GI ───────────────────────────────────────────────────────────────
+  {
+    id: 'heartburn',
+    label: 'Heartburn / acid regurgitation',
+    question: 'Is there heartburn or acid coming up into the throat?',
+    category: 'symptom',
+  },
+  {
+    id: 'dysphagia',
+    label: 'Dysphagia',
+    question: 'Is there any difficulty swallowing?',
+    category: 'symptom',
+  },
+  {
+    id: 'haematemesis',
+    label: 'Haematemesis',
+    question: 'Has there been haematemesis or coffee-ground vomiting?',
+    category: 'symptom',
+  },
+  {
+    id: 'melaena',
+    label: 'Melaena',
+    question: 'Is there melaena (black tarry stool)?',
+    category: 'symptom',
+  },
+  // ── Systemic / GI ─────────────────────────────────────────────────────────
   {
     id: 'fever',
     label: 'Fever',
     question: 'Does the patient have a documented or reported fever (>38°C)?',
     category: 'sign',
+  },
+  {
+    id: 'rigors',
+    label: 'Rigors / chills',
+    question: 'Has the patient had rigors or shaking chills?',
+    category: 'symptom',
   },
   {
     id: 'nausea_vomiting',
@@ -60,6 +128,19 @@ export const FEATURES: Feature[] = [
     category: 'symptom',
   },
   {
+    id: 'weight_loss',
+    label: 'Unintentional weight loss',
+    question: 'Has there been unintentional weight loss in recent months?',
+    category: 'symptom',
+  },
+  {
+    id: 'change_bowel_habit',
+    label: 'Change in bowel habit',
+    question: 'Is there a recent change in bowel habit (frequency, consistency, or alternating constipation/diarrhoea)?',
+    category: 'symptom',
+  },
+  // ── Examination signs ──────────────────────────────────────────────────────
+  {
     id: 'rebound_tenderness',
     label: 'Rebound tenderness',
     question: 'Is there rebound tenderness on examination?',
@@ -71,6 +152,19 @@ export const FEATURES: Feature[] = [
     question: "Is Murphy's sign positive (RUQ tenderness with inspiratory arrest)?",
     category: 'sign',
   },
+  {
+    id: 'groin_swelling',
+    label: 'Groin / abdominal wall swelling',
+    question: 'Is there a visible or palpable swelling in the groin or abdominal wall?',
+    category: 'sign',
+  },
+  {
+    id: 'jaundice',
+    label: 'Jaundice',
+    question: 'Is there clinical jaundice, yellow sclera, or dark urine?',
+    category: 'sign',
+  },
+  // ── History ────────────────────────────────────────────────────────────────
   {
     id: 'fatty_food_trigger',
     label: 'Fatty food trigger',
@@ -96,27 +190,22 @@ export const FEATURES: Feature[] = [
     category: 'history',
   },
   {
-    id: 'jaundice',
-    label: 'Jaundice',
-    question: 'Is there clinical jaundice, yellow sclera, or dark urine?',
+    id: 'hernia_irreducible',
+    label: 'Hernia irreducible',
+    question: 'Is the swelling irreducible (cannot be pushed back)?',
     category: 'sign',
   },
-  {
-    id: 'haematemesis',
-    label: 'Haematemesis',
-    question: 'Has there been haematemesis or coffee-ground vomiting?',
-    category: 'symptom',
-  },
-  {
-    id: 'melaena',
-    label: 'Melaena',
-    question: 'Is there melaena (black tarry stool)?',
-    category: 'symptom',
-  },
+  // ── Investigations ─────────────────────────────────────────────────────────
   {
     id: 'elevated_wbc',
     label: 'Elevated WBC',
     question: 'Is the white cell count elevated on FBC?',
+    category: 'investigation',
+  },
+  {
+    id: 'elevated_amylase',
+    label: 'Elevated amylase / lipase',
+    question: 'Is serum amylase or lipase elevated (>3× upper limit of normal)?',
     category: 'investigation',
   },
   {
