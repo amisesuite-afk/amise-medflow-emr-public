@@ -63,13 +63,17 @@ export type TopSection =
 
 /** Grouped trauma / burns state — stored as a single serialisable object. */
 export interface TraumaData {
-  mechanism: string[];         // 'Blunt' | 'Penetrating' | 'Burns' | 'Blast' | 'Fall' | 'RTA'
-  timeOfInjury: string;        // ISO datetime or empty
-  preHospital: string[];       // interventions checklist
-  gcScene: string;             // GCS on scene
-  primarySurvey: Record<string, { finding: string; action: string; response: string }>;
-  ais: Record<string, number>; // headNeck|face|thorax|abdomen|extremities|external → 0–6
-  secondary: Record<string, string>; // body region → free text
+  mechanism: string[];
+  timeOfInjury: string;
+  preHospital: string[];
+  gcScene: string;
+  mistInjuries: string;           // MIST — Injuries suspected
+  mistSigns: string;              // MIST — Pre-hospital vital signs (free text)
+  admissionVitals: Record<string, string>; // hr|sbp|dbp|rr|spo2|temp|gcsTotal|bm|pupils|painScore|timeAdmission
+  abcde: Record<string, Record<string, string>>; // A|B|C|D|E → field → value
+  ais: Record<string, number>;
+  secondary: Record<string, string>;
+  secondaryDropdowns: Record<string, string[]>; // body region → selected finding chips
   burnRegions: Record<string, { affected: boolean; degree: string }>;
   burnTimeOfInjury: string;
   burnInhalation: boolean;
@@ -77,9 +81,11 @@ export interface TraumaData {
 
 export const EMPTY_TRAUMA_DATA: TraumaData = {
   mechanism: [], timeOfInjury: '', preHospital: [], gcScene: '',
-  primarySurvey: {},
+  mistInjuries: '', mistSigns: '',
+  admissionVitals: {},
+  abcde: {},
   ais: { headNeck: 0, face: 0, thorax: 0, abdomen: 0, extremities: 0, external: 0 },
-  secondary: {},
+  secondary: {}, secondaryDropdowns: {},
   burnRegions: {}, burnTimeOfInjury: '', burnInhalation: false,
 };
 
