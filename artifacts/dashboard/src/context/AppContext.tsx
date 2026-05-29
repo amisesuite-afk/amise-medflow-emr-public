@@ -3,6 +3,7 @@ import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSi
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan } from '@/lib/db';
+import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
@@ -234,6 +235,14 @@ interface CtxValue {
   nokTel: string; setNokTel(v: string): void;
   admittingSurgeon: string; setAdmittingSurgeon(v: string): void;
   referringPhysician: string; setReferringPhysician(v: string): void;
+
+  /** PANE session persistence — survives tab navigation. */
+  paneState: PaneState | null;
+  setPaneState: React.Dispatch<React.SetStateAction<PaneState | null>>;
+  paneTop: RankedDiagnosis[];
+  setPaneTop: React.Dispatch<React.SetStateAction<RankedDiagnosis[]>>;
+  paneConverged: boolean;
+  setPaneConverged: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -357,6 +366,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [admittingSurgeon, setAdmittingSurgeon] = useState('Dr Dawit Daniel Kabiye, MD, DM');
   const [referringPhysician, setReferringPhysician] = useState('');
 
+  const [paneState, setPaneState] = useState<PaneState | null>(null);
+  const [paneTop, setPaneTop] = useState<RankedDiagnosis[]>([]);
+  const [paneConverged, setPaneConverged] = useState(false);
+
   const ENC_KEY = 'amise-enc-v1';
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -438,6 +451,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.nokTel === 'string') setNokTel(d.nokTel);
       if (typeof d.admittingSurgeon === 'string') setAdmittingSurgeon(d.admittingSurgeon);
       if (typeof d.referringPhysician === 'string') setReferringPhysician(d.referringPhysician);
+      if (d.paneState && typeof d.paneState === 'object') setPaneState(d.paneState as PaneState);
       // Attachments stored separately (can be large base64)
       try {
         const ar = localStorage.getItem('amise-attachments-v1');
@@ -470,6 +484,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords,
       encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
+      paneState,
     });
     // Attachments saved separately — avoids 5 MB localStorage limit on the main key
     try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { /* ignore */ }
@@ -487,7 +502,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
     radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
     encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
-    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician]);
+    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -528,6 +543,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setMrNumber(''); setWard(''); setDateAdmission(''); setDateDischarge('');
     setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
     setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
+    setPaneState(null); setPaneTop([]); setPaneConverged(false);
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
@@ -667,6 +683,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     nokTel, setNokTel,
     admittingSurgeon, setAdmittingSurgeon,
     referringPhysician, setReferringPhysician,
+    paneState, setPaneState,
+    paneTop, setPaneTop,
+    paneConverged, setPaneConverged,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

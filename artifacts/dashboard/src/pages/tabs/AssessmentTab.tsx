@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
+import { ManagementPanel } from '@/components/ManagementPanel';
 import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
 import { useSpeechInput } from '@/hooks/useSpeechInput';
@@ -359,7 +360,13 @@ export default function AssessmentTab() {
     triageResult,
     symptoms, examFindings, vitals, investigationResults,
     comorbidities, age, sex, isPostOp, procedureData, rosFindings,
+    paneTop, paneConverged, icdCodes,
   } = useAppContext();
+
+  const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
+    ? paneTop[0].disease.id
+    : null;
+  const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? null;
 
   const apptType = triageResult.appointmentType;
   const ddxOptions: DiffOption[] = DIFFERENTIAL_PROMPTS[apptType] ?? DIFFERENTIAL_PROMPTS['new_consult'];
@@ -431,6 +438,9 @@ export default function AssessmentTab() {
           setDifferentials(line);
         }}
       />
+
+      {/* ── Management Panel (auto-populated on convergence or ICD selection) ── */}
+      <ManagementPanel diseaseId={activeDiseaseId} icdCode={activeIcdCode} />
 
       {/* ── Working Diagnosis ── */}
       <CollapsibleCard title="Working diagnosis">

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import {
   DISEASES,
   FEATURES,
@@ -12,6 +12,7 @@ import {
 } from '@workspace/pane-engine';
 import type { Feature, PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 import { logPaneSession } from '@/lib/db';
+import { useAppContext } from '@/context/AppContext';
 
 export interface PaneOpts {
   age?: number | null;
@@ -42,8 +43,10 @@ function makeInitState(age: number | null, sex: string): PaneState {
 
 export function usePane(opts: PaneOpts = {}): UsePaneReturn {
   const { age = null, sex = 'unknown', encounterId = null, patientId = null } = opts;
+  const { paneState, setPaneState, setPaneTop, setPaneConverged } = useAppContext();
 
-  const [state, setState] = useState<PaneState>(() => makeInitState(age, sex));
+  // Initialise from context (null = new patient)
+  const state: PaneState = paneState ?? makeInitState(age, sex);
 
   // Re-initialise priors when age/sex become available, but only before any Q is answered.
   const prevAgeRef = useRef(age);
@@ -52,10 +55,11 @@ export function usePane(opts: PaneOpts = {}): UsePaneReturn {
     if (prevAgeRef.current === age && prevSexRef.current === sex) return;
     prevAgeRef.current = age;
     prevSexRef.current = sex;
-    setState(prev => {
-      if (prev.iteration > 0) return prev; // preserve in-progress session
+    setPaneState(prev => {
+      if (prev && prev.iteration > 0) return prev; // preserve in-progress session
       return makeInitState(age, sex);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [age, sex]);
 
   // Derive disease list with modifiers applied (used at init; state holds the result)
@@ -64,6 +68,13 @@ export function usePane(opts: PaneOpts = {}): UsePaneReturn {
   const nextQuestion = nextBestQuestion(state, diseases, FEATURES);
   const top = topDiagnoses(state, diseases, 3);
   const converged = isConverged(state);
+
+  // Propagate top/converged to AppContext so AssessmentTab can read them
+  useEffect(() => {
+    setPaneTop(top);
+    setPaneConverged(converged);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [converged, top.map(r => r.probability).join(',')]);
 
   // Audit-log once when the engine converges
   const loggedRef = useRef(false);
@@ -81,15 +92,19 @@ export function usePane(opts: PaneOpts = {}): UsePaneReturn {
       iteration: state.iteration,
       converged: true,
     });
-  }, [converged, state, top, encounterId, patientId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [converged, state.iteration]);
 
   const answer = useCallback((featureId: string, observed: boolean) => {
-    setState(prev => updatePosterior(prev, applyModifiers(DISEASES, age, sex), featureId, observed));
-  }, [age, sex]);
+    setPaneState(prev => {
+      const current = prev ?? makeInitState(age, sex);
+      return updatePosterior(current, applyModifiers(DISEASES, age, sex), featureId, observed);
+    });
+  }, [age, sex, setPaneState]);
 
   const reset = useCallback(() => {
-    setState(prev => {
-      if (prev.iteration > 0 && !loggedRef.current) {
+    setPaneState(prev => {
+      if (prev && prev.iteration > 0 && !loggedRef.current) {
         const currentTop = topDiagnoses(prev, applyModifiers(DISEASES, age, sex), 3);
         logPaneSession({
           encounter_id:  encounterId,
@@ -104,9 +119,9 @@ export function usePane(opts: PaneOpts = {}): UsePaneReturn {
         });
       }
       loggedRef.current = false;
-      return makeInitState(age, sex);
+      return null; // triggers re-init from null → makeInitState in next render
     });
-  }, [age, sex, encounterId, patientId]);
+  }, [age, sex, encounterId, patientId, setPaneState]);
 
   const exportDifferential = useCallback(
     () => exportSummary(state, diseases, FEATURES, 3),
