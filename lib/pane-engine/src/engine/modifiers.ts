@@ -53,6 +53,27 @@ export const SURGICAL_OPD_MODIFIERS: PriorModifier[] = [
 
   // Cholangitis — rises sharply after 60
   { diseaseId: 'cholangitis', multiplier: 1.8, condition: { ageMin: 60 } },
+
+  // Gynaecology — suppress to near-zero in males, boost in females
+  ...(['ectopic_pregnancy', 'ovarian_torsion', 'pelvic_inflammatory_disease',
+       'ovarian_cyst', 'endometriosis', 'uterine_fibroids',
+       'cervical_carcinoma', 'ovarian_carcinoma', 'uterine_carcinoma',
+       'bartholin_abscess'] as const).flatMap(id => ([
+    { diseaseId: id, multiplier: 0.001, condition: { sex: 'male' as const } },
+    { diseaseId: id, multiplier: 2.5,   condition: { sex: 'female' as const } },
+  ])),
+
+  // Breast — female predominance
+  ...(['fibroadenoma', 'fibrocystic_change', 'invasive_ductal_carcinoma', 'dcis',
+       'phyllodes_tumour', 'mastitis', 'breast_abscess', 'fat_necrosis_breast',
+       'duct_ectasia'] as const).flatMap(id => ([
+    { diseaseId: id, multiplier: 0.05, condition: { sex: 'male' as const } },
+    { diseaseId: id, multiplier: 1.8,  condition: { sex: 'female' as const } },
+  ])),
+
+  // Gynaecomastia — male only
+  { diseaseId: 'gynaecomastia', multiplier: 5.0, condition: { sex: 'male' as const } },
+  { diseaseId: 'gynaecomastia', multiplier: 0.01, condition: { sex: 'female' as const } },
 ];
 
 /**
