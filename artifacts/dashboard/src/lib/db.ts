@@ -537,3 +537,37 @@ export async function getLatestOpenEncounter(
 
   return { encounterId: (data as { id: string } | null)?.id ?? null, error: null };
 }
+
+// ─── logPaneSession ───────────────────────────────────────────────────────────
+
+export interface PaneSessionLog {
+  encounter_id: string | null;
+  patient_id: string | null;
+  answered: Record<string, boolean>;
+  top_diagnoses: Array<{ id: string; label: string; icd10: string; probability: number }>;
+  iteration: number;
+  converged: boolean;
+}
+
+/**
+ * Fire-and-forget: write a PANE session snapshot to audit_logs.
+ * Safe to call without awaiting — errors are logged to console only.
+ */
+export function logPaneSession(input: PaneSessionLog): void {
+  if (!supabase) return;
+  void supabase.from('audit_logs').insert({
+    action:     'pane_session',
+    table_name: 'encounters',
+    record_id:  input.encounter_id ?? undefined,
+    new_values: {
+      patient_id:    input.patient_id,
+      answered:      input.answered,
+      top_diagnoses: input.top_diagnoses,
+      iteration:     input.iteration,
+      converged:     input.converged,
+    },
+    mode: 'cds',
+  }).then(({ error }) => {
+    if (error) console.warn('[db] logPaneSession:', error.message);
+  });
+}

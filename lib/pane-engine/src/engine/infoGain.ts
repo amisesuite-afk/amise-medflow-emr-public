@@ -2,6 +2,9 @@ import type { DiseaseNode, Feature, PaneState, RankedDiagnosis } from '../types.
 import { updatePosterior } from './bayes.js';
 import { CONVERGENCE_THRESHOLD, DEFAULT_SENSITIVITY, MAX_QUESTIONS } from '../constants.js';
 
+export { applyModifiers, SURGICAL_OPD_MODIFIERS } from './modifiers.js';
+export type { PriorModifier } from './modifiers.js';
+
 function entropy(posteriors: Record<string, number>): number {
   return -Object.values(posteriors)
     .filter(p => p > 0)
@@ -77,4 +80,41 @@ export function topDiagnoses(
     .map(d => ({ disease: d, probability: state.posteriors[d.id] ?? 0 }))
     .sort((a, b) => b.probability - a.probability)
     .slice(0, n);
+}
+
+/**
+ * Generate a structured plain-text summary of the PANE session suitable
+ * for pasting into the differentials field or clinical notes.
+ */
+export function exportSummary(
+  state: PaneState,
+  diseases: DiseaseNode[],
+  features: Feature[],
+  n = 3,
+): string {
+  const top = topDiagnoses(state, diseases, n);
+  const date = new Date().toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'long', year: 'numeric',
+  });
+  const featureMap = new Map(features.map(f => [f.id, f.label]));
+
+  const lines: string[] = [`PANE Differential — ${date} (${state.iteration} Q${state.iteration !== 1 ? 's' : ''})`];
+
+  top.forEach((r, i) => {
+    const pct = Math.round(r.probability * 100);
+    const bar = '█'.repeat(Math.round(pct / 10)).padEnd(10, '░');
+    lines.push(`${i + 1}. ${r.disease.label} (${r.disease.icd10})  ${bar} ${pct}%`);
+  });
+
+  const present = Object.entries(state.answered)
+    .filter(([, v]) => v)
+    .map(([id]) => featureMap.get(id) ?? id);
+  const absent = Object.entries(state.answered)
+    .filter(([, v]) => !v)
+    .map(([id]) => featureMap.get(id) ?? id);
+
+  if (present.length) lines.push(`Present: ${present.join(' · ')}`);
+  if (absent.length) lines.push(`Absent: ${absent.join(' · ')}`);
+
+  return lines.join('\n');
 }

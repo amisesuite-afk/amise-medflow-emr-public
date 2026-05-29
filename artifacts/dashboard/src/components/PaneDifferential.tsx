@@ -1,8 +1,10 @@
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { useAppContext } from '@/context/AppContext';
 import { usePane } from '@/hooks/usePane';
 
 interface Props {
   onAddDifferential: (name: string) => void;
+  onExportDifferential: (text: string) => void;
 }
 
 function ProbBar({ value }: { value: number }) {
@@ -23,8 +25,15 @@ function ProbBar({ value }: { value: number }) {
   );
 }
 
-export default function PaneDifferential({ onAddDifferential }: Props) {
-  const { nextQuestion, top, converged, answer, reset, state } = usePane();
+export default function PaneDifferential({ onAddDifferential, onExportDifferential }: Props) {
+  const { age, sex, encounterId, patientId } = useAppContext();
+  const parsedAge = parseInt(age, 10) || null;
+  const { nextQuestion, top, converged, answer, reset, state, exportDifferential } = usePane({
+    age: parsedAge,
+    sex,
+    encounterId,
+    patientId,
+  });
 
   const titleSuffix = converged
     ? ' — converged'
@@ -140,7 +149,7 @@ export default function PaneDifferential({ onAddDifferential }: Props) {
           </div>
         ) : null}
 
-        {/* ── Footer: answered count + reset ── */}
+        {/* ── Footer: answered count + export + reset ── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           borderTop: '1px solid #e4f5f2', paddingTop: 8, marginTop: 2,
@@ -148,16 +157,32 @@ export default function PaneDifferential({ onAddDifferential }: Props) {
           <span style={{ fontSize: 11, color: '#9ca3af' }}>
             {state.iteration} / 8 questions answered
           </span>
-          <button
-            type="button"
-            onClick={reset}
-            style={{
-              fontSize: 11, color: '#5a706c', background: 'none',
-              border: '1px solid #d8e8e4', borderRadius: 4, padding: '3px 10px', cursor: 'pointer',
-            }}
-          >
-            Reset
-          </button>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {state.iteration > 0 && (
+              <button
+                type="button"
+                onClick={() => onExportDifferential(exportDifferential())}
+                title="Append PANE summary to differentials field"
+                style={{
+                  fontSize: 11, color: '#0b8278', background: 'none',
+                  border: '1px solid #0b8278', borderRadius: 4, padding: '3px 10px', cursor: 'pointer',
+                  fontWeight: 600,
+                }}
+              >
+                Export to Differentials
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={reset}
+              style={{
+                fontSize: 11, color: '#5a706c', background: 'none',
+                border: '1px solid #d8e8e4', borderRadius: 4, padding: '3px 10px', cursor: 'pointer',
+              }}
+            >
+              Reset
+            </button>
+          </div>
         </div>
 
       </div>

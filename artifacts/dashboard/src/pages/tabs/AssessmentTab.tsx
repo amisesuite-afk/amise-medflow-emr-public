@@ -421,10 +421,16 @@ export default function AssessmentTab() {
       )}
 
       {/* ── PANE probabilistic differential ── */}
-      <PaneDifferential onAddDifferential={name => {
-        const line = differentials.trim() ? `${differentials.trim()}\n${name}` : name;
-        setDifferentials(line);
-      }} />
+      <PaneDifferential
+        onAddDifferential={name => {
+          const line = differentials.trim() ? `${differentials.trim()}\n${name}` : name;
+          setDifferentials(line);
+        }}
+        onExportDifferential={text => {
+          const line = differentials.trim() ? `${differentials.trim()}\n\n${text}` : text;
+          setDifferentials(line);
+        }}
+      />
 
       {/* ── Working Diagnosis ── */}
       <CollapsibleCard title="Working diagnosis">
