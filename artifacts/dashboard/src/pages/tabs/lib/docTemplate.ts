@@ -17,12 +17,14 @@
 // ── Brand logo SVG ────────────────────────────────────────────────────────────
 // Two facing-profile silhouettes (blue left, red right) + logotype.
 // width/height attrs keep the rendered size small; viewBox defines coordinate space.
-export const AMISE_LOGO_SVG = `<svg width="175" height="56" viewBox="0 0 290 93" xmlns="http://www.w3.org/2000/svg">
-  <path d="M26,6 C28,6 30,10 28,11 C27,12 25,13 26,15 C26,17 28,18 28,19 C30,20 34,22 34,24 C34,26 32,26 32,27 C31,28 32,29 33,30 C34,31 34,33 33,33 C33,35 31,36 30,37 C29,38 28,39 28,39 C26,41 23,43 22,44 C21,46 20,48 19,49 C18,50 17,51 17,52 C14,56 10,58 8,68 C7,70 6,70 6,69 C6,67 7,64 9,60 C11,56 12,52 13,47 C13,42 13,36 14,28 C14,22 14,14 14,10 C14,8 14,6 16,5 C18,4 22,4 26,6Z" fill="#1B5490"/>
-  <path d="M45,6 C43,6 41,10 43,11 C44,12 46,13 45,15 C45,17 43,18 43,19 C41,20 37,22 37,24 C37,26 39,26 39,27 C40,28 39,29 38,30 C37,31 37,33 38,33 C38,35 40,36 41,37 C42,38 43,39 43,39 C45,41 48,43 49,44 C50,46 51,48 52,49 C53,50 54,51 54,52 C57,56 61,58 63,68 C64,70 65,70 65,69 C65,67 64,64 62,60 C60,56 59,52 58,47 C58,42 58,36 57,28 C57,22 57,14 57,10 C57,8 57,6 55,5 C53,4 49,4 45,6Z" fill="#C0392B"/>
-  <line x1="78" y1="6" x2="78" y2="80" stroke="#d0d0d0" stroke-width="0.7"/>
-  <text x="86" y="50" font-family="Arial,Helvetica,sans-serif" font-size="36" font-weight="900" fill="#C0392B" letter-spacing="2">AMISE</text>
-  <text x="87" y="65" font-family="Arial,Helvetica,sans-serif" font-size="10.5" fill="#C0392B" letter-spacing="3.5">MEDICAL SERVICES</text>
+export const AMISE_LOGO_SVG = `<svg width="178" height="59" viewBox="0 0 270 90" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue profile: right-facing, positioned higher -->
+  <path d="M30,5 C32,5 34,9 32,11 C31,12 29,14 30,17 C30,19 33,22 33,23 C36,24 41,25 41,27 C40,29 37,30 37,32 C38,33 39,35 37,37 C36,40 32,42 27,45 C24,47 20,49 19,52 C16,56 12,62 8,70 C7,73 6,74 7,74 C9,73 12,68 14,63 C16,58 18,54 20,52 C19,46 16,38 14,26 C13,18 14,12 16,7 C18,4 22,4 25,5 C27,5 29,5 30,5Z" fill="#1B5490"/>
+  <!-- Red profile: left-facing, positioned lower and overlapping -->
+  <path d="M57,13 C55,13 53,17 55,19 C56,20 58,22 57,25 C57,27 54,30 54,31 C51,32 46,33 46,35 C47,37 50,38 50,40 C49,41 48,43 50,45 C51,48 55,50 60,53 C63,55 67,57 68,60 C71,64 75,70 79,78 C80,81 81,82 80,82 C78,81 75,76 73,71 C71,66 69,62 67,60 C68,54 71,46 73,34 C74,26 73,20 71,15 C69,12 65,12 62,13 C60,13 58,13 57,13Z" fill="#C0392B"/>
+  <line x1="92" y1="6" x2="92" y2="82" stroke="#d0d0d0" stroke-width="0.7"/>
+  <text x="100" y="50" font-family="Arial,Helvetica,sans-serif" font-size="36" font-weight="900" fill="#C0392B" letter-spacing="2">AMISE</text>
+  <text x="101" y="65" font-family="Arial,Helvetica,sans-serif" font-size="10.5" fill="#C0392B" letter-spacing="3.5">MEDICAL SERVICES</text>
 </svg>`;
 
 // ── Colour tokens ─────────────────────────────────────────────────────────────
