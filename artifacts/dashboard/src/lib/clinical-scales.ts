@@ -684,3 +684,152 @@ export function interpretRansonAdmission(score: number): ScaleResult {
     evidence,
   };
 }
+
+// ── ISS / NISS (ATLS 11 / AIS 2015) ─────────────────────────────────────────
+
+export type IssRegion = 'headNeck' | 'face' | 'thorax' | 'abdomen' | 'extremities' | 'external';
+
+export const ISS_REGIONS: { key: IssRegion; label: string }[] = [
+  { key: 'headNeck',    label: 'Head and Neck' },
+  { key: 'face',        label: 'Face' },
+  { key: 'thorax',      label: 'Thorax (Chest)' },
+  { key: 'abdomen',     label: 'Abdomen / Pelvic Contents' },
+  { key: 'extremities', label: 'Extremities / Bony Pelvis' },
+  { key: 'external',    label: 'External (Skin / Soft Tissue)' },
+];
+
+export const AIS_LABELS: Record<number, string> = {
+  0: '0 — No injury',
+  1: '1 — Minor',
+  2: '2 — Moderate',
+  3: '3 — Serious',
+  4: '4 — Severe',
+  5: '5 — Critical',
+  6: '6 — Unsurvivable',
+};
+
+/** ISS = sum of squares of top-3 DIFFERENT-region AIS; any AIS 6 → 75. */
+export function issScore(ais: Record<string, number>): number {
+  const vals = ISS_REGIONS.map(r => ais[r.key] ?? 0);
+  if (vals.some(v => v === 6)) return 75;
+  return [...vals].sort((a, b) => b - a).slice(0, 3).reduce((s, v) => s + v * v, 0);
+}
+
+/** NISS = sum of squares of 3 highest AIS regardless of region. */
+export function nissScore(ais: Record<string, number>): number {
+  const vals = Object.values(ais);
+  if (vals.some(v => v === 6)) return 75;
+  return [...vals].sort((a, b) => b - a).slice(0, 3).reduce((s, v) => s + v * v, 0);
+}
+
+export function interpretIss(iss: number): { label: string; color: string } {
+  if (iss === 0) return { label: 'No injury',       color: '#6b7280' };
+  if (iss <= 8)  return { label: 'Minor',            color: '#16a34a' };
+  if (iss <= 15) return { label: 'Moderate',         color: '#ca8a04' };
+  if (iss <= 24) return { label: 'Serious',          color: '#ea580c' };
+  if (iss <= 40) return { label: 'Severe',           color: '#dc2626' };
+  if (iss <= 74) return { label: 'Critical',         color: '#9f1239' };
+  return          { label: 'Unsurvivable (ISS 75)', color: '#450a0a' };
+}
+
+// ── Burns: Rule of Nines ─────────────────────────────────────────────────────
+
+export type BurnRegionKey =
+  | 'headNeck'
+  | 'chestAnterior' | 'abdomenAnterior'
+  | 'upperBackPosterior' | 'lowerBackPosterior'
+  | 'leftArmAnterior' | 'leftArmPosterior'
+  | 'rightArmAnterior' | 'rightArmPosterior'
+  | 'leftThighAnterior' | 'leftThighPosterior'
+  | 'leftLegAnterior' | 'leftLegPosterior'
+  | 'rightThighAnterior' | 'rightThighPosterior'
+  | 'rightLegAnterior' | 'rightLegPosterior'
+  | 'perineum';
+
+export const BURN_REGIONS: { key: BurnRegionKey; label: string; percent: number; group: string }[] = [
+  { key: 'headNeck',           label: 'Head and Neck',         percent: 9,   group: 'Head' },
+  { key: 'chestAnterior',      label: 'Chest (anterior)',       percent: 9,   group: 'Trunk' },
+  { key: 'abdomenAnterior',    label: 'Abdomen (anterior)',     percent: 9,   group: 'Trunk' },
+  { key: 'upperBackPosterior', label: 'Upper Back (posterior)', percent: 9,   group: 'Trunk' },
+  { key: 'lowerBackPosterior', label: 'Lower Back / Buttocks',  percent: 9,   group: 'Trunk' },
+  { key: 'leftArmAnterior',    label: 'Left Arm (anterior)',    percent: 4.5, group: 'Left Arm' },
+  { key: 'leftArmPosterior',   label: 'Left Arm (posterior)',   percent: 4.5, group: 'Left Arm' },
+  { key: 'rightArmAnterior',   label: 'Right Arm (anterior)',   percent: 4.5, group: 'Right Arm' },
+  { key: 'rightArmPosterior',  label: 'Right Arm (posterior)',  percent: 4.5, group: 'Right Arm' },
+  { key: 'leftThighAnterior',  label: 'Left Thigh (anterior)',  percent: 4.5, group: 'Left Leg' },
+  { key: 'leftThighPosterior', label: 'Left Thigh (posterior)', percent: 4.5, group: 'Left Leg' },
+  { key: 'leftLegAnterior',    label: 'Left Leg/Foot (ant.)',   percent: 4.5, group: 'Left Leg' },
+  { key: 'leftLegPosterior',   label: 'Left Leg/Foot (post.)',  percent: 4.5, group: 'Left Leg' },
+  { key: 'rightThighAnterior', label: 'Right Thigh (anterior)', percent: 4.5, group: 'Right Leg' },
+  { key: 'rightThighPosterior',label: 'Right Thigh (posterior)',percent: 4.5, group: 'Right Leg' },
+  { key: 'rightLegAnterior',   label: 'Right Leg/Foot (ant.)',  percent: 4.5, group: 'Right Leg' },
+  { key: 'rightLegPosterior',  label: 'Right Leg/Foot (post.)', percent: 4.5, group: 'Right Leg' },
+  { key: 'perineum',           label: 'Perineum',               percent: 1,   group: 'Perineum' },
+];
+
+export type BurnDegree = '1st' | 'SPT' | 'DPT' | 'FT' | '4th';
+
+export const BURN_DEGREE_LABELS: Record<BurnDegree, string> = {
+  '1st': '1st — Superficial (erythema, NOT counted in TBSA)',
+  'SPT': '2nd Superficial Partial (blistering, wet, painful)',
+  'DPT': '2nd Deep Partial (pale/mottled, reduced sensation)',
+  'FT':  '3rd Full Thickness (leathery, insensate)',
+  '4th': '4th degree (FT + underlying bone/tendon)',
+};
+
+/** TBSA from burn region map. Excludes 1st-degree burns. */
+export function calcTbsa(regions: Record<string, { affected: boolean; degree: string }>): number {
+  return BURN_REGIONS.reduce((sum, r) => {
+    const entry = regions[r.key];
+    if (!entry?.affected || entry.degree === '1st') return sum;
+    return sum + r.percent;
+  }, 0);
+}
+
+/** Parkland formula with elapsed-time adjustment. */
+export function parklandFormula(
+  weightKg: number,
+  tbsa: number,
+  burnTimeIso: string,
+  nowIso: string = new Date().toISOString(),
+): { total: number; first8h: number; next16h: number; hoursElapsed: number; rateNow: number; rateNext16h: number; warning: string } {
+  const total     = 4 * weightKg * tbsa;
+  const half      = total / 2;
+  const rateNext16h = half / 16;
+
+  if (!burnTimeIso) {
+    return { total, first8h: half, next16h: half, hoursElapsed: 0, rateNow: half / 8, rateNext16h, warning: '' };
+  }
+
+  const elapsed = Math.max(0, (new Date(nowIso).getTime() - new Date(burnTimeIso).getTime()) / 3_600_000);
+
+  if (elapsed >= 8) {
+    return { total, first8h: half, next16h: half, hoursElapsed: elapsed, rateNow: 0, rateNext16h,
+      warning: `⚠ First 8-hour window elapsed (${elapsed.toFixed(1)} h). Give second half at ${rateNext16h.toFixed(0)} mL/hr over next 16 h.` };
+  }
+
+  const remaining = Math.max(0, 8 - elapsed);
+  const delivered = (elapsed / 8) * half;
+  const stillNeeded = Math.max(0, half - delivered);
+  const rateNow = remaining > 0 ? stillNeeded / remaining : 0;
+
+  return {
+    total, first8h: half, next16h: half, hoursElapsed: elapsed,
+    rateNow, rateNext16h,
+    warning: elapsed > 0.1
+      ? `${elapsed.toFixed(1)} h elapsed. Remaining first-8h volume: ${stillNeeded.toFixed(0)} mL in ${remaining.toFixed(1)} h = ${rateNow.toFixed(0)} mL/hr.`
+      : '',
+  };
+}
+
+/** Revised Baux score = age + TBSA + 17 (if inhalation injury). */
+export function bauxScore(age: number, tbsa: number, inhalation = false): number {
+  return age + tbsa + (inhalation ? 17 : 0);
+}
+
+export function interpretBaux(score: number): { label: string; color: string } {
+  if (score < 40)  return { label: 'Minor',              color: '#16a34a' };
+  if (score < 71)  return { label: 'Moderate',           color: '#ca8a04' };
+  if (score < 101) return { label: 'Severe',             color: '#dc2626' };
+  return            { label: 'Critical / Lethal',        color: '#7f1d1d' };
+}

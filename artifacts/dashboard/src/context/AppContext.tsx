@@ -58,7 +58,30 @@ export interface LabRecord {
 
 export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
-  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient';
+  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
+  | 'trauma' | 'vademecum';
+
+/** Grouped trauma / burns state — stored as a single serialisable object. */
+export interface TraumaData {
+  mechanism: string[];         // 'Blunt' | 'Penetrating' | 'Burns' | 'Blast' | 'Fall' | 'RTA'
+  timeOfInjury: string;        // ISO datetime or empty
+  preHospital: string[];       // interventions checklist
+  gcScene: string;             // GCS on scene
+  primarySurvey: Record<string, { finding: string; action: string; response: string }>;
+  ais: Record<string, number>; // headNeck|face|thorax|abdomen|extremities|external → 0–6
+  secondary: Record<string, string>; // body region → free text
+  burnRegions: Record<string, { affected: boolean; degree: string }>;
+  burnTimeOfInjury: string;
+  burnInhalation: boolean;
+}
+
+export const EMPTY_TRAUMA_DATA: TraumaData = {
+  mechanism: [], timeOfInjury: '', preHospital: [], gcScene: '',
+  primarySurvey: {},
+  ais: { headNeck: 0, face: 0, thorax: 0, abdomen: 0, extremities: 0, external: 0 },
+  secondary: {},
+  burnRegions: {}, burnTimeOfInjury: '', burnInhalation: false,
+};
 
 export type VitalsState = Record<keyof VitalSigns, string>;
 
@@ -243,6 +266,10 @@ interface CtxValue {
   setPaneTop: React.Dispatch<React.SetStateAction<RankedDiagnosis[]>>;
   paneConverged: boolean;
   setPaneConverged: React.Dispatch<React.SetStateAction<boolean>>;
+
+  /** Trauma / Burns assessment data. */
+  traumaData: TraumaData;
+  setTraumaData: React.Dispatch<React.SetStateAction<TraumaData>>;
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -369,6 +396,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [paneState, setPaneState] = useState<PaneState | null>(null);
   const [paneTop, setPaneTop] = useState<RankedDiagnosis[]>([]);
   const [paneConverged, setPaneConverged] = useState(false);
+  const [traumaData, setTraumaData] = useState<TraumaData>(EMPTY_TRAUMA_DATA);
 
   const ENC_KEY = 'amise-enc-v1';
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -452,6 +480,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.admittingSurgeon === 'string') setAdmittingSurgeon(d.admittingSurgeon);
       if (typeof d.referringPhysician === 'string') setReferringPhysician(d.referringPhysician);
       if (d.paneState && typeof d.paneState === 'object') setPaneState(d.paneState as PaneState);
+      if (d.traumaData && typeof d.traumaData === 'object') setTraumaData(d.traumaData as TraumaData);
       // Attachments stored separately (can be large base64)
       try {
         const ar = localStorage.getItem('amise-attachments-v1');
@@ -484,7 +513,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords,
       encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
-      paneState,
+      paneState, traumaData,
     });
     // Attachments saved separately — avoids 5 MB localStorage limit on the main key
     try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { /* ignore */ }
@@ -502,7 +531,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
     radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
     encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
-    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState]);
+    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -544,6 +573,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
     setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
     setPaneState(null); setPaneTop([]); setPaneConverged(false);
+    setTraumaData(EMPTY_TRAUMA_DATA);
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
@@ -686,6 +716,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     paneState, setPaneState,
     paneTop, setPaneTop,
     paneConverged, setPaneConverged,
+    traumaData, setTraumaData,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -33,6 +33,8 @@ import DashboardTab from './tabs/DashboardTab';
 import SchedulingTab from './tabs/SchedulingTab';
 import ProgressNotesTab from './tabs/ProgressNotesTab';
 import VitalsMonitoringTab from './tabs/VitalsMonitoringTab';
+import TraumaTab from './tabs/TraumaTab';
+import DictionaryTab from './tabs/DictionaryTab';
 import FloatingActions from '@/components/FloatingActions';
 
 function getAdaptivePath(
@@ -285,6 +287,8 @@ export default function HomePage() {
         {topSection === 'scheduling' && <SchedulingTab />}
         {topSection === 'analytics'  && hasRole(userRole, 'doctor') && <StubPanel title="Analytics" description="Volume trends, acuity distributions, wait-time reports, and outcome tracking — coming soon." />}
         {topSection === 'settings'   && hasRole(userRole, 'admin')  && <StubPanel title="Settings" description="Practice configuration, user roles, notification preferences, and system settings — coming soon." />}
+        {topSection === 'trauma'     && hasRole(userRole, 'nurse')  && <TraumaTab />}
+        {topSection === 'vademecum'  && hasRole(userRole, 'nurse')  && <DictionaryTab />}
       </main>
 
       <FloatingActions />
