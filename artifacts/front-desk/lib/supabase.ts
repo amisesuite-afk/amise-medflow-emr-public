@@ -93,3 +93,65 @@ export async function getRecentThreads(): Promise<ConversationThread[]> {
     .order('updated_at', { ascending: false });
   return (data ?? []) as ConversationThread[];
 }
+
+// ── Booking requests ──────────────────────────────────────────────────────────
+
+export interface BookingRow {
+  id: string;
+  patient_name: string;
+  patient_email: string | null;
+  patient_phone: string | null;
+  appointment_type: string;
+  location: string;
+  preferred_slot: string | null;
+  reason: string | null;
+  triage_acuity: string | null;
+  status: string;
+  notes: string | null;
+  confirmed_slot: string | null;
+  google_event_id: string | null;
+  created_at: string;
+}
+
+export async function createBookingRequest(
+  row: Omit<BookingRow, 'id' | 'created_at'>,
+): Promise<BookingRow> {
+  const sb = getServiceClient();
+  const { data, error } = await sb
+    .from('appointment_requests')
+    .insert(row)
+    .select('*')
+    .single();
+  if (error) throw new Error(`createBookingRequest: ${error.message}`);
+  return data as BookingRow;
+}
+
+export async function updateBookingRequest(
+  id: string,
+  patch: Partial<BookingRow>,
+): Promise<void> {
+  const { error } = await getServiceClient()
+    .from('appointment_requests')
+    .update(patch)
+    .eq('id', id);
+  if (error) throw new Error(`updateBookingRequest: ${error.message}`);
+}
+
+export async function getRecentBookings(days = 7): Promise<BookingRow[]> {
+  const since = new Date(Date.now() - days * 86400_000).toISOString();
+  const { data } = await getServiceClient()
+    .from('appointment_requests')
+    .select('*')
+    .gte('created_at', since)
+    .order('created_at', { ascending: false });
+  return (data ?? []) as BookingRow[];
+}
+
+export async function getBookingById(id: string): Promise<BookingRow | null> {
+  const { data } = await getServiceClient()
+    .from('appointment_requests')
+    .select('*')
+    .eq('id', id)
+    .single();
+  return data as BookingRow | null;
+}

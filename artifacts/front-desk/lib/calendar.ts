@@ -92,7 +92,15 @@ function formatSlot(slot: { start: Date; location: string }): string {
   return `${dayNames[start.getDay()]} ${start.getDate()} ${monthNames[start.getMonth()]} ${start.getFullYear()} at ${hh}:${mm} — ${loc}`;
 }
 
-export async function findSlots(appointmentType: string, max = 3): Promise<FoundSlot[]> {
+export async function findSlotsInWindow(
+  appointmentType: string,
+  lookaheadDays: number,
+  max = 3,
+): Promise<FoundSlot[]> {
+  return findSlots(appointmentType, max, lookaheadDays);
+}
+
+export async function findSlots(appointmentType: string, max = 3, lookaheadDays = 21): Promise<FoundSlot[]> {
   const auth = getAuth();
   if (!auth) return [];
 
@@ -133,7 +141,8 @@ export async function findSlots(appointmentType: string, max = 3): Promise<Found
   cursor.setHours(0, 0, 0, 0);
   cursor.setDate(cursor.getDate() + 1);
 
-  while (slots.length < max && cursor.getTime() < fromDate.getTime() + lookaheadMs) {
+  const windowEnd = fromDate.getTime() + lookaheadMs;
+  while (slots.length < max && cursor.getTime() < windowEnd) {
     if (rule.days.includes(cursor.getDay())) {
       const dayStart  = setTime(cursor, rule.windowStart);
       const dayEnd    = setTime(cursor, rule.windowEnd);
@@ -160,6 +169,94 @@ export async function findSlots(appointmentType: string, max = 3): Promise<Found
   }
 
   return slots;
+}
+
+/**
+ * For URGENT patients: try normal slots in a 48-hour window first.
+ * If none exist (schedule is full or no clinic day falls in that window),
+ * create a squeeze slot at the end of the next clinic day rather than
+ * leaving the patient without an option. Staff must still approve.
+ */
+export async function findUrgentSlot(appointmentType: string): Promise<FoundSlot | null> {
+  // 1. Try any normal slot in next 48 h
+  const quick = await findSlots(appointmentType, 1, 2);
+  if (quick.length > 0) return quick[0];
+
+  // 2. Squeeze: find next clinic day for this appointment type and
+  //    add a slot after the last event on that day.
+  const auth = getAuth();
+  if (!auth) return null;
+
+  const rule   = SLOT_RULES[appointmentType] ?? SLOT_RULES['new_consult'];
+  const calId  = calendarIdFor(rule.location);
+  if (!calId) return null;
+
+  const cal      = google.calendar({ version: 'v3', auth });
+  const fromDate = new Date();
+  const cursor   = new Date(fromDate);
+  cursor.setHours(0, 0, 0, 0);
+  cursor.setDate(cursor.getDate() + 1);
+
+  // Walk forward up to 14 days to find the next valid clinic day
+  for (let d = 0; d < 14; d++) {
+    if (rule.days.includes(cursor.getDay())) {
+      const dayStart = setTime(cursor, rule.windowStart);
+      const dayEnd   = setTime(cursor, rule.windowEnd);
+
+      // Fetch events on this day
+      let lastEnd = dayEnd;
+      try {
+        const { data } = await cal.events.list({
+          calendarId: calId,
+          timeMin:    dayStart.toISOString(),
+          timeMax:    new Date(dayEnd.getTime() + 3 * 3600_000).toISOString(), // +3 h buffer
+          singleEvents: true,
+          orderBy:    'startTime',
+          maxResults: 50,
+        });
+        for (const e of data.items ?? []) {
+          if (e.status === 'cancelled') continue;
+          const en = e.end?.dateTime ?? e.end?.date;
+          if (en && new Date(en) > lastEnd) lastEnd = new Date(en);
+        }
+      } catch {
+        lastEnd = dayEnd;
+      }
+
+      // Squeeze slot: 15 min after last event, capped at 19:00
+      const squeezeStart = new Date(lastEnd.getTime() + 15 * 60_000);
+      const squeezeEnd   = new Date(squeezeStart.getTime() + rule.durationMin * 60_000);
+      const cap          = setTime(cursor, '19:00');
+
+      if (squeezeEnd <= cap) {
+        const raw = { start: squeezeStart, location: rule.location };
+        return {
+          start:           squeezeStart,
+          end:             squeezeEnd,
+          location:        rule.location,
+          appointmentType,
+          display:         formatSlot(raw) + ' (priority squeeze)',
+        };
+      }
+
+      // Fall back to pre-clinic: 07:30 on the same day
+      const preStart = setTime(cursor, '07:30');
+      const preEnd   = new Date(preStart.getTime() + rule.durationMin * 60_000);
+      if (preEnd <= dayStart) {
+        const raw = { start: preStart, location: rule.location };
+        return {
+          start:           preStart,
+          end:             preEnd,
+          location:        rule.location,
+          appointmentType,
+          display:         formatSlot(raw) + ' (early priority)',
+        };
+      }
+    }
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  return null;
 }
 
 export interface CreateEventArgs {
