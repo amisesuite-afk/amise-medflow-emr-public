@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: amise-medflow-api
+    runtime: node
+    rootDir: artifacts/api-server
+    buildCommand: npm install -g pnpm@10 && pnpm install --no-frozen-lockfile && node build.mjs
+    startCommand: node dist/index.mjs
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: NODE_ENV
+        value: production
+      - key: MODE
+        value: dry_run
+      - key: SMS_PROVIDER
+        value: dry_run
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GMAIL_USER
+        value: amisesuite@gmail.com
+      - key: CALENDAR_ID_RODNEY_BAY
+        value: amisesuite@gmail.com
+      - key: CALENDAR_ID_CASTRIES
+        value: amisesuite@gmail.com
+      - key: CALENDAR_ID_TAPION_ERCP
+        value: amisesuite@gmail.com
+      # Add these in Render dashboard → Environment:
+      # ANTHROPIC_API_KEY=sk-ant-...
+      # GOOGLE_OAUTH_REFRESH_TOKEN=...
+      # GOOGLE_OAUTH_CLIENT_ID=...
+      # GOOGLE_OAUTH_CLIENT_SECRET=...
+      # SUPABASE_URL=https://nornhfzfrlmfzaqmrzzp.supabase.co
+      # SUPABASE_SERVICE_ROLE_KEY=sb_secret_...

@@ -1,0 +1,26 @@
+{
+  "name": "Amise MedFlow EMR",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "24" }
+  },
+  "forwardPorts": [3002, 8080],
+  "portsAttributes": {
+    "3002": { "label": "Dashboard", "onAutoForward": "openBrowser" },
+    "8080": { "label": "API Server", "onAutoForward": "silent" }
+  },
+  "postCreateCommand": "npm install -g pnpm && pnpm install",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}

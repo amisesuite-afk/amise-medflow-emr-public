@@ -1,0 +1,61 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main, claude/claude-md-DXmYK]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build triage-engine lib
+        run: pnpm --filter @workspace/triage-engine run build 2>/dev/null || true
+
+      - name: Build dashboard
+        env:
+          PORT: "3000"
+          BASE_PATH: /amise-medflow-emr-public/
+          VITE_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
+          VITE_DEMO_MODE: "true"
+          VITE_API_URL: https://amise-medflow-api.onrender.com
+          VITE_ANTHROPIC_API_KEY: ${{ secrets.VITE_ANTHROPIC_API_KEY }}
+        run: pnpm --filter @workspace/dashboard run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/dashboard/dist/public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

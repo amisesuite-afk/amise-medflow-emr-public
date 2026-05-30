@@ -31,7 +31,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
+    ...(process.env.REPL_ID !== undefined ? [runtimeErrorOverlay()] : []),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [
@@ -59,10 +59,17 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    proxy: { "/api": "http://localhost:3001" },
     port,
     strictPort: true,
     host: "0.0.0.0",
     allowedHosts: true,
+    proxy: {
+      "/api": {
+        target: `http://localhost:${process.env.API_PORT ?? 8080}`,
+        changeOrigin: true,
+      },
+    },
     fs: {
       strict: true,
     },

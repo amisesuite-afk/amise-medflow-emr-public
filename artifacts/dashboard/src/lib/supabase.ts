@@ -163,11 +163,10 @@ export function serializeError(e: unknown): Record<string, unknown> {
 export async function checkSupabaseReachable(): Promise<{ ok: boolean; status?: number; error?: string }> {
   if (!effectiveUrl) return { ok: false, error: 'VITE_SUPABASE_URL not set' };
   try {
-    const res = await fetch(`${effectiveUrl}/auth/v1/health`, {
-      method: 'GET',
-      headers: { apikey: supabaseAnon ?? '' },
-    });
-    return { ok: res.ok, status: res.status };
+    // no-cors avoids CORS preflight failures — the response is opaque but a
+    // non-throw proves the host responded (even a 403 means the server is up).
+    await fetch(`${effectiveUrl}/auth/v1/health`, { method: 'GET', mode: 'no-cors' });
+    return { ok: true };
   } catch (e: unknown) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }

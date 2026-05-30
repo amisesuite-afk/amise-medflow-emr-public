@@ -16,6 +16,13 @@ export function sb(): SupabaseClient {
   return _client;
 }
 
+export function getSupabaseAdmin(): SupabaseClient {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
+  return createClient(url, key, { auth: { persistSession: false } });
+}
+
 export type AuditAction =
   | 'classify' | 'triage' | 'draft' | 'send' | 'book'
   | 'remind' | 'escalate' | 'error' | 'skip';

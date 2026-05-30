@@ -5,409 +5,670 @@ import {
   alvaradoScore, interpretAlvarado, type AlvaradoInputs,
   heartScore,    interpretHeart,    type HeartInputs,
   wellsPeScore,  interpretWellsPe,  type WellsPeInputs,
+  wellsDvtScore, interpretWellsDvt, type WellsDvtInputs,
   abcd2Score,    interpretAbcd2,    type Abcd2Inputs,
   tg18CholangitisGrade, interpretTg18Cholangitis, type Tg18CholangitisInputs,
   asgeCbdProbability,   interpretAsgeCbd,          type AsgeCbdInputs,
+  interpretWagner, WAGNER_GRADES, type WagnerGrade,
+  news2Score, interpretNews2, type News2Inputs,
+  curb65Score, interpretCurb65, type Curb65Inputs,
+  glasgowBlatchfordScore, interpretGlasgowBlatchford, type GlasgowBlatchfordInputs,
+  preRockallScore, interpretPreRockall, type PreRockallInputs,
+  rcriScore, interpretRcri, type RcriInputs,
+  ransonAdmissionScore, interpretRansonAdmission, type RansonAdmissionInputs,
   type ScaleResult,
 } from '@/lib/clinical-scales';
+import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
+
+// ── Result badge ──────────────────────────────────────────────────────────────
 
 function ResultBadge({ result }: { result: ScaleResult }) {
+  const colors: Record<string, string> = {
+    green: '#d1fae5', amber: '#fef3c7', red: '#fee2e2',
+  };
+  const border: Record<string, string> = {
+    green: '#6ee7b7', amber: '#fcd34d', red: '#fca5a5',
+  };
   return (
-    <div className={`scale-result scale-result--${result.color}`}>
-      <div className="scale-result__band">{result.band}</div>
-      <div className="scale-result__desc">{result.description}</div>
-      <div className="scale-result__action">→ {result.action}</div>
-      <div className="scale-result__evidence">{result.evidence}</div>
+    <div style={{
+      marginTop: 12, padding: '10px 14px', borderRadius: 8,
+      background: colors[result.color] ?? '#f3f4f6',
+      border: `1px solid ${border[result.color] ?? '#d1d5db'}`,
+    }}>
+      <div style={{ fontWeight: 700, fontSize: 15 }}>{result.band}</div>
+      <div style={{ fontSize: 13, marginTop: 4, color: '#374151' }}>{result.action}</div>
     </div>
   );
 }
 
-function Toggle({ label, checked, onChange, sub }: {
-  label: string; checked: boolean; onChange(v: boolean): void; sub?: string;
+// ── Shared input helpers ──────────────────────────────────────────────────────
+
+function Chk({ label, checked, onChange, pts }: {
+  label: string; checked: boolean; onChange: () => void; pts?: number;
 }) {
   return (
-    <label className="scale-toggle">
-      <input type="checkbox" checked={checked} onChange={e => onChange(e.target.checked)} />
-      <span className="scale-toggle__label">{label}</span>
-      {sub && <span className="scale-toggle__sub">{sub}</span>}
+    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, cursor: 'pointer', marginBottom: 6, fontSize: 13 }}>
+      <input type="checkbox" checked={checked} onChange={onChange} style={{ marginTop: 2, flexShrink: 0 }} />
+      <span>{label}{pts !== undefined && <span style={{ color: '#6b7280', marginLeft: 4 }}>({pts > 0 ? `+${pts}` : pts})</span>}</span>
     </label>
   );
 }
 
-function NumInput({ label, value, onChange, unit, min, max, placeholder }: {
-  label: string; value: string; onChange(v: string): void;
-  unit?: string; min?: number; max?: number; placeholder?: string;
-}) {
+function ScoreRow({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="scale-field">
-      <label className="scale-field__label">{label}{unit && <span className="scale-field__unit">{unit}</span>}</label>
-      <input
-        className="scale-field__input"
-        type="number"
-        inputMode="decimal"
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        min={min}
-        max={max}
-        placeholder={placeholder ?? '—'}
-      />
+    <div style={{ marginTop: 10, fontWeight: 600, fontSize: 14 }}>
+      {label}: <span style={{ fontWeight: 700 }}>{value}</span>
     </div>
   );
 }
 
-function SelectInput({ label, value, onChange, options }: {
-  label: string; value: string; onChange(v: string): void;
-  options: { label: string; value: string }[];
-}) {
+// ── Scale card components ─────────────────────────────────────────────────────
+
+function News2Card() {
+  const [v, setV] = useState<News2Inputs>({
+    respiratoryRate: 15, spo2: 98, supplementalO2: false,
+    systolicBp: 120, heartRate: 75, consciousnessAvpu: 'A', temperatureC: 37.0,
+  });
+  const score = news2Score(v);
+  const result = interpretNews2(score);
+  const num = (k: keyof News2Inputs) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setV(p => ({ ...p, [k]: e.target.value ? parseFloat(e.target.value) : null }));
+  const gridStyle: React.CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2 };
+  const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
   return (
-    <div className="scale-field">
-      <label className="scale-field__label">{label}</label>
-      <select className="scale-field__input" value={value} onChange={e => onChange(e.target.value)}>
-        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-      </select>
+    <div>
+      <div style={gridStyle}>
+        <label style={lblStyle}>Resp rate (/min)<input style={inpStyle} type="number" value={v.respiratoryRate ?? ''} onChange={num('respiratoryRate')} /></label>
+        <label style={lblStyle}>SpO₂ (%)<input style={inpStyle} type="number" value={v.spo2 ?? ''} onChange={num('spo2')} /></label>
+        <label style={lblStyle}>Systolic BP<input style={inpStyle} type="number" value={v.systolicBp ?? ''} onChange={num('systolicBp')} /></label>
+        <label style={lblStyle}>Heart rate<input style={inpStyle} type="number" value={v.heartRate ?? ''} onChange={num('heartRate')} /></label>
+        <label style={lblStyle}>Temp (°C)<input style={inpStyle} type="number" step="0.1" value={v.temperatureC ?? ''} onChange={num('temperatureC')} /></label>
+        <label style={lblStyle}>Consciousness
+          <select style={inpStyle} value={v.consciousnessAvpu} onChange={e => setV(p => ({ ...p, consciousnessAvpu: e.target.value as News2Inputs['consciousnessAvpu'] }))}>
+            <option value="A">Alert</option>
+            <option value="C">New confusion</option>
+            <option value="V">Voice</option>
+            <option value="P">Pain</option>
+            <option value="U">Unresponsive</option>
+          </select>
+        </label>
+      </div>
+      <Chk label="On supplemental O₂" checked={v.supplementalO2} onChange={() => setV(p => ({ ...p, supplementalO2: !p.supplementalO2 }))} />
+      <ScoreRow label="NEWS2 Score" value={score} />
+      <ResultBadge result={result} />
     </div>
   );
 }
-
-// ─── Alvarado ────────────────────────────────────────────────────────────────
 
 function AlvaradoCard() {
-  const { symptoms, vitals } = useAppContext();
-  const autoFever = vitals.temperatureC ? parseFloat(vitals.temperatureC) > 37.3 : false;
-
-  const [inputs, setInputs] = useState<AlvaradoInputs>({
-    migratoryPain: false,
-    anorexia: symptoms.includes('anorexia'),
-    nausea: symptoms.includes('vomiting') || symptoms.includes('nausea'),
-    rifTenderness: false,
-    rebound: false,
-    fever: autoFever,
-    wbcAbove10: false,
-    leftShift: false,
+  const [v, setV] = useState<AlvaradoInputs>({
+    migratoryPain: false, anorexia: false, nausea: false,
+    rifTenderness: false, rebound: false, fever: false,
+    wbcAbove10: false, leftShift: false,
   });
-
-  const upd = (k: keyof AlvaradoInputs) => (v: boolean) =>
-    setInputs(c => ({ ...c, [k]: v }));
-
-  const score = useMemo(() => alvaradoScore(inputs), [inputs]);
-  const result = useMemo(() => interpretAlvarado(score), [score]);
-
+  const score = alvaradoScore(v);
+  const result = interpretAlvarado(score);
+  const tog = (k: keyof AlvaradoInputs) => setV(p => ({ ...p, [k]: !p[k] }));
   return (
-    <CollapsibleCard
-      title="Alvarado Score — Appendicitis"
-      badge={score > 0 ? String(score) + ' / 10' : undefined}
-      badgeVariant={result.color === 'red' ? 'danger' : result.color === 'amber' ? 'warn' : 'default'}
-    >
-      <div className="scale-grid">
-        <Toggle label="Migratory pain to RIF" checked={inputs.migratoryPain} onChange={upd('migratoryPain')} sub="1 pt" />
-        <Toggle label="Anorexia" checked={inputs.anorexia} onChange={upd('anorexia')} sub="1 pt" />
-        <Toggle label="Nausea / vomiting" checked={inputs.nausea} onChange={upd('nausea')} sub="1 pt" />
-        <Toggle label="RIF tenderness" checked={inputs.rifTenderness} onChange={upd('rifTenderness')} sub="2 pts" />
-        <Toggle label="Rebound tenderness" checked={inputs.rebound} onChange={upd('rebound')} sub="1 pt" />
-        <Toggle label={`Fever > 37.3°C${autoFever ? ' ✓ auto' : ''}`} checked={inputs.fever} onChange={upd('fever')} sub="1 pt" />
-        <Toggle label="WBC > 10,000" checked={inputs.wbcAbove10} onChange={upd('wbcAbove10')} sub="2 pts (lab required)" />
-        <Toggle label="Neutrophilia / left shift" checked={inputs.leftShift} onChange={upd('leftShift')} sub="1 pt (lab required)" />
-      </div>
+    <div>
+      <Chk label="Migratory pain to RLQ" checked={v.migratoryPain} onChange={() => tog('migratoryPain')} pts={1} />
+      <Chk label="Anorexia" checked={v.anorexia} onChange={() => tog('anorexia')} pts={1} />
+      <Chk label="Nausea / vomiting" checked={v.nausea} onChange={() => tog('nausea')} pts={1} />
+      <Chk label="Tenderness in RIF" checked={v.rifTenderness} onChange={() => tog('rifTenderness')} pts={2} />
+      <Chk label="Rebound tenderness" checked={v.rebound} onChange={() => tog('rebound')} pts={1} />
+      <Chk label="Fever (temperature > 37.3°C)" checked={v.fever} onChange={() => tog('fever')} pts={1} />
+      <Chk label="WBC > 10,000 /µL" checked={v.wbcAbove10} onChange={() => tog('wbcAbove10')} pts={2} />
+      <Chk label="Shift to left (neutrophilia / bands)" checked={v.leftShift} onChange={() => tog('leftShift')} pts={1} />
+      <ScoreRow label="Alvarado Score" value={`${score}/10`} />
       <ResultBadge result={result} />
-    </CollapsibleCard>
+    </div>
   );
 }
-
-// ─── HEART Score ─────────────────────────────────────────────────────────────
 
 function HeartCard() {
-  const { age } = useAppContext();
-  const ageNum = age ? parseInt(age) : null;
-
-  const [historyScore, setHistoryScore] = useState('0');
-  const [ecgScore, setEcgScore] = useState('0');
-  const [rfScore, setRfScore] = useState('0');
-  const [tropoScore, setTropoScore] = useState('0');
-
-  const inputs: HeartInputs = {
-    historyScore: parseInt(historyScore) as 0 | 1 | 2,
-    ecgScore: parseInt(ecgScore) as 0 | 1 | 2,
-    age: ageNum,
-    riskFactorScore: parseInt(rfScore) as 0 | 1 | 2,
-    troponinScore: parseInt(tropoScore) as 0 | 1 | 2,
-  };
-
-  const score = useMemo(() => heartScore(inputs), [inputs]);
-  const result = useMemo(() => interpretHeart(score), [score]);
-
+  const [v, setV] = useState<HeartInputs>({
+    historyScore: 1, ecgScore: 0, age: null,
+    riskFactorScore: 0, troponinScore: 0,
+  });
+  const score = heartScore(v);
+  const result = interpretHeart(score);
+  const numSel = (k: keyof HeartInputs) => (e: React.ChangeEvent<HTMLSelectElement>) =>
+    setV(p => ({ ...p, [k]: +e.target.value as 0 | 1 | 2 }));
+  const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
   return (
-    <CollapsibleCard
-      title="HEART Score — Chest Pain MACE Risk"
-      badge={score > 0 ? String(score) + ' / 10' : undefined}
-      badgeVariant={result.color === 'red' ? 'danger' : result.color === 'amber' ? 'warn' : 'default'}
-    >
-      <div className="scale-grid">
-        <SelectInput label="History character" value={historyScore} onChange={setHistoryScore} options={[
-          { value: '0', label: '0 — Slightly suspicious' },
-          { value: '1', label: '1 — Moderately suspicious' },
-          { value: '2', label: '2 — Highly suspicious (classic ACS)' },
-        ]} />
-        <SelectInput label="ECG" value={ecgScore} onChange={setEcgScore} options={[
-          { value: '0', label: '0 — Normal' },
-          { value: '1', label: '1 — Non-specific repolarisation changes' },
-          { value: '2', label: '2 — Significant ST deviation / LBBB' },
-        ]} />
-        <div className="scale-field">
-          <label className="scale-field__label">Age <span className="scale-field__unit">{ageNum ? `(auto: ${ageNum} yrs)` : '—'}</span></label>
-          <input className="scale-field__input" readOnly value={
-            ageNum == null ? '—' : ageNum < 45 ? '0 — < 45 years' : ageNum < 65 ? '1 — 45–64 years' : '2 — ≥ 65 years'
-          } />
-        </div>
-        <SelectInput label="Risk factors / known CAD" value={rfScore} onChange={setRfScore} options={[
-          { value: '0', label: '0 — No known risk factors' },
-          { value: '1', label: '1 — 1–2 risk factors or BMI > 30' },
-          { value: '2', label: '2 — Known CAD / ≥ 3 risk factors / DM' },
-        ]} />
-        <SelectInput label="Troponin" value={tropoScore} onChange={setTropoScore} options={[
-          { value: '0', label: '0 — ≤ normal limit' },
-          { value: '1', label: '1 — 1–3× upper limit of normal' },
-          { value: '2', label: '2 — > 3× upper limit of normal' },
-        ]} />
-      </div>
+    <div>
+      <label style={lblStyle}>History
+        <select style={inpStyle} value={v.historyScore} onChange={numSel('historyScore')}>
+          <option value={2}>Highly suspicious (2)</option>
+          <option value={1}>Moderately suspicious (1)</option>
+          <option value={0}>Slightly suspicious (0)</option>
+        </select>
+      </label>
+      <label style={lblStyle}>ECG
+        <select style={inpStyle} value={v.ecgScore} onChange={numSel('ecgScore')}>
+          <option value={2}>LBBB / significant ST changes (2)</option>
+          <option value={1}>Non-specific repolarisation changes (1)</option>
+          <option value={0}>Normal (0)</option>
+        </select>
+      </label>
+      <label style={lblStyle}>Age (years) — &lt; 45 = 0, 45–64 = 1, ≥ 65 = 2
+        <input style={inpStyle} type="number" value={v.age ?? ''} onChange={e => setV(p => ({ ...p, age: e.target.value ? +e.target.value : null }))} />
+      </label>
+      <label style={lblStyle}>Risk factors
+        <select style={inpStyle} value={v.riskFactorScore} onChange={numSel('riskFactorScore')}>
+          <option value={2}>Known CAD / ≥ 3 risk factors (2)</option>
+          <option value={1}>1–2 risk factors (1)</option>
+          <option value={0}>None known (0)</option>
+        </select>
+      </label>
+      <label style={lblStyle}>Troponin
+        <select style={inpStyle} value={v.troponinScore} onChange={numSel('troponinScore')}>
+          <option value={2}>{'>'} 3× upper limit of normal (2)</option>
+          <option value={1}>1–3× upper limit of normal (1)</option>
+          <option value={0}>≤ upper limit of normal (0)</option>
+        </select>
+      </label>
+      <ScoreRow label="HEART Score" value={`${score}/10`} />
       <ResultBadge result={result} />
-    </CollapsibleCard>
+    </div>
   );
 }
-
-// ─── Wells PE ────────────────────────────────────────────────────────────────
 
 function WellsPeCard() {
-  const { vitals, surgicalHistory, comorbidities } = useAppContext();
-  const autoHrHigh = vitals.heartRate ? parseFloat(vitals.heartRate) > 100 : false;
-  const autoCancer = comorbidities.some(c => /cancer|tumour|tumor|malignancy/i.test(c));
-  const autoRecentSurgery = surgicalHistory.length > 0;
-
-  const [inputs, setInputs] = useState<WellsPeInputs>({
-    dvtSigns: false,
-    altDiagnosisLessLikely: false,
-    hrAbove100: autoHrHigh,
-    immobilised: autoRecentSurgery,
-    priorDvtPe: false,
-    haemoptysis: false,
-    cancer: autoCancer,
+  const [v, setV] = useState<WellsPeInputs>({
+    dvtSigns: false, altDiagnosisLessLikely: false, hrAbove100: false,
+    immobilised: false, priorDvtPe: false, haemoptysis: false, cancer: false,
   });
-
-  const upd = (k: keyof WellsPeInputs) => (v: boolean) =>
-    setInputs(c => ({ ...c, [k]: v }));
-
-  const score = useMemo(() => wellsPeScore(inputs), [inputs]);
-  const result = useMemo(() => interpretWellsPe(score), [score]);
-
+  const score = wellsPeScore(v);
+  const result = interpretWellsPe(score);
+  const tog = (k: keyof WellsPeInputs) => setV(p => ({ ...p, [k]: !p[k] }));
   return (
-    <CollapsibleCard
-      title="Wells Score — Pulmonary Embolism"
-      badge={score > 0 ? String(score) + ' pts' : undefined}
-      badgeVariant={result.color === 'red' ? 'danger' : result.color === 'amber' ? 'warn' : 'default'}
-    >
-      <div className="scale-grid">
-        <Toggle label="Clinical signs of DVT" checked={inputs.dvtSigns} onChange={upd('dvtSigns')} sub="3 pts" />
-        <Toggle label="Alternative diagnosis less likely than PE" checked={inputs.altDiagnosisLessLikely} onChange={upd('altDiagnosisLessLikely')} sub="3 pts" />
-        <Toggle label={`HR > 100 bpm${autoHrHigh ? ' ✓ auto' : ''}`} checked={inputs.hrAbove100} onChange={upd('hrAbove100')} sub="1.5 pts" />
-        <Toggle label={`Immobilised / surgery in past 4 weeks${autoRecentSurgery ? ' ✓ surgical Hx' : ''}`} checked={inputs.immobilised} onChange={upd('immobilised')} sub="1.5 pts" />
-        <Toggle label="Prior DVT / PE" checked={inputs.priorDvtPe} onChange={upd('priorDvtPe')} sub="1.5 pts" />
-        <Toggle label="Haemoptysis" checked={inputs.haemoptysis} onChange={upd('haemoptysis')} sub="1 pt" />
-        <Toggle label={`Active cancer${autoCancer ? ' ✓ auto' : ''}`} checked={inputs.cancer} onChange={upd('cancer')} sub="1 pt" />
-      </div>
+    <div>
+      <Chk label="Clinical signs / symptoms of DVT" checked={v.dvtSigns} onChange={() => tog('dvtSigns')} pts={3} />
+      <Chk label="Alternative diagnosis less likely than PE" checked={v.altDiagnosisLessLikely} onChange={() => tog('altDiagnosisLessLikely')} pts={3} />
+      <Chk label="Heart rate > 100 bpm" checked={v.hrAbove100} onChange={() => tog('hrAbove100')} pts={1.5} />
+      <Chk label="Immobilisation or surgery in past 4 weeks" checked={v.immobilised} onChange={() => tog('immobilised')} pts={1.5} />
+      <Chk label="Prior DVT or PE" checked={v.priorDvtPe} onChange={() => tog('priorDvtPe')} pts={1.5} />
+      <Chk label="Haemoptysis" checked={v.haemoptysis} onChange={() => tog('haemoptysis')} pts={1} />
+      <Chk label="Malignancy (treatment / palliation in past 6 months)" checked={v.cancer} onChange={() => tog('cancer')} pts={1} />
+      <ScoreRow label="Wells PE Score" value={score} />
       <ResultBadge result={result} />
-    </CollapsibleCard>
+    </div>
   );
 }
 
-// ─── ABCD2 ───────────────────────────────────────────────────────────────────
+function WellsDvtCard() {
+  const [v, setV] = useState<WellsDvtInputs>({
+    activeCancer: false, paralysisParesis: false, bedridden3Days: false,
+    localTenderness: false, entireLegSwollen: false, calfSwelling3cm: false,
+    pittingOedema: false, collateralVeins: false, previousDvt: false,
+    alternativeDx: false,
+  });
+  const score = wellsDvtScore(v);
+  const result = interpretWellsDvt(score);
+  const tog = (k: keyof WellsDvtInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  return (
+    <div>
+      <Chk label="Active cancer (treatment within 6 months or palliation)" checked={v.activeCancer} onChange={() => tog('activeCancer')} pts={1} />
+      <Chk label="Paralysis, paresis, or recent plaster immobilisation of leg" checked={v.paralysisParesis} onChange={() => tog('paralysisParesis')} pts={1} />
+      <Chk label="Bedridden ≥ 3 days or major surgery within 12 weeks" checked={v.bedridden3Days} onChange={() => tog('bedridden3Days')} pts={1} />
+      <Chk label="Localised tenderness along deep venous system" checked={v.localTenderness} onChange={() => tog('localTenderness')} pts={1} />
+      <Chk label="Entire leg swollen" checked={v.entireLegSwollen} onChange={() => tog('entireLegSwollen')} pts={1} />
+      <Chk label="Calf swelling > 3 cm vs contralateral side" checked={v.calfSwelling3cm} onChange={() => tog('calfSwelling3cm')} pts={1} />
+      <Chk label="Pitting oedema (symptomatic leg only)" checked={v.pittingOedema} onChange={() => tog('pittingOedema')} pts={1} />
+      <Chk label="Collateral superficial veins (non-varicose)" checked={v.collateralVeins} onChange={() => tog('collateralVeins')} pts={1} />
+      <Chk label="Previously documented DVT" checked={v.previousDvt} onChange={() => tog('previousDvt')} pts={1} />
+      <Chk label="Alternative diagnosis at least as likely" checked={v.alternativeDx} onChange={() => tog('alternativeDx')} pts={-2} />
+      <ScoreRow label="Wells DVT Score" value={score} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
 
 function Abcd2Card() {
-  const { age, vitals, comorbidities } = useAppContext();
-  const ageNum = age ? parseInt(age) : null;
-  const autoBp = vitals.systolicBp ? parseFloat(vitals.systolicBp) >= 140 : false;
-  const autoDiabetes = comorbidities.some(c => /diabetes|diabetic/i.test(c));
-
-  const [clinScore, setClinScore] = useState('0');
-  const [durScore, setDurScore] = useState('0');
-  const [diabetes, setDiabetes] = useState(autoDiabetes);
-
-  const inputs: Abcd2Inputs = {
-    age: ageNum,
-    sbp: vitals.systolicBp ? parseFloat(vitals.systolicBp) : null,
-    clinicalFeatureScore: parseInt(clinScore) as 0 | 1 | 2,
-    durationScore: parseInt(durScore) as 0 | 1 | 2,
-    diabetes,
-  };
-
-  const score = useMemo(() => abcd2Score(inputs), [inputs]);
-  const result = useMemo(() => interpretAbcd2(score), [score]);
-
-  return (
-    <CollapsibleCard
-      title="ABCD2 Score — TIA Stroke Risk"
-      badge={score > 0 ? String(score) + ' / 7' : undefined}
-      badgeVariant={result.color === 'red' ? 'danger' : result.color === 'amber' ? 'warn' : 'default'}
-    >
-      <div className="scale-grid">
-        <div className="scale-field">
-          <label className="scale-field__label">Age ≥ 60 <span className="scale-field__unit">{ageNum ? `(auto: ${ageNum} yrs)` : '—'}</span></label>
-          <input className="scale-field__input" readOnly value={ageNum != null ? (ageNum >= 60 ? '1 pt — Yes' : '0 pt — No') : '—'} />
-        </div>
-        <div className="scale-field">
-          <label className="scale-field__label">SBP ≥ 140 mmHg <span className="scale-field__unit">{autoBp ? '✓ auto' : '—'}</span></label>
-          <input className="scale-field__input" readOnly value={vitals.systolicBp ? (autoBp ? '1 pt — Yes' : '0 pt — No') : '—'} />
-        </div>
-        <SelectInput label="Clinical features" value={clinScore} onChange={setClinScore} options={[
-          { value: '0', label: '0 — Other (vertigo, sensory loss, etc.)' },
-          { value: '1', label: '1 — Speech disturbance without weakness' },
-          { value: '2', label: '2 — Unilateral weakness' },
-        ]} />
-        <SelectInput label="Episode duration" value={durScore} onChange={setDurScore} options={[
-          { value: '0', label: '0 — < 10 minutes' },
-          { value: '1', label: '1 — 10–59 minutes' },
-          { value: '2', label: '2 — ≥ 60 minutes' },
-        ]} />
-        <Toggle label={`Diabetes${autoDiabetes ? ' ✓ auto' : ''}`} checked={diabetes} onChange={setDiabetes} sub="1 pt" />
-      </div>
-      <ResultBadge result={result} />
-    </CollapsibleCard>
-  );
-}
-
-// ─── TG18 Cholangitis ─────────────────────────────────────────────────────────
-
-function Tg18CholangitisCard() {
-  const { vitals, age } = useAppContext();
-  const autoFever = vitals.temperatureC ? parseFloat(vitals.temperatureC) >= 38 : false;
-  const ageNum = age ? parseInt(age) : null;
-
-  const [inputs, setInputs] = useState<Tg18CholangitisInputs>({
-    fever: autoFever,
-    wbcAbnormal: false,
-    age: ageNum,
-    bilirubinHighGrade2: false,
-    albuminLow: false,
-    organDysfunctionCv: false,
-    organDysfunctionCns: false,
-    organDysfunctionResp: false,
-    organDysfunctionRenal: false,
-    organDysfunctionHepatic: false,
-    organDysfunctionHaem: false,
+  const [v, setV] = useState<Abcd2Inputs>({
+    age: null, sbp: null, clinicalFeatureScore: 0, durationScore: 0, diabetes: false,
   });
-
-  const upd = (k: keyof Tg18CholangitisInputs) => (v: boolean) =>
-    setInputs(c => ({ ...c, [k]: v }));
-
-  const grade = useMemo(() => tg18CholangitisGrade(inputs), [inputs]);
-  const result = useMemo(() => interpretTg18Cholangitis(grade), [grade]);
-
+  const score = abcd2Score(v);
+  const result = interpretAbcd2(score);
+  const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
   return (
-    <CollapsibleCard
-      title="TG18 — Cholangitis Severity"
-      badge={grade ? `Grade ${grade}` : undefined}
-      badgeVariant={grade === 'III' ? 'danger' : grade === 'II' ? 'warn' : 'default'}
-    >
-      <div className="scale-section-head">Grade II criteria (any = moderate)</div>
-      <div className="scale-grid">
-        <Toggle label={`Fever ≥ 38°C${autoFever ? ' ✓ auto' : ''}`} checked={inputs.fever} onChange={upd('fever')} />
-        <Toggle label="WBC abnormal (< 4k or > 12k)" checked={inputs.wbcAbnormal} onChange={upd('wbcAbnormal')} />
-        <Toggle label={`Age ≥ 75 years${ageNum != null && ageNum >= 75 ? ' ✓ auto' : ''}`} checked={(ageNum ?? 0) >= 75} onChange={() => {}} />
-        <Toggle label="Bilirubin ≥ 85 µmol/L (5 mg/dL)" checked={inputs.bilirubinHighGrade2} onChange={upd('bilirubinHighGrade2')} />
-        <Toggle label="Albumin < 0.7× lower limit of normal" checked={inputs.albuminLow} onChange={upd('albuminLow')} />
-      </div>
-      <div className="scale-section-head scale-section-head--danger">Grade III criteria — organ dysfunction (any = severe)</div>
-      <div className="scale-grid">
-        <Toggle label="CV — hypotension requiring vasopressors" checked={inputs.organDysfunctionCv} onChange={upd('organDysfunctionCv')} />
-        <Toggle label="CNS — altered consciousness" checked={inputs.organDysfunctionCns} onChange={upd('organDysfunctionCns')} />
-        <Toggle label="Respiratory — PaO₂/FiO₂ < 300" checked={inputs.organDysfunctionResp} onChange={upd('organDysfunctionResp')} />
-        <Toggle label="Renal — oliguria / Cr > 177 µmol/L" checked={inputs.organDysfunctionRenal} onChange={upd('organDysfunctionRenal')} />
-        <Toggle label="Hepatic — PT-INR > 1.5" checked={inputs.organDysfunctionHepatic} onChange={upd('organDysfunctionHepatic')} />
-        <Toggle label="Haematological — Platelets < 100k" checked={inputs.organDysfunctionHaem} onChange={upd('organDysfunctionHaem')} />
-      </div>
+    <div>
+      <label style={lblStyle}>Age (years) — ≥ 60 scores 1 pt
+        <input style={inpStyle} type="number" value={v.age ?? ''} onChange={e => setV(p => ({ ...p, age: e.target.value ? +e.target.value : null }))} />
+      </label>
+      <label style={lblStyle}>Systolic BP (mmHg) — ≥ 140 scores 1 pt
+        <input style={inpStyle} type="number" value={v.sbp ?? ''} onChange={e => setV(p => ({ ...p, sbp: e.target.value ? +e.target.value : null }))} />
+      </label>
+      <label style={lblStyle}>Clinical features
+        <select style={inpStyle} value={v.clinicalFeatureScore} onChange={e => setV(p => ({ ...p, clinicalFeatureScore: +e.target.value as 0 | 1 | 2 }))}>
+          <option value={2}>Unilateral weakness (2)</option>
+          <option value={1}>Speech disturbance without weakness (1)</option>
+          <option value={0}>Other (0)</option>
+        </select>
+      </label>
+      <label style={lblStyle}>Duration of symptoms
+        <select style={inpStyle} value={v.durationScore} onChange={e => setV(p => ({ ...p, durationScore: +e.target.value as 0 | 1 | 2 }))}>
+          <option value={2}>≥ 60 minutes (2)</option>
+          <option value={1}>10–59 minutes (1)</option>
+          <option value={0}>&lt; 10 minutes (0)</option>
+        </select>
+      </label>
+      <Chk label="Diabetes mellitus" checked={v.diabetes} onChange={() => setV(p => ({ ...p, diabetes: !p.diabetes }))} pts={1} />
+      <ScoreRow label="ABCD² Score" value={`${score}/7`} />
       <ResultBadge result={result} />
-    </CollapsibleCard>
+    </div>
   );
 }
 
-// ─── ASGE CBD ────────────────────────────────────────────────────────────────
+function Tg18Card() {
+  const [v, setV] = useState<Tg18CholangitisInputs>({
+    fever: false, wbcAbnormal: false, age: null,
+    bilirubinHighGrade2: false, albuminLow: false,
+    organDysfunctionCv: false, organDysfunctionCns: false, organDysfunctionResp: false,
+    organDysfunctionRenal: false, organDysfunctionHepatic: false, organDysfunctionHaem: false,
+  });
+  const grade = tg18CholangitisGrade(v);
+  const result = interpretTg18Cholangitis(grade);
+  const tog = (k: keyof Tg18CholangitisInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
+  const hdr: React.CSSProperties = { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#6b7280', marginTop: 10, marginBottom: 4 };
+  return (
+    <div>
+      <div style={hdr}>Grade I / II criteria</div>
+      <Chk label="Fever / rigors (temp ≥ 38°C)" checked={v.fever} onChange={() => tog('fever')} />
+      <Chk label="WBC abnormal (< 4k or > 12k)" checked={v.wbcAbnormal} onChange={() => tog('wbcAbnormal')} />
+      <label style={lblStyle}>Age (years) — ≥ 75 is Grade II criterion
+        <input style={inpStyle} type="number" value={v.age ?? ''} onChange={e => setV(p => ({ ...p, age: e.target.value ? +e.target.value : null }))} />
+      </label>
+      <Chk label="Bilirubin ≥ 85 µmol/L (Grade II criterion)" checked={v.bilirubinHighGrade2} onChange={() => tog('bilirubinHighGrade2')} />
+      <Chk label="Albumin < 0.7 × LLN (Grade II criterion)" checked={v.albuminLow} onChange={() => tog('albuminLow')} />
+      <div style={hdr}>Organ dysfunction — Grade III criteria</div>
+      <Chk label="Cardiovascular — hypotension requiring vasopressors" checked={v.organDysfunctionCv} onChange={() => tog('organDysfunctionCv')} />
+      <Chk label="CNS — altered consciousness" checked={v.organDysfunctionCns} onChange={() => tog('organDysfunctionCns')} />
+      <Chk label="Respiratory — PaO₂/FiO₂ < 300" checked={v.organDysfunctionResp} onChange={() => tog('organDysfunctionResp')} />
+      <Chk label="Renal — oliguria / creatinine > 177 µmol/L" checked={v.organDysfunctionRenal} onChange={() => tog('organDysfunctionRenal')} />
+      <Chk label="Hepatic — PT-INR > 1.5" checked={v.organDysfunctionHepatic} onChange={() => tog('organDysfunctionHepatic')} />
+      <Chk label="Haematological — platelets < 100,000" checked={v.organDysfunctionHaem} onChange={() => tog('organDysfunctionHaem')} />
+      <ScoreRow label="TG18 Grade" value={grade} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
 
 function AsgeCbdCard() {
-  const { age, symptoms } = useAppContext();
-  const ageNum = age ? parseInt(age) : null;
-  const autoAge55 = (ageNum ?? 0) >= 55;
-  const autoCholangitis = symptoms.includes('jaundice') && symptoms.includes('fever after surgery');
-
-  const [inputs, setInputs] = useState<AsgeCbdInputs>({
-    cbdStoneOnUss: false,
-    cholangitisPresent: autoCholangitis,
-    bilirubin: null,
-    cbdDilated: false,
-    lftsAbnormal: false,
-    ageAbove55: autoAge55,
+  const [v, setV] = useState<AsgeCbdInputs>({
+    cbdStoneOnUss: false, cholangitisPresent: false, bilirubin: null,
+    cbdDilated: false, lftsAbnormal: false, ageAbove55: false,
   });
-  const [bilirubinStr, setBilirubinStr] = useState('');
-
-  const upd = (k: keyof AsgeCbdInputs) => (v: boolean) =>
-    setInputs(c => ({ ...c, [k]: v }));
-
-  const prob = useMemo(
-    () => asgeCbdProbability({ ...inputs, bilirubin: bilirubinStr ? parseFloat(bilirubinStr) : null }),
-    [inputs, bilirubinStr],
-  );
-  const result = useMemo(() => interpretAsgeCbd(prob), [prob]);
-
+  const prob = asgeCbdProbability(v);
+  const result = interpretAsgeCbd(prob);
+  const tog = (k: keyof AsgeCbdInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
+  const hdr: React.CSSProperties = { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#6b7280', marginTop: 10, marginBottom: 4 };
   return (
-    <CollapsibleCard
-      title="ASGE — CBD Stone Probability"
-      badge={prob}
-      badgeVariant={prob === 'HIGH' ? 'danger' : prob === 'INTERMEDIATE' ? 'warn' : 'default'}
-    >
-      <div className="scale-section-head">Strong predictors</div>
-      <div className="scale-grid">
-        <Toggle label="CBD stone visible on USS" checked={inputs.cbdStoneOnUss} onChange={upd('cbdStoneOnUss')} />
-        <Toggle label={`Cholangitis present${autoCholangitis ? ' ✓ auto' : ''}`} checked={inputs.cholangitisPresent} onChange={upd('cholangitisPresent')} />
-      </div>
-      <div className="scale-section-head">Intermediate predictors</div>
-      <div className="scale-grid">
-        <NumInput label="Bilirubin" unit="µmol/L" value={bilirubinStr} onChange={setBilirubinStr} min={0} max={600} placeholder="e.g. 120" />
-        <Toggle label="CBD diameter > 6 mm on USS" checked={inputs.cbdDilated} onChange={upd('cbdDilated')} />
-        <Toggle label="Abnormal LFTs (any)" checked={inputs.lftsAbnormal} onChange={upd('lftsAbnormal')} />
-        <Toggle label={`Age > 55 years${autoAge55 ? ' ✓ auto' : ''}`} checked={inputs.ageAbove55} onChange={upd('ageAbove55')} />
-      </div>
+    <div>
+      <div style={hdr}>Strong predictors (any = HIGH probability)</div>
+      <Chk label="CBD stone visualised on USS" checked={v.cbdStoneOnUss} onChange={() => tog('cbdStoneOnUss')} />
+      <Chk label="Clinical cholangitis present" checked={v.cholangitisPresent} onChange={() => tog('cholangitisPresent')} />
+      <label style={lblStyle}>{'Bilirubin (µmol/L) — > 68.5 with dilated CBD = HIGH'}
+        <input style={inpStyle} type="number" value={v.bilirubin ?? ''} onChange={e => setV(p => ({ ...p, bilirubin: e.target.value ? +e.target.value : null }))} />
+      </label>
+      <div style={hdr}>Intermediate predictors</div>
+      <Chk label="Dilated CBD on USS (> 6 mm)" checked={v.cbdDilated} onChange={() => tog('cbdDilated')} />
+      <Chk label="Abnormal LFTs (any elevation)" checked={v.lftsAbnormal} onChange={() => tog('lftsAbnormal')} />
+      <Chk label="Age > 55" checked={v.ageAbove55} onChange={() => tog('ageAbove55')} />
+      <ScoreRow label="CBD Stone Probability" value={prob} />
       <ResultBadge result={result} />
-    </CollapsibleCard>
+    </div>
   );
 }
 
-// ─── Main tab ────────────────────────────────────────────────────────────────
+function WagnerCard() {
+  const [grade, setGrade] = useState<WagnerGrade>(0);
+  const result = interpretWagner(grade);
+  const current = WAGNER_GRADES[grade];
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+        {WAGNER_GRADES.map(w => (
+          <button key={w.grade} onClick={() => setGrade(w.grade)} style={{
+            padding: '6px 14px', borderRadius: 6, border: '1px solid #d1d5db',
+            background: grade === w.grade ? '#1d4ed8' : '#fff',
+            color: grade === w.grade ? '#fff' : '#374151',
+            fontWeight: grade === w.grade ? 700 : 400, cursor: 'pointer', fontSize: 13,
+          }}>
+            Grade {w.grade}
+          </button>
+        ))}
+      </div>
+      <p style={{ fontSize: 13, color: '#374151', margin: '0 0 8px' }}>{current.description}</p>
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+function Curb65Card() {
+  const [v, setV] = useState<Curb65Inputs>({
+    confusion: false, ureaMmolAbove7: false, respiratoryRateAbove30: false,
+    bpLow: false, age65orAbove: false,
+  });
+  const score = curb65Score(v);
+  const result = interpretCurb65(score);
+  const tog = (k: keyof Curb65Inputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  return (
+    <div>
+      <Chk label="Confusion (new onset, AMTS ≤ 8)" checked={v.confusion} onChange={() => tog('confusion')} pts={1} />
+      <Chk label="Urea > 7 mmol/L (BUN > 19 mg/dL)" checked={v.ureaMmolAbove7} onChange={() => tog('ureaMmolAbove7')} pts={1} />
+      <Chk label="Respiratory rate ≥ 30/min" checked={v.respiratoryRateAbove30} onChange={() => tog('respiratoryRateAbove30')} pts={1} />
+      <Chk label="Low BP (SBP < 90 or DBP ≤ 60 mmHg)" checked={v.bpLow} onChange={() => tog('bpLow')} pts={1} />
+      <Chk label="Age ≥ 65 years" checked={v.age65orAbove} onChange={() => tog('age65orAbove')} pts={1} />
+      <ScoreRow label="CURB-65 Score" value={`${score}/5`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+function GlasgowBlatchfordCard() {
+  const [v, setV] = useState<GlasgowBlatchfordInputs>({
+    ureaMmol: null, haemoglobinMale: null, haemoglobinFemale: null,
+    isMale: true, systolicBp: null, heartRateAbove100: false,
+    melaena: false, syncope: false, liverDisease: false, cardiacFailure: false,
+  });
+  const score = glasgowBlatchfordScore(v);
+  const result = interpretGlasgowBlatchford(score);
+  const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
+  const grid: React.CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 };
+  return (
+    <div>
+      <div style={grid}>
+        <label style={lblStyle}>Urea (mmol/L)<input style={inpStyle} type="number" step="0.1" value={v.ureaMmol ?? ''} onChange={e => setV(p => ({ ...p, ureaMmol: e.target.value ? +e.target.value : null }))} /></label>
+        <label style={lblStyle}>Systolic BP<input style={inpStyle} type="number" value={v.systolicBp ?? ''} onChange={e => setV(p => ({ ...p, systolicBp: e.target.value ? +e.target.value : null }))} /></label>
+        <label style={lblStyle}>Hb — male (g/dL)<input style={inpStyle} type="number" step="0.1" value={v.haemoglobinMale ?? ''} onChange={e => setV(p => ({ ...p, haemoglobinMale: e.target.value ? +e.target.value : null }))} /></label>
+        <label style={lblStyle}>Hb — female (g/dL)<input style={inpStyle} type="number" step="0.1" value={v.haemoglobinFemale ?? ''} onChange={e => setV(p => ({ ...p, haemoglobinFemale: e.target.value ? +e.target.value : null }))} /></label>
+      </div>
+      <label style={{ ...lblStyle, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <input type="checkbox" checked={v.isMale} onChange={e => setV(p => ({ ...p, isMale: e.target.checked }))} />
+        Male patient (use male Hb thresholds)
+      </label>
+      <Chk label="Heart rate > 100 bpm" checked={v.heartRateAbove100} onChange={() => setV(p => ({ ...p, heartRateAbove100: !p.heartRateAbove100 }))} pts={1} />
+      <Chk label="Melaena on presentation" checked={v.melaena} onChange={() => setV(p => ({ ...p, melaena: !p.melaena }))} pts={1} />
+      <Chk label="Syncope" checked={v.syncope} onChange={() => setV(p => ({ ...p, syncope: !p.syncope }))} pts={2} />
+      <Chk label="Hepatic disease" checked={v.liverDisease} onChange={() => setV(p => ({ ...p, liverDisease: !p.liverDisease }))} pts={2} />
+      <Chk label="Cardiac failure" checked={v.cardiacFailure} onChange={() => setV(p => ({ ...p, cardiacFailure: !p.cardiacFailure }))} pts={2} />
+      <ScoreRow label="Glasgow-Blatchford Score" value={score} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+function PreRockallCard() {
+  const [v, setV] = useState<PreRockallInputs>({
+    age: null, haemodynamicShock: 'none', comorbidity: 'none',
+  });
+  const score = preRockallScore(v);
+  const result = interpretPreRockall(score);
+  const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
+  return (
+    <div>
+      <label style={lblStyle}>Age (years) — ≥ 60 scores 1 pt, ≥ 80 scores 2 pts
+        <input style={inpStyle} type="number" value={v.age ?? ''} onChange={e => setV(p => ({ ...p, age: e.target.value ? +e.target.value : null }))} />
+      </label>
+      <label style={lblStyle}>Haemodynamic shock
+        <select style={inpStyle} value={v.haemodynamicShock} onChange={e => setV(p => ({ ...p, haemodynamicShock: e.target.value as PreRockallInputs['haemodynamicShock'] }))}>
+          <option value="none">No shock — SBP ≥ 100, HR &lt; 100 (0)</option>
+          <option value="tachycardia">Tachycardia — HR ≥ 100, SBP ≥ 100 (1)</option>
+          <option value="hypotension">Hypotension — SBP &lt; 100 (2)</option>
+        </select>
+      </label>
+      <label style={lblStyle}>Comorbidity
+        <select style={inpStyle} value={v.comorbidity} onChange={e => setV(p => ({ ...p, comorbidity: e.target.value as PreRockallInputs['comorbidity'] }))}>
+          <option value="none">None (0)</option>
+          <option value="cardiac_renal">Cardiac failure / IHD / major comorbidity (2)</option>
+          <option value="liver_cancer">Renal or hepatic failure / metastatic cancer (3)</option>
+        </select>
+      </label>
+      <ScoreRow label="Pre-Rockall Score" value={score} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+function RcriCard() {
+  const [v, setV] = useState<RcriInputs>({
+    highRiskSurgery: false, ischemicHeartDisease: false, congestiveHeartFailure: false,
+    cerebrovascularDisease: false, insulinDependentDiabetes: false, creatinineAbove177: false,
+  });
+  const score = rcriScore(v);
+  const result = interpretRcri(score);
+  const tog = (k: keyof RcriInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  return (
+    <div>
+      <Chk label="High-risk surgery (intrathoracic / intraperitoneal / suprainguinal vascular)" checked={v.highRiskSurgery} onChange={() => tog('highRiskSurgery')} pts={1} />
+      <Chk label="Ischaemic heart disease (hx of MI / positive stress / angina / nitrates / Q waves)" checked={v.ischemicHeartDisease} onChange={() => tog('ischemicHeartDisease')} pts={1} />
+      <Chk label="Congestive heart failure (hx / pulmonary oedema / S3 / bilateral rales)" checked={v.congestiveHeartFailure} onChange={() => tog('congestiveHeartFailure')} pts={1} />
+      <Chk label="Cerebrovascular disease (hx of TIA or stroke)" checked={v.cerebrovascularDisease} onChange={() => tog('cerebrovascularDisease')} pts={1} />
+      <Chk label="Pre-operative insulin use" checked={v.insulinDependentDiabetes} onChange={() => tog('insulinDependentDiabetes')} pts={1} />
+      <Chk label="Pre-operative creatinine > 177 µmol/L (2.0 mg/dL)" checked={v.creatinineAbove177} onChange={() => tog('creatinineAbove177')} pts={1} />
+      <ScoreRow label="RCRI Score" value={`${score}/6`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+function RansonCard() {
+  const [v, setV] = useState<RansonAdmissionInputs>({
+    age55orAbove: false, wbcAbove16: false, glucoseAbove11: false,
+    ldhAbove350: false, astAbove250: false,
+  });
+  const score = ransonAdmissionScore(v);
+  const result = interpretRansonAdmission(score);
+  const tog = (k: keyof RansonAdmissionInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  return (
+    <div>
+      <p style={{ fontSize: 12, color: '#6b7280', margin: '0 0 8px' }}>
+        Admission criteria (5 of 11 total — 48-hour criteria collected separately after admission)
+      </p>
+      <Chk label="Age ≥ 55 years" checked={v.age55orAbove} onChange={() => tog('age55orAbove')} pts={1} />
+      <Chk label="WBC > 16,000 /µL" checked={v.wbcAbove16} onChange={() => tog('wbcAbove16')} pts={1} />
+      <Chk label="Glucose > 11 mmol/L (200 mg/dL)" checked={v.glucoseAbove11} onChange={() => tog('glucoseAbove11')} pts={1} />
+      <Chk label="LDH > 350 IU/L" checked={v.ldhAbove350} onChange={() => tog('ldhAbove350')} pts={1} />
+      <Chk label="AST > 250 IU/L" checked={v.astAbove250} onChange={() => tog('astAbove250')} pts={1} />
+      <ScoreRow label="Ranson Admission Score" value={`${score}/5`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── Scale registry ────────────────────────────────────────────────────────────
+
+const SCALE_COMPONENTS: Record<string, React.FC> = {
+  news2:            News2Card,
+  alvarado:         AlvaradoCard,
+  heart:            HeartCard,
+  wellsPe:          WellsPeCard,
+  wellsDvt:         WellsDvtCard,
+  abcd2:            Abcd2Card,
+  tg18Cholangitis:  Tg18Card,
+  asgeCbd:          AsgeCbdCard,
+  wagner:           WagnerCard,
+  curb65:           Curb65Card,
+  glasgowBlatchford: GlasgowBlatchfordCard,
+  preRockall:       PreRockallCard,
+  rcri:             RcriCard,
+  ranson:           RansonCard,
+};
+
+const ALL_SCALE_TITLES: Record<string, string> = {
+  news2:            'NEWS2 — Early Warning Score',
+  alvarado:         'Alvarado Score — Appendicitis',
+  heart:            'HEART Score — Chest Pain',
+  wellsPe:          'Wells PE Score — Pulmonary Embolism',
+  wellsDvt:         'Wells DVT Score — Deep Vein Thrombosis',
+  abcd2:            'ABCD² Score — TIA Stroke Risk',
+  tg18Cholangitis:  'TG18 Cholangitis Severity',
+  asgeCbd:          'ASGE CBD Stone Probability',
+  wagner:           'Wagner Classification — Diabetic Foot',
+  curb65:           'CURB-65 — Pneumonia Severity',
+  glasgowBlatchford: 'Glasgow-Blatchford — Upper GI Bleed',
+  preRockall:       'Pre-endoscopy Rockall — GI Bleed Risk',
+  rcri:             'RCRI — Pre-operative Cardiac Risk',
+  ranson:           "Ranson's Criteria — Pancreatitis",
+};
+
+const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }> = {
+  urgent:   { tag: 'URGENT',   color: '#b91c1c', bg: '#fef2f2' },
+  relevant: { tag: 'RELEVANT', color: '#b45309', bg: '#fffbeb' },
+  consider: { tag: 'CONSIDER', color: '#1d4ed8', bg: '#eff6ff' },
+};
+
+// ── Main ScalesTab ────────────────────────────────────────────────────────────
 
 export default function ScalesTab() {
-  const { symptoms } = useAppContext();
+  const ctx = useAppContext();
+  const [showOthers, setShowOthers] = useState(false);
 
-  const hasBiliary = symptoms.some(s => ['jaundice', 'dark urine', 'pale stool', 'abdominal pain'].includes(s));
-  const hasChestPain = symptoms.includes('chest pain');
-  const hasSob = symptoms.includes('shortness of breath');
-  const hasAbdPain = symptoms.includes('abdominal pain');
+  const cdsCtx: CdsContext = useMemo(() => ({
+    symptoms: ctx.symptoms,
+    examFindings: ctx.examFindings,
+    vitals: ctx.vitals,
+    investigationResults: ctx.investigationResults,
+    comorbidities: ctx.comorbidities,
+    assessment: ctx.assessment,
+    rosFindings: ctx.rosFindings,
+    age: ctx.age,
+    sex: ctx.sex,
+    isPostOp: !!(ctx.procedureData as Record<string, unknown>)?.postOp,
+    procedureData: ctx.procedureData as Record<string, unknown>,
+  }), [ctx]);
+
+  const suggestions = useMemo(() => getCdsSuggestions(cdsCtx), [cdsCtx]);
+  const triggeredKeys = new Set(suggestions.map(s => s.scaleKey));
+  const otherKeys = Object.keys(SCALE_COMPONENTS).filter(k => !triggeredKeys.has(k));
+
+  const hasAnyClinicalData = ctx.symptoms.length > 0
+    || Object.keys(ctx.examFindings).some(k => (ctx.examFindings[k] ?? []).length > 0)
+    || Object.values(ctx.vitals).some(v => v && v.trim() !== '');
 
   return (
-    <div className="gap-y">
-      <div className="scales-intro">
-        <strong>Clinical Decision Tools</strong> — Deterministic scoring; no AI. Items are auto-populated where intake data is available. Enter lab results below to complete scores.
-      </div>
+    <div style={{ maxWidth: 720 }}>
 
-      {/* Show most relevant scales first based on symptoms */}
-      {hasBiliary && <Tg18CholangitisCard />}
-      {hasBiliary && <AsgeCbdCard />}
-      {hasAbdPain && !hasBiliary && <AlvaradoCard />}
-      {hasChestPain && <HeartCard />}
-      {(hasChestPain || hasSob) && <WellsPeCard />}
+      {/* CDS banner */}
+      {suggestions.length > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          background: '#ecfdf5', border: '1px solid #6ee7b7',
+          borderRadius: 8, padding: '10px 14px', marginBottom: 16, fontSize: 13,
+        }}>
+          <span style={{ fontSize: 18 }}>⚡</span>
+          <span>
+            <strong>{suggestions.length} scoring tool{suggestions.length !== 1 ? 's' : ''}</strong>
+            {' '}suggested based on current clinical data — sorted by urgency
+          </span>
+        </div>
+      )}
 
-      {/* Always show all */}
-      {!hasAbdPain && !hasBiliary && <AlvaradoCard />}
-      {!hasChestPain && <HeartCard />}
-      {!hasChestPain && !hasSob && <WellsPeCard />}
-      {!hasBiliary && <Tg18CholangitisCard />}
-      {!hasBiliary && <AsgeCbdCard />}
-      <Abcd2Card />
+      {/* Suggested (triggered) tools */}
+      {suggestions.map(s => {
+        const ScaleComp = SCALE_COMPONENTS[s.scaleKey];
+        if (!ScaleComp) return null;
+        const u = URGENCY_LABELS[s.urgency] ?? URGENCY_LABELS.consider;
+        return (
+          <div key={s.scaleKey} style={{ marginBottom: 16, borderRadius: 10, overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+            {/* Urgency + category bar */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '6px 14px', background: u.bg,
+              borderBottom: `2px solid ${u.color}`,
+            }}>
+              <span style={{
+                fontSize: 11, fontWeight: 700,
+                background: u.color, borderRadius: 4, padding: '2px 7px', color: '#fff',
+              }}>{u.tag}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: '#6b7280' }}>{s.categoryTag}</span>
+              {s.needsLabs && !s.labsPresent && (
+                <span style={{
+                  marginLeft: 'auto', fontSize: 11, fontWeight: 600,
+                  color: '#92400e', background: '#fef3c7', padding: '2px 7px', borderRadius: 4,
+                }}>Labs not yet entered</span>
+              )}
+            </div>
+            {/* Trigger reason */}
+            <div style={{ padding: '7px 14px', background: '#f9fafb', fontSize: 12, color: '#374151', borderBottom: '1px solid #f3f4f6' }}>
+              ⚡ {s.triggerReason}
+            </div>
+            <CollapsibleCard title={s.title} defaultOpen>
+              <ScaleComp />
+            </CollapsibleCard>
+          </div>
+        );
+      })}
+
+      {/* Empty state */}
+      {suggestions.length === 0 && !showOthers && (
+        <div style={{
+          textAlign: 'center', padding: '40px 24px',
+          border: '1px dashed #d1d5db', borderRadius: 10,
+          color: '#6b7280',
+        }}>
+          <div style={{ fontSize: 36, marginBottom: 12 }}>🩺</div>
+          <h3 style={{ margin: '0 0 8px', color: '#374151' }}>No tools triggered yet</h3>
+          <p style={{ margin: '0 0 16px', fontSize: 13 }}>
+            Scoring tools surface automatically as you document symptoms, examination
+            findings, and vital signs. Enter clinical data in the History, Examination,
+            and Vitals tabs to see contextual suggestions appear here.
+          </p>
+          {!hasAnyClinicalData && (
+            <p style={{ margin: '0 0 16px', fontSize: 12, color: '#9ca3af' }}>
+              Start by entering the presenting complaint and vital signs.
+            </p>
+          )}
+          <button
+            onClick={() => setShowOthers(true)}
+            style={{
+              padding: '8px 18px', borderRadius: 6, border: '1px solid #d1d5db',
+              background: '#fff', cursor: 'pointer', fontSize: 13, fontWeight: 600,
+            }}
+          >
+            Show all {Object.keys(SCALE_COMPONENTS).length} available tools
+          </button>
+        </div>
+      )}
+
+      {/* Toggle for non-triggered tools */}
+      {suggestions.length > 0 && otherKeys.length > 0 && (
+        <div style={{ marginTop: 8, marginBottom: 12 }}>
+          <button
+            onClick={() => setShowOthers(v => !v)}
+            style={{
+              padding: '6px 14px', borderRadius: 6, border: '1px solid #d1d5db',
+              background: '#fff', cursor: 'pointer', fontSize: 13, color: '#6b7280',
+            }}
+          >
+            {showOthers
+              ? 'Hide other tools'
+              : `Show other tools (${otherKeys.length} not currently triggered)`}
+          </button>
+        </div>
+      )}
+
+      {/* Non-triggered tools (collapsed by default) */}
+      {showOthers && otherKeys.map(key => {
+        const ScaleComp = SCALE_COMPONENTS[key];
+        if (!ScaleComp) return null;
+        return (
+          <CollapsibleCard key={key} title={ALL_SCALE_TITLES[key]} defaultOpen={false}>
+            <ScaleComp />
+          </CollapsibleCard>
+        );
+      })}
     </div>
   );
 }

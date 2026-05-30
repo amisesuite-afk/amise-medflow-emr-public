@@ -449,4 +449,30 @@ grant select, insert, update        on public.plans            to authenticated;
 grant select, insert, update        on public.procedures       to authenticated;
 grant select, insert, update        on public.referrals        to authenticated;
 grant select, insert, update        on public.appointments     to authenticated;
+
+-- ── Appointment requests (self-triage portal) ────────────────────────────────
+create table if not exists appointment_requests (
+  id               uuid primary key default gen_random_uuid(),
+  created_at       timestamptz not null default now(),
+  patient_name     text not null,
+  patient_email    text not null,
+  patient_phone    text,
+  appointment_type text not null,
+  location         text not null default 'rodney_bay',
+  preferred_slot   timestamptz,           -- patient's requested slot
+  confirmed_slot   timestamptz,           -- slot confirmed by staff
+  reason           text,
+  triage_acuity    text,                  -- from self-triage engine
+  triage_score     int,
+  status           text not null default 'pending'
+                   check (status in ('pending','staff_confirmed','patient_confirmed','lapsed','cancelled')),
+  staff_confirmed_at  timestamptz,
+  patient_confirmed_at timestamptz,
+  reminder_sent_at    timestamptz,
+  google_event_id     text,
+  notes               text
+);
+
+alter table appointment_requests enable row level security;
+create policy "staff_all" on appointment_requests for all using (true);
 grant select, insert               on public.audit_logs       to authenticated;

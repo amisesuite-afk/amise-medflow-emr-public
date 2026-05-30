@@ -44,6 +44,51 @@ export interface SavedEncounter {
   id: string;
 }
 
+export interface FullPatientInput {
+  full_name: string;
+  age: string;
+  dob: string;
+  sex: string;
+  phone: string;
+  address: string;
+  referredBy: string;
+  insuranceProvider: string;
+  policyNumber: string;
+  nhiNumber: string;
+  preAuthStatus: string;
+}
+
+export interface VitalsInput {
+  encounter_id: string;
+  patient_id: string;
+  systolicBp: string;
+  diastolicBp: string;
+  heartRate: string;
+  temperatureC: string;
+  respiratoryRate: string;
+  spo2: string;
+  glucoseMmol: string;
+  weightKg: string;
+  heightCm: string;
+}
+
+export interface AssessmentInput {
+  encounter_id: string;
+  patient_id: string;
+  diagnosis: string;
+  differentials: string;
+  icdCodes: string[];
+  cptCodes: string[];
+  acuity: string;
+  triageScore: number;
+}
+
+export interface PlanInput {
+  encounter_id: string;
+  patient_id: string;
+  description: string;
+}
+
 export interface PatientListRow {
   id: string;
   full_name: string | null;
@@ -51,6 +96,174 @@ export interface PatientListRow {
   phone: string | null;
   date_of_birth: string | null;
   created_at: string | null;
+}
+
+// ─── savePatientFull ──────────────────────────────────────────────────────────
+
+/** Creates a patient row from the full receptionist form. */
+export async function savePatientFull(
+  input: FullPatientInput,
+): Promise<{ patient: SavedPatient; error: null } | { patient: null; error: string }> {
+  if (!supabase) return { patient: null, error: notConfigured('savePatientFull') };
+
+  const row: Record<string, unknown> = {
+    full_name: input.full_name.trim(),
+    sex:       input.sex || 'unknown',
+  };
+  if (input.dob)              row.date_of_birth        = input.dob;
+  else {
+    const d = ageToDob(input.age);
+    if (d) row.date_of_birth = d;
+  }
+  if (input.phone.trim())              row.phone                = input.phone.trim();
+  if (input.address.trim())            row.address              = input.address.trim();
+  if (input.referredBy.trim())         row.referred_by          = input.referredBy.trim();
+  if (input.insuranceProvider.trim())  row.insurance_provider   = input.insuranceProvider.trim();
+  if (input.policyNumber.trim())       row.policy_number        = input.policyNumber.trim();
+  if (input.nhiNumber.trim())          row.nhi_number           = input.nhiNumber.trim();
+  if (input.preAuthStatus)             row.pre_auth_status      = input.preAuthStatus;
+
+  const { data, error } = await supabase
+    .from('patients')
+    .insert(row)
+    .select('id, full_name')
+    .single();
+
+  if (error) {
+    console.error('[db] savePatientFull:', error);
+    return { patient: null, error: error.message };
+  }
+  return { patient: data as SavedPatient, error: null };
+}
+
+// ─── saveVitals ───────────────────────────────────────────────────────────────
+
+export async function saveVitals(
+  input: VitalsInput,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveVitals') };
+
+  function n(v: string): number | null {
+    const parsed = parseFloat(v);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  function i(v: string): number | null {
+    const parsed = parseInt(v, 10);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  const row: Record<string, unknown> = {
+    encounter_id:       input.encounter_id,
+    patient_id:         input.patient_id,
+    bp_systolic:        i(input.systolicBp),
+    bp_diastolic:       i(input.diastolicBp),
+    heart_rate:         i(input.heartRate),
+    temperature_c:      n(input.temperatureC),
+    oxygen_saturation:  i(input.spo2),
+    respiratory_rate:   i(input.respiratoryRate),
+    glucose_mmol:       n(input.glucoseMmol),
+    weight_kg:          n(input.weightKg),
+    height_cm:          n(input.heightCm),
+  };
+
+  // Strip null fields
+  Object.keys(row).forEach(k => { if (row[k] === null) delete row[k]; });
+
+  const { error } = await supabase.from('vitals').insert(row);
+  if (error) { console.error('[db] saveVitals:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── saveSymptoms ─────────────────────────────────────────────────────────────
+
+export async function saveSymptoms(
+  encounterId: string,
+  patientId: string,
+  symptoms: string[],
+  notes: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveSymptoms') };
+
+  const rows = symptoms.map(s => ({
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    symptom:      s,
+  }));
+
+  if (notes.trim()) {
+    rows.push({ encounter_id: encounterId, patient_id: patientId, symptom: '[notes] ' + notes.trim() });
+  }
+
+  if (rows.length === 0) return { error: null };
+
+  const { error } = await supabase.from('symptoms').insert(rows);
+  if (error) { console.error('[db] saveSymptoms:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── saveAllergyFreeText ──────────────────────────────────────────────────────
+
+/** Stores the nurse's free-text allergy field as a single row for the trial. */
+export async function saveAllergyFreeText(
+  patientId: string,
+  text: string,
+): Promise<{ error: string | null }> {
+  if (!supabase || !text.trim()) return { error: null };
+
+  const { error } = await supabase.from('allergies').insert({
+    patient_id: patientId,
+    allergen:   text.trim(),
+    status:     'active',
+  });
+  if (error) { console.error('[db] saveAllergyFreeText:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── saveAssessment ───────────────────────────────────────────────────────────
+
+export async function saveAssessment(
+  input: AssessmentInput,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveAssessment') };
+
+  const row: Record<string, unknown> = {
+    encounter_id:  input.encounter_id,
+    patient_id:    input.patient_id,
+    diagnosis:     input.diagnosis || null,
+    differentials: input.differentials || null,
+    icd10_code:    input.icdCodes.join(', ') || null,
+    acuity:        input.acuity || 'routine',
+    triage_score:  input.triageScore || 0,
+    notes:         input.cptCodes.length ? 'CPT: ' + input.cptCodes.join(', ') : null,
+  };
+
+  const { error } = await supabase
+    .from('assessments')
+    .upsert(row, { onConflict: 'encounter_id' })
+    .select();
+
+  if (error) { console.error('[db] saveAssessment:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── savePlan ─────────────────────────────────────────────────────────────────
+
+export async function savePlan(
+  input: PlanInput,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('savePlan') };
+
+  const { error } = await supabase
+    .from('plans')
+    .upsert({
+      encounter_id: input.encounter_id,
+      patient_id:   input.patient_id,
+      plan_type:    'management',
+      description:  input.description || null,
+    }, { onConflict: 'encounter_id' });
+
+  if (error) { console.error('[db] savePlan:', error); return { error: error.message }; }
+  return { error: null };
 }
 
 // ─── saveNewPatient ───────────────────────────────────────────────────────────
@@ -323,4 +536,38 @@ export async function getLatestOpenEncounter(
   }
 
   return { encounterId: (data as { id: string } | null)?.id ?? null, error: null };
+}
+
+// ─── logPaneSession ───────────────────────────────────────────────────────────
+
+export interface PaneSessionLog {
+  encounter_id: string | null;
+  patient_id: string | null;
+  answered: Record<string, boolean>;
+  top_diagnoses: Array<{ id: string; label: string; icd10: string; probability: number }>;
+  iteration: number;
+  converged: boolean;
+}
+
+/**
+ * Fire-and-forget: write a PANE session snapshot to audit_logs.
+ * Safe to call without awaiting — errors are logged to console only.
+ */
+export function logPaneSession(input: PaneSessionLog): void {
+  if (!supabase) return;
+  void supabase.from('audit_logs').insert({
+    action:     'pane_session',
+    table_name: 'encounters',
+    record_id:  input.encounter_id ?? undefined,
+    new_values: {
+      patient_id:    input.patient_id,
+      answered:      input.answered,
+      top_diagnoses: input.top_diagnoses,
+      iteration:     input.iteration,
+      converged:     input.converged,
+    },
+    mode: 'cds',
+  }).then(({ error }) => {
+    if (error) console.warn('[db] logPaneSession:', error.message);
+  });
 }

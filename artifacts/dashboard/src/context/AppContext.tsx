@@ -1,14 +1,93 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@/lib/adaptive-triage';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan } from '@/lib/db';
+import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
   | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
-  | 'allergies' | 'toxic' | 'scales' | 'examination' | 'assessment' | 'plan'
-  | 'procedures' | 'billing' | 'documents';
+  | 'allergies' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations'
+  | 'radiology' | 'attachments'
+  | 'assessment' | 'plan' | 'progress'
+  | 'procedures' | 'billing' | 'documents'
+  | 'monitoring';
+
+export interface ProgressNote {
+  id: string;
+  date: string;
+  author: string;
+  type: 'SOAP' | 'Ward Round' | 'Follow-up';
+  interval: string;
+  chiefComplaint: string;
+  symptoms: string[];
+  intervalHistory: string;
+  vitals: Partial<Record<string, string>>;
+  examGeneral: string; examCvs: string; examRs: string;
+  examAbdomen: string; examWound: string; examLimbs: string; examOther: string;
+  assessment: string;
+  plan: string;
+}
+
+export interface VitalRecord {
+  id: string;
+  timestamp: string;
+  recordedBy: string;
+  ward?: string;
+  sbp?: string;
+  dbp?: string;
+  hr?: string;
+  temp?: string;
+  spo2?: string;
+  rr?: string;
+  weight?: string;
+  gcs?: string;
+  pain?: string;
+  urine?: string;
+  notes?: string;
+}
+
+export interface LabRecord {
+  id: string;
+  timestamp: string;
+  recordedBy: string;
+  panel: string;
+  tests: Array<{ name: string; value: string; unit: string; refRange: string; flag: '' | 'H' | 'L' | 'C' }>;
+}
+
+export type TopSection =
+  | 'dashboard' | 'patients' | 'intake' | 'consultation'
+  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
+  | 'trauma' | 'vademecum';
+
+/** Grouped trauma / burns state — stored as a single serialisable object. */
+export interface TraumaData {
+  mechanism: string[];
+  timeOfInjury: string;
+  preHospital: string[];
+  gcScene: string;
+  mistInjuries: string;           // MIST — Injuries suspected
+  mistSigns: string;              // MIST — Pre-hospital vital signs (free text)
+  admissionVitals: Record<string, string>; // hr|sbp|dbp|rr|spo2|temp|gcsTotal|bm|pupils|painScore|timeAdmission
+  abcde: Record<string, Record<string, string>>; // A|B|C|D|E → field → value
+  ais: Record<string, number>;
+  secondary: Record<string, string>;
+  secondaryDropdowns: Record<string, string[]>; // body region → selected finding chips
+  burnRegions: Record<string, { affected: boolean; degree: string }>;
+  burnTimeOfInjury: string;
+  burnInhalation: boolean;
+}
+
+export const EMPTY_TRAUMA_DATA: TraumaData = {
+  mechanism: [], timeOfInjury: '', preHospital: [], gcScene: '',
+  mistInjuries: '', mistSigns: '',
+  admissionVitals: {},
+  abcde: {},
+  ais: { headNeck: 0, face: 0, thorax: 0, abdomen: 0, extremities: 0, external: 0 },
+  secondary: {}, secondaryDropdowns: {},
+  burnRegions: {}, burnTimeOfInjury: '', burnInhalation: false,
+};
 
 export type VitalsState = Record<keyof VitalSigns, string>;
 
@@ -35,9 +114,56 @@ function readSiteFromStorage(): SiteCode {
   return 'rodney_bay';
 }
 
+export type PreVisitStatus = 'new' | 'registered' | 'vitals_done';
+
+export interface AnatomicalFinding {
+  zone: string;
+  subLocation?: string;
+  findings: string[];
+  notes: string;
+}
+
+export interface RosFinding {
+  status: 'normal' | 'positive' | 'negative' | 'not-asked';
+  details: string[];
+  notes: string;
+}
+
+export interface ClinicalAttachment {
+  id: string;
+  name: string;
+  dataUrl: string;
+  mimeType: string;
+  anatomicalArea: string;
+  dimensions: string;
+  description: string;
+  dateAdded: string;
+}
+
+export interface RadiologyRequest {
+  id: string;
+  modality: string;
+  anatomicalRegion: string;
+  laterality: string;
+  urgency: string;
+  indication: string;
+  clinicalQuestion: string;
+  ctContrast: string;
+  ctEgfr: string;
+  mriProtocol: string;
+  scopeType: string;
+  functionalType: string;
+  resultReceived: boolean;
+  resultNotes: string;
+}
+
 interface CtxValue {
   activeSection: Section;
   setActiveSection(s: Section): void;
+
+  /** Top-level navigation section (mirrors Home.tsx topSection state). */
+  topSection: TopSection;
+  setTopSection(s: TopSection): void;
 
   /** Active clinic site for the current session. */
   currentSite: SiteCode;
@@ -53,6 +179,9 @@ interface CtxValue {
   sex: Sex; setSex(v: Sex): void;
   dob: string; setDob(v: string): void;
   phone: string; setPhone(v: string): void;
+  address: string; setAddress(v: string): void;
+  quarter: string; setQuarter(v: string): void;
+  referredBy: string; setReferredBy(v: string): void;
 
   durationDays: string; setDurationDays(v: string): void;
   painScore: string; setPainScore(v: string): void;
@@ -85,6 +214,23 @@ interface CtxValue {
   examExtremities: string; setExamExtremities(v: string): void;
   examBreast: string; setExamBreast(v: string): void;
   examWound: string; setExamWound(v: string): void;
+  examFindings: Record<string, string[]>; setExamFindings(v: Record<string, string[]>): void;
+  examNotes: Record<string, string>; setExamNotes(v: Record<string, string>): void;
+
+  orderedInvestigations: string[]; setOrderedInvestigations(v: string[]): void;
+  investigationResults: Record<string, string>; setInvestigationResults(v: Record<string, string>): void;
+  icdCodes: string[]; setIcdCodes(v: string[]): void;
+  cptCodes: string[]; setCptCodes(v: string[]): void;
+
+  weightKg: string; setWeightKg(v: string): void;
+  heightCm: string; setHeightCm(v: string): void;
+
+  anatomicalFindings: AnatomicalFinding[]; setAnatomicalFindings(v: AnatomicalFinding[]): void;
+  rosFindings: Record<string, RosFinding>; setRosFindings(v: Record<string, RosFinding>): void;
+
+  procedureData: Record<string, unknown>; setProcedureData(v: Record<string, unknown>): void;
+
+  preVisitStatus: PreVisitStatus; setPreVisitStatus(v: PreVisitStatus): void;
 
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
@@ -93,7 +239,43 @@ interface CtxValue {
   billing: string; setBilling(v: string): void;
   documents: string; setDocuments(v: string): void;
 
+  insuranceProvider: string; setInsuranceProvider(v: string): void;
+  policyNumber: string; setPolicyNumber(v: string): void;
+  nhiNumber: string; setNhiNumber(v: string): void;
+  preAuthStatus: string; setPreAuthStatus(v: string): void;
+
   triageResult: AdaptiveTriageResult;
+
+  attachments: ClinicalAttachment[]; setAttachments(v: ClinicalAttachment[]): void;
+  radiologyRequests: RadiologyRequest[]; setRadiologyRequests(v: RadiologyRequest[]): void;
+  finalDocument: string; setFinalDocument(v: string): void;
+  progressNotes: ProgressNote[]; setProgressNotes(v: ProgressNote[]): void;
+  vitalRecords: VitalRecord[]; setVitalRecords(v: VitalRecord[]): void;
+  labRecords: LabRecord[]; setLabRecords(v: LabRecord[]): void;
+
+  encounterMode: 'outpatient' | 'inpatient'; setEncounterMode(v: 'outpatient' | 'inpatient'): void;
+  mrNumber: string; setMrNumber(v: string): void;
+  ward: string; setWard(v: string): void;
+  dateAdmission: string; setDateAdmission(v: string): void;
+  dateDischarge: string; setDateDischarge(v: string): void;
+  bloodGroup: string; setBloodGroup(v: string): void;
+  nokName: string; setNokName(v: string): void;
+  nokRelation: string; setNokRelation(v: string): void;
+  nokTel: string; setNokTel(v: string): void;
+  admittingSurgeon: string; setAdmittingSurgeon(v: string): void;
+  referringPhysician: string; setReferringPhysician(v: string): void;
+
+  /** PANE session persistence — survives tab navigation. */
+  paneState: PaneState | null;
+  setPaneState: React.Dispatch<React.SetStateAction<PaneState | null>>;
+  paneTop: RankedDiagnosis[];
+  setPaneTop: React.Dispatch<React.SetStateAction<RankedDiagnosis[]>>;
+  paneConverged: boolean;
+  setPaneConverged: React.Dispatch<React.SetStateAction<boolean>>;
+
+  /** Trauma / Burns assessment data. */
+  traumaData: TraumaData;
+  setTraumaData: React.Dispatch<React.SetStateAction<TraumaData>>;
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -102,6 +284,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const { profile } = useAuth();
 
   const [activeSection, setActiveSection] = useState<Section>('intake');
+  const [topSection, setTopSection] = useState<TopSection>('intake');
 
   // localStorage provides the fast initial value while the profile loads from DB.
   const [currentSite, _setCurrentSite] = useState<SiteCode>(readSiteFromStorage);
@@ -136,6 +319,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [sex, setSex] = useState<Sex>('unknown');
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [quarter, setQuarter] = useState('');
+  const [referredBy, setReferredBy] = useState('');
 
   const [durationDays, setDurationDays] = useState('');
   const [painScore, setPainScore] = useState('');
@@ -168,6 +354,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [examExtremities, setExamExtremities] = useState('');
   const [examBreast, setExamBreast] = useState('');
   const [examWound, setExamWound] = useState('');
+  const [examFindings, setExamFindings] = useState<Record<string, string[]>>({});
+  const [examNotes, setExamNotes] = useState<Record<string, string>>({});
+
+  const [orderedInvestigations, setOrderedInvestigations] = useState<string[]>([]);
+  const [investigationResults, setInvestigationResults] = useState<Record<string, string>>({});
+  const [icdCodes, setIcdCodes] = useState<string[]>([]);
+  const [cptCodes, setCptCodes] = useState<string[]>([]);
+
+  const [weightKg, setWeightKg] = useState('');
+  const [heightCm, setHeightCm] = useState('');
+  const [anatomicalFindings, setAnatomicalFindings] = useState<AnatomicalFinding[]>([]);
+  const [rosFindings, setRosFindings] = useState<Record<string, RosFinding>>({});
+  const [procedureData, setProcedureData] = useState<Record<string, unknown>>({});
+  const [preVisitStatus, setPreVisitStatus] = useState<PreVisitStatus>('new');
 
   const [assessment, setAssessment] = useState('');
   const [differentials, setDifferentials] = useState('');
@@ -175,6 +375,169 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [procedures, setProcedures] = useState('');
   const [billing, setBilling] = useState('');
   const [documents, setDocuments] = useState('');
+  const [insuranceProvider, setInsuranceProvider] = useState('');
+  const [policyNumber, setPolicyNumber] = useState('');
+  const [nhiNumber, setNhiNumber] = useState('');
+  const [preAuthStatus, setPreAuthStatus] = useState('');
+
+  const [attachments, setAttachments] = useState<ClinicalAttachment[]>([]);
+  const [radiologyRequests, setRadiologyRequests] = useState<RadiologyRequest[]>([]);
+  const [finalDocument, setFinalDocument] = useState('');
+  const [progressNotes, setProgressNotes] = useState<ProgressNote[]>([]);
+  const [vitalRecords, setVitalRecords] = useState<VitalRecord[]>([]);
+  const [labRecords, setLabRecords] = useState<LabRecord[]>([]);
+
+  const [encounterMode, setEncounterMode] = useState<'outpatient' | 'inpatient'>('outpatient');
+  const [mrNumber, setMrNumber] = useState('');
+  const [ward, setWard] = useState('');
+  const [dateAdmission, setDateAdmission] = useState('');
+  const [dateDischarge, setDateDischarge] = useState('');
+  const [bloodGroup, setBloodGroup] = useState('');
+  const [nokName, setNokName] = useState('');
+  const [nokRelation, setNokRelation] = useState('');
+  const [nokTel, setNokTel] = useState('');
+  const [admittingSurgeon, setAdmittingSurgeon] = useState('Dr Dawit Daniel Kabiye, MD, DM');
+  const [referringPhysician, setReferringPhysician] = useState('');
+
+  const [paneState, setPaneState] = useState<PaneState | null>(null);
+  const [paneTop, setPaneTop] = useState<RankedDiagnosis[]>([]);
+  const [paneConverged, setPaneConverged] = useState(false);
+  const [traumaData, setTraumaData] = useState<TraumaData>(EMPTY_TRAUMA_DATA);
+
+  const ENC_KEY = 'amise-enc-v1';
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(ENC_KEY);
+      if (!raw) return;
+      const d = JSON.parse(raw) as Record<string, unknown>;
+      if (!d.patientName && !(Array.isArray(d.symptoms) && (d.symptoms as string[]).length > 0)) return;
+      if (d.vitals && typeof d.vitals === 'object') setVitals(d.vitals as VitalsState);
+      if (Array.isArray(d.symptoms)) setSymptoms(d.symptoms as string[]);
+      if (d.symptomDetails && typeof d.symptomDetails === 'object') setSymptomDetails(d.symptomDetails as Record<string, string[]>);
+      if (typeof d.freeText === 'string') setFreeText(d.freeText);
+      if (typeof d.durationDays === 'string') setDurationDays(d.durationDays);
+      if (typeof d.painScore === 'string') setPainScore(d.painScore);
+      if (typeof d.isPostOp === 'boolean') setIsPostOp(d.isPostOp);
+      if (typeof d.postOpDays === 'string') setPostOpDays(d.postOpDays);
+      if (typeof d.pregnancyPossible === 'boolean') setPregnancyPossible(d.pregnancyPossible);
+      if (typeof d.examGeneral === 'string') setExamGeneral(d.examGeneral);
+      if (typeof d.examCardio === 'string') setExamCardio(d.examCardio);
+      if (typeof d.examResp === 'string') setExamResp(d.examResp);
+      if (typeof d.examAbdomen === 'string') setExamAbdomen(d.examAbdomen);
+      if (typeof d.examNeuro === 'string') setExamNeuro(d.examNeuro);
+      if (typeof d.examExtremities === 'string') setExamExtremities(d.examExtremities);
+      if (typeof d.examBreast === 'string') setExamBreast(d.examBreast);
+      if (typeof d.examWound === 'string') setExamWound(d.examWound);
+      if (typeof d.assessment === 'string') setAssessment(d.assessment);
+      if (typeof d.differentials === 'string') setDifferentials(d.differentials);
+      if (typeof d.plan === 'string') setPlan(d.plan);
+      if (typeof d.procedures === 'string') setProcedures(d.procedures);
+      if (typeof d.billing === 'string') setBilling(d.billing);
+      if (typeof d.documents === 'string') setDocuments(d.documents);
+      if (typeof d.insuranceProvider === 'string') setInsuranceProvider(d.insuranceProvider);
+      if (typeof d.policyNumber === 'string') setPolicyNumber(d.policyNumber);
+      if (typeof d.nhiNumber === 'string') setNhiNumber(d.nhiNumber);
+      if (typeof d.preAuthStatus === 'string') setPreAuthStatus(d.preAuthStatus);
+      if (Array.isArray(d.comorbidities)) setComorbidities(d.comorbidities as string[]);
+      if (typeof d.pmhNotes === 'string') setPmhNotes(d.pmhNotes);
+      if (Array.isArray(d.surgicalHistory)) setSurgicalHistory(d.surgicalHistory as string[]);
+      if (typeof d.surgicalNotes === 'string') setSurgicalNotes(d.surgicalNotes);
+      if (Array.isArray(d.medications)) setMedications(d.medications as string[]);
+      if (typeof d.medicationsText === 'string') setMedicationsText(d.medicationsText);
+      if (typeof d.allergies === 'string') setAllergies(d.allergies);
+      if (Array.isArray(d.familyHistory)) setFamilyHistory(d.familyHistory as string[]);
+      if (Array.isArray(d.toxicHabits)) setToxicHabits(d.toxicHabits as string[]);
+      if (typeof d.patientName === 'string') setPatientName(d.patientName);
+      if (typeof d.age === 'string') setAge(d.age);
+      if (typeof d.sex === 'string') setSex(d.sex as Sex);
+      if (typeof d.dob === 'string') setDob(d.dob);
+      if (typeof d.phone === 'string') setPhone(d.phone);
+      if (typeof d.address === 'string') setAddress(d.address);
+      if (typeof d.quarter === 'string') setQuarter(d.quarter);
+      if (typeof d.referredBy === 'string') setReferredBy(d.referredBy);
+      if (d.examFindings && typeof d.examFindings === 'object') setExamFindings(d.examFindings as Record<string, string[]>);
+      if (d.examNotes && typeof d.examNotes === 'object') setExamNotes(d.examNotes as Record<string, string>);
+      if (Array.isArray(d.orderedInvestigations)) setOrderedInvestigations(d.orderedInvestigations as string[]);
+      if (d.investigationResults && typeof d.investigationResults === 'object') setInvestigationResults(d.investigationResults as Record<string, string>);
+      if (Array.isArray(d.icdCodes)) setIcdCodes(d.icdCodes as string[]);
+      if (Array.isArray(d.cptCodes)) setCptCodes(d.cptCodes as string[]);
+      if (typeof d.weightKg === 'string') setWeightKg(d.weightKg);
+      if (typeof d.heightCm === 'string') setHeightCm(d.heightCm);
+      if (Array.isArray(d.anatomicalFindings)) setAnatomicalFindings(d.anatomicalFindings as AnatomicalFinding[]);
+      if (d.rosFindings && typeof d.rosFindings === 'object') setRosFindings(d.rosFindings as Record<string, RosFinding>);
+      if (d.procedureData && typeof d.procedureData === 'object') setProcedureData(d.procedureData as Record<string, unknown>);
+      if (d.preVisitStatus === 'registered' || d.preVisitStatus === 'vitals_done') setPreVisitStatus(d.preVisitStatus);
+      if (Array.isArray(d.radiologyRequests)) setRadiologyRequests(d.radiologyRequests as RadiologyRequest[]);
+      if (typeof d.finalDocument === 'string') setFinalDocument(d.finalDocument);
+      if (Array.isArray(d.progressNotes)) setProgressNotes(d.progressNotes as ProgressNote[]);
+      if (Array.isArray(d.vitalRecords)) setVitalRecords(d.vitalRecords as VitalRecord[]);
+      if (Array.isArray(d.labRecords)) setLabRecords(d.labRecords as LabRecord[]);
+      if (d.encounterMode === 'inpatient') setEncounterMode('inpatient');
+      if (typeof d.mrNumber === 'string') setMrNumber(d.mrNumber);
+      if (typeof d.ward === 'string') setWard(d.ward);
+      if (typeof d.dateAdmission === 'string') setDateAdmission(d.dateAdmission);
+      if (typeof d.dateDischarge === 'string') setDateDischarge(d.dateDischarge);
+      if (typeof d.bloodGroup === 'string') setBloodGroup(d.bloodGroup);
+      if (typeof d.nokName === 'string') setNokName(d.nokName);
+      if (typeof d.nokRelation === 'string') setNokRelation(d.nokRelation);
+      if (typeof d.nokTel === 'string') setNokTel(d.nokTel);
+      if (typeof d.admittingSurgeon === 'string') setAdmittingSurgeon(d.admittingSurgeon);
+      if (typeof d.referringPhysician === 'string') setReferringPhysician(d.referringPhysician);
+      if (d.paneState && typeof d.paneState === 'object') setPaneState(d.paneState as PaneState);
+      if (d.traumaData && typeof d.traumaData === 'object') setTraumaData(d.traumaData as TraumaData);
+      // Attachments stored separately (can be large base64)
+      try {
+        const ar = localStorage.getItem('amise-attachments-v1');
+        if (ar) setAttachments(JSON.parse(ar) as ClinicalAttachment[]);
+      } catch { /* ignore */ }
+    } catch { /* ignore */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const scheduleSave = useCallback((data: Record<string, unknown>) => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      try { localStorage.setItem(ENC_KEY, JSON.stringify(data)); } catch { /* ignore */ }
+    }, 500);
+  }, []);
+
+  useEffect(() => {
+    scheduleSave({
+      vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
+      isPostOp, postOpDays, pregnancyPossible,
+      examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+      examFindings, examNotes,
+      assessment, differentials, plan, procedures, billing, documents,
+      insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
+      comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
+      medications, medicationsText, allergies, familyHistory, toxicHabits,
+      patientName, age, sex, dob, phone, address, quarter, referredBy,
+      orderedInvestigations, investigationResults, icdCodes, cptCodes,
+      weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
+      radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords,
+      encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
+      nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
+      paneState, traumaData,
+    });
+    // Attachments saved separately — avoids 5 MB localStorage limit on the main key
+    try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { /* ignore */ }
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
+  }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
+    isPostOp, postOpDays, pregnancyPossible,
+    examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+    examFindings, examNotes,
+    assessment, differentials, plan, procedures, billing, documents,
+    insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
+    comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
+    medications, medicationsText, allergies, familyHistory, toxicHabits,
+    patientName, age, sex, dob, phone, address, quarter, referredBy,
+    orderedInvestigations, investigationResults, icdCodes, cptCodes,
+    weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
+    radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
+    encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
+    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -201,7 +564,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAllergies(''); setToxicHabits([]);
     setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
     setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
+    setExamFindings({}); setExamNotes({});
+    setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]); setCptCodes([]);
+    setAddress(''); setQuarter(''); setReferredBy('');
+    setWeightKg(''); setHeightCm(''); setAnatomicalFindings([]);
+    setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
+    setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
+    setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
+    setProgressNotes([]);
+    setVitalRecords([]); setLabRecords([]);
+    setEncounterMode('outpatient');
+    setMrNumber(''); setWard(''); setDateAdmission(''); setDateDischarge('');
+    setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
+    setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
+    setPaneState(null); setPaneTop([]); setPaneConverged(false);
+    setTraumaData(EMPTY_TRAUMA_DATA);
+    try {
+      localStorage.removeItem(ENC_KEY);
+      localStorage.removeItem('amise-attachments-v1');
+    } catch { /* ignore */ }
   }
 
   const triageInput: AdaptiveTriageInput = useMemo(() => ({
@@ -233,8 +615,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const triageResult = useMemo(() => adaptiveTriage(triageInput), [triageInput]);
 
+  // ── Autosave doctor clinical data to Supabase (debounced 2 s) ────────────
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+    autoSaveTimerRef.current = setTimeout(() => {
+      void saveAssessment({
+        encounter_id:  encounterId,
+        patient_id:    patientId,
+        diagnosis:     assessment,
+        differentials,
+        icdCodes,
+        cptCodes,
+        acuity:        triageResult.acuity,
+        triageScore:   triageResult.score,
+      });
+      void savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan });
+    }, 2000);
+    return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score]);
+
   const value: CtxValue = {
     activeSection, setActiveSection,
+    topSection, setTopSection,
     currentSite, setCurrentSite,
     patientId, setPatientId,
     encounterId, setEncounterId,
@@ -243,6 +648,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     sex, setSex,
     dob, setDob,
     phone, setPhone,
+    address, setAddress,
+    quarter, setQuarter,
+    referredBy, setReferredBy,
     durationDays, setDurationDays,
     painScore, setPainScore,
     symptoms, toggleSymptom,
@@ -271,13 +679,50 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     examExtremities, setExamExtremities,
     examBreast, setExamBreast,
     examWound, setExamWound,
+    examFindings, setExamFindings,
+    examNotes, setExamNotes,
+    orderedInvestigations, setOrderedInvestigations,
+    investigationResults, setInvestigationResults,
+    icdCodes, setIcdCodes,
+    cptCodes, setCptCodes,
     assessment, setAssessment,
     differentials, setDifferentials,
     plan, setPlan,
     procedures, setProcedures,
     billing, setBilling,
     documents, setDocuments,
+    insuranceProvider, setInsuranceProvider,
+    policyNumber, setPolicyNumber,
+    nhiNumber, setNhiNumber,
+    preAuthStatus, setPreAuthStatus,
+    weightKg, setWeightKg,
+    heightCm, setHeightCm,
+    anatomicalFindings, setAnatomicalFindings,
+    rosFindings, setRosFindings,
+    procedureData, setProcedureData,
+    preVisitStatus, setPreVisitStatus,
     triageResult,
+    attachments, setAttachments,
+    radiologyRequests, setRadiologyRequests,
+    finalDocument, setFinalDocument,
+    progressNotes, setProgressNotes,
+    vitalRecords, setVitalRecords,
+    labRecords, setLabRecords,
+    encounterMode, setEncounterMode,
+    mrNumber, setMrNumber,
+    ward, setWard,
+    dateAdmission, setDateAdmission,
+    dateDischarge, setDateDischarge,
+    bloodGroup, setBloodGroup,
+    nokName, setNokName,
+    nokRelation, setNokRelation,
+    nokTel, setNokTel,
+    admittingSurgeon, setAdmittingSurgeon,
+    referringPhysician, setReferringPhysician,
+    paneState, setPaneState,
+    paneTop, setPaneTop,
+    paneConverged, setPaneConverged,
+    traumaData, setTraumaData,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

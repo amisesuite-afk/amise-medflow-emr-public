@@ -1,8 +1,13 @@
+import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PathwaySuggestions from '@/components/PathwaySuggestions';
 import SmartSymptomPicker from '@/components/SmartSymptomPicker';
 import { VitalSigns } from '@/lib/adaptive-triage';
+import { SL_COMMUNITIES, SL_DOCTORS, formatSlPhone, isValidSlPhone } from '@/data/st-lucia';
+
+const DEMO_PATIENTS_KEY = 'amise-patients-v1';
 
 const VITAL_KEYS: { key: keyof VitalSigns; label: string; placeholder: string }[] = [
   { key: 'systolicBp',     label: 'SBP',      placeholder: '120' },
@@ -30,6 +35,8 @@ export default function IntakeTab() {
   const {
     patientName, setPatientName,
     age, setAge, sex, setSex, dob, setDob, phone, setPhone,
+    address, setAddress, quarter, setQuarter,
+    referredBy, setReferredBy,
     durationDays, setDurationDays, painScore, setPainScore,
     isPostOp, setIsPostOp, postOpDays, setPostOpDays,
     pregnancyPossible, setPregnancyPossible,
@@ -37,7 +44,125 @@ export default function IntakeTab() {
     symptoms,
     freeText, setFreeText,
     triageResult,
+    currentSite,
+    weightKg, setWeightKg,
+    heightCm, setHeightCm,
+    encounterMode,
+    mrNumber, setMrNumber,
+    ward, setWard,
+    dateAdmission, setDateAdmission,
+    dateDischarge, setDateDischarge,
+    bloodGroup, setBloodGroup,
+    nokName, setNokName,
+    nokRelation, setNokRelation,
+    nokTel, setNokTel,
+    admittingSurgeon, setAdmittingSurgeon,
+    referringPhysician, setReferringPhysician,
+    insuranceProvider, setInsuranceProvider,
+    policyNumber, setPolicyNumber,
   } = useAppContext();
+
+  function calcBmi(): { bmi: number; class: string; color: string; rec: string } | null {
+    const w = parseFloat(weightKg);
+    const h = parseFloat(heightCm);
+    if (!w || !h || h < 50) return null;
+    const bmi = w / Math.pow(h / 100, 2);
+    if (bmi < 18.5) return { bmi, class: 'Underweight',    color: '#3b82f6', rec: 'Nutritional support pre-op. Increased wound healing risk.' };
+    if (bmi < 25)   return { bmi, class: 'Normal',         color: '#16a34a', rec: 'Standard surgical risk.' };
+    if (bmi < 30)   return { bmi, class: 'Overweight',     color: '#ca8a04', rec: 'Consider VTE prophylaxis. Monitor wound healing.' };
+    if (bmi < 35)   return { bmi, class: 'Obese class I',  color: '#ea580c', rec: 'High VTE risk — LMWH + TED stockings. Difficult laparoscopic access. Prone to SSI.' };
+    if (bmi < 40)   return { bmi, class: 'Obese class II', color: '#dc2626', rec: 'Very high anaesthetic risk. Airway assessment mandatory. Bariatric equipment required.' };
+    return           { bmi, class: 'Obese class III',      color: '#7f1d1d', rec: 'Extreme surgical risk. Senior anaesthetic review required. HDU bed post-op.' };
+  }
+
+  const { showToast } = useToast();
+  const [saving, setSaving] = useState(false);
+
+  // Address picker state
+  const [addressQuery, setAddressQuery] = useState(address);
+  const [addressOpen, setAddressOpen] = useState(false);
+  const addressRef = useRef<HTMLDivElement>(null);
+
+  const filteredCommunities = addressQuery.trim().length === 0
+    ? SL_COMMUNITIES.slice(0, 10)
+    : SL_COMMUNITIES.filter(c =>
+        c.community.toLowerCase().includes(addressQuery.toLowerCase()) ||
+        c.quarter.toLowerCase().includes(addressQuery.toLowerCase())
+      ).slice(0, 10);
+
+  function selectCommunity(c: { community: string; quarter: string }) {
+    setAddress(c.community);
+    setQuarter(c.quarter);
+    setAddressQuery(c.community);
+    setAddressOpen(false);
+  }
+
+  // Referral doctor picker state
+  const [referralQuery, setReferralQuery] = useState(referredBy);
+  const [referralOpen, setReferralOpen] = useState(false);
+  const referralRef = useRef<HTMLDivElement>(null);
+
+  const filteredDoctors = referralQuery.trim().length === 0
+    ? SL_DOCTORS.slice(0, 8)
+    : SL_DOCTORS.filter(d =>
+        d.name.toLowerCase().includes(referralQuery.toLowerCase()) ||
+        d.specialty.toLowerCase().includes(referralQuery.toLowerCase())
+      ).slice(0, 8);
+
+  // Phone validation
+  const phoneValid = phone.trim().length === 0 ? null : isValidSlPhone(phone);
+
+  function handlePhoneBlur() {
+    if (phone.trim()) {
+      const formatted = formatSlPhone(phone);
+      if (formatted !== phone) setPhone(formatted);
+    }
+  }
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (addressRef.current && !addressRef.current.contains(e.target as Node)) setAddressOpen(false);
+      if (referralRef.current && !referralRef.current.contains(e.target as Node)) setReferralOpen(false);
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  function savePatient() {
+    if (!patientName.trim()) return;
+    setSaving(true);
+    try {
+      const raw = localStorage.getItem(DEMO_PATIENTS_KEY);
+      const existing: Array<Record<string, unknown>> = raw ? (JSON.parse(raw) as Array<Record<string, unknown>>) : [];
+      const newRecord = {
+        id: crypto.randomUUID(),
+        full_name: patientName.trim(),
+        age,
+        sex,
+        dob,
+        phone,
+        site: currentSite,
+        acuity: triageResult.acuity,
+        score: triageResult.score,
+        weightKg,
+        heightCm,
+        savedAt: new Date().toISOString(),
+      };
+      const idx = existing.findIndex(p => (p as { full_name?: string }).full_name?.toLowerCase() === patientName.trim().toLowerCase());
+      if (idx >= 0) {
+        existing[idx] = { ...existing[idx], ...newRecord, id: existing[idx].id as string };
+      } else {
+        existing.push(newRecord);
+      }
+      localStorage.setItem(DEMO_PATIENTS_KEY, JSON.stringify(existing));
+      showToast('Patient saved to local registry', 'success');
+    } catch {
+      showToast('Could not save patient', 'error');
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="gap-y">
@@ -67,8 +192,126 @@ export default function IntakeTab() {
           </div>
           <div className="fld">
             <label>Phone</label>
-            <input inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 758 …" />
+            <input
+              inputMode="tel"
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              onBlur={handlePhoneBlur}
+              placeholder="+1 (758) XXX-XXXX"
+            />
+            {phone.trim().length > 0 && (
+              <span style={{ fontSize: 11, marginTop: 2, display: 'block', color: phoneValid ? '#16a34a' : '#b45309' }}>
+                {phoneValid ? '✓ Valid St. Lucia number' : 'Format: +1 (758) XXX-XXXX'}
+              </span>
+            )}
           </div>
+
+          {/* Address / community picker */}
+          <div className="fld" ref={addressRef} style={{ position: 'relative' }}>
+            <label>Community / Address</label>
+            <input
+              type="text"
+              value={addressQuery}
+              onChange={e => { setAddressQuery(e.target.value); setAddressOpen(true); }}
+              onFocus={() => setAddressOpen(true)}
+              placeholder="e.g. Rodney Bay, Gros Islet…"
+            />
+            {quarter && (
+              <span style={{ fontSize: 11, color: '#6b7280', marginTop: 2, display: 'block' }}>
+                Quarter: {quarter}
+              </span>
+            )}
+            {addressOpen && filteredCommunities.length > 0 && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                zIndex: 50,
+                background: '#fff',
+                border: '1px solid #e5e7eb',
+                borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                maxHeight: 220,
+                overflowY: 'auto',
+                marginTop: 2,
+              }}>
+                {filteredCommunities.map(c => (
+                  <button
+                    key={`${c.quarter}-${c.community}`}
+                    type="button"
+                    onMouseDown={() => selectCommunity(c)}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      padding: '7px 12px',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      borderBottom: '1px solid #f3f4f6',
+                      fontSize: 13,
+                    }}
+                  >
+                    <span>{c.community}</span>
+                    <span style={{ color: '#9ca3af', fontSize: 11 }}>{c.quarter}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Referred by */}
+          <div className="fld" ref={referralRef} style={{ position: 'relative' }}>
+            <label>Referred by</label>
+            <input
+              type="text"
+              value={referralQuery}
+              onChange={e => { setReferralQuery(e.target.value); setReferredBy(e.target.value); setReferralOpen(true); }}
+              onFocus={() => setReferralOpen(true)}
+              placeholder="Doctor or facility name…"
+            />
+            {referralOpen && filteredDoctors.length > 0 && referralQuery.trim().length > 0 && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                zIndex: 50,
+                background: '#fff',
+                border: '1px solid #e5e7eb',
+                borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                maxHeight: 220,
+                overflowY: 'auto',
+                marginTop: 2,
+              }}>
+                {filteredDoctors.map(d => (
+                  <button
+                    key={d.name}
+                    type="button"
+                    onMouseDown={() => { setReferredBy(d.name); setReferralQuery(d.name); setReferralOpen(false); }}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      width: '100%',
+                      padding: '7px 12px',
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      borderBottom: '1px solid #f3f4f6',
+                    }}
+                  >
+                    <span style={{ fontSize: 13, fontWeight: 500 }}>{d.name}</span>
+                    <span style={{ fontSize: 11, color: '#6b7280' }}>{d.specialty} · {d.institution}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="fld">
             <label>Duration (days)</label>
             <input inputMode="numeric" value={durationDays} onChange={e => setDurationDays(e.target.value)} placeholder="e.g. 3" />
@@ -120,6 +363,26 @@ export default function IntakeTab() {
             ))}
           </div>
         )}
+        <div className="form-grid cols-2" style={{ marginTop: 10 }}>
+          <div className="fld">
+            <label>Weight (kg)</label>
+            <input inputMode="decimal" value={weightKg} onChange={e => setWeightKg(e.target.value)} placeholder="e.g. 72" />
+          </div>
+          <div className="fld">
+            <label>Height (cm)</label>
+            <input inputMode="decimal" value={heightCm} onChange={e => setHeightCm(e.target.value)} placeholder="e.g. 165" />
+          </div>
+        </div>
+        {calcBmi() && (() => {
+          const b = calcBmi()!;
+          return (
+            <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 8, background: `${b.color}15`, border: `1px solid ${b.color}40`, display: 'flex', gap: 12, alignItems: 'center' }}>
+              <span style={{ fontWeight: 700, fontSize: 15, color: b.color }}>BMI {b.bmi.toFixed(1)}</span>
+              <span style={{ fontWeight: 600, color: b.color, fontSize: 13 }}>{b.class}</span>
+              <span style={{ color: '#6b7280', fontSize: 12, flex: 1 }}>{b.rec}</span>
+            </div>
+          );
+        })()}
       </CollapsibleCard>
 
       {/* Smart adaptive symptom picker + differential inference */}
@@ -145,6 +408,81 @@ export default function IntakeTab() {
           />
         </div>
       </CollapsibleCard>
+
+      {/* Inpatient admission details — only in inpatient mode */}
+      {encounterMode === 'inpatient' && (
+        <CollapsibleCard title="Inpatient Admission Details" badge="Inpatient" badgeVariant="warn">
+          <div className="form-grid">
+            <div className="fld">
+              <label>MR Number</label>
+              <input value={mrNumber} onChange={e => setMrNumber(e.target.value)} placeholder="MR-2024-001" />
+            </div>
+            <div className="fld">
+              <label>Blood Group</label>
+              <select value={bloodGroup} onChange={e => setBloodGroup(e.target.value)}>
+                <option value="">— select —</option>
+                {['A+','A−','B+','B−','AB+','AB−','O+','O−'].map(g => <option key={g}>{g}</option>)}
+              </select>
+            </div>
+            <div className="fld">
+              <label>Ward / Unit</label>
+              <input value={ward} onChange={e => setWard(e.target.value)} placeholder="Surgical Ward B" />
+            </div>
+            <div className="fld">
+              <label>Date of Admission</label>
+              <input type="date" value={dateAdmission} onChange={e => setDateAdmission(e.target.value)} />
+            </div>
+            <div className="fld">
+              <label>Date of Discharge</label>
+              <input type="date" value={dateDischarge} onChange={e => setDateDischarge(e.target.value)} />
+            </div>
+            <div className="fld">
+              <label>Admitting Surgeon</label>
+              <input value={admittingSurgeon} onChange={e => setAdmittingSurgeon(e.target.value)} placeholder="Dr Dawit Daniel Kabiye" />
+            </div>
+            <div className="fld">
+              <label>Referring Physician</label>
+              <input value={referringPhysician} onChange={e => setReferringPhysician(e.target.value)} placeholder="Name / facility" />
+            </div>
+            <div className="fld">
+              <label>Insurance Provider</label>
+              <input value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="CLICO / GEL / Self-pay" />
+            </div>
+            <div className="fld">
+              <label>Policy / NHI Number</label>
+              <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
+            </div>
+          </div>
+          <div className="form-grid" style={{ marginTop: 8 }}>
+            <div className="fld">
+              <label>Next of Kin</label>
+              <input value={nokName} onChange={e => setNokName(e.target.value)} placeholder="Full name" />
+            </div>
+            <div className="fld">
+              <label>Relationship</label>
+              <input value={nokRelation} onChange={e => setNokRelation(e.target.value)} placeholder="Spouse / Child / Sibling" />
+            </div>
+            <div className="fld">
+              <label>NOK Contact</label>
+              <input value={nokTel} onChange={e => setNokTel(e.target.value)} placeholder="+1 758 …" />
+            </div>
+          </div>
+        </CollapsibleCard>
+      )}
+
+      {/* Save patient to local registry */}
+      {patientName.trim() && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: 8 }}>
+          <button
+            className="summary-btn summary-btn--primary"
+            onClick={savePatient}
+            disabled={saving}
+            style={{ height: 36, minWidth: 160 }}
+          >
+            {saving ? 'Saving…' : '💾 Save patient'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

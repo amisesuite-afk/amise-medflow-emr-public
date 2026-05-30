@@ -1,11 +1,721 @@
 import { useState, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import CollapsibleCard from '@/components/CollapsibleCard';
 
-const BASE = import.meta.env.BASE_URL ?? '/';
+// ── helpers ────────────────────────────────────────────────────────────────
 
+function escHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+const SOAP_MAIN_HEADERS = new Set(['SUBJECTIVE', 'OBJECTIVE', 'ASSESSMENT', 'PLAN']);
+const SOAP_SUB_HEADERS = new Set([
+  'Chief Complaint', 'History of Present Illness', 'Past Medical History',
+  'Medications', 'Social History', 'Physical Examination', 'Laboratory/Diagnostic Results',
+  'Laboratory/Diagnostics:', 'Primary Diagnosis', 'Differentials Considered',
+  'Treatment Plan', 'Patient Education', 'Follow-up',
+]);
+
+function soapTextToHtml(text: string): string {
+  const lines = text.split('\n');
+  const out: string[] = [];
+  let inSection = false;
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) { out.push('<div class="s-gap"></div>'); continue; }
+    const safe = escHtml(t);
+
+    if (SOAP_MAIN_HEADERS.has(t)) {
+      if (inSection) out.push('</div>');
+      out.push(`<div class="s-section"><div class="s-main-hdr">${safe}</div>`);
+      inSection = true;
+      continue;
+    }
+    if (inSection && SOAP_SUB_HEADERS.has(t)) {
+      out.push(`<div class="s-sub-hdr">${safe}</div>`);
+      continue;
+    }
+    if (/^[•\-\*]\s/.test(t)) {
+      out.push(`<div class="s-bullet">${safe.replace(/^[•\-\*]\s*/, '')}</div>`);
+      continue;
+    }
+    out.push(`<div class="s-line">${safe}</div>`);
+  }
+  if (inSection) out.push('</div>');
+  return out.join('\n');
+}
+
+const SITE_INFO: Record<string, { name: string; address: string }> = {
+  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay, Saint Lucia' },
+  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia' },
+  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia' },
+};
+
+const APPT_LABELS: Record<string, string> = {
+  new_consult:   'New Consultation',
+  follow_up:     'Follow-up Consultation',
+  post_op:       'Post-operative Review',
+  ercp_workup:   'ERCP Work-up',
+  ercp:          'ERCP Procedure',
+  breast:        'Breast Clinic',
+  telephone:     'Telephone Consultation',
+  diabetic_foot: 'Diabetic Foot Clinic',
+};
+
+const LOGO_SVG = `<svg width="150" height="52" viewBox="0 0 150 52" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left figure — navy -->
+  <ellipse cx="15" cy="11" rx="6.5" ry="7.5" fill="#1a3a5c"/>
+  <path d="M8.5 19 C7 28 8 37 14 41 C17.5 43 21 41 21 38 C17.5 36 14.5 31 14.5 24.5 C14.5 20.5 16.5 19.5 18.5 19 C14 17 8.5 17.5 8.5 19Z" fill="#1a3a5c"/>
+  <!-- Right figure — crimson -->
+  <ellipse cx="29" cy="11" rx="6.5" ry="7.5" fill="#922b21"/>
+  <path d="M35.5 19 C37 28 36 37 30 41 C26.5 43 23 41 23 38 C26.5 36 29.5 31 29.5 24.5 C29.5 20.5 27.5 19.5 25.5 19 C30 17 35.5 17.5 35.5 19Z" fill="#922b21"/>
+  <!-- Divider -->
+  <line x1="48" y1="6" x2="48" y2="46" stroke="#ddd" stroke-width="1"/>
+  <!-- Practice name -->
+  <text x="56" y="24" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="bold" fill="#1a3a5c" letter-spacing="1.2">AMISE</text>
+  <text x="56" y="37" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#666" letter-spacing="2.5">MEDICAL SERVICES</text>
+  <text x="56" y="47" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#999" letter-spacing="0.5">Saint Lucia</text>
+</svg>`;
+
+interface PrintMeta {
+  patientName: string;
+  patientId: string | null;
+  age: string;
+  dob: string;
+  sex: string;
+  phone: string;
+  site: string;
+  appointmentType: string;
+}
+
+function buildPrintHtml(text: string, meta: PrintMeta): string {
+  const site = SITE_INFO[meta.site] ?? SITE_INFO.rodney_bay;
+  const consultType = APPT_LABELS[meta.appointmentType] ?? 'Clinic Consultation';
+
+  const now = new Date();
+  const ectOptions: Intl.DateTimeFormatOptions = { timeZone: 'America/St_Lucia' };
+  const consultDate = now.toLocaleString('en-GB', {
+    ...ectOptions, day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true,
+  });
+  const generatedDate = now.toLocaleDateString('en-GB', {
+    ...ectOptions, day: '2-digit', month: 'short', year: 'numeric',
+  }).replace(/ /g, '.');
+
+  const pidDisplay = meta.patientId
+    ? `P${meta.patientId.replace(/-/g, '').slice(0, 16).toUpperCase()}`
+    : '—';
+
+  const sexLabel = meta.sex && meta.sex !== 'unknown'
+    ? meta.sex.charAt(0).toUpperCase() + meta.sex.slice(1) : '';
+  const ageLine = [
+    meta.age ? `${meta.age} Years` : '',
+    meta.dob ? `(${meta.dob})` : '',
+    sexLabel,
+  ].filter(Boolean).join(' ');
+
+  const bodyHtml = soapTextToHtml(text);
+
+  return `<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<title>Clinical Summary — ${escHtml(meta.patientName || 'Patient')}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1a1a1a;line-height:1.65;background:#fff;max-width:175mm;margin:0 auto;padding:20px 24px}
+  /* ── Header ── */
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:2.5px solid #1a3a5c;margin-bottom:16px}
+  .hdr-brand{font-size:13px;font-weight:700;color:#1a3a5c;letter-spacing:.3px}
+  .hdr-addr{font-size:11px;color:#555;line-height:1.7;margin-top:3px}
+  /* ── Patient strip ── */
+  .pt-strip{background:#f4f6f9;border:1px solid #d8dde6;border-radius:6px;padding:12px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pt-label{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:4px}
+  .pt-val{font-size:12.5px;color:#1a1a1a;font-weight:700}
+  .pt-sub{font-size:11px;color:#555;font-weight:400;margin-top:2px}
+  /* ── Document title ── */
+  .doc-title{font-size:15px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;margin-bottom:18px;text-transform:uppercase;border-bottom:1px solid #e5e9ef;padding-bottom:8px}
+  /* ── SOAP sections ── */
+  .s-section{margin-bottom:18px}
+  .s-main-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:5px 12px;margin-bottom:10px;border-radius:4px}
+  .s-sub-hdr{font-weight:700;font-size:12px;color:#333;margin:12px 0 4px}
+  .s-line{font-size:12.5px;margin-bottom:4px;color:#222}
+  .s-bullet{font-size:12.5px;padding-left:18px;position:relative;margin-bottom:4px;color:#222}
+  .s-bullet::before{content:"•";position:absolute;left:5px;color:#1a3a5c}
+  .s-gap{height:8px}
+  /* ── Signature block ── */
+  .sig-block{margin-top:48px;padding-top:14px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
+  .sig-left{min-width:240px}
+  .sig-line{border-bottom:1px solid #333;width:210px;margin-bottom:5px;height:26px}
+  .sig-name{font-size:12.5px;font-weight:700;color:#1a1a1a}
+  .sig-title{font-size:11px;color:#555;margin-top:2px}
+  .sig-lic{font-size:10px;color:#888;margin-top:3px}
+  .sig-right{font-size:10px;color:#aaa;text-align:right}
+  @page{margin:16mm 18mm;size:A4}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;max-width:100%;padding:0}}
+</style>
+</head><body>
+
+<!-- Letterhead -->
+<div class="hdr">
+  <div>
+    <div class="hdr-brand">${escHtml(site.name)}</div>
+    <div class="hdr-addr">${escHtml(site.address)}<br>Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
+  </div>
+  <div>${LOGO_SVG}</div>
+</div>
+
+<!-- Patient strip -->
+<div class="pt-strip">
+  <div>
+    <div class="pt-label">Patient</div>
+    <div class="pt-val">${escHtml(meta.patientName || '—')}</div>
+    <div class="pt-sub">${escHtml(ageLine || '')}${meta.phone ? ' &nbsp;·&nbsp; ' + escHtml(meta.phone) : ''}</div>
+    ${meta.patientId ? `<div class="pt-sub" style="margin-top:2px">ID: ${escHtml(pidDisplay)}</div>` : ''}
+  </div>
+  <div>
+    <div class="pt-label">Consultation</div>
+    <div class="pt-val">${escHtml(consultType)}</div>
+    <div class="pt-sub">Dr. Dawit D Kabiye &nbsp;·&nbsp; ${escHtml(site.name)}</div>
+    <div class="pt-sub">${escHtml(consultDate)}</div>
+  </div>
+</div>
+
+<div class="doc-title">Clinical Summary</div>
+
+${bodyHtml}
+
+<!-- Signature — bottom left -->
+<div class="sig-block">
+  <div class="sig-left">
+    <div class="sig-line"></div>
+    <div class="sig-name">Dr. Dawit D Kabiye</div>
+    <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
+    <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ${generatedDate}</div>
+  </div>
+  <div class="sig-right">Generated ${generatedDate}</div>
+</div>
+
+</body></html>`;
+}
+
+// Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
+const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
 function apiUrl(path: string) {
-  const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
   return `${base}${path}`;
+}
+
+const ANTHROPIC_API_KEY = (import.meta.env.VITE_ANTHROPIC_API_KEY as string | undefined) ?? '';
+
+const SUMMARY_SYSTEM_PROMPT =
+  'You are a clinical documentation assistant for Amise Medical Services, Saint Lucia. ' +
+  'Generate a professional SOAP-format clinical summary. ' +
+  'Never include fees, diagnoses beyond what the clinician provides, medication doses, or test results. ' +
+  'Output plain text with headings: SUBJECTIVE, OBJECTIVE, ASSESSMENT, PLAN.';
+
+const FEE_RE   = /\$[\d,]+|EC\$[\d,]+|\bXCD\b|\bfee\b|\bcharge\b|\bcost\b/gi;
+const DOSE_RE  = /\b\d+\s*mg\b|\b\d+\s*mcg\b/gi;
+
+function redactForbidden(text: string): string {
+  // Replace any sentence containing a forbidden pattern with a redaction notice.
+  return text
+    .split('\n')
+    .map(line => {
+      if (FEE_RE.test(line) || DOSE_RE.test(line)) {
+        // Reset lastIndex for global regexes
+        FEE_RE.lastIndex = 0;
+        DOSE_RE.lastIndex = 0;
+        return '[REDACTED — requires clinical review]';
+      }
+      FEE_RE.lastIndex = 0;
+      DOSE_RE.lastIndex = 0;
+      return line;
+    })
+    .join('\n');
+}
+
+interface AnthropicMessage {
+  id: string;
+  content: { type: string; text: string }[];
+}
+
+async function callAnthropicDirect(body: Record<string, unknown>): Promise<string> {
+  const userContent = JSON.stringify(body, null, 2);
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2048,
+      system: SUMMARY_SYSTEM_PROMPT,
+      messages: [
+        {
+          role: 'user',
+          content: `Please generate a SOAP clinical summary for the following patient intake data:\n\n${userContent}`,
+        },
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: { message?: string } };
+    throw new Error(err.error?.message ?? `Anthropic API error: HTTP ${res.status}`);
+  }
+
+  const data = await res.json() as AnthropicMessage;
+  const text = data.content.find(b => b.type === 'text')?.text ?? '';
+  return redactForbidden(text);
+}
+
+// ── Direct-export template builders ──────────────────────────────────────────
+
+type DirectCtx = ReturnType<typeof useAppContext>;
+
+function sharedHead(title: string): string {
+  return `<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1a1a1a;line-height:1.65;background:#fff;max-width:175mm;margin:0 auto;padding:20px 24px}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:2.5px solid #1a3a5c;margin-bottom:16px}
+  .hdr-office{font-size:13px;font-weight:700;color:#1a3a5c;letter-spacing:.3px}
+  .hdr-sub{font-size:11px;color:#555;line-height:1.7;margin-top:3px}
+  .title{font-size:15px;font-weight:700;text-align:center;color:#1a3a5c;letter-spacing:.5px;margin:0 0 18px;text-transform:uppercase;border-bottom:1px solid #e5e9ef;padding-bottom:8px}
+  .pt-row{background:#f4f6f9;border:1px solid #d8dde6;border-radius:6px;padding:12px 16px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pt-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#888;font-weight:700;margin-bottom:4px}
+  .pt-val{font-size:12.5px;color:#1a1a1a;font-weight:700}
+  .pt-sub{font-size:11px;color:#555;margin-top:2px}
+  .section{margin:16px 0}
+  .sec-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#1a3a5c;background:#eef1f6;padding:5px 12px;border-radius:4px;margin-bottom:10px}
+  .sec-body{font-size:12.5px;padding:0 4px;line-height:1.65}
+  .item{margin-bottom:5px;padding-left:16px;position:relative}
+  .item::before{content:"•";position:absolute;left:4px;color:#1a3a5c}
+  .sig{margin-top:48px;padding-top:14px;border-top:1.5px solid #ccc;display:flex;justify-content:space-between;align-items:flex-end}
+  .sig-left{min-width:240px}
+  .sig-line{border-bottom:1px solid #333;width:210px;height:26px;margin-bottom:5px}
+  .sig-name{font-weight:700;font-size:12.5px;color:#1a1a1a}
+  .sig-title{font-size:11px;color:#555;margin-top:2px}
+  .sig-lic{font-size:10px;color:#888;margin-top:3px}
+  .sig-right{font-size:10px;color:#aaa;text-align:right}
+  @page{margin:16mm 18mm;size:A4}
+  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;max-width:100%;padding:0}}
+</style>
+<title>${escHtml(title)}</title>`;
+}
+
+function sharedHeader(site: { name: string; address: string }, consultDate: string): string {
+  return `<div class="hdr">
+  <div>
+    <div class="hdr-office">${escHtml(site.name)}</div>
+    <div class="hdr-sub">${escHtml(site.address)}</div>
+    <div class="hdr-sub">Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
+    <div class="hdr-sub" style="margin-top:2px;color:#1a3a5c">${escHtml(consultDate)}</div>
+  </div>
+  <div>${LOGO_SVG}</div>
+</div>`;
+}
+
+function sharedPatient(ctx: DirectCtx): string {
+  const ageLine = [ctx.age ? `${ctx.age} yrs` : '', ctx.dob ? `(${ctx.dob})` : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(' · ');
+  return `<div class="pt-row">
+  <div><div class="pt-lbl">Patient</div>
+    <div>${escHtml(ctx.patientName || '—')}</div>
+    <div>${escHtml(ageLine || '—')}</div>
+    <div>${escHtml(ctx.phone || '—')}</div>
+    ${ctx.address ? `<div>${escHtml(ctx.address)}</div>` : ''}
+  </div>
+  <div><div class="pt-lbl">Referring details</div>
+    <div>Dr. Dawit D Kabiye, MD, DM</div>
+    <div>General &amp; Endoscopic Surgery</div>
+    ${ctx.referredBy ? `<div>Referred by: ${escHtml(ctx.referredBy)}</div>` : ''}
+  </div>
+</div>`;
+}
+
+function items(arr: string[]): string {
+  return arr.map(a => `<div class="item">${escHtml(a)}</div>`).join('');
+}
+
+function buildDirectSummaryHtml(ctx: DirectCtx, meta: PrintMeta): string {
+  const site = SITE_INFO[meta.site] ?? SITE_INFO.rodney_bay;
+  const now = new Date();
+  const ect = { timeZone: 'America/St_Lucia' };
+  const consultDate = now.toLocaleString('en-GB', { ...ect, day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+
+  const vitalsArr = Object.entries({
+    'BP': ctx.vitals.systolicBp ? `${ctx.vitals.systolicBp}/${ctx.vitals.diastolicBp} mmHg` : '',
+    'HR': ctx.vitals.heartRate ? `${ctx.vitals.heartRate} bpm` : '',
+    'Temp': ctx.vitals.temperatureC ? `${ctx.vitals.temperatureC} °C` : '',
+    'RR': ctx.vitals.respiratoryRate ? `${ctx.vitals.respiratoryRate}/min` : '',
+    'SpO₂': ctx.vitals.spo2 ? `${ctx.vitals.spo2}%` : '',
+    'BSL': ctx.vitals.glucoseMmol ? `${ctx.vitals.glucoseMmol} mmol/L` : '',
+  }).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
+
+  const examLines = [
+    ctx.examGeneral && `General: ${ctx.examGeneral}`,
+    ctx.examCardio && `Cardiovascular: ${ctx.examCardio}`,
+    ctx.examResp && `Respiratory: ${ctx.examResp}`,
+    ctx.examAbdomen && `Abdomen: ${ctx.examAbdomen}`,
+    ctx.examNeuro && `Neurological: ${ctx.examNeuro}`,
+    ctx.examExtremities && `Extremities: ${ctx.examExtremities}`,
+    ctx.examBreast && `Breast/Local: ${ctx.examBreast}`,
+    ctx.examWound && `Wound: ${ctx.examWound}`,
+  ].filter(Boolean) as string[];
+
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+${sharedHead(`Clinical Note — ${ctx.patientName || 'Patient'}`)}
+</head><body>
+${sharedHeader(site, consultDate)}
+${sharedPatient(ctx)}
+<div class="title">CLINICAL NOTE</div>
+
+${ctx.symptoms.length || ctx.freeText ? `<div class="section">
+<div class="sec-hdr">Presenting Complaint</div>
+<div class="sec-body">
+${items(ctx.symptoms)}
+${ctx.freeText ? `<div style="margin-top:4px">${escHtml(ctx.freeText)}</div>` : ''}
+${ctx.durationDays ? `<div>Duration: ${escHtml(ctx.durationDays)} days</div>` : ''}
+${ctx.painScore ? `<div>Pain score: ${escHtml(ctx.painScore)}/10</div>` : ''}
+</div></div>` : ''}
+
+${vitalsArr.length ? `<div class="section">
+<div class="sec-hdr">Vital Signs</div>
+<div class="sec-body">${vitalsArr.map(v => `<span style="margin-right:18px">${escHtml(v)}</span>`).join('')}</div>
+</div>` : ''}
+
+${ctx.comorbidities.length || ctx.pmhNotes ? `<div class="section">
+<div class="sec-hdr">Past Medical History</div>
+<div class="sec-body">
+${items(ctx.comorbidities)}
+${ctx.pmhNotes ? `<div>${escHtml(ctx.pmhNotes)}</div>` : ''}
+</div></div>` : ''}
+
+${ctx.surgicalHistory.length || ctx.surgicalNotes ? `<div class="section">
+<div class="sec-hdr">Surgical History</div>
+<div class="sec-body">${items(ctx.surgicalHistory)}${ctx.surgicalNotes ? `<div>${escHtml(ctx.surgicalNotes)}</div>` : ''}</div>
+</div>` : ''}
+
+${ctx.medications.length || ctx.medicationsText ? `<div class="section">
+<div class="sec-hdr">Medications</div>
+<div class="sec-body">${items(ctx.medications)}${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}</div>
+</div>` : ''}
+
+${ctx.allergies ? `<div class="section">
+<div class="sec-hdr">Allergies</div>
+<div class="sec-body">${escHtml(ctx.allergies)}</div>
+</div>` : ''}
+
+${examLines.length ? `<div class="section">
+<div class="sec-hdr">Physical Examination</div>
+<div class="sec-body">${examLines.map(l => `<div class="item">${escHtml(l)}</div>`).join('')}</div>
+</div>` : ''}
+
+${ctx.orderedInvestigations.length ? `<div class="section">
+<div class="sec-hdr">Investigations Ordered</div>
+<div class="sec-body">${items(ctx.orderedInvestigations)}</div>
+</div>` : ''}
+
+${ctx.assessment ? `<div class="section">
+<div class="sec-hdr">Assessment</div>
+<div class="sec-body">${escHtml(ctx.assessment).replace(/\n/g, '<br>')}</div>
+</div>` : ''}
+
+${ctx.icdCodes.length ? `<div class="section">
+<div class="sec-hdr">ICD-10 Codes</div>
+<div class="sec-body">${items(ctx.icdCodes)}</div>
+</div>` : ''}
+
+${ctx.plan ? `<div class="section">
+<div class="sec-hdr">Plan</div>
+<div class="sec-body">${escHtml(ctx.plan).replace(/\n/g, '<br>')}</div>
+</div>` : ''}
+
+<div class="sig">
+<div class="sig-left">
+  <div class="sig-line"></div>
+  <div class="sig-name">Dr. Dawit D Kabiye</div>
+  <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
+  <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ..................</div>
+</div>
+<div class="sig-right">Generated ${consultDate}</div>
+</div>
+</body></html>`;
+}
+
+function buildReferralHtml(ctx: DirectCtx, meta: PrintMeta, referTo: string, referNotes: string): string {
+  const site = SITE_INFO[meta.site] ?? SITE_INFO.rodney_bay;
+  const now = new Date();
+  const ect = { timeZone: 'America/St_Lucia' };
+  const consultDate = now.toLocaleString('en-GB', { ...ect, day: 'numeric', month: 'long', year: 'numeric' });
+
+  const ageLine = [ctx.age ? `${ctx.age} yrs` : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(', ');
+
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+${sharedHead(`Referral Letter — ${ctx.patientName || 'Patient'}`)}
+</head><body>
+${sharedHeader(site, consultDate)}
+<div class="title">REFERRAL LETTER</div>
+
+<div style="font-size:11px;margin-bottom:10px">
+  <div>Dear Colleague${referTo ? ` / ${escHtml(referTo)}` : ''},</div>
+  <br>
+  <div>I am writing to refer <strong>${escHtml(ctx.patientName || 'this patient')}</strong>${ageLine ? `, ${escHtml(ageLine)},` : ''} who attended ${escHtml(site.name)} on ${escHtml(consultDate)}.</div>
+</div>
+
+${ctx.symptoms.length || ctx.freeText ? `<div class="section">
+<div class="sec-hdr">Presenting History</div>
+<div class="sec-body">
+${ctx.symptoms.length ? `<div>Presenting with: ${escHtml(ctx.symptoms.join(', '))}</div>` : ''}
+${ctx.freeText ? `<div style="margin-top:4px">${escHtml(ctx.freeText)}</div>` : ''}
+${ctx.durationDays ? `<div>Duration: ${escHtml(ctx.durationDays)} days</div>` : ''}
+</div></div>` : ''}
+
+${ctx.comorbidities.length || ctx.pmhNotes ? `<div class="section">
+<div class="sec-hdr">Past Medical History</div>
+<div class="sec-body">${items(ctx.comorbidities)}${ctx.pmhNotes ? `<div>${escHtml(ctx.pmhNotes)}</div>` : ''}</div>
+</div>` : ''}
+
+${ctx.medications.length || ctx.medicationsText ? `<div class="section">
+<div class="sec-hdr">Current Medications</div>
+<div class="sec-body">${items(ctx.medications)}${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}</div>
+</div>` : ''}
+
+${ctx.allergies ? `<div class="section">
+<div class="sec-hdr">Allergies</div>
+<div class="sec-body">${escHtml(ctx.allergies)}</div>
+</div>` : ''}
+
+${ctx.assessment ? `<div class="section">
+<div class="sec-hdr">Clinical Assessment</div>
+<div class="sec-body">${escHtml(ctx.assessment).replace(/\n/g, '<br>')}</div>
+</div>` : ''}
+
+${referNotes ? `<div class="section">
+<div class="sec-hdr">Reason for Referral</div>
+<div class="sec-body">${escHtml(referNotes).replace(/\n/g, '<br>')}</div>
+</div>` : ''}
+
+<div style="font-size:11px;margin-top:14px">
+  <div>I would be grateful for your review and further management of this patient.</div>
+  <br>
+  <div>Please do not hesitate to contact our office should you require any further information.</div>
+  <br>
+  <div>Kind regards,</div>
+</div>
+
+<div class="sig">
+<div class="sig-left">
+  <div class="sig-line"></div>
+  <div class="sig-name">Dr. Dawit D Kabiye</div>
+  <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
+  <div class="sig-lic">${escHtml(site.name)} &nbsp;·&nbsp; 1 (758) 720 7111</div>
+  <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ..................</div>
+</div>
+<div class="sig-right"></div>
+</div>
+</body></html>`;
+}
+
+function buildDischargeHtml(ctx: DirectCtx, meta: PrintMeta, dischargeNotes: string, followUp: string, warningSign: string): string {
+  const site = SITE_INFO[meta.site] ?? SITE_INFO.rodney_bay;
+  const now = new Date();
+  const ect = { timeZone: 'America/St_Lucia' };
+  const consultDate = now.toLocaleString('en-GB', { ...ect, day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+
+  const ageLine = [ctx.age ? `${ctx.age} yrs` : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(', ');
+
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+${sharedHead(`Discharge Note — ${ctx.patientName || 'Patient'}`)}
+</head><body>
+${sharedHeader(site, consultDate)}
+${sharedPatient(ctx)}
+<div class="title">DISCHARGE SUMMARY / CLINIC NOTE</div>
+
+<div class="section">
+<div class="sec-hdr">Patient</div>
+<div class="sec-body">${escHtml(ctx.patientName || '—')}${ageLine ? `, ${escHtml(ageLine)}` : ''}</div>
+</div>
+
+${ctx.assessment || ctx.icdCodes.length ? `<div class="section">
+<div class="sec-hdr">Diagnosis</div>
+<div class="sec-body">
+${ctx.assessment ? `<div>${escHtml(ctx.assessment).replace(/\n/g, '<br>')}</div>` : ''}
+${ctx.icdCodes.length ? `<div style="margin-top:4px;font-size:10px;color:#555">ICD-10: ${escHtml(ctx.icdCodes.join(', '))}</div>` : ''}
+</div></div>` : ''}
+
+${ctx.procedures || ctx.plan ? `<div class="section">
+<div class="sec-hdr">Procedures / Treatment</div>
+<div class="sec-body">
+${ctx.procedures ? `<div>${escHtml(ctx.procedures).replace(/\n/g, '<br>')}</div>` : ''}
+${ctx.plan ? `<div style="margin-top:4px">${escHtml(ctx.plan).replace(/\n/g, '<br>')}</div>` : ''}
+</div></div>` : ''}
+
+${ctx.medications.length || ctx.medicationsText ? `<div class="section">
+<div class="sec-hdr">Medications on Discharge</div>
+<div class="sec-body">${items(ctx.medications)}${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}</div>
+</div>` : ''}
+
+${dischargeNotes ? `<div class="section">
+<div class="sec-hdr">Discharge Instructions</div>
+<div class="sec-body">${escHtml(dischargeNotes).replace(/\n/g, '<br>')}</div>
+</div>` : ''}
+
+${warningSign ? `<div class="section">
+<div class="sec-hdr">Warning Signs — Return to Emergency If:</div>
+<div class="sec-body" style="color:#b91c1c">${escHtml(warningSign).replace(/\n/g, '<br>')}</div>
+</div>` : ''}
+
+${followUp ? `<div class="section">
+<div class="sec-hdr">Follow-up</div>
+<div class="sec-body">${escHtml(followUp).replace(/\n/g, '<br>')}</div>
+</div>` : ''}
+
+<div class="sig">
+<div class="sig-left">
+  <div class="sig-line"></div>
+  <div class="sig-name">Dr. Dawit D Kabiye</div>
+  <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
+  <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ..................</div>
+</div>
+<div class="sig-right">Issued: ${consultDate}</div>
+</div>
+</body></html>`;
+}
+
+function printHtml(html: string) {
+  const win = window.open('', '_blank');
+  if (win) {
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+    // Small delay so browser can lay out content before print dialog
+    setTimeout(() => { try { win.print(); } catch { /* ignore */ } }, 450);
+  } else {
+    // Popup blocked — fall back to download
+    downloadHtml(html, 'document.html');
+  }
+}
+
+function downloadHtml(html: string, filename: string) {
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const url = URL.createObjectURL(blob);
+  if (isIOS) { window.open(url, '_blank'); setTimeout(() => URL.revokeObjectURL(url), 30_000); return; }
+  const a = window.document.createElement('a');
+  a.href = url; a.download = filename; a.style.display = 'none';
+  window.document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+}
+
+// ── Direct export panel ───────────────────────────────────────────────────────
+
+function DirectExportPanel() {
+  const ctx = useAppContext();
+  const [docType, setDocType] = useState<'clinical' | 'referral' | 'discharge'>('clinical');
+  const [referTo, setReferTo] = useState('');
+  const [referNotes, setReferNotes] = useState('');
+  const [dischargeNotes, setDischargeNotes] = useState('');
+  const [followUp, setFollowUp] = useState('');
+  const [warningSign, setWarningSign] = useState('');
+
+  function makeMeta(): PrintMeta {
+    return {
+      patientName: ctx.patientName, patientId: ctx.patientId,
+      age: ctx.age, dob: ctx.dob, sex: ctx.sex, phone: ctx.phone,
+      site: ctx.currentSite, appointmentType: ctx.triageResult.appointmentType,
+    };
+  }
+
+  function getHtml(): string {
+    const meta = makeMeta();
+    if (docType === 'referral') return buildReferralHtml(ctx, meta, referTo, referNotes);
+    if (docType === 'discharge') return buildDischargeHtml(ctx, meta, dischargeNotes, followUp, warningSign);
+    return buildDirectSummaryHtml(ctx, meta);
+  }
+
+  function filename(): string {
+    const slug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const date = new Date().toISOString().slice(0, 10);
+    const prefix = docType === 'referral' ? 'referral' : docType === 'discharge' ? 'discharge' : 'clinical-note';
+    return `${prefix}-${slug}-${date}.html`;
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* Template selector */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        {([['clinical', 'Clinical Note'], ['referral', 'Referral Letter'], ['discharge', 'Discharge Note']] as const).map(([id, label]) => (
+          <button key={id} type="button" onClick={() => setDocType(id)} style={{
+            padding: '5px 14px', borderRadius: 8, fontSize: 12,
+            border: docType === id ? '2px solid #1a5276' : '1px solid #d1d5db',
+            background: docType === id ? '#1a5276' : '#f9fafb',
+            color: docType === id ? '#fff' : '#374151', cursor: 'pointer', fontWeight: docType === id ? 700 : 400,
+          }}>{label}</button>
+        ))}
+      </div>
+
+      {/* Referral extras */}
+      {docType === 'referral' && (
+        <div style={{ display: 'grid', gap: 8 }}>
+          <div className="fld">
+            <label style={{ fontSize: 12 }}>Refer to (name / department)</label>
+            <input type="text" value={referTo} onChange={e => setReferTo(e.target.value)}
+              placeholder="e.g. Dr Smith, Gastroenterology, OKEU" style={{ fontSize: 12 }} />
+          </div>
+          <div className="fld">
+            <label style={{ fontSize: 12 }}>Reason for referral / clinical question</label>
+            <textarea value={referNotes} onChange={e => setReferNotes(e.target.value)}
+              placeholder="e.g. For further evaluation and management of suspected…" style={{ fontSize: 12, minHeight: 70 }} />
+          </div>
+        </div>
+      )}
+
+      {/* Discharge extras */}
+      {docType === 'discharge' && (
+        <div style={{ display: 'grid', gap: 8 }}>
+          <div className="fld">
+            <label style={{ fontSize: 12 }}>Discharge instructions</label>
+            <textarea value={dischargeNotes} onChange={e => setDischargeNotes(e.target.value)}
+              placeholder="Diet, activity restrictions, wound care, medications, dressing changes…" style={{ fontSize: 12, minHeight: 70 }} />
+          </div>
+          <div className="fld">
+            <label style={{ fontSize: 12 }}>Warning signs — return if…</label>
+            <textarea value={warningSign} onChange={e => setWarningSign(e.target.value)}
+              placeholder="Fever >38.5°C, increasing pain, redness/swelling, inability to tolerate fluids…" style={{ fontSize: 12, minHeight: 50 }} />
+          </div>
+          <div className="fld">
+            <label style={{ fontSize: 12 }}>Follow-up plan</label>
+            <textarea value={followUp} onChange={e => setFollowUp(e.target.value)}
+              placeholder="e.g. Review in 2 weeks at Rodney Bay. Histopathology results to be discussed at follow-up." style={{ fontSize: 12, minHeight: 50 }} />
+          </div>
+        </div>
+      )}
+
+      {/* Actions */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button type="button"
+          onClick={() => printHtml(getHtml())}
+          style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #1a5276', background: '#1a5276', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
+          🖨 Print / Save PDF
+        </button>
+        <button type="button"
+          onClick={() => downloadHtml(getHtml(), filename())}
+          style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #374151', background: '#f9fafb', color: '#374151', fontSize: 12, cursor: 'pointer' }}>
+          ↓ Download HTML
+        </button>
+      </div>
+
+      <div style={{ fontSize: 11, color: '#9ca3af' }}>
+        Generated directly from entered data — no AI required. Review before printing.
+      </div>
+    </div>
+  );
 }
 
 export default function SummaryTab() {
@@ -70,24 +780,70 @@ export default function SummaryTab() {
         }),
       };
 
-      const res = await fetch(apiUrl('/api/summary/generate'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+      // If VITE_API_URL is set, use the API server directly; otherwise try same-origin
+      // proxy but fall back to direct Anthropic call if the server is unavailable.
+      let summaryText: string | null = null;
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
+      if (API_ORIGIN) {
+        // Deployed with explicit API URL — call server, no fallback needed
+        const res = await fetch(apiUrl('/api/summary/generate'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
+        }
+        const data = await res.json() as { document: string };
+        summaryText = data.document;
+      } else {
+        // No API_ORIGIN — try same-origin proxy, fall back to direct Anthropic call
+        let apiSucceeded = false;
+        try {
+          const res = await fetch(apiUrl('/api/summary/generate'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+          });
+          if (res.ok) {
+            const data = await res.json() as { document: string };
+            summaryText = data.document;
+            apiSucceeded = true;
+          }
+        } catch {
+          // API server not available — fall through to direct call
+        }
+
+        if (!apiSucceeded) {
+          if (!ANTHROPIC_API_KEY) {
+            throw new Error(
+              'Add VITE_ANTHROPIC_API_KEY to your .env.local to enable AI summaries, or connect to the API server.',
+            );
+          }
+          summaryText = await callAnthropicDirect(body);
+        }
       }
 
-      const data = await res.json() as { document: string };
-      setDocument(data.document);
+      setDocument(summaryText ?? '');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
+  }
+
+  function makePrintMeta(): PrintMeta {
+    return {
+      patientName: ctx.patientName,
+      patientId: ctx.patientId,
+      age: ctx.age,
+      dob: ctx.dob,
+      sex: ctx.sex,
+      phone: ctx.phone,
+      site: ctx.currentSite,
+      appointmentType: ctx.triageResult.appointmentType,
+    };
   }
 
   async function copy() {
@@ -97,69 +853,42 @@ export default function SummaryTab() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  function buildPrintHtml(text: string): string {
-    const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return `<!DOCTYPE html>
-<html><head>
-<meta charset="utf-8">
-<title>Clinical Summary — Amise Medical Services</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Georgia, 'Times New Roman', serif; max-width: 720px; margin: 32px auto; padding: 0 24px; line-height: 1.75; color: #111; font-size: 13px; }
-  pre { white-space: pre-wrap; word-break: break-word; font-family: inherit; font-size: 13px; }
-  h1 { font-size: 15px; margin-bottom: 6px; }
-  .footer { margin-top: 32px; padding-top: 12px; border-top: 1px solid #ccc; font-size: 11px; color: #555; }
-  @page { margin: 20mm; }
-  @media print { body { margin: 0; padding: 0; } }
-</style>
-</head><body>
-<pre>${escaped}</pre>
-<div class="footer">DRAFT — FOR REVIEW — Amise Medical Services, Saint Lucia. Clinical decisions remain with Dr Kabiye.</div>
-</body></html>`;
-  }
-
   function printDoc() {
     if (!document) return;
-    const html = buildPrintHtml(document);
-
-    // Inject a hidden iframe into the current page — avoids popup-blocker entirely
-    const iframe = window.document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;';
-    iframe.setAttribute('title', 'print-frame');
-    window.document.body.appendChild(iframe);
-
-    const iDoc = iframe.contentDocument ?? iframe.contentWindow?.document;
-    if (!iDoc) { iframe.remove(); return; }
-
-    iDoc.open();
-    iDoc.write(html);
-    iDoc.close();
-
-    // Wait for resources, then print; remove iframe after dialog closes
-    const doprint = () => {
-      try {
-        iframe.contentWindow?.focus();
-        iframe.contentWindow?.print();
-      } finally {
-        setTimeout(() => iframe.remove(), 2000);
-      }
-    };
-
-    if (iframe.contentDocument?.readyState === 'complete') {
-      doprint();
-    } else {
-      iframe.onload = doprint;
-    }
+    printHtml(buildPrintHtml(document, makePrintMeta()));
   }
 
   function downloadDoc() {
     if (!document) return;
     const patientSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const dateStr = new Date().toISOString().slice(0, 10);
-    const filename = `clinical-summary-${patientSlug}-${dateStr}.txt`;
+    const filename = `clinical-summary-${patientSlug}-${dateStr}.html`;
 
-    const blob = new Blob([document], { type: 'text/plain;charset=utf-8' });
+    const html = buildPrintHtml(document, makePrintMeta());
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+
+    // Web Share API — works on iOS Safari 15+ and mobile Chrome; preferred on mobile
+    if ('share' in navigator && 'canShare' in navigator) {
+      const file = new File([blob], filename, { type: 'text/html' });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((navigator as any).canShare({ files: [file] })) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        void (navigator as any).share({ files: [file], title: `Clinical Summary — ${ctx.patientName || 'Patient'}` });
+        return;
+      }
+    }
+
+    // iOS Safari: blob <a download> silently yields 0-byte files — open in new tab instead
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const url = URL.createObjectURL(blob);
+    if (isIOS) {
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 30_000);
+      return;
+    }
+
+    // Desktop: standard anchor-click download
     const a = window.document.createElement('a');
     a.href = url;
     a.download = filename;
@@ -173,103 +902,101 @@ export default function SummaryTab() {
 
   return (
     <div className="summary-tab">
-      {/* Header */}
-      <div className="summary-header">
-        <div>
-          <div className="summary-title">Clinical Intake Summary</div>
-          <div className="summary-sub">
-            AI-drafted from all collected data — review and edit before sending to Dr Kabiye
+
+      {/* ── Print / Export — primary, always open ── */}
+      <CollapsibleCard title="Print / Export — Clinical Documents" defaultOpen={true}>
+        <DirectExportPanel />
+      </CollapsibleCard>
+
+      {/* ── AI Summary — secondary, collapsed by default ── */}
+      <CollapsibleCard title="AI Clinical Summary (optional)" defaultOpen={false}>
+        {/* Sub-header */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 10 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+            Claude drafts a structured SOAP note from all entered data — review before forwarding.
           </div>
-        </div>
-        <div className="summary-actions">
-          {document && (
-            <>
-              <button className="summary-btn summary-btn--ghost" onClick={() => void copy()}>
-                {copied ? '✓ Copied' : '⎘ Copy'}
-              </button>
-              <button className="summary-btn summary-btn--ghost" onClick={downloadDoc}>
-                ↓ Download
-              </button>
-              <button className="summary-btn summary-btn--ghost" onClick={printDoc}>
-                🖨 Print / Save PDF
-              </button>
-              <button className="summary-btn summary-btn--ghost" onClick={() => setDocument('')}>
-                × Clear
-              </button>
-            </>
-          )}
-          <button
-            className="summary-btn summary-btn--primary"
-            onClick={() => void generate()}
-            disabled={loading || !hasData}
-            title={!hasData ? 'Enter at least a patient name or symptom first' : ''}
-          >
-            {loading ? (
-              <><span className="summary-spinner" /> Drafting…</>
-            ) : document ? (
-              '↻ Regenerate'
-            ) : (
-              '✦ Draft clinical summary'
+          <div className="summary-actions">
+            {document && (
+              <>
+                <button className="summary-btn summary-btn--ghost" onClick={() => void copy()}>
+                  {copied ? '✓ Copied' : '⎘ Copy'}
+                </button>
+                <button className="summary-btn summary-btn--ghost" onClick={downloadDoc}>
+                  ↓ Download
+                </button>
+                <button className="summary-btn summary-btn--ghost" onClick={printDoc}>
+                  🖨 Print
+                </button>
+                <button className="summary-btn summary-btn--ghost" onClick={() => setDocument('')}>
+                  × Clear
+                </button>
+              </>
             )}
-          </button>
-        </div>
-      </div>
-
-      {/* Error */}
-      {error && (
-        <div className="summary-error">
-          ⚠ {error}
-          {error.includes('ANTHROPIC') || error.includes('API') ? (
-            <span> — Check that ANTHROPIC_API_KEY is set in environment secrets.</span>
-          ) : null}
-        </div>
-      )}
-
-      {/* Empty state */}
-      {!document && !loading && (
-        <div className="summary-empty">
-          <div className="summary-empty-icon">📋</div>
-          <div className="summary-empty-title">No summary yet</div>
-          <div className="summary-empty-body">
-            Fill in the patient intake, then click <strong>Draft clinical summary</strong> above.
-            Claude will compose a structured document from all collected data, which you can edit
-            before sending for Dr Kabiye's review.
+            <button
+              className="summary-btn summary-btn--primary"
+              onClick={() => void generate()}
+              disabled={loading || !hasData}
+              title={!hasData ? 'Enter at least a patient name or symptom first' : ''}
+            >
+              {loading ? (
+                <><span className="summary-spinner" /> Drafting…</>
+              ) : document ? (
+                '↻ Regenerate'
+              ) : (
+                '✦ Draft AI summary'
+              )}
+            </button>
           </div>
-          <div className="summary-checklist">
+        </div>
+
+        {/* Error */}
+        {error && (
+          <div className="summary-error" style={{ marginBottom: 10 }}>
+            ⚠ {error}
+            {(error.includes('ANTHROPIC') || error.includes('API')) &&
+             !error.includes('VITE_ANTHROPIC_API_KEY') ? (
+              <span> — Check that ANTHROPIC_API_KEY is set in environment secrets.</span>
+            ) : null}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!document && !loading && (
+          <div className="summary-checklist" style={{ padding: '10px 0' }}>
             <div className={`summary-check ${ctx.patientName ? 'ok' : ''}`}>
               {ctx.patientName ? '✓' : '○'} Patient name
             </div>
             <div className={`summary-check ${ctx.symptoms.length ? 'ok' : ''}`}>
-              {ctx.symptoms.length ? '✓' : '○'} At least one symptom selected
+              {ctx.symptoms.length ? '✓' : '○'} At least one symptom
             </div>
             <div className={`summary-check ${Object.values(ctx.vitals).some(v => v.trim()) ? 'ok' : ''}`}>
               {Object.values(ctx.vitals).some(v => v.trim()) ? '✓' : '○'} Vital signs (optional)
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Generated document */}
-      {(document || loading) && (
-        <div className="summary-doc-wrap">
-          <div className="summary-doc-bar">
-            <span className="summary-doc-badge">DRAFT — FOR REVIEW</span>
-            <span className="summary-doc-note">
-              This is an AI-drafted administrative summary. Edit freely before forwarding.
-              Clinical decisions remain with Dr Kabiye.
-            </span>
+        {/* Generated document */}
+        {(document || loading) && (
+          <div className="summary-doc-wrap">
+            <div className="summary-doc-bar">
+              <span className="summary-doc-badge">DRAFT — FOR REVIEW</span>
+              <span className="summary-doc-note">
+                AI-drafted administrative summary. Edit freely before forwarding.
+              </span>
+            </div>
+            <textarea
+              ref={textRef}
+              className="summary-doc"
+              value={document}
+              onChange={e => setDocument(e.target.value)}
+              placeholder={loading ? 'Composing summary…' : ''}
+              readOnly={loading}
+              spellCheck
+            />
           </div>
-          <textarea
-            ref={textRef}
-            className="summary-doc"
-            value={document}
-            onChange={e => setDocument(e.target.value)}
-            placeholder={loading ? 'Composing summary…' : ''}
-            readOnly={loading}
-            spellCheck
-          />
-        </div>
-      )}
+        )}
+      </CollapsibleCard>
+
     </div>
   );
 }

@@ -5,7 +5,7 @@ import HomePage from '@/pages/Home';
 import LoginPage from '@/components/LoginPage';
 
 function AuthGuard() {
-  const { session, loading } = useAuth();
+  const { profile, loading } = useAuth();
 
   if (loading) {
     return (
@@ -19,7 +19,7 @@ function AuthGuard() {
     );
   }
 
-  if (!session) return <LoginPage />;
+  if (!profile) return <LoginPage />;
 
   return (
     <AppProvider>

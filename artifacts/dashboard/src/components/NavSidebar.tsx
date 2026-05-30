@@ -3,15 +3,14 @@ import {
   Scissors, CalendarDays, Receipt, BarChart2, Settings,
   PanelLeftClose, PanelLeftOpen, AlertTriangle, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
-  FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon,
+  FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
+  ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
-import type { Section } from '@/context/AppContext';
+import type { Section, TopSection } from '@/context/AppContext';
 import { hasRole } from '@/lib/roles';
 
-export type TopSection =
-  | 'dashboard' | 'patients' | 'intake' | 'consultation'
-  | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary';
+export type { TopSection };
 
 interface NavSidebarProps {
   collapsed: boolean;
@@ -25,6 +24,7 @@ interface NavSidebarProps {
   urgentCount: number;
   acuity: string;
   pmhCount?: number;
+  encounterMode?: 'outpatient' | 'inpatient';
 }
 
 const CLINICAL_SUB: {
@@ -40,9 +40,15 @@ const CLINICAL_SUB: {
   { id: 'allergies',   icon: ShieldAlert,    label: 'Allergies' },
   { id: 'toxic',       icon: Cigarette,      label: 'Toxic Habits' },
   { id: 'scales',      icon: ClipboardCheck, label: 'Scales' },
-  { id: 'examination', icon: Stethoscope,    label: 'Examination', minRole: 'nurse' },
-  { id: 'assessment',  icon: ClipboardCheck, label: 'Assessment',  minRole: 'doctor' },
-  { id: 'plan',        icon: FileEdit,       label: 'Plan',        minRole: 'doctor' },
+  { id: 'ros',         icon: ListChecks,     label: 'Review of Systems' },
+  { id: 'examination',     icon: Stethoscope,    label: 'Examination',    minRole: 'nurse' },
+  { id: 'investigations', icon: FlaskConical,   label: 'Investigations', minRole: 'nurse' },
+  { id: 'radiology',      icon: ScanLine,       label: 'Radiology',      minRole: 'nurse' },
+  { id: 'attachments',    icon: Paperclip,      label: 'Attachments',    minRole: 'nurse' },
+  { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },
+  { id: 'plan',           icon: FileEdit,       label: 'Plan',           minRole: 'doctor' },
+  { id: 'progress',       icon: FileText,       label: 'Progress Notes' },
+  { id: 'monitoring',    icon: Activity,       label: 'Monitoring' },
 ];
 
 const BILLING_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string }[] = [
@@ -65,9 +71,11 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'consultation', icon: Stethoscope,     label: 'Consultation', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'procedures',   icon: Scissors,        label: 'Procedures',   roles: ['doctor', 'admin'] },
   { id: 'scheduling',   icon: CalendarDays,    label: 'Scheduling',   roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
-  { id: 'summary',      icon: FileEdit,        label: 'Summary',      roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
+  { id: 'finaldoc',     icon: FileCheck2,      label: 'Summary',      roles: ['nurse', 'doctor', 'admin'] },
   { id: 'billing',      icon: Receipt,         label: 'Billing',      roles: ['front_desk', 'admin'] },
   { id: 'analytics',    icon: BarChart2,       label: 'Analytics',    roles: ['doctor', 'admin'] },
+  { id: 'trauma',       icon: Zap,             label: 'Trauma',       roles: ['nurse', 'doctor', 'admin'] },
+  { id: 'vademecum',    icon: BookOpen,        label: 'Disease Dict.', roles: ['nurse', 'doctor', 'admin'] },
   { id: 'settings',     icon: Settings,        label: 'Settings',     roles: ['admin'] },
 ];
 
@@ -77,6 +85,7 @@ export default function NavSidebar({
   activeSection, onSection,
   userRole, hasUrgentRedFlag, urgentCount, acuity,
   pmhCount = 0,
+  encounterMode = 'outpatient',
 }: NavSidebarProps) {
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
@@ -120,7 +129,13 @@ export default function NavSidebar({
                   <Icon size={16} strokeWidth={2} />
                   {isTriage && <span className="nsb-dot" />}
                 </span>
-                {!collapsed && <span className="nsb-label">{item.label}</span>}
+                {!collapsed && (
+                  <span className="nsb-label">
+                    {item.id === 'finaldoc' && encounterMode === 'inpatient'
+                      ? 'Summary (Inpatient)'
+                      : item.label}
+                  </span>
+                )}
                 {!collapsed && hasChevron && (
                   isActive
                     ? <ChevronDown size={12} strokeWidth={2.5} className="nsb-chevron" />
