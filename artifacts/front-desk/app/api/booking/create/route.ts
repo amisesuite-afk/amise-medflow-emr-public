@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createBookingRequest, logAudit } from '@/lib/supabase';
 import { createCalendarEvent, LOCATION_LABELS } from '@/lib/calendar';
 import { sendSms, sendWhatsApp } from '@/lib/twilio';
+import { sendConfirmationEmail } from '@/lib/email';
 import { TRACK_CONFIG, encodeReason, BOOKING_DISCLAIMER, type BookingTrack } from '@/lib/scheduling';
 
 export const runtime = 'nodejs';
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     appointmentType: string;
     patientName: string;
     patientPhone: string;
+    patientEmail?: string;
     patientDob?: string;
     reason?: string;
     referralDoctor?: string;
@@ -64,7 +66,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   };
 
   const {
-    track, appointmentType, patientName, patientPhone,
+    track, appointmentType, patientName, patientPhone, patientEmail,
     patientDob, reason, referralDoctor, referralPractice, selectedSlot,
   } = body;
 
@@ -112,7 +114,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   // Create booking row
   const row = await createBookingRequest({
     patient_name:     patientName,
-    patient_email:    null,
+    patient_email:    patientEmail?.trim() || null,
     patient_phone:    patientPhone,
     appointment_type: appointmentType,
     location:         selectedSlot?.location ?? '',
@@ -142,6 +144,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } else {
     // Referral or routine without confirmed slot
     await send(patientPhone, referralAcknowledgement(patientName));
+  }
+
+  // Send email with full procedure instructions (non-blocking)
+  if (patientEmail?.trim()) {
+    void sendConfirmationEmail({
+      to:              patientEmail.trim(),
+      patientName,
+      appointmentType,
+      slot:            (track === 'routine' && bookingStatus === 'patient_confirmed' && selectedSlot)
+        ? { display: selectedSlot.display, location: selectedSlot.location }
+        : null,
+      track,
+      isConfirmed:     bookingStatus === 'patient_confirmed',
+    }).catch(console.error);
   }
 
   // Notify staff of referral (non-blocking)

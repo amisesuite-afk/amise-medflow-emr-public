@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getThread, updateThread, logAudit } from '@/lib/supabase';
 import { sendWhatsApp, sendSms, checkForbidden } from '@/lib/twilio';
 import { createCalendarEvent, LOCATION_LABELS } from '@/lib/calendar';
+import { sendConfirmationEmail } from '@/lib/email';
 import type { AppointmentSlot } from '@/types';
 
 export const runtime = 'nodejs';
@@ -106,6 +107,22 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     await sendSms(thread.patient_identifier, finalMessage);
   } else {
     await sendWhatsApp(thread.patient_identifier, finalMessage);
+  }
+
+  // Send email with full procedure instructions if we have an email address and a confirmed slot
+  const threadEmail = (thread as { patient_email?: string | null }).patient_email;
+  if (threadEmail && calendarEventId) {
+    const confirmedSlot = appointmentSlots?.[selectedSlotIndex ?? 0];
+    void sendConfirmationEmail({
+      to:              threadEmail,
+      patientName:     thread.patient_name ?? 'Patient',
+      appointmentType: confirmedSlot?.appointmentType ?? 'new_consult',
+      slot:            confirmedSlot
+        ? { display: confirmedSlot.display, location: confirmedSlot.location }
+        : null,
+      track:           'referral',
+      isConfirmed:     true,
+    }).catch(console.error);
   }
 
   await updateThread(threadId, { status: 'resolved', draft_reply: null });

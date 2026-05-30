@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getBookingById, updateBookingRequest, logAudit } from '@/lib/supabase';
 import { findUrgentSlot, createCalendarEvent, LOCATION_LABELS } from '@/lib/calendar';
 import { sendSms, sendWhatsApp } from '@/lib/twilio';
+import { sendConfirmationEmail } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -100,12 +101,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     calendar_event:  eventResult.eventId,
   });
 
-  // Send confirmation
+  // Send confirmation via WhatsApp/SMS
   const phone = booking.patient_phone ?? '';
   if (phone) {
-    const msg    = urgentConfirmation(booking.patient_name, slot);
+    const msg        = urgentConfirmation(booking.patient_name, slot);
     const isWhatsApp = phone.toLowerCase().startsWith('whatsapp:');
     await (isWhatsApp ? sendWhatsApp : sendSms)(phone, msg);
+  }
+
+  // Send email with full procedure instructions (non-blocking)
+  const email = (booking as { patient_email?: string | null }).patient_email;
+  if (email) {
+    void sendConfirmationEmail({
+      to:              email,
+      patientName:     booking.patient_name,
+      appointmentType: booking.appointment_type,
+      slot:            { display: slot.display, location: slot.location },
+      track:           'urgent',
+      isConfirmed:     true,
+    }).catch(console.error);
   }
 
   return NextResponse.json({

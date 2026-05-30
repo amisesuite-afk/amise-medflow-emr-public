@@ -49,6 +49,7 @@ export default function BookingForm() {
   const [appointmentType,  setApptType]       = useState('new_consult');
   const [patientName,      setName]           = useState('');
   const [patientPhone,     setPhone]          = useState('');
+  const [patientEmail,     setEmail]          = useState('');
   const [patientDob,       setDob]            = useState('');
   const [reason,           setReason]         = useState('');
   const [referralDoctor,   setRefDoctor]      = useState('');
@@ -80,8 +81,8 @@ export default function BookingForm() {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
-          track, appointmentType, patientName, patientPhone, patientDob,
-          reason, referralDoctor, referralPractice,
+          track, appointmentType, patientName, patientPhone, patientEmail: patientEmail.trim() || undefined,
+          patientDob, reason, referralDoctor, referralPractice,
           selectedSlot: selectedSlot ?? undefined,
         }),
       });
@@ -92,7 +93,7 @@ export default function BookingForm() {
         setResult({
           autoConfirmed: data.autoConfirmed ?? false,
           message: data.autoConfirmed
-            ? `Your appointment has been confirmed: ${selectedSlot?.display ?? ''}. A confirmation has been sent to ${patientPhone}.`
+            ? `Your appointment has been confirmed: ${selectedSlot?.display ?? ''}. A confirmation has been sent to ${patientPhone}${patientEmail.trim() ? ` and ${patientEmail.trim()}` : ''}.`
             : `Your request has been received. You will be contacted at ${patientPhone} within ${track === 'referral' ? '24 hours' : '2 hours'} to confirm your appointment.`,
         });
         setStep('done');
@@ -104,9 +105,14 @@ export default function BookingForm() {
     }
   }
 
+  const emailValid =
+    patientEmail.trim() === '' ||
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientEmail.trim());
+
   const canAdvanceDetails =
     patientName.trim().length >= 2 &&
     patientPhone.trim().length >= 7 &&
+    emailValid &&
     (track !== 'referral' || referralDoctor.trim().length >= 2);
 
   return (
@@ -206,6 +212,23 @@ export default function BookingForm() {
               <input type="tel" value={patientPhone} onChange={e => setPhone(e.target.value)} placeholder="+1 758 …" style={inputStyle} />
               <div style={{ fontSize: 11, color: '#4b5563', marginTop: 4 }}>
                 We will send appointment confirmations to this number.
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 14 }}>
+              <label style={labelStyle}>Email address <span style={{ color: '#4b5563', fontWeight: 400, textTransform: 'none' }}>(recommended — full prep instructions sent here)</span></label>
+              <input
+                type="email"
+                value={patientEmail}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                style={{ ...inputStyle, borderColor: !emailValid ? '#ef4444' : '#374151' }}
+              />
+              {!emailValid && (
+                <div style={{ fontSize: 11, color: '#f87171', marginTop: 4 }}>Please enter a valid email address.</div>
+              )}
+              <div style={{ fontSize: 11, color: '#4b5563', marginTop: 4 }}>
+                Procedure instructions and your appointment details will be sent to this address. Leave blank to receive confirmation by WhatsApp/SMS only.
               </div>
             </div>
 
@@ -373,7 +396,7 @@ export default function BookingForm() {
             </div>
             <button
               onClick={() => {
-                setStep('track'); setName(''); setPhone(''); setDob('');
+                setStep('track'); setName(''); setPhone(''); setEmail(''); setDob('');
                 setReason(''); setRefDoctor(''); setRefPractice('');
                 setSelectedSlot(null); setResult(null); setError('');
               }}
