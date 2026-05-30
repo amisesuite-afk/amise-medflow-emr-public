@@ -12,6 +12,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
     "@supabase/supabase-js": "^2.43.0",
+    "@workspace/triage-engine": "workspace:*",
+    "googleapis": "^171.4.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",

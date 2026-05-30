@@ -179,32 +179,58 @@ export default function DashboardClient({ initialThreads, secret, mode }: Props)
 
               {/* Messages */}
               <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {selected.messages.map((m, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: m.role === 'patient' ? 'flex-start' : 'flex-end' }}>
-                    <div
-                      style={{
-                        maxWidth: '75%', padding: '8px 12px',
-                        borderRadius: m.role === 'patient' ? '4px 16px 16px 4px' : '16px 4px 4px 16px',
-                        background: m.role === 'patient' ? '#1e293b' : '#0d948822',
-                        border: `1px solid ${m.role === 'patient' ? '#374151' : '#0d948844'}`,
-                        fontSize: 13, color: '#e2e8f0', lineHeight: 1.5,
-                      }}
-                    >
-                      <div style={{ marginBottom: 2, fontSize: 10, color: '#6b7280', textTransform: 'capitalize' }}>{m.role}</div>
-                      <div style={{ whiteSpace: 'pre-wrap' }}>{m.content}</div>
-                      <div style={{ marginTop: 4, fontSize: 9, color: '#4b5563' }}>
-                        {m.timestamp
-                          ? new Date(m.timestamp).toLocaleTimeString('en-LC', {
-                              timeZone: 'America/St_Lucia',
-                              hour12: true,
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })
-                          : ''}
+                {selected.messages.map((m, i) => {
+                  // System messages render as staff-only triage/info panels
+                  if (m.role === 'system') {
+                    const isTriage = m.meta?.type === 'triage_result';
+                    const isSlots  = m.meta?.type === 'appointment_slots';
+                    const acuity   = isTriage ? (m.meta as { type: 'triage_result'; payload: { acuity: string; score: number } }).payload.acuity : null;
+                    const acuityColors: Record<string, string> = { urgent: '#ef4444', priority: '#f97316', review: '#fbbf24', routine: '#34d399' };
+                    const color = acuity ? (acuityColors[acuity] ?? '#6b7280') : '#6b7280';
+                    return (
+                      <div key={i} style={{
+                        padding: '6px 10px', borderRadius: 4,
+                        background: '#0f172a',
+                        border: `1px solid ${isSlots ? '#0d948844' : color + '44'}`,
+                        fontSize: 11, color: isSlots ? '#5eead4' : color,
+                      }}>
+                        <span style={{ fontWeight: 700, marginRight: 6 }}>
+                          {isTriage ? 'TRIAGE' : isSlots ? 'SLOTS' : 'SYSTEM'}
+                        </span>
+                        {m.content}
+                        <span style={{ marginLeft: 8, color: '#4b5563', fontSize: 9 }}>staff only</span>
+                      </div>
+                    );
+                  }
+
+                  // Patient / assistant bubbles
+                  return (
+                    <div key={i} style={{ display: 'flex', justifyContent: m.role === 'patient' ? 'flex-start' : 'flex-end' }}>
+                      <div
+                        style={{
+                          maxWidth: '75%', padding: '8px 12px',
+                          borderRadius: m.role === 'patient' ? '4px 16px 16px 4px' : '16px 4px 4px 16px',
+                          background: m.role === 'patient' ? '#1e293b' : '#0d948822',
+                          border: `1px solid ${m.role === 'patient' ? '#374151' : '#0d948844'}`,
+                          fontSize: 13, color: '#e2e8f0', lineHeight: 1.5,
+                        }}
+                      >
+                        <div style={{ marginBottom: 2, fontSize: 10, color: '#6b7280', textTransform: 'capitalize' }}>{m.role}</div>
+                        <div style={{ whiteSpace: 'pre-wrap' }}>{m.content}</div>
+                        <div style={{ marginTop: 4, fontSize: 9, color: '#4b5563' }}>
+                          {m.timestamp
+                            ? new Date(m.timestamp).toLocaleTimeString('en-LC', {
+                                timeZone: 'America/St_Lucia',
+                                hour12: true,
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })
+                            : ''}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 {selected.messages.length === 0 && (
                   <div style={{ textAlign: 'center', color: '#4b5563', fontSize: 13 }}>No messages yet</div>
                 )}

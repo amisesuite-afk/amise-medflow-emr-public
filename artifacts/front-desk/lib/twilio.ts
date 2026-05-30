@@ -14,12 +14,14 @@ function getClient() {
   return _client;
 }
 
+export function checkForbidden(text: string): boolean {
+  return FORBIDDEN_PATTERNS.some(p => p.test(text));
+}
+
 function safeBody(text: string): string {
-  for (const pattern of FORBIDDEN_PATTERNS) {
-    if (pattern.test(text)) {
-      console.warn('[SAFETY] Forbidden pattern detected, replacing with safe fallback');
-      return 'Thank you for your message. A member of our team will be in touch with you shortly.';
-    }
+  if (checkForbidden(text)) {
+    console.warn('[SAFETY] Forbidden pattern in outbound message — replaced with safe fallback');
+    return 'Thank you for your message. A member of our team will be in touch with you shortly.';
   }
   return text;
 }
@@ -35,6 +37,22 @@ export async function sendWhatsApp(to: string, body: string): Promise<void> {
 
   await getClient().messages.create({
     from: process.env.TWILIO_WHATSAPP_FROM!,
+    to,
+    body: safe,
+  });
+}
+
+export async function sendSms(to: string, body: string): Promise<void> {
+  const safe = safeBody(body);
+  const mode = process.env.MODE ?? 'dry_run';
+
+  if (mode === 'dry_run') {
+    console.log(`[DRY RUN] SMS → ${to}:\n${safe}\n`);
+    return;
+  }
+
+  await getClient().messages.create({
+    from: process.env.TWILIO_FROM_NUMBER!,
     to,
     body: safe,
   });
@@ -59,9 +77,9 @@ export function formatNurseAlert(thread: ConversationThread): string {
   const name = thread.patient_name ?? 'Unknown patient';
   const complaint = thread.chief_complaint ?? 'Not specified';
   return [
-    `⚡ AMISE ALERT — ${level}`,
+    `AMISE ALERT — ${level}`,
     `Patient: ${name}`,
     `Complaint: ${complaint}`,
-    `Review dashboard: https://your-domain.vercel.app/dashboard`,
+    `Review dashboard: ${process.env.NEXT_PUBLIC_DASHBOARD_URL ?? 'https://amise-front-desk.vercel.app/dashboard'}`,
   ].join('\n');
 }
