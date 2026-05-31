@@ -71,6 +71,7 @@ function Nav() {
             { href: '#contact',   label: 'Contact',        active: false },
             { href: '/guidance',  label: 'Health Guidance', active: false },
             { href: '/refer',     label: 'For Providers',   active: false },
+            { href: '/pathway',   label: 'Care Pathway',    active: false },
           ].map(({ href, label, active }) => (
             <a key={href} href={href} style={{
               fontSize: 14, fontWeight: 500, textDecoration: 'none',
