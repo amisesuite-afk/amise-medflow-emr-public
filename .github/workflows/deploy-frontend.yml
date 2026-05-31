@@ -10,8 +10,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -27,41 +25,52 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install
 
-      - name: Build (Vercel output format)
+      - name: Deploy to Vercel
         working-directory: artifacts/front-desk
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXT_PUBLIC_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
-        run: npx vercel build --prod --yes --token=$VERCEL_TOKEN
-
-      - name: Deploy to Vercel
-        id: deploy
-        working-directory: artifacts/front-desk
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           set -e
-          npx vercel deploy --prebuilt --prod --yes --token=$VERCEL_TOKEN 2>&1 | tee /tmp/vout.txt
-          cat /tmp/vout.txt
-          URL=$(grep -oE 'https://[^[:space:]"]+\.vercel\.app' /tmp/vout.txt | head -1)
-          echo "Captured URL: [$URL]"
-          echo "LIVE_URL=$URL" >> $GITHUB_ENV
-          echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "# Amise Front Desk Live" >> $GITHUB_STEP_SUMMARY
-          echo "**$URL**" >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat /tmp/vout.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
 
-      - name: Update repo homepage with live URL
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -n "$LIVE_URL" ]; then
-            gh repo edit amisesuite-afk/amise-medflow-emr-public --homepage "$LIVE_URL"
-            echo "Set homepage to $LIVE_URL"
-          else
-            echo "No URL captured, skipping homepage update"
+          # Single command: build + deploy + set production alias
+          echo '=== VERCEL DEPLOY ===' 
+          npx vercel --prod --yes --token=$VERCEL_TOKEN 2>&1 | tee /tmp/vout.txt
+          echo '=== END ==='
+
+          # Show .vercel/project.json so we know what was created
+          echo '--- project.json ---'
+          cat .vercel/project.json 2>/dev/null || echo '(none)'
+
+          # Extract URL - Vercel outputs the production URL on the last line
+          URL=$(grep -oE 'https://[^[:space:]"]+\.vercel\.app' /tmp/vout.txt | tail -1)
+          echo "LIVE URL: $URL"
+
+          # Write to GitHub Step Summary
+          {
+            echo '# 🚀 Amise Front Desk is Live'
+            echo ''
+            echo "## $URL"
+            echo ''
+            echo '| Page | Path |'
+            echo '|---|---|'
+            echo "| Marketing homepage | $URL/ |"
+            echo "| Book appointment | $URL/book |"
+            echo "| Health guidance | $URL/guidance |"
+            echo "| Care pathway | $URL/pathway |"
+            echo "| GP referral | $URL/refer |"
+            echo ''
+            echo '<details><summary>Full deploy log</summary>'
+            echo ''
+            echo '```'
+            cat /tmp/vout.txt
+            echo '```'
+            echo '</details>'
+          } >> $GITHUB_STEP_SUMMARY
+
+          # Update repo homepage so it's findable
+          if [ -n "$URL" ]; then
+            gh repo edit amisesuite-afk/amise-medflow-emr-public --homepage "$URL" || true
           fi
