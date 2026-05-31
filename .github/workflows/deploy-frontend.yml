@@ -31,16 +31,39 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           NEXT_PUBLIC_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
-        run: npx vercel build --yes --token=$VERCEL_TOKEN
+        run: npx vercel build --prod --yes --token=$VERCEL_TOKEN
 
-      - name: Deploy to Vercel
-        id: deploy
+      - name: Deploy to Vercel (production)
         working-directory: artifacts/front-desk
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          DEPLOY_URL=$(npx vercel deploy --prebuilt --yes --token=$VERCEL_TOKEN 2>&1 | grep -o 'https://[^ ]*\.vercel\.app' | tail -1)
-          echo "url=$DEPLOY_URL" >> $GITHUB_OUTPUT
-          echo "## Deployed" >> $GITHUB_STEP_SUMMARY
-          echo "$DEPLOY_URL" >> $GITHUB_STEP_SUMMARY
-          echo "Live at: $DEPLOY_URL"
+          set -e
+          echo '=== VERCEL DEPLOY OUTPUT ==='
+          npx vercel deploy --prebuilt --prod --yes --token=$VERCEL_TOKEN 2>&1 | tee /tmp/vout.txt
+          echo '=== END ==='
+
+          URL=$(grep -oE 'https://[^[:space:]]+\.vercel\.app' /tmp/vout.txt | tail -1)
+          echo "Deployed URL: $URL"
+
+          # Write URL to file so it can be read back
+          echo "$URL" > /tmp/LIVE_URL.txt
+
+          # Rich GitHub Step Summary
+          echo '# 🚀 Amise Front Desk — Live' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo "## $URL" >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo 'Pages deployed:' >> $GITHUB_STEP_SUMMARY
+          echo '- `/` — Marketing homepage' >> $GITHUB_STEP_SUMMARY
+          echo '- `/book` — Patient self-booking' >> $GITHUB_STEP_SUMMARY
+          echo '- `/guidance` — Health guidance' >> $GITHUB_STEP_SUMMARY
+          echo '- `/pathway` — Care pathway' >> $GITHUB_STEP_SUMMARY
+          echo '- `/refer` — GP referral portal' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '<details><summary>Full deploy log</summary>' >> $GITHUB_STEP_SUMMARY
+          echo '' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/vout.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo '</details>' >> $GITHUB_STEP_SUMMARY
