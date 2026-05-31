@@ -7,6 +7,10 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -25,13 +29,53 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install
 
+      - name: List Vercel projects (find the right URL)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          echo "=== Vercel user/team info ==="
+          curl -sf "https://api.vercel.com/v2/user" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -m json.tool || true
+
+          echo ""
+          echo "=== Vercel teams ==="
+          curl -sf "https://api.vercel.com/v2/teams" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -m json.tool || true
+
+          echo ""
+          echo "=== All Vercel projects ==="
+          PROJ=$(curl -sf "https://api.vercel.com/v9/projects?limit=50" \
+            -H "Authorization: Bearer $VERCEL_TOKEN")
+          echo "$PROJ" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          for p in data.get('projects', []):
+              aliases = [a.get('domain','') for a in p.get('alias', [])]
+              print(f\"  name={p['name']}  id={p['id']}  aliases={aliases}\")
+          " || echo "$PROJ"
+
+          {
+            echo "## Vercel project list"
+            echo '```'
+            PROJ2=$(curl -sf "https://api.vercel.com/v9/projects?limit=50" \
+              -H "Authorization: Bearer $VERCEL_TOKEN")
+            echo "$PROJ2" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          for p in data.get('projects', []):
+              aliases = [a.get('domain','') for a in p.get('alias', [])]
+              print(f\"name={p['name']}  id={p['id']}  aliases={aliases}\")
+            " || echo "$PROJ2"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Build
         working-directory: artifacts/front-desk
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           NEXT_PUBLIC_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
-        run: npx vercel build --prod --yes --token=$VERCEL_TOKEN
+        run: npx vercel build --prod --yes --no-color --token=$VERCEL_TOKEN
 
       - name: Deploy
         id: deploy
@@ -40,14 +84,18 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           set -e
-          echo '=== RAW VERCEL OUTPUT ==='
-          npx vercel deploy --prebuilt --prod --yes --token=$VERCEL_TOKEN 2>&1 | tee /tmp/vout.txt
+          echo '=== RAW VERCEL DEPLOY ==='
+          npx vercel deploy --prebuilt --prod --yes --no-color --token=$VERCEL_TOKEN \
+            2>&1 | tee /tmp/vout.txt
           echo '=== END ==='
 
-          # Try *.vercel.app first, then fall back to any https URL that isn't an inspect link
-          URL=$(grep -oE 'https://[^[:space:]"]+\.vercel\.app' /tmp/vout.txt | tail -1)
+          # Strip any residual ANSI codes, grab last https URL that isn't an inspect link
+          CLEAN=$(sed 's/\x1b\[[0-9;]*[mK]//g' /tmp/vout.txt)
+          URL=$(echo "$CLEAN" | grep -oE 'https://[^[:space:]"]+' | grep -v 'inspect' | tail -1)
+
+          # Fallback: last non-empty line (Vercel always prints the URL as the final line)
           if [ -z "$URL" ]; then
-            URL=$(grep -oE 'https://[^[:space:]"]+' /tmp/vout.txt | grep -v 'inspect\.vercel' | tail -1)
+            URL=$(echo "$CLEAN" | grep -v '^[[:space:]]*$' | tail -1 | tr -d '[:space:]')
           fi
 
           echo "Deployed URL: $URL"
@@ -55,13 +103,16 @@ jobs:
           echo "LIVE_URL=$URL" >> "$GITHUB_ENV"
 
           {
-            echo "# Amise Front Desk"
+            echo "# Amise Front Desk — Live"
             echo ""
             echo "**URL: $URL**"
+            echo ""
+            echo "<details><summary>Full vercel output</summary>"
             echo ""
             echo '```'
             cat /tmp/vout.txt
             echo '```'
+            echo "</details>"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Post live URL as GitHub issue
