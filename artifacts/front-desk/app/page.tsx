@@ -68,7 +68,9 @@ function Nav() {
             { href: '#patients',label: 'For Patients',active: false },
             { href: '#offices', label: 'Our Offices', active: false },
             { href: '#about',   label: 'About Us',    active: false },
-            { href: '#contact', label: 'Contact',     active: false },
+            { href: '#contact',   label: 'Contact',        active: false },
+            { href: '/guidance',  label: 'Health Guidance', active: false },
+            { href: '/refer',     label: 'For Providers',   active: false },
           ].map(({ href, label, active }) => (
             <a key={href} href={href} style={{
               fontSize: 14, fontWeight: 500, textDecoration: 'none',
@@ -780,6 +782,28 @@ export default function HomePage() {
         <WhyUs />
         <HowItWorks />
         <Contact />
+
+        {/* For Providers strip */}
+        <section style={{ padding: '48px 40px', background: '#0b2a35', textAlign: 'center' }}>
+          <div style={{ maxWidth: 700, margin: '0 auto' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Healthcare Providers</div>
+            <h2 style={{ margin: '0 0 12px', fontSize: 22, fontWeight: 800, color: '#f1f5f9' }}>Refer a Patient to Dr Kabiye</h2>
+            <p style={{ margin: '0 0 24px', fontSize: 14, color: '#94a3b8', lineHeight: 1.7 }}>
+              Structured GP and specialist referral portal with HL7 FHIR R4 support. Priority, routine, and urgent referral tracks. Confirmation sent to you and your patient.
+            </p>
+            <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+              <a href="/refer" style={{ padding: '12px 28px', background: '#0d9488', color: '#fff', borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>
+                Submit a Referral →
+              </a>
+              <a href="/guidance" style={{ padding: '12px 28px', background: 'transparent', color: '#94a3b8', border: '1px solid #374151', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>
+                Patient Health Guidance
+              </a>
+            </div>
+            <div style={{ marginTop: 20, fontSize: 12, color: '#4a7a8a' }}>
+              FHIR R4 endpoint: POST /api/referral/fhir · Content-Type: application/fhir+json
+            </div>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
