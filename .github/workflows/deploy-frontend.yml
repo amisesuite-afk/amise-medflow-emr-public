@@ -5,11 +5,15 @@ on:
     branches:
       - 'claude/**'
       - main
+    paths-ignore:
+      - 'LIVE_URL.txt'
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -33,37 +37,28 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
         run: npx vercel build --prod --yes --token=$VERCEL_TOKEN
 
-      - name: Deploy to Vercel (production)
+      - name: Deploy to Vercel
+        id: deploy
         working-directory: artifacts/front-desk
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           set -e
-          echo '=== VERCEL DEPLOY OUTPUT ==='
           npx vercel deploy --prebuilt --prod --yes --token=$VERCEL_TOKEN 2>&1 | tee /tmp/vout.txt
-          echo '=== END ==='
-
           URL=$(grep -oE 'https://[^[:space:]]+\.vercel\.app' /tmp/vout.txt | tail -1)
-          echo "Deployed URL: $URL"
-
-          # Write URL to file so it can be read back
-          echo "$URL" > /tmp/LIVE_URL.txt
-
-          # Rich GitHub Step Summary
-          echo '# 🚀 Amise Front Desk — Live' >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo "## $URL" >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo 'Pages deployed:' >> $GITHUB_STEP_SUMMARY
-          echo '- `/` — Marketing homepage' >> $GITHUB_STEP_SUMMARY
-          echo '- `/book` — Patient self-booking' >> $GITHUB_STEP_SUMMARY
-          echo '- `/guidance` — Health guidance' >> $GITHUB_STEP_SUMMARY
-          echo '- `/pathway` — Care pathway' >> $GITHUB_STEP_SUMMARY
-          echo '- `/refer` — GP referral portal' >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '<details><summary>Full deploy log</summary>' >> $GITHUB_STEP_SUMMARY
-          echo '' >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "LIVE_URL=$URL" >> $GITHUB_ENV
+          echo "url=$URL" >> $GITHUB_OUTPUT
+          echo "# Amise Front Desk" >> $GITHUB_STEP_SUMMARY
+          echo "**Live:** $URL" >> $GITHUB_STEP_SUMMARY
           cat /tmp/vout.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo '</details>' >> $GITHUB_STEP_SUMMARY
+
+      - name: Write URL to repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          echo "$LIVE_URL" > LIVE_URL.txt
+          git add LIVE_URL.txt
+          git commit -m "chore: update live URL [skip ci]" || true
+          git push
