@@ -254,7 +254,7 @@ export default function BookingForm() {
             {track === 'referral' && (
               <>
                 <div style={{ marginBottom: 14 }}>
-                  <label style={labelStyle}>Referring doctor's name *</label>
+                  <label style={labelStyle}>Referring doctor&apos;s name *</label>
                   <input
                     type="text"
                     value={referralDoctor}

@@ -1,2 +1,2 @@
-export * from './rules.js';
-export * from './adaptive-triage.js';
+export * from './rules';
+export * from './adaptive-triage';

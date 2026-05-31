@@ -1,4 +1,4 @@
-import { scanRedFlags, Severity, AppointmentType, PATHWAY_DEFINITIONS, PathwayPanel } from './rules.js';
+import { scanRedFlags, Severity, AppointmentType, PATHWAY_DEFINITIONS, PathwayPanel } from './rules';
 
 export type Sex = 'female' | 'male' | 'other' | 'unknown';
 

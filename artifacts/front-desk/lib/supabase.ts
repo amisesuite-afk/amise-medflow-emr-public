@@ -1,15 +1,10 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { ConversationThread } from '@/types';
 
-const url  = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const svc  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Anon client — used in dashboard for Realtime subscriptions
-export const supabaseAnon: SupabaseClient = createClient(url, anon);
-
-// Service client — only used server-side in API routes
+// Service client — only used server-side in API routes (lazy to avoid build-time errors)
 export function getServiceClient(): SupabaseClient {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const svc = process.env.SUPABASE_SERVICE_ROLE_KEY!;
   return createClient(url, svc, { auth: { persistSession: false } });
 }
 

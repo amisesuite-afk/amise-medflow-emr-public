@@ -622,7 +622,7 @@ function HowItWorks() {
           }}>
             <div style={{ color: '#f59e0b', fontSize: 16, marginBottom: 8, letterSpacing: 1 }}>★★★★★</div>
             <p style={{ margin: '0 0 10px', fontSize: 13, color: '#374151', lineHeight: 1.6, fontStyle: 'italic' }}>
-              "Caring staff, quick appointments and excellent service."
+              &ldquo;Caring staff, quick appointments and excellent service.&rdquo;
             </p>
             <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>— Patient Review</div>
           </div>
