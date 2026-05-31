@@ -2,322 +2,338 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Amise Medical Services — General & Endoscopic Surgery, Saint Lucia',
+  title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
   description:
-    'Dr Dawit Daniel Kabiye, MD, DM. General and endoscopic surgery specialist in Saint Lucia. Online appointment booking, colonoscopy, ERCP, hernia, breast clinic, diabetic foot care and more.',
+    'Dr Dawit Daniel Kabiye, MD, DM. Expert surgical and endoscopy care in Saint Lucia — colonoscopy, ERCP, hernia repair, breast clinic, thyroid surgery, diabetic foot care and more. Book online or WhatsApp us.',
 };
 
-const PHONE_PRIMARY   = '459-2227';
-const PHONE_SECONDARY = '284-0557';
-const WHATSAPP_LINK   = 'https://wa.me/17584592227';
+// ─── Constants ───────────────────────────────────────────────────────────────
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
+const WA_TAPION    = 'https://wa.me/17582840557';
+const WA_RODNEY    = 'https://wa.me/17587207111';
+const PHONE_TAPION = '758-284-0557';
+const PHONE_RODNEY = '758-720-7111';
+const EMAIL        = 'info@amisemedical.com';
+
+// ─── Logo SVG ────────────────────────────────────────────────────────────────
+
+function Logo() {
+  return (
+    <a href="#home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="18" r="18" fill="#0d9488" />
+        {/* Person silhouette */}
+        <circle cx="18" cy="11" r="4" fill="white" />
+        <path d="M10 30 C10 22 14 18 18 18 C22 18 26 22 26 30" fill="white" />
+        {/* Small cross */}
+        <rect x="22" y="6" width="2" height="6" rx="1" fill="white" />
+        <rect x="19" y="9" width="8" height="2" rx="1" fill="white" />
+      </svg>
+      <div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: '#0d9488', letterSpacing: '-0.01em', lineHeight: 1.1 }}>AMISE</div>
+        <div style={{ fontSize: 9, fontWeight: 600, color: '#64748b', letterSpacing: '0.04em', lineHeight: 1.1 }}>MEDICAL SERVICES</div>
+      </div>
+    </a>
+  );
+}
+
+// ─── Navigation ──────────────────────────────────────────────────────────────
 
 function Nav() {
   return (
     <nav style={{
-      position:        'sticky', top: 0, zIndex: 50,
-      background:      'rgba(15,23,42,0.96)',
-      backdropFilter:  'blur(12px)',
-      borderBottom:    '1px solid #1e293b',
-      padding:         '0 24px',
+      position: 'sticky', top: 0, zIndex: 100,
+      background: 'rgba(255,255,255,0.97)',
+      backdropFilter: 'blur(8px)',
+      borderBottom: '1px solid #e2e8f0',
+      padding: '0 32px',
     }}>
-      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
-        {/* Logo */}
-        <a href="#home" style={{ textDecoration: 'none' }}>
-          <div style={{ lineHeight: 1.2 }}>
-            <div style={{ fontSize: 15, fontWeight: 800, color: '#f1f5f9', letterSpacing: '-0.02em' }}>Amise Medical Services</div>
-            <div style={{ fontSize: 10, color: '#0d9488', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Saint Lucia</div>
-          </div>
-        </a>
-
-        {/* Links */}
+      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 68 }}>
+        <Logo />
         <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
           {[
-            { href: '#about',     label: 'About'     },
-            { href: '#services',  label: 'Services'  },
-            { href: '#locations', label: 'Locations' },
-            { href: '#contact',   label: 'Contact'   },
+            { href: '#home',    label: 'Home'        },
+            { href: '#services',label: 'Services'    },
+            { href: '#patients',label: 'For Patients' },
+            { href: '#offices', label: 'Our Offices'  },
+            { href: '#about',   label: 'About Us'     },
+            { href: '#contact', label: 'Contact'      },
           ].map(({ href, label }) => (
-            <a
-              key={href}
-              href={href}
-              style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none', fontWeight: 500 }}
-            >
+            <a key={href} href={href} style={{ fontSize: 14, color: '#374151', textDecoration: 'none', fontWeight: 500 }}>
               {label}
             </a>
           ))}
-          <Link
-            href="/book"
+          <a
+            href={WA_TAPION}
+            target="_blank"
+            rel="noopener noreferrer"
             style={{
-              padding:       '8px 18px',
-              background:    '#0d9488',
-              color:         '#fff',
-              borderRadius:  6,
-              fontSize:      13,
-              fontWeight:    700,
-              textDecoration: 'none',
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '9px 18px', background: '#0d9488', color: '#fff',
+              borderRadius: 8, fontSize: 13, fontWeight: 700, textDecoration: 'none',
             }}
           >
-            Book Appointment
-          </Link>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.534 5.857L.057 23.885l6.198-1.625A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.49-5.189-1.348l-.371-.22-3.676.964.981-3.585-.242-.378A9.944 9.944 0 012 12c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10z" fillRule="evenodd" clipRule="evenodd"/>
+            </svg>
+            WhatsApp Us
+          </a>
         </div>
       </div>
     </nav>
   );
 }
 
+// ─── Hero ─────────────────────────────────────────────────────────────────────
+
 function Hero() {
   return (
-    <section id="home" style={{
-      background:     'linear-gradient(160deg, #0f172a 0%, #0d1f2d 60%, #0a1f1e 100%)',
-      padding:        '96px 24px 80px',
-      borderBottom:   '1px solid #1e293b',
-    }}>
-      <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
-        <div style={{ display: 'inline-block', padding: '4px 14px', borderRadius: 100, background: '#0d948822', border: '1px solid #0d9488', fontSize: 11, fontWeight: 700, color: '#0d9488', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 24 }}>
-          General &amp; Endoscopic Surgery · Saint Lucia
-        </div>
+    <section id="home" style={{ position: 'relative', overflow: 'hidden', background: '#f0f7f7', minHeight: 560 }}>
+      {/* Background aerial photo — place your Saint Lucia coastal aerial at /locations/hero-bg.jpg */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/locations/hero-bg.jpg"
+        alt=""
+        aria-hidden="true"
+        style={{ position: 'absolute', right: 0, top: 0, width: '55%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+      />
+      {/* Fade overlay from left */}
+      <div style={{ position: 'absolute', right: '35%', top: 0, bottom: 0, width: '25%', background: 'linear-gradient(to right, #f0f7f7, transparent)', zIndex: 1 }} />
 
-        <h1 style={{ margin: '0 0 16px', fontSize: 'clamp(28px, 5vw, 48px)', fontWeight: 900, color: '#f1f5f9', lineHeight: 1.15, letterSpacing: '-0.03em' }}>
-          Dr Dawit Daniel Kabiye
-          <span style={{ display: 'block', fontSize: 'clamp(14px, 2.5vw, 20px)', fontWeight: 400, color: '#64748b', marginTop: 10, letterSpacing: 0 }}>
-            MD, DM — Consultant Surgeon
-          </span>
+      <div style={{ position: 'relative', zIndex: 2, margin: '0 auto', padding: '80px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center', maxWidth: '50%', minHeight: 560, boxSizing: 'border-box' }}>
+        <h1 style={{ margin: '0 0 10px', fontSize: 'clamp(30px, 4vw, 52px)', fontWeight: 900, color: '#0f172a', lineHeight: 1.1, letterSpacing: '-0.03em' }}>
+          Expert Surgical &amp;<br />Endoscopy Care
         </h1>
-
-        <p style={{ margin: '0 0 40px', fontSize: 'clamp(14px, 2vw, 17px)', color: '#94a3b8', lineHeight: 1.8, maxWidth: 580, marginLeft: 'auto', marginRight: 'auto' }}>
-          Specialist surgical care in Saint Lucia — covering general surgery, advanced endoscopy,
-          breast surgery, thyroid, colorectal, hernia repair, and diabetic foot care. Serving patients
-          at Rodney Bay, Castries, and Tapion Hospital.
+        <p style={{ margin: '0 0 8px', fontSize: 'clamp(16px, 2vw, 22px)', fontStyle: 'italic', color: '#0d9488', fontWeight: 600 }}>
+          Compassionate. Advanced. Always.
+        </p>
+        <p style={{ margin: '0 0 32px', fontSize: 15, color: '#475569', lineHeight: 1.7, maxWidth: 420 }}>
+          Quality care you can trust. Our team is here to guide you every step of the way.
         </p>
 
-        <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+        {/* Primary CTAs */}
+        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 20 }}>
           <Link href="/book" style={{
-            display: 'inline-block', padding: '14px 32px',
-            background: '#0d9488', color: '#fff', borderRadius: 8,
-            fontSize: 15, fontWeight: 700, textDecoration: 'none',
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '13px 24px', background: '#0d9488', color: '#fff',
+            borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: 'none',
           }}>
-            Book an Appointment
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Book Appointment</div>
+              <div style={{ fontSize: 11, fontWeight: 400, opacity: 0.85 }}>Routine Visit</div>
+            </div>
           </Link>
-          <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" style={{
-            display: 'inline-block', padding: '14px 32px',
-            background: '#1e293b', color: '#e2e8f0',
-            border: '1px solid #374151', borderRadius: 8,
-            fontSize: 15, fontWeight: 600, textDecoration: 'none',
+          <Link href="/book" style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            padding: '13px 24px', background: '#e63946', color: '#fff',
+            borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: 'none',
           }}>
-            WhatsApp Us
-          </a>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/>
+            </svg>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Urgent Triage</div>
+              <div style={{ fontSize: 11, fontWeight: 400, opacity: 0.85 }}>Need Urgent Care?</div>
+            </div>
+          </Link>
         </div>
 
-        {/* Trust bar */}
-        <div style={{ marginTop: 56, display: 'flex', gap: 32, justifyContent: 'center', flexWrap: 'wrap' }}>
+        {/* WhatsApp contacts */}
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
           {[
-            { icon: '🏥', text: 'Tapion Hospital' },
-            { icon: '📍', text: 'Rodney Bay · Castries' },
-            { icon: '📞', text: `${PHONE_PRIMARY} / ${PHONE_SECONDARY}` },
-          ].map(({ icon, text }) => (
-            <div key={text} style={{ fontSize: 13, color: '#475569', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span>{icon}</span>
-              <span>{text}</span>
-            </div>
+            { label: 'WhatsApp Tapion',     num: PHONE_TAPION, href: WA_TAPION    },
+            { label: 'WhatsApp Rodney Bay', num: PHONE_RODNEY, href: WA_RODNEY    },
+          ].map(({ label, num, href }) => (
+            <a key={label} href={href} target="_blank" rel="noopener noreferrer" style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 16px', background: '#fff', border: '1px solid #e2e8f0',
+              borderRadius: 8, fontSize: 13, color: '#0d9488', textDecoration: 'none',
+              fontWeight: 600, boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#0d9488">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.534 5.857L.057 23.885l6.198-1.625A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.49-5.189-1.348l-.371-.22-3.676.964.981-3.585-.242-.378A9.944 9.944 0 012 12c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10z" fillRule="evenodd" clipRule="evenodd"/>
+              </svg>
+              <div>
+                <div style={{ fontSize: 12, color: '#64748b', lineHeight: 1 }}>{label}</div>
+                <div style={{ fontSize: 13, lineHeight: 1.4 }}>{num}</div>
+              </div>
+            </a>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
 
-function About() {
-  return (
-    <section id="about" style={{ padding: '80px 24px', borderBottom: '1px solid #1e293b' }}>
-      <div style={{ maxWidth: 860, margin: '0 auto' }}>
-        <SectionLabel>About Dr Kabiye</SectionLabel>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 40, alignItems: 'start' }}>
-          <div>
-            <h2 style={{ margin: '0 0 16px', fontSize: 26, fontWeight: 800, color: '#f1f5f9', lineHeight: 1.3 }}>
-              Specialist surgical expertise in Saint Lucia
-            </h2>
-            <p style={{ margin: '0 0 16px', fontSize: 14, color: '#94a3b8', lineHeight: 1.8 }}>
-              Dr Dawit Daniel Kabiye is a Consultant General and Endoscopic Surgeon based in Saint Lucia,
-              with specialist training and qualifications in general and minimally invasive surgery.
-              He holds an MD and a DM (Doctorate in Medicine) and has extensive experience in both
-              open and laparoscopic surgical techniques.
-            </p>
-            <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', lineHeight: 1.8 }}>
-              Dr Kabiye sees patients across a broad range of general and endoscopic surgical conditions —
-              from routine consultations and endoscopy to complex elective surgery and specialist clinics
-              including breast, thyroid, colorectal, and diabetic foot care.
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {[
-              { label: 'Qualification',  value: 'MD, DM — General & Endoscopic Surgery' },
-              { label: 'Practice',       value: 'Amise Medical Services, Saint Lucia' },
-              { label: 'Hospital',       value: 'Tapion Hospital (La Toc, Castries)' },
-              { label: 'Clinics',        value: 'Rodney Bay · Castries' },
-              { label: 'Appointments',   value: 'Online booking · WhatsApp · Telephone' },
-            ].map(({ label, value }) => (
-              <div key={label} style={{ background: '#1e293b', borderRadius: 8, padding: '12px 16px', display: 'flex', gap: 12 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 100, paddingTop: 1 }}>{label}</div>
-                <div style={{ fontSize: 13, color: '#cbd5e1', lineHeight: 1.5 }}>{value}</div>
-              </div>
-            ))}
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#94a3b8' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+          </svg>
+          Your information is secure and confidential.
         </div>
       </div>
     </section>
   );
 }
 
-function Services() {
-  const services = [
+// ─── Feature Tiles ────────────────────────────────────────────────────────────
+
+function FeatureTiles() {
+  const tiles = [
     {
-      icon: '🔬',
-      title: 'Colonoscopy & Gastroscopy',
-      body: 'Diagnostic and therapeutic upper and lower GI endoscopy. Polyp removal, biopsy, and investigation of bowel and stomach symptoms.',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+      ),
+      colour: '#0d9488',
+      title: 'Routine Booking',
+      body: 'Book consultations, follow-ups and specialist visits.',
+      cta: 'Book Now →',
+      href: '/book',
+      ctaColour: '#0d9488',
     },
     {
-      icon: '🫀',
-      title: 'ERCP — Biliary Procedures',
-      body: 'Advanced endoscopic retrograde cholangiopancreatography for bile duct stones, strictures, and pancreatic conditions. Performed at Tapion Hospital.',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#e63946" strokeWidth="1.8">
+          <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      ),
+      colour: '#e63946',
+      title: 'Urgent Appointment',
+      body: 'Answer a few questions so we can prioritise your care.',
+      cta: 'Start Triage →',
+      href: '/book',
+      ctaColour: '#e63946',
     },
     {
-      icon: '🩹',
-      title: 'Hernia Repair',
-      body: 'Laparoscopic and open repair of inguinal, umbilical, incisional, and other hernias. Minimally invasive techniques for faster recovery.',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v4l3 3"/>
+          <path d="M7 3.34A10 10 0 003 12"/>
+        </svg>
+      ),
+      colour: '#0d9488',
+      title: 'Endoscopy / ERCP',
+      body: 'Schedule procedures and get preparation instructions.',
+      cta: 'Learn More →',
+      href: '#services',
+      ctaColour: '#0d9488',
     },
     {
-      icon: '💛',
-      title: 'Gallbladder Surgery',
-      body: 'Laparoscopic cholecystectomy (gallbladder removal) for gallstones, biliary colic, and cholecystitis.',
-    },
-    {
-      icon: '🩺',
-      title: 'Breast Clinic',
-      body: 'Assessment of breast lumps, nipple discharge, skin changes, and cancer screening. Includes review of mammogram and ultrasound results.',
-    },
-    {
-      icon: '🦋',
-      title: 'Thyroid Surgery',
-      body: 'Total and partial thyroidectomy for goitre, thyroid nodules, and thyroid cancer. Pre-operative assessment and post-operative care.',
-    },
-    {
-      icon: '🦶',
-      title: 'Diabetic Foot Clinic',
-      body: 'Specialist assessment and management of diabetic foot complications — ulcers, infections, vascular assessment, and preventive care.',
-    },
-    {
-      icon: '🔴',
-      title: 'Colorectal Surgery',
-      body: 'Haemorrhoid surgery, rectal prolapse, colonic resection, and management of colorectal conditions including cancer.',
-    },
-    {
-      icon: '🏥',
-      title: 'Elective General Surgery',
-      body: 'Wide range of planned surgical procedures. Full pre-operative assessment, surgical care, and structured post-operative follow-up.',
-    },
-    {
-      icon: '✂️',
-      title: 'Minor Procedures',
-      body: 'Removal of lipomas, sebaceous cysts, skin lesions, and other minor surgical procedures under local anaesthesia at the clinic.',
-    },
-    {
-      icon: '📋',
-      title: 'Specialist Referrals',
-      body: 'Fast-track appointments for patients referred by their GP or another specialist. Priority scheduling and referral verification.',
-    },
-    {
-      icon: '📞',
-      title: 'Telephone Review',
-      body: 'Follow-up, post-result, and post-discharge telephone consultations. Convenient and efficient for ongoing care.',
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
+          <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+          <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+        </svg>
+      ),
+      colour: '#0d9488',
+      title: 'Upload Reports',
+      body: 'Upload medical reports, scans or referral letters securely.',
+      cta: 'Upload Now →',
+      href: '/book',
+      ctaColour: '#0d9488',
     },
   ];
 
   return (
-    <section id="services" style={{ padding: '80px 24px', background: '#080f1a', borderBottom: '1px solid #1e293b' }}>
-      <div style={{ maxWidth: 1060, margin: '0 auto' }}>
-        <SectionLabel>Services</SectionLabel>
-        <h2 style={{ margin: '0 0 12px', fontSize: 26, fontWeight: 800, color: '#f1f5f9' }}>
-          What we treat
-        </h2>
-        <p style={{ margin: '0 0 48px', fontSize: 14, color: '#64748b', maxWidth: 500 }}>
-          A broad range of general and endoscopic surgical conditions, managed at clinic and Tapion Hospital.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
-          {services.map(({ icon, title, body }) => (
-            <div key={title} style={{ background: '#1e293b', borderRadius: 10, padding: '20px 22px', border: '1px solid #374151' }}>
-              <div style={{ fontSize: 26, marginBottom: 12 }}>{icon}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>{title}</div>
-              <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.65 }}>{body}</div>
+    <section id="services" style={{ background: '#f8fafc', padding: '56px 32px', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 24 }}>
+        {tiles.map(({ icon, title, body, cta, href, ctaColour }) => (
+          <div key={title} style={{ background: '#fff', borderRadius: 12, padding: '28px 24px', boxShadow: '0 1px 4px rgba(0,0,0,0.07)', display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <div style={{ width: 52, height: 52, borderRadius: 12, background: '#f0fdf9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+              {icon}
             </div>
-          ))}
-        </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>{title}</div>
+            <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.65, marginBottom: 16, flex: 1 }}>{body}</div>
+            <a href={href} style={{ fontSize: 13, fontWeight: 700, color: ctaColour, textDecoration: 'none' }}>{cta}</a>
+          </div>
+        ))}
       </div>
     </section>
   );
 }
 
-function BookingTracks() {
-  const tracks = [
+// ─── Our Offices ──────────────────────────────────────────────────────────────
+
+function Offices() {
+  const offices = [
     {
-      badge:   'Routine',
-      colour:  '#0d9488',
-      icon:    '📅',
-      title:   'Routine Appointment',
-      desc:    'Book directly online for a standard consultation or follow-up. Slots are confirmed immediately on booking.',
-      steps:   ['Choose your appointment type', 'Enter your details', 'Select a slot — confirmed instantly', 'Receive confirmation via email and WhatsApp'],
-      cta:     'Book Online →',
-      href:    '/book',
+      name:     'Tapion Hospital Office',
+      img:      '/locations/tapion.jpg',
+      imgAlt:   'Tapion Hospital, La Toc, Castries, Saint Lucia',
+      services: 'Surgery, Endoscopy, ERCP, Urgent Reviews',
+      phone:    PHONE_TAPION,
+      wa:       WA_TAPION,
+      mapsHref: 'https://maps.google.com/?q=Tapion+Hospital+Castries+Saint+Lucia',
     },
     {
-      badge:   'Referral',
-      colour:  '#6366f1',
-      icon:    '📋',
-      title:   'GP / Specialist Referral',
-      desc:    'Your doctor has referred you to Dr Kabiye. Priority scheduling — staff confirm your appointment within 24 hours.',
-      steps:   ['Submit your referral details online', 'Our team verifies your referral', 'We contact you to confirm your slot', 'Receive full prep instructions by email'],
-      cta:     'Submit Referral →',
-      href:    '/book',
-    },
-    {
-      badge:   'Urgent',
-      colour:  '#f59e0b',
-      icon:    '⚡',
-      title:   'Urgent Concern',
-      desc:    'If your clinical situation requires prompt attention, call us directly. Staff will arrange a priority slot — same day or next available.',
-      steps:   ['Call 459-2227 / 284-0557', 'Describe your urgent concern to our team', 'A priority appointment is arranged immediately', 'You will receive confirmation by phone and message'],
-      cta:     `Call ${PHONE_PRIMARY}`,
-      href:    `tel:+17584592227`,
+      name:     'Rodney Bay / Providence Office',
+      img:      '/locations/rodney-bay.jpg',
+      imgAlt:   'Providence Building, Rodney Bay, Saint Lucia',
+      services: 'Consultations, Follow-ups, Administrative Services',
+      phone:    PHONE_RODNEY,
+      wa:       WA_RODNEY,
+      mapsHref: 'https://maps.google.com/?q=Providence+Building+Rodney+Bay+Saint+Lucia',
     },
   ];
 
   return (
-    <section id="booking" style={{ padding: '80px 24px', borderBottom: '1px solid #1e293b' }}>
-      <div style={{ maxWidth: 1060, margin: '0 auto' }}>
-        <SectionLabel>Appointments</SectionLabel>
-        <h2 style={{ margin: '0 0 12px', fontSize: 26, fontWeight: 800, color: '#f1f5f9' }}>
-          How to book
+    <section id="offices" style={{ padding: '72px 32px', background: '#fff', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <h2 style={{ textAlign: 'center', fontSize: 26, fontWeight: 800, color: '#0f172a', margin: '0 0 40px' }}>
+          Our Offices
         </h2>
-        <p style={{ margin: '0 0 48px', fontSize: 14, color: '#64748b', maxWidth: 500 }}>
-          Three ways to access care — choose the one that suits your situation.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-          {tracks.map(({ badge, colour, icon, title, desc, steps, cta, href }) => (
-            <div key={badge} style={{ background: '#1e293b', borderRadius: 12, padding: '28px 24px', border: `1px solid ${colour}44`, display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 16 }}>
-                <span style={{ fontSize: 22 }}>{icon}</span>
-                <span style={{ fontSize: 11, fontWeight: 700, color: colour, textTransform: 'uppercase', letterSpacing: '0.08em', background: `${colour}18`, padding: '3px 10px', borderRadius: 100 }}>{badge}</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 28 }}>
+          {offices.map(({ name, img, imgAlt, services, phone, wa, mapsHref }) => (
+            <div key={name} style={{ borderRadius: 14, overflow: 'hidden', boxShadow: '0 2px 12px rgba(0,0,0,0.1)', background: '#fff', border: '1px solid #e2e8f0' }}>
+              {/* Building photo — 200px tall */}
+              <div style={{ position: 'relative', height: 200, background: '#e2f4f1', overflow: 'hidden' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={img} alt={imgAlt} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                {/* Map pin badge */}
+                <div style={{
+                  position: 'absolute', bottom: 12, left: 12,
+                  width: 32, height: 32, borderRadius: '50%',
+                  background: '#0d9488', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                  </svg>
+                </div>
               </div>
-              <div style={{ fontSize: 16, fontWeight: 700, color: '#f1f5f9', marginBottom: 10 }}>{title}</div>
-              <div style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.7, marginBottom: 20 }}>{desc}</div>
-              <ol style={{ margin: '0 0 24px', padding: '0 0 0 18px', color: '#64748b', fontSize: 12, lineHeight: 1.8 }}>
-                {steps.map(step => <li key={step}>{step}</li>)}
-              </ol>
-              <div style={{ marginTop: 'auto' }}>
-                <a href={href} style={{ display: 'inline-block', padding: '10px 20px', background: colour, color: '#fff', borderRadius: 6, fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
-                  {cta}
+
+              {/* Card body */}
+              <div style={{ padding: '22px 24px' }}>
+                <h3 style={{ margin: '0 0 6px', fontSize: 17, fontWeight: 700, color: '#0d9488' }}>{name}</h3>
+                <p style={{ margin: '0 0 16px', fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>{services}</p>
+
+                <a href={wa} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 15, fontWeight: 700, color: '#0d9488', textDecoration: 'none', marginBottom: 16 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#0d9488">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.534 5.857L.057 23.885l6.198-1.625A11.93 11.93 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.49-5.189-1.348l-.371-.22-3.676.964.981-3.585-.242-.378A9.944 9.944 0 012 12c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10z" fillRule="evenodd" clipRule="evenodd"/>
+                  </svg>
+                  {phone}
+                </a>
+
+                <a
+                  href={mapsHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'block', width: '100%', boxSizing: 'border-box',
+                    padding: '11px', background: '#0d9488', color: '#fff',
+                    borderRadius: 8, fontSize: 14, fontWeight: 700,
+                    textDecoration: 'none', textAlign: 'center',
+                  }}
+                >
+                  Get Directions
                 </a>
               </div>
             </div>
@@ -328,95 +344,159 @@ function BookingTracks() {
   );
 }
 
-function Preparation() {
-  const preps = [
+// ─── Why Choose Us ────────────────────────────────────────────────────────────
+
+function WhyUs() {
+  const pillars = [
     {
-      type: 'Colonoscopy / Lower GI Endoscopy',
-      colour: '#0d9488',
-      items: [
-        '2 days before: Low-fibre diet — avoid seeds, nuts, raw vegetables, and red meat.',
-        '1 day before: Clear liquids only — water, apple juice, clear broth, plain jelly (no red or purple).',
-        'Bowel preparation medication: take exactly as prescribed at the times given.',
-        'After midnight: Nil by mouth (no food or drink).',
-        'Arrange a responsible adult to drive you home — you cannot drive after sedation.',
-      ],
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
+          <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      ),
+      title: 'Experienced Specialists',
+      body: 'Advanced care with compassion.',
     },
     {
-      type: 'Gastroscopy / Upper GI Endoscopy',
-      colour: '#6366f1',
-      items: [
-        'No food or milk for 6 hours before the procedure.',
-        'Water only permitted up to 2 hours before.',
-        'Continue regular medications with a small sip of water unless told otherwise.',
-        'If sedation is planned: arrange a responsible adult to drive you home.',
-      ],
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      ),
+      title: 'Timely Appointments',
+      body: 'We respect your time.',
     },
     {
-      type: 'ERCP',
-      colour: '#f59e0b',
-      items: [
-        'Nil by mouth (no food or drink including water) from midnight.',
-        'Blood-thinning medications: stop as specifically instructed by Dr Kabiye.',
-        'Diabetic patients: adjust insulin/tablets as directed.',
-        'Arrange a responsible adult — you cannot drive for 24 hours after sedation.',
-        'Plan for a full day at Tapion Hospital and possible overnight stay.',
-      ],
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+        </svg>
+      ),
+      title: 'Secure & Confidential',
+      body: 'Your privacy is our priority.',
     },
     {
-      type: 'General Surgery (Elective)',
-      colour: '#ef4444',
-      items: [
-        'Nil by mouth: no food for 6 hours; no clear fluids for 2 hours before surgery.',
-        'Shower with antiseptic wash the evening before and morning of surgery.',
-        'Remove nail polish, jewellery, piercings, and contact lenses.',
-        'Hold morning diabetes medications unless instructed otherwise.',
-        'Arrange transport — you cannot drive after general anaesthesia.',
-      ],
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+        </svg>
+      ),
+      title: 'Patient-Centered',
+      body: 'Care tailored to your needs.',
+    },
+    {
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      ),
+      title: 'Advanced Procedures',
+      body: 'Endoscopy, ERCP & minimally invasive surgery.',
     },
   ];
 
   return (
-    <section id="preparation" style={{ padding: '80px 24px', background: '#080f1a', borderBottom: '1px solid #1e293b' }}>
-      <div style={{ maxWidth: 1060, margin: '0 auto' }}>
-        <SectionLabel>Patient Information</SectionLabel>
-        <h2 style={{ margin: '0 0 12px', fontSize: 26, fontWeight: 800, color: '#f1f5f9' }}>
-          Procedure preparation
+    <section style={{ padding: '64px 32px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <h2 style={{ textAlign: 'center', fontSize: 22, fontWeight: 800, color: '#0f172a', margin: '0 0 40px' }}>
+          Why Patients Choose Amise Medical Services
         </h2>
-        <p style={{ margin: '0 0 12px', fontSize: 14, color: '#64748b', maxWidth: 560, lineHeight: 1.7 }}>
-          Key preparation steps for common procedures. <strong style={{ color: '#94a3b8' }}>Full written instructions are emailed to you automatically after booking.</strong>
-        </p>
-        <p style={{ margin: '0 0 40px', fontSize: 12, color: '#475569', maxWidth: 560, lineHeight: 1.7 }}>
-          These are general guidelines only. Always follow the specific instructions given to you by Dr Kabiye and the clinical team, as individual circumstances vary.
-        </p>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
-          {preps.map(({ type, colour, items }) => (
-            <div key={type} style={{ background: '#1e293b', borderRadius: 10, padding: '20px 22px', borderLeft: `4px solid ${colour}` }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: colour, marginBottom: 14 }}>{type}</div>
-              <ul style={{ margin: 0, padding: '0 0 0 16px', color: '#94a3b8', fontSize: 12, lineHeight: 1.85 }}>
-                {items.map(item => <li key={item} style={{ marginBottom: 4 }}>{item}</li>)}
-              </ul>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 20 }}>
+          {pillars.map(({ icon, title, body }) => (
+            <div key={title} style={{ background: '#fff', borderRadius: 12, padding: '24px 20px', textAlign: 'center', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 14 }}>
+                <div style={{ width: 52, height: 52, borderRadius: '50%', border: '2px solid #e2f4f1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {icon}
+                </div>
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>{title}</div>
+              <div style={{ fontSize: 12, color: '#64748b', lineHeight: 1.6 }}>{body}</div>
             </div>
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
 
-        {/* What to bring */}
-        <div style={{ marginTop: 32, background: '#1e293b', borderRadius: 10, padding: '24px 28px', border: '1px solid #374151' }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#f59e0b', marginBottom: 14 }}>Always bring to every appointment</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '8px 24px' }}>
-            {[
-              'Valid photo ID (passport or national ID)',
-              'Health insurance card (if applicable)',
-              'Complete list of current medications',
-              'Relevant prior test results or imaging',
-              'Hospital discharge letters or operation notes',
-              'GP or specialist referral letter (if referred)',
-            ].map(item => (
-              <div key={item} style={{ fontSize: 13, color: '#94a3b8', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                <span style={{ color: '#0d9488', flexShrink: 0, marginTop: 2 }}>✓</span>
-                <span>{item}</span>
+// ─── How It Works ─────────────────────────────────────────────────────────────
+
+function HowItWorks() {
+  const steps = [
+    { n: '1', title: 'Tell Us Why',       body: 'Choose the reason for your visit.' },
+    { n: '2', title: 'Fill Your Details', body: 'Provide your information securely.' },
+    { n: '3', title: 'We Review',         body: 'Our team reviews and confirms your request.' },
+    { n: '4', title: "You're Confirmed",  body: 'Receive confirmation via WhatsApp or call.' },
+  ];
+
+  return (
+    <section id="patients" style={{ padding: '72px 32px', background: '#fff', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+        {/* Steps */}
+        <div>
+          <h2 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: '0 0 40px' }}>How It Works</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {steps.map(({ n, title, body }, i) => (
+              <div key={n} style={{ display: 'flex', gap: 20, alignItems: 'flex-start', marginBottom: i < steps.length - 1 ? 0 : 0 }}>
+                {/* Step indicator + connector */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: '50%',
+                    background: n === '4' ? '#0d9488' : '#f0fdf9',
+                    border: `2px solid ${n === '4' ? '#0d9488' : '#0d9488'}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 14, fontWeight: 700, color: n === '4' ? '#fff' : '#0d9488',
+                    flexShrink: 0,
+                  }}>
+                    {n === '4'
+                      ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      : n}
+                  </div>
+                  {i < steps.length - 1 && (
+                    <div style={{ width: 2, height: 40, background: '#e2f4f1', margin: '4px 0' }} />
+                  )}
+                </div>
+                <div style={{ paddingBottom: i < steps.length - 1 ? 20 : 0 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>{title}</div>
+                  <div style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6 }}>{body}</div>
+                </div>
               </div>
             ))}
+          </div>
+          <div style={{ marginTop: 36 }}>
+            <Link href="/book" style={{
+              display: 'inline-block', padding: '13px 28px',
+              background: '#0d9488', color: '#fff',
+              borderRadius: 8, fontSize: 15, fontWeight: 700, textDecoration: 'none',
+            }}>
+              Get Started Now →
+            </Link>
+          </div>
+        </div>
+
+        {/* Photo + review card */}
+        <div style={{ position: 'relative' }}>
+          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#e2f4f1', minHeight: 360 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/locations/staff-photo.jpg"
+              alt="Amise Medical Services clinical team"
+              style={{ width: '100%', height: 360, objectFit: 'cover' }}
+            />
+          </div>
+          {/* Floating review card */}
+          <div style={{
+            position: 'absolute', bottom: -20, right: -20,
+            background: '#fff', borderRadius: 12, padding: '16px 20px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.12)', maxWidth: 220,
+            border: '1px solid #e2e8f0',
+          }}>
+            <div style={{ color: '#f59e0b', fontSize: 16, marginBottom: 8 }}>★★★★★</div>
+            <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.6, fontStyle: 'italic', marginBottom: 8 }}>
+              "Caring staff, quick appointments and excellent service."
+            </div>
+            <div style={{ fontSize: 12, color: '#94a3b8' }}>— Patient Review</div>
           </div>
         </div>
       </div>
@@ -424,61 +504,41 @@ function Preparation() {
   );
 }
 
-function Locations() {
-  const locations = [
-    {
-      name:    'Rodney Bay — Providence Building',
-      icon:    '🏢',
-      colour:  '#0d9488',
-      clinics: ['New patient consultations', 'ERCP work-up clinic', 'Breast clinic', 'Diabetic foot clinic', 'Minor procedures'],
-      info:    'Rodney Bay, Gros Islet, Saint Lucia',
-      phone:   PHONE_PRIMARY,
-    },
-    {
-      name:    'Castries Clinic',
-      icon:    '🏥',
-      colour:  '#6366f1',
-      clinics: ['Follow-up appointments', 'Post-operative review', 'Specialist consultations'],
-      info:    'Castries, Saint Lucia',
-      phone:   PHONE_SECONDARY,
-    },
-    {
-      name:    'Tapion Hospital',
-      icon:    '⚕️',
-      colour:  '#f59e0b',
-      clinics: ['All surgical procedures', 'Colonoscopy & Gastroscopy', 'ERCP & biliary procedures', 'Emergency surgical admissions'],
-      info:    'La Toc Road, Castries, Saint Lucia',
-      phone:   PHONE_PRIMARY,
-    },
-  ];
+// ─── About ───────────────────────────────────────────────────────────────────
 
+function About() {
   return (
-    <section id="locations" style={{ padding: '80px 24px', borderBottom: '1px solid #1e293b' }}>
-      <div style={{ maxWidth: 1060, margin: '0 auto' }}>
-        <SectionLabel>Locations</SectionLabel>
-        <h2 style={{ margin: '0 0 12px', fontSize: 26, fontWeight: 800, color: '#f1f5f9' }}>
-          Where to find us
-        </h2>
-        <p style={{ margin: '0 0 48px', fontSize: 14, color: '#64748b' }}>
-          Three sites across Saint Lucia — bookings managed centrally.
-        </p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-          {locations.map(({ name, icon, colour, clinics, info, phone }) => (
-            <div key={name} style={{ background: '#1e293b', borderRadius: 12, padding: '28px 24px', border: `1px solid ${colour}33` }}>
-              <div style={{ fontSize: 32, marginBottom: 14 }}>{icon}</div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#f1f5f9', marginBottom: 6 }}>{name}</div>
-              <div style={{ fontSize: 12, color: '#475569', marginBottom: 18 }}>{info}</div>
-              <div style={{ marginBottom: 20 }}>
-                {clinics.map(c => (
-                  <div key={c} style={{ fontSize: 12, color: '#94a3b8', padding: '4px 0', borderBottom: '1px solid #263044', display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <span style={{ color: colour, fontSize: 10 }}>●</span>
-                    {c}
-                  </div>
-                ))}
-              </div>
-              <a href={`tel:+1758${phone.replace(/-/g, '')}`} style={{ fontSize: 13, color: colour, fontWeight: 600, textDecoration: 'none' }}>
-                📞 {phone}
-              </a>
+    <section id="about" style={{ padding: '72px 32px', background: '#f0f7f7', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 48, alignItems: 'center' }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
+            About Dr Kabiye
+          </div>
+          <h2 style={{ margin: '0 0 18px', fontSize: 26, fontWeight: 800, color: '#0f172a', lineHeight: 1.25 }}>
+            Specialist surgical expertise — Dr Dawit Daniel Kabiye, MD, DM
+          </h2>
+          <p style={{ margin: '0 0 14px', fontSize: 14, color: '#475569', lineHeight: 1.8 }}>
+            Dr Kabiye is a Consultant General and Endoscopic Surgeon based in Saint Lucia,
+            with specialist qualifications in general and minimally invasive surgery. He holds
+            an MD and DM (Doctorate in Medicine) with extensive experience in open and laparoscopic techniques.
+          </p>
+          <p style={{ margin: 0, fontSize: 14, color: '#475569', lineHeight: 1.8 }}>
+            He sees patients across a broad range of surgical conditions — from routine consultations
+            and endoscopy to complex elective surgery and specialist clinics including breast, thyroid,
+            colorectal, and diabetic foot care.
+          </p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          {[
+            { icon: '🔬', label: 'Advanced Endoscopy', sub: 'Colonoscopy, Gastroscopy, ERCP' },
+            { icon: '🏥', label: 'General Surgery',    sub: 'Hernia, Gallbladder, Colorectal' },
+            { icon: '🩺', label: 'Specialist Clinics', sub: 'Breast, Thyroid, Diabetic Foot'  },
+            { icon: '⚡', label: 'Urgent Care',         sub: 'Priority slots available'        },
+          ].map(({ icon, label, sub }) => (
+            <div key={label} style={{ background: '#fff', borderRadius: 12, padding: '20px', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+              <div style={{ fontSize: 28, marginBottom: 10 }}>{icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>{label}</div>
+              <div style={{ fontSize: 12, color: '#64748b' }}>{sub}</div>
             </div>
           ))}
         </div>
@@ -487,53 +547,48 @@ function Locations() {
   );
 }
 
+// ─── Contact ─────────────────────────────────────────────────────────────────
+
 function Contact() {
   return (
-    <section id="contact" style={{ padding: '80px 24px', background: '#080f1a', borderBottom: '1px solid #1e293b' }}>
-      <div style={{ maxWidth: 860, margin: '0 auto' }}>
-        <SectionLabel>Contact Us</SectionLabel>
-        <h2 style={{ margin: '0 0 12px', fontSize: 26, fontWeight: 800, color: '#f1f5f9' }}>
-          Reach us your way
-        </h2>
-        <p style={{ margin: '0 0 48px', fontSize: 14, color: '#64748b' }}>
-          Online booking, WhatsApp, or telephone — whichever is easiest for you.
+    <section id="contact" style={{ padding: '72px 32px', background: '#fff', borderBottom: '1px solid #e2e8f0' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto', textAlign: 'center' }}>
+        <h2 style={{ fontSize: 26, fontWeight: 800, color: '#0f172a', margin: '0 0 12px' }}>Get in Touch</h2>
+        <p style={{ fontSize: 14, color: '#64748b', margin: '0 0 48px' }}>
+          Book online, WhatsApp us, or call — whichever is easiest.
         </p>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-          <ContactCard
-            icon="📅"
-            colour="#0d9488"
-            title="Book Online"
-            desc="Choose your slot and confirm instantly — or submit a referral request."
-            href="/book"
-            cta="Book Now"
-          />
-          <ContactCard
-            icon="💬"
-            colour="#25D366"
-            title="WhatsApp"
-            desc="Message our team on WhatsApp for booking assistance, queries, and triage."
-            href={WHATSAPP_LINK}
-            cta="Open WhatsApp"
-            external
-          />
-          <ContactCard
-            icon="📞"
-            colour="#6366f1"
-            title="Telephone"
-            desc={`Call Tapion Hospital reception for urgent matters and appointments.\n${PHONE_PRIMARY} / ${PHONE_SECONDARY}`}
-            href={`tel:+1758${PHONE_PRIMARY.replace(/-/g, '')}`}
-            cta={`Call ${PHONE_PRIMARY}`}
-          />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20, marginBottom: 40 }}>
+          <a href="/book" style={contactCardStyle('#0d9488')}>
+            <div style={{ fontSize: 26, marginBottom: 10 }}>📅</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Book Online</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>Routine or referral — confirm your slot instantly.</div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#0d9488' }}>Book Now →</span>
+          </a>
+          <a href={WA_TAPION} target="_blank" rel="noopener noreferrer" style={contactCardStyle('#25D366')}>
+            <div style={{ fontSize: 26, marginBottom: 10 }}>💬</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>WhatsApp — Tapion</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>{PHONE_TAPION}</div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#25D366' }}>Message Us →</span>
+          </a>
+          <a href={WA_RODNEY} target="_blank" rel="noopener noreferrer" style={contactCardStyle('#25D366')}>
+            <div style={{ fontSize: 26, marginBottom: 10 }}>💬</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>WhatsApp — Rodney Bay</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>{PHONE_RODNEY}</div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#25D366' }}>Message Us →</span>
+          </a>
+          <a href={`mailto:${EMAIL}`} style={contactCardStyle('#6366f1')}>
+            <div style={{ fontSize: 26, marginBottom: 10 }}>✉️</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Email</div>
+            <div style={{ fontSize: 12, color: '#64748b', marginBottom: 16 }}>{EMAIL}</div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#6366f1' }}>Send Email →</span>
+          </a>
         </div>
 
         {/* Emergency notice */}
-        <div style={{ marginTop: 40, padding: '20px 24px', background: '#1a0a0a', border: '1px solid #7f1d1d', borderRadius: 10 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#ef4444', marginBottom: 8 }}>⚠️ Medical Emergencies</div>
-          <p style={{ margin: 0, fontSize: 13, color: '#fca5a5', lineHeight: 1.7 }}>
-            If you believe you are experiencing a medical emergency — including chest pain, difficulty breathing,
-            stroke symptoms, severe bleeding, or loss of consciousness — <strong>call 911 immediately</strong> or go to the nearest
-            emergency department. <strong>Do not use this website or WhatsApp in an emergency.</strong>
+        <div style={{ padding: '18px 24px', background: '#fff5f5', border: '1px solid #fca5a5', borderRadius: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#dc2626', marginBottom: 6 }}>⚠️ Medical Emergencies</div>
+          <p style={{ margin: 0, fontSize: 13, color: '#7f1d1d', lineHeight: 1.7 }}>
+            If you are experiencing a medical emergency — chest pain, difficulty breathing, stroke symptoms, severe bleeding — <strong>call 911 immediately</strong> or go to the nearest emergency department. Do not use this website in an emergency.
           </p>
         </div>
       </div>
@@ -541,72 +596,93 @@ function Contact() {
   );
 }
 
-function ContactCard({
-  icon, colour, title, desc, href, cta, external,
-}: {
-  icon: string; colour: string; title: string; desc: string;
-  href: string; cta: string; external?: boolean;
-}) {
-  return (
-    <div style={{ background: '#1e293b', borderRadius: 10, padding: '24px 22px', border: '1px solid #374151', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 28, marginBottom: 12 }}>{icon}</div>
-      <div style={{ fontSize: 14, fontWeight: 700, color: '#f1f5f9', marginBottom: 8 }}>{title}</div>
-      <div style={{ fontSize: 12, color: '#64748b', lineHeight: 1.7, marginBottom: 20, flex: 1, whiteSpace: 'pre-line' }}>{desc}</div>
-      <a
-        href={href}
-        {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        style={{ display: 'inline-block', padding: '9px 18px', background: colour, color: '#fff', borderRadius: 6, fontSize: 12, fontWeight: 700, textDecoration: 'none', textAlign: 'center' }}
-      >
-        {cta}
-      </a>
-    </div>
-  );
+function contactCardStyle(colour: string): React.CSSProperties {
+  return {
+    display: 'flex', flexDirection: 'column', alignItems: 'center',
+    padding: '24px 20px', background: '#fff',
+    border: '1px solid #e2e8f0', borderRadius: 12,
+    boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
+    textDecoration: 'none', textAlign: 'center',
+    transition: 'box-shadow 0.2s',
+  };
 }
+
+// ─── Footer ──────────────────────────────────────────────────────────────────
 
 function Footer() {
   return (
-    <footer style={{ background: '#060d18', padding: '48px 24px 32px', borderTop: '1px solid #1e293b' }}>
-      <div style={{ maxWidth: 1060, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 32, marginBottom: 40 }}>
+    <footer style={{ background: '#0f172a', color: '#94a3b8', padding: '40px 32px 24px' }}>
+      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 32, marginBottom: 32, alignItems: 'start' }}>
+          {/* Brand */}
           <div>
-            <div style={{ fontSize: 14, fontWeight: 800, color: '#f1f5f9', marginBottom: 6 }}>Amise Medical Services</div>
-            <div style={{ fontSize: 12, color: '#0d9488', fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 12 }}>Saint Lucia</div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: '#0d9488', marginBottom: 4 }}>Amise Medical Services</div>
             <div style={{ fontSize: 12, color: '#475569', lineHeight: 1.8 }}>
-              Dr Dawit Daniel Kabiye, MD, DM<br />
-              General &amp; Endoscopic Surgery
+              Surgical, Endoscopy &amp; Specialist Care<br />Saint Lucia
             </div>
           </div>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>Appointments</div>
-            {[
-              { label: 'Book Online',          href: '/book'         },
-              { label: 'Routine Appointment',   href: '/book'         },
-              { label: 'Referral Booking',      href: '/book'         },
-              { label: 'WhatsApp',              href: WHATSAPP_LINK   },
-            ].map(({ label, href }) => (
-              <a key={label} href={href} style={{ display: 'block', fontSize: 12, color: '#475569', textDecoration: 'none', marginBottom: 8 }}>{label}</a>
-            ))}
-          </div>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>Contact</div>
-            <div style={{ fontSize: 12, color: '#475569', lineHeight: 2 }}>
-              Tapion Hospital: {PHONE_PRIMARY}<br />
-              Alt: {PHONE_SECONDARY}<br />
-              Rodney Bay · Castries · Tapion
+
+          {/* Tapion */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3-8.59A2 2 0 012.02 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0' }}>{PHONE_TAPION}</div>
+              <div style={{ fontSize: 11, color: '#475569' }}>Tapion Office</div>
             </div>
           </div>
+
+          {/* Rodney Bay */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3-8.59A2 2 0 012.02 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#e2e8f0' }}>{PHONE_RODNEY}</div>
+              <div style={{ fontSize: 11, color: '#475569' }}>Rodney Bay Office</div>
+            </div>
+          </div>
+
+          {/* Email + Social */}
           <div>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 14 }}>Services</div>
-            {['Colonoscopy & Gastroscopy', 'ERCP', 'Hernia Repair', 'Gallbladder Surgery', 'Breast Clinic', 'Thyroid Surgery', 'Diabetic Foot', 'Colorectal Surgery'].map(s => (
-              <div key={s} style={{ fontSize: 12, color: '#475569', marginBottom: 6 }}>{s}</div>
-            ))}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#e2e8f0' }}>{EMAIL}</div>
+                <div style={{ fontSize: 11, color: '#475569' }}>General enquiries</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {[
+                { href: 'https://facebook.com',   label: 'Facebook',  d: 'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z' },
+                { href: 'https://instagram.com',  label: 'Instagram', d: 'M16 8A8 8 0 110 8a8 8 0 0116 0zm-8 4a4 4 0 100-8 4 4 0 000 8zm6.5-9.5a1 1 0 100 2 1 1 0 000-2z' },
+                { href: WA_TAPION,                label: 'WhatsApp',  d: 'M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z' },
+              ].map(({ href, label, d }) => (
+                <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} style={{
+                  width: 36, height: 36, borderRadius: '50%', background: '#1e293b',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#0d9488">
+                    <path d={d} fillRule="evenodd" clipRule="evenodd" />
+                  </svg>
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid #1e293b', paddingTop: 24, fontSize: 11, color: '#374151', lineHeight: 1.8, textAlign: 'center' }}>
-          <p style={{ margin: '0 0 8px' }}>
-            <strong style={{ color: '#475569' }}>Important:</strong> This website is for administrative scheduling only and does not constitute medical advice, clinical triage, or a diagnosis.
-            Appointment availability is subject to confirmation. If you believe you are experiencing a medical emergency, call 911 or attend the nearest emergency department immediately.
+        <div style={{ borderTop: '1px solid #1e293b', paddingTop: 20, fontSize: 11, color: '#374151', textAlign: 'center', lineHeight: 1.8 }}>
+          <p style={{ margin: '0 0 6px' }}>
+            This website is for administrative scheduling purposes only and does not constitute medical advice, clinical triage, or a diagnosis. If you are experiencing a medical emergency, call 911 immediately.
           </p>
           <p style={{ margin: 0 }}>
             © {new Date().getFullYear()} Amise Medical Services, Saint Lucia. All rights reserved.
@@ -617,30 +693,22 @@ function Footer() {
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 12 }}>
-      {children}
-    </div>
-  );
-}
-
-// ─── Page ────────────────────────────────────────────────────────────────────
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
   return (
-    <>
+    <div style={{ background: '#fff', color: '#0f172a', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
       <Nav />
       <main>
         <Hero />
+        <FeatureTiles />
+        <Offices />
+        <WhyUs />
+        <HowItWorks />
         <About />
-        <Services />
-        <BookingTracks />
-        <Preparation />
-        <Locations />
         <Contact />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }
