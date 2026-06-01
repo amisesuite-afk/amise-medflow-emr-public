@@ -126,8 +126,9 @@ jobs:
         run: |
           set -e
           echo '=== Vercel deploy (production) ==='
-          npx vercel build --prod --yes --no-color --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/vbuild.txt
-          npx vercel deploy --prebuilt --prod --yes --no-color --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/vdeploy.txt
+          # Pin to 54.6.1 — 54.7.0 has a Node.js 22 CJS/ESM incompatibility in @vercel/build-utils
+          npx vercel@54.6.1 build --prod --yes --no-color --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/vbuild.txt
+          npx vercel@54.6.1 deploy --prebuilt --prod --yes --no-color --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/vdeploy.txt
           echo '=== end ==='
 
           # Strip ANSI, grab last https URL that isn't an inspect link
