@@ -1,0 +1,16 @@
+# Build artifacts — Vercel builds from source in their environment
+artifacts/front-desk/.next
+artifacts/front-desk/.vercel
+artifacts/*/.next
+artifacts/*/dist
+lib/*/dist
+.turbo
+**/*.tsbuildinfo
+
+# Test artifacts
+coverage
+.nyc_output
+
+# Logs
+*.log
+npm-debug.log*

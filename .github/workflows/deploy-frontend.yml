@@ -30,13 +30,6 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install
 
-      - name: Build Next.js app
-        working-directory: artifacts/front-desk
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
-        run: pnpm run build
-
       - name: Discover Vercel org and project IDs
         id: vercel-ids
         env:
@@ -101,22 +94,42 @@ jobs:
             echo "ORG_ID=$ORG_ID"
             echo "PROJECT_ID=$PROJECT_ID"
             echo '```'
-            echo "<details><summary>All projects</summary>"
-            echo ""
-            echo '```'
-            echo "$PROJ_JSON" | python3 -c "
-          import sys, json
-          for p in json.load(sys.stdin).get('projects', []):
-            aliases = [a.get('domain','') for a in p.get('alias', [])]
-            print(f\"  {p['name']}  id={p['id']}  aliases={aliases}\")
-            " || echo "$PROJ_JSON"
-            echo '```'
-            echo "</details>"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Deploy to Vercel (production)
+      - name: Configure Vercel project (rootDirectory + env vars)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ steps.vercel-ids.outputs.org_id }}
+          VERCEL_PROJECT_ID: ${{ steps.vercel-ids.outputs.project_id }}
+        run: |
+          # Set rootDirectory so source deploy from repo root finds the right package
+          echo "=== Setting rootDirectory ==="
+          curl -sf -X PATCH \
+            "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"rootDirectory": "artifacts/front-desk"}' \
+            | python3 -c "
+          import sys, json
+          r = json.load(sys.stdin)
+          print(f\"rootDirectory={r.get('rootDirectory')}  framework={r.get('framework')}\")
+          " || true
+
+          # Upsert NEXT_PUBLIC env vars so they are available during Vercel's build
+          echo "=== Setting env vars ==="
+          for payload in \
+            '{"key":"NEXT_PUBLIC_SUPABASE_URL","value":"https://nornhfzfrlmfzaqmrzzp.supabase.co","target":["production","preview","development"],"type":"plain"}' \
+            '{"key":"NEXT_PUBLIC_SUPABASE_ANON_KEY","value":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc","target":["production","preview","development"],"type":"plain"}'; do
+            curl -sf -X POST \
+              "https://api.vercel.com/v10/projects/$VERCEL_PROJECT_ID/env?teamId=$VERCEL_ORG_ID&upsert=true" \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$payload" > /dev/null 2>&1 || true
+          done
+          echo "Done configuring project"
+
+      - name: Deploy to Vercel (production — source build)
         id: deploy
-        working-directory: artifacts/front-desk
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ steps.vercel-ids.outputs.org_id }}
@@ -125,18 +138,19 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
         run: |
           set -e
-          echo '=== Vercel deploy (production) ==='
-          # Pin to 54.6.1 — 54.7.0 has a Node.js 22 CJS/ESM incompatibility in @vercel/build-utils
-          npx vercel@54.6.1 build --prod --yes --no-color --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/vbuild.txt
-          npx vercel@54.6.1 deploy --prebuilt --prod --yes --no-color --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/vdeploy.txt
+          echo '=== Vercel deploy (production from source) ==='
+          # Deploy from repo root — Vercel uses rootDirectory=artifacts/front-desk to build.
+          # No --prebuilt: Vercel builds in their environment so pnpm paths are correct.
+          npx vercel@54.6.1 deploy --prod --yes --no-color --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/vdeploy.txt
           echo '=== end ==='
 
-          # Strip ANSI, grab last https URL that isn't an inspect link
+          # Extract the deployment-specific URL.
+          # Pattern stops at .vercel.app boundary — avoids capturing "Building…" suffix.
           URL=$(sed 's/\x1b\[[0-9;]*[mK]//g' /tmp/vdeploy.txt \
-            | grep -oE 'https://[^[:space:]"]+' \
+            | grep -oE 'https://[a-zA-Z0-9._-]+\.vercel\.app' \
             | grep -v 'inspect' | tail -1)
 
-          # Fallback: last non-empty line of deploy output
+          # Fallback: last non-empty line
           if [ -z "$URL" ]; then
             URL=$(sed 's/\x1b\[[0-9;]*[mK]//g' /tmp/vdeploy.txt \
               | grep -v '^[[:space:]]*$' | tail -1 | tr -d '[:space:]')
@@ -150,13 +164,6 @@ jobs:
             echo "## Live URL"
             echo ""
             echo "**$URL**"
-            echo ""
-            echo "<details><summary>vercel build log</summary>"
-            echo ""
-            echo '```'
-            cat /tmp/vbuild.txt
-            echo '```'
-            echo "</details>"
             echo ""
             echo "<details><summary>vercel deploy log</summary>"
             echo ""
@@ -177,7 +184,7 @@ jobs:
             echo "Assigning production alias to $LIVE_URL"
             npx vercel@54.6.1 alias set "$LIVE_URL" \
               front-desk-amisesuite-afks-projects.vercel.app \
-              --token="$VERCEL_TOKEN" --yes 2>&1 || true
+              --token="$VERCEL_TOKEN" 2>&1 || true
           else
             echo "No valid URL to alias — skipping"
           fi
