@@ -4,7 +4,7 @@ import {
   PanelLeftClose, PanelLeftOpen, AlertTriangle, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
-  ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap,
+  ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, FileQuestion,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -75,8 +75,9 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'billing',      icon: Receipt,         label: 'Billing',      roles: ['front_desk', 'admin'] },
   { id: 'analytics',    icon: BarChart2,       label: 'Analytics',    roles: ['doctor', 'admin'] },
   { id: 'trauma',       icon: Zap,             label: 'Trauma',       roles: ['nurse', 'doctor', 'admin'] },
-  { id: 'vademecum',    icon: BookOpen,        label: 'Disease Dict.', roles: ['nurse', 'doctor', 'admin'] },
-  { id: 'settings',     icon: Settings,        label: 'Settings',     roles: ['admin'] },
+  { id: 'vademecum',      icon: BookOpen,      label: 'Disease Dict.',  roles: ['nurse', 'doctor', 'admin'] },
+  { id: 'questionnaire',  icon: FileQuestion,  label: 'Questionnaire', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
+  { id: 'settings',       icon: Settings,      label: 'Settings',      roles: ['admin'] },
 ];
 
 export default function NavSidebar({
@@ -92,10 +93,11 @@ export default function NavSidebar({
 
   function handleTop(item: TopItem) {
     onTopSection(item.id);
-    if (item.id === 'intake')        { onSection('intake'); }
-    if (item.id === 'procedures')    { onSection('procedures'); }
-    if (item.id === 'consultation')  { onSection('triage'); }
-    if (item.id === 'billing')       { onSection('billing'); }
+    if (item.id === 'intake')          { onSection('intake'); }
+    if (item.id === 'procedures')      { onSection('procedures'); }
+    if (item.id === 'consultation')    { onSection('triage'); }
+    if (item.id === 'billing')         { onSection('billing'); }
+    if (item.id === 'questionnaire')   { onSection('apcq'); }
   }
 
   function subActive(id: Section) {
