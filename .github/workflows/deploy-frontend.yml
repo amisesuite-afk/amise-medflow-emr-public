@@ -8,8 +8,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   issues: write
+  deployments: write
 
 jobs:
   deploy:
@@ -29,103 +30,151 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install
 
-      - name: List Vercel projects (find the right URL)
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: |
-          echo "=== Vercel user/team info ==="
-          curl -sf "https://api.vercel.com/v2/user" \
-            -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -m json.tool || true
-
-          echo ""
-          echo "=== Vercel teams ==="
-          curl -sf "https://api.vercel.com/v2/teams" \
-            -H "Authorization: Bearer $VERCEL_TOKEN" | python3 -m json.tool || true
-
-          echo ""
-          echo "=== All Vercel projects ==="
-          PROJ=$(curl -sf "https://api.vercel.com/v9/projects?limit=50" \
-            -H "Authorization: Bearer $VERCEL_TOKEN")
-          echo "$PROJ" | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
-          for p in data.get('projects', []):
-              aliases = [a.get('domain','') for a in p.get('alias', [])]
-              print(f\"  name={p['name']}  id={p['id']}  aliases={aliases}\")
-          " || echo "$PROJ"
-
-          {
-            echo "## Vercel project list"
-            echo '```'
-            PROJ2=$(curl -sf "https://api.vercel.com/v9/projects?limit=50" \
-              -H "Authorization: Bearer $VERCEL_TOKEN")
-            echo "$PROJ2" | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
-          for p in data.get('projects', []):
-              aliases = [a.get('domain','') for a in p.get('alias', [])]
-              print(f\"name={p['name']}  id={p['id']}  aliases={aliases}\")
-            " || echo "$PROJ2"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Build
+      - name: Build Next.js app
         working-directory: artifacts/front-desk
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           NEXT_PUBLIC_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
-        run: npx vercel build --prod --yes --no-color --token=$VERCEL_TOKEN
+        run: pnpm run build
 
-      - name: Deploy
-        id: deploy
-        working-directory: artifacts/front-desk
+      - name: Discover Vercel org and project IDs
+        id: vercel-ids
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          set -e
-          echo '=== RAW VERCEL DEPLOY ==='
-          npx vercel deploy --prebuilt --prod --yes --no-color --token=$VERCEL_TOKEN \
-            2>&1 | tee /tmp/vout.txt
-          echo '=== END ==='
+          echo "=== User info ==="
+          USER_JSON=$(curl -sf "https://api.vercel.com/v2/user" \
+            -H "Authorization: Bearer $VERCEL_TOKEN")
+          echo "$USER_JSON" | python3 -c "
+          import sys, json; u=json.load(sys.stdin)['user']
+          print(f\"username={u.get('username')}  id={u.get('id')}\")
+          " || true
 
-          # Strip any residual ANSI codes, grab last https URL that isn't an inspect link
-          CLEAN=$(sed 's/\x1b\[[0-9;]*[mK]//g' /tmp/vout.txt)
-          URL=$(echo "$CLEAN" | grep -oE 'https://[^[:space:]"]+' | grep -v 'inspect' | tail -1)
+          echo "=== Teams ==="
+          TEAMS_JSON=$(curl -sf "https://api.vercel.com/v2/teams" \
+            -H "Authorization: Bearer $VERCEL_TOKEN")
+          echo "$TEAMS_JSON" | python3 -c "
+          import sys, json
+          for t in json.load(sys.stdin).get('teams', []):
+            print(f\"  slug={t.get('slug')}  id={t.get('id')}\")
+          " || true
 
-          # Fallback: last non-empty line (Vercel always prints the URL as the final line)
-          if [ -z "$URL" ]; then
-            URL=$(echo "$CLEAN" | grep -v '^[[:space:]]*$' | tail -1 | tr -d '[:space:]')
+          echo "=== Projects ==="
+          PROJ_JSON=$(curl -sf "https://api.vercel.com/v9/projects?limit=100" \
+            -H "Authorization: Bearer $VERCEL_TOKEN")
+          echo "$PROJ_JSON" | python3 -c "
+          import sys, json
+          for p in json.load(sys.stdin).get('projects', []):
+            aliases = [a.get('domain','') for a in p.get('alias', [])]
+            print(f\"  name={p['name']}  id={p['id']}  aliases={aliases}\")
+          " || echo "$PROJ_JSON"
+
+          # Extract org ID (prefer team, fall back to personal user ID)
+          ORG_ID=$(echo "$TEAMS_JSON" | python3 -c "
+          import sys, json
+          teams = json.load(sys.stdin).get('teams', [])
+          print(teams[0]['id'] if teams else '')
+          " 2>/dev/null || true)
+
+          if [ -z "$ORG_ID" ]; then
+            ORG_ID=$(echo "$USER_JSON" | python3 -c "
+          import sys, json; print(json.load(sys.stdin)['user']['id'])
+          " 2>/dev/null || true)
           fi
 
-          echo "Deployed URL: $URL"
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
-          echo "LIVE_URL=$URL" >> "$GITHUB_ENV"
+          # Find the front-desk project ID
+          PROJECT_ID=$(echo "$PROJ_JSON" | python3 -c "
+          import sys, json
+          ps = json.load(sys.stdin).get('projects', [])
+          p = next((x for x in ps if x['name'] == 'front-desk'), None)
+          print(p['id'] if p else '')
+          " 2>/dev/null || true)
+
+          echo "org_id=$ORG_ID" >> "$GITHUB_OUTPUT"
+          echo "project_id=$PROJECT_ID" >> "$GITHUB_OUTPUT"
+          echo "VERCEL_ORG_ID=$ORG_ID" >> "$GITHUB_ENV"
+          echo "VERCEL_PROJECT_ID=$PROJECT_ID" >> "$GITHUB_ENV"
 
           {
-            echo "# Amise Front Desk — Live"
-            echo ""
-            echo "**URL: $URL**"
-            echo ""
-            echo "<details><summary>Full vercel output</summary>"
+            echo "## Vercel project discovery"
+            echo '```'
+            echo "ORG_ID=$ORG_ID"
+            echo "PROJECT_ID=$PROJECT_ID"
+            echo '```'
+            echo "<details><summary>All projects</summary>"
             echo ""
             echo '```'
-            cat /tmp/vout.txt
+            echo "$PROJ_JSON" | python3 -c "
+          import sys, json
+          for p in json.load(sys.stdin).get('projects', []):
+            aliases = [a.get('domain','') for a in p.get('alias', [])]
+            print(f\"  {p['name']}  id={p['id']}  aliases={aliases}\")
+            " || echo "$PROJ_JSON"
             echo '```'
             echo "</details>"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Post live URL as GitHub issue
+      - name: Deploy to Vercel (production)
+        id: deploy
+        working-directory: artifacts/front-desk
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ steps.vercel-ids.outputs.org_id }}
+          VERCEL_PROJECT_ID: ${{ steps.vercel-ids.outputs.project_id }}
+          NEXT_PUBLIC_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
+        run: |
+          set -e
+          echo '=== Vercel deploy (production) ==='
+          npx vercel build --prod --yes --no-color --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/vbuild.txt
+          npx vercel deploy --prebuilt --prod --yes --no-color --token="$VERCEL_TOKEN" 2>&1 | tee /tmp/vdeploy.txt
+          echo '=== end ==='
+
+          # Strip ANSI, grab last https URL that isn't an inspect link
+          URL=$(sed 's/\x1b\[[0-9;]*[mK]//g' /tmp/vdeploy.txt \
+            | grep -oE 'https://[^[:space:]"]+' \
+            | grep -v 'inspect' | tail -1)
+
+          # Fallback: last non-empty line of deploy output
+          if [ -z "$URL" ]; then
+            URL=$(sed 's/\x1b\[[0-9;]*[mK]//g' /tmp/vdeploy.txt \
+              | grep -v '^[[:space:]]*$' | tail -1 | tr -d '[:space:]')
+          fi
+
+          echo "LIVE_URL=$URL"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "LIVE_URL=$URL" >> "$GITHUB_ENV"
+
+          {
+            echo "## Live URL"
+            echo ""
+            echo "**$URL**"
+            echo ""
+            echo "<details><summary>vercel build log</summary>"
+            echo ""
+            echo '```'
+            cat /tmp/vbuild.txt
+            echo '```'
+            echo "</details>"
+            echo ""
+            echo "<details><summary>vercel deploy log</summary>"
+            echo ""
+            echo '```'
+            cat /tmp/vdeploy.txt
+            echo '```'
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Write LIVE_URL to repo
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LIVE_URL: ${{ steps.deploy.outputs.url }}
         run: |
-          gh issue create \
-            --repo amisesuite-afk/amise-medflow-emr-public \
-            --title "Live URL: $LIVE_URL" \
-            --body "Amise Front Desk deployed.
-
-**URL:** $LIVE_URL
-
-Pages: / book guidance pathway refer" \
-          || echo "Issue creation skipped"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          echo "$LIVE_URL" > LIVE_URL.txt
+          echo "Pages: / book guidance pathway refer" >> LIVE_URL.txt
+          git add LIVE_URL.txt
+          git commit -m "chore: update live URL [skip ci]" || true
+          git push || true
+          echo "LIVE_URL.txt written: $LIVE_URL"
