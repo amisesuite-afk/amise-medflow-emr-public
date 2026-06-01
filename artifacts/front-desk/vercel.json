@@ -1,5 +1,8 @@
 {
   "framework": "nextjs",
   "installCommand": "cd ../.. && pnpm install",
-  "buildCommand": "cd ../.. && pnpm --filter @workspace/front-desk run build"
+  "buildCommand": "cd ../.. && pnpm --filter @workspace/front-desk run build",
+  "git": {
+    "deploymentEnabled": false
+  }
 }
