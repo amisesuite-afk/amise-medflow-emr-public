@@ -1,2 +1,2 @@
-https://front-desk-gdbhmm3ya-amisesuite-afks-projects.vercel.appBuilding…
+Error:The"--prebuilt"optionwasused,butnoprebuiltoutputfoundin".vercel/output".Run`vercelbuild`togeneratealocalbuild.
 Pages: / book guidance pathway refer
