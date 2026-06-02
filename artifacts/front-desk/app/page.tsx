@@ -239,84 +239,166 @@ function Hero() {
   );
 }
 
+// ── WhatsApp Strip ────────────────────────────────────────────────────────────
+
+function WhatsAppStrip() {
+  return (
+    <div style={{
+      background: '#0d9488', padding: '16px 40px',
+    }}>
+      <div style={{
+        maxWidth: 1160, margin: '0 auto',
+        display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 16,
+        justifyContent: 'space-between',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <WaSvg size={22} color="#fff" />
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>
+            Prefer to book on WhatsApp? Message us — we usually reply within 30 minutes.
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <a href={WA_TAPION} target="_blank" rel="noopener noreferrer" style={{
+            padding: '9px 18px', background: '#fff', color: '#0d9488',
+            borderRadius: 50, fontSize: 13, fontWeight: 700, textDecoration: 'none',
+            whiteSpace: 'nowrap',
+          }}>
+            Tapion: {PHONE_TAPION} →
+          </a>
+          <a href={WA_RODNEY} target="_blank" rel="noopener noreferrer" style={{
+            padding: '9px 18px', background: 'rgba(255,255,255,0.15)', color: '#fff',
+            border: '1.5px solid rgba(255,255,255,0.5)',
+            borderRadius: 50, fontSize: 13, fontWeight: 700, textDecoration: 'none',
+            whiteSpace: 'nowrap',
+          }}>
+            Rodney Bay: {PHONE_RODNEY} →
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Feature Tiles ─────────────────────────────────────────────────────────────
 
 function FeatureTiles() {
   return (
     <section id="services" style={{ background: '#f5fafa', padding: '60px 40px', borderBottom: '1px solid #e2eeed' }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24 }}>
+      <div style={{ maxWidth: 1160, margin: '0 auto' }}>
+        {/* Section heading */}
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <h2 style={{ margin: '0 0 8px', fontSize: 26, fontWeight: 800, color: '#0f172a' }}>
+            Specialist Surgical &amp; Endoscopy Care
+          </h2>
+          <div style={{ width: 48, height: 3, background: '#0d9488', borderRadius: 2, margin: '0 auto' }} />
+        </div>
 
-        {/* Routine Booking */}
-        <Tile
-          icon={
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.6">
-              <rect x="3" y="4" width="18" height="18" rx="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-              <line x1="8" y1="14" x2="8" y2="14" strokeWidth="2"/><line x1="12" y1="14" x2="12" y2="14" strokeWidth="2"/><line x1="16" y1="14" x2="16" y2="14" strokeWidth="2"/>
-              <line x1="8" y1="18" x2="8" y2="18" strokeWidth="2"/><line x1="12" y1="18" x2="12" y2="18" strokeWidth="2"/>
-            </svg>
-          }
-          ringColor="#0d9488"
-          title="Routine Booking"
-          body="Book consultations, follow-ups and specialist visits."
-          cta="Book Now →"
-          ctaHref="/book"
-          ctaColor="#0d9488"
-        />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
 
-        {/* Urgent */}
-        <Tile
-          icon={
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e63946" strokeWidth="1.6">
-              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-              <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-          }
-          ringColor="#e63946"
-          ringBg="#fff5f5"
-          title="Urgent Appointment"
-          body="Answer a few questions so we can prioritise your care."
-          cta="Start Triage →"
-          ctaHref="/book"
-          ctaColor="#e63946"
-        />
+          {/* Surgical Care */}
+          <Tile
+            icon={
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.6">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+            }
+            ringColor="#0d9488"
+            title="Surgical Care"
+            body="Hernia repair, cholecystectomy, colorectal, thyroid, diabetic foot surgery."
+            cta="Book Surgical Consult →"
+            ctaHref="/book"
+            ctaColor="#0d9488"
+          />
 
-        {/* Endoscopy */}
-        <Tile
-          icon={
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.6">
-              <ellipse cx="12" cy="13" rx="4" ry="5"/>
-              <path d="M8 13 C6 10 7 6 10 5"/>
-              <path d="M16 13 C18 10 17 6 14 5"/>
-              <path d="M10 5 C10 3 14 3 14 5"/>
-              <circle cx="12" cy="8" r="1" fill="#0d9488"/>
-            </svg>
-          }
-          ringColor="#0d9488"
-          title="Endoscopy / ERCP"
-          body="Schedule procedures and get preparation instructions."
-          cta="Learn More →"
-          ctaHref="#services"
-          ctaColor="#0d9488"
-        />
+          {/* Endoscopy */}
+          <Tile
+            icon={
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.6">
+                <ellipse cx="12" cy="13" rx="4" ry="5"/>
+                <path d="M8 13 C6 10 7 6 10 5"/>
+                <path d="M16 13 C18 10 17 6 14 5"/>
+                <path d="M10 5 C10 3 14 3 14 5"/>
+                <circle cx="12" cy="8" r="1" fill="#0d9488"/>
+              </svg>
+            }
+            ringColor="#0d9488"
+            title="Endoscopy"
+            body="Gastroscopy (OGD), colonoscopy, flexible sigmoidoscopy, polypectomy."
+            cta="Book Endoscopy →"
+            ctaHref="/book"
+            ctaColor="#0d9488"
+          />
 
-        {/* Upload */}
-        <Tile
-          icon={
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.6">
-              <polyline points="16 16 12 12 8 16"/>
-              <line x1="12" y1="12" x2="12" y2="21"/>
-              <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
-            </svg>
-          }
-          ringColor="#0d9488"
-          title="Upload Reports"
-          body="Upload medical reports, scans or referral letters securely."
-          cta="Upload Now →"
-          ctaHref="/book"
-          ctaColor="#0d9488"
-        />
+          {/* ERCP / Biliary */}
+          <Tile
+            icon={
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.6">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M8 12 C8 8 12 6 16 8"/>
+                <path d="M8 12 C8 16 12 18 16 16"/>
+                <circle cx="12" cy="12" r="2" fill="#0d9488"/>
+              </svg>
+            }
+            ringColor="#0d9488"
+            title="ERCP / Biliary"
+            body="Advanced biliary and pancreatic procedures. Stenting, stone extraction, sphincterotomy."
+            cta="ERCP Work-up →"
+            ctaHref="/book"
+            ctaColor="#0d9488"
+          />
+
+          {/* Breast Clinic */}
+          <Tile
+            icon={
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.6">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+              </svg>
+            }
+            ringColor="#0d9488"
+            title="Breast Clinic"
+            body="Breast lump assessment, mammogram review, biopsy, surgical planning."
+            cta="Book Breast Clinic →"
+            ctaHref="/book"
+            ctaColor="#0d9488"
+          />
+
+          {/* Thyroid & Neck */}
+          <Tile
+            icon={
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.6">
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+                <line x1="12" y1="11" x2="12" y2="15"/>
+                <line x1="10" y1="13" x2="14" y2="13"/>
+              </svg>
+            }
+            ringColor="#0d9488"
+            title="Thyroid &amp; Neck"
+            body="Thyroid nodule assessment, FNAC, thyroidectomy planning."
+            cta="Book Thyroid Clinic →"
+            ctaHref="/book"
+            ctaColor="#0d9488"
+          />
+
+          {/* Diabetic Foot */}
+          <Tile
+            icon={
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.6">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+            }
+            ringColor="#0d9488"
+            title="Diabetic Foot"
+            body="Wound assessment, debridement, vascular review, amputations."
+            cta="Book Foot Clinic →"
+            ctaHref="/book"
+            ctaColor="#0d9488"
+          />
+
+        </div>
       </div>
     </section>
   );
@@ -608,6 +690,27 @@ function HowItWorks() {
             ))}
           </div>
 
+          {/* Questionnaire CTA */}
+          <div style={{
+            background: '#f0fdf9', border: '1px solid #a7f3d0',
+            borderRadius: 10, padding: '18px 22px', marginBottom: 24,
+          }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>
+              Before your visit: Complete our digital intake questionnaire
+            </div>
+            <Link href="/questionnaire" style={{
+              display: 'inline-block', padding: '9px 20px',
+              background: '#0d9488', color: '#fff',
+              borderRadius: 6, fontSize: 13, fontWeight: 700,
+              textDecoration: 'none', marginBottom: 10,
+            }}>
+              Start Questionnaire →
+            </Link>
+            <div style={{ fontSize: 12, color: '#6b7280' }}>
+              Takes 3–5 minutes. Reduces your consultation time significantly.
+            </div>
+          </div>
+
           <div>
             <Link href="/book" style={{
               display: 'inline-block', padding: '13px 32px',
@@ -824,6 +927,7 @@ export default function HomePage() {
       <Nav />
       <main>
         <Hero />
+        <WhatsAppStrip />
         <FeatureTiles />
         <Offices />
         <WhyUs />

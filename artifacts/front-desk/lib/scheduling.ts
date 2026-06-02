@@ -36,15 +36,33 @@ export const TRACK_CONFIG: Record<BookingTrack, TrackConfig> = {
   },
 };
 
-export const APPOINTMENT_TYPES: Record<string, { label: string; location: string }> = {
-  new_consult:   { label: 'New consultation with Dr Kabiye',    location: 'rodney_bay' },
-  follow_up:     { label: 'Follow-up appointment',              location: 'castries'   },
-  post_op:       { label: 'Post-operative review',              location: 'castries'   },
-  ercp_workup:   { label: 'ERCP / biliary investigation',       location: 'rodney_bay' },
-  breast:        { label: 'Breast clinic',                      location: 'rodney_bay' },
-  diabetic_foot: { label: 'Diabetic foot clinic',               location: 'rodney_bay' },
-  telephone:     { label: 'Telephone review',                   location: 'remote'     },
+export const APPOINTMENT_TYPES: Record<string, { label: string; location: string; group: string }> = {
+  // Consultations
+  new_consult:    { label: 'New consultation with Dr Kabiye',  location: 'rodney_bay', group: 'Consultations' },
+  follow_up:      { label: 'Follow-up appointment',            location: 'castries',   group: 'Consultations' },
+  telephone:      { label: 'Telephone review',                 location: 'remote',     group: 'Consultations' },
+  // Endoscopy & Procedures
+  ogd:            { label: 'Gastroscopy (OGD)',                location: 'tapion',     group: 'Endoscopy & Procedures' },
+  colonoscopy:    { label: 'Colonoscopy',                      location: 'tapion',     group: 'Endoscopy & Procedures' },
+  ercp_workup:    { label: 'ERCP / Biliary investigation',     location: 'tapion',     group: 'Endoscopy & Procedures' },
+  flexi_sig:      { label: 'Flexible sigmoidoscopy',           location: 'tapion',     group: 'Endoscopy & Procedures' },
+  // Specialist Clinics
+  breast:         { label: 'Breast clinic',                    location: 'rodney_bay', group: 'Specialist Clinics' },
+  thyroid:        { label: 'Thyroid clinic',                   location: 'rodney_bay', group: 'Specialist Clinics' },
+  diabetic_foot:  { label: 'Diabetic foot clinic',             location: 'rodney_bay', group: 'Specialist Clinics' },
+  // Surgery & Post-Op
+  pre_op:         { label: 'Pre-operative assessment',         location: 'rodney_bay', group: 'Surgery & Post-Op' },
+  post_op:        { label: 'Post-operative review',            location: 'castries',   group: 'Surgery & Post-Op' },
 };
+
+export function getApptGroups(): Record<string, { key: string; label: string; location: string }[]> {
+  const result: Record<string, { key: string; label: string; location: string }[]> = {};
+  for (const [key, val] of Object.entries(APPOINTMENT_TYPES)) {
+    if (!result[val.group]) result[val.group] = [];
+    result[val.group].push({ key, label: val.label, location: val.location });
+  }
+  return result;
+}
 
 export function encodeReason(
   track: BookingTrack,
