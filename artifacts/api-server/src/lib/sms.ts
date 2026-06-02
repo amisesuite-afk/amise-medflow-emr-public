@@ -38,8 +38,66 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
   throw new Error(`Unknown SMS_PROVIDER: ${provider}`);
 }
 
-export function smsBody48h(opts: { day: string; date: string; time: string; location: string }): string {
-  return `Reminder: appt with Dr Kabiye ${opts.day} ${opts.date} ${opts.time} at ${opts.location}. Reply C to confirm, R to reschedule. Amise Medical.`;
+// Procedure types that require preparation instructions
+const PREP_INSTRUCTIONS: Record<string, string> = {
+  colonoscopy:
+    'PREP REQUIRED: Clear fluids only the day before (no solid food). Take your prescribed bowel prep solution as directed. Nothing by mouth from midnight. Arrange a driver — you cannot drive after sedation.',
+  ogd:
+    'PREP REQUIRED: Nothing to eat or drink from midnight before your gastroscopy. You may take essential medications with a small sip of water. Arrange a driver home.',
+  egd:
+    'PREP REQUIRED: Nothing to eat or drink from midnight before your gastroscopy. You may take essential medications with a small sip of water. Arrange a driver home.',
+  ercp_workup:
+    'PREP REQUIRED: Nothing to eat or drink from midnight. Stop blood thinners as advised by your doctor. Arrange a driver — you cannot drive after sedation.',
+  pre_op:
+    'PRE-OP INSTRUCTIONS: Nothing to eat or drink from midnight. Continue essential medications with a small sip of water unless advised otherwise. Bring your medication list.',
+  flexi_sig:
+    'PREP REQUIRED: Follow your bowel prep instructions. Clear fluids only on the morning of the procedure. Arrange a driver home.',
+};
+
+export function getPrepInstructions(appointmentType: string): string | null {
+  return PREP_INSTRUCTIONS[appointmentType.toLowerCase()] ?? null;
+}
+
+export function requiresPrep(appointmentType: string): boolean {
+  return appointmentType.toLowerCase() in PREP_INSTRUCTIONS;
+}
+
+export function smsBodyBookingAck(opts: { firstName: string; appointmentType: string; phone: string }): string {
+  const typeLabel = opts.appointmentType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  return `Hi ${opts.firstName}, we've received your ${typeLabel} request at Amise Medical Services. Our team will confirm your appointment shortly. Questions? Call ${opts.phone}. – Amise Medical`;
+}
+
+export function smsBodyStaffNewBooking(opts: {
+  patientName: string;
+  appointmentType: string;
+  preferredSlot: string | null;
+  patientPhone: string | null;
+  bookingId: string;
+}): string {
+  const typeLabel = opts.appointmentType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const slot = opts.preferredSlot ? ` — preferred: ${opts.preferredSlot}` : '';
+  const phone = opts.patientPhone ? ` Ph: ${opts.patientPhone}` : '';
+  return `NEW BOOKING [${opts.bookingId.slice(0, 8)}]: ${opts.patientName} — ${typeLabel}${slot}.${phone} Action in the Amise dashboard.`;
+}
+
+export function smsBodyStaffEscalation(opts: {
+  patientName: string;
+  appointmentType: string;
+  hoursWaiting: number;
+  bookingId: string;
+  patientPhone: string | null;
+}): string {
+  const typeLabel = opts.appointmentType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const phone = opts.patientPhone ? ` Ph: ${opts.patientPhone}` : '';
+  return `UNACTIONED BOOKING [${opts.bookingId.slice(0, 8)}] ${opts.hoursWaiting}h: ${opts.patientName} — ${typeLabel}.${phone} Please confirm or contact patient.`;
+}
+
+export function smsBody48h(opts: { day: string; date: string; time: string; location: string; prepInstructions?: string | null }): string {
+  const base = `Reminder: appt with Dr Kabiye ${opts.day} ${opts.date} ${opts.time} at ${opts.location}. Reply C to confirm, R to reschedule. Amise Medical.`;
+  if (opts.prepInstructions) {
+    return `${base}\n\n${opts.prepInstructions}`;
+  }
+  return base;
 }
 
 export function smsBody2h(opts: { location: string }): string {

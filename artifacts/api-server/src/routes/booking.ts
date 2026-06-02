@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getSupabaseAdmin, audit } from '../lib/supabase.js';
-import { sendSms } from '../lib/sms.js';
+import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions } from '../lib/sms.js';
+import { sendOrDraft } from '../lib/gmail.js';
 import { google } from 'googleapis';
 import { logger } from '../lib/logger.js';
 
@@ -62,9 +63,56 @@ router.post('/api/booking/request', async (req, res) => {
 
     if (error) throw error;
 
-    await audit({ action: 'book', entityType: 'appointment_request', entityId: data.id, payload: { status: 'pending', appointment_type } });
-    logger.info({ id: data.id }, '[booking/request] created');
-    res.json({ id: data.id, status: 'pending' });
+    const bookingId = data.id;
+    const now = new Date().toISOString();
+    const staffPhone = process.env.STAFF_NOTIFY_PHONE ?? null;
+    const staffEmail = process.env.STAFF_NOTIFY_EMAIL ?? process.env.DOCTOR_NOTIFY_EMAIL ?? null;
+    const practicePhone = process.env.PRACTICE_PHONE ?? '+17582840557';
+    const firstName = (patient_name as string).split(' ')[0];
+
+    // Immediate patient acknowledgement SMS
+    let patientAckSent = false;
+    if (patient_phone) {
+      const body = smsBodyBookingAck({ firstName, appointmentType: appointment_type, phone: practicePhone });
+      const result = await sendSms({ to: patient_phone, body });
+      patientAckSent = result.action === 'sent';
+    }
+
+    // Immediate staff SMS alert
+    if (staffPhone) {
+      const body = smsBodyStaffNewBooking({
+        patientName: patient_name,
+        appointmentType: appointment_type,
+        preferredSlot: preferred_slot ?? null,
+        patientPhone: patient_phone ?? null,
+        bookingId,
+      });
+      await sendSms({ to: staffPhone, body });
+    }
+
+    // Immediate staff email alert
+    if (staffEmail) {
+      const typeLabel = (appointment_type as string).replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+      const slotLine = preferred_slot ? `\nPreferred slot: ${preferred_slot}` : '';
+      const phoneLine = patient_phone ? `\nPhone: ${patient_phone}` : '';
+      const emailLine = patient_email ? `\nEmail: ${patient_email}` : '';
+      const prepNote = getPrepInstructions(appointment_type) ? `\n\n⚠ PREP REQUIRED for ${typeLabel} — ensure patient receives prep instructions with confirmation.` : '';
+      const reasonLine = reason ? `\nReason: ${reason}` : '';
+      await sendOrDraft({
+        to: staffEmail,
+        subject: `New Booking Request — ${patient_name} — ${typeLabel}`,
+        body: `A new booking request has been received.\n\nPatient: ${patient_name}${emailLine}${phoneLine}\nAppointment type: ${typeLabel}\nLocation: ${location ?? 'Rodney Bay'}${slotLine}${reasonLine}${prepNote}\n\nBooking ID: ${bookingId}\nSubmitted: ${now}\n\nPlease confirm or contact the patient within 2 hours.`,
+      }, 'auto');
+    }
+
+    // Record that patient was notified and staff was alerted
+    const updatePayload: Record<string, string | boolean> = { staff_notified_at: now };
+    if (patientAckSent) updatePayload.patient_ack_sent_at = now;
+    await supa.from('appointment_requests').update(updatePayload).eq('id', bookingId);
+
+    await audit({ action: 'book', entityType: 'appointment_request', entityId: bookingId, payload: { status: 'pending', appointment_type, patient_ack_sent: patientAckSent, staff_notified: !!(staffPhone || staffEmail) } });
+    logger.info({ id: bookingId, patientAckSent, staffPhone: !!staffPhone, staffEmail: !!staffEmail }, '[booking/request] created + notified');
+    res.json({ id: bookingId, status: 'pending' });
   } catch (err) {
     logger.error({ err }, '[booking/request] error');
     res.status(502).json({ error: String(err) });
