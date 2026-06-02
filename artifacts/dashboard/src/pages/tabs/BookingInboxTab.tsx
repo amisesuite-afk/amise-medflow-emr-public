@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { hasRole } from '@/lib/roles';
 
@@ -26,6 +26,8 @@ interface BookingRequest {
   staff_escalated_at: string | null;
   prep_sms_sent: boolean;
   reminder_sent_at: string | null;
+  source?: string;
+  whatsapp_from?: string | null;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -83,6 +85,25 @@ const LOCATION_LABELS: Record<string, string> = {
   tapion:     'Tapion Hospital / ERCP Suite',
 };
 
+const SOURCE_CONFIG: Record<string, { label: string; bg: string; color: string; border: string }> = {
+  web:       { label: 'Web',       bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
+  whatsapp:  { label: 'WhatsApp',  bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
+  manual:    { label: 'Manual',    bg: '#faf5ff', color: '#7c3aed', border: '#c4b5fd' },
+  phone:     { label: 'Phone',     bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' },
+  email:     { label: 'Email',     bg: '#f0f9ff', color: '#0369a1', border: '#7dd3fc' },
+};
+
+const APPOINTMENT_TYPE_OPTIONS = [
+  { value: 'consultation',  label: 'Consultation' },
+  { value: 'colonoscopy',   label: 'Colonoscopy' },
+  { value: 'ogd',           label: 'OGD / Gastroscopy' },
+  { value: 'ercp_workup',   label: 'ERCP Workup' },
+  { value: 'pre_op',        label: 'Pre-Op Assessment' },
+  { value: 'flexi_sig',     label: 'Flexible Sigmoidoscopy' },
+  { value: 'follow_up',     label: 'Follow-Up' },
+  { value: 'other',         label: 'Other' },
+];
+
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: string }) {
@@ -106,6 +127,19 @@ function AuditRow({ label, value, urgent }: { label: string; value: string | nul
         {value ?? '—'}
       </span>
     </div>
+  );
+}
+
+function SourceBadge({ source }: { source?: string }) {
+  const cfg = SOURCE_CONFIG[source ?? ''] ?? { label: source ?? 'web', bg: '#f3f4f6', color: '#6b7280', border: '#e5e7eb' };
+  return (
+    <span style={{
+      display: 'inline-block', padding: '1px 7px', borderRadius: 99,
+      fontSize: 10, fontWeight: 700, letterSpacing: 0.3,
+      background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}`,
+    }}>
+      {cfg.label.toUpperCase()}
+    </span>
   );
 }
 
@@ -134,6 +168,21 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [submitting, setSubmitting]       = useState(false);
   const [confirmErr, setConfirmErr]       = useState<string | null>(null);
   const [confirmOk, setConfirmOk]         = useState(false);
+
+  // Manual entry state
+  const [showNewRequest, setShowNewRequest]   = useState(false);
+  const [nrName, setNrName]                   = useState('');
+  const [nrPhone, setNrPhone]                 = useState('');
+  const [nrEmail, setNrEmail]                 = useState('');
+  const [nrType, setNrType]                   = useState('consultation');
+  const [nrLocation, setNrLocation]           = useState('rodney_bay');
+  const [nrSlot, setNrSlot]                   = useState('');
+  const [nrSource, setNrSource]               = useState<'manual' | 'phone' | 'email' | 'whatsapp'>('manual');
+  const [nrReason, setNrReason]               = useState('');
+  const [nrSubmitting, setNrSubmitting]       = useState(false);
+  const [nrErr, setNrErr]                     = useState<string | null>(null);
+  const [nrOk, setNrOk]                       = useState(false);
+  const nrNameRef                             = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     try {
@@ -197,6 +246,45 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     }
   }
 
+  async function handleNewRequest() {
+    if (!nrName.trim() || !nrType) return;
+    setNrSubmitting(true);
+    setNrErr(null);
+    try {
+      const r = await fetch(apiUrl('/api/booking/request'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_name:     nrName.trim(),
+          patient_email:    nrEmail.trim() || `manual.${Date.now()}@noreply.amise.internal`,
+          patient_phone:    nrPhone.trim() || null,
+          appointment_type: nrType,
+          location:         nrLocation,
+          preferred_slot:   nrSlot.trim() || null,
+          reason:           nrReason.trim() || null,
+          source:           nrSource,
+        }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      setNrOk(true);
+      await load();
+      setTimeout(() => {
+        setShowNewRequest(false);
+        setNrOk(false);
+        setNrName(''); setNrPhone(''); setNrEmail('');
+        setNrType('consultation'); setNrLocation('rodney_bay');
+        setNrSlot(''); setNrReason(''); setNrSource('manual');
+      }, 2000);
+    } catch (e) {
+      setNrErr(String(e));
+    } finally {
+      setNrSubmitting(false);
+    }
+  }
+
   // Sort: pending first (oldest), then confirmed, then others
   const sorted = [...requests].sort((a, b) => {
     const rank: Record<string, number> = { pending: 0, staff_confirmed: 1, patient_confirmed: 2, lapsed: 3 };
@@ -246,8 +334,8 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       }}>
 
         {/* Header */}
-        <div style={{ padding: '18px 20px 12px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-          <div>
+        <div style={{ padding: '18px 20px 12px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div style={{ flex: 1 }}>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Booking Requests</div>
             <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
               {pendingCount > 0
@@ -258,9 +346,15 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
           </div>
           <button
             onClick={() => void load()}
-            style={{ marginLeft: 'auto', padding: '5px 12px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 12, cursor: 'pointer' }}
+            style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 12, cursor: 'pointer' }}
           >
             Refresh
+          </button>
+          <button
+            onClick={() => { setShowNewRequest(true); setSelected(null); setTimeout(() => nrNameRef.current?.focus(), 50); }}
+            style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+          >
+            + New Request
           </button>
         </div>
 
@@ -299,9 +393,10 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                     <StatusBadge status={req.status} />
                   </div>
 
-                  {/* Row 2: Appt type + prep chip */}
+                  {/* Row 2: Appt type + source + prep chip */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                     <span style={{ fontSize: 12, color: '#374151' }}>{apptLabel(req.appointment_type)}</span>
+                    <SourceBadge source={req.source} />
                     {requiresPrep(req.appointment_type) && (
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa' }}>
                         PREP
@@ -336,6 +431,166 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
           </div>
         )}
       </div>
+
+      {/* ── Right: manual entry panel ────────────────────────────────────── */}
+      {showNewRequest && !selected && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#111827', flex: 1 }}>New Booking Request</div>
+            <button
+              onClick={() => setShowNewRequest(false)}
+              style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#fff', color: '#6b7280', cursor: 'pointer', fontSize: 13 }}
+            >
+              ✕ Cancel
+            </button>
+          </div>
+
+          <div style={{ padding: '16px', borderRadius: 10, background: '#fff', border: '2px solid #e5e7eb' }}>
+
+            {/* Source channel */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Source channel *</label>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {(['manual', 'phone', 'email', 'whatsapp'] as const).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setNrSource(s)}
+                    style={{
+                      padding: '5px 14px', borderRadius: 99, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                      border: `1.5px solid ${nrSource === s ? (SOURCE_CONFIG[s]?.border ?? '#d1d5db') : '#e5e7eb'}`,
+                      background: nrSource === s ? (SOURCE_CONFIG[s]?.bg ?? '#f3f4f6') : '#fff',
+                      color: nrSource === s ? (SOURCE_CONFIG[s]?.color ?? '#374151') : '#6b7280',
+                    }}
+                  >
+                    {SOURCE_CONFIG[s]?.label ?? s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Name + phone */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Patient name *</label>
+                <input
+                  ref={nrNameRef}
+                  type="text"
+                  value={nrName}
+                  onChange={e => setNrName(e.target.value)}
+                  placeholder="Full name"
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Phone number</label>
+                <input
+                  type="tel"
+                  value={nrPhone}
+                  onChange={e => setNrPhone(e.target.value)}
+                  placeholder="+1 758 …"
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Email address</label>
+              <input
+                type="email"
+                value={nrEmail}
+                onChange={e => setNrEmail(e.target.value)}
+                placeholder="patient@example.com (optional)"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
+              />
+            </div>
+
+            {/* Appointment type + location */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Appointment type *</label>
+                <select
+                  value={nrType}
+                  onChange={e => setNrType(e.target.value)}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
+                >
+                  {APPOINTMENT_TYPE_OPTIONS.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Location</label>
+                <select
+                  value={nrLocation}
+                  onChange={e => setNrLocation(e.target.value)}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
+                >
+                  <option value="rodney_bay">Rodney Bay Clinic</option>
+                  <option value="castries">Castries</option>
+                  <option value="tapion">Tapion Hospital / ERCP Suite</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Preferred slot */}
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Preferred date / time (free text)</label>
+              <input
+                type="text"
+                value={nrSlot}
+                onChange={e => setNrSlot(e.target.value)}
+                placeholder="e.g. any morning next week, Tuesday afternoon"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
+              />
+            </div>
+
+            {/* Reason / notes */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Reason / notes</label>
+              <textarea
+                value={nrReason}
+                onChange={e => setNrReason(e.target.value)}
+                rows={3}
+                placeholder="Patient's stated reason, referral notes, or conversation summary…"
+                style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 12, boxSizing: 'border-box', resize: 'vertical' }}
+              />
+            </div>
+
+            {requiresPrep(nrType) && (
+              <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 8, background: '#fff7ed', border: '1px solid #fed7aa' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#c2410c' }}>
+                  ⚠ {apptLabel(nrType)} requires preparation instructions — these will be sent automatically in the 48h confirmation SMS.
+                </div>
+              </div>
+            )}
+
+            {nrErr && (
+              <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+                {nrErr}
+              </div>
+            )}
+            {nrOk && (
+              <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontSize: 12, fontWeight: 600 }}>
+                ✓ Request created — staff will be notified.
+              </div>
+            )}
+
+            <button
+              onClick={() => void handleNewRequest()}
+              disabled={!nrName.trim() || nrSubmitting || nrOk}
+              style={{
+                width: '100%', padding: '11px', borderRadius: 8, border: 'none',
+                background: nrName.trim() && !nrSubmitting && !nrOk ? '#0d9488' : '#9ca3af',
+                color: '#fff', fontWeight: 700, fontSize: 14,
+                cursor: nrName.trim() && !nrSubmitting && !nrOk ? 'pointer' : 'not-allowed',
+              }}
+            >
+              {nrSubmitting ? 'Creating…' : nrOk ? '✓ Created' : 'Create Booking Request'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── Right: detail panel ───────────────────────────────────────────── */}
       {selected && (
@@ -383,6 +638,10 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{value ?? '—'}</div>
               </div>
             ))}
+            <div style={{ background: '#f9fafb', borderRadius: 8, padding: '10px 12px' }}>
+              <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 5 }}>Source channel</div>
+              <SourceBadge source={selected.source} />
+            </div>
           </div>
 
           {/* Reason */}
@@ -547,6 +806,9 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               )}
               {isAdmin && (
                 <AuditRow label="Booking ID" value={selected.id} />
+              )}
+              {isAdmin && selected.whatsapp_from && (
+                <AuditRow label="WhatsApp from" value={selected.whatsapp_from} />
               )}
               {selected.staff_confirmed_at && (
                 <AuditRow label="Slot confirmed"  value={fmtSlot(selected.staff_confirmed_at)} />

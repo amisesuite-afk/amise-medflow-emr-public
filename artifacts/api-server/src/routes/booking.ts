@@ -35,12 +35,15 @@ function getCalendarClient() {
 
 // POST /api/booking/request — patient or staff submits a booking request
 router.post('/api/booking/request', async (req, res) => {
-  const { patient_name, patient_email, patient_phone, appointment_type, location, preferred_slot, reason, triage_acuity, triage_score } = req.body ?? {};
+  const { patient_name, patient_email, patient_phone, appointment_type, location, preferred_slot, reason, triage_acuity, triage_score, source } = req.body ?? {};
 
   if (!patient_name || !patient_email || !appointment_type) {
     res.status(400).json({ error: 'patient_name, patient_email, and appointment_type are required' });
     return;
   }
+
+  const VALID_SOURCES = ['web', 'whatsapp', 'manual', 'phone', 'email'];
+  const resolvedSource: string = VALID_SOURCES.includes(source as string) ? (source as string) : 'web';
 
   try {
     const supa = getSupabaseAdmin();
@@ -57,6 +60,7 @@ router.post('/api/booking/request', async (req, res) => {
         triage_acuity: triage_acuity ?? null,
         triage_score: triage_score ?? null,
         status: 'pending',
+        source: resolvedSource,
       })
       .select('id')
       .single();
@@ -110,7 +114,7 @@ router.post('/api/booking/request', async (req, res) => {
     if (patientAckSent) updatePayload.patient_ack_sent_at = now;
     await supa.from('appointment_requests').update(updatePayload).eq('id', bookingId);
 
-    await audit({ action: 'book', entityType: 'appointment_request', entityId: bookingId, payload: { status: 'pending', appointment_type, patient_ack_sent: patientAckSent, staff_notified: !!(staffPhone || staffEmail) } });
+    await audit({ action: 'book', entityType: 'appointment_request', entityId: bookingId, payload: { status: 'pending', appointment_type, source: resolvedSource, patient_ack_sent: patientAckSent, staff_notified: !!(staffPhone || staffEmail) } });
     logger.info({ id: bookingId, patientAckSent, staffPhone: !!staffPhone, staffEmail: !!staffEmail }, '[booking/request] created + notified');
     res.json({ id: bookingId, status: 'pending' });
   } catch (err) {
