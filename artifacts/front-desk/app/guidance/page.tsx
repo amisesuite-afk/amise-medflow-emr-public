@@ -20,35 +20,22 @@ interface ScreeningCard {
 
 function GuidanceNav() {
   return (
-    <nav style={{
-      position: 'sticky', top: 0, zIndex: 100,
-      background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)',
-      borderBottom: '1px solid #e8f0ef',
-      padding: '0 40px',
-    }}>
-      <div style={{
-        maxWidth: 1160, margin: '0 auto',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        height: 64,
-      }}>
-        <Link href="/" style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          fontSize: 14, fontWeight: 600, color: '#0d9488',
-          textDecoration: 'none',
-        }}>
-          ← Back to Home
+    <nav className="amise-sub-nav">
+      <div className="amise-sub-nav-inner">
+        <Link href="/" style={{ fontSize: 14, fontWeight: 600, color: '#0d9488', textDecoration: 'none' }}>
+          ← Amise Medical Services
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>
-            Amise Medical Services
-          </div>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <Link href="/pathway" style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', textDecoration: 'none', padding: '8px 16px' }}>
+            Care Pathways
+          </Link>
+          <Link href="/book" style={{
+            padding: '9px 20px', background: '#0d9488', color: '#fff',
+            borderRadius: 50, fontSize: 13, fontWeight: 700, textDecoration: 'none',
+          }}>
+            Book Appointment
+          </Link>
         </div>
-        <Link href="/book" style={{
-          padding: '10px 22px', background: '#0d9488', color: '#fff',
-          borderRadius: 50, fontSize: 14, fontWeight: 700, textDecoration: 'none',
-        }}>
-          Book a Screening →
-        </Link>
       </div>
     </nav>
   );

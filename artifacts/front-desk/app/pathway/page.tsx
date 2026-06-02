@@ -460,16 +460,20 @@ export default function PathwayPage() {
   return (
     <div style={{ background: '#f8fafc', minHeight: '100vh', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
 
-      {/* Mini nav */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #e2eeed', padding: '0 40px' }}>
-        <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
-          <a href="/" style={{ fontSize: 13, color: '#0d9488', textDecoration: 'none', fontWeight: 600 }}>← Amise Medical Services</a>
-          <div style={{ display: 'flex', gap: 16 }}>
-            <Link href="/book"  style={{ fontSize: 13, padding: '7px 16px', background: '#0d9488', color: '#fff', borderRadius: 6, textDecoration: 'none', fontWeight: 600 }}>Book Appointment</Link>
-            <Link href="/refer" style={{ fontSize: 13, padding: '7px 16px', background: '#f0fdf9', color: '#0d9488', border: '1px solid #c0e4e0', borderRadius: 6, textDecoration: 'none', fontWeight: 600 }}>Refer a Patient</Link>
+      {/* Nav */}
+      <nav className="amise-sub-nav" style={{ background: 'rgba(255,255,255,0.97)' }}>
+        <div className="amise-sub-nav-inner">
+          <a href="/" style={{ fontSize: 14, fontWeight: 600, color: '#0d9488', textDecoration: 'none' }}>← Amise Medical Services</a>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <Link href="/guidance" style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', textDecoration: 'none', padding: '8px 16px' }}>
+              Health Guidance
+            </Link>
+            <Link href="/book" style={{ fontSize: 13, padding: '9px 20px', background: '#0d9488', color: '#fff', borderRadius: 50, textDecoration: 'none', fontWeight: 700 }}>
+              Book Appointment
+            </Link>
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* Hero */}
       <div style={{ background: 'linear-gradient(135deg, #0b2a35 0%, #134e4a 100%)', padding: '56px 40px' }}>

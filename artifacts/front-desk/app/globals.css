@@ -9,3 +9,28 @@ body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
+
+/* ── Nav responsive ──────────────────────────────────── */
+.amise-nav-links        { display: flex; gap: 32px; align-items: center; }
+.amise-nav-mobile-book  { display: none; }
+
+@media (max-width: 800px) {
+  .amise-nav-links       { display: none; }
+  .amise-nav-mobile-book { display: flex; }
+}
+
+/* ── Shared sub-page header ──────────────────────────── */
+.amise-sub-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.97); backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e8f0ef; padding: 0 40px;
+}
+.amise-sub-nav-inner {
+  max-width: 1160px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+@media (max-width: 480px) {
+  .amise-sub-nav       { padding: 0 20px; }
+  .amise-sub-nav-inner { height: 56px; }
+}

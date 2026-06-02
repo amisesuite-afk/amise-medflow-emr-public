@@ -51,43 +51,62 @@ function WaSvg({ size = 16, color = 'currentColor' }: { size?: number; color?: s
 
 // ── Nav ───────────────────────────────────────────────────────────────────────
 
+const NAV_LINKS = [
+  { href: '#services', label: 'Services'  },
+  { href: '#offices',  label: 'Clinics'   },
+  { href: '#about',    label: 'About'     },
+  { href: '#contact',  label: 'Contact'   },
+] as const;
+
 function Nav() {
   return (
     <nav style={{
       position: 'sticky', top: 0, zIndex: 100,
       background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)',
-      borderBottom: '1px solid #e8f0ef',
-      padding: '0 40px',
+      borderBottom: '1px solid #e8f0ef', padding: '0 40px',
     }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 70 }}>
+      <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
         <AmsiseLogo />
-        <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
-          {[
-            { href: '#home',    label: 'Home',        active: true  },
-            { href: '#services',label: 'Services',    active: false },
-            { href: '#patients',label: 'For Patients',active: false },
-            { href: '#offices', label: 'Our Offices', active: false },
-            { href: '#about',   label: 'About Us',    active: false },
-            { href: '#contact',   label: 'Contact',        active: false },
-            { href: '/guidance',  label: 'Health Guidance', active: false },
-            { href: '/refer',     label: 'For Providers',   active: false },
-            { href: '/pathway',   label: 'Care Pathway',    active: false },
-          ].map(({ href, label, active }) => (
+
+        {/* Desktop links */}
+        <div className="amise-nav-links">
+          {NAV_LINKS.map(({ href, label }) => (
             <a key={href} href={href} style={{
               fontSize: 14, fontWeight: 500, textDecoration: 'none',
-              color: active ? '#0f172a' : '#4b5563',
-              borderBottom: active ? '2px solid #0f172a' : '2px solid transparent',
-              paddingBottom: 2,
+              color: '#4b5563', paddingBottom: 2,
+              borderBottom: '2px solid transparent',
             }}>{label}</a>
           ))}
-          <a href={WA_TAPION} target="_blank" rel="noopener noreferrer" style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '10px 20px', background: '#0d9488', color: '#fff',
-            borderRadius: 50, fontSize: 14, fontWeight: 600, textDecoration: 'none',
-          }}>
-            <WaSvg size={16} color="white" />
-            WhatsApp Us
+
+          {/* WhatsApp icon link */}
+          <a href={WA_TAPION} target="_blank" rel="noopener noreferrer"
+            aria-label="WhatsApp us"
+            style={{ display: 'flex', alignItems: 'center', color: '#25D366', opacity: 0.9 }}
+          >
+            <WaSvg size={20} color="#25D366" />
           </a>
+
+          {/* Primary CTA */}
+          <Link href="/book" style={{
+            padding: '10px 22px', background: '#0d9488', color: '#fff',
+            borderRadius: 50, fontSize: 14, fontWeight: 700, textDecoration: 'none',
+            whiteSpace: 'nowrap',
+          }}>
+            Book Appointment
+          </Link>
+        </div>
+
+        {/* Mobile: just show Book button */}
+        <div className="amise-nav-mobile-book" style={{ gap: 12, alignItems: 'center' }}>
+          <a href={WA_TAPION} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+            <WaSvg size={22} color="#25D366" />
+          </a>
+          <Link href="/book" style={{
+            padding: '9px 18px', background: '#0d9488', color: '#fff',
+            borderRadius: 50, fontSize: 13, fontWeight: 700, textDecoration: 'none',
+          }}>
+            Book
+          </Link>
         </div>
       </div>
     </nav>
@@ -760,8 +779,35 @@ function Footer() {
         </div>
       </div>
 
+      {/* Footer links row */}
+      <div style={{ maxWidth: 1160, margin: '32px auto 0', borderTop: '1px solid #1e4a5a', paddingTop: 28, display: 'flex', flexWrap: 'wrap', gap: 40, rowGap: 20 }}>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Patient Resources</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            <Link href="/guidance" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Health Guidance &amp; Screening</Link>
+            <Link href="/pathway" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Care Pathways</Link>
+            <Link href="/book" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Book an Appointment</Link>
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Healthcare Providers</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            <Link href="/refer" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Submit a Referral</Link>
+            <Link href="/refer" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>FHIR Referral Portal</Link>
+          </div>
+        </div>
+        <div>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Services</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            <a href="#services" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>What We Treat</a>
+            <a href="#offices" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Our Clinics</a>
+            <a href="#about" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>About Dr Kabiye</a>
+          </div>
+        </div>
+      </div>
+
       {/* Bottom disclaimer */}
-      <div style={{ maxWidth: 1160, margin: '24px auto 0', borderTop: '1px solid #1e4a5a', paddingTop: 20, fontSize: 11, color: '#2d5a6a', textAlign: 'center', lineHeight: 1.8 }}>
+      <div style={{ maxWidth: 1160, margin: '20px auto 0', borderTop: '1px solid #1e4a5a', paddingTop: 18, fontSize: 11, color: '#2d5a6a', textAlign: 'center', lineHeight: 1.8 }}>
         This website is for administrative scheduling only and does not constitute medical advice or clinical triage.
         If you are experiencing a medical emergency, call 911 immediately. &nbsp;·&nbsp;
         © {new Date().getFullYear()} Amise Medical Services, Saint Lucia. All rights reserved.
