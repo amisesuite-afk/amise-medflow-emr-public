@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAppContext, Section, TopSection, type VitalsState } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
@@ -38,7 +38,14 @@ import DictionaryTab from './tabs/DictionaryTab';
 import APCQTab from './tabs/APCQTab';
 import NurseAPCQTab from './tabs/NurseAPCQTab';
 import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
+import BookingInboxTab from './tabs/BookingInboxTab';
 import FloatingActions from '@/components/FloatingActions';
+
+const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+function apiUrl(path: string) {
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
+}
 
 function getAdaptivePath(
   symptoms: string[],
@@ -116,8 +123,26 @@ export default function HomePage() {
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
+  const [pendingBookingCount, setPendingBookingCount] = useState(0);
 
   const userRole = profile?.role ?? 'front_desk';
+
+  const fetchPendingBookings = useCallback(async () => {
+    if (!hasRole(userRole, 'admin')) return;
+    try {
+      const r = await fetch(apiUrl('/api/booking/requests?status=pending'));
+      if (r.ok) {
+        const d = await r.json() as { requests: unknown[] };
+        setPendingBookingCount((d.requests ?? []).length);
+      }
+    } catch { /* ignore */ }
+  }, [userRole]);
+
+  useEffect(() => {
+    void fetchPendingBookings();
+    const t = setInterval(() => void fetchPendingBookings(), 60_000);
+    return () => clearInterval(t);
+  }, [fetchPendingBookings]);
 
   const urgentCount = triageResult.vitalRedFlags.filter(f => f.severity === 'urgent').length
     + triageResult.reasons.length;
@@ -217,6 +242,7 @@ export default function HomePage() {
         acuity={triageResult.acuity}
         pmhCount={comorbidities.length}
         encounterMode={encounterMode}
+        pendingBookingCount={pendingBookingCount}
       />
 
       {/* ── Main content ── */}
@@ -294,6 +320,7 @@ export default function HomePage() {
         {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
         {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
         {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')        && <NurseAPCQTab />}
+        {topSection === 'booking_inbox'  && hasRole(userRole, 'admin')        && <BookingInboxTab />}
       </main>
 
       <FloatingActions />

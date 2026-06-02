@@ -249,4 +249,29 @@ router.post('/api/booking/lapse', async (req, res) => {
   }
 });
 
+// GET /api/booking/requests — list booking requests (staff/admin)
+router.get('/api/booking/requests', async (req, res) => {
+  const status  = (req.query.status  as string | undefined) ?? null;
+  const limit   = Math.min(parseInt((req.query.limit as string) ?? '100'), 200);
+
+  try {
+    const supa = getSupabaseAdmin();
+    let query = supa
+      .from('appointment_requests')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (status) query = query.eq('status', status);
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    res.json({ requests: data ?? [] });
+  } catch (err) {
+    logger.error({ err }, '[booking/requests] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
 export default router;

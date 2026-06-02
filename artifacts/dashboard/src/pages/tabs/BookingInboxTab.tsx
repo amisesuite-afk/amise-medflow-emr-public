@@ -1,0 +1,569 @@
+import { useState, useEffect, useCallback } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { hasRole } from '@/lib/roles';
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface BookingRequest {
+  id: string;
+  patient_name: string;
+  patient_email: string;
+  patient_phone: string | null;
+  appointment_type: string;
+  location: string;
+  preferred_slot: string | null;
+  reason: string | null;
+  triage_acuity: string | null;
+  triage_score: number | null;
+  status: string;
+  notes: string | null;
+  created_at: string;
+  confirmed_slot: string | null;
+  staff_confirmed_at: string | null;
+  patient_confirmed_at: string | null;
+  patient_ack_sent_at: string | null;
+  staff_notified_at: string | null;
+  staff_escalated_at: string | null;
+  prep_sms_sent: boolean;
+  reminder_sent_at: string | null;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+function apiUrl(path: string) {
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
+}
+
+const PREP_TYPES = new Set(['colonoscopy', 'ogd', 'egd', 'ercp_workup', 'pre_op', 'flexi_sig']);
+function requiresPrep(type: string) { return PREP_TYPES.has(type.toLowerCase()); }
+
+function apptLabel(type: string) {
+  return type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function timeAgo(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(ms / 60_000);
+  if (mins < 2) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ${mins % 60}m ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
+
+function fmtSlot(iso: string): string {
+  return new Date(iso).toLocaleString('en-LC', {
+    timeZone: 'America/St_Lucia',
+    weekday: 'short', day: 'numeric', month: 'short',
+    hour: 'numeric', minute: '2-digit', hour12: true,
+  });
+}
+
+const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; border: string }> = {
+  pending:           { label: 'Pending',          bg: '#fffbeb', color: '#b45309', border: '#fcd34d' },
+  staff_confirmed:   { label: 'Slot Confirmed',   bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
+  patient_confirmed: { label: 'Patient Confirmed',bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
+  lapsed:            { label: 'Lapsed',           bg: '#f9fafb', color: '#9ca3af', border: '#e5e7eb' },
+};
+
+const PREP_INSTRUCTIONS: Record<string, string> = {
+  colonoscopy:  'Clear fluids only the day before. Take prescribed bowel prep solution as directed. Nothing by mouth from midnight. Patient must arrange a driver — sedation given.',
+  ogd:          'Nothing to eat or drink from midnight. May take essential medications with a small sip of water. Arrange a driver home.',
+  egd:          'Nothing to eat or drink from midnight. May take essential medications with a small sip of water. Arrange a driver home.',
+  ercp_workup:  'Nothing by mouth from midnight. Stop blood thinners as advised by doctor. Must arrange a driver — cannot drive after sedation.',
+  pre_op:       'Nothing by mouth from midnight. Continue essential medications with a small sip of water unless instructed otherwise. Bring full medication list to appointment.',
+  flexi_sig:    'Follow bowel prep instructions provided. Clear fluids only on morning of procedure. Arrange a driver home.',
+};
+
+const LOCATION_LABELS: Record<string, string> = {
+  rodney_bay: 'Rodney Bay Clinic',
+  castries:   'Castries',
+  tapion:     'Tapion Hospital / ERCP Suite',
+};
+
+// ── Sub-components ────────────────────────────────────────────────────────────
+
+function StatusBadge({ status }: { status: string }) {
+  const cfg = STATUS_CONFIG[status] ?? { label: status, bg: '#f3f4f6', color: '#6b7280', border: '#e5e7eb' };
+  return (
+    <span style={{
+      display: 'inline-block', padding: '2px 9px', borderRadius: 99,
+      fontSize: 11, fontWeight: 700, letterSpacing: 0.2,
+      background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}`,
+    }}>
+      {cfg.label}
+    </span>
+  );
+}
+
+function AuditRow({ label, value, urgent }: { label: string; value: string | null; urgent?: boolean }) {
+  return (
+    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: 12 }}>
+      <span style={{ minWidth: 130, color: '#6b7280', flexShrink: 0 }}>{label}</span>
+      <span style={{ color: urgent ? '#dc2626' : value ? '#111827' : '#9ca3af', fontWeight: value ? 600 : 400 }}>
+        {value ?? '—'}
+      </span>
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
+export interface BookingInboxTabProps {
+  /** If provided, only bookings with this status are shown. */
+  filterStatus?: string;
+}
+
+export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps = {}) {
+  const { profile } = useAuth();
+  const userRole = profile?.role ?? 'front_desk';
+  const isAdmin = hasRole(userRole, 'admin');
+
+  const [requests, setRequests]           = useState<BookingRequest[]>([]);
+  const [loading, setLoading]             = useState(true);
+  const [error, setError]                 = useState<string | null>(null);
+  const [selected, setSelected]           = useState<BookingRequest | null>(null);
+
+  // Confirm form state
+  const [confirmDate, setConfirmDate]     = useState('');
+  const [confirmTime, setConfirmTime]     = useState('09:00');
+  const [confirmLoc, setConfirmLoc]       = useState('rodney_bay');
+  const [confirmNotes, setConfirmNotes]   = useState('');
+  const [submitting, setSubmitting]       = useState(false);
+  const [confirmErr, setConfirmErr]       = useState<string | null>(null);
+  const [confirmOk, setConfirmOk]         = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      const url = filterStatus
+        ? apiUrl(`/api/booking/requests?status=${filterStatus}`)
+        : apiUrl('/api/booking/requests');
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const d = await r.json() as { requests: BookingRequest[] };
+      setRequests(d.requests ?? []);
+      setError(null);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setLoading(false);
+    }
+  }, [filterStatus]);
+
+  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    const t = setInterval(() => void load(), 30_000);
+    return () => clearInterval(t);
+  }, [load]);
+
+  // When a booking is selected, pre-fill location from its data
+  useEffect(() => {
+    if (selected) setConfirmLoc(selected.location || 'rodney_bay');
+  }, [selected?.id]);
+
+  async function handleConfirm() {
+    if (!selected || !confirmDate) return;
+    setSubmitting(true);
+    setConfirmErr(null);
+    try {
+      const confirmed_slot = `${confirmDate}T${confirmTime}:00`;
+      const r = await fetch(apiUrl(`/api/booking/staff-confirm/${selected.id}`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          confirmed_slot: new Date(confirmed_slot).toISOString(),
+          notes: confirmNotes || null,
+        }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      setConfirmOk(true);
+      await load();
+      setTimeout(() => {
+        setConfirmOk(false);
+        setSelected(null);
+        setConfirmDate('');
+        setConfirmTime('09:00');
+        setConfirmNotes('');
+      }, 2500);
+    } catch (e) {
+      setConfirmErr(String(e));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  // Sort: pending first (oldest), then confirmed, then others
+  const sorted = [...requests].sort((a, b) => {
+    const rank: Record<string, number> = { pending: 0, staff_confirmed: 1, patient_confirmed: 2, lapsed: 3 };
+    const ra = rank[a.status] ?? 9;
+    const rb = rank[b.status] ?? 9;
+    if (ra !== rb) return ra - rb;
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+  });
+
+  const pendingCount = requests.filter(r => r.status === 'pending').length;
+
+  // ── Loading / error states ─────────────────────────────────────────────────
+
+  if (loading) {
+    return (
+      <div style={{ padding: '40px 24px', color: '#6b7280', textAlign: 'center' }}>
+        Loading booking requests…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ padding: '24px' }}>
+        <div style={{ padding: '12px 16px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 13 }}>
+          Could not load bookings: {error}
+          <button onClick={() => void load()} style={{ marginLeft: 12, padding: '2px 10px', borderRadius: 6, border: '1px solid #fca5a5', background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: 12 }}>Retry</button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Main layout ────────────────────────────────────────────────────────────
+
+  return (
+    <div style={{ display: 'flex', gap: 0, height: '100%', minHeight: 0 }}>
+
+      {/* ── Left: booking list ─────────────────────────────────────────────── */}
+      <div style={{
+        width: selected ? 340 : '100%',
+        maxWidth: selected ? 340 : undefined,
+        flexShrink: 0,
+        borderRight: selected ? '1px solid #e5e7eb' : 'none',
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+
+        {/* Header */}
+        <div style={{ padding: '18px 20px 12px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Booking Requests</div>
+            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+              {pendingCount > 0
+                ? <span style={{ color: '#b45309', fontWeight: 600 }}>{pendingCount} pending action{pendingCount !== 1 ? 's' : ''}</span>
+                : 'All requests actioned'
+              }
+            </div>
+          </div>
+          <button
+            onClick={() => void load()}
+            style={{ marginLeft: 'auto', padding: '5px 12px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 12, cursor: 'pointer' }}
+          >
+            Refresh
+          </button>
+        </div>
+
+        {/* List */}
+        {sorted.length === 0 ? (
+          <div style={{ padding: '40px 20px', color: '#9ca3af', textAlign: 'center', fontSize: 13 }}>
+            No booking requests yet.
+          </div>
+        ) : (
+          <div style={{ flex: 1 }}>
+            {sorted.map(req => {
+              const isSelected = selected?.id === req.id;
+              const isEscalated = !!req.staff_escalated_at;
+              const isPending = req.status === 'pending';
+              const hoursWaiting = Math.floor((Date.now() - new Date(req.created_at).getTime()) / 3_600_000);
+              const overdue = isPending && hoursWaiting >= 2;
+
+              return (
+                <button
+                  key={req.id}
+                  onClick={() => setSelected(isSelected ? null : req)}
+                  style={{
+                    width: '100%', textAlign: 'left', padding: '12px 20px',
+                    borderBottom: '1px solid #f3f4f6',
+                    background: isSelected ? '#f0fdf4' : overdue ? '#fffbeb' : '#fff',
+                    border: 'none', cursor: 'pointer',
+                    borderLeft: isSelected ? '3px solid #16a34a' : overdue ? '3px solid #f59e0b' : '3px solid transparent',
+                    transition: 'background 0.1s',
+                  }}
+                >
+                  {/* Row 1: Name + status */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontWeight: 700, fontSize: 13, color: '#111827', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {req.patient_name}
+                    </span>
+                    <StatusBadge status={req.status} />
+                  </div>
+
+                  {/* Row 2: Appt type + prep chip */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                    <span style={{ fontSize: 12, color: '#374151' }}>{apptLabel(req.appointment_type)}</span>
+                    {requiresPrep(req.appointment_type) && (
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa' }}>
+                        PREP
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Row 3: Time + escalation warning */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, color: overdue ? '#b45309' : '#9ca3af' }}>
+                      {timeAgo(req.created_at)}
+                    </span>
+                    {isEscalated && (
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca' }}>
+                        ESCALATED
+                      </span>
+                    )}
+                    {req.patient_phone && (
+                      <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 'auto' }}>{req.patient_phone}</span>
+                    )}
+                  </div>
+
+                  {/* Preferred slot */}
+                  {req.preferred_slot && (
+                    <div style={{ fontSize: 11, color: '#6b7280', marginTop: 3 }}>
+                      Preferred: {req.preferred_slot}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── Right: detail panel ───────────────────────────────────────────── */}
+      {selected && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', minWidth: 0 }}>
+
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 20 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>{selected.patient_name}</div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                <StatusBadge status={selected.status} />
+                <span style={{ fontSize: 12, color: '#6b7280' }}>Submitted {timeAgo(selected.created_at)}</span>
+                {selected.triage_acuity && selected.triage_acuity !== 'routine' && (
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 99,
+                    background: selected.triage_acuity === 'urgent' ? '#fef2f2' : '#fff7ed',
+                    color: selected.triage_acuity === 'urgent' ? '#dc2626' : '#c2410c',
+                    border: `1px solid ${selected.triage_acuity === 'urgent' ? '#fecaca' : '#fed7aa'}`,
+                  }}>
+                    {selected.triage_acuity.toUpperCase()}
+                  </span>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => setSelected(null)}
+              style={{ padding: '6px 10px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#fff', color: '#6b7280', cursor: 'pointer', fontSize: 13 }}
+            >
+              ✕ Close
+            </button>
+          </div>
+
+          {/* Patient info grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 16 }}>
+            {[
+              { label: 'Email',       value: selected.patient_email },
+              { label: 'Phone',       value: selected.patient_phone },
+              { label: 'Appointment', value: apptLabel(selected.appointment_type) },
+              { label: 'Location',    value: LOCATION_LABELS[selected.location] ?? selected.location },
+              { label: 'Preferred slot', value: selected.preferred_slot ?? 'No preference' },
+              { label: 'Triage acuity', value: selected.triage_acuity ?? 'Not assessed' },
+            ].map(({ label, value }) => (
+              <div key={label} style={{ background: '#f9fafb', borderRadius: 8, padding: '10px 12px' }}>
+                <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 3 }}>{label}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{value ?? '—'}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Reason */}
+          {selected.reason && (
+            <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 8, background: '#f9fafb', border: '1px solid #e5e7eb' }}>
+              <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Reason / Notes from patient</div>
+              <div style={{ fontSize: 13, color: '#374151' }}>{selected.reason}</div>
+            </div>
+          )}
+
+          {/* Prep instructions */}
+          {requiresPrep(selected.appointment_type) && (
+            <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 8, background: '#fff7ed', border: '1px solid #fed7aa' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#c2410c', marginBottom: 6 }}>
+                ⚠ Procedure Preparation Required — {apptLabel(selected.appointment_type)}
+              </div>
+              <div style={{ fontSize: 12, color: '#7c2d12', lineHeight: 1.6 }}>
+                {PREP_INSTRUCTIONS[selected.appointment_type.toLowerCase()] ?? 'See procedure prep guidelines.'}
+              </div>
+              <div style={{ fontSize: 11, color: '#c2410c', marginTop: 8, fontWeight: 600 }}>
+                {selected.prep_sms_sent
+                  ? '✓ Prep instructions already sent to patient by SMS'
+                  : 'Prep instructions will be included in the 48h confirmation SMS automatically.'}
+              </div>
+            </div>
+          )}
+
+          {/* ── Confirm slot section ─────────────────────────────────────── */}
+          {selected.status === 'pending' && (
+            <div style={{ marginBottom: 20, padding: '16px', borderRadius: 10, background: '#fff', border: '2px solid #e5e7eb' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 14 }}>
+                Confirm Appointment Slot
+              </div>
+
+              {/* Contact patient quick link */}
+              {selected.patient_phone && (
+                <div style={{ marginBottom: 12, display: 'flex', gap: 8 }}>
+                  <a
+                    href={`tel:${selected.patient_phone}`}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', borderRadius: 7, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontWeight: 600, fontSize: 12, textDecoration: 'none' }}
+                  >
+                    📞 Call {selected.patient_name.split(' ')[0]}
+                  </a>
+                  <a
+                    href={`https://wa.me/${selected.patient_phone.replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '7px 14px', borderRadius: 7, background: '#f0fdf9', border: '1px solid #99f6e4', color: '#0f766e', fontWeight: 600, fontSize: 12, textDecoration: 'none' }}
+                  >
+                    WhatsApp
+                  </a>
+                </div>
+              )}
+
+              {/* Slot picker */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Date *</label>
+                  <input
+                    type="date"
+                    value={confirmDate}
+                    onChange={e => setConfirmDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Time *</label>
+                  <select
+                    value={confirmTime}
+                    onChange={e => setConfirmTime(e.target.value)}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
+                  >
+                    {['08:00','08:30','09:00','09:30','10:00','10:30','11:00','11:30',
+                      '13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30'].map(t => (
+                      <option key={t} value={t}>{t}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 10 }}>
+                <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Location</label>
+                <select
+                  value={confirmLoc}
+                  onChange={e => setConfirmLoc(e.target.value)}
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
+                >
+                  <option value="rodney_bay">Rodney Bay Clinic</option>
+                  <option value="castries">Castries</option>
+                  <option value="tapion">Tapion Hospital / ERCP Suite</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Internal notes (optional)</label>
+                <textarea
+                  value={confirmNotes}
+                  onChange={e => setConfirmNotes(e.target.value)}
+                  rows={2}
+                  placeholder="e.g. Patient to bring insurance card, prep kit collected…"
+                  style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 12, boxSizing: 'border-box', resize: 'vertical' }}
+                />
+              </div>
+
+              {confirmErr && (
+                <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+                  {confirmErr}
+                </div>
+              )}
+              {confirmOk && (
+                <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontSize: 12, fontWeight: 600 }}>
+                  ✓ Appointment confirmed — patient SMS will be sent in the next reminder cycle.
+                </div>
+              )}
+
+              <button
+                onClick={() => void handleConfirm()}
+                disabled={!confirmDate || submitting || confirmOk}
+                style={{
+                  width: '100%', padding: '11px', borderRadius: 8, border: 'none',
+                  background: confirmDate && !submitting && !confirmOk ? '#0d9488' : '#9ca3af',
+                  color: '#fff', fontWeight: 700, fontSize: 14,
+                  cursor: confirmDate && !submitting && !confirmOk ? 'pointer' : 'not-allowed',
+                  transition: 'background .15s',
+                }}
+              >
+                {submitting ? 'Confirming…' : confirmOk ? '✓ Confirmed' : 'Confirm Appointment & Notify Patient'}
+              </button>
+
+              <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 8, textAlign: 'center' }}>
+                Patient will receive a confirmation SMS with slot details{requiresPrep(selected.appointment_type) ? ' and preparation instructions' : ''}.
+              </div>
+            </div>
+          )}
+
+          {/* Confirmed slot display */}
+          {selected.status !== 'pending' && selected.confirmed_slot && (
+            <div style={{ marginBottom: 20, padding: '14px 16px', borderRadius: 10, background: '#eff6ff', border: '1px solid #93c5fd' }}>
+              <div style={{ fontSize: 12, color: '#1d4ed8', fontWeight: 700, marginBottom: 4 }}>Confirmed Slot</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a8a' }}>{fmtSlot(selected.confirmed_slot)}</div>
+              <div style={{ fontSize: 12, color: '#1d4ed8', marginTop: 4 }}>{LOCATION_LABELS[selected.location] ?? selected.location}</div>
+              {selected.notes && <div style={{ fontSize: 12, color: '#374151', marginTop: 6, fontStyle: 'italic' }}>{selected.notes}</div>}
+            </div>
+          )}
+
+          {/* ── Audit trail ─────────────────────────────────────────────── */}
+          <div style={{ padding: '14px 16px', borderRadius: 10, background: '#f9fafb', border: '1px solid #e5e7eb' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#374151', marginBottom: 10 }}>
+              {isAdmin ? 'Full Audit Trail' : 'Status Trail'}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <AuditRow label="Submitted"          value={fmtSlot(selected.created_at)} />
+              <AuditRow label="Patient ack SMS"    value={selected.patient_ack_sent_at ? fmtSlot(selected.patient_ack_sent_at) : null} />
+              <AuditRow label="Staff notified"     value={selected.staff_notified_at   ? fmtSlot(selected.staff_notified_at)   : null} />
+              {(isAdmin || selected.staff_escalated_at) && (
+                <AuditRow
+                  label="Escalation sent"
+                  value={selected.staff_escalated_at ? fmtSlot(selected.staff_escalated_at) : null}
+                  urgent={!!selected.staff_escalated_at}
+                />
+              )}
+              {isAdmin && (
+                <AuditRow label="Booking ID" value={selected.id} />
+              )}
+              {selected.staff_confirmed_at && (
+                <AuditRow label="Slot confirmed"  value={fmtSlot(selected.staff_confirmed_at)} />
+              )}
+              {selected.patient_confirmed_at && (
+                <AuditRow label="Patient confirmed" value={fmtSlot(selected.patient_confirmed_at)} />
+              )}
+              {selected.reminder_sent_at && (
+                <AuditRow label="Reminder SMS sent" value={fmtSlot(selected.reminder_sent_at)} />
+              )}
+              {isAdmin && (
+                <AuditRow label="Prep SMS sent" value={selected.prep_sms_sent ? 'Yes' : 'Not yet'} />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
