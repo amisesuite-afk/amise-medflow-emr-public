@@ -873,6 +873,74 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
   }
 });
 
+// POST /api/questionnaire/send-sms
+router.post('/api/questionnaire/send-sms', async (req, res) => {
+  const { sessionToken, phone, patientName } = req.body ?? {};
+
+  if (!sessionToken || !phone) {
+    res.status(400).json({ error: 'sessionToken and phone are required' });
+    return;
+  }
+  if (!/^\+?[1-9]\d{6,14}$/.test(phone)) {
+    res.status(400).json({ error: 'Invalid phone number — use international format e.g. +18685551234' });
+    return;
+  }
+
+  try {
+    const { data: session, error } = await sb()
+      .from('questionnaire_sessions')
+      .select('id, status')
+      .eq('session_token', sessionToken)
+      .single();
+
+    if (error || !session) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    const url = `${baseUrl}/questionnaire/${sessionToken}`;
+    const greeting = patientName ? `Hello ${patientName.split(' ')[0]},` : 'Hello,';
+    const body = `${greeting} Please complete your pre-visit questionnaire for Amise Medical Services: ${url}`;
+
+    const provider = process.env.SMS_PROVIDER ?? 'dry_run';
+    let messageSid: string | undefined;
+
+    if (provider === 'twilio') {
+      const sid  = process.env.TWILIO_ACCOUNT_SID!;
+      const auth = process.env.TWILIO_AUTH_TOKEN!;
+      const from = process.env.TWILIO_FROM_NUMBER!;
+      const encoded = Buffer.from(`${sid}:${auth}`).toString('base64');
+      const params = new URLSearchParams({ From: from, To: phone, Body: body });
+      const r = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${sid}/Messages.json`, {
+        method: 'POST',
+        headers: { Authorization: `Basic ${encoded}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+      });
+      if (!r.ok) {
+        const txt = await r.text();
+        throw new Error(`Twilio error ${r.status}: ${txt}`);
+      }
+      const json = await r.json() as { sid: string };
+      messageSid = json.sid;
+    } else {
+      req.log.info({ phone, url, body }, '[questionnaire/send-sms] dry_run — would send SMS');
+    }
+
+    await audit({
+      action: 'send',
+      entityType: 'questionnaire_sms',
+      entityId: sessionToken,
+      payload: { phone, dryRun: provider !== 'twilio', messageSid, url },
+    });
+
+    res.json({ sent: provider === 'twilio', dryRun: provider !== 'twilio', messageSid, url });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/send-sms] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
 // GET /api/questionnaire/templates
 router.get('/api/questionnaire/templates', async (req, res) => {
   try {

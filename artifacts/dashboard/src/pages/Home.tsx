@@ -37,6 +37,7 @@ import TraumaTab from './tabs/TraumaTab';
 import DictionaryTab from './tabs/DictionaryTab';
 import APCQTab from './tabs/APCQTab';
 import NurseAPCQTab from './tabs/NurseAPCQTab';
+import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
 import FloatingActions from '@/components/FloatingActions';
 
 function getAdaptivePath(
@@ -291,8 +292,8 @@ export default function HomePage() {
         {topSection === 'settings'   && hasRole(userRole, 'admin')  && <StubPanel title="Settings" description="Practice configuration, user roles, notification preferences, and system settings — coming soon." />}
         {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
         {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
-        {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')  && <NurseAPCQTab />}
-        {topSection === 'questionnaire'  && !hasRole(userRole, 'nurse') && <APCQTab />}
+        {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
+        {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')        && <NurseAPCQTab />}
       </main>
 
       <FloatingActions />
