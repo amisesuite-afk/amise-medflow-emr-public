@@ -536,6 +536,134 @@ export default function App() {
     setDocs(prev => prev.map(d => ({ ...d, extracted: d.extracted.map(e => ({ ...e, applied: true })) })));
   }
 
+  // ── Excel Template Download ────────────────────────────────────────────────
+  async function downloadExcelTemplate() {
+    const XLSX = await import('xlsx');
+    const wb = XLSX.utils.book_new();
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    function colLetter(idx: number): string {
+      let s = '';
+      for (let num = idx + 1; num > 0; ) {
+        const r = (num - 1) % 26;
+        s = String.fromCharCode(65 + r) + s;
+        num = Math.floor((num - 1) / 26);
+      }
+      return s;
+    }
+    const COL_E = colLetter(4);   // Jan
+    const COL_P = colLetter(15);  // Dec
+    const COL_Q = colLetter(16);  // Annual Total
+
+    // ── Instructions sheet ──────────────────────────────────────────────────
+    const instrWS = XLSX.utils.aoa_to_sheet([
+      ['AMISE MEDICAL SERVICES — Tax & Financial Planner (3-Year)'],
+      ['IRD Saint Lucia · ITA Cap 15.02 · 2025 Regime · All amounts in XCD (Eastern Caribbean Dollars)'],
+      [''],
+      ['HOW TO USE THIS WORKBOOK:'],
+      ['1. Open the relevant year tab: 2025, 2026, or 2027'],
+      ['2. Enter actual XCD amounts paid each month in columns E (Jan) through P (Dec)'],
+      ['3. Column Q calculates the Annual Total automatically (SUM formula)'],
+      ['4. Save and upload the completed workbook in the Finance Auditor app → Documents tab'],
+      ['5. The AI will extract and pre-fill your expense entries from the data'],
+      [''],
+      ['TAX BANDS — IRD Saint Lucia 2025 (ITA Cap 15.02):'],
+      ['  0%  — First XCD 18,000 (personal allowance for all resident taxpayers)'],
+      ['  10% — XCD 18,001 to 30,000'],
+      ['  15% — XCD 30,001 to 50,000'],
+      ['  20% — XCD 50,001 to 80,000'],
+      ['  30% — Above XCD 80,000'],
+      [''],
+      ['IMPORTANT DEADLINES:'],
+      ['  Tax return filing: 31 March following the tax year'],
+      ['  Complete all qualifying deductions: 31 December of the tax year'],
+      [''],
+      ['IRD CONTACT:'],
+      ['  Online filing: efilingovt.lc'],
+      ['  Telephone: 468-4700'],
+      ['  Retain all receipts and documents for minimum 7 years (ITA s.73)'],
+    ]);
+    instrWS['!cols'] = [{ wch: 85 }];
+    XLSX.utils.book_append_sheet(wb, instrWS, 'Instructions');
+
+    // ── Year sheets ──────────────────────────────────────────────────────────
+    for (const year of [2025, 2026, 2027]) {
+      type ARow = (string | number)[];
+      const aoa: ARow[] = [];
+
+      // Header rows
+      aoa.push(['Category', 'Item / Allowance', `Conservative (${year}) XCD`, `Maximum (${year}) XCD`, ...MONTHS, 'Annual Total XCD']);
+      aoa.push(['', '', 'IRD reference figure', 'IRD reference figure', ...MONTHS.map(() => 'Enter actual XCD'), 'Auto-calculated']);
+      aoa.push(new Array(17).fill(''));
+
+      // ── PART 1: Personal Allowances ────────────────────────────────────────
+      aoa.push([`PART 1 — PERSONAL ALLOWANCES & RELIEFS (ITA Cap 15.02, ${year})`, '', '', '', ...MONTHS.map(() => ''), '']);
+
+      for (const a of ALLOWANCES) {
+        aoa.push([
+          a.cat,
+          a.label + (a.new2025 ? '  ★ NEW 2025' : ''),
+          a.max !== null ? a.max : 'Receipted amount',
+          a.max !== null ? a.max : 'Receipted amount',
+          ...MONTHS.map(() => 0),
+          0,
+        ]);
+      }
+
+      aoa.push(new Array(17).fill(''));
+
+      // ── PART 2: Business Expenses ──────────────────────────────────────────
+      aoa.push([`PART 2 — DEDUCTIBLE BUSINESS EXPENSES (ITA s.18, ${year})`, '', '', '', ...MONTHS.map(() => ''), '']);
+
+      for (const cat of EXPENSE_CATS) {
+        aoa.push([cat.name, `── ${cat.name} ──`, '', '', ...MONTHS.map(() => ''), '']);
+        for (const item of cat.items) {
+          aoa.push([
+            cat.name,
+            item.label,
+            item.conservative,
+            item.maximum,
+            ...MONTHS.map(() => 0),
+            0,
+          ]);
+        }
+        aoa.push(new Array(17).fill(''));
+      }
+
+      // ── Summary ────────────────────────────────────────────────────────────
+      aoa.push([`SUMMARY — ${year}`, '', '', '', ...MONTHS.map(() => ''), '']);
+      aoa.push(['INCOME', `Gross Professional Income (XCD) — Tax Year ${year}`, '', '', ...MONTHS.map(() => 0), 0]);
+      aoa.push(['SUMMARY', 'Total Personal Allowances (sum from Part 1)', '', '', ...MONTHS.map(() => ''), '']);
+      aoa.push(['SUMMARY', 'Total Business Expenses (sum from Part 2)', '', '', ...MONTHS.map(() => ''), '']);
+      aoa.push(['SUMMARY', 'Estimated Chargeable Income (Gross − Allowances − Expenses)', '', '', ...MONTHS.map(() => ''), '']);
+      aoa.push(['NOTE', 'Use the Finance Auditor app for full band-by-band tax computation', '', '', ...MONTHS.map(() => ''), '']);
+
+      const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+      // Add SUM formulas for Annual Total column on all numeric data rows
+      for (let r = 0; r < aoa.length; r++) {
+        if (aoa[r].length >= 17 && typeof aoa[r][4] === 'number') {
+          const xlR = r + 1;
+          ws[`${COL_Q}${xlR}`] = { t: 'n', f: `SUM(${COL_E}${xlR}:${COL_P}${xlR})` };
+        }
+      }
+
+      // Column widths
+      ws['!cols'] = [
+        { wch: 32 },
+        { wch: 50 },
+        { wch: 20 },
+        { wch: 18 },
+        ...MONTHS.map(() => ({ wch: 9 })),
+        { wch: 15 },
+      ];
+
+      XLSX.utils.book_append_sheet(wb, ws, String(year));
+    }
+
+    XLSX.writeFile(wb, 'amise-tax-planner-2025-2027.xlsx');
+  }
+
   // ── AI Report ─────────────────────────────────────────────────────────────
   async function runReport() {
     if (pf.blockers.length > 0) { setActive('preflight'); return; }
@@ -1066,6 +1194,23 @@ Use precise financial language. Quote specific XCD amounts. Reference the ITA wh
       <div>
         <SH icon="📎" title="Documents & Receipts"
           sub="Upload receipts, invoices, PDFs, photos or spreadsheets — AI extracts and pre-fills expense entries" />
+
+        {/* Excel template download */}
+        <div style={{ background: C.card, border: `1px solid ${C.green}33`, borderRadius: 8, padding: '12px 16px', marginBottom: 14, display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ flex: 1 }}>
+            <div style={{ color: C.green, fontWeight: 700, fontSize: 11, marginBottom: 3 }}>📥 Download 3-Year Monthly Input Template</div>
+            <div style={{ color: C.muted, fontSize: 10, lineHeight: 1.5 }}>
+              Pre-formatted Excel workbook with all allowances &amp; expense lines as rows, monthly columns Jan–Dec, for 2025 · 2026 · 2027.
+              Fill in your monthly figures, then upload the completed file here for AI extraction.
+            </div>
+          </div>
+          <button
+            onClick={() => void downloadExcelTemplate()}
+            style={{ padding: '9px 18px', borderRadius: 6, border: `1px solid ${C.green}`, background: C.greenBg, color: C.green, cursor: 'pointer', fontFamily: 'inherit', fontWeight: 700, fontSize: 11, letterSpacing: '0.07em', whiteSpace: 'nowrap' }}
+          >
+            📥 Download .xlsx
+          </button>
+        </div>
 
         {!profile.apiKey && (
           <Alert type="warn" msg="Add your Anthropic API key in Profile to enable AI document scanning" />
