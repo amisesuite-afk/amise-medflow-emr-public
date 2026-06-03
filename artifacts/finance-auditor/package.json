@@ -9,6 +9,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "xlsx": "0.18.5"
+  },
   "devDependencies": {
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

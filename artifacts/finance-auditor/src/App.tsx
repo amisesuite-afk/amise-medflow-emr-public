@@ -18,6 +18,7 @@ const SECTIONS = [
   { id: 'actions',    label: 'Action Plan',     icon: '✅' },
   { id: 'preflight',  label: 'Pre-Flight',      icon: '🛡️' },
   { id: 'report',     label: 'AI Report',       icon: '🧠' },
+  { id: 'documents',  label: 'Documents',       icon: '📎' },
 ];
 
 // ─── IRD Saint Lucia 2025 Tax Bands ──────────────────────────────────────────
@@ -73,6 +74,18 @@ const ALLOWANCES: Allowance[] = [
 // ─── Part 2 — Deductible Business Expenses (ITA s.18) ────────────────────────
 interface ExpenseItem { id: string; label: string; conservative: number; maximum: number; }
 interface ExpenseCategory { id: string; name: string; color: string; items: ExpenseItem[]; }
+
+interface ExtractedExpense {
+  id: string; vendor: string; date: string; amountXcd: number;
+  description: string; catId: string; itemId: string;
+  applied: boolean; sourceDocId: string;
+}
+interface DocFile {
+  id: string; name: string; mimeType: string; base64: string;
+  fileType: 'image' | 'pdf' | 'excel' | 'csv';
+  status: 'queued' | 'processing' | 'done' | 'error';
+  extracted: ExtractedExpense[]; errorMsg?: string;
+}
 
 const EXPENSE_CATS: ExpenseCategory[] = [
   { id:'staff', name:'1. Staff, Wages & Professional Fees', color:C.green, items:[
@@ -261,6 +274,14 @@ function Divider({ label, color }: { label: string; color?: string }) {
   );
 }
 
+// ─── Document extraction prompt ───────────────────────────────────────────────
+const EXTRACT_PROMPT = `You are a financial document parser for Amise Medical Services, a surgical practice in Saint Lucia.
+Extract all expense or payment items from the provided content.
+Return ONLY a valid JSON array (no markdown, no extra text) with this structure:
+[{"vendor":"string","date":"string","amountXcd":number,"description":"string","catId":"staff|premises|equipment|vehicle|insurance|comms|cme|profees|bank|misc","itemId":"string"}]
+Item IDs — staff: rn,anaes,recep1,recep2,medsecy,pracmgr,locum,accountant,legal,payroll_svc,recruit | premises: rent1,rent2,elec1,elec2,water,homeoffice,signage | equipment: cap_ercp,cap_surg,cap_office,cap_fitout,ercp_cons,surg_inst,ppe,diag,gas,equip_svc,sterilise | vehicle: fuel,veh_ins,veh_maint,veh_dep,parking | insurance: malpractice,public_liab,biz_int,prof_ind,keyperson | comms: landlines,mobile,broadband,emr,telehealth,cyber,website,software | cme: esge_conf,carib_conf,airfare,hotel,online_cme,textbooks,simulation,fellowship,slma_cpd | profees: slma,ecsmg,medcouncil,esge_dues,gp_gifts,advertising,stationery | bank: bank_charges,merchant,equip_loan,fitout_loan,overdraft | misc: research,audit_qual,med_waste,postage,uniforms,subscriptions,entertainment,sundry
+Currency: all amounts must be XCD. Convert USD×2.70, GBP×3.42, EUR×2.94. If amount unclear set 0. Return ONLY the JSON array, nothing else.`;
+
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
   const [active, setActive]     = useState('profile');
@@ -268,6 +289,8 @@ export default function App() {
   const [report, setReport]     = useState('');
   const [ackd, setAckd]         = useState(false);
   const reportRef               = useRef<HTMLDivElement>(null);
+  const fileInputRef            = useRef<HTMLInputElement>(null);
+  const cameraRef               = useRef<HTMLInputElement>(null);
 
   const [profile, setProfile]   = useState({
     name:       'Dr. Dawit Daniel Kabiye, MD, DM',
@@ -292,6 +315,9 @@ export default function App() {
 
   // action checklist
   const [done, setDone]         = useState<Record<string, boolean>>({});
+
+  // documents
+  const [docs, setDocs]         = useState<DocFile[]>([]);
   const toggleDone = (id: string) => setDone(d => ({ ...d, [id]: !d[id] }));
 
   // ── Computed ───────────────────────────────────────────────────────────────
@@ -392,6 +418,122 @@ export default function App() {
       ALLOWANCES.forEach(a => { if (a.max !== null) next[a.id] = String(a.max); });
       return next;
     });
+  }
+
+  // ── Documents ─────────────────────────────────────────────────────────────
+  function classifyFileType(mime: string, name: string): DocFile['fileType'] {
+    if (mime.startsWith('image/')) return 'image';
+    if (mime === 'application/pdf') return 'pdf';
+    const ext = name.split('.').pop()?.toLowerCase() ?? '';
+    if (['xlsx', 'xls'].includes(ext) || mime.includes('spreadsheet') || mime.includes('excel')) return 'excel';
+    return 'csv';
+  }
+
+  async function readBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve((r.result as string).split(',')[1] ?? '');
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+  }
+
+  async function processDocObj(doc: DocFile) {
+    if (!profile.apiKey) return;
+    const contentParts: unknown[] = [{ type: 'text', text: EXTRACT_PROMPT }];
+    if (doc.fileType === 'image') {
+      contentParts.push({ type: 'image', source: { type: 'base64', media_type: doc.mimeType || 'image/jpeg', data: doc.base64 } });
+    } else if (doc.fileType === 'pdf') {
+      contentParts.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: doc.base64 } });
+    } else {
+      let text = '';
+      try {
+        if (doc.fileType === 'excel') {
+          const XLSX = await import('xlsx');
+          const wb = XLSX.read(doc.base64, { type: 'base64' });
+          text = wb.SheetNames.map(nm => `Sheet: ${nm}\n${XLSX.utils.sheet_to_csv(wb.Sheets[nm])}`).join('\n\n');
+        } else {
+          text = atob(doc.base64);
+        }
+      } catch { text = ''; }
+      contentParts.push({ type: 'text', text: `\n\nFILE CONTENT:\n${text.slice(0, 8000)}` });
+    }
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': profile.apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-allow-browser': 'true',
+        },
+        body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages: [{ role: 'user', content: contentParts }] }),
+      });
+      const j = await res.json() as { content?: { text?: string }[]; error?: { message?: string } };
+      if (j.error) throw new Error(j.error.message);
+      const raw = j.content?.map(b => b.text ?? '').join('') ?? '[]';
+      const parsed = JSON.parse(raw.match(/\[[\s\S]*\]/)?.[0] ?? '[]') as Array<{
+        vendor?: string; date?: string; amountXcd?: number; description?: string; catId?: string; itemId?: string;
+      }>;
+      const extracted: ExtractedExpense[] = parsed.map((item, idx) => ({
+        id: `ext-${doc.id}-${idx}`,
+        vendor: item.vendor ?? 'Unknown',
+        date: item.date ?? '',
+        amountXcd: Number(item.amountXcd) || 0,
+        description: item.description ?? '',
+        catId: item.catId ?? 'misc',
+        itemId: item.itemId ?? 'sundry',
+        applied: false,
+        sourceDocId: doc.id,
+      }));
+      setDocs(prev => prev.map(d => d.id === doc.id ? { ...d, status: 'done', extracted } : d));
+    } catch (err) {
+      setDocs(prev => prev.map(d => d.id === doc.id ? { ...d, status: 'error', errorMsg: String(err) } : d));
+    }
+  }
+
+  async function processDoc(docId: string) {
+    const doc = docs.find(d => d.id === docId);
+    if (!doc || doc.status === 'processing') return;
+    const processing = { ...doc, status: 'processing' as const };
+    setDocs(prev => prev.map(d => d.id === docId ? processing : d));
+    await processDocObj(processing);
+  }
+
+  async function handleDocFiles(files: FileList | null) {
+    if (!files?.length) return;
+    const newDocs: DocFile[] = [];
+    for (const f of Array.from(files)) {
+      const base64 = await readBase64(f);
+      newDocs.push({
+        id: `doc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        name: f.name, mimeType: f.type, base64,
+        fileType: classifyFileType(f.type, f.name),
+        status: profile.apiKey ? 'processing' : 'queued',
+        extracted: [],
+      });
+    }
+    setDocs(prev => [...prev, ...newDocs]);
+    if (profile.apiKey) {
+      for (const doc of newDocs) await processDocObj(doc);
+    }
+  }
+
+  function applyExtracted(extId: string) {
+    const item = docs.flatMap(d => d.extracted).find(e => e.id === extId);
+    if (!item) return;
+    setActual(a => ({ ...a, [item.itemId]: String(n(a[item.itemId] ?? 0) + item.amountXcd) }));
+    setDocs(prev => prev.map(d => ({ ...d, extracted: d.extracted.map(e => e.id === extId ? { ...e, applied: true } : e) })));
+  }
+
+  function applyAll() {
+    const pending = docs.flatMap(d => d.extracted.filter(e => !e.applied));
+    setActual(a => {
+      const next = { ...a };
+      pending.forEach(e => { next[e.itemId] = String(n(next[e.itemId] ?? 0) + e.amountXcd); });
+      return next;
+    });
+    setDocs(prev => prev.map(d => ({ ...d, extracted: d.extracted.map(e => ({ ...e, applied: true })) })));
   }
 
   // ── AI Report ─────────────────────────────────────────────────────────────
@@ -916,6 +1058,158 @@ Use precise financial language. Quote specific XCD amounts. Reference the ITA wh
     );
   }
 
+  function renderDocuments() {
+    const allPending  = docs.flatMap(d => d.extracted.filter(e => !e.applied));
+    const appliedCount = docs.flatMap(d => d.extracted.filter(e => e.applied)).length;
+    const totalXcd    = allPending.reduce((s, e) => s + e.amountXcd, 0);
+    return (
+      <div>
+        <SH icon="📎" title="Documents & Receipts"
+          sub="Upload receipts, invoices, PDFs, photos or spreadsheets — AI extracts and pre-fills expense entries" />
+
+        {!profile.apiKey && (
+          <Alert type="warn" msg="Add your Anthropic API key in Profile to enable AI document scanning" />
+        )}
+
+        {/* Drop zone */}
+        <div
+          onDragOver={e => e.preventDefault()}
+          onDrop={e => { e.preventDefault(); void handleDocFiles(e.dataTransfer.files); }}
+          onClick={() => fileInputRef.current?.click()}
+          style={{ border: `2px dashed ${C.border}`, borderRadius: 8, padding: '28px 16px', textAlign: 'center', cursor: 'pointer', marginBottom: 10 }}
+        >
+          <div style={{ fontSize: 30, marginBottom: 6 }}>📎</div>
+          <div style={{ color: C.text, fontSize: 12, fontWeight: 700 }}>Drop files here or tap to browse</div>
+          <div style={{ color: C.muted, fontSize: 10, marginTop: 3 }}>Receipts · Invoices · PDFs · Photos · Excel (.xlsx) · CSV</div>
+          <input ref={fileInputRef} type="file" multiple accept="image/*,.pdf,.xlsx,.xls,.csv"
+            style={{ display: 'none' }} onChange={e => void handleDocFiles(e.target.files)} />
+        </div>
+
+        {/* Camera button (opens photo library + camera on mobile) */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          <button onClick={() => cameraRef.current?.click()}
+            style={{ flex: 1, padding: '9px', borderRadius: 6, border: `1px solid ${C.border}`, background: C.card, color: C.text, cursor: 'pointer', fontFamily: 'inherit', fontSize: 11, fontWeight: 700 }}>
+            📸 Photograph Receipt / Stub
+          </button>
+          <input ref={cameraRef} type="file" accept="image/*"
+            style={{ display: 'none' }} onChange={e => void handleDocFiles(e.target.files)} />
+          {docs.length > 0 && (
+            <button onClick={() => setDocs([])}
+              style={{ padding: '9px 12px', borderRadius: 6, border: `1px solid ${C.border}`, background: 'transparent', color: C.muted, cursor: 'pointer', fontFamily: 'inherit', fontSize: 10 }}>
+              Clear All
+            </button>
+          )}
+        </div>
+
+        {/* Processing queue */}
+        {docs.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <p style={{ color: C.dim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 6, fontWeight: 700 }}>
+              Document Queue
+            </p>
+            {docs.map(doc => (
+              <div key={doc.id} style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: '8px 12px', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 14 }}>
+                  {doc.fileType === 'image' ? '🖼️' : doc.fileType === 'pdf' ? '📄' : '📊'}
+                </span>
+                <span style={{ flex: 1, color: C.text, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.name}</span>
+                {doc.status === 'processing' && <span style={{ color: C.blue, fontSize: 10 }}>⟳ Processing…</span>}
+                {doc.status === 'done' && (
+                  <span style={{ color: C.green, fontSize: 10 }}>
+                    ✓ {doc.extracted.length} item{doc.extracted.length !== 1 ? 's' : ''}
+                  </span>
+                )}
+                {doc.status === 'error' && (
+                  <span style={{ color: C.red, fontSize: 10 }} title={doc.errorMsg}>✕ Error</span>
+                )}
+                {doc.status === 'queued' && (
+                  <button onClick={() => void processDoc(doc.id)} disabled={!profile.apiKey}
+                    style={{ padding: '3px 10px', borderRadius: 4, border: `1px solid ${C.border}`, background: 'transparent', color: profile.apiKey ? C.blue : C.muted, cursor: profile.apiKey ? 'pointer' : 'not-allowed', fontFamily: 'inherit', fontSize: 10 }}>
+                    Process
+                  </button>
+                )}
+                <button onClick={() => setDocs(prev => prev.filter(d => d.id !== doc.id))}
+                  style={{ padding: '2px 6px', border: 'none', background: 'none', color: C.muted, cursor: 'pointer', fontSize: 12 }}>✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Extracted items review table */}
+        {allPending.length > 0 && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <span style={{ flex: 1, color: C.dim, fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 700 }}>
+                Extracted — {allPending.length} pending · {xcd(totalXcd)} XCD
+              </span>
+              <button onClick={applyAll}
+                style={{ padding: '5px 14px', borderRadius: 5, border: 'none', background: 'linear-gradient(135deg,#1a6aff,#0a3aaa)', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 700, fontSize: 10 }}>
+                ✓ Apply All
+              </button>
+            </div>
+            <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, overflow: 'hidden' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1.4fr 0.9fr 2fr 54px', padding: '6px 12px', background: C.panel, borderBottom: `1px solid ${C.border}` }}>
+                {['Vendor', 'Description', 'Amount', 'Expense Line', ''].map((h, i) => (
+                  <span key={i} style={{ color: C.muted, fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700 }}>{h}</span>
+                ))}
+              </div>
+              {allPending.map(item => (
+                <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '1.4fr 1.4fr 0.9fr 2fr 54px', padding: '7px 12px', borderBottom: `1px solid ${C.border}22`, alignItems: 'center', gap: 4 }}>
+                  <div style={{ color: C.text, fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.vendor}>{item.vendor}</div>
+                  <div style={{ color: C.muted, fontSize: 10, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={item.description}>{item.description || item.date}</div>
+                  <div style={{ color: C.green, fontWeight: 700, fontSize: 11 }}>{xcd(item.amountXcd)}</div>
+                  <select
+                    value={item.itemId}
+                    onChange={e => {
+                      const nid = e.target.value;
+                      const newCat = EXPENSE_CATS.find(c => c.items.some(i => i.id === nid));
+                      setDocs(prev => prev.map(d => ({
+                        ...d,
+                        extracted: d.extracted.map(ex => ex.id === item.id
+                          ? { ...ex, itemId: nid, catId: newCat?.id ?? ex.catId }
+                          : ex),
+                      })));
+                    }}
+                    style={{ ...inputS, fontSize: 10, padding: '2px 4px' }}
+                  >
+                    {EXPENSE_CATS.map(c => (
+                      <optgroup key={c.id} label={c.name.replace(/^\d+\.\s*/, '').slice(0, 28)}>
+                        {c.items.map(i => <option key={i.id} value={i.id}>{i.label.slice(0, 34)}</option>)}
+                      </optgroup>
+                    ))}
+                  </select>
+                  <button onClick={() => applyExtracted(item.id)}
+                    style={{ width: 50, padding: '4px 0', borderRadius: 4, border: 'none', background: C.greenBg, color: C.green, cursor: 'pointer', fontFamily: 'inherit', fontSize: 10, fontWeight: 700 }}>
+                    Apply
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {appliedCount > 0 && (
+          <div style={{ marginTop: 10 }}>
+            <Alert type="ok" msg={`${appliedCount} item(s) applied to business expenses — review totals in Business Exp. tab`} />
+          </div>
+        )}
+
+        {docs.length === 0 && (
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 6, padding: '16px 14px', marginTop: 8 }}>
+            <p style={{ color: C.muted, fontSize: 10, lineHeight: 1.7, margin: 0 }}>
+              <strong style={{ color: C.dim }}>Supported formats</strong><br />
+              📸 <strong style={{ color: C.text }}>Photos</strong> — photograph receipts, payment stubs, or even an Excel spreadsheet with your phone camera<br />
+              📄 <strong style={{ color: C.text }}>PDF</strong> — clinic invoices, bank statements, insurance receipts, tax certificates<br />
+              📊 <strong style={{ color: C.text }}>Excel / CSV</strong> — exported bank transactions, expense spreadsheets (.xlsx, .xls, .csv)<br /><br />
+              Claude reads each file and extracts vendor, date, amount, and suggested expense category.
+              You review and apply each item — amounts are added directly to the matching expense fields.
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   const pfBadge = pf.blockers.length ? `${pf.blockers.length} 🚫` : pf.issues.filter(i => i.sev === 'WARN').length ? `${pf.issues.filter(i => i.sev === 'WARN').length} ⚠` : '✓';
   const pfColor = pf.blockers.length ? C.red : pf.issues.some(i => i.sev === 'WARN') ? C.amber : C.green;
 
@@ -973,8 +1267,9 @@ Use precise financial language. Quote specific XCD amounts. Reference the ITA wh
         {active === 'actions'    && renderActions()}
         {active === 'preflight'  && renderPreflight()}
         {active === 'report'     && renderReport()}
+        {active === 'documents'  && renderDocuments()}
 
-        {!['preflight', 'report'].includes(active) && (
+        {!['preflight', 'report', 'documents'].includes(active) && (
           <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={() => { const i = SECTIONS.findIndex(s => s.id === active); if (i < SECTIONS.length - 1) setActive(SECTIONS[i + 1].id); }}
