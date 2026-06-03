@@ -11,14 +11,16 @@ const C = {
 };
 
 const SECTIONS = [
-  { id: 'profile',    label: 'Profile',        icon: '👤' },
-  { id: 'allowances', label: 'Personal Relief', icon: '🏠' },
-  { id: 'expenses',   label: 'Business Exp.',   icon: '🏥' },
-  { id: 'tax',        label: 'Tax Computation', icon: '🏛️' },
-  { id: 'actions',    label: 'Action Plan',     icon: '✅' },
-  { id: 'preflight',  label: 'Pre-Flight',      icon: '🛡️' },
-  { id: 'report',     label: 'AI Report',       icon: '🧠' },
-  { id: 'documents',  label: 'Documents',       icon: '📎' },
+  { id: 'entities',   label: 'Entities',        icon: '🏢' },
+  { id: 'profile',    label: 'Profile',          icon: '👤' },
+  { id: 'allowances', label: 'Personal Relief',  icon: '🏠' },
+  { id: 'expenses',   label: 'Business Exp.',    icon: '🏥' },
+  { id: 'tax',        label: 'Tax Computation',  icon: '🏛️' },
+  { id: 'actions',    label: 'Action Plan',      icon: '✅' },
+  { id: 'payroll',    label: 'Payroll',          icon: '👥' },
+  { id: 'preflight',  label: 'Pre-Flight',       icon: '🛡️' },
+  { id: 'report',     label: 'AI Report',        icon: '🧠' },
+  { id: 'documents',  label: 'Documents',        icon: '📎' },
 ];
 
 // ─── IRD Saint Lucia 2025 Tax Bands ──────────────────────────────────────────
@@ -274,13 +276,62 @@ function Divider({ label, color }: { label: string; color?: string }) {
   );
 }
 
+// ─── Multi-Entity ─────────────────────────────────────────────────────────────
+type EntityId = 'amise' | 'verdance' | 'zemed';
+interface EntitySnapshot { grossIncome: string; actual: Record<string,string>; claimed: Record<string,string>; }
+const ENTITY_DEFS: { id: EntityId; name: string; shortName: string; color: string; icon: string; type: string }[] = [
+  { id:'amise',    name:'Amise Medical Services', shortName:'Amise',    color:'#4a9eff', icon:'🏥', type:'Medical Practice'  },
+  { id:'verdance', name:'Verdance Holding Ltd',   shortName:'Verdance', color:'#34d399', icon:'🏢', type:'Holding Company'   },
+  { id:'zemed',    name:'Zemed',                  shortName:'Zemed',    color:'#a78bfa', icon:'🔨', type:'Business Entity'   },
+];
+
+// ─── Payroll / PAYE / NIC ─────────────────────────────────────────────────────
+const NIC_RATE_EMP  = 0.05;   // employee 5 %
+const NIC_RATE_ER   = 0.05;   // employer 5 %
+const NIC_MAX_MO    = 5417;   // ~XCD 65,000 / yr ceiling — confirm with NIC Board
+
+interface StaffMember {
+  id: string; name: string; position: string; entityId: EntityId;
+  grossMonthly: number;
+  personalAllowance: number;  // annual XCD
+  spouseAllowance: number;    // annual XCD
+  childAllowances: number;    // annual XCD (total for all children)
+  otherAllowances: number;    // annual XCD
+  permanent: boolean;
+}
+
+function staffPAYE(s: StaffMember) {
+  const annualGross      = s.grossMonthly * 12;
+  const totalAllowances  = s.personalAllowance + s.spouseAllowance + s.childAllowances + s.otherAllowances;
+  const annualChargeable = Math.max(0, annualGross - totalAllowances);
+  const annualPAYE       = calcTax(annualChargeable);
+  const monthlyPAYE      = annualPAYE / 12;
+  const monthlyNIC       = Math.min(s.grossMonthly, NIC_MAX_MO) * NIC_RATE_EMP;
+  const monthlyNIC_er    = Math.min(s.grossMonthly, NIC_MAX_MO) * NIC_RATE_ER;
+  const netMonthly       = s.grossMonthly - monthlyPAYE - monthlyNIC;
+  return { annualGross, totalAllowances, annualChargeable, annualPAYE, monthlyPAYE, monthlyNIC, monthlyNIC_er, netMonthly };
+}
+
+const DEFAULT_STAFF: StaffMember[] = [
+  { id:'s1', name:'Receptionist / Admin — Clinic 1', position:'Receptionist',      entityId:'amise',    grossMonthly:1833, personalAllowance:40000, spouseAllowance:0, childAllowances:0, otherAllowances:0, permanent:true  },
+  { id:'s2', name:'Receptionist / Admin — Clinic 2', position:'Receptionist',      entityId:'amise',    grossMonthly:1500, personalAllowance:40000, spouseAllowance:0, childAllowances:0, otherAllowances:0, permanent:true  },
+  { id:'s3', name:'Medical Secretary / PA',          position:'Medical Secretary', entityId:'amise',    grossMonthly:1250, personalAllowance:40000, spouseAllowance:0, childAllowances:0, otherAllowances:0, permanent:true  },
+  { id:'s4', name:'Practice Manager',                position:'Practice Manager',  entityId:'amise',    grossMonthly:1667, personalAllowance:40000, spouseAllowance:0, childAllowances:0, otherAllowances:0, permanent:true  },
+  { id:'s5', name:'Payroll / HR Administrator',      position:'HR Administrator',  entityId:'amise',    grossMonthly:917,  personalAllowance:40000, spouseAllowance:0, childAllowances:0, otherAllowances:0, permanent:false },
+];
+
 // ─── Document extraction prompt ───────────────────────────────────────────────
-const EXTRACT_PROMPT = `You are a financial document parser for Amise Medical Services, a surgical practice in Saint Lucia.
-Extract all expense or payment items from the provided content.
-Return ONLY a valid JSON array (no markdown, no extra text) with this structure:
-[{"vendor":"string","date":"string","amountXcd":number,"description":"string","catId":"staff|premises|equipment|vehicle|insurance|comms|cme|profees|bank|misc","itemId":"string"}]
+const EXTRACT_PROMPT = `You are a financial document parser for three Saint Lucia business entities:
+1. Amise Medical Services — medical/surgical/endoscopy practice
+2. Verdance Holding Ltd — holding company, investments, property
+3. Zemed — business entity
+
+Determine the entity from context (letterheads, vendor names, account names). Default to "amise" if unclear.
+Extract ALL expense or payment line items from the document.
+Return ONLY a valid JSON array (no markdown, no extra text):
+[{"vendor":"string","date":"YYYY-MM-DD","amountXcd":number,"description":"string","entityId":"amise|verdance|zemed","catId":"staff|premises|equipment|vehicle|insurance|comms|cme|profees|bank|misc","itemId":"string"}]
 Item IDs — staff: rn,anaes,recep1,recep2,medsecy,pracmgr,locum,accountant,legal,payroll_svc,recruit | premises: rent1,rent2,elec1,elec2,water,homeoffice,signage | equipment: cap_ercp,cap_surg,cap_office,cap_fitout,ercp_cons,surg_inst,ppe,diag,gas,equip_svc,sterilise | vehicle: fuel,veh_ins,veh_maint,veh_dep,parking | insurance: malpractice,public_liab,biz_int,prof_ind,keyperson | comms: landlines,mobile,broadband,emr,telehealth,cyber,website,software | cme: esge_conf,carib_conf,airfare,hotel,online_cme,textbooks,simulation,fellowship,slma_cpd | profees: slma,ecsmg,medcouncil,esge_dues,gp_gifts,advertising,stationery | bank: bank_charges,merchant,equip_loan,fitout_loan,overdraft | misc: research,audit_qual,med_waste,postage,uniforms,subscriptions,entertainment,sundry
-Currency: all amounts must be XCD. Convert USD×2.70, GBP×3.42, EUR×2.94. If amount unclear set 0. Return ONLY the JSON array, nothing else.`;
+Currency: all amounts in XCD. Convert USD×2.70, GBP×3.42, EUR×2.94. Return ONLY the JSON array.`;
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
@@ -315,6 +366,17 @@ export default function App() {
     setInstallPrompt(null);
     setShowInstallBanner(false);
   }
+
+  // ── Multi-entity ledger ───────────────────────────────────────────────────
+  const [activeEntity, setActiveEntity] = useState<EntityId>('amise');
+  const [entitySnapshots, setEntitySnapshots] = useState<Record<EntityId, EntitySnapshot>>({
+    amise:    { grossIncome: '1000000', actual: {}, claimed: { personal: '40000' } },
+    verdance: { grossIncome: '0',       actual: {}, claimed: { personal: '40000' } },
+    zemed:    { grossIncome: '0',       actual: {}, claimed: { personal: '40000' } },
+  });
+
+  // ── Payroll ───────────────────────────────────────────────────────────────
+  const [staff, setStaff] = useState<StaffMember[]>(DEFAULT_STAFF);
 
   const [profile, setProfile]   = useState({
     name:       'Dr. Dawit Daniel Kabiye, MD, DM',
@@ -442,6 +504,95 @@ export default function App() {
       ALLOWANCES.forEach(a => { if (a.max !== null) next[a.id] = String(a.max); });
       return next;
     });
+  }
+
+  // ── Entity switching ──────────────────────────────────────────────────────
+  function switchEntity(newId: EntityId) {
+    if (newId === activeEntity) return;
+    // Save current state into snapshot
+    setEntitySnapshots(prev => ({
+      ...prev,
+      [activeEntity]: { grossIncome: profile.grossIncome, actual, claimed },
+    }));
+    // Load target entity
+    const snap = entitySnapshots[newId];
+    setActual(snap.actual);
+    setClaimed(snap.claimed);
+    setP('grossIncome', snap.grossIncome);
+    setActiveEntity(newId);
+  }
+
+  function getEntityData(id: EntityId): EntitySnapshot {
+    if (id === activeEntity) return { grossIncome: profile.grossIncome, actual, claimed };
+    return entitySnapshots[id];
+  }
+
+  // ── Staff / Payroll helpers ───────────────────────────────────────────────
+  function addStaffRow() {
+    setStaff(prev => [...prev, {
+      id: `s${Date.now()}`, name: 'New Staff Member', position: '',
+      entityId: activeEntity, grossMonthly: 0, personalAllowance: 40000,
+      spouseAllowance: 0, childAllowances: 0, otherAllowances: 0, permanent: true,
+    }]);
+  }
+
+  function removeStaff(id: string) { setStaff(prev => prev.filter(s => s.id !== id)); }
+
+  function updateStaff(id: string, updates: Partial<StaffMember>) {
+    setStaff(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+  }
+
+  async function downloadPayrollExcel() {
+    const XLSX = await import('xlsx');
+    const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const wb = XLSX.utils.book_new();
+
+    // ── Sheet 1: Full schedule ──
+    const aoa: (string|number)[][] = [];
+    aoa.push(['AMISE MEDICAL SERVICES — Payroll & Salary Schedule 2025']);
+    aoa.push(['IRD Saint Lucia · All amounts XCD · NIC rates: Employee 5% / Employer 5%']);
+    aoa.push([]);
+    aoa.push(['Staff Member','Position','Entity','Type','Gross/Mo','Personal Allow /yr','Spouse Allow /yr','Child Allow /yr','Other Allow /yr','Total Allow /yr','Annual Chargeable','Annual PAYE','Monthly PAYE','Employee NIC /mo','Employer NIC /mo','Net Pay /mo','Annual Net']);
+    for (const s of staff) {
+      const p = staffPAYE(s);
+      const entName = ENTITY_DEFS.find(e => e.id === s.entityId)?.name ?? '';
+      aoa.push([s.name,s.position,entName,s.permanent?'Permanent':'Contract',s.grossMonthly,s.personalAllowance,s.spouseAllowance,s.childAllowances,s.otherAllowances,p.totalAllowances,p.annualChargeable,p.annualPAYE,p.monthlyPAYE,p.monthlyNIC,p.monthlyNIC_er,p.netMonthly,p.netMonthly*12]);
+    }
+    const tots = staff.map(s => staffPAYE(s));
+    aoa.push(['TOTALS','','','',staff.reduce((s,m)=>s+m.grossMonthly,0),'','','','','',tots.reduce((s,p)=>s+p.annualChargeable,0),tots.reduce((s,p)=>s+p.annualPAYE,0),tots.reduce((s,p)=>s+p.monthlyPAYE,0),tots.reduce((s,p)=>s+p.monthlyNIC,0),tots.reduce((s,p)=>s+p.monthlyNIC_er,0),tots.reduce((s,p)=>s+p.netMonthly,0),tots.reduce((s,p)=>s+p.netMonthly*12,0)]);
+    aoa.push([]);
+    aoa.push(['Notes:','Personal allowance: XCD 40,000/yr for all resident employees (2025 ITA)']);
+    aoa.push(['','NIC ceiling: ~XCD 65,000/yr — confirm exact with NIC Board Tel 468-5100']);
+    aoa.push(['','PAYE remittance due: 15th of the following month  |  efilingovt.lc  |  Tel 468-4700']);
+    const ws1 = XLSX.utils.aoa_to_sheet(aoa);
+    ws1['!cols'] = [{wch:28},{wch:20},{wch:22},{wch:11},{wch:11},{wch:18},{wch:16},{wch:16},{wch:16},{wch:16},{wch:18},{wch:13},{wch:13},{wch:15},{wch:15},{wch:13},{wch:13}];
+    XLSX.utils.book_append_sheet(wb, ws1, 'Payroll Schedule');
+
+    // ── Sheet 2: Monthly net-pay calendar ──
+    const aoa2: (string|number)[][] = [];
+    aoa2.push(['MONTHLY NET PAY CALENDAR 2025','','', ...MONTHS,'Annual Net']);
+    aoa2.push(['Staff Member','Entity','Gross/Mo', ...MONTHS.map(()=>'Net Pay XCD'),'Annual XCD']);
+    for (const s of staff) {
+      const p = staffPAYE(s);
+      const entName = ENTITY_DEFS.find(e=>e.id===s.entityId)?.shortName??'';
+      aoa2.push([s.name,entName,s.grossMonthly,...MONTHS.map(()=>Math.round(p.netMonthly)),Math.round(p.netMonthly*12)]);
+    }
+    aoa2.push([]);
+    const totalGross = staff.reduce((s,m)=>s+m.grossMonthly,0);
+    const totalPAYE  = tots.reduce((s,p)=>s+p.monthlyPAYE,0);
+    const totalNIC   = tots.reduce((s,p)=>s+p.monthlyNIC,0);
+    const totalNet   = tots.reduce((s,p)=>s+p.netMonthly,0);
+    const totalEr    = tots.reduce((s,p)=>s+p.monthlyNIC_er,0);
+    aoa2.push(['Gross payroll','',totalGross,...MONTHS.map(()=>totalGross),totalGross*12]);
+    aoa2.push(['PAYE to IRD (due 15th)','',totalPAYE,...MONTHS.map(()=>Math.round(totalPAYE)),Math.round(totalPAYE*12)]);
+    aoa2.push(['Employee NIC','',totalNIC,...MONTHS.map(()=>Math.round(totalNIC)),Math.round(totalNIC*12)]);
+    aoa2.push(['Employer NIC','',totalEr,...MONTHS.map(()=>Math.round(totalEr)),Math.round(totalEr*12)]);
+    aoa2.push(['Net pay to staff','',Math.round(totalNet),...MONTHS.map(()=>Math.round(totalNet)),Math.round(totalNet*12)]);
+    const ws2 = XLSX.utils.aoa_to_sheet(aoa2);
+    ws2['!cols'] = [{wch:28},{wch:10},{wch:11},...MONTHS.map(()=>({wch:9})),{wch:12}];
+    XLSX.utils.book_append_sheet(wb, ws2, 'Monthly Calendar');
+
+    XLSX.writeFile(wb, 'amise-payroll-2025.xlsx');
   }
 
   // ── Documents ─────────────────────────────────────────────────────────────
@@ -1210,6 +1361,279 @@ Use precise financial language. Quote specific XCD amounts. Reference the ITA wh
     );
   }
 
+  // ── Entities overview ─────────────────────────────────────────────────────
+  function renderEntities() {
+    return (
+      <div>
+        <SH icon="🏢" title="Business Entities" sub="Switch between Amise, Verdance Holding and Zemed — each has its own ledger, expenses and tax position" />
+
+        {/* Entity cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 20 }}>
+          {ENTITY_DEFS.map(e => {
+            const data = getEntityData(e.id);
+            const g    = n(data.grossIncome);
+            const cl   = ALLOWANCES.reduce((s,a)=>s+n(data.claimed[a.id]??0),0);
+            const act  = EXPENSE_CATS.reduce((s,cat)=>s+cat.items.reduce((cs,i)=>cs+n(data.actual[i.id]??0),0),0);
+            const tax  = calcTax(Math.max(0,g-cl-act));
+            const isActive = activeEntity === e.id;
+            return (
+              <div key={e.id} onClick={()=>switchEntity(e.id)}
+                style={{ background:isActive?`${e.color}11`:C.card, border:`2px solid ${isActive?e.color:C.border}`, borderRadius:10, padding:'16px 14px', cursor:'pointer' }}>
+                <div style={{ display:'flex', gap:10, alignItems:'center', marginBottom:12 }}>
+                  <span style={{ fontSize:22 }}>{e.icon}</span>
+                  <div>
+                    <div style={{ color:isActive?e.color:C.text, fontWeight:700, fontSize:11 }}>{e.name}</div>
+                    <div style={{ color:C.muted, fontSize:9 }}>{e.type}</div>
+                  </div>
+                </div>
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:6, marginBottom:8 }}>
+                  {[['Gross Income',xcd(g),e.color],['Tax Payable',xcd2(tax),tax===0?C.green:C.amber]].map(([l,v,col])=>(
+                    <div key={l as string} style={{ background:C.panel, borderRadius:4, padding:'6px 8px' }}>
+                      <div style={{ color:C.muted, fontSize:8, textTransform:'uppercase', letterSpacing:'0.1em' }}>{l}</div>
+                      <div style={{ color:col as string, fontWeight:700, fontSize:12 }}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ color:isActive?e.color:C.muted, fontSize:9, textAlign:'center', fontWeight:700 }}>
+                  {isActive ? '✓ ACTIVE — editing this entity' : 'Tap to switch'}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Gross income quick-set */}
+        <Divider label="Gross Income — All Entities" />
+        {ENTITY_DEFS.map(e => {
+          const data = getEntityData(e.id);
+          return (
+            <div key={e.id} style={{ display:'grid', gridTemplateColumns:'1fr 180px', gap:10, marginBottom:10, alignItems:'center' }}>
+              <label style={{ color:C.text, fontSize:11 }}>{e.icon} {e.name}</label>
+              <div style={{ position:'relative' }}>
+                <span style={{ position:'absolute', left:8, top:'50%', transform:'translateY(-50%)', color:e.color, fontWeight:700 }}>$</span>
+                <input type="number" style={{ ...inputS, paddingLeft:18 }} value={data.grossIncome}
+                  onChange={ev => {
+                    if (e.id === activeEntity) { setP('grossIncome', ev.target.value); }
+                    else { setEntitySnapshots(prev=>({...prev,[e.id]:{...prev[e.id],grossIncome:ev.target.value}})); }
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Consolidated summary */}
+        <Divider label="Consolidated — All Entities" />
+        <div style={{ border:`1px solid ${C.border}`, borderRadius:6, overflow:'hidden' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr', padding:'6px 12px', background:'#05111e', borderBottom:`1px solid ${C.border}` }}>
+            {['Entity','Gross Income','Deductions','Chargeable','Tax Payable'].map(h=>(
+              <span key={h} style={{ color:C.muted, fontSize:9, textTransform:'uppercase', letterSpacing:'0.1em' }}>{h}</span>
+            ))}
+          </div>
+          {ENTITY_DEFS.map((e,idx) => {
+            const data   = getEntityData(e.id);
+            const g      = n(data.grossIncome);
+            const cl     = ALLOWANCES.reduce((s,a)=>s+n(data.claimed[a.id]??0),0);
+            const act    = EXPENSE_CATS.reduce((s,cat)=>s+cat.items.reduce((cs,i)=>cs+n(data.actual[i.id]??0),0),0);
+            const ch     = Math.max(0,g-cl-act);
+            const tax    = calcTax(ch);
+            const isAct  = activeEntity===e.id;
+            return (
+              <div key={e.id} onClick={()=>switchEntity(e.id)} style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr', padding:'8px 12px', borderBottom:idx<ENTITY_DEFS.length-1?`1px solid ${C.border}22`:'none', background:isAct?`${e.color}08`:idx%2===0?C.panel:C.card, cursor:'pointer' }}>
+                <div style={{ display:'flex', gap:6, alignItems:'center' }}>
+                  <span>{e.icon}</span>
+                  <span style={{ color:isAct?e.color:C.text, fontSize:11, fontWeight:isAct?700:400 }}>{e.shortName}</span>
+                  {isAct && <span style={{ color:e.color, fontSize:8, fontWeight:700 }}>●</span>}
+                </div>
+                <span style={{ color:C.dim, fontSize:11 }}>{xcd(g)}</span>
+                <span style={{ color:C.green, fontSize:11 }}>{xcd(cl+act)}</span>
+                <span style={{ color:C.amber, fontSize:11 }}>{xcd(ch)}</span>
+                <span style={{ color:tax===0?C.green:C.red, fontSize:11, fontWeight:700 }}>{xcd2(tax)}</span>
+              </div>
+            );
+          })}
+          {(() => {
+            const rows = ENTITY_DEFS.map(e => {
+              const data = getEntityData(e.id);
+              const g   = n(data.grossIncome);
+              const cl  = ALLOWANCES.reduce((s,a)=>s+n(data.claimed[a.id]??0),0);
+              const act = EXPENSE_CATS.reduce((s,cat)=>s+cat.items.reduce((cs,i)=>cs+n(data.actual[i.id]??0),0),0);
+              return { g, deduct:cl+act, ch:Math.max(0,g-cl-act), tax:calcTax(Math.max(0,g-cl-act)) };
+            });
+            return (
+              <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 1fr 1fr 1fr', padding:'8px 12px', background:'#040d16', borderTop:`1px solid ${C.border}` }}>
+                <span style={{ color:C.dim, fontSize:10, fontWeight:700 }}>COMBINED</span>
+                <span style={{ color:C.blue, fontSize:11, fontWeight:700 }}>{xcd(rows.reduce((s,r)=>s+r.g,0))}</span>
+                <span style={{ color:C.green, fontSize:11, fontWeight:700 }}>{xcd(rows.reduce((s,r)=>s+r.deduct,0))}</span>
+                <span style={{ color:C.amber, fontSize:11, fontWeight:700 }}>{xcd(rows.reduce((s,r)=>s+r.ch,0))}</span>
+                <span style={{ color:C.red, fontSize:12, fontWeight:800 }}>{xcd2(rows.reduce((s,r)=>s+r.tax,0))}</span>
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Payroll / Salary Schedule ──────────────────────────────────────────────
+  function renderPayroll() {
+    const payData = staff.map(s => ({ s, ...staffPAYE(s) }));
+    const zeroTax = payData.filter(p=>p.monthlyPAYE===0).length;
+    const totGross = payData.reduce((s,p)=>s+p.s.grossMonthly,0);
+    const totPAYE  = payData.reduce((s,p)=>s+p.monthlyPAYE,0);
+    const totNIC   = payData.reduce((s,p)=>s+p.monthlyNIC,0);
+    const totNet   = payData.reduce((s,p)=>s+p.netMonthly,0);
+    const totEr    = payData.reduce((s,p)=>s+p.monthlyNIC_er,0);
+
+    return (
+      <div>
+        <SH icon="👥" title="Payroll & Salary Schedule" sub="PAYE and NIC — IRD Saint Lucia 2025. Personal allowance XCD 40,000/yr means most staff have zero income tax." />
+
+        {/* KPIs */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:14 }}>
+          <KV label="Gross payroll /mo" value={xcd(totGross)} color={C.blue} />
+          <KV label="PAYE withheld /mo" value={xcd2(totPAYE)} color={totPAYE===0?C.green:C.red} />
+          <KV label="Employee NIC /mo" value={xcd2(totNIC)} color={C.amber} />
+          <KV label="Net to staff /mo" value={xcd(Math.round(totNet))} color={C.green} large />
+        </div>
+
+        <Alert type="ok" msg={`${zeroTax} of ${payData.length} staff members have $0.00 PAYE — personal allowance (XCD 40,000/yr) exceeds their gross annual salary`} />
+
+        {/* Salary table */}
+        <div style={{ marginTop:14, overflowX:'auto' }}>
+          <div style={{ display:'grid', gridTemplateColumns:'2.2fr 0.8fr 0.9fr 1.3fr 0.8fr 0.8fr 0.9fr', background:'#05111e', padding:'6px 10px', borderRadius:'6px 6px 0 0', border:`1px solid ${C.border}`, borderBottom:'none', minWidth:700 }}>
+            {['Staff Member / Position','Entity','Gross /mo','Allow. /yr → Chargeable','PAYE /mo','NIC /mo','Net /mo'].map(h=>(
+              <div key={h} style={{ color:C.muted, fontSize:9, textTransform:'uppercase', letterSpacing:'0.08em' }}>{h}</div>
+            ))}
+          </div>
+          <div style={{ border:`1px solid ${C.border}`, borderRadius:'0 0 6px 6px', overflow:'hidden', minWidth:700 }}>
+            {payData.map(({s,totalAllowances,annualChargeable,monthlyPAYE,monthlyNIC,netMonthly},idx)=>{
+              const ent = ENTITY_DEFS.find(e=>e.id===s.entityId)!;
+              return (
+                <div key={s.id} style={{ display:'grid', gridTemplateColumns:'2.2fr 0.8fr 0.9fr 1.3fr 0.8fr 0.8fr 0.9fr', padding:'8px 10px', borderBottom:idx<payData.length-1?`1px solid ${C.border}`:'none', background:idx%2===0?C.panel:C.card, alignItems:'center' }}>
+                  <div>
+                    <div style={{ color:C.text, fontSize:11, fontWeight:600 }}>{s.name}</div>
+                    <div style={{ color:C.muted, fontSize:9 }}>{s.position}{s.permanent?' · Permanent':' · Contract'}</div>
+                  </div>
+                  <div style={{ display:'flex', gap:4, alignItems:'center' }}>
+                    <span style={{ fontSize:11 }}>{ent.icon}</span>
+                    <span style={{ color:ent.color, fontSize:10 }}>{ent.shortName}</span>
+                  </div>
+                  <span style={{ color:C.dim, fontSize:11 }}>{xcd(s.grossMonthly)}</span>
+                  <div>
+                    <div style={{ color:C.green, fontSize:10 }}>{xcd(totalAllowances)}</div>
+                    <div style={{ color:C.muted, fontSize:9 }}>→ chargeable: {xcd(annualChargeable)}</div>
+                  </div>
+                  <span style={{ color:monthlyPAYE===0?C.green:C.red, fontWeight:monthlyPAYE===0?700:400, fontSize:11 }}>
+                    {monthlyPAYE===0?'$0 ✓':xcd2(monthlyPAYE)}
+                  </span>
+                  <span style={{ color:C.amber, fontSize:11 }}>{xcd2(monthlyNIC)}</span>
+                  <span style={{ color:C.green, fontWeight:600, fontSize:11 }}>{xcd(Math.round(netMonthly))}</span>
+                </div>
+              );
+            })}
+            {/* Totals */}
+            <div style={{ display:'grid', gridTemplateColumns:'2.2fr 0.8fr 0.9fr 1.3fr 0.8fr 0.8fr 0.9fr', padding:'8px 10px', background:'#040d16', borderTop:`1px solid ${C.border}` }}>
+              <span style={{ color:C.dim, fontSize:10, fontWeight:700 }}>MONTHLY TOTALS</span>
+              <span /><span style={{ color:C.blue, fontSize:11, fontWeight:700 }}>{xcd(totGross)}</span><span />
+              <span style={{ color:totPAYE===0?C.green:C.red, fontSize:11, fontWeight:700 }}>{xcd2(totPAYE)}</span>
+              <span style={{ color:C.amber, fontSize:11, fontWeight:700 }}>{xcd2(totNIC)}</span>
+              <span style={{ color:C.green, fontSize:11, fontWeight:700 }}>{xcd(Math.round(totNet))}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Employer NIC */}
+        <div style={{ marginTop:12, background:C.amberBg, border:`1px solid ${C.amber}33`, borderRadius:6, padding:'10px 14px', display:'flex', gap:24 }}>
+          <div>
+            <div style={{ color:C.amber, fontWeight:700, fontSize:10, marginBottom:2 }}>Employer NIC liability (5%)</div>
+            <div style={{ color:C.text, fontSize:11 }}>Monthly: <strong style={{ color:C.amber }}>{xcd2(totEr)}</strong></div>
+            <div style={{ color:C.text, fontSize:11 }}>Annual: <strong style={{ color:C.amber }}>{xcd2(totEr*12)}</strong></div>
+          </div>
+          <div style={{ color:C.muted, fontSize:9, lineHeight:1.6 }}>
+            NIC contributions due by the 15th of the following month.<br />
+            Ceiling ~XCD 65,000/yr — confirm with NIC Board Tel 468-5100.<br />
+            Both PAYE and NIC file via efilingovt.lc or Tel 468-4700.
+          </div>
+        </div>
+
+        {/* Actions */}
+        <Divider label="Staff Roster" />
+        <div style={{ display:'flex', gap:8, marginBottom:14 }}>
+          <button onClick={addStaffRow} style={{ padding:'6px 14px', borderRadius:5, border:`1px solid ${C.blue}`, background:'transparent', color:C.blue, cursor:'pointer', fontFamily:'inherit', fontSize:10, fontWeight:700 }}>
+            + Add Staff Member
+          </button>
+          <button onClick={()=>void downloadPayrollExcel()} style={{ padding:'6px 14px', borderRadius:5, border:`1px solid ${C.green}`, background:C.greenBg, color:C.green, cursor:'pointer', fontFamily:'inherit', fontSize:10, fontWeight:700 }}>
+            📥 Download Payroll Schedule .xlsx
+          </button>
+        </div>
+
+        {/* Editable staff cards */}
+        {staff.map(s => {
+          const p = staffPAYE(s);
+          return (
+            <div key={s.id} style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:6, padding:'10px 12px', marginBottom:8 }}>
+              <div style={{ display:'grid', gridTemplateColumns:'2fr 1fr 130px 90px auto', gap:8, alignItems:'end', marginBottom:8 }}>
+                <div>
+                  <label style={labelS}>Name</label>
+                  <input style={inputS} value={s.name} onChange={e=>updateStaff(s.id,{name:e.target.value})} />
+                </div>
+                <div>
+                  <label style={labelS}>Entity</label>
+                  <select style={inputS} value={s.entityId} onChange={e=>updateStaff(s.id,{entityId:e.target.value as EntityId})}>
+                    {ENTITY_DEFS.map(en=><option key={en.id} value={en.id}>{en.icon} {en.shortName}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={labelS}>Gross Monthly XCD</label>
+                  <div style={{ position:'relative' }}>
+                    <span style={{ position:'absolute', left:8, top:'50%', transform:'translateY(-50%)', color:C.blue, fontWeight:700 }}>$</span>
+                    <input type="number" style={{ ...inputS, paddingLeft:18 }} value={s.grossMonthly}
+                      onChange={e=>updateStaff(s.id,{grossMonthly:Number(e.target.value)})} />
+                  </div>
+                </div>
+                <div>
+                  <label style={labelS}>Status</label>
+                  <select style={inputS} value={s.permanent?'perm':'cont'} onChange={e=>updateStaff(s.id,{permanent:e.target.value==='perm'})}>
+                    <option value="perm">Permanent</option>
+                    <option value="cont">Contract</option>
+                  </select>
+                </div>
+                <button onClick={()=>removeStaff(s.id)} style={{ background:'none', border:'none', color:C.muted, cursor:'pointer', fontSize:15, padding:'0 4px' }}>✕</button>
+              </div>
+              {/* Allowance inputs */}
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:8, marginBottom:8 }}>
+                {([['personalAllowance','Personal Allow. /yr'],['spouseAllowance','Spouse Allow. /yr'],['childAllowances','Child Allow. /yr (total)'],['otherAllowances','Other Allow. /yr']] as const).map(([k,l])=>(
+                  <div key={k}>
+                    <label style={labelS}>{l}</label>
+                    <div style={{ position:'relative' }}>
+                      <span style={{ position:'absolute', left:7, top:'50%', transform:'translateY(-50%)', color:C.green, fontWeight:700, fontSize:11 }}>$</span>
+                      <input type="number" style={{ ...inputS, paddingLeft:16, fontSize:11 }} value={s[k]}
+                        onChange={e=>updateStaff(s.id,{[k]:Number(e.target.value)})} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {/* PAYE preview strip */}
+              <div style={{ background:C.panel, borderRadius:4, padding:'6px 10px', display:'flex', gap:14, flexWrap:'wrap' }}>
+                {[
+                  ['Annual gross',xcd(p.annualGross),C.dim],
+                  ['Total allowances',xcd(p.totalAllowances),C.green],
+                  ['Chargeable',xcd(p.annualChargeable),C.amber],
+                  ['Monthly PAYE',p.monthlyPAYE===0?'$0.00 ✓':xcd2(p.monthlyPAYE),p.monthlyPAYE===0?C.green:C.red],
+                  ['NIC /mo',xcd2(p.monthlyNIC),C.amber],
+                  ['Net /mo',xcd(Math.round(p.netMonthly)),C.green],
+                ].map(([l,v,col])=>(
+                  <span key={l} style={{ color:C.muted, fontSize:10 }}>{l}: <strong style={{ color:col as string }}>{v}</strong></span>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   function renderDocuments() {
     const allPending  = docs.flatMap(d => d.extracted.filter(e => !e.applied));
     const appliedCount = docs.flatMap(d => d.extracted.filter(e => e.applied)).length;
@@ -1392,7 +1816,14 @@ Use precise financial language. Quote specific XCD amounts. Reference the ITA wh
           <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg,#1a6aff,#0a3aaa)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>🏛️</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', color: '#e8f4ff' }}>AMISE — TAX & FINANCIAL CONSULTANCY</div>
-            <div style={{ fontSize: 9, color: C.muted, letterSpacing: '0.15em', marginTop: 2 }}>IRD SAINT LUCIA · ITA CAP 15.02 · 2025 REGIME · ALL AMOUNTS XCD</div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 3 }}>
+              {ENTITY_DEFS.map(e => (
+                <button key={e.id} onClick={() => switchEntity(e.id)}
+                  style={{ padding: '2px 9px', borderRadius: 99, border: `1px solid ${activeEntity===e.id?e.color:C.border}`, background: activeEntity===e.id?`${e.color}22`:'transparent', color: activeEntity===e.id?e.color:C.muted, fontSize: 9, fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer', fontFamily: 'inherit' }}>
+                  {e.icon} {e.shortName}
+                </button>
+              ))}
+            </div>
           </div>
           <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
             <div style={{ textAlign: 'right' }}>
@@ -1458,16 +1889,18 @@ Use precise financial language. Quote specific XCD amounts. Reference the ITA wh
 
       {/* Body */}
       <div style={{ maxWidth: 980, margin: '0 auto', padding: '22px 16px 60px' }}>
+        {active === 'entities'   && renderEntities()}
         {active === 'profile'    && renderProfile()}
         {active === 'allowances' && renderAllowances()}
         {active === 'expenses'   && renderExpenses()}
         {active === 'tax'        && renderTax()}
         {active === 'actions'    && renderActions()}
+        {active === 'payroll'    && renderPayroll()}
         {active === 'preflight'  && renderPreflight()}
         {active === 'report'     && renderReport()}
         {active === 'documents'  && renderDocuments()}
 
-        {!['preflight', 'report', 'documents'].includes(active) && (
+        {!['preflight', 'report', 'documents', 'payroll'].includes(active) && (
           <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end' }}>
             <button
               onClick={() => { const i = SECTIONS.findIndex(s => s.id === active); if (i < SECTIONS.length - 1) setActive(SECTIONS[i + 1].id); }}
