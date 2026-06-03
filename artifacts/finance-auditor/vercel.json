@@ -1,0 +1,12 @@
+{
+  "framework": null,
+  "installCommand": "npm install -g pnpm@10 && cd ../.. && pnpm install --frozen-lockfile",
+  "buildCommand": "cd ../.. && pnpm --filter @workspace/finance-auditor run build",
+  "outputDirectory": "dist/public",
+  "rewrites": [
+    { "source": "/:path*", "destination": "/index.html" }
+  ],
+  "git": {
+    "deploymentEnabled": false
+  }
+}
