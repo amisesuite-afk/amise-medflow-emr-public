@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
 const C = {
@@ -291,6 +291,30 @@ export default function App() {
   const reportRef               = useRef<HTMLDivElement>(null);
   const fileInputRef            = useRef<HTMLInputElement>(null);
   const cameraRef               = useRef<HTMLInputElement>(null);
+
+  // ── PWA install prompt ────────────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(true);
+  const isStandalone = typeof window !== 'undefined' &&
+    (window.matchMedia('(display-mode: standalone)').matches ||
+     (window.navigator as unknown as { standalone?: boolean }).standalone === true);
+  const isIos = typeof navigator !== 'undefined' &&
+    /iphone|ipad|ipod/i.test(navigator.userAgent) && !isStandalone;
+
+  useEffect(() => {
+    const handler = (e: Event) => { e.preventDefault(); setInstallPrompt(e); };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  async function triggerInstall() {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+    setShowInstallBanner(false);
+  }
 
   const [profile, setProfile]   = useState({
     name:       'Dr. Dawit Daniel Kabiye, MD, DM',
@@ -1382,6 +1406,35 @@ Use precise financial language. Quote specific XCD amounts. Reference the ITA wh
           </div>
         </div>
       </div>
+
+      {/* PWA Install Banner */}
+      {showInstallBanner && !isStandalone && (installPrompt || isIos) && (
+        <div style={{ background: '#0d2040', borderBottom: `1px solid ${C.border}`, padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 16 }}>📲</span>
+          <span style={{ color: C.text, fontSize: 11, flex: 1, minWidth: 160 }}>
+            Install this app on your device for offline access
+          </span>
+          {installPrompt && (
+            <button
+              onClick={() => void triggerInstall()}
+              style={{ padding: '6px 16px', borderRadius: 5, border: 'none', background: 'linear-gradient(135deg,#1a6aff,#0a3aaa)', color: '#fff', cursor: 'pointer', fontFamily: 'inherit', fontWeight: 700, fontSize: 10, letterSpacing: '0.08em' }}
+            >
+              ↓ INSTALL APP
+            </button>
+          )}
+          {isIos && (
+            <span style={{ color: C.dim, fontSize: 10 }}>
+              Tap <strong style={{ color: C.text }}>Share</strong> → <strong style={{ color: C.text }}>Add to Home Screen</strong>
+            </span>
+          )}
+          <button
+            onClick={() => setShowInstallBanner(false)}
+            style={{ background: 'none', border: 'none', color: C.muted, cursor: 'pointer', fontSize: 14, padding: '0 4px', lineHeight: 1 }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {/* Nav */}
       <div style={{ display: 'flex', gap: 2, padding: '8px 12px 0', borderBottom: `1px solid ${C.border}`, background: '#07111f', overflowX: 'auto' }}>
