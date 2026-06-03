@@ -324,10 +324,10 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
 
       {/* ── Left: booking list ─────────────────────────────────────────────── */}
       <div style={{
-        width: selected ? 340 : '100%',
-        maxWidth: selected ? 340 : undefined,
+        width: (selected || showNewRequest) ? 340 : '100%',
+        maxWidth: (selected || showNewRequest) ? 340 : undefined,
         flexShrink: 0,
-        borderRight: selected ? '1px solid #e5e7eb' : 'none',
+        borderRight: (selected || showNewRequest) ? '1px solid #e5e7eb' : 'none',
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
@@ -375,7 +375,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               return (
                 <button
                   key={req.id}
-                  onClick={() => setSelected(isSelected ? null : req)}
+                  onClick={() => { setShowNewRequest(false); setSelected(isSelected ? null : req); }}
                   style={{
                     width: '100%', textAlign: 'left', padding: '12px 20px',
                     borderBottom: '1px solid #f3f4f6',

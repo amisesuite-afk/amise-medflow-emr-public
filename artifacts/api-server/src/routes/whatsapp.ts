@@ -6,13 +6,13 @@ import { sendSms, smsBodyStaffNewBooking } from '../lib/sms.js';
 const router = Router();
 
 const APPOINTMENT_KEYWORDS: Array<[RegExp, string]> = [
-  [/colonoscop/i,                                                    'colonoscopy'],
-  [/gastroscop|OGD|oesophagogastro/i,                               'ogd'],
-  [/EGD/i,                                                           'ogd'],
-  [/ERCP/i,                                                          'ercp_workup'],
-  [/pre[\s-]?op|pre[\s-]?operat|surgery|operat/i,                  'pre_op'],
-  [/flexi|sigmoid/i,                                                 'flexi_sig'],
-  [/endoscop/i,                                                      'ogd'],
+  [/colonoscop/i,                                   'colonoscopy'],
+  [/gastroscop|OGD|oesophagogastro/i,               'ogd'],
+  [/EGD/i,                                           'ogd'],
+  [/ERCP/i,                                          'ercp_workup'],
+  [/pre[\s-]?op|pre[\s-]?operat|surgery/i,          'pre_op'],
+  [/flexi|sigmoid/i,                                 'flexi_sig'],
+  [/endoscop/i,                                      'ogd'],
 ];
 
 function detectAppointmentType(text: string): string {
@@ -27,6 +27,16 @@ function extractName(profileName: string, body: string): string {
   const m = body.match(/(?:my name is|i(?:'?m| am)|this is)\s+([A-Za-z]+(?: [A-Za-z]+){0,2})/i);
   return m ? m[1].trim() : '';
 }
+
+const TWIML_SUCCESS = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Message>Thank you for contacting Amise Medical Services. We have received your message and a member of our team will be in touch shortly to confirm your appointment. For urgent matters, please call the clinic directly. – Amise Medical</Message>
+</Response>`;
+
+const TWIML_ERROR = `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Message>Thank you for reaching Amise Medical Services. We have noted your message; however, we were unable to register your request automatically. Please call the clinic directly so we can assist you. – Amise Medical</Message>
+</Response>`;
 
 // POST /api/whatsapp/inbound — Twilio WhatsApp webhook
 router.post('/api/whatsapp/inbound', async (req, res) => {
@@ -52,7 +62,9 @@ router.post('/api/whatsapp/inbound', async (req, res) => {
         return;
       }
     } catch (err) {
-      logger.warn({ err }, '[whatsapp/inbound] signature validation threw — proceeding');
+      logger.error({ err }, '[whatsapp/inbound] signature validation threw — rejecting');
+      res.status(403).send('Forbidden');
+      return;
     }
   }
 
@@ -62,7 +74,9 @@ router.post('/api/whatsapp/inbound', async (req, res) => {
   const patientName = extractName(profileName, body) || `WA ${fromNumber}`;
 
   // Build a placeholder email so NOT NULL constraint is satisfied
-  const placeholderEmail = `wa.${fromNumber.replace(/\D/g, '')}@noreply.amise.internal`;
+  const placeholderEmail = `wa.${fromNumber.replace(/\D/g, '') || 'unknown'}@noreply.amise.internal`;
+
+  let bookingCreated = false;
 
   try {
     const supa = getSupabaseAdmin();
@@ -85,6 +99,7 @@ router.post('/api/whatsapp/inbound', async (req, res) => {
 
     if (error) throw error;
     const bookingId: string = data.id;
+    bookingCreated = true;
 
     const staffPhone = process.env.STAFF_NOTIFY_PHONE ?? null;
     if (staffPhone) {
@@ -112,14 +127,9 @@ router.post('/api/whatsapp/inbound', async (req, res) => {
     logger.error({ err }, '[whatsapp/inbound] booking creation failed');
   }
 
-  // Always respond with TwiML so Twilio does not retry
-  const twiml = `<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Message>Thank you for contacting Amise Medical Services. We have received your message and a member of our team will be in touch shortly to confirm your appointment. For urgent matters, please call the clinic directly. – Amise Medical</Message>
-</Response>`;
-
+  // Always respond with TwiML so Twilio does not retry; message content reflects actual outcome
   res.set('Content-Type', 'text/xml');
-  res.send(twiml);
+  res.send(bookingCreated ? TWIML_SUCCESS : TWIML_ERROR);
 });
 
 export default router;

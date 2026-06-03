@@ -68,7 +68,7 @@ router.post('/api/cron/reminders', async (req, res) => {
         }
       }
 
-      if (appt.patient_email && !appt.email_24h_sent && hoursUntil <= 24) {
+      if (appt.patient_email && !appt.patient_email.endsWith('@noreply.amise.internal') && !appt.email_24h_sent && hoursUntil <= 24) {
         const draft = await draftReply({ template: 'confirmation', patientFirstName: appt.patient_first_name, bookingDetails: slotDisplay });
         const prepInstructions = getPrepInstructions(appt.appointment_type);
         const prepSection = prepInstructions
