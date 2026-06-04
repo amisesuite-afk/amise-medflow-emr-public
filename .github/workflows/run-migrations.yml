@@ -13,6 +13,8 @@ jobs:
     if: ${{ github.event.inputs.confirm == 'run' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: claude/session-setup-MGrDO
 
       - name: Run clinical-records migration
         run: |
