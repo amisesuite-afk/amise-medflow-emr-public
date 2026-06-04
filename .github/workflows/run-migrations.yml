@@ -14,29 +14,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Supabase CLI
-        run: npm install -g supabase@latest
-
       - name: Run clinical-records migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-clinical-records-migration.sql
+          QUERY=$(jq -Rs . < supabase-clinical-records-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/nornhfzfrlmfzaqmrzzp/database/query" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" \
+            | jq .
 
       - name: Run patient-portal migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-patient-portal-migration.sql
+          QUERY=$(jq -Rs . < supabase-patient-portal-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/nornhfzfrlmfzaqmrzzp/database/query" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" \
+            | jq .
 
       - name: Done
-        run: echo "Both migrations completed successfully."
+        run: echo "Both migrations applied successfully."
