@@ -1,0 +1,42 @@
+name: Run DB Migrations
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "run" to confirm executing migrations on production'
+        required: true
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.confirm == 'run' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Supabase CLI
+        run: npm install -g supabase@latest
+
+      - name: Run clinical-records migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-clinical-records-migration.sql
+
+      - name: Run patient-portal migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-patient-portal-migration.sql
+
+      - name: Done
+        run: echo "Both migrations completed successfully."
