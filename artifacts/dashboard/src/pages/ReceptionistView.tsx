@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { savePatientFull } from '@/lib/db';
-import type { Sex } from '@/lib/adaptive-triage';
+import type { Sex } from '@workspace/triage-engine';
 import BookingInboxTab from './tabs/BookingInboxTab';
 import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
 

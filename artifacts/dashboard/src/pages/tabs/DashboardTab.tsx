@@ -1,7 +1,7 @@
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { SITE_LABELS } from '@/lib/supabase';
-import { PUBLIC_HOLIDAYS_SLU } from '@/lib/rules';
+import { PUBLIC_HOLIDAYS_SLU } from '@workspace/triage-engine';
 import { useState, useEffect } from 'react';
 import bundledCache from '@/data/calendar-cache.json';
 

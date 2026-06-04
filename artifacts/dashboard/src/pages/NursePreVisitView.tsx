@@ -5,7 +5,7 @@ import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import WheelPicker from '@/components/WheelPicker';
 import { createEncounter, saveVitals, saveSymptoms, saveAllergyFreeText } from '@/lib/db';
-import type { VitalSigns } from '@/lib/adaptive-triage';
+import type { VitalSigns } from '@workspace/triage-engine';
 
 interface VitalField {
   key: keyof VitalSigns;

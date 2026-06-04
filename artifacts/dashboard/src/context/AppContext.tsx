@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@/lib/adaptive-triage';
+import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan } from '@/lib/db';

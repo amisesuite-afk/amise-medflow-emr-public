@@ -4,7 +4,7 @@ import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PathwaySuggestions from '@/components/PathwaySuggestions';
 import SmartSymptomPicker from '@/components/SmartSymptomPicker';
-import { VitalSigns } from '@/lib/adaptive-triage';
+import { VitalSigns } from '@workspace/triage-engine';
 import { SL_COMMUNITIES, SL_DOCTORS, formatSlPhone, isValidSlPhone } from '@/data/st-lucia';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
