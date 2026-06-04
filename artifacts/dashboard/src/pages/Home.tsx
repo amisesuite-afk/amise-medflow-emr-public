@@ -39,6 +39,8 @@ import APCQTab from './tabs/APCQTab';
 import NurseAPCQTab from './tabs/NurseAPCQTab';
 import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
 import BookingInboxTab from './tabs/BookingInboxTab';
+import AnalyticsTab from './tabs/AnalyticsTab';
+import SettingsTab from './tabs/SettingsTab';
 import FloatingActions from '@/components/FloatingActions';
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
@@ -314,8 +316,8 @@ export default function HomePage() {
         {topSection === 'dashboard'  && <DashboardTab />}
         {topSection === 'patients'   && <PatientSearchTab />}
         {topSection === 'scheduling' && <SchedulingTab />}
-        {topSection === 'analytics'  && hasRole(userRole, 'doctor') && <StubPanel title="Analytics" description="Volume trends, acuity distributions, wait-time reports, and outcome tracking — coming soon." />}
-        {topSection === 'settings'   && hasRole(userRole, 'admin')  && <StubPanel title="Settings" description="Practice configuration, user roles, notification preferences, and system settings — coming soon." />}
+        {topSection === 'analytics'  && hasRole(userRole, 'doctor') && <AnalyticsTab />}
+        {topSection === 'settings'   && hasRole(userRole, 'admin')  && <SettingsTab />}
         {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
         {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
         {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
