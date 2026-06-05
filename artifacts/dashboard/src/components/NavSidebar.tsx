@@ -4,7 +4,7 @@ import {
   PanelLeftClose, PanelLeftOpen, AlertTriangle, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
-  ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap,
+  ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, FileQuestion, Inbox,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -25,6 +25,7 @@ interface NavSidebarProps {
   acuity: string;
   pmhCount?: number;
   encounterMode?: 'outpatient' | 'inpatient';
+  pendingBookingCount?: number;
 }
 
 const CLINICAL_SUB: {
@@ -75,8 +76,10 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'billing',      icon: Receipt,         label: 'Billing',      roles: ['front_desk', 'admin'] },
   { id: 'analytics',    icon: BarChart2,       label: 'Analytics',    roles: ['doctor', 'admin'] },
   { id: 'trauma',       icon: Zap,             label: 'Trauma',       roles: ['nurse', 'doctor', 'admin'] },
-  { id: 'vademecum',    icon: BookOpen,        label: 'Disease Dict.', roles: ['nurse', 'doctor', 'admin'] },
-  { id: 'settings',     icon: Settings,        label: 'Settings',     roles: ['admin'] },
+  { id: 'vademecum',      icon: BookOpen,      label: 'Disease Dict.',  roles: ['nurse', 'doctor', 'admin'] },
+  { id: 'questionnaire',  icon: FileQuestion,  label: 'Questionnaire', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
+  { id: 'booking_inbox',  icon: Inbox,         label: 'Booking Inbox', roles: ['admin'] },
+  { id: 'settings',       icon: Settings,      label: 'Settings',      roles: ['admin'] },
 ];
 
 export default function NavSidebar({
@@ -86,16 +89,18 @@ export default function NavSidebar({
   userRole, hasUrgentRedFlag, urgentCount, acuity,
   pmhCount = 0,
   encounterMode = 'outpatient',
+  pendingBookingCount = 0,
 }: NavSidebarProps) {
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
 
   function handleTop(item: TopItem) {
     onTopSection(item.id);
-    if (item.id === 'intake')        { onSection('intake'); }
-    if (item.id === 'procedures')    { onSection('procedures'); }
-    if (item.id === 'consultation')  { onSection('triage'); }
-    if (item.id === 'billing')       { onSection('billing'); }
+    if (item.id === 'intake')          { onSection('intake'); }
+    if (item.id === 'procedures')      { onSection('procedures'); }
+    if (item.id === 'consultation')    { onSection('triage'); }
+    if (item.id === 'billing')         { onSection('billing'); }
+    if (item.id === 'questionnaire')   { onSection('apcq'); }
   }
 
   function subActive(id: Section) {
@@ -128,6 +133,7 @@ export default function NavSidebar({
                 <span className="nsb-icon">
                   <Icon size={16} strokeWidth={2} />
                   {isTriage && <span className="nsb-dot" />}
+                  {item.id === 'booking_inbox' && pendingBookingCount > 0 && <span className="nsb-dot" />}
                 </span>
                 {!collapsed && (
                   <span className="nsb-label">
@@ -145,6 +151,9 @@ export default function NavSidebar({
                   <span className={`nsb-badge${acuity === 'urgent' ? '' : ' nsb-badge--warn'}`}>
                     {urgentCount}
                   </span>
+                )}
+                {!collapsed && item.id === 'booking_inbox' && pendingBookingCount > 0 && (
+                  <span className="nsb-badge nsb-badge--warn">{pendingBookingCount}</span>
                 )}
               </button>
 

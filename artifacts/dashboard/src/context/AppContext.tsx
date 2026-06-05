@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@/lib/adaptive-triage';
+import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan } from '@/lib/db';
@@ -12,7 +12,7 @@ export type Section =
   | 'radiology' | 'attachments'
   | 'assessment' | 'plan' | 'progress'
   | 'procedures' | 'billing' | 'documents'
-  | 'monitoring';
+  | 'monitoring' | 'apcq' | 'nurse_apcq';
 
 export interface ProgressNote {
   id: string;
@@ -59,7 +59,7 @@ export interface LabRecord {
 export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
-  | 'trauma' | 'vademecum';
+  | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox';
 
 /** Grouped trauma / burns state — stored as a single serialisable object. */
 export interface TraumaData {

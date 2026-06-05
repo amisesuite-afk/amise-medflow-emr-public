@@ -2,10 +2,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import type { ConversationThread, TriageLevel } from '@/types';
+import type { BookingRow } from '@/lib/supabase';
 import ThreadCard from '@/components/ThreadCard';
 import DraftApproval from '@/components/DraftApproval';
 import TriageBadge from '@/components/TriageBadge';
 import { sortThreads, triageColor } from '@/lib/triage';
+import { decodeTrack } from '@/lib/scheduling';
 
 const SUPABASE_URL  = process.env.NEXT_PUBLIC_SUPABASE_URL  ?? '';
 const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
@@ -28,45 +30,75 @@ function useLiveClock(): string {
   return time;
 }
 
+const TRACK_COLORS: Record<string, string> = {
+  routine:  '#34d399',
+  referral: '#60a5fa',
+  urgent:   '#f97316',
+};
+
+const STATUS_LABEL: Record<string, string> = {
+  pending:           'Pending',
+  staff_confirmed:   'Confirmed',
+  patient_confirmed: 'Auto-confirmed',
+  declined:          'Declined',
+  lapsed:            'Lapsed',
+};
+
 interface Props {
-  initialThreads: ConversationThread[];
+  initialThreads:  ConversationThread[];
+  initialBookings: BookingRow[];
   secret: string;
-  mode: string;
+  mode:   string;
 }
 
-export default function DashboardClient({ initialThreads, secret, mode }: Props) {
-  const [threads, setThreads]   = useState<ConversationThread[]>(initialThreads);
-  const [selected, setSelected] = useState<ConversationThread | null>(null);
-  const [adHocMsg, setAdHocMsg] = useState('');
-  const [sending, setSending]   = useState(false);
+export default function DashboardClient({
+  initialThreads, initialBookings, secret, mode,
+}: Props) {
+  const [tab,      setTab]     = useState<'messaging' | 'bookings'>('messaging');
+  const [threads,  setThreads] = useState<ConversationThread[]>(initialThreads);
+  const [bookings, setBookings]= useState<BookingRow[]>(initialBookings);
+  const [selected, setSelected]= useState<ConversationThread | null>(null);
+  const [adHocMsg, setAdHocMsg]= useState('');
+  const [sending,  setSending] = useState(false);
+  const [urgentLoading, setUrgentLoading] = useState<Record<string, boolean>>({});
+  const [urgentMsg,     setUrgentMsg]     = useState<Record<string, string>>({});
   const clock = useLiveClock();
 
   const sorted = sortThreads(threads);
 
-  // Supabase Realtime
+  // Supabase Realtime — threads
   useEffect(() => {
     if (!SUPABASE_URL || !SUPABASE_ANON) return;
-    const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+    const sb      = createClient(SUPABASE_URL, SUPABASE_ANON);
     const channel = sb
       .channel('thread-updates')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'conversation_threads' },
-        payload => {
-          const row = payload.new as ConversationThread;
-          setThreads(prev => {
-            const idx = prev.findIndex(t => t.id === row.id);
-            if (idx >= 0) {
-              const next = [...prev];
-              next[idx] = row;
-              return next;
-            }
-            return [row, ...prev];
-          });
-          // Update selected if it matches
-          setSelected(prev => (prev?.id === row.id ? row : prev));
-        },
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'conversation_threads' }, payload => {
+        const row = payload.new as ConversationThread;
+        setThreads(prev => {
+          const idx = prev.findIndex(t => t.id === row.id);
+          if (idx >= 0) { const next = [...prev]; next[idx] = row; return next; }
+          return [row, ...prev];
+        });
+        setSelected(prev => (prev?.id === row.id ? row : prev));
+      })
+      .subscribe();
+    return () => { void sb.removeChannel(channel); };
+  }, []);
+
+  // Supabase Realtime — bookings
+  useEffect(() => {
+    if (!SUPABASE_URL || !SUPABASE_ANON) return;
+    const sb      = createClient(SUPABASE_URL, SUPABASE_ANON);
+    const channel = sb
+      .channel('booking-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'appointment_requests' }, payload => {
+        const row = payload.new as BookingRow;
+        setBookings(prev => {
+          const idx = prev.findIndex(b => b.id === row.id);
+          if (idx >= 0) { const next = [...prev]; next[idx] = row; return next; }
+          return [row, ...prev];
+        });
+      })
       .subscribe();
     return () => { void sb.removeChannel(channel); };
   }, []);
@@ -81,175 +113,363 @@ export default function DashboardClient({ initialThreads, secret, mode }: Props)
         body: JSON.stringify({ threadId: selected.id, message: adHocMsg.trim(), nurseId: 'nurse' }),
       });
       setAdHocMsg('');
-    } finally {
-      setSending(false);
-    }
+    } finally { setSending(false); }
   }, [selected, adHocMsg, secret]);
 
-  // Triage counts
+  async function scheduleUrgent(bookingId: string) {
+    setUrgentLoading(prev => ({ ...prev, [bookingId]: true }));
+    setUrgentMsg(prev => ({ ...prev, [bookingId]: '' }));
+    try {
+      const r = await fetch('/api/booking/urgent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-internal-secret': secret },
+        body: JSON.stringify({ bookingId, nurseId: 'nurse' }),
+      });
+      const d = await r.json() as { success?: boolean; slot?: string; error?: string; fallback?: string };
+      if (d.success) {
+        setUrgentMsg(prev => ({ ...prev, [bookingId]: `Confirmed: ${d.slot ?? ''}` }));
+        setBookings(prev => prev.map(b =>
+          b.id === bookingId ? { ...b, status: 'staff_confirmed' } : b,
+        ));
+      } else {
+        setUrgentMsg(prev => ({ ...prev, [bookingId]: d.error ?? 'Error' }));
+      }
+    } catch {
+      setUrgentMsg(prev => ({ ...prev, [bookingId]: 'Network error' }));
+    } finally {
+      setUrgentLoading(prev => ({ ...prev, [bookingId]: false }));
+    }
+  }
+
   const counts: Record<TriageLevel, number> = { EMERGENT: 0, URGENT: 0, ROUTINE: 0, INFO: 0 };
   threads.forEach(t => { counts[t.triage_level]++; });
 
+  const pendingBookings  = bookings.filter(b => b.status === 'pending');
+  const urgentBookings   = pendingBookings.filter(b => b.triage_acuity === 'urgent');
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0f172a', color: '#e2e8f0', fontFamily: 'system-ui, sans-serif' }}>
+
       {/* Header */}
       <header style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '10px 20px', background: '#1e293b', borderBottom: '1px solid #374151', flexShrink: 0 }}>
         <div style={{ fontWeight: 800, fontSize: 16, color: '#0d9488' }}>Amise Front Desk</div>
         <div style={{ fontSize: 11, color: '#6b7280' }}>AI Intake · Saint Lucia</div>
         <div style={{ flex: 1 }} />
-        {/* Triage counts */}
+
+        {/* Urgent booking alert */}
+        {urgentBookings.length > 0 && (
+          <span style={{
+            fontSize: 11, fontWeight: 700, color: '#f97316',
+            background: '#f9731622', border: '1px solid #f9731644',
+            borderRadius: 10, padding: '2px 8px', cursor: 'pointer',
+          }} onClick={() => setTab('bookings')}>
+            ⚠ {urgentBookings.length} urgent booking{urgentBookings.length > 1 ? 's' : ''}
+          </span>
+        )}
+
         {(['EMERGENT', 'URGENT', 'ROUTINE', 'INFO'] as TriageLevel[]).map(l =>
           counts[l] > 0 ? (
-            <span
-              key={l}
-              style={{
-                fontSize: 11, fontWeight: 700, color: triageColor(l),
-                background: `${triageColor(l)}22`,
-                border: `1px solid ${triageColor(l)}44`,
-                borderRadius: 10, padding: '2px 8px',
-              }}
-            >
+            <span key={l} style={{
+              fontSize: 11, fontWeight: 700, color: triageColor(l),
+              background: `${triageColor(l)}22`, border: `1px solid ${triageColor(l)}44`,
+              borderRadius: 10, padding: '2px 8px',
+            }}>
               {l} {counts[l]}
             </span>
           ) : null,
         )}
+
+        <a href="/book" target="_blank" rel="noopener" style={{
+          fontSize: 11, padding: '3px 10px', borderRadius: 10,
+          background: '#0d948822', border: '1px solid #0d948844',
+          color: '#5eead4', textDecoration: 'none', fontWeight: 600,
+        }}>
+          + Book online
+        </a>
+
         <div style={{ fontSize: 11, color: '#94a3b8', fontVariantNumeric: 'tabular-nums' }}>{clock} ECT</div>
-        <span
-          style={{
-            fontSize: 10, fontWeight: 700, padding: '2px 10px', borderRadius: 10,
-            background: mode === 'dry_run' ? '#422006' : '#14532d',
-            color: mode === 'dry_run' ? '#fbbf24' : '#34d399',
-            border: `1px solid ${mode === 'dry_run' ? '#fbbf2444' : '#34d39944'}`,
-          }}
-        >
+
+        <span style={{
+          fontSize: 10, fontWeight: 700, padding: '2px 10px', borderRadius: 10,
+          background: mode === 'dry_run' ? '#422006' : '#14532d',
+          color: mode === 'dry_run' ? '#fbbf24' : '#34d399',
+          border: `1px solid ${mode === 'dry_run' ? '#fbbf2444' : '#34d39944'}`,
+        }}>
           {mode === 'dry_run' ? '⚗ DRY RUN' : '● LIVE'}
         </span>
       </header>
 
-      {/* Body */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Thread list */}
-        <aside style={{ width: 320, flexShrink: 0, padding: '12px 10px', overflowY: 'auto', borderRight: '1px solid #374151' }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-            {sorted.length} thread{sorted.length !== 1 ? 's' : ''} (24 h)
-          </div>
-          {sorted.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '32px 16px', color: '#4b5563' }}>
-              <div style={{ fontSize: 32, marginBottom: 8 }}>🩺</div>
-              <div style={{ fontWeight: 600 }}>All quiet</div>
-              <div style={{ fontSize: 11 }}>No active threads</div>
-            </div>
-          )}
-          {sorted.map(t => (
-            <ThreadCard
-              key={t.id}
-              thread={t}
-              selected={selected?.id === t.id}
-              onClick={() => setSelected(t)}
-            />
-          ))}
-        </aside>
+      {/* Tabs */}
+      <div style={{ display: 'flex', background: '#1e293b', borderBottom: '1px solid #374151', padding: '0 20px', flexShrink: 0 }}>
+        {(['messaging', 'bookings'] as const).map(t => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            style={{
+              padding: '10px 16px', border: 'none', background: 'transparent',
+              color: tab === t ? '#0d9488' : '#6b7280', fontWeight: tab === t ? 700 : 400,
+              fontSize: 13, cursor: 'pointer',
+              borderBottom: `2px solid ${tab === t ? '#0d9488' : 'transparent'}`,
+              textTransform: 'capitalize',
+            }}
+          >
+            {t === 'messaging' ? `Messaging${sorted.length ? ` (${sorted.length})` : ''}` : `Bookings${pendingBookings.length ? ` (${pendingBookings.length} pending)` : ''}`}
+          </button>
+        ))}
+      </div>
 
-        {/* Thread detail */}
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          {!selected ? (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4b5563' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: 40, marginBottom: 8 }}>←</div>
-                <div style={{ fontWeight: 600 }}>Select a thread</div>
-              </div>
+      {/* ── MESSAGING TAB ── */}
+      {tab === 'messaging' && (
+        <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+          {/* Thread list */}
+          <aside style={{ width: 320, flexShrink: 0, padding: '12px 10px', overflowY: 'auto', borderRight: '1px solid #374151' }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#6b7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
+              {sorted.length} thread{sorted.length !== 1 ? 's' : ''} (24 h)
             </div>
-          ) : (
-            <>
-              {/* Thread header */}
-              <div style={{ padding: '12px 16px', borderBottom: '1px solid #374151', display: 'flex', gap: 10, alignItems: 'center', flexShrink: 0 }}>
-                <TriageBadge level={selected.triage_level} />
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 14 }}>{selected.patient_name ?? 'Anonymous'}</div>
-                  <div style={{ fontSize: 11, color: '#6b7280' }}>{selected.chief_complaint ?? 'Complaint not yet recorded'}</div>
+            {sorted.length === 0 && (
+              <div style={{ textAlign: 'center', padding: '32px 16px', color: '#4b5563' }}>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>🩺</div>
+                <div style={{ fontWeight: 600 }}>All quiet</div>
+                <div style={{ fontSize: 11 }}>No active threads</div>
+              </div>
+            )}
+            {sorted.map(t => (
+              <ThreadCard key={t.id} thread={t} selected={selected?.id === t.id} onClick={() => setSelected(t)} />
+            ))}
+          </aside>
+
+          {/* Thread detail */}
+          <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            {!selected ? (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4b5563' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 40, marginBottom: 8 }}>←</div>
+                  <div style={{ fontWeight: 600 }}>Select a thread</div>
                 </div>
-                <div style={{ marginLeft: 'auto', fontSize: 11, color: '#6b7280' }}>
-                  Status: <b style={{ color: '#94a3b8' }}>{selected.status}</b>
-                  &nbsp;·&nbsp;{selected.channel.toUpperCase()}
-                  {selected.intake_complete && (
-                    <span style={{ marginLeft: 8, color: '#34d399' }}>✓ Intake complete</span>
+              </div>
+            ) : (
+              <>
+                {/* Thread header */}
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid #374151', display: 'flex', gap: 10, alignItems: 'center', flexShrink: 0 }}>
+                  <TriageBadge level={selected.triage_level} />
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: 14 }}>{selected.patient_name ?? 'Anonymous'}</div>
+                    <div style={{ fontSize: 11, color: '#6b7280' }}>{selected.chief_complaint ?? 'Complaint not yet recorded'}</div>
+                  </div>
+                  <div style={{ marginLeft: 'auto', fontSize: 11, color: '#6b7280' }}>
+                    Status: <b style={{ color: '#94a3b8' }}>{selected.status}</b>
+                    &nbsp;·&nbsp;{selected.channel.toUpperCase()}
+                    {selected.intake_complete && (
+                      <span style={{ marginLeft: 8, color: '#34d399' }}>✓ Intake complete</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Messages */}
+                <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {selected.messages.map((m, i) => {
+                    if (m.role === 'system') {
+                      const isTriage = m.meta?.type === 'triage_result';
+                      const isSlots  = m.meta?.type === 'appointment_slots';
+                      const acuity   = isTriage ? (m.meta as { type: 'triage_result'; payload: { acuity: string } }).payload.acuity : null;
+                      const acuityColors: Record<string, string> = { urgent: '#ef4444', priority: '#f97316', review: '#fbbf24', routine: '#34d399' };
+                      const color = acuity ? (acuityColors[acuity] ?? '#6b7280') : '#6b7280';
+                      return (
+                        <div key={i} style={{
+                          padding: '6px 10px', borderRadius: 4,
+                          background: '#0f172a', border: `1px solid ${isSlots ? '#0d948844' : color + '44'}`,
+                          fontSize: 11, color: isSlots ? '#5eead4' : color,
+                        }}>
+                          <span style={{ fontWeight: 700, marginRight: 6 }}>
+                            {isTriage ? 'TRIAGE' : isSlots ? 'SLOTS' : 'SYSTEM'}
+                          </span>
+                          {m.content}
+                          <span style={{ marginLeft: 8, color: '#4b5563', fontSize: 9 }}>staff only</span>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={i} style={{ display: 'flex', justifyContent: m.role === 'patient' ? 'flex-start' : 'flex-end' }}>
+                        <div style={{
+                          maxWidth: '75%', padding: '8px 12px',
+                          borderRadius: m.role === 'patient' ? '4px 16px 16px 4px' : '16px 4px 4px 16px',
+                          background: m.role === 'patient' ? '#1e293b' : '#0d948822',
+                          border: `1px solid ${m.role === 'patient' ? '#374151' : '#0d948844'}`,
+                          fontSize: 13, color: '#e2e8f0', lineHeight: 1.5,
+                        }}>
+                          <div style={{ marginBottom: 2, fontSize: 10, color: '#6b7280', textTransform: 'capitalize' }}>{m.role}</div>
+                          <div style={{ whiteSpace: 'pre-wrap' }}>{m.content}</div>
+                          <div style={{ marginTop: 4, fontSize: 9, color: '#4b5563' }}>
+                            {m.timestamp
+                              ? new Date(m.timestamp).toLocaleTimeString('en-LC', {
+                                  timeZone: 'America/St_Lucia', hour12: true, hour: '2-digit', minute: '2-digit',
+                                })
+                              : ''}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {selected.messages.length === 0 && (
+                    <div style={{ textAlign: 'center', color: '#4b5563', fontSize: 13 }}>No messages yet</div>
                   )}
                 </div>
-              </div>
 
-              {/* Messages */}
-              <div style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {selected.messages.map((m, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: m.role === 'patient' ? 'flex-start' : 'flex-end' }}>
-                    <div
-                      style={{
-                        maxWidth: '75%', padding: '8px 12px',
-                        borderRadius: m.role === 'patient' ? '4px 16px 16px 4px' : '16px 4px 4px 16px',
-                        background: m.role === 'patient' ? '#1e293b' : '#0d948822',
-                        border: `1px solid ${m.role === 'patient' ? '#374151' : '#0d948844'}`,
-                        fontSize: 13, color: '#e2e8f0', lineHeight: 1.5,
-                      }}
-                    >
-                      <div style={{ marginBottom: 2, fontSize: 10, color: '#6b7280', textTransform: 'capitalize' }}>{m.role}</div>
-                      <div style={{ whiteSpace: 'pre-wrap' }}>{m.content}</div>
-                      <div style={{ marginTop: 4, fontSize: 9, color: '#4b5563' }}>
-                        {m.timestamp
-                          ? new Date(m.timestamp).toLocaleTimeString('en-LC', {
-                              timeZone: 'America/St_Lucia',
-                              hour12: true,
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })
-                          : ''}
+                {/* Draft approval */}
+                {selected.status === 'pending_approval' && selected.draft_reply && (
+                  <div style={{ padding: '0 16px', flexShrink: 0 }}>
+                    <DraftApproval
+                      thread={selected} secret={secret}
+                      onAction={() => setSelected(prev => (prev ? { ...prev, status: 'resolved', draft_reply: null } : null))}
+                    />
+                  </div>
+                )}
+
+                {/* Ad-hoc send */}
+                <div style={{ padding: '12px 16px', borderTop: '1px solid #374151', display: 'flex', gap: 8, flexShrink: 0 }}>
+                  <input
+                    type="text"
+                    value={adHocMsg}
+                    onChange={e => setAdHocMsg(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); void sendAdHoc(); } }}
+                    placeholder="Send a message as nurse…"
+                    style={{ flex: 1, padding: '8px 12px', borderRadius: 6, background: '#1e293b', border: '1px solid #374151', color: '#e2e8f0', fontSize: 13 }}
+                  />
+                  <button
+                    onClick={() => void sendAdHoc()}
+                    disabled={sending || !adHocMsg.trim()}
+                    style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#0d9488', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', opacity: sending ? 0.6 : 1 }}
+                  >
+                    {sending ? '…' : 'Send'}
+                  </button>
+                </div>
+              </>
+            )}
+          </main>
+        </div>
+      )}
+
+      {/* ── BOOKINGS TAB ── */}
+      {tab === 'bookings' && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Appointment bookings (7 days)
+            </div>
+            <div style={{ flex: 1 }} />
+            <a href="/book" target="_blank" rel="noopener" style={{
+              fontSize: 12, padding: '5px 12px', borderRadius: 6,
+              background: '#0d9488', color: '#fff', textDecoration: 'none', fontWeight: 700,
+            }}>
+              Open booking page
+            </a>
+          </div>
+
+          {bookings.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '48px 16px', color: '#4b5563' }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>📅</div>
+              <div style={{ fontWeight: 600 }}>No bookings in the last 7 days</div>
+            </div>
+          )}
+
+          {/* Sort: urgent pending first, then referral, then routine */}
+          {[...bookings]
+            .sort((a, b) => {
+              const priority = (b: BookingRow) =>
+                b.triage_acuity === 'urgent' ? 3 : b.triage_acuity === 'priority' ? 2 : 1;
+              const pd = priority(b) - priority(a);
+              if (pd !== 0) return pd;
+              return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            })
+            .map(booking => {
+              const track       = decodeTrack(booking.reason);
+              const trackColor  = TRACK_COLORS[track] ?? '#6b7280';
+              const statusLabel = STATUS_LABEL[booking.status] ?? booking.status;
+              const isLoading   = urgentLoading[booking.id];
+              const msg         = urgentMsg[booking.id];
+              const canUrgent   = booking.status === 'pending' && track !== 'routine';
+              const isActionable = booking.status === 'pending';
+
+              return (
+                <div key={booking.id} style={{
+                  marginBottom: 12, padding: '14px 16px', borderRadius: 8,
+                  background: '#1e293b', border: `1px solid ${isActionable ? trackColor + '44' : '#374151'}`,
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, color: trackColor,
+                          background: trackColor + '22', border: `1px solid ${trackColor}44`,
+                          borderRadius: 8, padding: '1px 7px', textTransform: 'uppercase',
+                        }}>
+                          {track}
+                        </span>
+                        <span style={{ fontSize: 10, color: '#6b7280', textTransform: 'uppercase' }}>
+                          {booking.appointment_type?.replace(/_/g, ' ')}
+                        </span>
+                        <span style={{
+                          marginLeft: 'auto', fontSize: 10, fontWeight: 600,
+                          color: booking.status === 'patient_confirmed' || booking.status === 'staff_confirmed' ? '#34d399' : '#6b7280',
+                        }}>
+                          {statusLabel}
+                        </span>
+                      </div>
+
+                      <div style={{ fontWeight: 700, fontSize: 14, color: '#f1f5f9' }}>{booking.patient_name}</div>
+                      {booking.patient_phone && (
+                        <div style={{ fontSize: 12, color: '#6b7280' }}>{booking.patient_phone}</div>
+                      )}
+                      {booking.reason && (
+                        <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 4, lineHeight: 1.4 }}>
+                          {booking.reason}
+                        </div>
+                      )}
+                      {booking.notes && (
+                        <div style={{ fontSize: 11, color: '#60a5fa', marginTop: 3 }}>{booking.notes}</div>
+                      )}
+                      {booking.confirmed_slot && (
+                        <div style={{ fontSize: 11, color: '#34d399', marginTop: 4 }}>
+                          Slot: {new Date(booking.confirmed_slot).toLocaleString('en-LC', {
+                            timeZone: 'America/St_Lucia', dateStyle: 'medium', timeStyle: 'short',
+                          })}
+                        </div>
+                      )}
+                      <div style={{ fontSize: 10, color: '#374151', marginTop: 4 }}>
+                        {new Date(booking.created_at).toLocaleString('en-LC', {
+                          timeZone: 'America/St_Lucia', dateStyle: 'short', timeStyle: 'short',
+                        })}
                       </div>
                     </div>
                   </div>
-                ))}
-                {selected.messages.length === 0 && (
-                  <div style={{ textAlign: 'center', color: '#4b5563', fontSize: 13 }}>No messages yet</div>
-                )}
-              </div>
 
-              {/* Draft approval */}
-              {selected.status === 'pending_approval' && selected.draft_reply && (
-                <div style={{ padding: '0 16px', flexShrink: 0 }}>
-                  <DraftApproval
-                    thread={selected}
-                    secret={secret}
-                    onAction={() =>
-                      setSelected(prev => (prev ? { ...prev, status: 'resolved', draft_reply: null } : null))
-                    }
-                  />
+                  {/* Staff actions */}
+                  {isActionable && (
+                    <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                      <button
+                        onClick={() => void scheduleUrgent(booking.id)}
+                        disabled={isLoading}
+                        style={{
+                          padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                          background: canUrgent ? '#f97316' : '#0d9488',
+                          color: '#fff', fontWeight: 700, fontSize: 12,
+                          opacity: isLoading ? 0.6 : 1,
+                        }}
+                      >
+                        {isLoading ? '…' : canUrgent ? 'Schedule urgent slot' : 'Auto-schedule'}
+                      </button>
+                      {msg && (
+                        <span style={{ fontSize: 12, color: msg.startsWith('Confirmed') ? '#34d399' : '#f87171' }}>
+                          {msg}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
-              )}
-
-              {/* Ad-hoc send */}
-              <div style={{ padding: '12px 16px', borderTop: '1px solid #374151', display: 'flex', gap: 8, flexShrink: 0 }}>
-                <input
-                  type="text"
-                  value={adHocMsg}
-                  onChange={e => setAdHocMsg(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      void sendAdHoc();
-                    }
-                  }}
-                  placeholder="Send a message as nurse…"
-                  style={{ flex: 1, padding: '8px 12px', borderRadius: 6, background: '#1e293b', border: '1px solid #374151', color: '#e2e8f0', fontSize: 13 }}
-                />
-                <button
-                  onClick={() => void sendAdHoc()}
-                  disabled={sending || !adHocMsg.trim()}
-                  style={{ padding: '8px 16px', borderRadius: 6, border: 'none', background: '#0d9488', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', opacity: sending ? 0.6 : 1 }}
-                >
-                  {sending ? '…' : 'Send'}
-                </button>
-              </div>
-            </>
-          )}
-        </main>
-      </div>
+              );
+            })}
+        </div>
+      )}
     </div>
   );
 }

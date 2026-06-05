@@ -10,12 +10,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.24.0",
-    "@supabase/supabase-js": "^2.43.0",
+    "@anthropic-ai/sdk": "^0.100.1",
+    "@supabase/supabase-js": "^2.107.0",
+    "@workspace/triage-engine": "workspace:*",
+    "googleapis": "^171.4.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "twilio": "^5.2.0"
+    "twilio": "^6.0.2"
   },
   "devDependencies": {
     "@types/node": "^20",

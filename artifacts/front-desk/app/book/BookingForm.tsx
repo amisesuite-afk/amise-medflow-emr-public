@@ -1,0 +1,718 @@
+'use client';
+import { useState, useEffect } from 'react';
+import type { BookingTrack } from '@/types';
+import { APPOINTMENT_TYPES, BOOKING_DISCLAIMER } from '@/lib/scheduling';
+
+interface Slot {
+  start: string;
+  end: string;
+  location: string;
+  appointmentType: string;
+  display: string;
+}
+
+type Step = 'track' | 'details' | 'slots' | 'done';
+
+const TRACK_INFO: Record<BookingTrack, { label: string; description: string; icon: string }> = {
+  routine: {
+    label:       'Routine appointment',
+    description: 'Book directly for a standard consultation. Slots are confirmed immediately.',
+    icon:        '📅',
+  },
+  referral: {
+    label:       'GP / specialist referral',
+    description: 'Your doctor has referred you to Dr Kabiye. Priority slots — staff will confirm within 24 hours.',
+    icon:        '📋',
+  },
+  urgent: {
+    label:       '',
+    description: '',
+    icon:        '',
+  },
+};
+
+/** Map each appointment-type key to one of the four optgroup labels */
+const APPT_GROUPS: Record<string, string> = {
+  new_consult:  'Consultations',
+  follow_up:    'Consultations',
+  telephone:    'Consultations',
+  ogd:          'Endoscopy & Procedures',
+  colonoscopy:  'Endoscopy & Procedures',
+  ercp_workup:  'Endoscopy & Procedures',
+  flexi_sig:    'Endoscopy & Procedures',
+  breast:       'Specialist Clinics',
+  thyroid:      'Specialist Clinics',
+  diabetic_foot:'Specialist Clinics',
+  pre_op:       'Surgery & Post-Op',
+  post_op:      'Surgery & Post-Op',
+};
+
+const OPTGROUP_ORDER = [
+  'Consultations',
+  'Endoscopy & Procedures',
+  'Specialist Clinics',
+  'Surgery & Post-Op',
+];
+
+/** True when the appointment type requires endoscopy prep info */
+function needsPrepNotice(apptType: string): boolean {
+  return ['colonoscopy', 'egd', 'ogd', 'ercp'].some(prefix => apptType.startsWith(prefix));
+}
+
+// ── Shared style primitives ───────────────────────────────────────────────────
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: '12px 14px',
+  borderRadius: 8,
+  background: '#f8fafc',
+  border: '1px solid #d1e8e5',
+  color: '#0f172a',
+  fontSize: 14,
+  fontFamily: 'inherit',
+  outline: 'none',
+};
+
+const labelStyle: React.CSSProperties = {
+  display: 'block',
+  fontSize: 11,
+  fontWeight: 700,
+  color: '#374151',
+  marginBottom: 6,
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+};
+
+const stepLabelStyle: React.CSSProperties = {
+  fontSize: 11,
+  fontWeight: 700,
+  color: '#0d9488',
+  marginBottom: 18,
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+};
+
+const primaryBtnStyle: React.CSSProperties = {
+  flex: 1,
+  padding: '12px 20px',
+  borderRadius: 50,
+  border: 'none',
+  background: '#0d9488',
+  color: '#fff',
+  fontWeight: 700,
+  fontSize: 14,
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+};
+
+const ghostBtnStyle: React.CSSProperties = {
+  flex: '0 0 auto',
+  padding: '12px 18px',
+  borderRadius: 50,
+  border: '1px solid #d1d5db',
+  background: 'transparent',
+  color: '#6b7280',
+  cursor: 'pointer',
+  fontSize: 14,
+  fontFamily: 'inherit',
+};
+
+// ── WhatsApp SVG icon ─────────────────────────────────────────────────────────
+
+function WhatsAppIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style={{ flexShrink: 0 }}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+  );
+}
+
+// ── Step indicator ────────────────────────────────────────────────────────────
+
+function StepIndicator({ current }: { current: Step }) {
+  const steps: { id: Step; label: string }[] = [
+    { id: 'track',   label: 'Appointment type' },
+    { id: 'details', label: 'Your details' },
+    { id: 'slots',   label: 'Choose slot' },
+  ];
+  const currentIdx = steps.findIndex(s => s.id === current);
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0, marginBottom: 28 }}>
+      {steps.map((s, i) => {
+        const active   = s.id === current;
+        const complete = i < currentIdx;
+        return (
+          <div key={s.id} style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+              <div style={{
+                width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 700,
+                background: complete ? '#0d9488' : active ? '#0d9488' : '#e2e8f0',
+                color: complete || active ? '#fff' : '#94a3b8',
+                border: active ? '2px solid #0d9488' : complete ? '2px solid #0d9488' : '2px solid #e2e8f0',
+              }}>
+                {complete ? '✓' : i + 1}
+              </div>
+              <div style={{ fontSize: 10, fontWeight: active ? 700 : 400, color: active ? '#0d9488' : complete ? '#0d9488' : '#94a3b8', whiteSpace: 'nowrap' }}>
+                {s.label}
+              </div>
+            </div>
+            {i < steps.length - 1 && (
+              <div style={{ width: 40, height: 2, background: i < currentIdx ? '#0d9488' : '#e2e8f0', margin: '0 4px', marginBottom: 20 }} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
+export default function BookingForm() {
+  const [step,             setStep]           = useState<Step>('track');
+  const [track,            setTrack]          = useState<BookingTrack>('routine');
+  const [appointmentType,  setApptType]       = useState('new_consult');
+  const [patientName,      setName]           = useState('');
+  const [patientPhone,     setPhone]          = useState('');
+  const [patientEmail,     setEmail]          = useState('');
+  const [patientDob,       setDob]            = useState('');
+  const [reason,           setReason]         = useState('');
+  const [referralDoctor,   setRefDoctor]      = useState('');
+  const [referralPractice, setRefPractice]    = useState('');
+  const [slots,            setSlots]          = useState<Slot[]>([]);
+  const [slotsLoading,     setSlotsLoading]   = useState(false);
+  const [selectedSlot,     setSelectedSlot]   = useState<Slot | null>(null);
+  const [submitting,       setSubmitting]     = useState(false);
+  const [result,           setResult]         = useState<{ autoConfirmed: boolean; message: string } | null>(null);
+  const [error,            setError]          = useState('');
+
+  // Load slots when reaching slot step
+  useEffect(() => {
+    if (step !== 'slots') return;
+    setSlotsLoading(true);
+    setSlots([]);
+    setSelectedSlot(null);
+    void fetch(`/api/booking/slots?type=${appointmentType}&track=${track}`)
+      .then(r => r.json())
+      .then((d: { slots: Slot[] }) => { setSlots(d.slots ?? []); setSlotsLoading(false); })
+      .catch(() => setSlotsLoading(false));
+  }, [step, appointmentType, track]);
+
+  async function submit() {
+    setSubmitting(true);
+    setError('');
+    try {
+      const r = await fetch('/api/booking/create', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          track, appointmentType, patientName, patientPhone, patientEmail: patientEmail.trim() || undefined,
+          patientDob, reason, referralDoctor, referralPractice,
+          selectedSlot: selectedSlot ?? undefined,
+        }),
+      });
+      const data = await r.json() as { autoConfirmed?: boolean; error?: string };
+      if (!r.ok || data.error) {
+        setError(data.error ?? 'Something went wrong. Please try again.');
+      } else {
+        setResult({
+          autoConfirmed: data.autoConfirmed ?? false,
+          message: data.autoConfirmed
+            ? `Your appointment has been confirmed: ${selectedSlot?.display ?? ''}. A confirmation has been sent to ${patientPhone}${patientEmail.trim() ? ` and ${patientEmail.trim()}` : ''}.`
+            : `Your request has been received. You will be contacted at ${patientPhone} within ${track === 'referral' ? '24 hours' : '2 hours'} to confirm your appointment.`,
+        });
+        setStep('done');
+      }
+    } catch {
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const emailValid =
+    patientEmail.trim() === '' ||
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientEmail.trim());
+
+  const canAdvanceDetails =
+    patientName.trim().length >= 2 &&
+    patientPhone.trim().length >= 7 &&
+    emailValid &&
+    (track !== 'referral' || referralDoctor.trim().length >= 2);
+
+  // Build optgroups for the appointment type selector
+  const groupedTypes = OPTGROUP_ORDER.map(groupLabel => ({
+    groupLabel,
+    items: Object.entries(APPOINTMENT_TYPES).filter(([k]) => APPT_GROUPS[k] === groupLabel),
+  })).filter(g => g.items.length > 0);
+
+  // ── Layout ────────────────────────────────────────────────────────────────
+
+  return (
+    <>
+      {/* ── Sub-nav header ──────────────────────────────────────────── */}
+      <nav className="amise-sub-nav">
+        <div className="amise-sub-nav-inner">
+          <a
+            href="/"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#0f172a', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}
+          >
+            <span style={{ fontSize: 16 }}>←</span>
+            <span>Amise Medical Services</span>
+          </a>
+          {/* Right side intentionally empty — user is on the booking page */}
+        </div>
+      </nav>
+
+      {/* ── Page body ───────────────────────────────────────────────── */}
+      <div style={{ minHeight: '100vh', background: '#f8fafc', color: '#0f172a', fontFamily: 'system-ui, -apple-system, sans-serif', padding: '32px 16px' }}>
+        <div style={{ maxWidth: 600, margin: '0 auto' }}>
+
+          {/* Page title block */}
+          <div style={{ marginBottom: 24, textAlign: 'center' }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
+              Amise Medical Services · Saint Lucia
+            </div>
+            <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: '#0f172a' }}>
+              Book an Appointment
+            </h1>
+            <p style={{ margin: '6px 0 0', fontSize: 13, color: '#64748b' }}>
+              Dr Dawit Daniel Kabiye, MD, DM — General &amp; Endoscopic Surgery
+            </p>
+          </div>
+
+          {/* ── Disclaimer banner ──────────────────────────────────── */}
+          <div style={{
+            marginBottom: 24, padding: '10px 14px', borderRadius: 8,
+            background: '#fff7ed', border: '1px solid #fed7aa',
+            fontSize: 11, color: '#92400e', lineHeight: 1.6,
+          }}>
+            <strong>Important:</strong> {BOOKING_DISCLAIMER}
+          </div>
+
+          {/* ── WhatsApp alternative card ───────────────────────────── */}
+          <div style={{
+            marginBottom: 8, padding: '18px 20px', borderRadius: 10,
+            background: '#f0fdf9', border: '1px solid #a7f3d0',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12 }}>
+              <div style={{ color: '#16a34a', marginTop: 1 }}>
+                <WhatsAppIcon />
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: '#064e3b', marginBottom: 4 }}>
+                  Book instantly on WhatsApp
+                </div>
+                <div style={{ fontSize: 13, color: '#065f46', lineHeight: 1.6 }}>
+                  Message us directly — we usually respond within 30 minutes during clinic hours.
+                </div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <a
+                href="https://wa.me/17582840557"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '9px 16px', borderRadius: 50,
+                  background: '#16a34a', color: '#fff',
+                  fontWeight: 700, fontSize: 13, textDecoration: 'none',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <WhatsAppIcon />
+                WhatsApp Tapion →
+              </a>
+              <a
+                href="https://wa.me/17587207111"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                  padding: '9px 16px', borderRadius: 50,
+                  background: '#16a34a', color: '#fff',
+                  fontWeight: 700, fontSize: 13, textDecoration: 'none',
+                  fontFamily: 'inherit',
+                }}
+              >
+                <WhatsAppIcon />
+                WhatsApp Rodney Bay →
+              </a>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0 24px' }}>
+            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+            <span style={{ fontSize: 12, color: '#94a3b8', whiteSpace: 'nowrap' }}>— or book online below —</span>
+            <div style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
+          </div>
+
+          {/* ── Form card ──────────────────────────────────────────── */}
+          <div style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 12,
+            padding: '32px',
+            boxShadow: '0 1px 4px rgba(15,23,42,0.06)',
+          }}
+          // Mobile padding handled inline below via a wrapper trick — we use a className instead
+          className="amise-booking-card"
+          >
+            {/* Step indicator (hidden on done screen) */}
+            {step !== 'done' && <StepIndicator current={step} />}
+
+            {/* ── STEP: TRACK ────────────────────────────────────── */}
+            {step === 'track' && (
+              <div>
+                <div style={stepLabelStyle}>How are you coming to us?</div>
+
+                {(['routine', 'referral'] as BookingTrack[]).map(t => {
+                  const info = TRACK_INFO[t];
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => setTrack(t)}
+                      style={{
+                        display: 'block', width: '100%', marginBottom: 10,
+                        padding: '14px 16px', borderRadius: 10, cursor: 'pointer',
+                        background: track === t ? '#f0fdf9' : '#f8fafc',
+                        border: `2px solid ${track === t ? '#0d9488' : '#e2e8f0'}`,
+                        color: '#0f172a', textAlign: 'left',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4, color: track === t ? '#0d9488' : '#0f172a' }}>
+                        {info.icon} {info.label}
+                      </div>
+                      <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.5 }}>{info.description}</div>
+                    </button>
+                  );
+                })}
+
+                <div style={{ marginTop: 20 }}>
+                  <label style={labelStyle}>Type of appointment</label>
+                  <select
+                    value={appointmentType}
+                    onChange={e => setApptType(e.target.value)}
+                    style={{ ...inputStyle, appearance: 'auto' }}
+                  >
+                    {groupedTypes.map(({ groupLabel, items }) => (
+                      <optgroup key={groupLabel} label={groupLabel}>
+                        {items.map(([k, v]) => (
+                          <option key={k} value={k}>{v.label}</option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Endoscopy prep notice */}
+                {needsPrepNotice(appointmentType) && (
+                  <div style={{
+                    marginTop: 12, padding: '12px 14px', borderRadius: 8,
+                    background: '#eff6ff', border: '1px solid #bfdbfe',
+                    fontSize: 12, color: '#1e40af', lineHeight: 1.6,
+                  }}>
+                    <strong>Preparation required:</strong> Endoscopy procedures require specific preparation. Full instructions will be sent by email and WhatsApp after your booking is confirmed. Please ensure you have provided both contact details.
+                  </div>
+                )}
+
+                <button
+                  onClick={() => setStep('details')}
+                  style={{ ...primaryBtnStyle, marginTop: 24, width: '100%' }}
+                >
+                  Continue →
+                </button>
+              </div>
+            )}
+
+            {/* ── STEP: DETAILS ──────────────────────────────────── */}
+            {step === 'details' && (
+              <div>
+                <div style={stepLabelStyle}>Your details</div>
+
+                <div style={{ marginBottom: 16 }}>
+                  <label style={labelStyle}>Full name *</label>
+                  <input
+                    type="text"
+                    value={patientName}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="First and last name"
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                  <label style={labelStyle}>WhatsApp / mobile number *</label>
+                  <input
+                    type="tel"
+                    value={patientPhone}
+                    onChange={e => setPhone(e.target.value)}
+                    placeholder="+1 758 …"
+                    style={inputStyle}
+                  />
+                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 5 }}>
+                    We will send appointment confirmations to this number.
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                  <label style={labelStyle}>
+                    Email address{' '}
+                    <span style={{ color: '#6b7280', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>
+                      (recommended — full prep instructions sent here)
+                    </span>
+                  </label>
+                  <input
+                    type="email"
+                    value={patientEmail}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    style={{ ...inputStyle, borderColor: !emailValid ? '#dc2626' : '#d1e8e5' }}
+                  />
+                  {!emailValid && (
+                    <div style={{ fontSize: 11, color: '#dc2626', marginTop: 5 }}>
+                      Please enter a valid email address.
+                    </div>
+                  )}
+                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 5 }}>
+                    Procedure instructions and your appointment details will be sent to this address. Leave blank to receive confirmation by WhatsApp/SMS only.
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                  <label style={labelStyle}>Date of birth</label>
+                  <input
+                    type="date"
+                    value={patientDob}
+                    onChange={e => setDob(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div style={{ marginBottom: 16 }}>
+                  <label style={labelStyle}>Brief reason for visit <span style={{ color: '#6b7280', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+                  <textarea
+                    value={reason}
+                    onChange={e => setReason(e.target.value)}
+                    placeholder="e.g. follow-up after discharge, hernia review, breast screening"
+                    rows={2}
+                    style={{ ...inputStyle, resize: 'vertical' }}
+                  />
+                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 5 }}>
+                    Administrative only — do not include clinical history or test results.
+                  </div>
+                </div>
+
+                {track === 'referral' && (
+                  <>
+                    <div style={{ marginBottom: 16 }}>
+                      <label style={labelStyle}>Referring doctor&apos;s name *</label>
+                      <input
+                        type="text"
+                        value={referralDoctor}
+                        onChange={e => setRefDoctor(e.target.value)}
+                        placeholder="Dr …"
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div style={{ marginBottom: 16 }}>
+                      <label style={labelStyle}>Referring practice / hospital</label>
+                      <input
+                        type="text"
+                        value={referralPractice}
+                        onChange={e => setRefPractice(e.target.value)}
+                        placeholder="Practice or hospital name"
+                        style={inputStyle}
+                      />
+                    </div>
+                  </>
+                )}
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
+                  <button
+                    onClick={() => setStep('track')}
+                    style={ghostBtnStyle}
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    onClick={() => setStep('slots')}
+                    disabled={!canAdvanceDetails}
+                    style={{
+                      ...primaryBtnStyle,
+                      background: canAdvanceDetails ? '#0d9488' : '#e2e8f0',
+                      color: canAdvanceDetails ? '#fff' : '#94a3b8',
+                      cursor: canAdvanceDetails ? 'pointer' : 'not-allowed',
+                    }}
+                  >
+                    View available slots →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── STEP: SLOTS ────────────────────────────────────── */}
+            {step === 'slots' && (
+              <div>
+                <div style={stepLabelStyle}>
+                  {track === 'referral' ? 'Preferred appointment slot' : 'Select your appointment'}
+                </div>
+
+                {slotsLoading && (
+                  <div style={{ textAlign: 'center', padding: 28, color: '#6b7280', fontSize: 13 }}>
+                    Checking availability…
+                  </div>
+                )}
+
+                {!slotsLoading && slots.length === 0 && (
+                  <div style={{
+                    padding: '14px 16px', borderRadius: 10, background: '#f8fafc',
+                    border: '1px solid #e2e8f0', color: '#64748b', fontSize: 13, marginBottom: 16,
+                    lineHeight: 1.6,
+                  }}>
+                    {track === 'referral'
+                      ? 'Our team will contact you to arrange a priority slot. Please submit your details and we will confirm within 24 hours.'
+                      : 'No slots are currently available online. Please contact us directly at Tapion Hospital (459-2227) and we will arrange an appointment for you.'}
+                  </div>
+                )}
+
+                {!slotsLoading && slots.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedSlot(s)}
+                    style={{
+                      display: 'block', width: '100%', marginBottom: 10,
+                      padding: '12px 16px', borderRadius: 10, cursor: 'pointer',
+                      background: selectedSlot?.start === s.start ? '#f0fdf9' : '#f8fafc',
+                      border: `2px solid ${selectedSlot?.start === s.start ? '#0d9488' : '#e2e8f0'}`,
+                      color: '#0f172a', textAlign: 'left', fontSize: 14,
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    {s.display}
+                  </button>
+                ))}
+
+                {track === 'referral' && (
+                  <div style={{
+                    padding: '10px 14px', borderRadius: 8, background: '#f8fafc',
+                    border: '1px solid #e2e8f0', fontSize: 12, color: '#6b7280',
+                    marginBottom: 14, lineHeight: 1.5,
+                  }}>
+                    Referral appointments are subject to staff confirmation and verification of the referral. You will receive a confirmation message within 24 hours.
+                  </div>
+                )}
+
+                {error && (
+                  <div style={{ color: '#dc2626', fontSize: 13, marginBottom: 12 }}>{error}</div>
+                )}
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
+                  <button
+                    onClick={() => setStep('details')}
+                    style={ghostBtnStyle}
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    onClick={() => void submit()}
+                    disabled={
+                      submitting ||
+                      (track === 'routine' && !selectedSlot) ||
+                      (slots.length > 0 && !selectedSlot && track !== 'referral')
+                    }
+                    style={{
+                      ...primaryBtnStyle,
+                      opacity: submitting ? 0.7 : 1,
+                      cursor: submitting ? 'wait' : 'pointer',
+                    }}
+                  >
+                    {submitting ? 'Submitting…' : track === 'routine' ? 'Confirm appointment' : 'Submit request'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── STEP: DONE ─────────────────────────────────────── */}
+            {step === 'done' && result && (
+              <div style={{ textAlign: 'center', padding: '16px 0 8px' }}>
+                <div style={{ fontSize: 44, marginBottom: 14 }}>
+                  {result.autoConfirmed ? '✅' : '📨'}
+                </div>
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0d9488', margin: '0 0 12px' }}>
+                  {result.autoConfirmed ? 'Appointment confirmed' : 'Request received'}
+                </h2>
+                <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.7, margin: '0 0 24px' }}>
+                  {result.message}
+                </p>
+
+                {/* Add-to-WhatsApp + prep link */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginBottom: 24 }}>
+                  <a
+                    href={`https://wa.me/17582840557?text=${encodeURIComponent(`Hi, I have an appointment booked — name: ${patientName}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                      padding: '10px 18px', borderRadius: 50,
+                      background: '#16a34a', color: '#fff',
+                      fontWeight: 700, fontSize: 13, textDecoration: 'none',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    <WhatsAppIcon />
+                    Add to WhatsApp
+                  </a>
+                  <a
+                    href="/guidance"
+                    style={{
+                      display: 'inline-flex', alignItems: 'center',
+                      padding: '10px 18px', borderRadius: 50,
+                      border: '1px solid #d1d5db', background: 'transparent',
+                      color: '#374151', fontWeight: 600, fontSize: 13, textDecoration: 'none',
+                      fontFamily: 'inherit',
+                    }}
+                  >
+                    Download prep instructions
+                  </a>
+                </div>
+
+                <div style={{
+                  fontSize: 11, color: '#6b7280', padding: '10px 14px',
+                  background: '#f8fafc', border: '1px solid #e2e8f0',
+                  borderRadius: 8, textAlign: 'left', lineHeight: 1.6,
+                }}>
+                  {BOOKING_DISCLAIMER}
+                </div>
+
+                <button
+                  onClick={() => {
+                    setStep('track'); setName(''); setPhone(''); setEmail(''); setDob('');
+                    setReason(''); setRefDoctor(''); setRefPractice('');
+                    setSelectedSlot(null); setResult(null); setError('');
+                  }}
+                  style={{ ...ghostBtnStyle, marginTop: 20, flex: 'none' }}
+                >
+                  Book another appointment
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div style={{ marginTop: 28, paddingTop: 16, borderTop: '1px solid #e2e8f0', fontSize: 11, color: '#94a3b8', textAlign: 'center', lineHeight: 1.8 }}>
+            Amise Medical Services · Saint Lucia<br />
+            Tapion Hospital: 459-2227 / 284-0557<br />
+            Rodney Bay (Providence Building) · Castries
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

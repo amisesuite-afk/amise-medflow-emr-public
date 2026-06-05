@@ -6,6 +6,8 @@ import cronRouter from "./cron";
 import summaryRouter from "./summary";
 import schedulingRouter from "./scheduling";
 import bookingRouter from "./booking";
+import questionnaireRouter from "./questionnaire";
+import whatsappRouter from "./whatsapp";
 
 const router: IRouter = Router();
 
@@ -16,5 +18,7 @@ router.use(cronRouter);
 router.use(summaryRouter);
 router.use(schedulingRouter);
 router.use(bookingRouter);
+router.use(questionnaireRouter);
+router.use(whatsappRouter);
 
 export default router;

@@ -15,10 +15,19 @@ export const INTAKE_SECTIONS: Record<string, string> = {
 };
 
 export const FORBIDDEN_PATTERNS: RegExp[] = [
-  /diagnos/i,
-  /your (result|test)/i,
-  /EC\$?\s*\d+/i,
-  /fee[s]?.*\$?/i,
-  /medication dose/i,
-  /mg\b/i,
+  // Diagnoses
+  /\bdiagnos/i,
+  /\b(you (have|may have|likely have) (cancer|tumou?r|malignancy))\b/i,
+  /\b(i diagnose|i can confirm you have)\b/i,
+  // Test / result disclosure
+  /\b(your (biopsy|histology|test|blood|scan|x.ray) result)\b/i,
+  /\b(the result (is|shows|confirms))\b/i,
+  // Fees / financial
+  /\$\s*\d/,
+  /\b(EC\$|XCD|USD)\s*\d/i,
+  /\bfee[s]?\b.*\d/i,
+  // Drug doses
+  /\b(take|increase|decrease|stop)\s+\d+\s*mg\b/i,
+  /\b\d+\s*mg\b/i,
+  /\bmedication dose\b/i,
 ];
