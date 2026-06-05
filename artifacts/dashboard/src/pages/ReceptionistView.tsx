@@ -7,6 +7,7 @@ import { savePatientFull } from '@/lib/db';
 import type { Sex } from '@workspace/triage-engine';
 import BookingInboxTab from './tabs/BookingInboxTab';
 import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
+import { SL_COMMUNITIES } from '@/data/st-lucia';
 
 type ReceptionistTab = 'checkin' | 'inbox' | 'questionnaire';
 
@@ -288,11 +289,24 @@ export default function ReceptionistView() {
                 <label>Community / Address</label>
                 <input
                   type="text"
+                  list="sl-communities"
                   value={address}
-                  onChange={e => { setAddress(e.target.value); setQuarter(''); }}
-                  placeholder="e.g. Rodney Bay, Gros Islet…"
+                  onChange={e => {
+                    const val = e.target.value;
+                    setAddress(val);
+                    const match = SL_COMMUNITIES.find(c => c.community.toLowerCase() === val.toLowerCase());
+                    setQuarter(match ? match.quarter : '');
+                  }}
+                  placeholder="e.g. Rodney Bay, Castries…"
                   style={{ padding: '10px 11px' }}
                 />
+                <datalist id="sl-communities">
+                  {SL_COMMUNITIES.map(c => (
+                    <option key={`${c.quarter}-${c.community}`} value={c.community}>
+                      {c.quarter}
+                    </option>
+                  ))}
+                </datalist>
                 {quarter && (
                   <span style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
                     Quarter: {quarter}
