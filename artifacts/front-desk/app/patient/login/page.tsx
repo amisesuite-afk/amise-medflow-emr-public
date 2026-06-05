@@ -1,12 +1,8 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const TEAL = '#0d9488';
 
@@ -53,9 +49,7 @@ const s = {
   } as React.CSSProperties,
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
-export default function PatientLoginPage() {
+function PatientLoginContent() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get('next') ?? '/patient';
@@ -65,7 +59,6 @@ export default function PatientLoginPage() {
   const [errMsg, setErrMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // If already logged in, redirect immediately
   useEffect(() => {
     const sb = getPatientClient();
     void sb.auth.getSession().then(({ data: { session } }) => {
@@ -87,7 +80,7 @@ export default function PatientLoginPage() {
     const { error } = await sb.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
       options: {
-        shouldCreateUser: false,  // Only allow existing patients invited by staff
+        shouldCreateUser: false,
         emailRedirectTo: `${window.location.origin}/patient`,
       },
     });
@@ -95,7 +88,6 @@ export default function PatientLoginPage() {
     setLoading(false);
 
     if (error) {
-      // signInWithOtp returns an error for non-existent users when shouldCreateUser = false
       if (error.message.toLowerCase().includes('not found') || error.message.includes('not exist')) {
         setErrMsg('No patient account found for this email address. Please contact our front desk to activate your portal access.');
       } else {
@@ -110,7 +102,6 @@ export default function PatientLoginPage() {
   return (
     <div style={s.page}>
       <div style={s.card}>
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: TEAL, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
             Amise Medical Services · Saint Lucia
@@ -123,7 +114,6 @@ export default function PatientLoginPage() {
           </p>
         </div>
 
-        {/* Email form */}
         {stage === 'email' && (
           <>
             <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6, marginBottom: 24 }}>
@@ -164,7 +154,6 @@ export default function PatientLoginPage() {
           </>
         )}
 
-        {/* Sent */}
         {stage === 'sent' && (
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>📧</div>
@@ -185,7 +174,6 @@ export default function PatientLoginPage() {
           </div>
         )}
 
-        {/* Error */}
         {stage === 'error' && (
           <div>
             <div style={{ padding: '14px 16px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', fontSize: 13, lineHeight: 1.6, marginBottom: 16 }}>
@@ -207,5 +195,13 @@ export default function PatientLoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function PatientLoginPage() {
+  return (
+    <Suspense fallback={<div style={{ background: '#0f172a', minHeight: '100vh' }} />}>
+      <PatientLoginContent />
+    </Suspense>
   );
 }
