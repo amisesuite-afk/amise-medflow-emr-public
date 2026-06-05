@@ -35,10 +35,12 @@ create table if not exists patient_intake (
 
 alter table patient_intake enable row level security;
 
-create policy if not exists "patients_select_own_intake" on patient_intake
+drop policy if exists "patients_select_own_intake" on patient_intake;
+create policy "patients_select_own_intake" on patient_intake
   for select using (patient_id = my_patient_id());
 
-create policy if not exists "patients_insert_own_intake" on patient_intake
+drop policy if exists "patients_insert_own_intake" on patient_intake;
+create policy "patients_insert_own_intake" on patient_intake
   for insert with check (patient_id = my_patient_id());
 
 grant select, insert on public.patient_intake to authenticated;
