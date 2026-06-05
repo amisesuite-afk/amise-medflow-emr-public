@@ -77,11 +77,14 @@ function PatientLoginContent() {
     setErrMsg('');
 
     const sb = getPatientClient();
+    // Use canonical site URL so the redirect is always the production alias,
+    // not a deployment-specific Vercel URL (which Supabase would reject).
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
     const { error } = await sb.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
       options: {
         shouldCreateUser: false,
-        emailRedirectTo: `${window.location.origin}/patient`,
+        emailRedirectTo: `${siteUrl}/patient`,
       },
     });
 

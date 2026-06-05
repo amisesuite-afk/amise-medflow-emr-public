@@ -13,6 +13,7 @@ export function getPatientClient(): SupabaseClient {
       persistSession: true,
       autoRefreshToken: true,
       storageKey: 'amise-patient-session',
+      flowType: 'implicit',  // implicit = hash tokens, works cross-device; PKCE breaks when email opened on different device
     },
   });
 
