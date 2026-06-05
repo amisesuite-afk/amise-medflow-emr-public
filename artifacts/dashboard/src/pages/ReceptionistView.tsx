@@ -24,6 +24,7 @@ export default function ReceptionistView() {
     sex, setSex,
     dob, setDob,
     phone, setPhone,
+    email, setEmail,
     address, setAddress,
     quarter, setQuarter,
     referredBy, setReferredBy,
@@ -42,6 +43,8 @@ export default function ReceptionistView() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [savedName, setSavedName] = useState('');
+  const [inviting, setInviting] = useState(false);
+  const [inviteResult, setInviteResult] = useState<'sent' | 'error' | null>(null);
   const [activeTab, setActiveTab] = useState<ReceptionistTab>('checkin');
   const [pendingCount, setPendingCount] = useState(0);
 
@@ -61,11 +64,28 @@ export default function ReceptionistView() {
     return () => clearInterval(t);
   }, [fetchPendingCount]);
 
+  async function handleInvitePortal() {
+    if (!patientId || !email.trim()) return;
+    setInviting(true);
+    setInviteResult(null);
+    try {
+      const r = await fetch(apiUrl('/api/patient/invite'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ patient_id: patientId, email: email.trim() }),
+      });
+      setInviteResult(r.ok ? 'sent' : 'error');
+    } catch {
+      setInviteResult('error');
+    }
+    setInviting(false);
+  }
+
   async function handleCheckIn() {
     setSaving(true);
     setSaveError(null);
     const { patient, error } = await savePatientFull({
-      full_name: patientName, age, dob, sex, phone,
+      full_name: patientName, age, dob, sex, phone, email,
       address, referredBy, insuranceProvider,
       policyNumber, nhiNumber, preAuthStatus,
     });
@@ -89,6 +109,7 @@ export default function ReceptionistView() {
   function handleNewPatient() {
     setSaved(false);
     setSavedName('');
+    setInviteResult(null);
     clearPatient();
     setSaveError(null);
   }
@@ -222,6 +243,37 @@ export default function ReceptionistView() {
               >
                 + Register Next Patient
               </button>
+
+              {/* Portal invite */}
+              {email.trim() && patientId && inviteResult === null && (
+                <button
+                  type="button"
+                  onClick={() => void handleInvitePortal()}
+                  disabled={inviting}
+                  style={{
+                    padding: '11px 24px',
+                    borderRadius: 10,
+                    border: '1.5px solid #0d9488',
+                    background: 'transparent',
+                    color: '#0d9488',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: inviting ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {inviting ? 'Sending…' : '📧 Invite to Patient Portal'}
+                </button>
+              )}
+              {inviteResult === 'sent' && (
+                <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 600 }}>
+                  ✓ Portal invite sent to {email}
+                </div>
+              )}
+              {inviteResult === 'error' && (
+                <div style={{ fontSize: 13, color: '#dc2626' }}>
+                  Invite failed — check API server or try again.
+                </div>
+              )}
             </div>
           )}
 
@@ -281,6 +333,17 @@ export default function ReceptionistView() {
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   placeholder="+1 (758) XXX-XXXX"
+                  style={{ padding: '10px 11px' }}
+                />
+              </div>
+
+              <div className="fld">
+                <label>Email <span style={{ fontWeight: 400, color: '#9ca3af' }}>(for portal invite)</span></label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  placeholder="patient@example.com"
                   style={{ padding: '10px 11px' }}
                 />
               </div>

@@ -126,9 +126,12 @@ export default function PatientDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    void (async () => {
+    async function loadData(accessToken?: string) {
+      // With implicit flow, the access token may arrive via onAuthStateChange
+      // before getSession() is ready. Accept it either way.
       const { data: { session } } = await sb.auth.getSession();
-      if (!session) { router.replace('/patient/login'); return; }
+      const activeSession = session ?? (accessToken ? { access_token: accessToken } : null);
+      if (!activeSession) { router.replace('/patient/login'); return; }
 
       const [{ data: profileData }, { data: apptData }] = await Promise.all([
         sb.from('patients').select('*').single(),
@@ -145,7 +148,17 @@ export default function PatientDashboardPage() {
       setProfile(profileData);
       setUpcoming(apptData ?? []);
       setLoading(false);
-    })();
+    }
+
+    void loadData();
+
+    // Catch the SIGNED_IN event from implicit flow hash tokens
+    const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        void loadData(session.access_token);
+      }
+    });
+    return () => subscription.unsubscribe();
   }, [router, sb]);
 
   async function signOut() {

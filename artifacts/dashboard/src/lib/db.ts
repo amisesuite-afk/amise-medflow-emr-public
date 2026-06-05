@@ -50,6 +50,7 @@ export interface FullPatientInput {
   dob: string;
   sex: string;
   phone: string;
+  email: string;
   address: string;
   referredBy: string;
   insuranceProvider: string;
@@ -116,6 +117,7 @@ export async function savePatientFull(
     if (d) row.date_of_birth = d;
   }
   if (input.phone.trim())              row.phone                = input.phone.trim();
+  if (input.email.trim())              row.email                = input.email.trim();
   if (input.address.trim())            row.address              = input.address.trim();
   if (input.referredBy.trim())         row.referred_by          = input.referredBy.trim();
   if (input.insuranceProvider.trim())  row.insurance_provider   = input.insuranceProvider.trim();

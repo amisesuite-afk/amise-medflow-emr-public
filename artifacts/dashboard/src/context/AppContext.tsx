@@ -179,6 +179,7 @@ interface CtxValue {
   sex: Sex; setSex(v: Sex): void;
   dob: string; setDob(v: string): void;
   phone: string; setPhone(v: string): void;
+  email: string; setEmail(v: string): void;
   address: string; setAddress(v: string): void;
   quarter: string; setQuarter(v: string): void;
   referredBy: string; setReferredBy(v: string): void;
@@ -319,6 +320,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [sex, setSex] = useState<Sex>('unknown');
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [quarter, setQuarter] = useState('');
   const [referredBy, setReferredBy] = useState('');
@@ -555,7 +557,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   function clearPatient() {
     setPatientId(null); setEncounterId(null);
-    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone('');
+    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail('');
     setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
     setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
     setVitals({ systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '' });
@@ -648,6 +650,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     sex, setSex,
     dob, setDob,
     phone, setPhone,
+    email, setEmail,
     address, setAddress,
     quarter, setQuarter,
     referredBy, setReferredBy,
