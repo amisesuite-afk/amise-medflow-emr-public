@@ -104,7 +104,7 @@ export default function PatientLoginPage() {
 
   async function verifyCode() {
     const code = otp.trim();
-    if (code.length !== 6) return;
+    if (code.length < 6) return;
     setLoading(true);
     setErrMsg('');
 
@@ -198,10 +198,10 @@ export default function PatientLoginPage() {
               type="text"
               inputMode="numeric"
               autoComplete="one-time-code"
-              maxLength={6}
+              maxLength={8}
               value={otp}
               placeholder="000000"
-              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
               onKeyDown={e => { if (e.key === 'Enter') void verifyCode(); }}
               style={{ ...s.input, fontSize: 28, letterSpacing: '0.3em', textAlign: 'center' }}
               // eslint-disable-next-line jsx-a11y/no-autofocus
@@ -211,14 +211,14 @@ export default function PatientLoginPage() {
             <button
               type="button"
               onClick={() => void verifyCode()}
-              disabled={otp.trim().length !== 6 || loading}
+              disabled={otp.trim().length < 6 || loading}
               style={{
                 display: 'block', width: '100%', marginTop: 16, padding: '13px',
                 borderRadius: 9, border: 'none',
-                background: otp.trim().length !== 6 || loading ? '#1e3a5f' : TEAL,
-                color:      otp.trim().length !== 6 || loading ? '#475569' : '#fff',
+                background: otp.trim().length < 6 || loading ? '#1e3a5f' : TEAL,
+                color:      otp.trim().length < 6 || loading ? '#475569' : '#fff',
                 fontWeight: 700, fontSize: 15,
-                cursor: otp.trim().length !== 6 || loading ? 'not-allowed' : 'pointer',
+                cursor: otp.trim().length < 6 || loading ? 'not-allowed' : 'pointer',
               }}
             >
               {loading ? 'Verifying…' : 'Sign in →'}
