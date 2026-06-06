@@ -13,7 +13,7 @@ export function getPatientClient(): SupabaseClient {
       persistSession: true,
       autoRefreshToken: true,
       storageKey: 'amise-patient-session',
-      flowType: 'pkce',
+      flowType: 'implicit',
     },
   });
 

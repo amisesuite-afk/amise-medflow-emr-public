@@ -6,8 +6,6 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
 const TEAL = '#0d9488';
 
 const s = {
@@ -53,32 +51,29 @@ const s = {
   } as React.CSSProperties,
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export default function PatientLoginPage() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get('next') ?? '/patient';
 
-  const [email, setEmail] = useState('');
-  const [stage, setStage] = useState<'email' | 'sent' | 'error'>('email');
-  const [errMsg, setErrMsg] = useState('');
+  const [email,   setEmail]   = useState('');
+  const [otp,     setOtp]     = useState('');
+  const [stage,   setStage]   = useState<'email' | 'otp' | 'error'>('email');
+  const [errMsg,  setErrMsg]  = useState('');
   const [loading, setLoading] = useState(false);
 
-  // If already logged in, redirect immediately
   useEffect(() => {
     const sb = getPatientClient();
     void sb.auth.getSession().then(({ data: { session } }) => {
       if (session) router.replace(next);
     });
-
     const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
       if (session) router.replace(next);
     });
     return () => subscription.unsubscribe();
   }, [next, router]);
 
-  async function sendMagicLink() {
+  async function sendCode() {
     if (!email.trim()) return;
     setLoading(true);
     setErrMsg('');
@@ -86,10 +81,7 @@ export default function PatientLoginPage() {
     const sb = getPatientClient();
     const { error } = await sb.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
-      options: {
-        shouldCreateUser: false,  // Only allow existing patients invited by staff
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin}/patient/auth/callback`,
-      },
+      options: { shouldCreateUser: false },
     });
 
     setLoading(false);
@@ -97,22 +89,47 @@ export default function PatientLoginPage() {
     if (error) {
       const msg = error.message.toLowerCase();
       if (msg.includes('not found') || msg.includes('not exist') || msg.includes('signups not allowed') || msg.includes('invalid login')) {
-        setErrMsg('No patient account found for this email. Please contact our front desk to activate your portal access, or use "Request a consultation" below.');
+        setErrMsg('No patient account found for this email. Please contact our front desk to activate your portal access.');
       } else if (msg.includes('sending') || msg.includes('smtp') || msg.includes('email') || msg.includes('rate limit') || msg.includes('confirmation')) {
-        setErrMsg('We are having trouble sending sign-in emails right now. Please call us on 459-2227 / 284-0557 or try again in a few minutes.');
+        setErrMsg('We are having trouble sending emails right now. Please call 459-2227 / 284-0557 or try again in a few minutes.');
       } else {
         setErrMsg(error.message);
       }
       setStage('error');
     } else {
-      setStage('sent');
+      setOtp('');
+      setStage('otp');
+    }
+  }
+
+  async function verifyCode() {
+    const code = otp.trim();
+    if (code.length !== 6) return;
+    setLoading(true);
+    setErrMsg('');
+
+    const sb = getPatientClient();
+    const { error } = await sb.auth.verifyOtp({
+      email: email.trim().toLowerCase(),
+      token: code,
+      type: 'email',
+    });
+
+    setLoading(false);
+
+    if (error) {
+      setErrMsg('That code is invalid or has expired. Please request a new one.');
+      setStage('error');
+    } else {
+      router.replace(next);
     }
   }
 
   return (
     <div style={s.page}>
       <div style={s.card}>
-        {/* Logo */}
+
+        {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: TEAL, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 8 }}>
             Amise Medical Services · Saint Lucia
@@ -125,11 +142,11 @@ export default function PatientLoginPage() {
           </p>
         </div>
 
-        {/* Email form */}
+        {/* Step 1 — Email */}
         {stage === 'email' && (
           <>
             <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6, marginBottom: 24 }}>
-              Enter your email address and we will send you a secure sign-in link.
+              Enter your email address and we will send you a 6-digit sign-in code.
             </p>
 
             <label style={s.label}>Email Address</label>
@@ -139,52 +156,92 @@ export default function PatientLoginPage() {
               autoComplete="email"
               placeholder="you@example.com"
               onChange={e => setEmail(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') void sendMagicLink(); }}
+              onKeyDown={e => { if (e.key === 'Enter') void sendCode(); }}
               style={s.input}
             />
 
             <button
               type="button"
-              onClick={() => void sendMagicLink()}
+              onClick={() => void sendCode()}
               disabled={!email.trim() || loading}
               style={{
-                display: 'block',
-                width: '100%',
-                marginTop: 16,
-                padding: '13px',
-                borderRadius: 9,
-                border: 'none',
+                display: 'block', width: '100%', marginTop: 16, padding: '13px',
+                borderRadius: 9, border: 'none',
                 background: !email.trim() || loading ? '#1e3a5f' : TEAL,
-                color: !email.trim() || loading ? '#475569' : '#fff',
-                fontWeight: 700,
-                fontSize: 15,
+                color:      !email.trim() || loading ? '#475569' : '#fff',
+                fontWeight: 700, fontSize: 15,
                 cursor: !email.trim() || loading ? 'not-allowed' : 'pointer',
               }}
             >
-              {loading ? 'Sending…' : 'Send sign-in link →'}
+              {loading ? 'Sending…' : 'Send sign-in code →'}
             </button>
           </>
         )}
 
-        {/* Sent */}
-        {stage === 'sent' && (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>📧</div>
-            <h2 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 700, color: '#4ade80' }}>
-              Check your email
-            </h2>
-            <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', lineHeight: 1.7 }}>
-              A sign-in link has been sent to <strong style={{ color: '#e2e8f0' }}>{email}</strong>.
-              Click the link in your email to access your portal — it expires in 1 hour.
-            </p>
+        {/* Step 2 — OTP input */}
+        {stage === 'otp' && (
+          <>
+            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>📧</div>
+              <h2 style={{ margin: '0 0 10px', fontSize: 18, fontWeight: 700, color: '#4ade80' }}>
+                Check your email
+              </h2>
+              <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', lineHeight: 1.7 }}>
+                A 6-digit code was sent to{' '}
+                <strong style={{ color: '#e2e8f0' }}>{email}</strong>.
+                Open the email and enter the code below.
+              </p>
+            </div>
+
+            <label style={s.label}>6-Digit Code</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              maxLength={6}
+              value={otp}
+              placeholder="000000"
+              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              onKeyDown={e => { if (e.key === 'Enter') void verifyCode(); }}
+              style={{ ...s.input, fontSize: 28, letterSpacing: '0.3em', textAlign: 'center' }}
+              // eslint-disable-next-line jsx-a11y/no-autofocus
+              autoFocus
+            />
+
             <button
               type="button"
-              onClick={() => { setStage('email'); setEmail(''); }}
-              style={{ marginTop: 20, fontSize: 13, color: TEAL, background: 'none', border: 'none', cursor: 'pointer' }}
+              onClick={() => void verifyCode()}
+              disabled={otp.trim().length !== 6 || loading}
+              style={{
+                display: 'block', width: '100%', marginTop: 16, padding: '13px',
+                borderRadius: 9, border: 'none',
+                background: otp.trim().length !== 6 || loading ? '#1e3a5f' : TEAL,
+                color:      otp.trim().length !== 6 || loading ? '#475569' : '#fff',
+                fontWeight: 700, fontSize: 15,
+                cursor: otp.trim().length !== 6 || loading ? 'not-allowed' : 'pointer',
+              }}
             >
-              Use a different email
+              {loading ? 'Verifying…' : 'Sign in →'}
             </button>
-          </div>
+
+            <div style={{ textAlign: 'center', marginTop: 16 }}>
+              <button
+                type="button"
+                onClick={() => void sendCode()}
+                disabled={loading}
+                style={{ fontSize: 13, color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', marginRight: 16 }}
+              >
+                Resend code
+              </button>
+              <button
+                type="button"
+                onClick={() => { setStage('email'); setOtp(''); }}
+                style={{ fontSize: 13, color: TEAL, background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                ← Change email
+              </button>
+            </div>
+          </>
         )}
 
         {/* Error */}
@@ -214,6 +271,7 @@ export default function PatientLoginPage() {
           Portal access is by invitation from Amise Medical Services staff only.<br />
           For help, call Tapion Hospital: 459-2227 / 284-0557.
         </p>
+
       </div>
     </div>
   );
