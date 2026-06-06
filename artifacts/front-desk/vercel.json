@@ -3,6 +3,6 @@
   "installCommand": "npm install -g pnpm@10 && cd ../.. && pnpm install --frozen-lockfile",
   "buildCommand": "cd ../.. && pnpm --filter @workspace/front-desk run build",
   "git": {
-    "deploymentEnabled": true
+    "deploymentEnabled": false
   }
 }
