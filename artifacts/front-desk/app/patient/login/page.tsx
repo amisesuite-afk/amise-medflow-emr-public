@@ -88,7 +88,7 @@ export default function PatientLoginPage() {
       email: email.trim().toLowerCase(),
       options: {
         shouldCreateUser: false,  // Only allow existing patients invited by staff
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin}/patient`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin}/patient/auth/callback`,
       },
     });
 
