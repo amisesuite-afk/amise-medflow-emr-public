@@ -95,9 +95,11 @@ export default function PatientLoginPage() {
     setLoading(false);
 
     if (error) {
-      // signInWithOtp returns an error for non-existent users when shouldCreateUser = false
-      if (error.message.toLowerCase().includes('not found') || error.message.includes('not exist')) {
-        setErrMsg('No patient account found for this email address. Please contact our front desk to activate your portal access.');
+      const msg = error.message.toLowerCase();
+      if (msg.includes('not found') || msg.includes('not exist') || msg.includes('signups not allowed') || msg.includes('invalid login')) {
+        setErrMsg('No patient account found for this email. Please contact our front desk to activate your portal access, or use "Request a consultation" below.');
+      } else if (msg.includes('sending') || msg.includes('smtp') || msg.includes('email') || msg.includes('rate limit') || msg.includes('confirmation')) {
+        setErrMsg('We are having trouble sending sign-in emails right now. Please call us on 459-2227 / 284-0557 or try again in a few minutes.');
       } else {
         setErrMsg(error.message);
       }
