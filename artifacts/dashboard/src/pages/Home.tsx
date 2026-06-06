@@ -41,6 +41,7 @@ import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
 import BookingInboxTab from './tabs/BookingInboxTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
 import SettingsTab from './tabs/SettingsTab';
+import PortalIntakeTab from './tabs/PortalIntakeTab';
 import FloatingActions from '@/components/FloatingActions';
 
 const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
@@ -323,6 +324,7 @@ export default function HomePage() {
         {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
         {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')        && <NurseAPCQTab />}
         {topSection === 'booking_inbox'  && hasRole(userRole, 'admin')        && <BookingInboxTab />}
+        {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
       </main>
 
       <FloatingActions />

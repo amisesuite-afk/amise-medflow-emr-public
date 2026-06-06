@@ -201,7 +201,14 @@ export default function PatientLoginPage() {
           </div>
         )}
 
-        <p style={{ marginTop: 28, paddingTop: 20, borderTop: '1px solid #1e3a5f', fontSize: 11, color: '#374151', textAlign: 'center', lineHeight: 1.6 }}>
+        <p style={{ marginTop: 20, textAlign: 'center', fontSize: 13, color: '#64748b' }}>
+          New patient?{' '}
+          <a href="/patient/request" style={{ color: TEAL, fontWeight: 600, textDecoration: 'none' }}>
+            Request a consultation →
+          </a>
+        </p>
+
+        <p style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #1e3a5f', fontSize: 11, color: '#374151', textAlign: 'center', lineHeight: 1.6 }}>
           Portal access is by invitation from Amise Medical Services staff only.<br />
           For help, call Tapion Hospital: 459-2227 / 284-0557.
         </p>

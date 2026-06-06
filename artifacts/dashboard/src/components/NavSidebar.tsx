@@ -79,6 +79,7 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'vademecum',      icon: BookOpen,      label: 'Disease Dict.',  roles: ['nurse', 'doctor', 'admin'] },
   { id: 'questionnaire',  icon: FileQuestion,  label: 'Questionnaire', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'booking_inbox',  icon: Inbox,         label: 'Booking Inbox', roles: ['admin'] },
+  { id: 'portal_intake',  icon: ClipboardCheck, label: 'Portal Intake', roles: ['doctor', 'admin'] },
   { id: 'settings',       icon: Settings,      label: 'Settings',      roles: ['admin'] },
 ];
 

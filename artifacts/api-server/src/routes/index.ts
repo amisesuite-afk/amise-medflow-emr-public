@@ -8,6 +8,7 @@ import schedulingRouter from "./scheduling";
 import bookingRouter from "./booking";
 import questionnaireRouter from "./questionnaire";
 import whatsappRouter from "./whatsapp";
+import portalRouter from "./portal";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(schedulingRouter);
 router.use(bookingRouter);
 router.use(questionnaireRouter);
 router.use(whatsappRouter);
+router.use(portalRouter);
 
 export default router;

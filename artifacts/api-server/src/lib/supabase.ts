@@ -25,7 +25,8 @@ export function getSupabaseAdmin(): SupabaseClient {
 
 export type AuditAction =
   | 'classify' | 'triage' | 'draft' | 'send' | 'book'
-  | 'remind' | 'escalate' | 'error' | 'skip';
+  | 'remind' | 'escalate' | 'error' | 'skip'
+  | 'portal_invite_sent';
 
 export async function audit(args: {
   action: AuditAction;
