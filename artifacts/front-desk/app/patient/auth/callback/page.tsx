@@ -3,36 +3,40 @@
 export const dynamic = 'force-dynamic';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 
 const TEAL = '#0d9488';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const params = useSearchParams();
 
   useEffect(() => {
-    const sb = getPatientClient();
+    const sb   = getPatientClient();
+    const code = params.get('code');
 
-    // With implicit flow supabase-js reads the URL hash and fires SIGNED_IN
-    const { data: { subscription } } = sb.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        router.replace('/patient');
-      } else if (event === 'SIGNED_OUT') {
-        router.replace('/patient/login');
-      }
-    });
-
-    // In case the hash was already consumed before this page mounted
-    void sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.replace('/patient');
-    });
-
-    // Fallback — if nothing happens in 8 seconds, go to login
-    const t = setTimeout(() => router.replace('/patient/login'), 8000);
-
-    return () => { subscription.unsubscribe(); clearTimeout(t); };
-  }, [router]);
+    if (code) {
+      // PKCE flow: exchange the one-time code for a session
+      void sb.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+        if (data.session) {
+          router.replace('/patient');
+        } else {
+          console.error('exchangeCodeForSession failed:', error);
+          router.replace('/patient/login?error=auth');
+        }
+      });
+    } else {
+      // Fallback: check if a session already exists (e.g. navigated here directly)
+      void sb.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          router.replace('/patient');
+        } else {
+          router.replace('/patient/login?error=nocode');
+        }
+      });
+    }
+  }, [router, params]);
 
   return (
     <div style={{
