@@ -327,7 +327,7 @@ function SkipLink({ onClick }: { onClick: () => void }) {
         color: '#94a3b8', fontSize: 13, cursor: 'pointer',
         WebkitTapHighlightColor: 'transparent',
       }}>
-      I'd rather discuss this with the doctor →
+      {"I'd rather discuss this with the doctor →"}
     </button>
   );
 }
