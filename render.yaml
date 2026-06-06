@@ -2,6 +2,7 @@ services:
   - type: web
     name: amise-medflow-api
     runtime: node
+    plan: free
     rootDir: artifacts/api-server
     buildCommand: npm install -g pnpm@10 && pnpm install --no-frozen-lockfile && node build.mjs
     startCommand: node dist/index.mjs
