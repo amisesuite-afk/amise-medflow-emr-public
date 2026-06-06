@@ -194,6 +194,61 @@ RULES: summarise and organise only. Do NOT diagnose, prescribe, or speculate bey
   }
 }
 
+// ── GET /api/patient/consultation-requests ────────────────────────────────────
+// Staff — list all consultation requests (from the public "request a consult" form).
+router.get('/api/patient/consultation-requests', async (req, res) => {
+  const status  = req.query.status as string | undefined;
+  const limit   = Math.min(parseInt((req.query.limit as string) ?? '100'), 200);
+
+  try {
+    let query = sb()
+      .from('consultation_requests')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (status) query = query.eq('status', status);
+
+    const { data, error } = await query;
+    if (error) throw error;
+    res.json({ requests: data ?? [] });
+  } catch (err) {
+    req.log.error({ err }, '[portal/consultation-requests] list error');
+    res.status(500).json({ error: String(err) });
+  }
+});
+
+// ── PATCH /api/patient/consultation-requests/:id ──────────────────────────────
+// Staff — update status and/or staff_notes on a consultation request.
+router.patch('/api/patient/consultation-requests/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status, staff_notes } = (req.body ?? {}) as { status?: string; staff_notes?: string };
+
+  const VALID_STATUSES = ['new', 'contacted', 'registered'];
+  if (status !== undefined && !VALID_STATUSES.includes(status)) {
+    res.status(400).json({ error: `status must be one of: ${VALID_STATUSES.join(', ')}` });
+    return;
+  }
+
+  const updates: Record<string, unknown> = {};
+  if (status !== undefined) updates.status = status;
+  if (staff_notes !== undefined) updates.staff_notes = staff_notes;
+
+  if (Object.keys(updates).length === 0) {
+    res.status(400).json({ error: 'Nothing to update' });
+    return;
+  }
+
+  try {
+    const { error } = await sb().from('consultation_requests').update(updates).eq('id', id);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err }, '[portal/consultation-requests/:id] error');
+    res.status(500).json({ error: String(err) });
+  }
+});
+
 // ── POST /api/patient/request-consult ────────────────────────────────────────
 // Public endpoint — no auth required. Saves a consultation request from a
 // new patient who does not yet have a portal account.

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { hasRole } from '@/lib/roles';
+import ConsultationRequestsView from './ConsultationRequestsView';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -145,6 +146,8 @@ function SourceBadge({ source }: { source?: string }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+type InboxView = 'bookings' | 'consult_requests';
+
 export interface BookingInboxTabProps {
   /** If provided, only bookings with this status are shown. */
   filterStatus?: string;
@@ -183,6 +186,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [nrErr, setNrErr]                     = useState<string | null>(null);
   const [nrOk, setNrOk]                       = useState(false);
   const nrNameRef                             = useRef<HTMLInputElement>(null);
+  const [view, setView]                       = useState<InboxView>('bookings');
 
   const load = useCallback(async () => {
     try {
@@ -296,31 +300,28 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
 
   const pendingCount = requests.filter(r => r.status === 'pending').length;
 
-  // ── Loading / error states ─────────────────────────────────────────────────
+  // ── Layout ────────────────────────────────────────────────────────────────
 
-  if (loading) {
-    return (
-      <div style={{ padding: '40px 24px', color: '#6b7280', textAlign: 'center' }}>
-        Loading booking requests…
+  const TAB_STYLE = (active: boolean) => ({
+    padding: '10px 16px', fontSize: 13, fontWeight: active ? 700 : 500,
+    color: active ? '#0d9488' : '#6b7280', background: 'none', border: 'none',
+    borderBottom: active ? '2px solid #0d9488' : '2px solid transparent',
+    cursor: 'pointer', transition: 'color .15s',
+  });
+
+  const bookingsContent = loading ? (
+    <div style={{ padding: '40px 24px', color: '#6b7280', textAlign: 'center' }}>
+      Loading booking requests…
+    </div>
+  ) : error ? (
+    <div style={{ padding: '24px' }}>
+      <div style={{ padding: '12px 16px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 13 }}>
+        Could not load bookings: {error}
+        <button onClick={() => void load()} style={{ marginLeft: 12, padding: '2px 10px', borderRadius: 6, border: '1px solid #fca5a5', background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: 12 }}>Retry</button>
       </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ padding: '24px' }}>
-        <div style={{ padding: '12px 16px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 13 }}>
-          Could not load bookings: {error}
-          <button onClick={() => void load()} style={{ marginLeft: 12, padding: '2px 10px', borderRadius: 6, border: '1px solid #fca5a5', background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: 12 }}>Retry</button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Main layout ────────────────────────────────────────────────────────────
-
-  return (
-    <div style={{ display: 'flex', gap: 0, height: '100%', minHeight: 0 }}>
+    </div>
+  ) : (
+    <div style={{ display: 'flex', gap: 0, flex: 1, minHeight: 0, overflow: 'hidden' }}>
 
       {/* ── Left: booking list ─────────────────────────────────────────────── */}
       <div style={{
@@ -824,6 +825,29 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               )}
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+      {/* Tab nav */}
+      <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', paddingLeft: 8, flexShrink: 0, background: '#fafafa' }}>
+        <button onClick={() => setView('bookings')} style={TAB_STYLE(view === 'bookings')}>
+          Booking Requests{pendingCount > 0 ? ` (${pendingCount})` : ''}
+        </button>
+        <button onClick={() => setView('consult_requests')} style={TAB_STYLE(view === 'consult_requests')}>
+          Public Enquiries
+        </button>
+      </div>
+      {view === 'consult_requests' ? (
+        <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+          <ConsultationRequestsView />
+        </div>
+      ) : (
+        <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          {bookingsContent}
         </div>
       )}
     </div>
