@@ -42,6 +42,11 @@ export default function PatientDashboardPage() {
 
   useEffect(() => {
     async function load() {
+      // Magic link lands here with #access_token in the hash — wait for
+      // onAuthStateChange SIGNED_IN instead of redirecting immediately.
+      if (typeof window !== 'undefined' && window.location.hash.includes('access_token')) {
+        return;
+      }
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { router.replace('/patient/login'); return; }
 
