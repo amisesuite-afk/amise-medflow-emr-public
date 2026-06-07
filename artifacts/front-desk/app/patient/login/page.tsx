@@ -110,16 +110,26 @@ function LoginContent() {
     setErrMsg('');
 
     const sb = getPatientClient();
-    const { error } = await sb.auth.verifyOtp({
+
+    // signInWithOtp generates a magiclink-type token; try both
+    let result = await sb.auth.verifyOtp({
       email: email.trim().toLowerCase(),
       token: code,
-      type: 'email',
+      type: 'magiclink',
     });
+    if (result.error) {
+      result = await sb.auth.verifyOtp({
+        email: email.trim().toLowerCase(),
+        token: code,
+        type: 'email',
+      });
+    }
+    const { error } = result;
 
     setLoading(false);
 
     if (error) {
-      setErrMsg('That code is invalid or has expired. Please request a new one.');
+      setErrMsg(error.message ?? 'That code is invalid or has expired. Please request a new one.');
       setStage('error');
     } else {
       router.replace(next);
