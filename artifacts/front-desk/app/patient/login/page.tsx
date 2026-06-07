@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { Suspense, useState, useEffect, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 
 const TEAL = '#0d9488';
@@ -53,7 +53,6 @@ const s = {
 
 // useSearchParams must be inside a Suspense boundary
 function LoginContent() {
-  const router = useRouter();
   const params = useSearchParams();
   const next = params.get('next') ?? '/patient';
 
@@ -70,13 +69,13 @@ function LoginContent() {
   useEffect(() => {
     const sb = getPatientClient();
     void sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) router.replace(next);
+      if (session) window.location.href = next;
     });
     const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
-      if (session) router.replace(next);
+      if (session) window.location.href = next;
     });
     return () => subscription.unsubscribe();
-  }, [next, router]);
+  }, [next]);
 
   async function sendCode() {
     if (!email.trim() || inFlight.current) return;
@@ -125,10 +124,11 @@ function LoginContent() {
     });
 
     if (data.session) {
-      // Don't flip loading/inFlight back — a stray re-render must not show
-      // the error stage while the redirect is in flight (the cause of the
-      // "successful sign-in followed by an expired-token flash" reports).
-      router.replace(next);
+      // Hard navigation, not router.replace() — the Next.js client router can
+      // silently stall after this async auth state change (confirmed: user saw
+      // "Verifying…" hang until a manual refresh). A full page load reliably
+      // picks up the now-persisted session.
+      window.location.href = next;
       return;
     }
 

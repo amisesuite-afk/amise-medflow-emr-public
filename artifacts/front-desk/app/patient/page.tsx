@@ -43,7 +43,7 @@ export default function PatientDashboardPage() {
   useEffect(() => {
     async function load() {
       const { data: { session } } = await sb.auth.getSession();
-      if (!session) { router.replace('/patient/login'); return; }
+      if (!session) { window.location.href = '/patient/login'; return; }
 
       const [{ data: pData }, { data: aData }] = await Promise.all([
         sb.from('patients').select('*').single(),
@@ -69,7 +69,7 @@ export default function PatientDashboardPage() {
 
   async function signOut() {
     await sb.auth.signOut();
-    router.replace('/patient/login');
+    window.location.href = '/patient/login';
   }
 
   if (loading) {

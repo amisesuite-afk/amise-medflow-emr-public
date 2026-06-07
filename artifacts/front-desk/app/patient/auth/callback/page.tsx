@@ -3,7 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { Suspense, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 
 const TEAL = '#0d9488';
@@ -27,28 +27,30 @@ const Spinner = () => (
 
 // useSearchParams must be inside a Suspense boundary
 function CallbackContent() {
-  const router = useRouter();
   const params = useSearchParams();
 
   useEffect(() => {
     const sb   = getPatientClient();
     const code = params.get('code');
 
+    // Hard navigation, not router.replace() — the Next.js client router can
+    // silently stall after an async auth state change. A full page load
+    // reliably picks up the now-persisted session.
     if (code) {
       void sb.auth.exchangeCodeForSession(code).then(({ data, error }) => {
         if (data.session) {
-          router.replace('/patient');
+          window.location.href = '/patient';
         } else {
           console.error('exchangeCodeForSession failed:', error);
-          router.replace('/patient/login');
+          window.location.href = '/patient/login';
         }
       });
     } else {
       void sb.auth.getSession().then(({ data: { session } }) => {
-        router.replace(session ? '/patient' : '/patient/login');
+        window.location.href = session ? '/patient' : '/patient/login';
       });
     }
-  }, [router, params]);
+  }, [params]);
 
   return <Spinner />;
 }
