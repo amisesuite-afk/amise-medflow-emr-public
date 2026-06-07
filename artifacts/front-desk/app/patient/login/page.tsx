@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 
 const TEAL = '#0d9488';
+const API  = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 
 const s = {
   page: {
@@ -57,8 +58,11 @@ function LoginContent() {
   const next = params.get('next') ?? '/patient';
 
   const [email,      setEmail]      = useState('');
-  const [stage,      setStage]      = useState<'email' | 'sent' | 'error' | 'stuck' | 'redirecting'>('email');
+  const [phone,      setPhone]      = useState('');
+  const [code,       setCode]       = useState('');
+  const [stage,      setStage]      = useState<'email' | 'sent' | 'error' | 'stuck' | 'redirecting' | 'phone' | 'code'>('email');
   const [errMsg,     setErrMsg]     = useState('');
+  const [errOrigin,  setErrOrigin]  = useState<'email' | 'phone' | 'code'>('email');
   const [loading,    setLoading]    = useState(false);
   // Guards against double-fire (e.g. on-screen keyboard "Go" + button tap landing
   // almost simultaneously) — useState is async and can't prevent a same-tick race;
@@ -128,9 +132,66 @@ function LoginContent() {
       } else {
         setErrMsg(error.message);
       }
+      setErrOrigin('email');
       setStage('error');
     } else {
       setStage('sent');
+    }
+  }
+
+  async function sendSmsCode() {
+    if (!phone.trim() || inFlight.current) return;
+    inFlight.current = true;
+    setLoading(true);
+    setErrMsg('');
+
+    try {
+      const r = await fetch(`${API}/api/patient/sms-code/request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phone.trim() }),
+      });
+      const d = await r.json().catch(() => ({})) as { error?: string };
+      if (!r.ok) throw new Error(d.error ?? `HTTP ${r.status}`);
+      setCode('');
+      setStage('code');
+    } catch (e) {
+      setErrMsg(e instanceof Error ? e.message : 'Could not send a code. Please try again.');
+      setErrOrigin('phone');
+      setStage('error');
+    } finally {
+      setLoading(false);
+      inFlight.current = false;
+    }
+  }
+
+  async function verifySmsCode() {
+    if (!code.trim() || inFlight.current) return;
+    inFlight.current = true;
+    setLoading(true);
+    setErrMsg('');
+
+    try {
+      const r = await fetch(`${API}/api/patient/sms-code/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: phone.trim(), code: code.trim() }),
+      });
+      const d = await r.json().catch(() => ({})) as { access_token?: string; refresh_token?: string; error?: string };
+      if (!r.ok || !d.access_token || !d.refresh_token) throw new Error(d.error ?? 'Incorrect or expired code. Please try again.');
+
+      const sb = getPatientClient();
+      const { error } = await sb.auth.setSession({ access_token: d.access_token, refresh_token: d.refresh_token });
+      if (error) throw error;
+      // The session listener in the effect above takes it from here —
+      // it will detect the new session and redirect.
+    } catch (e) {
+      setErrMsg(e instanceof Error ? e.message : 'Incorrect or expired code. Please try again.');
+      setErrOrigin('code');
+      setStage('error');
+    } finally {
+      setLoading(false);
+      inFlight.current = false;
     }
   }
 
@@ -195,6 +256,125 @@ function LoginContent() {
             >
               {loading ? 'Sending…' : 'Send sign-in link →'}
             </button>
+
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <button
+                type="button"
+                onClick={() => { setStage('phone'); setErrMsg(''); }}
+                style={{ fontSize: 13, color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: 3 }}
+              >
+                Don't check email much? Text me a sign-in code instead →
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Phone — request an SMS code */}
+        {stage === 'phone' && (
+          <>
+            <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6, marginBottom: 24 }}>
+              Enter the mobile number on file with us and we'll text you a 6-digit sign-in code.
+            </p>
+
+            <label style={s.label}>Mobile Number</label>
+            <input
+              type="tel"
+              inputMode="tel"
+              value={phone}
+              autoComplete="tel"
+              placeholder="758 XXX XXXX"
+              onChange={e => setPhone(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') void sendSmsCode(); }}
+              style={s.input}
+            />
+
+            <button
+              type="button"
+              onClick={() => void sendSmsCode()}
+              disabled={!phone.trim() || loading}
+              style={{
+                display: 'block', width: '100%', marginTop: 16, padding: '13px',
+                borderRadius: 9, border: 'none',
+                background: !phone.trim() || loading ? '#1e3a5f' : TEAL,
+                color:      !phone.trim() || loading ? '#475569' : '#fff',
+                fontWeight: 700, fontSize: 15,
+                cursor: !phone.trim() || loading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {loading ? 'Sending…' : 'Text me a code →'}
+            </button>
+
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <button
+                type="button"
+                onClick={() => { setStage('email'); setErrMsg(''); }}
+                style={{ fontSize: 13, color: TEAL, background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                ← Use email instead
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* Code — enter the SMS code */}
+        {stage === 'code' && (
+          <>
+            <div style={{ textAlign: 'center', marginBottom: 20 }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>💬</div>
+              <h2 style={{ margin: '0 0 10px', fontSize: 18, fontWeight: 700, color: '#4ade80' }}>
+                Enter your code
+              </h2>
+              <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', lineHeight: 1.7 }}>
+                We texted a 6-digit code to <strong style={{ color: '#e2e8f0' }}>{phone}</strong>.
+                It's valid for one hour.
+              </p>
+            </div>
+
+            <label style={s.label}>Sign-in Code</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={code}
+              placeholder="123456"
+              onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              onKeyDown={e => { if (e.key === 'Enter') void verifySmsCode(); }}
+              style={{ ...s.input, letterSpacing: '0.3em', textAlign: 'center', fontSize: 20, fontWeight: 700 }}
+            />
+
+            <button
+              type="button"
+              onClick={() => void verifySmsCode()}
+              disabled={code.trim().length < 6 || loading}
+              style={{
+                display: 'block', width: '100%', marginTop: 16, padding: '13px',
+                borderRadius: 9, border: 'none',
+                background: code.trim().length < 6 || loading ? '#1e3a5f' : TEAL,
+                color:      code.trim().length < 6 || loading ? '#475569' : '#fff',
+                fontWeight: 700, fontSize: 15,
+                cursor: code.trim().length < 6 || loading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {loading ? 'Verifying…' : 'Verify & sign in →'}
+            </button>
+
+            <div style={{ textAlign: 'center', marginTop: 18 }}>
+              <button
+                type="button"
+                onClick={() => void sendSmsCode()}
+                disabled={loading}
+                style={{ fontSize: 13, color: '#64748b', background: 'none', border: 'none', cursor: loading ? 'not-allowed' : 'pointer', marginRight: 16 }}
+              >
+                Resend code
+              </button>
+              <button
+                type="button"
+                onClick={() => { setStage('phone'); setCode(''); setErrMsg(''); }}
+                style={{ fontSize: 13, color: TEAL, background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                ← Change number
+              </button>
+            </div>
           </>
         )}
 
@@ -274,7 +454,7 @@ function LoginContent() {
             </div>
             <button
               type="button"
-              onClick={() => setStage('email')}
+              onClick={() => setStage(errOrigin === 'code' ? 'phone' : errOrigin)}
               style={{ fontSize: 13, color: TEAL, background: 'none', border: 'none', cursor: 'pointer' }}
             >
               ← Try again

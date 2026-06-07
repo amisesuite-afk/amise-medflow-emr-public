@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
-import { sb, audit } from '../lib/supabase.js';
+import { sb, getSupabaseAdmin, audit } from '../lib/supabase.js';
+import { sendSms } from '../lib/sms.js';
 
 const router = Router();
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -85,6 +86,127 @@ router.post('/api/patient/invite', async (req, res) => {
   } catch (err) {
     req.log.error({ err }, '[portal/invite] error');
     res.status(500).json({ error: String(err) });
+  }
+});
+
+// ── SMS sign-in (alternative to email magic-link) ────────────────────────────
+// Email magic-links are fragile in in-app browsers and useless for patients
+// who don't check email regularly. This reuses Supabase's own OTP machinery —
+// generateLink() returns a 6-digit `email_otp` alongside the email link — so
+// no separate code-storage table is needed; we just deliver that code over SMS
+// instead of email and verify it the normal way.
+
+const smsCodeCooldown = new Map<string, number>();
+const SMS_CODE_COOLDOWN_MS = 60_000;
+
+function normalizePhone(raw: string): string {
+  const digits = raw.replace(/\D/g, '');
+  return digits.length > 10 ? digits.slice(-10) : digits;
+}
+
+async function findPortalPatientByPhone(normalPhone: string): Promise<{ id: string; email: string; phone: string } | null> {
+  const { data: candidates } = await sb()
+    .from('patients')
+    .select('id, email, phone')
+    .eq('portal_enabled', true)
+    .not('email', 'is', null)
+    .not('phone', 'is', null);
+
+  const match = candidates?.find(p => p.phone && normalizePhone(p.phone) === normalPhone);
+  return match?.email ? { id: match.id, email: match.email, phone: match.phone! } : null;
+}
+
+// ── POST /api/patient/sms-code/request ────────────────────────────────────────
+// Public — sends a one-time sign-in code by SMS. Always responds the same way
+// regardless of whether the number matches a patient, so the endpoint can't be
+// used to enumerate registered phone numbers.
+router.post('/api/patient/sms-code/request', async (req, res) => {
+  const { phone } = (req.body ?? {}) as { phone?: string };
+  if (!phone?.trim()) {
+    res.status(400).json({ error: 'phone is required' });
+    return;
+  }
+
+  const normalPhone = normalizePhone(phone);
+  if (normalPhone.length < 7) {
+    res.status(400).json({ error: 'Please enter a valid phone number' });
+    return;
+  }
+
+  const lastSent = smsCodeCooldown.get(normalPhone);
+  if (lastSent && Date.now() - lastSent < SMS_CODE_COOLDOWN_MS) {
+    res.status(429).json({ error: 'Please wait a minute before requesting another code' });
+    return;
+  }
+
+  try {
+    const patient = await findPortalPatientByPhone(normalPhone);
+
+    if (patient) {
+      const { data: link, error: linkErr } = await sb().auth.admin.generateLink({
+        type: 'magiclink',
+        email: patient.email,
+      });
+      const code = link?.properties?.email_otp;
+
+      if (!linkErr && code) {
+        await sendSms({
+          to: patient.phone,
+          body: `Your Amise Medical Services sign-in code is ${code}. It expires in 1 hour — don't share it with anyone.`,
+        });
+        smsCodeCooldown.set(normalPhone, Date.now());
+      } else {
+        req.log.warn({ err: linkErr }, '[portal/sms-code/request] generateLink failed');
+      }
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err }, '[portal/sms-code/request] error');
+    res.status(500).json({ error: 'Could not send a code. Please try again.' });
+  }
+});
+
+// ── POST /api/patient/sms-code/verify ─────────────────────────────────────────
+// Verifies the code against Supabase Auth server-side — using a throwaway
+// client so the patient's session never touches the shared admin client — and
+// hands back session tokens for the browser to install via setSession().
+// The patient's email is never sent to the browser.
+router.post('/api/patient/sms-code/verify', async (req, res) => {
+  const { phone, code } = (req.body ?? {}) as { phone?: string; code?: string };
+  if (!phone?.trim() || !code?.trim()) {
+    res.status(400).json({ error: 'phone and code are required' });
+    return;
+  }
+
+  const normalPhone = normalizePhone(phone);
+  const genericError = 'Incorrect or expired code. Please check and try again, or request a new one.';
+
+  try {
+    const patient = await findPortalPatientByPhone(normalPhone);
+    if (!patient) {
+      res.status(400).json({ error: genericError });
+      return;
+    }
+
+    const { data, error } = await getSupabaseAdmin().auth.verifyOtp({
+      email: patient.email,
+      token: code.trim(),
+      type: 'email',
+    });
+
+    if (error || !data.session) {
+      res.status(400).json({ error: genericError });
+      return;
+    }
+
+    res.json({
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+    });
+  } catch (err) {
+    req.log.error({ err }, '[portal/sms-code/verify] error');
+    res.status(500).json({ error: 'Could not verify your code. Please try again.' });
   }
 });
 
