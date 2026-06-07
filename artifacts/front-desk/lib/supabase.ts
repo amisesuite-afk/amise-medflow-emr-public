@@ -201,3 +201,76 @@ export async function markDocumentReviewed(id: string, staffUserId: string | nul
     .eq('id', id);
   if (error) throw new Error(`markDocumentReviewed: ${error.message}`);
 }
+
+// On-demand "old system" migration — staff attach a patient's historic
+// records (paper/PDF scans from the previous system) while handling a
+// pending request or an upcoming/in-progress encounter, never as a bulk job.
+// Matches an existing patient by email/phone, or creates one (mirrors the
+// match-or-create logic used when a consultation request is "registered").
+export async function findOrCreatePatientForBooking(
+  booking: { patient_name: string; patient_email: string | null; patient_phone: string | null },
+): Promise<string> {
+  const sb = getServiceClient();
+  const normalEmail = booking.patient_email?.trim().toLowerCase() || null;
+
+  if (normalEmail) {
+    const { data: existing } = await sb.from('patients').select('id').eq('email', normalEmail).maybeSingle();
+    if (existing) return existing.id;
+  }
+  if (booking.patient_phone) {
+    const { data: existing } = await sb.from('patients').select('id').eq('phone', booking.patient_phone).maybeSingle();
+    if (existing) return existing.id;
+  }
+
+  const { data: created, error } = await sb
+    .from('patients')
+    .insert({ full_name: booking.patient_name, phone: booking.patient_phone, email: normalEmail })
+    .select('id')
+    .single();
+  if (error) throw new Error(`findOrCreatePatientForBooking: ${error.message}`);
+  return created.id;
+}
+
+export interface RegisterHistoricDocumentArgs {
+  patientId: string;
+  documentType: string;
+  title: string;
+  fileName: string;
+  mimeType: string;
+  fileBuffer: Buffer;
+}
+
+const DOCUMENTS_BUCKET = 'patient-documents';
+
+export async function registerHistoricDocument(args: RegisterHistoricDocumentArgs): Promise<string> {
+  const sb = getServiceClient();
+  const ts = Date.now();
+  const safeName = args.fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+  // `staff/` prefix distinguishes staff-attached historic scans from
+  // patient-portal uploads (which live under their own auth user id).
+  const path = `staff/${args.patientId}/${ts}_${safeName}`;
+
+  const { error: uploadErr } = await sb.storage.from(DOCUMENTS_BUCKET).upload(path, args.fileBuffer, {
+    contentType: args.mimeType,
+    upsert: false,
+  });
+  if (uploadErr) throw new Error(`registerHistoricDocument upload: ${uploadErr.message}`);
+
+  const { data, error } = await sb
+    .from('documents')
+    .insert({
+      patient_id:           args.patientId,
+      document_type:        args.documentType,
+      title:                args.title,
+      file_name:            args.fileName,
+      storage_path:         path,
+      mime_type:            args.mimeType,
+      file_size_bytes:      args.fileBuffer.length,
+      source:               'scanned',
+      ai_extraction_status: 'pending',
+    })
+    .select('id')
+    .single();
+  if (error) throw new Error(`registerHistoricDocument insert: ${error.message}`);
+  return data.id;
+}

@@ -408,6 +408,18 @@ router.post('/api/patient/documents/register', async (req, res) => {
   }
 });
 
+// ── POST /api/patient/documents/:id/extract ──────────────────────────────────
+// Internal/staff trigger — (re)runs the triage-only extraction pass for a
+// document. Used by the staff "attach historic record" flow (on-demand
+// migration of a patient's old paper/PDF records when they're pending or
+// coming in for an encounter) and to retry a failed pass. Fire-and-forget,
+// guarded against double-processing inside extractDocumentInsights itself.
+router.post('/api/patient/documents/:id/extract', async (req, res) => {
+  const { id } = req.params;
+  res.json({ status: 'queued' });
+  void extractDocumentInsights(id);
+});
+
 const EXTRACTABLE_MIME = new Set([
   'application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp',
 ]);
@@ -422,7 +434,7 @@ async function extractDocumentInsights(documentId: string): Promise<void> {
   try {
     const { data: doc, error } = await sb()
       .from('documents')
-      .select('id, patient_id, document_type, title, storage_path, mime_type')
+      .select('id, patient_id, document_type, title, storage_path, mime_type, ai_extraction_status')
       .eq('id', documentId)
       .single();
 
@@ -430,6 +442,10 @@ async function extractDocumentInsights(documentId: string): Promise<void> {
       console.error('[portal/documents] document not found', documentId);
       return;
     }
+
+    // Avoid double-processing — relevant when /extract is used to (re)trigger
+    // a document that's mid-flight or already done.
+    if (doc.ai_extraction_status === 'processing' || doc.ai_extraction_status === 'done') return;
 
     if (!doc.storage_path || !doc.mime_type || !EXTRACTABLE_MIME.has(doc.mime_type)) {
       await sb().from('documents').update({

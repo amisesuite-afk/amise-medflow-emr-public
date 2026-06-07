@@ -71,6 +71,10 @@ export default function DashboardClient({
   const [urgentLoading, setUrgentLoading] = useState<Record<string, boolean>>({});
   const [urgentMsg,     setUrgentMsg]     = useState<Record<string, string>>({});
   const [reviewing, setReviewing] = useState<Record<string, boolean>>({});
+  const [migrateOpen,    setMigrateOpen]    = useState<Record<string, boolean>>({});
+  const [migrateType,    setMigrateType]    = useState<Record<string, string>>({});
+  const [migrateLoading, setMigrateLoading] = useState<Record<string, boolean>>({});
+  const [migrateMsg,     setMigrateMsg]     = useState<Record<string, string>>({});
   const clock = useLiveClock();
 
   const sorted = sortThreads(threads);
@@ -146,6 +150,38 @@ export default function DashboardClient({
       }
     } finally {
       setReviewing(prev => ({ ...prev, [documentId]: false }));
+    }
+  }
+
+  // On-demand "old system" migration — staff attach a patient's historic
+  // paper/PDF records while handling a pending request or upcoming encounter
+  // (never a bulk import). Reuses the same triage-only AI extraction pipeline
+  // as portal uploads; results land in the Documents review tab.
+  async function attachHistoricRecord(bookingId: string, file: File) {
+    setMigrateLoading(prev => ({ ...prev, [bookingId]: true }));
+    setMigrateMsg(prev => ({ ...prev, [bookingId]: '' }));
+    try {
+      const form = new FormData();
+      form.set('bookingId', bookingId);
+      form.set('documentType', migrateType[bookingId] ?? 'other');
+      form.set('file', file);
+
+      const r = await fetch('/api/documents/migrate', {
+        method: 'POST',
+        headers: { 'x-internal-secret': secret },
+        body: form,
+      });
+      const d = await r.json() as { success?: boolean; error?: string };
+      if (d.success) {
+        setMigrateMsg(prev => ({ ...prev, [bookingId]: 'Attached — queued for AI extraction' }));
+        setMigrateOpen(prev => ({ ...prev, [bookingId]: false }));
+      } else {
+        setMigrateMsg(prev => ({ ...prev, [bookingId]: d.error ?? 'Could not attach the file' }));
+      }
+    } catch {
+      setMigrateMsg(prev => ({ ...prev, [bookingId]: 'Network error' }));
+    } finally {
+      setMigrateLoading(prev => ({ ...prev, [bookingId]: false }));
     }
   }
 
@@ -524,6 +560,75 @@ export default function DashboardClient({
                         <span style={{ fontSize: 12, color: msg.startsWith('Confirmed') ? '#34d399' : '#f87171' }}>
                           {msg}
                         </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* On-demand "old system" migration — attach historic records
+                      while this patient is pending or coming in for an encounter */}
+                  {!['lapsed', 'cancelled', 'declined'].includes(booking.status) && (
+                    <div style={{ marginTop: 8 }}>
+                      {!migrateOpen[booking.id] ? (
+                        <button
+                          onClick={() => setMigrateOpen(prev => ({ ...prev, [booking.id]: true }))}
+                          style={{
+                            padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
+                            background: 'transparent', color: '#94a3b8',
+                            border: '1px solid #374151', cursor: 'pointer',
+                          }}
+                        >
+                          📎 Attach old records
+                        </button>
+                      ) : (
+                        <div style={{
+                          marginTop: 4, padding: '10px 12px', borderRadius: 6,
+                          background: '#0f172a', border: '1px solid #374151',
+                          display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center',
+                        }}>
+                          <span style={{ fontSize: 11, color: '#6b7280' }}>Attach a scan for {booking.patient_name}:</span>
+                          <select
+                            value={migrateType[booking.id] ?? 'other'}
+                            onChange={e => setMigrateType(prev => ({ ...prev, [booking.id]: e.target.value }))}
+                            style={{
+                              fontSize: 11, padding: '3px 6px', borderRadius: 4,
+                              background: '#1e293b', color: '#cbd5e1', border: '1px solid #374151',
+                            }}
+                          >
+                            <option value="lab_report">Lab report</option>
+                            <option value="imaging_report">Imaging report</option>
+                            <option value="referral_letter">Referral letter</option>
+                            <option value="surgical_report">Surgical report</option>
+                            <option value="discharge_summary">Discharge summary</option>
+                            <option value="prescription">Prescription</option>
+                            <option value="other">Other</option>
+                          </select>
+                          <input
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png,.webp"
+                            disabled={migrateLoading[booking.id]}
+                            onChange={e => {
+                              const f = e.target.files?.[0];
+                              if (f) void attachHistoricRecord(booking.id, f);
+                              e.target.value = '';
+                            }}
+                            style={{ fontSize: 11, color: '#94a3b8', maxWidth: 220 }}
+                          />
+                          <button
+                            onClick={() => setMigrateOpen(prev => ({ ...prev, [booking.id]: false }))}
+                            style={{ fontSize: 11, color: '#6b7280', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                          >
+                            Cancel
+                          </button>
+                          {migrateLoading[booking.id] && <span style={{ fontSize: 11, color: '#5eead4' }}>Uploading…</span>}
+                        </div>
+                      )}
+                      {migrateMsg[booking.id] && (
+                        <div style={{
+                          marginTop: 4, fontSize: 11,
+                          color: migrateMsg[booking.id].startsWith('Attached') ? '#34d399' : '#f87171',
+                        }}>
+                          {migrateMsg[booking.id]}
+                        </div>
                       )}
                     </div>
                   )}
