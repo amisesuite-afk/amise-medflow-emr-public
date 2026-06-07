@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 
@@ -51,7 +51,8 @@ const s = {
   } as React.CSSProperties,
 };
 
-export default function PatientLoginPage() {
+// useSearchParams must be inside a Suspense boundary
+function LoginContent() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get('next') ?? '/patient';
@@ -146,7 +147,7 @@ export default function PatientLoginPage() {
         {stage === 'email' && (
           <>
             <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6, marginBottom: 24 }}>
-              Enter your email address and we will send you a 6-digit sign-in code.
+              Enter your email address and we will send you a sign-in code.
             </p>
 
             <label style={s.label}>Email Address</label>
@@ -187,13 +188,13 @@ export default function PatientLoginPage() {
                 Check your email
               </h2>
               <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', lineHeight: 1.7 }}>
-                A 6-digit code was sent to{' '}
+                A sign-in code was sent to{' '}
                 <strong style={{ color: '#e2e8f0' }}>{email}</strong>.
-                Open the email and enter the code below.
+                Enter it below — it expires in 1 hour.
               </p>
             </div>
 
-            <label style={s.label}>6-Digit Code</label>
+            <label style={s.label}>Sign-in Code</label>
             <input
               type="text"
               inputMode="numeric"
@@ -204,8 +205,6 @@ export default function PatientLoginPage() {
               onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
               onKeyDown={e => { if (e.key === 'Enter') void verifyCode(); }}
               style={{ ...s.input, fontSize: 28, letterSpacing: '0.3em', textAlign: 'center' }}
-              // eslint-disable-next-line jsx-a11y/no-autofocus
-              autoFocus
             />
 
             <button
@@ -274,5 +273,18 @@ export default function PatientLoginPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function PatientLoginPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: '100vh', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', border: '3px solid #0d9488', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite' }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
