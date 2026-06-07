@@ -36,7 +36,7 @@ interface DetailQ {
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 const SURGICAL_COMPLAINTS = [
-  { value: 'abdominal-pain',  label: 'Abdominal pain',          icon: '🫁' },
+  { value: 'abdominal-pain',  label: 'Abdominal pain',          icon: '🫃' },
   { value: 'lump',            label: 'Lump or swelling',        icon: '🔵' },
   { value: 'hernia',          label: 'Hernia',                  icon: '🔺' },
   { value: 'bowel-change',    label: 'Change in bowel habits',  icon: '🔄' },
