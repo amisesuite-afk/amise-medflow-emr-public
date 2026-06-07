@@ -36,7 +36,7 @@ const Q2: Record<Path, Opt[]> = {
   surgical: [
     { id: 'new_consult', emoji: '🆕', label: 'First-time consultation',    sub: 'New patient, never seen Dr. Kabiye'     },
     { id: 'follow_up',  emoji: '🔄', label: 'Follow-up visit',             sub: 'Continuing care after a previous visit'  },
-    { id: 'endoscopy',  emoji: '🩻', label: 'Endoscopy or colonoscopy',     sub: 'Scope procedure, ERCP, or work-up'      },
+    { id: 'endoscopy',  emoji: '🔬', label: 'Endoscopy or colonoscopy',     sub: 'Scope procedure, ERCP, or work-up'      },
     { id: 'not_sure',   emoji: '❓', label: "Not sure what I need",         sub: 'Happy for the team to guide me'         },
   ],
   symptoms: [
