@@ -21,6 +21,52 @@ async function getPatientId(authHeader: string | undefined): Promise<string | nu
   return patient?.id ?? null;
 }
 
+// ── Portal invite helper ──────────────────────────────────────────────────────
+// Creates (or reuses) the Supabase Auth user for an email, sends the magic-link
+// invite, and marks the patient record as portal-enabled. Shared by the manual
+// staff invite endpoint and the auto-invite-on-registration flow below.
+async function sendPortalInvite(patientId: string, normalEmail: string): Promise<string | null> {
+  const portalUrl = process.env.PORTAL_URL ?? 'https://front-desk-amisesuite-afks-projects.vercel.app/patient';
+  // Route through the auth callback (which knows how to parse the implicit-flow
+  // token hash) rather than dumping the link straight on /patient — landing
+  // there directly skips session detection and bounces the patient back to login.
+  const redirectTo = `${new URL(portalUrl).origin}/patient/auth/callback?next=${encodeURIComponent('/patient')}`;
+
+  const { data: invite, error: inviteErr } = await sb().auth.admin.inviteUserByEmail(normalEmail, { redirectTo });
+
+  let authUserId: string | null = null;
+  if (inviteErr) {
+    // User may already exist — look them up
+    if (inviteErr.message?.toLowerCase().includes('already been registered')) {
+      const usersResp = await sb().auth.admin.listUsers();
+      const existing = usersResp.data?.users?.find((u: { email?: string; id: string }) => u.email === normalEmail);
+      authUserId = existing?.id ?? null;
+    } else {
+      throw inviteErr;
+    }
+  } else {
+    authUserId = invite.user?.id ?? null;
+  }
+
+  const updates: Record<string, unknown> = {
+    email: normalEmail,
+    portal_enabled: true,
+    portal_registered_at: new Date().toISOString(),
+  };
+  if (authUserId) updates.auth_user_id = authUserId;
+
+  await sb().from('patients').update(updates).eq('id', patientId);
+
+  await audit({
+    action: 'portal_invite_sent',
+    entityType: 'patient',
+    entityId: patientId,
+    payload: { email: normalEmail, auth_user_id: authUserId },
+  });
+
+  return authUserId;
+}
+
 // ── POST /api/patient/invite ──────────────────────────────────────────────────
 // Staff invites a patient to the portal by email.
 router.post('/api/patient/invite', async (req, res) => {
@@ -32,53 +78,9 @@ router.post('/api/patient/invite', async (req, res) => {
   }
 
   const normalEmail = email.trim().toLowerCase();
-  const portalUrl = process.env.PORTAL_URL ?? 'https://front-desk-amisesuite-afks-projects.vercel.app/patient';
-  // Route the invite link through the auth callback (which knows how to parse
-  // the implicit-flow token hash) rather than dumping it straight on /patient —
-  // landing there directly skips session detection and bounces the patient
-  // back to the login screen.
-  const redirectTo = `${new URL(portalUrl).origin}/patient/auth/callback?next=${encodeURIComponent('/patient')}`;
 
   try {
-    // Invite via Supabase Auth (sends magic-link email)
-    const { data: invite, error: inviteErr } = await sb().auth.admin.inviteUserByEmail(normalEmail, {
-      redirectTo,
-    });
-
-    let authUserId: string | null = null;
-
-    if (inviteErr) {
-      // User may already exist — look them up
-      if (inviteErr.message?.toLowerCase().includes('already been registered')) {
-        const usersResp = await sb().auth.admin.listUsers();
-        const existing = usersResp.data?.users?.find((u: { email?: string; id: string }) => u.email === normalEmail);
-        authUserId = existing?.id ?? null;
-      } else {
-        req.log.warn({ err: inviteErr }, '[portal/invite] inviteUserByEmail failed');
-        res.status(502).json({ error: inviteErr.message });
-        return;
-      }
-    } else {
-      authUserId = invite.user?.id ?? null;
-    }
-
-    // Update patient record
-    const updates: Record<string, unknown> = {
-      email: normalEmail,
-      portal_enabled: true,
-      portal_registered_at: new Date().toISOString(),
-    };
-    if (authUserId) updates.auth_user_id = authUserId;
-
-    await sb().from('patients').update(updates).eq('id', patient_id);
-
-    await audit({
-      action: 'portal_invite_sent',
-      entityType: 'patient',
-      entityId: patient_id,
-      payload: { email: normalEmail, auth_user_id: authUserId },
-    });
-
+    const authUserId = await sendPortalInvite(patient_id, normalEmail);
     res.json({ success: true, auth_user_id: authUserId });
   } catch (err) {
     req.log.error({ err }, '[portal/invite] error');
@@ -245,9 +247,51 @@ router.patch('/api/patient/consultation-requests/:id', async (req, res) => {
   }
 
   try {
+    const { data: request, error: fetchErr } = await sb()
+      .from('consultation_requests')
+      .select('full_name, phone, email, status')
+      .eq('id', id)
+      .single();
+    if (fetchErr) throw fetchErr;
+
     const { error } = await sb().from('consultation_requests').update(updates).eq('id', id);
     if (error) throw error;
-    res.json({ success: true });
+
+    let patientId: string | null = null;
+    let invited = false;
+
+    // Marking a request "registered" is the staff signal that this person is
+    // now a real patient — fold the patient-record creation and portal invite
+    // into that single click instead of two further manual steps. Phone-only
+    // requests fall through untouched: the portal can only invite by email.
+    if (status === 'registered' && request?.status !== 'registered' && request?.email) {
+      const normalEmail = request.email.trim().toLowerCase();
+
+      const { data: existing } = await sb()
+        .from('patients')
+        .select('id, portal_enabled')
+        .eq('email', normalEmail)
+        .maybeSingle();
+
+      if (existing) {
+        patientId = existing.id;
+      } else {
+        const { data: created, error: createErr } = await sb()
+          .from('patients')
+          .insert({ full_name: request.full_name, phone: request.phone, email: normalEmail })
+          .select('id')
+          .single();
+        if (createErr) throw createErr;
+        patientId = created?.id ?? null;
+      }
+
+      if (patientId && !existing?.portal_enabled) {
+        await sendPortalInvite(patientId, normalEmail);
+        invited = true;
+      }
+    }
+
+    res.json({ success: true, patient_id: patientId, invited });
   } catch (err) {
     req.log.error({ err }, '[portal/consultation-requests/:id] error');
     res.status(500).json({ error: String(err) });

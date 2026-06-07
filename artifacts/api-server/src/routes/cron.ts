@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { sb, getSupabaseAdmin, audit } from '../lib/supabase.js';
-import { sendSms, smsBody48h, smsBody2h, smsBodyStaffEscalation, getPrepInstructions } from '../lib/sms.js';
+import { sendSms, smsBody48h, smsBody2h, smsBodyIntakeReminder, smsBodyStaffEscalation, getPrepInstructions } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { draftReply } from '../lib/claude.js';
 import { formatSlotForDisplay } from '../lib/calendar.js';
@@ -78,6 +78,40 @@ router.post('/api/cron/reminders', async (req, res) => {
         await sb().from('confirmed_appointments').update({ email_24h_sent: true }).eq('id', appt.id);
         await audit({ action: 'remind', entityType: 'appointment', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions } });
         results.push({ id: appt.id, action: 'email_24h_sent' });
+      }
+    }
+
+    // Pre-visit questionnaire nudge — piggybacks on the same 48h window so the
+    // doctor has the AI pre-consult summary in hand before the appointment.
+    // Only fires for patients who (a) have a portal account and (b) haven't
+    // submitted an intake yet — the questionnaire is otherwise an orphaned
+    // self-serve card on the portal home page that nobody is prompted to use.
+    if (hoursUntil <= 48 && hoursUntil > 2 && !appt.intake_reminder_sent && appt.patient_phone && appt.patient_email) {
+      const { data: patient } = await sb()
+        .from('patients')
+        .select('id')
+        .eq('email', appt.patient_email.toLowerCase())
+        .eq('portal_enabled', true)
+        .maybeSingle();
+
+      if (patient) {
+        const { data: intake } = await sb()
+          .from('patient_intake')
+          .select('id')
+          .eq('patient_id', patient.id)
+          .limit(1)
+          .maybeSingle();
+
+        if (!intake) {
+          const portalOrigin = new URL(process.env.PORTAL_URL ?? 'https://front-desk-amisesuite-afks-projects.vercel.app/patient').origin;
+          const body = smsBodyIntakeReminder({ firstName: appt.patient_first_name, portalOrigin });
+          const result = await sendSms({ to: appt.patient_phone, body });
+          if (result.action === 'sent') {
+            await sb().from('confirmed_appointments').update({ intake_reminder_sent: true }).eq('id', appt.id);
+            await audit({ action: 'remind', entityType: 'appointment', entityId: appt.id, payload: { kind: 'intake_reminder_sms' } });
+            results.push({ id: appt.id, action: 'intake_reminder_sent' });
+          }
+        }
       }
     }
 

@@ -57,6 +57,7 @@ export default function ConsultationRequestsView() {
   const [notes, setNotes]         = useState('');
   const [saving, setSaving]       = useState(false);
   const [saveOk, setSaveOk]       = useState(false);
+  const [saveMsg, setSaveMsg]     = useState('Saved');
   const [saveErr, setSaveErr]     = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -99,6 +100,12 @@ export default function ConsultationRequestsView() {
         const d = await r.json().catch(() => ({})) as { error?: string };
         throw new Error(d.error ?? `HTTP ${r.status}`);
       }
+      const d = await r.json().catch(() => ({})) as { invited?: boolean };
+      setSaveMsg(
+        body.status === 'registered' && d.invited
+          ? '✓ Patient record created and portal invite sent'
+          : '✓ Saved'
+      );
       setSaveOk(true);
       const merged = { ...body };
       setRequests(prev => prev.map(req => req.id === id ? { ...req, ...merged } as ConsultRequest : req));
@@ -271,7 +278,7 @@ export default function ConsultationRequestsView() {
 
           {saveOk && (
             <div style={{ marginBottom: 12, padding: '8px 12px', borderRadius: 6, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontSize: 12, fontWeight: 600 }}>
-              ✓ Saved
+              {saveMsg}
             </div>
           )}
           {saveErr && (

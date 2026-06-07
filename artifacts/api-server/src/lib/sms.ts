@@ -103,3 +103,7 @@ export function smsBody48h(opts: { day: string; date: string; time: string; loca
 export function smsBody2h(opts: { location: string }): string {
   return `Reminder: your appt with Dr Kabiye is in 2 hours at ${opts.location}. See you soon. Amise Medical.`;
 }
+
+export function smsBodyIntakeReminder(opts: { firstName: string; portalOrigin: string }): string {
+  return `Hi ${opts.firstName}, before your visit with Dr Kabiye please take 2 mins to complete your pre-visit questionnaire: ${opts.portalOrigin}/patient/intake — it helps us prepare for your appointment. Amise Medical.`;
+}
