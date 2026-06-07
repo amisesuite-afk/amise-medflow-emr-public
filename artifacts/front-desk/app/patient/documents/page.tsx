@@ -9,6 +9,7 @@ import { getPatientClient } from '@/lib/patient-supabase';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TEAL = '#0d9488';
+const API  = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 const BUCKET = 'patient-documents';
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_MIME = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -114,7 +115,34 @@ export default function DocumentsPage() {
       return;
     }
 
+    // Register the file for the clinical pipeline (metadata row + AI triage
+    // extraction). Best-effort — the upload itself already succeeded, so a
+    // failure here shouldn't block the patient or surface as an error.
+    void registerDocument(path, file);
+
     await loadDocs(authUid);
+  }
+
+  async function registerDocument(storagePath: string, file: File) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+      await fetch(`${API}/api/patient/documents/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          storage_path: storagePath,
+          file_name: file.name,
+          mime_type: file.type,
+          file_size_bytes: file.size,
+        }),
+      });
+    } catch {
+      // best-effort — file is already safely in storage
+    }
   }
 
   async function handleDelete(filePath: string) {

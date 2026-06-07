@@ -150,3 +150,54 @@ export async function getBookingById(id: string): Promise<BookingRow | null> {
     .single();
   return data as BookingRow | null;
 }
+
+// ── Clinical document AI-extraction review queue ─────────────────────────────
+// Patients upload PDFs/images via the portal; the api-server runs a
+// triage-only Claude extraction pass (structured facts + flags — never a
+// diagnosis) and writes the result back onto the `documents` row. Staff review
+// and acknowledge flagged documents here before anything reaches the chart.
+
+export interface DocumentReviewRow {
+  id: string;
+  patient_id: string;
+  patient_name: string | null;
+  document_type: string;
+  title: string;
+  file_name: string | null;
+  mime_type: string | null;
+  source: string;
+  created_at: string;
+  ai_extraction_status: string;
+  ai_extracted_data: string | null;
+  ai_flags: string | null;
+  ai_extraction_at: string | null;
+  staff_reviewed_by: string | null;
+  staff_reviewed_at: string | null;
+}
+
+export async function getDocumentsForReview(limit = 50): Promise<DocumentReviewRow[]> {
+  const { data: docs } = await getServiceClient()
+    .from('documents')
+    .select('id, patient_id, document_type, title, file_name, mime_type, source, created_at, ai_extraction_status, ai_extracted_data, ai_flags, ai_extraction_at, staff_reviewed_by, staff_reviewed_at')
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (!docs?.length) return [];
+
+  const patientIds = [...new Set(docs.map(d => d.patient_id).filter(Boolean))];
+  const { data: patients } = await getServiceClient()
+    .from('patients')
+    .select('id, full_name')
+    .in('id', patientIds);
+
+  const nameById = Object.fromEntries((patients ?? []).map(p => [p.id, p.full_name as string]));
+  return docs.map(d => ({ ...d, patient_name: nameById[d.patient_id] ?? null })) as DocumentReviewRow[];
+}
+
+export async function markDocumentReviewed(id: string, staffUserId: string | null): Promise<void> {
+  const { error } = await getServiceClient()
+    .from('documents')
+    .update({ staff_reviewed_at: new Date().toISOString(), staff_reviewed_by: staffUserId })
+    .eq('id', id);
+  if (error) throw new Error(`markDocumentReviewed: ${error.message}`);
+}

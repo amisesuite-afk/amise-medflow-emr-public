@@ -38,5 +38,13 @@ jobs:
             --project-ref nornhfzfrlmfzaqmrzzp \
             --file supabase-patient-portal-migration.sql
 
+      - name: Run document AI-extraction migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-document-ai-extraction-migration.sql
+
       - name: Done
-        run: echo "Both migrations completed successfully."
+        run: echo "Migrations completed successfully."

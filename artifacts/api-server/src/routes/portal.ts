@@ -22,6 +22,23 @@ async function getPatientId(authHeader: string | undefined): Promise<string | nu
   return patient?.id ?? null;
 }
 
+// Like getPatientId, but also returns the Supabase auth user id — needed to
+// verify a storage path belongs to the calling patient (paths are
+// `${authUserId}/...`) before we register it as a clinical document.
+async function getPatientAuth(authHeader: string | undefined): Promise<{ authUserId: string; patientId: string } | null> {
+  if (!authHeader?.startsWith('Bearer ')) return null;
+  const jwt = authHeader.slice(7);
+  const { data } = await sb().auth.getUser(jwt);
+  if (!data?.user) return null;
+  const { data: patient } = await sb()
+    .from('patients')
+    .select('id')
+    .eq('auth_user_id', data.user.id)
+    .single();
+  if (!patient?.id) return null;
+  return { authUserId: data.user.id, patientId: patient.id };
+}
+
 // ── Portal invite helper ──────────────────────────────────────────────────────
 // Creates (or reuses) the Supabase Auth user for an email, sends the magic-link
 // invite, and marks the patient record as portal-enabled. Shared by the manual
@@ -322,6 +339,265 @@ RULES: summarise and organise only. Do NOT diagnose, prescribe, or speculate bey
     console.error('[portal/intake-summary] generation error', err);
   }
 }
+
+// ── POST /api/patient/documents/register ─────────────────────────────────────
+// Called by the patient portal right after a file lands in Supabase Storage
+// (the upload itself is client→storage; this just registers the metadata row
+// and kicks off triage-only AI extraction). Mirrors the intake-summary
+// fire-and-forget pattern above.
+const DOCUMENT_TYPES = [
+  'lab_report', 'imaging_report', 'referral_letter', 'consent_form',
+  'surgical_report', 'discharge_summary', 'prescription', 'insurance_form', 'other',
+];
+
+router.post('/api/patient/documents/register', async (req, res) => {
+  const auth = await getPatientAuth(req.headers.authorization);
+  if (!auth) {
+    res.status(401).json({ error: 'Sign in required' });
+    return;
+  }
+
+  const { storage_path, file_name, mime_type, file_size_bytes, document_type } = (req.body ?? {}) as {
+    storage_path?: string;
+    file_name?: string;
+    mime_type?: string;
+    file_size_bytes?: number;
+    document_type?: string;
+  };
+
+  if (!storage_path?.trim()) {
+    res.status(400).json({ error: 'storage_path is required' });
+    return;
+  }
+
+  // Storage paths are written as `${authUserId}/...` by the upload page —
+  // refuse to register anything outside the caller's own folder.
+  if (!storage_path.startsWith(`${auth.authUserId}/`)) {
+    res.status(403).json({ error: 'storage_path does not belong to this account' });
+    return;
+  }
+
+  const docType = document_type && DOCUMENT_TYPES.includes(document_type) ? document_type : 'other';
+
+  try {
+    const { data, error } = await sb()
+      .from('documents')
+      .insert({
+        patient_id:          auth.patientId,
+        document_type:       docType,
+        title:               file_name?.trim() || 'Uploaded document',
+        file_name:           file_name ?? null,
+        storage_path,
+        mime_type:           mime_type ?? null,
+        file_size_bytes:     file_size_bytes ?? null,
+        source:              'uploaded',
+        created_by:          auth.authUserId,
+        ai_extraction_status: 'pending',
+      })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    res.json({ status: 'registered', document_id: data.id });
+
+    void extractDocumentInsights(data.id);
+  } catch (err) {
+    req.log.error({ err }, '[portal/documents/register] error');
+    res.status(500).json({ error: 'Could not register the document. Please try again.' });
+  }
+});
+
+const EXTRACTABLE_MIME = new Set([
+  'application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp',
+]);
+
+// Pulls structured facts + flags out of an uploaded clinical document with
+// Claude vision. Strictly "triage territory": it transcribes what the
+// document itself states (values, units, stated reference ranges, dates) and
+// notes anything the document marks as out-of-range/urgent — it never
+// diagnoses, interprets, or speculates. Output is queued for staff review,
+// never written into the clinical record automatically.
+async function extractDocumentInsights(documentId: string): Promise<void> {
+  try {
+    const { data: doc, error } = await sb()
+      .from('documents')
+      .select('id, patient_id, document_type, title, storage_path, mime_type')
+      .eq('id', documentId)
+      .single();
+
+    if (error || !doc) {
+      console.error('[portal/documents] document not found', documentId);
+      return;
+    }
+
+    if (!doc.storage_path || !doc.mime_type || !EXTRACTABLE_MIME.has(doc.mime_type)) {
+      await sb().from('documents').update({
+        ai_extraction_status: 'skipped',
+        ai_extraction_at: new Date().toISOString(),
+      }).eq('id', documentId);
+      return;
+    }
+
+    await sb().from('documents').update({ ai_extraction_status: 'processing' }).eq('id', documentId);
+
+    const { data: file, error: dlErr } = await sb().storage.from('patient-documents').download(doc.storage_path);
+    if (dlErr || !file) throw dlErr ?? new Error('download returned no file');
+
+    const buf = Buffer.from(await file.arrayBuffer());
+    if (buf.length > 20 * 1024 * 1024) {
+      await sb().from('documents').update({
+        ai_extraction_status: 'skipped',
+        ai_extraction_at: new Date().toISOString(),
+      }).eq('id', documentId);
+      return;
+    }
+    const base64 = buf.toString('base64');
+
+    const { data: patient } = await sb()
+      .from('patients')
+      .select('full_name, date_of_birth, sex')
+      .eq('id', doc.patient_id)
+      .single();
+
+    const contentBlock = doc.mime_type === 'application/pdf'
+      ? { type: 'document' as const, source: { type: 'base64' as const, media_type: 'application/pdf' as const, data: base64 } }
+      : { type: 'image' as const, source: { type: 'base64' as const, media_type: doc.mime_type as 'image/jpeg' | 'image/png' | 'image/webp', data: base64 } };
+
+    const instructions = `This is a clinical document ("${doc.title}", type: ${doc.document_type}) uploaded by a patient of a surgical/endoscopy practice in Saint Lucia${patient?.full_name ? ` (patient: ${patient.full_name})` : ''}.
+
+Read the document and TRANSCRIBE — do not interpret or diagnose — what it states. Extract:
+- Each named test/measurement/finding with its stated value, unit, and any reference range PRINTED ON THE DOCUMENT ITSELF.
+- Whether the document itself marks/flags that item as out-of-range, abnormal, critical, or urgent (only report what the document marks — never decide this yourself).
+- Key dates (collection/report/procedure date).
+
+Return a JSON object with this exact schema (no markdown fences, no commentary):
+{
+  "documentSummary": "one factual sentence describing what this document is (e.g. 'Full blood count report dated 12 March 2026')",
+  "reportDate": "date string as printed, or null",
+  "extractedFacts": [{"label": "string", "value": "string", "unit": "string|null", "referenceRange": "string|null", "markedAbnormal": true|false}],
+  "flags": [{"type": "out_of_range|urgent_marking|incomplete|illegible|other", "label": "short label", "severity": "info|attention|urgent", "detail": "one factual sentence quoting/describing what the document shows — no interpretation"}]
+}
+
+RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpret results, suggest treatment, or speculate about clinical significance beyond what the document itself states. If the document is illegible or not a clinical report, say so via a "flags" entry of type "illegible" or "other" and keep "extractedFacts" empty.`;
+
+    const msg = await anthropic.messages.create({
+      model: MODEL,
+      max_tokens: 1536,
+      messages: [{
+        role: 'user',
+        content: [contentBlock, { type: 'text', text: instructions }],
+      }],
+    });
+
+    const raw = msg.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('')
+      .trim()
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/```\s*$/, '');
+
+    let parsed: { documentSummary?: string; reportDate?: string | null; extractedFacts?: unknown[]; flags?: unknown[] };
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      parsed = { documentSummary: raw.slice(0, 300), extractedFacts: [], flags: [{ type: 'illegible', label: 'Could not parse document', severity: 'attention', detail: 'AI extraction did not return structured data — please review manually.' }] };
+    }
+
+    const flags = Array.isArray(parsed.flags) ? parsed.flags : [];
+
+    await sb()
+      .from('documents')
+      .update({
+        ai_extracted_data:    JSON.stringify({ documentSummary: parsed.documentSummary ?? null, reportDate: parsed.reportDate ?? null, extractedFacts: parsed.extractedFacts ?? [] }),
+        ai_flags:             flags.length ? JSON.stringify(flags) : null,
+        ai_extraction_status: 'done',
+        ai_extraction_at:     new Date().toISOString(),
+      })
+      .eq('id', documentId);
+
+    await audit({
+      action:     'triage',
+      entityType: 'document',
+      entityId:   documentId,
+      payload:    { document_type: doc.document_type, flag_count: flags.length },
+    });
+  } catch (err) {
+    console.error('[portal/documents] extraction error', err);
+    await sb().from('documents').update({
+      ai_extraction_status: 'failed',
+      ai_extraction_at: new Date().toISOString(),
+    }).eq('id', documentId).then(() => {}, () => {});
+  }
+}
+
+// ── GET /api/patient/documents-review ─────────────────────────────────────────
+// Staff — list uploaded documents alongside their AI extraction/flags, newest
+// first. Optional ?needs_review=true narrows to flagged-and-unacknowledged
+// documents — the set the dashboard alert badge counts.
+router.get('/api/patient/documents-review', async (req, res) => {
+  const needsReview = req.query.needs_review === 'true';
+  const status      = req.query.status as string | undefined;
+  const limit       = Math.min(parseInt((req.query.limit as string) ?? '100'), 200);
+
+  try {
+    let query = sb()
+      .from('documents')
+      .select('id, patient_id, document_type, title, file_name, mime_type, source, created_at, ai_extraction_status, ai_extracted_data, ai_flags, ai_extraction_at, staff_reviewed_by, staff_reviewed_at')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (status) query = query.eq('ai_extraction_status', status);
+    if (needsReview) query = query.not('ai_flags', 'is', null).is('staff_reviewed_at', null);
+
+    const { data: docs, error } = await query;
+    if (error) throw error;
+
+    const patientIds = [...new Set((docs ?? []).map(d => d.patient_id).filter(Boolean))];
+    let patientsById: Record<string, { full_name: string }> = {};
+    if (patientIds.length) {
+      const { data: patients } = await sb().from('patients').select('id, full_name').in('id', patientIds);
+      patientsById = Object.fromEntries((patients ?? []).map(p => [p.id, { full_name: p.full_name }]));
+    }
+
+    const requests = (docs ?? []).map(d => ({
+      ...d,
+      patient_name: patientsById[d.patient_id]?.full_name ?? null,
+    }));
+
+    res.json({ documents: requests });
+  } catch (err) {
+    req.log.error({ err }, '[portal/documents-review] list error');
+    res.status(500).json({ error: String(err) });
+  }
+});
+
+// ── PATCH /api/patient/documents-review/:id ───────────────────────────────────
+// Staff — acknowledge (mark reviewed) a document's AI extraction/flags. This
+// is the human-in-the-loop gate: nothing from ai_extracted_data/ai_flags is
+// ever folded into the clinical record automatically.
+router.patch('/api/patient/documents-review/:id', async (req, res) => {
+  const { id } = req.params;
+  const { staff_user_id } = (req.body ?? {}) as { staff_user_id?: string };
+
+  try {
+    const { error } = await sb()
+      .from('documents')
+      .update({
+        staff_reviewed_at: new Date().toISOString(),
+        staff_reviewed_by: staff_user_id ?? null,
+      })
+      .eq('id', id);
+
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    req.log.error({ err }, '[portal/documents-review/:id] error');
+    res.status(500).json({ error: String(err) });
+  }
+});
 
 // ── GET /api/patient/consultation-requests ────────────────────────────────────
 // Staff — list all consultation requests (from the public "request a consult" form).

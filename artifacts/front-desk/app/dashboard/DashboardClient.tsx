@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import type { ConversationThread, TriageLevel } from '@/types';
-import type { BookingRow } from '@/lib/supabase';
+import type { BookingRow, DocumentReviewRow } from '@/lib/supabase';
 import ThreadCard from '@/components/ThreadCard';
 import DraftApproval from '@/components/DraftApproval';
 import TriageBadge from '@/components/TriageBadge';
@@ -47,21 +47,30 @@ const STATUS_LABEL: Record<string, string> = {
 interface Props {
   initialThreads:  ConversationThread[];
   initialBookings: BookingRow[];
+  initialDocuments: DocumentReviewRow[];
   secret: string;
   mode:   string;
 }
 
+const FLAG_SEVERITY_COLORS: Record<string, string> = {
+  info:      '#60a5fa',
+  attention: '#fbbf24',
+  urgent:    '#f97316',
+};
+
 export default function DashboardClient({
-  initialThreads, initialBookings, secret, mode,
+  initialThreads, initialBookings, initialDocuments, secret, mode,
 }: Props) {
-  const [tab,      setTab]     = useState<'messaging' | 'bookings'>('messaging');
+  const [tab,      setTab]     = useState<'messaging' | 'bookings' | 'documents'>('messaging');
   const [threads,  setThreads] = useState<ConversationThread[]>(initialThreads);
   const [bookings, setBookings]= useState<BookingRow[]>(initialBookings);
+  const [documents, setDocuments] = useState<DocumentReviewRow[]>(initialDocuments);
   const [selected, setSelected]= useState<ConversationThread | null>(null);
   const [adHocMsg, setAdHocMsg]= useState('');
   const [sending,  setSending] = useState(false);
   const [urgentLoading, setUrgentLoading] = useState<Record<string, boolean>>({});
   const [urgentMsg,     setUrgentMsg]     = useState<Record<string, string>>({});
+  const [reviewing, setReviewing] = useState<Record<string, boolean>>({});
   const clock = useLiveClock();
 
   const sorted = sortThreads(threads);
@@ -102,6 +111,43 @@ export default function DashboardClient({
       .subscribe();
     return () => { void sb.removeChannel(channel); };
   }, []);
+
+  // Supabase Realtime — uploaded documents / AI extraction updates
+  useEffect(() => {
+    if (!SUPABASE_URL || !SUPABASE_ANON) return;
+    const sb      = createClient(SUPABASE_URL, SUPABASE_ANON);
+    const channel = sb
+      .channel('document-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'documents' }, payload => {
+        const row = payload.new as DocumentReviewRow;
+        setDocuments(prev => {
+          const idx = prev.findIndex(d => d.id === row.id);
+          if (idx >= 0) { const next = [...prev]; next[idx] = { ...prev[idx], ...row }; return next; }
+          return [row, ...prev];
+        });
+      })
+      .subscribe();
+    return () => { void sb.removeChannel(channel); };
+  }, []);
+
+  async function markReviewed(documentId: string) {
+    setReviewing(prev => ({ ...prev, [documentId]: true }));
+    try {
+      const r = await fetch('/api/documents/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-internal-secret': secret },
+        body: JSON.stringify({ documentId, staffId: 'nurse' }),
+      });
+      if (r.ok) {
+        const now = new Date().toISOString();
+        setDocuments(prev => prev.map(d =>
+          d.id === documentId ? { ...d, staff_reviewed_at: now, staff_reviewed_by: 'nurse' } : d,
+        ));
+      }
+    } finally {
+      setReviewing(prev => ({ ...prev, [documentId]: false }));
+    }
+  }
 
   const sendAdHoc = useCallback(async () => {
     if (!selected || !adHocMsg.trim()) return;
@@ -146,6 +192,7 @@ export default function DashboardClient({
 
   const pendingBookings  = bookings.filter(b => b.status === 'pending');
   const urgentBookings   = pendingBookings.filter(b => b.triage_acuity === 'urgent');
+  const docsNeedingReview = documents.filter(d => d.ai_flags && !d.staff_reviewed_at);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#0f172a', color: '#e2e8f0', fontFamily: 'system-ui, sans-serif' }}>
@@ -164,6 +211,17 @@ export default function DashboardClient({
             borderRadius: 10, padding: '2px 8px', cursor: 'pointer',
           }} onClick={() => setTab('bookings')}>
             ⚠ {urgentBookings.length} urgent booking{urgentBookings.length > 1 ? 's' : ''}
+          </span>
+        )}
+
+        {/* Flagged-document alert */}
+        {docsNeedingReview.length > 0 && (
+          <span style={{
+            fontSize: 11, fontWeight: 700, color: '#fbbf24',
+            background: '#fbbf2422', border: '1px solid #fbbf2444',
+            borderRadius: 10, padding: '2px 8px', cursor: 'pointer',
+          }} onClick={() => setTab('documents')}>
+            📄 {docsNeedingReview.length} document{docsNeedingReview.length > 1 ? 's' : ''} flagged
           </span>
         )}
 
@@ -201,7 +259,7 @@ export default function DashboardClient({
 
       {/* Tabs */}
       <div style={{ display: 'flex', background: '#1e293b', borderBottom: '1px solid #374151', padding: '0 20px', flexShrink: 0 }}>
-        {(['messaging', 'bookings'] as const).map(t => (
+        {(['messaging', 'bookings', 'documents'] as const).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -213,7 +271,11 @@ export default function DashboardClient({
               textTransform: 'capitalize',
             }}
           >
-            {t === 'messaging' ? `Messaging${sorted.length ? ` (${sorted.length})` : ''}` : `Bookings${pendingBookings.length ? ` (${pendingBookings.length} pending)` : ''}`}
+            {t === 'messaging'
+              ? `Messaging${sorted.length ? ` (${sorted.length})` : ''}`
+              : t === 'bookings'
+              ? `Bookings${pendingBookings.length ? ` (${pendingBookings.length} pending)` : ''}`
+              : `Documents${docsNeedingReview.length ? ` (${docsNeedingReview.length} flagged)` : ''}`}
           </button>
         ))}
       </div>
@@ -468,6 +530,132 @@ export default function DashboardClient({
                 </div>
               );
             })}
+        </div>
+      )}
+
+      {/* ── DOCUMENTS TAB ── */}
+      {tab === 'documents' && (
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Patient-uploaded documents
+            </div>
+          </div>
+          <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 16, lineHeight: 1.5 }}>
+            AI extraction transcribes facts and surfaces only what the document itself marks as out-of-range or urgent —
+            it never diagnoses or interprets. Review and acknowledge before anything informs the chart.
+          </div>
+
+          {documents.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '48px 16px', color: '#4b5563' }}>
+              <div style={{ fontSize: 32, marginBottom: 8 }}>📄</div>
+              <div style={{ fontWeight: 600 }}>No documents uploaded yet</div>
+            </div>
+          )}
+
+          {documents.map(doc => {
+            let extracted: { documentSummary?: string; reportDate?: string | null; extractedFacts?: Array<{ label: string; value: string; unit?: string | null; referenceRange?: string | null; markedAbnormal?: boolean }> } | null = null;
+            let flags: Array<{ type: string; label: string; severity: string; detail: string }> = [];
+            try { extracted = doc.ai_extracted_data ? JSON.parse(doc.ai_extracted_data) : null; } catch { /* leave null */ }
+            try { flags = doc.ai_flags ? JSON.parse(doc.ai_flags) : []; } catch { /* leave empty */ }
+
+            const reviewed   = !!doc.staff_reviewed_at;
+            const isFlagged  = flags.length > 0;
+            const isLoading  = reviewing[doc.id];
+            const borderTone = isFlagged && !reviewed ? '#fbbf2444' : '#374151';
+
+            return (
+              <div key={doc.id} style={{
+                marginBottom: 12, padding: '14px 16px', borderRadius: 8,
+                background: '#1e293b', border: `1px solid ${borderTone}`,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+                      <span style={{
+                        fontSize: 10, fontWeight: 700, color: '#5eead4',
+                        background: '#0d948822', border: '1px solid #0d948844',
+                        borderRadius: 8, padding: '1px 7px', textTransform: 'uppercase',
+                      }}>
+                        {doc.document_type.replace(/_/g, ' ')}
+                      </span>
+                      <span style={{ fontSize: 10, color: '#6b7280', textTransform: 'uppercase' }}>
+                        {doc.ai_extraction_status === 'done' ? 'AI reviewed'
+                          : doc.ai_extraction_status === 'processing' ? 'Extracting…'
+                          : doc.ai_extraction_status === 'failed' ? 'Extraction failed'
+                          : doc.ai_extraction_status === 'skipped' ? 'Not extractable'
+                          : 'Queued'}
+                      </span>
+                      {reviewed && (
+                        <span style={{ fontSize: 10, fontWeight: 600, color: '#34d399' }}>✓ Acknowledged</span>
+                      )}
+                    </div>
+
+                    <div style={{ fontWeight: 700, fontSize: 14, color: '#f1f5f9' }}>{doc.patient_name ?? 'Unmatched patient'}</div>
+                    <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>{doc.title}</div>
+                    {extracted?.documentSummary && (
+                      <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 4, lineHeight: 1.4 }}>{extracted.documentSummary}</div>
+                    )}
+
+                    {!!extracted?.extractedFacts?.length && (
+                      <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        {extracted.extractedFacts.map((f, i) => (
+                          <div key={i} style={{ fontSize: 11, color: f.markedAbnormal ? '#fbbf24' : '#6b7280' }}>
+                            {f.markedAbnormal ? '● ' : '· '}
+                            <span style={{ color: '#cbd5e1' }}>{f.label}</span>: {f.value}{f.unit ? ` ${f.unit}` : ''}
+                            {f.referenceRange ? ` (ref: ${f.referenceRange})` : ''}
+                            {f.markedAbnormal ? ' — marked on document' : ''}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {!!flags.length && (
+                      <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {flags.map((flag, i) => {
+                          const color = FLAG_SEVERITY_COLORS[flag.severity] ?? '#6b7280';
+                          return (
+                            <div key={i} style={{
+                              fontSize: 11, color, padding: '5px 8px', borderRadius: 4,
+                              background: `${color}15`, border: `1px solid ${color}33`,
+                            }}>
+                              <span style={{ fontWeight: 700, marginRight: 6, textTransform: 'uppercase' }}>{flag.label}</span>
+                              {flag.detail}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div style={{ fontSize: 10, color: '#374151', marginTop: 6 }}>
+                      Uploaded {new Date(doc.created_at).toLocaleString('en-LC', {
+                        timeZone: 'America/St_Lucia', dateStyle: 'short', timeStyle: 'short',
+                      })}
+                      {doc.ai_extraction_at && ` · AI pass ${new Date(doc.ai_extraction_at).toLocaleString('en-LC', {
+                        timeZone: 'America/St_Lucia', dateStyle: 'short', timeStyle: 'short',
+                      })}`}
+                    </div>
+                  </div>
+                </div>
+
+                {isFlagged && !reviewed && (
+                  <div style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <button
+                      onClick={() => void markReviewed(doc.id)}
+                      disabled={isLoading}
+                      style={{
+                        padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                        background: '#0d9488', color: '#fff', fontWeight: 700, fontSize: 12,
+                        opacity: isLoading ? 0.6 : 1,
+                      }}
+                    >
+                      {isLoading ? '…' : 'Acknowledge'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
