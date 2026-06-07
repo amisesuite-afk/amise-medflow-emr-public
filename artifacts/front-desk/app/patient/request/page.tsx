@@ -13,10 +13,12 @@ const BORDER = '#e2e8f0';
 const API    = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 
 // Direct-contact channels — for visitors who would rather skip the form.
-const DIRECT_PHONE_TEL = 'tel:+17582840557';
-const DIRECT_PHONE_LBL = '284-0557';
-const DIRECT_WHATSAPP  = 'https://wa.me/17582840557';
-const DIRECT_EMAIL     = 'mailto:info@amisemedical.com';
+// Both branches are offered: Tapion Hospital and Rodney Bay (Providence Building).
+const DIRECT_EMAIL = 'mailto:info@amisemedical.com';
+const DIRECT_BRANCHES = [
+  { branch: 'Tapion',     tel: 'tel:+17582840557',  phoneLbl: '284-0557',  whatsapp: 'https://wa.me/17582840557'  },
+  { branch: 'Rodney Bay', tel: 'tel:+17587207111',  phoneLbl: '720-7111',  whatsapp: 'https://wa.me/17587207111'  },
+];
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -352,34 +354,40 @@ function OptionCards({ options, picking, onPick }: {
 }
 
 function DirectContactStrip() {
-  const channels: { emoji: string; label: string; href: string; external?: boolean }[] = [
-    { emoji: '📞', label: 'Call',     href: DIRECT_PHONE_TEL },
-    { emoji: '💬', label: 'WhatsApp', href: DIRECT_WHATSAPP, external: true },
-    { emoji: '✉️', label: 'Email',    href: DIRECT_EMAIL },
-  ];
+  const pillCss: React.CSSProperties = {
+    display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap',
+    padding: '10px 14px', borderRadius: 999,
+    border: `1.5px solid ${BORDER}`, background: '#f8fafc',
+    color: '#475569', fontSize: 13, fontWeight: 700,
+    textDecoration: 'none', WebkitTapHighlightColor: 'transparent',
+  };
 
   return (
     <div style={{ marginTop: 28, paddingTop: 20, borderTop: `1px solid ${BORDER}` }}>
       <p style={{ textAlign: 'center', fontSize: 12, color: '#94a3b8', margin: '0 0 12px' }}>
         Prefer to skip the form? Reach us directly —
       </p>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
-        {channels.map(c => (
-          <a key={c.label} href={c.href}
-            target={c.external ? '_blank' : undefined}
-            rel={c.external ? 'noopener noreferrer' : undefined}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap',
-              padding: '10px 14px', borderRadius: 999,
-              border: `1.5px solid ${BORDER}`, background: '#f8fafc',
-              color: '#475569', fontSize: 13, fontWeight: 700,
-              textDecoration: 'none', WebkitTapHighlightColor: 'transparent',
-            }}
-          >
-            <span style={{ fontSize: 16, lineHeight: 1 }}>{c.emoji}</span>
-            {c.label === 'Call' ? DIRECT_PHONE_LBL : c.label}
-          </a>
-        ))}
+
+      {DIRECT_BRANCHES.map(b => (
+        <div key={b.branch} style={{ marginBottom: 10 }}>
+          <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: '#cbd5e1', textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 8px' }}>
+            {b.branch}
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <a href={b.tel} style={pillCss}>
+              <span style={{ fontSize: 16, lineHeight: 1 }}>📞</span>{b.phoneLbl}
+            </a>
+            <a href={b.whatsapp} target="_blank" rel="noopener noreferrer" style={pillCss}>
+              <span style={{ fontSize: 16, lineHeight: 1 }}>💬</span>WhatsApp
+            </a>
+          </div>
+        </div>
+      ))}
+
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
+        <a href={DIRECT_EMAIL} style={pillCss}>
+          <span style={{ fontSize: 16, lineHeight: 1 }}>✉️</span>Email
+        </a>
       </div>
     </div>
   );

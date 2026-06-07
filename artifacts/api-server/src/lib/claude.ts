@@ -82,10 +82,11 @@ ${emailBody}`;
 }
 
 export interface DraftReplyArgs {
-  template: 'slot_offer' | 'confirmation' | 'urgent_ack' | 'out_of_scope';
+  template: 'slot_offer' | 'confirmation' | 'urgent_ack' | 'out_of_scope' | 'general_enquiry';
   patientFirstName: string | null;
   slots?: { day: string; date: string; time: string; location: string }[];
   bookingDetails?: { day: string; date: string; time: string; location: string };
+  triageFormUrl?: string;
 }
 
 export async function draftReply(args: DraftReplyArgs): Promise<{ subject: string; body: string; safe: boolean; violations: string[] }> {
@@ -107,6 +108,15 @@ Draft a brief acknowledgement (NO clinical content). Address the patient as "${n
     out_of_scope: `Subject: Amise Medical Services — Your Enquiry
 
 Draft a brief reply (NO clinical content). Address the patient as "${name}". Tell them the query has been passed to Dr Kabiye or relevant clinical staff for a personal reply within 1-2 working days. End with the standard sign-off.`,
+
+    general_enquiry: `Subject: Amise Medical Services — Thanks for Reaching Out
+
+Draft a brief reply (NO clinical content) to a general enquiry. Address the patient as "${name}". Cover, in this order:
+1. A one-line description of the practice: general and endoscopic surgery with Dr Dawit Daniel Kabiye, MD, DM, in Saint Lucia (consultations, procedures such as colonoscopy/ERCP, and follow-up care).
+2. Invite them to complete the short triage form so the team can prepare for their visit: ${args.triageFormUrl}
+3. Tell them they may also reply to this email with their details and the team will guide them through triage directly.
+4. Offer the option to call the front desk instead — Tapion Hospital 459-2227 / 284-0557, or Rodney Bay 758-720-7111.
+End with the standard sign-off.`,
   };
 
   const resp = await client.messages.create({
