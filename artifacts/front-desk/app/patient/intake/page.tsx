@@ -124,8 +124,13 @@ function getDetailQuestions(visitType: VisitType | '', complaintTrack: string, c
   const isWeightLoss     = complaint === 'weight-loss' || complaintTrack === 'weight-loss';
   const isAppendix       = complaintTrack === 'appendix';
   const isBowel          = ['diarrhoea','constipation','ibs-like','mass-effect','bowel-change'].includes(complaintTrack);
+  // "How severe is your discomfort?" only fits complaints that are
+  // themselves a pain/discomfort symptom — weight loss, rectal bleeding and
+  // bowel-habit changes get their own clinically-relevant yes/no questions
+  // below instead of a pain score that doesn't describe what they reported.
+  const isPainless       = isWeightLoss || isRectalBleeding || (isBowel && !isHernia) || isScreening;
 
-  if (!isScreening)
+  if (!isPainless)
     qs.push({ id:'severity', question:'How severe is your discomfort?', hint:'1 = very mild · 10 = worst imaginable', type:'severity', stateKey:'severity' });
   qs.push({ id:'duration', question:'How long have you had this?', type:'duration', stateKey:'durationDays' });
 
