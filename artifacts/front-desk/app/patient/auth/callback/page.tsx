@@ -28,29 +28,43 @@ const Spinner = () => (
 // useSearchParams must be inside a Suspense boundary
 function CallbackContent() {
   const params = useSearchParams();
+  const next   = params.get('next') ?? '/patient';
 
   useEffect(() => {
-    const sb   = getPatientClient();
-    const code = params.get('code');
+    const sb = getPatientClient();
+    let settled = false;
 
     // Hard navigation, not router.replace() — the Next.js client router can
     // silently stall after an async auth state change. A full page load
     // reliably picks up the now-persisted session.
-    if (code) {
-      void sb.auth.exchangeCodeForSession(code).then(({ data, error }) => {
-        if (data.session) {
-          window.location.href = '/patient';
-        } else {
-          console.error('exchangeCodeForSession failed:', error);
-          window.location.href = '/patient/login';
-        }
-      });
-    } else {
-      void sb.auth.getSession().then(({ data: { session } }) => {
-        window.location.href = session ? '/patient' : '/patient/login';
-      });
+    function go(destination: string) {
+      if (settled) return;
+      settled = true;
+      window.location.href = destination;
     }
-  }, [params]);
+
+    // The link uses Supabase's implicit flow: the access/refresh tokens arrive
+    // in the URL hash (#access_token=...) and supabase-js (detectSessionInUrl)
+    // parses and persists them automatically — entirely client-side, so it
+    // works even when the link is opened in a different browser/WebView than
+    // the one that requested it (unlike PKCE, which needs a shared verifier).
+    void sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) go(next);
+    });
+
+    const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
+      if (session) go(next);
+    });
+
+    // Fallback: if no session materialises shortly, the link was likely
+    // invalid or expired — send the patient back to request a fresh one.
+    const timeout = setTimeout(() => go('/patient/login'), 8000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
+  }, [params, next]);
 
   return <Spinner />;
 }

@@ -57,8 +57,7 @@ function LoginContent() {
   const next = params.get('next') ?? '/patient';
 
   const [email,      setEmail]      = useState('');
-  const [otp,        setOtp]        = useState('');
-  const [stage,      setStage]      = useState<'email' | 'otp' | 'error'>('email');
+  const [stage,      setStage]      = useState<'email' | 'sent' | 'error'>('email');
   const [errMsg,     setErrMsg]     = useState('');
   const [loading,    setLoading]    = useState(false);
   // Guards against double-fire (e.g. on-screen keyboard "Go" + button tap landing
@@ -104,7 +103,10 @@ function LoginContent() {
     const sb = getPatientClient();
     const { error } = await sb.auth.signInWithOtp({
       email: email.trim().toLowerCase(),
-      options: { shouldCreateUser: false },
+      options: {
+        shouldCreateUser: false,
+        emailRedirectTo: `${window.location.origin}/patient/auth/callback?next=${encodeURIComponent(next)}`,
+      },
     });
 
     setLoading(false);
@@ -121,41 +123,7 @@ function LoginContent() {
       }
       setStage('error');
     } else {
-      setOtp('');
-      setStage('otp');
-    }
-  }
-
-  async function verifyCode() {
-    const code = otp.trim();
-    if (code.length < 6 || inFlight.current) return;
-    inFlight.current = true;
-    setLoading(true);
-    setErrMsg('');
-
-    const sb = getPatientClient();
-
-    const { data, error } = await sb.auth.verifyOtp({
-      email: email.trim().toLowerCase(),
-      token: code,
-      type: 'email',
-    });
-
-    if (data.session) {
-      // Hard navigation, not router.replace() — the Next.js client router can
-      // silently stall after this async auth state change (confirmed: user saw
-      // "Verifying…" hang until a manual refresh). A full page load reliably
-      // picks up the now-persisted session.
-      window.location.href = next;
-      return;
-    }
-
-    setLoading(false);
-    inFlight.current = false;
-
-    if (error) {
-      setErrMsg('That code did not work. Please use "Resend code" below to get a fresh one, then enter it once and wait — no need to press enter or tap Sign in more than once.');
-      setStage('error');
+      setStage('sent');
     }
   }
 
@@ -180,7 +148,7 @@ function LoginContent() {
         {stage === 'email' && (
           <>
             <p style={{ fontSize: 14, color: '#94a3b8', lineHeight: 1.6, marginBottom: 24 }}>
-              Enter your email address and we will send you a sign-in code.
+              Enter your email address and we will send you a sign-in link — just one tap, no codes to type.
             </p>
 
             <label style={s.label}>Email Address</label>
@@ -207,13 +175,13 @@ function LoginContent() {
                 cursor: !email.trim() || loading ? 'not-allowed' : 'pointer',
               }}
             >
-              {loading ? 'Sending…' : 'Send sign-in code →'}
+              {loading ? 'Sending…' : 'Send sign-in link →'}
             </button>
           </>
         )}
 
-        {/* Step 2 — OTP input */}
-        {stage === 'otp' && (
+        {/* Step 2 — Link sent confirmation */}
+        {stage === 'sent' && (
           <>
             <div style={{ textAlign: 'center', marginBottom: 24 }}>
               <div style={{ fontSize: 40, marginBottom: 12 }}>📧</div>
@@ -221,57 +189,31 @@ function LoginContent() {
                 Check your email
               </h2>
               <p style={{ margin: 0, fontSize: 14, color: '#94a3b8', lineHeight: 1.7 }}>
-                A sign-in code was sent to{' '}
+                We sent a sign-in link to{' '}
                 <strong style={{ color: '#e2e8f0' }}>{email}</strong>.
-                Enter it below — it expires in 1 hour.
+                Open the email and tap the link — that's all you need to do.
               </p>
             </div>
 
-            <p style={{ margin: '0 0 14px', fontSize: 12, color: '#64748b', textAlign: 'center', lineHeight: 1.6 }}>
-              No rush — this code stays valid for a full hour, so take your time finding it in your email.
+            <p style={{ margin: '0 0 4px', fontSize: 12, color: '#64748b', textAlign: 'center', lineHeight: 1.6 }}>
+              No rush — the link stays valid for a full hour. Take your time finding the email.
+            </p>
+            <p style={{ margin: 0, fontSize: 12, color: '#64748b', textAlign: 'center', lineHeight: 1.6 }}>
+              Tip: if you don't see it, check your Junk or Spam folder.
             </p>
 
-            <label style={s.label}>Sign-in Code</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={8}
-              value={otp}
-              placeholder="000000"
-              onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 8))}
-              onKeyDown={e => { if (e.key === 'Enter') void verifyCode(); }}
-              style={{ ...s.input, fontSize: 28, letterSpacing: '0.3em', textAlign: 'center' }}
-            />
-
-            <button
-              type="button"
-              onClick={() => void verifyCode()}
-              disabled={otp.trim().length < 6 || loading}
-              style={{
-                display: 'block', width: '100%', marginTop: 16, padding: '13px',
-                borderRadius: 9, border: 'none',
-                background: otp.trim().length < 6 || loading ? '#1e3a5f' : TEAL,
-                color:      otp.trim().length < 6 || loading ? '#475569' : '#fff',
-                fontWeight: 700, fontSize: 15,
-                cursor: otp.trim().length < 6 || loading ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {loading ? 'Verifying…' : 'Sign in →'}
-            </button>
-
-            <div style={{ textAlign: 'center', marginTop: 16 }}>
+            <div style={{ textAlign: 'center', marginTop: 20 }}>
               <button
                 type="button"
                 onClick={() => void sendCode()}
                 disabled={loading}
-                style={{ fontSize: 13, color: '#64748b', background: 'none', border: 'none', cursor: 'pointer', marginRight: 16 }}
+                style={{ fontSize: 13, color: '#64748b', background: 'none', border: 'none', cursor: loading ? 'not-allowed' : 'pointer', marginRight: 16 }}
               >
-                Resend code
+                {loading ? 'Sending…' : 'Resend link'}
               </button>
               <button
                 type="button"
-                onClick={() => { setStage('email'); setOtp(''); }}
+                onClick={() => setStage('email')}
                 style={{ fontSize: 13, color: TEAL, background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 ← Change email
