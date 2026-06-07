@@ -8,8 +8,8 @@ export const config = {
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
-  // Login page is always accessible
-  if (pathname === '/patient/login') return NextResponse.next();
+  // Login and the public consultation-request form need no account
+  if (pathname === '/patient/login' || pathname === '/patient/request') return NextResponse.next();
 
   const supabaseUrl  = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;

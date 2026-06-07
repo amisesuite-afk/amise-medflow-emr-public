@@ -12,6 +12,12 @@ const MUTED  = '#64748b';
 const BORDER = '#e2e8f0';
 const API    = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 
+// Direct-contact channels — for visitors who would rather skip the form.
+const DIRECT_PHONE_TEL = 'tel:+17582840557';
+const DIRECT_PHONE_LBL = '284-0557';
+const DIRECT_WHATSAPP  = 'https://wa.me/17582840557';
+const DIRECT_EMAIL     = 'mailto:info@amisemedical.com';
+
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 type Path        = 'surgical' | 'symptoms' | 'explore';
@@ -300,13 +306,8 @@ export default function RequestPage() {
 
       </div>
 
-      {/* Soft skip link */}
-      {showChrome && screen < 3 && (
-        <p style={{ textAlign: 'center', marginTop: 28, marginBottom: 0, fontSize: 12, color: '#d1d5db' }}>
-          Prefer to call us directly?{' '}
-          <a href="tel:+17582840557" style={{ color: '#94a3b8', textDecoration: 'underline' }}>284-0557</a>
-        </p>
-      )}
+      {/* Direct-contact channels — skip the form and reach us straight away */}
+      {showChrome && screen < 3 && <DirectContactStrip />}
     </div>
   );
 }
@@ -346,6 +347,40 @@ function OptionCards({ options, picking, onPick }: {
           </button>
         );
       })}
+    </div>
+  );
+}
+
+function DirectContactStrip() {
+  const channels: { emoji: string; label: string; href: string; external?: boolean }[] = [
+    { emoji: '📞', label: 'Call',     href: DIRECT_PHONE_TEL },
+    { emoji: '💬', label: 'WhatsApp', href: DIRECT_WHATSAPP, external: true },
+    { emoji: '✉️', label: 'Email',    href: DIRECT_EMAIL },
+  ];
+
+  return (
+    <div style={{ marginTop: 28, paddingTop: 20, borderTop: `1px solid ${BORDER}` }}>
+      <p style={{ textAlign: 'center', fontSize: 12, color: '#94a3b8', margin: '0 0 12px' }}>
+        Prefer to skip the form? Reach us directly —
+      </p>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
+        {channels.map(c => (
+          <a key={c.label} href={c.href}
+            target={c.external ? '_blank' : undefined}
+            rel={c.external ? 'noopener noreferrer' : undefined}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap',
+              padding: '10px 14px', borderRadius: 999,
+              border: `1.5px solid ${BORDER}`, background: '#f8fafc',
+              color: '#475569', fontSize: 13, fontWeight: 700,
+              textDecoration: 'none', WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            <span style={{ fontSize: 16, lineHeight: 1 }}>{c.emoji}</span>
+            {c.label === 'Call' ? DIRECT_PHONE_LBL : c.label}
+          </a>
+        ))}
+      </div>
     </div>
   );
 }
