@@ -57,11 +57,19 @@ function LoginContent() {
   const params = useSearchParams();
   const next = params.get('next') ?? '/patient';
 
-  const [email,   setEmail]   = useState('');
-  const [otp,     setOtp]     = useState('');
-  const [stage,   setStage]   = useState<'email' | 'otp' | 'error'>('email');
-  const [errMsg,  setErrMsg]  = useState('');
-  const [loading, setLoading] = useState(false);
+  const [email,      setEmail]      = useState('');
+  const [otp,        setOtp]        = useState('');
+  const [stage,      setStage]      = useState<'email' | 'otp' | 'error'>('email');
+  const [errMsg,     setErrMsg]     = useState('');
+  const [loading,    setLoading]    = useState(false);
+  const [codeSentAt, setCodeSentAt] = useState<number | null>(null);
+  const [elapsed,    setElapsed]    = useState(0);
+
+  useEffect(() => {
+    if (stage !== 'otp' || codeSentAt === null) return;
+    const id = setInterval(() => setElapsed(Math.floor((Date.now() - codeSentAt) / 1000)), 1000);
+    return () => clearInterval(id);
+  }, [stage, codeSentAt]);
 
   useEffect(() => {
     const sb = getPatientClient();
@@ -99,6 +107,8 @@ function LoginContent() {
       setStage('error');
     } else {
       setOtp('');
+      setCodeSentAt(Date.now());
+      setElapsed(0);
       setStage('otp');
     }
   }
@@ -111,25 +121,18 @@ function LoginContent() {
 
     const sb = getPatientClient();
 
-    // signInWithOtp generates a magiclink-type token; try both
-    let result = await sb.auth.verifyOtp({
+    const { error } = await sb.auth.verifyOtp({
       email: email.trim().toLowerCase(),
       token: code,
-      type: 'magiclink',
+      type: 'email',
     });
-    if (result.error) {
-      result = await sb.auth.verifyOtp({
-        email: email.trim().toLowerCase(),
-        token: code,
-        type: 'email',
-      });
-    }
-    const { error } = result;
 
     setLoading(false);
 
     if (error) {
-      setErrMsg(error.message ?? 'That code is invalid or has expired. Please request a new one.');
+      const age = codeSentAt ? Math.floor((Date.now() - codeSentAt) / 1000) : null;
+      const ageNote = age && age > 55 ? ` (code is ${age}s old — request a fresh one)` : '';
+      setErrMsg((error.message ?? 'That code is invalid or has expired.') + ageNote);
       setStage('error');
     } else {
       router.replace(next);
@@ -203,6 +206,12 @@ function LoginContent() {
                 Enter it below — it expires in 1 hour.
               </p>
             </div>
+
+            {elapsed > 0 && (
+              <p style={{ margin: '0 0 14px', fontSize: 12, color: elapsed > 55 ? '#f59e0b' : '#64748b', textAlign: 'center' }}>
+                Code age: {elapsed}s {elapsed > 55 ? '— enter quickly or request a new code' : ''}
+              </p>
+            )}
 
             <label style={s.label}>Sign-in Code</label>
             <input
