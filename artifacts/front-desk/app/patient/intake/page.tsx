@@ -339,6 +339,19 @@ function QHint({ children }: { children: React.ReactNode }) {
   return <p style={{ margin: '0 0 20px', fontSize: 13, color: '#94a3b8' }}>{children}</p>;
 }
 
+// Tip + soft word-count guidance for free-text "describe in your own words" fields.
+// Most phone keyboards have a built-in microphone for dictation — no custom
+// speech-recognition code needed (and it works inside in-app browsers too).
+function FreeTextAid({ text }: { text: string }) {
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  return (
+    <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', gap: 12, fontSize: 12, color: '#94a3b8', lineHeight: 1.5 }}>
+      <span>🎤 Prefer to talk? Tap the microphone on your keyboard to dictate.</span>
+      <span style={{ flexShrink: 0, color: words > 150 ? '#d97706' : '#cbd5e1' }}>{words} words</span>
+    </div>
+  );
+}
+
 const inputSty = {
   width: '100%', padding: '13px 14px', border: '1.5px solid #d1d5db', borderRadius: 10,
   fontSize: 15, color: '#1e293b', boxSizing: 'border-box' as const, fontFamily: 'inherit',
@@ -640,6 +653,8 @@ export default function IntakePage() {
             onChange={e => setUnsureText(e.target.value)}
             placeholder="e.g. I've had pain in my stomach for a few months and two other doctors haven't found the cause…"
           />
+          <FreeTextAid text={unsureText} />
+          <div style={{ height: 12 }} />
           <NextBtn onClick={() => { setTrack('unsure'); fade(() => setScreen('final')); }} disabled={!unsureText.trim()} />
           <SkipLink onClick={() => fade(() => setScreen('bailout'))} />
         </Fade>
@@ -677,6 +692,8 @@ export default function IntakePage() {
         {complaint === 'other' && (
           <div style={{ marginTop: 4 }}>
             <textarea style={textareaSty} rows={3} value={unsureText} onChange={e => setUnsureText(e.target.value)} placeholder="Describe your main concern…" />
+            <FreeTextAid text={unsureText} />
+            <div style={{ height: 12 }} />
             <NextBtn onClick={() => { setTrack('other'); setDetailIdx(0); fade(() => setScreen('detail')); }} disabled={!unsureText.trim()} />
           </div>
         )}

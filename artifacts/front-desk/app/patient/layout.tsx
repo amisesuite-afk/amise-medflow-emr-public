@@ -48,7 +48,15 @@ export default function PatientPortalLayout({ children }: { children: React.Reac
         padding: '20px 24px 32px',
       }}>
         Amise Medical Services · Saint Lucia<br />
-        <strong style={{ color: '#64748b' }}>Emergencies: Tapion Hospital 459-2227 · 284-0557</strong>
+        <strong style={{ color: '#64748b' }}>Emergencies: Tapion Hospital 459-2227 · 284-0557</strong><br />
+        Front desk —{' '}
+        <a href="tel:+17582840557" style={{ color: '#64748b', textDecoration: 'none', fontWeight: 600 }}>Tapion 284-0557</a>
+        {' · '}
+        <a href="https://wa.me/17582840557" target="_blank" rel="noopener noreferrer" style={{ color: '#64748b', textDecoration: 'none', fontWeight: 600 }}>WhatsApp</a>
+        {' · '}
+        <a href="tel:+17587207111" style={{ color: '#64748b', textDecoration: 'none', fontWeight: 600 }}>Rodney Bay 720-7111</a>
+        {' · '}
+        <a href="https://wa.me/17587207111" target="_blank" rel="noopener noreferrer" style={{ color: '#64748b', textDecoration: 'none', fontWeight: 600 }}>WhatsApp</a>
       </footer>
     </div>
   );
