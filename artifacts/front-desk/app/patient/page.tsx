@@ -45,6 +45,10 @@ export default function PatientDashboardPage() {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { window.location.href = '/patient/login'; return; }
 
+      // A session landed here successfully — clear the login page's loop-breaker
+      // flag so a normal future sign-in isn't mistaken for a bounce-back.
+      sessionStorage.removeItem('amise-patient-login-redirect-attempted');
+
       const [{ data: pData }, { data: aData }] = await Promise.all([
         sb.from('patients').select('*').single(),
         sb.from('appointments')

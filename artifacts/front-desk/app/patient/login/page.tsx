@@ -68,11 +68,29 @@ function LoginContent() {
 
   useEffect(() => {
     const sb = getPatientClient();
+
+    // Loop-breaker: a stale/half-written session can "exist" here yet get
+    // rejected by the destination page, which bounces back to login — which
+    // sees the same stale session and bounces away again, forever. If we're
+    // about to redirect away but a prior attempt already landed us back here,
+    // the session is bad: clear it and stay put instead of looping.
+    const BOUNCE_FLAG = 'amise-patient-login-redirect-attempted';
+
+    function redirectAwayOrBreakLoop() {
+      if (sessionStorage.getItem(BOUNCE_FLAG)) {
+        sessionStorage.removeItem(BOUNCE_FLAG);
+        void sb.auth.signOut();
+        return;
+      }
+      sessionStorage.setItem(BOUNCE_FLAG, '1');
+      window.location.href = next;
+    }
+
     void sb.auth.getSession().then(({ data: { session } }) => {
-      if (session) window.location.href = next;
+      if (session) redirectAwayOrBreakLoop();
     });
     const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
-      if (session) window.location.href = next;
+      if (session) redirectAwayOrBreakLoop();
     });
     return () => subscription.unsubscribe();
   }, [next]);
