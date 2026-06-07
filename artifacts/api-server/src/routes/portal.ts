@@ -33,11 +33,16 @@ router.post('/api/patient/invite', async (req, res) => {
 
   const normalEmail = email.trim().toLowerCase();
   const portalUrl = process.env.PORTAL_URL ?? 'https://front-desk-amisesuite-afks-projects.vercel.app/patient';
+  // Route the invite link through the auth callback (which knows how to parse
+  // the implicit-flow token hash) rather than dumping it straight on /patient —
+  // landing there directly skips session detection and bounces the patient
+  // back to the login screen.
+  const redirectTo = `${new URL(portalUrl).origin}/patient/auth/callback?next=${encodeURIComponent('/patient')}`;
 
   try {
     // Invite via Supabase Auth (sends magic-link email)
     const { data: invite, error: inviteErr } = await sb().auth.admin.inviteUserByEmail(normalEmail, {
-      redirectTo: portalUrl,
+      redirectTo,
     });
 
     let authUserId: string | null = null;
