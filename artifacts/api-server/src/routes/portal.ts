@@ -54,11 +54,15 @@ async function sendPortalInvite(patientId: string, normalEmail: string): Promise
 
   let authUserId: string | null = null;
   if (inviteErr) {
-    // User may already exist — look them up
+    // User may already exist — page through listUsers() to find them (it
+    // does not support filtering by email, and the match could be on any page).
     if (inviteErr.message?.toLowerCase().includes('already been registered')) {
-      const usersResp = await sb().auth.admin.listUsers();
-      const existing = usersResp.data?.users?.find((u: { email?: string; id: string }) => u.email === normalEmail);
-      authUserId = existing?.id ?? null;
+      for (let page = 1; page <= 20 && !authUserId; page++) {
+        const usersResp = await sb().auth.admin.listUsers({ page, perPage: 200 });
+        const users = usersResp.data?.users ?? [];
+        authUserId = users.find((u: { email?: string; id: string }) => u.email === normalEmail)?.id ?? null;
+        if (users.length < 200) break;
+      }
     } else {
       throw inviteErr;
     }
@@ -216,6 +220,13 @@ router.post('/api/patient/sms-code/verify', async (req, res) => {
       res.status(400).json({ error: genericError });
       return;
     }
+
+    // generateLink()/verifyOtp() create the auth user on first sign-in — link
+    // it back onto the patient record so RLS (auth_user_id = auth.uid()) can
+    // ever match. Without this the patient is permanently locked out of their
+    // own row ("Unable to load your profile") despite a valid session.
+    const authUserId = data.session.user.id;
+    await sb().from('patients').update({ auth_user_id: authUserId }).eq('id', patient.id);
 
     res.json({
       access_token: data.session.access_token,

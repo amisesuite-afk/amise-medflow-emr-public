@@ -620,21 +620,33 @@ export default function BookingForm() {
                   >
                     ← Back
                   </button>
-                  <button
-                    onClick={() => void submit()}
-                    disabled={
-                      submitting ||
-                      (track === 'routine' && !selectedSlot) ||
-                      (slots.length > 0 && !selectedSlot && track !== 'referral')
-                    }
-                    style={{
-                      ...primaryBtnStyle,
-                      opacity: submitting ? 0.7 : 1,
-                      cursor: submitting ? 'wait' : 'pointer',
-                    }}
-                  >
-                    {submitting ? 'Submitting…' : track === 'routine' ? 'Confirm appointment' : 'Submit request'}
-                  </button>
+                  {!slotsLoading && track === 'routine' && slots.length === 0 ? (
+                    // No online slots to confirm against — a disabled "Confirm
+                    // appointment" button here would look broken. Point the
+                    // patient straight at the phone number we just told them to call.
+                    <a
+                      href="tel:+17584592227"
+                      style={{ ...primaryBtnStyle, textAlign: 'center', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      Call Tapion Hospital →
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => void submit()}
+                      disabled={
+                        submitting ||
+                        (track === 'routine' && !selectedSlot) ||
+                        (slots.length > 0 && !selectedSlot && track !== 'referral')
+                      }
+                      style={{
+                        ...primaryBtnStyle,
+                        opacity: submitting ? 0.7 : 1,
+                        cursor: submitting ? 'wait' : 'pointer',
+                      }}
+                    >
+                      {submitting ? 'Submitting…' : track === 'routine' ? 'Confirm appointment' : 'Submit request'}
+                    </button>
+                  )}
                 </div>
               </div>
             )}

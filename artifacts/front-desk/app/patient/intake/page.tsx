@@ -449,7 +449,11 @@ export default function IntakePage() {
   }
 
   async function handleSubmit() {
-    if (!patientId || submitting) return;
+    if (submitting) return;
+    if (!patientId) {
+      alert('We could not load your profile, so this could not be submitted. Please sign out and back in, then try again.');
+      return;
+    }
     setSubmitting(true);
 
     const symptomsList: string[] = [];
@@ -525,7 +529,11 @@ export default function IntakePage() {
   }
 
   async function handleBailout() {
-    if (!patientId || submitting) return;
+    if (submitting) return;
+    if (!patientId) {
+      alert('We could not load your profile, so this could not be submitted. Please sign out and back in, then try again.');
+      return;
+    }
     setSubmitting(true);
     const { data: insertData } = await sb
       .from('patient_intake')
