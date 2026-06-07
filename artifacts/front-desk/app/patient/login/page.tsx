@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { Suspense, useState, useEffect } from 'react';
+import { Suspense, useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 
@@ -62,14 +62,10 @@ function LoginContent() {
   const [stage,      setStage]      = useState<'email' | 'otp' | 'error'>('email');
   const [errMsg,     setErrMsg]     = useState('');
   const [loading,    setLoading]    = useState(false);
-  const [codeSentAt, setCodeSentAt] = useState<number | null>(null);
-  const [elapsed,    setElapsed]    = useState(0);
-
-  useEffect(() => {
-    if (stage !== 'otp' || codeSentAt === null) return;
-    const id = setInterval(() => setElapsed(Math.floor((Date.now() - codeSentAt) / 1000)), 1000);
-    return () => clearInterval(id);
-  }, [stage, codeSentAt]);
+  // Guards against double-fire (e.g. on-screen keyboard "Go" + button tap landing
+  // almost simultaneously) — useState is async and can't prevent a same-tick race;
+  // a ref flips synchronously so the second call bails before any network request.
+  const inFlight = useRef(false);
 
   useEffect(() => {
     const sb = getPatientClient();
@@ -83,7 +79,8 @@ function LoginContent() {
   }, [next, router]);
 
   async function sendCode() {
-    if (!email.trim()) return;
+    if (!email.trim() || inFlight.current) return;
+    inFlight.current = true;
     setLoading(true);
     setErrMsg('');
 
@@ -94,6 +91,7 @@ function LoginContent() {
     });
 
     setLoading(false);
+    inFlight.current = false;
 
     if (error) {
       const msg = error.message.toLowerCase();
@@ -107,35 +105,39 @@ function LoginContent() {
       setStage('error');
     } else {
       setOtp('');
-      setCodeSentAt(Date.now());
-      setElapsed(0);
       setStage('otp');
     }
   }
 
   async function verifyCode() {
     const code = otp.trim();
-    if (code.length < 6) return;
+    if (code.length < 6 || inFlight.current) return;
+    inFlight.current = true;
     setLoading(true);
     setErrMsg('');
 
     const sb = getPatientClient();
 
-    const { error } = await sb.auth.verifyOtp({
+    const { data, error } = await sb.auth.verifyOtp({
       email: email.trim().toLowerCase(),
       token: code,
       type: 'email',
     });
 
+    if (data.session) {
+      // Don't flip loading/inFlight back — a stray re-render must not show
+      // the error stage while the redirect is in flight (the cause of the
+      // "successful sign-in followed by an expired-token flash" reports).
+      router.replace(next);
+      return;
+    }
+
     setLoading(false);
+    inFlight.current = false;
 
     if (error) {
-      const age = codeSentAt ? Math.floor((Date.now() - codeSentAt) / 1000) : null;
-      const ageNote = age && age > 55 ? ` (code is ${age}s old — request a fresh one)` : '';
-      setErrMsg((error.message ?? 'That code is invalid or has expired.') + ageNote);
+      setErrMsg('That code did not work. Please use "Resend code" below to get a fresh one, then enter it once and wait — no need to press enter or tap Sign in more than once.');
       setStage('error');
-    } else {
-      router.replace(next);
     }
   }
 
@@ -207,11 +209,9 @@ function LoginContent() {
               </p>
             </div>
 
-            {elapsed > 0 && (
-              <p style={{ margin: '0 0 14px', fontSize: 12, color: elapsed > 55 ? '#f59e0b' : '#64748b', textAlign: 'center' }}>
-                Code age: {elapsed}s {elapsed > 55 ? '— enter quickly or request a new code' : ''}
-              </p>
-            )}
+            <p style={{ margin: '0 0 14px', fontSize: 12, color: '#64748b', textAlign: 'center', lineHeight: 1.6 }}>
+              No rush — this code stays valid for a full hour, so take your time finding it in your email.
+            </p>
 
             <label style={s.label}>Sign-in Code</label>
             <input
