@@ -166,7 +166,9 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    void (async () => {
+    let cancelled = false;
+
+    async function load() {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { router.replace('/patient/login'); return; }
 
@@ -175,7 +177,12 @@ export default function ProfilePage() {
         .select('*')
         .single();
 
+      if (cancelled) return;
+
       if (fetchErr || !data) {
+        // Right after sign-in the session can land before the Postgrest
+        // client has the fresh JWT attached, so the RLS-gated query briefly
+        // returns no rows — onAuthStateChange below retries once it settles.
         setSaveError('Unable to load your profile. Please try again shortly.');
         setLoading(false);
         return;
@@ -183,8 +190,15 @@ export default function ProfilePage() {
 
       setProfile(data as PatientRow);
       populateFields(data as PatientRow);
+      setSaveError(null);
       setLoading(false);
-    })();
+    }
+
+    void load();
+    const { data: { subscription } } = sb.auth.onAuthStateChange((ev, sess) => {
+      if (ev === 'SIGNED_IN' && sess) void load();
+    });
+    return () => { cancelled = true; subscription.unsubscribe(); };
   }, [router, sb, populateFields]);
 
   async function handleSave(e: React.FormEvent) {
