@@ -7,6 +7,32 @@ import { TRACK_CONFIG, encodeReason, BOOKING_DISCLAIMER, type BookingTrack } fro
 
 export const runtime = 'nodejs';
 
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
+
+// Mints a pre-consult questionnaire link via api-server's privileged
+// provisioning endpoint, so the patient can complete it before their visit
+// without a separate staff follow-up. api-server stays the sole owner of
+// session_token generation — front-desk only asks for a finished link.
+// Best-effort: a failure here must never block booking confirmation.
+async function provisionQuestionnaireLink(): Promise<string | null> {
+  const staffToken = process.env.CRON_SECRET;
+  if (!staffToken) return null;
+
+  try {
+    const r = await fetch(`${API}/api/questionnaire/provision-link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-staff-token': staffToken },
+      body: JSON.stringify({}),
+    });
+    if (!r.ok) return null;
+    const d = await r.json() as { url?: string };
+    return d.url ?? null;
+  } catch (err) {
+    console.error('[booking/create] questionnaire link provisioning failed:', err);
+    return null;
+  }
+}
+
 // Patients often type their number without the country code (e.g. "758 285
 // 7626" or "17582857626") even though the field is labelled "+1 758 …".
 // Twilio rejects anything that isn't E.164, which previously bubbled up as
@@ -24,6 +50,7 @@ function toE164(raw: string): string {
 function routineConfirmation(
   patientName: string,
   slot: { display: string; location: string },
+  questionnaireUrl: string | null,
 ): string {
   const firstName = patientName.split(' ')[0];
   const locLabel  = LOCATION_LABELS[slot.location] ?? slot.location;
@@ -35,6 +62,11 @@ function routineConfirmation(
     `Location: ${locLabel}`,
     ``,
     `Please arrive 10 minutes early with a valid photo ID.`,
+    ...(questionnaireUrl ? [
+      ``,
+      `Please complete your pre-visit questionnaire before your appointment: ${questionnaireUrl}`,
+    ] : []),
+    ``,
     `For enquiries: Tapion Hospital 459-2227 / 284-0557.`,
     ``,
     `Medical emergency? Call emergency services or go to the nearest emergency room — do not wait for this appointment.`,
@@ -45,13 +77,17 @@ function routineConfirmation(
   ].join('\n');
 }
 
-function referralAcknowledgement(patientName: string): string {
+function referralAcknowledgement(patientName: string, questionnaireUrl: string | null): string {
   const firstName = patientName.split(' ')[0];
   return [
     `Good day ${firstName},`,
     ``,
     `Thank you for contacting Amise Medical Services.`,
     `Your appointment request has been received and we will be in touch within 24 hours to confirm a time.`,
+    ...(questionnaireUrl ? [
+      ``,
+      `While you wait, you can get a head start by completing your pre-visit questionnaire: ${questionnaireUrl}`,
+    ] : []),
     ``,
     `Medical emergency? Call emergency services or go to the nearest emergency room — do not wait for a callback.`,
     ``,
@@ -157,15 +193,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const isWhatsApp = patientPhone.toLowerCase().startsWith('whatsapp:');
   const send = isWhatsApp ? sendWhatsApp : sendSms;
 
+  // Mint a pre-consult questionnaire link up front so it can ride along in
+  // the same confirmation message — one text to the patient, not two.
+  const questionnaireUrl = await provisionQuestionnaireLink();
+
   // The booking row is already saved at this point — a notification failure
   // (bad number, Twilio outage, etc.) shouldn't turn into a 500 that tells
   // the patient their request never went through.
   try {
     if (track === 'routine' && bookingStatus === 'patient_confirmed' && selectedSlot) {
-      await send(patientPhone, routineConfirmation(patientName, selectedSlot));
+      await send(patientPhone, routineConfirmation(patientName, selectedSlot, questionnaireUrl));
     } else {
       // Referral or routine without confirmed slot
-      await send(patientPhone, referralAcknowledgement(patientName));
+      await send(patientPhone, referralAcknowledgement(patientName, questionnaireUrl));
     }
   } catch (err) {
     console.error('[booking/create] Failed to send patient notification:', err);

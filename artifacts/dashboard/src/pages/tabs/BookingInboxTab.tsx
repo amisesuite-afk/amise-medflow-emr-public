@@ -67,6 +67,7 @@ function fmtSlot(iso: string): string {
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; border: string }> = {
   pending:           { label: 'Pending',          bg: '#fffbeb', color: '#b45309', border: '#fcd34d' },
+  waitlisted:        { label: 'Waitlisted',       bg: '#faf5ff', color: '#7c3aed', border: '#c4b5fd' },
   staff_confirmed:   { label: 'Slot Confirmed',   bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
   patient_confirmed: { label: 'Patient Confirmed',bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
   lapsed:            { label: 'Lapsed',           bg: '#f9fafb', color: '#9ca3af', border: '#e5e7eb' },
@@ -173,6 +174,10 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [confirmErr, setConfirmErr]       = useState<string | null>(null);
   const [confirmOk, setConfirmOk]         = useState(false);
 
+  // Waitlist action state
+  const [waitlisting, setWaitlisting]     = useState(false);
+  const [waitlistErr, setWaitlistErr]     = useState<string | null>(null);
+
   // Manual entry state
   const [showNewRequest, setShowNewRequest]   = useState(false);
   const [nrName, setNrName]                   = useState('');
@@ -251,6 +256,29 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     }
   }
 
+  async function handleWaitlist() {
+    if (!selected) return;
+    setWaitlisting(true);
+    setWaitlistErr(null);
+    try {
+      const r = await fetch(apiUrl(`/api/booking/waitlist/${selected.id}`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes: confirmNotes || null }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      await load();
+      setSelected(null);
+    } catch (e) {
+      setWaitlistErr(String(e));
+    } finally {
+      setWaitlisting(false);
+    }
+  }
+
   async function handleNewRequest() {
     if (!nrName.trim() || !nrType) return;
     setNrSubmitting(true);
@@ -290,12 +318,39 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     }
   }
 
-  // Sort: pending first (oldest), then confirmed, then others
+  // Unified intake sort — surfaces the cases that need attention first,
+  // regardless of which channel (web/WhatsApp/phone/email/manual) they
+  // arrived on:
+  //   1. Urgent acuity always leads — a life/limb-threatening case can't
+  //      wait behind scheduling order just because it came in by phone.
+  //   2. Procedures (endoscopy/OR-suite types needing prep + lead time for
+  //      anaesthesia/lab coordination) get a fast path ahead of routine
+  //      already-scheduled follow-ups — their logistics lock in early.
+  //   3. Remaining acuity tiers (priority, then routine).
+  //   4. Status — items still needing action (pending/waitlisted) before
+  //      ones already actioned.
+  //   5. Oldest first, as a fair tiebreaker.
+  const ACUITY_RANK: Record<string, number> = { urgent: 0, priority: 1, routine: 2 };
+  const STATUS_RANK: Record<string, number> = {
+    pending: 0, waitlisted: 1, staff_confirmed: 2, patient_confirmed: 3, lapsed: 4, cancelled: 5,
+  };
   const sorted = [...requests].sort((a, b) => {
-    const rank: Record<string, number> = { pending: 0, staff_confirmed: 1, patient_confirmed: 2, lapsed: 3 };
-    const ra = rank[a.status] ?? 9;
-    const rb = rank[b.status] ?? 9;
-    if (ra !== rb) return ra - rb;
+    const aUrgent = a.triage_acuity === 'urgent' ? 0 : 1;
+    const bUrgent = b.triage_acuity === 'urgent' ? 0 : 1;
+    if (aUrgent !== bUrgent) return aUrgent - bUrgent;
+
+    const aProc = requiresPrep(a.appointment_type) ? 0 : 1;
+    const bProc = requiresPrep(b.appointment_type) ? 0 : 1;
+    if (aProc !== bProc) return aProc - bProc;
+
+    const aAcuity = ACUITY_RANK[a.triage_acuity ?? 'routine'] ?? ACUITY_RANK.routine;
+    const bAcuity = ACUITY_RANK[b.triage_acuity ?? 'routine'] ?? ACUITY_RANK.routine;
+    if (aAcuity !== bAcuity) return aAcuity - bAcuity;
+
+    const aStatus = STATUS_RANK[a.status] ?? 9;
+    const bStatus = STATUS_RANK[b.status] ?? 9;
+    if (aStatus !== bStatus) return aStatus - bStatus;
+
     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
   });
 
@@ -777,6 +832,24 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 8, textAlign: 'center' }}>
                 Patient will receive a confirmation SMS with slot details{requiresPrep(selected.appointment_type) ? ' and preparation instructions' : ''}.
               </div>
+
+              {waitlistErr && (
+                <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+                  {waitlistErr}
+                </div>
+              )}
+
+              <button
+                onClick={() => void handleWaitlist()}
+                disabled={waitlisting}
+                style={{
+                  width: '100%', marginTop: 10, padding: '9px', borderRadius: 8,
+                  border: '1.5px solid #c4b5fd', background: '#faf5ff', color: '#7c3aed',
+                  fontWeight: 600, fontSize: 13, cursor: waitlisting ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {waitlisting ? 'Moving to waitlist…' : 'No slot available — move to waitlist'}
+              </button>
             </div>
           )}
 

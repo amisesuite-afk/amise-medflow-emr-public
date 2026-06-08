@@ -1,4 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/lib/supabase';
+
+async function staffAuthHeaders(): Promise<HeadersInit> {
+  const token = (await supabase?.auth.getSession())?.data.session?.access_token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -316,7 +322,7 @@ export default function NurseAPCQTab() {
 
   const fetchQueue = useCallback(async () => {
     try {
-      const res = await fetch('/api/questionnaire/nurse/queue');
+      const res = await fetch('/api/questionnaire/nurse/queue', { headers: await staffAuthHeaders() });
       if (res.ok) {
         const data = await res.json() as { sessions: QuestionnaireSession[] };
         setSessions(data.sessions ?? []);
@@ -371,7 +377,7 @@ export default function NurseAPCQTab() {
 
     // Fetch AI summary separately
     try {
-      const res = await fetch(`/api/questionnaire/session/${token}/summary`);
+      const res = await fetch(`/api/questionnaire/session/${token}/summary`, { headers: await staffAuthHeaders() });
       if (res.ok) {
         const data = await res.json() as { summary: AISummary };
         setAiSummary(data.summary ?? null);

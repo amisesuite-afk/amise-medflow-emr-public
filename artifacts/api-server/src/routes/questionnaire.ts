@@ -452,6 +452,73 @@ router.post('/api/questionnaire/session/start', async (req, res) => {
   }
 });
 
+// POST /api/questionnaire/provision-link — staff/internal only.
+// Mints a pre-consult questionnaire session for a (possibly unregistered)
+// patient and returns a shareable link, so a privileged caller (e.g. the
+// front-desk booking flow) can bundle it into a confirmation message
+// without ever touching session_token generation itself — api-server stays
+// the sole owner of the questionnaire-session lifecycle.
+router.post('/api/questionnaire/provision-link', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { patientId, templateKey } = (req.body ?? {}) as {
+    patientId?: string;
+    templateKey?: string;
+  };
+
+  const key = templateKey || 'general_screening';
+
+  try {
+    const { data: template, error: tmplErr } = await sb()
+      .from('questionnaire_templates')
+      .select('id, name')
+      .eq('name', key)
+      .eq('is_active', true)
+      .single();
+
+    if (tmplErr || !template) {
+      res.status(404).json({ error: `Template '${key}' not found or inactive` });
+      return;
+    }
+
+    const sessionToken = generateSessionToken();
+
+    const { data: sessionRow, error: sessErr } = await sb()
+      .from('questionnaire_sessions')
+      .insert({
+        template_id: template.id,
+        mode: 'screening',
+        status: 'in_progress',
+        delivery_method: 'whatsapp_link',
+        patient_id: patientId ?? null,
+        session_token: sessionToken,
+        consent_given: false,
+        started_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single();
+
+    if (sessErr || !sessionRow) {
+      req.log.info({ err: sessErr }, '[questionnaire/provision-link] insert session failed');
+      res.status(502).json({ error: 'Failed to create session' });
+      return;
+    }
+
+    await audit({
+      action: 'classify',
+      entityType: 'questionnaire_session',
+      entityId: sessionRow.id,
+      payload: { templateKey: key, mode: 'screening', delivery: 'whatsapp_link', provisioned: true },
+    });
+
+    const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    res.status(201).json({ url: `${baseUrl}/questionnaire/${sessionToken}` });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/provision-link] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
 // POST /api/questionnaire/session/:token/answer
 router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
   const { token } = req.params;
@@ -469,12 +536,17 @@ router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
     // Validate session
     const { data: sessionRow, error: sessErr } = await sb()
       .from('questionnaire_sessions')
-      .select('id, status, template_id, mode, patient_id, encounter_id')
+      .select('id, status, template_id, mode, patient_id, encounter_id, expires_at')
       .eq('session_token', token)
       .single();
 
     if (sessErr || !sessionRow) {
       res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    if (sessionRow.expires_at && new Date(sessionRow.expires_at).getTime() < Date.now()) {
+      res.status(410).json({ error: 'This questionnaire link has expired' });
       return;
     }
 
@@ -628,6 +700,11 @@ router.get('/api/questionnaire/session/:token', async (req, res) => {
       return;
     }
 
+    if (sessionRow.expires_at && new Date(sessionRow.expires_at).getTime() < Date.now()) {
+      res.status(410).json({ error: 'This questionnaire link has expired' });
+      return;
+    }
+
     const { data: responsesRaw, error: respErr } = await sb()
       .from('questionnaire_responses')
       .select('*')
@@ -712,7 +789,14 @@ router.get('/api/questionnaire/nurse/queue', async (req, res) => {
 });
 
 // GET /api/questionnaire/session/:token/summary
+// Staff/clinician only — patients never get self-service access to their AI-
+// generated clinical summary. The token that lets a patient submit answers
+// must not also unlock the read-back of clinically-interpreted data; release
+// to a patient on request goes through staff review (see nurse-review /
+// doctor-approve below), not this endpoint.
 router.get('/api/questionnaire/session/:token/summary', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
   const { token } = req.params;
 
   try {
