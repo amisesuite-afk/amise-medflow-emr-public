@@ -23,6 +23,30 @@ export function getSupabaseAdmin(): SupabaseClient {
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
+/**
+ * Gate for staff-only routes. Accepts either:
+ *  - x-staff-token: <CRON_SECRET>   (simple shared secret for internal tools)
+ *  - Authorization: Bearer <supabase-jwt>  (standard staff session)
+ */
+export async function requireStaffAuth(req: any, res: any): Promise<boolean> {
+  const cronSecret = process.env.CRON_SECRET;
+
+  if (cronSecret) {
+    const staffToken = req.headers['x-staff-token'];
+    if (staffToken === cronSecret) return true;
+  }
+
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    const jwt = authHeader.slice(7);
+    const { data, error } = await sb().auth.getUser(jwt);
+    if (!error && data?.user) return true;
+  }
+
+  res.status(401).json({ error: 'Unauthorised — provide x-staff-token or a valid Bearer token' });
+  return false;
+}
+
 export type AuditAction =
   | 'classify' | 'triage' | 'draft' | 'send' | 'book'
   | 'remind' | 'escalate' | 'error' | 'skip'

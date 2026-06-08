@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
-import { sb, getSupabaseAdmin, audit } from '../lib/supabase.js';
+import { sb, getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { sendSms } from '../lib/sms.js';
 
 const router = Router();
@@ -92,6 +92,8 @@ async function sendPortalInvite(patientId: string, normalEmail: string): Promise
 // ── POST /api/patient/invite ──────────────────────────────────────────────────
 // Staff invites a patient to the portal by email.
 router.post('/api/patient/invite', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
   const { patient_id, email } = (req.body ?? {}) as { patient_id?: string; email?: string };
 
   if (!patient_id || !email?.trim()) {
@@ -106,6 +108,81 @@ router.post('/api/patient/invite', async (req, res) => {
     res.json({ success: true, auth_user_id: authUserId });
   } catch (err) {
     req.log.error({ err }, '[portal/invite] error');
+    res.status(500).json({ error: String(err) });
+  }
+});
+
+// ── POST /api/patient/portal/register-by-phone ───────────────────────────────
+// Staff enables portal access for a patient using just name + phone — no
+// password, PIN, or email required from the patient. Sign-in afterwards goes
+// through the existing passwordless SMS-code flow (sms-code/request|verify):
+// the patient only ever enters their phone number and a one-time code that
+// expires in an hour. Nothing is created that could be guessed, written down,
+// or shared — that's the whole point of preferring this over a password.
+//
+// Supabase's OTP machinery needs *an* email to key on internally; patients who
+// give only a phone number get an internal placeholder address they never see
+// or use (mirrors the synthetic-email pattern already used for WhatsApp intake).
+router.post('/api/patient/portal/register-by-phone', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { patientName, patientPhone } = (req.body ?? {}) as {
+    patientName?: string;
+    patientPhone?: string;
+  };
+
+  if (!patientName?.trim() || !patientPhone?.trim()) {
+    res.status(400).json({ error: 'patientName and patientPhone are required' });
+    return;
+  }
+
+  const phone = patientPhone.trim();
+  const placeholderEmail = `phone.${phone.replace(/\D/g, '')}@noreply.amise.internal`;
+
+  try {
+    const { data: existing, error: lookupErr } = await sb()
+      .from('patients')
+      .select('id, email')
+      .eq('phone', phone)
+      .maybeSingle();
+    if (lookupErr) throw lookupErr;
+
+    let patientId: string;
+    let finalEmail: string;
+
+    if (existing) {
+      patientId = existing.id;
+      finalEmail = existing.email?.trim().toLowerCase() || placeholderEmail;
+    } else {
+      const { data: created, error: createErr } = await sb()
+        .from('patients')
+        .insert({ full_name: patientName.trim(), phone, email: placeholderEmail })
+        .select('id')
+        .single();
+      if (createErr || !created) throw createErr ?? new Error('Failed to create patient record');
+      patientId = created.id;
+      finalEmail = placeholderEmail;
+    }
+
+    await sb()
+      .from('patients')
+      .update({
+        email: finalEmail,
+        portal_enabled: true,
+        portal_registered_at: new Date().toISOString(),
+      })
+      .eq('id', patientId);
+
+    await audit({
+      action: 'portal_invite_sent',
+      entityType: 'patient',
+      entityId: patientId,
+      payload: { method: 'sms_code', phone, placeholder_email: finalEmail === placeholderEmail },
+    });
+
+    res.json({ success: true, patient_id: patientId });
+  } catch (err) {
+    req.log.error({ err }, '[portal/register-by-phone] error');
     res.status(500).json({ error: String(err) });
   }
 });

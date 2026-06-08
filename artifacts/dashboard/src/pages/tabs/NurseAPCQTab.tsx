@@ -1,10 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabase';
-
-async function staffAuthHeaders(): Promise<HeadersInit> {
-  const token = (await supabase?.auth.getSession())?.data.session?.access_token;
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+import { staffAuthHeaders } from '@/lib/staff-auth';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

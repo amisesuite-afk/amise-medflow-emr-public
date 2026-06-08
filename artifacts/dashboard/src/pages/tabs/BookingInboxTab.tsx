@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { hasRole } from '@/lib/roles';
 import ConsultationRequestsView from './ConsultationRequestsView';
 
@@ -178,6 +179,11 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [waitlisting, setWaitlisting]     = useState(false);
   const [waitlistErr, setWaitlistErr]     = useState<string | null>(null);
 
+  // Portal-access action state
+  const [portalRegistering, setPortalRegistering] = useState(false);
+  const [portalErr, setPortalErr]                 = useState<string | null>(null);
+  const [portalOk, setPortalOk]                   = useState(false);
+
   // Manual entry state
   const [showNewRequest, setShowNewRequest]   = useState(false);
   const [nrName, setNrName]                   = useState('');
@@ -217,9 +223,12 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     return () => clearInterval(t);
   }, [load]);
 
-  // When a booking is selected, pre-fill location from its data
+  // When a booking is selected, pre-fill location from its data and reset
+  // any per-selection action state from the previously-viewed request
   useEffect(() => {
     if (selected) setConfirmLoc(selected.location || 'rodney_bay');
+    setPortalOk(false);
+    setPortalErr(null);
   }, [selected?.id]);
 
   async function handleConfirm() {
@@ -276,6 +285,31 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       setWaitlistErr(String(e));
     } finally {
       setWaitlisting(false);
+    }
+  }
+
+  async function handleEnablePortal() {
+    if (!selected || !selected.patient_phone) return;
+    setPortalRegistering(true);
+    setPortalErr(null);
+    try {
+      const r = await fetch(apiUrl('/api/patient/portal/register-by-phone'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({
+          patientName:  selected.patient_name,
+          patientPhone: selected.patient_phone,
+        }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      setPortalOk(true);
+    } catch (e) {
+      setPortalErr(String(e));
+    } finally {
+      setPortalRegistering(false);
     }
   }
 
@@ -860,6 +894,42 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a8a' }}>{fmtSlot(selected.confirmed_slot)}</div>
               <div style={{ fontSize: 12, color: '#1d4ed8', marginTop: 4 }}>{LOCATION_LABELS[selected.location] ?? selected.location}</div>
               {selected.notes && <div style={{ fontSize: 12, color: '#374151', marginTop: 6, fontStyle: 'italic' }}>{selected.notes}</div>}
+            </div>
+          )}
+
+          {/* ── Patient portal access ────────────────────────────────────── */}
+          {selected.status !== 'pending' && selected.patient_phone && (
+            <div style={{ marginBottom: 20, padding: '16px', borderRadius: 10, background: '#fff', border: '2px solid #e5e7eb' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 6 }}>
+                Patient Portal Access
+              </div>
+              <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 12, lineHeight: 1.5 }}>
+                No password to set up — the patient signs in with just their phone number and a one-time code sent by SMS each time.
+              </div>
+
+              {portalErr && (
+                <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+                  {portalErr}
+                </div>
+              )}
+              {portalOk && (
+                <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontSize: 12, fontWeight: 600 }}>
+                  ✓ Portal access enabled — {selected.patient_name.split(' ')[0]} can sign in at the patient portal with {selected.patient_phone}.
+                </div>
+              )}
+
+              <button
+                onClick={() => void handleEnablePortal()}
+                disabled={portalRegistering || portalOk}
+                style={{
+                  width: '100%', padding: '10px', borderRadius: 8, border: 'none',
+                  background: portalOk ? '#9ca3af' : '#0d9488',
+                  color: '#fff', fontWeight: 700, fontSize: 13,
+                  cursor: portalRegistering || portalOk ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {portalRegistering ? 'Enabling…' : portalOk ? '✓ Portal Access Enabled' : 'Enable Portal Access'}
+              </button>
             </div>
           )}
 

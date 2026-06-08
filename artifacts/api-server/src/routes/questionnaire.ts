@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { randomBytes } from 'node:crypto';
 import Anthropic from '@anthropic-ai/sdk';
-import { sb, audit } from '../lib/supabase.js';
+import { sb, audit, requireStaffAuth } from '../lib/supabase.js';
 import {
   createSession,
   getNextQuestion,
@@ -94,36 +94,6 @@ function formatAnswerDisplay(question: Question, value: string | string[]): stri
     return opt ? opt.label : v;
   });
   return labels.join(', ');
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// AUTH MIDDLEWARE — staff routes
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Accept either:
- *  - x-staff-token: <CRON_SECRET>   (simple shared secret for internal tools)
- *  - Authorization: Bearer <supabase-jwt>  (standard staff session)
- */
-async function requireStaffAuth(req: any, res: any): Promise<boolean> {
-  const cronSecret = process.env.CRON_SECRET;
-
-  // Allow CRON_SECRET as a staff token
-  if (cronSecret) {
-    const staffToken = req.headers['x-staff-token'];
-    if (staffToken === cronSecret) return true;
-  }
-
-  // Accept Supabase JWT
-  const authHeader = req.headers.authorization;
-  if (authHeader?.startsWith('Bearer ')) {
-    const jwt = authHeader.slice(7);
-    const { data, error } = await sb().auth.getUser(jwt);
-    if (!error && data?.user) return true;
-  }
-
-  res.status(401).json({ error: 'Unauthorised — provide x-staff-token or a valid Bearer token' });
-  return false;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
