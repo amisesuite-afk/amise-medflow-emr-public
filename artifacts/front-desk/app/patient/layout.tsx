@@ -48,7 +48,7 @@ export default function PatientPortalLayout({ children }: { children: React.Reac
         padding: '20px 24px 32px',
       }}>
         Amise Medical Services · Saint Lucia<br />
-        <strong style={{ color: '#dc2626' }}>Medical emergency? Go straight to your nearest Emergency Department — do not call.</strong><br />
+        <strong style={{ color: '#dc2626' }}>Medical emergency? Call emergency services or go to the nearest emergency room.</strong><br />
         Clinic hours: Mon–Fri, 9am–5pm — call us during these hours for guidance.<br />
         Front desk —{' '}
         <a href="tel:+17582840557" style={{ color: '#64748b', textDecoration: 'none', fontWeight: 600 }}>Tapion 284-0557</a>

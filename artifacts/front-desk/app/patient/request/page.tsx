@@ -295,7 +295,7 @@ export default function RequestPage() {
               within one working day to confirm your appointment.
             </p>
             <div style={{ padding: '14px 16px', borderRadius: 12, background: '#f8fafc', border: `1px solid ${BORDER}`, fontSize: 13, color: MUTED, lineHeight: 1.9 }}>
-              <strong style={{ color: '#dc2626' }}>Medical emergency? Go straight to your nearest Emergency Department — do not call.</strong><br />
+              <strong style={{ color: '#dc2626' }}>Medical emergency? Call emergency services or go to the nearest emergency room.</strong><br />
               For urgent (non-emergency) concerns during clinic hours (Mon–Fri, 9am–5pm):<br />
               <strong style={{ color: '#475569' }}>Tapion Hospital</strong>{' '}
               <a href="tel:+17584592227" style={{ color: TEAL, textDecoration: 'none', fontWeight: 700 }}>459-2227</a>
