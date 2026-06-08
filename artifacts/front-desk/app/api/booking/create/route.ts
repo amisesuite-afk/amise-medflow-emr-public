@@ -7,6 +7,20 @@ import { TRACK_CONFIG, encodeReason, BOOKING_DISCLAIMER, type BookingTrack } fro
 
 export const runtime = 'nodejs';
 
+// Patients often type their number without the country code (e.g. "758 285
+// 7626" or "17582857626") even though the field is labelled "+1 758 …".
+// Twilio rejects anything that isn't E.164, which previously bubbled up as
+// an unhandled exception (surfaced to the patient as a generic "Network
+// error"). Normalise to E.164 — defaulting to the +1 (Saint Lucia) country
+// code — before it ever reaches Twilio or the database.
+function toE164(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith('+')) return `+${trimmed.slice(1).replace(/\D/g, '')}`;
+  const digits = trimmed.replace(/\D/g, '');
+  if (digits.length === 10) return `+1${digits}`;
+  return `+${digits}`;
+}
+
 function routineConfirmation(
   patientName: string,
   slot: { display: string; location: string },
@@ -66,13 +80,15 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   };
 
   const {
-    track, appointmentType, patientName, patientPhone, patientEmail,
+    track, appointmentType, patientName, patientEmail,
     patientDob, reason, referralDoctor, referralPractice, selectedSlot,
   } = body;
 
-  if (!patientName?.trim() || !patientPhone?.trim() || !track || !appointmentType) {
+  if (!patientName?.trim() || !body.patientPhone?.trim() || !track || !appointmentType) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
+
+  const patientPhone = toE164(body.patientPhone);
 
   const cfg = TRACK_CONFIG[track] ?? TRACK_CONFIG['routine'];
 
@@ -139,11 +155,18 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const isWhatsApp = patientPhone.toLowerCase().startsWith('whatsapp:');
   const send = isWhatsApp ? sendWhatsApp : sendSms;
 
-  if (track === 'routine' && bookingStatus === 'patient_confirmed' && selectedSlot) {
-    await send(patientPhone, routineConfirmation(patientName, selectedSlot));
-  } else {
-    // Referral or routine without confirmed slot
-    await send(patientPhone, referralAcknowledgement(patientName));
+  // The booking row is already saved at this point — a notification failure
+  // (bad number, Twilio outage, etc.) shouldn't turn into a 500 that tells
+  // the patient their request never went through.
+  try {
+    if (track === 'routine' && bookingStatus === 'patient_confirmed' && selectedSlot) {
+      await send(patientPhone, routineConfirmation(patientName, selectedSlot));
+    } else {
+      // Referral or routine without confirmed slot
+      await send(patientPhone, referralAcknowledgement(patientName));
+    }
+  } catch (err) {
+    console.error('[booking/create] Failed to send patient notification:', err);
   }
 
   // Send email with full procedure instructions (non-blocking)
