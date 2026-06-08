@@ -31,6 +31,20 @@ const TRACK_INFO: Record<BookingTrack, { label: string; description: string; ico
   },
 };
 
+// Public hospitals and polyclinics in Saint Lucia — offered as suggestions on
+// the "referring practice / hospital" field via <datalist> so referrers can
+// pick rather than type in full. (We don't maintain a directory of individual
+// doctors' names here — that would need to be sourced from a verified
+// registry such as the SLMDA roster rather than guessed at.)
+const SAINT_LUCIA_HEALTH_INSTITUTIONS = [
+  'Victoria Hospital', 'Tapion Hospital', 'St Jude Hospital',
+  'Soufrière Hospital', 'Dennery Hospital', 'Gros Islet Polyclinic',
+  'Castries Polyclinic', 'Vieux Fort Polyclinic', 'Micoud Polyclinic',
+  'Babonneau Polyclinic', 'Choiseul Polyclinic', 'Anse La Raye Polyclinic',
+  'Canaries Polyclinic', 'Marigot Health Centre', 'Praslin Health Centre',
+  'Mon Repos Health Centre', 'Laborie Health Centre', 'Dennery Health Centre',
+];
+
 /** Map each appointment-type key to one of the four optgroup labels */
 const APPT_GROUPS: Record<string, string> = {
   new_consult:  'Consultations',
@@ -529,7 +543,11 @@ export default function BookingForm() {
                         onChange={e => setRefPractice(e.target.value)}
                         placeholder="Practice or hospital name"
                         style={inputStyle}
+                        list="sl-health-institutions"
                       />
+                      <datalist id="sl-health-institutions">
+                        {SAINT_LUCIA_HEALTH_INSTITUTIONS.map(inst => <option key={inst} value={inst} />)}
+                      </datalist>
                     </div>
                   </>
                 )}
