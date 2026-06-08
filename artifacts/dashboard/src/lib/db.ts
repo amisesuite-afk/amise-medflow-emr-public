@@ -778,6 +778,146 @@ export async function syncMedicationList(
   return { error: null };
 }
 
+// ─── saveExamFindings ─────────────────────────────────────────────────────────
+
+const EXAM_SYSTEM_LABELS: Record<string, string> = {
+  general: 'General', cardiovascular: 'Cardiovascular', respiratory: 'Respiratory',
+  abdomen: 'Abdomen', breast: 'Breast/Local', wound: 'Wound/Diabetic foot',
+  neurological: 'Neurological', extremities: 'Extremities',
+};
+const EXAM_SYSTEM_ORDER = Object.keys(EXAM_SYSTEM_LABELS);
+
+/** Replaces the 'consultation' examination snapshot for this encounter.
+ *  Deletes any existing consultation note tagged with the sentinel prefix,
+ *  then inserts a fresh serialisation of the chip + free-text findings. */
+export async function saveExamFindings(
+  examFindings: Record<string, string[]>,
+  examNotes: Record<string, string>,
+  patientId: string,
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveExamFindings') };
+
+  const hasContent =
+    Object.values(examFindings).some(arr => arr.length > 0) ||
+    Object.values(examNotes).some(s => s.trim());
+  if (!hasContent) return { error: null };
+
+  const parts: string[] = [];
+  for (const sys of EXAM_SYSTEM_ORDER) {
+    const chips = examFindings[sys] ?? [];
+    const note  = examNotes[sys]?.trim() ?? '';
+    if (!chips.length && !note) continue;
+    const findings: string[] = [];
+    if (chips.length) findings.push(chips.join(', '));
+    if (note) findings.push(note);
+    parts.push(`${EXAM_SYSTEM_LABELS[sys]}: ${findings.join('. ')}`);
+  }
+  const content = '[EXAMINATION]\n' + (parts.join('\n') || '(No findings entered)');
+
+  // Delete the previous examination snapshot for this encounter, then re-insert
+  await supabase.from('clinical_notes')
+    .delete()
+    .eq('encounter_id', encounterId)
+    .like('content', '[EXAMINATION]%');
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    note_type:    'consultation',
+    status:       'draft',
+    content,
+    ai_assisted:  false,
+  });
+
+  if (error) { console.error('[db] saveExamFindings:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── closeEncounter ───────────────────────────────────────────────────────────
+
+export async function closeEncounter(
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('closeEncounter') };
+
+  const { error } = await supabase
+    .from('encounters')
+    .update({ status: 'closed' })
+    .eq('id', encounterId);
+
+  if (error) { console.error('[db] closeEncounter:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── loadEncounterData ────────────────────────────────────────────────────────
+
+export interface EncounterData {
+  assessment: string;
+  differentials: string;
+  icdCodes: string[];
+  plan: string;
+  allergens: string[];
+  medications: string[];
+}
+
+/** Fetches the clinical snapshot for an encounter: assessment, plan, allergies,
+ *  and consultation-list medications. Used to repopulate AppContext when a
+ *  returning patient is loaded from the patient registry. */
+export async function loadEncounterData(
+  encounterId: string,
+  patientId: string,
+): Promise<{ data: EncounterData; error: null } | { data: null; error: string }> {
+  if (!supabase) return { data: null, error: notConfigured('loadEncounterData') };
+
+  const [assessRes, planRes, allergyRes, medRes] = await Promise.all([
+    supabase.from('assessments')
+      .select('diagnosis, differentials, icd10_code')
+      .eq('encounter_id', encounterId)
+      .maybeSingle(),
+    supabase.from('plans')
+      .select('description')
+      .eq('encounter_id', encounterId)
+      .eq('plan_type', 'management')
+      .maybeSingle(),
+    supabase.from('allergies')
+      .select('allergen')
+      .eq('patient_id', patientId)
+      .eq('status', 'active'),
+    supabase.from('medications')
+      .select('drug_name')
+      .eq('patient_id', patientId)
+      .eq('encounter_id', encounterId)
+      .eq('indication', 'consultation-list')
+      .eq('status', 'active'),
+  ]);
+
+  const firstError = assessRes.error ?? planRes.error ?? allergyRes.error ?? medRes.error;
+  if (firstError) {
+    console.error('[db] loadEncounterData:', firstError);
+    return { data: null, error: firstError.message };
+  }
+
+  const assessRow = assessRes.data as { diagnosis: string | null; differentials: string | null; icd10_code: string | null } | null;
+  const planRow   = planRes.data   as { description: string | null } | null;
+  const allergyRows = (allergyRes.data ?? []) as { allergen: string }[];
+  const medRows     = (medRes.data   ?? []) as { drug_name: string }[];
+
+  return {
+    data: {
+      assessment:    assessRow?.diagnosis    ?? '',
+      differentials: assessRow?.differentials ?? '',
+      icdCodes:      assessRow?.icd10_code
+        ? assessRow.icd10_code.split(',').map(s => s.trim()).filter(Boolean)
+        : [],
+      plan:          planRow?.description ?? '',
+      allergens:     allergyRows.map(r => r.allergen),
+      medications:   medRows.map(r => r.drug_name),
+    },
+    error: null,
+  };
+}
+
 export interface PaneSessionLog {
   encounter_id: string | null;
   patient_id: string | null;

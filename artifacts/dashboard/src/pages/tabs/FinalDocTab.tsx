@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { closeEncounter } from '@/lib/db';
 import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, inlineText, callout, footer, signoff, escH, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
@@ -693,6 +694,28 @@ export default function FinalDocTab() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
 
+  const [closing, setClosing] = useState(false);
+  const [closeMsg, setCloseMsg] = useState('');
+
+  async function handleCloseEncounter() {
+    if (!ctx.encounterId) return;
+    if (!window.confirm(
+      `Close this encounter for ${ctx.patientName || 'this patient'}?\n\n` +
+      'The encounter will be marked closed and locked for further edits. ' +
+      'All saved data remains in the record.',
+    )) return;
+    setClosing(true);
+    setCloseMsg('');
+    const { error } = await closeEncounter(ctx.encounterId);
+    setClosing(false);
+    if (error) {
+      setCloseMsg(`Error: ${error}`);
+    } else {
+      setCloseMsg('Encounter closed.');
+      ctx.setEncounterId(null);
+    }
+  }
+
   const site = SITE_INFO[ctx.currentSite] ?? SITE_INFO.rodney_bay;
   const patSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   const dateStr = new Date().toISOString().slice(0, 10);
@@ -770,6 +793,25 @@ export default function FinalDocTab() {
         <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 4 }}>
           Edits auto-saved to session
         </span>
+
+        {ctx.encounterId && (
+          <>
+            <div style={{ width: 1, height: 20, background: '#e5e7eb', margin: '0 2px' }} />
+            <button
+              type="button"
+              style={closing ? btnDisabled({ ...BTN_BASE, background: '#dc2626', color: '#fff', border: 'none' }) : { ...BTN_BASE, background: '#dc2626', color: '#fff', border: 'none' }}
+              disabled={closing}
+              onClick={() => void handleCloseEncounter()}
+            >
+              {closing ? '⏳ Closing…' : '✓ Close Encounter'}
+            </button>
+          </>
+        )}
+        {closeMsg && (
+          <span style={{ fontSize: 11, color: closeMsg.startsWith('Error') ? '#dc2626' : '#16a34a', fontWeight: 600 }}>
+            {closeMsg}
+          </span>
+        )}
       </div>
 
       {/* ── AI error ── */}

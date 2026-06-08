@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, listPatientsBySite, getLatestOpenEncounter, loadPMH, type PatientListRow } from '@/lib/db';
+import { listPatients, listPatientsBySite, getLatestOpenEncounter, loadPMH, loadEncounterData, type PatientListRow } from '@/lib/db';
 import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { DEMO_MODE } from '@/context/AuthContext';
 
@@ -97,7 +97,12 @@ export default function PatientSearchTab() {
   const [selected,      setSelected]      = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { setPatientName, setAge, setSex, setDob, setPhone, setPatientId, setEncounterId, setComorbidities } = useAppContext();
+  const {
+    setPatientName, setAge, setSex, setDob, setPhone,
+    setPatientId, setEncounterId, setComorbidities,
+    setAssessment, setDifferentials, setIcdCodes, setPlan,
+    setAllergies, setMedications,
+  } = useAppContext();
   const { showToast } = useToast();
 
   // ── Demo mode: load from localStorage ──────────────────────────────────────
@@ -232,6 +237,17 @@ export default function PatientSearchTab() {
         ? ` · ${pmhResult.conditions.length} PMH condition${pmhResult.conditions.length !== 1 ? 's' : ''} loaded`
         : '';
       if (encResult.encounterId) {
+        // Restore clinical snapshot: assessment, plan, allergies, medications
+        const encData = await loadEncounterData(encResult.encounterId, p.id);
+        if (!encData.error && encData.data) {
+          const d = encData.data;
+          if (d.assessment)    setAssessment(d.assessment);
+          if (d.differentials) setDifferentials(d.differentials);
+          if (d.icdCodes.length) setIcdCodes(d.icdCodes);
+          if (d.plan)          setPlan(d.plan);
+          if (d.allergens.length) setAllergies(d.allergens.join(', '));
+          if (d.medications.length) setMedications(d.medications);
+        }
         showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
       } else {
         showToast(`Loaded: ${p.full_name ?? 'patient'} — no open encounter${pmhSuffix}.`, 'info');

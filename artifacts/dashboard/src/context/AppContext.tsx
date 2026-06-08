@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -199,7 +199,7 @@ interface CtxValue {
   familyHistoryNotes: string; setFamilyHistoryNotes(v: string): void;
   surgicalHistory: string[]; toggleSurgical(v: string): void;
   surgicalNotes: string; setSurgicalNotes(v: string): void;
-  medications: string[]; toggleMedication(v: string): void;
+  medications: string[]; toggleMedication(v: string): void; setMedications(v: string[]): void;
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
   toxicHabits: string[]; toggleToxicHabit(v: string): void;
@@ -651,6 +651,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, allergies]);
 
+  // ── Autosave examination findings (debounced 3 s) ─────────────────────────
+  const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    if (examTimerRef.current) clearTimeout(examTimerRef.current);
+    examTimerRef.current = setTimeout(() => {
+      void saveExamFindings(examFindings, examNotes, patientId, encounterId);
+    }, 3000);
+    return () => { if (examTimerRef.current) clearTimeout(examTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, examFindings, examNotes]);
+
   const value: CtxValue = {
     activeSection, setActiveSection,
     topSection, setTopSection,
@@ -680,7 +692,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     familyHistoryNotes, setFamilyHistoryNotes,
     surgicalHistory, toggleSurgical,
     surgicalNotes, setSurgicalNotes,
-    medications, toggleMedication,
+    medications, toggleMedication, setMedications,
     medicationsText, setMedicationsText,
     allergies, setAllergies,
     toxicHabits, toggleToxicHabit,
