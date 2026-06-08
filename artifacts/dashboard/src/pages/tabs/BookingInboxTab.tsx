@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { getApiOrigin } from '@/lib/api-origin';
 import { hasRole } from '@/lib/roles';
 import ConsultationRequestsView from './ConsultationRequestsView';
 
@@ -33,7 +34,7 @@ interface BookingRequest {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;

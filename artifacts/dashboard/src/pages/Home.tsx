@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppContext, Section, TopSection, type VitalsState } from '@/context/AppContext';
+import { getApiOrigin } from '@/lib/api-origin';
 import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
@@ -44,7 +45,7 @@ import SettingsTab from './tabs/SettingsTab';
 import PortalIntakeTab from './tabs/PortalIntakeTab';
 import FloatingActions from '@/components/FloatingActions';
 
-const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;

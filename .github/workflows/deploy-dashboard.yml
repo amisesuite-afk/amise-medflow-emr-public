@@ -137,7 +137,8 @@ jobs:
           echo "=== Setting VITE_ env vars ==="
           for payload in \
             '{"key":"VITE_SUPABASE_URL","value":"https://nornhfzfrlmfzaqmrzzp.supabase.co","target":["production","preview","development"],"type":"plain"}' \
-            '{"key":"VITE_SUPABASE_ANON_KEY","value":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc","target":["production","preview","development"],"type":"plain"}'; do
+            '{"key":"VITE_SUPABASE_ANON_KEY","value":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc","target":["production","preview","development"],"type":"plain"}' \
+            '{"key":"VITE_API_URL","value":"https://amise-medflow-api.onrender.com","target":["production","preview","development"],"type":"plain"}'; do
             curl -sf -X POST \
               "https://api.vercel.com/v10/projects/$VERCEL_PROJECT_ID/env?teamId=$VERCEL_ORG_ID&upsert=true" \
               -H "Authorization: Bearer $VERCEL_TOKEN" \
@@ -154,6 +155,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ steps.vercel-ids.outputs.project_id }}
           VITE_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
+          VITE_API_URL: https://amise-medflow-api.onrender.com
         run: |
           set -e
           echo '=== Vercel deploy (production from source) ==='
