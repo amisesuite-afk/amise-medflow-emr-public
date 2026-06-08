@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import { useAuth } from '@/context/AuthContext';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -84,6 +85,21 @@ function statusColors(status: QuestionnaireSession['status']): {
       return { bg: '#dbeafe', text: '#1e40af', border: '#60a5fa', label: 'Doctor Approved' };
     default:
       return { bg: '#f3f4f6', text: '#374151', border: '#d1d5db', label: status };
+  }
+}
+
+/** Red flags are persisted using the triage engine's urgency vocabulary
+ *  (routine/priority/urgent/emergency); the badge UI here uses high/medium/low —
+ *  map between the two so severity badges render with the right colour. */
+function urgencyToDisplaySeverity(urgency: string): 'high' | 'medium' | 'low' {
+  switch (urgency) {
+    case 'emergency':
+    case 'urgent':
+      return 'high';
+    case 'priority':
+      return 'medium';
+    default:
+      return 'low';
   }
 }
 
@@ -303,6 +319,10 @@ function AISummaryBox({ summary, loading }: { summary: AISummary | null | undefi
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 export default function NurseAPCQTab() {
+  const { profile } = useAuth();
+  const userRole = profile?.role ?? 'front_desk';
+  const isDoctor = userRole === 'doctor' || userRole === 'admin';
+
   const [sessions, setSessions] = useState<QuestionnaireSession[]>([]);
   const [loadingQueue, setLoadingQueue] = useState(true);
   const [queueError, setQueueError] = useState<string | null>(null);
@@ -314,13 +334,29 @@ export default function NurseAPCQTab() {
   const [nurseNotes, setNurseNotes] = useState('');
   const [marking, setMarking] = useState(false);
   const [markSuccess, setMarkSuccess] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const [approveSuccess, setApproveSuccess] = useState(false);
+  const [approveErr, setApproveErr] = useState<string | null>(null);
 
   const fetchQueue = useCallback(async () => {
     try {
       const res = await fetch('/api/questionnaire/nurse/queue', { headers: await staffAuthHeaders() });
       if (res.ok) {
-        const data = await res.json() as { sessions: QuestionnaireSession[] };
-        setSessions(data.sessions ?? []);
+        // Backend sends raw urgency values (routine/priority/urgent/emergency)
+        // for red-flag severity — remap to the high/medium/low badge vocabulary.
+        const data = await res.json() as {
+          sessions: Array<Omit<QuestionnaireSession, 'redFlags'> & {
+            redFlags: Array<{ questionId: string; severity: string; label?: string }>;
+          }>;
+        };
+        setSessions((data.sessions ?? []).map(s => ({
+          ...s,
+          redFlags: s.redFlags.map(f => ({
+            questionId: f.questionId,
+            severity: urgencyToDisplaySeverity(f.severity),
+            label: f.label,
+          })),
+        })));
         setQueueError(null);
       } else {
         setQueueError('Unable to load queue. Please refresh.');
@@ -346,6 +382,8 @@ export default function NurseAPCQTab() {
       setAiSummary(undefined);
       setNurseNotes('');
       setMarkSuccess(false);
+      setApproveSuccess(false);
+      setApproveErr(null);
       return;
     }
     setSelectedToken(token);
@@ -353,14 +391,55 @@ export default function NurseAPCQTab() {
     setAiSummary(undefined);
     setNurseNotes('');
     setMarkSuccess(false);
+    setApproveSuccess(false);
+    setApproveErr(null);
     setLoadingDetail(true);
     setLoadingAI(true);
 
     try {
       const res = await fetch(`/api/questionnaire/session/${token}`);
       if (res.ok) {
-        const data = await res.json() as SessionDetail;
-        setDetail(data);
+        // The session-detail endpoint is shared with the anonymous patient
+        // resume flow, so it returns raw DB rows (`session` + `responses`)
+        // rather than the display shape this tab needs — map it here,
+        // filling in patient/template names from the already-loaded queue row.
+        const data = await res.json() as {
+          session: {
+            session_token: string;
+            status: string;
+            patient_id: string | null;
+            completed_at: string | null;
+            started_at: string | null;
+            red_flags_detected: Array<{ question_key: string; severity: string; message?: string }> | null;
+          };
+          responses: Array<{
+            question_key: string;
+            question_text: string | null;
+            answer_value: string | null;
+            answer_display: string | null;
+            answered_at: string;
+          }>;
+        };
+        const base = sessions.find(s => s.sessionToken === token);
+        setDetail({
+          sessionToken: data.session.session_token,
+          patientName: base?.patientName ?? null,
+          patientId: data.session.patient_id,
+          templateKey: base?.templateKey ?? 'general_screening',
+          completedAt: data.session.completed_at ?? data.session.started_at ?? '',
+          status: data.session.status as SessionDetail['status'],
+          redFlags: (data.session.red_flags_detected ?? []).map(f => ({
+            questionId: f.question_key,
+            severity: urgencyToDisplaySeverity(f.severity),
+            label: f.message,
+          })),
+          responses: (data.responses ?? []).map(r => ({
+            questionId: r.question_key,
+            questionText: r.question_text ?? r.question_key,
+            answer: r.answer_display ?? r.answer_value ?? '—',
+            answeredAt: r.answered_at,
+          })),
+        });
       } else {
         setDetail(null);
       }
@@ -370,12 +449,37 @@ export default function NurseAPCQTab() {
       setLoadingDetail(false);
     }
 
-    // Fetch AI summary separately
+    // Fetch AI summary separately — backend returns the raw `intake_summaries`
+    // row (snake_case columns); map it onto the display shape this tab uses.
     try {
       const res = await fetch(`/api/questionnaire/session/${token}/summary`, { headers: await staffAuthHeaders() });
       if (res.ok) {
-        const data = await res.json() as { summary: AISummary };
-        setAiSummary(data.summary ?? null);
+        const data = await res.json() as {
+          summary?: {
+            ai_summary: string | null;
+            key_positives: unknown;
+            red_flags: unknown;
+            recommended_focus_areas: unknown;
+          };
+        };
+        const s = data.summary;
+        const asStringArray = (v: unknown): string[] =>
+          Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
+        // intake_summaries.red_flags is an array of {symptom, severity, action}
+        // objects (not plain strings) — render each as a readable line.
+        const redFlagLines = (v: unknown): string[] =>
+          Array.isArray(v)
+            ? (v as Array<{ symptom?: string; severity?: string; action?: string }>)
+                .filter((f) => f && typeof f === 'object')
+                .map((f) => [f.symptom, f.severity ? `(${f.severity})` : null, f.action ? `— ${f.action}` : null]
+                  .filter(Boolean).join(' '))
+            : [];
+        setAiSummary(s ? {
+          overallImpression: s.ai_summary ?? '',
+          keyPositives: asStringArray(s.key_positives),
+          redFlags: redFlagLines(s.red_flags),
+          recommendedFocusAreas: asStringArray(s.recommended_focus_areas),
+        } : null);
       } else {
         setAiSummary(null);
       }
@@ -387,13 +491,13 @@ export default function NurseAPCQTab() {
   }
 
   async function markReviewed() {
-    if (!selectedToken || marking) return;
+    if (!selectedToken || marking || !profile?.id) return;
     setMarking(true);
     try {
       const res = await fetch(`/api/questionnaire/session/${selectedToken}/nurse-review`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes: nurseNotes }),
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({ nurseNotes, nurseUserId: profile.id }),
       });
       if (res.ok) {
         setMarkSuccess(true);
@@ -412,6 +516,40 @@ export default function NurseAPCQTab() {
       // Silently fail — user can retry
     } finally {
       setMarking(false);
+    }
+  }
+
+  /** Doctor approval — also triggers EMR population (drafts symptoms,
+   *  assessment and plan from the intake onto the patient's encounter). */
+  async function approveSession() {
+    if (!selectedToken || approving || !profile?.id) return;
+    setApproving(true);
+    setApproveErr(null);
+    try {
+      const res = await fetch(`/api/questionnaire/session/${selectedToken}/doctor-approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({ doctorUserId: profile.id }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(d.error ?? `HTTP ${res.status}`);
+      }
+      setApproveSuccess(true);
+      setSessions(prev =>
+        prev.map(s =>
+          s.sessionToken === selectedToken
+            ? { ...s, status: 'doctor_approved' as const }
+            : s,
+        ),
+      );
+      if (detail) {
+        setDetail({ ...detail, status: 'doctor_approved' });
+      }
+    } catch (e) {
+      setApproveErr(String(e instanceof Error ? e.message : e));
+    } finally {
+      setApproving(false);
     }
   }
 
@@ -593,98 +731,153 @@ export default function NurseAPCQTab() {
                 {/* Divider */}
                 <div style={{ borderTop: '1px solid #e5e7eb' }} />
 
-                {/* Nurse notes */}
-                <div>
-                  <label
-                    htmlFor="nurse-notes"
-                    className="block text-xs font-bold mb-2 uppercase tracking-wider"
-                    style={{ color: '#6b7280' }}
-                  >
-                    Nurse Notes
-                  </label>
-                  <textarea
-                    id="nurse-notes"
-                    value={nurseNotes}
-                    onChange={e => setNurseNotes(e.target.value)}
-                    placeholder="Add clinical notes or observations…"
-                    rows={3}
-                    className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none transition-all"
-                    style={{
-                      border: '1.5px solid',
-                      borderColor: nurseNotes.trim() ? '#1e40af' : '#d1d5db',
-                      background: '#fff',
-                      color: '#111827',
-                    }}
-                    disabled={(detail ?? selectedSession)?.status !== 'completed'}
-                  />
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex items-center gap-3">
-                  {markSuccess ? (
-                    <div
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold"
-                      style={{ background: '#d1fae5', color: '#065f46', border: '1px solid #34d399' }}
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                      Marked as Reviewed
+                {/* Nurse review (nurse role) */}
+                {!isDoctor && (
+                  <>
+                    <div>
+                      <label
+                        htmlFor="nurse-notes"
+                        className="block text-xs font-bold mb-2 uppercase tracking-wider"
+                        style={{ color: '#6b7280' }}
+                      >
+                        Nurse Notes
+                      </label>
+                      <textarea
+                        id="nurse-notes"
+                        value={nurseNotes}
+                        onChange={e => setNurseNotes(e.target.value)}
+                        placeholder="Add clinical notes or observations…"
+                        rows={3}
+                        className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none transition-all"
+                        style={{
+                          border: '1.5px solid',
+                          borderColor: nurseNotes.trim() ? '#1e40af' : '#d1d5db',
+                          background: '#fff',
+                          color: '#111827',
+                        }}
+                        disabled={(detail ?? selectedSession)?.status !== 'completed'}
+                      />
                     </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => { void markReviewed(); }}
-                      disabled={
-                        marking ||
-                        (detail ?? selectedSession)?.status !== 'completed'
-                      }
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold text-white transition-all"
-                      style={{
-                        background:
-                          !marking && (detail ?? selectedSession)?.status === 'completed'
-                            ? '#1e40af'
-                            : '#93c5fd',
-                        cursor:
-                          !marking && (detail ?? selectedSession)?.status === 'completed'
-                            ? 'pointer'
-                            : 'not-allowed',
-                      }}
-                    >
-                      {marking ? (
-                        <>
-                          <Spinner size={14} />
-                          Saving…
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+
+                    <div className="flex items-center gap-3">
+                      {markSuccess ? (
+                        <div
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold"
+                          style={{ background: '#d1fae5', color: '#065f46', border: '1px solid #34d399' }}
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                           </svg>
-                          Mark as Reviewed
-                        </>
+                          Marked as Reviewed — the doctor can now approve and populate the EMR
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => { void markReviewed(); }}
+                          disabled={
+                            marking ||
+                            (detail ?? selectedSession)?.status !== 'completed'
+                          }
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold text-white transition-all"
+                          style={{
+                            background:
+                              !marking && (detail ?? selectedSession)?.status === 'completed'
+                                ? '#1e40af'
+                                : '#93c5fd',
+                            cursor:
+                              !marking && (detail ?? selectedSession)?.status === 'completed'
+                                ? 'pointer'
+                                : 'not-allowed',
+                          }}
+                        >
+                          {marking ? (
+                            <>
+                              <Spinner size={14} />
+                              Saving…
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                              </svg>
+                              Mark as Reviewed
+                            </>
+                          )}
+                        </button>
                       )}
-                    </button>
-                  )}
+                    </div>
+                  </>
+                )}
 
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all"
-                    style={{
-                      background: '#f3f4f6',
-                      color: '#374151',
-                      border: '1.5px solid #e5e7eb',
-                    }}
-                    onClick={() => {
-                      // Future: sends notification to doctor
-                    }}
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                    </svg>
-                    Notify Doctor
-                  </button>
-                </div>
+                {/* Doctor approval (doctor/admin role) — closes the loop into the EMR */}
+                {isDoctor && (
+                  <div className="space-y-3">
+                    <div
+                      className="rounded-lg px-4 py-3 text-xs leading-relaxed"
+                      style={{ background: '#eff6ff', color: '#1e3a8a', border: '1px solid #bfdbfe' }}
+                    >
+                      Approving will draft this patient's symptoms, a provisional assessment and a
+                      management plan onto an open encounter from the intake responses and AI
+                      summary — clearly marked as AI-drafted, ready for you to review and amend at
+                      consultation.
+                    </div>
+
+                    {(detail ?? selectedSession)?.status === 'doctor_approved' || approveSuccess ? (
+                      <div
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold"
+                        style={{ background: '#dbeafe', color: '#1e40af', border: '1px solid #60a5fa' }}
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                        Approved — EMR populated for this encounter
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => { void approveSession(); }}
+                        disabled={
+                          approving ||
+                          !['completed', 'nurse_reviewed'].includes((detail ?? selectedSession)?.status ?? '')
+                        }
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold text-white transition-all"
+                        style={{
+                          background:
+                            !approving && ['completed', 'nurse_reviewed'].includes((detail ?? selectedSession)?.status ?? '')
+                              ? '#1e40af'
+                              : '#93c5fd',
+                          cursor:
+                            !approving && ['completed', 'nurse_reviewed'].includes((detail ?? selectedSession)?.status ?? '')
+                              ? 'pointer'
+                              : 'not-allowed',
+                        }}
+                      >
+                        {approving ? (
+                          <>
+                            <Spinner size={14} />
+                            Approving…
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Approve &amp; Populate EMR
+                          </>
+                        )}
+                      </button>
+                    )}
+
+                    {approveErr && (
+                      <div
+                        className="px-4 py-2.5 rounded-lg text-sm"
+                        style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b' }}
+                      >
+                        {approveErr}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>

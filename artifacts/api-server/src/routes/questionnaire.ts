@@ -245,8 +245,115 @@ ${responseSummaryText}`;
 }
 
 /**
- * Create or update an encounter record from the intake summary and return the
- * encounter UUID.
+ * Pre-consultation intake questions that capture history/background rather
+ * than an active symptom — these feed the encounter chief complaint or are
+ * better suited to other tables (medications, allergies) than `symptoms`,
+ * so they're excluded from the auto-drafted symptom list.
+ */
+const NON_SYMPTOM_QUESTION_KEYS = new Set([
+  'chief_complaint', 'current_medications', 'allergies', 'smoking_status',
+  'alcohol_use', 'family_history_cancer', 'family_history_breast',
+  'prior_surgery', 'colonoscopy_history', 'mammogram_history',
+  'surgery_date', 'surgery_type', 'screening_reason',
+]);
+
+/** Answers that indicate "no finding" — not worth drafting a symptom row for. */
+const NEGATIVE_ANSWER_VALUES = new Set(['no', 'none', 'never', 'n/a', '']);
+
+const URGENCY_TO_ACUITY: Record<string, 'routine' | 'review' | 'priority' | 'urgent'> = {
+  routine: 'routine',
+  priority: 'priority',
+  urgent: 'urgent',
+  emergency: 'urgent', // assessments.acuity has no 'emergency' tier — cap at 'urgent'
+};
+
+/**
+ * Draft `symptoms`, `assessments` and `plans` rows from a completed intake —
+ * AI/questionnaire-derived, clearly marked as such, and always subject to
+ * physician review/edit before clinical use. Skipped if this session has
+ * already populated the EMR once (re-approval must not duplicate rows).
+ */
+async function draftClinicalRecordsFromIntake(
+  sessionId: string,
+  encounterId: string,
+  patientId: string,
+  summary: {
+    chief_complaint: string | null;
+    ai_summary: string | null;
+    key_positives: unknown;
+    recommended_focus_areas: unknown;
+    estimated_urgency: string;
+  },
+): Promise<void> {
+  const { data: responses, error: respErr } = await sb()
+    .from('questionnaire_responses')
+    .select('question_key, question_text, answer_value, answer_display, is_red_flag')
+    .eq('session_id', sessionId)
+    .order('sequence_number', { ascending: true });
+
+  if (respErr) throw respErr;
+
+  const symptomRows = (responses ?? [])
+    .filter((r) => {
+      if (NON_SYMPTOM_QUESTION_KEYS.has(r.question_key)) return false;
+      const v = (r.answer_value ?? '').trim().toLowerCase();
+      return v.length > 0 && !NEGATIVE_ANSWER_VALUES.has(v);
+    })
+    .map((r) => ({
+      encounter_id: encounterId,
+      patient_id: patientId,
+      symptom: r.question_text || r.question_key,
+      severity: r.is_red_flag ? ('severe' as const) : null,
+      details: {
+        source: 'questionnaire_intake',
+        session_id: sessionId,
+        question_key: r.question_key,
+        answer_value: r.answer_value,
+        answer_display: r.answer_display,
+      },
+      notes: 'Auto-drafted from pre-visit questionnaire — confirm with patient at consultation.',
+    }));
+
+  if (symptomRows.length) {
+    const { error: symErr } = await sb().from('symptoms').insert(symptomRows);
+    if (symErr) throw symErr;
+  }
+
+  const keyPositives = Array.isArray(summary.key_positives)
+    ? (summary.key_positives as unknown[]).filter((p): p is string => typeof p === 'string')
+    : [];
+  const focusAreas = Array.isArray(summary.recommended_focus_areas)
+    ? (summary.recommended_focus_areas as unknown[]).filter((p): p is string => typeof p === 'string')
+    : [];
+
+  const { error: assessErr } = await sb().from('assessments').insert({
+    encounter_id: encounterId,
+    patient_id: patientId,
+    diagnosis: summary.chief_complaint ?? null,
+    differentials: keyPositives.length ? keyPositives.join('; ') : null,
+    acuity: URGENCY_TO_ACUITY[summary.estimated_urgency] ?? 'routine',
+    notes: [
+      'DRAFT — generated from AI pre-visit intake summary. Physician must review, correct and confirm before use.',
+      summary.ai_summary ? `\nAI summary:\n${summary.ai_summary}` : null,
+    ].filter(Boolean).join('\n'),
+  });
+  if (assessErr) throw assessErr;
+
+  const { error: planErr } = await sb().from('plans').insert({
+    encounter_id: encounterId,
+    patient_id: patientId,
+    plan_type: 'management',
+    description: focusAreas.length
+      ? `DRAFT — areas flagged by intake AI for the physician to probe at consultation: ${focusAreas.join('; ')}`
+      : 'DRAFT — pending physician assessment at consultation.',
+  });
+  if (planErr) throw planErr;
+}
+
+/**
+ * Create or update an encounter record from the intake summary, draft the
+ * supporting clinical records (symptoms/assessment/plan) on first approval,
+ * and return the encounter UUID.
  */
 async function populateEMR(sessionId: string, existingEncounterId?: string): Promise<string> {
   const { data: summary, error: sumErr } = await sb()
@@ -259,14 +366,15 @@ async function populateEMR(sessionId: string, existingEncounterId?: string): Pro
     throw new Error(`No intake summary found for session ${sessionId}`);
   }
 
-  // Fetch patient_id from the session
+  // Fetch patient_id + emr_populated flag from the session
   const { data: session } = await sb()
     .from('questionnaire_sessions')
-    .select('patient_id')
+    .select('patient_id, emr_populated')
     .eq('id', sessionId)
     .single();
 
   const patientId: string | null = session?.patient_id ?? null;
+  const alreadyPopulated = session?.emr_populated === true;
 
   let encounterId = existingEncounterId ?? null;
 
@@ -303,6 +411,10 @@ async function populateEMR(sessionId: string, existingEncounterId?: string): Pro
 
   if (!encounterId) {
     throw new Error('Cannot populate EMR: no patient_id and no existing encounter');
+  }
+
+  if (!alreadyPopulated && patientId) {
+    await draftClinicalRecordsFromIntake(sessionId, encounterId, patientId, summary);
   }
 
   return encounterId;
@@ -727,31 +839,52 @@ router.get('/api/questionnaire/nurse/queue', async (req, res) => {
     const { data, error } = await sb()
       .from('questionnaire_sessions')
       .select(
-        'id, patient_id, status, red_flags_detected, started_at, completed_at, template_id, mode, delivery_method',
+        `id, patient_id, status, red_flags_detected, started_at, completed_at, session_token,
+         template:questionnaire_templates(name),
+         patient:patients(full_name)`,
       )
-      .in('status', ['completed', 'in_progress'])
+      .in('status', ['completed', 'in_progress', 'nurse_reviewed'])
       .order('completed_at', { ascending: false });
 
     if (error) throw error;
 
-    const rows = data ?? [];
+    type QueueRow = {
+      id: string;
+      patient_id: string | null;
+      status: string;
+      red_flags_detected: Array<{ question_key: string; severity: string; message?: string }> | null;
+      started_at: string | null;
+      completed_at: string | null;
+      session_token: string;
+      template: { name: string } | { name: string }[] | null;
+      patient: { full_name: string } | { full_name: string }[] | null;
+    };
 
-    // Sort: sessions with red flags first, then by completed_at desc
-    const sorted = rows.sort((a, b) => {
-      const aHasFlags =
-        Array.isArray(a.red_flags_detected) && (a.red_flags_detected as unknown[]).length > 0;
-      const bHasFlags =
-        Array.isArray(b.red_flags_detected) && (b.red_flags_detected as unknown[]).length > 0;
+    const rows = (data ?? []) as unknown as QueueRow[];
+    const single = <T,>(v: T | T[] | null): T | null => (Array.isArray(v) ? v[0] ?? null : v);
 
-      if (aHasFlags && !bHasFlags) return -1;
-      if (!aHasFlags && bHasFlags) return 1;
+    const sessions = rows.map((row) => ({
+      sessionToken: row.session_token,
+      patientId: row.patient_id,
+      patientName: single(row.patient)?.full_name ?? null,
+      templateKey: single(row.template)?.name ?? 'general_screening',
+      completedAt: row.completed_at ?? row.started_at ?? '',
+      status: row.status,
+      redFlags: (row.red_flags_detected ?? []).map((f) => ({
+        questionId: f.question_key,
+        severity: f.severity,
+        label: f.message,
+      })),
+    }));
 
-      const aTime = a.completed_at ?? a.started_at ?? '';
-      const bTime = b.completed_at ?? b.started_at ?? '';
-      return bTime.localeCompare(aTime);
+    // Sort: sessions with red flags first, then by completion/start time desc
+    const sorted = sessions.sort((a, b) => {
+      if (a.redFlags.length > 0 && b.redFlags.length === 0) return -1;
+      if (a.redFlags.length === 0 && b.redFlags.length > 0) return 1;
+      return b.completedAt.localeCompare(a.completedAt);
     });
 
-    res.json({ queue: sorted, total: sorted.length });
+    res.json({ sessions: sorted, total: sorted.length });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/nurse-queue] error');
     res.status(502).json({ error: String(err) });
@@ -806,6 +939,8 @@ router.get('/api/questionnaire/session/:token/summary', async (req, res) => {
 
 // POST /api/questionnaire/session/:token/nurse-review
 router.post('/api/questionnaire/session/:token/nurse-review', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
   const { token } = req.params;
   const { nurseNotes, nurseUserId } = (req.body ?? {}) as {
     nurseNotes?: string;
@@ -859,6 +994,8 @@ router.post('/api/questionnaire/session/:token/nurse-review', async (req, res) =
 
 // POST /api/questionnaire/session/:token/doctor-approve
 router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
   const { token } = req.params;
   const { doctorUserId } = (req.body ?? {}) as { doctorUserId?: string };
 
