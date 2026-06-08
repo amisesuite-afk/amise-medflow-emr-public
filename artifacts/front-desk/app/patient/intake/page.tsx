@@ -357,6 +357,44 @@ function FreeTextAid({ text }: { text: string }) {
   );
 }
 
+// Quick-reference for "what kind of change" — patients often aren't sure how
+// to describe stool consistency, so give them the clinical Bristol Stool Scale
+// types in plain language to match against rather than guessing.
+const BRISTOL_TYPES = [
+  { type: 1, label: 'Separate hard lumps',           note: 'like nuts — hard to pass' },
+  { type: 2, label: 'Lumpy, sausage-shaped',         note: 'but lumpy' },
+  { type: 3, label: 'Sausage-shaped with cracks',    note: 'on the surface' },
+  { type: 4, label: 'Smooth, soft sausage or snake', note: '— typical/normal' },
+  { type: 5, label: 'Soft blobs with clear edges',   note: 'passed easily' },
+  { type: 6, label: 'Mushy, fluffy pieces',          note: 'with ragged edges' },
+  { type: 7, label: 'Watery, no solid pieces',       note: '— entirely liquid' },
+];
+
+function BristolStoolReference() {
+  return (
+    <details style={{
+      marginBottom: 20, border: '1px solid #e2e8f0', borderRadius: 10,
+      background: '#f8fafc', padding: '12px 16px',
+    }}>
+      <summary style={{ cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#475569', WebkitTapHighlightColor: 'transparent' }}>
+        Not sure how to describe it? Tap for a quick reference (Bristol Stool Scale)
+      </summary>
+      <div style={{ marginTop: 12 }}>
+        {BRISTOL_TYPES.map(b => (
+          <div key={b.type} style={{ display: 'flex', gap: 10, marginBottom: 8, fontSize: 13, color: '#475569', lineHeight: 1.5 }}>
+            <span style={{
+              flexShrink: 0, width: 22, height: 22, borderRadius: '50%',
+              background: '#e2e8f0', color: '#475569', fontWeight: 700, fontSize: 12,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>{b.type}</span>
+            <span><strong>{b.label}</strong> {b.note}</span>
+          </div>
+        ))}
+      </div>
+    </details>
+  );
+}
+
 const inputSty = {
   width: '100%', padding: '13px 14px', border: '1.5px solid #d1d5db', borderRadius: 10,
   fontSize: 15, color: '#1e293b', boxSizing: 'border-box' as const, fontFamily: 'inherit',
@@ -728,6 +766,7 @@ export default function IntakePage() {
         <Dots phase={1} />
         <QTitle>{step2.title}</QTitle>
         {step2.hint && <QHint>{step2.hint}</QHint>}
+        {complaint === 'bowel-change' && <BristolStoolReference />}
         {step2.options.map(o => (
           <OptionCard
             key={o.value} label={o.label}

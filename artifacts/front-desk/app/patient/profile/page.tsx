@@ -26,6 +26,15 @@ interface PatientRow {
 
 const TEAL = '#0d9488';
 
+// Common Saint Lucia districts/communities — offered as suggestions on the
+// address field via <datalist> so patients can pick rather than type in full.
+const SAINT_LUCIA_LOCALITIES = [
+  'Castries', 'Gros Islet', 'Rodney Bay', 'Bois d’Orange', 'Choc Estate',
+  'Babonneau', 'Marigot Bay', 'Anse La Raye', 'Canaries', 'Soufrière',
+  'Choiseul', 'Laborie', 'Vieux Fort', 'Micoud', 'Dennery', 'Praslin',
+  'Mon Repos', 'Desruisseaux',
+];
+
 const s = {
   pageTitle: {
     margin: 0,
@@ -308,7 +317,11 @@ export default function ProfilePage() {
               onChange={e => setAddress(e.target.value)}
               placeholder="e.g. 12 Choc Estate, Castries"
               autoComplete="street-address"
+              list="sl-localities"
             />
+            <datalist id="sl-localities">
+              {SAINT_LUCIA_LOCALITIES.map(loc => <option key={loc} value={loc} />)}
+            </datalist>
           </div>
         </div>
 
