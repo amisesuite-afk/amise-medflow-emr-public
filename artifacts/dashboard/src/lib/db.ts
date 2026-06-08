@@ -538,7 +538,169 @@ export async function getLatestOpenEncounter(
   return { encounterId: (data as { id: string } | null)?.id ?? null, error: null };
 }
 
-// ─── logPaneSession ───────────────────────────────────────────────────────────
+// ─── saveVitalsRecord ─────────────────────────────────────────────────────────
+
+/** Maps a VitalRecord (from the monitoring tab's wheel-entry) to the `vitals`
+ *  table. GCS/pain/urine don't have dedicated vitals columns — they're omitted
+ *  from this insert (the ward monitoring display retains them locally). */
+export async function saveVitalsRecord(
+  rec: {
+    timestamp: string;
+    sbp?: string; dbp?: string; hr?: string; temp?: string;
+    spo2?: string; rr?: string; weight?: string;
+  },
+  patientId: string,
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveVitalsRecord') };
+
+  const n = (v?: string): number | null => {
+    const p = parseFloat(v ?? '');
+    return Number.isFinite(p) ? p : null;
+  };
+
+  const row: Record<string, unknown> = {
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    recorded_at:  new Date(rec.timestamp).toISOString(),
+  };
+  const map: Array<[string, number | null]> = [
+    ['bp_systolic',      n(rec.sbp)],
+    ['bp_diastolic',     n(rec.dbp)],
+    ['heart_rate',       n(rec.hr)],
+    ['temperature_c',    n(rec.temp)],
+    ['oxygen_saturation',n(rec.spo2)],
+    ['respiratory_rate', n(rec.rr)],
+    ['weight_kg',        n(rec.weight)],
+  ];
+  for (const [col, val] of map) {
+    if (val !== null) row[col] = val;
+  }
+
+  const { error } = await supabase.from('vitals').insert(row);
+  if (error) { console.error('[db] saveVitalsRecord:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── saveLabPanel ─────────────────────────────────────────────────────────────
+
+const LAB_CATEGORY: Record<string, string> = {
+  'FBC': 'haematology',
+  'Metabolic / UEC': 'biochemistry',
+  'LFT': 'biochemistry',
+  'Coagulation': 'haematology',
+  'Inflammatory': 'biochemistry',
+  'Cardiac': 'cardiac',
+  'Pancreatic / GI': 'biochemistry',
+  'Urine': 'urine',
+  'Stool': 'stool',
+};
+
+/** Maps a LabRecord (from the monitoring tab's lab panel entry) to a row in
+ *  `investigation_results`, using the analytes JSONB column for multi-test
+ *  panels and flagging critical values for physician notification. */
+export async function saveLabPanel(
+  rec: {
+    timestamp: string;
+    panel: string;
+    tests: Array<{ name: string; value: string; unit: string; refRange: string; flag: '' | 'H' | 'L' | 'C' }>;
+  },
+  patientId: string,
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveLabPanel') };
+
+  const analytes = rec.tests.map(t => ({
+    name: t.name, value: t.value, unit: t.unit, ref: t.refRange,
+    abnormal: t.flag === 'H' || t.flag === 'L' || t.flag === 'C',
+    critical: t.flag === 'C',
+  }));
+
+  const row = {
+    encounter_id:  encounterId,
+    patient_id:    patientId,
+    test_name:     rec.panel,
+    test_category: LAB_CATEGORY[rec.panel] ?? 'other',
+    analytes,
+    is_abnormal:   rec.tests.some(t => t.flag !== ''),
+    is_critical:   rec.tests.some(t => t.flag === 'C'),
+    status:        'resulted',
+    collected_at:  new Date(rec.timestamp).toISOString(),
+  };
+
+  const { error } = await supabase.from('investigation_results').insert(row);
+  if (error) { console.error('[db] saveLabPanel:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── saveClinicalNote ─────────────────────────────────────────────────────────
+
+/** Persists a ProgressNote to `clinical_notes` as a SOAP-formatted text note
+ *  in `draft` status. The physician can later sign it (status → 'signed').
+ *  The note is marked ai_assisted: false because it's staff-authored. */
+export async function saveClinicalNote(
+  note: {
+    date: string;
+    type: string;
+    interval: string;
+    chiefComplaint: string;
+    symptoms: string[];
+    intervalHistory: string;
+    vitals: Partial<Record<string, string>>;
+    examGeneral: string; examCvs: string; examRs: string;
+    examAbdomen: string; examWound: string; examLimbs: string; examOther: string;
+    assessment: string;
+    plan: string;
+  },
+  patientId: string,
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveClinicalNote') };
+
+  const parts: string[] = [];
+
+  // S
+  const sLines: string[] = [];
+  if (note.chiefComplaint) sLines.push(`CC: ${note.chiefComplaint}`);
+  if (note.symptoms.length) sLines.push(`Symptoms: ${note.symptoms.join(', ')}`);
+  if (note.intervalHistory) sLines.push(`Interval history: ${note.intervalHistory}`);
+  if (note.interval) sLines.push(`Interval: ${note.interval}`);
+  if (sLines.length) parts.push(`S (Subjective)\n${sLines.join('\n')}`);
+
+  // O
+  const oLines: string[] = [];
+  const vEntries = Object.entries(note.vitals).filter(([, v]) => v?.trim());
+  if (vEntries.length) oLines.push(`Vitals: ${vEntries.map(([k, v]) => `${k} ${v}`).join(', ')}`);
+  const examSections: [string, string][] = [
+    ['General', note.examGeneral], ['CVS', note.examCvs], ['RS', note.examRs],
+    ['Abdomen', note.examAbdomen], ['Wound', note.examWound], ['Limbs', note.examLimbs],
+    ['Other', note.examOther],
+  ];
+  for (const [label, text] of examSections) {
+    if (text?.trim()) oLines.push(`${label}: ${text.trim()}`);
+  }
+  if (oLines.length) parts.push(`O (Objective)\n${oLines.join('\n')}`);
+
+  // A
+  if (note.assessment?.trim()) parts.push(`A (Assessment)\n${note.assessment.trim()}`);
+
+  // P
+  if (note.plan?.trim()) parts.push(`P (Plan)\n${note.plan.trim()}`);
+
+  const content = parts.join('\n\n') || '(No content entered)';
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    note_type:    'soap',
+    status:       'draft',
+    content,
+    ai_assisted:  false,
+  });
+
+  if (error) { console.error('[db] saveClinicalNote:', error); return { error: error.message }; }
+  return { error: null };
+}
 
 export interface PaneSessionLog {
   encounter_id: string | null;

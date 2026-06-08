@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
+import { saveClinicalNote } from '@/lib/db';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
 import { escH as escHDoc, T, AMISE_LOGO_SVG } from './lib/docTemplate';
@@ -351,6 +352,11 @@ export default function ProgressNotesTab() {
       plan,
     };
     ctx.setProgressNotes([note, ...ctx.progressNotes]);
+
+    if (ctx.patientId && ctx.encounterId) {
+      void saveClinicalNote(note, ctx.patientId, ctx.encounterId);
+    }
+
     // Reset form
     setChiefComplaint(''); setSelectedSymptoms([]); setIntervalHistory('');
     setVitals({});
