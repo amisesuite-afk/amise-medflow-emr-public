@@ -702,6 +702,82 @@ export async function saveClinicalNote(
   return { error: null };
 }
 
+// ─── syncAllergyList ──────────────────────────────────────────────────────────
+
+/** Upserts each allergen in the list as an active row for the patient.
+ *  Uses the allergen_ci generated column (lower-case) as the conflict target,
+ *  so re-saving the same list is idempotent. Does NOT deactivate allergens
+ *  that were removed from the chip list — those require an explicit clinical
+ *  "mark resolved" action, not a UI toggle. */
+export async function syncAllergyList(
+  patientId: string,
+  allergens: string[],
+): Promise<{ error: string | null }> {
+  if (!supabase || !allergens.length) return { error: null };
+
+  const rows = allergens.map(a => ({
+    patient_id: patientId,
+    allergen:   a.trim(),
+    status:     'active' as const,
+  }));
+
+  const { error } = await supabase
+    .from('allergies')
+    .upsert(rows, { onConflict: 'patient_id,allergen_ci' })
+    .select();
+
+  if (error) { console.error('[db] syncAllergyList:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── syncMedicationList ───────────────────────────────────────────────────────
+
+/** Replaces the 'consultation-list' medication snapshot for this encounter.
+ *  Deletes all rows tagged indication='consultation-list' for this
+ *  patient+encounter, then re-inserts the current chip selection and the
+ *  free-text block. Clean and idempotent across repeated saves. */
+export async function syncMedicationList(
+  patientId: string,
+  encounterId: string,
+  chipMeds: string[],
+  freeText: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('syncMedicationList') };
+
+  const { error: delErr } = await supabase
+    .from('medications')
+    .delete()
+    .eq('patient_id', patientId)
+    .eq('encounter_id', encounterId)
+    .eq('indication', 'consultation-list');
+  if (delErr) { console.error('[db] syncMedicationList delete:', delErr); return { error: delErr.message }; }
+
+  const rows: Array<Record<string, unknown>> = chipMeds.map(d => ({
+    patient_id:   patientId,
+    encounter_id: encounterId,
+    drug_name:    d,
+    status:       'active',
+    indication:   'consultation-list',
+  }));
+
+  if (freeText.trim()) {
+    rows.push({
+      patient_id:   patientId,
+      encounter_id: encounterId,
+      drug_name:    freeText.trim().slice(0, 255),
+      status:       'active',
+      indication:   'consultation-list',
+      dose:         '(see notes)',
+    });
+  }
+
+  if (!rows.length) return { error: null };
+
+  const { error: insErr } = await supabase.from('medications').insert(rows);
+  if (insErr) { console.error('[db] syncMedicationList insert:', insErr); return { error: insErr.message }; }
+  return { error: null };
+}
+
 export interface PaneSessionLog {
   encounter_id: string | null;
   patient_id: string | null;

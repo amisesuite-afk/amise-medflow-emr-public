@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -632,10 +632,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         triageScore:   triageResult.score,
       });
       void savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan });
+      void syncMedicationList(patientId, encounterId, medications, medicationsText);
     }, 2000);
     return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score]);
+  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score, medications, medicationsText]);
+
+  // ── Autosave allergies (debounced 3 s — patient-level, no encounter needed) ─
+  const allergyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !allergies) return;
+    if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current);
+    allergyTimerRef.current = setTimeout(() => {
+      const allergenList = allergies.split(',').map(s => s.trim()).filter(Boolean);
+      if (allergenList.length) void syncAllergyList(patientId, allergenList);
+    }, 3000);
+    return () => { if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, allergies]);
 
   const value: CtxValue = {
     activeSection, setActiveSection,

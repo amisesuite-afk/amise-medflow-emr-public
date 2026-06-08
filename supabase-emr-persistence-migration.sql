@@ -28,3 +28,21 @@ alter table plans
 -- ─────────────────────────────────────────────────────────────────────────────
 alter table vitals
   alter column recorded_at set default now();
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- allergies: unique(patient_id, allergen) enables upsert from the UI.
+-- Allergen comparison is case-insensitive via ci_allergen generated column.
+-- ─────────────────────────────────────────────────────────────────────────────
+alter table allergies
+  add column if not exists allergen_ci text generated always as (lower(allergen)) stored;
+create unique index if not exists allergies_patient_allergen_ci
+  on allergies (patient_id, allergen_ci);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- medications: unique(patient_id, encounter_id, drug_name, indication)
+-- The 'consultation-list' indication marks chip-selected meds so that
+-- re-saving from the consultation form replaces rather than appends.
+-- ─────────────────────────────────────────────────────────────────────────────
+create unique index if not exists medications_encounter_drug_indication
+  on medications (patient_id, encounter_id, drug_name, indication)
+  where indication = 'consultation-list';
