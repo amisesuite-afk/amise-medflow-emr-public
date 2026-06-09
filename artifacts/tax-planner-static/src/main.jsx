@@ -5,6 +5,7 @@ import {
   FileText, Calculator, Users, TrendingUp, TrendingDown,
   CheckCircle, Trash2, Plus, ChevronUp, ChevronDown, Check,
   Pencil, X, Receipt, BarChart2, ClipboardCheck, Brain, Shield,
+  Mail, Camera, Image, RefreshCw,
 } from 'lucide-react'
 import './style.css'
 
@@ -19,6 +20,30 @@ function fmtInt(n){ return '$'+Math.round(Number(n||0)).toLocaleString('en') }
 function nanoid(n=10){ let s=''; const c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'; for(let i=0;i<n;i++) s+=c[Math.floor(Math.random()*c.length)]; return s }
 function fxRate(cur){ return ({XCD:1,USD:2.7,EUR:2.95,GBP:3.45,CAD:1.98})[String(cur||'XCD').toUpperCase()]||2.7 }
 function readB64(file){ return new Promise((ok,fail)=>{ const r=new FileReader(); r.onload=e=>ok(e.target.result.split(',')[1]); r.onerror=fail; r.readAsDataURL(file) }) }
+
+function nextOccurrence(dateStr, frequency){
+  const d=new Date(dateStr+'T12:00:00')
+  if(frequency==='weekly')    d.setDate(d.getDate()+7)
+  else if(frequency==='monthly')   d.setMonth(d.getMonth()+1)
+  else if(frequency==='quarterly') d.setMonth(d.getMonth()+3)
+  else if(frequency==='annual')    d.setFullYear(d.getFullYear()+1)
+  else d.setMonth(d.getMonth()+1)
+  return d.toISOString().slice(0,10)
+}
+
+function generateDue(r, today){
+  const exps=[]
+  let cursor=r.last_generated?nextOccurrence(r.last_generated,r.frequency):r.start_date
+  let safety=0
+  while(cursor<=today&&safety<120){
+    safety++
+    const rate=fxRate(r.currency)
+    const amtXcd=r.currency==='XCD'?Number(r.amount_xcd):Number((Number(r.amount_xcd)*rate).toFixed(2))
+    exps.push({id:nanoid(),entity_id:r.entity_id||'',date:cursor,vendor:r.vendor||'',category:r.category||'',classification:r.classification||'business',amount_xcd:amtXcd,amount_original:Number(r.amount_xcd),currency:r.currency||'XCD',fx_rate:rate,fx_date:cursor,is_capital:false,deductible_amount:r.classification!=='personal'?amtXcd:0,source_document_id:null,confidence:1,status:'approved',duplicate:false,near_duplicate:false,recurring_id:r.id,notes:r.notes||'',created_at:new Date().toISOString()})
+    cursor=nextOccurrence(cursor,r.frequency)
+  }
+  return exps
+}
 
 function calcTax(income, bands){
   if(!bands?.length) return 0
@@ -237,7 +262,7 @@ const DEFAULT_SETTINGS={
 function freshDb(){
   const db={
     entities:DEFAULT_ENTITIES.map(e=>({...e,profile:{...e.profile}})),
-    expenses:[],documents:[],vendors:[],
+    expenses:[],documents:[],vendors:[],recurring:[],
     payroll:{settings:DEFAULT_PS,staff:DEFAULT_STAFF,runs:[]},
     allowances:{},actions:{},settings:DEFAULT_SETTINGS,
   }
@@ -255,6 +280,7 @@ function loadDb(){
     if(!db.entities?.length) db.entities=freshDb().entities
     if(!db.payroll) db.payroll={settings:DEFAULT_PS,staff:DEFAULT_STAFF,runs:[]}
     if(!db.documents) db.documents=[]
+    if(!db.recurring) db.recurring=[]
     for(const e of db.entities) if(!db.allowances[e.id]) db.allowances[e.id]={personal:'40000'}
     return db
   }catch{ return freshDb() }
@@ -304,7 +330,8 @@ const TABS=[
   {id:'allowances',label:'Allowances', Icon:Landmark    },
   {id:'personal',  label:'Personal',   Icon:TrendingUp  },
   {id:'business',  label:'Business',   Icon:Briefcase   },
-  {id:'upload',    label:'Upload',     Icon:UploadCloud },
+  {id:'upload',    label:'Fetch',      Icon:UploadCloud },
+  {id:'recurring', label:'Recurring',  Icon:RefreshCw   },
   {id:'payroll',   label:'Payroll',    Icon:Users       },
   {id:'taxcomp',   label:'Tax Comp',   Icon:BarChart2   },
   {id:'actions',   label:'Action Plan',Icon:ClipboardCheck},
@@ -359,6 +386,25 @@ function App(){
 
   const sp={state,mutate,settings,entity,entities,entIdx,setEntIdx,year,setYear,tk}
 
+  const autoGenRef=React.useRef(false)
+  React.useEffect(()=>{
+    if(autoGenRef.current) return
+    autoGenRef.current=true
+    const today=new Date().toISOString().slice(0,10)
+    setState(prev=>{
+      const next=JSON.parse(JSON.stringify(prev))
+      if(!next.recurring) next.recurring=[]
+      let changed=false
+      for(const r of next.recurring){
+        if(!r.active) continue
+        const gen=generateDue(r,today)
+        if(gen.length>0){ next.expenses.push(...gen); r.last_generated=gen[gen.length-1].date; changed=true }
+      }
+      if(changed) saveDb(next)
+      return changed?next:prev
+    })
+  },[])
+
   return(
     <div className="app">
       <div className="app-header">
@@ -391,6 +437,7 @@ function App(){
         {tab==='personal'  &&<PersonalTab   totals={personalTotals} yearExp={yearAllExp} settings={settings} year={year} setYear={setYear} totalEntries={yearAllExp.length}/>}
         {tab==='business'  &&<BusinessTab   {...sp} expenses={expenses} yearEntExp={yearEntExp} entityDeductible={entityDeductible}/>}
         {tab==='upload'    &&<UploadTab     {...sp} pending={pending}/>}
+        {tab==='recurring' &&<RecurringTab  {...sp}/>}
         {tab==='payroll'   &&<PayrollTab    {...sp}/>}
         {tab==='taxcomp'   &&<TaxCompTab    {...sp} entityDeductible={entityDeductible}/>}
         {tab==='actions'   &&<ActionPlanTab {...sp}/>}
@@ -666,50 +713,131 @@ function BusinessTab({expenses,yearEntExp,entityDeductible,entity,settings,year,
 function UploadTab({state,mutate,pending,entity}){
   const [view,setView]=useState('inbox')
   const [busy,setBusy]=useState(false)
+  const [busyMsg,setBusyMsg]=useState('')
   const [aiKey,setAiKey]=useState(sessionStorage.getItem('up_key')||'')
+  const [keyOpen,setKeyOpen]=useState(!sessionStorage.getItem('up_key'))
+  const [showEmail,setShowEmail]=useState(false)
+  const [emailText,setEmailText]=useState('')
   const docs=(state?.documents||[]).slice().reverse()
 
-  async function handleFiles(files){
-    setBusy(true)
-    if(aiKey) sessionStorage.setItem('up_key',aiKey)
-    for(const file of [...files]){
-      const extracted=await extractFile(aiKey,file)
-      const rate=fxRate(extracted.currency)
-      const amountXcd=Number((Number(extracted.total||0)*rate).toFixed(2))
-      const docId=nanoid()
-      const confidence=Number(extracted.confidence||0)
-      const status=extracted.is_capital_item||confidence<0.75?'pending':'ready'
-      const doc={id:docId,source_type:/pdf/i.test(file.type)?'pdf':'photo',file_url:'',file_name:file.name,received_at:new Date().toISOString(),status:'received',extracted}
-      const exp={id:nanoid(),entity_id:extracted.suggested_entity||entity?.name||'Amise Medical Services',date:extracted.date||new Date().toISOString().slice(0,10),vendor:extracted.vendor_name||'Unknown',category:extracted.suggested_category||'',classification:extracted.suggested_classification||'business',amount_xcd:amountXcd,amount_original:Number(extracted.total||0),currency:extracted.currency||'XCD',fx_rate:rate,fx_date:new Date().toISOString().slice(0,10),is_capital:!!extracted.is_capital_item,deductible_amount:status==='approved'?amountXcd:0,source_document_id:docId,confidence,status,duplicate:false,near_duplicate:false,notes:extracted.notes||'',created_at:new Date().toISOString()}
-      mutate(db=>{ db.documents.push(doc); db.expenses.push(exp) })
-    }
-    setBusy(false)
+  function pushExtracted(extracted, label){
+    const rate=fxRate(extracted.currency)
+    const amountXcd=Number((Number(extracted.total||0)*rate).toFixed(2))
+    const docId=nanoid()
+    const confidence=Number(extracted.confidence||0)
+    const status=extracted.is_capital_item||confidence<0.75?'pending':'ready'
+    const doc={id:docId,source_type:'receipt',file_url:'',file_name:label||extracted.vendor_name||'Document',received_at:new Date().toISOString(),status:'received',extracted}
+    const exp={id:nanoid(),entity_id:extracted.suggested_entity||entity?.name||'Amise Medical Services',date:extracted.date||new Date().toISOString().slice(0,10),vendor:extracted.vendor_name||'Unknown',category:extracted.suggested_category||'',classification:extracted.suggested_classification||'business',amount_xcd:amountXcd,amount_original:Number(extracted.total||0),currency:extracted.currency||'XCD',fx_rate:rate,fx_date:new Date().toISOString().slice(0,10),is_capital:!!extracted.is_capital_item,deductible_amount:status==='approved'?amountXcd:0,source_document_id:docId,confidence,status,duplicate:false,near_duplicate:false,notes:extracted.notes||'',created_at:new Date().toISOString()}
+    mutate(db=>{ db.documents.push(doc); db.expenses.push(exp) })
   }
+
+  async function handleFiles(files){
+    if(aiKey) sessionStorage.setItem('up_key',aiKey)
+    setBusy(true)
+    const arr=[...files]
+    for(let i=0;i<arr.length;i++){
+      const file=arr[i]
+      setBusyMsg(`Scanning ${i+1} of ${arr.length}: ${file.name}…`)
+      const extracted=await extractFile(aiKey,file)
+      pushExtracted(extracted, file.name)
+    }
+    setBusy(false); setBusyMsg('')
+  }
+
+  async function handleEmail(){
+    if(!emailText.trim()) return
+    if(!aiKey){ alert('API key required for email extraction.'); return }
+    setBusy(true); setBusyMsg('Extracting expenses from email…')
+    try{
+      const prompt='Extract all expense/receipt information from this email for Saint Lucia tax bookkeeping. Return ONLY a JSON array (no prose, no code fences) where each item has: document_type, vendor_name, date (YYYY-MM-DD), currency, total, subtotal, tax_amount, suggested_category, suggested_classification, suggested_entity, is_capital_item (bool), confidence (0-1), notes. Return [] if no expenses found.'
+      const text=await callClaude(aiKey,[{role:'user',content:`${prompt}\n\nEMAIL:\n${emailText}`}],'claude-haiku-4-5-20251001',2000)
+      const arr=JSON.parse(text.replace(/```json|```/g,'').trim())
+      const items=Array.isArray(arr)?arr:[arr]
+      if(items.length===0){ alert('No expenses found in this email.') }
+      else{ items.forEach((x,i)=>pushExtracted(x,`Email — ${x.vendor_name||'item '+(i+1)}`)); setEmailText(''); setShowEmail(false) }
+    }catch(e){ alert(`Extraction failed: ${e.message}`) }
+    setBusy(false); setBusyMsg('')
+  }
+
   function update(id,patch){ mutate(db=>{ const i=db.expenses.findIndex(e=>e.id===id); if(i>=0) Object.assign(db.expenses[i],patch) }) }
   function bulk(){ mutate(db=>{ for(const e of db.expenses){ if(e.status==='ready'&&!e.is_capital&&!e.duplicate){ e.status='approved'; e.deductible_amount=e.classification!=='personal'?Number(e.amount_xcd||0):0 } } }) }
   function delDoc(id){ if(!confirm('Delete document and linked expense?')) return; mutate(db=>{ db.documents=db.documents.filter(d=>d.id!==id); db.expenses=db.expenses.filter(e=>e.source_document_id!==id) }) }
 
   return(
     <div className="page">
-      <div className="page-title-row"><div><h1 className="page-h1">Upload</h1><p className="page-sub">{docs.length} documents · {pending.length} pending</p></div></div>
-      <section className="section">
-        <div className="section-title">Anthropic API Key (for AI extraction)</div>
-        <p style={{fontSize:13,color:'#777',marginBottom:10}}>Optional — used only for receipt AI extraction. Stored in session only.</p>
-        <div style={{display:'flex',gap:8}}>
-          <input type="password" value={aiKey} onChange={e=>setAiKey(e.target.value)} placeholder="sk-ant-api03-…" style={{flex:1,padding:'11px 13px',border:'1.5px solid #dde4e1',borderRadius:10,fontSize:14}}/>
+      <div className="page-title-row">
+        <div><h1 className="page-h1">Fetch Expenses</h1><p className="page-sub">{docs.length} documents · {pending.length} pending</p></div>
+      </div>
+
+      {/* API key — collapsible */}
+      <div className="section" style={{padding:'12px 16px'}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer',userSelect:'none'}} onClick={()=>setKeyOpen(o=>!o)}>
+          <span style={{fontSize:13,fontWeight:700,color:'#333'}}>
+            {aiKey?<><span style={{color:'#177a56'}}>✓</span> API Key saved</> : 'Anthropic API Key (required for AI)'}
+          </span>
+          <span style={{fontSize:11,color:'#aaa'}}>{keyOpen?'▲':'▼'}</span>
         </div>
-      </section>
-      <label className="drop-zone">
+        {keyOpen&&<>
+          <p style={{fontSize:12,color:'#999',margin:'8px 0 8px'}}>Session-only — powers receipt scanning and email extraction.</p>
+          <input type="password" value={aiKey} onChange={e=>{ setAiKey(e.target.value); if(e.target.value) sessionStorage.setItem('up_key',e.target.value) }} placeholder="sk-ant-api03-…" style={{width:'100%',padding:'11px 13px',border:'1.5px solid #dde4e1',borderRadius:10,fontSize:14,fontFamily:'inherit'}}/>
+        </>}
+      </div>
+
+      {/* 4 source cards */}
+      <div className="fetch-grid">
+        <button className={`fetch-source${showEmail?' fetch-source-active':''}`} onClick={()=>setShowEmail(o=>!o)}>
+          <Mail size={28} color={showEmail?'#3d9b7d':'#555'}/>
+          <span className="fetch-source-label">Email</span>
+          <span className="fetch-source-sub">Paste forwarded receipt email</span>
+        </button>
+        <label className="fetch-source">
+          <input type="file" accept="image/*" capture="environment" multiple style={{display:'none'}} onChange={e=>handleFiles(e.target.files)}/>
+          <Camera size={28} color="#555"/>
+          <span className="fetch-source-label">Camera</span>
+          <span className="fetch-source-sub">Take photo of receipt</span>
+        </label>
+        <label className="fetch-source">
+          <input type="file" accept="image/*,.heic" multiple style={{display:'none'}} onChange={e=>handleFiles(e.target.files)}/>
+          <Image size={28} color="#555"/>
+          <span className="fetch-source-label">Photos</span>
+          <span className="fetch-source-sub">Pick from camera roll</span>
+        </label>
+        <label className="fetch-source">
+          <input type="file" accept=".pdf,.xlsx,.csv,.doc,.docx" multiple style={{display:'none'}} onChange={e=>handleFiles(e.target.files)}/>
+          <FileText size={28} color="#555"/>
+          <span className="fetch-source-label">Files</span>
+          <span className="fetch-source-sub">PDF, Excel, CSV</span>
+        </label>
+      </div>
+
+      {/* Email paste panel */}
+      {showEmail&&(
+        <section className="section">
+          <div className="section-title">Paste Forwarded Email</div>
+          <p style={{fontSize:12,color:'#888',marginBottom:10}}>Forward a receipt or invoice email to yourself, open it, copy the body, and paste it below.</p>
+          <textarea value={emailText} onChange={e=>setEmailText(e.target.value)} placeholder="Paste email content here…" rows={7} style={{width:'100%',padding:'11px 13px',border:'1.5px solid #dde4e1',borderRadius:10,fontSize:13,fontFamily:'inherit',resize:'vertical'}}/>
+          <div style={{display:'flex',gap:8,marginTop:10,flexWrap:'wrap'}}>
+            <button onClick={handleEmail} disabled={busy||!emailText.trim()}><Brain size={14}/> Extract expenses</button>
+            <button className="btn-secondary" onClick={()=>{ setShowEmail(false); setEmailText('') }}>Cancel</button>
+          </div>
+        </section>
+      )}
+
+      {/* Drop zone */}
+      <label className="drop-zone" style={{padding:'26px 20px'}}>
         <input type="file" multiple accept="image/*,.heic,.pdf,.xlsx,.csv,.doc,.docx" onChange={e=>handleFiles(e.target.files)}/>
-        <UploadCloud size={40} className="card-icon"/>
-        <strong>Drop receipts, invoices, statements</strong>
-        <span>Photos, PDF, Excel, CSV — up to 30 files · AI extracts details if key provided</span>
+        <UploadCloud size={34} className="card-icon"/>
+        <strong>Drop anything here</strong>
+        <span>Receipts · Invoices · Bank statements · Photos</span>
       </label>
-      {busy&&<div className="notice">Processing files…</div>}
+
+      {busy&&<div className="notice">{busyMsg||'Processing…'}</div>}
+
       <div className="filter-row">
         <button className={`filter-btn${view==='inbox'?' active':''}`} onClick={()=>setView('inbox')}>Inbox{pending.length>0?` (${pending.length})`:''}</button>
         <button className={`filter-btn${view==='docs'?' active':''}`} onClick={()=>setView('docs')}>All Documents{docs.length>0?` (${docs.length})`:''}</button>
       </div>
+
       {view==='inbox'&&(
         <>
           {pending.length>0&&(
@@ -914,6 +1042,115 @@ function StaffForm({s,ps,entities,onSave,onClose}){
         <button onClick={()=>onSave(f)}><Check size={15}/> Save</button>
         {f.id&&<button className="btn-danger" onClick={()=>{if(confirm('Deactivate?')) onSave({...f,status:'inactive'})}}>Deactivate</button>}
         <button className="btn-secondary" onClick={onClose}>Cancel</button>
+      </div>
+    </div>
+  )
+}
+
+// ── Recurring ─────────────────────────────────────────────────────────────────
+const FREQ_LABELS={weekly:'Weekly',monthly:'Monthly',quarterly:'Quarterly',annual:'Annual'}
+const BLANK_RECUR={vendor:'',category:'',classification:'business',entity_id:'',amount_xcd:'',currency:'XCD',frequency:'monthly',start_date:new Date().toISOString().slice(0,10),notes:'',active:true}
+
+function RecurringTab({state,mutate,settings,entities}){
+  const [editing,setEditing]=useState(null)
+  const recurring=state?.recurring||[]
+  const today=new Date().toISOString().slice(0,10)
+  const bizCats=settings?.categories?.business||[]
+  const perCats=settings?.categories?.personal||[]
+
+  function save(r){
+    if(r.id) mutate(db=>{ const i=db.recurring.findIndex(x=>x.id===r.id); if(i>=0) db.recurring[i]={...db.recurring[i],...r} })
+    else mutate(db=>{ db.recurring.push({...r,id:nanoid(),last_generated:''}) })
+    setEditing(null)
+  }
+  function toggle(id){ mutate(db=>{ const r=db.recurring.find(x=>x.id===id); if(r) r.active=!r.active }) }
+  function del(id){ if(!confirm('Delete this recurring payment?')) return; mutate(db=>{ db.recurring=db.recurring.filter(x=>x.id!==id) }) }
+  function runNow(){
+    mutate(db=>{
+      if(!db.recurring) return
+      for(const r of db.recurring){
+        if(!r.active) continue
+        const gen=generateDue(r,today)
+        if(gen.length>0){ db.expenses.push(...gen); r.last_generated=gen[gen.length-1].date }
+      }
+    })
+  }
+  function nextDue(r){
+    if(!r.active) return 'paused'
+    const next=r.last_generated?nextOccurrence(r.last_generated,r.frequency):(r.start_date||today)
+    return next<=today?'due now':next
+  }
+
+  const activeCount=recurring.filter(r=>r.active).length
+  return(
+    <div className="page">
+      <div className="page-title-row">
+        <div><h1 className="page-h1">Recurring</h1><p className="page-sub">{activeCount} active · auto-posts on app open</p></div>
+        <div style={{display:'flex',gap:8}}>
+          <button className="btn-sm btn-secondary" onClick={runNow}><RefreshCw size={13}/> Run now</button>
+          <button className="btn-sm" onClick={()=>setEditing({...BLANK_RECUR,entity_id:entities?.[0]?.name||''})}><Plus size={13}/> Add</button>
+        </div>
+      </div>
+      <div className="notice" style={{background:'#eaf4fe',color:'#1355a5',marginBottom:0}}>
+        Each time you open the app, overdue recurring payments are automatically posted as approved expenses. Use <strong>Run now</strong> to trigger manually.
+      </div>
+      {recurring.length===0&&<div className="empty-state">No recurring payments yet. Add rent, insurance, subscriptions…</div>}
+      {recurring.length>0&&(
+        <section className="section">
+          {recurring.map(r=>(
+            <div key={r.id} className="recur-row">
+              <div className="recur-info">
+                <div className="recur-name" style={{color:r.active?'#111':'#bbb'}}>{r.vendor}</div>
+                <div className="recur-meta">
+                  {fmt(r.amount_xcd)} {r.currency!=='XCD'&&r.currency} · {FREQ_LABELS[r.frequency]||r.frequency}
+                  {r.entity_id&&<span> · {r.entity_id}</span>}
+                  <span style={{marginLeft:8,fontWeight:600,color:nextDue(r)==='due now'?'#c03030':nextDue(r)==='paused'?'#bbb':'#888'}}>
+                    {nextDue(r)==='due now'?'⚠ due now':nextDue(r)==='paused'?'paused':`next ${nextDue(r)}`}
+                  </span>
+                </div>
+                {r.category&&<div style={{fontSize:11,color:'#aaa',marginTop:2}}>{r.category}</div>}
+              </div>
+              <div style={{display:'flex',gap:6,flexShrink:0,alignItems:'center'}}>
+                <button className="btn-sm btn-secondary" style={{fontSize:11,padding:'5px 10px'}} onClick={()=>toggle(r.id)}>{r.active?'Pause':'Resume'}</button>
+                <button className="btn-icon" onClick={()=>setEditing({...r})}><Pencil size={13}/></button>
+                <button className="btn-icon btn-icon-danger" onClick={()=>del(r.id)}><Trash2 size={13}/></button>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+      {editing&&<Modal title={editing.id?'Edit Recurring':'Add Recurring Payment'} onClose={()=>setEditing(null)}><RecurForm r={editing} entities={entities} bizCats={bizCats} perCats={perCats} onSave={save} onCancel={()=>setEditing(null)}/></Modal>}
+    </div>
+  )
+}
+function RecurForm({r,entities,bizCats,perCats,onSave,onCancel}){
+  const [f,setF]=useState(r)
+  const cats=f.classification==='personal'?perCats:bizCats
+  return(
+    <div>
+      <Field label="Vendor / Description"><input value={f.vendor||''} onChange={e=>setF({...f,vendor:e.target.value})} placeholder="e.g. LIME Landline, ECMIS Insurance"/></Field>
+      <TwoCol>
+        <Field label="Amount"><input type="number" min="0" step="0.01" value={f.amount_xcd||''} onChange={e=>setF({...f,amount_xcd:e.target.value})} placeholder="0.00"/></Field>
+        <Field label="Currency"><select value={f.currency||'XCD'} onChange={e=>setF({...f,currency:e.target.value})}><option>XCD</option><option>USD</option><option>EUR</option><option>GBP</option></select></Field>
+      </TwoCol>
+      <TwoCol>
+        <Field label="Frequency">
+          <select value={f.frequency||'monthly'} onChange={e=>setF({...f,frequency:e.target.value})}>
+            <option value="weekly">Weekly</option><option value="monthly">Monthly</option>
+            <option value="quarterly">Quarterly</option><option value="annual">Annual</option>
+          </select>
+        </Field>
+        <Field label="Start Date"><input type="date" value={f.start_date||''} onChange={e=>setF({...f,start_date:e.target.value})}/></Field>
+      </TwoCol>
+      <TwoCol>
+        <Field label="Type"><select value={f.classification||'business'} onChange={e=>setF({...f,classification:e.target.value,category:''})}><option value="business">Business</option><option value="personal">Personal</option></select></Field>
+        <Field label="Category"><select value={f.category||''} onChange={e=>setF({...f,category:e.target.value})}><option value="">— select —</option>{cats.map(c=><option key={c}>{c}</option>)}</select></Field>
+      </TwoCol>
+      <Field label="Entity"><select value={f.entity_id||''} onChange={e=>setF({...f,entity_id:e.target.value})}><option value="">— select —</option>{entities.map(e=><option key={e.id} value={e.name}>{e.name}</option>)}</select></Field>
+      <Field label="Notes (optional)"><textarea rows={2} value={f.notes||''} onChange={e=>setF({...f,notes:e.target.value})}/></Field>
+      <div className="modal-actions">
+        <button onClick={()=>onSave(f)}><Check size={15}/> Save</button>
+        <button className="btn-secondary" onClick={onCancel}>Cancel</button>
       </div>
     </div>
   )
