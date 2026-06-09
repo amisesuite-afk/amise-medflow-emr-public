@@ -14,6 +14,48 @@ const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV
 const YEARS  = [2024,2025,2026,2027]
 const STORE  = 'amise_tax_v1'
 const ANTHROPIC = 'https://api.anthropic.com/v1/messages'
+const GCID_KEY  = 'amise_gcid'
+const GTOKEN_KEY = 'amise_gtoken'
+
+// Handle Google OAuth redirect callback immediately at module load
+;(function(){
+  const h=window.location.hash
+  if(h?.includes('access_token')){
+    const p=new URLSearchParams(h.slice(1))
+    const t=p.get('access_token')
+    if(t){ sessionStorage.setItem(GTOKEN_KEY,t); window.history.replaceState(null,'',window.location.pathname+window.location.search) }
+  }
+})()
+
+// ── Gmail API helpers ─────────────────────────────────────────────────────────
+function connectGmail(clientId){
+  const uri=window.location.origin+window.location.pathname.replace(/\/$/,'')+'/'
+  const p=new URLSearchParams({client_id:clientId,redirect_uri:uri,response_type:'token',scope:'https://www.googleapis.com/auth/gmail.readonly',include_granted_scopes:'true',prompt:'select_account'})
+  window.location.href='https://accounts.google.com/o/oauth2/v2/auth?'+p
+}
+async function gapi(token,path){
+  const r=await fetch('https://gmail.googleapis.com/gmail/v1/'+path,{headers:{Authorization:'Bearer '+token}})
+  const j=await r.json()
+  if(j.error){ const err=new Error(j.error.message||'Gmail error'); err.status=j.error.code; throw err }
+  return j
+}
+async function gmailProfile(token){ return gapi(token,'users/me/profile') }
+async function gmailSearch(token,q,max=30){ const j=await gapi(token,`users/me/messages?q=${encodeURIComponent(q)}&maxResults=${max}`); return j.messages||[] }
+async function gmailMessage(token,id){ return gapi(token,`users/me/messages/${id}?format=full`) }
+async function gmailAttachment(token,msgId,attId){ const j=await gapi(token,`users/me/messages/${msgId}/attachments/${attId}`); return j.data }
+function parseGmailMsg(msg){
+  const hdrs=msg.payload?.headers||[]
+  const h=name=>hdrs.find(x=>x.name.toLowerCase()===name)?.value||''
+  let body=''; const atts=[]
+  function walk(part){
+    if(!part) return
+    if(part.mimeType==='text/plain'&&part.body?.data) try{body+=atob(part.body.data.replace(/-/g,'+').replace(/_/g,'/'))}catch(_){}
+    if(part.filename&&part.body?.attachmentId) atts.push({name:part.filename,id:part.body.attachmentId,mime:part.mimeType,msgId:msg.id})
+    if(part.parts) part.parts.forEach(walk)
+  }
+  walk(msg.payload)
+  return{id:msg.id,from:h('from'),subject:h('subject'),date:h('date'),body:body.slice(0,4000),atts}
+}
 
 function fmt(n){ return '$'+Number(n||0).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2}) }
 function fmtInt(n){ return '$'+Math.round(Number(n||0)).toLocaleString('en') }
@@ -719,6 +761,7 @@ function UploadTab({state,mutate,pending,entity}){
   const [showEmail,setShowEmail]=useState(false)
   const [emailText,setEmailText]=useState('')
   const docs=(state?.documents||[]).slice().reverse()
+  const gmailToken=sessionStorage.getItem(GTOKEN_KEY)||''
 
   function pushExtracted(extracted, label){
     const rate=fxRate(extracted.currency)
@@ -773,22 +816,25 @@ function UploadTab({state,mutate,pending,entity}){
       <div className="section" style={{padding:'12px 16px'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer',userSelect:'none'}} onClick={()=>setKeyOpen(o=>!o)}>
           <span style={{fontSize:13,fontWeight:700,color:'#333'}}>
-            {aiKey?<><span style={{color:'#177a56'}}>✓</span> API Key saved</> : 'Anthropic API Key (required for AI)'}
+            {aiKey?<><span style={{color:'#177a56'}}>✓</span> Anthropic API Key saved</> : 'Anthropic API Key (required for AI)'}
           </span>
           <span style={{fontSize:11,color:'#aaa'}}>{keyOpen?'▲':'▼'}</span>
         </div>
         {keyOpen&&<>
-          <p style={{fontSize:12,color:'#999',margin:'8px 0 8px'}}>Session-only — powers receipt scanning and email extraction.</p>
+          <p style={{fontSize:12,color:'#999',margin:'8px 0 8px'}}>Session-only — powers receipt scanning, email + Gmail extraction.</p>
           <input type="password" value={aiKey} onChange={e=>{ setAiKey(e.target.value); if(e.target.value) sessionStorage.setItem('up_key',e.target.value) }} placeholder="sk-ant-api03-…" style={{width:'100%',padding:'11px 13px',border:'1.5px solid #dde4e1',borderRadius:10,fontSize:14,fontFamily:'inherit'}}/>
         </>}
       </div>
+
+      {/* Gmail — primary source */}
+      <GmailSection aiKey={aiKey} entity={entity} pushExtracted={pushExtracted}/>
 
       {/* 4 source cards */}
       <div className="fetch-grid">
         <button className={`fetch-source${showEmail?' fetch-source-active':''}`} onClick={()=>setShowEmail(o=>!o)}>
           <Mail size={28} color={showEmail?'#3d9b7d':'#555'}/>
-          <span className="fetch-source-label">Email</span>
-          <span className="fetch-source-sub">Paste forwarded receipt email</span>
+          <span className="fetch-source-label">Paste Email</span>
+          <span className="fetch-source-sub">Forward &amp; paste email body</span>
         </button>
         <label className="fetch-source">
           <input type="file" accept="image/*" capture="environment" multiple style={{display:'none'}} onChange={e=>handleFiles(e.target.files)}/>
@@ -880,6 +926,168 @@ function UploadTab({state,mutate,pending,entity}){
     </div>
   )
 }
+// ── Gmail Section ─────────────────────────────────────────────────────────────
+function GmailSection({aiKey,entity,pushExtracted}){
+  const [clientId,setClientId]=useState(localStorage.getItem(GCID_KEY)||'')
+  const [token,setToken]=useState(sessionStorage.getItem(GTOKEN_KEY)||'')
+  const [profile,setProfile]=useState(null)
+  const [open,setOpen]=useState(!!sessionStorage.getItem(GTOKEN_KEY))
+  const [query,setQuery]=useState('subject:(invoice OR receipt OR payment OR order confirmation) newer_than:30d')
+  const [fetching,setFetching]=useState(false)
+  const [emails,setEmails]=useState([])
+  const [selected,setSelected]=useState(new Set())
+  const [processing,setProcessing]=useState(false)
+  const [procMsg,setProcMsg]=useState('')
+
+  React.useEffect(()=>{
+    const t=sessionStorage.getItem(GTOKEN_KEY)
+    if(!t) return
+    setToken(t)
+    gmailProfile(t).then(p=>{ if(p.emailAddress) setProfile(p); else disconnect() }).catch(disconnect)
+  },[])
+
+  function disconnect(){ sessionStorage.removeItem(GTOKEN_KEY); setToken(''); setProfile(null); setEmails([]) }
+
+  function connect(){
+    if(!clientId.trim()){ alert('Paste your Google OAuth Client ID first.'); return }
+    localStorage.setItem(GCID_KEY,clientId.trim())
+    connectGmail(clientId.trim())
+  }
+
+  async function fetchEmails(){
+    setFetching(true); setEmails([])
+    try{
+      const msgs=await gmailSearch(token,query,30)
+      if(!msgs.length){ setFetching(false); return }
+      const full=await Promise.all(msgs.slice(0,30).map(m=>gmailMessage(token,m.id)))
+      const parsed=full.map(parseGmailMsg)
+      setEmails(parsed)
+      setSelected(new Set(parsed.map(e=>e.id)))
+    }catch(err){
+      if(err.status===401){ disconnect(); alert('Gmail session expired. Please reconnect.') }
+      else alert('Gmail error: '+err.message)
+    }
+    setFetching(false)
+  }
+
+  async function extractSelected(){
+    if(!aiKey){ alert('Anthropic API key required.'); return }
+    const todo=emails.filter(e=>selected.has(e.id))
+    setProcessing(true)
+    for(let i=0;i<todo.length;i++){
+      const email=todo[i]
+      setProcMsg(`${i+1}/${todo.length}: ${email.subject.slice(0,35)}…`)
+      let extracted=null
+
+      // Try PDF/image attachments first
+      for(const att of email.atts){
+        const isImg=/^image\//.test(att.mime), isPdf=att.mime==='application/pdf'
+        if(!isImg&&!isPdf) continue
+        try{
+          const data=await gmailAttachment(token,att.msgId,att.id)
+          const b64=data.replace(/-/g,'+').replace(/_/g,'/')
+          const block=isPdf?{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}}:{type:'image',source:{type:'base64',media_type:att.mime,data:b64}}
+          const prompt='Extract this receipt/invoice for Saint Lucia tax. Return ONLY JSON: document_type, vendor_name, date (YYYY-MM-DD), currency, total, subtotal, tax_amount, suggested_category, suggested_classification, suggested_entity, is_capital_item, confidence, notes.'
+          const text=await callClaude(aiKey,[{role:'user',content:[block,{type:'text',text:prompt}]}])
+          extracted=JSON.parse(text.replace(/```json|```/g,'').trim())
+          break
+        }catch(_){}
+      }
+
+      // Fall back to email body
+      if(!extracted&&email.body){
+        try{
+          const prompt='Extract expense/receipt info from this email for Saint Lucia tax. Return ONLY JSON: document_type, vendor_name, date (YYYY-MM-DD), currency, total, subtotal, tax_amount, suggested_category, suggested_classification, suggested_entity, is_capital_item (bool), confidence (0-1), notes.'
+          const text=await callClaude(aiKey,[{role:'user',content:`${prompt}\n\nFROM: ${email.from}\nSUBJECT: ${email.subject}\n\n${email.body}`}])
+          extracted=JSON.parse(text.replace(/```json|```/g,'').trim())
+        }catch(_){ extracted=fallbackExtract(email.subject,'Email body extraction failed') }
+      }
+
+      if(extracted) pushExtracted(extracted, email.subject||email.from)
+    }
+    setProcessing(false); setProcMsg(''); setEmails([]); setSelected(new Set())
+  }
+
+  const redirectUri=window.location.origin+window.location.pathname.replace(/\/$/,'')+'/'
+  return(
+    <div className="section" style={{padding:0,overflow:'hidden'}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'13px 16px',cursor:'pointer',userSelect:'none'}} onClick={()=>setOpen(o=>!o)}>
+        <div style={{display:'flex',gap:10,alignItems:'center'}}>
+          <Mail size={18} color={token?'#177a56':'#888'}/>
+          <span style={{fontWeight:700,fontSize:14,color:'#111'}}>Gmail</span>
+          {profile?<span style={{fontSize:12,color:'#177a56',fontWeight:600}}>{profile.emailAddress} ✓</span>:<span style={{fontSize:12,color:'#aaa'}}>Connect to fetch receipts automatically</span>}
+        </div>
+        <span style={{fontSize:11,color:'#aaa'}}>{open?'▲':'▼'}</span>
+      </div>
+
+      {open&&<div style={{padding:'0 16px 16px'}}>
+        {!token?(
+          <>
+            <div style={{background:'#f8f9fa',borderRadius:10,padding:'11px 14px',marginBottom:12,fontSize:12,color:'#555',lineHeight:1.65}}>
+              <strong>One-time Google setup</strong><br/>
+              1. <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" style={{color:'#1a6ae6'}}>console.cloud.google.com</a> → APIs &amp; Services → Credentials<br/>
+              2. Create <strong>OAuth 2.0 Client ID</strong> (Web application type)<br/>
+              3. Authorised JavaScript origins: <code style={{background:'#eee',padding:'1px 5px',borderRadius:4,fontSize:11}}>{window.location.origin}</code><br/>
+              4. Authorised redirect URIs: <code style={{background:'#eee',padding:'1px 5px',borderRadius:4,fontSize:11}}>{redirectUri}</code><br/>
+              5. Enable <strong>Gmail API</strong> in your project
+            </div>
+            <Field label="Google OAuth Client ID">
+              <input value={clientId} onChange={e=>setClientId(e.target.value)} placeholder="123456789-abc….apps.googleusercontent.com" style={{fontFamily:'monospace',fontSize:12}}/>
+            </Field>
+            <button onClick={connect} disabled={!clientId.trim()}><Mail size={14}/> Connect Gmail</button>
+          </>
+        ):(
+          <>
+            <div style={{display:'flex',gap:8,marginBottom:10,flexWrap:'wrap',alignItems:'flex-end'}}>
+              <div style={{flex:1}}>
+                <div style={{fontSize:11,fontWeight:700,color:'#aaa',letterSpacing:'.05em',textTransform:'uppercase',marginBottom:4}}>Search query</div>
+                <input value={query} onChange={e=>setQuery(e.target.value)} style={{width:'100%',padding:'9px 12px',border:'1.5px solid #dde4e1',borderRadius:9,fontSize:12,fontFamily:'monospace'}}/>
+              </div>
+            </div>
+            <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:emails.length?12:0}}>
+              <button onClick={fetchEmails} disabled={fetching||processing}>{fetching?'Searching…':'Search inbox'}</button>
+              <button className="btn-secondary btn-sm" onClick={disconnect}>Disconnect</button>
+            </div>
+            {emails.length>0&&(
+              <>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',margin:'12px 0 8px'}}>
+                  <span style={{fontSize:13,fontWeight:600,color:'#333'}}>{emails.length} emails found</span>
+                  <div style={{display:'flex',gap:6}}>
+                    <button className="btn-sm btn-secondary" style={{fontSize:12}} onClick={()=>setSelected(selected.size===emails.length?new Set():new Set(emails.map(e=>e.id)))}>
+                      {selected.size===emails.length?'Deselect all':'Select all'}
+                    </button>
+                    <button className="btn-sm" onClick={extractSelected} disabled={processing||!selected.size||!aiKey}>
+                      <Brain size={13}/> {processing?procMsg:`Extract ${selected.size}`}
+                    </button>
+                  </div>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',gap:6}}>
+                  {emails.map(e=>{
+                    const sel=selected.has(e.id)
+                    return(
+                      <div key={e.id} style={{display:'flex',gap:10,alignItems:'flex-start',padding:'10px 12px',background:sel?'#f0faf5':'#f8faf9',borderRadius:10,border:`1.5px solid ${sel?'#3d9b7d':'transparent'}`,cursor:'pointer'}} onClick={()=>{const s=new Set(selected);sel?s.delete(e.id):s.add(e.id);setSelected(s)}}>
+                        <input type="checkbox" checked={sel} readOnly style={{marginTop:3,flexShrink:0}}/>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontSize:13,fontWeight:600,color:'#111',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{e.subject||'(no subject)'}</div>
+                          <div style={{fontSize:11,color:'#888',marginTop:1,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>
+                            {e.from}
+                            {e.atts.length>0&&<span style={{marginLeft:8,color:'#3d9b7d'}}>📎 {e.atts.length} attachment{e.atts.length>1?'s':''}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </>
+            )}
+            {!fetching&&!emails.length&&<p style={{fontSize:13,color:'#aaa',margin:'8px 0 0'}}>Click "Search inbox" to find receipt emails.</p>}
+          </>
+        )}
+      </div>}
+    </div>
+  )
+}
+
 function ReviewCard({e,state,update}){
   const [x,setX]=useState(e)
   const cats=state.settings.categories[x.classification==='personal'?'personal':'business']||[]
