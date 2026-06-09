@@ -41,6 +41,30 @@ const DEFAULT_PAYROLL_SETTINGS = {
   ],
 };
 
+// ─── ENTITY DEFAULTS ─────────────────────────────────────────────────────────
+
+const DEFAULT_ENTITIES = [
+  { id:'ent1', name:'Amise Medical Services',  shortName:'Amise',    type:'Medical Practice', color:'#1a6ae6',
+    profile:{ practitionerName:'Dr. Dawit Daniel Kabiye, MD, DM', practiceName:'Amise Medical Services', practitionerTin:'', practiceTin:'', phone:'', address:'Rodney Bay, Gros Islet, Saint Lucia', taxYear:2026, engagementType:'both', notes:'General & endoscopic surgery practice.' }},
+  { id:'ent2', name:'Verdance',                shortName:'Verdance', type:'Property',          color:'#2a9d5c',
+    profile:{ practitionerName:'Dawit Kabiye', practiceName:'Verdance', practitionerTin:'', practiceTin:'', phone:'', address:'Saint Lucia', taxYear:2026, engagementType:'business', notes:'' }},
+  { id:'ent3', name:'Zemed Condos & Villas',   shortName:'Zemed',    type:'Property',          color:'#e67e22',
+    profile:{ practitionerName:'Dawit Kabiye', practiceName:'Zemed Condos & Villas', practitionerTin:'', practiceTin:'', phone:'', address:'Saint Lucia', taxYear:2026, engagementType:'business', notes:'' }},
+  { id:'ent4', name:'MSSL',                    shortName:'MSSL',     type:'Business',          color:'#8e44ad',
+    profile:{ practitionerName:'Dawit Kabiye', practiceName:'MSSL', practitionerTin:'', practiceTin:'', phone:'', address:'Saint Lucia', taxYear:2026, engagementType:'business', notes:'' }},
+  { id:'ent5', name:'Lucienne Bee Farm',       shortName:'Bee Farm', type:'Agriculture',       color:'#c8950a',
+    profile:{ practitionerName:'Dawit Kabiye', practiceName:'Lucienne Bee Farm', practitionerTin:'', practiceTin:'', phone:'', address:'Saint Lucia', taxYear:2026, engagementType:'business', notes:'' }},
+  { id:'ent6', name:'Lucienne Parfums',        shortName:'Parfums',  type:'Retail',            color:'#c0397a',
+    profile:{ practitionerName:'Dawit Kabiye', practiceName:'Lucienne Parfums', practitionerTin:'', practiceTin:'', phone:'', address:'Saint Lucia', taxYear:2026, engagementType:'business', notes:'' }},
+];
+
+function ensureEntities(db){
+  if(!db.entities||db.entities.length===0){
+    db.entities=DEFAULT_ENTITIES.map(e=>({...e,profile:{...e.profile}}));
+    writeDb(db);
+  }
+}
+
 const DEFAULT_STAFF = [
   { id:'s1', name:'Receptionist / Admin – Clinic 1', position:'Receptionist / Admin',     entity:'Amise Medical Services', type:'permanent', grossMonthly:1833, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
   { id:'s2', name:'Receptionist / Admin – Clinic 2', position:'Receptionist / Admin',     entity:'Amise Medical Services', type:'permanent', grossMonthly:1500, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
@@ -52,6 +76,7 @@ const DEFAULT_STAFF = [
 // ─── DB ───────────────────────────────────────────────────────────────────────
 
 const defaultDb = {
+  entities: DEFAULT_ENTITIES.map(e=>({...e,profile:{...e.profile}})),
   settings: {
     taxYear: 2026,
     baseCurrency: 'XCD',
@@ -157,7 +182,13 @@ async function extractWithClaude(file){
 
 // ─── EXPENSE ROUTES ───────────────────────────────────────────────────────────
 
-app.get('/api/state', (_,res)=>{ const db=readDb(); ensurePayroll(db); res.json(db); });
+app.get('/api/state', (_,res)=>{ const db=readDb(); ensurePayroll(db); ensureEntities(db); res.json(db); });
+
+// ─── ENTITY ROUTES ────────────────────────────────────────────────────────────
+app.get('/api/entities', (_,res)=>{ const db=readDb(); ensureEntities(db); res.json(db.entities); });
+app.post('/api/entities', (req,res)=>{ const db=readDb(); ensureEntities(db); const e={...req.body,id:nanoid()}; if(!e.profile) e.profile={practitionerName:'',practiceName:e.name||'',practitionerTin:'',practiceTin:'',phone:'',address:'',taxYear:2026,engagementType:'business',notes:''}; db.entities.push(e); writeDb(db); res.json(e); });
+app.put('/api/entities/:id', (req,res)=>{ const db=readDb(); ensureEntities(db); const i=db.entities.findIndex(e=>e.id===req.params.id); if(i<0) return res.status(404).json({error:'Not found'}); db.entities[i]={...db.entities[i],...req.body, profile:{...db.entities[i].profile,...(req.body.profile||{})}}; writeDb(db); res.json(db.entities[i]); });
+app.delete('/api/entities/:id', (req,res)=>{ const db=readDb(); ensureEntities(db); db.entities=db.entities.filter(e=>e.id!==req.params.id); writeDb(db); res.json({ok:true}); });
 app.put('/api/settings', (req,res)=>{ const db=readDb(); db.settings={...db.settings,...req.body}; writeDb(db); res.json(db.settings); });
 app.post('/api/upload', upload.array('files', 30), async (req,res)=>{
   const db=readDb(); const created=[];
