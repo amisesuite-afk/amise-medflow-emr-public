@@ -14,7 +14,7 @@
     "@supabase/supabase-js": "^2.107.0",
     "@workspace/triage-engine": "workspace:*",
     "googleapis": "^171.4.0",
-    "next": "14.2.3",
+    "next": "^14.2.35",
     "react": "^18",
     "react-dom": "^18",
     "twilio": "^6.0.2"
@@ -25,7 +25,7 @@
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
-    "eslint-config-next": "14.2.3",
+    "eslint-config-next": "^14.2.35",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
