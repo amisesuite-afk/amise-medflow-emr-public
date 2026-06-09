@@ -173,3 +173,64 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:100vh;font-size:16px;color:#888}
 
 input,select,textarea{font-family:inherit;font-size:14px}
+
+/* ── Allowances ── */
+.allowance-row{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #eef1ef}
+.allowance-row:last-child{border-bottom:none}
+.allowance-info{flex:1;min-width:0}
+.allowance-label{font-size:13px;font-weight:600;color:#111;display:flex;align-items:center;gap:6px;flex-wrap:wrap;line-height:1.35}
+.allowance-max{font-size:12px;color:#3d9b7d;font-weight:500;margin-top:2px}
+.allowance-note{font-size:11px;color:#aaa;margin-top:3px;line-height:1.45}
+.allowance-input-wrap{display:flex;gap:5px;align-items:center;flex-shrink:0;margin-top:2px}
+.allowance-input{width:88px;padding:8px 10px;border:1.5px solid #dde4e1;border-radius:9px;font-size:14px;font-weight:600;color:#111;text-align:right;font-family:inherit}
+.allowance-input:focus{outline:none;border-color:#3d9b7d}
+.btn-fill-max{padding:5px 10px;font-size:11px;font-weight:700;border-radius:7px;background:#e8f4ef;color:#177a56;border:none;cursor:pointer;font-family:inherit}
+.btn-fill-max:hover{background:#d4ece2}
+.badge-new{background:#1a6ae6;color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.04em;flex-shrink:0;line-height:1.5}
+
+/* ── Target banner ── */
+.target-banner{display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600}
+.target-ok{background:#e3f4ed;color:#177a56}
+.target-low{background:#fff4d9;color:#8a5800}
+.target-high{background:#fde9e9;color:#c03030}
+
+/* ── Scenario grid ── */
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.scenario-card{background:#f8faf9;border:1.5px solid #eaeeec;border-radius:14px;padding:14px 10px;text-align:center}
+.scenario-current{background:#f0f9f4;border-color:#3d9b7d}
+.scenario-label{font-size:10px;font-weight:700;color:#888;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.scenario-deduct{font-size:11px;color:#666;margin-bottom:8px}
+.scenario-tax{font-size:20px;font-weight:700;color:#c03030;letter-spacing:-.015em}
+
+/* ── Action plan ── */
+.actions-list{display:flex;flex-direction:column;gap:10px}
+.action-item{display:flex;gap:12px;align-items:flex-start;background:white;border-radius:14px;padding:14px;box-shadow:0 1px 5px rgba(0,0,0,.055);cursor:pointer;border:1.5px solid transparent}
+.action-item:hover{border-color:#eaeeec}
+.action-done{opacity:.5}
+.action-check{width:22px;height:22px;border-radius:50%;border:2px solid #dde4e1;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:background .15s,border-color .15s}
+.action-check-done{background:#3d9b7d;border-color:#3d9b7d;color:white}
+.action-body{flex:1;min-width:0}
+.action-label{font-size:14px;font-weight:600;color:#111;line-height:1.35;margin-bottom:5px}
+.action-meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.action-saving{font-size:12px;font-weight:700;color:#177a56}
+.action-deadline{font-size:12px;color:#888}
+.action-note{font-size:12px;color:#aaa;line-height:1.45}
+
+/* ── Report ── */
+.report-body{font-size:14px;line-height:1.7;color:#222}
+.report-h3{font-size:15px;font-weight:700;color:#111;margin:16px 0 8px;border-top:1px solid #eef1ef;padding-top:14px}
+.report-h3:first-child{border-top:none;padding-top:0;margin-top:0}
+.report-bullet{padding:2px 0 2px 8px;color:#444}
+.report-p{margin:3px 0;color:#333}
+
+/* ── Documents ── */
+.doc-grid{display:flex;flex-direction:column;gap:10px}
+.doc-card{display:flex;gap:12px;align-items:center;background:white;border-radius:14px;padding:12px;box-shadow:0 1px 5px rgba(0,0,0,.055)}
+.doc-thumb{width:50px;height:50px;border-radius:10px;background:#f2f4f3;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.doc-thumb img{width:50px;height:50px;object-fit:cover;border-radius:10px;display:block}
+.doc-info{flex:1;min-width:0}
+.doc-name{font-size:13px;font-weight:600;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doc-meta{font-size:12px;color:#888;margin-top:2px}
+.doc-extracted{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:5px}
+.doc-actions{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.doc-tag{background:#f0f4f2;border-radius:6px;padding:2px 8px;font-size:11px;color:#555}
