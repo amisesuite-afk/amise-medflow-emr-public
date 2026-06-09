@@ -139,6 +139,7 @@ export default function LoginPage() {
   return (
     <div style={shell}>
       <div style={{ textAlign: 'center', marginBottom: 28 }}>
+        <img src="/amise-logo.jpg" alt="Amise Medical Services" style={{ width: 72, height: 72, objectFit: 'contain', marginBottom: 10, borderRadius: 8 }} />
         <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase', color: '#4db8ad', marginBottom: 8 }}>
           Amise Medical Services
         </div>

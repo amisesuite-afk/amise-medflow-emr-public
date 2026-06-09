@@ -169,7 +169,10 @@ export default function HomePage() {
     >
       {/* ── Sticky header ── */}
       <header className="app-header">
-        <div className="header-brand">Amise Medical</div>
+        <div className="header-brand" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <img src="/amise-logo.jpg" alt="" style={{ height: 30, width: 'auto', objectFit: 'contain' }} />
+          Amise Medical
+        </div>
         {DEMO_MODE
           ? <span className="proto-pill" style={{ background: 'rgba(251,191,36,.15)', border: '1px solid rgba(251,191,36,.35)', color: '#fbbf24' }}>⚗ DEMO MODE — local trial only</span>
           : <span className="proto-pill">⚗ PROTOTYPE</span>
