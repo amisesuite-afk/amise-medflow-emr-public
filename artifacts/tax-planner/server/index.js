@@ -26,6 +26,31 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage, limits: { fileSize: 30 * 1024 * 1024, files: 30 } });
 
+// ─── PAYROLL DEFAULTS (Saint Lucia ITA Cap 15.02) ─────────────────────────────
+
+const DEFAULT_PAYROLL_SETTINGS = {
+  personalAllowance: 40000,   // XCD/yr employee personal allowance
+  nicEmployeeRate:   0.05,    // 5 % of insurable earnings
+  nicEmployerRate:   0.05,    // 5 % employer contribution
+  nicMonthlyCeiling: 5000,    // XCD insurable earnings ceiling per month
+  taxBands: [                 // Applied on annual chargeable income after all allowances
+    { upto: 10000, rate: 0.10 },
+    { upto: 20000, rate: 0.15 },
+    { upto: 30000, rate: 0.20 },
+    { upto: null,  rate: 0.25 }, // null = no upper limit
+  ],
+};
+
+const DEFAULT_STAFF = [
+  { id:'s1', name:'Receptionist / Admin – Clinic 1', position:'Receptionist / Admin',     entity:'Amise Medical Services', type:'permanent', grossMonthly:1833, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
+  { id:'s2', name:'Receptionist / Admin – Clinic 2', position:'Receptionist / Admin',     entity:'Amise Medical Services', type:'permanent', grossMonthly:1500, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
+  { id:'s3', name:'Medical Secretary / PA',           position:'Medical Secretary / PA',  entity:'Amise Medical Services', type:'permanent', grossMonthly:1250, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
+  { id:'s4', name:'Practice Manager',                 position:'Practice Manager',        entity:'Amise Medical Services', type:'permanent', grossMonthly:1667, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
+  { id:'s5', name:'Payroll / HR Administrator',       position:'Payroll / HR Administrator', entity:'Amise Medical Services', type:'contract', grossMonthly:3500, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
+];
+
+// ─── DB ───────────────────────────────────────────────────────────────────────
+
 const defaultDb = {
   settings: {
     taxYear: 2026,
@@ -43,10 +68,51 @@ const defaultDb = {
   },
   documents: [],
   expenses: [],
-  vendors: []
+  vendors: [],
+  payroll: { settings: DEFAULT_PAYROLL_SETTINGS, staff: DEFAULT_STAFF, runs: [] },
 };
+
 function readDb(){ if(!fs.existsSync(DATA_PATH)) fs.writeFileSync(DATA_PATH, JSON.stringify(defaultDb,null,2)); return JSON.parse(fs.readFileSync(DATA_PATH,'utf8')); }
 function writeDb(db){ fs.writeFileSync(DATA_PATH, JSON.stringify(db,null,2)); }
+
+// Migration: seed payroll block into db.json files created before this feature
+function ensurePayroll(db){
+  if(!db.payroll){ db.payroll={ settings:{...DEFAULT_PAYROLL_SETTINGS}, staff:[...DEFAULT_STAFF], runs:[] }; writeDb(db); }
+}
+
+// ─── PAYE / NIC ENGINE (mirrors frontend computePayFE) ───────────────────────
+
+function computeMonthlyPay(s, ps){
+  const annual = s.grossMonthly * 12;
+  const allow  = (ps.personalAllowance||40000) + (s.spouseAllowance||0) + (s.childAllowance||0) + (s.otherAllowance||0);
+  let chargeable = Math.max(0, annual - allow);
+  let annualPAYE = 0, prev = 0;
+  for(const band of (ps.taxBands||[])){
+    if(chargeable<=0) break;
+    const last  = band.upto==null;
+    const width = last ? chargeable : (band.upto - prev);
+    const taxable = Math.min(chargeable, width);
+    annualPAYE += taxable * band.rate;
+    chargeable -= taxable;
+    if(!last) prev = band.upto;
+  }
+  const ceil   = ps.nicMonthlyCeiling||5000;
+  const nicEmp  = Math.min(s.grossMonthly,ceil) * (ps.nicEmployeeRate||0.05);
+  const nicEmpr = Math.min(s.grossMonthly,ceil) * (ps.nicEmployerRate||0.05);
+  const monthlyPAYE = annualPAYE / 12;
+  return {
+    gross:       s.grossMonthly,
+    paye:        +monthlyPAYE.toFixed(2),
+    nicEmployee: +nicEmp.toFixed(2),
+    nicEmployer: +nicEmpr.toFixed(2),
+    net:         +(s.grossMonthly - monthlyPAYE - nicEmp).toFixed(2),
+    annualGross: annual,
+    annualPAYE:  +annualPAYE.toFixed(2),
+  };
+}
+
+// ─── EXISTING HELPERS ─────────────────────────────────────────────────────────
+
 function statusFor(extracted, duplicate=false){ return duplicate || extracted.is_capital_item || extracted.confidence < .75 ? 'pending' : 'ready'; }
 function deductible(exp){ return exp.is_capital || exp.classification !== 'business' ? 0 : Number(exp.amount_xcd || 0); }
 function fxRate(currency){ const map={XCD:1,USD:2.7,EUR:2.95,GBP:3.45,CAD:1.98,CNY:.37}; return map[String(currency||'XCD').toUpperCase()] || 2.7; }
@@ -80,18 +146,18 @@ async function extractWithClaude(file){
       const text = (msg.content||[]).map(c=>c.text||'').join('\n').trim();
       return JSON.parse(text.replace(/```json|```/g,'').trim());
     }catch(err){
-      // One bad document must not kill the whole batch — hold it for manual review.
       return fallbackExtract(file, ext, `Auto-extract failed: ${err.message}. Held for manual review.`, 0.3);
     }
   }
   if(apiKey && !visionReady){
-    // HEIC (default iPhone/iPad photo format) and other formats can't be sent to the vision API directly.
     return fallbackExtract(file, ext, `Unsupported format for auto-extract (e.g. HEIC). Convert to JPEG/PNG/PDF, or enable server-side HEIC conversion. Held for manual review.`, 0.3);
   }
   return fallbackExtract(file, ext, 'Mock extraction used. Add ANTHROPIC_API_KEY for Claude Vision.', 0.82);
 }
 
-app.get('/api/state', (_,res)=>res.json(readDb()));
+// ─── EXPENSE ROUTES ───────────────────────────────────────────────────────────
+
+app.get('/api/state', (_,res)=>{ const db=readDb(); ensurePayroll(db); res.json(db); });
 app.put('/api/settings', (req,res)=>{ const db=readDb(); db.settings={...db.settings,...req.body}; writeDb(db); res.json(db.settings); });
 app.post('/api/upload', upload.array('files', 30), async (req,res)=>{
   const db=readDb(); const created=[];
@@ -116,6 +182,66 @@ app.post('/api/email-ingest', async (req,res)=>{
 });
 app.put('/api/expenses/:id', (req,res)=>{ const db=readDb(); const exp=db.expenses.find(e=>e.id===req.params.id); if(!exp) return res.status(404).json({error:'Not found'}); Object.assign(exp, req.body); if(exp.status==='approved') { exp.deductible_amount=deductible(exp); upsertVendor(db, exp.vendor, exp.category, exp.classification, exp.entity_id); } else exp.deductible_amount=0; writeDb(db); res.json(exp); });
 app.post('/api/expenses/bulk-approve-ready', (_,res)=>{ const db=readDb(); let count=0; for(const e of db.expenses){ if(e.status==='ready' && !e.is_capital && !e.duplicate){ e.status='approved'; e.deductible_amount=deductible(e); upsertVendor(db,e.vendor,e.category,e.classification,e.entity_id); count++; }} writeDb(db); res.json({count}); });
+
+// ─── PAYROLL ROUTES ───────────────────────────────────────────────────────────
+
+// Staff CRUD
+app.get('/api/payroll/staff', (_,res)=>{ const db=readDb(); ensurePayroll(db); res.json(db.payroll.staff); });
+app.post('/api/payroll/staff', (req,res)=>{ const db=readDb(); ensurePayroll(db); const s={...req.body,id:nanoid(),status:'active'}; db.payroll.staff.push(s); writeDb(db); res.json(s); });
+app.put('/api/payroll/staff/:id', (req,res)=>{ const db=readDb(); ensurePayroll(db); const i=db.payroll.staff.findIndex(s=>s.id===req.params.id); if(i<0) return res.status(404).json({error:'Not found'}); db.payroll.staff[i]={...db.payroll.staff[i],...req.body}; writeDb(db); res.json(db.payroll.staff[i]); });
+app.delete('/api/payroll/staff/:id', (req,res)=>{ const db=readDb(); ensurePayroll(db); db.payroll.staff=db.payroll.staff.filter(s=>s.id!==req.params.id); writeDb(db); res.json({ok:true}); });
+
+// Payroll settings (tax bands, NIC rates, allowances)
+app.get('/api/payroll/settings', (_,res)=>{ const db=readDb(); ensurePayroll(db); res.json(db.payroll.settings); });
+app.put('/api/payroll/settings', (req,res)=>{ const db=readDb(); ensurePayroll(db); db.payroll.settings={...db.payroll.settings,...req.body}; writeDb(db); res.json(db.payroll.settings); });
+
+// Run payroll for a month — computes and stores PAYE/NIC for all active staff
+app.post('/api/payroll/run', (req,res)=>{
+  const {month}=req.body;
+  if(!month) return res.status(400).json({error:'month required (YYYY-MM)'});
+  const db=readDb(); ensurePayroll(db);
+  const ps=db.payroll.settings;
+  const lines=db.payroll.staff.filter(s=>s.status==='active').map(s=>({
+    staffId:s.id, name:s.name, position:s.position, entity:s.entity, type:s.type,
+    ...computeMonthlyPay(s,ps),
+  }));
+  const totals=lines.reduce((t,l)=>({
+    gross:+(t.gross+l.gross).toFixed(2),
+    paye:+(t.paye+l.paye).toFixed(2),
+    nicEmployee:+(t.nicEmployee+l.nicEmployee).toFixed(2),
+    nicEmployer:+(t.nicEmployer+l.nicEmployer).toFixed(2),
+    net:+(t.net+l.net).toFixed(2),
+  }),{gross:0,paye:0,nicEmployee:0,nicEmployer:0,net:0});
+  const run={id:nanoid(),month,lines,totals,createdAt:new Date().toISOString()};
+  db.payroll.runs=db.payroll.runs.filter(r=>r.month!==month);
+  db.payroll.runs.push(run);
+  writeDb(db); res.json(run);
+});
+
+// Export payroll run → approved expense rows (replaces any previous export for that month)
+app.post('/api/payroll/export', (req,res)=>{
+  const {month}=req.body;
+  const db=readDb(); ensurePayroll(db);
+  const run=db.payroll.runs.find(r=>r.month===month);
+  if(!run) return res.status(404).json({error:`No payroll run found for ${month}. Run payroll first.`});
+  db.expenses=db.expenses.filter(e=>e.payroll_month!==month);
+  const byEntity={};
+  for(const l of run.lines){
+    if(!byEntity[l.entity]) byEntity[l.entity]={salaries:0,nicEmpr:0};
+    byEntity[l.entity].salaries+=l.gross;
+    byEntity[l.entity].nicEmpr+=l.nicEmployer;
+  }
+  const created=[];
+  for(const [entity,t] of Object.entries(byEntity)){
+    const total=+(t.salaries+t.nicEmpr).toFixed(2);
+    const exp={id:nanoid(),entity_id:entity,date:`${month}-01`,vendor:'Staff Payroll',category:'staff salaries & employer NIC',classification:'business',amount_xcd:total,amount_original:total,currency:'XCD',fx_rate:1,fx_date:`${month}-01`,is_capital:false,deductible_amount:total,source_document_id:null,confidence:1,status:'approved',duplicate:false,near_duplicate:false,payroll_month:month,notes:`${run.lines.length} staff · salaries XCD ${t.salaries.toFixed(2)} · employer NIC XCD ${t.nicEmpr.toFixed(2)}`,created_at:new Date().toISOString()};
+    db.expenses.push(exp); created.push(exp);
+  }
+  writeDb(db); res.json({created});
+});
+
+// ─── MISC ─────────────────────────────────────────────────────────────────────
+
 app.delete('/api/reset', (_,res)=>{ writeDb(defaultDb); res.json({ok:true}); });
 
 app.use(express.static(path.join(ROOT,'dist')));
