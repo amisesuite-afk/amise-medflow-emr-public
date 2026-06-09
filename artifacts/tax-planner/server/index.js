@@ -519,5 +519,5 @@ Write in professional British-Caribbean tone. Be specific and actionable.`;
 app.delete('/api/reset', (_,res)=>{ writeDb(defaultDb); res.json({ok:true}); });
 
 app.use(express.static(path.join(ROOT,'dist')));
-app.get('*', (_,res)=>{ const html=path.join(ROOT,'dist','index.html'); fs.existsSync(html) ? res.sendFile(html) : res.send('Run npm run dev for the frontend.'); });
+app.get('/{*path}', (_,res)=>{ const html=path.join(ROOT,'dist','index.html'); fs.existsSync(html) ? res.sendFile(html) : res.send('Run npm run dev for the frontend.'); });
 app.listen(PORT, ()=>console.log(`Amise Tax Planner API running on http://localhost:${PORT}`));
