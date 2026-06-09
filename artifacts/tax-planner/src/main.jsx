@@ -100,7 +100,7 @@ function App() {
 
   const entityDeductible = useMemo(()=>
     yearEntExp.filter(e=>!e.is_capital&&e.classification!=='personal')
-              .reduce((s,e)=>s++(e.deductible_amount||e.amount_xcd||0),0)
+              .reduce((s,e)=>s+Number(e.deductible_amount||e.amount_xcd||0),0)
   ,[yearEntExp])
 
   async function apiCall(url,method='GET',body){
@@ -347,7 +347,7 @@ function AllowancesTab({entity,state,apiCall,tk}){
 
 // ── Personal ──────────────────────────────────────────────────────────────────
 function PersonalTab({totals,yearExp,settings,year,setYear,totalEntries}){
-  const months=MONTHS.map((_,i)=>yearExp.filter(e=>e.classification==='personal'&&new Date(e.date).getMonth()===i).reduce((s,e)=>s++(e.amount_xcd||0),0))
+  const months=MONTHS.map((_,i)=>yearExp.filter(e=>e.classification==='personal'&&new Date(e.date).getMonth()===i).reduce((s,e)=>s+Number(e.amount_xcd||0),0))
   const pMax =settings.personalMaximumLimit     ||232000
   const pCons=settings.personalConservativeLimit||232000
   return(
@@ -393,7 +393,7 @@ function BusinessTab({expenses,yearEntExp,entityDeductible,entity,settings,year,
   const bCons  =settings.conservativeLimit||551000
   const expCats=tk.expenseCats||[]
 
-  const months=MONTHS.map((_,i)=>yearEntExp.filter(e=>new Date(e.date).getMonth()===i).reduce((s,e)=>s++(e.deductible_amount||e.amount_xcd||0),0))
+  const months=MONTHS.map((_,i)=>yearEntExp.filter(e=>new Date(e.date).getMonth()===i).reduce((s,e)=>s+Number(e.deductible_amount||e.amount_xcd||0),0))
 
   async function submit(ev){
     ev.preventDefault(); if(!form.vendor||!form.amount_xcd) return
