@@ -175,6 +175,19 @@ function buildDocument(ctx: Ctx): string {
     lines.push(hint('record weight and height'));
   }
 
+  // ROS
+  const rosEntries = Object.entries(ctx.rosFindings).filter(
+    ([, f]) => f.status !== 'not-asked' && (f.details.length > 0 || f.notes),
+  );
+  if (rosEntries.length > 0) {
+    lines.push(sec('REVIEW OF SYSTEMS'));
+    rosEntries.forEach(([sys, f]) => {
+      const detail = f.details.join(', ');
+      const note = f.notes ? (detail ? ` — ${f.notes}` : f.notes) : '';
+      lines.push(`  ${sys} [${f.status}]: ${detail}${note}`);
+    });
+  }
+
   // Examination
   lines.push(sec('PHYSICAL EXAMINATION'));
   const examFields: [string, string][] = [
@@ -192,17 +205,24 @@ function buildDocument(ctx: Ctx): string {
     lines.push(hint('add neurological and extremity findings if relevant'));
   }
 
-  // ROS
-  const rosEntries = Object.entries(ctx.rosFindings).filter(
-    ([, f]) => f.status !== 'not-asked' && (f.details.length > 0 || f.notes),
-  );
-  if (rosEntries.length > 0) {
-    lines.push(sec('REVIEW OF SYSTEMS'));
-    rosEntries.forEach(([sys, f]) => {
-      const detail = f.details.join(', ');
-      const note = f.notes ? (detail ? ` — ${f.notes}` : f.notes) : '';
-      lines.push(`  ${sys} [${f.status}]: ${detail}${note}`);
-    });
+  // Assessment
+  lines.push(sec('ASSESSMENT'));
+  if (ctx.assessment) {
+    lines.push(`Working Dx:  ${ctx.assessment}`);
+  } else {
+    lines.push(hint('enter working diagnosis / clinical impression'));
+  }
+  if (ctx.icdCodes.length > 0) {
+    lines.push(`ICD-10:      ${ctx.icdCodes.join('  |  ')}`);
+  } else {
+    lines.push(hint('add ICD-10 code(s)'));
+  }
+  if (ctx.differentials) {
+    lines.push('');
+    lines.push('Differentials:');
+    lines.push(ctx.differentials);
+  } else {
+    lines.push(hint('list differential diagnoses in order of probability'));
   }
 
   // Investigations
@@ -233,26 +253,6 @@ function buildDocument(ctx: Ctx): string {
       if (r.functionalType) lines.push(`      Study: ${r.functionalType}`);
       if (r.resultReceived) lines.push(`      ✓ Result: ${r.resultNotes || '[findings to be documented]'}`);
     });
-  }
-
-  // Assessment
-  lines.push(sec('ASSESSMENT'));
-  if (ctx.assessment) {
-    lines.push(`Working Dx:  ${ctx.assessment}`);
-  } else {
-    lines.push(hint('enter working diagnosis / clinical impression'));
-  }
-  if (ctx.icdCodes.length > 0) {
-    lines.push(`ICD-10:      ${ctx.icdCodes.join('  |  ')}`);
-  } else {
-    lines.push(hint('add ICD-10 code(s)'));
-  }
-  if (ctx.differentials) {
-    lines.push('');
-    lines.push('Differentials:');
-    lines.push(ctx.differentials);
-  } else {
-    lines.push(hint('list differential diagnoses in order of probability'));
   }
 
   // Plan
