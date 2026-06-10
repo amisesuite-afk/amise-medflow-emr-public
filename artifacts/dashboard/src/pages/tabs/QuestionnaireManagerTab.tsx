@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getApiOrigin } from '@/lib/api-origin';
+import { getSupabase } from '@/lib/supabase';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -268,8 +269,12 @@ export default function QuestionnaireManagerTab() {
 
   const fetchQueue = useCallback(async () => {
     try {
+      const client = getSupabase();
+      const session = client ? (await client.auth.getSession()).data.session : null;
       const res = await fetch(apiUrl('/api/questionnaire/nurse/queue'), {
-        headers: { Authorization: 'Bearer internal' },
+        headers: session?.access_token
+          ? { Authorization: `Bearer ${session.access_token}` }
+          : {},
       });
       if (res.ok) {
         const data = await res.json() as QueueResponse;
