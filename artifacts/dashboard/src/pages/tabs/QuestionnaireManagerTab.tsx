@@ -1,4 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getApiOrigin } from '@/lib/api-origin';
+
+const API_ORIGIN = getApiOrigin();
+function apiUrl(path: string) {
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -261,7 +268,7 @@ export default function QuestionnaireManagerTab() {
 
   const fetchQueue = useCallback(async () => {
     try {
-      const res = await fetch('/api/questionnaire/nurse/queue', {
+      const res = await fetch(apiUrl('/api/questionnaire/nurse/queue'), {
         headers: { Authorization: 'Bearer internal' },
       });
       if (res.ok) {
@@ -290,7 +297,7 @@ export default function QuestionnaireManagerTab() {
     setSmsResult(null);
 
     try {
-      const res = await fetch('/api/questionnaire/session/start', {
+      const res = await fetch(apiUrl('/api/questionnaire/session/start'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -329,7 +336,7 @@ export default function QuestionnaireManagerTab() {
     setSmsResult(null);
 
     try {
-      const res = await fetch('/api/questionnaire/send-sms', {
+      const res = await fetch(apiUrl('/api/questionnaire/send-sms'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
