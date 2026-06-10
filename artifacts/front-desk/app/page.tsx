@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { AmsiseLogo } from './components/AmsiseLogo';
 
 export const metadata: Metadata = {
   title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
@@ -12,31 +13,6 @@ const WA_RODNEY    = 'https://wa.me/17587207111';
 const PHONE_TAPION = '758-284-0557';
 const PHONE_RODNEY = '758-720-7111';
 const EMAIL        = 'info@amisemedical.com';
-
-// ── Logo ─────────────────────────────────────────────────────────────────────
-
-function AmsiseLogo({ dark = false }: { dark?: boolean }) {
-  const text = dark ? '#fff' : '#0d7a74';
-  const sub  = dark ? '#94a3b8' : '#64748b';
-  return (
-    <a href="#home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-      <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
-        <circle cx="21" cy="21" r="21" fill="#0d9488" />
-        {/* Stylised running figure */}
-        <circle cx="25" cy="10" r="3.5" fill="white"/>
-        <path d="M16 38 Q18 28 22 24 Q26 20 28 26 Q30 30 27 34" stroke="white" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-        <path d="M22 24 L18 30 L13 32" stroke="white" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-        {/* Medical cross on upper-right */}
-        <rect x="28" y="6"  width="1.8" height="6"   rx="0.9" fill="white"/>
-        <rect x="25.5" y="8.1" width="6.8" height="1.8" rx="0.9" fill="white"/>
-      </svg>
-      <div>
-        <div style={{ fontSize: 17, fontWeight: 900, color: text, letterSpacing: '0.04em', lineHeight: 1 }}>AMISE</div>
-        <div style={{ fontSize: 8.5, fontWeight: 600, color: sub, letterSpacing: '0.1em', lineHeight: 1.4 }}>MEDICAL SERVICES</div>
-      </div>
-    </a>
-  );
-}
 
 // ── WhatsApp SVG ──────────────────────────────────────────────────────────────
 
@@ -66,7 +42,7 @@ function Nav() {
       borderBottom: '1px solid #e8f0ef', padding: '0 40px',
     }}>
       <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
-        <AmsiseLogo />
+        <AmsiseLogo href="#home" />
 
         {/* Desktop links */}
         <div className="amise-nav-links">
@@ -830,7 +806,7 @@ function Footer() {
 
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <AmsiseLogo dark />
+          <AmsiseLogo dark href="#home" />
           <div style={{ borderLeft: '1px solid #1e4a5a', paddingLeft: 14 }}>
             <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.8 }}>
               Surgical, Endoscopy &amp; Specialist Care<br />Saint Lucia

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { AmsiseLogo } from '../components/AmsiseLogo';
 
 export const metadata: Metadata = {
   title: 'Amise Medical Services',
@@ -18,8 +19,8 @@ export default function PatientPortalLayout({ children }: { children: React.Reac
       <header style={{
         background: '#fff',
         borderBottom: '1px solid #f1f5f9',
-        padding: '0 20px',
-        height: 52,
+        padding: '6px 20px',
+        minHeight: 52,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -27,10 +28,7 @@ export default function PatientPortalLayout({ children }: { children: React.Reac
         top: 0,
         zIndex: 10,
       }}>
-        <a href="/patient" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 18, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em' }}>Amise</span>
-          <span style={{ fontSize: 11, color: '#0d9488', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Medical</span>
-        </a>
+        <AmsiseLogo href="/patient" />
         <span style={{ fontSize: 11, color: '#94a3b8', letterSpacing: '0.02em' }}>Saint Lucia</span>
       </header>
 
