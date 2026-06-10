@@ -46,5 +46,13 @@ jobs:
             --project-ref nornhfzfrlmfzaqmrzzp \
             --file supabase-document-ai-extraction-migration.sql
 
+      - name: Run APCQ (adaptive questionnaire) migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-apcq-migration.sql
+
       - name: Done
         run: echo "Migrations completed successfully."
