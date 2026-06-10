@@ -94,6 +94,7 @@ export function masthead(
   docType: string,
   siteName: string,
   siteAddress: string,
+  sitePhone: string,
   now: string,
   logoSvg: string,
 ): string {
@@ -103,7 +104,7 @@ export function masthead(
     <div class="mast-org">Amise Medical Services</div>
     <div class="mast-doc">${escH(docType)}</div>
     <div class="mast-meta">${escH(siteName)} · ${escH(siteAddress)}</div>
-    <div class="mast-meta">Tel: 1 (758) 720 7111 · amisesuite@gmail.com · ${escH(now)}</div>
+    <div class="mast-meta">Tel: ${escH(sitePhone)} · amisesuite@gmail.com · ${escH(now)}</div>
   </div>
   <div style="flex-shrink:0;margin-left:14px">${logoSvg}</div>
 </div>
@@ -172,7 +173,7 @@ export function callout(heading: string, bodyHtml: string): string {
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 export function footer(disclaimer: string): string {
-  const contact = 'Amise Medical Services · Rodney Bay / Castries · Tapion Hospital · 720 7111 / 459 2227';
+  const contact = 'Amise Medical Services · Rodney Bay / Castries: 1 (758) 720 7111 · Tapion Hospital: 1 (758) 459 2227 / 1 (758) 284 0557';
   return `<hr class="footer-rule">
 <div class="footer-row">
   <div class="footer-note">${escH(disclaimer)}</div>

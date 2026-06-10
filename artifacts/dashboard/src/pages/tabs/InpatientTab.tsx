@@ -445,10 +445,10 @@ interface PrintState {
   lftLabel1: string; lftLabel2: string;
 }
 
-const SITE_INFO: Record<string, { name: string; address: string }> = {
-  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay' },
-  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia' },
-  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia' },
+const SITE_INFO: Record<string, { name: string; address: string; phone: string }> = {
+  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay', phone: '1 (758) 720 7111' },
+  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia', phone: '1 (758) 720 7111' },
+  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia', phone: '1 (758) 459 2227 / 1 (758) 284 0557' },
 };
 
 function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext>): string {
@@ -573,7 +573,7 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
     ? ctx.cptCodes.map(c => `<span style="font-family:monospace;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;padding:1px 7px;font-size:10px;margin-right:5px">${escH(c)}</span>`).join('')
     : '';
 
-  let body = masthead('Inpatient / Procedural Discharge Summary', site.name, site.address, now, AMISE_LOGO_SVG);
+  let body = masthead('Inpatient / Procedural Discharge Summary', site.name, site.address, site.phone, now, AMISE_LOGO_SVG);
   body += meta;
 
   if (diagBody) body += sec('Diagnoses', diagBody + (cptHtml ? `<div style="margin-top:6px"><span style="font-size:9.5px;font-weight:700;color:${T.mute};text-transform:uppercase;letter-spacing:.04em">CPT: </span>${cptHtml}</div>` : ''));
@@ -660,7 +660,7 @@ function buildInpatientHtml(st: PrintState, ctx: ReturnType<typeof useAppContext
   body += signoff(
     st.signoffName || 'Dr Dawit Daniel Kabiye, MD, DM',
     st.signoffRole || 'General & Endoscopic Surgery · Amise Medical Services',
-    `${st.signoffContact || site.name + ' · 1 (758) 720 7111'}   Date: ${st.signoffDate || '..................'}`,
+    `${st.signoffContact || site.name + ' · ' + site.phone}   Date: ${st.signoffDate || '..................'}`,
   );
   body += footer('Prepared from clinical data recorded at the time of admission and discharge. Please verify all details before acting on this summary.');
 

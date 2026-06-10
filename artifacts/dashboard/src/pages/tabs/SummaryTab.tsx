@@ -48,10 +48,10 @@ function soapTextToHtml(text: string): string {
   return out.join('\n');
 }
 
-const SITE_INFO: Record<string, { name: string; address: string }> = {
-  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay, Saint Lucia' },
-  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia' },
-  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia' },
+const SITE_INFO: Record<string, { name: string; address: string; phone: string }> = {
+  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay, Saint Lucia', phone: '1 (758) 720 7111' },
+  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia', phone: '1 (758) 720 7111' },
+  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia', phone: '1 (758) 459 2227 / 1 (758) 284 0557' },
 };
 
 const APPT_LABELS: Record<string, string> = {
@@ -149,7 +149,7 @@ function buildPrintHtml(text: string, meta: PrintMeta): string {
 <div class="hdr">
   <div>
     <div class="hdr-brand">${escHtml(site.name)}</div>
-    <div class="hdr-addr">${escHtml(site.address)}<br>Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
+    <div class="hdr-addr">${escHtml(site.address)}<br>Tel: ${escHtml(site.phone)} &nbsp;·&nbsp; amisesuite@gmail.com</div>
   </div>
   <div>${LOGO_SVG}</div>
 </div>
@@ -297,12 +297,12 @@ function sharedHead(title: string): string {
 <title>${escHtml(title)}</title>`;
 }
 
-function sharedHeader(site: { name: string; address: string }, consultDate: string): string {
+function sharedHeader(site: { name: string; address: string; phone: string }, consultDate: string): string {
   return `<div class="hdr">
   <div>
     <div class="hdr-office">${escHtml(site.name)}</div>
     <div class="hdr-sub">${escHtml(site.address)}</div>
-    <div class="hdr-sub">Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
+    <div class="hdr-sub">Tel: ${escHtml(site.phone)} &nbsp;·&nbsp; amisesuite@gmail.com</div>
     <div class="hdr-sub" style="margin-top:2px;color:#1a3a5c">${escHtml(consultDate)}</div>
   </div>
   <div>${LOGO_SVG}</div>
@@ -502,7 +502,7 @@ ${referNotes ? `<div class="section">
   <div class="sig-line"></div>
   <div class="sig-name">Dr. Dawit D Kabiye</div>
   <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
-  <div class="sig-lic">${escHtml(site.name)} &nbsp;·&nbsp; 1 (758) 720 7111</div>
+  <div class="sig-lic">${escHtml(site.name)} &nbsp;·&nbsp; ${escHtml(site.phone)}</div>
   <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ..................</div>
 </div>
 <div class="sig-right"></div>

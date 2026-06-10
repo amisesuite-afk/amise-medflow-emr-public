@@ -18,10 +18,10 @@ interface CALocal { name: string; anatomicalArea: string; dimensions: string; de
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const SITE_INFO: Record<string, { name: string; address: string }> = {
-  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay' },
-  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia' },
-  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia' },
+const SITE_INFO: Record<string, { name: string; address: string; phone: string }> = {
+  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay', phone: '1 (758) 720 7111' },
+  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia', phone: '1 (758) 720 7111' },
+  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia', phone: '1 (758) 459 2227 / 1 (758) 284 0557' },
 };
 const APPT_LABELS: Record<string, string> = {
   new_consult: 'New Consultation', follow_up: 'Follow-up Consultation',
@@ -338,7 +338,7 @@ function buildPrintHtml(text: string, ctx: Ctx): string {
   }
 
   const body =
-    masthead('Encounter Record', site.name, site.address, now, AMISE_LOGO_SVG) +
+    masthead('Encounter Record', site.name, site.address, site.phone, now, AMISE_LOGO_SVG) +
     meta + sectHtml +
     signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', 'Licence #: ............   Date: ..................') +
     footer('Prepared from the clinical encounter data entered at time of consultation. Verify all details before issuing.');
@@ -392,9 +392,9 @@ function buildReferralHtml(ctx: Ctx, referTo: string, referNotes: string): strin
 <p style="margin-top:6px">Kind regards,</p>`;
 
   const body =
-    masthead('Referral Letter', site.name, site.address, now, AMISE_LOGO_SVG) +
+    masthead('Referral Letter', site.name, site.address, site.phone, now, AMISE_LOGO_SVG) +
     meta + salutation + sectHtml + closing +
-    signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', `${escH(site.name)} · 1 (758) 720 7111`) +
+    signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', `${escH(site.name)} · ${site.phone}`) +
     footer('Prepared at time of consultation. Please verify clinical details before acting on this referral.');
 
   return wrapDoc(`Referral — ${ctx.patientName || 'Patient'}`, body);
@@ -434,7 +434,7 @@ function buildDischargeHtml(ctx: Ctx, dischargeNotes: string, followUp: string, 
   if (followUp) sectHtml += docSec('Follow-up plan', inlineText(followUp));
 
   const body =
-    masthead('Discharge / Clinic Summary', site.name, site.address, now, AMISE_LOGO_SVG) +
+    masthead('Discharge / Clinic Summary', site.name, site.address, site.phone, now, AMISE_LOGO_SVG) +
     meta + sectHtml +
     signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', 'Licence #: ............   Date: ..................') +
     footer('Please keep this summary for your records. Contact our office if you have questions about your care.');
