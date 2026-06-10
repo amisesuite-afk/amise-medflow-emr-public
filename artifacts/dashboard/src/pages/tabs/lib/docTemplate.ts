@@ -40,6 +40,7 @@ body{font-family:Arial,Helvetica,sans-serif;font-size:10.5px;color:${T.ink};line
 .mast-org{font-size:15px;font-weight:700;color:${T.navy};text-transform:uppercase;letter-spacing:.6px;margin-bottom:3px}
 .mast-doc{font-size:11px;color:${T.ink};margin-bottom:4px}
 .mast-meta{font-size:8.5px;color:${T.mute};margin-top:1px}
+.mast-generated{font-size:7.5px;color:#DADEE3;margin-top:1px}
 /* Gold rule spans FULL width — sits below the flex row, not inside it */
 .gold-rule{border:none;border-top:.75pt solid ${T.gold};margin:8px 0 10px;display:block;width:100%}
 /* Meta / patient block */
@@ -104,7 +105,8 @@ export function masthead(
     <div class="mast-org">Amise Medical Services</div>
     <div class="mast-doc">${escH(docType)}</div>
     <div class="mast-meta">${escH(siteName)} · ${escH(siteAddress)}</div>
-    <div class="mast-meta">Tel: ${escH(sitePhone)} · amisesuite@gmail.com · ${escH(now)}</div>
+    <div class="mast-meta">Tel: ${escH(sitePhone)} · amisesuite@gmail.com</div>
+    <div class="mast-generated">Generated: ${escH(now)}</div>
   </div>
   <div style="flex-shrink:0;margin-left:14px">${logoSvg}</div>
 </div>

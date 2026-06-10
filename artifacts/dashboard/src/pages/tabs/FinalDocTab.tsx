@@ -262,6 +262,7 @@ function buildDocument(ctx: Ctx): string {
   } else {
     lines.push(hint('enter numbered management steps'));
     lines.push(hint('e.g. 1. IV access + fluids  2. Analgesia  3. Imaging  4. Consult  5. Admit / Discharge'));
+    lines.push(hint('outpatient e.g. 1. Labs: FBC, U&E, LFTs  2. X-ray / imaging if indicated  3. Follow-up review in 2 weeks  4. Recommendations / lifestyle advice'));
   }
   if (ctx.cptCodes.length > 0) lines.push(`\nCPT:  ${ctx.cptCodes.join('  |  ')}`);
   if (ctx.procedures) { lines.push(''); lines.push(`Procedures: ${ctx.procedures}`); }
