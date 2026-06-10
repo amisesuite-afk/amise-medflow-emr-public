@@ -208,7 +208,7 @@ function LoginContent() {
             Patient Portal
           </h1>
           <p style={{ margin: '6px 0 0', fontSize: 13, color: '#64748b' }}>
-            Dr Dawit Daniel Kabiye, MD, DM
+            General &amp; Endoscopic Surgery — led by Dr Dawit Daniel Kabiye, MD, DM
           </p>
         </div>
 

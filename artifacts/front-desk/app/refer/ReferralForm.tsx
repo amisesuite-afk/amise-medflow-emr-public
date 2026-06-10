@@ -211,10 +211,10 @@ export default function ReferralForm() {
             Amise Medical Services · Saint Lucia
           </div>
           <h1 style={{ margin: '0 0 8px', fontSize: 24, fontWeight: 900, color: '#0f172a' }}>
-            Refer a Patient to Dr Kabiye
+            Refer a Patient to Amise Medical Services
           </h1>
           <p style={{ margin: 0, fontSize: 14, color: '#64748b', lineHeight: 1.6 }}>
-            Dr Dawit Daniel Kabiye, MD, DM — General &amp; Endoscopic Surgery
+            General &amp; Endoscopic Surgery — led by Dr Dawit Daniel Kabiye, MD, DM
           </p>
         </div>
 

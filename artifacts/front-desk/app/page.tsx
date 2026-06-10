@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
   description:
-    'Dr Dawit Daniel Kabiye, MD, DM. Expert surgical and endoscopy care in Saint Lucia — colonoscopy, ERCP, hernia repair, breast clinic, thyroid surgery, diabetic foot care and more.',
+    'Amise Medical Services — expert surgical and endoscopy care in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM. Colonoscopy, ERCP, hernia repair, breast clinic, thyroid surgery, diabetic foot care and more.',
 };
 
 const WA_TAPION    = 'https://wa.me/17582840557';
@@ -77,6 +77,14 @@ function Nav() {
               borderBottom: '2px solid transparent',
             }}>{label}</a>
           ))}
+
+          {/* New patient / general info CTA */}
+          <Link href="/patient/request" style={{
+            fontSize: 14, fontWeight: 700, textDecoration: 'none',
+            color: '#0d9488', whiteSpace: 'nowrap',
+          }}>
+            New Patient?
+          </Link>
 
           {/* WhatsApp icon link */}
           <a href={WA_TAPION} target="_blank" rel="noopener noreferrer"
@@ -164,12 +172,23 @@ function Hero() {
         </p>
 
         <p style={{
-          margin: '0 0 36px',
+          margin: '0 0 20px',
           fontSize: 15, color: '#475569', lineHeight: 1.7,
           maxWidth: 400,
         }}>
           Quality care you can trust. Our team is here to guide you every step of the way.
         </p>
+
+        {/* New patient / general info CTA */}
+        <Link href="/patient/request" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          padding: '10px 20px', marginBottom: 18,
+          background: '#fff', color: '#0d9488',
+          border: '1.5px solid #0d9488', borderRadius: 50,
+          fontSize: 13, fontWeight: 700, textDecoration: 'none',
+        }}>
+          New here? Tell us what you need →
+        </Link>
 
         {/* Primary CTAs */}
         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 18 }}>
@@ -904,7 +923,7 @@ function Footer() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             <a href="#services" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>What We Treat</a>
             <a href="#offices" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Our Clinics</a>
-            <a href="#about" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>About Dr Kabiye</a>
+            <a href="#about" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>About Amise Medical Services</a>
           </div>
         </div>
       </div>
@@ -938,7 +957,10 @@ export default function HomePage() {
         <section style={{ padding: '48px 40px', background: '#0b2a35', textAlign: 'center' }}>
           <div style={{ maxWidth: 700, margin: '0 auto' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Healthcare Providers</div>
-            <h2 style={{ margin: '0 0 12px', fontSize: 22, fontWeight: 800, color: '#f1f5f9' }}>Refer a Patient to Dr Kabiye</h2>
+            <h2 style={{ margin: '0 0 12px', fontSize: 22, fontWeight: 800, color: '#f1f5f9' }}>Refer a Patient to Amise Medical Services</h2>
+            <p style={{ margin: '0 0 8px', fontSize: 13, color: '#4a7a8a', fontWeight: 600 }}>
+              General &amp; Endoscopic Surgery — led by Dr Dawit Daniel Kabiye, MD, DM
+            </p>
             <p style={{ margin: '0 0 24px', fontSize: 14, color: '#94a3b8', lineHeight: 1.7 }}>
               Structured GP and specialist referral portal with HL7 FHIR R4 support. Priority, routine, and urgent referral tracks. Confirmation sent to you and your patient.
             </p>

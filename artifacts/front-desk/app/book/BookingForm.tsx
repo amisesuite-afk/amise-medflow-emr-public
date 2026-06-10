@@ -21,7 +21,7 @@ const TRACK_INFO: Record<BookingTrack, { label: string; description: string; ico
   },
   referral: {
     label:       'GP / specialist referral',
-    description: 'Your doctor has referred you to Dr Kabiye. Priority slots — staff will confirm within 24 hours.',
+    description: 'Your doctor has referred you to Amise Medical Services. Priority slots — staff will confirm within 24 hours.',
     icon:        '📋',
   },
   urgent: {
@@ -294,7 +294,7 @@ export default function BookingForm() {
               Book an Appointment
             </h1>
             <p style={{ margin: '6px 0 0', fontSize: 13, color: '#64748b' }}>
-              Dr Dawit Daniel Kabiye, MD, DM — General &amp; Endoscopic Surgery
+              General &amp; Endoscopic Surgery — led by Dr Dawit Daniel Kabiye, MD, DM
             </p>
           </div>
 

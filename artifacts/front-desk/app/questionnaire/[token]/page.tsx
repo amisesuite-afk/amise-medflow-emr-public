@@ -611,7 +611,7 @@ export default function QuestionnairePage({ params }: { params: { token: string 
         <div style={s.header}>
           <div style={s.headerLabel}>Amise Medical Services · Saint Lucia</div>
           <h1 style={s.h1}>Pre-Visit Health Questionnaire</h1>
-          <p style={s.subhead}>Dr Dawit Daniel Kabiye, MD, DM — General &amp; Endoscopic Surgery</p>
+          <p style={s.subhead}>General &amp; Endoscopic Surgery — led by Dr Dawit Daniel Kabiye, MD, DM</p>
         </div>
 
         {/* ── Loading ── */}
