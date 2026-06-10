@@ -475,4 +475,5 @@ create table if not exists appointment_requests (
 
 alter table appointment_requests enable row level security;
 create policy "staff_all" on appointment_requests for all using (true);
+grant select, insert, update        on public.appointment_requests to authenticated, service_role;
 grant select, insert               on public.audit_logs       to authenticated;

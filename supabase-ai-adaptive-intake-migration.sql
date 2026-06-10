@@ -43,7 +43,7 @@ create policy "anon_insert_consultation_requests" on consultation_requests
   for insert to anon with check (true);
 
 grant insert on public.consultation_requests to anon;
-grant all on public.consultation_requests to authenticated;
+grant all on public.consultation_requests to authenticated, service_role;
 
 -- ── RLS: allow staff to read/update ai_summary on patient_intake ──────────────
 -- (The existing patients_select_own_intake policy covers patient reads.)
