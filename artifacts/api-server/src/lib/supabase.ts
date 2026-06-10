@@ -50,7 +50,7 @@ export async function requireStaffAuth(req: any, res: any): Promise<boolean> {
 export type AuditAction =
   | 'classify' | 'triage' | 'draft' | 'send' | 'book'
   | 'remind' | 'escalate' | 'error' | 'skip'
-  | 'portal_invite_sent';
+  | 'portal_invite_sent' | 'extract';
 
 export async function audit(args: {
   action: AuditAction;
