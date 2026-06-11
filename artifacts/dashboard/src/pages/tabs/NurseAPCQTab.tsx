@@ -1,6 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
+import { getApiOrigin } from '@/lib/api-origin';
+
+const API_ORIGIN = getApiOrigin();
+function apiUrl(path: string) {
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -340,7 +347,7 @@ export default function NurseAPCQTab() {
 
   const fetchQueue = useCallback(async () => {
     try {
-      const res = await fetch('/api/questionnaire/nurse/queue', { headers: await staffAuthHeaders() });
+      const res = await fetch(apiUrl('/api/questionnaire/nurse/queue'), { headers: await staffAuthHeaders() });
       if (res.ok) {
         // Backend sends raw urgency values (routine/priority/urgent/emergency)
         // for red-flag severity — remap to the high/medium/low badge vocabulary.
@@ -397,7 +404,7 @@ export default function NurseAPCQTab() {
     setLoadingAI(true);
 
     try {
-      const res = await fetch(`/api/questionnaire/session/${token}`);
+      const res = await fetch(apiUrl(`/api/questionnaire/session/${token}`));
       if (res.ok) {
         // The session-detail endpoint is shared with the anonymous patient
         // resume flow, so it returns raw DB rows (`session` + `responses`)
@@ -452,7 +459,7 @@ export default function NurseAPCQTab() {
     // Fetch AI summary separately — backend returns the raw `intake_summaries`
     // row (snake_case columns); map it onto the display shape this tab uses.
     try {
-      const res = await fetch(`/api/questionnaire/session/${token}/summary`, { headers: await staffAuthHeaders() });
+      const res = await fetch(apiUrl(`/api/questionnaire/session/${token}/summary`), { headers: await staffAuthHeaders() });
       if (res.ok) {
         const data = await res.json() as {
           summary?: {
@@ -494,7 +501,7 @@ export default function NurseAPCQTab() {
     if (!selectedToken || marking || !profile?.id) return;
     setMarking(true);
     try {
-      const res = await fetch(`/api/questionnaire/session/${selectedToken}/nurse-review`, {
+      const res = await fetch(apiUrl(`/api/questionnaire/session/${selectedToken}/nurse-review`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({ nurseNotes, nurseUserId: profile.id }),
@@ -526,7 +533,7 @@ export default function NurseAPCQTab() {
     setApproving(true);
     setApproveErr(null);
     try {
-      const res = await fetch(`/api/questionnaire/session/${selectedToken}/doctor-approve`, {
+      const res = await fetch(apiUrl(`/api/questionnaire/session/${selectedToken}/doctor-approve`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({ doctorUserId: profile.id }),
