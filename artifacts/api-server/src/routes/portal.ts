@@ -518,7 +518,7 @@ const EXTRACTABLE_MIME = new Set([
 // notes anything the document marks as out-of-range/urgent — it never
 // diagnoses, interprets, or speculates. Output is queued for staff review,
 // never written into the clinical record automatically.
-async function extractDocumentInsights(documentId: string): Promise<void> {
+export async function extractDocumentInsights(documentId: string): Promise<void> {
   try {
     const { data: doc, error } = await sb()
       .from('documents')

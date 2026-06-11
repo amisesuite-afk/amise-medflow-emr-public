@@ -10,6 +10,7 @@ import questionnaireRouter from "./questionnaire";
 import whatsappRouter from "./whatsapp";
 import portalRouter from "./portal";
 import investigationsRouter from "./investigations";
+import emailIntakeRouter from "./email-intake";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(questionnaireRouter);
 router.use(whatsappRouter);
 router.use(portalRouter);
 router.use(investigationsRouter);
+router.use(emailIntakeRouter);
 
 export default router;
