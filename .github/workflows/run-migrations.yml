@@ -54,5 +54,13 @@ jobs:
             --project-ref nornhfzfrlmfzaqmrzzp \
             --file supabase-apcq-migration.sql
 
+      - name: Run questionnaire token expiry migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-questionnaire-token-expiry-migration.sql
+
       - name: Done
         run: echo "Migrations completed successfully."
