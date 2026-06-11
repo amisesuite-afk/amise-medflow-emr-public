@@ -118,7 +118,10 @@ function redFlagBadgeStyle(severity: 'high' | 'medium' | 'low'): React.CSSProper
 }
 
 function buildPatientUrl(token: string): string {
-  return `${window.location.origin}/questionnaire/${token}`;
+  const raw = (import.meta.env.VITE_PATIENT_APP_URL as string | undefined) ?? '';
+  const base = raw.trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/, '')
+    || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+  return `${base}/questionnaire/${token}`;
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
