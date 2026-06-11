@@ -1,8 +1,25 @@
 import { google, gmail_v1 } from 'googleapis';
 
 function getAuth() {
+  // OAuth2 path — personal account (amisesuite@gmail.com), no service account needed
+  if (
+    process.env.GOOGLE_OAUTH_CLIENT_ID &&
+    process.env.GOOGLE_OAUTH_CLIENT_SECRET &&
+    process.env.GOOGLE_OAUTH_REFRESH_TOKEN
+  ) {
+    const client = new google.auth.OAuth2(
+      process.env.GOOGLE_OAUTH_CLIENT_ID,
+      process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      'urn:ietf:wg:oauth:2.0:oob'
+    );
+    client.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN });
+    return client;
+  }
+  // Service account fallback — requires Google Workspace domain-wide delegation
   if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-    throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON must be set');
+    throw new Error(
+      'No Google credentials. Set GOOGLE_OAUTH_CLIENT_ID/SECRET/REFRESH_TOKEN or GOOGLE_SERVICE_ACCOUNT_JSON.'
+    );
   }
   const creds = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
   return new google.auth.JWT({
