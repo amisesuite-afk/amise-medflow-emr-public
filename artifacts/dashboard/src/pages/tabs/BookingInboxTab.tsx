@@ -10,7 +10,7 @@ import ConsultationRequestsView from './ConsultationRequestsView';
 interface BookingRequest {
   id: string;
   patient_name: string;
-  patient_email: string;
+  patient_email: string | null;
   patient_phone: string | null;
   appointment_type: string;
   location: string;
