@@ -587,21 +587,21 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
 
     const msg = await anthropic.messages.create({
       model: MODEL,
-      max_tokens: 1536,
+      max_tokens: 4096,
       messages: [{
         role: 'user',
         content: [contentBlock, { type: 'text', text: instructions }],
       }],
     });
 
-    const raw = msg.content
+    const rawText = msg.content
       .filter(b => b.type === 'text')
       .map(b => (b as { type: 'text'; text: string }).text)
       .join('')
-      .trim()
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/```\s*$/, '');
+      .trim();
+
+    const fenceMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+    const raw = (fenceMatch ? fenceMatch[1] : rawText).trim();
 
     let parsed: { documentSummary?: string; reportDate?: string | null; extractedFacts?: unknown[]; flags?: unknown[] };
     try {

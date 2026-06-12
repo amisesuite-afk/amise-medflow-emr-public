@@ -173,12 +173,13 @@ export interface DocumentReviewRow {
   ai_extraction_at: string | null;
   staff_reviewed_by: string | null;
   staff_reviewed_at: string | null;
+  view_url: string | null;
 }
 
 export async function getDocumentsForReview(limit = 50): Promise<DocumentReviewRow[]> {
   const { data: docs } = await getServiceClient()
     .from('documents')
-    .select('id, patient_id, document_type, title, file_name, mime_type, source, created_at, ai_extraction_status, ai_extracted_data, ai_flags, ai_extraction_at, staff_reviewed_by, staff_reviewed_at')
+    .select('id, patient_id, document_type, title, file_name, mime_type, source, storage_path, created_at, ai_extraction_status, ai_extracted_data, ai_flags, ai_extraction_at, staff_reviewed_by, staff_reviewed_at')
     .order('created_at', { ascending: false })
     .limit(limit);
 
@@ -191,8 +192,20 @@ export async function getDocumentsForReview(limit = 50): Promise<DocumentReviewR
     .in('id', patientIds);
 
   const nameById = Object.fromEntries((patients ?? []).map(p => [p.id, p.full_name as string]));
-  return docs.map(d => ({ ...d, patient_name: nameById[d.patient_id] ?? null })) as DocumentReviewRow[];
+
+  const sb = getServiceClient();
+  const viewUrls = await Promise.all(docs.map(d =>
+    d.storage_path
+      ? sb.storage.from('patient-documents').createSignedUrl(d.storage_path, 3600).then(r => r.data?.signedUrl ?? null)
+      : Promise.resolve(null)
+  ));
+
+  return docs.map((d, i) => {
+    const { storage_path: _storage_path, ...rest } = d;
+    return { ...rest, patient_name: nameById[d.patient_id] ?? null, view_url: viewUrls[i] };
+  }) as DocumentReviewRow[];
 }
+
 
 export async function markDocumentReviewed(id: string, staffUserId: string | null): Promise<void> {
   const { error } = await getServiceClient()

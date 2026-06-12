@@ -697,7 +697,14 @@ export default function DashboardClient({
                     </div>
 
                     <div style={{ fontWeight: 700, fontSize: 14, color: '#f1f5f9' }}>{doc.patient_name ?? 'Unmatched patient'}</div>
-                    <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>{doc.title}</div>
+                    <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>
+                      {doc.title}
+                      {doc.view_url && (
+                        <a href={doc.view_url} target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8, color: '#5eead4' }}>
+                          View document ↗
+                        </a>
+                      )}
+                    </div>
                     {extracted?.documentSummary && (
                       <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 4, lineHeight: 1.4 }}>{extracted.documentSummary}</div>
                     )}
