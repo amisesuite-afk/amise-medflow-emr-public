@@ -103,7 +103,6 @@ function Hero() {
   return (
     <section id="home" style={{ position: 'relative', background: '#eef7f6', overflow: 'hidden', minHeight: 580 }}>
       {/* Right-side building/landscape photo */}
-      {/* Drop an aerial Saint Lucia coastal photo at public/locations/hero-bg.jpg */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/locations/hero-bg.jpg"
@@ -721,11 +720,10 @@ function HowItWorks() {
         {/* Photo + floating review card */}
         <div style={{ position: 'relative', paddingBottom: 24 }}>
           <div style={{ borderRadius: 16, overflow: 'hidden', background: '#e2f4f1' }}>
-            {/* Drop a healthcare team photo at public/locations/staff-photo.jpg */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/locations/staff-photo.jpg"
-              alt="Amise Medical Services — clinical team"
+              alt="Tapion Hospital, Castries — Amise Medical Services"
               style={{ width: '100%', height: 380, objectFit: 'cover', objectPosition: 'top', display: 'block' }}
             />
           </div>
