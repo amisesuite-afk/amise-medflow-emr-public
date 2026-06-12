@@ -6,6 +6,20 @@ const ATTACHMENT_MIME = new Set([
   'application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp',
 ]);
 
+// Supabase/Postgrest/Storage errors are plain objects (not Error instances),
+// so String(err) collapses them to "[object Object]". Stringify those instead.
+function errorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'object' && err !== null) {
+    try {
+      return JSON.stringify(err);
+    } catch {
+      // fall through
+    }
+  }
+  return String(err);
+}
+
 export interface EmailDocumentSummary {
   processed: number;
   documentsCreated: number;
@@ -99,7 +113,7 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
           void extractDocumentInsights(doc.id);
         } catch (err) {
           allOk = false;
-          summary.errors.push({ messageId: id, error: String(err) });
+          summary.errors.push({ messageId: id, error: errorMessage(err) });
         }
       }
 
@@ -107,7 +121,7 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
         await markRead(id);
       }
     } catch (err) {
-      summary.errors.push({ messageId: id, error: String(err) });
+      summary.errors.push({ messageId: id, error: errorMessage(err) });
     }
   }
 
