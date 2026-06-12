@@ -701,7 +701,7 @@ function HowItWorks() {
               Start Questionnaire →
             </Link>
             <div style={{ fontSize: 12, color: '#6b7280' }}>
-              Takes 3–5 minutes. Reduces your consultation time significantly.
+              Takes 3–5 minutes. Helps your consultation stay focused and cover more in the same time.
             </div>
           </div>
 
