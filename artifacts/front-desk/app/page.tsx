@@ -105,7 +105,7 @@ function Hero() {
       {/* Right-side building/landscape photo */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/locations/hero-bg.jpg"
+        src="/locations/hero-bg-v2.jpg"
         alt=""
         aria-hidden="true"
         style={{
