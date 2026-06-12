@@ -45,6 +45,10 @@ create policy "patients_insert_own_intake" on patient_intake
 
 grant select, insert on public.patient_intake to authenticated;
 
+-- service_role (artifacts/api-server's sb() client) needs full table
+-- privileges — see supabase-service-role-grants-fix-migration.sql.
+grant select, insert, update, delete on public.patient_intake to service_role;
+
 -- ── Storage bucket for patient documents ─────────────────────────────────────
 -- Create bucket (idempotent)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)

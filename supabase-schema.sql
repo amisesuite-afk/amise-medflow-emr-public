@@ -435,7 +435,7 @@ create index if not exists idx_audit_created      on audit_logs(created_at desc)
 -- Without these, the authenticated role receives permission denied
 -- even if an RLS policy would otherwise allow the operation.
 -- ─────────────────────────────────────────────────────────────
-grant usage on schema public to anon, authenticated;
+grant usage on schema public to anon, authenticated, service_role;
 
 grant select, insert, update        on public.user_profiles   to authenticated;
 grant select, insert, update        on public.patients         to authenticated;
@@ -449,6 +449,23 @@ grant select, insert, update        on public.plans            to authenticated;
 grant select, insert, update        on public.procedures       to authenticated;
 grant select, insert, update        on public.referrals        to authenticated;
 grant select, insert, update        on public.appointments     to authenticated;
+
+-- service_role (artifacts/api-server's sb() client) needs full table
+-- privileges on these core tables. RLS is bypassed for service_role, but
+-- the underlying GRANT is still required or Postgres returns
+-- "permission denied for table X" (42501) before RLS is even evaluated.
+grant select, insert, update, delete on public.user_profiles   to service_role;
+grant select, insert, update, delete on public.patients         to service_role;
+grant select, insert, update, delete on public.encounters       to service_role;
+grant select, insert, update, delete on public.vitals           to service_role;
+grant select, insert, update, delete on public.symptoms         to service_role;
+grant select, insert, update, delete on public.medications      to service_role;
+grant select, insert, update, delete on public.allergies        to service_role;
+grant select, insert, update, delete on public.assessments      to service_role;
+grant select, insert, update, delete on public.plans            to service_role;
+grant select, insert, update, delete on public.procedures       to service_role;
+grant select, insert, update, delete on public.referrals        to service_role;
+grant select, insert, update, delete on public.appointments     to service_role;
 
 -- ── Appointment requests (self-triage portal) ────────────────────────────────
 create table if not exists appointment_requests (
@@ -477,3 +494,4 @@ alter table appointment_requests enable row level security;
 create policy "staff_all" on appointment_requests for all using (true);
 grant select, insert, update        on public.appointment_requests to authenticated, service_role;
 grant select, insert               on public.audit_logs       to authenticated;
+grant select, insert, update, delete on public.audit_logs     to service_role;
