@@ -8,6 +8,7 @@ import {
   processAnswer,
   checkRedFlag,
   buildResponseSummary,
+  detectSpecialty,
   QUESTION_BANK,
   SPECIALTY_QUEUES,
 } from '@workspace/triage-engine/apcq.js';
@@ -16,6 +17,7 @@ import type {
   Response as ApcqResponse,
   RedFlag,
   Question,
+  Specialty,
 } from '@workspace/triage-engine/apcq.js';
 
 const router = Router();
@@ -29,6 +31,38 @@ const CONSENT_TEXT_V1 =
   'securely and will be reviewed by clinical staff in preparation for your appointment. ' +
   'By proceeding you consent to this collection and use of your health information. ' +
   'Version 1.0 — Amise Medical Services, Saint Lucia.';
+
+// Specialty-specific guidance for the HPI narrative — tailors which history
+// elements the AI should prioritise for the practice's two main referral
+// streams (general surgery vs endoscopy/GI), plus the smaller breast and
+// post-op queues.
+const SPECIALTY_HPI_GUIDANCE: Record<Specialty, string> = {
+  general_surgery:
+    'This is a general surgical presentation (e.g. abdominal pain, hernia, lump). ' +
+    'The HPI should cover: site, onset, character, severity, radiation, and progression of the ' +
+    'presenting complaint; aggravating/relieving factors; associated GI or urinary symptoms; ' +
+    'relevant prior abdominal surgery; and any factors relevant to operative planning ' +
+    '(anticoagulants, anaesthetic history) surfaced by the questionnaire.',
+  endoscopy:
+    'This is an endoscopy/GI presentation (e.g. reflux, dysphagia, change in bowel habit, rectal bleeding). ' +
+    'The HPI should cover: nature, duration and progression of the GI symptom(s); alarm/red-flag features ' +
+    '(unintentional weight loss, PR bleeding, dysphagia, anaemia symptoms); bowel habit and diet; ' +
+    'any previous endoscopic procedures or findings mentioned; and anticoagulant/antiplatelet use ' +
+    'relevant to procedure planning and bowel preparation.',
+  breast_surgery:
+    'This is a breast surgical presentation (e.g. lump, pain, nipple discharge or skin change). ' +
+    'The HPI should cover: site, size, duration and any change in the lump or symptom; associated ' +
+    'skin, nipple or axillary changes; relevant family history of breast disease if mentioned; ' +
+    'and any prior breast surgery or imaging.',
+  post_op:
+    'This is a post-operative review. The HPI should cover: the original procedure and approximate date ' +
+    'if known, current symptoms (pain, wound concerns, fever), recovery progress, and any concerns ' +
+    'raised by the patient since surgery.',
+  general_medical:
+    'This is a general screening or undifferentiated presentation. The HPI should cover the presenting ' +
+    'complaint(s) with onset, duration, character and progression, and any relevant background ' +
+    'surfaced by the questionnaire.',
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -155,16 +189,27 @@ async function generateIntakeSummary(sessionId: string): Promise<void> {
       is_red_flag: r.is_red_flag,
     }));
 
-    const systemPrompt = `You are a clinical documentation assistant for Amise Medical Services, a surgical and endoscopic practice in Saint Lucia led by Dr Dawit Daniel Kabiye MD DM.
+    // Tailor the HPI guidance to whichever of the practice's two main
+    // tracks (general surgery vs endoscopy/GI) — or breast/post-op —
+    // this questionnaire falls under.
+    const chiefComplaintResponse = state.responses.find(r => r.questionKey === 'chief_complaint');
+    const chiefComplaintValues = chiefComplaintResponse
+      ? (Array.isArray(chiefComplaintResponse.answerValue) ? chiefComplaintResponse.answerValue : [chiefComplaintResponse.answerValue])
+      : [];
+    const specialty = detectSpecialty(chiefComplaintValues);
 
-Your task: analyse the patient's pre-consultation questionnaire responses and produce a structured pre-visit briefing for the physician.
+    const systemPrompt = `You are a clinical documentation assistant for Amise Medical Services, a general and endoscopic surgery practice in Saint Lucia led by Dr Dawit Daniel Kabiye MD DM.
+
+Your task: analyse the patient's pre-consultation questionnaire responses and produce a structured pre-visit briefing for the physician, including a History of Presenting Illness (HPI) narrative the physician can use as a starting point for the first-visit clinical note.
+
+${SPECIALTY_HPI_GUIDANCE[specialty]}
 
 CRITICAL RULES:
 - You MAY: summarise, organise, highlight, flag concerns
 - You MAY NOT: diagnose, suggest specific treatments, prescribe, or speculate beyond the data
 - Flag red flags explicitly
 - Use British-Caribbean professional medical language
-- Keep the summary under 300 words
+- Write the HPI as flowing third-person prose (no bullet points), under 300 words
 - Format as JSON only, no markdown fences`;
 
     const userPrompt = `Analyse the following pre-consultation questionnaire and return a JSON object with this exact schema:
@@ -174,7 +219,7 @@ CRITICAL RULES:
   "redFlags": [{"symptom": "string", "severity": "routine|priority|urgent|emergency", "action": "string"}],
   "recommendedFocusAreas": ["string", "..."],
   "estimatedUrgency": "routine|priority|urgent|emergency",
-  "summary": "string — narrative pre-visit briefing under 300 words"
+  "summary": "string — a History of Presenting Illness (HPI) narrative under 300 words, written in flowing third-person prose ready to be copied into the patient's first-visit clinical note. Cover onset, duration, character, severity, site/radiation and progression of the presenting complaint, associated symptoms and pertinent negatives, and any relevant background (medications, allergies, prior surgery/endoscopy) surfaced by the questionnaire. No bullet points."
 }
 
 QUESTIONNAIRE RESPONSES:
@@ -334,7 +379,7 @@ async function draftClinicalRecordsFromIntake(
     acuity: URGENCY_TO_ACUITY[summary.estimated_urgency] ?? 'routine',
     notes: [
       'DRAFT — generated from AI pre-visit intake summary. Physician must review, correct and confirm before use.',
-      summary.ai_summary ? `\nAI summary:\n${summary.ai_summary}` : null,
+      summary.ai_summary ? `\nHistory of Presenting Illness (from pre-visit questionnaire):\n${summary.ai_summary}` : null,
     ].filter(Boolean).join('\n'),
   });
   if (assessErr) throw assessErr;
