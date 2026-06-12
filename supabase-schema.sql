@@ -472,7 +472,7 @@ create table if not exists appointment_requests (
   id               uuid primary key default gen_random_uuid(),
   created_at       timestamptz not null default now(),
   patient_name     text not null,
-  patient_email    text not null,
+  patient_email    text,
   patient_phone    text,
   appointment_type text not null,
   location         text not null default 'rodney_bay',
@@ -482,16 +482,29 @@ create table if not exists appointment_requests (
   triage_acuity    text,                  -- from self-triage engine
   triage_score     int,
   status           text not null default 'pending'
-                   check (status in ('pending','staff_confirmed','patient_confirmed','lapsed','cancelled')),
+                   check (status in ('pending','staff_confirmed','patient_confirmed','waitlisted','lapsed','cancelled')),
   staff_confirmed_at  timestamptz,
   patient_confirmed_at timestamptz,
   reminder_sent_at    timestamptz,
   google_event_id     text,
-  notes               text
+  notes               text,
+  patient_ack_sent_at timestamptz,
+  staff_notified_at   timestamptz,
+  staff_escalated_at  timestamptz,
+  prep_sms_sent       boolean not null default false,
+  source              text not null default 'web'
+                      check (source in ('web', 'whatsapp', 'manual', 'phone', 'email')),
+  whatsapp_from       text
 );
 
 alter table appointment_requests enable row level security;
 create policy "staff_all" on appointment_requests for all using (true);
 grant select, insert, update        on public.appointment_requests to authenticated, service_role;
+
+create index if not exists idx_appt_requests_pending_created
+  on appointment_requests (status, created_at)
+  where status = 'pending';
+create index if not exists idx_appt_requests_source
+  on appointment_requests (source, status, created_at);
 grant select, insert               on public.audit_logs       to authenticated;
 grant select, insert, update, delete on public.audit_logs     to service_role;
