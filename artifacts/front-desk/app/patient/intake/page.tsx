@@ -526,34 +526,43 @@ export default function IntakePage() {
       .map(([k, v]) => `${k}: ${String(v)}`)
       .join('; ');
 
-    const { data: insertData, error } = await sb
-      .from('patient_intake')
-      .insert({
-        patient_id:       patientId,
-        visit_type:       visitType || null,
-        complaint_track:  complaintTrack || null,
-        complexity_score: complexity,
-        chief_complaint:  chiefComplaint || null,
-        symptoms:         symptomsList.length > 0 ? symptomsList : null,
-        duration_days:    durationDays,
-        severity:         s3.severity ?? null,
-        prior_treatment:  null,
-        current_meds:     currentMeds.trim() || null,
-        allergies_note:   allergies.trim() || null,
-        referral_reason:  referralReason,
-        additional_notes: [
-          step3Notes,
-          specifics ? `Location/specifics: ${specifics}` : '',
-          additionalNotes.trim(),
-        ].filter(Boolean).join('\n') || null,
-      })
-      .select('id')
-      .single();
+    let insertData: { id: string } | null = null;
+    let insertError: unknown = null;
+    try {
+      const result = await sb
+        .from('patient_intake')
+        .insert({
+          patient_id:       patientId,
+          visit_type:       visitType || null,
+          complaint_track:  complaintTrack || null,
+          complexity_score: complexity,
+          chief_complaint:  chiefComplaint || null,
+          symptoms:         symptomsList.length > 0 ? symptomsList : null,
+          duration_days:    durationDays,
+          severity:         s3.severity ?? null,
+          prior_treatment:  null,
+          current_meds:     currentMeds.trim() || null,
+          allergies_note:   allergies.trim() || null,
+          referral_reason:  referralReason,
+          additional_notes: [
+            step3Notes,
+            specifics ? `Location/specifics: ${specifics}` : '',
+            additionalNotes.trim(),
+          ].filter(Boolean).join('\n') || null,
+        })
+        .select('id')
+        .single();
+      insertData = result.data;
+      insertError = result.error;
+    } catch (err) {
+      insertError = err;
+    }
 
     setSubmitting(false);
 
-    if (error || !insertData) {
-      alert('Could not submit. Please check your connection and try again.');
+    if (insertError || !insertData) {
+      console.error('[patient/intake] Failed to submit intake form:', insertError);
+      alert('Could not submit. Please check your connection and try again, or call us at 459-2227 / 284-0557.');
       return;
     }
 
@@ -573,26 +582,42 @@ export default function IntakePage() {
       return;
     }
     setSubmitting(true);
-    const { data: insertData } = await sb
-      .from('patient_intake')
-      .insert({
-        patient_id:       patientId,
-        visit_type:       visitType || 'unsure',
-        complaint_track:  'minimal',
-        complexity_score: 0,
-        chief_complaint:  bailName ? `Minimal intake — ${bailName}` : 'Minimal intake',
-        additional_notes: bailPhone ? `Patient prefers call at: ${bailPhone}` : 'Patient preferred to discuss with doctor',
-      })
-      .select('id')
-      .single();
-    setSubmitting(false);
-    if (insertData) {
-      fetch(`${API}/api/patient/intake-summary`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ intake_id: insertData.id }),
-      }).catch(() => {});
+
+    let insertData: { id: string } | null = null;
+    let insertError: unknown = null;
+    try {
+      const result = await sb
+        .from('patient_intake')
+        .insert({
+          patient_id:       patientId,
+          visit_type:       visitType || 'unsure',
+          complaint_track:  'minimal',
+          complexity_score: 0,
+          chief_complaint:  bailName ? `Minimal intake — ${bailName}` : 'Minimal intake',
+          additional_notes: bailPhone ? `Patient prefers call at: ${bailPhone}` : 'Patient preferred to discuss with doctor',
+        })
+        .select('id')
+        .single();
+      insertData = result.data;
+      insertError = result.error;
+    } catch (err) {
+      insertError = err;
     }
+
+    setSubmitting(false);
+
+    if (insertError || !insertData) {
+      console.error('[patient/intake] Failed to submit bailout intake:', insertError);
+      alert('Could not submit. Please check your connection and try again, or call us at 459-2227 / 284-0557.');
+      return;
+    }
+
+    fetch(`${API}/api/patient/intake-summary`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ intake_id: insertData.id }),
+    }).catch(() => {});
+
     fade(() => setScreen('done'));
   }
 
