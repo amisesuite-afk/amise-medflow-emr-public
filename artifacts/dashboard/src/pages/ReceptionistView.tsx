@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
@@ -45,6 +46,23 @@ export default function ReceptionistView() {
   const [savedName, setSavedName] = useState('');
   const [activeTab, setActiveTab] = useState<ReceptionistTab>('checkin');
   const [pendingCount, setPendingCount] = useState(0);
+  const [referringProviders, setReferringProviders] = useState<string[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch(apiUrl('/api/admin/referring-providers'), { headers: await staffAuthHeaders() });
+        if (r.ok) {
+          const d = await r.json() as { providers: { name: string; provider_type: string; active: boolean }[] };
+          const names = (d.providers ?? [])
+            .filter(p => p.provider_type === 'referring_doctor' && p.active)
+            .map(p => p.name)
+            .sort((a, b) => a.localeCompare(b));
+          setReferringProviders(names);
+        }
+      } catch { /* ignore — falls back to free text */ }
+    })();
+  }, []);
 
   const fetchPendingCount = useCallback(async () => {
     try {
@@ -319,11 +337,17 @@ export default function ReceptionistView() {
                 <label>Referred by</label>
                 <input
                   type="text"
+                  list="referring-doctors"
                   value={referredBy}
                   onChange={e => setReferredBy(e.target.value)}
                   placeholder="Doctor or facility name…"
                   style={{ padding: '10px 11px' }}
                 />
+                <datalist id="referring-doctors">
+                  {referringProviders.map(name => (
+                    <option key={name} value={name} />
+                  ))}
+                </datalist>
               </div>
             </div>
           </CollapsibleCard>}

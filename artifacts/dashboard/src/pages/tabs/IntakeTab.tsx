@@ -4,10 +4,18 @@ import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PathwaySuggestions from '@/components/PathwaySuggestions';
 import SmartSymptomPicker from '@/components/SmartSymptomPicker';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { VitalSigns } from '@workspace/triage-engine';
-import { SL_COMMUNITIES, SL_DOCTORS, formatSlPhone, isValidSlPhone } from '@/data/st-lucia';
+import { SL_COMMUNITIES, SL_DOCTORS, formatSlPhone, isValidSlPhone, type SlDoctor } from '@/data/st-lucia';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
+
+const API_ORIGIN = getApiOrigin();
+function apiUrl(path: string) {
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
+}
 
 const VITAL_KEYS: { key: keyof VitalSigns; label: string; placeholder: string }[] = [
   { key: 'systolicBp',     label: 'SBP',      placeholder: '120' },
@@ -101,10 +109,28 @@ export default function IntakeTab() {
   const [referralQuery, setReferralQuery] = useState(referredBy);
   const [referralOpen, setReferralOpen] = useState(false);
   const referralRef = useRef<HTMLDivElement>(null);
+  const [referringDoctors, setReferringDoctors] = useState<SlDoctor[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch(apiUrl('/api/admin/referring-providers'), { headers: await staffAuthHeaders() });
+        if (r.ok) {
+          const d = await r.json() as { providers: { name: string; provider_type: string; notes: string | null; active: boolean }[] };
+          const doctors = (d.providers ?? [])
+            .filter(p => p.provider_type === 'referring_doctor' && p.active)
+            .map(p => ({ name: p.name, specialty: 'Referring Doctor', institution: p.notes ?? '', phone: '' }));
+          setReferringDoctors(doctors);
+        }
+      } catch { /* ignore — falls back to static list */ }
+    })();
+  }, []);
+
+  const allDoctors = [...referringDoctors, ...SL_DOCTORS];
 
   const filteredDoctors = referralQuery.trim().length === 0
-    ? SL_DOCTORS.slice(0, 8)
-    : SL_DOCTORS.filter(d =>
+    ? allDoctors.slice(0, 8)
+    : allDoctors.filter(d =>
         d.name.toLowerCase().includes(referralQuery.toLowerCase()) ||
         d.specialty.toLowerCase().includes(referralQuery.toLowerCase())
       ).slice(0, 8);
@@ -305,7 +331,7 @@ export default function IntakeTab() {
                     }}
                   >
                     <span style={{ fontSize: 13, fontWeight: 500 }}>{d.name}</span>
-                    <span style={{ fontSize: 11, color: '#6b7280' }}>{d.specialty} · {d.institution}</span>
+                    <span style={{ fontSize: 11, color: '#6b7280' }}>{d.specialty}{d.institution ? ` · ${d.institution}` : ''}</span>
                   </button>
                 ))}
               </div>
