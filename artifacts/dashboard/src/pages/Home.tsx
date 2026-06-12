@@ -43,6 +43,7 @@ import BookingInboxTab from './tabs/BookingInboxTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
 import SettingsTab from './tabs/SettingsTab';
 import PortalIntakeTab from './tabs/PortalIntakeTab';
+import ReferringProvidersTab from './tabs/ReferringProvidersTab';
 import FloatingActions from '@/components/FloatingActions';
 
 const API_ORIGIN = getApiOrigin();
@@ -329,6 +330,7 @@ export default function HomePage() {
         {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')        && <NurseAPCQTab />}
         {topSection === 'booking_inbox'  && hasRole(userRole, 'admin')        && <BookingInboxTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
+        {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
       </main>
 
       <FloatingActions />
