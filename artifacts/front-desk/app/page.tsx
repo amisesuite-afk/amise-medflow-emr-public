@@ -723,7 +723,7 @@ function HowItWorks() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/locations/staff-photo.jpg"
-              alt="Tapion Hospital, Castries — Amise Medical Services"
+              alt="Rodney Bay / Providence office — Amise Medical Services"
               style={{ width: '100%', height: 380, objectFit: 'cover', objectPosition: 'top', display: 'block' }}
             />
           </div>
