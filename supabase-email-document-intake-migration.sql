@@ -61,3 +61,8 @@ create policy "admins_delete_referring_providers" on referring_providers
   for delete using (auth_role() = 'admin');
 
 grant select, insert, update, delete on public.referring_providers to authenticated;
+
+-- service_role (artifacts/api-server's sb() client, used by the email-intake
+-- cron job to look up referring_providers by sender email) needs the same
+-- privileges — see supabase-service-role-grants-fix-migration.sql.
+grant select, insert, update, delete on public.referring_providers to service_role;
