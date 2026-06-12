@@ -241,7 +241,7 @@ export default function BookingForm() {
         setStep('done');
       }
     } catch {
-      setError('Network error. Please check your connection and try again.');
+      setError('Network error. Please check your connection and try again, or call us at 459-2227 / 284-0557 to book by phone.');
     } finally {
       setSubmitting(false);
     }

@@ -9,6 +9,11 @@ export const runtime = 'nodejs';
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 
+// Shown to the patient when something unexpected blows up the request
+// (Supabase outage, missing env var, etc.) — gives them a way to reach the
+// office instead of the previous unhelpful generic "Network error".
+const FALLBACK_ERROR = 'We could not process your request online. Please call us at 459-2227 / 284-0557 and our front desk will book your appointment by phone.';
+
 // Mints a pre-consult questionnaire link via api-server's privileged
 // provisioning endpoint, so the patient can complete it before their visit
 // without a separate staff follow-up. api-server stays the sole owner of
@@ -98,7 +103,7 @@ function referralAcknowledgement(patientName: string, questionnaireUrl: string |
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  const body = await req.json() as {
+  let body: {
     track: BookingTrack;
     appointmentType: string;
     patientName: string;
@@ -116,6 +121,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       display: string;
     };
   };
+
+  try {
+    body = await req.json();
+  } catch (err) {
+    console.error('[booking/create] Failed to parse request body:', err);
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  }
 
   const {
     track, appointmentType, patientName, patientEmail,
@@ -137,112 +149,119 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     referralPractice?.trim(),
   );
 
-  // Determine status and slot
-  let bookingStatus = 'pending';
-  let confirmedSlot: string | null = null;
-  let googleEventId: string | null = null;
+  try {
+    // Determine status and slot
+    let bookingStatus = 'pending';
+    let confirmedSlot: string | null = null;
+    let googleEventId: string | null = null;
 
-  // Routine: auto-confirm if a slot was selected
-  if (track === 'routine' && selectedSlot) {
-    const eventResult = await createCalendarEvent({
-      appointmentType: selectedSlot.appointmentType,
-      location:        selectedSlot.location,
-      start:           new Date(selectedSlot.start),
-      end:             new Date(selectedSlot.end),
-      patientName,
-      patientPhone,
-      reason:          reason?.trim(),
+    // Routine: auto-confirm if a slot was selected
+    if (track === 'routine' && selectedSlot) {
+      const eventResult = await createCalendarEvent({
+        appointmentType: selectedSlot.appointmentType,
+        location:        selectedSlot.location,
+        start:           new Date(selectedSlot.start),
+        end:             new Date(selectedSlot.end),
+        patientName,
+        patientPhone,
+        reason:          reason?.trim(),
+      });
+
+      if (eventResult) {
+        googleEventId = eventResult.eventId;
+        confirmedSlot = selectedSlot.start;
+        bookingStatus = 'patient_confirmed';
+      }
+      // If calendar fails for routine: still create the request as pending
+    }
+
+    // Preferred slot for referral (staff confirms later)
+    const preferredSlot = !confirmedSlot && selectedSlot ? selectedSlot.start : null;
+
+    // Create booking row
+    const row = await createBookingRequest({
+      patient_name:     patientName,
+      patient_email:    patientEmail?.trim() || null,
+      patient_phone:    patientPhone,
+      appointment_type: appointmentType,
+      location:         selectedSlot?.location ?? '',
+      preferred_slot:   preferredSlot,
+      reason:           encodedReason,
+      triage_acuity:    cfg.acuity,
+      status:           bookingStatus,
+      notes:            referralDoctor
+        ? `Referring: ${referralDoctor}${referralPractice ? ', ' + referralPractice : ''}`
+        : null,
+      confirmed_slot:   confirmedSlot,
+      google_event_id:  googleEventId,
     });
 
-    if (eventResult) {
-      googleEventId = eventResult.eventId;
-      confirmedSlot = selectedSlot.start;
-      bookingStatus = 'patient_confirmed';
-    }
-    // If calendar fails for routine: still create the request as pending
-  }
-
-  // Preferred slot for referral (staff confirms later)
-  const preferredSlot = !confirmedSlot && selectedSlot ? selectedSlot.start : null;
-
-  // Create booking row
-  const row = await createBookingRequest({
-    patient_name:     patientName,
-    patient_email:    patientEmail?.trim() || null,
-    patient_phone:    patientPhone,
-    appointment_type: appointmentType,
-    location:         selectedSlot?.location ?? '',
-    preferred_slot:   preferredSlot,
-    reason:           encodedReason,
-    triage_acuity:    cfg.acuity,
-    status:           bookingStatus,
-    notes:            referralDoctor
-      ? `Referring: ${referralDoctor}${referralPractice ? ', ' + referralPractice : ''}`
-      : null,
-    confirmed_slot:   confirmedSlot,
-    google_event_id:  googleEventId,
-  });
-
-  await logAudit(row.id, 'online_booking_created', 'patient', {
-    track,
-    appointment_type: appointmentType,
-    auto_confirmed:   bookingStatus === 'patient_confirmed',
-  });
-
-  // Send patient notification
-  const isWhatsApp = patientPhone.toLowerCase().startsWith('whatsapp:');
-  const send = isWhatsApp ? sendWhatsApp : sendSms;
-
-  // Mint a pre-consult questionnaire link up front so it can ride along in
-  // the same confirmation message — one text to the patient, not two.
-  const questionnaireUrl = await provisionQuestionnaireLink();
-
-  // The booking row is already saved at this point — a notification failure
-  // (bad number, Twilio outage, etc.) shouldn't turn into a 500 that tells
-  // the patient their request never went through.
-  try {
-    if (track === 'routine' && bookingStatus === 'patient_confirmed' && selectedSlot) {
-      await send(patientPhone, routineConfirmation(patientName, selectedSlot, questionnaireUrl));
-    } else {
-      // Referral or routine without confirmed slot
-      await send(patientPhone, referralAcknowledgement(patientName, questionnaireUrl));
-    }
-  } catch (err) {
-    console.error('[booking/create] Failed to send patient notification:', err);
-  }
-
-  // Send email with full procedure instructions (non-blocking)
-  if (patientEmail?.trim()) {
-    void sendConfirmationEmail({
-      to:              patientEmail.trim(),
-      patientName,
-      appointmentType,
-      slot:            (track === 'routine' && bookingStatus === 'patient_confirmed' && selectedSlot)
-        ? { display: selectedSlot.display, location: selectedSlot.location }
-        : null,
+    await logAudit(row.id, 'online_booking_created', 'patient', {
       track,
-      isConfirmed:     bookingStatus === 'patient_confirmed',
-    }).catch(console.error);
-  }
+      appointment_type: appointmentType,
+      auto_confirmed:   bookingStatus === 'patient_confirmed',
+    }).catch(err => console.error('[booking/create] audit log failed:', err));
 
-  // Notify staff of referral (non-blocking)
-  const nurseWa = process.env.NURSE_ALERT_WHATSAPP;
-  if (nurseWa && track !== 'routine') {
-    const staffAlert = [
-      `NEW ${track.toUpperCase()} BOOKING — ${patientName}`,
-      `Type: ${appointmentType.replace(/_/g, ' ')}`,
-      encodedReason,
-      `Phone: ${patientPhone}`,
-      `Review: ${process.env.NEXT_PUBLIC_DASHBOARD_URL ?? 'dashboard'}/dashboard`,
-    ].join('\n');
-    void sendWhatsApp(nurseWa, staffAlert).catch(console.error);
-  }
+    // Send patient notification
+    const isWhatsApp = patientPhone.toLowerCase().startsWith('whatsapp:');
+    const send = isWhatsApp ? sendWhatsApp : sendSms;
 
-  return NextResponse.json({
-    id:             row.id,
-    status:         bookingStatus,
-    autoConfirmed:  bookingStatus === 'patient_confirmed',
-    googleEventId,
-    disclaimer:     BOOKING_DISCLAIMER,
-  });
+    // Mint a pre-consult questionnaire link up front so it can ride along in
+    // the same confirmation message — one text to the patient, not two.
+    const questionnaireUrl = await provisionQuestionnaireLink();
+
+    // The booking row is already saved at this point — a notification failure
+    // (bad number, Twilio outage, etc.) shouldn't turn into a 500 that tells
+    // the patient their request never went through.
+    try {
+      if (track === 'routine' && bookingStatus === 'patient_confirmed' && selectedSlot) {
+        await send(patientPhone, routineConfirmation(patientName, selectedSlot, questionnaireUrl));
+      } else {
+        // Referral or routine without confirmed slot
+        await send(patientPhone, referralAcknowledgement(patientName, questionnaireUrl));
+      }
+    } catch (err) {
+      console.error('[booking/create] Failed to send patient notification:', err);
+    }
+
+    // Send email with full procedure instructions (non-blocking)
+    if (patientEmail?.trim()) {
+      void sendConfirmationEmail({
+        to:              patientEmail.trim(),
+        patientName,
+        appointmentType,
+        slot:            (track === 'routine' && bookingStatus === 'patient_confirmed' && selectedSlot)
+          ? { display: selectedSlot.display, location: selectedSlot.location }
+          : null,
+        track,
+        isConfirmed:     bookingStatus === 'patient_confirmed',
+      }).catch(console.error);
+    }
+
+    // Notify staff of referral (non-blocking)
+    const nurseWa = process.env.NURSE_ALERT_WHATSAPP;
+    if (nurseWa && track !== 'routine') {
+      const staffAlert = [
+        `NEW ${track.toUpperCase()} BOOKING — ${patientName}`,
+        `Type: ${appointmentType.replace(/_/g, ' ')}`,
+        encodedReason,
+        `Phone: ${patientPhone}`,
+        `Review: ${process.env.NEXT_PUBLIC_DASHBOARD_URL ?? 'dashboard'}/dashboard`,
+      ].join('\n');
+      void sendWhatsApp(nurseWa, staffAlert).catch(console.error);
+    }
+
+    return NextResponse.json({
+      id:             row.id,
+      status:         bookingStatus,
+      autoConfirmed:  bookingStatus === 'patient_confirmed',
+      googleEventId,
+      disclaimer:     BOOKING_DISCLAIMER,
+    });
+  } catch (err) {
+    console.error('[booking/create] Unhandled error creating booking:', err, {
+      track, appointmentType, patientDob: !!patientDob,
+    });
+    return NextResponse.json({ error: FALLBACK_ERROR }, { status: 500 });
+  }
 }
