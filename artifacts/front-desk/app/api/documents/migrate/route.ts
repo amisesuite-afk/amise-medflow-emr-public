@@ -9,7 +9,8 @@ const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_MIME = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const DOCUMENT_TYPES = [
   'lab_report', 'imaging_report', 'referral_letter', 'consent_form',
-  'surgical_report', 'discharge_summary', 'prescription', 'insurance_form', 'other',
+  'surgical_report', 'discharge_summary', 'prescription', 'insurance_form',
+  'clinical_photo', 'other',
 ];
 
 // POST /api/documents/migrate — staff-side, on-demand "old system" migration.

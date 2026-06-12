@@ -55,6 +55,7 @@ export default function DocumentsPage() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
 
   const loadDocs = async (uid: string) => {
     const { data, error } = await sb.storage.from(BUCKET).list(uid, {
@@ -89,11 +90,13 @@ export default function DocumentsPage() {
     if (!ALLOWED_MIME.includes(file.type)) {
       setUploadError('Only PDF, JPEG, PNG, and WebP files are accepted.');
       if (fileRef.current) fileRef.current.value = '';
+      if (cameraRef.current) cameraRef.current.value = '';
       return;
     }
     if (file.size > MAX_BYTES) {
       setUploadError('File is too large. Maximum size is 10 MB.');
       if (fileRef.current) fileRef.current.value = '';
+      if (cameraRef.current) cameraRef.current.value = '';
       return;
     }
 
@@ -108,6 +111,7 @@ export default function DocumentsPage() {
     });
 
     if (fileRef.current) fileRef.current.value = '';
+    if (cameraRef.current) cameraRef.current.value = '';
     setUploading(false);
 
     if (error) {
@@ -200,26 +204,54 @@ export default function DocumentsPage() {
           style={{ display: 'none' }}
           id="doc-upload"
         />
-        <label
-          htmlFor="doc-upload"
-          style={{
-            display: 'inline-block',
-            padding: '12px 28px',
-            background: uploading ? '#99f6e4' : TEAL,
-            color: uploading ? '#0f766e' : '#fff',
-            borderRadius: 8,
-            fontSize: 14,
-            fontWeight: 700,
-            cursor: uploading ? 'default' : 'pointer',
-          }}
-        >
-          {uploading ? (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ animation: 'amise-spin 0.8s linear infinite' }}><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg>
-              Uploading…
-            </span>
-          ) : 'Choose File'}
-        </label>
+        <input
+          ref={cameraRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={(e) => void handleFileChange(e)}
+          disabled={uploading}
+          style={{ display: 'none' }}
+          id="doc-camera-upload"
+        />
+        <div style={{ display: 'inline-flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <label
+            htmlFor="doc-upload"
+            style={{
+              display: 'inline-block',
+              padding: '12px 28px',
+              background: uploading ? '#99f6e4' : TEAL,
+              color: uploading ? '#0f766e' : '#fff',
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: uploading ? 'default' : 'pointer',
+            }}
+          >
+            {uploading ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ animation: 'amise-spin 0.8s linear infinite' }}><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg>
+                Uploading…
+              </span>
+            ) : 'Choose File'}
+          </label>
+          <label
+            htmlFor="doc-camera-upload"
+            style={{
+              display: 'inline-block',
+              padding: '12px 28px',
+              background: '#fff',
+              color: uploading ? '#94a3b8' : TEAL,
+              border: `1.5px solid ${uploading ? '#e2e8f0' : TEAL}`,
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 700,
+              cursor: uploading ? 'default' : 'pointer',
+            }}
+          >
+            📷 Take Photo
+          </label>
+        </div>
 
         {uploadError && (
           <p style={{ margin: '14px 0 0', fontSize: 13, color: '#dc2626' }}>{uploadError}</p>

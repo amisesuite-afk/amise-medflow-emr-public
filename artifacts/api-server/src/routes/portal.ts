@@ -435,7 +435,8 @@ RULES: summarise and organise only. Do NOT diagnose, prescribe, or speculate bey
 // fire-and-forget pattern above.
 const DOCUMENT_TYPES = [
   'lab_report', 'imaging_report', 'referral_letter', 'consent_form',
-  'surgical_report', 'discharge_summary', 'prescription', 'insurance_form', 'other',
+  'surgical_report', 'discharge_summary', 'prescription', 'insurance_form',
+  'clinical_photo', 'other',
 ];
 
 router.post('/api/patient/documents/register', async (req, res) => {

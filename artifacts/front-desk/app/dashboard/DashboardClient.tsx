@@ -600,6 +600,7 @@ export default function DashboardClient({
                             <option value="surgical_report">Surgical report</option>
                             <option value="discharge_summary">Discharge summary</option>
                             <option value="prescription">Prescription</option>
+                            <option value="clinical_photo">Clinical photo</option>
                             <option value="other">Other</option>
                           </select>
                           <input
@@ -613,6 +614,26 @@ export default function DashboardClient({
                             }}
                             style={{ fontSize: 11, color: '#94a3b8', maxWidth: 220 }}
                           />
+                          <label
+                            style={{
+                              fontSize: 11, padding: '3px 8px', borderRadius: 4, cursor: migrateLoading[booking.id] ? 'default' : 'pointer',
+                              background: '#1e293b', color: '#5eead4', border: '1px solid #374151',
+                            }}
+                          >
+                            📷 Camera
+                            <input
+                              type="file"
+                              accept="image/*"
+                              capture="environment"
+                              disabled={migrateLoading[booking.id]}
+                              onChange={e => {
+                                const f = e.target.files?.[0];
+                                if (f) void attachHistoricRecord(booking.id, f);
+                                e.target.value = '';
+                              }}
+                              style={{ display: 'none' }}
+                            />
+                          </label>
                           <button
                             onClick={() => setMigrateOpen(prev => ({ ...prev, [booking.id]: false }))}
                             style={{ fontSize: 11, color: '#6b7280', background: 'transparent', border: 'none', cursor: 'pointer' }}
@@ -675,6 +696,15 @@ export default function DashboardClient({
                 background: '#1e293b', border: `1px solid ${borderTone}`,
               }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  {doc.view_url && doc.mime_type?.startsWith('image/') && (
+                    <a href={doc.view_url} target="_blank" rel="noopener noreferrer" style={{ flexShrink: 0 }}>
+                      <img
+                        src={doc.view_url}
+                        alt={doc.title}
+                        style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 6, border: '1px solid #374151' }}
+                      />
+                    </a>
+                  )}
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
                       <span style={{
