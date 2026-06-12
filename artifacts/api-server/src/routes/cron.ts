@@ -44,6 +44,7 @@ router.post('/api/cron/reminders', async (req, res) => {
   const results: { id: string; action: string }[] = [];
 
   for (const appt of appointments || []) {
+    try {
     const apptTime = new Date(appt.start_time);
     const msUntil  = apptTime.getTime() - now.getTime();
     const hoursUntil = msUntil / 3600_000;
@@ -124,6 +125,10 @@ router.post('/api/cron/reminders', async (req, res) => {
         results.push({ id: appt.id, action: 'sms_2h_sent' });
       }
     }
+    } catch (err) {
+      req.log.error({ error: err, appointmentId: appt.id }, '[cron/reminders] failed to process appointment, continuing with remaining');
+      results.push({ id: appt.id, action: 'error' });
+    }
   }
 
   res.json({ processed: results.length, results });
@@ -181,11 +186,15 @@ router.post('/api/cron/daily-summary', async (req, res) => {
   const summaryBody = summaryLines.join('\n');
 
   if (process.env.DOCTOR_NOTIFY_EMAIL) {
-    await sendOrDraft({
-      to: process.env.DOCTOR_NOTIFY_EMAIL,
-      subject: `Amise Front Desk — Daily Summary ${startOfDay.toDateString()}`,
-      body: summaryBody,
-    }, 'auto');
+    try {
+      await sendOrDraft({
+        to: process.env.DOCTOR_NOTIFY_EMAIL,
+        subject: `Amise Front Desk — Daily Summary ${startOfDay.toDateString()}`,
+        body: summaryBody,
+      }, 'auto');
+    } catch (err) {
+      req.log.error({ error: err }, '[cron/daily-summary] failed to send summary email');
+    }
   }
 
   req.log.info('[cron/daily-summary] complete');
@@ -220,21 +229,26 @@ router.post('/api/cron/booking-reminders', async (req, res) => {
   const results: { id: string; action: string }[] = [];
 
   for (const req of requests ?? []) {
-    if (req.patient_phone) {
-      const slotDate = new Date(req.confirmed_slot);
-      const slotStr = slotDate.toLocaleString('en-LC', { timeZone: 'America/St_Lucia', weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit', hour12: true });
-      const prepInstructions = getPrepInstructions(req.appointment_type);
-      const prepLine = prepInstructions ? `\n\n${prepInstructions}` : '';
-      const body = `Hi ${req.patient_name.split(' ')[0]}, your appointment with Dr Kabiye is on ${slotStr}. Reply YES to confirm or call us to reschedule.${prepLine} – Amise Medical`;
-      const result = await sendSms({ to: req.patient_phone, body });
-      if (result.action === 'sent' || result.action === 'skipped') {
-        await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString(), prep_sms_sent: !!prepInstructions }).eq('id', req.id);
-        await audit({ action: 'remind', entityType: 'appointment_request', entityId: req.id, payload: { kind: 'sms_48h_confirmation', prep_included: !!prepInstructions } });
-        results.push({ id: req.id, action: result.action === 'sent' ? 'sms_sent' : 'sms_dry_run' });
+    try {
+      if (req.patient_phone) {
+        const slotDate = new Date(req.confirmed_slot);
+        const slotStr = slotDate.toLocaleString('en-LC', { timeZone: 'America/St_Lucia', weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit', hour12: true });
+        const prepInstructions = getPrepInstructions(req.appointment_type);
+        const prepLine = prepInstructions ? `\n\n${prepInstructions}` : '';
+        const body = `Hi ${req.patient_name.split(' ')[0]}, your appointment with Dr Kabiye is on ${slotStr}. Reply YES to confirm or call us to reschedule.${prepLine} – Amise Medical`;
+        const result = await sendSms({ to: req.patient_phone, body });
+        if (result.action === 'sent' || result.action === 'skipped') {
+          await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString(), prep_sms_sent: !!prepInstructions }).eq('id', req.id);
+          await audit({ action: 'remind', entityType: 'appointment_request', entityId: req.id, payload: { kind: 'sms_48h_confirmation', prep_included: !!prepInstructions } });
+          results.push({ id: req.id, action: result.action === 'sent' ? 'sms_sent' : 'sms_dry_run' });
+        }
+      } else {
+        await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', req.id);
+        results.push({ id: req.id, action: 'no_phone' });
       }
-    } else {
-      await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', req.id);
-      results.push({ id: req.id, action: 'no_phone' });
+    } catch (err) {
+      logger.error({ error: err, requestId: req.id }, '[cron/booking-reminders] failed to process request, continuing with remaining');
+      results.push({ id: req.id, action: 'error' });
     }
   }
 
@@ -272,42 +286,47 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
   const results: { id: string; action: string }[] = [];
 
   for (const booking of pending ?? []) {
-    const createdAt = new Date(booking.created_at);
-    const hoursWaiting = Math.floor((now.getTime() - createdAt.getTime()) / 3600_000);
-    const isDocEscalation = booking.created_at < fourHoursAgo;
+    try {
+      const createdAt = new Date(booking.created_at);
+      const hoursWaiting = Math.floor((now.getTime() - createdAt.getTime()) / 3600_000);
+      const isDocEscalation = booking.created_at < fourHoursAgo;
 
-    const smsBody = smsBodyStaffEscalation({
-      patientName: booking.patient_name,
-      appointmentType: booking.appointment_type,
-      hoursWaiting,
-      bookingId: booking.id,
-      patientPhone: booking.patient_phone ?? null,
-    });
+      const smsBody = smsBodyStaffEscalation({
+        patientName: booking.patient_name,
+        appointmentType: booking.appointment_type,
+        hoursWaiting,
+        bookingId: booking.id,
+        patientPhone: booking.patient_phone ?? null,
+      });
 
-    const typeLabel = (booking.appointment_type as string).replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
-    const emailBody = `UNACTIONED BOOKING — ${hoursWaiting} hours outstanding\n\nPatient: ${booking.patient_name}\nAppointment: ${typeLabel}\nPhone: ${booking.patient_phone ?? 'not provided'}\nEmail: ${booking.patient_email ?? 'not provided'}\nPreferred slot: ${booking.preferred_slot ?? 'not specified'}\nBooking ID: ${booking.id}\nSubmitted: ${booking.created_at}\n\nThis booking has not been confirmed or actioned. Please review immediately.`;
+      const typeLabel = (booking.appointment_type as string).replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+      const emailBody = `UNACTIONED BOOKING — ${hoursWaiting} hours outstanding\n\nPatient: ${booking.patient_name}\nAppointment: ${typeLabel}\nPhone: ${booking.patient_phone ?? 'not provided'}\nEmail: ${booking.patient_email ?? 'not provided'}\nPreferred slot: ${booking.preferred_slot ?? 'not specified'}\nBooking ID: ${booking.id}\nSubmitted: ${booking.created_at}\n\nThis booking has not been confirmed or actioned. Please review immediately.`;
 
-    if (isDocEscalation && doctorEmail) {
-      await sendOrDraft({
-        to: doctorEmail,
-        subject: `⚠ ESCALATION: Unactioned booking ${hoursWaiting}h — ${booking.patient_name}`,
-        body: emailBody,
-      }, 'auto');
-    } else if (staffEmail) {
-      await sendOrDraft({
-        to: staffEmail,
-        subject: `Action required: Unactioned booking ${hoursWaiting}h — ${booking.patient_name}`,
-        body: emailBody,
-      }, 'auto');
+      if (isDocEscalation && doctorEmail) {
+        await sendOrDraft({
+          to: doctorEmail,
+          subject: `⚠ ESCALATION: Unactioned booking ${hoursWaiting}h — ${booking.patient_name}`,
+          body: emailBody,
+        }, 'auto');
+      } else if (staffEmail) {
+        await sendOrDraft({
+          to: staffEmail,
+          subject: `Action required: Unactioned booking ${hoursWaiting}h — ${booking.patient_name}`,
+          body: emailBody,
+        }, 'auto');
+      }
+
+      if (staffPhone) {
+        await sendSms({ to: staffPhone, body: smsBody });
+      }
+
+      await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).eq('id', booking.id);
+      await audit({ action: 'escalate', entityType: 'appointment_request', entityId: booking.id, payload: { hours_waiting: hoursWaiting, doc_escalation: isDocEscalation } });
+      results.push({ id: booking.id, action: isDocEscalation ? 'doctor_escalated' : 'staff_re_notified' });
+    } catch (err) {
+      logger.error({ error: err, bookingId: booking.id }, '[cron/staff-escalation] failed to process booking, continuing with remaining');
+      results.push({ id: booking.id, action: 'error' });
     }
-
-    if (staffPhone) {
-      await sendSms({ to: staffPhone, body: smsBody });
-    }
-
-    await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).eq('id', booking.id);
-    await audit({ action: 'escalate', entityType: 'appointment_request', entityId: booking.id, payload: { hours_waiting: hoursWaiting, doc_escalation: isDocEscalation } });
-    results.push({ id: booking.id, action: isDocEscalation ? 'doctor_escalated' : 'staff_re_notified' });
   }
 
   logger.info({ count: results.length }, '[cron/staff-escalation] done');
