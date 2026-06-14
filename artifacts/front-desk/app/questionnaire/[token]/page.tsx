@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useCallback } from 'react';
+import VitalsPhotoCapture from '@/components/VitalsPhotoCapture';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -432,7 +433,7 @@ export default function QuestionnairePage({ params }: { params: { token: string 
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
 
   // ── Questionnaire flow ────────────────────────────────────────────────────
-  type Screen = 'consent' | 'question' | 'complete';
+  type Screen = 'consent' | 'question' | 'vitals_photo' | 'complete';
   const [screen, setScreen] = useState<Screen>('consent');
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [value, setValue] = useState<string | string[] | null>(null);
@@ -547,7 +548,7 @@ export default function QuestionnairePage({ params }: { params: { token: string 
       }
 
       if (data.isComplete || !data.nextQuestion) {
-        setScreen('complete');
+        setScreen('vitals_photo');
       } else {
         setCurrentQuestion(data.nextQuestion);
         setValue(null);
@@ -725,6 +726,16 @@ export default function QuestionnairePage({ params }: { params: { token: string 
               </div>
             </div>
           </div>
+        )}
+
+        {/* ── Vitals photo screen ── */}
+        {!loading && !sessionError && screen === 'vitals_photo' && (
+          <VitalsPhotoCapture
+            apiBase={API_BASE}
+            token={token}
+            onContinue={() => setScreen('complete')}
+            onSkip={() => setScreen('complete')}
+          />
         )}
 
         {/* ── Complete screen ── */}

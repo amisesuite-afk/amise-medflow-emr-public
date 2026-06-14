@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { randomBytes } from 'node:crypto';
 import Anthropic from '@anthropic-ai/sdk';
+import { z } from 'zod';
 import { sb, audit, requireStaffAuth } from '../lib/supabase.js';
 import {
   createSession,
@@ -62,6 +63,70 @@ const SPECIALTY_HPI_GUIDANCE: Record<Specialty, string> = {
     'This is a general screening or undifferentiated presentation. The HPI should cover the presenting ' +
     'complaint(s) with onset, duration, character and progression, and any relevant background ' +
     'surfaced by the questionnaire.',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VITALS PHOTO CAPTURE
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SUPPORTED_VITALS_MIME_TYPES = new Set([
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+]);
+
+const ExtractedVitalsSchema = z.object({
+  systolicBp: z.number().nullable().optional(),
+  diastolicBp: z.number().nullable().optional(),
+  heartRate: z.number().nullable().optional(),
+  temperatureC: z.number().nullable().optional(),
+  spo2: z.number().nullable().optional(),
+  respiratoryRate: z.number().nullable().optional(),
+  weightKg: z.number().nullable().optional(),
+  heightCm: z.number().nullable().optional(),
+  glucoseMmol: z.number().nullable().optional(),
+  deviceType: z.string().nullable().optional(),
+  rawText: z.string().nullable().optional(),
+  confidence: z.enum(['high', 'medium', 'low']).optional().default('medium'),
+});
+
+const VITALS_EXTRACT_PROMPT = `This image is a photo of a home medical device display — a blood pressure ` +
+  `monitor, digital weighing scale, thermometer, pulse oximeter, or glucometer. Read off the numeric ` +
+  `value(s) shown on the screen exactly as displayed. Do not interpret, diagnose, or comment on the ` +
+  `readings — only transcribe what is visible.
+
+Respond with ONLY a JSON object, no markdown fences, matching this schema:
+{
+  "systolicBp": number | null,
+  "diastolicBp": number | null,
+  "heartRate": number | null,
+  "temperatureC": number | null,
+  "spo2": number | null,
+  "respiratoryRate": number | null,
+  "weightKg": number | null,
+  "heightCm": number | null,
+  "glucoseMmol": number | null,
+  "deviceType": string | null,
+  "rawText": string | null,
+  "confidence": "high" | "medium" | "low"
+}
+
+Only fill in fields that are actually shown on the device's display — leave everything else null. ` +
+  `"deviceType" should briefly describe the device (e.g. "blood pressure monitor", "digital scale", ` +
+  `"thermometer"). "rawText" should be a short transcription of the digits/units visible on the screen. ` +
+  `Convert temperature to Celsius and weight to kilograms if the device shows Fahrenheit or pounds. ` +
+  `"confidence" reflects how clearly the display could be read.`;
+
+// Maps the camelCase fields produced by ExtractedVitalsSchema onto the
+// snake_case columns of the vitals table.
+const VITALS_FIELD_MAP: Record<string, string> = {
+  systolicBp: 'bp_systolic',
+  diastolicBp: 'bp_diastolic',
+  heartRate: 'heart_rate',
+  temperatureC: 'temperature_c',
+  spo2: 'oxygen_saturation',
+  respiratoryRate: 'respiratory_rate',
+  weightKg: 'weight_kg',
+  heightCm: 'height_cm',
+  glucoseMmol: 'glucose_mmol',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -414,7 +479,7 @@ async function populateEMR(sessionId: string, existingEncounterId?: string): Pro
   // Fetch patient_id + emr_populated flag from the session
   const { data: session } = await sb()
     .from('questionnaire_sessions')
-    .select('patient_id, emr_populated')
+    .select('patient_id, emr_populated, extracted_vitals, extracted_vitals_status')
     .eq('id', sessionId)
     .single();
 
@@ -460,6 +525,32 @@ async function populateEMR(sessionId: string, existingEncounterId?: string): Pro
 
   if (!alreadyPopulated && patientId) {
     await draftClinicalRecordsFromIntake(sessionId, encounterId, patientId, summary);
+  }
+
+  // Nurse-confirmed vitals from a device-photo capture get written to the
+  // vitals table here, once an encounter exists to attach them to. The
+  // status flips to 'written' so re-running populateEMR (e.g. on a second
+  // doctor-approve call) doesn't insert a duplicate row.
+  if (session?.extracted_vitals_status === 'confirmed' && session.extracted_vitals && patientId) {
+    const extracted = session.extracted_vitals as Record<string, unknown>;
+    const vitalsRow: Record<string, unknown> = {
+      encounter_id: encounterId,
+      patient_id: patientId,
+    };
+    for (const [src, dest] of Object.entries(VITALS_FIELD_MAP)) {
+      const val = extracted[src];
+      if (typeof val === 'number') vitalsRow[dest] = val;
+    }
+
+    if (Object.keys(vitalsRow).length > 2) {
+      const { error: vitalsErr } = await sb().from('vitals').insert(vitalsRow);
+      if (vitalsErr) throw vitalsErr;
+
+      await sb()
+        .from('questionnaire_sessions')
+        .update({ extracted_vitals_status: 'written' })
+        .eq('id', sessionId);
+    }
   }
 
   return encounterId;
@@ -872,6 +963,170 @@ router.get('/api/questionnaire/session/:token', async (req, res) => {
     });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/get-session] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
+// POST /api/questionnaire/session/:token/vitals-photo
+// Patient (own device) or kiosk uploads a photo of a BP monitor, scale,
+// thermometer, pulse oximeter, or glucometer display. Claude Vision reads
+// off the values for nurse review — nothing is written to the clinical
+// record at this stage.
+router.post('/api/questionnaire/session/:token/vitals-photo', async (req, res) => {
+  const { token } = req.params;
+  const { dataBase64, mimeType } = (req.body ?? {}) as {
+    dataBase64?: string; mimeType?: string;
+  };
+
+  if (!dataBase64 || !mimeType) {
+    res.status(400).json({ error: 'dataBase64 and mimeType are required' });
+    return;
+  }
+  if (!SUPPORTED_VITALS_MIME_TYPES.has(mimeType)) {
+    res.status(400).json({ error: `Unsupported image type: ${mimeType}` });
+    return;
+  }
+
+  try {
+    const { data: sessionRow, error: sessErr } = await sb()
+      .from('questionnaire_sessions')
+      .select('id, extracted_vitals')
+      .eq('session_token', token)
+      .single();
+
+    if (sessErr || !sessionRow) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    const resp = await anthropic.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 1024,
+      messages: [{
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: mimeType as 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif',
+              data: dataBase64,
+            },
+          },
+          { type: 'text', text: VITALS_EXTRACT_PROMPT },
+        ],
+      }],
+    });
+
+    const text = resp.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('')
+      .trim()
+      .replace(/^```json\s*/i, '')
+      .replace(/```\s*$/, '');
+
+    const extracted = ExtractedVitalsSchema.parse(JSON.parse(text));
+
+    // Merge with any previously captured readings — separate photos may
+    // supply BP, weight, and temperature at different times.
+    const existing = (sessionRow.extracted_vitals ?? {}) as Record<string, unknown>;
+    const merged: Record<string, unknown> = { ...existing };
+    for (const [key, value] of Object.entries(extracted)) {
+      if (value !== null && value !== undefined && value !== '') merged[key] = value;
+    }
+
+    const { data: updated, error: updateErr } = await sb()
+      .from('questionnaire_sessions')
+      .update({
+        extracted_vitals: merged,
+        extracted_vitals_status: 'pending_review',
+        extracted_vitals_at: new Date().toISOString(),
+      })
+      .eq('id', sessionRow.id)
+      .select('extracted_vitals, extracted_vitals_status')
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    await audit({
+      action: 'extract',
+      entityType: 'questionnaire_session',
+      entityId: sessionRow.id,
+      payload: { event: 'vitals_photo', extracted },
+    });
+
+    res.json({ extracted, vitals: updated.extracted_vitals, status: updated.extracted_vitals_status });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/vitals-photo] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
+// POST /api/questionnaire/session/:token/vitals-photo/review
+// Staff confirm or reject the values Claude read off a vitals photo. On
+// confirm, the (possibly edited) values are staged for the next EMR
+// population pass, which writes them into the vitals table.
+router.post('/api/questionnaire/session/:token/vitals-photo/review', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { token } = req.params;
+  const { values, action, nurseUserId } = (req.body ?? {}) as {
+    values?: Record<string, unknown>;
+    action?: 'confirm' | 'reject';
+    nurseUserId?: string;
+  };
+
+  if (action !== 'confirm' && action !== 'reject') {
+    res.status(400).json({ error: 'action must be "confirm" or "reject"' });
+    return;
+  }
+  if (!nurseUserId) {
+    res.status(400).json({ error: 'nurseUserId is required' });
+    return;
+  }
+
+  try {
+    const { data: sessionRow, error: sessErr } = await sb()
+      .from('questionnaire_sessions')
+      .select('id, extracted_vitals')
+      .eq('session_token', token)
+      .single();
+
+    if (sessErr || !sessionRow) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    const update: Record<string, unknown> = {
+      extracted_vitals_status: action === 'confirm' ? 'confirmed' : 'rejected',
+      vitals_confirmed_by: nurseUserId,
+      vitals_confirmed_at: new Date().toISOString(),
+    };
+
+    if (action === 'confirm' && values) {
+      update.extracted_vitals = values;
+    }
+
+    const { data: updated, error: updateErr } = await sb()
+      .from('questionnaire_sessions')
+      .update(update)
+      .eq('id', sessionRow.id)
+      .select('extracted_vitals, extracted_vitals_status')
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    await audit({
+      action: 'classify',
+      entityType: 'questionnaire_session',
+      entityId: sessionRow.id,
+      payload: { event: 'vitals_review', decision: action, nurseUserId },
+    });
+
+    res.json({ vitals: updated.extracted_vitals, status: updated.extracted_vitals_status });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/vitals-photo/review] error');
     res.status(502).json({ error: String(err) });
   }
 });

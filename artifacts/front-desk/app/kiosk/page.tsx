@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import VitalsPhotoCapture from '@/components/VitalsPhotoCapture';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -27,7 +28,7 @@ interface AnswerResponse {
   estimatedRemaining?: number;
 }
 
-type KioskScreen = 'welcome' | 'checkin' | 'consent' | 'question' | 'redflag' | 'complete';
+type KioskScreen = 'welcome' | 'checkin' | 'consent' | 'question' | 'redflag' | 'vitals_photo' | 'complete';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Theme
@@ -303,6 +304,7 @@ function KioskInput({
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function KioskPage() {
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
   const [screen, setScreen] = useState<KioskScreen>('welcome');
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');
@@ -343,7 +345,7 @@ export default function KioskPage() {
   }, [resetIdle]);
 
   useEffect(() => {
-    const active = screen === 'checkin' || screen === 'consent' || screen === 'question';
+    const active = screen === 'checkin' || screen === 'consent' || screen === 'question' || screen === 'vitals_photo';
     if (!active) {
       if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
       setIdleSeconds(0);
@@ -463,7 +465,7 @@ export default function KioskPage() {
       }
 
       if (data.isComplete || !data.nextQuestion) {
-        setScreen('complete');
+        setScreen('vitals_photo');
       } else {
         setCurrentQuestion(data.nextQuestion);
         setValue(null);
@@ -918,6 +920,17 @@ export default function KioskPage() {
               )}
             </div>
           </div>
+        )}
+
+        {/* ── Vitals photo ── */}
+        {screen === 'vitals_photo' && (
+          <VitalsPhotoCapture
+            apiBase={API_BASE}
+            token={token}
+            onContinue={() => setScreen('complete')}
+            onSkip={() => setScreen('complete')}
+            theme={{ card: CARD, border: BORDER, accent: TEAL, inputBg: BG }}
+          />
         )}
 
         {/* Footer */}

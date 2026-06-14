@@ -42,9 +42,40 @@ interface QuestionnaireSession {
   responses?: QAResponse[];
 }
 
+interface ExtractedVitals {
+  systolicBp?: number | null;
+  diastolicBp?: number | null;
+  heartRate?: number | null;
+  temperatureC?: number | null;
+  spo2?: number | null;
+  respiratoryRate?: number | null;
+  weightKg?: number | null;
+  heightCm?: number | null;
+  glucoseMmol?: number | null;
+  deviceType?: string | null;
+  rawText?: string | null;
+  confidence?: 'high' | 'medium' | 'low';
+}
+
+type ExtractedVitalsStatus = 'pending_review' | 'confirmed' | 'rejected' | 'written';
+
+const VITALS_FIELD_LABELS: Array<{ key: keyof ExtractedVitals; label: string; unit: string }> = [
+  { key: 'systolicBp', label: 'Systolic BP', unit: 'mmHg' },
+  { key: 'diastolicBp', label: 'Diastolic BP', unit: 'mmHg' },
+  { key: 'heartRate', label: 'Heart rate', unit: 'bpm' },
+  { key: 'temperatureC', label: 'Temperature', unit: '°C' },
+  { key: 'spo2', label: 'Oxygen saturation', unit: '%' },
+  { key: 'respiratoryRate', label: 'Respiratory rate', unit: '/min' },
+  { key: 'weightKg', label: 'Weight', unit: 'kg' },
+  { key: 'heightCm', label: 'Height', unit: 'cm' },
+  { key: 'glucoseMmol', label: 'Glucose', unit: 'mmol/L' },
+];
+
 interface SessionDetail extends QuestionnaireSession {
   responses: QAResponse[];
   aiSummary?: AISummary | null;
+  extractedVitals?: ExtractedVitals | null;
+  extractedVitalsStatus?: ExtractedVitalsStatus | null;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -345,6 +376,9 @@ export default function NurseAPCQTab() {
   const [approveSuccess, setApproveSuccess] = useState(false);
   const [approveErr, setApproveErr] = useState<string | null>(null);
   const [emrWarning, setEmrWarning] = useState<string | null>(null);
+  const [vitalsForm, setVitalsForm] = useState<Record<string, string>>({});
+  const [vitalsSubmitting, setVitalsSubmitting] = useState<'confirm' | 'reject' | null>(null);
+  const [vitalsActionErr, setVitalsActionErr] = useState<string | null>(null);
 
   const fetchQueue = useCallback(async () => {
     try {
@@ -392,6 +426,8 @@ export default function NurseAPCQTab() {
       setMarkSuccess(false);
       setApproveSuccess(false);
       setApproveErr(null);
+      setVitalsForm({});
+      setVitalsActionErr(null);
       return;
     }
     setSelectedToken(token);
@@ -401,6 +437,8 @@ export default function NurseAPCQTab() {
     setMarkSuccess(false);
     setApproveSuccess(false);
     setApproveErr(null);
+    setVitalsForm({});
+    setVitalsActionErr(null);
     setLoadingDetail(true);
     setLoadingAI(true);
 
@@ -419,6 +457,8 @@ export default function NurseAPCQTab() {
             completed_at: string | null;
             started_at: string | null;
             red_flags_detected: Array<{ question_key: string; severity: string; message?: string }> | null;
+            extracted_vitals: ExtractedVitals | null;
+            extracted_vitals_status: ExtractedVitalsStatus | null;
           };
           responses: Array<{
             question_key: string;
@@ -447,7 +487,19 @@ export default function NurseAPCQTab() {
             answer: r.answer_display ?? r.answer_value ?? '—',
             answeredAt: r.answered_at,
           })),
+          extractedVitals: data.session.extracted_vitals,
+          extractedVitalsStatus: data.session.extracted_vitals_status,
         });
+
+        if (data.session.extracted_vitals) {
+          const vitals = data.session.extracted_vitals;
+          const form: Record<string, string> = {};
+          for (const { key } of VITALS_FIELD_LABELS) {
+            const v = vitals[key];
+            if (typeof v === 'number') form[key] = String(v);
+          }
+          setVitalsForm(form);
+        }
       } else {
         setDetail(null);
       }
@@ -495,6 +547,44 @@ export default function NurseAPCQTab() {
       setAiSummary(null);
     } finally {
       setLoadingAI(false);
+    }
+  }
+
+  /** Confirm or reject the vitals Claude read off a patient/kiosk photo.
+   *  Confirmed values are staged for the next EMR population pass, which
+   *  writes them into the vitals table. */
+  async function reviewVitalsPhoto(action: 'confirm' | 'reject') {
+    if (!selectedToken || vitalsSubmitting || !profile?.id) return;
+    setVitalsSubmitting(action);
+    setVitalsActionErr(null);
+    try {
+      const values: Record<string, number> = {};
+      if (action === 'confirm') {
+        for (const { key } of VITALS_FIELD_LABELS) {
+          const raw = vitalsForm[key];
+          if (raw === undefined || raw.trim() === '') continue;
+          const num = Number(raw);
+          if (!Number.isNaN(num)) values[key] = num;
+        }
+      }
+
+      const res = await fetch(apiUrl(`/api/questionnaire/session/${selectedToken}/vitals-photo/review`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({ action, values, nurseUserId: profile.id }),
+      });
+
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(d.error ?? `HTTP ${res.status}`);
+      }
+
+      const d = await res.json() as { vitals: ExtractedVitals; status: ExtractedVitalsStatus };
+      setDetail(prev => prev ? { ...prev, extractedVitals: d.vitals, extractedVitalsStatus: d.status } : prev);
+    } catch (err) {
+      setVitalsActionErr(err instanceof Error ? err.message : 'Could not save vitals review.');
+    } finally {
+      setVitalsSubmitting(null);
     }
   }
 
@@ -742,6 +832,95 @@ export default function NurseAPCQTab() {
                     style={{ background: '#f9fafb', color: '#9ca3af', border: '1px solid #f3f4f6' }}
                   >
                     Response details are being loaded…
+                  </div>
+                )}
+
+                {/* Vitals from photo */}
+                {detail?.extractedVitals && (
+                  <div className="rounded-lg p-4" style={{ background: '#f0fdfa', border: '1px solid #99f6e4' }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-xs font-bold uppercase tracking-wider" style={{ color: '#0f766e' }}>
+                        Vitals from Photo
+                      </p>
+                      {detail.extractedVitalsStatus === 'pending_review' && (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#fef9c3', color: '#854d0e', border: '1px solid #fde68a' }}>
+                          Awaiting review
+                        </span>
+                      )}
+                      {(detail.extractedVitalsStatus === 'confirmed' || detail.extractedVitalsStatus === 'written') && (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#d1fae5', color: '#065f46', border: '1px solid #34d399' }}>
+                          {detail.extractedVitalsStatus === 'written' ? 'Confirmed — written to chart' : 'Confirmed'}
+                        </span>
+                      )}
+                      {detail.extractedVitalsStatus === 'rejected' && (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5' }}>
+                          Rejected
+                        </span>
+                      )}
+                    </div>
+
+                    {detail.extractedVitals.deviceType && (
+                      <p className="text-xs mb-3" style={{ color: '#6b7280' }}>
+                        Photographed device: {detail.extractedVitals.deviceType}
+                        {detail.extractedVitals.confidence === 'low' && ' — low confidence, please verify'}
+                      </p>
+                    )}
+
+                    {detail.extractedVitalsStatus === 'pending_review' || !detail.extractedVitalsStatus ? (
+                      <>
+                        <div className="grid grid-cols-2 gap-3 mb-3">
+                          {VITALS_FIELD_LABELS.map(({ key, label, unit }) => (
+                            <label key={key} className="text-xs" style={{ color: '#374151' }}>
+                              {label} ({unit})
+                              <input
+                                type="number"
+                                inputMode="decimal"
+                                value={vitalsForm[key] ?? ''}
+                                onChange={e => setVitalsForm(prev => ({ ...prev, [key]: e.target.value }))}
+                                className="mt-1 w-full rounded-md px-2 py-1.5 text-sm outline-none"
+                                style={{ border: '1.5px solid #d1d5db', background: '#fff', color: '#111827' }}
+                              />
+                            </label>
+                          ))}
+                        </div>
+
+                        {vitalsActionErr && (
+                          <div className="px-3 py-2 rounded-lg text-xs mb-3" style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b' }}>
+                            {vitalsActionErr}
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => { void reviewVitalsPhoto('confirm'); }}
+                            disabled={vitalsSubmitting !== null}
+                            className="px-3 py-2 rounded-lg text-xs font-bold text-white transition-all"
+                            style={{ background: vitalsSubmitting ? '#6ee7b7' : '#0d9488', cursor: vitalsSubmitting ? 'not-allowed' : 'pointer' }}
+                          >
+                            {vitalsSubmitting === 'confirm' ? 'Saving…' : 'Confirm vitals'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { void reviewVitalsPhoto('reject'); }}
+                            disabled={vitalsSubmitting !== null}
+                            className="px-3 py-2 rounded-lg text-xs font-bold transition-all"
+                            style={{ background: '#fff', color: '#991b1b', border: '1px solid #fca5a5', cursor: vitalsSubmitting ? 'not-allowed' : 'pointer' }}
+                          >
+                            {vitalsSubmitting === 'reject' ? 'Saving…' : 'Discard photo reading'}
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2">
+                        {VITALS_FIELD_LABELS.filter(({ key }) => detail.extractedVitals?.[key] != null).map(({ key, label, unit }) => (
+                          <div key={key} className="text-sm" style={{ color: '#111827' }}>
+                            <span style={{ color: '#6b7280' }}>{label}:</span>{' '}
+                            <strong>{String(detail.extractedVitals?.[key])} {unit}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
 
