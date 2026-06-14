@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { closeEncounter } from '@/lib/db';
 import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, inlineText, callout, footer, signoff, escH, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
@@ -17,10 +18,10 @@ interface CALocal { name: string; anatomicalArea: string; dimensions: string; de
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const SITE_INFO: Record<string, { name: string; address: string }> = {
-  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay' },
-  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia' },
-  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia' },
+const SITE_INFO: Record<string, { name: string; address: string; phone: string }> = {
+  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay', phone: '1 (758) 720 7111' },
+  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia', phone: '1 (758) 720 7111' },
+  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia', phone: '1 (758) 459 2227 / 1 (758) 284 0557' },
 };
 const APPT_LABELS: Record<string, string> = {
   new_consult: 'New Consultation', follow_up: 'Follow-up Consultation',
@@ -174,6 +175,19 @@ function buildDocument(ctx: Ctx): string {
     lines.push(hint('record weight and height'));
   }
 
+  // ROS
+  const rosEntries = Object.entries(ctx.rosFindings).filter(
+    ([, f]) => f.status !== 'not-asked' && (f.details.length > 0 || f.notes),
+  );
+  if (rosEntries.length > 0) {
+    lines.push(sec('REVIEW OF SYSTEMS'));
+    rosEntries.forEach(([sys, f]) => {
+      const detail = f.details.join(', ');
+      const note = f.notes ? (detail ? ` — ${f.notes}` : f.notes) : '';
+      lines.push(`  ${sys} [${f.status}]: ${detail}${note}`);
+    });
+  }
+
   // Examination
   lines.push(sec('PHYSICAL EXAMINATION'));
   const examFields: [string, string][] = [
@@ -191,17 +205,24 @@ function buildDocument(ctx: Ctx): string {
     lines.push(hint('add neurological and extremity findings if relevant'));
   }
 
-  // ROS
-  const rosEntries = Object.entries(ctx.rosFindings).filter(
-    ([, f]) => f.status !== 'not-asked' && (f.details.length > 0 || f.notes),
-  );
-  if (rosEntries.length > 0) {
-    lines.push(sec('REVIEW OF SYSTEMS'));
-    rosEntries.forEach(([sys, f]) => {
-      const detail = f.details.join(', ');
-      const note = f.notes ? (detail ? ` — ${f.notes}` : f.notes) : '';
-      lines.push(`  ${sys} [${f.status}]: ${detail}${note}`);
-    });
+  // Assessment
+  lines.push(sec('ASSESSMENT'));
+  if (ctx.assessment) {
+    lines.push(`Working Dx:  ${ctx.assessment}`);
+  } else {
+    lines.push(hint('enter working diagnosis / clinical impression'));
+  }
+  if (ctx.icdCodes.length > 0) {
+    lines.push(`ICD-10:      ${ctx.icdCodes.join('  |  ')}`);
+  } else {
+    lines.push(hint('add ICD-10 code(s)'));
+  }
+  if (ctx.differentials) {
+    lines.push('');
+    lines.push('Differentials:');
+    lines.push(ctx.differentials);
+  } else {
+    lines.push(hint('list differential diagnoses in order of probability'));
   }
 
   // Investigations
@@ -234,26 +255,6 @@ function buildDocument(ctx: Ctx): string {
     });
   }
 
-  // Assessment
-  lines.push(sec('ASSESSMENT'));
-  if (ctx.assessment) {
-    lines.push(`Working Dx:  ${ctx.assessment}`);
-  } else {
-    lines.push(hint('enter working diagnosis / clinical impression'));
-  }
-  if (ctx.icdCodes.length > 0) {
-    lines.push(`ICD-10:      ${ctx.icdCodes.join('  |  ')}`);
-  } else {
-    lines.push(hint('add ICD-10 code(s)'));
-  }
-  if (ctx.differentials) {
-    lines.push('');
-    lines.push('Differentials:');
-    lines.push(ctx.differentials);
-  } else {
-    lines.push(hint('list differential diagnoses in order of probability'));
-  }
-
   // Plan
   lines.push(sec('MANAGEMENT PLAN'));
   if (ctx.plan) {
@@ -261,6 +262,7 @@ function buildDocument(ctx: Ctx): string {
   } else {
     lines.push(hint('enter numbered management steps'));
     lines.push(hint('e.g. 1. IV access + fluids  2. Analgesia  3. Imaging  4. Consult  5. Admit / Discharge'));
+    lines.push(hint('outpatient e.g. 1. Labs: FBC, U&E, LFTs  2. X-ray / imaging if indicated  3. Follow-up review in 2 weeks  4. Recommendations / lifestyle advice'));
   }
   if (ctx.cptCodes.length > 0) lines.push(`\nCPT:  ${ctx.cptCodes.join('  |  ')}`);
   if (ctx.procedures) { lines.push(''); lines.push(`Procedures: ${ctx.procedures}`); }
@@ -337,7 +339,7 @@ function buildPrintHtml(text: string, ctx: Ctx): string {
   }
 
   const body =
-    masthead('Encounter Record', site.name, site.address, now, AMISE_LOGO_SVG) +
+    masthead('Encounter Record', site.name, site.address, site.phone, now, AMISE_LOGO_SVG) +
     meta + sectHtml +
     signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', 'Licence #: ............   Date: ..................') +
     footer('Prepared from the clinical encounter data entered at time of consultation. Verify all details before issuing.');
@@ -391,9 +393,9 @@ function buildReferralHtml(ctx: Ctx, referTo: string, referNotes: string): strin
 <p style="margin-top:6px">Kind regards,</p>`;
 
   const body =
-    masthead('Referral Letter', site.name, site.address, now, AMISE_LOGO_SVG) +
+    masthead('Referral Letter', site.name, site.address, site.phone, now, AMISE_LOGO_SVG) +
     meta + salutation + sectHtml + closing +
-    signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', `${escH(site.name)} · 1 (758) 720 7111`) +
+    signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', `${escH(site.name)} · ${site.phone}`) +
     footer('Prepared at time of consultation. Please verify clinical details before acting on this referral.');
 
   return wrapDoc(`Referral — ${ctx.patientName || 'Patient'}`, body);
@@ -433,7 +435,7 @@ function buildDischargeHtml(ctx: Ctx, dischargeNotes: string, followUp: string, 
   if (followUp) sectHtml += docSec('Follow-up plan', inlineText(followUp));
 
   const body =
-    masthead('Discharge / Clinic Summary', site.name, site.address, now, AMISE_LOGO_SVG) +
+    masthead('Discharge / Clinic Summary', site.name, site.address, site.phone, now, AMISE_LOGO_SVG) +
     meta + sectHtml +
     signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', 'Licence #: ............   Date: ..................') +
     footer('Please keep this summary for your records. Contact our office if you have questions about your care.');
@@ -693,6 +695,28 @@ export default function FinalDocTab() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
 
+  const [closing, setClosing] = useState(false);
+  const [closeMsg, setCloseMsg] = useState('');
+
+  async function handleCloseEncounter() {
+    if (!ctx.encounterId) return;
+    if (!window.confirm(
+      `Close this encounter for ${ctx.patientName || 'this patient'}?\n\n` +
+      'The encounter will be marked closed and locked for further edits. ' +
+      'All saved data remains in the record.',
+    )) return;
+    setClosing(true);
+    setCloseMsg('');
+    const { error } = await closeEncounter(ctx.encounterId);
+    setClosing(false);
+    if (error) {
+      setCloseMsg(`Error: ${error}`);
+    } else {
+      setCloseMsg('Encounter closed.');
+      ctx.setEncounterId(null);
+    }
+  }
+
   const site = SITE_INFO[ctx.currentSite] ?? SITE_INFO.rodney_bay;
   const patSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   const dateStr = new Date().toISOString().slice(0, 10);
@@ -770,6 +794,25 @@ export default function FinalDocTab() {
         <span style={{ fontSize: 11, color: '#9ca3af', marginLeft: 4 }}>
           Edits auto-saved to session
         </span>
+
+        {ctx.encounterId && (
+          <>
+            <div style={{ width: 1, height: 20, background: '#e5e7eb', margin: '0 2px' }} />
+            <button
+              type="button"
+              style={closing ? btnDisabled({ ...BTN_BASE, background: '#dc2626', color: '#fff', border: 'none' }) : { ...BTN_BASE, background: '#dc2626', color: '#fff', border: 'none' }}
+              disabled={closing}
+              onClick={() => void handleCloseEncounter()}
+            >
+              {closing ? '⏳ Closing…' : '✓ Close Encounter'}
+            </button>
+          </>
+        )}
+        {closeMsg && (
+          <span style={{ fontSize: 11, color: closeMsg.startsWith('Error') ? '#dc2626' : '#16a34a', fontWeight: 600 }}>
+            {closeMsg}
+          </span>
+        )}
       </div>
 
       {/* ── AI error ── */}

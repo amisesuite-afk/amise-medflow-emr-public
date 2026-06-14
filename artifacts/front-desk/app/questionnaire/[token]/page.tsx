@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useCallback } from 'react';
+import VitalsPhotoCapture from '@/components/VitalsPhotoCapture';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -424,7 +425,7 @@ function QuestionInput({
 
 export default function QuestionnairePage({ params }: { params: { token: string } }) {
   const { token } = params;
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 
   // ── Loading / session state ────────────────────────────────────────────────
   const [loading, setLoading] = useState(true);
@@ -432,7 +433,7 @@ export default function QuestionnairePage({ params }: { params: { token: string 
   const [sessionData, setSessionData] = useState<SessionData | null>(null);
 
   // ── Questionnaire flow ────────────────────────────────────────────────────
-  type Screen = 'consent' | 'question' | 'complete';
+  type Screen = 'consent' | 'question' | 'vitals_photo' | 'complete';
   const [screen, setScreen] = useState<Screen>('consent');
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [value, setValue] = useState<string | string[] | null>(null);
@@ -547,7 +548,7 @@ export default function QuestionnairePage({ params }: { params: { token: string 
       }
 
       if (data.isComplete || !data.nextQuestion) {
-        setScreen('complete');
+        setScreen('vitals_photo');
       } else {
         setCurrentQuestion(data.nextQuestion);
         setValue(null);
@@ -611,7 +612,7 @@ export default function QuestionnairePage({ params }: { params: { token: string 
         <div style={s.header}>
           <div style={s.headerLabel}>Amise Medical Services · Saint Lucia</div>
           <h1 style={s.h1}>Pre-Visit Health Questionnaire</h1>
-          <p style={s.subhead}>Dr Dawit Daniel Kabiye, MD, DM — General &amp; Endoscopic Surgery</p>
+          <p style={s.subhead}>General &amp; Endoscopic Surgery — led by Dr Dawit Daniel Kabiye, MD, DM</p>
         </div>
 
         {/* ── Loading ── */}
@@ -725,6 +726,16 @@ export default function QuestionnairePage({ params }: { params: { token: string 
               </div>
             </div>
           </div>
+        )}
+
+        {/* ── Vitals photo screen ── */}
+        {!loading && !sessionError && screen === 'vitals_photo' && (
+          <VitalsPhotoCapture
+            apiBase={API_BASE}
+            token={token}
+            onContinue={() => setScreen('complete')}
+            onSkip={() => setScreen('complete')}
+          />
         )}
 
         {/* ── Complete screen ── */}

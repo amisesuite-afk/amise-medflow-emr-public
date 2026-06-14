@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -59,7 +59,7 @@ export interface LabRecord {
 export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
-  | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox';
+  | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox' | 'portal_intake' | 'referring_providers';
 
 /** Grouped trauma / burns state — stored as a single serialisable object. */
 export interface TraumaData {
@@ -200,7 +200,7 @@ interface CtxValue {
   familyHistoryNotes: string; setFamilyHistoryNotes(v: string): void;
   surgicalHistory: string[]; toggleSurgical(v: string): void;
   surgicalNotes: string; setSurgicalNotes(v: string): void;
-  medications: string[]; toggleMedication(v: string): void;
+  medications: string[]; toggleMedication(v: string): void; setMedications(v: string[]): void;
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
   toxicHabits: string[]; toggleToxicHabit(v: string): void;
@@ -634,10 +634,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         triageScore:   triageResult.score,
       });
       void savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan });
+      void syncMedicationList(patientId, encounterId, medications, medicationsText);
     }, 2000);
     return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score]);
+  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score, medications, medicationsText]);
+
+  // ── Autosave allergies (debounced 3 s — patient-level, no encounter needed) ─
+  const allergyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !allergies) return;
+    if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current);
+    allergyTimerRef.current = setTimeout(() => {
+      const allergenList = allergies.split(',').map(s => s.trim()).filter(Boolean);
+      if (allergenList.length) void syncAllergyList(patientId, allergenList);
+    }, 3000);
+    return () => { if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, allergies]);
+
+  // ── Autosave examination findings (debounced 3 s) ─────────────────────────
+  const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    if (examTimerRef.current) clearTimeout(examTimerRef.current);
+    examTimerRef.current = setTimeout(() => {
+      void saveExamFindings(examFindings, examNotes, patientId, encounterId);
+    }, 3000);
+    return () => { if (examTimerRef.current) clearTimeout(examTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, examFindings, examNotes]);
 
   const value: CtxValue = {
     activeSection, setActiveSection,
@@ -669,7 +695,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     familyHistoryNotes, setFamilyHistoryNotes,
     surgicalHistory, toggleSurgical,
     surgicalNotes, setSurgicalNotes,
-    medications, toggleMedication,
+    medications, toggleMedication, setMedications,
     medicationsText, setMedicationsText,
     allergies, setAllergies,
     toxicHabits, toggleToxicHabit,

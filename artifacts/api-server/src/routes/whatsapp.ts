@@ -22,6 +22,28 @@ function detectAppointmentType(text: string): string {
   return 'consultation';
 }
 
+const BOOKING_INTENT = /\b(book|appointment|schedule|reschedul|cancel|consult(?:ation)?|available|slot|see (?:the )?(?:doctor|dr)\b)/i;
+const ENQUIRY_HINTS  = /\b(what|where|when|how|who|why|do you|does|can i|is it|info|information|services?|hours|open|location|address|cost|price|fee)\b|\?/i;
+
+// WhatsApp has no Claude classification step (cost/latency) — a light keyword
+// check is enough to separate "tell me about the practice" from "book me in".
+function isGeneralEnquiry(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed || BOOKING_INTENT.test(trimmed)) return false;
+  return ENQUIRY_HINTS.test(trimmed);
+}
+
+function enquiryReplyTwiml(triageFormUrl: string): string {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Message>Thanks for reaching out to Amise Medical Services — a general &amp; endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM, in Saint Lucia (consultations, procedures such as colonoscopy/ERCP, and follow-up care).
+
+To help us prepare for your visit, please complete our short triage form: ${triageFormUrl}
+
+You're also welcome to reply here or email info@amisemedical.com with your details and we'll guide you through it — or call our front desk: Tapion 284-0557, Rodney Bay 720-7111. – Amise Medical</Message>
+</Response>`;
+}
+
 function extractName(profileName: string, body: string): string {
   if (profileName) return profileName;
   const m = body.match(/(?:my name is|i(?:'?m| am)|this is)\s+([A-Za-z]+(?: [A-Za-z]+){0,2})/i);
@@ -70,6 +92,23 @@ router.post('/api/whatsapp/inbound', async (req, res) => {
 
   // Strip "whatsapp:" prefix Twilio adds to the From number
   const fromNumber = from.replace(/^whatsapp:/i, '');
+
+  // General enquiries ("what services do you offer?") get an informational
+  // auto-reply pointing to the triage form, instead of becoming a booking record.
+  if (isGeneralEnquiry(body)) {
+    const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    await audit({
+      action:     'send',
+      entityType: 'whatsapp_message',
+      entityId:   fromNumber,
+      payload:    { reason: 'general_enquiry', body: body.slice(0, 500) },
+    });
+    logger.info({ from: fromNumber }, '[whatsapp/inbound] general enquiry — sent auto-reply');
+    res.set('Content-Type', 'text/xml');
+    res.send(enquiryReplyTwiml(`${baseUrl}/patient/request`));
+    return;
+  }
+
   const appointmentType = detectAppointmentType(body);
   const patientName = extractName(profileName, body) || `WA ${fromNumber}`;
 

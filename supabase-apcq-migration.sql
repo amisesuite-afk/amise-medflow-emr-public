@@ -703,30 +703,30 @@ create policy "apcq_cr_staff_select"
 -- before RLS is even evaluated.
 
 -- Schema usage
-grant usage on schema public to anon, authenticated;
+grant usage on schema public to anon, authenticated, service_role;
 
 -- questionnaire_templates and question_bank: read for all authenticated
 grant select
   on public.questionnaire_templates
-  to authenticated;
+  to authenticated, service_role;
 grant insert, update, delete
   on public.questionnaire_templates
-  to authenticated;   -- RLS limits actual mutations to admin
+  to authenticated, service_role;   -- RLS limits actual mutations to admin
 
 grant select
   on public.question_bank
-  to authenticated;
+  to authenticated, service_role;
 grant insert, update, delete
   on public.question_bank
-  to authenticated;   -- RLS limits actual mutations to admin
+  to authenticated, service_role;   -- RLS limits actual mutations to admin
 
 -- branching_rules
 grant select
   on public.branching_rules
-  to authenticated;
+  to authenticated, service_role;
 grant insert, update, delete
   on public.branching_rules
-  to authenticated;   -- RLS limits actual mutations to admin
+  to authenticated, service_role;   -- RLS limits actual mutations to admin
 
 -- questionnaire_sessions: anon needs select/insert; authenticated needs all
 grant select, insert
@@ -734,20 +734,23 @@ grant select, insert
   to anon;
 grant select, insert, update
   on public.questionnaire_sessions
-  to authenticated;
+  to authenticated, service_role;
 
 -- questionnaire_responses: anon insert; authenticated select/insert
 grant insert
   on public.questionnaire_responses
   to anon;
-grant select, insert
+grant select, insert, update
   on public.questionnaire_responses
-  to authenticated;
+  to authenticated, service_role;
 
--- intake_summaries: authenticated select only (writes via service_role)
+-- intake_summaries: authenticated select only; service_role full access (Claude-generated content)
 grant select
   on public.intake_summaries
   to authenticated;
+grant select, insert, update
+  on public.intake_summaries
+  to service_role;
 
 -- consent_records: anon insert; authenticated select/insert
 grant insert
@@ -755,7 +758,27 @@ grant insert
   to anon;
 grant select, insert
   on public.consent_records
-  to authenticated;
+  to authenticated, service_role;
+
+
+-- ============================================================
+-- SECTION 9: SEED DATA — QUESTIONNAIRE TEMPLATES
+-- ============================================================
+-- The dashboard's "Start Questionnaire" feature looks up these
+-- templates by `name` (must be active). The actual question
+-- content/branching for each template lives in code
+-- (lib/triage-engine/src/apcq.ts — SPECIALTY_QUEUES), this table
+-- only needs to exist so the API can resolve a template_id.
+
+insert into questionnaire_templates (name, mode, specialty, description, is_active)
+values
+  ('general_screening', 'screening',          'general_medical', 'General pre-consultation screening questionnaire', true),
+  ('abdominal_pain',    'condition_specific',  'general_surgery', 'Targeted questionnaire for abdominal pain presentations', true),
+  ('upper_gi',          'condition_specific',  'endoscopy',       'Upper GI symptoms questionnaire (reflux, dysphagia, etc.)', true),
+  ('colorectal',        'condition_specific',  'endoscopy',       'Colorectal symptoms questionnaire (bleeding, bowel habit change)', true),
+  ('breast',            'condition_specific',  'breast_surgery',  'Breast surgery questionnaire (lump, discharge, skin changes)', true),
+  ('post_op',           'condition_specific',  'post_op',         'Post-operative review questionnaire', true)
+on conflict (name) do nothing;
 
 
 -- ============================================================
@@ -778,4 +801,8 @@ grant select, insert
 -- Triggers created:
 --   trg_set_session_token    — auto-fills session_token before insert
 --   trg_updated_at           — maintains updated_at on templates/sessions
+--
+-- Seed data:
+--   questionnaire_templates  — 6 rows: general_screening, abdominal_pain,
+--                               upper_gi, colorectal, breast, post_op
 -- ============================================================

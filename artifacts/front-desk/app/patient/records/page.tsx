@@ -115,43 +115,52 @@ export default function RecordsPage() {
   const [loading, setLoading] = useState(true);
   const [showAllMeds, setShowAllMeds] = useState(false);
 
+  // Records are gated — patient must explicitly request to view them
+  const [summaryRequested, setSummaryRequested] = useState(false);
+  const [fetching, setFetching] = useState(false);
+
   useEffect(() => {
     void (async () => {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { router.replace('/patient/login'); return; }
-
-      const [
-        { data: medsData },
-        { data: allergiesData },
-        { data: referralsData },
-      ] = await Promise.all([
-        sb
-          .from('medications')
-          .select('id, medication_name, dosage, frequency, prescribed_date, status, prescribing_doctor, notes')
-          .order('status', { ascending: true })
-          .order('medication_name', { ascending: true }),
-        sb
-          .from('allergies')
-          .select('id, allergen, reaction, severity, diagnosed_date')
-          .order('severity', { ascending: false }),
-        sb
-          .from('referrals')
-          .select('id, referral_date, specialty, referred_to, reason, status')
-          .order('referral_date', { ascending: false })
-          .limit(10),
-      ]);
-
-      setMedications(medsData ?? []);
-      setAllergies(allergiesData ?? []);
-      setReferrals(referralsData ?? []);
       setLoading(false);
     })();
   }, [router, sb]);
 
+  async function handleRequestSummary() {
+    setFetching(true);
+    const [
+      { data: medsData },
+      { data: allergiesData },
+      { data: referralsData },
+    ] = await Promise.all([
+      sb
+        .from('medications')
+        .select('id, medication_name, dosage, frequency, prescribed_date, status, prescribing_doctor, notes')
+        .order('status', { ascending: true })
+        .order('medication_name', { ascending: true }),
+      sb
+        .from('allergies')
+        .select('id, allergen, reaction, severity, diagnosed_date')
+        .order('severity', { ascending: false }),
+      sb
+        .from('referrals')
+        .select('id, referral_date, specialty, referred_to, reason, status')
+        .order('referral_date', { ascending: false })
+        .limit(10),
+    ]);
+
+    setMedications(medsData ?? []);
+    setAllergies(allergiesData ?? []);
+    setReferrals(referralsData ?? []);
+    setFetching(false);
+    setSummaryRequested(true);
+  }
+
   if (loading) {
     return (
       <div style={{ textAlign: 'center', paddingTop: 64, color: '#94a3b8', fontSize: 14 }}>
-        Loading your records…
+        Loading…
       </div>
     );
   }
@@ -159,6 +168,51 @@ export default function RecordsPage() {
   const activeMeds = medications.filter(m => m.status === 'active');
   const otherMeds  = medications.filter(m => m.status !== 'active');
   const visibleMeds = showAllMeds ? medications : activeMeds;
+
+  if (!summaryRequested) {
+    return (
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 32 }}>
+          <button
+            type="button"
+            onClick={() => router.push('/patient')}
+            style={{ background: 'none', border: 'none', color: '#0d9488', fontSize: 20, cursor: 'pointer', padding: 0, lineHeight: 1 }}
+            aria-label="Back"
+          >←</button>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#1e293b' }}>Medical Summary</h1>
+        </div>
+
+        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 16, padding: '40px 32px', textAlign: 'center' }}>
+          <div style={{ fontSize: 48, marginBottom: 20 }}>🩺</div>
+          <h2 style={{ margin: '0 0 12px', fontSize: 18, fontWeight: 800, color: '#1e293b' }}>View your medical summary</h2>
+          <p style={{ margin: '0 0 28px', fontSize: 14, color: '#64748b', lineHeight: 1.7, maxWidth: 360, marginLeft: 'auto', marginRight: 'auto' }}>
+            Your summary includes your medications on record, known allergies, and referral history.
+            This information is for your personal reference only.
+          </p>
+          <button
+            type="button"
+            onClick={() => void handleRequestSummary()}
+            disabled={fetching}
+            style={{
+              padding: '14px 32px',
+              background: fetching ? '#99f6e4' : '#0d9488',
+              color: fetching ? '#0f766e' : '#fff',
+              border: 'none',
+              borderRadius: 10,
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: fetching ? 'default' : 'pointer',
+            }}
+          >
+            {fetching ? 'Loading your records…' : 'View My Medical Summary'}
+          </button>
+          <p style={{ marginTop: 20, fontSize: 12, color: '#94a3b8' }}>
+            Records are loaded fresh each time. For clinical decisions, always consult your doctor.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

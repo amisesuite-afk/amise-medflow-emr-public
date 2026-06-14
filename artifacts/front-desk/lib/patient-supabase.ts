@@ -13,7 +13,7 @@ export function getPatientClient(): SupabaseClient {
       persistSession: true,
       autoRefreshToken: true,
       storageKey: 'amise-patient-session',
-      flowType: 'implicit',  // implicit = hash tokens, works cross-device; PKCE breaks when email opened on different device
+      flowType: 'implicit',
     },
   });
 
@@ -30,4 +30,10 @@ export interface PatientProfile {
   address: string | null;
   emergency_contact: string | null;
   emergency_phone: string | null;
+  nok_name: string | null;
+  nok_relation: string | null;
+  nok_phone: string | null;
+  blood_group: string | null;
+  height_cm: number | null;
+  weight_kg: number | null;
 }

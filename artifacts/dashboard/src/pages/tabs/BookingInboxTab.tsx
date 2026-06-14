@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { hasRole } from '@/lib/roles';
+import ConsultationRequestsView from './ConsultationRequestsView';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface BookingRequest {
   id: string;
   patient_name: string;
-  patient_email: string;
+  patient_email: string | null;
   patient_phone: string | null;
   appointment_type: string;
   location: string;
@@ -32,7 +35,7 @@ interface BookingRequest {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
@@ -65,9 +68,11 @@ function fmtSlot(iso: string): string {
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; border: string }> = {
   pending:           { label: 'Pending',          bg: '#fffbeb', color: '#b45309', border: '#fcd34d' },
+  waitlisted:        { label: 'Waitlisted',       bg: '#faf5ff', color: '#7c3aed', border: '#c4b5fd' },
   staff_confirmed:   { label: 'Slot Confirmed',   bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
   patient_confirmed: { label: 'Patient Confirmed',bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
   lapsed:            { label: 'Lapsed',           bg: '#f9fafb', color: '#9ca3af', border: '#e5e7eb' },
+  cancelled:         { label: 'Cancelled',        bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
 };
 
 const PREP_INSTRUCTIONS: Record<string, string> = {
@@ -145,6 +150,8 @@ function SourceBadge({ source }: { source?: string }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
+type InboxView = 'bookings' | 'consult_requests';
+
 export interface BookingInboxTabProps {
   /** If provided, only bookings with this status are shown. */
   filterStatus?: string;
@@ -169,6 +176,19 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [confirmErr, setConfirmErr]       = useState<string | null>(null);
   const [confirmOk, setConfirmOk]         = useState(false);
 
+  // Waitlist action state
+  const [waitlisting, setWaitlisting]     = useState(false);
+  const [waitlistErr, setWaitlistErr]     = useState<string | null>(null);
+
+  // Cancel action state
+  const [cancelling, setCancelling]       = useState(false);
+  const [cancelErr, setCancelErr]         = useState<string | null>(null);
+
+  // Portal-access action state
+  const [portalRegistering, setPortalRegistering] = useState(false);
+  const [portalErr, setPortalErr]                 = useState<string | null>(null);
+  const [portalOk, setPortalOk]                   = useState(false);
+
   // Manual entry state
   const [showNewRequest, setShowNewRequest]   = useState(false);
   const [nrName, setNrName]                   = useState('');
@@ -183,6 +203,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [nrErr, setNrErr]                     = useState<string | null>(null);
   const [nrOk, setNrOk]                       = useState(false);
   const nrNameRef                             = useRef<HTMLInputElement>(null);
+  const [view, setView]                       = useState<InboxView>('bookings');
 
   const load = useCallback(async () => {
     try {
@@ -207,9 +228,12 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     return () => clearInterval(t);
   }, [load]);
 
-  // When a booking is selected, pre-fill location from its data
+  // When a booking is selected, pre-fill location from its data and reset
+  // any per-selection action state from the previously-viewed request
   useEffect(() => {
     if (selected) setConfirmLoc(selected.location || 'rodney_bay');
+    setPortalOk(false);
+    setPortalErr(null);
   }, [selected?.id]);
 
   async function handleConfirm() {
@@ -243,6 +267,78 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       setConfirmErr(String(e));
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleWaitlist() {
+    if (!selected) return;
+    setWaitlisting(true);
+    setWaitlistErr(null);
+    try {
+      const r = await fetch(apiUrl(`/api/booking/waitlist/${selected.id}`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes: confirmNotes || null }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      await load();
+      setSelected(null);
+    } catch (e) {
+      setWaitlistErr(String(e));
+    } finally {
+      setWaitlisting(false);
+    }
+  }
+
+  async function handleCancel() {
+    if (!selected) return;
+    if (!window.confirm(`Cancel this booking request for ${selected.patient_name}?`)) return;
+    setCancelling(true);
+    setCancelErr(null);
+    try {
+      const r = await fetch(apiUrl(`/api/booking/cancel/${selected.id}`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: 'Cancelled by staff' }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      await load();
+      setSelected(null);
+    } catch (e) {
+      setCancelErr(String(e));
+    } finally {
+      setCancelling(false);
+    }
+  }
+
+  async function handleEnablePortal() {
+    if (!selected || !selected.patient_phone) return;
+    setPortalRegistering(true);
+    setPortalErr(null);
+    try {
+      const r = await fetch(apiUrl('/api/patient/portal/register-by-phone'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({
+          patientName:  selected.patient_name,
+          patientPhone: selected.patient_phone,
+        }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      setPortalOk(true);
+    } catch (e) {
+      setPortalErr(String(e));
+    } finally {
+      setPortalRegistering(false);
     }
   }
 
@@ -285,42 +381,66 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     }
   }
 
-  // Sort: pending first (oldest), then confirmed, then others
+  // Unified intake sort — surfaces the cases that need attention first,
+  // regardless of which channel (web/WhatsApp/phone/email/manual) they
+  // arrived on:
+  //   1. Urgent acuity always leads — a life/limb-threatening case can't
+  //      wait behind scheduling order just because it came in by phone.
+  //   2. Procedures (endoscopy/OR-suite types needing prep + lead time for
+  //      anaesthesia/lab coordination) get a fast path ahead of routine
+  //      already-scheduled follow-ups — their logistics lock in early.
+  //   3. Remaining acuity tiers (priority, then routine).
+  //   4. Status — items still needing action (pending/waitlisted) before
+  //      ones already actioned.
+  //   5. Oldest first, as a fair tiebreaker.
+  const ACUITY_RANK: Record<string, number> = { urgent: 0, priority: 1, routine: 2 };
+  const STATUS_RANK: Record<string, number> = {
+    pending: 0, waitlisted: 1, staff_confirmed: 2, patient_confirmed: 3, lapsed: 4, cancelled: 5,
+  };
   const sorted = [...requests].sort((a, b) => {
-    const rank: Record<string, number> = { pending: 0, staff_confirmed: 1, patient_confirmed: 2, lapsed: 3 };
-    const ra = rank[a.status] ?? 9;
-    const rb = rank[b.status] ?? 9;
-    if (ra !== rb) return ra - rb;
+    const aUrgent = a.triage_acuity === 'urgent' ? 0 : 1;
+    const bUrgent = b.triage_acuity === 'urgent' ? 0 : 1;
+    if (aUrgent !== bUrgent) return aUrgent - bUrgent;
+
+    const aProc = requiresPrep(a.appointment_type) ? 0 : 1;
+    const bProc = requiresPrep(b.appointment_type) ? 0 : 1;
+    if (aProc !== bProc) return aProc - bProc;
+
+    const aAcuity = ACUITY_RANK[a.triage_acuity ?? 'routine'] ?? ACUITY_RANK.routine;
+    const bAcuity = ACUITY_RANK[b.triage_acuity ?? 'routine'] ?? ACUITY_RANK.routine;
+    if (aAcuity !== bAcuity) return aAcuity - bAcuity;
+
+    const aStatus = STATUS_RANK[a.status] ?? 9;
+    const bStatus = STATUS_RANK[b.status] ?? 9;
+    if (aStatus !== bStatus) return aStatus - bStatus;
+
     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
   });
 
   const pendingCount = requests.filter(r => r.status === 'pending').length;
 
-  // ── Loading / error states ─────────────────────────────────────────────────
+  // ── Layout ────────────────────────────────────────────────────────────────
 
-  if (loading) {
-    return (
-      <div style={{ padding: '40px 24px', color: '#6b7280', textAlign: 'center' }}>
-        Loading booking requests…
+  const TAB_STYLE = (active: boolean) => ({
+    padding: '10px 16px', fontSize: 13, fontWeight: active ? 700 : 500,
+    color: active ? '#0d9488' : '#6b7280', background: 'none', border: 'none',
+    borderBottom: active ? '2px solid #0d9488' : '2px solid transparent',
+    cursor: 'pointer', transition: 'color .15s',
+  });
+
+  const bookingsContent = loading ? (
+    <div style={{ padding: '40px 24px', color: '#6b7280', textAlign: 'center' }}>
+      Loading booking requests…
+    </div>
+  ) : error ? (
+    <div style={{ padding: '24px' }}>
+      <div style={{ padding: '12px 16px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 13 }}>
+        Could not load bookings: {error}
+        <button onClick={() => void load()} style={{ marginLeft: 12, padding: '2px 10px', borderRadius: 6, border: '1px solid #fca5a5', background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: 12 }}>Retry</button>
       </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ padding: '24px' }}>
-        <div style={{ padding: '12px 16px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 13 }}>
-          Could not load bookings: {error}
-          <button onClick={() => void load()} style={{ marginLeft: 12, padding: '2px 10px', borderRadius: 6, border: '1px solid #fca5a5', background: 'white', color: '#dc2626', cursor: 'pointer', fontSize: 12 }}>Retry</button>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Main layout ────────────────────────────────────────────────────────────
-
-  return (
-    <div style={{ display: 'flex', gap: 0, height: '100%', minHeight: 0 }}>
+    </div>
+  ) : (
+    <div style={{ display: 'flex', gap: 0, flex: 1, minHeight: 0, overflow: 'hidden' }}>
 
       {/* ── Left: booking list ─────────────────────────────────────────────── */}
       <div style={{
@@ -775,6 +895,24 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 8, textAlign: 'center' }}>
                 Patient will receive a confirmation SMS with slot details{requiresPrep(selected.appointment_type) ? ' and preparation instructions' : ''}.
               </div>
+
+              {waitlistErr && (
+                <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+                  {waitlistErr}
+                </div>
+              )}
+
+              <button
+                onClick={() => void handleWaitlist()}
+                disabled={waitlisting}
+                style={{
+                  width: '100%', marginTop: 10, padding: '9px', borderRadius: 8,
+                  border: '1.5px solid #c4b5fd', background: '#faf5ff', color: '#7c3aed',
+                  fontWeight: 600, fontSize: 13, cursor: waitlisting ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {waitlisting ? 'Moving to waitlist…' : 'No slot available — move to waitlist'}
+              </button>
             </div>
           )}
 
@@ -785,6 +923,64 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a8a' }}>{fmtSlot(selected.confirmed_slot)}</div>
               <div style={{ fontSize: 12, color: '#1d4ed8', marginTop: 4 }}>{LOCATION_LABELS[selected.location] ?? selected.location}</div>
               {selected.notes && <div style={{ fontSize: 12, color: '#374151', marginTop: 6, fontStyle: 'italic' }}>{selected.notes}</div>}
+            </div>
+          )}
+
+          {/* ── Cancel request ────────────────────────────────────────────── */}
+          {['pending', 'waitlisted', 'staff_confirmed'].includes(selected.status) && (
+            <div style={{ marginBottom: 20 }}>
+              {cancelErr && (
+                <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+                  {cancelErr}
+                </div>
+              )}
+              <button
+                onClick={() => void handleCancel()}
+                disabled={cancelling}
+                style={{
+                  width: '100%', padding: '9px', borderRadius: 8,
+                  border: '1.5px solid #fecaca', background: '#fef2f2', color: '#b91c1c',
+                  fontWeight: 600, fontSize: 13, cursor: cancelling ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {cancelling ? 'Cancelling…' : 'Cancel booking request'}
+              </button>
+            </div>
+          )}
+
+          {/* ── Patient portal access ────────────────────────────────────── */}
+          {selected.status !== 'pending' && selected.patient_phone && (
+            <div style={{ marginBottom: 20, padding: '16px', borderRadius: 10, background: '#fff', border: '2px solid #e5e7eb' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#111827', marginBottom: 6 }}>
+                Patient Portal Access
+              </div>
+              <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 12, lineHeight: 1.5 }}>
+                No password to set up — the patient signs in with just their phone number and a one-time code sent by SMS each time.
+              </div>
+
+              {portalErr && (
+                <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+                  {portalErr}
+                </div>
+              )}
+              {portalOk && (
+                <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontSize: 12, fontWeight: 600 }}>
+                  ✓ Portal access enabled — {selected.patient_name.split(' ')[0]} can sign in at the patient portal with {selected.patient_phone}.
+                </div>
+              )}
+
+              <button
+                onClick={() => void handleEnablePortal()}
+                disabled={portalRegistering || portalOk}
+                style={{
+                  width: '100%', padding: '10px', borderRadius: 8, border: 'none',
+                  background: portalOk ? '#9ca3af' : '#0d9488',
+                  color: '#fff', fontWeight: 700, fontSize: 13,
+                  cursor: portalRegistering || portalOk ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {portalRegistering ? 'Enabling…' : portalOk ? '✓ Portal Access Enabled' : 'Enable Portal Access'}
+              </button>
             </div>
           )}
 
@@ -824,6 +1020,29 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               )}
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+      {/* Tab nav */}
+      <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', paddingLeft: 8, flexShrink: 0, background: '#fafafa' }}>
+        <button onClick={() => setView('bookings')} style={TAB_STYLE(view === 'bookings')}>
+          Booking Requests{pendingCount > 0 ? ` (${pendingCount})` : ''}
+        </button>
+        <button onClick={() => setView('consult_requests')} style={TAB_STYLE(view === 'consult_requests')}>
+          Public Enquiries
+        </button>
+      </div>
+      {view === 'consult_requests' ? (
+        <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+          <ConsultationRequestsView />
+        </div>
+      ) : (
+        <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          {bookingsContent}
         </div>
       )}
     </div>

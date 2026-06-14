@@ -179,6 +179,21 @@ textarea { resize: vertical; }
 .acuity-badge .ab-level { font-size: 14px; font-weight: 900; letter-spacing: -.01em; }
 .acuity-badge .ab-score { font-size: 10px; opacity: .8; }
 
+.surgical-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: #312e81;
+  color: #fff;
+  min-width: 90px;
+  cursor: default;
+}
+.surgical-badge .ab-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; opacity: .85; }
+.surgical-badge .ab-level { font-size: 13px; font-weight: 900; letter-spacing: -.01em; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.surgical-badge .ab-score { font-size: 10px; opacity: .8; }
+
 /* ── Nav Sidebar ─────────────────────────────────── */
 .nav-sidebar {
   display: flex;

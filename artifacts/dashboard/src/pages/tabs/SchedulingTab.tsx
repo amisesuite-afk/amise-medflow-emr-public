@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { getApiOrigin } from '@/lib/api-origin';
 import { SLOT_RULES, AppointmentType } from '@workspace/triage-engine';
 
 // Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
-const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');

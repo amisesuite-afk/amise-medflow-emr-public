@@ -1,13 +1,15 @@
 import { Router } from 'express';
 import { randomBytes } from 'node:crypto';
 import Anthropic from '@anthropic-ai/sdk';
-import { sb, audit } from '../lib/supabase.js';
+import { z } from 'zod';
+import { sb, audit, requireStaffAuth } from '../lib/supabase.js';
 import {
   createSession,
   getNextQuestion,
   processAnswer,
   checkRedFlag,
   buildResponseSummary,
+  detectSpecialty,
   QUESTION_BANK,
   SPECIALTY_QUEUES,
 } from '@workspace/triage-engine/apcq.js';
@@ -16,6 +18,7 @@ import type {
   Response as ApcqResponse,
   RedFlag,
   Question,
+  Specialty,
 } from '@workspace/triage-engine/apcq.js';
 
 const router = Router();
@@ -29,6 +32,102 @@ const CONSENT_TEXT_V1 =
   'securely and will be reviewed by clinical staff in preparation for your appointment. ' +
   'By proceeding you consent to this collection and use of your health information. ' +
   'Version 1.0 — Amise Medical Services, Saint Lucia.';
+
+// Specialty-specific guidance for the HPI narrative — tailors which history
+// elements the AI should prioritise for the practice's two main referral
+// streams (general surgery vs endoscopy/GI), plus the smaller breast and
+// post-op queues.
+const SPECIALTY_HPI_GUIDANCE: Record<Specialty, string> = {
+  general_surgery:
+    'This is a general surgical presentation (e.g. abdominal pain, hernia, lump). ' +
+    'The HPI should cover: site, onset, character, severity, radiation, and progression of the ' +
+    'presenting complaint; aggravating/relieving factors; associated GI or urinary symptoms; ' +
+    'relevant prior abdominal surgery; and any factors relevant to operative planning ' +
+    '(anticoagulants, anaesthetic history) surfaced by the questionnaire.',
+  endoscopy:
+    'This is an endoscopy/GI presentation (e.g. reflux, dysphagia, change in bowel habit, rectal bleeding). ' +
+    'The HPI should cover: nature, duration and progression of the GI symptom(s); alarm/red-flag features ' +
+    '(unintentional weight loss, PR bleeding, dysphagia, anaemia symptoms); bowel habit and diet; ' +
+    'any previous endoscopic procedures or findings mentioned; and anticoagulant/antiplatelet use ' +
+    'relevant to procedure planning and bowel preparation.',
+  breast_surgery:
+    'This is a breast surgical presentation (e.g. lump, pain, nipple discharge or skin change). ' +
+    'The HPI should cover: site, size, duration and any change in the lump or symptom; associated ' +
+    'skin, nipple or axillary changes; relevant family history of breast disease if mentioned; ' +
+    'and any prior breast surgery or imaging.',
+  post_op:
+    'This is a post-operative review. The HPI should cover: the original procedure and approximate date ' +
+    'if known, current symptoms (pain, wound concerns, fever), recovery progress, and any concerns ' +
+    'raised by the patient since surgery.',
+  general_medical:
+    'This is a general screening or undifferentiated presentation. The HPI should cover the presenting ' +
+    'complaint(s) with onset, duration, character and progression, and any relevant background ' +
+    'surfaced by the questionnaire.',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VITALS PHOTO CAPTURE
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SUPPORTED_VITALS_MIME_TYPES = new Set([
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+]);
+
+const ExtractedVitalsSchema = z.object({
+  systolicBp: z.number().nullable().optional(),
+  diastolicBp: z.number().nullable().optional(),
+  heartRate: z.number().nullable().optional(),
+  temperatureC: z.number().nullable().optional(),
+  spo2: z.number().nullable().optional(),
+  respiratoryRate: z.number().nullable().optional(),
+  weightKg: z.number().nullable().optional(),
+  heightCm: z.number().nullable().optional(),
+  glucoseMmol: z.number().nullable().optional(),
+  deviceType: z.string().nullable().optional(),
+  rawText: z.string().nullable().optional(),
+  confidence: z.enum(['high', 'medium', 'low']).optional().default('medium'),
+});
+
+const VITALS_EXTRACT_PROMPT = `This image is a photo of a home medical device display — a blood pressure ` +
+  `monitor, digital weighing scale, thermometer, pulse oximeter, or glucometer. Read off the numeric ` +
+  `value(s) shown on the screen exactly as displayed. Do not interpret, diagnose, or comment on the ` +
+  `readings — only transcribe what is visible.
+
+Respond with ONLY a JSON object, no markdown fences, matching this schema:
+{
+  "systolicBp": number | null,
+  "diastolicBp": number | null,
+  "heartRate": number | null,
+  "temperatureC": number | null,
+  "spo2": number | null,
+  "respiratoryRate": number | null,
+  "weightKg": number | null,
+  "heightCm": number | null,
+  "glucoseMmol": number | null,
+  "deviceType": string | null,
+  "rawText": string | null,
+  "confidence": "high" | "medium" | "low"
+}
+
+Only fill in fields that are actually shown on the device's display — leave everything else null. ` +
+  `"deviceType" should briefly describe the device (e.g. "blood pressure monitor", "digital scale", ` +
+  `"thermometer"). "rawText" should be a short transcription of the digits/units visible on the screen. ` +
+  `Convert temperature to Celsius and weight to kilograms if the device shows Fahrenheit or pounds. ` +
+  `"confidence" reflects how clearly the display could be read.`;
+
+// Maps the camelCase fields produced by ExtractedVitalsSchema onto the
+// snake_case columns of the vitals table.
+const VITALS_FIELD_MAP: Record<string, string> = {
+  systolicBp: 'bp_systolic',
+  diastolicBp: 'bp_diastolic',
+  heartRate: 'heart_rate',
+  temperatureC: 'temperature_c',
+  spo2: 'oxygen_saturation',
+  respiratoryRate: 'respiratory_rate',
+  weightKg: 'weight_kg',
+  heightCm: 'height_cm',
+  glucoseMmol: 'glucose_mmol',
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
@@ -97,36 +196,6 @@ function formatAnswerDisplay(question: Question, value: string | string[]): stri
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// AUTH MIDDLEWARE — staff routes
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Accept either:
- *  - x-staff-token: <CRON_SECRET>   (simple shared secret for internal tools)
- *  - Authorization: Bearer <supabase-jwt>  (standard staff session)
- */
-async function requireStaffAuth(req: any, res: any): Promise<boolean> {
-  const cronSecret = process.env.CRON_SECRET;
-
-  // Allow CRON_SECRET as a staff token
-  if (cronSecret) {
-    const staffToken = req.headers['x-staff-token'];
-    if (staffToken === cronSecret) return true;
-  }
-
-  // Accept Supabase JWT
-  const authHeader = req.headers.authorization;
-  if (authHeader?.startsWith('Bearer ')) {
-    const jwt = authHeader.slice(7);
-    const { data, error } = await sb().auth.getUser(jwt);
-    if (!error && data?.user) return true;
-  }
-
-  res.status(401).json({ error: 'Unauthorised — provide x-staff-token or a valid Bearer token' });
-  return false;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // BACKGROUND TASKS
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -185,16 +254,27 @@ async function generateIntakeSummary(sessionId: string): Promise<void> {
       is_red_flag: r.is_red_flag,
     }));
 
-    const systemPrompt = `You are a clinical documentation assistant for Amise Medical Services, a surgical and endoscopic practice in Saint Lucia led by Dr Dawit Daniel Kabiye MD DM.
+    // Tailor the HPI guidance to whichever of the practice's two main
+    // tracks (general surgery vs endoscopy/GI) — or breast/post-op —
+    // this questionnaire falls under.
+    const chiefComplaintResponse = state.responses.find(r => r.questionKey === 'chief_complaint');
+    const chiefComplaintValues = chiefComplaintResponse
+      ? (Array.isArray(chiefComplaintResponse.answerValue) ? chiefComplaintResponse.answerValue : [chiefComplaintResponse.answerValue])
+      : [];
+    const specialty = detectSpecialty(chiefComplaintValues);
 
-Your task: analyse the patient's pre-consultation questionnaire responses and produce a structured pre-visit briefing for the physician.
+    const systemPrompt = `You are a clinical documentation assistant for Amise Medical Services, a general and endoscopic surgery practice in Saint Lucia led by Dr Dawit Daniel Kabiye MD DM.
+
+Your task: analyse the patient's pre-consultation questionnaire responses and produce a structured pre-visit briefing for the physician, including a History of Presenting Illness (HPI) narrative the physician can use as a starting point for the first-visit clinical note.
+
+${SPECIALTY_HPI_GUIDANCE[specialty]}
 
 CRITICAL RULES:
 - You MAY: summarise, organise, highlight, flag concerns
 - You MAY NOT: diagnose, suggest specific treatments, prescribe, or speculate beyond the data
 - Flag red flags explicitly
 - Use British-Caribbean professional medical language
-- Keep the summary under 300 words
+- Write the HPI as flowing third-person prose (no bullet points), under 300 words
 - Format as JSON only, no markdown fences`;
 
     const userPrompt = `Analyse the following pre-consultation questionnaire and return a JSON object with this exact schema:
@@ -204,7 +284,7 @@ CRITICAL RULES:
   "redFlags": [{"symptom": "string", "severity": "routine|priority|urgent|emergency", "action": "string"}],
   "recommendedFocusAreas": ["string", "..."],
   "estimatedUrgency": "routine|priority|urgent|emergency",
-  "summary": "string — narrative pre-visit briefing under 300 words"
+  "summary": "string — a History of Presenting Illness (HPI) narrative under 300 words, written in flowing third-person prose ready to be copied into the patient's first-visit clinical note. Cover onset, duration, character, severity, site/radiation and progression of the presenting complaint, associated symptoms and pertinent negatives, and any relevant background (medications, allergies, prior surgery/endoscopy) surfaced by the questionnaire. No bullet points."
 }
 
 QUESTIONNAIRE RESPONSES:
@@ -275,8 +355,115 @@ ${responseSummaryText}`;
 }
 
 /**
- * Create or update an encounter record from the intake summary and return the
- * encounter UUID.
+ * Pre-consultation intake questions that capture history/background rather
+ * than an active symptom — these feed the encounter chief complaint or are
+ * better suited to other tables (medications, allergies) than `symptoms`,
+ * so they're excluded from the auto-drafted symptom list.
+ */
+const NON_SYMPTOM_QUESTION_KEYS = new Set([
+  'chief_complaint', 'current_medications', 'allergies', 'smoking_status',
+  'alcohol_use', 'family_history_cancer', 'family_history_breast',
+  'prior_surgery', 'colonoscopy_history', 'mammogram_history',
+  'surgery_date', 'surgery_type', 'screening_reason',
+]);
+
+/** Answers that indicate "no finding" — not worth drafting a symptom row for. */
+const NEGATIVE_ANSWER_VALUES = new Set(['no', 'none', 'never', 'n/a', '']);
+
+const URGENCY_TO_ACUITY: Record<string, 'routine' | 'review' | 'priority' | 'urgent'> = {
+  routine: 'routine',
+  priority: 'priority',
+  urgent: 'urgent',
+  emergency: 'urgent', // assessments.acuity has no 'emergency' tier — cap at 'urgent'
+};
+
+/**
+ * Draft `symptoms`, `assessments` and `plans` rows from a completed intake —
+ * AI/questionnaire-derived, clearly marked as such, and always subject to
+ * physician review/edit before clinical use. Skipped if this session has
+ * already populated the EMR once (re-approval must not duplicate rows).
+ */
+async function draftClinicalRecordsFromIntake(
+  sessionId: string,
+  encounterId: string,
+  patientId: string,
+  summary: {
+    chief_complaint: string | null;
+    ai_summary: string | null;
+    key_positives: unknown;
+    recommended_focus_areas: unknown;
+    estimated_urgency: string;
+  },
+): Promise<void> {
+  const { data: responses, error: respErr } = await sb()
+    .from('questionnaire_responses')
+    .select('question_key, question_text, answer_value, answer_display, is_red_flag')
+    .eq('session_id', sessionId)
+    .order('sequence_number', { ascending: true });
+
+  if (respErr) throw respErr;
+
+  const symptomRows = (responses ?? [])
+    .filter((r) => {
+      if (NON_SYMPTOM_QUESTION_KEYS.has(r.question_key)) return false;
+      const v = (r.answer_value ?? '').trim().toLowerCase();
+      return v.length > 0 && !NEGATIVE_ANSWER_VALUES.has(v);
+    })
+    .map((r) => ({
+      encounter_id: encounterId,
+      patient_id: patientId,
+      symptom: r.question_text || r.question_key,
+      severity: r.is_red_flag ? ('severe' as const) : null,
+      details: {
+        source: 'questionnaire_intake',
+        session_id: sessionId,
+        question_key: r.question_key,
+        answer_value: r.answer_value,
+        answer_display: r.answer_display,
+      },
+      notes: 'Auto-drafted from pre-visit questionnaire — confirm with patient at consultation.',
+    }));
+
+  if (symptomRows.length) {
+    const { error: symErr } = await sb().from('symptoms').insert(symptomRows);
+    if (symErr) throw symErr;
+  }
+
+  const keyPositives = Array.isArray(summary.key_positives)
+    ? (summary.key_positives as unknown[]).filter((p): p is string => typeof p === 'string')
+    : [];
+  const focusAreas = Array.isArray(summary.recommended_focus_areas)
+    ? (summary.recommended_focus_areas as unknown[]).filter((p): p is string => typeof p === 'string')
+    : [];
+
+  const { error: assessErr } = await sb().from('assessments').insert({
+    encounter_id: encounterId,
+    patient_id: patientId,
+    diagnosis: summary.chief_complaint ?? null,
+    differentials: keyPositives.length ? keyPositives.join('; ') : null,
+    acuity: URGENCY_TO_ACUITY[summary.estimated_urgency] ?? 'routine',
+    notes: [
+      'DRAFT — generated from AI pre-visit intake summary. Physician must review, correct and confirm before use.',
+      summary.ai_summary ? `\nHistory of Presenting Illness (from pre-visit questionnaire):\n${summary.ai_summary}` : null,
+    ].filter(Boolean).join('\n'),
+  });
+  if (assessErr) throw assessErr;
+
+  const { error: planErr } = await sb().from('plans').insert({
+    encounter_id: encounterId,
+    patient_id: patientId,
+    plan_type: 'management',
+    description: focusAreas.length
+      ? `DRAFT — areas flagged by intake AI for the physician to probe at consultation: ${focusAreas.join('; ')}`
+      : 'DRAFT — pending physician assessment at consultation.',
+  });
+  if (planErr) throw planErr;
+}
+
+/**
+ * Create or update an encounter record from the intake summary, draft the
+ * supporting clinical records (symptoms/assessment/plan) on first approval,
+ * and return the encounter UUID.
  */
 async function populateEMR(sessionId: string, existingEncounterId?: string): Promise<string> {
   const { data: summary, error: sumErr } = await sb()
@@ -289,14 +476,15 @@ async function populateEMR(sessionId: string, existingEncounterId?: string): Pro
     throw new Error(`No intake summary found for session ${sessionId}`);
   }
 
-  // Fetch patient_id from the session
+  // Fetch patient_id + emr_populated flag from the session
   const { data: session } = await sb()
     .from('questionnaire_sessions')
-    .select('patient_id')
+    .select('patient_id, emr_populated, extracted_vitals, extracted_vitals_status')
     .eq('id', sessionId)
     .single();
 
   const patientId: string | null = session?.patient_id ?? null;
+  const alreadyPopulated = session?.emr_populated === true;
 
   let encounterId = existingEncounterId ?? null;
 
@@ -333,6 +521,36 @@ async function populateEMR(sessionId: string, existingEncounterId?: string): Pro
 
   if (!encounterId) {
     throw new Error('Cannot populate EMR: no patient_id and no existing encounter');
+  }
+
+  if (!alreadyPopulated && patientId) {
+    await draftClinicalRecordsFromIntake(sessionId, encounterId, patientId, summary);
+  }
+
+  // Nurse-confirmed vitals from a device-photo capture get written to the
+  // vitals table here, once an encounter exists to attach them to. The
+  // status flips to 'written' so re-running populateEMR (e.g. on a second
+  // doctor-approve call) doesn't insert a duplicate row.
+  if (session?.extracted_vitals_status === 'confirmed' && session.extracted_vitals && patientId) {
+    const extracted = session.extracted_vitals as Record<string, unknown>;
+    const vitalsRow: Record<string, unknown> = {
+      encounter_id: encounterId,
+      patient_id: patientId,
+    };
+    for (const [src, dest] of Object.entries(VITALS_FIELD_MAP)) {
+      const val = extracted[src];
+      if (typeof val === 'number') vitalsRow[dest] = val;
+    }
+
+    if (Object.keys(vitalsRow).length > 2) {
+      const { error: vitalsErr } = await sb().from('vitals').insert(vitalsRow);
+      if (vitalsErr) throw vitalsErr;
+
+      await sb()
+        .from('questionnaire_sessions')
+        .update({ extracted_vitals_status: 'written' })
+        .eq('id', sessionId);
+    }
   }
 
   return encounterId;
@@ -452,6 +670,73 @@ router.post('/api/questionnaire/session/start', async (req, res) => {
   }
 });
 
+// POST /api/questionnaire/provision-link — staff/internal only.
+// Mints a pre-consult questionnaire session for a (possibly unregistered)
+// patient and returns a shareable link, so a privileged caller (e.g. the
+// front-desk booking flow) can bundle it into a confirmation message
+// without ever touching session_token generation itself — api-server stays
+// the sole owner of the questionnaire-session lifecycle.
+router.post('/api/questionnaire/provision-link', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { patientId, templateKey } = (req.body ?? {}) as {
+    patientId?: string;
+    templateKey?: string;
+  };
+
+  const key = templateKey || 'general_screening';
+
+  try {
+    const { data: template, error: tmplErr } = await sb()
+      .from('questionnaire_templates')
+      .select('id, name')
+      .eq('name', key)
+      .eq('is_active', true)
+      .single();
+
+    if (tmplErr || !template) {
+      res.status(404).json({ error: `Template '${key}' not found or inactive` });
+      return;
+    }
+
+    const sessionToken = generateSessionToken();
+
+    const { data: sessionRow, error: sessErr } = await sb()
+      .from('questionnaire_sessions')
+      .insert({
+        template_id: template.id,
+        mode: 'screening',
+        status: 'in_progress',
+        delivery_method: 'whatsapp_link',
+        patient_id: patientId ?? null,
+        session_token: sessionToken,
+        consent_given: false,
+        started_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single();
+
+    if (sessErr || !sessionRow) {
+      req.log.info({ err: sessErr }, '[questionnaire/provision-link] insert session failed');
+      res.status(502).json({ error: 'Failed to create session' });
+      return;
+    }
+
+    await audit({
+      action: 'classify',
+      entityType: 'questionnaire_session',
+      entityId: sessionRow.id,
+      payload: { templateKey: key, mode: 'screening', delivery: 'whatsapp_link', provisioned: true },
+    });
+
+    const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    res.status(201).json({ url: `${baseUrl}/questionnaire/${sessionToken}` });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/provision-link] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
 // POST /api/questionnaire/session/:token/answer
 router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
   const { token } = req.params;
@@ -469,12 +754,17 @@ router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
     // Validate session
     const { data: sessionRow, error: sessErr } = await sb()
       .from('questionnaire_sessions')
-      .select('id, status, template_id, mode, patient_id, encounter_id')
+      .select('id, status, template_id, mode, patient_id, encounter_id, expires_at')
       .eq('session_token', token)
       .single();
 
     if (sessErr || !sessionRow) {
       res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    if (sessionRow.expires_at && new Date(sessionRow.expires_at).getTime() < Date.now()) {
+      res.status(410).json({ error: 'This questionnaire link has expired' });
       return;
     }
 
@@ -628,6 +918,11 @@ router.get('/api/questionnaire/session/:token', async (req, res) => {
       return;
     }
 
+    if (sessionRow.expires_at && new Date(sessionRow.expires_at).getTime() < Date.now()) {
+      res.status(410).json({ error: 'This questionnaire link has expired' });
+      return;
+    }
+
     const { data: responsesRaw, error: respErr } = await sb()
       .from('questionnaire_responses')
       .select('*')
@@ -672,6 +967,170 @@ router.get('/api/questionnaire/session/:token', async (req, res) => {
   }
 });
 
+// POST /api/questionnaire/session/:token/vitals-photo
+// Patient (own device) or kiosk uploads a photo of a BP monitor, scale,
+// thermometer, pulse oximeter, or glucometer display. Claude Vision reads
+// off the values for nurse review — nothing is written to the clinical
+// record at this stage.
+router.post('/api/questionnaire/session/:token/vitals-photo', async (req, res) => {
+  const { token } = req.params;
+  const { dataBase64, mimeType } = (req.body ?? {}) as {
+    dataBase64?: string; mimeType?: string;
+  };
+
+  if (!dataBase64 || !mimeType) {
+    res.status(400).json({ error: 'dataBase64 and mimeType are required' });
+    return;
+  }
+  if (!SUPPORTED_VITALS_MIME_TYPES.has(mimeType)) {
+    res.status(400).json({ error: `Unsupported image type: ${mimeType}` });
+    return;
+  }
+
+  try {
+    const { data: sessionRow, error: sessErr } = await sb()
+      .from('questionnaire_sessions')
+      .select('id, extracted_vitals')
+      .eq('session_token', token)
+      .single();
+
+    if (sessErr || !sessionRow) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    const resp = await anthropic.messages.create({
+      model: CLAUDE_MODEL,
+      max_tokens: 1024,
+      messages: [{
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            source: {
+              type: 'base64',
+              media_type: mimeType as 'image/jpeg' | 'image/png' | 'image/webp' | 'image/gif',
+              data: dataBase64,
+            },
+          },
+          { type: 'text', text: VITALS_EXTRACT_PROMPT },
+        ],
+      }],
+    });
+
+    const text = resp.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('')
+      .trim()
+      .replace(/^```json\s*/i, '')
+      .replace(/```\s*$/, '');
+
+    const extracted = ExtractedVitalsSchema.parse(JSON.parse(text));
+
+    // Merge with any previously captured readings — separate photos may
+    // supply BP, weight, and temperature at different times.
+    const existing = (sessionRow.extracted_vitals ?? {}) as Record<string, unknown>;
+    const merged: Record<string, unknown> = { ...existing };
+    for (const [key, value] of Object.entries(extracted)) {
+      if (value !== null && value !== undefined && value !== '') merged[key] = value;
+    }
+
+    const { data: updated, error: updateErr } = await sb()
+      .from('questionnaire_sessions')
+      .update({
+        extracted_vitals: merged,
+        extracted_vitals_status: 'pending_review',
+        extracted_vitals_at: new Date().toISOString(),
+      })
+      .eq('id', sessionRow.id)
+      .select('extracted_vitals, extracted_vitals_status')
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    await audit({
+      action: 'extract',
+      entityType: 'questionnaire_session',
+      entityId: sessionRow.id,
+      payload: { event: 'vitals_photo', extracted },
+    });
+
+    res.json({ extracted, vitals: updated.extracted_vitals, status: updated.extracted_vitals_status });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/vitals-photo] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
+// POST /api/questionnaire/session/:token/vitals-photo/review
+// Staff confirm or reject the values Claude read off a vitals photo. On
+// confirm, the (possibly edited) values are staged for the next EMR
+// population pass, which writes them into the vitals table.
+router.post('/api/questionnaire/session/:token/vitals-photo/review', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { token } = req.params;
+  const { values, action, nurseUserId } = (req.body ?? {}) as {
+    values?: Record<string, unknown>;
+    action?: 'confirm' | 'reject';
+    nurseUserId?: string;
+  };
+
+  if (action !== 'confirm' && action !== 'reject') {
+    res.status(400).json({ error: 'action must be "confirm" or "reject"' });
+    return;
+  }
+  if (!nurseUserId) {
+    res.status(400).json({ error: 'nurseUserId is required' });
+    return;
+  }
+
+  try {
+    const { data: sessionRow, error: sessErr } = await sb()
+      .from('questionnaire_sessions')
+      .select('id, extracted_vitals')
+      .eq('session_token', token)
+      .single();
+
+    if (sessErr || !sessionRow) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    const update: Record<string, unknown> = {
+      extracted_vitals_status: action === 'confirm' ? 'confirmed' : 'rejected',
+      vitals_confirmed_by: nurseUserId,
+      vitals_confirmed_at: new Date().toISOString(),
+    };
+
+    if (action === 'confirm' && values) {
+      update.extracted_vitals = values;
+    }
+
+    const { data: updated, error: updateErr } = await sb()
+      .from('questionnaire_sessions')
+      .update(update)
+      .eq('id', sessionRow.id)
+      .select('extracted_vitals, extracted_vitals_status')
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    await audit({
+      action: 'classify',
+      entityType: 'questionnaire_session',
+      entityId: sessionRow.id,
+      payload: { event: 'vitals_review', decision: action, nurseUserId },
+    });
+
+    res.json({ vitals: updated.extracted_vitals, status: updated.extracted_vitals_status });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/vitals-photo/review] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
 // GET /api/questionnaire/nurse/queue
 router.get('/api/questionnaire/nurse/queue', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
@@ -680,31 +1139,52 @@ router.get('/api/questionnaire/nurse/queue', async (req, res) => {
     const { data, error } = await sb()
       .from('questionnaire_sessions')
       .select(
-        'id, patient_id, status, red_flags_detected, started_at, completed_at, template_id, mode, delivery_method',
+        `id, patient_id, status, red_flags_detected, started_at, completed_at, session_token,
+         template:questionnaire_templates(name),
+         patient:patients(full_name)`,
       )
-      .in('status', ['completed', 'in_progress'])
+      .in('status', ['completed', 'in_progress', 'nurse_reviewed'])
       .order('completed_at', { ascending: false });
 
     if (error) throw error;
 
-    const rows = data ?? [];
+    type QueueRow = {
+      id: string;
+      patient_id: string | null;
+      status: string;
+      red_flags_detected: Array<{ question_key: string; severity: string; message?: string }> | null;
+      started_at: string | null;
+      completed_at: string | null;
+      session_token: string;
+      template: { name: string } | { name: string }[] | null;
+      patient: { full_name: string } | { full_name: string }[] | null;
+    };
 
-    // Sort: sessions with red flags first, then by completed_at desc
-    const sorted = rows.sort((a, b) => {
-      const aHasFlags =
-        Array.isArray(a.red_flags_detected) && (a.red_flags_detected as unknown[]).length > 0;
-      const bHasFlags =
-        Array.isArray(b.red_flags_detected) && (b.red_flags_detected as unknown[]).length > 0;
+    const rows = (data ?? []) as unknown as QueueRow[];
+    const single = <T,>(v: T | T[] | null): T | null => (Array.isArray(v) ? v[0] ?? null : v);
 
-      if (aHasFlags && !bHasFlags) return -1;
-      if (!aHasFlags && bHasFlags) return 1;
+    const sessions = rows.map((row) => ({
+      sessionToken: row.session_token,
+      patientId: row.patient_id,
+      patientName: single(row.patient)?.full_name ?? null,
+      templateKey: single(row.template)?.name ?? 'general_screening',
+      completedAt: row.completed_at ?? row.started_at ?? '',
+      status: row.status,
+      redFlags: (row.red_flags_detected ?? []).map((f) => ({
+        questionId: f.question_key,
+        severity: f.severity,
+        label: f.message,
+      })),
+    }));
 
-      const aTime = a.completed_at ?? a.started_at ?? '';
-      const bTime = b.completed_at ?? b.started_at ?? '';
-      return bTime.localeCompare(aTime);
+    // Sort: sessions with red flags first, then by completion/start time desc
+    const sorted = sessions.sort((a, b) => {
+      if (a.redFlags.length > 0 && b.redFlags.length === 0) return -1;
+      if (a.redFlags.length === 0 && b.redFlags.length > 0) return 1;
+      return b.completedAt.localeCompare(a.completedAt);
     });
 
-    res.json({ queue: sorted, total: sorted.length });
+    res.json({ sessions: sorted, total: sorted.length });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/nurse-queue] error');
     res.status(502).json({ error: String(err) });
@@ -712,7 +1192,14 @@ router.get('/api/questionnaire/nurse/queue', async (req, res) => {
 });
 
 // GET /api/questionnaire/session/:token/summary
+// Staff/clinician only — patients never get self-service access to their AI-
+// generated clinical summary. The token that lets a patient submit answers
+// must not also unlock the read-back of clinically-interpreted data; release
+// to a patient on request goes through staff review (see nurse-review /
+// doctor-approve below), not this endpoint.
 router.get('/api/questionnaire/session/:token/summary', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
   const { token } = req.params;
 
   try {
@@ -752,6 +1239,8 @@ router.get('/api/questionnaire/session/:token/summary', async (req, res) => {
 
 // POST /api/questionnaire/session/:token/nurse-review
 router.post('/api/questionnaire/session/:token/nurse-review', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
   const { token } = req.params;
   const { nurseNotes, nurseUserId } = (req.body ?? {}) as {
     nurseNotes?: string;
@@ -805,6 +1294,8 @@ router.post('/api/questionnaire/session/:token/nurse-review', async (req, res) =
 
 // POST /api/questionnaire/session/:token/doctor-approve
 router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
   const { token } = req.params;
   const { doctorUserId } = (req.body ?? {}) as { doctorUserId?: string };
 
@@ -827,14 +1318,19 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
 
     // Populate EMR asynchronously — but we need the encounter ID synchronously
     let encounterId: string | null = null;
+    let emrError: string | null = null;
     try {
       encounterId = await populateEMR(
         sessionRow.id,
         sessionRow.encounter_id ?? undefined,
       );
     } catch (emrErr) {
-      // EMR population failure is non-fatal for the approval itself
-      req.log.info({ err: emrErr }, '[questionnaire/doctor-approve] EMR population failed');
+      // EMR population failure is non-fatal for the approval itself, but it
+      // leaves emr_populated permanently false with no retry path — log at
+      // warn (not info) and surface the message in the response so staff
+      // know to link the patient record and re-run population manually.
+      emrError = emrErr instanceof Error ? emrErr.message : String(emrErr);
+      req.log.warn({ err: emrErr }, '[questionnaire/doctor-approve] EMR population failed');
     }
 
     const { data: updated, error: updateErr } = await sb()
@@ -866,7 +1362,7 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
       payload: { event: 'doctor_approved', doctorUserId, encounterId },
     });
 
-    res.json({ approved: true, encounterId });
+    res.json({ approved: true, encounterId, emrPopulated: encounterId !== null, emrError });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/doctor-approve] error');
     res.status(502).json({ error: String(err) });

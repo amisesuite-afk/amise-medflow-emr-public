@@ -92,6 +92,7 @@ pnpm run build                                 # Typecheck + build all packages
 - Triage rules in `lib/triage-engine` must stay in sync with the copy in `artifacts/dashboard/src/lib/` until the dashboard imports the shared lib directly via Vite bundling.
 - Google service account needs domain-wide delegation for `gmail.modify`, `gmail.send`, and `calendar` scopes.
 - Patient records and audit logs live in Supabase — the Replit DB is not used.
+- **Every new table needs an explicit `grant ... to service_role` (in addition to `authenticated`).** `artifacts/api-server`'s `sb()` client connects as `service_role` — RLS is bypassed for that role, but the underlying table-level GRANT is still checked first, so a missing grant causes `permission denied for table X` (42501) → HTTP 502 on any endpoint touching that table. This bit `patients`, `documents`, `clinical_notes`, etc. (fixed in `supabase-service-role-grants-fix-migration.sql`) — when adding a new migration, grant `service_role` alongside `authenticated` from the start instead of patching it later.
 
 ## Tone
 

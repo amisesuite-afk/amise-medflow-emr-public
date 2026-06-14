@@ -53,78 +53,83 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     };
   };
 
-  const booking = await getBookingById(bookingId);
-  if (!booking) return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+  try {
+    const booking = await getBookingById(bookingId);
+    if (!booking) return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
 
-  // Find the priority slot (or use staff override)
-  const slot = overrideSlot ?? await findUrgentSlot(booking.appointment_type);
+    // Find the priority slot (or use staff override)
+    const slot = overrideSlot ?? await findUrgentSlot(booking.appointment_type);
 
-  if (!slot) {
-    // Absolute fallback — should not happen given squeeze logic, but defend
-    await logAudit(bookingId, 'urgent_slot_not_found', `nurse:${nurseId}`, {});
-    return NextResponse.json({
-      error: 'No slot found even with squeeze. Please arrange a telephone review immediately and contact the patient directly.',
-      fallback: 'telephone_review',
-    }, { status: 200 });
-  }
+    if (!slot) {
+      // Absolute fallback — should not happen given squeeze logic, but defend
+      await logAudit(bookingId, 'urgent_slot_not_found', `nurse:${nurseId}`, {});
+      return NextResponse.json({
+        error: 'No slot found even with squeeze. Please arrange a telephone review immediately and contact the patient directly.',
+        fallback: 'telephone_review',
+      }, { status: 200 });
+    }
 
-  const slotStartIso = typeof slot.start === 'string' ? slot.start : slot.start.toISOString();
+    const slotStartIso = typeof slot.start === 'string' ? slot.start : slot.start.toISOString();
 
-  // Create calendar event — must succeed before confirmation is sent
-  const eventResult = await createCalendarEvent({
-    appointmentType: slot.appointmentType,
-    location:        slot.location,
-    start:           new Date(slotStartIso),
-    end:             new Date(typeof slot.end === 'string' ? slot.end : slot.end.toISOString()),
-    patientName:     booking.patient_name,
-    patientPhone:    booking.patient_phone ?? '',
-    reason:          booking.reason ?? undefined,
-  });
-
-  if (!eventResult) {
-    return NextResponse.json({
-      error: 'Calendar write failed — appointment not confirmed.',
-    }, { status: 502 });
-  }
-
-  // Persist
-  await updateBookingRequest(bookingId, {
-    status:          'staff_confirmed',
-    confirmed_slot:  slotStartIso,
-    google_event_id: eventResult.eventId,
-    triage_acuity:   'urgent',
-    notes:           `Urgent slot confirmed by nurse:${nurseId}`,
-  });
-
-  await logAudit(bookingId, 'urgent_slot_confirmed', `nurse:${nurseId}`, {
-    slot:            slot.display,
-    calendar_event:  eventResult.eventId,
-  });
-
-  // Send confirmation via WhatsApp/SMS
-  const phone = booking.patient_phone ?? '';
-  if (phone) {
-    const msg        = urgentConfirmation(booking.patient_name, slot);
-    const isWhatsApp = phone.toLowerCase().startsWith('whatsapp:');
-    await (isWhatsApp ? sendWhatsApp : sendSms)(phone, msg);
-  }
-
-  // Send email with full procedure instructions (non-blocking)
-  const email = (booking as { patient_email?: string | null }).patient_email;
-  if (email) {
-    void sendConfirmationEmail({
-      to:              email,
+    // Create calendar event — must succeed before confirmation is sent
+    const eventResult = await createCalendarEvent({
+      appointmentType: slot.appointmentType,
+      location:        slot.location,
+      start:           new Date(slotStartIso),
+      end:             new Date(typeof slot.end === 'string' ? slot.end : slot.end.toISOString()),
       patientName:     booking.patient_name,
-      appointmentType: booking.appointment_type,
-      slot:            { display: slot.display, location: slot.location },
-      track:           'urgent',
-      isConfirmed:     true,
-    }).catch(console.error);
-  }
+      patientPhone:    booking.patient_phone ?? '',
+      reason:          booking.reason ?? undefined,
+    });
 
-  return NextResponse.json({
-    success:        true,
-    slot:           slot.display,
-    googleEventId:  eventResult.eventId,
-  });
+    if (!eventResult) {
+      return NextResponse.json({
+        error: 'Calendar write failed — appointment not confirmed.',
+      }, { status: 502 });
+    }
+
+    // Persist
+    await updateBookingRequest(bookingId, {
+      status:          'staff_confirmed',
+      confirmed_slot:  slotStartIso,
+      google_event_id: eventResult.eventId,
+      triage_acuity:   'urgent',
+      notes:           `Urgent slot confirmed by nurse:${nurseId}`,
+    });
+
+    await logAudit(bookingId, 'urgent_slot_confirmed', `nurse:${nurseId}`, {
+      slot:            slot.display,
+      calendar_event:  eventResult.eventId,
+    });
+
+    // Send confirmation via WhatsApp/SMS
+    const phone = booking.patient_phone ?? '';
+    if (phone) {
+      const msg        = urgentConfirmation(booking.patient_name, slot);
+      const isWhatsApp = phone.toLowerCase().startsWith('whatsapp:');
+      await (isWhatsApp ? sendWhatsApp : sendSms)(phone, msg);
+    }
+
+    // Send email with full procedure instructions (non-blocking)
+    const email = (booking as { patient_email?: string | null }).patient_email;
+    if (email) {
+      void sendConfirmationEmail({
+        to:              email,
+        patientName:     booking.patient_name,
+        appointmentType: booking.appointment_type,
+        slot:            { display: slot.display, location: slot.location },
+        track:           'urgent',
+        isConfirmed:     true,
+      }).catch(console.error);
+    }
+
+    return NextResponse.json({
+      success:        true,
+      slot:           slot.display,
+      googleEventId:  eventResult.eventId,
+    });
+  } catch (err) {
+    console.error('[booking/urgent] Unhandled error:', err);
+    return NextResponse.json({ error: 'Failed to confirm urgent slot. Please arrange a telephone review and contact the patient directly.' }, { status: 500 });
+  }
 }

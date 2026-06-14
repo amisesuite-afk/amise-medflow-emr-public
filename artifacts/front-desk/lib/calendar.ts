@@ -13,7 +13,7 @@ const SLOT_RULES: Record<string, {
   new_consult:   { durationMin: 45, location: 'rodney_bay', days: [1, 4, 5], windowStart: '10:00', windowEnd: '17:00', bufferAfterMin: 5  },
   follow_up:     { durationMin: 15, location: 'castries',   days: [2, 4],    windowStart: '09:00', windowEnd: '12:00', bufferAfterMin: 5  },
   post_op:       { durationMin: 20, location: 'castries',   days: [2, 4],    windowStart: '09:00', windowEnd: '12:00', bufferAfterMin: 5  },
-  ercp_workup:   { durationMin: 30, location: 'rodney_bay', days: [1],       windowStart: '14:00', windowEnd: '16:00', bufferAfterMin: 10 },
+  ercp_workup:   { durationMin: 30, location: 'tapion',     days: [1],       windowStart: '14:00', windowEnd: '16:00', bufferAfterMin: 10 },
   breast:        { durationMin: 45, location: 'rodney_bay', days: [3],       windowStart: '14:00', windowEnd: '17:00', bufferAfterMin: 15 },
   telephone:     { durationMin: 15, location: 'remote',     days: [1,2,3,4,5],windowStart: '08:00', windowEnd: '16:00', bufferAfterMin: 5  },
   diabetic_foot: { durationMin: 30, location: 'rodney_bay', days: [1, 3, 5], windowStart: '10:00', windowEnd: '14:00', bufferAfterMin: 10 },

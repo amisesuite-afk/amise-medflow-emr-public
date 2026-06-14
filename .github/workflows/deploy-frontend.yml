@@ -115,6 +115,20 @@ jobs:
           print(f\"rootDirectory={r.get('rootDirectory')}  framework={r.get('framework')}\")
           " || true
 
+          # This is a public patient-facing site — disable Vercel Authentication /
+          # password protection so staff and patients don't need a Vercel account to view it.
+          echo "=== Disabling deployment protection (public site) ==="
+          curl -sf -X PATCH \
+            "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"ssoProtection": null, "passwordProtection": null}' \
+            | python3 -c "
+          import sys, json
+          r = json.load(sys.stdin)
+          print(f\"ssoProtection={r.get('ssoProtection')}  passwordProtection={r.get('passwordProtection')}\")
+          " || true
+
           # Upsert NEXT_PUBLIC env vars so they are available during Vercel's build
           echo "=== Setting env vars ==="
           for payload in \
@@ -137,6 +151,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ steps.vercel-ids.outputs.project_id }}
           NEXT_PUBLIC_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
+          NEXT_PUBLIC_SITE_URL: https://front-desk-amisesuite-afks-projects.vercel.app
         run: |
           set -e
           echo '=== Vercel deploy (production from source) ==='

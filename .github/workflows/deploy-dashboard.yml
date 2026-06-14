@@ -134,6 +134,20 @@ jobs:
           print(f\"rootDirectory={r.get('rootDirectory')}  framework={r.get('framework')}\")
           " || true
 
+          # Staff sign in via Supabase auth (AuthGuard) — disable Vercel
+          # Authentication / password protection so staff don't also need a Vercel account.
+          echo "=== Disabling deployment protection ==="
+          curl -sf -X PATCH \
+            "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"ssoProtection": null, "passwordProtection": null}' \
+            | python3 -c "
+          import sys, json
+          r = json.load(sys.stdin)
+          print(f\"ssoProtection={r.get('ssoProtection')}  passwordProtection={r.get('passwordProtection')}\")
+          " || true
+
           echo "=== Setting VITE_ env vars ==="
           for payload in \
             '{"key":"VITE_SUPABASE_URL","value":"https://nornhfzfrlmfzaqmrzzp.supabase.co","target":["production","preview","development"],"type":"plain"}' \
@@ -155,6 +169,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ steps.vercel-ids.outputs.project_id }}
           VITE_SUPABASE_URL: https://nornhfzfrlmfzaqmrzzp.supabase.co
           VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
+          VITE_API_URL: https://amise-medflow-api.onrender.com
         run: |
           set -e
           echo '=== Vercel deploy (production from source) ==='

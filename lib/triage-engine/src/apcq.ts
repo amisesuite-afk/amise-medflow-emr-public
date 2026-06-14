@@ -548,7 +548,7 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'current_medications',
     'allergies',
   ],
-  breast_surgery: [
+  breast: [
     'chief_complaint',
     'breast_lump_duration',
     'breast_lump_change',

@@ -399,6 +399,14 @@ grant select, insert, update on public.billing_charges       to authenticated;
 grant select, insert, update on public.imaging_orders        to authenticated;
 grant select, insert, update on public.investigation_results to authenticated;
 
+-- service_role (artifacts/api-server's sb() client) needs full table
+-- privileges — see supabase-service-role-grants-fix-migration.sql.
+grant select, insert, update, delete on public.clinical_notes        to service_role;
+grant select, insert, update, delete on public.documents             to service_role;
+grant select, insert, update, delete on public.billing_charges       to service_role;
+grant select, insert, update, delete on public.imaging_orders        to service_role;
+grant select, insert, update, delete on public.investigation_results to service_role;
+
 -- ─────────────────────────────────────────────────────────────
 -- SUPABASE STORAGE BUCKET (run separately or via Supabase CLI)
 -- ─────────────────────────────────────────────────────────────

@@ -1,4 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getApiOrigin } from '@/lib/api-origin';
+import { getSupabase } from '@/lib/supabase';
+import { useAppContext } from '@/context/AppContext';
+
+const API_ORIGIN = getApiOrigin();
+function apiUrl(path: string) {
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -110,7 +119,10 @@ function redFlagBadgeStyle(severity: 'high' | 'medium' | 'low'): React.CSSProper
 }
 
 function buildPatientUrl(token: string): string {
-  return `${window.location.origin}/questionnaire/${token}`;
+  const raw = (import.meta.env.VITE_PATIENT_APP_URL as string | undefined) ?? '';
+  const base = raw.trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/, '')
+    || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+  return `${base}/questionnaire/${token}`;
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
@@ -234,11 +246,18 @@ function QueueSessionRow({ session }: { session: QueueSession }) {
 // ── Main Component ─────────────────────────────────────────────────────────────
 
 export default function QuestionnaireManagerTab() {
+  const { patientId: checkedInPatientId, patientName: checkedInPatientName } = useAppContext();
+
   // Form state
   const [templateKey, setTemplateKey] = useState<TemplateKey>('general_screening');
   const [mode, setMode] = useState<SessionMode>('screening');
   const [patientPhone, setPatientPhone] = useState('');
   const [patientName, setPatientName] = useState('');
+
+  // Prefill the patient name from the most recently checked-in patient
+  useEffect(() => {
+    if (checkedInPatientName && !patientName) setPatientName(checkedInPatientName);
+  }, [checkedInPatientName, patientName]);
 
   // State machine
   const [appState, setAppState] = useState<AppState>('idle');
@@ -261,8 +280,12 @@ export default function QuestionnaireManagerTab() {
 
   const fetchQueue = useCallback(async () => {
     try {
-      const res = await fetch('/api/questionnaire/nurse/queue', {
-        headers: { Authorization: 'Bearer internal' },
+      const client = getSupabase();
+      const session = client ? (await client.auth.getSession()).data.session : null;
+      const res = await fetch(apiUrl('/api/questionnaire/nurse/queue'), {
+        headers: session?.access_token
+          ? { Authorization: `Bearer ${session.access_token}` }
+          : {},
       });
       if (res.ok) {
         const data = await res.json() as QueueResponse;
@@ -290,13 +313,14 @@ export default function QuestionnaireManagerTab() {
     setSmsResult(null);
 
     try {
-      const res = await fetch('/api/questionnaire/session/start', {
+      const res = await fetch(apiUrl('/api/questionnaire/session/start'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           templateKey,
           mode,
           patientName: patientName.trim() || undefined,
+          patientId: checkedInPatientId ?? undefined,
         }),
       });
 
@@ -329,7 +353,7 @@ export default function QuestionnaireManagerTab() {
     setSmsResult(null);
 
     try {
-      const res = await fetch('/api/questionnaire/send-sms', {
+      const res = await fetch(apiUrl('/api/questionnaire/send-sms'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -446,6 +470,21 @@ export default function QuestionnaireManagerTab() {
             />
           </div>
         </div>
+
+        {/* Patient linkage indicator */}
+        {appState !== 'ready' && (
+          <div
+            className="px-3 py-2 rounded-lg text-xs mb-4"
+            style={checkedInPatientId
+              ? { background: '#f0fdf4', border: '1px solid #86efac', color: '#166534' }
+              : { background: '#fffbeb', border: '1px solid #fde68a', color: '#92400e' }
+            }
+          >
+            {checkedInPatientId
+              ? <>Linked to <strong>{checkedInPatientName || 'checked-in patient'}</strong>'s record — responses will be added to their EMR chart once reviewed and approved.</>
+              : 'No patient record linked — check this patient in first so responses can be added to their EMR chart.'}
+          </div>
+        )}
 
         {/* Launch error */}
         {launchError && (

@@ -52,6 +52,7 @@ export interface FullPatientInput {
   phone: string;
   email: string;
   address: string;
+  quarter: string;
   referredBy: string;
   insuranceProvider: string;
   policyNumber: string;
@@ -119,6 +120,7 @@ export async function savePatientFull(
   if (input.phone.trim())              row.phone                = input.phone.trim();
   if (input.email.trim())              row.email                = input.email.trim();
   if (input.address.trim())            row.address              = input.address.trim();
+  if (input.quarter.trim())            row.quarter              = input.quarter.trim();
   if (input.referredBy.trim())         row.referred_by          = input.referredBy.trim();
   if (input.insuranceProvider.trim())  row.insurance_provider   = input.insuranceProvider.trim();
   if (input.policyNumber.trim())       row.policy_number        = input.policyNumber.trim();
@@ -540,7 +542,385 @@ export async function getLatestOpenEncounter(
   return { encounterId: (data as { id: string } | null)?.id ?? null, error: null };
 }
 
-// ─── logPaneSession ───────────────────────────────────────────────────────────
+// ─── saveVitalsRecord ─────────────────────────────────────────────────────────
+
+/** Maps a VitalRecord (from the monitoring tab's wheel-entry) to the `vitals`
+ *  table. GCS/pain/urine don't have dedicated vitals columns — they're omitted
+ *  from this insert (the ward monitoring display retains them locally). */
+export async function saveVitalsRecord(
+  rec: {
+    timestamp: string;
+    sbp?: string; dbp?: string; hr?: string; temp?: string;
+    spo2?: string; rr?: string; weight?: string;
+  },
+  patientId: string,
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveVitalsRecord') };
+
+  const n = (v?: string): number | null => {
+    const p = parseFloat(v ?? '');
+    return Number.isFinite(p) ? p : null;
+  };
+
+  const row: Record<string, unknown> = {
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    recorded_at:  new Date(rec.timestamp).toISOString(),
+  };
+  const map: Array<[string, number | null]> = [
+    ['bp_systolic',      n(rec.sbp)],
+    ['bp_diastolic',     n(rec.dbp)],
+    ['heart_rate',       n(rec.hr)],
+    ['temperature_c',    n(rec.temp)],
+    ['oxygen_saturation',n(rec.spo2)],
+    ['respiratory_rate', n(rec.rr)],
+    ['weight_kg',        n(rec.weight)],
+  ];
+  for (const [col, val] of map) {
+    if (val !== null) row[col] = val;
+  }
+
+  const { error } = await supabase.from('vitals').insert(row);
+  if (error) { console.error('[db] saveVitalsRecord:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── saveLabPanel ─────────────────────────────────────────────────────────────
+
+const LAB_CATEGORY: Record<string, string> = {
+  'FBC': 'haematology',
+  'Metabolic / UEC': 'biochemistry',
+  'LFT': 'biochemistry',
+  'Coagulation': 'haematology',
+  'Inflammatory': 'biochemistry',
+  'Cardiac': 'cardiac',
+  'Pancreatic / GI': 'biochemistry',
+  'Urine': 'urine',
+  'Stool': 'stool',
+};
+
+/** Maps a LabRecord (from the monitoring tab's lab panel entry) to a row in
+ *  `investigation_results`, using the analytes JSONB column for multi-test
+ *  panels and flagging critical values for physician notification. */
+export async function saveLabPanel(
+  rec: {
+    timestamp: string;
+    panel: string;
+    tests: Array<{ name: string; value: string; unit: string; refRange: string; flag: '' | 'H' | 'L' | 'C' }>;
+  },
+  patientId: string,
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveLabPanel') };
+
+  const analytes = rec.tests.map(t => ({
+    name: t.name, value: t.value, unit: t.unit, ref: t.refRange,
+    abnormal: t.flag === 'H' || t.flag === 'L' || t.flag === 'C',
+    critical: t.flag === 'C',
+  }));
+
+  const row = {
+    encounter_id:  encounterId,
+    patient_id:    patientId,
+    test_name:     rec.panel,
+    test_category: LAB_CATEGORY[rec.panel] ?? 'other',
+    analytes,
+    is_abnormal:   rec.tests.some(t => t.flag !== ''),
+    is_critical:   rec.tests.some(t => t.flag === 'C'),
+    status:        'resulted',
+    collected_at:  new Date(rec.timestamp).toISOString(),
+  };
+
+  const { error } = await supabase.from('investigation_results').insert(row);
+  if (error) { console.error('[db] saveLabPanel:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── saveClinicalNote ─────────────────────────────────────────────────────────
+
+/** Persists a ProgressNote to `clinical_notes` as a SOAP-formatted text note
+ *  in `draft` status. The physician can later sign it (status → 'signed').
+ *  The note is marked ai_assisted: false because it's staff-authored. */
+export async function saveClinicalNote(
+  note: {
+    date: string;
+    type: string;
+    interval: string;
+    chiefComplaint: string;
+    symptoms: string[];
+    intervalHistory: string;
+    vitals: Partial<Record<string, string>>;
+    examGeneral: string; examCvs: string; examRs: string;
+    examAbdomen: string; examWound: string; examLimbs: string; examOther: string;
+    assessment: string;
+    plan: string;
+  },
+  patientId: string,
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveClinicalNote') };
+
+  const parts: string[] = [];
+
+  // S
+  const sLines: string[] = [];
+  if (note.chiefComplaint) sLines.push(`CC: ${note.chiefComplaint}`);
+  if (note.symptoms.length) sLines.push(`Symptoms: ${note.symptoms.join(', ')}`);
+  if (note.intervalHistory) sLines.push(`Interval history: ${note.intervalHistory}`);
+  if (note.interval) sLines.push(`Interval: ${note.interval}`);
+  if (sLines.length) parts.push(`S (Subjective)\n${sLines.join('\n')}`);
+
+  // O
+  const oLines: string[] = [];
+  const vEntries = Object.entries(note.vitals).filter(([, v]) => v?.trim());
+  if (vEntries.length) oLines.push(`Vitals: ${vEntries.map(([k, v]) => `${k} ${v}`).join(', ')}`);
+  const examSections: [string, string][] = [
+    ['General', note.examGeneral], ['CVS', note.examCvs], ['RS', note.examRs],
+    ['Abdomen', note.examAbdomen], ['Wound', note.examWound], ['Limbs', note.examLimbs],
+    ['Other', note.examOther],
+  ];
+  for (const [label, text] of examSections) {
+    if (text?.trim()) oLines.push(`${label}: ${text.trim()}`);
+  }
+  if (oLines.length) parts.push(`O (Objective)\n${oLines.join('\n')}`);
+
+  // A
+  if (note.assessment?.trim()) parts.push(`A (Assessment)\n${note.assessment.trim()}`);
+
+  // P
+  if (note.plan?.trim()) parts.push(`P (Plan)\n${note.plan.trim()}`);
+
+  const content = parts.join('\n\n') || '(No content entered)';
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    note_type:    'soap',
+    status:       'draft',
+    content,
+    ai_assisted:  false,
+  });
+
+  if (error) { console.error('[db] saveClinicalNote:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── syncAllergyList ──────────────────────────────────────────────────────────
+
+/** Upserts each allergen in the list as an active row for the patient.
+ *  Uses the allergen_ci generated column (lower-case) as the conflict target,
+ *  so re-saving the same list is idempotent. Does NOT deactivate allergens
+ *  that were removed from the chip list — those require an explicit clinical
+ *  "mark resolved" action, not a UI toggle. */
+export async function syncAllergyList(
+  patientId: string,
+  allergens: string[],
+): Promise<{ error: string | null }> {
+  if (!supabase || !allergens.length) return { error: null };
+
+  const rows = allergens.map(a => ({
+    patient_id: patientId,
+    allergen:   a.trim(),
+    status:     'active' as const,
+  }));
+
+  const { error } = await supabase
+    .from('allergies')
+    .upsert(rows, { onConflict: 'patient_id,allergen_ci' })
+    .select();
+
+  if (error) { console.error('[db] syncAllergyList:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── syncMedicationList ───────────────────────────────────────────────────────
+
+/** Replaces the 'consultation-list' medication snapshot for this encounter.
+ *  Deletes all rows tagged indication='consultation-list' for this
+ *  patient+encounter, then re-inserts the current chip selection and the
+ *  free-text block. Clean and idempotent across repeated saves. */
+export async function syncMedicationList(
+  patientId: string,
+  encounterId: string,
+  chipMeds: string[],
+  freeText: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('syncMedicationList') };
+
+  const { error: delErr } = await supabase
+    .from('medications')
+    .delete()
+    .eq('patient_id', patientId)
+    .eq('encounter_id', encounterId)
+    .eq('indication', 'consultation-list');
+  if (delErr) { console.error('[db] syncMedicationList delete:', delErr); return { error: delErr.message }; }
+
+  const rows: Array<Record<string, unknown>> = chipMeds.map(d => ({
+    patient_id:   patientId,
+    encounter_id: encounterId,
+    drug_name:    d,
+    status:       'active',
+    indication:   'consultation-list',
+  }));
+
+  if (freeText.trim()) {
+    rows.push({
+      patient_id:   patientId,
+      encounter_id: encounterId,
+      drug_name:    freeText.trim().slice(0, 255),
+      status:       'active',
+      indication:   'consultation-list',
+      dose:         '(see notes)',
+    });
+  }
+
+  if (!rows.length) return { error: null };
+
+  const { error: insErr } = await supabase.from('medications').insert(rows);
+  if (insErr) { console.error('[db] syncMedicationList insert:', insErr); return { error: insErr.message }; }
+  return { error: null };
+}
+
+// ─── saveExamFindings ─────────────────────────────────────────────────────────
+
+const EXAM_SYSTEM_LABELS: Record<string, string> = {
+  general: 'General', cardiovascular: 'Cardiovascular', respiratory: 'Respiratory',
+  abdomen: 'Abdomen', breast: 'Breast/Local', wound: 'Wound/Diabetic foot',
+  neurological: 'Neurological', extremities: 'Extremities',
+};
+const EXAM_SYSTEM_ORDER = Object.keys(EXAM_SYSTEM_LABELS);
+
+/** Replaces the 'consultation' examination snapshot for this encounter.
+ *  Deletes any existing consultation note tagged with the sentinel prefix,
+ *  then inserts a fresh serialisation of the chip + free-text findings. */
+export async function saveExamFindings(
+  examFindings: Record<string, string[]>,
+  examNotes: Record<string, string>,
+  patientId: string,
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveExamFindings') };
+
+  const hasContent =
+    Object.values(examFindings).some(arr => arr.length > 0) ||
+    Object.values(examNotes).some(s => s.trim());
+  if (!hasContent) return { error: null };
+
+  const parts: string[] = [];
+  for (const sys of EXAM_SYSTEM_ORDER) {
+    const chips = examFindings[sys] ?? [];
+    const note  = examNotes[sys]?.trim() ?? '';
+    if (!chips.length && !note) continue;
+    const findings: string[] = [];
+    if (chips.length) findings.push(chips.join(', '));
+    if (note) findings.push(note);
+    parts.push(`${EXAM_SYSTEM_LABELS[sys]}: ${findings.join('. ')}`);
+  }
+  const content = '[EXAMINATION]\n' + (parts.join('\n') || '(No findings entered)');
+
+  // Delete the previous examination snapshot for this encounter, then re-insert
+  await supabase.from('clinical_notes')
+    .delete()
+    .eq('encounter_id', encounterId)
+    .like('content', '[EXAMINATION]%');
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    note_type:    'consultation',
+    status:       'draft',
+    content,
+    ai_assisted:  false,
+  });
+
+  if (error) { console.error('[db] saveExamFindings:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── closeEncounter ───────────────────────────────────────────────────────────
+
+export async function closeEncounter(
+  encounterId: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('closeEncounter') };
+
+  const { error } = await supabase
+    .from('encounters')
+    .update({ status: 'closed' })
+    .eq('id', encounterId);
+
+  if (error) { console.error('[db] closeEncounter:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── loadEncounterData ────────────────────────────────────────────────────────
+
+export interface EncounterData {
+  assessment: string;
+  differentials: string;
+  icdCodes: string[];
+  plan: string;
+  allergens: string[];
+  medications: string[];
+}
+
+/** Fetches the clinical snapshot for an encounter: assessment, plan, allergies,
+ *  and consultation-list medications. Used to repopulate AppContext when a
+ *  returning patient is loaded from the patient registry. */
+export async function loadEncounterData(
+  encounterId: string,
+  patientId: string,
+): Promise<{ data: EncounterData; error: null } | { data: null; error: string }> {
+  if (!supabase) return { data: null, error: notConfigured('loadEncounterData') };
+
+  const [assessRes, planRes, allergyRes, medRes] = await Promise.all([
+    supabase.from('assessments')
+      .select('diagnosis, differentials, icd10_code')
+      .eq('encounter_id', encounterId)
+      .maybeSingle(),
+    supabase.from('plans')
+      .select('description')
+      .eq('encounter_id', encounterId)
+      .eq('plan_type', 'management')
+      .maybeSingle(),
+    supabase.from('allergies')
+      .select('allergen')
+      .eq('patient_id', patientId)
+      .eq('status', 'active'),
+    supabase.from('medications')
+      .select('drug_name')
+      .eq('patient_id', patientId)
+      .eq('encounter_id', encounterId)
+      .eq('indication', 'consultation-list')
+      .eq('status', 'active'),
+  ]);
+
+  const firstError = assessRes.error ?? planRes.error ?? allergyRes.error ?? medRes.error;
+  if (firstError) {
+    console.error('[db] loadEncounterData:', firstError);
+    return { data: null, error: firstError.message };
+  }
+
+  const assessRow = assessRes.data as { diagnosis: string | null; differentials: string | null; icd10_code: string | null } | null;
+  const planRow   = planRes.data   as { description: string | null } | null;
+  const allergyRows = (allergyRes.data ?? []) as { allergen: string }[];
+  const medRows     = (medRes.data   ?? []) as { drug_name: string }[];
+
+  return {
+    data: {
+      assessment:    assessRow?.diagnosis    ?? '',
+      differentials: assessRow?.differentials ?? '',
+      icdCodes:      assessRow?.icd10_code
+        ? assessRow.icd10_code.split(',').map(s => s.trim()).filter(Boolean)
+        : [],
+      plan:          planRow?.description ?? '',
+      allergens:     allergyRows.map(r => r.allergen),
+      medications:   medRows.map(r => r.drug_name),
+    },
+    error: null,
+  };
+}
 
 export interface PaneSessionLog {
   encounter_id: string | null;

@@ -57,6 +57,29 @@ router.post('/api/intake/run', async (req, res) => {
         continue;
       }
 
+      if (classification.category === 'admin' && triageResult.recommendedAction !== 'draft_supervised') {
+        const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+        const reply = await draftReply({
+          template: 'general_enquiry',
+          patientFirstName: classification.patient_first_name,
+          triageFormUrl: `${baseUrl}/patient/request`,
+        });
+
+        if (!reply.safe) {
+          req.log.warn({ violations: reply.violations }, '[intake] unsafe general-enquiry draft — saving to review queue');
+          await audit({ action: 'skip', entityType: 'gmail_message', entityId: id, payload: { violations: reply.violations } });
+          results.push({ id, action: 'skipped_unsafe', reason: 'Forbidden content in draft' });
+          await markRead(id);
+          continue;
+        }
+
+        await sendOrDraft({ to: msg.from, subject: reply.subject, body: reply.body, threadId: msg.threadId }, mode as 'dry_run' | 'supervised' | 'auto');
+        await audit({ action: 'send', entityType: 'gmail_message', entityId: id, payload: { reason: 'general_enquiry' } });
+        results.push({ id, action: 'auto_replied_general_enquiry' });
+        await markRead(id);
+        continue;
+      }
+
       if (triageResult.recommendedAction === 'draft_supervised' || !triageResult.appointmentType) {
         const reply = await draftReply({ template: 'out_of_scope', patientFirstName: classification.patient_first_name });
         await sendOrDraft({ to: msg.from, subject: reply.subject, body: reply.body, threadId: msg.threadId }, 'supervised');

@@ -157,6 +157,31 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
   }
 });
 
+// POST /api/booking/waitlist/:id — staff parks a request that can't be slotted
+// immediately (e.g. fully-booked procedure list) without losing it in "pending"
+router.post('/api/booking/waitlist/:id', async (req, res) => {
+  const { id } = req.params;
+  const { notes } = req.body ?? {};
+
+  try {
+    const supa = getSupabaseAdmin();
+    const { error } = await supa
+      .from('appointment_requests')
+      .update({ status: 'waitlisted', notes: notes ?? null })
+      .eq('id', id)
+      .eq('status', 'pending');
+
+    if (error) throw error;
+
+    await audit({ action: 'book', entityType: 'appointment_request', entityId: id, payload: { status: 'waitlisted' } });
+    logger.info({ id }, '[booking/waitlist] waitlisted');
+    res.json({ id, status: 'waitlisted' });
+  } catch (err) {
+    logger.error({ err }, '[booking/waitlist] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
 // POST /api/booking/patient-confirm/:id — patient confirms 48 hrs prior; creates Google Calendar event
 router.post('/api/booking/patient-confirm/:id', async (req, res) => {
   const { id } = req.params;
@@ -212,6 +237,36 @@ router.post('/api/booking/patient-confirm/:id', async (req, res) => {
     res.json({ id, status: 'patient_confirmed', google_event_id: googleEventId });
   } catch (err) {
     logger.error({ err }, '[booking/patient-confirm] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
+// POST /api/booking/cancel/:id — staff cancels a request that hasn't been
+// patient-confirmed yet (pending, waitlisted, or staff_confirmed)
+router.post('/api/booking/cancel/:id', async (req, res) => {
+  const { id } = req.params;
+  const { reason } = req.body ?? {};
+
+  try {
+    const supa = getSupabaseAdmin();
+    const { data, error } = await supa
+      .from('appointment_requests')
+      .update({ status: 'cancelled', notes: reason ?? null })
+      .eq('id', id)
+      .in('status', ['pending', 'waitlisted', 'staff_confirmed'])
+      .select('id')
+      .single();
+
+    if (error || !data) {
+      res.status(404).json({ error: 'Request not found or already finalised' });
+      return;
+    }
+
+    await audit({ action: 'skip', entityType: 'appointment_request', entityId: id, payload: { status: 'cancelled', reason: reason ?? null } });
+    logger.info({ id, reason }, '[booking/cancel] cancelled');
+    res.json({ id, status: 'cancelled' });
+  } catch (err) {
+    logger.error({ err }, '[booking/cancel] error');
     res.status(502).json({ error: String(err) });
   }
 });

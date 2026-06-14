@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { AmsiseLogo } from './components/AmsiseLogo';
 
 export const metadata: Metadata = {
   title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
   description:
-    'Dr Dawit Daniel Kabiye, MD, DM. Expert surgical and endoscopy care in Saint Lucia — colonoscopy, ERCP, hernia repair, breast clinic, thyroid surgery, diabetic foot care and more.',
+    'Amise Medical Services — expert surgical and endoscopy care in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM. Colonoscopy, ERCP, hernia repair, breast clinic, thyroid surgery, diabetic foot care and more.',
 };
 
 const WA_TAPION    = 'https://wa.me/17582840557';
@@ -12,31 +13,6 @@ const WA_RODNEY    = 'https://wa.me/17587207111';
 const PHONE_TAPION = '758-284-0557';
 const PHONE_RODNEY = '758-720-7111';
 const EMAIL        = 'info@amisemedical.com';
-
-// ── Logo ─────────────────────────────────────────────────────────────────────
-
-function AmsiseLogo({ dark = false }: { dark?: boolean }) {
-  const text = dark ? '#fff' : '#0d7a74';
-  const sub  = dark ? '#94a3b8' : '#64748b';
-  return (
-    <a href="#home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-      <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
-        <circle cx="21" cy="21" r="21" fill="#0d9488" />
-        {/* Stylised running figure */}
-        <circle cx="25" cy="10" r="3.5" fill="white"/>
-        <path d="M16 38 Q18 28 22 24 Q26 20 28 26 Q30 30 27 34" stroke="white" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-        <path d="M22 24 L18 30 L13 32" stroke="white" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-        {/* Medical cross on upper-right */}
-        <rect x="28" y="6"  width="1.8" height="6"   rx="0.9" fill="white"/>
-        <rect x="25.5" y="8.1" width="6.8" height="1.8" rx="0.9" fill="white"/>
-      </svg>
-      <div>
-        <div style={{ fontSize: 17, fontWeight: 900, color: text, letterSpacing: '0.04em', lineHeight: 1 }}>AMISE</div>
-        <div style={{ fontSize: 8.5, fontWeight: 600, color: sub, letterSpacing: '0.1em', lineHeight: 1.4 }}>MEDICAL SERVICES</div>
-      </div>
-    </a>
-  );
-}
 
 // ── WhatsApp SVG ──────────────────────────────────────────────────────────────
 
@@ -66,7 +42,7 @@ function Nav() {
       borderBottom: '1px solid #e8f0ef', padding: '0 40px',
     }}>
       <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
-        <AmsiseLogo />
+        <AmsiseLogo href="#home" />
 
         {/* Desktop links */}
         <div className="amise-nav-links">
@@ -77,6 +53,14 @@ function Nav() {
               borderBottom: '2px solid transparent',
             }}>{label}</a>
           ))}
+
+          {/* New patient / general info CTA */}
+          <Link href="/patient/request" style={{
+            fontSize: 14, fontWeight: 700, textDecoration: 'none',
+            color: '#0d9488', whiteSpace: 'nowrap',
+          }}>
+            New Patient?
+          </Link>
 
           {/* WhatsApp icon link */}
           <a href={WA_TAPION} target="_blank" rel="noopener noreferrer"
@@ -119,10 +103,9 @@ function Hero() {
   return (
     <section id="home" style={{ position: 'relative', background: '#eef7f6', overflow: 'hidden', minHeight: 580 }}>
       {/* Right-side building/landscape photo */}
-      {/* Drop an aerial Saint Lucia coastal photo at public/locations/hero-bg.jpg */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/locations/hero-bg.jpg"
+        src="/locations/hero-bg-v2.jpg"
         alt=""
         aria-hidden="true"
         style={{
@@ -164,12 +147,23 @@ function Hero() {
         </p>
 
         <p style={{
-          margin: '0 0 36px',
+          margin: '0 0 20px',
           fontSize: 15, color: '#475569', lineHeight: 1.7,
           maxWidth: 400,
         }}>
           Quality care you can trust. Our team is here to guide you every step of the way.
         </p>
+
+        {/* New patient / general info CTA */}
+        <Link href="/patient/request" style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          padding: '10px 20px', marginBottom: 18,
+          background: '#fff', color: '#0d9488',
+          border: '1.5px solid #0d9488', borderRadius: 50,
+          fontSize: 13, fontWeight: 700, textDecoration: 'none',
+        }}>
+          New here? Tell us what you need →
+        </Link>
 
         {/* Primary CTAs */}
         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 18 }}>
@@ -707,7 +701,7 @@ function HowItWorks() {
               Start Questionnaire →
             </Link>
             <div style={{ fontSize: 12, color: '#6b7280' }}>
-              Takes 3–5 minutes. Reduces your consultation time significantly.
+              Takes 3–5 minutes. Helps your consultation stay focused and cover more in the same time.
             </div>
           </div>
 
@@ -726,11 +720,10 @@ function HowItWorks() {
         {/* Photo + floating review card */}
         <div style={{ position: 'relative', paddingBottom: 24 }}>
           <div style={{ borderRadius: 16, overflow: 'hidden', background: '#e2f4f1' }}>
-            {/* Drop a healthcare team photo at public/locations/staff-photo.jpg */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/locations/staff-photo.jpg"
-              alt="Amise Medical Services — clinical team"
+              alt="Rodney Bay / Providence office — Amise Medical Services"
               style={{ width: '100%', height: 380, objectFit: 'cover', objectPosition: 'top', display: 'block' }}
             />
           </div>
@@ -811,7 +804,7 @@ function Footer() {
 
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <AmsiseLogo dark />
+          <AmsiseLogo dark href="#home" />
           <div style={{ borderLeft: '1px solid #1e4a5a', paddingLeft: 14 }}>
             <div style={{ fontSize: 12, color: '#94a3b8', lineHeight: 1.8 }}>
               Surgical, Endoscopy &amp; Specialist Care<br />Saint Lucia
@@ -904,7 +897,7 @@ function Footer() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             <a href="#services" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>What We Treat</a>
             <a href="#offices" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Our Clinics</a>
-            <a href="#about" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>About Dr Kabiye</a>
+            <a href="#about" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>About Amise Medical Services</a>
           </div>
         </div>
       </div>
@@ -938,7 +931,10 @@ export default function HomePage() {
         <section style={{ padding: '48px 40px', background: '#0b2a35', textAlign: 'center' }}>
           <div style={{ maxWidth: 700, margin: '0 auto' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Healthcare Providers</div>
-            <h2 style={{ margin: '0 0 12px', fontSize: 22, fontWeight: 800, color: '#f1f5f9' }}>Refer a Patient to Dr Kabiye</h2>
+            <h2 style={{ margin: '0 0 12px', fontSize: 22, fontWeight: 800, color: '#f1f5f9' }}>Refer a Patient to Amise Medical Services</h2>
+            <p style={{ margin: '0 0 8px', fontSize: 13, color: '#4a7a8a', fontWeight: 600 }}>
+              General &amp; Endoscopic Surgery — led by Dr Dawit Daniel Kabiye, MD, DM
+            </p>
             <p style={{ margin: '0 0 24px', fontSize: 14, color: '#94a3b8', lineHeight: 1.7 }}>
               Structured GP and specialist referral portal with HL7 FHIR R4 support. Priority, routine, and urgent referral tracks. Confirmation sent to you and your patient.
             </p>

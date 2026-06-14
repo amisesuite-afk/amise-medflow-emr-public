@@ -150,3 +150,140 @@ export async function getBookingById(id: string): Promise<BookingRow | null> {
     .single();
   return data as BookingRow | null;
 }
+
+// ── Clinical document AI-extraction review queue ─────────────────────────────
+// Patients upload PDFs/images via the portal; the api-server runs a
+// triage-only Claude extraction pass (structured facts + flags — never a
+// diagnosis) and writes the result back onto the `documents` row. Staff review
+// and acknowledge flagged documents here before anything reaches the chart.
+
+export interface DocumentReviewRow {
+  id: string;
+  patient_id: string;
+  patient_name: string | null;
+  document_type: string;
+  title: string;
+  file_name: string | null;
+  mime_type: string | null;
+  source: string;
+  created_at: string;
+  ai_extraction_status: string;
+  ai_extracted_data: string | null;
+  ai_flags: string | null;
+  ai_extraction_at: string | null;
+  staff_reviewed_by: string | null;
+  staff_reviewed_at: string | null;
+  view_url: string | null;
+}
+
+export async function getDocumentsForReview(limit = 50): Promise<DocumentReviewRow[]> {
+  const { data: docs } = await getServiceClient()
+    .from('documents')
+    .select('id, patient_id, document_type, title, file_name, mime_type, source, storage_path, created_at, ai_extraction_status, ai_extracted_data, ai_flags, ai_extraction_at, staff_reviewed_by, staff_reviewed_at')
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (!docs?.length) return [];
+
+  const patientIds = [...new Set(docs.map(d => d.patient_id).filter(Boolean))];
+  const { data: patients } = await getServiceClient()
+    .from('patients')
+    .select('id, full_name')
+    .in('id', patientIds);
+
+  const nameById = Object.fromEntries((patients ?? []).map(p => [p.id, p.full_name as string]));
+
+  const sb = getServiceClient();
+  const viewUrls = await Promise.all(docs.map(d =>
+    d.storage_path
+      ? sb.storage.from('patient-documents').createSignedUrl(d.storage_path, 3600).then(r => r.data?.signedUrl ?? null)
+      : Promise.resolve(null)
+  ));
+
+  return docs.map((d, i) => {
+    const { storage_path: _storage_path, ...rest } = d;
+    return { ...rest, patient_name: nameById[d.patient_id] ?? null, view_url: viewUrls[i] };
+  }) as DocumentReviewRow[];
+}
+
+
+export async function markDocumentReviewed(id: string, staffUserId: string | null): Promise<void> {
+  const { error } = await getServiceClient()
+    .from('documents')
+    .update({ staff_reviewed_at: new Date().toISOString(), staff_reviewed_by: staffUserId })
+    .eq('id', id);
+  if (error) throw new Error(`markDocumentReviewed: ${error.message}`);
+}
+
+// On-demand "old system" migration — staff attach a patient's historic
+// records (paper/PDF scans from the previous system) while handling a
+// pending request or an upcoming/in-progress encounter, never as a bulk job.
+// Matches an existing patient by email/phone, or creates one (mirrors the
+// match-or-create logic used when a consultation request is "registered").
+export async function findOrCreatePatientForBooking(
+  booking: { patient_name: string; patient_email: string | null; patient_phone: string | null },
+): Promise<string> {
+  const sb = getServiceClient();
+  const normalEmail = booking.patient_email?.trim().toLowerCase() || null;
+
+  if (normalEmail) {
+    const { data: existing } = await sb.from('patients').select('id').eq('email', normalEmail).maybeSingle();
+    if (existing) return existing.id;
+  }
+  if (booking.patient_phone) {
+    const { data: existing } = await sb.from('patients').select('id').eq('phone', booking.patient_phone).maybeSingle();
+    if (existing) return existing.id;
+  }
+
+  const { data: created, error } = await sb
+    .from('patients')
+    .insert({ full_name: booking.patient_name, phone: booking.patient_phone, email: normalEmail })
+    .select('id')
+    .single();
+  if (error) throw new Error(`findOrCreatePatientForBooking: ${error.message}`);
+  return created.id;
+}
+
+export interface RegisterHistoricDocumentArgs {
+  patientId: string;
+  documentType: string;
+  title: string;
+  fileName: string;
+  mimeType: string;
+  fileBuffer: Buffer;
+}
+
+const DOCUMENTS_BUCKET = 'patient-documents';
+
+export async function registerHistoricDocument(args: RegisterHistoricDocumentArgs): Promise<string> {
+  const sb = getServiceClient();
+  const ts = Date.now();
+  const safeName = args.fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+  // `staff/` prefix distinguishes staff-attached historic scans from
+  // patient-portal uploads (which live under their own auth user id).
+  const path = `staff/${args.patientId}/${ts}_${safeName}`;
+
+  const { error: uploadErr } = await sb.storage.from(DOCUMENTS_BUCKET).upload(path, args.fileBuffer, {
+    contentType: args.mimeType,
+    upsert: false,
+  });
+  if (uploadErr) throw new Error(`registerHistoricDocument upload: ${uploadErr.message}`);
+
+  const { data, error } = await sb
+    .from('documents')
+    .insert({
+      patient_id:           args.patientId,
+      document_type:        args.documentType,
+      title:                args.title,
+      file_name:            args.fileName,
+      storage_path:         path,
+      mime_type:            args.mimeType,
+      file_size_bytes:      args.fileBuffer.length,
+      source:               'scanned',
+      ai_extraction_status: 'pending',
+    })
+    .select('id')
+    .single();
+  if (error) throw new Error(`registerHistoricDocument insert: ${error.message}`);
+  return data.id;
+}

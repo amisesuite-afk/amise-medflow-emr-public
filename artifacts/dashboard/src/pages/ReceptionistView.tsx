@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
@@ -11,7 +13,7 @@ import { SL_COMMUNITIES } from '@/data/st-lucia';
 
 type ReceptionistTab = 'checkin' | 'inbox' | 'questionnaire';
 
-const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
@@ -47,6 +49,23 @@ export default function ReceptionistView() {
   const [inviteResult, setInviteResult] = useState<'sent' | 'error' | null>(null);
   const [activeTab, setActiveTab] = useState<ReceptionistTab>('checkin');
   const [pendingCount, setPendingCount] = useState(0);
+  const [referringProviders, setReferringProviders] = useState<string[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch(apiUrl('/api/admin/referring-providers'), { headers: await staffAuthHeaders() });
+        if (r.ok) {
+          const d = await r.json() as { providers: { name: string; provider_type: string; active: boolean }[] };
+          const names = (d.providers ?? [])
+            .filter(p => p.provider_type === 'referring_doctor' && p.active)
+            .map(p => p.name)
+            .sort((a, b) => a.localeCompare(b));
+          setReferringProviders(names);
+        }
+      } catch { /* ignore — falls back to free text */ }
+    })();
+  }, []);
 
   const fetchPendingCount = useCallback(async () => {
     try {
@@ -64,29 +83,12 @@ export default function ReceptionistView() {
     return () => clearInterval(t);
   }, [fetchPendingCount]);
 
-  async function handleInvitePortal() {
-    if (!patientId || !email.trim()) return;
-    setInviting(true);
-    setInviteResult(null);
-    try {
-      const r = await fetch(apiUrl('/api/patient/invite'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ patient_id: patientId, email: email.trim() }),
-      });
-      setInviteResult(r.ok ? 'sent' : 'error');
-    } catch {
-      setInviteResult('error');
-    }
-    setInviting(false);
-  }
-
   async function handleCheckIn() {
     setSaving(true);
     setSaveError(null);
     const { patient, error } = await savePatientFull({
       full_name: patientName, age, dob, sex, phone, email,
-      address, referredBy, insuranceProvider,
+      address, quarter, referredBy, insuranceProvider,
       policyNumber, nhiNumber, preAuthStatus,
     });
     setSaving(false);
@@ -112,6 +114,24 @@ export default function ReceptionistView() {
     setInviteResult(null);
     clearPatient();
     setSaveError(null);
+  }
+
+  async function handleInvitePortal() {
+    if (!patientId || !email.trim()) return;
+    setInviting(true);
+    setInviteResult(null);
+    try {
+      const r = await fetch(apiUrl('/api/patient/invite'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({ patient_id: patientId, email: email.trim() }),
+      });
+      setInviteResult(r.ok ? 'sent' : 'error');
+    } catch {
+      setInviteResult('error');
+    } finally {
+      setInviting(false);
+    }
   }
 
   return (
@@ -225,55 +245,57 @@ export default function ReceptionistView() {
                   <strong>{savedName || 'Patient'}</strong> has been registered and is awaiting the nurse.
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={handleNewPatient}
-                style={{
-                  marginTop: 6,
-                  padding: '13px 34px',
-                  borderRadius: 10,
-                  border: 'none',
-                  background: 'var(--accent)',
-                  color: '#fff',
-                  fontWeight: 800,
-                  fontSize: 15,
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-                }}
-              >
-                + Register Next Patient
-              </button>
-
-              {/* Portal invite */}
-              {email.trim() && patientId && inviteResult === null && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
                 <button
                   type="button"
-                  onClick={() => void handleInvitePortal()}
-                  disabled={inviting}
+                  onClick={handleNewPatient}
                   style={{
-                    padding: '11px 24px',
+                    marginTop: 6,
+                    padding: '13px 34px',
                     borderRadius: 10,
-                    border: '1.5px solid #0d9488',
-                    background: 'transparent',
-                    color: '#0d9488',
-                    fontWeight: 700,
-                    fontSize: 14,
-                    cursor: inviting ? 'not-allowed' : 'pointer',
+                    border: 'none',
+                    background: 'var(--accent)',
+                    color: '#fff',
+                    fontWeight: 800,
+                    fontSize: 15,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
                   }}
                 >
-                  {inviting ? 'Sending…' : '📧 Invite to Patient Portal'}
+                  + Register Next Patient
                 </button>
-              )}
-              {inviteResult === 'sent' && (
-                <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 600 }}>
-                  ✓ Portal invite sent to {email}
-                </div>
-              )}
-              {inviteResult === 'error' && (
-                <div style={{ fontSize: 13, color: '#dc2626' }}>
-                  Invite failed — check API server or try again.
-                </div>
-              )}
+
+                {/* Portal invite */}
+                {email.trim() && patientId && inviteResult === null && (
+                  <button
+                    type="button"
+                    onClick={() => void handleInvitePortal()}
+                    disabled={inviting}
+                    style={{
+                      padding: '11px 24px',
+                      borderRadius: 10,
+                      border: '1.5px solid #0d9488',
+                      background: 'transparent',
+                      color: '#0d9488',
+                      fontWeight: 700,
+                      fontSize: 14,
+                      cursor: inviting ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {inviting ? 'Sending…' : '📧 Invite to Patient Portal'}
+                  </button>
+                )}
+                {inviteResult === 'sent' && (
+                  <div style={{ fontSize: 13, color: '#16a34a', fontWeight: 600 }}>
+                    ✓ Portal invite sent to {email}
+                  </div>
+                )}
+                {inviteResult === 'error' && (
+                  <div style={{ fontSize: 13, color: '#dc2626' }}>
+                    Invite failed — check API server or try again.
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
@@ -381,11 +403,17 @@ export default function ReceptionistView() {
                 <label>Referred by</label>
                 <input
                   type="text"
+                  list="referring-doctors"
                   value={referredBy}
                   onChange={e => setReferredBy(e.target.value)}
                   placeholder="Doctor or facility name…"
                   style={{ padding: '10px 11px' }}
                 />
+                <datalist id="referring-doctors">
+                  {referringProviders.map(name => (
+                    <option key={name} value={name} />
+                  ))}
+                </datalist>
               </div>
             </div>
           </CollapsibleCard>}

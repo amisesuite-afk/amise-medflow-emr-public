@@ -5,6 +5,7 @@ import {
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
   ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, FileQuestion, Inbox,
+  Contact,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -43,10 +44,10 @@ const CLINICAL_SUB: {
   { id: 'scales',      icon: ClipboardCheck, label: 'Scales' },
   { id: 'ros',         icon: ListChecks,     label: 'Review of Systems' },
   { id: 'examination',     icon: Stethoscope,    label: 'Examination',    minRole: 'nurse' },
+  { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },
   { id: 'investigations', icon: FlaskConical,   label: 'Investigations', minRole: 'nurse' },
   { id: 'radiology',      icon: ScanLine,       label: 'Radiology',      minRole: 'nurse' },
   { id: 'attachments',    icon: Paperclip,      label: 'Attachments',    minRole: 'nurse' },
-  { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },
   { id: 'plan',           icon: FileEdit,       label: 'Plan',           minRole: 'doctor' },
   { id: 'progress',       icon: FileText,       label: 'Progress Notes' },
   { id: 'monitoring',    icon: Activity,       label: 'Monitoring' },
@@ -78,7 +79,9 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'trauma',       icon: Zap,             label: 'Trauma',       roles: ['nurse', 'doctor', 'admin'] },
   { id: 'vademecum',      icon: BookOpen,      label: 'Disease Dict.',  roles: ['nurse', 'doctor', 'admin'] },
   { id: 'questionnaire',  icon: FileQuestion,  label: 'Questionnaire', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
-  { id: 'booking_inbox',  icon: Inbox,         label: 'Booking Inbox', roles: ['admin'] },
+  { id: 'booking_inbox',  icon: Inbox,         label: 'Booking Inbox', roles: ['front_desk', 'nurse', 'admin'] },
+  { id: 'portal_intake',  icon: ClipboardCheck, label: 'Portal Intake', roles: ['doctor', 'admin'] },
+  { id: 'referring_providers', icon: Contact,  label: 'Referring Providers', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'settings',       icon: Settings,      label: 'Settings',      roles: ['admin'] },
 ];
 

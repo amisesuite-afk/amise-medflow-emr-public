@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { getApiOrigin } from '@/lib/api-origin';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { AMISE_LOGO_SVG } from './lib/docTemplate';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -46,10 +48,10 @@ function soapTextToHtml(text: string): string {
   return out.join('\n');
 }
 
-const SITE_INFO: Record<string, { name: string; address: string }> = {
-  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay, Saint Lucia' },
-  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia' },
-  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia' },
+const SITE_INFO: Record<string, { name: string; address: string; phone: string }> = {
+  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay, Saint Lucia', phone: '1 (758) 720 7111' },
+  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia', phone: '1 (758) 720 7111' },
+  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia', phone: '1 (758) 459 2227 / 1 (758) 284 0557' },
 };
 
 const APPT_LABELS: Record<string, string> = {
@@ -63,20 +65,7 @@ const APPT_LABELS: Record<string, string> = {
   diabetic_foot: 'Diabetic Foot Clinic',
 };
 
-const LOGO_SVG = `<svg width="150" height="52" viewBox="0 0 150 52" xmlns="http://www.w3.org/2000/svg">
-  <!-- Left figure — navy -->
-  <ellipse cx="15" cy="11" rx="6.5" ry="7.5" fill="#1a3a5c"/>
-  <path d="M8.5 19 C7 28 8 37 14 41 C17.5 43 21 41 21 38 C17.5 36 14.5 31 14.5 24.5 C14.5 20.5 16.5 19.5 18.5 19 C14 17 8.5 17.5 8.5 19Z" fill="#1a3a5c"/>
-  <!-- Right figure — crimson -->
-  <ellipse cx="29" cy="11" rx="6.5" ry="7.5" fill="#922b21"/>
-  <path d="M35.5 19 C37 28 36 37 30 41 C26.5 43 23 41 23 38 C26.5 36 29.5 31 29.5 24.5 C29.5 20.5 27.5 19.5 25.5 19 C30 17 35.5 17.5 35.5 19Z" fill="#922b21"/>
-  <!-- Divider -->
-  <line x1="48" y1="6" x2="48" y2="46" stroke="#ddd" stroke-width="1"/>
-  <!-- Practice name -->
-  <text x="56" y="24" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="bold" fill="#1a3a5c" letter-spacing="1.2">AMISE</text>
-  <text x="56" y="37" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#666" letter-spacing="2.5">MEDICAL SERVICES</text>
-  <text x="56" y="47" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#999" letter-spacing="0.5">Saint Lucia</text>
-</svg>`;
+const LOGO_SVG = AMISE_LOGO_SVG;
 
 interface PrintMeta {
   patientName: string;
@@ -160,7 +149,7 @@ function buildPrintHtml(text: string, meta: PrintMeta): string {
 <div class="hdr">
   <div>
     <div class="hdr-brand">${escHtml(site.name)}</div>
-    <div class="hdr-addr">${escHtml(site.address)}<br>Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
+    <div class="hdr-addr">${escHtml(site.address)}<br>Tel: ${escHtml(site.phone)} &nbsp;·&nbsp; amisesuite@gmail.com</div>
   </div>
   <div>${LOGO_SVG}</div>
 </div>
@@ -200,7 +189,7 @@ ${bodyHtml}
 }
 
 // Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
-const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
@@ -308,12 +297,12 @@ function sharedHead(title: string): string {
 <title>${escHtml(title)}</title>`;
 }
 
-function sharedHeader(site: { name: string; address: string }, consultDate: string): string {
+function sharedHeader(site: { name: string; address: string; phone: string }, consultDate: string): string {
   return `<div class="hdr">
   <div>
     <div class="hdr-office">${escHtml(site.name)}</div>
     <div class="hdr-sub">${escHtml(site.address)}</div>
-    <div class="hdr-sub">Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
+    <div class="hdr-sub">Tel: ${escHtml(site.phone)} &nbsp;·&nbsp; amisesuite@gmail.com</div>
     <div class="hdr-sub" style="margin-top:2px;color:#1a3a5c">${escHtml(consultDate)}</div>
   </div>
   <div>${LOGO_SVG}</div>
@@ -513,7 +502,7 @@ ${referNotes ? `<div class="section">
   <div class="sig-line"></div>
   <div class="sig-name">Dr. Dawit D Kabiye</div>
   <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
-  <div class="sig-lic">${escHtml(site.name)} &nbsp;·&nbsp; 1 (758) 720 7111</div>
+  <div class="sig-lic">${escHtml(site.name)} &nbsp;·&nbsp; ${escHtml(site.phone)}</div>
   <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ..................</div>
 </div>
 <div class="sig-right"></div>

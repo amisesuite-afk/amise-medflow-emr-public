@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppContext, Section, TopSection, type VitalsState } from '@/context/AppContext';
+import { getApiOrigin } from '@/lib/api-origin';
 import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
@@ -41,9 +42,11 @@ import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
 import BookingInboxTab from './tabs/BookingInboxTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
 import SettingsTab from './tabs/SettingsTab';
+import PortalIntakeTab from './tabs/PortalIntakeTab';
+import ReferringProvidersTab from './tabs/ReferringProvidersTab';
 import FloatingActions from '@/components/FloatingActions';
 
-const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
@@ -167,7 +170,10 @@ export default function HomePage() {
     >
       {/* ── Sticky header ── */}
       <header className="app-header">
-        <div className="header-brand">Amise Medical</div>
+        <div className="header-brand" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <img src="/amise-logo.jpg" alt="" style={{ height: 30, width: 'auto', objectFit: 'contain' }} />
+          Amise Medical
+        </div>
         {DEMO_MODE
           ? <span className="proto-pill" style={{ background: 'rgba(251,191,36,.15)', border: '1px solid rgba(251,191,36,.35)', color: '#fbbf24' }}>⚗ DEMO MODE — local trial only</span>
           : <span className="proto-pill">⚗ PROTOTYPE</span>
@@ -218,6 +224,17 @@ export default function HomePage() {
             <span className="ab-level">{triageResult.acuity.toUpperCase()}</span>
             <span className="ab-score">Score {triageResult.score}</span>
           </div>
+
+          {triageResult.isPrimarilySurgical && (
+            <div
+              className="surgical-badge"
+              title={`Surgical pathway match: ${triageResult.surgicalMatches.map(m => m.label).join(', ')}`}
+            >
+              <span className="ab-label">Surgical</span>
+              <span className="ab-level">{triageResult.surgicalMatches[0].label}</span>
+              <span className="ab-score">{triageResult.surgicalMatches[0].category}</span>
+            </div>
+          )}
 
           {/* User chip */}
           {profile && (
@@ -323,6 +340,8 @@ export default function HomePage() {
         {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
         {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')        && <NurseAPCQTab />}
         {topSection === 'booking_inbox'  && hasRole(userRole, 'admin')        && <BookingInboxTab />}
+        {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
+        {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
       </main>
 
       <FloatingActions />
