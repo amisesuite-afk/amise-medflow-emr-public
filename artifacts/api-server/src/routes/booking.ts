@@ -241,6 +241,36 @@ router.post('/api/booking/patient-confirm/:id', async (req, res) => {
   }
 });
 
+// POST /api/booking/cancel/:id — staff cancels a request that hasn't been
+// patient-confirmed yet (pending, waitlisted, or staff_confirmed)
+router.post('/api/booking/cancel/:id', async (req, res) => {
+  const { id } = req.params;
+  const { reason } = req.body ?? {};
+
+  try {
+    const supa = getSupabaseAdmin();
+    const { data, error } = await supa
+      .from('appointment_requests')
+      .update({ status: 'cancelled', notes: reason ?? null })
+      .eq('id', id)
+      .in('status', ['pending', 'waitlisted', 'staff_confirmed'])
+      .select('id')
+      .single();
+
+    if (error || !data) {
+      res.status(404).json({ error: 'Request not found or already finalised' });
+      return;
+    }
+
+    await audit({ action: 'skip', entityType: 'appointment_request', entityId: id, payload: { status: 'cancelled', reason: reason ?? null } });
+    logger.info({ id, reason }, '[booking/cancel] cancelled');
+    res.json({ id, status: 'cancelled' });
+  } catch (err) {
+    logger.error({ err }, '[booking/cancel] error');
+    res.status(502).json({ error: String(err) });
+  }
+});
+
 // POST /api/booking/lapse — cron-triggered: mark staff_confirmed requests with slot < 24hrs as lapsed
 router.post('/api/booking/lapse', async (req, res) => {
   const secret = process.env.CRON_SECRET;

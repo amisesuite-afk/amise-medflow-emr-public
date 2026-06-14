@@ -1063,14 +1063,19 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
 
     // Populate EMR asynchronously — but we need the encounter ID synchronously
     let encounterId: string | null = null;
+    let emrError: string | null = null;
     try {
       encounterId = await populateEMR(
         sessionRow.id,
         sessionRow.encounter_id ?? undefined,
       );
     } catch (emrErr) {
-      // EMR population failure is non-fatal for the approval itself
-      req.log.info({ err: emrErr }, '[questionnaire/doctor-approve] EMR population failed');
+      // EMR population failure is non-fatal for the approval itself, but it
+      // leaves emr_populated permanently false with no retry path — log at
+      // warn (not info) and surface the message in the response so staff
+      // know to link the patient record and re-run population manually.
+      emrError = emrErr instanceof Error ? emrErr.message : String(emrErr);
+      req.log.warn({ err: emrErr }, '[questionnaire/doctor-approve] EMR population failed');
     }
 
     const { data: updated, error: updateErr } = await sb()
@@ -1102,7 +1107,7 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
       payload: { event: 'doctor_approved', doctorUserId, encounterId },
     });
 
-    res.json({ approved: true, encounterId });
+    res.json({ approved: true, encounterId, emrPopulated: encounterId !== null, emrError });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/doctor-approve] error');
     res.status(502).json({ error: String(err) });

@@ -72,6 +72,7 @@ const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; 
   staff_confirmed:   { label: 'Slot Confirmed',   bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
   patient_confirmed: { label: 'Patient Confirmed',bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
   lapsed:            { label: 'Lapsed',           bg: '#f9fafb', color: '#9ca3af', border: '#e5e7eb' },
+  cancelled:         { label: 'Cancelled',        bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
 };
 
 const PREP_INSTRUCTIONS: Record<string, string> = {
@@ -179,6 +180,10 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [waitlisting, setWaitlisting]     = useState(false);
   const [waitlistErr, setWaitlistErr]     = useState<string | null>(null);
 
+  // Cancel action state
+  const [cancelling, setCancelling]       = useState(false);
+  const [cancelErr, setCancelErr]         = useState<string | null>(null);
+
   // Portal-access action state
   const [portalRegistering, setPortalRegistering] = useState(false);
   const [portalErr, setPortalErr]                 = useState<string | null>(null);
@@ -285,6 +290,30 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       setWaitlistErr(String(e));
     } finally {
       setWaitlisting(false);
+    }
+  }
+
+  async function handleCancel() {
+    if (!selected) return;
+    if (!window.confirm(`Cancel this booking request for ${selected.patient_name}?`)) return;
+    setCancelling(true);
+    setCancelErr(null);
+    try {
+      const r = await fetch(apiUrl(`/api/booking/cancel/${selected.id}`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: 'Cancelled by staff' }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      await load();
+      setSelected(null);
+    } catch (e) {
+      setCancelErr(String(e));
+    } finally {
+      setCancelling(false);
     }
   }
 
@@ -894,6 +923,28 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a8a' }}>{fmtSlot(selected.confirmed_slot)}</div>
               <div style={{ fontSize: 12, color: '#1d4ed8', marginTop: 4 }}>{LOCATION_LABELS[selected.location] ?? selected.location}</div>
               {selected.notes && <div style={{ fontSize: 12, color: '#374151', marginTop: 6, fontStyle: 'italic' }}>{selected.notes}</div>}
+            </div>
+          )}
+
+          {/* ── Cancel request ────────────────────────────────────────────── */}
+          {['pending', 'waitlisted', 'staff_confirmed'].includes(selected.status) && (
+            <div style={{ marginBottom: 20 }}>
+              {cancelErr && (
+                <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+                  {cancelErr}
+                </div>
+              )}
+              <button
+                onClick={() => void handleCancel()}
+                disabled={cancelling}
+                style={{
+                  width: '100%', padding: '9px', borderRadius: 8,
+                  border: '1.5px solid #fecaca', background: '#fef2f2', color: '#b91c1c',
+                  fontWeight: 600, fontSize: 13, cursor: cancelling ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {cancelling ? 'Cancelling…' : 'Cancel booking request'}
+              </button>
             </div>
           )}
 

@@ -85,7 +85,7 @@ export default function ReceptionistView() {
     setSaveError(null);
     const { patient, error } = await savePatientFull({
       full_name: patientName, age, dob, sex, phone,
-      address, referredBy, insuranceProvider,
+      address, quarter, referredBy, insuranceProvider,
       policyNumber, nhiNumber, preAuthStatus,
     });
     setSaving(false);

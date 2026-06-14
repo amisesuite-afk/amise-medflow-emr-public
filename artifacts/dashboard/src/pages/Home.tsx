@@ -225,6 +225,17 @@ export default function HomePage() {
             <span className="ab-score">Score {triageResult.score}</span>
           </div>
 
+          {triageResult.isPrimarilySurgical && (
+            <div
+              className="surgical-badge"
+              title={`Surgical pathway match: ${triageResult.surgicalMatches.map(m => m.label).join(', ')}`}
+            >
+              <span className="ab-label">Surgical</span>
+              <span className="ab-level">{triageResult.surgicalMatches[0].label}</span>
+              <span className="ab-score">{triageResult.surgicalMatches[0].category}</span>
+            </div>
+          )}
+
           {/* User chip */}
           {profile && (
             <div className="user-chip">

@@ -344,6 +344,7 @@ export default function NurseAPCQTab() {
   const [approving, setApproving] = useState(false);
   const [approveSuccess, setApproveSuccess] = useState(false);
   const [approveErr, setApproveErr] = useState<string | null>(null);
+  const [emrWarning, setEmrWarning] = useState<string | null>(null);
 
   const fetchQueue = useCallback(async () => {
     try {
@@ -532,6 +533,7 @@ export default function NurseAPCQTab() {
     if (!selectedToken || approving || !profile?.id) return;
     setApproving(true);
     setApproveErr(null);
+    setEmrWarning(null);
     try {
       const res = await fetch(apiUrl(`/api/questionnaire/session/${selectedToken}/doctor-approve`), {
         method: 'POST',
@@ -541,6 +543,14 @@ export default function NurseAPCQTab() {
       if (!res.ok) {
         const d = await res.json().catch(() => ({})) as { error?: string };
         throw new Error(d.error ?? `HTTP ${res.status}`);
+      }
+      const d = await res.json() as { emrPopulated?: boolean; emrError?: string | null };
+      if (d.emrPopulated === false) {
+        setEmrWarning(
+          d.emrError
+            ? `Approved, but EMR was not populated automatically: ${d.emrError}. Please add symptoms/assessment/plan manually for this encounter.`
+            : 'Approved, but EMR was not populated automatically — this session is not yet linked to a patient. Please add symptoms/assessment/plan manually for this encounter.',
+        );
       }
       setApproveSuccess(true);
       setSessions(prev =>
@@ -837,7 +847,7 @@ export default function NurseAPCQTab() {
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
-                        Approved — EMR populated for this encounter
+                        {emrWarning ? 'Approved — EMR not populated, see note below' : 'Approved — EMR populated for this encounter'}
                       </div>
                     ) : (
                       <button
@@ -881,6 +891,15 @@ export default function NurseAPCQTab() {
                         style={{ background: '#fef2f2', border: '1px solid #fca5a5', color: '#991b1b' }}
                       >
                         {approveErr}
+                      </div>
+                    )}
+
+                    {emrWarning && (
+                      <div
+                        className="px-4 py-2.5 rounded-lg text-sm"
+                        style={{ background: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e' }}
+                      >
+                        ⚠ {emrWarning}
                       </div>
                     )}
                   </div>

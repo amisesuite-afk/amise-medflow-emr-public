@@ -29,7 +29,10 @@ async function provisionQuestionnaireLink(): Promise<string | null> {
       headers: { 'Content-Type': 'application/json', 'x-staff-token': staffToken },
       body: JSON.stringify({}),
     });
-    if (!r.ok) return null;
+    if (!r.ok) {
+      console.error(`[booking/create] questionnaire link provisioning failed: HTTP ${r.status}`);
+      return null;
+    }
     const d = await r.json() as { url?: string };
     return d.url ?? null;
   } catch (err) {
