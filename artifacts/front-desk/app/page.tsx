@@ -110,13 +110,13 @@ function Hero() {
         aria-hidden="true"
         style={{
           position: 'absolute', right: 0, top: 0,
-          width: '52%', height: '100%',
+          width: '31%', height: '100%',
           objectFit: 'cover', objectPosition: 'center',
         }}
       />
       {/* Fade gradient from left over the photo */}
       <div style={{
-        position: 'absolute', right: '38%', top: 0, bottom: 0, width: '200px',
+        position: 'absolute', right: '23%', top: 0, bottom: 0, width: '120px',
         background: 'linear-gradient(to right, #eef7f6, transparent)',
         zIndex: 1,
       }} />
