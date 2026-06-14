@@ -110,13 +110,13 @@ function Hero() {
         aria-hidden="true"
         style={{
           position: 'absolute', right: 0, top: 0,
-          width: '31%', height: '100%',
+          width: '52%', height: '100%',
           objectFit: 'cover', objectPosition: 'center',
         }}
       />
       {/* Fade gradient from left over the photo */}
       <div style={{
-        position: 'absolute', right: '23%', top: 0, bottom: 0, width: '120px',
+        position: 'absolute', right: '38%', top: 0, bottom: 0, width: '200px',
         background: 'linear-gradient(to right, #eef7f6, transparent)',
         zIndex: 1,
       }} />
@@ -460,6 +460,7 @@ function Offices() {
             phone={PHONE_RODNEY}
             waHref={WA_RODNEY}
             mapsHref="https://maps.google.com/?q=Providence+Building+Rodney+Bay+Saint+Lucia"
+            imgWidth="25%"
           />
         </div>
       </div>
@@ -467,9 +468,9 @@ function Offices() {
   );
 }
 
-function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref }: {
+function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref, imgWidth = '42%' }: {
   img: string; imgAlt: string; name: string; services: string;
-  phone: string; waHref: string; mapsHref: string;
+  phone: string; waHref: string; mapsHref: string; imgWidth?: string;
 }) {
   return (
     <div style={{
@@ -478,8 +479,8 @@ function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref }: {
       border: '1px solid #e2eeed',
       display: 'flex', background: '#fff',
     }}>
-      {/* Building photo — left 42% */}
-      <div style={{ position: 'relative', width: '42%', flexShrink: 0 }}>
+      {/* Building photo */}
+      <div style={{ position: 'relative', width: imgWidth, flexShrink: 0 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={img} alt={imgAlt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         {/* Map pin badge */}
