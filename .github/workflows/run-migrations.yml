@@ -62,5 +62,117 @@ jobs:
             --project-ref nornhfzfrlmfzaqmrzzp \
             --file supabase-questionnaire-token-expiry-migration.sql
 
+      - name: Run documents clinical-photo migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-documents-clinical-photo-migration.sql
+
+      - name: Run email document intake migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-email-document-intake-migration.sql
+
+      - name: Run referring doctors seed migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-referring-doctors-seed-migration.sql
+
+      - name: Run EMR persistence migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-emr-persistence-migration.sql
+
+      - name: Run patients quarter migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-patients-quarter-migration.sql
+
+      - name: Run portal self-service migration (incl. patient-documents storage bucket)
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-portal-self-service-migration.sql
+
+      - name: Run AI adaptive intake migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-ai-adaptive-intake-migration.sql
+
+      - name: Run appointment requests email-optional migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-appointment-requests-email-optional-migration.sql
+
+      - name: Run booking notifications migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-booking-notifications-migration.sql
+
+      - name: Run booking source migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-booking-source-migration.sql
+
+      - name: Run booking waitlist migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-booking-waitlist-migration.sql
+
+      - name: Run intake reminder migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-intake-reminder-migration.sql
+
+      - name: Run vitals photo capture migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-vitals-photo-migration.sql
+
+      - name: Run service-role grants fix migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase db execute \
+            --project-ref nornhfzfrlmfzaqmrzzp \
+            --file supabase-service-role-grants-fix-migration.sql
+
       - name: Done
         run: echo "Migrations completed successfully."
