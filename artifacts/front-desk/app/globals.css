@@ -13,7 +13,7 @@ body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
 /* ── Nav responsive ──────────────────────────────────── */
 .amise-nav-links        { display: flex; gap: 32px; align-items: center; }
 .amise-nav-mobile-book  { display: none; }
-.amise-nav-hamburger    { display: none; position: absolute; left: 8px; top: 14px; }
+.amise-nav-hamburger    { display: none; position: absolute; left: 2px; top: 14px; }
 
 @media (max-width: 800px) {
   .amise-nav-links       { display: none; }
