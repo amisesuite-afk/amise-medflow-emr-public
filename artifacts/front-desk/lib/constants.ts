@@ -30,4 +30,10 @@ export const FORBIDDEN_PATTERNS: RegExp[] = [
   /\b(take|increase|decrease|stop)\s+\d+\s*mg\b/i,
   /\b\d+\s*mg\b/i,
   /\bmedication dose\b/i,
+  // Procedure-prep adjustments: never let a draft specify anticoagulant/diabetes
+  // medication stop-timing, dose changes, or bowel-prep product substitutions —
+  // those are clinical decisions for Dr Kabiye, not the assistant.
+  /\b(stop|hold|discontinue|restart|resume)\b[^.]{0,40}\b(warfarin|coumadin|apixaban|eliquis|rivaroxaban|xarelto|dabigatran|pradaxa|edoxaban|lixiana|clopidogrel|plavix|ticagrelor|aspirin|heparin|enoxaparin|lovenox|insulin|metformin|gliclazide)\b/i,
+  /\b(switch|change)\b[^.]{0,30}\b(insulin|dose|medication|prep)\b[^.]{0,20}\bto\b/i,
+  /\b(use|take|switch to)\b[^.]{0,20}\b(golytely|moviprep|miralax|picolax|citromag|fleet|dulcolax|peglyte|pico.?salax)\b/i,
 ];

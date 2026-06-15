@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getThread, updateThread, logAudit } from '@/lib/supabase';
+import { getThread, updateThread, logAudit, createProcedurePrepDraft } from '@/lib/supabase';
 import { sendWhatsApp, sendSms, checkForbidden } from '@/lib/twilio';
 import { createCalendarEvent, LOCATION_LABELS } from '@/lib/calendar';
 import { sendConfirmationEmail } from '@/lib/email';
+import { isProcedurePrepEligible, draftProcedurePrepAdjustment } from '@/lib/claude';
 import type { AppointmentSlot } from '@/types';
 
 export const runtime = 'nodejs';
@@ -137,6 +138,37 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         track:           'referral',
         isConfirmed:     true,
       }).catch(console.error);
+    }
+
+    // Queue a Claude-drafted, patient-specific procedure-prep flag (DM,
+    // renal impairment, blood thinners) for clinical staff review. The
+    // standard prep instructions above are unaffected — this runs in the
+    // background and never blocks/delays the patient-facing confirmation.
+    if (calendarEventId) {
+      const confirmedSlot = appointmentSlots?.[selectedSlotIndex ?? 0];
+      if (confirmedSlot && isProcedurePrepEligible(confirmedSlot.appointmentType)) {
+        const patientMessages = thread.messages
+          .filter(msg => msg.role === 'patient')
+          .map(msg => msg.content);
+        const firstName = thread.patient_name ? thread.patient_name.split(' ')[0] : null;
+
+        void draftProcedurePrepAdjustment(confirmedSlot.appointmentType, firstName, patientMessages)
+          .then(result => {
+            if (!result.flagged || !result.body || !result.safe) {
+              if (!result.safe) {
+                console.warn('[nurse/approve] procedure-prep draft failed safety check:', result.violations);
+              }
+              return;
+            }
+            return createProcedurePrepDraft({
+              thread_id:      threadId,
+              procedure_type: confirmedSlot.appointmentType,
+              patient_name:   thread.patient_name ?? null,
+              draft_text:     result.body,
+            }).then(() => undefined);
+          })
+          .catch(err => console.error('[nurse/approve] procedure-prep draft error:', err));
+      }
     }
 
     await updateThread(threadId, { status: 'resolved', draft_reply: null });

@@ -3,7 +3,7 @@ import type {
   ConversationThread, TriageLevel, PatientMessage,
   TriageSnapshot, AppointmentSlot,
 } from '@/types';
-import { adaptiveTriage } from '@workspace/triage-engine';
+import { adaptiveTriage, checkForbiddenContent } from '@workspace/triage-engine';
 import { findSlots } from './calendar';
 import { FORBIDDEN_PATTERNS } from './constants';
 
@@ -230,4 +230,87 @@ export async function runIntakeTurn(
   };
 
   return { reply: safeReply, updatedThread, emergent };
+}
+
+// ── Procedure-prep adjustment drafting ──────────────────────────────────────
+//
+// For endoscopy procedures (colonoscopy, gastroscopy), the standard prep
+// instructions are sent immediately and automatically — they are pre-vetted,
+// generic, and contain no patient-specific clinical content.
+//
+// Separately, if the patient has mentioned anything in their own words during
+// intake that suggests they're on an anticoagulant/antiplatelet, a diabetes
+// medication, or have renal impairment/dialysis/a stoma/IBD/prior bowel
+// surgery, Claude drafts a short flagging note for clinical staff to review.
+//
+// This draft NEVER specifies medication stop-timing, dose changes, or prep
+// product substitutions itself — those remain Dr Kabiye's decision. It is
+// always queued for human approval before it reaches the patient, and drafting
+// it never blocks or delays the standard confirmation/prep email.
+
+const PROCEDURE_PREP_TYPES = new Set(['colonoscopy', 'gastroscopy']);
+
+export function isProcedurePrepEligible(appointmentType: string): boolean {
+  return PROCEDURE_PREP_TYPES.has(appointmentType);
+}
+
+export interface ProcedurePrepAdjustmentResult {
+  /** Empty string if nothing relevant was found in the patient's messages. */
+  body: string;
+  flagged: boolean;
+  safe: boolean;
+  violations: string[];
+}
+
+export async function draftProcedurePrepAdjustment(
+  procedureType: string,
+  patientFirstName: string | null,
+  patientMessages: string[],
+): Promise<ProcedurePrepAdjustmentResult> {
+  const name = patientFirstName || 'the patient';
+  const context = patientMessages.join('\n').trim();
+
+  if (!context) {
+    return { body: '', flagged: false, safe: true, violations: [] };
+  }
+
+  const prompt = `Below are messages a patient sent during intake, ahead of a ${procedureType} appointment.
+
+Patient messages:
+"""
+${context}
+"""
+
+Check ONLY for mentions of:
+- Blood thinners / antiplatelets (e.g. warfarin, apixaban/Eliquis, rivaroxaban/Xarelto, dabigatran, clopidogrel, aspirin, heparin)
+- Diabetes medications (insulin, metformin, gliclazide, or "diabetic"/"diabetes")
+- Kidney/renal disease, dialysis, a stoma, inflammatory bowel disease, or prior bowel surgery
+
+If NONE of these are mentioned, respond with exactly: NONE
+
+If one or more ARE mentioned, write a short internal note (2-4 sentences max) for Dr Kabiye's clinical team, addressed to the team (not the patient), that:
+1. Names ${name} and lists which of the above categories were mentioned, quoting the relevant phrase from the patient.
+2. States that the standard ${procedureType} prep instructions have already been sent, and asks the team to contact the patient with any necessary adjustment to medication timing or prep product BEFORE their prep begins.
+
+Do NOT suggest a specific stop date, dose change, or alternative prep product yourself — that is for the clinical team to decide. Return ONLY the note text (or NONE), no preamble.`;
+
+  const response = await anthropic.messages.create({
+    model:      'claude-haiku-4-5-20251001',
+    max_tokens: 300,
+    messages:   [{ role: 'user', content: prompt }],
+  });
+
+  const raw = (response.content[0].type === 'text' ? response.content[0].text : '').trim();
+
+  if (!raw || raw.toUpperCase() === 'NONE') {
+    return { body: '', flagged: false, safe: true, violations: [] };
+  }
+
+  const check = checkForbiddenContent(raw);
+  return {
+    body:       raw,
+    flagged:    true,
+    safe:       check.safe,
+    violations: check.violations,
+  };
 }
