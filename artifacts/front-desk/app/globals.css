@@ -15,7 +15,7 @@ body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
 .amise-nav-mobile-book  { display: none; }
 .amise-nav-hamburger    { display: none; position: absolute; left: 2px; top: 14px; }
 
-@media (max-width: 800px) {
+@media (max-width: 1024px) {
   .amise-nav-links       { display: none; }
   .amise-nav-mobile-book { display: flex; }
   .amise-nav-hamburger   { display: flex; }
