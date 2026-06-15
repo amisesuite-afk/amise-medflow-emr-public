@@ -463,9 +463,12 @@ export default function PathwayPage() {
       {/* Nav */}
       <nav className="amise-sub-nav" style={{ background: 'rgba(255,255,255,0.97)' }}>
         <div className="amise-sub-nav-inner">
-          <a href="/" style={{ fontSize: 14, fontWeight: 600, color: '#0d9488', textDecoration: 'none' }}>← Amise Medical Services</a>
+          <a href="/" style={{ fontSize: 14, fontWeight: 600, color: '#0d9488', textDecoration: 'none' }}>
+            <span className="amise-sub-nav-back-full">← Amise Medical Services</span>
+            <span className="amise-sub-nav-back-short">← Home</span>
+          </a>
           <div style={{ display: 'flex', gap: 12 }}>
-            <Link href="/guidance" style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', textDecoration: 'none', padding: '8px 16px' }}>
+            <Link href="/guidance" className="amise-sub-nav-secondary" style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', textDecoration: 'none', padding: '8px 16px' }}>
               Health Guidance
             </Link>
             <Link href="/book" style={{ fontSize: 13, padding: '9px 20px', background: '#0d9488', color: '#fff', borderRadius: 50, textDecoration: 'none', fontWeight: 700 }}>

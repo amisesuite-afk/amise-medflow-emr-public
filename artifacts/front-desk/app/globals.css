@@ -31,7 +31,13 @@ body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
   display: flex; align-items: center; justify-content: space-between;
   height: 64px;
 }
+.amise-sub-nav-secondary { display: inline-flex; }
+.amise-sub-nav-back-short { display: none; }
+
 @media (max-width: 480px) {
-  .amise-sub-nav       { padding: 0 20px; }
-  .amise-sub-nav-inner { height: 56px; }
+  .amise-sub-nav            { padding: 0 20px; }
+  .amise-sub-nav-inner      { height: 56px; }
+  .amise-sub-nav-secondary  { display: none; }
+  .amise-sub-nav-back-full  { display: none; }
+  .amise-sub-nav-back-short { display: inline; }
 }
