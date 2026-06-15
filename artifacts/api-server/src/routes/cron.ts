@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { sb, getSupabaseAdmin, audit } from '../lib/supabase.js';
-import { sendSms, smsBody48h, smsBody2h, smsBodyIntakeReminder, smsBodyStaffEscalation, getPrepInstructions } from '../lib/sms.js';
+import { sendSms, smsBody48h, smsBody2h, smsBodyIntakeReminder, smsBodyPostVisit, smsBodyStaffEscalation, getPrepInstructions } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { draftReply } from '../lib/claude.js';
 import { formatSlotForDisplay } from '../lib/calendar.js';
@@ -128,6 +128,45 @@ router.post('/api/cron/reminders', async (req, res) => {
     } catch (err) {
       req.log.error({ error: err, appointmentId: appt.id }, '[cron/reminders] failed to process appointment, continuing with remaining');
       results.push({ id: appt.id, action: 'error' });
+    }
+  }
+
+  // Post-visit follow-up — a generic, non-clinical "how are you feeling
+  // since your visit" check-in ~24h after the appointment, completing the
+  // post_visit_24h entry in REMINDER_CASCADE. Never mentions diagnoses,
+  // results, or medication — just an open door back to the practice and the
+  // emergency number.
+  const postVisitWindowStart = new Date(now.getTime() - 25 * 60 * 60 * 1000);
+  const postVisitWindowEnd   = new Date(now.getTime() - 23 * 60 * 60 * 1000);
+
+  const { data: pastAppointments, error: pastErr } = await sb()
+    .from('confirmed_appointments')
+    .select('*')
+    .gte('start_time', postVisitWindowStart.toISOString())
+    .lte('start_time', postVisitWindowEnd.toISOString())
+    .eq('cancelled', false)
+    .eq('post_visit_followup_sent', false);
+
+  if (pastErr) {
+    req.log.error({ error: pastErr }, '[cron/reminders] post-visit db error');
+  } else {
+    for (const appt of pastAppointments || []) {
+      try {
+        if (appt.patient_phone) {
+          const body = smsBodyPostVisit({ firstName: appt.patient_first_name || 'there' });
+          const result = await sendSms({ to: appt.patient_phone, body });
+          if (result.action === 'sent') {
+            await sb().from('confirmed_appointments').update({ post_visit_followup_sent: true }).eq('id', appt.id);
+            await audit({ action: 'remind', entityType: 'appointment', entityId: appt.id, payload: { kind: 'post_visit_24h' } });
+            results.push({ id: appt.id, action: 'post_visit_24h_sent' });
+          }
+        } else {
+          await sb().from('confirmed_appointments').update({ post_visit_followup_sent: true }).eq('id', appt.id);
+        }
+      } catch (err) {
+        req.log.error({ error: err, appointmentId: appt.id }, '[cron/reminders] failed to process post-visit follow-up, continuing with remaining');
+        results.push({ id: appt.id, action: 'error' });
+      }
     }
   }
 

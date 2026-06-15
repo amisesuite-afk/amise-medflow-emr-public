@@ -107,3 +107,7 @@ export function smsBody2h(opts: { location: string }): string {
 export function smsBodyIntakeReminder(opts: { firstName: string; portalOrigin: string }): string {
   return `Hi ${opts.firstName}, before your visit with Dr Kabiye please take 2 mins to complete your pre-visit questionnaire: ${opts.portalOrigin}/patient/intake — it helps us prepare for your appointment. Amise Medical.`;
 }
+
+export function smsBodyPostVisit(opts: { firstName: string }): string {
+  return `Hi ${opts.firstName}, we hope your visit with Dr Kabiye went well yesterday. If you have any concerns about your recovery, please call us on 758-284-0557. For a medical emergency, call 911 or go to the nearest ED. – Amise Medical`;
+}
