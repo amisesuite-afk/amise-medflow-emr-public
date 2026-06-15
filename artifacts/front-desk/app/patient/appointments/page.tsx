@@ -59,9 +59,132 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+// Self-service reschedule/cancel: lets a patient flag that they need a
+// change, with staff contacting them to actually action it (assist mode).
+// Requests inside the minimum-notice window are declined here in favour of
+// calling the practice directly, mirroring the server-side check.
+const MIN_NOTICE_HOURS = 48;
+
+function ChangeRequestControl({
+  appointment,
+  pending,
+  onSubmitted,
+}: {
+  appointment: Appointment;
+  pending: { change_type: string } | undefined;
+  onSubmitted: (appointmentId: string, changeType: 'reschedule' | 'cancel') => void;
+}) {
+  const sb = getPatientClient();
+  const [expanded, setExpanded] = useState<'reschedule' | 'cancel' | null>(null);
+  const [reason, setReason] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (['cancelled', 'attended', 'no_show'].includes(appointment.status)) return null;
+
+  if (pending) {
+    return (
+      <div style={{ marginTop: 10, padding: '8px 12px', background: '#fef3c7', borderRadius: 6, fontSize: 12, color: '#92400e', fontWeight: 600 }}>
+        {pending.change_type === 'cancel' ? 'Cancellation' : 'Reschedule'} request sent — our team will be in touch.
+      </div>
+    );
+  }
+
+  const apptDateTime = new Date(`${appointment.appointment_date}T${appointment.appointment_time ?? '00:00:00'}`);
+  const hoursUntil = (apptDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
+
+  if (hoursUntil < MIN_NOTICE_HOURS) {
+    return (
+      <div style={{ marginTop: 10, fontSize: 12, color: '#94a3b8' }}>
+        Too soon to change online — please call 459-2227 · 284-0557.
+      </div>
+    );
+  }
+
+  async function submit() {
+    if (!expanded) return;
+    setSubmitting(true);
+    setError(null);
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { setError('Please sign in again.'); setSubmitting(false); return; }
+    try {
+      const res = await fetch(`${API}/api/patient/appointments/${appointment.id}/request-change`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ change_type: expanded, reason: reason.trim() || undefined }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(json.error || 'Could not submit your request. Please try again.');
+        setSubmitting(false);
+        return;
+      }
+      onSubmitted(appointment.id, expanded);
+    } catch {
+      setError('Could not submit your request. Please try again.');
+      setSubmitting(false);
+    }
+  }
+
+  if (!expanded) {
+    return (
+      <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
+        <button
+          type="button"
+          onClick={() => { setExpanded('reschedule'); setReason(''); setError(null); }}
+          style={{ padding: '6px 12px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 7, fontSize: 12, fontWeight: 600, color: '#475569', cursor: 'pointer' }}
+        >
+          Request Reschedule
+        </button>
+        <button
+          type="button"
+          onClick={() => { setExpanded('cancel'); setReason(''); setError(null); }}
+          style={{ padding: '6px 12px', background: '#fff', border: '1px solid #fca5a5', borderRadius: 7, fontSize: 12, fontWeight: 600, color: '#dc2626', cursor: 'pointer' }}
+        >
+          Request Cancellation
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginTop: 10, padding: 12, background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+      <p style={{ margin: '0 0 8px', fontSize: 12, fontWeight: 700, color: '#1e293b' }}>
+        {expanded === 'cancel' ? 'Request cancellation' : 'Request reschedule'}
+      </p>
+      <textarea
+        value={reason}
+        onChange={e => setReason(e.target.value)}
+        placeholder={expanded === 'cancel' ? 'Reason (optional)' : 'Preferred new date/time, or reason (optional)'}
+        rows={2}
+        style={{ width: '100%', boxSizing: 'border-box', padding: 8, fontSize: 13, borderRadius: 6, border: '1px solid #e2e8f0', resize: 'vertical', fontFamily: 'inherit' }}
+      />
+      {error && <p style={{ margin: '6px 0 0', fontSize: 12, color: '#dc2626' }}>{error}</p>}
+      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <button
+          type="button"
+          disabled={submitting}
+          onClick={() => void submit()}
+          style={{ padding: '7px 14px', background: submitting ? '#99f6e4' : TEAL, color: submitting ? '#0f766e' : '#fff', border: 'none', borderRadius: 7, fontSize: 12, fontWeight: 700, cursor: submitting ? 'default' : 'pointer' }}
+        >
+          {submitting ? 'Sending…' : 'Send Request'}
+        </button>
+        <button
+          type="button"
+          onClick={() => { setExpanded(null); setError(null); }}
+          style={{ padding: '7px 14px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: 7, fontSize: 12, fontWeight: 600, color: '#475569', cursor: 'pointer' }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const TEAL = '#0d9488';
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 const TODAY = new Date().toISOString().slice(0, 10);
 
 type Filter = 'upcoming' | 'past' | 'all';
@@ -71,6 +194,7 @@ export default function AppointmentsPage() {
   const sb = getPatientClient();
 
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [changeRequests, setChangeRequests] = useState<Record<string, { change_type: string }>>({});
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>('upcoming');
 
@@ -90,8 +214,13 @@ export default function AppointmentsPage() {
         query = query.lt('appointment_date', TODAY);
       }
 
-      const { data } = await query.limit(50);
+      const [{ data }, { data: changeReqs }] = await Promise.all([
+        query.limit(50),
+        sb.from('appointment_change_requests').select('appointment_id, change_type').eq('status', 'pending'),
+      ]);
+
       setAppointments(data ?? []);
+      setChangeRequests(Object.fromEntries((changeReqs ?? []).map(r => [r.appointment_id, { change_type: r.change_type }])));
       setLoading(false);
     })();
   }, [filter, router, sb]);
@@ -185,12 +314,22 @@ export default function AppointmentsPage() {
                 {appt.notes}
               </div>
             )}
+
+            {filter !== 'past' && (
+              <ChangeRequestControl
+                appointment={appt}
+                pending={changeRequests[appt.id]}
+                onSubmitted={(appointmentId, changeType) =>
+                  setChangeRequests(prev => ({ ...prev, [appointmentId]: { change_type: changeType } }))
+                }
+              />
+            )}
           </div>
         ))
       )}
 
       <p style={{ marginTop: 24, fontSize: 12, color: '#94a3b8', textAlign: 'center', lineHeight: 1.7 }}>
-        To reschedule or cancel, please call Tapion Hospital:<br />
+        For anything urgent, or if online options don&apos;t work for you, call Tapion Hospital:<br />
         459-2227 · 284-0557
       </p>
     </div>
