@@ -249,7 +249,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         `Type: ${appointmentType.replace(/_/g, ' ')}`,
         encodedReason,
         `Phone: ${patientPhone}`,
-        `Review: ${process.env.NEXT_PUBLIC_DASHBOARD_URL ?? 'dashboard'}/dashboard`,
+        ...(process.env.NEXT_PUBLIC_DASHBOARD_URL ? [`Review: ${process.env.NEXT_PUBLIC_DASHBOARD_URL}`] : []),
       ].join('\n');
       void sendWhatsApp(nurseWa, staffAlert).catch(console.error);
     }
