@@ -884,6 +884,18 @@ router.post('/api/patient/appointments/:id/request-change', async (req, res) => 
     return;
   }
 
+  const { data: existingRequest } = await sb()
+    .from('appointment_change_requests')
+    .select('id')
+    .eq('appointment_id', appt.id)
+    .eq('status', 'pending')
+    .maybeSingle();
+
+  if (existingRequest) {
+    res.status(400).json({ error: 'You already have a pending request for this appointment — our team will be in touch.' });
+    return;
+  }
+
   const apptDateTime = new Date(`${appt.appointment_date}T${appt.appointment_time ?? '00:00:00'}`);
   const hoursUntil = (apptDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
   if (hoursUntil < CHANGE_REQUEST_MIN_NOTICE_HOURS) {

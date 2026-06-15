@@ -223,9 +223,14 @@ export async function runIntakeTurn(
     }
   }
 
+  // Slots found for a non-urgent enquiry are normally queued for staff
+  // review before the patient sees them. For INFO-level (non-clinical)
+  // enquiries, the "available times" message carries no clinical content,
+  // so it can go straight to the patient — booking confirmation itself
+  // still requires staff to pick a slot in the booking inbox.
   const newStatus: ConversationThread['status'] = emergent
     ? 'escalated'
-    : result.triage.level === 'URGENT' || slots.length > 0
+    : result.triage.level === 'URGENT' || (slots.length > 0 && result.triage.level !== 'INFO')
       ? 'pending_approval'
       : 'active';
 

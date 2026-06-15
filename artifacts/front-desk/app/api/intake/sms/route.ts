@@ -70,7 +70,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    return twimlResponse(reply);
+    // For 'active' threads, send the drafted reply if one was prepared
+    // (e.g. INFO-level appointment slots), otherwise the conversational reply.
+    const outbound = (merged.status === 'active' && merged.draft_reply) ? merged.draft_reply : reply;
+    return twimlResponse(outbound);
   } catch (err) {
     console.error('[sms-webhook] Error:', err);
     return twimlResponse('Thank you for your message. We will be in touch shortly.');

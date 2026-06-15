@@ -62,8 +62,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       return twimlResponse('Thank you. Your message has been received and a member of our team will contact you shortly.');
     }
 
-    // ROUTINE / INFO — continue intake flow
-    return twimlResponse(reply);
+    // ROUTINE / INFO — continue intake flow. For 'active' threads, send the
+    // drafted reply if one was prepared (e.g. INFO-level appointment slots),
+    // otherwise fall back to the conversational reply.
+    const outbound = (merged.status === 'active' && merged.draft_reply) ? merged.draft_reply : reply;
+    return twimlResponse(outbound);
   } catch (err) {
     console.error('[webhook] Error:', err);
     return twimlResponse('Thank you for your message. We will be in touch shortly.');
