@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AmsiseLogo } from './components/AmsiseLogo';
+import { MobileNavMenu } from './components/MobileNavMenu';
 
 export const metadata: Metadata = {
   title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
@@ -41,7 +42,10 @@ function Nav() {
       background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)',
       borderBottom: '1px solid #e8f0ef', padding: '0 40px',
     }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
+      <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66, gap: 12 }}>
+        {/* Mobile hamburger — left corner */}
+        <MobileNavMenu links={NAV_LINKS} />
+
         <AmsiseLogo href="#home" />
 
         {/* Desktop links */}
