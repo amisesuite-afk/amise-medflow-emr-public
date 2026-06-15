@@ -42,10 +42,10 @@ function Nav() {
       background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)',
       borderBottom: '1px solid #e8f0ef', padding: '0 40px',
     }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66, gap: 12 }}>
-        {/* Mobile hamburger — left corner */}
-        <MobileNavMenu links={NAV_LINKS} />
+      {/* Mobile hamburger — left corner, overlay only, doesn't affect layout below */}
+      <MobileNavMenu links={NAV_LINKS} />
 
+      <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
         <AmsiseLogo href="#home" />
 
         {/* Desktop links */}
@@ -528,64 +528,6 @@ function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref, imgW
   );
 }
 
-// ── Why Choose Us ─────────────────────────────────────────────────────────────
-
-function WhyUs() {
-  const pillars = [
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>,
-      title: 'Experienced Specialists',
-      body: 'Advanced care with compassion.',
-    },
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-      title: 'Timely Appointments',
-      body: 'We respect your time.',
-    },
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
-      title: 'Secure & Confidential',
-      body: 'Your privacy is our priority.',
-    },
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>,
-      title: 'Patient-Centered',
-      body: 'Care tailored to your needs.',
-    },
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>,
-      title: 'Advanced Procedures',
-      body: 'Endoscopy, ERCP & minimally invasive surgery.',
-    },
-  ];
-
-  return (
-    <section style={{ padding: '60px 40px', background: '#f9fafb', borderBottom: '1px solid #e2eeed' }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 22, fontWeight: 800, color: '#0f172a', margin: '0 0 44px' }}>
-          Why Patients Choose Amise Medical Services
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
-          {pillars.map(({ icon, title, body }) => (
-            <div key={title} style={{ textAlign: 'center', padding: '12px 8px' }}>
-              <div style={{
-                width: 56, height: 56, borderRadius: '50%',
-                border: '1.5px solid #c0e4e0',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                margin: '0 auto 14px',
-              }}>
-                {icon}
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 5 }}>{title}</div>
-              <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6 }}>{body}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ── How It Works ──────────────────────────────────────────────────────────────
 
 function HowItWorks() {
@@ -928,7 +870,6 @@ export default function HomePage() {
         <WhatsAppStrip />
         <FeatureTiles />
         <Offices />
-        <WhyUs />
         <HowItWorks />
         <Contact />
 

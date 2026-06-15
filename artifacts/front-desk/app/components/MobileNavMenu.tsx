@@ -26,7 +26,7 @@ export function MobileNavMenu({ links }: { links: readonly { href: string; label
 
       {open && (
         <div style={{
-          position: 'absolute', top: 66, left: 0, right: 0,
+          position: 'fixed', top: 66, left: 0, right: 0,
           background: '#fff', borderBottom: '1px solid #e8f0ef',
           boxShadow: '0 8px 16px rgba(0,0,0,0.08)',
           display: 'flex', flexDirection: 'column', padding: '8px 24px 16px',
