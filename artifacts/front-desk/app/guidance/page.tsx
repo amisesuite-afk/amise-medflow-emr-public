@@ -149,7 +149,7 @@ const SCREENING_CARDS: ScreeningCard[] = [
   {
     id: 'breast',
     title: 'Breast Health',
-    icon: '🩺',
+    icon: '🎗️',
     body: (
       <div>
         <p style={{ margin: '0 0 12px', fontSize: 14, color: '#374151', lineHeight: 1.75 }}>
@@ -177,7 +177,7 @@ const SCREENING_CARDS: ScreeningCard[] = [
   {
     id: 'upper-gi',
     title: 'Upper GI & Oesophagus',
-    icon: '🔭',
+    icon: '🫁',
     body: (
       <div>
         <p style={{ margin: '0 0 12px', fontSize: 14, color: '#374151', lineHeight: 1.75 }}>
@@ -205,7 +205,7 @@ const SCREENING_CARDS: ScreeningCard[] = [
   {
     id: 'gallbladder',
     title: 'Gallbladder & Biliary',
-    icon: '🫀',
+    icon: '🩻',
     body: (
       <div>
         <p style={{ margin: '0 0 12px', fontSize: 14, color: '#374151', lineHeight: 1.75 }}>
@@ -258,7 +258,7 @@ const SCREENING_CARDS: ScreeningCard[] = [
   {
     id: 'diabetes',
     title: 'Diabetes & Metabolic Health',
-    icon: '📊',
+    icon: '💉',
     body: (
       <div>
         <p style={{ margin: '0 0 12px', fontSize: 14, color: '#374151', lineHeight: 1.75 }}>
