@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { runIntakeTurn } from '@/lib/claude';
 import { getOrCreateThread, updateThread, logAudit } from '@/lib/supabase';
 import { sendWhatsApp, validateTwilioSignature, formatNurseAlert } from '@/lib/twilio';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -28,6 +29,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   if (!validateTwilioSignature(url, params, sigHdr)) {
     return new NextResponse('Forbidden', { status: 403 });
+  }
+
+  // 10 messages per minute per number — prevents webhook replay / flooding
+  if (!checkRateLimit(`wa:${from}`, 10, 60_000)) {
+    return emptyTwiml();
   }
 
   if (!from || !body) return emptyTwiml();

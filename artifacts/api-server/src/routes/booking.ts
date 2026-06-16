@@ -135,6 +135,22 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
 
   try {
     const supa = getSupabaseAdmin();
+
+    // Optimistic conflict check — prevent two requests landing in the same slot.
+    // Not a hard DB-level lock, but eliminates the common case of concurrent staff actions.
+    const { data: conflict } = await supa
+      .from('appointment_requests')
+      .select('id')
+      .eq('confirmed_slot', confirmed_slot)
+      .in('status', ['staff_confirmed', 'patient_confirmed'])
+      .neq('id', id)
+      .maybeSingle();
+
+    if (conflict) {
+      res.status(409).json({ error: 'That slot is already taken by another confirmed appointment. Please choose a different time.' });
+      return;
+    }
+
     const { error } = await supa
       .from('appointment_requests')
       .update({

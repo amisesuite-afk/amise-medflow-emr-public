@@ -10,9 +10,24 @@ export interface SmsResult {
   providerId?: string;
 }
 
+// Process-level dedup — prevents identical (to + body) sends within 60 seconds.
+// Resets on process restart; prevents double-submit acks and rapid webhook replays
+// without blocking legitimate reminder sequences which differ in body or timing.
+const recentSends = new Map<string, number>();
+const SMS_DEDUP_MS = 60_000;
+
 export async function sendSms(args: SmsArgs): Promise<SmsResult> {
   const provider = process.env.SMS_PROVIDER || 'dry_run';
   const mode = process.env.MODE || 'dry_run';
+
+  // Dedup key = to + first 40 chars of body (enough to distinguish message types)
+  const dedupKey = `${args.to}:${args.body.slice(0, 40)}`;
+  const now = Date.now();
+  const lastSent = recentSends.get(dedupKey);
+  if (lastSent && now - lastSent < SMS_DEDUP_MS) {
+    logger.info({ to: args.to }, '[SMS] duplicate suppressed (cooldown)');
+    return { action: 'skipped' };
+  }
 
   if (provider === 'dry_run' || mode === 'dry_run') {
     logger.info({ to: args.to }, '[SMS dry-run]');
@@ -27,6 +42,7 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
       to: args.to,
       body: args.body,
     });
+    recentSends.set(dedupKey, now);
     return { action: 'sent', providerId: msg.sid };
   }
 
