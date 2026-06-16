@@ -52,12 +52,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     if (merged.triage_level === 'URGENT') {
-      // Acknowledge immediately; queue nurse alert
       const nurseWa = process.env.NURSE_ALERT_WHATSAPP;
       if (nurseWa) {
-        setTimeout(() => {
-          void sendWhatsApp(nurseWa, formatNurseAlert(merged));
-        }, 2 * 60 * 1000); // 2 min delay
+        await sendWhatsApp(nurseWa, formatNurseAlert(merged));
+        await logAudit(thread.id, 'urgent_nurse_alert_sent', 'system', { to: nurseWa, channel: 'whatsapp' });
       }
       return twimlResponse('Thank you. Your message has been received and a member of our team will contact you shortly.');
     }

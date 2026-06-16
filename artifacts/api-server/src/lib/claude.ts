@@ -45,7 +45,13 @@ export const ClassificationSchema = z.object({
 
 export type Classification = z.infer<typeof ClassificationSchema>;
 
+const EMAIL_BODY_MAX_CHARS = 4000;
+
 export async function classifyMessage(emailBody: string, subject: string): Promise<Classification> {
+  const truncatedBody = emailBody.length > EMAIL_BODY_MAX_CHARS
+    ? emailBody.slice(0, EMAIL_BODY_MAX_CHARS) + '\n[truncated]'
+    : emailBody;
+
   const prompt = `Classify the following patient email. Respond with ONLY a JSON object, no preamble, no markdown fences.
 
 Schema:
@@ -60,7 +66,7 @@ Schema:
 
 Subject: ${subject}
 Body:
-${emailBody}`;
+${truncatedBody}`;
 
   const resp = await client.messages.create({
     model: MODEL,

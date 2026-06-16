@@ -38,6 +38,7 @@ export interface ConversationThread {
   patient_identifier: string;
   patient_name: string | null;
   patient_dob: string | null;
+  patient_email: string | null;
   chief_complaint: string | null;
   triage_level: TriageLevel;
   status: ThreadStatus;

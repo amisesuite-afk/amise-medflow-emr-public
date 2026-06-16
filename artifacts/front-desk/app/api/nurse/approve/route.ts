@@ -125,7 +125,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     // Send email with full procedure instructions if we have an email address and a confirmed slot
-    const threadEmail = (thread as { patient_email?: string | null }).patient_email;
+    const threadEmail = thread.patient_email;
     if (threadEmail && calendarEventId) {
       const confirmedSlot = appointmentSlots?.[selectedSlotIndex ?? 0];
       void sendConfirmationEmail({

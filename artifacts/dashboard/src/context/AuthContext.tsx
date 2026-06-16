@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase, supabaseConfigured, configIssues, UserProfile, UserRole, SiteCode, serializeError } from '@/lib/supabase';
 
-export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true';
+export const DEMO_MODE = false;
 export const DEMO_PROFILE: UserProfile = {
   id: 'demo',
   full_name: 'Dr Demo',

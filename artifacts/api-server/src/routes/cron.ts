@@ -10,7 +10,10 @@ const router = Router();
 
 function requireCronSecret(req: any, res: any): boolean {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return true;
+  if (!secret) {
+    res.status(401).json({ error: 'Cron secret not configured on this server' });
+    return false;
+  }
   const provided = req.headers['x-cron-secret'] || req.query?.secret;
   if (provided !== secret) {
     res.status(401).json({ error: 'Unauthorized' });
@@ -218,7 +221,8 @@ router.post('/api/cron/daily-summary', async (req, res) => {
   if (escalations?.length) {
     summaryLines.push('', 'Escalations:');
     for (const esc of escalations) {
-      summaryLines.push(`  ${esc.entity_id}: ${JSON.stringify(esc.payload)}`);
+      // Omit payload — may contain PHI; entity_id and action are sufficient for triage
+      summaryLines.push(`  [${esc.action}] entity: ${esc.entity_id} at ${esc.created_at}`);
     }
   }
 
