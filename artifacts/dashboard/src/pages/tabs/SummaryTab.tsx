@@ -196,73 +196,6 @@ function apiUrl(path: string) {
   return `${base}${path}`;
 }
 
-const ANTHROPIC_API_KEY = (import.meta.env.VITE_ANTHROPIC_API_KEY as string | undefined) ?? '';
-
-const SUMMARY_SYSTEM_PROMPT =
-  'You are a clinical documentation assistant for Amise Medical Services, Saint Lucia. ' +
-  'Generate a professional SOAP-format clinical summary. ' +
-  'Never include fees, diagnoses beyond what the clinician provides, medication doses, or test results. ' +
-  'Output plain text with headings: SUBJECTIVE, OBJECTIVE, ASSESSMENT, PLAN.';
-
-const FEE_RE   = /\$[\d,]+|EC\$[\d,]+|\bXCD\b|\bfee\b|\bcharge\b|\bcost\b/gi;
-const DOSE_RE  = /\b\d+\s*mg\b|\b\d+\s*mcg\b/gi;
-
-function redactForbidden(text: string): string {
-  // Replace any sentence containing a forbidden pattern with a redaction notice.
-  return text
-    .split('\n')
-    .map(line => {
-      if (FEE_RE.test(line) || DOSE_RE.test(line)) {
-        // Reset lastIndex for global regexes
-        FEE_RE.lastIndex = 0;
-        DOSE_RE.lastIndex = 0;
-        return '[REDACTED — requires clinical review]';
-      }
-      FEE_RE.lastIndex = 0;
-      DOSE_RE.lastIndex = 0;
-      return line;
-    })
-    .join('\n');
-}
-
-interface AnthropicMessage {
-  id: string;
-  content: { type: string; text: string }[];
-}
-
-async function callAnthropicDirect(body: Record<string, unknown>): Promise<string> {
-  const userContent = JSON.stringify(body, null, 2);
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      system: SUMMARY_SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: `Please generate a SOAP clinical summary for the following patient intake data:\n\n${userContent}`,
-        },
-      ],
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({})) as { error?: { message?: string } };
-    throw new Error(err.error?.message ?? `Anthropic API error: HTTP ${res.status}`);
-  }
-
-  const data = await res.json() as AnthropicMessage;
-  const text = data.content.find(b => b.type === 'text')?.text ?? '';
-  return redactForbidden(text);
-}
-
 // ── Direct-export template builders ──────────────────────────────────────────
 
 type DirectCtx = ReturnType<typeof useAppContext>;
@@ -787,31 +720,18 @@ export default function SummaryTab() {
         const data = await res.json() as { document: string };
         summaryText = data.document;
       } else {
-        // No API_ORIGIN — try same-origin proxy, fall back to direct Anthropic call
-        let apiSucceeded = false;
-        try {
-          const res = await fetch(apiUrl('/api/summary/generate'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-          });
-          if (res.ok) {
-            const data = await res.json() as { document: string };
-            summaryText = data.document;
-            apiSucceeded = true;
-          }
-        } catch {
-          // API server not available — fall through to direct call
+        // No API_ORIGIN — use same-origin proxy (Vite dev proxy or production Next.js)
+        const res = await fetch(apiUrl('/api/summary/generate'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
         }
-
-        if (!apiSucceeded) {
-          if (!ANTHROPIC_API_KEY) {
-            throw new Error(
-              'Add VITE_ANTHROPIC_API_KEY to your .env.local to enable AI summaries, or connect to the API server.',
-            );
-          }
-          summaryText = await callAnthropicDirect(body);
-        }
+        const data = await res.json() as { document: string };
+        summaryText = data.document;
       }
 
       setDocument(summaryText ?? '');

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
+import { requireAuth } from '../middlewares/auth.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -291,6 +292,44 @@ router.post('/api/summary/generate', async (req, res) => {
     res.json({ document });
   } catch {
     res.json({ document: buildTemplateSoap(req.body) });
+  }
+});
+
+const REFINE_SYSTEM =
+  'You are a clinical documentation assistant for Dr. Dawit D Kabiye, MD, DM, General & Endoscopic Surgeon at Amise Medical Services, Saint Lucia. ' +
+  'You will receive a structured clinical encounter record and must: ' +
+  '1. Keep ALL factual clinical data exactly as stated — do not invent findings, results, or diagnoses. ' +
+  '2. Replace placeholder prompts (lines beginning with ▸ [ADD:) with standard clinical language if inferable, or remove them if not. ' +
+  '3. Improve medical phrasing, completeness, and structure. ' +
+  '4. Preserve all section headers and the signature block. ' +
+  '5. Never include fees, charges, costs, or financial information. ' +
+  'Output only the refined encounter record in the same plain-text format — no markdown, no commentary.';
+
+router.post('/api/ai/refine', requireAuth, async (req, res) => {
+  const { text } = req.body as { text?: string };
+  if (!text || typeof text !== 'string') {
+    res.status(400).json({ error: 'text is required' });
+    return;
+  }
+  if (!process.env.ANTHROPIC_API_KEY) {
+    res.status(503).json({ error: 'AI not configured on this server' });
+    return;
+  }
+  try {
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 4096,
+      system: REFINE_SYSTEM,
+      messages: [{ role: 'user', content: `Refine the following clinical encounter record:\n\n${text}` }],
+    });
+    const refined = response.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('')
+      .trim();
+    res.json({ refined });
+  } catch {
+    res.status(502).json({ error: 'AI refine request failed' });
   }
 });
 

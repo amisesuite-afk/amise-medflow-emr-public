@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { sb, getSupabaseAdmin, audit } from '../lib/supabase.js';
-import { sendSms, smsBody48h, smsBody2h, smsBodyIntakeReminder, smsBodyPostVisit, smsBodyStaffEscalation, getPrepInstructions } from '../lib/sms.js';
+import { sendSms, smsBody48h, smsBodyPostVisit, smsBodyStaffEscalation, getPrepInstructions } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { draftReply } from '../lib/claude.js';
 import { formatSlotForDisplay } from '../lib/calendar.js';
@@ -27,16 +27,17 @@ router.post('/api/cron/reminders', async (req, res) => {
 
   const now = new Date();
   const window48h = new Date(now.getTime() + 48 * 60 * 60 * 1000 + 30 * 60 * 1000);
-  const window2h   = new Date(now.getTime() + 2  * 60 * 60 * 1000 + 30 * 60 * 1000);
 
   req.log.info({ now }, '[cron/reminders] running');
 
-  let { data: appointments, error } = await sb()
-    .from('confirmed_appointments')
+  // appointment_requests tracks all bookings from the AI intake flow; confirmed_slot
+  // holds the agreed appointment time once staff have confirmed.
+  const { data: appointments, error } = await sb()
+    .from('appointment_requests')
     .select('*')
-    .gte('start_time', now.toISOString())
-    .lte('start_time', window48h.toISOString())
-    .eq('cancelled', false);
+    .in('status', ['staff_confirmed', 'patient_confirmed'])
+    .gte('confirmed_slot', now.toISOString())
+    .lte('confirmed_slot', window48h.toISOString());
 
   if (error) {
     req.log.error({ error }, '[cron/reminders] db error');
@@ -48,128 +49,57 @@ router.post('/api/cron/reminders', async (req, res) => {
 
   for (const appt of appointments || []) {
     try {
-    const apptTime = new Date(appt.start_time);
-    const msUntil  = apptTime.getTime() - now.getTime();
-    const hoursUntil = msUntil / 3600_000;
+      const apptTime = new Date(appt.confirmed_slot);
+      const hoursUntil = (apptTime.getTime() - now.getTime()) / 3600_000;
+      const firstName = (appt.patient_name as string || 'there').split(' ')[0];
 
-    const slot = {
-      start: apptTime,
-      end: new Date(appt.end_time || apptTime.getTime() + 30 * 60 * 1000),
-      location: appt.location,
-      appointmentType: appt.appointment_type,
-    };
-    const slotDisplay = formatSlotForDisplay(slot as any);
+      const slot = {
+        start: apptTime,
+        end: new Date(apptTime.getTime() + 45 * 60 * 1000),
+        location: appt.location,
+        appointmentType: appt.appointment_type,
+      };
+      const slotDisplay = formatSlotForDisplay(slot as any);
 
-    if (hoursUntil <= 48 && hoursUntil > 2 && !appt.reminder_48h_sent) {
-      if (appt.patient_phone) {
+      // 48h SMS reminder — send once (reminder_sent_at IS NULL)
+      if (hoursUntil <= 48 && hoursUntil > 2 && !appt.reminder_sent_at && appt.patient_phone) {
         const prepInstructions = getPrepInstructions(appt.appointment_type);
         const body = smsBody48h({ ...slotDisplay, prepInstructions });
         const result = await sendSms({ to: appt.patient_phone, body });
-        if (result.action === 'sent') {
-          await sb().from('confirmed_appointments').update({ reminder_48h_sent: true }).eq('id', appt.id);
-          await audit({ action: 'remind', entityType: 'appointment', entityId: appt.id, payload: { kind: 'sms_48h' } });
+        if (result.action === 'sent' || result.action === 'skipped') {
+          await sb().from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', appt.id);
+          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'sms_48h' } });
           results.push({ id: appt.id, action: 'sms_48h_sent' });
         }
       }
 
-      if (appt.patient_email && !appt.patient_email.endsWith('@noreply.amise.internal') && !appt.email_24h_sent && hoursUntil <= 24) {
-        const draft = await draftReply({ template: 'confirmation', patientFirstName: appt.patient_first_name, bookingDetails: slotDisplay });
+      // 24h email reminder — send once (patient_ack_sent_at IS NULL)
+      if (hoursUntil <= 24 && hoursUntil > 1 && !appt.patient_ack_sent_at && appt.patient_email && !appt.patient_email.endsWith('@noreply.amise.internal')) {
+        const draft = await draftReply({ template: 'confirmation', patientFirstName: firstName, bookingDetails: slotDisplay });
         const prepInstructions = getPrepInstructions(appt.appointment_type);
         const prepSection = prepInstructions
           ? `\n\n---\nPREPARATION INSTRUCTIONS\n\n${prepInstructions}\n\nIf you have any questions about your preparation, please call us at ${process.env.PRACTICE_PHONE ?? '+1 758 284 0557'}.`
           : '';
         await sendOrDraft({ to: appt.patient_email, subject: `Reminder: ${draft.subject}`, body: `${draft.body}${prepSection}` }, 'auto');
-        await sb().from('confirmed_appointments').update({ email_24h_sent: true }).eq('id', appt.id);
-        await audit({ action: 'remind', entityType: 'appointment', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions } });
+        await sb().from('appointment_requests').update({ patient_ack_sent_at: now.toISOString() }).eq('id', appt.id);
+        await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions } });
         results.push({ id: appt.id, action: 'email_24h_sent' });
       }
-    }
 
-    // Pre-visit questionnaire nudge — piggybacks on the same 48h window so the
-    // doctor has the AI pre-consult summary in hand before the appointment.
-    // Only fires for patients who (a) have a portal account and (b) haven't
-    // submitted an intake yet — the questionnaire is otherwise an orphaned
-    // self-serve card on the portal home page that nobody is prompted to use.
-    if (hoursUntil <= 48 && hoursUntil > 2 && !appt.intake_reminder_sent && appt.patient_phone && appt.patient_email) {
-      const { data: patient } = await sb()
-        .from('patients')
-        .select('id')
-        .eq('email', appt.patient_email.toLowerCase())
-        .eq('portal_enabled', true)
-        .maybeSingle();
-
-      if (patient) {
-        const { data: intake } = await sb()
-          .from('patient_intake')
-          .select('id')
-          .eq('patient_id', patient.id)
-          .limit(1)
-          .maybeSingle();
-
-        if (!intake) {
-          const portalOrigin = new URL(process.env.PORTAL_URL ?? 'https://front-desk-amisesuite-afks-projects.vercel.app/patient').origin;
-          const body = smsBodyIntakeReminder({ firstName: appt.patient_first_name, portalOrigin });
-          const result = await sendSms({ to: appt.patient_phone, body });
-          if (result.action === 'sent') {
-            await sb().from('confirmed_appointments').update({ intake_reminder_sent: true }).eq('id', appt.id);
-            await audit({ action: 'remind', entityType: 'appointment', entityId: appt.id, payload: { kind: 'intake_reminder_sms' } });
-            results.push({ id: appt.id, action: 'intake_reminder_sent' });
-          }
+      // Post-visit follow-up — 24h after the appointment
+      // (checked inline since there's no dedicated tracking column)
+      const hoursSince = -hoursUntil;
+      if (hoursSince >= 23 && hoursSince <= 25 && appt.patient_phone && appt.reminder_sent_at) {
+        const body = smsBodyPostVisit({ firstName });
+        const result = await sendSms({ to: appt.patient_phone, body });
+        if (result.action === 'sent' || result.action === 'skipped') {
+          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'post_visit_24h' } });
+          results.push({ id: appt.id, action: 'post_visit_24h_sent' });
         }
       }
-    }
-
-    if (hoursUntil <= 2.5 && hoursUntil > 0 && !appt.reminder_2h_sent && appt.patient_phone) {
-      const body = smsBody2h(slotDisplay);
-      const result = await sendSms({ to: appt.patient_phone, body });
-      if (result.action === 'sent') {
-        await sb().from('confirmed_appointments').update({ reminder_2h_sent: true }).eq('id', appt.id);
-        await audit({ action: 'remind', entityType: 'appointment', entityId: appt.id, payload: { kind: 'sms_2h' } });
-        results.push({ id: appt.id, action: 'sms_2h_sent' });
-      }
-    }
     } catch (err) {
       req.log.error({ error: err, appointmentId: appt.id }, '[cron/reminders] failed to process appointment, continuing with remaining');
       results.push({ id: appt.id, action: 'error' });
-    }
-  }
-
-  // Post-visit follow-up — a generic, non-clinical "how are you feeling
-  // since your visit" check-in ~24h after the appointment, completing the
-  // post_visit_24h entry in REMINDER_CASCADE. Never mentions diagnoses,
-  // results, or medication — just an open door back to the practice and the
-  // emergency number.
-  const postVisitWindowStart = new Date(now.getTime() - 25 * 60 * 60 * 1000);
-  const postVisitWindowEnd   = new Date(now.getTime() - 23 * 60 * 60 * 1000);
-
-  const { data: pastAppointments, error: pastErr } = await sb()
-    .from('confirmed_appointments')
-    .select('*')
-    .gte('start_time', postVisitWindowStart.toISOString())
-    .lte('start_time', postVisitWindowEnd.toISOString())
-    .eq('cancelled', false)
-    .eq('post_visit_followup_sent', false);
-
-  if (pastErr) {
-    req.log.error({ error: pastErr }, '[cron/reminders] post-visit db error');
-  } else {
-    for (const appt of pastAppointments || []) {
-      try {
-        if (appt.patient_phone) {
-          const body = smsBodyPostVisit({ firstName: appt.patient_first_name || 'there' });
-          const result = await sendSms({ to: appt.patient_phone, body });
-          if (result.action === 'sent') {
-            await sb().from('confirmed_appointments').update({ post_visit_followup_sent: true }).eq('id', appt.id);
-            await audit({ action: 'remind', entityType: 'appointment', entityId: appt.id, payload: { kind: 'post_visit_24h' } });
-            results.push({ id: appt.id, action: 'post_visit_24h_sent' });
-          }
-        } else {
-          await sb().from('confirmed_appointments').update({ post_visit_followup_sent: true }).eq('id', appt.id);
-        }
-      } catch (err) {
-        req.log.error({ error: err, appointmentId: appt.id }, '[cron/reminders] failed to process post-visit follow-up, continuing with remaining');
-        results.push({ id: appt.id, action: 'error' });
-      }
     }
   }
 
@@ -184,23 +114,23 @@ router.post('/api/cron/daily-summary', async (req, res) => {
   const endOfDay   = new Date(today.setHours(23, 59, 59, 999));
 
   const { data: appointments } = await sb()
-    .from('confirmed_appointments')
-    .select('*')
-    .gte('start_time', startOfDay.toISOString())
-    .lte('start_time', endOfDay.toISOString())
-    .eq('cancelled', false);
+    .from('appointment_requests')
+    .select('id, patient_name, patient_email, appointment_type, location, confirmed_slot')
+    .in('status', ['staff_confirmed', 'patient_confirmed'])
+    .gte('confirmed_slot', startOfDay.toISOString())
+    .lte('confirmed_slot', endOfDay.toISOString());
 
   const { data: escalations } = await sb()
-    .from('audit_log')
-    .select('*')
+    .from('audit_logs')
+    .select('action, record_id, created_at')
     .eq('action', 'escalate')
     .gte('created_at', startOfDay.toISOString())
     .lte('created_at', endOfDay.toISOString());
 
   const { data: pending } = await sb()
-    .from('pending_bookings')
-    .select('*')
-    .eq('status', 'awaiting_reply');
+    .from('appointment_requests')
+    .select('id')
+    .eq('status', 'pending');
 
   const summaryLines: string[] = [
     `Daily Summary — Amise Front Desk AI — ${startOfDay.toDateString()}`,
@@ -213,16 +143,16 @@ router.post('/api/cron/daily-summary', async (req, res) => {
   if (appointments?.length) {
     summaryLines.push('', 'Today\'s schedule:');
     for (const appt of appointments) {
-      const t = new Date(appt.start_time);
-      summaryLines.push(`  ${t.getHours().toString().padStart(2,'0')}:${t.getMinutes().toString().padStart(2,'0')} — ${appt.patient_first_name || appt.patient_email} (${appt.appointment_type}) @ ${appt.location}`);
+      const t = new Date(appt.confirmed_slot);
+      summaryLines.push(`  ${t.getHours().toString().padStart(2,'0')}:${t.getMinutes().toString().padStart(2,'0')} — ${appt.patient_name || appt.patient_email} (${appt.appointment_type}) @ ${appt.location}`);
     }
   }
 
   if (escalations?.length) {
     summaryLines.push('', 'Escalations:');
     for (const esc of escalations) {
-      // Omit payload — may contain PHI; entity_id and action are sufficient for triage
-      summaryLines.push(`  [${esc.action}] entity: ${esc.entity_id} at ${esc.created_at}`);
+      // Omit payload — record_id and action are sufficient for triage
+      summaryLines.push(`  [${esc.action}] entity: ${esc.record_id} at ${esc.created_at}`);
     }
   }
 
