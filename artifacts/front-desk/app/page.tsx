@@ -13,7 +13,7 @@ const WA_TAPION    = 'https://wa.me/17582840557';
 const WA_RODNEY    = 'https://wa.me/17587207111';
 const PHONE_TAPION = '758-284-0557';
 const PHONE_RODNEY = '758-720-7111';
-const EMAIL        = 'info@amisemedical.com';
+const WA_LABEL     = 'Message us on WhatsApp';
 
 // ── WhatsApp SVG ──────────────────────────────────────────────────────────────
 
@@ -709,7 +709,7 @@ function Contact() {
             { icon: '📅', title: 'Book Online',            desc: 'Routine or referral — confirm instantly.',      cta: 'Book Now →',     href: '/book',           color: '#0d9488' },
             { icon: '💬', title: 'WhatsApp — Tapion',       desc: PHONE_TAPION,                                   cta: 'Message Us →',   href: WA_TAPION,         color: '#25D366', external: true },
             { icon: '💬', title: 'WhatsApp — Rodney Bay',   desc: PHONE_RODNEY,                                   cta: 'Message Us →',   href: WA_RODNEY,         color: '#25D366', external: true },
-            { icon: '✉️', title: 'Email',                   desc: EMAIL,                                          cta: 'Send Email →',   href: `mailto:${EMAIL}`, color: '#6366f1' },
+            { icon: '📞', title: 'Call — Tapion',            desc: PHONE_TAPION,                                   cta: 'Call Now →',     href: 'tel:+17582840557', color: '#6366f1' },
           ].map(({ icon, title, desc, cta, href, color, external }) => (
             <a
               key={title}
@@ -785,19 +785,16 @@ function Footer() {
           </div>
         </div>
 
-        {/* Email */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{ width: 42, height: 42, borderRadius: '50%', background: '#1e4a5a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
-            </svg>
+        {/* WhatsApp enquiries */}
+        <a href={WA_TAPION} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
+          <div style={{ width: 42, height: 42, borderRadius: '50%', background: '#25D36622', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <WaSvg size={20} color="#25D366" />
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{EMAIL}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{WA_LABEL}</div>
             <div style={{ fontSize: 11, color: '#4a7a8a' }}>General enquiries</div>
           </div>
-        </div>
+        </a>
 
         {/* Social — WhatsApp only until practice social accounts are set up */}
         <div style={{ display: 'flex', gap: 10 }}>
