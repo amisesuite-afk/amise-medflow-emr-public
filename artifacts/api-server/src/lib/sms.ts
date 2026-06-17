@@ -29,6 +29,13 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
     return { action: 'skipped' };
   }
 
+  // Periodic cleanup — evict expired entries so the Map doesn't grow unbounded
+  if (recentSends.size > 200) {
+    for (const [k, ts] of recentSends) {
+      if (now - ts > SMS_DEDUP_MS) recentSends.delete(k);
+    }
+  }
+
   if (provider === 'dry_run' || mode === 'dry_run') {
     logger.info({ to: args.to }, '[SMS dry-run]');
     return { action: 'skipped' };
@@ -54,20 +61,101 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
   throw new Error(`Unknown SMS_PROVIDER: ${provider}`);
 }
 
-// Procedure types that require preparation instructions
+// Preparation instructions aligned with ESGE/BSG/ASA outpatient guidelines,
+// adapted for the Saint Lucian setting (Tapion Hospital, Rodney Bay clinic).
+// General outpatient surgical checklist items are appended to every prep type.
+const GENERAL_PREP = [
+  'WHAT TO WEAR: Loose, comfortable clothing (you will change into a gown). Remove all jewellery, piercings, watches, and hair accessories before arrival.',
+  'WHAT TO BRING: Valid photo ID, insurance card (if applicable), a complete list of your current medications (including doses), any relevant referral letters, blood results, or imaging reports.',
+  'TRANSPORT: Arrange a responsible adult to drive you home — you CANNOT drive after sedation or anaesthesia. You should not take public transport alone. Plan for someone to stay with you for 24 hours after your procedure.',
+  'FASTING: Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment time, unless otherwise instructed below.',
+  'MEDICATIONS: Take essential heart, blood pressure, and anti-seizure medications with a small sip of water on the morning of your procedure. Do NOT take diabetes tablets or insulin on the morning — call us if unsure.',
+  'CONTINGENCIES: If you develop fever, a new cough, vomiting, or feel unwell in the days before your procedure, call us immediately — we may need to reschedule. If you have a medical emergency at any time, call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately — do not wait.',
+].join('\n');
+
 const PREP_INSTRUCTIONS: Record<string, string> = {
-  colonoscopy:
-    'PREP REQUIRED: Clear fluids only the day before (no solid food). Take your prescribed bowel prep solution as directed. Nothing by mouth from midnight. Arrange a driver — you cannot drive after sedation.',
-  ogd:
-    'PREP REQUIRED: Nothing to eat or drink from midnight before your gastroscopy. You may take essential medications with a small sip of water. Arrange a driver home.',
-  egd:
-    'PREP REQUIRED: Nothing to eat or drink from midnight before your gastroscopy. You may take essential medications with a small sip of water. Arrange a driver home.',
-  ercp_workup:
-    'PREP REQUIRED: Nothing to eat or drink from midnight. Stop blood thinners as advised by your doctor. Arrange a driver — you cannot drive after sedation.',
-  pre_op:
-    'PRE-OP INSTRUCTIONS: Nothing to eat or drink from midnight. Continue essential medications with a small sip of water unless advised otherwise. Bring your medication list.',
-  flexi_sig:
-    'PREP REQUIRED: Follow your bowel prep instructions. Clear fluids only on the morning of the procedure. Arrange a driver home.',
+  colonoscopy: [
+    'COLONOSCOPY PREPARATION',
+    '• TWO DAYS BEFORE: Switch to a low-fibre diet (white bread, rice, chicken, fish — avoid fruits, vegetables, seeds, nuts, whole grains).',
+    '• DAY BEFORE: Clear fluids only from morning (water, clear broth, black tea/coffee, apple juice — no milk, no red/purple drinks, no alcohol). Take your prescribed bowel prep solution exactly as directed by the clinic.',
+    '• MORNING OF: Nothing by mouth from midnight. You may take essential medications with a small sip of water.',
+    '• IMPORTANT: Good bowel preparation is essential for a safe and effective examination. If your prep is incomplete, the procedure may need to be repeated.',
+    '',
+    GENERAL_PREP,
+  ].join('\n'),
+
+  ogd: [
+    'GASTROSCOPY (OGD) PREPARATION',
+    '• Nothing to eat for 6 hours before your appointment.',
+    '• You may drink water up to 2 hours before — then nothing by mouth.',
+    '• Take essential medications (heart, blood pressure, anti-seizure) with a small sip of water.',
+    '• If you have diabetes, do NOT take your morning diabetes tablets or insulin — call us for specific guidance.',
+    '',
+    GENERAL_PREP,
+  ].join('\n'),
+
+  egd: [
+    'GASTROSCOPY (OGD) PREPARATION',
+    '• Nothing to eat for 6 hours before your appointment.',
+    '• You may drink water up to 2 hours before — then nothing by mouth.',
+    '• Take essential medications (heart, blood pressure, anti-seizure) with a small sip of water.',
+    '• If you have diabetes, do NOT take your morning diabetes tablets or insulin — call us for specific guidance.',
+    '',
+    GENERAL_PREP,
+  ].join('\n'),
+
+  ercp_workup: [
+    'ERCP WORK-UP PREPARATION',
+    '• Nothing to eat for 6 hours and nothing to drink for 2 hours before your appointment.',
+    '• Blood thinners: follow the specific instructions given to you by Dr Kabiye. Do NOT stop any medication without being told to.',
+    '• Bring all recent blood results and imaging (ultrasound, CT, MRCP) to your appointment.',
+    '',
+    GENERAL_PREP,
+  ].join('\n'),
+
+  pre_op: [
+    'PRE-OPERATIVE INSTRUCTIONS — OUTPATIENT SURGERY',
+    '• Nothing to eat for 6 hours and nothing to drink for 2 hours before your surgery time.',
+    '• Take essential heart, blood pressure, and anti-seizure medications with a small sip of water.',
+    '• Do NOT take diabetes tablets, insulin, or blood thinners on the morning unless specifically instructed by Dr Kabiye.',
+    '• Shower or bathe on the morning of surgery. Do not apply lotions, deodorant, or make-up to the surgical area.',
+    '• Leave all valuables at home.',
+    '• A responsible adult MUST accompany you and remain at the facility. You will need someone to stay with you for 24 hours after discharge.',
+    '• If you develop any illness (fever, cough, cold) in the days before surgery, call us immediately — your surgery may need to be postponed for your safety.',
+    '',
+    GENERAL_PREP,
+  ].join('\n'),
+
+  flexi_sig: [
+    'FLEXIBLE SIGMOIDOSCOPY PREPARATION',
+    '• Follow the bowel prep instructions provided (usually a single enema or mini-prep the morning of).',
+    '• Light breakfast only on the morning of the procedure (toast, tea — avoid heavy or greasy food).',
+    '• You may not need sedation — ask us about your options.',
+    '',
+    GENERAL_PREP,
+  ].join('\n'),
+
+  new_consult: [
+    'YOUR FIRST CONSULTATION',
+    '• Bring a valid photo ID, insurance card (if applicable), and your referral letter (if you were referred).',
+    '• Bring a list of all your current medications, including doses and any vitamins or supplements.',
+    '• Bring any recent blood results, imaging reports, or discharge summaries from other hospitals.',
+    '• Write down your main questions or concerns — this helps us make the most of your appointment time.',
+    '• Arrive 10 minutes early to complete registration.',
+    '',
+    'EMERGENCY: If your symptoms worsen before your appointment (severe pain, bleeding, vomiting blood, high fever, difficulty breathing), do NOT wait — call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately.',
+  ].join('\n'),
+
+  diabetic_foot: [
+    'DIABETIC FOOT CLINIC',
+    '• Bring your glucose log / HbA1c result if available.',
+    '• Wear loose-fitting shoes or sandals that are easy to remove.',
+    '• Do NOT apply any creams or ointments to the wound on the day of your appointment — the doctor needs to see it as-is.',
+    '• Bring a list of all medications including insulin type, dose, and timing.',
+    '• If you notice sudden worsening — spreading redness, black areas, pus, fever, or inability to bear weight — call 911 or go to Victoria Hospital A&E / Tapion Hospital immediately. Do NOT wait for your appointment.',
+    '',
+    GENERAL_PREP,
+  ].join('\n'),
 };
 
 export function getPrepInstructions(appointmentType: string): string | null {

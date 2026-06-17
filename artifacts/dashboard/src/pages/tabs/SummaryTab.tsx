@@ -862,9 +862,8 @@ export default function SummaryTab() {
         {error && (
           <div className="summary-error" style={{ marginBottom: 10 }}>
             ⚠ {error}
-            {(error.includes('ANTHROPIC') || error.includes('API')) &&
-             !error.includes('VITE_ANTHROPIC_API_KEY') ? (
-              <span> — Check that ANTHROPIC_API_KEY is set in environment secrets.</span>
+            {error.includes('not configured') ? (
+              <span> — Check that ANTHROPIC_API_KEY is set on the API server.</span>
             ) : null}
           </div>
         )}

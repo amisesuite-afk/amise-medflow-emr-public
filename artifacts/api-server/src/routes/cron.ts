@@ -73,33 +73,59 @@ router.post('/api/cron/reminders', async (req, res) => {
         }
       }
 
-      // 24h email reminder — send once (patient_ack_sent_at IS NULL)
-      if (hoursUntil <= 24 && hoursUntil > 1 && !appt.patient_ack_sent_at && appt.patient_email && !appt.patient_email.endsWith('@noreply.amise.internal')) {
+      // 24h email reminder with prep instructions — send once (prep_sms_sent IS false/null).
+      // NOTE: patient_ack_sent_at is set during the booking-ack SMS flow, so it cannot
+      // be used here — it would silently suppress the email for every normal booking.
+      if (hoursUntil <= 24 && hoursUntil > 1 && !appt.prep_sms_sent && appt.patient_email && !appt.patient_email.endsWith('@noreply.amise.internal')) {
         const draft = await draftReply({ template: 'confirmation', patientFirstName: firstName, bookingDetails: slotDisplay });
         const prepInstructions = getPrepInstructions(appt.appointment_type);
         const prepSection = prepInstructions
           ? `\n\n---\nPREPARATION INSTRUCTIONS\n\n${prepInstructions}\n\nIf you have any questions about your preparation, please call us at ${process.env.PRACTICE_PHONE ?? '+1 758 284 0557'}.`
           : '';
         await sendOrDraft({ to: appt.patient_email, subject: `Reminder: ${draft.subject}`, body: `${draft.body}${prepSection}` }, 'auto');
-        await sb().from('appointment_requests').update({ patient_ack_sent_at: now.toISOString() }).eq('id', appt.id);
+        await sb().from('appointment_requests').update({ prep_sms_sent: true }).eq('id', appt.id);
         await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions } });
         results.push({ id: appt.id, action: 'email_24h_sent' });
       }
 
-      // Post-visit follow-up — 24h after the appointment
-      // (checked inline since there's no dedicated tracking column)
-      const hoursSince = -hoursUntil;
-      if (hoursSince >= 23 && hoursSince <= 25 && appt.patient_phone && appt.reminder_sent_at) {
-        const body = smsBodyPostVisit({ firstName });
-        const result = await sendSms({ to: appt.patient_phone, body });
-        if (result.action === 'sent' || result.action === 'skipped') {
-          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'post_visit_24h' } });
-          results.push({ id: appt.id, action: 'post_visit_24h_sent' });
-        }
-      }
     } catch (err) {
       req.log.error({ error: err, appointmentId: appt.id }, '[cron/reminders] failed to process appointment, continuing with remaining');
       results.push({ id: appt.id, action: 'error' });
+    }
+  }
+
+  // Post-visit follow-up — separate query for appointments 23–25 hours ago.
+  // A generic, non-clinical "how are you feeling" check-in; never mentions
+  // diagnoses, results, or medication.
+  const postVisitStart = new Date(now.getTime() - 25 * 3600_000);
+  const postVisitEnd   = new Date(now.getTime() - 23 * 3600_000);
+
+  const { data: pastAppts, error: pastErr } = await sb()
+    .from('appointment_requests')
+    .select('id, patient_name, patient_phone, reminder_sent_at')
+    .in('status', ['staff_confirmed', 'patient_confirmed'])
+    .gte('confirmed_slot', postVisitStart.toISOString())
+    .lte('confirmed_slot', postVisitEnd.toISOString())
+    .not('reminder_sent_at', 'is', null);
+
+  if (pastErr) {
+    req.log.error({ error: pastErr }, '[cron/reminders] post-visit query error');
+  } else {
+    for (const appt of pastAppts || []) {
+      try {
+        if (appt.patient_phone) {
+          const firstName = (appt.patient_name as string || 'there').split(' ')[0];
+          const body = smsBodyPostVisit({ firstName });
+          const result = await sendSms({ to: appt.patient_phone, body });
+          if (result.action === 'sent' || result.action === 'skipped') {
+            await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'post_visit_24h' } });
+            results.push({ id: appt.id, action: 'post_visit_24h_sent' });
+          }
+        }
+      } catch (err) {
+        req.log.error({ error: err, appointmentId: appt.id }, '[cron/reminders] post-visit error');
+        results.push({ id: appt.id, action: 'error' });
+      }
     }
   }
 
@@ -144,7 +170,8 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     summaryLines.push('', 'Today\'s schedule:');
     for (const appt of appointments) {
       const t = new Date(appt.confirmed_slot);
-      summaryLines.push(`  ${t.getHours().toString().padStart(2,'0')}:${t.getMinutes().toString().padStart(2,'0')} — ${appt.patient_name || appt.patient_email} (${appt.appointment_type}) @ ${appt.location}`);
+      const ectTime = t.toLocaleTimeString('en-GB', { timeZone: 'America/St_Lucia', hour: '2-digit', minute: '2-digit', hour12: false });
+      summaryLines.push(`  ${ectTime} — ${appt.patient_name || appt.patient_email} (${appt.appointment_type}) @ ${appt.location}`);
     }
   }
 

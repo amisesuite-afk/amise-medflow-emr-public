@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAppContext } from '@/context/AppContext';
 import { closeEncounter } from '@/lib/db';
 import {
@@ -696,10 +697,10 @@ export default function FinalDocTab() {
     setAiError('');
     try {
       const apiOrigin = getApiOrigin();
-      const url = apiOrigin ? `${apiOrigin}/api/ai/refine` : '/api/ai/refine';
-      const res = await fetch(url, {
+      const base = apiOrigin || (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
+      const res = await fetch(`${base}/api/ai/refine`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({ text: finalDocument }),
       });
       if (!res.ok) {

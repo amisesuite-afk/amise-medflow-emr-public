@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { requireAuth } from '../middlewares/auth.js';
+import { checkForbiddenContent, FORBIDDEN_PATTERNS } from '@workspace/triage-engine';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -283,11 +284,19 @@ router.post('/api/summary/generate', async (req, res) => {
       messages: [{ role: 'user', content: prompt }],
     });
 
-    const document = response.content
+    let document = response.content
       .filter(b => b.type === 'text')
       .map(b => (b as { type: 'text'; text: string }).text)
       .join('')
       .trim();
+
+    if (!checkForbiddenContent(document).safe) {
+      document = document.split('\n').map(line => {
+        if (FORBIDDEN_PATTERNS.some(p => p.test(line))) return '[REDACTED — requires clinical review]';
+        FORBIDDEN_PATTERNS.forEach(p => { p.lastIndex = 0; });
+        return line;
+      }).join('\n');
+    }
 
     res.json({ document });
   } catch {
@@ -322,11 +331,20 @@ router.post('/api/ai/refine', requireAuth, async (req, res) => {
       system: REFINE_SYSTEM,
       messages: [{ role: 'user', content: `Refine the following clinical encounter record:\n\n${text}` }],
     });
-    const refined = response.content
+    let refined = response.content
       .filter(b => b.type === 'text')
       .map(b => (b as { type: 'text'; text: string }).text)
       .join('')
       .trim();
+
+    if (!checkForbiddenContent(refined).safe) {
+      refined = refined.split('\n').map(line => {
+        if (FORBIDDEN_PATTERNS.some(p => p.test(line))) return '[REDACTED — requires clinical review]';
+        FORBIDDEN_PATTERNS.forEach(p => { p.lastIndex = 0; });
+        return line;
+      }).join('\n');
+    }
+
     res.json({ refined });
   } catch {
     res.status(502).json({ error: 'AI refine request failed' });
