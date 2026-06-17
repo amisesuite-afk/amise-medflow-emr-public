@@ -245,7 +245,7 @@ function EntryPoints() {
     {
       icon: '🌐',
       label: 'Website Booking',
-      sub: 'amisemedicalservices.com/book',
+      sub: 'Online booking form',
       href: '/book',
       tracks: ['Routine self-booking', 'Referral submission'],
     },
@@ -259,7 +259,7 @@ function EntryPoints() {
     {
       icon: '📋',
       label: 'GP / Specialist Referral',
-      sub: 'amisemedicalservices.com/refer',
+      sub: 'Structured referral form',
       href: '/refer',
       tracks: ['Structured referral form', 'HL7 FHIR R4 API'],
     },

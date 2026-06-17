@@ -799,22 +799,8 @@ function Footer() {
           </div>
         </div>
 
-        {/* Social */}
+        {/* Social — WhatsApp only until practice social accounts are set up */}
         <div style={{ display: 'flex', gap: 10 }}>
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-            style={{ width: 38, height: 38, borderRadius: '50%', background: '#1e4a5a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8">
-              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
-            </svg>
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-            style={{ width: 38, height: 38, borderRadius: '50%', background: '#1e4a5a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.8">
-              <rect x="2" y="2" width="20" height="20" rx="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.5" cy="6.5" r="0.5" fill="#94a3b8"/>
-            </svg>
-          </a>
           <a href={WA_TAPION} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
             style={{ width: 38, height: 38, borderRadius: '50%', background: '#25D36622', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <WaSvg size={18} color="#25D366" />

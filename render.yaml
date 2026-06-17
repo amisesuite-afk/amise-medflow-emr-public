@@ -11,9 +11,9 @@ services:
       - key: NODE_ENV
         value: production
       - key: MODE
-        value: dry_run
+        value: supervised
       - key: SMS_PROVIDER
-        value: dry_run
+        value: twilio
       - key: SESSION_SECRET
         generateValue: true
       - key: GMAIL_USER

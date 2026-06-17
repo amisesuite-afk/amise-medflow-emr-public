@@ -146,8 +146,8 @@ export default function LoginPage() {
         <div style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-.02em' }}>
           MedFlow EMR
         </div>
-        <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 12px', borderRadius: 999, background: 'rgba(255,180,0,.1)', border: '1px solid rgba(255,180,0,.28)', color: '#fbbf24', fontSize: 10, fontWeight: 800, letterSpacing: '.08em' }}>
-          ⚗ INTERNAL PROTOTYPE — NOT FOR CLINICAL USE
+        <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 12px', borderRadius: 999, background: 'rgba(13,146,120,.12)', border: '1px solid rgba(13,146,120,.3)', color: '#4db8ad', fontSize: 10, fontWeight: 800, letterSpacing: '.08em' }}>
+          Staff Portal
         </div>
       </div>
 
@@ -226,8 +226,8 @@ export default function LoginPage() {
       )}
 
       <p style={{ marginTop: 16, fontSize: 11, color: '#3d6056', textAlign: 'center', lineHeight: 1.6 }}>
-        Amise Medical Services · Verdance Software Division<br />
-        This tool is a supervised clinical prototype. All recommendations require clinical review.
+        Amise Medical Services<br />
+        All clinical recommendations require qualified review before action.
       </p>
     </div>
   );
