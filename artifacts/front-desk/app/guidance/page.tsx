@@ -1,10 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import '../subpage-mobile.css';
 
 export const metadata: Metadata = {
   title: 'Health Guidance & Preventive Screening — Amise Medical Services',
   description:
     'General health guidance and preventive screening information from Amise Medical Services. Dr Dawit Daniel Kabiye, MD, DM — General & Endoscopic Surgery, Saint Lucia.',
+  openGraph: {
+    title: 'Health Guidance & Preventive Screening — Amise Medical Services',
+    description: 'Preventive screening and health guidance from Amise Medical Services in Saint Lucia. Colonoscopy, breast screening, thyroid checks, and more.',
+  },
+  twitter: {
+    title: 'Health Guidance & Preventive Screening',
+    description: 'Preventive screening and health guidance from Amise Medical Services, Saint Lucia.',
+  },
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -46,7 +55,7 @@ function GuidanceNav() {
 
 function Hero() {
   return (
-    <section style={{ background: '#f0fdf9', padding: '72px 40px 60px', borderBottom: '1px solid #e2eeed' }}>
+    <section className="guidance-hero" style={{ background: '#f0fdf9', padding: '72px 40px 60px', borderBottom: '1px solid #e2eeed' }}>
       <div style={{ maxWidth: 860, margin: '0 auto', textAlign: 'center' }}>
         {/* Label */}
         <div style={{
@@ -75,7 +84,7 @@ function Hero() {
         </p>
 
         {/* Disclaimer banner */}
-        <div style={{
+        <div className="guidance-disclaimer" style={{
           padding: '16px 24px',
           background: '#fff7ed', border: '2px solid #f97316',
           borderRadius: 10, textAlign: 'left', maxWidth: 640, margin: '0 auto',
@@ -92,7 +101,7 @@ function Hero() {
         </div>
 
         {/* Anchor links */}
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 36 }}>
+        <div className="guidance-anchor-links" style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginTop: 36 }}>
           {[
             { href: '#colorectal', label: 'Colorectal' },
             { href: '#breast', label: 'Breast Health' },
@@ -345,7 +354,7 @@ const SCREENING_CARDS: ScreeningCard[] = [
 
 function ScreeningSection() {
   return (
-    <section style={{ padding: '72px 40px', background: '#fff' }}>
+    <section className="guidance-screening" style={{ padding: '72px 40px', background: '#fff' }}>
       <div style={{ maxWidth: 1000, margin: '0 auto' }}>
         {/* Section header */}
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
@@ -367,6 +376,7 @@ function ScreeningSection() {
             <div
               key={card.id}
               id={card.id}
+              className="guidance-card"
               style={{
                 background: '#fff', border: '1.5px solid #e2eeed',
                 borderRadius: 14, padding: '32px 36px',
@@ -433,7 +443,7 @@ const LIFE_LESSONS = [
 
 function LifeLessons() {
   return (
-    <section style={{ background: '#0d9488', padding: '72px 40px' }}>
+    <section className="guidance-life-lessons" style={{ background: '#0d9488', padding: '72px 40px' }}>
       <div style={{ maxWidth: 1060, margin: '0 auto' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
@@ -449,7 +459,7 @@ function LifeLessons() {
         </div>
 
         {/* Grid */}
-        <div style={{
+        <div className="guidance-life-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: 20,
@@ -475,7 +485,7 @@ function LifeLessons() {
 
 function CtaSection() {
   return (
-    <section style={{ padding: '72px 40px', background: '#f9fafb', textAlign: 'center' }}>
+    <section className="guidance-cta" style={{ padding: '72px 40px', background: '#f9fafb', textAlign: 'center' }}>
       <div style={{ maxWidth: 600, margin: '0 auto' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>
           Take the Next Step
@@ -488,7 +498,7 @@ function CtaSection() {
           colonoscopy, a breast clinic appointment, or specialist advice, we will ensure you receive timely,
           expert care.
         </p>
-        <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div className="guidance-cta-buttons" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link href="/book" style={{
             padding: '13px 30px', background: '#0d9488', color: '#fff',
             borderRadius: 8, fontSize: 15, fontWeight: 700, textDecoration: 'none',
@@ -511,7 +521,7 @@ function CtaSection() {
 
 function GuidanceFooterDisclaimer() {
   return (
-    <footer style={{ background: '#0b2a35', padding: '32px 40px', textAlign: 'center' }}>
+    <footer className="guidance-footer" style={{ background: '#0b2a35', padding: '32px 40px', textAlign: 'center' }}>
       <div style={{ maxWidth: 860, margin: '0 auto' }}>
         <p style={{ margin: '0 0 12px', fontSize: 12, color: '#4a7a8a', lineHeight: 1.9 }}>
           This page provides <strong style={{ color: '#64748b' }}>general health information only</strong>. It is not a substitute for professional

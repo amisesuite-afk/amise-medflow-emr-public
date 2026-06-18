@@ -1,10 +1,19 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import '../subpage-mobile.css';
 
 export const metadata: Metadata = {
   title: 'Patient Care Pathway — Amise Medical Services',
   description:
     'How patients move through Amise Medical Services — from first contact through triage, appointment, procedure, and follow-up. Condition-specific surgical and endoscopy care chains.',
+  openGraph: {
+    title: 'Patient Care Pathway — Amise Medical Services',
+    description: 'Understand your care journey at Amise Medical Services, from first contact through triage, procedure, and follow-up in Saint Lucia.',
+  },
+  twitter: {
+    title: 'Patient Care Pathway — Amise Medical Services',
+    description: 'Your care journey at Amise Medical Services, from first contact through procedure and follow-up.',
+  },
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -273,7 +282,7 @@ function EntryPoints() {
   ];
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 0 }}>
+    <div className="pathway-entry-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 0 }}>
       {entries.map(({ icon, label, sub, href, tracks }) => (
         <a key={label} href={href} style={{
           background: '#fff', borderRadius: 12, padding: '22px 20px',
@@ -298,7 +307,7 @@ function EntryPoints() {
 
 function TriageTiers() {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+    <div className="pathway-triage-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
       {TRIAGE_TIERS.map(({ id, label, colour, bg, border, time, icon, conditions, action }) => (
         <div key={id} style={{
           background: bg, border: `1px solid ${border}`,
@@ -345,20 +354,29 @@ function ChainCard({ chain }: { chain: CareChain }) {
       </div>
 
       {/* Steps */}
-      <div style={{ padding: '16px 20px', display: 'flex', gap: 0, alignItems: 'stretch' }}>
+      <div className="pathway-chain-steps" style={{ padding: '16px 20px', display: 'flex', gap: 0, alignItems: 'stretch' }}>
         {chain.steps.map((step, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'stretch', flex: 1 }}>
+          <div key={i} className="pathway-chain-step" style={{ display: 'flex', alignItems: 'stretch', flex: 1 }}>
             {/* Step box */}
             <div style={{ flex: 1, background: '#f8fafc', borderRadius: 8, padding: '10px 12px', border: '1px solid #e2eeed' }}>
               <div style={{ fontSize: 9, fontWeight: 700, color: tier.colour, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>Step {i + 1}</div>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#0f172a', marginBottom: 2 }}>{step.label}</div>
               {step.sub && <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.4 }}>{step.sub}</div>}
             </div>
-            {/* Arrow connector */}
+            {/* Arrow connector — horizontal (desktop) */}
             {i < chain.steps.length - 1 && (
-              <div style={{ display: 'flex', alignItems: 'center', padding: '0 6px', flexShrink: 0 }}>
+              <div className="pathway-step-arrow-h" style={{ display: 'flex', alignItems: 'center', padding: '0 6px', flexShrink: 0 }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c0e4e0" strokeWidth="2">
                   <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </div>
+            )}
+            {/* Arrow connector — vertical (mobile) */}
+            {i < chain.steps.length - 1 && (
+              <div className="pathway-step-arrow-v">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c0e4e0" strokeWidth="2">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <polyline points="19 12 12 19 5 12"/>
                 </svg>
               </div>
             )}
@@ -410,7 +428,7 @@ export default function PathwayPage() {
       </nav>
 
       {/* Hero */}
-      <div style={{ background: 'linear-gradient(135deg, #0b2a35 0%, #134e4a 100%)', padding: '56px 40px' }}>
+      <div className="pathway-hero" style={{ background: 'linear-gradient(135deg, #0b2a35 0%, #134e4a 100%)', padding: '56px 40px' }}>
         <div style={{ maxWidth: 1160, margin: '0 auto' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 12 }}>
             Patient Care Pathway
@@ -426,7 +444,7 @@ export default function PathwayPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1160, margin: '0 auto', padding: '56px 40px' }}>
+      <div className="pathway-content" style={{ maxWidth: 1160, margin: '0 auto', padding: '56px 40px' }}>
 
         {/* ── 1. Entry Points ── */}
         <section style={{ marginBottom: 16 }}>
@@ -479,12 +497,12 @@ export default function PathwayPage() {
         </section>
 
         {/* ── CTA ── */}
-        <div style={{ background: '#0b2a35', borderRadius: 14, padding: '36px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
+        <div className="pathway-cta" style={{ background: '#0b2a35', borderRadius: 14, padding: '36px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: '#f1f5f9', marginBottom: 6 }}>Ready to get started?</div>
             <div style={{ fontSize: 14, color: '#94a3b8' }}>Book online, or ask your GP or specialist to send a referral — our team will take it from there.</div>
           </div>
-          <div style={{ display: 'flex', gap: 12 }}>
+          <div className="pathway-cta-buttons" style={{ display: 'flex', gap: 12 }}>
             <Link href="/book"    style={{ padding: '12px 24px', background: '#0d9488', color: '#fff', borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>Book an Appointment →</Link>
             <Link href="/refer"   style={{ padding: '12px 24px', background: 'transparent', color: '#94a3b8', border: '1px solid #374151', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Refer a Patient →</Link>
           </div>

@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
   description:
     'Amise Medical Services — expert surgical and endoscopy care in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM. Colonoscopy, ERCP, hernia repair, breast clinic, thyroid surgery, diabetic foot care and more.',
+  openGraph: {
+    title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
+    description: 'Book an appointment with Dr Dawit Daniel Kabiye, MD, DM. Colonoscopy, ERCP, hernia repair, breast clinic, thyroid surgery, and diabetic foot care in Saint Lucia.',
+  },
+  twitter: {
+    title: 'Amise Medical Services — Expert Surgical & Endoscopy Care',
+    description: 'Book an appointment with Dr Dawit Daniel Kabiye, MD, DM — surgical and endoscopy care in Saint Lucia.',
+  },
 };
 
 const WA_TAPION    = 'https://wa.me/17582840557';
