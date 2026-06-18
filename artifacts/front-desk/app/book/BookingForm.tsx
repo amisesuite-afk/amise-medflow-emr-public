@@ -86,7 +86,6 @@ const inputStyle: React.CSSProperties = {
   color: '#0f172a',
   fontSize: 14,
   fontFamily: 'inherit',
-  outline: 'none',
 };
 
 const labelStyle: React.CSSProperties = {
@@ -458,6 +457,7 @@ export default function BookingForm() {
                     value={patientName}
                     onChange={e => setName(e.target.value)}
                     placeholder="First and last name"
+                    autoComplete="name"
                     style={inputStyle}
                   />
                 </div>
@@ -469,6 +469,7 @@ export default function BookingForm() {
                     value={patientPhone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder="+1 758 …"
+                    autoComplete="tel"
                     style={inputStyle}
                   />
                   <div style={{ fontSize: 11, color: '#6b7280', marginTop: 5 }}>
@@ -488,10 +489,13 @@ export default function BookingForm() {
                     value={patientEmail}
                     onChange={e => setEmail(e.target.value)}
                     placeholder="you@example.com"
+                    autoComplete="email"
+                    aria-invalid={!emailValid || undefined}
+                    aria-describedby={!emailValid ? 'email-error' : undefined}
                     style={{ ...inputStyle, borderColor: !emailValid ? '#dc2626' : '#d1e8e5' }}
                   />
                   {!emailValid && (
-                    <div style={{ fontSize: 11, color: '#dc2626', marginTop: 5 }}>
+                    <div id="email-error" role="alert" style={{ fontSize: 11, color: '#dc2626', marginTop: 5 }}>
                       Please enter a valid email address.
                     </div>
                   )}
@@ -506,6 +510,7 @@ export default function BookingForm() {
                     type="date"
                     value={patientDob}
                     onChange={e => setDob(e.target.value)}
+                    autoComplete="bday"
                     style={inputStyle}
                   />
                 </div>

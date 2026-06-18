@@ -61,7 +61,6 @@ const inputStyle: React.CSSProperties = {
   padding: '10px 14px', borderRadius: 7,
   background: '#f8fafc', border: '1.5px solid #d1e8e5',
   color: '#0f172a', fontSize: 14, fontFamily: 'inherit',
-  outline: 'none',
 };
 
 const labelStyle: React.CSSProperties = {
@@ -263,6 +262,7 @@ export default function ReferralForm() {
                   type="tel" value={form.referrerPhone} required
                   onChange={e => set('referrerPhone', e.target.value)}
                   placeholder="+1 758 …"
+                  autoComplete="tel"
                   style={inputStyle}
                 />
               </div>
@@ -272,6 +272,7 @@ export default function ReferralForm() {
                   type="email" value={form.referrerEmail} required
                   onChange={e => set('referrerEmail', e.target.value)}
                   placeholder="doctor@practice.com"
+                  autoComplete="email"
                   style={inputStyle}
                 />
               </div>
