@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import '../subpage-mobile.css';
 
 export const metadata: Metadata = {
   title: 'Health Guidance & Preventive Screening — Amise Medical Services',
@@ -54,7 +55,7 @@ function GuidanceNav() {
 
 function Hero() {
   return (
-    <section style={{ background: '#f0fdf9', padding: '72px 40px 60px', borderBottom: '1px solid #e2eeed' }}>
+    <section className="guidance-hero" style={{ background: '#f0fdf9', padding: '72px 40px 60px', borderBottom: '1px solid #e2eeed' }}>
       <div style={{ maxWidth: 860, margin: '0 auto', textAlign: 'center' }}>
         {/* Label */}
         <div style={{
@@ -83,7 +84,7 @@ function Hero() {
         </p>
 
         {/* Disclaimer banner */}
-        <div style={{
+        <div className="guidance-disclaimer" style={{
           padding: '16px 24px',
           background: '#fff7ed', border: '2px solid #f97316',
           borderRadius: 10, textAlign: 'left', maxWidth: 640, margin: '0 auto',

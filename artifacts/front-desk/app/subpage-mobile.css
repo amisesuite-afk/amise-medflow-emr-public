@@ -1,0 +1,101 @@
+/* ── Sub-page mobile polish ──────────────────────────────────────────────────
+   Responsive overrides for /guidance, /pathway, /refer, and error pages.
+   Imported by each sub-page individually. Does NOT touch globals.css.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GUIDANCE PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .guidance-hero         { padding: 56px 16px 40px !important; }
+  .guidance-disclaimer   { padding: 14px 16px !important; }
+  .guidance-screening    { padding: 40px 16px !important; }
+  .guidance-card         { padding: 20px 16px !important; }
+  .guidance-life-lessons { padding: 40px 16px !important; }
+  .guidance-cta          { padding: 40px 16px !important; }
+  .guidance-footer       { padding: 24px 16px !important; }
+  .guidance-anchor-links { gap: 8px !important; }
+  .guidance-anchor-links a { padding: 6px 12px !important; font-size: 12px !important; }
+  .guidance-life-grid    { grid-template-columns: 1fr !important; }
+  .guidance-cta-buttons  { flex-direction: column !important; width: 100% !important; }
+  .guidance-cta-buttons > a { width: 100% !important; text-align: center !important; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .guidance-hero         { padding: 60px 24px 48px !important; }
+  .guidance-screening    { padding: 56px 24px !important; }
+  .guidance-card         { padding: 24px 20px !important; }
+  .guidance-life-lessons { padding: 56px 24px !important; }
+  .guidance-cta          { padding: 56px 24px !important; }
+  .guidance-footer       { padding: 28px 24px !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PATHWAY PAGE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .pathway-hero          { padding: 44px 16px !important; }
+  .pathway-content       { padding: 32px 16px !important; }
+
+  /* Entry points: 4-col -> 1-col */
+  .pathway-entry-grid    { grid-template-columns: 1fr !important; gap: 12px !important; }
+
+  /* Triage tiers: 3-col -> 1-col */
+  .pathway-triage-grid   { grid-template-columns: 1fr !important; gap: 14px !important; }
+
+  /* Chain card steps: horizontal -> vertical */
+  .pathway-chain-steps   { flex-direction: column !important; gap: 0 !important; }
+  .pathway-chain-step    { flex-direction: column !important; }
+  .pathway-step-arrow-h  { display: none !important; }
+  .pathway-step-arrow-v  { display: flex !important; }
+
+  /* Bottom CTA */
+  .pathway-cta           { padding: 24px 16px !important; flex-direction: column !important; text-align: center !important; }
+  .pathway-cta-buttons   { flex-direction: column !important; width: 100% !important; }
+  .pathway-cta-buttons > a { width: 100% !important; text-align: center !important; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .pathway-hero          { padding: 48px 24px !important; }
+  .pathway-content       { padding: 40px 24px !important; }
+  .pathway-entry-grid    { grid-template-columns: repeat(2, 1fr) !important; }
+  .pathway-triage-grid   { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .pathway-chain-steps   { flex-wrap: wrap !important; }
+  .pathway-cta           { padding: 28px 24px !important; }
+}
+
+/* Vertical arrow (hidden by default, shown on mobile) */
+.pathway-step-arrow-v {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REFERRAL FORM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .refer-form-card       { padding: 20px 16px !important; }
+  .refer-grid-2col       { grid-template-columns: 1fr !important; }
+  .refer-reg-input       { max-width: 100% !important; }
+  .refer-nic-input       { max-width: 100% !important; }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .refer-form-card       { padding: 24px 20px !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ERROR / NOT-FOUND PAGES — already responsive, just ensure padding
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .error-page-wrap       { padding: 20px 16px !important; }
+  .error-page-buttons    { flex-direction: column !important; width: 100% !important; }
+  .error-page-buttons > a,
+  .error-page-buttons > button { width: 100% !important; text-align: center !important; }
+}
