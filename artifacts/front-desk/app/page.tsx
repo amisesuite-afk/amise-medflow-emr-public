@@ -496,7 +496,7 @@ function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref, imgW
       {/* Building photo */}
       <div className="amise-office-card-img" style={{ position: 'relative', width: imgWidth, flexShrink: 0 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={img} alt={imgAlt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <img src={img} alt={imgAlt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         {/* Map pin badge */}
         <div style={{
           position: 'absolute', bottom: 14, left: 14,
@@ -681,6 +681,7 @@ function HowItWorks() {
             <img
               src="/locations/staff-photo.jpg"
               alt="Rodney Bay / Providence office — Amise Medical Services"
+              loading="lazy"
               style={{ width: '100%', height: 380, objectFit: 'cover', objectPosition: 'top', display: 'block' }}
             />
           </div>
