@@ -5,6 +5,14 @@ export const metadata: Metadata = {
   title: 'Health Guidance & Preventive Screening — Amise Medical Services',
   description:
     'General health guidance and preventive screening information from Amise Medical Services. Dr Dawit Daniel Kabiye, MD, DM — General & Endoscopic Surgery, Saint Lucia.',
+  openGraph: {
+    title: 'Health Guidance & Preventive Screening — Amise Medical Services',
+    description: 'Preventive screening and health guidance from Amise Medical Services in Saint Lucia. Colonoscopy, breast screening, thyroid checks, and more.',
+  },
+  twitter: {
+    title: 'Health Guidance & Preventive Screening',
+    description: 'Preventive screening and health guidance from Amise Medical Services, Saint Lucia.',
+  },
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────

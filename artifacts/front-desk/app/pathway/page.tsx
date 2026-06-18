@@ -5,6 +5,14 @@ export const metadata: Metadata = {
   title: 'Patient Care Pathway — Amise Medical Services',
   description:
     'How patients move through Amise Medical Services — from first contact through triage, appointment, procedure, and follow-up. Condition-specific surgical and endoscopy care chains.',
+  openGraph: {
+    title: 'Patient Care Pathway — Amise Medical Services',
+    description: 'Understand your care journey at Amise Medical Services, from first contact through triage, procedure, and follow-up in Saint Lucia.',
+  },
+  twitter: {
+    title: 'Patient Care Pathway — Amise Medical Services',
+    description: 'Your care journey at Amise Medical Services, from first contact through procedure and follow-up.',
+  },
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
