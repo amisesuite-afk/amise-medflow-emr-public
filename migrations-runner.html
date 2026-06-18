@@ -3,126 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Amise MedFlow EMR - Migration Runner</title>
+<title>Amise MedFlow — Migration Runner</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --bg: #0f0f1a;
+    --card: #1a1a2e;
+    --card-hover: #1f1f38;
+    --accent: #4f46e5;
+    --accent-light: #6366f1;
+    --success: #22c55e;
+    --success-bg: rgba(34,197,94,0.12);
+    --error: #ef4444;
+    --error-bg: rgba(239,68,68,0.12);
+    --gray: #64748b;
+    --gray-bg: rgba(100,116,139,0.12);
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --border: #2d2d4a;
+    --radius: 10px;
+  }
+
+  html { font-size: 16px; }
+
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: #0f0f1a;
-    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
     line-height: 1.6;
-    padding: 16px;
-    padding-bottom: 80px;
+    min-height: 100vh;
     -webkit-text-size-adjust: 100%;
   }
 
-  .header {
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 16px 80px;
+  }
+
+  /* ── Header ── */
+  .page-header {
     text-align: center;
-    padding: 24px 16px;
-    margin-bottom: 20px;
+    padding: 28px 0 20px;
   }
-
-  .header h1 {
-    font-size: 1.5rem;
+  .page-header h1 {
+    font-size: 1.6rem;
     font-weight: 700;
-    color: #f1f5f9;
+    letter-spacing: -0.02em;
     margin-bottom: 4px;
   }
-
-  .header .subtitle {
+  .page-header .subtitle {
+    color: var(--text-dim);
     font-size: 0.9rem;
-    color: #94a3b8;
   }
 
-  .instructions {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-left: 4px solid #4f46e5;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    font-size: 0.9rem;
-    color: #cbd5e1;
+  /* ── Progress bar ── */
+  .progress-section {
+    margin: 16px 0 24px;
   }
-
-  .instructions h2 {
-    font-size: 1rem;
-    color: #f1f5f9;
-    margin-bottom: 8px;
-  }
-
-  .instructions ol {
-    padding-left: 20px;
-    margin-bottom: 8px;
-  }
-
-  .instructions li {
-    margin-bottom: 4px;
-  }
-
-  .instructions .note {
-    font-size: 0.8rem;
-    color: #64748b;
-    margin-top: 8px;
-  }
-
-  /* Progress bar */
-  .progress-container {
-    background: #1a1a2e;
-    border: 1px solid #2d2d44;
-    border-radius: 8px;
-    padding: 16px 20px;
-    margin-bottom: 24px;
-  }
-
   .progress-label {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-dim);
     margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 10px;
+    background: var(--card);
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-light));
+    border-radius: 5px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── Instructions banner ── */
+  .instructions {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+  .instructions h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--accent-light);
+  }
+  .instructions ol {
+    padding-left: 22px;
+    color: var(--text-dim);
     font-size: 0.9rem;
   }
-
-  .progress-label .count {
-    color: #a78bfa;
-    font-weight: 600;
+  .instructions ol li {
+    margin-bottom: 6px;
   }
-
-  .progress-bar-outer {
-    background: #2d2d44;
+  .instructions ol li strong {
+    color: var(--text);
+  }
+  .instructions .warn {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(234,179,8,0.08);
+    border: 1px solid rgba(234,179,8,0.25);
     border-radius: 6px;
-    height: 12px;
-    overflow: hidden;
+    font-size: 0.82rem;
+    color: #fbbf24;
   }
 
-  .progress-bar-inner {
-    background: linear-gradient(90deg, #4f46e5, #7c3aed);
-    height: 100%;
-    border-radius: 6px;
-    transition: width 0.4s ease;
-    min-width: 0;
-  }
-
-  /* Accordion cards */
+  /* ── Accordion cards ── */
   .migration-card {
-    background: #1a1a2e;
-    border: 1px solid #2d2d44;
-    border-radius: 8px;
-    margin-bottom: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
     overflow: hidden;
     transition: border-color 0.2s;
   }
-
+  .migration-card:hover {
+    border-color: #3d3d5c;
+  }
   .migration-card.status-success {
-    border-color: #166534;
+    border-left: 3px solid var(--success);
   }
-
   .migration-card.status-error {
-    border-color: #991b1b;
+    border-left: 3px solid var(--error);
   }
 
-  .migration-header {
+  .card-header {
     display: flex;
     align-items: center;
     padding: 14px 16px;
@@ -130,248 +147,226 @@
     user-select: none;
     -webkit-user-select: none;
     gap: 12px;
-    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
   }
-
-  .migration-header:hover {
-    background: #22223a;
-  }
-
-  .migration-header:active {
-    background: #2a2a45;
+  .card-header:active {
+    background: var(--card-hover);
   }
 
   .badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 32px;
+    flex-shrink: 0;
+    width: 32px;
     height: 32px;
     border-radius: 8px;
-    background: #4f46e5;
+    background: var(--accent);
     color: #fff;
     font-size: 0.8rem;
     font-weight: 700;
-    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .migration-name {
+  .card-title {
     flex: 1;
     font-size: 0.95rem;
-    font-weight: 500;
-    color: #f1f5f9;
+    font-weight: 600;
+    min-width: 0;
+  }
+  .card-title .filename {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .status-pill {
-    font-size: 0.7rem;
+    flex-shrink: 0;
+    font-size: 0.72rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 4px 10px;
     border-radius: 12px;
-    flex-shrink: 0;
+    white-space: nowrap;
   }
-
-  .status-pill.not-run {
-    background: #374151;
-    color: #9ca3af;
-  }
-
-  .status-pill.success {
-    background: #166534;
-    color: #86efac;
-  }
-
-  .status-pill.error {
-    background: #991b1b;
-    color: #fca5a5;
-  }
+  .pill-pending { background: var(--gray-bg); color: var(--gray); }
+  .pill-success { background: var(--success-bg); color: var(--success); }
+  .pill-error   { background: var(--error-bg); color: var(--error); }
 
   .chevron {
-    color: #64748b;
-    font-size: 1.2rem;
-    transition: transform 0.2s;
     flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    color: var(--text-dim);
+    transition: transform 0.2s;
   }
-
   .migration-card.open .chevron {
-    transform: rotate(90deg);
+    transform: rotate(180deg);
   }
 
-  .migration-body {
+  /* ── Expanded body ── */
+  .card-body {
     display: none;
-    padding: 0 16px 16px 16px;
+    padding: 0 16px 16px;
   }
-
-  .migration-card.open .migration-body {
+  .migration-card.open .card-body {
     display: block;
   }
 
-  .sql-textarea {
+  .sql-area {
     width: 100%;
     min-height: 200px;
-    max-height: 400px;
-    background: #0d1117;
+    max-height: 50vh;
+    background: #0d0d18;
     color: #c9d1d9;
-    border: 1px solid #2d2d44;
-    border-radius: 6px;
-    padding: 12px;
-    font-family: 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
-    font-size: 13px;
-    line-height: 1.5;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.55;
     resize: vertical;
-    margin-bottom: 12px;
     -webkit-overflow-scrolling: touch;
   }
 
-  .sql-textarea:focus {
-    outline: none;
-    border-color: #4f46e5;
-  }
-
-  .button-row {
+  .btn-row {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    margin-top: 12px;
   }
 
   .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     padding: 10px 18px;
+    border-radius: 8px;
     border: none;
-    border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.15s;
     -webkit-tap-highlight-color: transparent;
-    position: relative;
-    min-height: 44px; /* iPad touch target */
+    transition: opacity 0.15s, transform 0.1s;
+    touch-action: manipulation;
+  }
+  .btn:active {
+    transform: scale(0.97);
   }
 
   .btn-copy {
-    background: #4f46e5;
+    background: var(--accent);
     color: #fff;
-    flex: 1;
-    min-width: 120px;
   }
-
-  .btn-copy:hover { background: #4338ca; }
-  .btn-copy:active { background: #3730a3; }
+  .btn-copy:hover { opacity: 0.9; }
 
   .btn-done {
-    background: #166534;
-    color: #86efac;
+    background: var(--success);
+    color: #fff;
   }
-
-  .btn-done:hover { background: #15803d; }
-  .btn-done:active { background: #14532d; }
+  .btn-done:hover { opacity: 0.9; }
 
   .btn-error {
-    background: #991b1b;
-    color: #fca5a5;
+    background: var(--error);
+    color: #fff;
   }
-
-  .btn-error:hover { background: #b91c1c; }
-  .btn-error:active { background: #7f1d1d; }
+  .btn-error:hover { opacity: 0.9; }
 
   .btn-reset {
-    background: #374151;
-    color: #9ca3af;
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
   }
-
-  .btn-reset:hover { background: #4b5563; }
-  .btn-reset:active { background: #374151; }
+  .btn-reset:hover { border-color: var(--gray); color: var(--text); }
 
   .copy-feedback {
-    position: absolute;
-    top: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #166534;
-    color: #86efac;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--success);
     opacity: 0;
-    pointer-events: none;
     transition: opacity 0.3s;
-    white-space: nowrap;
+    align-self: center;
+    margin-left: 4px;
+  }
+  .copy-feedback.show { opacity: 1; }
+
+  /* ── Bulk actions ── */
+  .bulk-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .bulk-actions .btn {
+    font-size: 0.8rem;
+    padding: 8px 14px;
   }
 
-  .copy-feedback.show {
-    opacity: 1;
-  }
-
-  /* Reset all button */
-  .reset-all-container {
+  /* ── Footer ── */
+  .page-footer {
     text-align: center;
-    margin-top: 32px;
-    padding: 16px;
+    padding: 32px 0 16px;
+    color: var(--text-dim);
+    font-size: 0.78rem;
   }
 
-  .btn-reset-all {
-    background: transparent;
-    border: 1px solid #991b1b;
-    color: #f87171;
-    padding: 10px 24px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    min-height: 44px;
-  }
-
-  .btn-reset-all:hover { background: #1c1c1c; }
-
-  @media (max-width: 600px) {
-    body { padding: 10px; }
-    .header h1 { font-size: 1.3rem; }
-    .sql-textarea { font-size: 12px; min-height: 150px; }
+  /* ── Responsive ── */
+  @media (min-width: 768px) {
+    .container { padding: 32px 24px 80px; }
+    .page-header h1 { font-size: 1.85rem; }
+    .sql-area { font-size: 0.9rem; min-height: 260px; }
   }
 </style>
 </head>
 <body>
-
-<div class="header">
-  <h1>Amise MedFlow EMR</h1>
-  <div class="subtitle">Database Migration Runner</div>
-</div>
-
-<div class="instructions">
-  <h2>Workflow</h2>
-  <ol>
-    <li>Tap a migration section below to expand it.</li>
-    <li>Tap <strong>Copy SQL</strong> to copy the migration to your clipboard.</li>
-    <li>Switch to the <strong>Supabase Dashboard &rarr; SQL Editor</strong> and paste.</li>
-    <li>Click <strong>Run</strong> in Supabase.</li>
-    <li>Come back here and tap <strong>Mark as Done</strong> (or <strong>Mark as Error</strong> if it failed).</li>
-  </ol>
-  <div class="note">Run migrations in order (0 &rarr; 22). Status is saved in your browser. You may close and reopen this page.</div>
-</div>
-
-<div class="progress-container">
-  <div class="progress-label">
-    <span>Progress</span>
-    <span class="count" id="progress-count">0 / 23 completed</span>
+<div class="container">
+  <div class="page-header">
+    <h1>Amise MedFlow EMR</h1>
+    <div class="subtitle">Database Migration Runner</div>
   </div>
-  <div class="progress-bar-outer">
-    <div class="progress-bar-inner" id="progress-bar" style="width: 0%"></div>
+
+  <div class="progress-section">
+    <div class="progress-label">
+      <span id="progress-text">0 of 23 migrations completed</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <h2>How to Run Migrations</h2>
+    <ol>
+      <li>Expand a migration card below and tap <strong>Copy SQL</strong></li>
+      <li>Open your <strong>Supabase Dashboard</strong> and go to the <strong>SQL Editor</strong></li>
+      <li>Paste the SQL and tap <strong>Run</strong></li>
+      <li>Come back here and tap <strong>Mark Done</strong> (or <strong>Mark Error</strong> if it failed)</li>
+      <li>Proceed to the next migration <strong>in order</strong></li>
+    </ol>
+    <div class="warn">
+      Run migrations sequentially (0 through 22). Later migrations may depend on tables or columns created by earlier ones.
+    </div>
+  </div>
+
+  <div class="bulk-actions">
+    <button class="btn btn-reset" onclick="expandAll()">Expand All</button>
+    <button class="btn btn-reset" onclick="collapseAll()">Collapse All</button>
+    <button class="btn btn-error" onclick="resetAll()">Reset All Status</button>
+  </div>
+
+  <div id="migrations-list"></div>
+
+  <div class="page-footer">
+    Amise Medical Services &mdash; Migration Runner &mdash; 23 migrations<br>
+    Status is saved in your browser (localStorage)
   </div>
 </div>
 
-<div id="migrations-container"></div>
-
-<div class="reset-all-container">
-  <button class="btn-reset-all" onclick="resetAll()">Reset All Migration Statuses</button>
-</div>
-
-<!-- ============ EMBEDDED SQL CONTENT ============ -->
-
-<script type="text/plain" data-migration-id="0" data-migration-name="Base Schema">
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- Embedded SQL migrations (read by JavaScript below) -->
+<!-- ═══════════════════════════════════════════════════ -->
+<script type="text/plain" data-migration-id="0" data-migration-name="Base Schema" data-migration-file="supabase-schema.sql">
 -- ============================================================
 -- Amise Medical Services — Supabase Schema
 -- Run this in: Supabase Dashboard → SQL Editor
@@ -883,8 +878,7 @@ create index if not exists idx_appt_requests_source
 grant select, insert               on public.audit_logs       to authenticated;
 grant select, insert, update, delete on public.audit_logs     to service_role;
 </script>
-
-<script type="text/plain" data-migration-id="1" data-migration-name="Clinical Records">
+<script type="text/plain" data-migration-id="1" data-migration-name="Clinical Records" data-migration-file="supabase-clinical-records-migration.sql">
 -- ============================================================
 -- Amise Medical Services — Clinical Records Migration
 -- Adds: clinical_notes, documents, billing_charges,
@@ -1312,8 +1306,7 @@ grant select, insert, update, delete on public.investigation_results to service_
 --   Allow owner or admin to delete:
 --     (bucket_id = 'patient-documents' and auth.uid() is not null)
 </script>
-
-<script type="text/plain" data-migration-id="2" data-migration-name="Patient Portal">
+<script type="text/plain" data-migration-id="2" data-migration-name="Patient Portal" data-migration-file="supabase-patient-portal-migration.sql">
 -- ============================================================
 -- Amise Medical Services — Patient Portal Migration
 -- Enables authenticated patient self-service access.
@@ -1429,8 +1422,7 @@ grant execute on function my_patient_id() to authenticated;
 -- Also set "Site URL" to your patient portal domain.
 -- ─────────────────────────────────────────────────────────────
 </script>
-
-<script type="text/plain" data-migration-id="3" data-migration-name="APCQ (Adaptive Pre-Consultation Questionnaire)">
+<script type="text/plain" data-migration-id="3" data-migration-name="APCQ (Adaptive Pre-Consultation Questionnaire)" data-migration-file="supabase-apcq-migration.sql">
 -- ============================================================
 -- Amise Medical Services — APCQ Migration
 -- Adaptive Pre-Consultation Questionnaire (APCQ) Module
@@ -2240,8 +2232,7 @@ on conflict (name) do nothing;
 --                               upper_gi, colorectal, breast, post_op
 -- ============================================================
 </script>
-
-<script type="text/plain" data-migration-id="4" data-migration-name="Questionnaire Token Expiry">
+<script type="text/plain" data-migration-id="4" data-migration-name="Questionnaire Token Expiry" data-migration-file="supabase-questionnaire-token-expiry-migration.sql">
 -- Migration: questionnaire_token_expiry
 -- Adds an expiry to questionnaire_sessions.session_token. The anonymous
 -- bearer token is sent over plain SMS/WhatsApp links — until now it carried
@@ -2266,8 +2257,7 @@ BEGIN
 END;
 $$;
 </script>
-
-<script type="text/plain" data-migration-id="5" data-migration-name="EMR Persistence">
+<script type="text/plain" data-migration-id="5" data-migration-name="EMR Persistence" data-migration-file="supabase-emr-persistence-migration.sql">
 -- ─────────────────────────────────────────────────────────────────────────────
 -- EMR Persistence — unique constraints required for upsert patterns
 -- ─────────────────────────────────────────────────────────────────────────────
@@ -2317,8 +2307,7 @@ create unique index if not exists medications_encounter_drug_indication
   on medications (patient_id, encounter_id, drug_name, indication)
   where indication = 'consultation-list';
 </script>
-
-<script type="text/plain" data-migration-id="6" data-migration-name="Portal Self-Service">
+<script type="text/plain" data-migration-id="6" data-migration-name="Portal Self-Service" data-migration-file="supabase-portal-self-service-migration.sql">
 -- ============================================================
 -- Amise Medical Services — Patient Portal Self-Service Migration
 -- Adds patient-editable profile fields, intake questionnaire,
@@ -2407,8 +2396,7 @@ create policy "patients_delete_own_docs" on storage.objects
     and (storage.foldername(name))[1] = auth.uid()::text
   );
 </script>
-
-<script type="text/plain" data-migration-id="7" data-migration-name="AI Adaptive Intake">
+<script type="text/plain" data-migration-id="7" data-migration-name="AI Adaptive Intake" data-migration-file="supabase-ai-adaptive-intake-migration.sql">
 -- ============================================================
 -- Amise Medical Services — AI Adaptive Intake Migration
 -- Adds: adaptive intake columns, AI summary fields,
@@ -2460,8 +2448,7 @@ grant all on public.consultation_requests to authenticated, service_role;
 -- (The existing patients_select_own_intake policy covers patient reads.)
 -- Staff access is via service_role key on the API server — bypasses RLS by design.
 </script>
-
-<script type="text/plain" data-migration-id="8" data-migration-name="Booking Notifications">
+<script type="text/plain" data-migration-id="8" data-migration-name="Booking Notifications" data-migration-file="supabase-booking-notifications-migration.sql">
 -- Migration: booking_notifications
 -- Adds columns for tracking patient acknowledgement, staff notification, and escalation state.
 -- Run in Supabase SQL Editor against your production project.
@@ -2505,8 +2492,7 @@ BEGIN
 END;
 $$;
 </script>
-
-<script type="text/plain" data-migration-id="9" data-migration-name="Booking Source">
+<script type="text/plain" data-migration-id="9" data-migration-name="Booking Source" data-migration-file="supabase-booking-source-migration.sql">
 -- Migration: booking_source
 -- Adds source channel tracking + WhatsApp contact name to appointment_requests.
 -- Run in Supabase SQL Editor. 2026-06-02
@@ -2533,8 +2519,7 @@ BEGIN
 END;
 $$;
 </script>
-
-<script type="text/plain" data-migration-id="10" data-migration-name="Email Document Intake">
+<script type="text/plain" data-migration-id="10" data-migration-name="Email Document Intake" data-migration-file="supabase-email-document-intake-migration.sql">
 -- ============================================================
 -- Amise Medical Services — Email Document Intake Migration
 -- Adds a `referring_providers` directory (labs, imaging centres,
@@ -2604,8 +2589,7 @@ grant select, insert, update, delete on public.referring_providers to authentica
 -- privileges — see supabase-service-role-grants-fix-migration.sql.
 grant select, insert, update, delete on public.referring_providers to service_role;
 </script>
-
-<script type="text/plain" data-migration-id="11" data-migration-name="Document AI Extraction">
+<script type="text/plain" data-migration-id="11" data-migration-name="Document AI Extraction" data-migration-file="supabase-document-ai-extraction-migration.sql">
 -- ============================================================
 -- Amise Medical Services — Document AI Extraction Migration
 -- Adds a triage-only AI extraction pipeline to `documents`:
@@ -2647,8 +2631,7 @@ create index if not exists documents_needs_review_idx
   on documents (created_at desc)
   where ai_flags is not null and staff_reviewed_at is null;
 </script>
-
-<script type="text/plain" data-migration-id="12" data-migration-name="Documents Clinical Photo">
+<script type="text/plain" data-migration-id="12" data-migration-name="Documents Clinical Photo" data-migration-file="supabase-documents-clinical-photo-migration.sql">
 -- Migration: documents_clinical_photo
 -- Adds a 'clinical_photo' category to documents.document_type so staff can
 -- attach clinical photos (wound checks, post-op sites, endoscopy stills,
@@ -2679,8 +2662,7 @@ BEGIN
 END;
 $$;
 </script>
-
-<script type="text/plain" data-migration-id="13" data-migration-name="Vitals Photo Capture">
+<script type="text/plain" data-migration-id="13" data-migration-name="Vitals Photo Capture" data-migration-file="supabase-vitals-photo-migration.sql">
 -- Migration: vitals_photo_capture
 -- Adds staged storage for vitals readings extracted by Claude Vision from a
 -- photo of a BP monitor / scale / thermometer / pulse oximeter / glucometer
@@ -2723,8 +2705,7 @@ BEGIN
 END;
 $$;
 </script>
-
-<script type="text/plain" data-migration-id="14" data-migration-name="Service Role Grants Fix">
+<script type="text/plain" data-migration-id="14" data-migration-name="Service Role Grants Fix" data-migration-file="supabase-service-role-grants-fix-migration.sql">
 -- Fix: grant the service_role Postgres role table privileges on core
 -- clinical tables. The base schema and the clinical-records migration only
 -- granted these tables to `authenticated`, but artifacts/api-server's sb()
@@ -2758,8 +2739,7 @@ grant select, insert, update, delete on public.investigation_results to service_
 
 grant select, insert, update, delete on public.patient_intake       to service_role;
 </script>
-
-<script type="text/plain" data-migration-id="15" data-migration-name="Appointment Requests Email Optional">
+<script type="text/plain" data-migration-id="15" data-migration-name="Appointment Requests Email Optional" data-migration-file="supabase-appointment-requests-email-optional-migration.sql">
 -- Migration: appointment_requests_email_optional
 -- The online booking form (artifacts/front-desk/app/book/BookingForm.tsx)
 -- treats patient email as optional — phone is the required contact method.
@@ -2787,8 +2767,7 @@ BEGIN
 END;
 $$;
 </script>
-
-<script type="text/plain" data-migration-id="16" data-migration-name="Referring Doctors Seed">
+<script type="text/plain" data-migration-id="16" data-migration-name="Referring Doctors Seed" data-migration-file="supabase-referring-doctors-seed-migration.sql">
 -- Migration: referring_doctors_seed
 -- Seeds `referring_providers` with the practice's initial directory of
 -- referring doctors (provider_type = 'referring_doctor'), so the "Referred
@@ -2885,8 +2864,7 @@ BEGIN
 END;
 $$;
 </script>
-
-<script type="text/plain" data-migration-id="17" data-migration-name="Intake Reminder">
+<script type="text/plain" data-migration-id="17" data-migration-name="Intake Reminder" data-migration-file="supabase-intake-reminder-migration.sql">
 -- ============================================================
 -- Amise Medical Services — Pre-Visit Intake Reminder Migration
 -- Tracks whether a patient has been nudged to complete their
@@ -2902,8 +2880,7 @@ alter table confirmed_appointments
 comment on column confirmed_appointments.intake_reminder_sent is
   'Set to true once the 48h pre-visit-questionnaire SMS nudge has been sent for this appointment (cron/reminders).';
 </script>
-
-<script type="text/plain" data-migration-id="18" data-migration-name="Booking Waitlist">
+<script type="text/plain" data-migration-id="18" data-migration-name="Booking Waitlist" data-migration-file="supabase-booking-waitlist-migration.sql">
 -- Migration: booking_waitlist
 -- Adds a 'waitlisted' status to appointment_requests for the unified intake
 -- queue — staff use it to park requests that can't be slotted immediately
@@ -2929,8 +2906,7 @@ BEGIN
 END;
 $$;
 </script>
-
-<script type="text/plain" data-migration-id="19" data-migration-name="Patients Quarter">
+<script type="text/plain" data-migration-id="19" data-migration-name="Patients Quarter" data-migration-file="supabase-patients-quarter-migration.sql">
 -- Migration: patients_quarter
 -- Adds a `quarter` column to `patients` so the administrative quarter
 -- (auto-derived from the "Community / Address" lookup in the front-desk
@@ -2954,8 +2930,7 @@ BEGIN
 END;
 $$;
 </script>
-
-<script type="text/plain" data-migration-id="20" data-migration-name="Procedure Prep Drafts">
+<script type="text/plain" data-migration-id="20" data-migration-name="Procedure Prep Drafts" data-migration-file="supabase-procedure-prep-drafts-migration.sql">
 -- Migration: procedure_prep_drafts
 -- Queue of Claude-drafted, patient-specific procedure-prep flagging notes
 -- (e.g. "this patient mentioned warfarin / diabetes / dialysis ahead of
@@ -2996,8 +2971,7 @@ create policy "staff manage procedure prep drafts"
 grant select, insert, update on procedure_prep_drafts to authenticated;
 grant select, insert, update on procedure_prep_drafts to service_role;
 </script>
-
-<script type="text/plain" data-migration-id="21" data-migration-name="Post-Visit Follow-Up">
+<script type="text/plain" data-migration-id="21" data-migration-name="Post-Visit Follow-Up" data-migration-file="supabase-post-visit-followup-migration.sql">
 -- ============================================================
 -- Amise Medical Services — Post-Visit Follow-Up Migration
 -- Tracks whether a patient has received the generic, non-clinical
@@ -3015,8 +2989,7 @@ alter table confirmed_appointments
 comment on column confirmed_appointments.post_visit_followup_sent is
   'Set to true once the ~24h post-visit check-in SMS has been sent for this appointment (cron/reminders).';
 </script>
-
-<script type="text/plain" data-migration-id="22" data-migration-name="Appointment Change Requests">
+<script type="text/plain" data-migration-id="22" data-migration-name="Appointment Change Requests" data-migration-file="supabase-appointment-change-requests-migration.sql">
 -- ============================================================
 -- Amise Medical Services — Appointment Change Requests Migration
 -- Lets patients request a reschedule or cancellation of an upcoming
@@ -3069,162 +3042,181 @@ grant select, insert, update on public.appointment_change_requests to service_ro
 
 <script>
 (function() {
+  'use strict';
+
   const STORAGE_KEY = 'amise-migrations-status';
   const TOTAL = 23;
 
-  // Load statuses from localStorage
+  // ── State ──
+  let statuses = loadStatuses();
+
   function loadStatuses() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (typeof parsed === 'object' && parsed !== null) return parsed;
+      }
     } catch(e) {}
     return {};
   }
 
-  function saveStatuses(statuses) {
+  function saveStatuses() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(statuses));
   }
 
   function getStatus(id) {
-    const s = loadStatuses();
-    return s[id] || 'not_run';
+    return statuses[id] || 'pending';
   }
 
   function setStatus(id, status) {
-    const s = loadStatuses();
-    s[id] = status;
-    saveStatuses(s);
+    if (status === 'pending') {
+      delete statuses[id];
+    } else {
+      statuses[id] = status;
+    }
+    saveStatuses();
     renderCard(id);
     updateProgress();
   }
 
+  // ── Progress ──
   function updateProgress() {
-    const s = loadStatuses();
     let done = 0;
     for (let i = 0; i < TOTAL; i++) {
-      if (s[i] === 'success') done++;
+      if (getStatus(i) === 'success') done++;
     }
-    document.getElementById('progress-count').textContent = done + ' / ' + TOTAL + ' completed';
-    document.getElementById('progress-bar').style.width = ((done / TOTAL) * 100) + '%';
+    const pct = Math.round((done / TOTAL) * 100);
+    document.getElementById('progress-text').textContent = done + ' of ' + TOTAL + ' migrations completed';
+    document.getElementById('progress-pct').textContent = pct + '%';
+    document.getElementById('progress-fill').style.width = pct + '%';
   }
 
-  function getStatusPillHTML(status) {
-    if (status === 'success') return '<span class="status-pill success">Done</span>';
-    if (status === 'error') return '<span class="status-pill error">Error</span>';
-    return '<span class="status-pill not-run">Not Run</span>';
-  }
-
-  function renderCard(id) {
-    const card = document.getElementById('card-' + id);
-    if (!card) return;
-    const status = getStatus(id);
-    card.className = 'migration-card' + (card.classList.contains('open') ? ' open' : '') + (status === 'success' ? ' status-success' : '') + (status === 'error' ? ' status-error' : '');
-    const pillEl = card.querySelector('.status-pill');
-    if (pillEl) {
-      pillEl.outerHTML = getStatusPillHTML(status);
-    }
-  }
-
-  // Build migration cards
-  const container = document.getElementById('migrations-container');
+  // ── Build cards ──
+  const list = document.getElementById('migrations-list');
   const scripts = document.querySelectorAll('script[data-migration-id]');
+  const migrations = {};
 
-  scripts.forEach(function(script) {
-    const id = parseInt(script.getAttribute('data-migration-id'));
-    const name = script.getAttribute('data-migration-name');
-    const sql = script.textContent;
-    const status = getStatus(id);
+  scripts.forEach(function(s) {
+    const id = parseInt(s.getAttribute('data-migration-id'), 10);
+    migrations[id] = {
+      name: s.getAttribute('data-migration-name'),
+      file: s.getAttribute('data-migration-file'),
+      sql: s.textContent
+    };
+  });
+
+  for (let i = 0; i < TOTAL; i++) {
+    const m = migrations[i];
+    if (!m) continue;
 
     const card = document.createElement('div');
-    card.id = 'card-' + id;
-    card.className = 'migration-card' + (status === 'success' ? ' status-success' : '') + (status === 'error' ? ' status-error' : '');
-
+    card.className = 'migration-card';
+    card.id = 'card-' + i;
     card.innerHTML =
-      '<div class="migration-header" onclick="toggleCard(' + id + ')">' +
-        '<span class="badge">' + id + '</span>' +
-        '<span class="migration-name">' + escapeHTML(name) + '</span>' +
-        getStatusPillHTML(status) +
-        '<span class="chevron">&#9654;</span>' +
+      '<div class="card-header" onclick="toggleCard(' + i + ')">' +
+        '<div class="badge">' + i + '</div>' +
+        '<div class="card-title">' +
+          escapeHtml(m.name) +
+          '<span class="filename">' + escapeHtml(m.file) + '</span>' +
+        '</div>' +
+        '<span class="status-pill" id="pill-' + i + '"></span>' +
+        '<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>' +
       '</div>' +
-      '<div class="migration-body">' +
-        '<textarea class="sql-textarea" readonly id="sql-' + id + '"></textarea>' +
-        '<div class="button-row">' +
-          '<button class="btn btn-copy" onclick="copySql(' + id + ', this)" style="position:relative;">' +
-            'Copy SQL' +
-            '<span class="copy-feedback" id="feedback-' + id + '">Copied!</span>' +
-          '</button>' +
-          '<button class="btn btn-done" onclick="markDone(' + id + ')">Mark as Done</button>' +
-          '<button class="btn btn-error" onclick="markError(' + id + ')">Mark as Error</button>' +
-          '<button class="btn btn-reset" onclick="markReset(' + id + ')">Reset</button>' +
+      '<div class="card-body">' +
+        '<textarea class="sql-area" readonly id="sql-' + i + '"></textarea>' +
+        '<div class="btn-row">' +
+          '<button class="btn btn-copy" onclick="copySql(' + i + ')">Copy SQL</button>' +
+          '<span class="copy-feedback" id="feedback-' + i + '">Copied!</span>' +
+          '<button class="btn btn-done" onclick="markDone(' + i + ')">Mark Done</button>' +
+          '<button class="btn btn-error" onclick="markError(' + i + ')">Mark Error</button>' +
+          '<button class="btn btn-reset" onclick="markReset(' + i + ')">Reset</button>' +
         '</div>' +
       '</div>';
 
-    container.appendChild(card);
+    list.appendChild(card);
 
-    // Set textarea content after DOM insertion to avoid HTML escaping issues
-    document.getElementById('sql-' + id).value = sql;
-  });
-
-  function escapeHTML(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    // Set SQL content via DOM property to avoid HTML parsing issues
+    document.getElementById('sql-' + i).value = m.sql;
   }
 
-  // Global functions
+  // Initial render
+  for (let i = 0; i < TOTAL; i++) {
+    renderCard(i);
+  }
+  updateProgress();
+
+  function renderCard(id) {
+    const card = document.getElementById('card-' + id);
+    const pill = document.getElementById('pill-' + id);
+    if (!card || !pill) return;
+
+    const st = getStatus(id);
+    card.classList.remove('status-success', 'status-error');
+    if (st === 'success') {
+      card.classList.add('status-success');
+      pill.className = 'status-pill pill-success';
+      pill.textContent = 'Done';
+    } else if (st === 'error') {
+      card.classList.add('status-error');
+      pill.className = 'status-pill pill-error';
+      pill.textContent = 'Error';
+    } else {
+      pill.className = 'status-pill pill-pending';
+      pill.textContent = 'Not Run';
+    }
+  }
+
+  function escapeHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  // ── Global functions ──
   window.toggleCard = function(id) {
     var card = document.getElementById('card-' + id);
     if (card) card.classList.toggle('open');
   };
 
-  window.copySql = function(id, btn) {
+  window.copySql = function(id) {
     var textarea = document.getElementById('sql-' + id);
-    var text = textarea.value;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function() {
-        showFeedback(id);
-      }).catch(function() {
-        fallbackCopy(textarea);
-        showFeedback(id);
-      });
-    } else {
-      fallbackCopy(textarea);
-      showFeedback(id);
-    }
+    if (!textarea) return;
+    navigator.clipboard.writeText(textarea.value).then(function() {
+      var fb = document.getElementById('feedback-' + id);
+      fb.classList.add('show');
+      setTimeout(function() { fb.classList.remove('show'); }, 2000);
+    }).catch(function() {
+      // Fallback: select the textarea
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length);
+      document.execCommand('copy');
+      var fb = document.getElementById('feedback-' + id);
+      fb.classList.add('show');
+      setTimeout(function() { fb.classList.remove('show'); }, 2000);
+    });
   };
-
-  function fallbackCopy(textarea) {
-    textarea.removeAttribute('readonly');
-    textarea.select();
-    textarea.setSelectionRange(0, textarea.value.length);
-    document.execCommand('copy');
-    textarea.setAttribute('readonly', '');
-  }
-
-  function showFeedback(id) {
-    var fb = document.getElementById('feedback-' + id);
-    fb.classList.add('show');
-    setTimeout(function() {
-      fb.classList.remove('show');
-    }, 2000);
-  }
 
   window.markDone = function(id) { setStatus(id, 'success'); };
   window.markError = function(id) { setStatus(id, 'error'); };
-  window.markReset = function(id) { setStatus(id, 'not_run'); };
+  window.markReset = function(id) { setStatus(id, 'pending'); };
 
+  window.expandAll = function() {
+    document.querySelectorAll('.migration-card').forEach(function(c) { c.classList.add('open'); });
+  };
+  window.collapseAll = function() {
+    document.querySelectorAll('.migration-card').forEach(function(c) { c.classList.remove('open'); });
+  };
   window.resetAll = function() {
     if (confirm('Reset all migration statuses? This cannot be undone.')) {
-      localStorage.removeItem(STORAGE_KEY);
-      for (var i = 0; i < TOTAL; i++) {
-        renderCard(i);
-      }
+      statuses = {};
+      saveStatuses();
+      for (var i = 0; i < TOTAL; i++) renderCard(i);
       updateProgress();
     }
   };
 
-  // Initial progress
-  updateProgress();
 })();
 </script>
-
 </body>
 </html>
