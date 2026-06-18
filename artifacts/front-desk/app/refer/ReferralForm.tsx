@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { APPOINTMENT_TYPES } from '@/lib/scheduling';
+import '../subpage-mobile.css';
 
 type Priority = 'routine' | 'priority' | 'urgent';
 
@@ -229,12 +230,12 @@ export default function ReferralForm() {
         </div>
 
         <form onSubmit={(e) => { void handleSubmit(e); }} noValidate>
-          <div style={{ background: '#fff', border: '1.5px solid #e2eeed', borderRadius: 14, padding: '32px 32px', boxShadow: '0 1px 8px rgba(0,0,0,0.05)' }}>
+          <div className="refer-form-card" style={{ background: '#fff', border: '1.5px solid #e2eeed', borderRadius: 14, padding: '32px 32px', boxShadow: '0 1px 8px rgba(0,0,0,0.05)' }}>
 
             {/* ── Referring Provider ── */}
             <div style={sectionHeadStyle}>Referring Provider</div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="refer-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div style={fieldStyle}>
                 <label style={labelStyle}>Doctor&apos;s full name *</label>
                 <input
@@ -255,7 +256,7 @@ export default function ReferralForm() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="refer-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div style={fieldStyle}>
                 <label style={labelStyle}>Contact phone *</label>
                 <input
@@ -282,6 +283,7 @@ export default function ReferralForm() {
                 type="text" value={form.referrerRegNumber}
                 onChange={e => set('referrerRegNumber', e.target.value)}
                 placeholder="Registration / licence number"
+                className="refer-reg-input"
                 style={{ ...inputStyle, maxWidth: 300 }}
               />
             </div>
@@ -289,7 +291,7 @@ export default function ReferralForm() {
             {/* ── Patient ── */}
             <div style={sectionHeadStyle}>Patient Information</div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="refer-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div style={fieldStyle}>
                 <label style={labelStyle}>Patient full name *</label>
                 <input
@@ -309,7 +311,7 @@ export default function ReferralForm() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="refer-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div style={fieldStyle}>
                 <label style={labelStyle}>Patient contact phone *</label>
                 <input
@@ -336,6 +338,7 @@ export default function ReferralForm() {
                 type="text" value={form.patientNic}
                 onChange={e => set('patientNic', e.target.value)}
                 placeholder="National ID or passport number"
+                className="refer-nic-input"
                 style={{ ...inputStyle, maxWidth: 340 }}
               />
             </div>
@@ -343,7 +346,7 @@ export default function ReferralForm() {
             {/* ── Referral Details ── */}
             <div style={sectionHeadStyle}>Referral Details</div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+            <div className="refer-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
               <div>
                 <label style={labelStyle}>Appointment type</label>
                 <select
