@@ -1,6 +1,20 @@
 import app from "./app";
 import { logger } from "./lib/logger";
 
+// Fail fast — missing secrets cause silent 500s that are hard to diagnose.
+const REQUIRED_ENV = [
+  'SUPABASE_URL',
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'ANTHROPIC_API_KEY',
+  'SESSION_SECRET',
+  'CRON_SECRET',
+] as const;
+const missing = REQUIRED_ENV.filter(k => !process.env[k]);
+if (missing.length) {
+  console.error(`[startup] Missing required env vars: ${missing.join(', ')}`);
+  process.exit(1);
+}
+
 const rawPort = process.env["PORT"];
 
 if (!rawPort) {

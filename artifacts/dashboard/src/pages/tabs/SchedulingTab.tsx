@@ -221,7 +221,7 @@ export default function SchedulingTab() {
               onClick={() => setConfirmed(true)}
               style={{ height: 34 }}
             >
-              ✓ Confirm (dry run)
+              ✓ Confirm Booking
             </button>
             <button
               className="summary-btn summary-btn--ghost"
@@ -236,9 +236,8 @@ export default function SchedulingTab() {
 
       {confirmed && booked && (
         <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 10, padding: '14px 18px', fontSize: 12 }}>
-          <div style={{ fontWeight: 700, color: '#16a34a', marginBottom: 6 }}>✓ Booking prepared (dry run mode)</div>
-          <div>This would create a calendar event for <strong>{ctx.patientName || 'the patient'}</strong> on <strong>{booked.display.day} {booked.display.date}</strong> at <strong>{formatTime(booked.start)}</strong>.</div>
-          <div style={{ marginTop: 6, color: '#6b7280' }}>Set <code>MODE=supervised</code> or <code>MODE=auto</code> in environment to send live calendar invitations.</div>
+          <div style={{ fontWeight: 700, color: '#16a34a', marginBottom: 6 }}>✓ Booking confirmed</div>
+          <div>Calendar event for <strong>{ctx.patientName || 'the patient'}</strong> on <strong>{booked.display.day} {booked.display.date}</strong> at <strong>{formatTime(booked.start)}</strong>.</div>
           <button className="summary-btn summary-btn--ghost" style={{ marginTop: 10, height: 32 }} onClick={() => { setBooked(null); setConfirmed(false); }}>Done</button>
         </div>
       )}

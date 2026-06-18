@@ -245,7 +245,7 @@ function EntryPoints() {
     {
       icon: '🌐',
       label: 'Website Booking',
-      sub: 'amisemedicalservices.com/book',
+      sub: 'Online booking form',
       href: '/book',
       tracks: ['Routine self-booking', 'Referral submission'],
     },
@@ -259,7 +259,7 @@ function EntryPoints() {
     {
       icon: '📋',
       label: 'GP / Specialist Referral',
-      sub: 'amisemedicalservices.com/refer',
+      sub: 'Structured referral form',
       href: '/refer',
       tracks: ['Structured referral form', 'HL7 FHIR R4 API'],
     },
@@ -381,75 +381,6 @@ function ChainCard({ chain }: { chain: CareChain }) {
   );
 }
 
-function DeploymentSection() {
-  const services = [
-    {
-      name: 'Vercel',
-      role: 'Hosting (Next.js)',
-      detail: 'Connect GitHub repo → auto-deploy on push. Add all env vars in Project Settings → Environment Variables.',
-      effort: 'Easy',
-      colour: '#0f172a',
-    },
-    {
-      name: 'Supabase',
-      role: 'Database + Auth',
-      detail: 'Create project → run supabase-schema.sql in SQL editor → copy URL and anon key (JWT format, eyJ…) to env.',
-      effort: 'Easy',
-      colour: '#3ecf8e',
-    },
-    {
-      name: 'Google Cloud',
-      role: 'Calendar + Gmail',
-      detail: 'Enable Calendar API and Gmail API → create service account → grant domain-wide delegation → download JSON key → paste to GOOGLE_SERVICE_ACCOUNT_JSON.',
-      effort: 'Moderate',
-      colour: '#4285f4',
-    },
-    {
-      name: 'Twilio',
-      role: 'WhatsApp + SMS',
-      detail: 'Create account → enrol WhatsApp Business sender → get approved (can take 1–2 days) → copy Account SID and Auth Token.',
-      effort: 'Moderate',
-      colour: '#f22f46',
-    },
-    {
-      name: 'Anthropic',
-      role: 'Claude AI intake',
-      detail: 'Sign up at console.anthropic.com → generate API key → paste to ANTHROPIC_API_KEY.',
-      effort: 'Easy',
-      colour: '#d97706',
-    },
-    {
-      name: 'Custom Domain',
-      role: 'amisemedicalservices.com',
-      detail: 'In Vercel: Project → Domains → add your domain → update DNS at your registrar (A record or CNAME to Vercel). HTTPS is automatic.',
-      effort: 'Easy',
-      colour: '#0d9488',
-    },
-  ];
-
-  const effortColour = (e: string) =>
-    e === 'Easy' ? '#059669' : e === 'Moderate' ? '#d97706' : '#dc2626';
-
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 18 }}>
-      {services.map(({ name, role, detail, effort, colour }) => (
-        <div key={name} style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2eeed', padding: '20px 22px', borderLeft: `4px solid ${colour}` }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a' }}>{name}</div>
-              <div style={{ fontSize: 12, color: '#64748b' }}>{role}</div>
-            </div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: effortColour(effort), background: `${effortColour(effort)}14`, padding: '2px 8px', borderRadius: 100, whiteSpace: 'nowrap' }}>
-              {effort}
-            </div>
-          </div>
-          <p style={{ margin: 0, fontSize: 12, color: '#475569', lineHeight: 1.7 }}>{detail}</p>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function PathwayPage() {
@@ -463,9 +394,12 @@ export default function PathwayPage() {
       {/* Nav */}
       <nav className="amise-sub-nav" style={{ background: 'rgba(255,255,255,0.97)' }}>
         <div className="amise-sub-nav-inner">
-          <a href="/" style={{ fontSize: 14, fontWeight: 600, color: '#0d9488', textDecoration: 'none' }}>← Amise Medical Services</a>
+          <a href="/" style={{ fontSize: 14, fontWeight: 600, color: '#0d9488', textDecoration: 'none' }}>
+            <span className="amise-sub-nav-back-full">← Amise Medical Services</span>
+            <span className="amise-sub-nav-back-short">← Home</span>
+          </a>
           <div style={{ display: 'flex', gap: 12 }}>
-            <Link href="/guidance" style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', textDecoration: 'none', padding: '8px 16px' }}>
+            <Link href="/guidance" className="amise-sub-nav-secondary" style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', textDecoration: 'none', padding: '8px 16px' }}>
               Health Guidance
             </Link>
             <Link href="/book" style={{ fontSize: 13, padding: '9px 20px', background: '#0d9488', color: '#fff', borderRadius: 50, textDecoration: 'none', fontWeight: 700 }}>
@@ -544,62 +478,15 @@ export default function PathwayPage() {
           </div>
         </section>
 
-        {/* ── Divider ── */}
-        <div style={{ borderTop: '2px solid #e2eeed', margin: '0 0 56px' }} />
-
-        {/* ── 6. Deployment ── */}
-        <section id="deploy" style={{ marginBottom: 48 }}>
-          <SectionTitle sub="Six services to configure. Copy .env.local.example, fill in credentials, deploy to Vercel.">
-            6 · Deployment environment
-          </SectionTitle>
-
-          {/* Mode ladder */}
-          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2eeed', padding: '20px 24px', marginBottom: 28 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 14 }}>Go-live ladder — start slow, build confidence</div>
-            <div style={{ display: 'flex', gap: 0 }}>
-              {[
-                { mode: 'dry_run',    label: 'Dry Run',    desc: 'Everything logs, nothing sends. Safe for development and initial testing.', colour: '#64748b' },
-                { mode: 'supervised', label: 'Supervised', desc: 'AI drafts replies and bookings. Staff reviews and approves each one before it goes out.', colour: '#d97706' },
-                { mode: 'auto',       label: 'Auto',       desc: 'Fully automated outbound. Use only after supervised mode has run cleanly for one week.', colour: '#0d9488' },
-              ].map(({ mode, label, desc, colour }, i, arr) => (
-                <div key={mode} style={{ flex: 1, display: 'flex', alignItems: 'stretch' }}>
-                  <div style={{ flex: 1, padding: '14px 18px', background: `${colour}0f`, borderTop: `3px solid ${colour}`, borderRadius: i === 0 ? '8px 0 0 8px' : i === arr.length - 1 ? '0 8px 8px 0' : 0, border: `1px solid ${colour}33`, borderLeft: i > 0 ? 'none' : undefined }}>
-                    <div style={{ fontSize: 12, fontWeight: 800, color: colour, marginBottom: 4 }}>MODE={mode}</div>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>{label}</div>
-                    <div style={{ fontSize: 11, color: '#64748b', lineHeight: 1.6 }}>{desc}</div>
-                  </div>
-                  {i < arr.length - 1 && (
-                    <div style={{ display: 'flex', alignItems: 'center', padding: '0 0 0 0' }}>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c0e4e0" strokeWidth="2">
-                        <polyline points="9 18 15 12 9 6"/>
-                      </svg>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <DeploymentSection />
-
-          {/* Env file note */}
-          <div style={{ marginTop: 24, background: '#0f172a', borderRadius: 10, padding: '16px 20px', fontFamily: 'monospace', fontSize: 12, color: '#94a3b8' }}>
-            <div style={{ color: '#0d9488', marginBottom: 8, fontWeight: 700 }}># Quick start</div>
-            <div>cp artifacts/front-desk/.env.local.example artifacts/front-desk/.env.local</div>
-            <div style={{ color: '#475569', marginTop: 2 }}># Fill in all values, then:</div>
-            <div>pnpm --filter @workspace/front-desk run dev</div>
-          </div>
-        </section>
-
         {/* ── CTA ── */}
         <div style={{ background: '#0b2a35', borderRadius: 14, padding: '36px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#f1f5f9', marginBottom: 6 }}>Ready to activate the system?</div>
-            <div style={{ fontSize: 14, color: '#94a3b8' }}>Start in dry_run, book a test patient, review the logs, then promote to supervised.</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#f1f5f9', marginBottom: 6 }}>Ready to get started?</div>
+            <div style={{ fontSize: 14, color: '#94a3b8' }}>Book online, or ask your GP or specialist to send a referral — our team will take it from there.</div>
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
-            <Link href="/book"    style={{ padding: '12px 24px', background: '#0d9488', color: '#fff', borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>Book Test Patient →</Link>
-            <Link href="/refer"   style={{ padding: '12px 24px', background: 'transparent', color: '#94a3b8', border: '1px solid #374151', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Test GP Referral →</Link>
+            <Link href="/book"    style={{ padding: '12px 24px', background: '#0d9488', color: '#fff', borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: 'none' }}>Book an Appointment →</Link>
+            <Link href="/refer"   style={{ padding: '12px 24px', background: 'transparent', color: '#94a3b8', border: '1px solid #374151', borderRadius: 8, fontSize: 14, fontWeight: 600, textDecoration: 'none' }}>Refer a Patient →</Link>
           </div>
         </div>
       </div>

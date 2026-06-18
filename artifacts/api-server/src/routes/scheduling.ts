@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { findSlots, formatSlotForDisplay, fetchUpcomingEvents, AvailableSlot } from '../lib/calendar';
 import { SLOT_RULES, AppointmentType, SlotRule, Location } from '@workspace/triage-engine';
+import { requireAuth } from '../middlewares/auth';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -76,7 +77,7 @@ router.get('/api/scheduling/slots', async (req, res) => {
 // ── /api/scheduling/sync ─────────────────────────────────────────────────────
 // Fetches live events from Google Calendar and writes calendar-cache.json.
 
-router.post('/api/scheduling/sync', async (_req, res) => {
+router.post('/api/scheduling/sync', requireAuth, async (_req, res) => {
   try {
     const events = await fetchUpcomingEvents(45);
     const cache = {
@@ -122,7 +123,7 @@ function loadCache(): CalendarCache | null {
   }
 }
 
-router.get('/api/scheduling/upcoming', (req, res) => {
+router.get('/api/scheduling/upcoming', requireAuth, (req, res) => {
   const cache = loadCache();
   if (!cache) {
     res.status(503).json({ error: 'Calendar cache not available' });

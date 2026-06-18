@@ -1,5 +1,6 @@
 import express, { type Express } from "express";
 import cors from "cors";
+import helmet from "helmet";
 import pinoHttp from "pino-http";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -29,7 +30,24 @@ app.use(
     },
   }),
 );
-app.use(cors());
+app.use(helmet());
+
+const allowedOrigins = [
+  process.env.PORTAL_URL,
+  process.env.DASHBOARD_URL,
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:5173',
+].filter(Boolean) as string[];
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow server-to-server (no origin) and whitelisted origins
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

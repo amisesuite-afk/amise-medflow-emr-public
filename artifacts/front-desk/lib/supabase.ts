@@ -244,6 +244,58 @@ export async function findOrCreatePatientForBooking(
   return created.id;
 }
 
+// ── Procedure-prep adjustment drafts ─────────────────────────────────────────
+// Claude-drafted, patient-specific flags (anticoagulant/diabetes meds, renal
+// impairment, etc.) ahead of a colonoscopy/gastroscopy, queued here for
+// clinical staff review. Always internal — never sent directly to a patient.
+// See supabase-procedure-prep-drafts-migration.sql.
+
+export interface ProcedurePrepDraftRow {
+  id: string;
+  thread_id: string | null;
+  procedure_type: string;
+  patient_name: string | null;
+  draft_text: string;
+  status: 'pending_approval' | 'approved' | 'rejected' | 'sent';
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+}
+
+export async function createProcedurePrepDraft(
+  row: Pick<ProcedurePrepDraftRow, 'thread_id' | 'procedure_type' | 'patient_name' | 'draft_text'>,
+): Promise<ProcedurePrepDraftRow> {
+  const { data, error } = await getServiceClient()
+    .from('procedure_prep_drafts')
+    .insert(row)
+    .select('*')
+    .single();
+  if (error) throw new Error(`createProcedurePrepDraft: ${error.message}`);
+  return data as ProcedurePrepDraftRow;
+}
+
+export async function listProcedurePrepDrafts(
+  status: ProcedurePrepDraftRow['status'] = 'pending_approval',
+): Promise<ProcedurePrepDraftRow[]> {
+  const { data } = await getServiceClient()
+    .from('procedure_prep_drafts')
+    .select('*')
+    .eq('status', status)
+    .order('created_at', { ascending: false });
+  return (data ?? []) as ProcedurePrepDraftRow[];
+}
+
+export async function updateProcedurePrepDraft(
+  id: string,
+  patch: Partial<Pick<ProcedurePrepDraftRow, 'status' | 'reviewed_by' | 'reviewed_at'>>,
+): Promise<void> {
+  const { error } = await getServiceClient()
+    .from('procedure_prep_drafts')
+    .update(patch)
+    .eq('id', id);
+  if (error) throw new Error(`updateProcedurePrepDraft: ${error.message}`);
+}
+
 export interface RegisterHistoricDocumentArgs {
   patientId: string;
   documentType: string;

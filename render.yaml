@@ -2,7 +2,7 @@ services:
   - type: web
     name: amise-medflow-api
     runtime: node
-    plan: free
+    plan: starter
     buildCommand: npx --yes pnpm@10 install --no-frozen-lockfile && cd artifacts/api-server && node build.mjs
     startCommand: node artifacts/api-server/dist/index.mjs
     envVars:
@@ -11,9 +11,9 @@ services:
       - key: NODE_ENV
         value: production
       - key: MODE
-        value: dry_run
+        value: supervised
       - key: SMS_PROVIDER
-        value: dry_run
+        value: twilio
       - key: SESSION_SECRET
         generateValue: true
       - key: GMAIL_USER
@@ -25,10 +25,17 @@ services:
       - key: CALENDAR_ID_TAPION_ERCP
         value: amisesuite@gmail.com
       # Add these in Render dashboard → Environment:
+      # SUPABASE_URL=https://nornhfzfrlmfzaqmrzzp.supabase.co
+      # SUPABASE_SERVICE_ROLE_KEY=...
       # ANTHROPIC_API_KEY=sk-ant-...
-      # GOOGLE_OAUTH_REFRESH_TOKEN=...
       # GOOGLE_OAUTH_CLIENT_ID=...
       # GOOGLE_OAUTH_CLIENT_SECRET=...
-      # SUPABASE_URL=https://nornhfzfrlmfzaqmrzzp.supabase.co
-      # SUPABASE_SERVICE_ROLE_KEY=sb_secret_...   ← required for /api/patient/invite
-      # PORTAL_URL=https://front-desk-amisesuite-afks-projects.vercel.app/patient
+      # GOOGLE_OAUTH_REFRESH_TOKEN=...
+      # TWILIO_ACCOUNT_SID=...
+      # TWILIO_AUTH_TOKEN=...
+      # TWILIO_FROM_NUMBER=+1758...
+      # CRON_SECRET=... (any strong random string)
+      # DOCTOR_NOTIFY_EMAIL=amisesuite@gmail.com
+      # STAFF_NOTIFY_EMAIL=amisesuite@gmail.com
+      # PORTAL_URL=https://front-desk-amisesuite-afks-projects.vercel.app
+      # DASHBOARD_URL=https://dashboard-lemon-gamma-44.vercel.app

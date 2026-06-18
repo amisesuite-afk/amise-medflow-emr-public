@@ -45,10 +45,10 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
           padding: '3px 12px', borderRadius: 999,
-          background: 'rgba(255,180,0,.12)', border: '1px solid rgba(255,180,0,.3)',
-          color: '#fbbf24', fontSize: 11, fontWeight: 800, letterSpacing: '.08em',
+          background: 'rgba(13,146,120,.12)', border: '1px solid rgba(13,146,120,.3)',
+          color: '#4db8ad', fontSize: 11, fontWeight: 800, letterSpacing: '.08em',
         }}>
-          ⚗ INTERNAL PROTOTYPE — NOT FOR CLINICAL USE
+          Staff Portal
         </div>
       </div>
 
@@ -113,8 +113,8 @@ export default function PasswordGate({ children }: { children: React.ReactNode }
 
       {/* Footer */}
       <p style={{ marginTop: 28, fontSize: 11, color: '#3d6056', textAlign: 'center', maxWidth: 320, lineHeight: 1.5 }}>
-        Amise Medical Services · Verdance Software Division<br />
-        This tool is a supervised clinical prototype. All triage recommendations require qualified clinical review.
+        Amise Medical Services<br />
+        All triage recommendations require qualified clinical review.
       </p>
 
       <style>{`

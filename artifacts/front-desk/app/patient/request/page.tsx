@@ -14,7 +14,7 @@ const API    = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onr
 
 // Direct-contact channels — for visitors who would rather skip the form.
 // Both branches are offered: Tapion Hospital and Rodney Bay (Providence Building).
-const DIRECT_EMAIL = 'mailto:info@amisemedical.com';
+const DIRECT_EMAIL = 'mailto:amisesuite@gmail.com';
 const DIRECT_BRANCHES = [
   { branch: 'Tapion',     tel: 'tel:+17582840557',  phoneLbl: '284-0557',  whatsapp: 'https://wa.me/17582840557'  },
   { branch: 'Rodney Bay', tel: 'tel:+17587207111',  phoneLbl: '720-7111',  whatsapp: 'https://wa.me/17587207111'  },

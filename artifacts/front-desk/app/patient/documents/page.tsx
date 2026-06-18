@@ -24,6 +24,19 @@ interface DocFile {
   size: number;
 }
 
+interface DocStatus {
+  ai_extraction_status: string | null;
+  staff_reviewed_at: string | null;
+}
+
+const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }> = {
+  pending:    { label: 'Received — queued for review', color: '#92400e', bg: '#fef3c7' },
+  processing: { label: 'Received — processing',         color: '#92400e', bg: '#fef3c7' },
+  done:       { label: 'Received — reviewed by AI triage', color: '#1e40af', bg: '#dbeafe' },
+  skipped:    { label: 'Received',                       color: '#374151', bg: '#f3f4f6' },
+  failed:     { label: 'Received',                       color: '#374151', bg: '#f3f4f6' },
+};
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function fmtSize(bytes: number) {
@@ -50,9 +63,11 @@ export default function DocumentsPage() {
 
   const [authUid, setAuthUid] = useState<string | null>(null);
   const [docs, setDocs] = useState<DocFile[]>([]);
+  const [docStatuses, setDocStatuses] = useState<Record<string, DocStatus>>({});
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -70,13 +85,33 @@ export default function DocumentsPage() {
     })));
   };
 
+  // Lets patients see that an uploaded file has actually reached the care
+  // team's review queue (and whether AI triage has looked at it yet), rather
+  // than only seeing it sit in their own file list with no further signal.
+  const loadDocStatuses = async () => {
+    const { data, error } = await sb
+      .from('documents')
+      .select('storage_path, ai_extraction_status, staff_reviewed_at');
+    if (error || !data) return;
+    const byPath: Record<string, DocStatus> = {};
+    for (const row of data) {
+      if (row.storage_path) {
+        byPath[row.storage_path] = {
+          ai_extraction_status: row.ai_extraction_status,
+          staff_reviewed_at: row.staff_reviewed_at,
+        };
+      }
+    }
+    setDocStatuses(byPath);
+  };
+
   useEffect(() => {
     void (async () => {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) { router.replace('/patient/login'); return; }
       const uid = session.user.id;
       setAuthUid(uid);
-      await loadDocs(uid);
+      await Promise.all([loadDocs(uid), loadDocStatuses()]);
       setLoading(false);
     })();
   }, [router, sb]);
@@ -101,6 +136,7 @@ export default function DocumentsPage() {
     }
 
     setUploading(true);
+    setUploadSuccess(null);
     const ts = Date.now();
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const path = `${authUid}/${ts}_${safeName}`;
@@ -124,6 +160,7 @@ export default function DocumentsPage() {
     // failure here shouldn't block the patient or surface as an error.
     void registerDocument(path, file);
 
+    setUploadSuccess(`"${file.name}" received — your care team will review it.`);
     await loadDocs(authUid);
   }
 
@@ -256,6 +293,9 @@ export default function DocumentsPage() {
         {uploadError && (
           <p style={{ margin: '14px 0 0', fontSize: 13, color: '#dc2626' }}>{uploadError}</p>
         )}
+        {uploadSuccess && (
+          <p style={{ margin: '14px 0 0', fontSize: 13, color: '#0d9488' }}>{uploadSuccess}</p>
+        )}
       </div>
 
       {/* File list */}
@@ -268,7 +308,14 @@ export default function DocumentsPage() {
           <p style={{ fontSize: 13, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>
             Uploaded Files
           </p>
-          {docs.map(doc => (
+          {docs.map(doc => {
+            const status = docStatuses[doc.name];
+            const badge = status
+              ? (status.staff_reviewed_at
+                  ? { label: 'Reviewed by care team', color: '#166534', bg: '#dcfce7' }
+                  : (STATUS_LABELS[status.ai_extraction_status ?? 'pending'] ?? STATUS_LABELS.pending))
+              : null;
+            return (
             <div
               key={doc.name}
               style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 12, padding: '14px 18px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 14 }}
@@ -281,6 +328,11 @@ export default function DocumentsPage() {
                 <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>
                   {fmtSize(doc.size)}{doc.updatedAt ? ` · ${fmtDate(doc.updatedAt)}` : ''}
                 </div>
+                {badge && (
+                  <div style={{ display: 'inline-block', marginTop: 6, padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700, color: badge.color, background: badge.bg }}>
+                    {badge.label}
+                  </div>
+                )}
               </div>
               <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
                 <button
@@ -300,7 +352,8 @@ export default function DocumentsPage() {
                 </button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </>
       )}
 

@@ -13,8 +13,9 @@ body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
 /* ── Nav responsive ──────────────────────────────────── */
 .amise-nav-links        { display: flex; gap: 32px; align-items: center; }
 .amise-nav-mobile-book  { display: none; }
+.amise-nav-hamburger    { display: flex; position: absolute; left: 2px; top: 14px; }
 
-@media (max-width: 800px) {
+@media (max-width: 1024px) {
   .amise-nav-links       { display: none; }
   .amise-nav-mobile-book { display: flex; }
 }
@@ -30,7 +31,13 @@ body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
   display: flex; align-items: center; justify-content: space-between;
   height: 64px;
 }
+.amise-sub-nav-secondary { display: inline-flex; }
+.amise-sub-nav-back-short { display: none; }
+
 @media (max-width: 480px) {
-  .amise-sub-nav       { padding: 0 20px; }
-  .amise-sub-nav-inner { height: 56px; }
+  .amise-sub-nav            { padding: 0 20px; }
+  .amise-sub-nav-inner      { height: 56px; }
+  .amise-sub-nav-secondary  { display: none; }
+  .amise-sub-nav-back-full  { display: none; }
+  .amise-sub-nav-back-short { display: inline; }
 }

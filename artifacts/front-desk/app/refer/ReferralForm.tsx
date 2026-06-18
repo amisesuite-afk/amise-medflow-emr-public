@@ -224,11 +224,8 @@ export default function ReferralForm() {
           <strong>758-284-0557</strong> directly in addition to submitting this form.
         </div>
         <div style={{ padding: '12px 16px', background: '#f0fdf9', border: '1px solid #a7f3d0', borderRadius: 8, marginBottom: 28, fontSize: 12, color: '#065f46', lineHeight: 1.7 }}>
-          This portal uses HL7-compatible structured data. For FHIR R4 integration,{' '}
-          <code style={{ fontFamily: 'monospace', background: '#dcfce7', padding: '2px 5px', borderRadius: 4 }}>
-            POST /api/referral/fhir
-          </code>{' '}
-          (<code style={{ fontFamily: 'monospace' }}>application/fhir+json</code>).
+          Referrals are reviewed by our clinical team within one working day.
+          You will receive a confirmation with the proposed appointment details.
         </div>
 
         <form onSubmit={(e) => { void handleSubmit(e); }} noValidate>

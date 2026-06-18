@@ -1,4 +1,6 @@
 import { useState, useCallback } from 'react';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAppContext } from '@/context/AppContext';
 import { closeEncounter } from '@/lib/db';
 import {
@@ -29,8 +31,6 @@ const APPT_LABELS: Record<string, string> = {
   breast: 'Breast Clinic', telephone: 'Telephone Consultation', diabetic_foot: 'Diabetic Foot Clinic',
 };
 
-
-const ANTHROPIC_KEY = (import.meta.env.VITE_ANTHROPIC_API_KEY as string | undefined) ?? '';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -445,37 +445,6 @@ function buildDischargeHtml(ctx: Ctx, dischargeNotes: string, followUp: string, 
 
 // printHtml / downloadHtml → now provided by pdfExport (printDoc / saveBlobAsPDF)
 
-// ── AI Refine ─────────────────────────────────────────────────────────────────
-
-const REFINE_SYSTEM =
-  'You are a clinical documentation assistant for Dr. Dawit D Kabiye, MD, DM, General & Endoscopic Surgeon at Amise Medical Services, Saint Lucia. ' +
-  'You will receive a structured clinical encounter record and must: ' +
-  '1. Keep ALL factual clinical data exactly as stated — do not invent findings, results, or diagnoses. ' +
-  '2. Replace placeholder prompts (lines beginning with ▸ [ADD:) with standard clinical language if inferable, or remove them if not. ' +
-  '3. Improve medical phrasing, completeness, and structure. ' +
-  '4. Preserve all section headers and the signature block. ' +
-  '5. Never include fees, charges, costs, or financial information. ' +
-  'Output only the refined encounter record in the same plain-text format — no markdown, no commentary.';
-
-async function callAiRefine(text: string): Promise<string> {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': ANTHROPIC_KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 4096,
-      system: REFINE_SYSTEM,
-      messages: [{ role: 'user', content: `Refine the following clinical encounter record:\n\n${text}` }],
-    }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({})) as { error?: { message?: string } };
-    throw new Error(err.error?.message ?? `HTTP ${res.status}`);
-  }
-  const data = await res.json() as { content: { type: string; text: string }[] };
-  return data.content.find(b => b.type === 'text')?.text ?? '';
-}
-
 // ── Section parser / serialiser ───────────────────────────────────────────────
 
 interface DocSection { title: string; body: string }
@@ -724,16 +693,22 @@ export default function FinalDocTab() {
 
   async function handleAiRefine() {
     if (!finalDocument) return;
-    if (!ANTHROPIC_KEY) {
-      setShowImport(true);
-      setAiError('No API key — copy the text, refine externally, then paste below.');
-      return;
-    }
     setAiLoading(true);
     setAiError('');
     try {
-      const refined = await callAiRefine(finalDocument);
-      setFinalDocument(refined);
+      const apiOrigin = getApiOrigin();
+      const base = apiOrigin || (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
+      const res = await fetch(`${base}/api/ai/refine`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({ text: finalDocument }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(err.error ?? `HTTP ${res.status}`);
+      }
+      const data = await res.json() as { refined: string };
+      setFinalDocument(data.refined);
     } catch (e) {
       setAiError(e instanceof Error ? e.message : 'Unknown error');
       setShowImport(true);

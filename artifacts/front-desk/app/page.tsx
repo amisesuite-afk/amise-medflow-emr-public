@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AmsiseLogo } from './components/AmsiseLogo';
+import { MobileNavMenu } from './components/MobileNavMenu';
 
 export const metadata: Metadata = {
   title: 'Amise Medical Services — Expert Surgical & Endoscopy Care, Saint Lucia',
@@ -12,7 +13,8 @@ const WA_TAPION    = 'https://wa.me/17582840557';
 const WA_RODNEY    = 'https://wa.me/17587207111';
 const PHONE_TAPION = '758-284-0557';
 const PHONE_RODNEY = '758-720-7111';
-const EMAIL        = 'info@amisemedical.com';
+const WA_LABEL     = 'Message us on WhatsApp';
+const CONTACT_EMAIL = 'amisesuite@gmail.com';
 
 // ── WhatsApp SVG ──────────────────────────────────────────────────────────────
 
@@ -41,6 +43,9 @@ function Nav() {
       background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)',
       borderBottom: '1px solid #e8f0ef', padding: '0 40px',
     }}>
+      {/* Mobile hamburger — left corner, overlay only, doesn't affect layout below */}
+      <MobileNavMenu links={NAV_LINKS} />
+
       <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
         <AmsiseLogo href="#home" />
 
@@ -460,6 +465,7 @@ function Offices() {
             phone={PHONE_RODNEY}
             waHref={WA_RODNEY}
             mapsHref="https://maps.google.com/?q=Providence+Building+Rodney+Bay+Saint+Lucia"
+            imgWidth="25%"
           />
         </div>
       </div>
@@ -467,9 +473,9 @@ function Offices() {
   );
 }
 
-function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref }: {
+function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref, imgWidth = '42%' }: {
   img: string; imgAlt: string; name: string; services: string;
-  phone: string; waHref: string; mapsHref: string;
+  phone: string; waHref: string; mapsHref: string; imgWidth?: string;
 }) {
   return (
     <div style={{
@@ -478,8 +484,8 @@ function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref }: {
       border: '1px solid #e2eeed',
       display: 'flex', background: '#fff',
     }}>
-      {/* Building photo — left 42% */}
-      <div style={{ position: 'relative', width: '42%', flexShrink: 0 }}>
+      {/* Building photo */}
+      <div style={{ position: 'relative', width: imgWidth, flexShrink: 0 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={img} alt={imgAlt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         {/* Map pin badge */}
@@ -520,64 +526,6 @@ function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref }: {
         </a>
       </div>
     </div>
-  );
-}
-
-// ── Why Choose Us ─────────────────────────────────────────────────────────────
-
-function WhyUs() {
-  const pillars = [
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>,
-      title: 'Experienced Specialists',
-      body: 'Advanced care with compassion.',
-    },
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
-      title: 'Timely Appointments',
-      body: 'We respect your time.',
-    },
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
-      title: 'Secure & Confidential',
-      body: 'Your privacy is our priority.',
-    },
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>,
-      title: 'Patient-Centered',
-      body: 'Care tailored to your needs.',
-    },
-    {
-      icon: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.7"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>,
-      title: 'Advanced Procedures',
-      body: 'Endoscopy, ERCP & minimally invasive surgery.',
-    },
-  ];
-
-  return (
-    <section style={{ padding: '60px 40px', background: '#f9fafb', borderBottom: '1px solid #e2eeed' }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto' }}>
-        <h2 style={{ textAlign: 'center', fontSize: 22, fontWeight: 800, color: '#0f172a', margin: '0 0 44px' }}>
-          Why Patients Choose Amise Medical Services
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16 }}>
-          {pillars.map(({ icon, title, body }) => (
-            <div key={title} style={{ textAlign: 'center', padding: '12px 8px' }}>
-              <div style={{
-                width: 56, height: 56, borderRadius: '50%',
-                border: '1.5px solid #c0e4e0',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                margin: '0 auto 14px',
-              }}>
-                {icon}
-              </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 5 }}>{title}</div>
-              <div style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.6 }}>{body}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -762,7 +710,8 @@ function Contact() {
             { icon: '📅', title: 'Book Online',            desc: 'Routine or referral — confirm instantly.',      cta: 'Book Now →',     href: '/book',           color: '#0d9488' },
             { icon: '💬', title: 'WhatsApp — Tapion',       desc: PHONE_TAPION,                                   cta: 'Message Us →',   href: WA_TAPION,         color: '#25D366', external: true },
             { icon: '💬', title: 'WhatsApp — Rodney Bay',   desc: PHONE_RODNEY,                                   cta: 'Message Us →',   href: WA_RODNEY,         color: '#25D366', external: true },
-            { icon: '✉️', title: 'Email',                   desc: EMAIL,                                          cta: 'Send Email →',   href: `mailto:${EMAIL}`, color: '#6366f1' },
+            { icon: '📞', title: 'Call — Tapion',            desc: PHONE_TAPION,                                   cta: 'Call Now →',     href: 'tel:+17582840557', color: '#6366f1' },
+            { icon: '✉️', title: 'Email',                   desc: CONTACT_EMAIL,                                  cta: 'Send Email →',   href: `mailto:${CONTACT_EMAIL}`, color: '#6366f1' },
           ].map(({ icon, title, desc, cta, href, color, external }) => (
             <a
               key={title}
@@ -839,7 +788,7 @@ function Footer() {
         </div>
 
         {/* Email */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <a href={`mailto:${CONTACT_EMAIL}`} style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none' }}>
           <div style={{ width: 42, height: 42, borderRadius: '50%', background: '#1e4a5a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="1.8">
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
@@ -847,27 +796,13 @@ function Footer() {
             </svg>
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{EMAIL}</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: '#e2e8f0' }}>{CONTACT_EMAIL}</div>
             <div style={{ fontSize: 11, color: '#4a7a8a' }}>General enquiries</div>
           </div>
-        </div>
+        </a>
 
-        {/* Social */}
+        {/* Social — WhatsApp */}
         <div style={{ display: 'flex', gap: 10 }}>
-          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-            style={{ width: 38, height: 38, borderRadius: '50%', background: '#1e4a5a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#94a3b8">
-              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
-            </svg>
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-            style={{ width: 38, height: 38, borderRadius: '50%', background: '#1e4a5a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.8">
-              <rect x="2" y="2" width="20" height="20" rx="5"/>
-              <circle cx="12" cy="12" r="4"/>
-              <circle cx="17.5" cy="6.5" r="0.5" fill="#94a3b8"/>
-            </svg>
-          </a>
           <a href={WA_TAPION} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"
             style={{ width: 38, height: 38, borderRadius: '50%', background: '#25D36622', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <WaSvg size={18} color="#25D366" />
@@ -923,7 +858,6 @@ export default function HomePage() {
         <WhatsAppStrip />
         <FeatureTiles />
         <Offices />
-        <WhyUs />
         <HowItWorks />
         <Contact />
 

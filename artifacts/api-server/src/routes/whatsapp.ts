@@ -40,7 +40,7 @@ function enquiryReplyTwiml(triageFormUrl: string): string {
 
 To help us prepare for your visit, please complete our short triage form: ${triageFormUrl}
 
-You're also welcome to reply here or email info@amisemedical.com with your details and we'll guide you through it — or call our front desk: Tapion 284-0557, Rodney Bay 720-7111. – Amise Medical</Message>
+You're also welcome to reply here or email amisesuite@gmail.com with your details and we'll guide you through it — or call our front desk: Tapion 284-0557, Rodney Bay 720-7111. – Amise Medical</Message>
 </Response>`;
 }
 

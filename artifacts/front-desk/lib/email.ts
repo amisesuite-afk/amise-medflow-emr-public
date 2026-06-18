@@ -8,7 +8,7 @@ import { getInstructions, type ProcedureInstructions } from '@/lib/instructions'
 import { LOCATION_LABELS } from '@/lib/calendar';
 import type { BookingTrack } from '@/lib/scheduling';
 
-const GMAIL_FROM = process.env.GMAIL_USER ?? 'noreply@amisemedicalsevices.com';
+const GMAIL_FROM = process.env.GMAIL_USER ?? 'noreply@amisemedicalservices.com';
 const GMAIL_FROM_NAME = 'Amise Medical Services';
 
 function getGmailAuth() {

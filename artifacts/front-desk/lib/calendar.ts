@@ -1,23 +1,14 @@
 import { google, type calendar_v3 } from 'googleapis';
+import { isPublicHoliday, SLOT_RULES } from '@workspace/triage-engine';
 
 const TZ = 'America/St_Lucia';
+const ECT_OFFSET_MS = -4 * 60 * 60_000; // UTC-4, no DST
 
-const SLOT_RULES: Record<string, {
-  durationMin: number;
-  location: string;
-  days: number[];
-  windowStart: string;
-  windowEnd: string;
-  bufferAfterMin: number;
-}> = {
-  new_consult:   { durationMin: 45, location: 'rodney_bay', days: [1, 4, 5], windowStart: '10:00', windowEnd: '17:00', bufferAfterMin: 5  },
-  follow_up:     { durationMin: 15, location: 'castries',   days: [2, 4],    windowStart: '09:00', windowEnd: '12:00', bufferAfterMin: 5  },
-  post_op:       { durationMin: 20, location: 'castries',   days: [2, 4],    windowStart: '09:00', windowEnd: '12:00', bufferAfterMin: 5  },
-  ercp_workup:   { durationMin: 30, location: 'tapion',     days: [1],       windowStart: '14:00', windowEnd: '16:00', bufferAfterMin: 10 },
-  breast:        { durationMin: 45, location: 'rodney_bay', days: [3],       windowStart: '14:00', windowEnd: '17:00', bufferAfterMin: 15 },
-  telephone:     { durationMin: 15, location: 'remote',     days: [1,2,3,4,5],windowStart: '08:00', windowEnd: '16:00', bufferAfterMin: 5  },
-  diabetic_foot: { durationMin: 30, location: 'rodney_bay', days: [1, 3, 5], windowStart: '10:00', windowEnd: '14:00', bufferAfterMin: 10 },
-};
+// Return the day-of-week (0=Sun…6=Sat) in Eastern Caribbean Time, not the
+// server's local timezone (Render runs UTC; getDay() there would be wrong).
+function getDayECT(d: Date): number {
+  return new Date(d.getTime() + ECT_OFFSET_MS).getDay();
+}
 
 export const LOCATION_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay (Providence Building)',
@@ -104,13 +95,13 @@ export async function findSlots(appointmentType: string, max = 3, lookaheadDays 
   const auth = getAuth();
   if (!auth) return [];
 
-  const rule = SLOT_RULES[appointmentType] ?? SLOT_RULES['new_consult'];
+  const rule = (SLOT_RULES as Record<string, typeof SLOT_RULES[keyof typeof SLOT_RULES]>)[appointmentType] ?? SLOT_RULES['new_consult'];
   const calId = calendarIdFor(rule.location);
   if (!calId) return [];
 
   const cal = google.calendar({ version: 'v3', auth });
   const fromDate = new Date();
-  const lookaheadMs = 21 * 86400_000;
+  const lookaheadMs = lookaheadDays * 86400_000;
   const timeMax = new Date(fromDate.getTime() + lookaheadMs).toISOString();
 
   let busyEvents: { start: Date; end: Date }[] = [];
@@ -143,7 +134,7 @@ export async function findSlots(appointmentType: string, max = 3, lookaheadDays 
 
   const windowEnd = fromDate.getTime() + lookaheadMs;
   while (slots.length < max && cursor.getTime() < windowEnd) {
-    if (rule.days.includes(cursor.getDay())) {
+    if (rule.days.includes(getDayECT(cursor)) && !isPublicHoliday(cursor)) {
       const dayStart  = setTime(cursor, rule.windowStart);
       const dayEnd    = setTime(cursor, rule.windowEnd);
       const stepMin   = rule.durationMin + rule.bufferAfterMin;
@@ -187,7 +178,7 @@ export async function findUrgentSlot(appointmentType: string): Promise<FoundSlot
   const auth = getAuth();
   if (!auth) return null;
 
-  const rule   = SLOT_RULES[appointmentType] ?? SLOT_RULES['new_consult'];
+  const rule   = (SLOT_RULES as Record<string, typeof SLOT_RULES[keyof typeof SLOT_RULES]>)[appointmentType] ?? SLOT_RULES['new_consult'];
   const calId  = calendarIdFor(rule.location);
   if (!calId) return null;
 
@@ -199,7 +190,7 @@ export async function findUrgentSlot(appointmentType: string): Promise<FoundSlot
 
   // Walk forward up to 14 days to find the next valid clinic day
   for (let d = 0; d < 14; d++) {
-    if (rule.days.includes(cursor.getDay())) {
+    if (rule.days.includes(getDayECT(cursor))) {
       const dayStart = setTime(cursor, rule.windowStart);
       const dayEnd   = setTime(cursor, rule.windowEnd);
 

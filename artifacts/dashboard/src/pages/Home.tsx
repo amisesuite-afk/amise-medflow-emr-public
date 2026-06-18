@@ -176,7 +176,7 @@ export default function HomePage() {
         </div>
         {DEMO_MODE
           ? <span className="proto-pill" style={{ background: 'rgba(251,191,36,.15)', border: '1px solid rgba(251,191,36,.35)', color: '#fbbf24' }}>⚗ DEMO MODE — local trial only</span>
-          : <span className="proto-pill">⚗ PROTOTYPE</span>
+          : null
         }
         <div className="header-patient">
           <span className="header-name">{patientLabel}</span>

@@ -76,10 +76,13 @@ export function formatNurseAlert(thread: ConversationThread): string {
   const level = thread.triage_level;
   const name = thread.patient_name ?? 'Unknown patient';
   const complaint = thread.chief_complaint ?? 'Not specified';
-  return [
+  const lines = [
     `AMISE ALERT — ${level}`,
     `Patient: ${name}`,
     `Complaint: ${complaint}`,
-    `Review dashboard: ${process.env.NEXT_PUBLIC_DASHBOARD_URL ?? 'https://amise-front-desk.vercel.app/dashboard'}`,
-  ].join('\n');
+  ];
+  if (process.env.NEXT_PUBLIC_DASHBOARD_URL) {
+    lines.push(`Review dashboard: ${process.env.NEXT_PUBLIC_DASHBOARD_URL}`);
+  }
+  return lines.join('\n');
 }

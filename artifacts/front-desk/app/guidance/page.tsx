@@ -23,10 +23,11 @@ function GuidanceNav() {
     <nav className="amise-sub-nav">
       <div className="amise-sub-nav-inner">
         <Link href="/" style={{ fontSize: 14, fontWeight: 600, color: '#0d9488', textDecoration: 'none' }}>
-          ← Amise Medical Services
+          <span className="amise-sub-nav-back-full">← Amise Medical Services</span>
+          <span className="amise-sub-nav-back-short">← Home</span>
         </Link>
         <div style={{ display: 'flex', gap: 12 }}>
-          <Link href="/pathway" style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', textDecoration: 'none', padding: '8px 16px' }}>
+          <Link href="/pathway" className="amise-sub-nav-secondary" style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', textDecoration: 'none', padding: '8px 16px' }}>
             Care Pathways
           </Link>
           <Link href="/book" style={{
@@ -148,7 +149,7 @@ const SCREENING_CARDS: ScreeningCard[] = [
   {
     id: 'breast',
     title: 'Breast Health',
-    icon: '🩺',
+    icon: '🎗️',
     body: (
       <div>
         <p style={{ margin: '0 0 12px', fontSize: 14, color: '#374151', lineHeight: 1.75 }}>
@@ -176,7 +177,7 @@ const SCREENING_CARDS: ScreeningCard[] = [
   {
     id: 'upper-gi',
     title: 'Upper GI & Oesophagus',
-    icon: '🔭',
+    icon: '🫁',
     body: (
       <div>
         <p style={{ margin: '0 0 12px', fontSize: 14, color: '#374151', lineHeight: 1.75 }}>
@@ -204,7 +205,7 @@ const SCREENING_CARDS: ScreeningCard[] = [
   {
     id: 'gallbladder',
     title: 'Gallbladder & Biliary',
-    icon: '🫀',
+    icon: '🩻',
     body: (
       <div>
         <p style={{ margin: '0 0 12px', fontSize: 14, color: '#374151', lineHeight: 1.75 }}>
@@ -257,7 +258,7 @@ const SCREENING_CARDS: ScreeningCard[] = [
   {
     id: 'diabetes',
     title: 'Diabetes & Metabolic Health',
-    icon: '📊',
+    icon: '💉',
     body: (
       <div>
         <p style={{ margin: '0 0 12px', fontSize: 14, color: '#374151', lineHeight: 1.75 }}>

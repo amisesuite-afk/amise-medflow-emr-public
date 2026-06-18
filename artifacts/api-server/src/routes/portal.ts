@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { sb, getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
-import { sendSms } from '../lib/sms.js';
+import { sendSms, smsBodyStaffChangeRequest } from '../lib/sms.js';
+import { sendOrDraft } from '../lib/gmail.js';
 
 const router = Router();
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -840,6 +841,128 @@ router.post('/api/patient/request-consult', async (req, res) => {
   } catch (err) {
     req.log.error({ err }, '[portal/request-consult] error');
     res.status(500).json({ error: 'Could not save your request. Please try again.' });
+  }
+});
+
+// ── POST /api/patient/appointments/:id/request-change ────────────────────────
+// Patient-initiated request to reschedule or cancel an upcoming appointment.
+// This never touches the calendar or the appointment record itself — it only
+// logs a request and notifies staff, who contact the patient and action it
+// (assist mode: staff decides). Requests inside the minimum-notice window are
+// rejected with instructions to call the practice directly.
+const CHANGE_REQUEST_MIN_NOTICE_HOURS = 48;
+
+router.post('/api/patient/appointments/:id/request-change', async (req, res) => {
+  const auth = await getPatientAuth(req.headers.authorization);
+  if (!auth) {
+    res.status(401).json({ error: 'Sign in required' });
+    return;
+  }
+
+  const { change_type, reason } = (req.body ?? {}) as { change_type?: string; reason?: string };
+  if (change_type !== 'reschedule' && change_type !== 'cancel') {
+    res.status(400).json({ error: 'change_type must be "reschedule" or "cancel"' });
+    return;
+  }
+
+  const { data: appt, error: apptErr } = await sb()
+    .from('appointments')
+    .select('id, patient_id, appointment_date, appointment_time, appointment_type, status')
+    .eq('id', req.params.id)
+    .single();
+
+  if (apptErr || !appt) {
+    res.status(404).json({ error: 'Appointment not found' });
+    return;
+  }
+  if (appt.patient_id !== auth.patientId) {
+    res.status(403).json({ error: 'Not your appointment' });
+    return;
+  }
+  if (appt.status === 'cancelled') {
+    res.status(400).json({ error: 'This appointment is already cancelled.' });
+    return;
+  }
+
+  const { data: existingRequest } = await sb()
+    .from('appointment_change_requests')
+    .select('id')
+    .eq('appointment_id', appt.id)
+    .eq('status', 'pending')
+    .maybeSingle();
+
+  if (existingRequest) {
+    res.status(400).json({ error: 'You already have a pending request for this appointment — our team will be in touch.' });
+    return;
+  }
+
+  const apptDateTime = new Date(`${appt.appointment_date}T${appt.appointment_time ?? '00:00:00'}`);
+  const hoursUntil = (apptDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
+  if (hoursUntil < CHANGE_REQUEST_MIN_NOTICE_HOURS) {
+    res.status(400).json({
+      error: 'This appointment is too soon to change online. Please call us directly: Tapion Hospital 459-2227 / 284-0557.',
+    });
+    return;
+  }
+
+  try {
+    const { data: request, error: insertErr } = await sb()
+      .from('appointment_change_requests')
+      .insert({
+        patient_id:     auth.patientId,
+        appointment_id: appt.id,
+        change_type,
+        reason:         reason?.trim() || null,
+      })
+      .select('id')
+      .single();
+
+    if (insertErr) throw insertErr;
+
+    const { data: patient } = await sb()
+      .from('patients')
+      .select('full_name, phone')
+      .eq('id', auth.patientId)
+      .single();
+
+    const staffPhone = process.env.STAFF_NOTIFY_PHONE ?? null;
+    const staffEmail = process.env.STAFF_NOTIFY_EMAIL ?? process.env.DOCTOR_NOTIFY_EMAIL ?? null;
+
+    if (staffPhone && patient) {
+      const body = smsBodyStaffChangeRequest({
+        patientName:     patient.full_name,
+        appointmentType: appt.appointment_type,
+        changeType:      change_type,
+        appointmentDate: appt.appointment_date,
+        patientPhone:    patient.phone ?? null,
+        requestId:       request.id,
+      });
+      await sendSms({ to: staffPhone, body });
+    }
+
+    if (staffEmail && patient) {
+      const typeLabel = (appt.appointment_type as string).replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
+      const action = change_type === 'cancel' ? 'cancel' : 'reschedule';
+      const reasonLine = reason?.trim() ? `\nReason given: ${reason.trim()}` : '';
+      const phoneLine = patient.phone ? `\nPhone: ${patient.phone}` : '';
+      await sendOrDraft({
+        to: staffEmail,
+        subject: `Appointment ${action} request — ${patient.full_name}`,
+        body: `${patient.full_name} has requested to ${action} their ${typeLabel} appointment on ${appt.appointment_date}.${phoneLine}${reasonLine}\n\nRequest ID: ${request.id}\n\nPlease contact the patient to arrange.`,
+      }, 'auto');
+    }
+
+    await audit({
+      action:     'change_request',
+      entityType: 'appointment',
+      entityId:   appt.id,
+      payload:    { change_type, request_id: request.id },
+    });
+
+    res.json({ status: 'pending', id: request.id });
+  } catch (err) {
+    req.log.error({ err }, '[portal/appointments/request-change] error');
+    res.status(500).json({ error: 'Could not submit your request. Please try again.' });
   }
 });
 
