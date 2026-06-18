@@ -2,7 +2,7 @@ services:
   - type: web
     name: amise-medflow-api
     runtime: node
-    plan: free
+    plan: starter
     buildCommand: npx --yes pnpm@10 install --no-frozen-lockfile && cd artifacts/api-server && node build.mjs
     startCommand: node artifacts/api-server/dist/index.mjs
     envVars:
