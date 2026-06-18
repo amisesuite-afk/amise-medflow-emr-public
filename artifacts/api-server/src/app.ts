@@ -1,6 +1,7 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -50,6 +51,26 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const publicLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Too many requests — please try again in a few minutes, or call us at 284-0557.' },
+});
+
+const smsLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { error: 'Too many code requests — please wait 15 minutes before trying again.' },
+});
+
+app.use('/api/booking', publicLimiter);
+app.use('/api/patient/sms-code', smsLimiter);
+app.use('/api/patient/request-consult', publicLimiter);
 
 app.use(router);
 
