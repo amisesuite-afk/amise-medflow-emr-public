@@ -25,6 +25,14 @@ services:
         value: amisesuite@gmail.com
       - key: CALENDAR_ID_TAPION_ERCP
         value: amisesuite@gmail.com
+      # ── Cron job URLs (set in Render dashboard → Cron Jobs, or use
+      #    an external cron service like cron-job.org to POST to these) ──
+      # POST /api/cron/reminders         — every 30 min (48h SMS + 24h email + post-visit)
+      # POST /api/cron/booking-reminders — every 30 min (confirmation SMS for staff-confirmed)
+      # POST /api/cron/staff-escalation  — every 30 min (re-notify on unactioned bookings)
+      # POST /api/cron/daily-summary     — once daily at 06:00 ECT (appointment + escalation digest)
+      # All require header: x-cron-secret: <CRON_SECRET value>
+
       # ── Set these in Render dashboard → Environment ──
       # SUPABASE_URL            = https://nornhfzfrlmfzaqmrzzp.supabase.co
       # SUPABASE_SERVICE_ROLE_KEY = …

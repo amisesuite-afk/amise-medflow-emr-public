@@ -905,8 +905,9 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <a href="#main" className="skip-to-main">Skip to main content</a>
       <Nav />
-      <main>
+      <main id="main">
         <Hero />
         <WhatsAppStrip />
         <FeatureTiles />
