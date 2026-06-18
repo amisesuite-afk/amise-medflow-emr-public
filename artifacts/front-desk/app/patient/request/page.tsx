@@ -14,7 +14,7 @@ const API    = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onr
 
 // Direct-contact channels — for visitors who would rather skip the form.
 // Both branches are offered: Tapion Hospital and Rodney Bay (Providence Building).
-const DIRECT_WA = 'https://wa.me/17582840557';
+const DIRECT_EMAIL = 'mailto:amisesuite@gmail.com';
 const DIRECT_BRANCHES = [
   { branch: 'Tapion',     tel: 'tel:+17582840557',  phoneLbl: '284-0557',  whatsapp: 'https://wa.me/17582840557'  },
   { branch: 'Rodney Bay', tel: 'tel:+17587207111',  phoneLbl: '720-7111',  whatsapp: 'https://wa.me/17587207111'  },
@@ -384,8 +384,8 @@ function DirectContactStrip() {
       ))}
 
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-        <a href={DIRECT_WA} target="_blank" rel="noopener noreferrer" style={pillCss}>
-          <span style={{ fontSize: 16, lineHeight: 1 }}>💬</span>WhatsApp Tapion
+        <a href={DIRECT_EMAIL} style={pillCss}>
+          <span style={{ fontSize: 16, lineHeight: 1 }}>✉️</span>Email
         </a>
       </div>
     </div>
