@@ -38,7 +38,7 @@ const NAV_LINKS = [
 
 function Nav() {
   return (
-    <nav style={{
+    <nav className="amise-nav" style={{
       position: 'sticky', top: 0, zIndex: 100,
       background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(8px)',
       borderBottom: '1px solid #e8f0ef', padding: '0 40px',
@@ -110,6 +110,7 @@ function Hero() {
       {/* Right-side building/landscape photo */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
+        className="amise-hero-bg"
         src="/locations/hero-bg-v2.jpg"
         alt=""
         aria-hidden="true"
@@ -120,14 +121,14 @@ function Hero() {
         }}
       />
       {/* Fade gradient from left over the photo */}
-      <div style={{
+      <div className="amise-hero-fade" style={{
         position: 'absolute', right: '38%', top: 0, bottom: 0, width: '200px',
         background: 'linear-gradient(to right, #eef7f6, transparent)',
         zIndex: 1,
       }} />
 
       {/* Content */}
-      <div style={{
+      <div className="amise-hero-content" style={{
         position: 'relative', zIndex: 2,
         maxWidth: 1160, margin: '0 auto',
         padding: '88px 40px 80px',
@@ -171,7 +172,7 @@ function Hero() {
         </Link>
 
         {/* Primary CTAs */}
-        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 18 }}>
+        <div className="amise-hero-ctas" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 18 }}>
           <Link href="/book" style={{
             display: 'flex', alignItems: 'center', gap: 14,
             padding: '14px 22px', background: '#0d9488', color: '#fff',
@@ -206,7 +207,7 @@ function Hero() {
         </div>
 
         {/* WhatsApp contacts */}
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
+        <div className="amise-hero-wa" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
           {[
             { label: 'WhatsApp Tapion',     num: PHONE_TAPION, href: WA_TAPION },
             { label: 'WhatsApp Rodney Bay', num: PHONE_RODNEY, href: WA_RODNEY },
@@ -242,10 +243,10 @@ function Hero() {
 
 function WhatsAppStrip() {
   return (
-    <div style={{
+    <div className="amise-wa-strip" style={{
       background: '#0d9488', padding: '16px 40px',
     }}>
-      <div style={{
+      <div className="amise-wa-strip-inner" style={{
         maxWidth: 1160, margin: '0 auto',
         display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 16,
         justifyContent: 'space-between',
@@ -256,7 +257,7 @@ function WhatsAppStrip() {
             Prefer to book on WhatsApp? Message us — we usually reply within 30 minutes.
           </span>
         </div>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        <div className="amise-wa-strip-buttons" style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <a href={WA_TAPION} target="_blank" rel="noopener noreferrer" style={{
             padding: '9px 18px', background: '#fff', color: '#0d9488',
             borderRadius: 50, fontSize: 13, fontWeight: 700, textDecoration: 'none',
@@ -282,7 +283,7 @@ function WhatsAppStrip() {
 
 function FeatureTiles() {
   return (
-    <section id="services" style={{ background: '#f5fafa', padding: '60px 40px', borderBottom: '1px solid #e2eeed' }}>
+    <section id="services" className="amise-section-padded" style={{ background: '#f5fafa', padding: '60px 40px', borderBottom: '1px solid #e2eeed' }}>
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
         {/* Section heading */}
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
@@ -292,7 +293,7 @@ function FeatureTiles() {
           <div style={{ width: 48, height: 3, background: '#0d9488', borderRadius: 2, margin: '0 auto' }} />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+        <div className="amise-services-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
 
           {/* Surgical Care */}
           <Tile
@@ -435,7 +436,7 @@ function Tile({
 
 function Offices() {
   return (
-    <section id="offices" style={{ padding: '72px 40px', background: '#fff', borderBottom: '1px solid #e2eeed' }}>
+    <section id="offices" className="amise-section-padded" style={{ padding: '72px 40px', background: '#fff', borderBottom: '1px solid #e2eeed' }}>
       <div style={{ maxWidth: 1160, margin: '0 auto' }}>
         {/* Section title with underline accent */}
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
@@ -443,7 +444,7 @@ function Offices() {
           <div style={{ width: 48, height: 3, background: '#0d9488', borderRadius: 2, margin: '0 auto' }} />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28 }}>
+        <div className="amise-offices-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 28 }}>
 
           {/* Tapion */}
           <OfficeCard
@@ -478,14 +479,14 @@ function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref, imgW
   phone: string; waHref: string; mapsHref: string; imgWidth?: string;
 }) {
   return (
-    <div style={{
+    <div className="amise-office-card" style={{
       borderRadius: 14, overflow: 'hidden',
       boxShadow: '0 2px 16px rgba(0,0,0,0.1)',
       border: '1px solid #e2eeed',
       display: 'flex', background: '#fff',
     }}>
       {/* Building photo */}
-      <div style={{ position: 'relative', width: imgWidth, flexShrink: 0 }}>
+      <div className="amise-office-card-img" style={{ position: 'relative', width: imgWidth, flexShrink: 0 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={img} alt={imgAlt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         {/* Map pin badge */}
@@ -582,15 +583,15 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="patients" style={{ padding: '72px 40px', background: '#fff', borderBottom: '1px solid #e2eeed' }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 60, alignItems: 'center' }}>
+    <section id="patients" className="amise-section-padded" style={{ padding: '72px 40px', background: '#fff', borderBottom: '1px solid #e2eeed' }}>
+      <div className="amise-hiw-grid" style={{ maxWidth: 1160, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 60, alignItems: 'center' }}>
 
         {/* Steps */}
         <div>
           <h2 style={{ margin: '0 0 48px', fontSize: 26, fontWeight: 800, color: '#0f172a' }}>How It Works</h2>
 
           {/* Horizontal step row */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 40 }}>
+          <div className="amise-hiw-steps" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 40 }}>
             {steps.map(({ n, icon, title, body, done }, i) => (
               <div key={n} style={{ display: 'flex', alignItems: 'flex-start', flex: 1 }}>
                 {/* Step + connector */}
@@ -699,7 +700,7 @@ function HowItWorks() {
 
 function Contact() {
   return (
-    <section id="contact" style={{ padding: '64px 40px', background: '#f9fafb', borderBottom: '1px solid #e2eeed' }}>
+    <section id="contact" className="amise-section-padded" style={{ padding: '64px 40px', background: '#f9fafb', borderBottom: '1px solid #e2eeed' }}>
       <div style={{ maxWidth: 860, margin: '0 auto', textAlign: 'center' }}>
         <h2 style={{ fontSize: 24, fontWeight: 800, color: '#0f172a', margin: '0 0 10px' }}>Get in Touch</h2>
         <p style={{ fontSize: 14, color: '#64748b', margin: '0 0 44px' }}>
@@ -748,8 +749,8 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer style={{ background: '#0b2a35', color: '#94a3b8', padding: '44px 40px 28px' }}>
-      <div style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', gap: 0, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: 24 }}>
+    <footer className="amise-footer" style={{ background: '#0b2a35', color: '#94a3b8', padding: '44px 40px 28px' }}>
+      <div className="amise-footer-main" style={{ maxWidth: 1160, margin: '0 auto', display: 'flex', gap: 0, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', rowGap: 24 }}>
 
         {/* Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -811,7 +812,7 @@ function Footer() {
       </div>
 
       {/* Footer links row */}
-      <div style={{ maxWidth: 1160, margin: '32px auto 0', borderTop: '1px solid #1e4a5a', paddingTop: 28, display: 'flex', flexWrap: 'wrap', gap: 40, rowGap: 20 }}>
+      <div className="amise-footer-links" style={{ maxWidth: 1160, margin: '32px auto 0', borderTop: '1px solid #1e4a5a', paddingTop: 28, display: 'flex', flexWrap: 'wrap', gap: 40, rowGap: 20 }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Patient Resources</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
@@ -862,7 +863,7 @@ export default function HomePage() {
         <Contact />
 
         {/* For Providers strip */}
-        <section style={{ padding: '48px 40px', background: '#0b2a35', textAlign: 'center' }}>
+        <section className="amise-provider-strip" style={{ padding: '48px 40px', background: '#0b2a35', textAlign: 'center' }}>
           <div style={{ maxWidth: 700, margin: '0 auto' }}>
             <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Healthcare Providers</div>
             <h2 style={{ margin: '0 0 12px', fontSize: 22, fontWeight: 800, color: '#f1f5f9' }}>Refer a Patient to Amise Medical Services</h2>

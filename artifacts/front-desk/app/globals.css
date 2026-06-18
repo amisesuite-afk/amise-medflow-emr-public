@@ -20,6 +20,78 @@ body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
   .amise-nav-mobile-book { display: flex; }
 }
 
+/* ── Mobile responsive overrides (< 768px) ─────────── */
+@media (max-width: 768px) {
+  /* Nav padding */
+  .amise-nav           { padding: 0 16px !important; }
+
+  /* Hero */
+  .amise-hero-bg       { display: none !important; }
+  .amise-hero-fade     { display: none !important; }
+  .amise-hero-content  {
+    width: 100% !important;
+    padding: 60px 20px 50px !important;
+  }
+
+  /* Hero CTA buttons — full width */
+  .amise-hero-ctas     { flex-direction: column !important; }
+  .amise-hero-ctas > a { min-width: 0 !important; width: 100% !important; }
+
+  /* Hero WhatsApp contacts — full width stack */
+  .amise-hero-wa       { flex-direction: column !important; }
+  .amise-hero-wa > a   { width: 100% !important; }
+
+  /* WhatsApp strip */
+  .amise-wa-strip      { padding: 16px 16px !important; }
+  .amise-wa-strip-inner {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 12px !important;
+  }
+  .amise-wa-strip-inner > div:first-child {
+    justify-content: center !important;
+  }
+  .amise-wa-strip-buttons {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  .amise-wa-strip-buttons > a {
+    flex: 1 !important;
+    text-align: center !important;
+  }
+
+  /* Services grid — 1 column */
+  .amise-services-grid { grid-template-columns: 1fr !important; }
+
+  /* Offices grid — 1 column */
+  .amise-offices-grid  { grid-template-columns: 1fr !important; }
+
+  /* Office card — stack vertically */
+  .amise-office-card   { flex-direction: column !important; }
+  .amise-office-card-img { width: 100% !important; height: 200px !important; }
+
+  /* How it works — single column */
+  .amise-hiw-grid      { grid-template-columns: 1fr !important; gap: 32px !important; }
+
+  /* Steps row — wrap on mobile */
+  .amise-hiw-steps     { flex-wrap: wrap !important; gap: 20px !important; }
+  .amise-hiw-steps > div { flex: 0 0 calc(50% - 10px) !important; }
+
+  /* Section padding */
+  .amise-section-padded { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* Footer */
+  .amise-footer        { padding: 32px 16px 20px !important; }
+  .amise-footer-main   { flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; }
+  .amise-footer-links  { flex-direction: column !important; gap: 24px !important; }
+
+  /* Provider strip */
+  .amise-provider-strip { padding: 40px 16px !important; }
+
+  /* Touch target minimum heights */
+  .amise-touch-target  { min-height: 44px; display: flex; align-items: center; }
+}
+
 /* ── Shared sub-page header ──────────────────────────── */
 .amise-sub-nav {
   position: sticky; top: 0; z-index: 100;
