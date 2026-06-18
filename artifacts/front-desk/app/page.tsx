@@ -496,7 +496,7 @@ function OfficeCard({ img, imgAlt, name, services, phone, waHref, mapsHref, imgW
       {/* Building photo */}
       <div className="amise-office-card-img" style={{ position: 'relative', width: imgWidth, flexShrink: 0 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={img} alt={imgAlt} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <img src={img} alt={imgAlt} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         {/* Map pin badge */}
         <div style={{
           position: 'absolute', bottom: 14, left: 14,
@@ -681,6 +681,7 @@ function HowItWorks() {
             <img
               src="/locations/staff-photo.jpg"
               alt="Rodney Bay / Providence office — Amise Medical Services"
+              loading="lazy"
               style={{ width: '100%', height: 380, objectFit: 'cover', objectPosition: 'top', display: 'block' }}
             />
           </div>
@@ -720,6 +721,7 @@ function Contact() {
             { icon: '💬', title: 'WhatsApp — Tapion',       desc: PHONE_TAPION,                                   cta: 'Message Us →',   href: WA_TAPION,         color: '#25D366', external: true },
             { icon: '💬', title: 'WhatsApp — Rodney Bay',   desc: PHONE_RODNEY,                                   cta: 'Message Us →',   href: WA_RODNEY,         color: '#25D366', external: true },
             { icon: '📞', title: 'Call — Tapion',            desc: PHONE_TAPION,                                   cta: 'Call Now →',     href: 'tel:+17582840557', color: '#6366f1' },
+            { icon: '📞', title: 'Call — Rodney Bay',       desc: PHONE_RODNEY,                                   cta: 'Call Now →',     href: 'tel:+17587207111', color: '#6366f1' },
             { icon: '✉️', title: 'Email',                   desc: CONTACT_EMAIL,                                  cta: 'Send Email →',   href: `mailto:${CONTACT_EMAIL}`, color: '#6366f1' },
           ].map(({ icon, title, desc, cta, href, color, external }) => (
             <a
@@ -857,9 +859,52 @@ function Footer() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'MedicalBusiness',
+  name: 'Amise Medical Services',
+  description: 'Expert surgical and endoscopy care in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM.',
+  url: 'https://amisemedical.com',
+  telephone: ['+17582840557', '+17587207111'],
+  email: 'amisesuite@gmail.com',
+  address: [
+    {
+      '@type': 'PostalAddress',
+      streetAddress: 'Tapion Hospital, La Toc',
+      addressLocality: 'Castries',
+      addressCountry: 'LC',
+    },
+    {
+      '@type': 'PostalAddress',
+      streetAddress: 'Providence Building',
+      addressLocality: 'Rodney Bay',
+      addressCountry: 'LC',
+    },
+  ],
+  medicalSpecialty: ['Surgery', 'Gastroenterology'],
+  availableService: [
+    { '@type': 'MedicalProcedure', name: 'Colonoscopy' },
+    { '@type': 'MedicalProcedure', name: 'ERCP' },
+    { '@type': 'MedicalProcedure', name: 'Gastroscopy (OGD)' },
+    { '@type': 'MedicalProcedure', name: 'Hernia Repair' },
+    { '@type': 'MedicalProcedure', name: 'Thyroidectomy' },
+    { '@type': 'MedicalProcedure', name: 'Breast Surgery' },
+  ],
+  physician: {
+    '@type': 'Physician',
+    name: 'Dr Dawit Daniel Kabiye',
+    honorificSuffix: 'MD, DM',
+    medicalSpecialty: ['General Surgery', 'Endoscopic Surgery'],
+  },
+};
+
 export default function HomePage() {
   return (
     <div style={{ background: '#fff', color: '#0f172a', fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif', minHeight: '100vh' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Nav />
       <main>
         <Hero />

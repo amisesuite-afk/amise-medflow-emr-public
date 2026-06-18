@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import type { BookingTrack } from '@/types';
 import { APPOINTMENT_TYPES, BOOKING_DISCLAIMER } from '@/lib/scheduling';
+import '../subpage-mobile.css';
 
 interface Slot {
   start: string;

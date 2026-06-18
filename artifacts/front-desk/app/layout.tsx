@@ -25,6 +25,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.svg',
+    apple: '/favicon.svg',
   },
   other: {
     'apple-mobile-web-app-capable': 'yes',
