@@ -12,7 +12,6 @@ const RESOURCE_LINKS = [
 
 const PROVIDER_LINKS = [
   { href: '/refer', label: 'Submit a Referral' },
-  { href: '/refer', label: 'FHIR Referral Portal' },
 ] as const;
 
 export function MobileNavMenu({ links }: { links: readonly { href: string; label: string }[] }) {
@@ -27,7 +26,7 @@ export function MobileNavMenu({ links }: { links: readonly { href: string; label
         onClick={() => setOpen(o => !o)}
         style={{
           display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 5,
-          width: 38, height: 38, padding: 0,
+          width: 44, height: 44, padding: 0,
           background: 'none', border: 'none', cursor: 'pointer',
         }}
       >
@@ -51,9 +50,10 @@ export function MobileNavMenu({ links }: { links: readonly { href: string; label
               href={href}
               onClick={() => setOpen(false)}
               style={{
-                padding: '12px 0', fontSize: 15, fontWeight: 600,
+                padding: '14px 0', fontSize: 15, fontWeight: 600,
                 color: '#374151', textDecoration: 'none',
                 borderBottom: '1px solid #f1f5f9',
+                minHeight: 44, display: 'flex', alignItems: 'center',
               }}
             >
               {label}
@@ -63,9 +63,10 @@ export function MobileNavMenu({ links }: { links: readonly { href: string; label
             href="/patient/request"
             onClick={() => setOpen(false)}
             style={{
-              padding: '12px 0', fontSize: 15, fontWeight: 700,
+              padding: '14px 0', fontSize: 15, fontWeight: 700,
               color: '#0d9488', textDecoration: 'none',
               borderBottom: '1px solid #f1f5f9',
+              minHeight: 44, display: 'flex', alignItems: 'center',
             }}
           >
             New Patient?
@@ -81,9 +82,10 @@ export function MobileNavMenu({ links }: { links: readonly { href: string; label
               href={href}
               onClick={() => setOpen(false)}
               style={{
-                padding: '10px 0', fontSize: 14, fontWeight: 500,
+                padding: '12px 0', fontSize: 14, fontWeight: 500,
                 color: '#374151', textDecoration: 'none',
                 borderBottom: '1px solid #f1f5f9',
+                minHeight: 44, display: 'flex', alignItems: 'center',
               }}
             >
               {label}
@@ -100,9 +102,10 @@ export function MobileNavMenu({ links }: { links: readonly { href: string; label
               href={href}
               onClick={() => setOpen(false)}
               style={{
-                padding: '10px 0', fontSize: 14, fontWeight: 500,
+                padding: '12px 0', fontSize: 14, fontWeight: 500,
                 color: '#374151', textDecoration: 'none',
                 borderBottom: '1px solid #f1f5f9',
+                minHeight: 44, display: 'flex', alignItems: 'center',
               }}
             >
               {label}

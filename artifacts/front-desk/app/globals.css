@@ -92,6 +92,11 @@ body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
   .amise-touch-target  { min-height: 44px; display: flex; align-items: center; }
 }
 
+/* ── Tablet breakpoint (481–768px) — 2-col services ── */
+@media (min-width: 481px) and (max-width: 768px) {
+  .amise-services-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
 /* ── Shared sub-page header ──────────────────────────── */
 .amise-sub-nav {
   position: sticky; top: 0; z-index: 100;

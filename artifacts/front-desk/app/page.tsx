@@ -825,7 +825,6 @@ function Footer() {
           <div style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Healthcare Providers</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
             <Link href="/refer" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>Submit a Referral</Link>
-            <Link href="/refer" style={{ fontSize: 13, color: '#94a3b8', textDecoration: 'none' }}>FHIR Referral Portal</Link>
           </div>
         </div>
         <div>
