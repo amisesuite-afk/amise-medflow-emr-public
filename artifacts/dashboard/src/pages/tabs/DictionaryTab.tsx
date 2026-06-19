@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { DISEASES, getDiseaseSpecialty, getProtocol } from '@workspace/pane-engine';
 import IcdCodeBadge from '@/components/IcdCode';
 import { ManagementPanel } from '@/components/ManagementPanel';
@@ -95,9 +95,8 @@ export default function DictionaryTab() {
               const isOpen  = expanded === d.id;
 
               return (
-                <>
+                <React.Fragment key={d.id}>
                   <tr
-                    key={d.id}
                     onClick={() => setExpanded(isOpen ? null : d.id)}
                     style={{
                       background: i % 2 === 0 ? '#0f172a' : '#1e293b',
@@ -134,7 +133,7 @@ export default function DictionaryTab() {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
           </tbody>

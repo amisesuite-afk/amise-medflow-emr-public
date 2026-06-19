@@ -7,7 +7,7 @@ import SmartSymptomPicker from '@/components/SmartSymptomPicker';
 import PatientPhotoCapture from '@/components/PatientPhotoCapture';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
-import { VitalSigns } from '@workspace/triage-engine';
+import { Sex, VitalSigns } from '@workspace/triage-engine';
 import { SL_COMMUNITIES, SL_DOCTORS, formatSlPhone, isValidSlPhone, type SlDoctor } from '@/data/st-lucia';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
@@ -207,7 +207,7 @@ export default function IntakeTab() {
           </div>
           <div className="fld">
             <label>Sex</label>
-            <select value={sex} onChange={e => setSex(e.target.value as any)}>
+            <select value={sex} onChange={e => setSex(e.target.value as Sex)}>
               <option value="unknown">—</option>
               <option value="female">Female</option>
               <option value="male">Male</option>

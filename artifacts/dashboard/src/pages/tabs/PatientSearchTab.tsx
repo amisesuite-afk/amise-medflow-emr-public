@@ -358,7 +358,7 @@ export default function PatientSearchTab() {
         />
         {(searching || loadingAll) && <span className="psearch-spinner">⟳</span>}
         {query && !searching && (
-          <button className="psearch-clear" onClick={() => { setQuery(''); setSearchResults(null); }}>✕</button>
+          <button className="psearch-clear" aria-label="Clear search" onClick={() => { setQuery(''); setSearchResults(null); }}>✕</button>
         )}
       </div>
 
