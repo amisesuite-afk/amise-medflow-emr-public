@@ -1,7 +1,9 @@
 import express, { type Express } from "express";
 import cors from "cors";
 import helmet from "helmet";
+import compression from "compression";
 import rateLimit from "express-rate-limit";
+import * as Sentry from "@sentry/node";
 import pinoHttp from "pino-http";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -11,6 +13,8 @@ import { logger } from "./lib/logger";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app: Express = express();
+
+app.set("trust proxy", 1);
 
 app.use(
   pinoHttp({
@@ -32,6 +36,7 @@ app.use(
   }),
 );
 app.use(helmet());
+app.use(compression());
 
 const allowedOrigins = [
   process.env.PORTAL_URL,
@@ -77,6 +82,12 @@ app.use('/api/patient/sms-code', smsLimiter);
 app.use('/api/patient/request-consult', publicLimiter);
 
 app.use(router);
+
+app.all("/api/{*splat}", (_req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+
+Sentry.setupExpressErrorHandler(app);
 
 // Production: serve the built dashboard and fall back to index.html for SPA routing
 if (process.env.NODE_ENV === "production") {

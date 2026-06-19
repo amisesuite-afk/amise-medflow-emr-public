@@ -38,7 +38,7 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
-app.listen(port, (err) => {
+const server = app.listen(port, (err) => {
   if (err) {
     logger.error({ err }, "Error listening on port");
     process.exit(1);
@@ -46,3 +46,18 @@ app.listen(port, (err) => {
 
   logger.info({ port }, "Server listening");
 });
+
+function shutdown(signal: string) {
+  logger.info({ signal }, "Shutting down gracefully");
+  server.close(() => {
+    logger.info("Server closed");
+    process.exit(0);
+  });
+  setTimeout(() => {
+    logger.warn("Forced shutdown after timeout");
+    process.exit(1);
+  }, 10_000);
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
