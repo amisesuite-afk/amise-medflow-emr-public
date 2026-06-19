@@ -3,6 +3,7 @@ import { randomBytes } from 'node:crypto';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { sb, audit, requireStaffAuth } from '../lib/supabase.js';
+import { errStr } from '../lib/logger.js';
 import {
   createSession,
   getNextQuestion,
@@ -666,7 +667,7 @@ router.post('/api/questionnaire/session/start', async (req, res) => {
     });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/start] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -733,7 +734,7 @@ router.post('/api/questionnaire/provision-link', async (req, res) => {
     res.status(201).json({ url: `${baseUrl}/questionnaire/${sessionToken}` });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/provision-link] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -898,7 +899,7 @@ router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
     });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/answer] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -963,7 +964,7 @@ router.get('/api/questionnaire/session/:token', async (req, res) => {
     });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/get-session] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -1059,7 +1060,7 @@ router.post('/api/questionnaire/session/:token/vitals-photo', async (req, res) =
     res.json({ extracted, vitals: updated.extracted_vitals, status: updated.extracted_vitals_status });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/vitals-photo] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -1127,7 +1128,7 @@ router.post('/api/questionnaire/session/:token/vitals-photo/review', async (req,
     res.json({ vitals: updated.extracted_vitals, status: updated.extracted_vitals_status });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/vitals-photo/review] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -1187,7 +1188,7 @@ router.get('/api/questionnaire/nurse/queue', async (req, res) => {
     res.json({ sessions: sorted, total: sorted.length });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/nurse-queue] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -1233,7 +1234,7 @@ router.get('/api/questionnaire/session/:token/summary', async (req, res) => {
     res.json({ summary });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/summary] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -1288,7 +1289,7 @@ router.post('/api/questionnaire/session/:token/nurse-review', async (req, res) =
     res.json({ session: updated });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/nurse-review] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -1365,7 +1366,7 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
     res.json({ approved: true, encounterId, emrPopulated: encounterId !== null, emrError });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/doctor-approve] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -1433,7 +1434,7 @@ router.post('/api/questionnaire/send-sms', async (req, res) => {
     res.json({ sent: provider === 'twilio', dryRun: provider !== 'twilio', messageSid, url });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/send-sms] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -1451,7 +1452,7 @@ router.get('/api/questionnaire/templates', async (req, res) => {
     res.json({ templates: data ?? [] });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/templates] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 

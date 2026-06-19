@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { errMsg } from '@/lib/err';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
 
@@ -199,7 +200,7 @@ export default function PlanTab() {
       }
       setScheduleOk(targetDate);
     } catch (e) {
-      setScheduleErr(String(e));
+      setScheduleErr(errMsg(e));
     } finally {
       setScheduling(false);
     }

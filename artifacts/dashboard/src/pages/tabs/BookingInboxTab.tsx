@@ -4,6 +4,7 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { hasRole } from '@/lib/roles';
 import ConsultationRequestsView from './ConsultationRequestsView';
+import { errMsg } from '@/lib/err';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -216,7 +217,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       setRequests(d.requests ?? []);
       setError(null);
     } catch (e) {
-      setError(String(e));
+      setError(errMsg(e));
     } finally {
       setLoading(false);
     }
@@ -264,7 +265,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         setConfirmNotes('');
       }, 2500);
     } catch (e) {
-      setConfirmErr(String(e));
+      setConfirmErr(errMsg(e));
     } finally {
       setSubmitting(false);
     }
@@ -287,7 +288,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       await load();
       setSelected(null);
     } catch (e) {
-      setWaitlistErr(String(e));
+      setWaitlistErr(errMsg(e));
     } finally {
       setWaitlisting(false);
     }
@@ -311,7 +312,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       await load();
       setSelected(null);
     } catch (e) {
-      setCancelErr(String(e));
+      setCancelErr(errMsg(e));
     } finally {
       setCancelling(false);
     }
@@ -336,7 +337,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       }
       setPortalOk(true);
     } catch (e) {
-      setPortalErr(String(e));
+      setPortalErr(errMsg(e));
     } finally {
       setPortalRegistering(false);
     }
@@ -375,7 +376,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         setNrSlot(''); setNrReason(''); setNrSource('manual');
       }, 2000);
     } catch (e) {
-      setNrErr(String(e));
+      setNrErr(errMsg(e));
     } finally {
       setNrSubmitting(false);
     }

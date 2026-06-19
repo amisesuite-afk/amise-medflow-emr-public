@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import { errMsg } from '@/lib/err';
 
 interface ConsultRequest {
   id: string;
@@ -70,7 +71,7 @@ export default function ConsultationRequestsView() {
       setRequests(d.requests ?? []);
       setError(null);
     } catch (e) {
-      setError(String(e));
+      setError(errMsg(e));
     } finally {
       setLoading(false);
     }
@@ -114,7 +115,7 @@ export default function ConsultationRequestsView() {
       setSelected(prev => prev?.id === id ? { ...prev, ...merged } as ConsultRequest : prev);
       setTimeout(() => setSaveOk(false), 2500);
     } catch (e) {
-      setSaveErr(String(e));
+      setSaveErr(errMsg(e));
     } finally {
       setSaving(false);
     }

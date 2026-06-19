@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { sb, upsertPatient, audit } from '../lib/supabase.js';
+import { errStr } from '../lib/logger.js';
 import { listUnreadMessages, getMessage, markRead, sendOrDraft } from '../lib/gmail.js';
 import { classifyMessage, draftReply } from '../lib/claude.js';
 import { triage } from '../lib/triage-logic.js';
@@ -132,8 +133,8 @@ router.post('/api/intake/run', async (req, res) => {
       await markRead(id);
     } catch (err) {
       req.log.error({ err, messageId: id }, '[intake] error processing message');
-      await audit({ action: 'error', entityType: 'gmail_message', entityId: id, payload: { error: String(err) } });
-      results.push({ id, action: 'error', reason: String(err) });
+      await audit({ action: 'error', entityType: 'gmail_message', entityId: id, payload: { error: errStr(err) } });
+      results.push({ id, action: 'error', reason: errStr(err) });
     }
   }
 

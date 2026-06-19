@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { sb, getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
+import { errStr } from '../lib/logger.js';
 import { sendSms, smsBodyStaffChangeRequest } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 
@@ -109,7 +110,7 @@ router.post('/api/patient/invite', async (req, res) => {
     res.json({ success: true, auth_user_id: authUserId });
   } catch (err) {
     req.log.error({ err }, '[portal/invite] error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 
@@ -184,7 +185,7 @@ router.post('/api/patient/portal/register-by-phone', async (req, res) => {
     res.json({ success: true, patient_id: patientId });
   } catch (err) {
     req.log.error({ err }, '[portal/register-by-phone] error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 
@@ -678,7 +679,7 @@ router.get('/api/patient/documents-review', async (req, res) => {
     res.json({ documents: requests });
   } catch (err) {
     req.log.error({ err }, '[portal/documents-review] list error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 
@@ -704,7 +705,7 @@ router.patch('/api/patient/documents-review/:id', async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     req.log.error({ err }, '[portal/documents-review/:id] error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 
@@ -729,7 +730,7 @@ router.get('/api/patient/consultation-requests', async (req, res) => {
     res.json({ requests: data ?? [] });
   } catch (err) {
     req.log.error({ err }, '[portal/consultation-requests] list error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 
@@ -803,7 +804,7 @@ router.patch('/api/patient/consultation-requests/:id', async (req, res) => {
     res.json({ success: true, patient_id: patientId, invited });
   } catch (err) {
     req.log.error({ err }, '[portal/consultation-requests/:id] error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 

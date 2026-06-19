@@ -3,7 +3,7 @@ import { getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { google } from 'googleapis';
-import { logger } from '../lib/logger.js';
+import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
 
@@ -119,7 +119,7 @@ router.post('/api/booking/request', async (req, res) => {
     res.json({ id: bookingId, status: 'pending' });
   } catch (err) {
     logger.error({ err }, '[booking/request] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -170,7 +170,7 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
     res.json({ id, status: 'staff_confirmed', confirmed_slot });
   } catch (err) {
     logger.error({ err }, '[booking/staff-confirm] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -196,7 +196,7 @@ router.post('/api/booking/waitlist/:id', async (req, res) => {
     res.json({ id, status: 'waitlisted' });
   } catch (err) {
     logger.error({ err }, '[booking/waitlist] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -255,7 +255,7 @@ router.post('/api/booking/patient-confirm/:id', async (req, res) => {
     res.json({ id, status: 'patient_confirmed', google_event_id: googleEventId });
   } catch (err) {
     logger.error({ err }, '[booking/patient-confirm] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -286,7 +286,7 @@ router.post('/api/booking/cancel/:id', async (req, res) => {
     res.json({ id, status: 'cancelled' });
   } catch (err) {
     logger.error({ err }, '[booking/cancel] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -326,7 +326,7 @@ router.post('/api/booking/lapse', async (req, res) => {
     res.json({ lapsed: lapsed.length, ids: lapsed });
   } catch (err) {
     logger.error({ err }, '[booking/lapse] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
@@ -352,7 +352,7 @@ router.get('/api/booking/requests', async (req, res) => {
     res.json({ requests: data ?? [] });
   } catch (err) {
     logger.error({ err }, '[booking/requests] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 

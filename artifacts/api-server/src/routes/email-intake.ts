@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { processIncomingDocumentEmails } from '../lib/email-documents.js';
-import { logger } from '../lib/logger.js';
+import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
 
@@ -35,7 +35,7 @@ router.post('/api/cron/email-documents', async (req, res) => {
     res.json(summary);
   } catch (err) {
     logger.error({ err }, '[cron/email-documents] error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 
@@ -54,7 +54,7 @@ router.get('/api/admin/referring-providers', async (req, res) => {
     res.json({ providers: data ?? [] });
   } catch (err) {
     req.log.error({ err }, '[admin/referring-providers] list error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 
@@ -102,7 +102,7 @@ router.post('/api/admin/referring-providers', async (req, res) => {
     res.json({ provider: data });
   } catch (err) {
     req.log.error({ err }, '[admin/referring-providers] create error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 
@@ -149,7 +149,7 @@ router.patch('/api/admin/referring-providers/:id', async (req, res) => {
     res.json({ provider: data });
   } catch (err) {
     req.log.error({ err }, '[admin/referring-providers/:id] update error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 
@@ -169,7 +169,7 @@ router.delete('/api/admin/referring-providers/:id', async (req, res) => {
     res.json({ status: 'deleted' });
   } catch (err) {
     req.log.error({ err }, '[admin/referring-providers/:id] delete error');
-    res.status(500).json({ error: String(err) });
+    res.status(500).json({ error: errStr(err) });
   }
 });
 

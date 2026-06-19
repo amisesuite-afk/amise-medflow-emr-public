@@ -2,7 +2,7 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { requireStaffAuth, audit } from '../lib/supabase.js';
-import { logger } from '../lib/logger.js';
+import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
 
@@ -90,7 +90,7 @@ router.post('/api/investigations/extract-results', async (req, res) => {
     res.json(parsed);
   } catch (err) {
     logger.error({ err }, '[investigations/extract-results] error');
-    res.status(502).json({ error: String(err) });
+    res.status(502).json({ error: errStr(err) });
   }
 });
 
