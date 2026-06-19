@@ -78,6 +78,9 @@
 -- 22. Appointment change requests: appointment_change_requests table
 \i supabase-appointment-change-requests-migration.sql
 
+-- 23. User default site: user_profiles.default_site
+\i supabase-user-default-site-migration.sql
+
 -- ============================================================
 -- FULL TABLE INVENTORY (after all migrations)
 -- ============================================================
