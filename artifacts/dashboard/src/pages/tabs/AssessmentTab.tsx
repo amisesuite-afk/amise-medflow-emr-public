@@ -83,7 +83,7 @@ function DiagnosisPicker() {
     ICD_CODES.filter(c =>
       c.code.toLowerCase().includes(query.toLowerCase()) ||
       c.description.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 14);
+    ).slice(0, 20);
 
   // Group filtered by category
   const grouped: Record<string, IcdCode[]> = {};
