@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { hasRole } from '@/lib/roles';
@@ -57,6 +58,18 @@ function timeAgo(iso: string): string {
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `${hours}h ${mins % 60}m ago`;
   return `${Math.floor(hours / 24)}d ago`;
+}
+
+function fmtPhone(raw: string | null | undefined): string {
+  if (!raw) return '';
+  const digits = raw.replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('1')) {
+    return `+1 ${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+  }
+  if (digits.length === 10) {
+    return `+1 ${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  return raw;
 }
 
 function fmtSlot(iso: string): string {
@@ -160,6 +173,7 @@ export interface BookingInboxTabProps {
 
 export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps = {}) {
   const { profile } = useAuth();
+  const { currentSite } = useAppContext();
   const userRole = profile?.role ?? 'front_desk';
   const isAdmin = hasRole(userRole, 'admin');
 
@@ -167,6 +181,8 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [loading, setLoading]             = useState(true);
   const [error, setError]                 = useState<string | null>(null);
   const [selected, setSelected]           = useState<BookingRequest | null>(null);
+  const [lastRefresh, setLastRefresh]     = useState<Date | null>(null);
+  const [statusFilter, setStatusFilter]   = useState<string>(filterStatus ?? '');
 
   // Confirm form state
   const [confirmDate, setConfirmDate]     = useState(() => new Date().toISOString().slice(0, 10));
@@ -196,7 +212,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [nrPhone, setNrPhone]                 = useState('');
   const [nrEmail, setNrEmail]                 = useState('');
   const [nrType, setNrType]                   = useState('consultation');
-  const [nrLocation, setNrLocation]           = useState('rodney_bay');
+  const [nrLocation, setNrLocation]           = useState(currentSite);
   const [nrSlot, setNrSlot]                   = useState(() => new Date().toISOString().slice(0, 10));
   const [nrSource, setNrSource]               = useState<'manual' | 'phone' | 'email' | 'whatsapp'>('manual');
   const [nrReason, setNrReason]               = useState('');
@@ -208,20 +224,21 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
 
   const load = useCallback(async () => {
     try {
-      const url = filterStatus
-        ? apiUrl(`/api/booking/requests?status=${filterStatus}`)
+      const url = statusFilter
+        ? apiUrl(`/api/booking/requests?status=${statusFilter}`)
         : apiUrl('/api/booking/requests');
       const r = await fetch(url, { headers: await staffAuthHeaders() });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const d = await r.json() as { requests: BookingRequest[] };
       setRequests(d.requests ?? []);
       setError(null);
+      setLastRefresh(new Date());
     } catch (e) {
       setError(errMsg(e));
     } finally {
       setLoading(false);
     }
-  }, [filterStatus]);
+  }, [statusFilter]);
 
   useEffect(() => { void load(); }, [load]);
   useEffect(() => {
@@ -372,7 +389,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         setShowNewRequest(false);
         setNrOk(false);
         setNrName(''); setNrPhone(''); setNrEmail('');
-        setNrType('consultation'); setNrLocation('rodney_bay');
+        setNrType('consultation'); setNrLocation(currentSite);
         setNrSlot(''); setNrReason(''); setNrSource('manual');
       }, 2000);
     } catch (e) {
@@ -455,28 +472,59 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       }}>
 
         {/* Header */}
-        <div style={{ padding: '18px 20px 12px', borderBottom: '1px solid #f3f4f6', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Booking Requests</div>
-            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
-              {pendingCount > 0
-                ? <span style={{ color: '#b45309', fontWeight: 600 }}>{pendingCount} pending action{pendingCount !== 1 ? 's' : ''}</span>
-                : 'All requests actioned'
-              }
+        <div style={{ padding: '18px 20px 12px', borderBottom: '1px solid #f3f4f6', flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#111827' }}>Booking Requests</div>
+              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                {pendingCount > 0
+                  ? <span style={{ color: '#b45309', fontWeight: 600 }}>{pendingCount} pending action{pendingCount !== 1 ? 's' : ''}</span>
+                  : 'All requests actioned'
+                }
+                {lastRefresh && (
+                  <span style={{ marginLeft: 8, color: '#9ca3af', fontSize: 10 }}>
+                    Updated {lastRefresh.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
+              </div>
             </div>
+            <button
+              onClick={() => void load()}
+              style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 12, cursor: 'pointer' }}
+            >
+              Refresh
+            </button>
+            <button
+              onClick={() => { setShowNewRequest(true); setSelected(null); setTimeout(() => nrNameRef.current?.focus(), 50); }}
+              style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+            >
+              + New Request
+            </button>
           </div>
-          <button
-            onClick={() => void load()}
-            style={{ padding: '5px 10px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#fff', color: '#374151', fontSize: 12, cursor: 'pointer' }}
-          >
-            Refresh
-          </button>
-          <button
-            onClick={() => { setShowNewRequest(true); setSelected(null); setTimeout(() => nrNameRef.current?.focus(), 50); }}
-            style={{ padding: '5px 12px', borderRadius: 6, border: 'none', background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-          >
-            + New Request
-          </button>
+          <div style={{ display: 'flex', gap: 4, marginTop: 8, flexWrap: 'wrap' }}>
+            {[
+              { value: '', label: 'All' },
+              { value: 'pending', label: 'Pending' },
+              { value: 'waitlisted', label: 'Waitlisted' },
+              { value: 'staff_confirmed', label: 'Confirmed' },
+              { value: 'patient_confirmed', label: 'Patient OK' },
+              { value: 'lapsed', label: 'Lapsed' },
+              { value: 'cancelled', label: 'Cancelled' },
+            ].map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setStatusFilter(opt.value)}
+                style={{
+                  padding: '3px 10px', borderRadius: 12, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                  border: statusFilter === opt.value ? '1px solid #0d9488' : '1px solid #e5e7eb',
+                  background: statusFilter === opt.value ? '#ecfdf5' : '#fff',
+                  color: statusFilter === opt.value ? '#0d9488' : '#6b7280',
+                }}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* List */}
@@ -536,7 +584,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                       </span>
                     )}
                     {req.patient_phone && (
-                      <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 'auto' }}>{req.patient_phone}</span>
+                      <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 'auto' }}>{fmtPhone(req.patient_phone)}</span>
                     )}
                   </div>
 
@@ -644,7 +692,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                 <label style={{ display: 'block', fontSize: 11, color: '#6b7280', marginBottom: 4 }}>Location</label>
                 <select
                   value={nrLocation}
-                  onChange={e => setNrLocation(e.target.value)}
+                  onChange={e => setNrLocation(e.target.value as typeof currentSite)}
                   style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
                 >
                   <option value="rodney_bay">Rodney Bay Clinic</option>
@@ -748,7 +796,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 16 }}>
             {[
               { label: 'Email',       value: selected.patient_email },
-              { label: 'Phone',       value: selected.patient_phone },
+              { label: 'Phone',       value: fmtPhone(selected.patient_phone) || null },
               { label: 'Appointment', value: apptLabel(selected.appointment_type) },
               { label: 'Location',    value: LOCATION_LABELS[selected.location] ?? selected.location },
               { label: 'Preferred slot', value: selected.preferred_slot ?? 'No preference' },
