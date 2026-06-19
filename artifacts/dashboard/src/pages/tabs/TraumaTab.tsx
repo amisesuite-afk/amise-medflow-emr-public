@@ -353,8 +353,11 @@ export default function TraumaTab() {
       {/* Print summary — only visible via @media print */}
       <PrintSummary />
 
+      {/* Interactive form — hidden on print; PrintSummary above is shown instead */}
+      <div className="no-print">
+
       {/* ── Header ────────────────────────────────────────────────────────── */}
-      <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 800, color: '#f87171' }}>
           ⚡ Trauma Assessment — ATLS 11th Edition
         </div>
@@ -916,6 +919,8 @@ export default function TraumaTab() {
           <ManagementPanel diseaseId={primaryDiseaseId} icdCode={null} />
         </CollapsibleCard>
       )}
+
+      </div>{/* end .no-print interactive form wrapper */}
     </div>
   );
 }

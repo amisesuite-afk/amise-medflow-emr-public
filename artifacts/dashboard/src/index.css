@@ -1662,19 +1662,26 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
 .trauma-print-summary { display: none; }
 
 @media print {
-  * { visibility: hidden; }
-  .trauma-print-summary,
-  .trauma-print-summary * { visibility: visible; }
+  .no-print { display: none !important; }
   .trauma-print-summary {
     display: block !important;
     position: absolute;
     top: 0; left: 0;
     width: 100%;
+    z-index: 9999;
     background: #fff;
     color: #111;
     font-family: 'Helvetica Neue', Arial, sans-serif;
     font-size: 11pt;
     padding: 24px 32px;
+  }
+  /* Strip dark backgrounds from all form elements when printing */
+  select, input, textarea {
+    background: #fff !important;
+    color: #111 !important;
+    border-color: #999 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   .trauma-print-summary h1 {
     font-size: 16pt; font-weight: 800; margin: 0 0 4px;
