@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { sb, getSupabaseAdmin, audit } from '../lib/supabase.js';
+import { sb, getSupabaseAdmin, audit, requireCronSecret } from '../lib/supabase.js';
 import { sendSms, smsBody48h, smsBodyPostVisit, smsBodyStaffEscalation, getPrepInstructions } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { draftReply } from '../lib/claude.js';
@@ -7,20 +7,6 @@ import { formatSlotForDisplay } from '../lib/calendar.js';
 import { logger } from '../lib/logger.js';
 
 const router = Router();
-
-function requireCronSecret(req: any, res: any): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    res.status(401).json({ error: 'Cron secret not configured on this server' });
-    return false;
-  }
-  const provided = req.headers['x-cron-secret'] || req.query?.secret;
-  if (provided !== secret) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return false;
-  }
-  return true;
-}
 
 router.post('/api/cron/reminders', async (req, res) => {
   if (!requireCronSecret(req, res)) return;

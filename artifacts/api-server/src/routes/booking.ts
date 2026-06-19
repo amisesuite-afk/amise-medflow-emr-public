@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
+import { getSupabaseAdmin, audit, requireStaffAuth, requireCronSecret } from '../lib/supabase.js';
 import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { google } from 'googleapis';
@@ -37,8 +37,8 @@ function getCalendarClient() {
 router.post('/api/booking/request', async (req, res) => {
   const { patient_name, patient_email, patient_phone, appointment_type, location, preferred_slot, reason, triage_acuity, triage_score, source } = req.body ?? {};
 
-  if (!patient_name || !patient_email || !appointment_type) {
-    res.status(400).json({ error: 'patient_name, patient_email, and appointment_type are required' });
+  if (!patient_name || !appointment_type) {
+    res.status(400).json({ error: 'patient_name and appointment_type are required' });
     return;
   }
 
@@ -51,7 +51,7 @@ router.post('/api/booking/request', async (req, res) => {
       .from('appointment_requests')
       .insert({
         patient_name,
-        patient_email,
+        patient_email: patient_email || null,
         patient_phone: patient_phone ?? null,
         appointment_type,
         location: location ?? 'rodney_bay',
@@ -292,17 +292,7 @@ router.post('/api/booking/cancel/:id', async (req, res) => {
 
 // POST /api/booking/lapse — cron-triggered: mark staff_confirmed requests with slot < 24hrs as lapsed
 router.post('/api/booking/lapse', async (req, res) => {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    logger.warn('[booking/lapse] CRON_SECRET not set — rejecting');
-    res.status(503).json({ error: 'CRON_SECRET not configured' });
-    return;
-  }
-  const provided = req.headers['x-cron-secret'] ?? req.query?.secret;
-  if (provided !== secret) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
-  }
+  if (!requireCronSecret(req, res)) return;
 
   const cutoff = new Date(Date.now() + 24 * 60 * 60_000).toISOString();
 

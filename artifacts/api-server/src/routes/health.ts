@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { HealthCheckResponse } from "@workspace/api-zod";
+import { requireCronSecret } from "../lib/supabase.js";
 
 const router: IRouter = Router();
 
@@ -9,12 +10,7 @@ router.get("/api/healthz", (_req, res) => {
 });
 
 router.get("/api/healthz/env", (req, res) => {
-  const secret = process.env.CRON_SECRET;
-  const provided = req.headers['x-cron-secret'] || req.query?.secret;
-  if (!secret || provided !== secret) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
-  }
+  if (!requireCronSecret(req, res)) return;
 
   const check = (key: string) => !!process.env[key];
   const mode = process.env.MODE || 'dry_run';

@@ -1,24 +1,9 @@
 import { Router } from 'express';
-import { sb, requireStaffAuth } from '../lib/supabase.js';
+import { sb, requireStaffAuth, requireCronSecret } from '../lib/supabase.js';
 import { processIncomingDocumentEmails } from '../lib/email-documents.js';
 import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
-
-function requireCronSecret(req: any, res: any): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    logger.warn('[cron] CRON_SECRET not set — rejecting request');
-    res.status(503).json({ error: 'CRON_SECRET not configured' });
-    return false;
-  }
-  const provided = req.headers['x-cron-secret'] || req.query?.secret;
-  if (provided !== secret) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return false;
-  }
-  return true;
-}
 
 const PROVIDER_TYPES = ['lab', 'radiology', 'referring_doctor', 'other'];
 const DOCUMENT_TYPES = [

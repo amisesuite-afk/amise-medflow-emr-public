@@ -17,10 +17,7 @@ export function sb(): SupabaseClient {
 }
 
 export function getSupabaseAdmin(): SupabaseClient {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
-  return createClient(url, key, { auth: { persistSession: false } });
+  return sb();
 }
 
 /**
@@ -45,6 +42,21 @@ export async function requireStaffAuth(req: any, res: any): Promise<boolean> {
 
   res.status(401).json({ error: 'Unauthorised — provide x-staff-token or a valid Bearer token' });
   return false;
+}
+
+export function requireCronSecret(req: any, res: any): boolean {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    logger.warn('[cron] CRON_SECRET not set — rejecting request');
+    res.status(503).json({ error: 'CRON_SECRET not configured' });
+    return false;
+  }
+  const provided = req.headers['x-cron-secret'] || req.query?.secret;
+  if (provided !== secret) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return false;
+  }
+  return true;
 }
 
 export type AuditAction =
