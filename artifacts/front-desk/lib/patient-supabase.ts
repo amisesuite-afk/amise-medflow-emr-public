@@ -36,4 +36,5 @@ export interface PatientProfile {
   blood_group: string | null;
   height_cm: number | null;
   weight_kg: number | null;
+  photo_url: string | null;
 }

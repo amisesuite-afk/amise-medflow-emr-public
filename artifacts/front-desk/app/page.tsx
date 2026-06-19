@@ -591,114 +591,61 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="patients" className="amise-section-padded" style={{ padding: '72px 40px', background: '#fff', borderBottom: '1px solid #e2eeed' }}>
-      <div className="amise-hiw-grid" style={{ maxWidth: 1160, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 60, alignItems: 'center' }}>
+    <section id="patients" className="amise-section-padded" style={{ padding: '56px 40px', background: '#fff', borderBottom: '1px solid #e2eeed' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto' }}>
+        <h2 style={{ margin: '0 0 36px', fontSize: 24, fontWeight: 800, color: '#0f172a', textAlign: 'center' }}>How It Works</h2>
 
-        {/* Steps */}
-        <div>
-          <h2 style={{ margin: '0 0 48px', fontSize: 26, fontWeight: 800, color: '#0f172a' }}>How It Works</h2>
-
-          {/* Horizontal step row */}
-          <div className="amise-hiw-steps" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 40 }}>
-            {steps.map(({ n, icon, title, body, done }, i) => (
-              <div key={n} style={{ display: 'flex', alignItems: 'flex-start', flex: 1 }}>
-                {/* Step + connector */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                  {/* Circle */}
-                  <div style={{
-                    width: 52, height: 52, borderRadius: '50%',
-                    background: done ? '#0d9488' : '#0d9488',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: '0 2px 8px rgba(13,149,136,0.3)',
-                    marginBottom: 14, flexShrink: 0,
-                    position: 'relative',
-                  }}>
-                    {/* Step number badge */}
-                    {!done && (
-                      <div style={{
-                        position: 'absolute', top: -6, left: -6,
-                        width: 20, height: 20, borderRadius: '50%',
-                        background: '#fff', border: '1.5px solid #0d9488',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 10, fontWeight: 800, color: '#0d9488',
-                      }}>{n}</div>
-                    )}
-                    {icon}
-                  </div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 5 }}>{title}</div>
-                  <div style={{ fontSize: 11.5, color: '#6b7280', lineHeight: 1.55, maxWidth: 120 }}>{body}</div>
+        <div className="amise-hiw-steps" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 36 }}>
+          {steps.map(({ n, icon, title, body, done }, i) => (
+            <div key={n} style={{ display: 'flex', alignItems: 'flex-start', flex: 1 }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: '50%',
+                  background: '#0d9488',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(13,149,136,0.3)',
+                  marginBottom: 12, flexShrink: 0,
+                  position: 'relative',
+                }}>
+                  {!done && (
+                    <div style={{
+                      position: 'absolute', top: -5, left: -5,
+                      width: 18, height: 18, borderRadius: '50%',
+                      background: '#fff', border: '1.5px solid #0d9488',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 9, fontWeight: 800, color: '#0d9488',
+                    }}>{n}</div>
+                  )}
+                  {icon}
                 </div>
-
-                {/* Dashed connector (not after last) */}
-                {i < steps.length - 1 && (
-                  <div style={{
-                    flex: 0, alignSelf: 'flex-start', marginTop: 24,
-                    width: 32, borderTop: '2px dashed #c0e4e0',
-                    flexShrink: 0,
-                  }} />
-                )}
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>{title}</div>
+                <div style={{ fontSize: 11.5, color: '#6b7280', lineHeight: 1.5, maxWidth: 110 }}>{body}</div>
               </div>
-            ))}
-          </div>
-
-          {/* Questionnaire CTA */}
-          <div style={{
-            background: '#f0fdf9', border: '1px solid #a7f3d0',
-            borderRadius: 10, padding: '18px 22px', marginBottom: 24,
-          }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>
-              Before your visit: Complete our digital intake questionnaire
+              {i < steps.length - 1 && (
+                <div style={{ flex: 0, alignSelf: 'flex-start', marginTop: 22, width: 28, borderTop: '2px dashed #c0e4e0', flexShrink: 0 }} />
+              )}
             </div>
-            <Link href="/questionnaire" style={{
-              display: 'inline-block', padding: '9px 20px',
-              background: '#0d9488', color: '#fff',
-              borderRadius: 6, fontSize: 13, fontWeight: 700,
-              textDecoration: 'none', marginBottom: 10,
-            }}>
-              Start Questionnaire →
-            </Link>
-            <div style={{ fontSize: 12, color: '#6b7280' }}>
-              Takes 3–5 minutes. Helps your consultation stay focused and cover more in the same time.
-            </div>
-          </div>
-
-          <div>
-            <Link href="/book" style={{
-              display: 'inline-block', padding: '13px 32px',
-              background: '#0d9488', color: '#fff',
-              borderRadius: 8, fontSize: 15, fontWeight: 700,
-              textDecoration: 'none',
-            }}>
-              Get Started Now →
-            </Link>
-          </div>
+          ))}
         </div>
 
-        {/* Photo + floating review card */}
-        <div style={{ position: 'relative', paddingBottom: 24 }}>
-          <div style={{ borderRadius: 16, overflow: 'hidden', background: '#e2f4f1' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/locations/staff-photo.jpg"
-              alt="Rodney Bay / Providence office — Amise Medical Services"
-              loading="lazy"
-              style={{ width: '100%', height: 380, objectFit: 'cover', objectPosition: 'top', display: 'block' }}
-            />
-          </div>
-          {/* Floating review card */}
-          <div style={{
-            position: 'absolute', bottom: 0, right: -12,
-            background: '#fff', borderRadius: 12,
-            padding: '18px 22px', maxWidth: 210,
-            boxShadow: '0 6px 24px rgba(0,0,0,0.13)',
-            border: '1px solid #e8f0ef',
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Link href="/book" style={{
+            display: 'inline-block', padding: '12px 28px',
+            background: '#0d9488', color: '#fff',
+            borderRadius: 8, fontSize: 14, fontWeight: 700,
+            textDecoration: 'none',
           }}>
-            <div style={{ color: '#f59e0b', fontSize: 16, marginBottom: 8, letterSpacing: 1 }}>★★★★★</div>
-            <p style={{ margin: '0 0 10px', fontSize: 13, color: '#374151', lineHeight: 1.6, fontStyle: 'italic' }}>
-              &ldquo;Caring staff, quick appointments and excellent service.&rdquo;
-            </p>
-            <div style={{ fontSize: 11, color: '#94a3b8', fontWeight: 600 }}>— Patient Review</div>
-          </div>
+            Book Appointment →
+          </Link>
+          <Link href="/questionnaire" style={{
+            display: 'inline-block', padding: '12px 28px',
+            background: '#f0fdf9', color: '#0d9488',
+            border: '1.5px solid #0d9488',
+            borderRadius: 8, fontSize: 14, fontWeight: 700,
+            textDecoration: 'none',
+          }}>
+            Pre-Visit Questionnaire
+          </Link>
         </div>
       </div>
     </section>

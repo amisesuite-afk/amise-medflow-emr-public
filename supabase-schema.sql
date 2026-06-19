@@ -47,6 +47,7 @@ create table if not exists patients (
   address             text,
   emergency_contact   text,
   emergency_phone     text,
+  photo_url           text,
   created_by          uuid references auth.users(id),
   updated_by          uuid references auth.users(id),
   created_at          timestamptz not null default now(),

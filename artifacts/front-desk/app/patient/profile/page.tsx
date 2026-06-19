@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
 
@@ -20,6 +20,7 @@ interface PatientRow {
   blood_group: string | null;
   height_cm: number | null;
   weight_kg: number | null;
+  photo_url: string | null;
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
@@ -162,6 +163,11 @@ export default function ProfilePage() {
   const [heightCm,   setHeightCm]   = useState('');
   const [weightKg,   setWeightKg]   = useState('');
 
+  // Photo
+  const [photoUrl, setPhotoUrl]     = useState<string | null>(null);
+  const [photoSaving, setPhotoSaving] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
   const populateFields = useCallback((row: PatientRow) => {
     setPhone(row.phone       ?? '');
     setEmail(row.email       ?? '');
@@ -172,6 +178,7 @@ export default function ProfilePage() {
     setBloodGroup(row.blood_group  ?? '');
     setHeightCm(row.height_cm != null ? String(row.height_cm) : '');
     setWeightKg(row.weight_kg != null ? String(row.weight_kg) : '');
+    setPhotoUrl(row.photo_url ?? null);
   }, []);
 
   useEffect(() => {
@@ -209,6 +216,66 @@ export default function ProfilePage() {
     });
     return () => { cancelled = true; subscription.unsubscribe(); };
   }, [router, sb, populateFields]);
+
+  function resizePhoto(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 400;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          const ratio = Math.min(MAX / w, MAX / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d')!.drawImage(img, 0, 0, w, h);
+        resolve(c.toDataURL('image/jpeg', 0.85));
+      };
+      img.onerror = () => reject(new Error('Could not read image'));
+      img.src = URL.createObjectURL(file);
+    });
+  }
+
+  async function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !profile) return;
+    if (!file.type.startsWith('image/')) return;
+
+    setPhotoSaving(true);
+    try {
+      const dataUrl = await resizePhoto(file);
+      const { error: upErr } = await sb
+        .from('patients')
+        .update({ photo_url: dataUrl })
+        .eq('id', profile.id);
+      if (upErr) throw upErr;
+      setPhotoUrl(dataUrl);
+    } catch {
+      setSaveError('Could not upload photo. Please try again.');
+    } finally {
+      setPhotoSaving(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  }
+
+  async function removePhoto() {
+    if (!profile) return;
+    setPhotoSaving(true);
+    try {
+      const { error: upErr } = await sb
+        .from('patients')
+        .update({ photo_url: null })
+        .eq('id', profile.id);
+      if (upErr) throw upErr;
+      setPhotoUrl(null);
+    } catch {
+      setSaveError('Could not remove photo. Please try again.');
+    } finally {
+      setPhotoSaving(false);
+    }
+  }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -273,6 +340,71 @@ export default function ProfilePage() {
       </div>
 
       <form onSubmit={(e) => void handleSave(e)} noValidate>
+
+        {/* ── Profile Photo ── */}
+        <div style={s.card}>
+          <p style={s.sectionHeading}>Profile Photo</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt="Your photo"
+                style={{
+                  width: 80, height: 80, borderRadius: '50%',
+                  objectFit: 'cover', border: `2px solid ${TEAL}`,
+                }}
+              />
+            ) : (
+              <div style={{
+                width: 80, height: 80, borderRadius: '50%',
+                background: '#f1f5f9', border: '2px dashed #cbd5e1',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 32, color: '#94a3b8',
+              }}>
+                👤
+              </div>
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <button
+                type="button"
+                disabled={photoSaving}
+                onClick={() => fileRef.current?.click()}
+                style={{
+                  padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 700,
+                  background: TEAL, color: '#fff', border: 'none', cursor: 'pointer',
+                  opacity: photoSaving ? 0.6 : 1,
+                }}
+              >
+                {photoSaving ? 'Saving…' : photoUrl ? 'Change Photo' : 'Upload Photo'}
+              </button>
+              {photoUrl && (
+                <button
+                  type="button"
+                  disabled={photoSaving}
+                  onClick={() => void removePhoto()}
+                  style={{
+                    padding: '6px 14px', borderRadius: 8, fontSize: 12,
+                    background: 'none', color: '#ef4444', border: '1px solid #fca5a5',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Remove
+                </button>
+              )}
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                capture="user"
+                onChange={e => void handlePhotoSelect(e)}
+                style={{ display: 'none' }}
+              />
+            </div>
+          </div>
+          <p style={{ margin: '12px 0 0', fontSize: 11, color: '#94a3b8', lineHeight: 1.5 }}>
+            Optional. This helps our staff identify you at your appointment.
+          </p>
+        </div>
 
         {/* ── Section 1: Contact Details ── */}
         <div style={s.card}>

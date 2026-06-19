@@ -73,6 +73,7 @@ function demoToRow(p: DemoPatient): PatientListRowEx {
     sex: p.sex || null,
     phone: p.phone ?? null,
     created_at: p.savedAt ?? null,
+    photo_url: null,
     acuity: p.acuity,
     score: p.score,
     age: p.age,
@@ -101,7 +102,7 @@ export default function PatientSearchTab() {
     setPatientName, setAge, setSex, setDob, setPhone,
     setPatientId, setEncounterId, setComorbidities,
     setAssessment, setDifferentials, setIcdCodes, setPlan,
-    setAllergies, setMedications,
+    setAllergies, setMedications, setPatientPhoto,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -168,13 +169,13 @@ export default function PatientSearchTab() {
       const dbQuery = isPhone
         ? supabase
             .from('patients')
-            .select('id, full_name, sex, phone, date_of_birth, created_at')
+            .select('id, full_name, sex, phone, date_of_birth, created_at, photo_url')
             .ilike('phone', `%${q.replace(/[\s()-]/g, '')}%`)
             .order('created_at', { ascending: false })
             .limit(30)
         : supabase
             .from('patients')
-            .select('id, full_name, sex, phone, date_of_birth, created_at')
+            .select('id, full_name, sex, phone, date_of_birth, created_at, photo_url')
             .ilike('full_name', `%${q}%`)
             .order('created_at', { ascending: false })
             .limit(30);
@@ -218,6 +219,7 @@ export default function PatientSearchTab() {
     }
     if (p.sex) setSex(p.sex as Parameters<typeof setSex>[0]);
     if (p.phone) setPhone(p.phone);
+    if (p.photo_url) setPatientPhoto(p.photo_url);
     setPatientId(p.id);
 
     if (DEMO_MODE) {

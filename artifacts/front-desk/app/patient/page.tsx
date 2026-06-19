@@ -86,13 +86,26 @@ export default function PatientDashboardPage() {
     <div>
 
       {/* Greeting */}
-      <div style={{ marginBottom: 32 }}>
-        <p style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em' }}>
-          Good day, {firstName}.
-        </p>
-        <p style={{ margin: 0, fontSize: 14, color: '#64748b' }}>
-          Welcome to your Amise Medical portal.
-        </p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
+        {profile?.photo_url ? (
+          <img
+            src={profile.photo_url}
+            alt=""
+            style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${TEAL}`, flexShrink: 0 }}
+          />
+        ) : (
+          <div style={{ width: 52, height: 52, borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, color: '#94a3b8', flexShrink: 0 }}>
+            👤
+          </div>
+        )}
+        <div>
+          <p style={{ margin: '0 0 4px', fontSize: 24, fontWeight: 900, color: '#0f172a', letterSpacing: '-0.02em' }}>
+            Good day, {firstName}.
+          </p>
+          <p style={{ margin: 0, fontSize: 14, color: '#64748b' }}>
+            Welcome to your Amise Medical portal.
+          </p>
+        </div>
       </div>
 
       {/* Upcoming appointments */}

@@ -98,6 +98,7 @@ export interface PatientListRow {
   phone: string | null;
   date_of_birth: string | null;
   created_at: string | null;
+  photo_url: string | null;
 }
 
 // ─── savePatientFull ──────────────────────────────────────────────────────────
@@ -339,7 +340,7 @@ export async function listPatients(): Promise<
 
   const { data, error } = await supabase
     .from('patients')
-    .select('id, full_name, sex, phone, date_of_birth, created_at')
+    .select('id, full_name, sex, phone, date_of_birth, created_at, photo_url')
     .order('created_at', { ascending: false })
     .limit(100);
 
@@ -394,7 +395,7 @@ export async function listPatientsBySite(
 
   const { data, error } = await supabase
     .from('patients')
-    .select('id, full_name, sex, phone, date_of_birth, created_at')
+    .select('id, full_name, sex, phone, date_of_birth, created_at, photo_url')
     .in('id', ids)
     .order('created_at', { ascending: false })
     .limit(100);

@@ -101,9 +101,6 @@ textarea:focus-visible {
   .amise-office-card   { flex-direction: column !important; }
   .amise-office-card-img { width: 100% !important; height: 200px !important; }
 
-  /* How it works — single column */
-  .amise-hiw-grid      { grid-template-columns: 1fr !important; gap: 32px !important; }
-
   /* Steps row — wrap on mobile */
   .amise-hiw-steps     { flex-wrap: wrap !important; gap: 20px !important; }
   .amise-hiw-steps > div { flex: 0 0 calc(50% - 10px) !important; }
