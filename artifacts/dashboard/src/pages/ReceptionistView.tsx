@@ -483,30 +483,32 @@ export default function ReceptionistView() {
                 onClick={() => void handleCheckIn()}
                 disabled={!patientName.trim() || saving}
                 style={{
-                  padding: '12px 30px',
-                  borderRadius: 8,
+                  padding: '14px 36px',
+                  borderRadius: 10,
                   border: 'none',
                   background: patientName.trim() && !saving ? 'var(--accent)' : '#9ca3af',
                   color: '#fff',
                   fontWeight: 800,
-                  fontSize: 15,
+                  fontSize: 17,
+                  minHeight: 48,
                   cursor: patientName.trim() && !saving ? 'pointer' : 'not-allowed',
                   transition: 'background .15s',
                 }}
               >
-                {saving ? 'Saving…' : 'Check In ✓'}
+                {saving ? 'Saving...' : 'Check In'}
               </button>
               <button
                 type="button"
                 onClick={handleNewPatient}
                 style={{
-                  padding: '12px 20px',
-                  borderRadius: 8,
+                  padding: '14px 24px',
+                  borderRadius: 10,
                   border: '1.5px solid #d1d5db',
                   background: 'transparent',
                   color: '#6b7280',
                   fontWeight: 600,
-                  fontSize: 14,
+                  fontSize: 15,
+                  minHeight: 48,
                   cursor: 'pointer',
                 }}
               >

@@ -300,7 +300,7 @@ export default function IntakeTab() {
               onFocus={() => setReferralOpen(true)}
               placeholder="Doctor or facility name…"
             />
-            {referralOpen && filteredDoctors.length > 0 && referralQuery.trim().length > 0 && (
+            {referralOpen && filteredDoctors.length > 0 && (
               <div style={{
                 position: 'absolute',
                 top: '100%',
@@ -342,11 +342,13 @@ export default function IntakeTab() {
 
           <div className="fld">
             <label>Duration (days)</label>
-            <input inputMode="numeric" value={durationDays} onChange={e => setDurationDays(e.target.value)} placeholder="e.g. 3" />
+            <input type="number" inputMode="numeric" min={0} step={1} value={durationDays} onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 3" />
           </div>
           <div className="fld">
             <label>Pain score (0–10)</label>
-            <input inputMode="numeric" value={painScore} onChange={e => setPainScore(e.target.value)} placeholder="0–10"
+            <input type="number" inputMode="numeric" min={0} max={10} step={1} value={painScore}
+              onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setPainScore(v && Number(v) > 10 ? '10' : v); }}
+              placeholder="0-10"
               className={painScore && Number(painScore) >= 8 ? 'danger' : painScore && Number(painScore) >= 5 ? 'warn' : ''} />
           </div>
         </div>
@@ -362,7 +364,7 @@ export default function IntakeTab() {
           {isPostOp && (
             <div className="inline-field">
               <span>Days since op:</span>
-              <input inputMode="numeric" value={postOpDays} onChange={e => setPostOpDays(e.target.value)} placeholder="days" />
+              <input type="number" inputMode="numeric" min={0} step={1} value={postOpDays} onChange={e => setPostOpDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="days" />
             </div>
           )}
         </div>
