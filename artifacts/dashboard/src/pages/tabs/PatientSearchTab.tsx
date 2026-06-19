@@ -4,6 +4,7 @@ import { useToast } from '@/components/ToastProvider';
 import { listPatients, listPatientsBySite, getLatestOpenEncounter, loadPMH, loadEncounterData, type PatientListRow } from '@/lib/db';
 import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { DEMO_MODE } from '@/context/AuthContext';
+import { fmtPhone } from '@/lib/fmt';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
 
@@ -382,7 +383,7 @@ export default function PatientSearchTab() {
                   </span>
                 )}
                 <span className="psearch-row-meta">
-                  {[p.age ? `Age ${p.age}` : ageFromDob(p.date_of_birth), p.sex, p.phone].filter(Boolean).join(' · ')}
+                  {[p.age ? `Age ${p.age}` : ageFromDob(p.date_of_birth), p.sex, fmtPhone(p.phone)].filter(Boolean).join(' · ')}
                 </span>
               </div>
               <div className="psearch-row-right">

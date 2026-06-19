@@ -6,6 +6,7 @@ import { staffAuthHeaders } from '@/lib/staff-auth';
 import { hasRole } from '@/lib/roles';
 import ConsultationRequestsView from './ConsultationRequestsView';
 import { errMsg } from '@/lib/err';
+import { fmtPhone } from '@/lib/fmt';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -60,17 +61,6 @@ function timeAgo(iso: string): string {
   return `${Math.floor(hours / 24)}d ago`;
 }
 
-function fmtPhone(raw: string | null | undefined): string {
-  if (!raw) return '';
-  const digits = raw.replace(/\D/g, '');
-  if (digits.length === 11 && digits.startsWith('1')) {
-    return `+1 ${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
-  }
-  if (digits.length === 10) {
-    return `+1 ${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
-  }
-  return raw;
-}
 
 function fmtSlot(iso: string): string {
   return new Date(iso).toLocaleString('en-LC', {

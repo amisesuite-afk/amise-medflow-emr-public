@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { errMsg } from '@/lib/err';
+import { fmtPhone } from '@/lib/fmt';
 
 interface ConsultRequest {
   id: string;
@@ -198,7 +199,7 @@ export default function ConsultationRequestsView() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11, color: '#9ca3af' }}>
                     <span>{timeAgo(req.created_at)}</span>
-                    {req.phone && <span style={{ marginLeft: 'auto' }}>{req.phone}</span>}
+                    {req.phone && <span style={{ marginLeft: 'auto' }}>{fmtPhone(req.phone)}</span>}
                   </div>
                 </button>
               );
@@ -228,7 +229,7 @@ export default function ConsultationRequestsView() {
           {/* Contact info grid */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 16 }}>
             {[
-              { label: 'Phone',      value: selected.phone },
+              { label: 'Phone',      value: fmtPhone(selected.phone) || null },
               { label: 'Email',      value: selected.email },
               { label: 'Visit type', value: VISIT_LABELS[selected.visit_type ?? ''] ?? selected.visit_type ?? 'General enquiry' },
               { label: 'Request ID', value: selected.id.slice(0, 8) },
