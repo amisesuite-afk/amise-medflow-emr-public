@@ -1,5 +1,14 @@
+import * as Sentry from "@sentry/node";
 import app from "./app";
 import { logger } from "./lib/logger";
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.MODE || 'dry_run',
+    tracesSampleRate: 0.2,
+  });
+}
 
 // Fail fast — missing secrets cause silent 500s that are hard to diagnose.
 const REQUIRED_ENV = [

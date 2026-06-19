@@ -11,164 +11,211 @@ jobs:
   migrate:
     runs-on: ubuntu-latest
     if: ${{ github.event.inputs.confirm == 'run' }}
+    env:
+      PROJECT_REF: nornhfzfrlmfzaqmrzzp
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: claude/session-setup-MGrDO
 
-      - name: Run clinical-records migration
+      - name: Run base schema
+        run: |
+          QUERY=$(jq -Rs . < supabase-schema.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 1: Clinical records"
         run: |
           QUERY=$(jq -Rs . < supabase-clinical-records-migration.sql)
-          curl -sf -X POST "https://api.supabase.com/v1/projects/nornhfzfrlmfzaqmrzzp/database/query" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ACCESS_TOKEN }}" \
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" \
-            | jq .
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run patient-portal migration
+      - name: "Migration 2: Patient portal"
         run: |
           QUERY=$(jq -Rs . < supabase-patient-portal-migration.sql)
-          curl -sf -X POST "https://api.supabase.com/v1/projects/nornhfzfrlmfzaqmrzzp/database/query" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_ACCESS_TOKEN }}" \
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" \
-            | jq .
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run document AI-extraction migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 3: APCQ questionnaires"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-document-ai-extraction-migration.sql
+          QUERY=$(jq -Rs . < supabase-apcq-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run APCQ (adaptive questionnaire) migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 4: Questionnaire token expiry"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-apcq-migration.sql
+          QUERY=$(jq -Rs . < supabase-questionnaire-token-expiry-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run questionnaire token expiry migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 5: EMR persistence"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-questionnaire-token-expiry-migration.sql
+          QUERY=$(jq -Rs . < supabase-emr-persistence-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run documents clinical-photo migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 6: Portal self-service"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-documents-clinical-photo-migration.sql
+          QUERY=$(jq -Rs . < supabase-portal-self-service-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run email document intake migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 7: AI adaptive intake"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-email-document-intake-migration.sql
+          QUERY=$(jq -Rs . < supabase-ai-adaptive-intake-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run referring doctors seed migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 8: Booking notifications"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-referring-doctors-seed-migration.sql
+          QUERY=$(jq -Rs . < supabase-booking-notifications-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run EMR persistence migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 9: Booking source"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-emr-persistence-migration.sql
+          QUERY=$(jq -Rs . < supabase-booking-source-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run patients quarter migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 10: Email document intake"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-patients-quarter-migration.sql
+          QUERY=$(jq -Rs . < supabase-email-document-intake-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run portal self-service migration (incl. patient-documents storage bucket)
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 11: Document AI extraction"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-portal-self-service-migration.sql
+          QUERY=$(jq -Rs . < supabase-document-ai-extraction-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run AI adaptive intake migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 12: Documents clinical photo"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-ai-adaptive-intake-migration.sql
+          QUERY=$(jq -Rs . < supabase-documents-clinical-photo-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run appointment requests email-optional migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 13: Vitals photo"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-appointment-requests-email-optional-migration.sql
+          QUERY=$(jq -Rs . < supabase-vitals-photo-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run booking notifications migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 14: Service role grants"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-booking-notifications-migration.sql
+          QUERY=$(jq -Rs . < supabase-service-role-grants-fix-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run booking source migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 15: Appointment email optional"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-booking-source-migration.sql
+          QUERY=$(jq -Rs . < supabase-appointment-requests-email-optional-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run booking waitlist migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 16: Referring doctors seed"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-booking-waitlist-migration.sql
+          QUERY=$(jq -Rs . < supabase-referring-doctors-seed-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run intake reminder migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 17: Confirmed appointments"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-intake-reminder-migration.sql
+          QUERY=$(jq -Rs . < supabase-confirmed-appointments-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run vitals photo capture migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 18: Intake reminder"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-vitals-photo-migration.sql
+          QUERY=$(jq -Rs . < supabase-intake-reminder-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
-      - name: Run service-role grants fix migration
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      - name: "Migration 19: Booking waitlist"
         run: |
-          supabase db execute \
-            --project-ref nornhfzfrlmfzaqmrzzp \
-            --file supabase-service-role-grants-fix-migration.sql
+          QUERY=$(jq -Rs . < supabase-booking-waitlist-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 20: Patients quarter"
+        run: |
+          QUERY=$(jq -Rs . < supabase-patients-quarter-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 21: Procedure prep drafts"
+        run: |
+          QUERY=$(jq -Rs . < supabase-procedure-prep-drafts-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 22: Post-visit followup"
+        run: |
+          QUERY=$(jq -Rs . < supabase-post-visit-followup-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 23: Appointment change requests"
+        run: |
+          QUERY=$(jq -Rs . < supabase-appointment-change-requests-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 24: User default site"
+        run: |
+          QUERY=$(jq -Rs . < supabase-user-default-site-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
 
       - name: Done
-        run: echo "Migrations completed successfully."
+        run: echo "All 24 migrations completed successfully."
