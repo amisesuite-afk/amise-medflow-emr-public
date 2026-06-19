@@ -54,7 +54,7 @@ class ErrorBoundary extends React.Component<
 }
 
 function AuthGuard() {
-  const { profile, loading } = useAuth();
+  const { profile, loading, sessionExpired } = useAuth();
 
   if (loading) {
     return (
@@ -68,7 +68,7 @@ function AuthGuard() {
     );
   }
 
-  if (!profile) return <LoginPage />;
+  if (!profile) return <LoginPage sessionExpired={sessionExpired} />;
 
   return (
     <AppProvider>
