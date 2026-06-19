@@ -1,5 +1,14 @@
 import { logger } from './logger.js';
 
+export function toE164(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith('+')) return `+${trimmed.slice(1).replace(/\D/g, '')}`;
+  const digits = trimmed.replace(/\D/g, '');
+  if (digits.length === 7) return `+1758${digits}`;
+  if (digits.length === 10) return `+1${digits}`;
+  return `+${digits}`;
+}
+
 export interface SmsArgs {
   to: string;
   body: string;

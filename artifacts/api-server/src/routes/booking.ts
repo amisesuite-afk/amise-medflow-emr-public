@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getSupabaseAdmin, audit, requireStaffAuth, requireCronSecret } from '../lib/supabase.js';
-import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions } from '../lib/sms.js';
+import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions, toE164 } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { google } from 'googleapis';
 import { logger, errStr } from '../lib/logger.js';
@@ -44,6 +44,7 @@ router.post('/api/booking/request', async (req, res) => {
 
   const VALID_SOURCES = ['web', 'whatsapp', 'manual', 'phone', 'email'];
   const resolvedSource: string = VALID_SOURCES.includes(source as string) ? (source as string) : 'web';
+  const normalizedPhone = patient_phone ? toE164(patient_phone as string) : null;
 
   try {
     const supa = getSupabaseAdmin();
@@ -52,7 +53,7 @@ router.post('/api/booking/request', async (req, res) => {
       .insert({
         patient_name,
         patient_email: patient_email || null,
-        patient_phone: patient_phone ?? null,
+        patient_phone: normalizedPhone,
         appointment_type,
         location: location ?? 'rodney_bay',
         preferred_slot: preferred_slot ?? null,
@@ -76,9 +77,9 @@ router.post('/api/booking/request', async (req, res) => {
 
     // Immediate patient acknowledgement SMS
     let patientAckSent = false;
-    if (patient_phone) {
+    if (normalizedPhone) {
       const body = smsBodyBookingAck({ firstName, appointmentType: appointment_type, phone: practicePhone });
-      const result = await sendSms({ to: patient_phone, body });
+      const result = await sendSms({ to: normalizedPhone, body });
       patientAckSent = result.action === 'sent';
     }
 
@@ -88,7 +89,7 @@ router.post('/api/booking/request', async (req, res) => {
         patientName: patient_name,
         appointmentType: appointment_type,
         preferredSlot: preferred_slot ?? null,
-        patientPhone: patient_phone ?? null,
+        patientPhone: normalizedPhone,
         bookingId,
       });
       await sendSms({ to: staffPhone, body });
