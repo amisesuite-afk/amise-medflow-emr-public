@@ -212,7 +212,7 @@ export default function BookingForm() {
     void fetch(`/api/booking/slots?type=${appointmentType}&track=${track}`)
       .then(r => r.json())
       .then((d: { slots: Slot[] }) => { setSlots(d.slots ?? []); setSlotsLoading(false); })
-      .catch(() => setSlotsLoading(false));
+      .catch(() => { setSlotsLoading(false); setError('Unable to load available slots. Please try again.'); });
   }, [step, appointmentType, track]);
 
   async function submit() {
