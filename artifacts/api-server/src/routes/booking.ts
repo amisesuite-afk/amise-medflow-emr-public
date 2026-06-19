@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getSupabaseAdmin, audit } from '../lib/supabase.js';
+import { getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { google } from 'googleapis';
@@ -326,8 +326,9 @@ router.post('/api/booking/lapse', async (req, res) => {
 
 // GET /api/booking/requests — list booking requests (staff/admin)
 router.get('/api/booking/requests', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const status  = (req.query.status  as string | undefined) ?? null;
-  const limit   = Math.min(parseInt((req.query.limit as string) ?? '100'), 200);
+  const limit   = Math.min(parseInt((req.query.limit as string) ?? '100', 10) || 100, 200);
 
   try {
     const supa = getSupabaseAdmin();

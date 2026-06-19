@@ -44,11 +44,11 @@ const allowedOrigins = [
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    // Accept Vercel preview/production URLs for this project (team and auto-generated)
+    // Vercel preview/production URLs for this project
     if (/^https:\/\/[\w-]+-amisesuite-afks-projects\.vercel\.app$/.test(origin)) return cb(null, true);
     if (/^https:\/\/amise[\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
-    // Vercel auto-generated preview slugs (e.g. rd-lemon-gamma-44.vercel.app)
-    if (/^https:\/\/[\w][\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
+    // Vercel auto-generated preview slugs (word-word-word-NN.vercel.app)
+    if (/^https:\/\/[a-z]{2,12}-[a-z]{2,12}-[a-z]{2,12}-\d{1,4}\.vercel\.app$/.test(origin)) return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,

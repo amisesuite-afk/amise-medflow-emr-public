@@ -7,7 +7,11 @@ const router = Router();
 
 function requireCronSecret(req: any, res: any): boolean {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return true;
+  if (!secret) {
+    logger.warn('[cron] CRON_SECRET not set — rejecting request');
+    res.status(503).json({ error: 'CRON_SECRET not configured' });
+    return false;
+  }
   const provided = req.headers['x-cron-secret'] || req.query?.secret;
   if (provided !== secret) {
     res.status(401).json({ error: 'Unauthorized' });
