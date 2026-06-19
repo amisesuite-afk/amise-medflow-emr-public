@@ -168,7 +168,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [selected, setSelected]           = useState<BookingRequest | null>(null);
 
   // Confirm form state
-  const [confirmDate, setConfirmDate]     = useState('');
+  const [confirmDate, setConfirmDate]     = useState(() => new Date().toISOString().slice(0, 10));
   const [confirmTime, setConfirmTime]     = useState('09:00');
   const [confirmLoc, setConfirmLoc]       = useState('rodney_bay');
   const [confirmNotes, setConfirmNotes]   = useState('');
@@ -196,7 +196,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [nrEmail, setNrEmail]                 = useState('');
   const [nrType, setNrType]                   = useState('consultation');
   const [nrLocation, setNrLocation]           = useState('rodney_bay');
-  const [nrSlot, setNrSlot]                   = useState('');
+  const [nrSlot, setNrSlot]                   = useState(() => new Date().toISOString().slice(0, 10));
   const [nrSource, setNrSource]               = useState<'manual' | 'phone' | 'email' | 'whatsapp'>('manual');
   const [nrReason, setNrReason]               = useState('');
   const [nrSubmitting, setNrSubmitting]       = useState(false);
