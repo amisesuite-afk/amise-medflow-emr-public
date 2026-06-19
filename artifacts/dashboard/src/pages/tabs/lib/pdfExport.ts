@@ -26,7 +26,25 @@ export function printDoc(html: string): void {
 
 // ── PDF blob via jsPDF + html2canvas ─────────────────────────────────────────
 
+const _isIOS =
+  typeof navigator !== 'undefined' && (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  );
+
 export async function saveBlobAsPDF(html: string, filename: string): Promise<void> {
+  // On iOS Safari, window.open must be called synchronously inside the user
+  // gesture (tap) or it gets blocked as a popup.  Open a placeholder window
+  // now, then navigate it to the blob URL once the PDF is ready.
+  const iosWin = _isIOS ? window.open('', '_blank') : null;
+  if (iosWin) {
+    iosWin.document.write(
+      '<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui;margin:0">' +
+      '<p style="font-size:16px;color:#555">Generating PDF&#8230;</p></body></html>'
+    );
+    iosWin.document.close();
+  }
+
   // jsPDF v4+ uses named export `jsPDF`; v2/v3 used default export — handle both.
   const [jsPDFModule, { default: html2canvas }] = await Promise.all([
     import('jspdf'),
@@ -86,9 +104,17 @@ export async function saveBlobAsPDF(html: string, filename: string): Promise<voi
       doc.addImage(imgData, 'PNG', 0, -(i * A4_H_MM), imgW, imgH);
     }
 
-    _triggerDownload(doc.output('blob') as Blob, filename);
+    const blob = doc.output('blob') as Blob;
+    if (iosWin) {
+      const url = URL.createObjectURL(blob);
+      iosWin.location.href = url;
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } else {
+      _triggerDownload(blob, filename);
+    }
   } catch (err) {
     console.error('[pdfExport] jsPDF render failed, falling back to print dialog', err);
+    if (iosWin) iosWin.close();
     printDoc(html);
   } finally {
     document.body.removeChild(iframe);
