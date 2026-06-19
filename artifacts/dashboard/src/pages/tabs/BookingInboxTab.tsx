@@ -210,7 +210,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       const url = filterStatus
         ? apiUrl(`/api/booking/requests?status=${filterStatus}`)
         : apiUrl('/api/booking/requests');
-      const r = await fetch(url);
+      const r = await fetch(url, { headers: await staffAuthHeaders() });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const d = await r.json() as { requests: BookingRequest[] };
       setRequests(d.requests ?? []);
@@ -244,7 +244,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       const confirmed_slot = `${confirmDate}T${confirmTime}:00`;
       const r = await fetch(apiUrl(`/api/booking/staff-confirm/${selected.id}`), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({
           confirmed_slot: new Date(confirmed_slot).toISOString(),
           notes: confirmNotes || null,
@@ -277,7 +277,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     try {
       const r = await fetch(apiUrl(`/api/booking/waitlist/${selected.id}`), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({ notes: confirmNotes || null }),
       });
       if (!r.ok) {
@@ -301,7 +301,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     try {
       const r = await fetch(apiUrl(`/api/booking/cancel/${selected.id}`), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({ reason: 'Cancelled by staff' }),
       });
       if (!r.ok) {

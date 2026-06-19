@@ -125,6 +125,7 @@ router.post('/api/booking/request', async (req, res) => {
 
 // POST /api/booking/staff-confirm/:id — staff approves and sets the confirmed slot
 router.post('/api/booking/staff-confirm/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { id } = req.params;
   const { confirmed_slot, notes } = req.body ?? {};
 
@@ -176,6 +177,7 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
 // POST /api/booking/waitlist/:id — staff parks a request that can't be slotted
 // immediately (e.g. fully-booked procedure list) without losing it in "pending"
 router.post('/api/booking/waitlist/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { id } = req.params;
   const { notes } = req.body ?? {};
 
@@ -260,6 +262,7 @@ router.post('/api/booking/patient-confirm/:id', async (req, res) => {
 // POST /api/booking/cancel/:id — staff cancels a request that hasn't been
 // patient-confirmed yet (pending, waitlisted, or staff_confirmed)
 router.post('/api/booking/cancel/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { id } = req.params;
   const { reason } = req.body ?? {};
 
@@ -290,12 +293,15 @@ router.post('/api/booking/cancel/:id', async (req, res) => {
 // POST /api/booking/lapse — cron-triggered: mark staff_confirmed requests with slot < 24hrs as lapsed
 router.post('/api/booking/lapse', async (req, res) => {
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const provided = req.headers['x-cron-secret'] ?? req.query?.secret;
-    if (provided !== secret) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
+  if (!secret) {
+    logger.warn('[booking/lapse] CRON_SECRET not set — rejecting');
+    res.status(503).json({ error: 'CRON_SECRET not configured' });
+    return;
+  }
+  const provided = req.headers['x-cron-secret'] ?? req.query?.secret;
+  if (provided !== secret) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
   }
 
   const cutoff = new Date(Date.now() + 24 * 60 * 60_000).toISOString();

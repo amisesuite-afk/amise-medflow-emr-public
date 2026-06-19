@@ -69,7 +69,7 @@ export default function ReceptionistView() {
 
   const fetchPendingCount = useCallback(async () => {
     try {
-      const r = await fetch(apiUrl('/api/booking/requests?status=pending'));
+      const r = await fetch(apiUrl('/api/booking/requests?status=pending'), { headers: await staffAuthHeaders() });
       if (r.ok) {
         const d = await r.json() as { requests: unknown[] };
         setPendingCount((d.requests ?? []).length);

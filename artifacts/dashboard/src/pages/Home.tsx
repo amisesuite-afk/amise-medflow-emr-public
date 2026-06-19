@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAppContext, Section, TopSection, type VitalsState } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
@@ -136,7 +137,7 @@ export default function HomePage() {
   const fetchPendingBookings = useCallback(async () => {
     if (!hasRole(userRole, 'admin')) return;
     try {
-      const r = await fetch(apiUrl('/api/booking/requests?status=pending'));
+      const r = await fetch(apiUrl('/api/booking/requests?status=pending'), { headers: await staffAuthHeaders() });
       if (r.ok) {
         const d = await r.json() as { requests: unknown[] };
         setPendingBookingCount((d.requests ?? []).length);
