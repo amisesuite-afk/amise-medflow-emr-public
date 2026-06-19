@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
+import { getApiOrigin } from '@/lib/api-origin';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -286,6 +287,52 @@ function NotificationPrefs() {
   );
 }
 
+// ─── API connectivity ────────────────────────────────────────────────────────
+
+function ApiStatus() {
+  const [status, setStatus] = useState<'checking' | 'ok' | 'error'>('checking');
+  const [latency, setLatency] = useState<number | null>(null);
+  const [err, setErr] = useState('');
+  const apiOrigin = getApiOrigin();
+
+  async function check() {
+    setStatus('checking'); setErr('');
+    const t0 = performance.now();
+    try {
+      const r = await fetch(`${apiOrigin}/api/healthz`);
+      const ms = Math.round(performance.now() - t0);
+      setLatency(ms);
+      if (r.ok) { setStatus('ok'); } else { setStatus('error'); setErr(`HTTP ${r.status}`); }
+    } catch (e) {
+      setLatency(null);
+      setStatus('error');
+      setErr(e instanceof Error ? e.message : 'Network error');
+    }
+  }
+
+  useEffect(() => { void check(); }, []);
+
+  const dot = status === 'ok' ? '#10b981' : status === 'error' ? '#ef4444' : '#f59e0b';
+  const label = status === 'ok' ? 'Connected' : status === 'error' ? 'Unreachable' : 'Checking…';
+
+  return (
+    <Section title="API Server">
+      <div style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ width: 10, height: 10, borderRadius: '50%', background: dot, flexShrink: 0 }} />
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: '#1e293b' }}>{label}</div>
+          <div style={{ fontSize: 11, color: '#64748b' }}>
+            {apiOrigin || '(same origin)'}
+            {latency !== null && ` · ${latency} ms`}
+          </div>
+          {err && <div style={{ fontSize: 11, color: '#ef4444', marginTop: 2 }}>{err}</div>}
+        </div>
+        <button style={btn()} onClick={() => void check()}>Test</button>
+      </div>
+    </Section>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function SettingsTab() {
@@ -308,6 +355,7 @@ export default function SettingsTab() {
         </div>
       </div>
 
+      <ApiStatus />
       <ProfileSection />
       <UserManagement />
       <NotificationPrefs />
