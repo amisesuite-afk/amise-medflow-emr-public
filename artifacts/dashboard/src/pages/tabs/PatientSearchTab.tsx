@@ -86,6 +86,7 @@ const SITE_FILTER_OPTIONS: { value: SiteFilter; label: string }[] = [
   { value: 'all',        label: 'All locations' },
   { value: 'rodney_bay', label: 'Rodney Bay' },
   { value: 'tapion',     label: 'Tapion' },
+  { value: 'castries',   label: 'Castries' },
 ];
 
 export default function PatientSearchTab() {
