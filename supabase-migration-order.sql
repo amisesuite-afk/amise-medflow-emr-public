@@ -60,25 +60,28 @@
 -- 16. Referring doctors seed data
 \i supabase-referring-doctors-seed-migration.sql
 
--- 17. Intake reminder: confirmed_appointments.intake_reminder_sent
+-- 17. Confirmed appointments table (prerequisite for intake-reminder)
+\i supabase-confirmed-appointments-migration.sql
+
+-- 18. Intake reminder: confirmed_appointments.intake_reminder_sent
 \i supabase-intake-reminder-migration.sql
 
--- 18. Booking waitlist: waitlist status support
+-- 19. Booking waitlist: waitlist status support
 \i supabase-booking-waitlist-migration.sql
 
--- 19. Patients quarter: patients.quarter
+-- 20. Patients quarter: patients.quarter
 \i supabase-patients-quarter-migration.sql
 
--- 20. Procedure prep drafts: procedure_prep_drafts table
+-- 21. Procedure prep drafts: procedure_prep_drafts table
 \i supabase-procedure-prep-drafts-migration.sql
 
--- 21. Post-visit followup: confirmed_appointments.post_visit_followup_sent
+-- 22. Post-visit followup: confirmed_appointments.post_visit_followup_sent
 \i supabase-post-visit-followup-migration.sql
 
--- 22. Appointment change requests: appointment_change_requests table
+-- 23. Appointment change requests: appointment_change_requests table
 \i supabase-appointment-change-requests-migration.sql
 
--- 23. User default site: user_profiles.default_site
+-- 24. User default site: user_profiles.default_site
 \i supabase-user-default-site-migration.sql
 
 -- ============================================================
@@ -95,7 +98,8 @@
 --   branching_rules, questionnaire_sessions, questionnaire_responses,
 --   intake_summaries, consent_records, patient_intake,
 --   consultation_requests, referring_providers,
---   procedure_prep_drafts, appointment_change_requests
+--   confirmed_appointments, procedure_prep_drafts,
+--   appointment_change_requests
 --
--- Total: 31 tables
+-- Total: 32 tables
 -- ============================================================
