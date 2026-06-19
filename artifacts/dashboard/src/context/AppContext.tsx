@@ -140,6 +140,16 @@ export interface ClinicalAttachment {
   dateAdded: string;
 }
 
+export interface ExamPhoto {
+  id: string;
+  dataUrl: string;
+  mimeType: string;
+  bodyRegion: string;
+  description: string;
+  distanceCm: string;
+  dateAdded: string;
+}
+
 export interface RadiologyRequest {
   id: string;
   modality: string;
@@ -183,6 +193,8 @@ interface CtxValue {
   address: string; setAddress(v: string): void;
   quarter: string; setQuarter(v: string): void;
   referredBy: string; setReferredBy(v: string): void;
+  patientPhoto: string; setPatientPhoto(v: string): void;
+  examPhotos: ExamPhoto[]; setExamPhotos(v: ExamPhoto[] | ((prev: ExamPhoto[]) => ExamPhoto[])): void;
 
   durationDays: string; setDurationDays(v: string): void;
   painScore: string; setPainScore(v: string): void;
@@ -324,6 +336,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [address, setAddress] = useState('');
   const [quarter, setQuarter] = useState('');
   const [referredBy, setReferredBy] = useState('');
+  const [patientPhoto, setPatientPhoto] = useState('');
+  const [examPhotos, setExamPhotos] = useState<ExamPhoto[]>([]);
 
   const [durationDays, setDurationDays] = useState('');
   const [painScore, setPainScore] = useState('');
@@ -459,6 +473,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.address === 'string') setAddress(d.address);
       if (typeof d.quarter === 'string') setQuarter(d.quarter);
       if (typeof d.referredBy === 'string') setReferredBy(d.referredBy);
+      if (typeof d.patientPhoto === 'string') setPatientPhoto(d.patientPhoto);
+      if (Array.isArray(d.examPhotos)) setExamPhotos(d.examPhotos as ExamPhoto[]);
       if (d.examFindings && typeof d.examFindings === 'object') setExamFindings(d.examFindings as Record<string, string[]>);
       if (d.examNotes && typeof d.examNotes === 'object') setExamNotes(d.examNotes as Record<string, string>);
       if (Array.isArray(d.orderedInvestigations)) setOrderedInvestigations(d.orderedInvestigations as string[]);
@@ -489,10 +505,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.referringPhysician === 'string') setReferringPhysician(d.referringPhysician);
       if (d.paneState && typeof d.paneState === 'object') setPaneState(d.paneState as PaneState);
       if (d.traumaData && typeof d.traumaData === 'object') setTraumaData(d.traumaData as TraumaData);
-      // Attachments stored separately (can be large base64)
+      // Large blobs stored separately (can be large base64)
       try {
         const ar = localStorage.getItem('amise-attachments-v1');
         if (ar) setAttachments(JSON.parse(ar) as ClinicalAttachment[]);
+      } catch { /* ignore */ }
+      try {
+        const pp = localStorage.getItem('amise-patient-photo-v1');
+        if (pp) setPatientPhoto(pp);
+      } catch { /* ignore */ }
+      try {
+        const ep = localStorage.getItem('amise-exam-photos-v1');
+        if (ep) setExamPhotos(JSON.parse(ep) as ExamPhoto[]);
       } catch { /* ignore */ }
     } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -523,8 +547,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
       paneState, traumaData,
     });
-    // Attachments saved separately — avoids 5 MB localStorage limit on the main key
+    // Large blobs saved separately — avoids 5 MB localStorage limit on the main key
     try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { /* ignore */ }
+    try { localStorage.setItem('amise-patient-photo-v1', patientPhoto); } catch { /* ignore */ }
+    try { localStorage.setItem('amise-exam-photos-v1', JSON.stringify(examPhotos)); } catch { /* ignore */ }
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
     isPostOp, postOpDays, pregnancyPossible,
@@ -539,7 +565,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
     radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
     encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
-    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData]);
+    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData,
+    patientPhoto, examPhotos]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -557,7 +584,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   function clearPatient() {
     setPatientId(null); setEncounterId(null);
-    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail('');
+    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto(''); setExamPhotos([]);
     setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
     setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
     setVitals({ systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '' });
@@ -585,6 +612,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
+      localStorage.removeItem('amise-patient-photo-v1');
+      localStorage.removeItem('amise-exam-photos-v1');
     } catch { /* ignore */ }
   }
 
@@ -680,6 +709,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     address, setAddress,
     quarter, setQuarter,
     referredBy, setReferredBy,
+    patientPhoto, setPatientPhoto,
+    examPhotos, setExamPhotos,
     durationDays, setDurationDays,
     painScore, setPainScore,
     symptoms, toggleSymptom,

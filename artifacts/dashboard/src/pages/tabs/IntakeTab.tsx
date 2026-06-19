@@ -4,6 +4,7 @@ import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PathwaySuggestions from '@/components/PathwaySuggestions';
 import SmartSymptomPicker from '@/components/SmartSymptomPicker';
+import PatientPhotoCapture from '@/components/PatientPhotoCapture';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { VitalSigns } from '@workspace/triage-engine';
@@ -194,7 +195,8 @@ export default function IntakeTab() {
     <div className="gap-y">
       {/* Patient demographics */}
       <CollapsibleCard title="Patient" badge={triageResult.missingCriticalFields.length > 0 ? `${triageResult.missingCriticalFields.length} missing` : undefined} badgeVariant={triageResult.missingCriticalFields.length > 0 ? 'warn' : 'default'}>
-        <div className="form-grid">
+        <PatientPhotoCapture />
+        <div className="form-grid" style={{ marginTop: 10 }}>
           <div className="fld">
             <label>Full name</label>
             <input value={patientName} onChange={e => setPatientName(e.target.value)} placeholder="e.g. Marie Joseph" />

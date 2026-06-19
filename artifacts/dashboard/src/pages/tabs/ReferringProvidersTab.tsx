@@ -358,7 +358,14 @@ export default function ReferringProvidersTab() {
         {loading ? (
           <div style={{ padding: 16, fontSize: 12, color: 'var(--muted, #64748b)' }}>Loading providers…</div>
         ) : error ? (
-          <div style={{ padding: 16, fontSize: 12, color: 'var(--urgent, #ef4444)' }}>{error}</div>
+          <div style={{ padding: 16, fontSize: 12 }}>
+            <div style={{ color: 'var(--urgent, #ef4444)', marginBottom: 6 }}>{error}</div>
+            <button
+              type="button"
+              onClick={() => void load()}
+              style={{ fontSize: 12, color: '#0d9488', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+            >↻ Retry</button>
+          </div>
         ) : providers.length === 0 ? (
           <div style={{ padding: 16, fontSize: 12, color: 'var(--muted, #64748b)' }}>No referring providers yet.</div>
         ) : (
