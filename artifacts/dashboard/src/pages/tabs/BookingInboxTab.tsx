@@ -372,7 +372,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           patient_name:     nrName.trim(),
-          patient_email:    nrEmail.trim() || `manual.${Date.now()}@noreply.amise.internal`,
+          patient_email:    nrEmail.trim() || null,
           patient_phone:    nrPhone.trim() || null,
           appointment_type: nrType,
           location:         nrLocation,
