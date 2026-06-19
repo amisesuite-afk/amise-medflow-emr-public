@@ -331,7 +331,7 @@ export default function DashboardTab() {
 
         {!calLoading && dates.length === 0 && (
           <div style={emptyStyle}>
-            No upcoming appointments in cache — start the API server to load schedule
+            No upcoming appointments found
           </div>
         )}
 
