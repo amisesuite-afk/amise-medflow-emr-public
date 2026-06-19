@@ -251,9 +251,15 @@ export default function BookingForm() {
     patientEmail.trim() === '' ||
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientEmail.trim());
 
+  const phoneDigits = patientPhone.replace(/\D/g, '');
+  const phoneValid =
+    patientPhone.trim() === '' ||
+    (phoneDigits.length >= 7 && phoneDigits.length <= 15);
+
   const canAdvanceDetails =
     patientName.trim().length >= 2 &&
-    patientPhone.trim().length >= 7 &&
+    phoneDigits.length >= 7 &&
+    phoneValid &&
     emailValid &&
     (track !== 'referral' || referralDoctor.trim().length >= 2);
 
@@ -468,13 +474,23 @@ export default function BookingForm() {
                     type="tel"
                     value={patientPhone}
                     onChange={e => setPhone(e.target.value)}
-                    placeholder="+1 758 …"
+                    placeholder="+1 758 XXX-XXXX"
                     autoComplete="tel"
-                    style={inputStyle}
+                    aria-invalid={patientPhone.trim() !== '' && !phoneValid ? true : undefined}
+                    style={{
+                      ...inputStyle,
+                      ...(patientPhone.trim() !== '' && !phoneValid ? { borderColor: '#ef4444' } : {}),
+                    }}
                   />
-                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 5 }}>
-                    We will send appointment confirmations to this number.
-                  </div>
+                  {patientPhone.trim() !== '' && !phoneValid ? (
+                    <div style={{ fontSize: 11, color: '#ef4444', marginTop: 5 }} role="alert">
+                      Please enter a valid phone number (e.g. +1 758 284-0557).
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 11, color: '#6b7280', marginTop: 5 }}>
+                      We will send appointment confirmations to this number.
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ marginBottom: 16 }}>
