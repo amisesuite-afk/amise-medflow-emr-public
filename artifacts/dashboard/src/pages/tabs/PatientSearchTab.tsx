@@ -164,12 +164,20 @@ export default function PatientSearchTab() {
     setSearching(true);
     try {
       if (!supabase) throw new Error('Supabase not configured — check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
-      const dbQuery = supabase
-        .from('patients')
-        .select('id, full_name, sex, phone, date_of_birth, created_at')
-        .ilike('full_name', `%${q}%`)
-        .order('created_at', { ascending: false })
-        .limit(30);
+      const isPhone = /^\+?\d[\d\s()-]{3,}$/.test(q.trim());
+      const dbQuery = isPhone
+        ? supabase
+            .from('patients')
+            .select('id, full_name, sex, phone, date_of_birth, created_at')
+            .ilike('phone', `%${q.replace(/[\s()-]/g, '')}%`)
+            .order('created_at', { ascending: false })
+            .limit(30)
+        : supabase
+            .from('patients')
+            .select('id, full_name, sex, phone, date_of_birth, created_at')
+            .ilike('full_name', `%${q}%`)
+            .order('created_at', { ascending: false })
+            .limit(30);
 
       const { data, error: err } = await dbQuery;
       if (err) throw err;
@@ -342,7 +350,7 @@ export default function PatientSearchTab() {
           className="psearch-input"
           value={query}
           onChange={e => handleChange(e.target.value)}
-          placeholder="Filter by name…"
+          placeholder="Search by name or phone…"
           autoFocus
         />
         {(searching || loadingAll) && <span className="psearch-spinner">⟳</span>}

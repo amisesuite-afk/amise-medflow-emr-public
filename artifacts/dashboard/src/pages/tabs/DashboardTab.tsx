@@ -195,6 +195,27 @@ export default function DashboardTab() {
               <AcuityBadge acuity={r.acuity} score={r.score} />
               <span style={{ fontSize: 12, color: 'var(--muted)' }}>{ACTION_LABELS[r.recommendedAction] ?? r.recommendedAction}</span>
             </div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+              {[
+                { label: 'Intake', top: 'intake' as const, sec: 'intake' as const },
+                { label: 'Consult', top: 'consultation' as const, sec: 'triage' as const },
+                { label: 'Exam', top: 'consultation' as const, sec: 'examination' as const },
+                { label: 'Summary', top: 'finaldoc' as const, sec: 'intake' as const },
+              ].map(a => (
+                <button
+                  key={a.label}
+                  type="button"
+                  onClick={() => { ctx.setTopSection(a.top); ctx.setActiveSection(a.sec); }}
+                  style={{
+                    padding: '4px 10px', borderRadius: 5, fontSize: 11, fontWeight: 600,
+                    border: '1px solid #e2e8f0', background: '#f8fafc', color: '#334155',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {a.label} →
+                </button>
+              ))}
+            </div>
           </div></div>
         )}
       </div>
