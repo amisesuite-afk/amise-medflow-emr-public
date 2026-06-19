@@ -125,6 +125,7 @@ export default function HomePage() {
     symptoms,
     vitals,
     encounterMode, setEncounterMode,
+    patientPhoto,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -178,9 +179,18 @@ export default function HomePage() {
           ? <span className="proto-pill" style={{ background: 'rgba(251,191,36,.15)', border: '1px solid rgba(251,191,36,.35)', color: '#fbbf24' }}>⚗ DEMO MODE — local trial only</span>
           : null
         }
-        <div className="header-patient">
-          <span className="header-name">{patientLabel}</span>
-          {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
+        <div className="header-patient" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {patientPhoto && (
+            <img
+              src={patientPhoto}
+              alt=""
+              style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #e2e8f0' }}
+            />
+          )}
+          <div>
+            <span className="header-name">{patientLabel}</span>
+            {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
+          </div>
         </div>
         <div className="header-right">
           {/* Encounter mode pill — outpatient / inpatient */}
@@ -304,6 +314,43 @@ export default function HomePage() {
             </div>
           );
         })()}
+        {/* Consultation horizontal tab strip — reduces sidebar dependency */}
+        {topSection === 'consultation' && (
+          <div className="consult-tabstrip">
+            {([
+              { id: 'triage', label: 'Triage' },
+              { id: 'pmh', label: 'PMH' },
+              { id: 'surgical', label: 'Surgical' },
+              { id: 'medications', label: 'Meds' },
+              { id: 'allergies', label: 'Allergies' },
+              { id: 'toxic', label: 'Habits' },
+              { id: 'scales', label: 'Scales' },
+              { id: 'ros', label: 'ROS' },
+              ...(hasRole(userRole, 'nurse') ? [
+                { id: 'examination', label: 'Exam' },
+                { id: 'investigations', label: 'Labs' },
+                { id: 'radiology', label: 'Radiology' },
+                { id: 'attachments', label: 'Attach' },
+              ] : []),
+              ...(hasRole(userRole, 'doctor') ? [
+                { id: 'assessment', label: 'Assess' },
+                { id: 'plan', label: 'Plan' },
+              ] : []),
+              { id: 'progress', label: 'Notes' },
+              { id: 'monitoring', label: 'Monitor' },
+            ] as { id: Section; label: string }[]).map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
+                onClick={() => setActiveSection(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Clinical sections */}
         {topSection === 'intake'        && <IntakeTab />}
         {topSection === 'consultation'  && activeSection === 'triage'      && <TriageTab />}

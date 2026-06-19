@@ -174,7 +174,15 @@ export default function DashboardTab() {
         {!ctx.patientName.trim() ? (
           <div style={emptyStyle}>No patient loaded — start with New Patient in Intake</div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            {ctx.patientPhoto && (
+              <img
+                src={ctx.patientPhoto}
+                alt=""
+                style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover', border: '1px solid #e2e8f0', flexShrink: 0 }}
+              />
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
             <div style={{ fontSize: 16, fontWeight: 800, color: '#1a2e2b' }}>{ctx.patientName}</div>
             {(ctx.age || ctx.sex !== 'unknown') && (
               <div style={{ fontSize: 12, color: 'var(--muted)' }}>
@@ -187,7 +195,7 @@ export default function DashboardTab() {
               <AcuityBadge acuity={r.acuity} score={r.score} />
               <span style={{ fontSize: 12, color: 'var(--muted)' }}>{ACTION_LABELS[r.recommendedAction] ?? r.recommendedAction}</span>
             </div>
-          </div>
+          </div></div>
         )}
       </div>
 

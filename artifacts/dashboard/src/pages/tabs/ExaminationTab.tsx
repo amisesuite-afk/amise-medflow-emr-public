@@ -1,6 +1,7 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import AnatomicalSketch from '@/components/AnatomicalSketch';
+import ExamPhotoPanel from '@/components/ExamPhotoPanel';
 
 interface ExamSystem {
   key: string;
@@ -86,7 +87,7 @@ const EXAM_SYSTEMS: ExamSystem[] = [
 
 export default function ExaminationTab() {
   const ctx = useAppContext();
-  const { examFindings, setExamFindings, examNotes, setExamNotes, anatomicalFindings } = ctx;
+  const { examFindings, setExamFindings, examNotes, setExamNotes, anatomicalFindings, examPhotos } = ctx;
 
   const legacySetterMap: Record<string, (v: string) => void> = {
     general: ctx.setExamGeneral,
@@ -133,6 +134,13 @@ export default function ExaminationTab() {
     <div className="gap-y">
       <CollapsibleCard title="Anatomical findings" badge={anatomicalFindings.length > 0 ? `${anatomicalFindings.length} zones` : undefined}>
         <AnatomicalSketch />
+      </CollapsibleCard>
+
+      <CollapsibleCard
+        title="Clinical photographs"
+        badge={examPhotos.length > 0 ? `${examPhotos.length} / 5` : undefined}
+      >
+        <ExamPhotoPanel />
       </CollapsibleCard>
 
       <CollapsibleCard

@@ -43,8 +43,9 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, cb) => {
-    // Allow server-to-server (no origin) and whitelisted origins
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+    // Accept Vercel preview/production URLs for this project
+    if (/^https:\/\/[\w-]+-amisesuite-afks-projects\.vercel\.app$/.test(origin)) return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,

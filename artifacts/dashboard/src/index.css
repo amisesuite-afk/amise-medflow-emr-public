@@ -1700,3 +1700,39 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   .tps-footer { margin-top: 24px; padding-top: 8px; border-top: 1px solid #d1d5db; font-size: 8pt; color: #6b7280; }
   .no-print { display: none !important; }
 }
+
+/* ── Consultation horizontal tab strip ───────────────────────────── */
+.consult-tabstrip {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  padding: 0 0 10px;
+  margin: 0 0 4px;
+  border-bottom: 1px solid #e2e8f0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.consult-tabstrip::-webkit-scrollbar { height: 3px; }
+.consult-tabstrip::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.ct-tab {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.12s;
+}
+.ct-tab:hover { background: #f1f5f9; color: #334155; }
+.ct-tab--active {
+  background: #0d9488;
+  color: #fff;
+}
+.ct-tab--active:hover {
+  background: #0f766e;
+  color: #fff;
+}

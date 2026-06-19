@@ -267,6 +267,16 @@ function buildDocument(ctx: Ctx): string {
   if (ctx.cptCodes.length > 0) lines.push(`\nCPT:  ${ctx.cptCodes.join('  |  ')}`);
   if (ctx.procedures) { lines.push(''); lines.push(`Procedures: ${ctx.procedures}`); }
 
+  // Exam photos
+  if (ctx.examPhotos.length > 0) {
+    lines.push(sec('CLINICAL PHOTOGRAPHS'));
+    ctx.examPhotos.forEach((p, i) => {
+      lines.push(`  [${i + 1}] ${p.bodyRegion}  (${p.distanceCm} cm)`);
+      if (p.description) lines.push(`      ${p.description}`);
+      lines.push(`      ${new Date(p.dateAdded).toLocaleString('en-GB', { timeZone: 'America/St_Lucia', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`);
+    });
+  }
+
   // Attachments
   if (att.length > 0) {
     lines.push(sec('CLINICAL IMAGES / ATTACHMENTS'));
