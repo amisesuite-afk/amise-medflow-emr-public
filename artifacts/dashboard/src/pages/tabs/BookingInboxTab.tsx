@@ -161,9 +161,21 @@ export interface BookingInboxTabProps {
   filterStatus?: string;
 }
 
+function useNarrow(bp = 768) {
+  const [narrow, setNarrow] = useState(() => window.innerWidth < bp);
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${bp - 1}px)`);
+    const h = (e: MediaQueryListEvent) => setNarrow(e.matches);
+    mq.addEventListener('change', h);
+    return () => mq.removeEventListener('change', h);
+  }, [bp]);
+  return narrow;
+}
+
 export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps = {}) {
   const { profile } = useAuth();
   const { currentSite } = useAppContext();
+  const narrow = useNarrow();
   const userRole = profile?.role ?? 'front_desk';
   const isAdmin = hasRole(userRole, 'admin');
 
@@ -452,12 +464,12 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
 
       {/* ── Left: booking list ─────────────────────────────────────────────── */}
       <div style={{
-        width: (selected || showNewRequest) ? 340 : '100%',
-        maxWidth: (selected || showNewRequest) ? 340 : undefined,
+        width: (selected || showNewRequest) ? (narrow ? '100%' : 340) : '100%',
+        maxWidth: (selected || showNewRequest) ? (narrow ? undefined : 340) : undefined,
         flexShrink: 0,
-        borderRight: (selected || showNewRequest) ? '1px solid #e5e7eb' : 'none',
+        borderRight: (selected || showNewRequest) && !narrow ? '1px solid #e5e7eb' : 'none',
         overflowY: 'auto',
-        display: 'flex',
+        display: narrow && (selected || showNewRequest) ? 'none' : 'flex',
         flexDirection: 'column',
       }}>
 
@@ -594,6 +606,14 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       {/* ── Right: manual entry panel ────────────────────────────────────── */}
       {showNewRequest && !selected && (
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', minWidth: 0 }}>
+          {narrow && (
+            <button
+              onClick={() => setShowNewRequest(false)}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 0', marginBottom: 8, background: 'none', border: 'none', color: '#0d9488', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+            >
+              ← Back to list
+            </button>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
             <div style={{ fontSize: 16, fontWeight: 800, color: '#111827', flex: 1 }}>New Booking Request</div>
             <button
@@ -756,6 +776,14 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', minWidth: 0 }}>
 
           {/* Header */}
+          {narrow && (
+            <button
+              onClick={() => setSelected(null)}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 0', marginBottom: 8, background: 'none', border: 'none', color: '#0d9488', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+            >
+              ← Back to list
+            </button>
+          )}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 20 }}>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 18, fontWeight: 800, color: '#111827', marginBottom: 4 }}>{selected.patient_name}</div>
