@@ -505,6 +505,7 @@ router.post('/api/patient/documents/register', async (req, res) => {
 // coming in for an encounter) and to retry a failed pass. Fire-and-forget,
 // guarded against double-processing inside extractDocumentInsights itself.
 router.post('/api/patient/documents/:id/extract', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { id } = req.params;
   res.json({ status: 'queued' });
   void extractDocumentInsights(id);
@@ -644,6 +645,7 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
 // first. Optional ?needs_review=true narrows to flagged-and-unacknowledged
 // documents — the set the dashboard alert badge counts.
 router.get('/api/patient/documents-review', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const needsReview = req.query.needs_review === 'true';
   const status      = req.query.status as string | undefined;
   const limit       = Math.min(parseInt((req.query.limit as string) ?? '100'), 200);
@@ -685,6 +687,7 @@ router.get('/api/patient/documents-review', async (req, res) => {
 // is the human-in-the-loop gate: nothing from ai_extracted_data/ai_flags is
 // ever folded into the clinical record automatically.
 router.patch('/api/patient/documents-review/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { id } = req.params;
   const { staff_user_id } = (req.body ?? {}) as { staff_user_id?: string };
 
@@ -708,6 +711,7 @@ router.patch('/api/patient/documents-review/:id', async (req, res) => {
 // ── GET /api/patient/consultation-requests ────────────────────────────────────
 // Staff — list all consultation requests (from the public "request a consult" form).
 router.get('/api/patient/consultation-requests', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const status  = req.query.status as string | undefined;
   const limit   = Math.min(parseInt((req.query.limit as string) ?? '100'), 200);
 
@@ -732,6 +736,7 @@ router.get('/api/patient/consultation-requests', async (req, res) => {
 // ── PATCH /api/patient/consultation-requests/:id ──────────────────────────────
 // Staff — update status and/or staff_notes on a consultation request.
 router.patch('/api/patient/consultation-requests/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { id } = req.params;
   const { status, staff_notes } = (req.body ?? {}) as { status?: string; staff_notes?: string };
 

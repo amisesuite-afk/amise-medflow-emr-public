@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 
 interface ConsultRequest {
   id: string;
@@ -63,7 +64,7 @@ export default function ConsultationRequestsView() {
 
   const load = useCallback(async () => {
     try {
-      const r = await fetch(apiUrl('/api/patient/consultation-requests'));
+      const r = await fetch(apiUrl('/api/patient/consultation-requests'), { headers: await staffAuthHeaders() });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const d = await r.json() as { requests: ConsultRequest[] };
       setRequests(d.requests ?? []);
@@ -94,7 +95,7 @@ export default function ConsultationRequestsView() {
     try {
       const r = await fetch(apiUrl(`/api/patient/consultation-requests/${id}`), {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify(body),
       });
       if (!r.ok) {

@@ -9,6 +9,11 @@ import { logger } from '../lib/logger.js';
 const router = Router();
 
 router.post('/api/intake/run', async (req, res) => {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) { res.status(503).json({ error: 'CRON_SECRET not configured' }); return; }
+  const provided = req.headers['x-cron-secret'] || req.query?.secret;
+  if (provided !== secret) { res.status(401).json({ error: 'Unauthorized' }); return; }
+
   const mode = (req.body?.mode as string) || process.env.MODE || 'dry_run';
   const maxMessages = Number(req.body?.max_messages ?? 10);
 
