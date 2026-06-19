@@ -3,6 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { AMISE_LOGO_SVG } from './lib/docTemplate';
+import { saveBlobAsPDF } from './lib/pdfExport';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -561,11 +562,21 @@ function DirectExportPanel() {
     return buildDirectSummaryHtml(ctx, meta);
   }
 
-  function filename(): string {
+  function fileSlug(): { prefix: string; slug: string; date: string } {
     const slug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const date = new Date().toISOString().slice(0, 10);
     const prefix = docType === 'referral' ? 'referral' : docType === 'discharge' ? 'discharge' : 'clinical-note';
+    return { prefix, slug, date };
+  }
+
+  function filename(): string {
+    const { prefix, slug, date } = fileSlug();
     return `${prefix}-${slug}-${date}.html`;
+  }
+
+  function pdfFilename(): string {
+    const { prefix, slug, date } = fileSlug();
+    return `${prefix}-${slug}-${date}.pdf`;
   }
 
   return (
@@ -624,12 +635,17 @@ function DirectExportPanel() {
         <button type="button"
           onClick={() => printHtml(getHtml())}
           style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #1a5276', background: '#1a5276', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
-          🖨 Print / Save PDF
+          🖨 Print
+        </button>
+        <button type="button"
+          onClick={() => void saveBlobAsPDF(getHtml(), pdfFilename())}
+          style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #0b8278', background: '#0b8278', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
+          ↓ PDF
         </button>
         <button type="button"
           onClick={() => downloadHtml(getHtml(), filename())}
           style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #374151', background: '#f9fafb', color: '#374151', fontSize: 12, cursor: 'pointer' }}>
-          ↓ Download HTML
+          ↓ HTML
         </button>
       </div>
 
@@ -767,6 +783,13 @@ export default function SummaryTab() {
     printHtml(buildPrintHtml(document, makePrintMeta()));
   }
 
+  function downloadPdf() {
+    if (!document) return;
+    const patientSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    void saveBlobAsPDF(buildPrintHtml(document, makePrintMeta()), `clinical-summary-${patientSlug}-${dateStr}.pdf`);
+  }
+
   function downloadDoc() {
     if (!document) return;
     const patientSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
@@ -830,8 +853,8 @@ export default function SummaryTab() {
                 <button className="summary-btn summary-btn--ghost" onClick={() => void copy()}>
                   {copied ? '✓ Copied' : '⎘ Copy'}
                 </button>
-                <button className="summary-btn summary-btn--ghost" onClick={downloadDoc}>
-                  ↓ Download
+                <button className="summary-btn summary-btn--ghost" onClick={downloadPdf}>
+                  ↓ PDF
                 </button>
                 <button className="summary-btn summary-btn--ghost" onClick={printDoc}>
                   🖨 Print
