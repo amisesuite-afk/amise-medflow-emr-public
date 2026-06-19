@@ -62,14 +62,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     supabase.auth.getSession().then(({ data: { session: s }, error }) => {
       if (error) console.error('[auth] getSession error:', serializeError(error));
-      else console.log('[auth] getSession OK, session:', s ? 'active' : 'none');
       setSession(s);
       if (s) fetchProfile(s.user.id, s.user.email ?? null);
       else setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((evt, s) => {
-      console.log('[auth] onAuthStateChange event:', evt, 'session:', s ? 'active' : 'none');
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_evt, s) => {
       setSession(s);
       if (s) fetchProfile(s.user.id, s.user.email ?? null);
       else { setProfile(null); setProfileError(null); setLoading(false); }
@@ -80,7 +78,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function fetchProfile(userId: string, email: string | null) {
     if (!supabase) return;
     setProfileError(null);
-    console.log('[auth] fetchProfile start, userId:', userId);
 
     try {
       const { data, error } = await supabase
@@ -112,7 +109,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setProfileError(`Profile create failed — ${detail}`);
           setProfile({ id: userId, full_name: email, role: 'front_desk', email });
         } else {
-          console.log('[auth] profile created:', created);
           setProfile(
             created
               ? { id: created.id, full_name: created.full_name ?? email, role: created.role as UserRole, email, default_site: (created.default_site as SiteCode | null) ?? undefined }
@@ -120,7 +116,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           );
         }
       } else {
-        console.log('[auth] profile loaded:', data.role, 'default_site:', data.default_site);
         setProfile({ id: data.id, full_name: data.full_name ?? email, role: data.role as UserRole, email, default_site: (data.default_site as SiteCode | null) ?? undefined });
       }
     } catch (e: unknown) {
@@ -147,7 +142,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       return { error: 'Supabase client not initialised — check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.' };
     }
-    console.log('[auth] signIn attempt for:', email);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
@@ -155,7 +149,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error('[auth] signInWithPassword error:', detail, serializeError(error));
         return { error: friendlyError(error.message), detail };
       }
-      console.log('[auth] signInWithPassword OK, user:', data.user?.id);
       return { error: null };
     } catch (e: unknown) {
       const ser = serializeError(e);

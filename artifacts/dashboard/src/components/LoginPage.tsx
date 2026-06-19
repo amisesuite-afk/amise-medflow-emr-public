@@ -41,7 +41,6 @@ export default function LoginPage() {
   async function runNetworkTest() {
     setTesting(true);
     const result = await checkSupabaseReachable();
-    console.log('[diag] reachability test:', result);
     setReachable(result);
     setTesting(false);
   }
