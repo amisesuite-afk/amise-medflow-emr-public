@@ -55,7 +55,7 @@ export interface SessionState {
   estimatedRemaining: number;
 }
 
-const MAX_QUESTIONS = 12;
+const MAX_QUESTIONS = 18;
 const MIN_SUFFICIENT_RESPONSES = 3;
 
 export const QUESTION_BANK: Record<string, Question> = {
@@ -67,16 +67,16 @@ export const QUESTION_BANK: Record<string, Question> = {
     options: [
       { value: 'abdominal_pain', label: 'Abdominal pain', triggersKeys: ['pain_location', 'pain_severity', 'pain_character', 'pain_radiation', 'peritoneal_signs', 'nausea_vomiting', 'last_bowel_movement', 'associated_fever'] },
       { value: 'rectal_bleeding', label: 'Rectal bleeding', triggersKeys: ['rectal_bleeding_character', 'rectal_bleeding_volume', 'bowel_habit_change', 'colonoscopy_history', 'family_history_cancer', 'alarm_features'] },
-      { value: 'blood_in_vomit_stool', label: 'Blood in vomit/stool', triggersKeys: ['hematemesis_volume', 'rectal_bleeding_character', 'alarm_features'], isRedFlag: true, urgencyIfSelected: 'urgent' },
-      { value: 'difficulty_swallowing', label: 'Difficulty swallowing', triggersKeys: ['dysphagia_severity', 'odynophagia', 'alarm_features'], isRedFlag: true, urgencyIfSelected: 'priority' },
-      { value: 'acid_reflux', label: 'Acid reflux/heartburn', triggersKeys: ['gerd_frequency', 'alarm_features', 'odynophagia'] },
+      { value: 'blood_in_vomit_stool', label: 'Blood in vomit or stool (haematemesis/melaena)', triggersKeys: ['hematemesis_volume', 'rectal_bleeding_character', 'alarm_features'], isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'difficulty_swallowing', label: 'Difficulty swallowing (dysphagia)', triggersKeys: ['dysphagia_severity', 'odynophagia', 'alarm_features'], isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'acid_reflux', label: 'Acid reflux/heartburn (GERD)', triggersKeys: ['gerd_frequency', 'alarm_features', 'odynophagia'] },
       { value: 'lump_or_mass', label: 'Lump or mass', triggersKeys: ['breast_lump_duration', 'breast_lump_change', 'skin_changes'] },
       { value: 'breast_concern', label: 'Breast concern', triggersKeys: ['breast_lump_duration', 'breast_lump_change', 'nipple_discharge', 'skin_changes', 'breast_pain', 'mammogram_history', 'family_history_breast'] },
       { value: 'change_in_bowel_habit', label: 'Change in bowel habit', triggersKeys: ['bowel_habit_change', 'rectal_bleeding_character', 'colonoscopy_history', 'family_history_cancer', 'alarm_features'] },
       { value: 'nausea_vomiting', label: 'Nausea/vomiting', triggersKeys: ['nausea_vomiting', 'associated_fever', 'last_bowel_movement'] },
       { value: 'weight_loss', label: 'Weight loss (unintentional)', triggersKeys: ['alarm_features'], isRedFlag: true, urgencyIfSelected: 'priority' },
       { value: 'post_op_concern', label: 'Post-operative concern', triggersKeys: ['surgery_date', 'surgery_type', 'wound_concerns', 'wound_concerns_severity', 'fever_post_op', 'diet_tolerance'] },
-      { value: 'jaundice', label: 'Jaundice/yellowing', triggersKeys: ['associated_fever', 'alarm_features', 'dysphagia_severity'], isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'jaundice', label: 'Yellowing of skin or eyes (jaundice)', triggersKeys: ['associated_fever', 'alarm_features', 'dysphagia_severity'], isRedFlag: true, urgencyIfSelected: 'urgent' },
       { value: 'general_screening', label: 'General check-up/screening', triggersKeys: ['screening_reason', 'last_checkup'] },
     ],
   },
@@ -189,32 +189,32 @@ export const QUESTION_BANK: Record<string, Question> = {
 
   dysphagia_severity: {
     key: 'dysphagia_severity',
-    text: 'Which best describes your difficulty swallowing?',
+    text: 'Which best describes your difficulty or inability to swallow (dysphagia)?',
     type: 'single_choice',
     isRedFlagScreen: true,
     options: [
       { value: 'solids_only', label: 'Solids only' },
       { value: 'solids_and_liquids', label: 'Solids and liquids' },
       { value: 'liquids_only', label: 'Liquids only now', isRedFlag: true, urgencyIfSelected: 'urgent' },
-      { value: 'saliva_only', label: 'Saliva only (cannot swallow anything)', isRedFlag: true, urgencyIfSelected: 'emergency' },
+      { value: 'saliva_only', label: 'Cannot swallow anything (saliva only)', isRedFlag: true, urgencyIfSelected: 'emergency' },
     ],
   },
 
   odynophagia: {
     key: 'odynophagia',
-    text: 'Do you experience pain when swallowing?',
+    text: 'Do you experience pain when swallowing (odynophagia)?',
     type: 'boolean',
   },
 
   hematemesis_volume: {
     key: 'hematemesis_volume',
-    text: 'How much blood have you vomited or seen?',
+    text: 'How much blood have you vomited (haematemesis)?',
     type: 'single_choice',
     options: [
       { value: 'streaks', label: 'Streaks in spit' },
-      { value: 'tablespoon', label: 'Tablespoon amount' },
-      { value: 'cup_or_more', label: 'Cup or more', isRedFlag: true, urgencyIfSelected: 'urgent' },
-      { value: 'coffee_ground', label: 'Coffee-ground vomit' },
+      { value: 'tablespoon', label: 'About a tablespoon' },
+      { value: 'cup_or_more', label: 'A cup or more', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'coffee_ground', label: 'Dark coffee-ground vomit' },
     ],
   },
 
@@ -232,13 +232,13 @@ export const QUESTION_BANK: Record<string, Question> = {
 
   alarm_features: {
     key: 'alarm_features',
-    text: 'Do you have any of the following? (Select all that apply)',
+    text: 'Do you have any of the following warning signs? (Select all that apply)',
     type: 'multi_choice',
     isRedFlagScreen: true,
     options: [
-      { value: 'weight_loss', label: 'Unintentional weight loss', isRedFlag: true, urgencyIfSelected: 'priority' },
-      { value: 'anaemia', label: 'Anaemia/feeling pale or unusually tired', isRedFlag: true, urgencyIfSelected: 'priority' },
-      { value: 'dysphagia', label: 'Difficulty swallowing', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'weight_loss', label: 'Unexplained weight loss', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'anaemia', label: 'Feeling unusually pale or tired (anaemia)', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'dysphagia', label: 'Difficulty swallowing (dysphagia)', isRedFlag: true, urgencyIfSelected: 'priority' },
       { value: 'night_sweats', label: 'Night sweats', isRedFlag: true, urgencyIfSelected: 'priority' },
       { value: 'loss_of_appetite', label: 'Loss of appetite', isRedFlag: true, urgencyIfSelected: 'priority' },
     ],
@@ -246,12 +246,12 @@ export const QUESTION_BANK: Record<string, Question> = {
 
   rectal_bleeding_character: {
     key: 'rectal_bleeding_character',
-    text: 'How would you describe the rectal bleeding?',
+    text: 'How would you describe the bleeding from your back passage (rectal bleeding)?',
     type: 'single_choice',
     options: [
       { value: 'fresh_on_paper', label: 'Fresh red blood on toilet paper' },
       { value: 'fresh_mixed', label: 'Fresh blood mixed with stool' },
-      { value: 'dark_tarry', label: 'Dark tarry stool', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'dark_tarry', label: 'Dark tarry stool (melaena)', isRedFlag: true, urgencyIfSelected: 'urgent' },
       { value: 'mucus_blood', label: 'Mucus with blood' },
     ],
   },
@@ -496,6 +496,72 @@ export const QUESTION_BANK: Record<string, Question> = {
       { value: 'never', label: 'Never' },
     ],
   },
+  // --- Review of Systems (ROS) ---
+  ros_constitutional: {
+    key: 'ros_constitutional',
+    text: 'In the past 2 weeks, have you experienced any of the following general symptoms? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'fatigue', label: 'Unusual tiredness or fatigue' },
+      { value: 'fever', label: 'Fever or chills', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'weight_change', label: 'Unexplained weight loss or gain', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'night_sweats', label: 'Night sweats', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  ros_gastrointestinal: {
+    key: 'ros_gastrointestinal',
+    text: 'Have you had any of these stomach or bowel symptoms recently? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'nausea', label: 'Nausea or vomiting' },
+      { value: 'heartburn', label: 'Heartburn or acid reflux (GERD)' },
+      { value: 'bloating', label: 'Bloating or feeling full quickly' },
+      { value: 'constipation', label: 'Constipation' },
+      { value: 'diarrhoea', label: 'Diarrhoea' },
+      { value: 'blood_in_stool', label: 'Blood in stool', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  ros_cardiovascular: {
+    key: 'ros_cardiovascular',
+    text: 'Have you had any of these heart or circulation symptoms? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'chest_pain', label: 'Chest pain or tightness', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'palpitations', label: 'Palpitations (heart racing or skipping)' },
+      { value: 'shortness_of_breath', label: 'Shortness of breath (dyspnoea)', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'leg_swelling', label: 'Swelling in legs or ankles (oedema)' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  ros_respiratory: {
+    key: 'ros_respiratory',
+    text: 'Have you had any breathing or lung symptoms? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'cough', label: 'Persistent cough' },
+      { value: 'wheezing', label: 'Wheezing' },
+      { value: 'coughing_blood', label: 'Coughing up blood (haemoptysis)', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  ros_urinary: {
+    key: 'ros_urinary',
+    text: 'Have you had any urinary symptoms? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'burning', label: 'Burning or pain when passing urine (dysuria)' },
+      { value: 'frequency', label: 'Going more often than usual' },
+      { value: 'blood_in_urine', label: 'Blood in urine (haematuria)', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'difficulty', label: 'Difficulty starting or weak stream' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
 };
 
 export const SPECIALTY_QUEUES: Record<string, string[]> = {
@@ -504,6 +570,9 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'symptom_duration',
     'pain_severity',
     'associated_fever',
+    'ros_constitutional',
+    'ros_gastrointestinal',
+    'ros_cardiovascular',
     'prior_surgery',
     'current_medications',
     'allergies',
@@ -518,6 +587,8 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'gerd_frequency',
     'alarm_features',
     'symptom_duration',
+    'ros_constitutional',
+    'ros_gastrointestinal',
     'prior_surgery',
     'current_medications',
     'allergies',
@@ -531,6 +602,8 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'family_history_cancer',
     'symptom_duration',
     'alarm_features',
+    'ros_constitutional',
+    'ros_gastrointestinal',
     'current_medications',
     'allergies',
   ],
@@ -544,6 +617,9 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'nausea_vomiting',
     'last_bowel_movement',
     'associated_fever',
+    'ros_constitutional',
+    'ros_gastrointestinal',
+    'ros_urinary',
     'prior_surgery',
     'current_medications',
     'allergies',
