@@ -309,10 +309,10 @@ export const QUESTION_BANK: Record<string, Question> = {
 
   peritoneal_signs: {
     key: 'peritoneal_signs',
-    text: 'Is your belly very hard and stiff, or does pressing and letting go cause a sharp increase in pain?',
+    text: 'Does your pain get significantly worse with coughing, movement, or walking?',
     type: 'boolean',
     isRedFlagScreen: true,
-    helpText: 'A very hard, stiff belly or worsening pain on release may need urgent assessment.',
+    helpText: 'Pain that worsens with coughing or movement may need urgent assessment.',
   },
 
   nausea_vomiting: {
