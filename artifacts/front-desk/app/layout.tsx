@@ -6,6 +6,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://amisemedical.com'),
   title: {
     default: 'Amise Medical Services — General & Endoscopic Surgery, Saint Lucia',
     template: '%s | Amise Medical Services',
