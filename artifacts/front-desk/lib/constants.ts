@@ -1,3 +1,6 @@
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
+
 export const SITE_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
   tapion: 'Tapion / ERCP',

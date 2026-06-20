@@ -5,9 +5,9 @@ import { sendSms, sendWhatsApp } from '@/lib/twilio';
 import { sendConfirmationEmail } from '@/lib/email';
 import { TRACK_CONFIG, encodeReason, BOOKING_DISCLAIMER, type BookingTrack } from '@/lib/scheduling';
 
-export const runtime = 'nodejs';
+import { API_BASE as API } from '@/lib/constants';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
+export const runtime = 'nodejs';
 
 // Shown to the patient when something unexpected blows up the request
 // (Supabase outage, missing env var, etc.) — gives them a way to reach the

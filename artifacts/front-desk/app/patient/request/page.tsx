@@ -5,12 +5,12 @@
 // then captures minimal contact info and submits to the front desk.
 
 import { useState } from 'react';
+import { API_BASE as API } from '@/lib/constants';
 
 const TEAL   = '#0d9488';
 const SLATE  = '#0f172a';
 const MUTED  = '#64748b';
 const BORDER = '#e2e8f0';
-const API    = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 
 // Direct-contact channels — for visitors who would rather skip the form.
 // Both branches are offered: Tapion Hospital and Rodney Bay (Providence Building).

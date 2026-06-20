@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
+import { API_BASE as API } from '@/lib/constants';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -184,7 +185,6 @@ function ChangeRequestControl({
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const TEAL = '#0d9488';
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 const TODAY = new Date().toISOString().slice(0, 10);
 
 type Filter = 'upcoming' | 'past' | 'all';

@@ -5,9 +5,9 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
+import { API_BASE as API } from '@/lib/constants';
 
 const TEAL = '#0d9488';
-const API  = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

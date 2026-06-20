@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import VitalsPhotoCapture from '@/components/VitalsPhotoCapture';
+import { API_BASE } from '@/lib/constants';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -304,7 +305,6 @@ function KioskInput({
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function KioskPage() {
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
   const [screen, setScreen] = useState<KioskScreen>('welcome');
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');

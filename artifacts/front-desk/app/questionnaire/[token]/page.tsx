@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useCallback } from 'react';
 import VitalsPhotoCapture from '@/components/VitalsPhotoCapture';
+import { API_BASE } from '@/lib/constants';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -425,7 +426,6 @@ function QuestionInput({
 
 export default function QuestionnairePage({ params }: { params: { token: string } }) {
   const { token } = params;
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 
   // ── Loading / session state ────────────────────────────────────────────────
   const [loading, setLoading] = useState(true);

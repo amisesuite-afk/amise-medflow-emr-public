@@ -5,11 +5,11 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getPatientClient } from '@/lib/patient-supabase';
+import { API_BASE as API } from '@/lib/constants';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TEAL = '#0d9488';
-const API  = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
 const BUCKET = 'patient-documents';
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_MIME = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];

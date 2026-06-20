@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBookingById, findOrCreatePatientForBooking, registerHistoricDocument } from '@/lib/supabase';
 
-export const runtime = 'nodejs';
+import { API_BASE as API } from '@/lib/constants';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
+export const runtime = 'nodejs';
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_MIME = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
