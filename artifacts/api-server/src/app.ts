@@ -38,12 +38,11 @@ app.use(
 app.use(helmet());
 app.use(compression());
 
+const isDev = process.env.NODE_ENV !== 'production';
 const allowedOrigins = [
   process.env.PORTAL_URL,
   process.env.DASHBOARD_URL,
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:5173',
+  ...(isDev ? ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'] : []),
 ].filter(Boolean) as string[];
 
 app.use(cors({

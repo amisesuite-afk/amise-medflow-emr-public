@@ -96,7 +96,7 @@ router.post('/api/whatsapp/inbound', async (req, res) => {
   // General enquiries ("what services do you offer?") get an informational
   // auto-reply pointing to the triage form, instead of becoming a booking record.
   if (isGeneralEnquiry(body)) {
-    const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    const baseUrl = process.env.PORTAL_URL || process.env.FRONTEND_URL || 'https://amise-medflow-front-desk.vercel.app';
     await audit({
       action:     'send',
       entityType: 'whatsapp_message',
