@@ -71,11 +71,15 @@ export async function audit(args: {
   payload?: Record<string, unknown>;
 }): Promise<void> {
   try {
+    // audit_logs columns: table_name (text), record_id (uuid), new_values (jsonb)
+    // record_id is uuid — only set it when entityId looks like a valid UUID
+    const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const recordId = args.entityId && uuidRe.test(args.entityId) ? args.entityId : null;
     await sb().from('audit_logs').insert({
       action: args.action,
-      entity_type: args.entityType,
-      entity_id: args.entityId,
-      payload: args.payload,
+      table_name: args.entityType ?? null,
+      record_id: recordId,
+      new_values: args.payload ?? null,
       mode: process.env.MODE,
     });
   } catch (err) {
