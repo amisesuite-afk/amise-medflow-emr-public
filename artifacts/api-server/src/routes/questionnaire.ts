@@ -17,7 +17,7 @@ import {
 import type {
   SessionState,
   Response as ApcqResponse,
-  RedFlag,
+  ApcqRedFlag,
   Question,
   Specialty,
 } from '@workspace/triage-engine/apcq.js';

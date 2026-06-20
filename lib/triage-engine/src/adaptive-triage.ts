@@ -1,5 +1,6 @@
 import { scanRedFlags, Severity, AppointmentType, PATHWAY_DEFINITIONS, PathwayPanel } from './rules';
 import { matchSurgicalPathologies, SurgicalPathology } from './surgical-dictionary';
+import { screenForCancer, detectReferrals, CancerScreenResult, ReferralRecommendation, ScreeningInput } from './cancer-screening';
 
 export type Sex = 'female' | 'male' | 'other' | 'unknown';
 
@@ -53,8 +54,12 @@ export interface AdaptiveTriageResult {
   missingCriticalFields: string[];
   /** Surgical pathologies (with ICD-10/CPT codes) matched against the patient's reason/free text, most urgent first. */
   surgicalMatches: SurgicalPathology[];
-  /** "Magnet first step" flag — true when the patient's complaint matches a known surgical pathology. */
+  /** "Magnet first step" flag -- true when the patient's complaint matches a known surgical pathology. */
   isPrimarilySurgical: boolean;
+  /** NICE NG12 cancer screening result when criteria are met. */
+  cancerScreen: CancerScreenResult | null;
+  /** Internal medicine / allied referral recommendations when pathology is non-surgical. */
+  referralRecommendations: ReferralRecommendation[];
 }
 
 const ERCP_TERMS = /(jaundice|yellow eyes|yellow skin|dark urine|pale stool|bile duct|cbd|stone|mrcp|ercp|cholangitis|pancreatitis|biliary)/i;
@@ -266,6 +271,25 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     }
   }
 
+  const screeningInput: ScreeningInput = {
+    age: data.age,
+    sex: data.sex === 'unknown' ? 'unknown' : data.sex,
+    chiefComplaints: data.symptoms,
+    symptoms: data.symptoms,
+    familyHistory: data.comorbidities.filter(c => /family|hereditary|brca|lynch/i.test(c)),
+    responses: {},
+  };
+  const cancerScreen = screenForCancer(screeningInput);
+  const referralRecommendations = detectReferrals(screeningInput);
+
+  if (cancerScreen.triggered && cancerScreen.referralUrgency === 'two_week_wait') {
+    addScore(true, 30, `Cancer screening triggered (${cancerScreen.cancerType}) -- 2-week-wait referral criteria met`, state);
+    if (acuity === 'routine' || acuity === 'review') {
+      acuity = 'priority';
+      recommendedAction = 'same_day_call';
+    }
+  }
+
   return {
     acuity,
     score: state.score,
@@ -283,6 +307,8 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     missingCriticalFields,
     surgicalMatches,
     isPrimarilySurgical,
+    cancerScreen: cancerScreen.triggered ? cancerScreen : null,
+    referralRecommendations,
   };
 }
 
