@@ -121,9 +121,13 @@ router.post('/api/cron/reminders', async (req, res) => {
 router.post('/api/cron/daily-summary', async (req, res) => {
   if (!requireCronSecret(req, res)) return;
 
-  const today = new Date();
-  const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-  const endOfDay   = new Date(today.setHours(23, 59, 59, 999));
+  const ECT_OFFSET_MS = -4 * 60 * 60_000;
+  const nowUtc = Date.now();
+  const ectMidnight = new Date(nowUtc + ECT_OFFSET_MS);
+  ectMidnight.setUTCHours(0, 0, 0, 0);
+  const startOfDay = new Date(ectMidnight.getTime() - ECT_OFFSET_MS);
+  const endOfDay   = new Date(startOfDay.getTime() + 86400_000 - 1);
+  const dateLabel  = startOfDay.toLocaleDateString('en-LC', { timeZone: 'America/St_Lucia', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
   const { data: appointments } = await sb()
     .from('appointment_requests')
@@ -145,7 +149,7 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     .eq('status', 'pending');
 
   const summaryLines: string[] = [
-    `Daily Summary — Amise Front Desk AI — ${startOfDay.toDateString()}`,
+    `Daily Summary — Amise Front Desk AI — ${dateLabel}`,
     '',
     `Appointments today: ${appointments?.length ?? 0}`,
     `Escalations today: ${escalations?.length ?? 0}`,
@@ -175,7 +179,7 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     try {
       await sendOrDraft({
         to: process.env.DOCTOR_NOTIFY_EMAIL,
-        subject: `Amise Front Desk — Daily Summary ${startOfDay.toDateString()}`,
+        subject: `Amise Front Desk — Daily Summary ${dateLabel}`,
         body: summaryBody,
       }, 'auto');
     } catch (err) {
