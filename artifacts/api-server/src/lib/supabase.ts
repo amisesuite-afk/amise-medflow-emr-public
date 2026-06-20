@@ -71,7 +71,7 @@ export async function audit(args: {
   payload?: Record<string, unknown>;
 }): Promise<void> {
   try {
-    await sb().from('audit_log').insert({
+    await sb().from('audit_logs').insert({
       action: args.action,
       entity_type: args.entityType,
       entity_id: args.entityId,
