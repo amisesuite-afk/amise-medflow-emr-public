@@ -46,6 +46,8 @@ export interface SessionState {
   templateKey: string;
   mode: QuestionMode;
   specialty?: Specialty;
+  patientAge?: number;
+  patientSex?: 'male' | 'female' | 'other';
   responses: Response[];
   redFlags: RedFlag[];
   queuedKeys: string[];
@@ -496,6 +498,156 @@ export const QUESTION_BANK: Record<string, Question> = {
       { value: 'never', label: 'Never' },
     ],
   },
+  // --- Age/sex-relevant and CC-specific questions ---
+  aggravating_factors: {
+    key: 'aggravating_factors',
+    text: 'What makes the pain worse? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'eating', label: 'Eating or drinking' },
+      { value: 'movement', label: 'Movement or walking' },
+      { value: 'coughing', label: 'Coughing or straining', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'lying_flat', label: 'Lying flat' },
+      { value: 'deep_breath', label: 'Taking a deep breath' },
+      { value: 'nothing_specific', label: 'Nothing specific' },
+    ],
+  },
+
+  relieving_factors: {
+    key: 'relieving_factors',
+    text: 'What eases the pain? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'rest', label: 'Rest or lying still' },
+      { value: 'antacids', label: 'Antacids or acid tablets' },
+      { value: 'painkillers', label: 'Painkillers' },
+      { value: 'heat', label: 'Heat or warm compress' },
+      { value: 'vomiting', label: 'After vomiting' },
+      { value: 'nothing', label: 'Nothing helps', isRedFlag: true, urgencyIfSelected: 'priority' },
+    ],
+  },
+
+  relation_to_meals: {
+    key: 'relation_to_meals',
+    text: 'Is the pain related to eating?',
+    type: 'single_choice',
+    options: [
+      { value: 'worse_after', label: 'Worse after eating' },
+      { value: 'better_after', label: 'Better after eating' },
+      { value: 'no_relation', label: 'No relation to meals' },
+      { value: 'cannot_eat', label: 'Unable to eat at all', isRedFlag: true, urgencyIfSelected: 'urgent' },
+    ],
+  },
+
+  menstrual_history: {
+    key: 'menstrual_history',
+    text: 'When was your last menstrual period?',
+    type: 'single_choice',
+    options: [
+      { value: 'current', label: 'Currently on period' },
+      { value: 'within_4_weeks', label: 'Within the last 4 weeks' },
+      { value: 'over_4_weeks', label: 'More than 4 weeks ago' },
+      { value: 'missed', label: 'Missed or late period', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'postmenopausal', label: 'Post-menopausal' },
+      { value: 'not_applicable', label: 'Not applicable' },
+    ],
+  },
+
+  pregnancy_possible: {
+    key: 'pregnancy_possible',
+    text: 'Is there any chance you could be pregnant?',
+    type: 'boolean',
+    isRedFlagScreen: true,
+  },
+
+  appetite_change: {
+    key: 'appetite_change',
+    text: 'Has your appetite changed recently?',
+    type: 'single_choice',
+    options: [
+      { value: 'normal', label: 'Normal appetite' },
+      { value: 'decreased', label: 'Reduced appetite' },
+      { value: 'no_appetite', label: 'No appetite at all', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'early_satiety', label: 'Feeling full quickly after small amounts (early satiety)' },
+    ],
+  },
+
+  haemorrhoid_history: {
+    key: 'haemorrhoid_history',
+    text: 'Have you been told you have piles (haemorrhoids) before?',
+    type: 'boolean',
+  },
+
+  anal_symptoms: {
+    key: 'anal_symptoms',
+    text: 'Do you have any of the following? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'pain', label: 'Pain around the back passage' },
+      { value: 'itch', label: 'Itching' },
+      { value: 'lump', label: 'Lump or swelling near the back passage' },
+      { value: 'straining', label: 'Straining to pass stool' },
+      { value: 'tenesmus', label: 'Feeling of needing to go but unable to (tenesmus)' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  dvt_symptoms: {
+    key: 'dvt_symptoms',
+    text: 'Since your surgery, have you noticed any of the following in your legs? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'calf_pain', label: 'Pain or tenderness in one calf', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'swelling', label: 'Swelling in one leg more than the other', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'redness', label: 'Redness or warmth in one leg', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  post_op_mobility: {
+    key: 'post_op_mobility',
+    text: 'How is your mobility since the surgery?',
+    type: 'single_choice',
+    options: [
+      { value: 'normal', label: 'Walking normally' },
+      { value: 'limited', label: 'Walking with difficulty' },
+      { value: 'bed_bound', label: 'Mostly in bed', isRedFlag: true, urgencyIfSelected: 'priority' },
+    ],
+  },
+
+  urinary_retention: {
+    key: 'urinary_retention',
+    text: 'Are you able to pass urine normally since your surgery?',
+    type: 'single_choice',
+    options: [
+      { value: 'normal', label: 'Yes, normal' },
+      { value: 'difficulty', label: 'Some difficulty starting' },
+      { value: 'unable', label: 'Unable to pass urine', isRedFlag: true, urgencyIfSelected: 'urgent' },
+    ],
+  },
+
+  hormone_use: {
+    key: 'hormone_use',
+    text: 'Are you taking any hormones — such as the contraceptive pill, HRT, or hormone therapy?',
+    type: 'boolean',
+  },
+
+  comorbidities: {
+    key: 'comorbidities',
+    text: 'Do you have any of the following conditions? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'diabetes', label: 'Diabetes', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'heart_disease', label: 'Heart disease', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'blood_thinners', label: 'On blood thinners (anticoagulants)', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'kidney_disease', label: 'Kidney disease' },
+      { value: 'liver_disease', label: 'Liver disease' },
+      { value: 'cancer_history', label: 'Previous cancer', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'immunosuppressed', label: 'Weakened immune system (immunosuppressed)' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
   // --- Review of Systems (ROS) ---
   ros_constitutional: {
     key: 'ros_constitutional',
@@ -585,8 +737,11 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'odynophagia',
     'hematemesis_volume',
     'gerd_frequency',
+    'relation_to_meals',
+    'appetite_change',
     'alarm_features',
     'symptom_duration',
+    'comorbidities',
     'ros_constitutional',
     'ros_gastrointestinal',
     'prior_surgery',
@@ -598,10 +753,14 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'rectal_bleeding_character',
     'rectal_bleeding_volume',
     'bowel_habit_change',
+    'haemorrhoid_history',
+    'anal_symptoms',
     'colonoscopy_history',
     'family_history_cancer',
     'symptom_duration',
+    'appetite_change',
     'alarm_features',
+    'comorbidities',
     'ros_constitutional',
     'ros_gastrointestinal',
     'current_medications',
@@ -613,10 +772,15 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'pain_severity',
     'pain_character',
     'pain_radiation',
+    'aggravating_factors',
+    'relieving_factors',
+    'relation_to_meals',
     'peritoneal_signs',
     'nausea_vomiting',
     'last_bowel_movement',
+    'appetite_change',
     'associated_fever',
+    'comorbidities',
     'ros_constitutional',
     'ros_gastrointestinal',
     'ros_urinary',
@@ -633,6 +797,8 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'breast_pain',
     'mammogram_history',
     'family_history_breast',
+    'hormone_use',
+    'comorbidities',
     'current_medications',
     'allergies',
   ],
@@ -644,6 +810,9 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'fever_post_op',
     'diet_tolerance',
     'pain_severity',
+    'dvt_symptoms',
+    'post_op_mobility',
+    'urinary_retention',
     'current_medications',
     'allergies',
   ],
@@ -654,9 +823,13 @@ const ABDOMINAL_PAIN_KEYS = [
   'pain_severity',
   'pain_character',
   'pain_radiation',
+  'aggravating_factors',
+  'relieving_factors',
+  'relation_to_meals',
   'peritoneal_signs',
   'nausea_vomiting',
   'last_bowel_movement',
+  'appetite_change',
   'associated_fever',
 ];
 
@@ -664,8 +837,11 @@ const COLORECTAL_KEYS = [
   'rectal_bleeding_character',
   'rectal_bleeding_volume',
   'bowel_habit_change',
+  'haemorrhoid_history',
+  'anal_symptoms',
   'colonoscopy_history',
   'family_history_cancer',
+  'appetite_change',
   'alarm_features',
 ];
 
@@ -674,6 +850,8 @@ const UPPER_GI_KEYS = [
   'odynophagia',
   'hematemesis_volume',
   'gerd_frequency',
+  'relation_to_meals',
+  'appetite_change',
   'alarm_features',
 ];
 
@@ -694,6 +872,9 @@ const POST_OP_KEYS = [
   'wound_concerns_severity',
   'fever_post_op',
   'diet_tolerance',
+  'dvt_symptoms',
+  'post_op_mobility',
+  'urinary_retention',
 ];
 
 function uniqKeys(keys: string[]): string[] {
@@ -782,28 +963,58 @@ function applyChiefComplaintBranching(
   values: string[],
   currentQueue: string[],
   answeredKeys: Set<string>,
+  patientAge?: number,
+  patientSex?: 'male' | 'female' | 'other',
 ): string[] {
   const additions: string[] = [];
 
   for (const v of values) {
     if (v === 'abdominal_pain') {
       additions.push(...ABDOMINAL_PAIN_KEYS);
+      additions.push('aggravating_factors', 'relieving_factors', 'relation_to_meals', 'appetite_change');
+      // Female of reproductive age: consider gynaecological differentials
+      if (patientSex === 'female' && (patientAge === undefined || patientAge < 55)) {
+        additions.push('menstrual_history', 'pregnancy_possible');
+      }
     }
     if (v === 'rectal_bleeding' || v === 'change_in_bowel_habit') {
       additions.push(...COLORECTAL_KEYS);
+      additions.push('haemorrhoid_history', 'anal_symptoms', 'appetite_change');
+      // Over 45: higher malignancy risk — ensure screening questions
+      if (patientAge !== undefined && patientAge >= 45) {
+        additions.push('alarm_features');
+      }
     }
     if (v === 'difficulty_swallowing' || v === 'acid_reflux' || v === 'blood_in_vomit_stool') {
       additions.push(...UPPER_GI_KEYS);
+      additions.push('relation_to_meals', 'appetite_change');
     }
     if (v === 'breast_concern' || v === 'lump_or_mass') {
       additions.push(...BREAST_KEYS);
+      additions.push('hormone_use');
     }
     if (v === 'post_op_concern') {
       additions.push(...POST_OP_KEYS);
+      additions.push('dvt_symptoms', 'post_op_mobility', 'urinary_retention');
     }
     if (v === 'jaundice') {
       additions.push(...UPPER_GI_KEYS);
+      additions.push('appetite_change');
     }
+    if (v === 'nausea_vomiting') {
+      // Female of reproductive age: always screen for pregnancy
+      if (patientSex === 'female' && (patientAge === undefined || patientAge < 55)) {
+        additions.push('pregnancy_possible');
+      }
+    }
+    if (v === 'weight_loss') {
+      additions.push('appetite_change');
+    }
+  }
+
+  // All pathways: add comorbidities for patients over 50 or any red-flag CC
+  if (patientAge !== undefined && patientAge >= 50) {
+    additions.push('comorbidities');
   }
 
   const merged = uniqKeys([...currentQueue, ...additions]).filter(k => !answeredKeys.has(k));
@@ -850,6 +1061,8 @@ export function createSession(params: {
   templateKey: string;
   mode: QuestionMode;
   specialty?: Specialty;
+  patientAge?: number;
+  patientSex?: 'male' | 'female' | 'other';
 }): SessionState {
   const baseQueue = SPECIALTY_QUEUES[params.templateKey] ?? SPECIALTY_QUEUES['general_screening']!;
   const queuedKeys = [...baseQueue];
@@ -858,6 +1071,8 @@ export function createSession(params: {
     templateKey: params.templateKey,
     mode: params.mode,
     specialty: params.specialty,
+    patientAge: params.patientAge,
+    patientSex: params.patientSex,
     responses: [],
     redFlags: [],
     queuedKeys,
@@ -898,7 +1113,7 @@ export function processAnswer(
   let newQueue = state.queuedKeys.filter(k => k !== answer.questionKey);
 
   if (answer.questionKey === 'chief_complaint') {
-    newQueue = applyChiefComplaintBranching(values, newQueue, newAnsweredKeys);
+    newQueue = applyChiefComplaintBranching(values, newQueue, newAnsweredKeys, state.patientAge, state.patientSex);
   } else {
     newQueue = applyOptionBranching(question, values, newQueue, newAnsweredKeys);
   }
