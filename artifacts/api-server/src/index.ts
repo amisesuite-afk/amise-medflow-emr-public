@@ -20,7 +20,7 @@ const REQUIRED_ENV = [
 ] as const;
 const missing = REQUIRED_ENV.filter(k => !process.env[k]);
 if (missing.length) {
-  console.error(`[startup] Missing required env vars: ${missing.join(', ')}`);
+  logger.fatal({ missing }, 'Missing required env vars');
   process.exit(1);
 }
 

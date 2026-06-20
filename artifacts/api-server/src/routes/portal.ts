@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { sb, getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
-import { errStr } from '../lib/logger.js';
+import { logger, errStr } from '../lib/logger.js';
 import { sendSms, smsBodyStaffChangeRequest } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 
@@ -343,7 +343,7 @@ async function generateSummary(intakeId: string): Promise<void> {
       .single();
 
     if (error || !intake) {
-      console.error('[portal/intake-summary] intake not found', intakeId);
+      logger.warn({ intakeId }, '[portal/intake-summary] intake not found');
       return;
     }
 
@@ -426,7 +426,7 @@ RULES: summarise and organise only. Do NOT diagnose, prescribe, or speculate bey
       .eq('id', intakeId);
 
   } catch (err) {
-    console.error('[portal/intake-summary] generation error', err);
+    logger.error({ err }, '[portal/intake-summary] generation error');
   }
 }
 
@@ -531,7 +531,7 @@ export async function extractDocumentInsights(documentId: string): Promise<void>
       .single();
 
     if (error || !doc) {
-      console.error('[portal/documents] document not found', documentId);
+      logger.warn({ documentId }, '[portal/documents] document not found');
       return;
     }
 
@@ -633,7 +633,7 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
       payload:    { document_type: doc.document_type, flag_count: flags.length },
     });
   } catch (err) {
-    console.error('[portal/documents] extraction error', err);
+    logger.error({ err }, '[portal/documents] extraction error');
     await sb().from('documents').update({
       ai_extraction_status: 'failed',
       ai_extraction_at: new Date().toISOString(),

@@ -3,7 +3,7 @@ import { randomBytes } from 'node:crypto';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { sb, audit, requireStaffAuth } from '../lib/supabase.js';
-import { errStr } from '../lib/logger.js';
+import { logger, errStr } from '../lib/logger.js';
 import {
   createSession,
   getNextQuestion,
@@ -351,7 +351,7 @@ ${responseSummaryText}`;
       );
   } catch (err) {
     // Non-fatal — log but do not crash the request
-    console.error('[questionnaire] generateIntakeSummary error', err);
+    logger.error({ err }, '[questionnaire] generateIntakeSummary error');
   }
 }
 
@@ -880,7 +880,7 @@ router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
 
       // Trigger AI summary generation asynchronously — do not await
       generateIntakeSummary(sessionId).catch(err =>
-        console.error('[questionnaire] async summary generation failed', err),
+        logger.error({ err }, '[questionnaire] async summary generation failed'),
       );
 
       await audit({
@@ -1225,7 +1225,7 @@ router.get('/api/questionnaire/session/:token/summary', async (req, res) => {
     if (sumErr || !summary) {
       // Not generated yet — trigger generation and return 202
       generateIntakeSummary(sessionRow.id).catch(err =>
-        console.error('[questionnaire] async summary generation failed', err),
+        logger.error({ err }, '[questionnaire] async summary generation failed'),
       );
       res.status(202).json({ generating: true });
       return;
