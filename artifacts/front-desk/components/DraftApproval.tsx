@@ -18,7 +18,6 @@ const ACUITY_COLORS: Record<string, string> = {
 function buildConfirmation(patientName: string | null, slot: AppointmentSlot): string {
   const LOCATION_LABELS: Record<string, string> = {
     rodney_bay: 'Rodney Bay (Providence Building)',
-    castries:   'Castries',
     tapion:     'Tapion Hospital',
     remote:     'Telephone consultation',
   };

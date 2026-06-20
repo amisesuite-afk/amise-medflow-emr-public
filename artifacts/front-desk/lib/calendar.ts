@@ -12,7 +12,6 @@ function getDayECT(d: Date): number {
 
 export const LOCATION_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay (Providence Building)',
-  castries:   'Castries',
   tapion:     'Tapion Hospital',
   remote:     'Telephone consultation',
 };
@@ -20,7 +19,6 @@ export const LOCATION_LABELS: Record<string, string> = {
 function calendarIdFor(location: string): string {
   switch (location) {
     case 'rodney_bay': return process.env.CALENDAR_ID_RODNEY_BAY ?? '';
-    case 'castries':   return process.env.CALENDAR_ID_CASTRIES ?? '';
     case 'tapion':     return process.env.CALENDAR_ID_TAPION_ERCP ?? '';
     default:           return process.env.CALENDAR_ID_RODNEY_BAY ?? '';
   }

@@ -960,7 +960,7 @@ export default function KioskPage() {
           lineHeight: 1.7,
         }}>
           Amise Medical Services · Saint Lucia<br />
-          Tapion Hospital: 459-2227 · 284-0557 · Rodney Bay · Castries
+          Tapion Hospital: 459-2227 · 284-0557 · Rodney Bay (Providence Building)
         </div>
       </div>
     </div>

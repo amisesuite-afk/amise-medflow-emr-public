@@ -175,7 +175,7 @@ export function callout(heading: string, bodyHtml: string): string {
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 export function footer(disclaimer: string): string {
-  const contact = 'Amise Medical Services · Rodney Bay / Castries: 1 (758) 720 7111 · Tapion Hospital: 1 (758) 459 2227 / 1 (758) 284 0557';
+  const contact = 'Amise Medical Services · Rodney Bay: 1 (758) 720 7111 · Tapion Hospital: 1 (758) 459 2227 / 1 (758) 284 0557';
   return `<hr class="footer-rule">
 <div class="footer-row">
   <div class="footer-note">${escH(disclaimer)}</div>

@@ -50,7 +50,6 @@ function apiUrl(path: string) {
 
 const SITE_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
-  castries: 'Castries',
   tapion: 'Tapion',
 };
 

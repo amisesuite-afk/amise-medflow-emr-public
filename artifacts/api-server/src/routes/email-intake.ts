@@ -55,8 +55,8 @@ router.post('/api/admin/referring-providers', async (req, res) => {
     active?: boolean;
   };
 
-  if (!name?.trim() || !email?.trim()) {
-    res.status(400).json({ error: 'name and email are required' });
+  if (!name?.trim()) {
+    res.status(400).json({ error: 'name is required' });
     return;
   }
   if (!provider_type || !PROVIDER_TYPES.includes(provider_type)) {
@@ -73,7 +73,7 @@ router.post('/api/admin/referring-providers', async (req, res) => {
       .from('referring_providers')
       .insert({
         name:                  name.trim(),
-        email:                 email.trim().toLowerCase(),
+        email:                 email?.trim().toLowerCase() || null,
         provider_type,
         default_document_type,
         notes:                 notes?.trim() || null,
@@ -115,7 +115,7 @@ router.patch('/api/admin/referring-providers/:id', async (req, res) => {
 
   const updates: Record<string, unknown> = {};
   if (name !== undefined) updates.name = name.trim();
-  if (email !== undefined) updates.email = email.trim().toLowerCase();
+  if (email !== undefined) updates.email = email?.trim().toLowerCase() || null;
   if (provider_type !== undefined) updates.provider_type = provider_type;
   if (default_document_type !== undefined) updates.default_document_type = default_document_type;
   if (notes !== undefined) updates.notes = notes?.trim() || null;

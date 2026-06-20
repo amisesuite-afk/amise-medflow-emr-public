@@ -447,7 +447,6 @@ interface PrintState {
 
 const SITE_INFO: Record<string, { name: string; address: string; phone: string }> = {
   rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay', phone: '1 (758) 720 7111' },
-  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia', phone: '1 (758) 720 7111' },
   tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia', phone: '1 (758) 459 2227 / 1 (758) 284 0557' },
 };
 

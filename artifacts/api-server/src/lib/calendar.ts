@@ -52,7 +52,6 @@ function getCalendar() {
 export function calendarIdFor(location: Location): string {
   switch (location) {
     case 'rodney_bay': return process.env.CALENDAR_ID_RODNEY_BAY!;
-    case 'castries':   return process.env.CALENDAR_ID_CASTRIES!;
     case 'tapion':     return process.env.CALENDAR_ID_TAPION_ERCP!;
     case 'remote':     return process.env.CALENDAR_ID_RODNEY_BAY!;
     default:           return process.env.CALENDAR_ID_RODNEY_BAY!;
@@ -213,7 +212,7 @@ function labelFor(t: AppointmentType): string {
 export function formatSlotForDisplay(slot: AvailableSlot): { day: string; date: string; time: string; location: string } {
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const locLabel = ({ rodney_bay: 'Rodney Bay', castries: 'Castries', tapion: 'Tapion Hospital', remote: 'Telephone' } as Record<string, string>)[slot.location];
+  const locLabel = ({ rodney_bay: 'Rodney Bay', tapion: 'Tapion Hospital', remote: 'Telephone' } as Record<string, string>)[slot.location];
   const ect = new Date(slot.start.getTime() + ECT_OFFSET_MS);
   return {
     day: dayNames[ect.getDay()],
@@ -243,7 +242,6 @@ export async function fetchUpcomingEvents(daysAhead = 30): Promise<CalendarEvent
 
   const calIds = [
     process.env.CALENDAR_ID_RODNEY_BAY,
-    process.env.CALENDAR_ID_CASTRIES,
     process.env.CALENDAR_ID_TAPION_ERCP,
   ].filter(Boolean) as string[];
 

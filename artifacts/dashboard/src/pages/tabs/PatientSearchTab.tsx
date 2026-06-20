@@ -74,7 +74,6 @@ function demoToRow(p: DemoPatient): PatientListRowEx {
     sex: p.sex || null,
     phone: p.phone ?? null,
     created_at: p.savedAt ?? null,
-    photo_url: null,
     acuity: p.acuity,
     score: p.score,
     age: p.age,
@@ -87,7 +86,6 @@ const SITE_FILTER_OPTIONS: { value: SiteFilter; label: string }[] = [
   { value: 'all',        label: 'All locations' },
   { value: 'rodney_bay', label: 'Rodney Bay' },
   { value: 'tapion',     label: 'Tapion' },
-  { value: 'castries',   label: 'Castries' },
 ];
 
 export default function PatientSearchTab() {
@@ -171,13 +169,13 @@ export default function PatientSearchTab() {
       const dbQuery = isPhone
         ? supabase
             .from('patients')
-            .select('id, full_name, sex, phone, date_of_birth, created_at, photo_url')
+            .select('id, full_name, sex, phone, date_of_birth, created_at')
             .ilike('phone', `%${q.replace(/[\s()-]/g, '')}%`)
             .order('created_at', { ascending: false })
             .limit(30)
         : supabase
             .from('patients')
-            .select('id, full_name, sex, phone, date_of_birth, created_at, photo_url')
+            .select('id, full_name, sex, phone, date_of_birth, created_at')
             .ilike('full_name', `%${q}%`)
             .order('created_at', { ascending: false })
             .limit(30);
@@ -221,7 +219,6 @@ export default function PatientSearchTab() {
     }
     if (p.sex) setSex(p.sex as Parameters<typeof setSex>[0]);
     if (p.phone) setPhone(p.phone);
-    if (p.photo_url) setPatientPhoto(p.photo_url);
     setPatientId(p.id);
 
     if (DEMO_MODE) {

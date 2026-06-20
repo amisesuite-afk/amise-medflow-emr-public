@@ -66,7 +66,7 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
 
   follow_up: {
     displayName: 'Follow-up Appointment',
-    location:    'Castries',
+    location:    'Rodney Bay (Providence Building)',
     duration:    '15 minutes',
     beforeVisit: [
       'No special preparation required.',
@@ -89,7 +89,7 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
 
   post_op: {
     displayName: 'Post-operative Review',
-    location:    'Castries',
+    location:    'Tapion Hospital (La Toc, Castries)',
     duration:    '20 minutes',
     beforeVisit: [
       'Do not remove or change your wound dressing before this appointment unless you have been specifically instructed to do so.',
@@ -414,7 +414,7 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'Light walking from Day 1 is encouraged — it helps with recovery.',
       'Do not drive for 1–2 weeks (until you can perform an emergency stop comfortably).',
       'Return to non-physical work in approximately 1–2 weeks (desk work) or 4–6 weeks (manual work).',
-      'Attend post-op review at Castries as scheduled.',
+      'Attend post-op review at Tapion Hospital as scheduled.',
       'If laparoscopic: you may experience shoulder-tip discomfort from gas — walking and lying flat both help.',
     ],
     whatToBring: [

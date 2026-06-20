@@ -90,7 +90,6 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
 
 const LOCATION_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay Clinic',
-  castries:   'Castries',
   tapion:     'Tapion Hospital / ERCP Suite',
 };
 
@@ -706,7 +705,6 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                   style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
                 >
                   <option value="rodney_bay">Rodney Bay Clinic</option>
-                  <option value="castries">Castries</option>
                   <option value="tapion">Tapion Hospital / ERCP Suite</option>
                 </select>
               </div>
@@ -918,7 +916,6 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                   style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
                 >
                   <option value="rodney_bay">Rodney Bay Clinic</option>
-                  <option value="castries">Castries</option>
                   <option value="tapion">Tapion Hospital / ERCP Suite</option>
                 </select>
               </div>
