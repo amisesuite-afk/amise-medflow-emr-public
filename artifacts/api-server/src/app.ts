@@ -35,7 +35,28 @@ app.use(
     },
   }),
 );
-app.use(helmet());
+const supabaseHost = process.env.SUPABASE_URL
+  ? new URL(process.env.SUPABASE_URL).host
+  : 'nornhfzfrlmfzaqmrzzp.supabase.co';
+
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      connectSrc: [
+        "'self'",
+        `https://${supabaseHost}`,
+        'https://*.sentry.io',
+        'https://www.googleapis.com',
+      ],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      frameSrc: ["'none'"],
+    },
+  },
+}));
 app.use(compression());
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -57,8 +78,8 @@ app.use(cors({
   },
   credentials: true,
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 const publicLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -76,9 +97,17 @@ const smsLimiter = rateLimit({
   message: { error: 'Too many code requests — please wait 15 minutes before trying again.' },
 });
 
+const webhookLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 30,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+});
+
 app.use('/api/booking', publicLimiter);
 app.use('/api/patient/sms-code', smsLimiter);
 app.use('/api/patient/request-consult', publicLimiter);
+app.use('/api/whatsapp', webhookLimiter);
 
 app.use(router);
 
