@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { getSupabaseAdmin, audit, requireStaffAuth, requireCronSecret } from '../lib/supabase.js';
 import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions, toE164 } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
@@ -6,6 +7,15 @@ import { google } from 'googleapis';
 import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
+
+const bookingRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  keyGenerator: (req) => req.body?.patient_phone || req.ip,
+  message: { error: 'Too many booking requests. Please try again later or call us.' },
+});
 
 function getCalendarClient() {
   if (
@@ -34,7 +44,7 @@ function getCalendarClient() {
 }
 
 // POST /api/booking/request — patient or staff submits a booking request
-router.post('/api/booking/request', async (req, res) => {
+router.post('/api/booking/request', bookingRateLimit, async (req, res) => {
   const { patient_name, patient_email, patient_phone, appointment_type, location, preferred_slot, reason, triage_acuity, triage_score, source } = req.body ?? {};
 
   if (!patient_name || !appointment_type) {

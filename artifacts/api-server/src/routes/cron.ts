@@ -319,6 +319,46 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
     }
   }
 
+  // Auto-cancel bookings unactioned for > 8 hours — sends apology SMS to patient
+  const eightHoursAgo = new Date(now.getTime() - 8 * 3600_000).toISOString();
+  const { data: stale, error: staleErr } = await supa
+    .from('appointment_requests')
+    .select('id, patient_name, patient_phone, patient_email, appointment_type')
+    .eq('status', 'pending')
+    .lt('created_at', eightHoursAgo);
+
+  if (staleErr) {
+    logger.error({ error: staleErr }, '[cron/staff-escalation] stale query error');
+  } else {
+    for (const booking of stale ?? []) {
+      try {
+        await supa.from('appointment_requests').update({ status: 'cancelled', cancelled_at: now.toISOString() }).eq('id', booking.id);
+
+        if (booking.patient_phone) {
+          const firstName = (booking.patient_name as string || 'there').split(' ')[0];
+          await sendSms({
+            to: booking.patient_phone,
+            body: `Hi ${firstName}, we sincerely apologise -- we were unable to confirm your appointment in time. Please call us at ${process.env.PRACTICE_PHONE ?? '+1 758 284 0557'} or reply to rebook. -- Amise Medical`,
+          });
+        }
+
+        if (doctorEmail) {
+          await sendOrDraft({
+            to: doctorEmail,
+            subject: `Auto-cancelled: ${booking.patient_name} booking expired after 8h`,
+            body: `Booking ${booking.id} for ${booking.patient_name} (${booking.appointment_type}) was auto-cancelled after 8 hours with no staff action.\n\nPatient phone: ${booking.patient_phone ?? 'not provided'}\nPatient email: ${booking.patient_email ?? 'not provided'}\n\nPlease follow up if appropriate.`,
+          }, 'auto');
+        }
+
+        await audit({ action: 'auto_cancel', entityType: 'appointment_request', entityId: booking.id, payload: { reason: 'unactioned_8h' } });
+        results.push({ id: booking.id, action: 'auto_cancelled_8h' });
+      } catch (err) {
+        logger.error({ error: err, bookingId: booking.id }, '[cron/staff-escalation] auto-cancel error');
+        results.push({ id: booking.id, action: 'error' });
+      }
+    }
+  }
+
   logger.info({ count: results.length }, '[cron/staff-escalation] done');
   res.json({ processed: results.length, results });
 });

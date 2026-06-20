@@ -302,17 +302,17 @@ export const QUESTION_BANK: Record<string, Question> = {
       { value: 'rlq', label: 'Right lower quadrant', isRedFlag: true, urgencyIfSelected: 'urgent' },
       { value: 'llq', label: 'Left lower quadrant' },
       { value: 'central', label: 'Central/around the navel' },
-      { value: 'suprapubic', label: 'Lower central (suprapubic)' },
+      { value: 'suprapubic', label: 'Lower central (below the navel)' },
       { value: 'diffuse', label: 'Diffuse/whole abdomen', isRedFlag: true, urgencyIfSelected: 'urgent' },
     ],
   },
 
   peritoneal_signs: {
     key: 'peritoneal_signs',
-    text: 'Is your abdomen board-like/rigid, or does touching and releasing it cause severe pain?',
+    text: 'Is your belly very hard and stiff, or does pressing and letting go cause a sharp increase in pain?',
     type: 'boolean',
     isRedFlagScreen: true,
-    helpText: 'Board-like rigidity or rebound tenderness are signs of peritonitis requiring urgent assessment.',
+    helpText: 'A very hard, stiff belly or worsening pain on release may need urgent assessment.',
   },
 
   nausea_vomiting: {
