@@ -59,11 +59,19 @@ function AuthGuard() {
   if (loading) {
     return (
       <div style={{
-        height: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#0d2520', color: '#4db8ad', fontSize: 13, fontWeight: 700,
-        letterSpacing: '.06em', fontFamily: '-apple-system, sans-serif',
+        height: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', gap: 16, background: '#0d2520',
+        fontFamily: '-apple-system, sans-serif',
       }}>
-        Loading...
+        <div style={{
+          width: 32, height: 32, border: '3px solid #1e3a3a',
+          borderTopColor: '#0d9488', borderRadius: '50%',
+          animation: 'spin .8s linear infinite',
+        }} />
+        <div style={{ color: '#4db8ad', fontSize: 12, fontWeight: 700, letterSpacing: '.08em' }}>
+          AMISE MEDFLOW
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
     );
   }

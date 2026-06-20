@@ -4,7 +4,8 @@ services:
     runtime: node
     plan: starter
     buildCommand: npx --yes pnpm@10 install --no-frozen-lockfile && cd artifacts/api-server && node build.mjs
-    startCommand: node artifacts/api-server/dist/index.mjs
+    startCommand: node --enable-source-maps artifacts/api-server/dist/index.mjs
+    healthCheckPath: /api/healthz
     envVars:
       - key: PORT
         value: 10000
@@ -30,8 +31,16 @@ services:
       # POST /api/cron/reminders         — every 30 min (48h SMS + 24h email + post-visit)
       # POST /api/cron/booking-reminders — every 30 min (confirmation SMS for staff-confirmed)
       # POST /api/cron/staff-escalation  — every 30 min (re-notify on unactioned bookings)
+      # POST /api/cron/calendar-sync     — every 15 min (sync Google Calendar to local cache)
       # POST /api/cron/daily-summary     — once daily at 06:00 ECT (appointment + escalation digest)
+      # POST /api/booking/lapse          — once daily at 00:00 ECT (mark unconfirmed as lapsed)
       # All require header: x-cron-secret: <CRON_SECRET value>
+
+      # ── Optional — monitoring ──
+      # SENTRY_DSN               = https://…@….ingest.sentry.io/…
+      # STAFF_NOTIFY_PHONE       = +1758…
+      # PRACTICE_PHONE           = +17582840557
+      # LOG_LEVEL                = info
 
       # ── Set these in Render dashboard → Environment ──
       # SUPABASE_URL            = https://nornhfzfrlmfzaqmrzzp.supabase.co
