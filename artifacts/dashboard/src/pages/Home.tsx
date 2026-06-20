@@ -45,6 +45,7 @@ import AnalyticsTab from './tabs/AnalyticsTab';
 import SettingsTab from './tabs/SettingsTab';
 import PortalIntakeTab from './tabs/PortalIntakeTab';
 import ReferringProvidersTab from './tabs/ReferringProvidersTab';
+import VisitManagerTab from './VisitManager';
 import FloatingActions from '@/components/FloatingActions';
 
 const API_ORIGIN = getApiOrigin();
@@ -390,6 +391,7 @@ export default function HomePage() {
         {topSection === 'booking_inbox'  && hasRole(userRole, 'admin')        && <BookingInboxTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
+        {topSection === 'visit_lifecycle'                                        && <VisitManagerTab />}
       </main>
 
       <FloatingActions />
