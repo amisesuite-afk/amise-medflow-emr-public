@@ -47,6 +47,10 @@ const server = app.listen(port, (err) => {
   logger.info({ port }, "Server listening");
 });
 
+server.timeout = 120_000;
+server.keepAliveTimeout = 65_000;
+server.headersTimeout = 66_000;
+
 function shutdown(signal: string) {
   logger.info({ signal }, "Shutting down gracefully");
   server.close(() => {
