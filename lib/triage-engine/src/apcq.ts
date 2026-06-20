@@ -849,6 +849,161 @@ export const QUESTION_BANK: Record<string, Question> = {
       { value: 'none', label: 'None of the above' },
     ],
   },
+
+  // --- Pre-operative assessment (ASA / fitness for surgery) ---
+  asa_exercise_tolerance: {
+    key: 'asa_exercise_tolerance',
+    text: 'How far can you walk on flat ground without stopping due to breathlessness or chest pain?',
+    type: 'single_choice',
+    options: [
+      { value: 'unlimited', label: 'No limit -- I can walk as far as I like' },
+      { value: 'over_200m', label: 'More than 200 metres (2 blocks)' },
+      { value: 'under_200m', label: 'Less than 200 metres', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'housebound', label: 'I can barely walk around the house', isRedFlag: true, urgencyIfSelected: 'urgent' },
+    ],
+    helpText: 'Exercise tolerance helps us assess your fitness for surgery and anaesthesia.',
+  },
+
+  asa_cardiac_history: {
+    key: 'asa_cardiac_history',
+    text: 'Do you have any of these heart conditions? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'hypertension', label: 'High blood pressure (hypertension)' },
+      { value: 'angina', label: 'Chest pain on exertion (angina)', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'heart_attack', label: 'Previous heart attack', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'heart_failure', label: 'Heart failure', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'valve_disease', label: 'Heart valve disease' },
+      { value: 'pacemaker', label: 'Pacemaker or defibrillator' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  asa_respiratory_history: {
+    key: 'asa_respiratory_history',
+    text: 'Do you have any of these breathing conditions? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'asthma', label: 'Asthma' },
+      { value: 'copd', label: 'COPD or emphysema', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'sleep_apnoea', label: 'Sleep apnoea (use a CPAP machine)' },
+      { value: 'home_oxygen', label: 'I use oxygen at home', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  anaesthesia_history: {
+    key: 'anaesthesia_history',
+    text: 'Have you had any problems with anaesthesia (being put to sleep for surgery) in the past?',
+    type: 'single_choice',
+    options: [
+      { value: 'none', label: 'No problems' },
+      { value: 'nausea', label: 'Severe nausea or vomiting after' },
+      { value: 'difficult_airway', label: 'I was told my airway was difficult', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'family_reaction', label: 'A family member had a bad reaction to anaesthesia', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'not_sure', label: 'Not sure' },
+    ],
+  },
+
+  blood_thinners_detail: {
+    key: 'blood_thinners_detail',
+    text: 'Are you taking any blood-thinning medicines? If so, which one?',
+    type: 'single_choice',
+    options: [
+      { value: 'none', label: 'None' },
+      { value: 'aspirin', label: 'Aspirin' },
+      { value: 'warfarin', label: 'Warfarin (Coumadin)' },
+      { value: 'rivaroxaban', label: 'Rivaroxaban (Xarelto)' },
+      { value: 'apixaban', label: 'Apixaban (Eliquis)' },
+      { value: 'clopidogrel', label: 'Clopidogrel (Plavix)' },
+      { value: 'other', label: 'Other blood thinner' },
+    ],
+    helpText: 'Blood thinners may need to be stopped before surgery -- this is important for planning.',
+  },
+
+  fasting_status: {
+    key: 'fasting_status',
+    text: 'When did you last eat or drink anything?',
+    type: 'single_choice',
+    options: [
+      { value: 'over_8h', label: 'More than 8 hours ago' },
+      { value: '6_8h', label: '6-8 hours ago' },
+      { value: '2_6h', label: '2-6 hours ago' },
+      { value: 'under_2h', label: 'Less than 2 hours ago', isRedFlag: true, urgencyIfSelected: 'priority' },
+    ],
+    helpText: 'Fasting before procedures reduces the risk of aspiration.',
+  },
+
+  // --- Second opinion pathway ---
+  external_diagnosis: {
+    key: 'external_diagnosis',
+    text: 'What diagnosis or condition were you given by your previous doctor?',
+    type: 'text',
+    helpText: 'If you have a letter or report, please bring it or upload it.',
+  },
+
+  previous_treatment: {
+    key: 'previous_treatment',
+    text: 'What treatment have you had so far for this condition?',
+    type: 'text',
+  },
+
+  second_opinion_reason: {
+    key: 'second_opinion_reason',
+    text: 'What is the main reason you are seeking a second opinion?',
+    type: 'single_choice',
+    options: [
+      { value: 'confirm_diagnosis', label: 'I want to confirm the diagnosis' },
+      { value: 'explore_options', label: 'I want to explore other treatment options' },
+      { value: 'surgery_recommended', label: 'Surgery was recommended and I want another view' },
+      { value: 'not_improving', label: 'Treatment is not working' },
+      { value: 'other', label: 'Other reason' },
+    ],
+  },
+
+  external_investigations: {
+    key: 'external_investigations',
+    text: 'Do you have any test results, scans, or reports to share?',
+    type: 'single_choice',
+    options: [
+      { value: 'have_physical', label: 'Yes -- I will bring paper copies' },
+      { value: 'have_digital', label: 'Yes -- I can upload them' },
+      { value: 'can_request', label: 'No, but I can request them from my doctor' },
+      { value: 'none', label: 'No investigations done' },
+    ],
+  },
+
+  // --- Follow-up specific ---
+  followup_since_last: {
+    key: 'followup_since_last',
+    text: 'Since your last visit, how are you doing overall?',
+    type: 'single_choice',
+    options: [
+      { value: 'much_better', label: 'Much better' },
+      { value: 'somewhat_better', label: 'Somewhat better' },
+      { value: 'same', label: 'About the same' },
+      { value: 'worse', label: 'Getting worse', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'much_worse', label: 'Much worse', isRedFlag: true, urgencyIfSelected: 'urgent' },
+    ],
+  },
+
+  medication_compliance: {
+    key: 'medication_compliance',
+    text: 'Have you been taking your prescribed medicines as directed?',
+    type: 'single_choice',
+    options: [
+      { value: 'yes_all', label: 'Yes, all of them' },
+      { value: 'most', label: 'Most of them' },
+      { value: 'some', label: 'Some -- I stopped or missed doses' },
+      { value: 'none', label: 'I have not been taking them' },
+    ],
+  },
+
+  new_symptoms_since: {
+    key: 'new_symptoms_since',
+    text: 'Have you developed any new symptoms since your last visit?',
+    type: 'boolean',
+  },
 };
 
 export const SPECIALTY_QUEUES: Record<string, string[]> = {
@@ -950,6 +1105,62 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'urinary_retention',
     'current_medications',
     'allergies',
+  ],
+  pre_op: [
+    'surgery_type',
+    'asa_exercise_tolerance',
+    'asa_cardiac_history',
+    'asa_respiratory_history',
+    'anaesthesia_history',
+    'blood_thinners_detail',
+    'comorbidities',
+    'current_medications',
+    'allergies',
+    'smoking_status',
+    'alcohol_use',
+    'prior_surgery',
+    'ros_constitutional',
+    'ros_cardiovascular',
+    'ros_respiratory',
+    'fasting_status',
+  ],
+  second_opinion: [
+    'second_opinion_reason',
+    'external_diagnosis',
+    'previous_treatment',
+    'external_investigations',
+    'chief_complaint',
+    'symptom_duration',
+    'prior_surgery',
+    'current_medications',
+    'allergies',
+    'comorbidities',
+    'family_history_cancer',
+    'ros_constitutional',
+    'ros_gastrointestinal',
+  ],
+  follow_up: [
+    'followup_since_last',
+    'new_symptoms_since',
+    'medication_compliance',
+    'pain_severity',
+    'appetite_change',
+    'current_medications',
+    'allergies',
+  ],
+  new_consult: [
+    'chief_complaint',
+    'symptom_duration',
+    'pain_severity',
+    'associated_fever',
+    'prior_surgery',
+    'current_medications',
+    'allergies',
+    'smoking_status',
+    'family_history_cancer',
+    'ros_constitutional',
+    'ros_gastrointestinal',
+    'comorbidities',
   ],
 };
 

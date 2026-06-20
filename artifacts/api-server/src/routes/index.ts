@@ -11,6 +11,7 @@ import whatsappRouter from "./whatsapp";
 import portalRouter from "./portal";
 import investigationsRouter from "./investigations";
 import emailIntakeRouter from "./email-intake";
+import visitLifecycleRouter from "./visit-lifecycle";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(whatsappRouter);
 router.use(portalRouter);
 router.use(investigationsRouter);
 router.use(emailIntakeRouter);
+router.use(visitLifecycleRouter);
 
 export default router;

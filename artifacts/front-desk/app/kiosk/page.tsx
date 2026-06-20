@@ -801,10 +801,28 @@ export default function KioskPage() {
 
             <button
               type="button"
-              onClick={() => { resetIdle(); setScreen('question'); }}
+              onClick={async () => {
+                resetIdle();
+                try {
+                  const r = await fetch(`/api/questionnaire/session/${token}/consent`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ consentGiven: true }),
+                  });
+                  if (!r.ok) {
+                    const e = await r.json().catch(() => ({}));
+                    setError((e as { error?: string }).error ?? 'Could not record consent');
+                    return;
+                  }
+                } catch {
+                  setError('Connection error recording consent');
+                  return;
+                }
+                setScreen('question');
+              }}
               style={btnPrimary}
             >
-              I agree — start questionnaire
+              I agree -- start questionnaire
             </button>
             <button type="button" onClick={() => setScreen('checkin')} style={btnSecondary}>
               ← Back

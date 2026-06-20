@@ -506,7 +506,22 @@ export default function QuestionnairePage({ params }: { params: { token: string 
   }, [token, API_BASE]);
 
   // ── Consent accepted ──────────────────────────────────────────────────────
-  function handleConsent() {
+  async function handleConsent() {
+    try {
+      const r = await fetch(`${API_BASE}/api/questionnaire/session/${token}/consent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ consentGiven: true }),
+      });
+      if (!r.ok) {
+        const e = await r.json().catch(() => ({}));
+        setSubmitError((e as { error?: string }).error ?? 'Could not record consent');
+        return;
+      }
+    } catch {
+      setSubmitError('Connection error recording consent');
+      return;
+    }
     if (!sessionData?.currentQuestion) {
       setScreen('complete');
       return;
