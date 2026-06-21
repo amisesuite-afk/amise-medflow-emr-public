@@ -58,18 +58,25 @@ router.post('/api/booking/request', bookingRateLimit, async (req, res) => {
 
   try {
     const supa = getSupabaseAdmin();
+    const resolvedLocation = location ?? 'rodney_bay';
     const { data, error } = await supa
       .from('appointment_requests')
       .insert({
         patient_name,
         patient_email: patient_email || null,
         patient_phone: normalizedPhone,
+        // New column names (used by app code)
         appointment_type,
-        location: location ?? 'rodney_bay',
+        location: resolvedLocation,
         preferred_slot: preferred_slot ?? null,
         reason: reason ?? null,
         triage_acuity: triage_acuity ?? null,
         triage_score: triage_score ?? null,
+        // Mirror to production DB column names for backwards compat
+        chief_complaint: appointment_type,
+        preferred_site: resolvedLocation,
+        preferred_date: preferred_slot ?? null,
+        triage_level: triage_acuity ?? null,
         status: 'pending',
         source: resolvedSource,
       })

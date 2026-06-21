@@ -125,9 +125,14 @@ router.post('/api/whatsapp/inbound', async (req, res) => {
         patient_name:     patientName,
         patient_email:    placeholderEmail,
         patient_phone:    fromNumber,
+        // New column names (app code canonical)
         appointment_type: appointmentType,
         location:         'rodney_bay',
         preferred_slot:   null,
+        // Mirror to production DB column names for backwards compat
+        chief_complaint:  appointmentType,
+        preferred_site:   'rodney_bay',
+        preferred_date:   null,
         reason:           body.slice(0, 500) || null,
         status:           'pending',
         source:           'whatsapp',
