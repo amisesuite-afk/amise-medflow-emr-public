@@ -189,7 +189,7 @@ function PracticeInfo() {
     ['Physician', 'Dr Dawit Daniel Kabiye, MD, DM'],
     ['Specialty', 'General & Endoscopic Surgery'],
     ['Timezone',  'Eastern Caribbean Time (UTC−4, America/St_Lucia)'],
-    ['Sites',     'Rodney Bay (Providence Building) · Castries · Tapion Hospital (ERCP)'],
+    ['Sites',     'Rodney Bay (Providence Building) · Tapion Hospital (ERCP / Surgery)'],
     ['Emergency', '459-2227 / 284-0557'],
   ];
 

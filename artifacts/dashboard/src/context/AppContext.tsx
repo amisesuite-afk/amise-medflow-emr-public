@@ -59,7 +59,8 @@ export interface LabRecord {
 export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
-  | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox' | 'portal_intake' | 'referring_providers';
+  | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox' | 'portal_intake' | 'referring_providers'
+  | 'visit_lifecycle';
 
 /** Grouped trauma / burns state — stored as a single serialisable object. */
 export interface TraumaData {
@@ -109,7 +110,7 @@ const SITE_STORAGE_KEY = 'amise_current_site';
 function readSiteFromStorage(): SiteCode {
   try {
     const v = localStorage.getItem(SITE_STORAGE_KEY);
-    if (v === 'rodney_bay' || v === 'tapion' || v === 'castries') return v;
+    if (v === 'rodney_bay' || v === 'tapion') return v;
   } catch { /* ignore */ }
   return 'rodney_bay';
 }

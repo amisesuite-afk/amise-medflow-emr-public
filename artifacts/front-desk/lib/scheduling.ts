@@ -39,7 +39,7 @@ export const TRACK_CONFIG: Record<BookingTrack, TrackConfig> = {
 export const APPOINTMENT_TYPES: Record<string, { label: string; location: string; group: string }> = {
   // Consultations
   new_consult:    { label: 'New consultation with Dr Kabiye',  location: 'rodney_bay', group: 'Consultations' },
-  follow_up:      { label: 'Follow-up appointment',            location: 'castries',   group: 'Consultations' },
+  follow_up:      { label: 'Follow-up appointment',            location: 'rodney_bay', group: 'Consultations' },
   telephone:      { label: 'Telephone review',                 location: 'remote',     group: 'Consultations' },
   // Endoscopy & Procedures
   ogd:            { label: 'Gastroscopy (OGD)',                location: 'tapion',     group: 'Endoscopy & Procedures' },
@@ -52,7 +52,7 @@ export const APPOINTMENT_TYPES: Record<string, { label: string; location: string
   diabetic_foot:  { label: 'Diabetic foot clinic',             location: 'rodney_bay', group: 'Specialist Clinics' },
   // Surgery & Post-Op
   pre_op:         { label: 'Pre-operative assessment',         location: 'rodney_bay', group: 'Surgery & Post-Op' },
-  post_op:        { label: 'Post-operative review',            location: 'castries',   group: 'Surgery & Post-Op' },
+  post_op:        { label: 'Post-operative review',            location: 'tapion',     group: 'Surgery & Post-Op' },
 };
 
 export function getApptGroups(): Record<string, { key: string; label: string; location: string }[]> {

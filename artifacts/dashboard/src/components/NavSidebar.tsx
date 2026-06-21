@@ -5,7 +5,7 @@ import {
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
   ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, FileQuestion, Inbox,
-  Contact,
+  Contact, HeartPulse,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -73,6 +73,7 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'consultation', icon: Stethoscope,     label: 'Consultation', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'procedures',   icon: Scissors,        label: 'Procedures',   roles: ['doctor', 'admin'] },
   { id: 'scheduling',   icon: CalendarDays,    label: 'Scheduling',   roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
+  { id: 'visit_lifecycle', icon: HeartPulse,   label: 'Visits',       roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'finaldoc',     icon: FileCheck2,      label: 'Summary',      roles: ['nurse', 'doctor', 'admin'] },
   { id: 'billing',      icon: Receipt,         label: 'Billing',      roles: ['front_desk', 'admin'] },
   { id: 'analytics',    icon: BarChart2,       label: 'Analytics',    roles: ['doctor', 'admin'] },

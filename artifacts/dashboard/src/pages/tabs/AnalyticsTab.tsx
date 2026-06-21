@@ -44,7 +44,6 @@ const ACUITY_COLORS: Record<string, string> = {
 
 const SITE_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
-  castries:   'Castries',
   tapion:     'Tapion / ERCP',
 };
 

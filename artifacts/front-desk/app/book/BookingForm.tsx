@@ -761,7 +761,7 @@ export default function BookingForm() {
           <div style={{ marginTop: 28, paddingTop: 16, borderTop: '1px solid #e2e8f0', fontSize: 11, color: '#94a3b8', textAlign: 'center', lineHeight: 1.8 }}>
             Amise Medical Services · Saint Lucia<br />
             Tapion Hospital: 459-2227 / 284-0557<br />
-            Rodney Bay (Providence Building) · Castries
+            Rodney Bay (Providence Building) · Tapion Hospital
           </div>
         </div>
       </div>

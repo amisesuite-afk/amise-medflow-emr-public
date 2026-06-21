@@ -4,7 +4,6 @@ export const API_BASE =
 export const SITE_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
   tapion: 'Tapion / ERCP',
-  castries: 'Castries',
 };
 
 export const INTAKE_SECTIONS: Record<string, string> = {

@@ -10,7 +10,7 @@ export type AppointmentType =
   | 'telephone'
   | 'diabetic_foot';
 
-export type Location = 'rodney_bay' | 'castries' | 'tapion' | 'remote';
+export type Location = 'rodney_bay' | 'tapion' | 'remote';
 
 export interface SlotRule {
   durationMin: number;
@@ -34,7 +34,7 @@ export const SLOT_RULES: Record<AppointmentType, SlotRule> = {
   },
   follow_up: {
     durationMin: 15,
-    location: 'castries',
+    location: 'rodney_bay',
     days: [2, 4],
     windowStart: '09:00',
     windowEnd: '12:00',
@@ -43,7 +43,7 @@ export const SLOT_RULES: Record<AppointmentType, SlotRule> = {
   },
   post_op: {
     durationMin: 20,
-    location: 'castries',
+    location: 'tapion',
     days: [2, 4],
     windowStart: '09:00',
     windowEnd: '12:00',

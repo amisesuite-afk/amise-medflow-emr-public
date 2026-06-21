@@ -17,7 +17,7 @@ import {
 import type {
   SessionState,
   Response as ApcqResponse,
-  RedFlag,
+  ApcqRedFlag,
   Question,
   Specialty,
 } from '@workspace/triage-engine/apcq.js';
@@ -634,16 +634,9 @@ router.post('/api/questionnaire/session/start', async (req, res) => {
 
     const sessionId: string = sessionRow.id;
 
-    // Insert consent record
-    await sb().from('consent_records').insert({
-      session_id: sessionId,
-      consent_type: 'data_collection',
-      consent_text: CONSENT_TEXT_V1,
-      consent_version: '1.0',
-      consented: true,
-      ip_address: (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ?? req.ip ?? null,
-      user_agent: req.headers['user-agent'] ?? null,
-    });
+    // Consent record is created when the patient explicitly accepts
+    // via POST /api/questionnaire/session/:token/consent (see below).
+    // Session starts with consent_given=false.
 
     // Initialise engine state to get first question
     const state = createSession({ sessionId, templateKey, mode: sessionMode });
@@ -662,6 +655,9 @@ router.post('/api/questionnaire/session/start', async (req, res) => {
     res.status(201).json({
       sessionId,
       sessionToken,
+      consentRequired: true,
+      consentText: CONSENT_TEXT_V1,
+      consentVersion: '1.0',
       firstQuestion,
       totalEstimated,
     });
@@ -738,6 +734,79 @@ router.post('/api/questionnaire/provision-link', async (req, res) => {
   }
 });
 
+// POST /api/questionnaire/session/:token/consent — patient must accept before answering
+router.post('/api/questionnaire/session/:token/consent', async (req, res) => {
+  const { token } = req.params;
+  const { patientNameEntered, consentGiven } = (req.body ?? {}) as {
+    patientNameEntered?: string;
+    consentGiven?: boolean;
+  };
+
+  if (consentGiven !== true) {
+    res.status(400).json({ error: 'Consent must be explicitly accepted (consentGiven: true)' });
+    return;
+  }
+
+  try {
+    const { data: sessionRow, error: sessErr } = await sb()
+      .from('questionnaire_sessions')
+      .select('id, status, consent_given, expires_at')
+      .eq('session_token', token)
+      .single();
+
+    if (sessErr || !sessionRow) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    if (sessionRow.expires_at && new Date(sessionRow.expires_at).getTime() < Date.now()) {
+      res.status(410).json({ error: 'This questionnaire link has expired' });
+      return;
+    }
+
+    if (sessionRow.consent_given) {
+      res.json({ sessionId: sessionRow.id, consentAlreadyGiven: true });
+      return;
+    }
+
+    const ipAddress = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ?? req.ip ?? null;
+    const userAgent = req.headers['user-agent'] ?? null;
+
+    await sb().from('consent_records').insert({
+      session_id: sessionRow.id,
+      consent_type: 'data_collection',
+      consent_text: CONSENT_TEXT_V1,
+      consent_version: '1.0',
+      consented: true,
+      patient_name_entered: patientNameEntered ?? null,
+      ip_address: ipAddress,
+      user_agent: userAgent,
+    });
+
+    await sb()
+      .from('questionnaire_sessions')
+      .update({
+        consent_given: true,
+        consent_timestamp: new Date().toISOString(),
+        consent_ip: ipAddress,
+      })
+      .eq('id', sessionRow.id);
+
+    await audit({
+      action: 'classify',
+      entityType: 'questionnaire_session',
+      entityId: sessionRow.id,
+      payload: { action: 'consent_given', version: '1.0' },
+    });
+
+    req.log.info({ sessionId: sessionRow.id }, '[questionnaire/consent] patient consented');
+    res.json({ sessionId: sessionRow.id, consentRecorded: true });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/consent] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 // POST /api/questionnaire/session/:token/answer
 router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
   const { token } = req.params;
@@ -771,6 +840,22 @@ router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
 
     if (sessionRow.status !== 'in_progress') {
       res.status(409).json({ error: `Session is already '${sessionRow.status}'` });
+      return;
+    }
+
+    // Consent gate: patient must accept data collection consent before answers are recorded
+    const { data: consentCheck } = await sb()
+      .from('questionnaire_sessions')
+      .select('consent_given')
+      .eq('id', sessionRow.id)
+      .single();
+
+    if (!consentCheck?.consent_given) {
+      res.status(403).json({
+        error: 'Consent required before answering questions. Call POST /api/questionnaire/session/:token/consent first.',
+        consentRequired: true,
+        consentText: CONSENT_TEXT_V1,
+      });
       return;
     }
 

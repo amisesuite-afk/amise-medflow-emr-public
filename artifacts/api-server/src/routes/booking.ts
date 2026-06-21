@@ -58,18 +58,25 @@ router.post('/api/booking/request', bookingRateLimit, async (req, res) => {
 
   try {
     const supa = getSupabaseAdmin();
+    const resolvedLocation = location ?? 'rodney_bay';
     const { data, error } = await supa
       .from('appointment_requests')
       .insert({
         patient_name,
         patient_email: patient_email || null,
         patient_phone: normalizedPhone,
+        // New column names (used by app code)
         appointment_type,
-        location: location ?? 'rodney_bay',
+        location: resolvedLocation,
         preferred_slot: preferred_slot ?? null,
         reason: reason ?? null,
         triage_acuity: triage_acuity ?? null,
         triage_score: triage_score ?? null,
+        // Mirror to production DB column names for backwards compat
+        chief_complaint: appointment_type,
+        preferred_site: resolvedLocation,
+        preferred_date: preferred_slot ?? null,
+        triage_level: triage_acuity ?? null,
         status: 'pending',
         source: resolvedSource,
       })
@@ -136,16 +143,16 @@ router.post('/api/booking/request', bookingRateLimit, async (req, res) => {
 
 // POST /api/booking/staff-confirm/:id — staff approves and sets the confirmed slot
 router.post('/api/booking/staff-confirm/:id', async (req, res) => {
-  if (!(await requireStaffAuth(req, res))) return;
-  const { id } = req.params;
-  const { confirmed_slot, notes } = req.body ?? {};
-
-  if (!confirmed_slot) {
-    res.status(400).json({ error: 'confirmed_slot (ISO string) required' });
-    return;
-  }
-
   try {
+    if (!(await requireStaffAuth(req, res))) return;
+    const { id } = req.params;
+    const { confirmed_slot, notes } = req.body ?? {};
+
+    if (!confirmed_slot) {
+      res.status(400).json({ error: 'confirmed_slot (ISO string) required' });
+      return;
+    }
+
     const supa = getSupabaseAdmin();
 
     // Optimistic conflict check — prevent two requests landing in the same slot.
@@ -188,11 +195,11 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
 // POST /api/booking/waitlist/:id — staff parks a request that can't be slotted
 // immediately (e.g. fully-booked procedure list) without losing it in "pending"
 router.post('/api/booking/waitlist/:id', async (req, res) => {
-  if (!(await requireStaffAuth(req, res))) return;
-  const { id } = req.params;
-  const { notes } = req.body ?? {};
-
   try {
+    if (!(await requireStaffAuth(req, res))) return;
+    const { id } = req.params;
+    const { notes } = req.body ?? {};
+
     const supa = getSupabaseAdmin();
     const { error } = await supa
       .from('appointment_requests')
@@ -273,11 +280,11 @@ router.post('/api/booking/patient-confirm/:id', async (req, res) => {
 // POST /api/booking/cancel/:id — staff cancels a request that hasn't been
 // patient-confirmed yet (pending, waitlisted, or staff_confirmed)
 router.post('/api/booking/cancel/:id', async (req, res) => {
-  if (!(await requireStaffAuth(req, res))) return;
-  const { id } = req.params;
-  const { reason } = req.body ?? {};
-
   try {
+    if (!(await requireStaffAuth(req, res))) return;
+    const { id } = req.params;
+    const { reason } = req.body ?? {};
+
     const supa = getSupabaseAdmin();
     const { data, error } = await supa
       .from('appointment_requests')
@@ -333,11 +340,11 @@ router.post('/api/booking/lapse', async (req, res) => {
 
 // GET /api/booking/requests — list booking requests (staff/admin)
 router.get('/api/booking/requests', async (req, res) => {
-  if (!(await requireStaffAuth(req, res))) return;
-  const status  = (req.query.status  as string | undefined) ?? null;
-  const limit   = Math.min(parseInt((req.query.limit as string) ?? '100', 10) || 100, 200);
-
   try {
+    if (!(await requireStaffAuth(req, res))) return;
+    const status  = (req.query.status  as string | undefined) ?? null;
+    const limit   = Math.min(parseInt((req.query.limit as string) ?? '100', 10) || 100, 200);
+
     const supa = getSupabaseAdmin();
     let query = supa
       .from('appointment_requests')

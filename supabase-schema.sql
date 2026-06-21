@@ -477,7 +477,7 @@ create table if not exists appointment_requests (
   patient_phone    text,
   appointment_type text not null,
   location         text not null default 'rodney_bay',
-  preferred_slot   timestamptz,           -- patient's requested slot
+  preferred_slot   text,                  -- patient's requested slot (free text or ISO date)
   confirmed_slot   timestamptz,           -- slot confirmed by staff
   reason           text,
   triage_acuity    text,                  -- from self-triage engine

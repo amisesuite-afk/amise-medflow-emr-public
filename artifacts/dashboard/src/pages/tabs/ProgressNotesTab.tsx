@@ -380,7 +380,7 @@ export default function ProgressNotesTab() {
     }
   }
 
-  const siteLabels: Record<string, string> = { rodney_bay: 'Rodney Bay', castries: 'Castries', tapion: 'Tapion Hospital' };
+  const siteLabels: Record<string, string> = { rodney_bay: 'Rodney Bay', tapion: 'Tapion Hospital' };
   const siteName = siteLabels[ctx.currentSite] ?? 'Amise Medical';
 
   return (

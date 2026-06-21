@@ -34,7 +34,7 @@ export interface Response {
   answeredAt: string;
 }
 
-export interface RedFlag {
+export interface ApcqRedFlag {
   questionKey: string;
   answerValue: string;
   severity: Urgency;
@@ -49,7 +49,7 @@ export interface SessionState {
   patientAge?: number;
   patientSex?: 'male' | 'female' | 'other';
   responses: Response[];
-  redFlags: RedFlag[];
+  redFlags: ApcqRedFlag[];
   queuedKeys: string[];
   answeredKeys: Set<string>;
   currentQuestion: Question | null;
@@ -498,6 +498,141 @@ export const QUESTION_BANK: Record<string, Question> = {
       { value: 'never', label: 'Never' },
     ],
   },
+  // --- Diagnostic pathway questions (guideline-based) ---
+
+  // Biliary colic / cholecystitis pattern (Murphy's equivalent for patients)
+  biliary_pattern: {
+    key: 'biliary_pattern',
+    text: 'Does the pain come in waves after eating fatty or heavy meals, mainly under the right ribs?',
+    type: 'boolean',
+    isRedFlagScreen: true,
+    helpText: 'A pattern of pain after fatty food under the right ribs may suggest gallbladder problems (biliary colic).',
+  },
+
+  // Appendicitis pattern (adapted Alvarado score components)
+  pain_migration: {
+    key: 'pain_migration',
+    text: 'Did the pain start around your navel and then move to the lower right side of your belly?',
+    type: 'boolean',
+    isRedFlagScreen: true,
+    helpText: 'Pain that migrates from the centre to the lower right may suggest appendicitis.',
+  },
+
+  appetite_lost_before_pain: {
+    key: 'appetite_lost_before_pain',
+    text: 'Did you lose your appetite before the pain started?',
+    type: 'boolean',
+  },
+
+  // Bowel obstruction pattern
+  obstruction_symptoms: {
+    key: 'obstruction_symptoms',
+    text: 'Do you have any of these symptoms? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'bloating', label: 'Belly bloating or distension (swelling)' },
+      { value: 'no_gas', label: 'Unable to pass wind (flatus)', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'no_stool', label: 'Unable to pass stool for more than 24 hours' },
+      { value: 'projectile_vomiting', label: 'Vomiting large amounts or repeatedly', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'crampy_waves', label: 'Pain coming in waves/cramping' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  // Hernia-specific
+  hernia_symptoms: {
+    key: 'hernia_symptoms',
+    text: 'If you have a lump or bulge, which best describes it?',
+    type: 'single_choice',
+    options: [
+      { value: 'reducible', label: 'I can push it back in or it goes away when I lie down' },
+      { value: 'intermittent', label: 'It comes and goes, especially when I cough or strain' },
+      { value: 'irreducible', label: 'It will not go back in', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'painful_irreducible', label: 'It will not go back in and it is painful', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'no_lump', label: 'I do not have a lump' },
+    ],
+  },
+
+  // Pancreatitis pattern
+  pancreatitis_pattern: {
+    key: 'pancreatitis_pattern',
+    text: 'Is the pain in the upper middle of your belly going straight through to your back, and does sitting forward ease it?',
+    type: 'boolean',
+    isRedFlagScreen: true,
+    helpText: 'Epigastric pain radiating to the back, eased by leaning forward, is a pattern seen in pancreatitis.',
+  },
+
+  alcohol_binge: {
+    key: 'alcohol_binge',
+    text: 'Have you consumed a large amount of alcohol in the past few days?',
+    type: 'boolean',
+  },
+
+  // Diabetic foot specific
+  foot_wound_duration: {
+    key: 'foot_wound_duration',
+    text: 'How long has the foot wound or ulcer been present?',
+    type: 'single_choice',
+    options: [
+      { value: 'under_1_week', label: 'Less than 1 week' },
+      { value: '1_4_weeks', label: '1–4 weeks' },
+      { value: '1_3_months', label: '1–3 months' },
+      { value: 'over_3_months', label: 'More than 3 months' },
+    ],
+  },
+
+  foot_sensation: {
+    key: 'foot_sensation',
+    text: 'Can you feel normally in your feet?',
+    type: 'single_choice',
+    options: [
+      { value: 'normal', label: 'Yes, normal feeling' },
+      { value: 'reduced', label: 'Reduced feeling or numbness (neuropathy)' },
+      { value: 'none', label: 'No feeling at all', isRedFlag: true, urgencyIfSelected: 'priority' },
+    ],
+  },
+
+  spreading_redness: {
+    key: 'spreading_redness',
+    text: 'Is there redness around the wound that is spreading or getting worse?',
+    type: 'boolean',
+    isRedFlagScreen: true,
+    helpText: 'Spreading redness (cellulitis) with a diabetic foot wound needs urgent assessment.',
+  },
+
+  // Cancer screening specific
+  screening_age_appropriate: {
+    key: 'screening_age_appropriate',
+    text: 'Are you interested in any of the following screening tests? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'colonoscopy', label: 'Bowel cancer screening (colonoscopy)' },
+      { value: 'gastroscopy', label: 'Stomach check (gastroscopy/OGD)' },
+      { value: 'breast', label: 'Breast screening (mammogram/ultrasound)' },
+      { value: 'general', label: 'General surgical check-up' },
+      { value: 'none', label: 'Not at this time' },
+    ],
+  },
+
+  fobt_result: {
+    key: 'fobt_result',
+    text: 'Have you had a stool test for hidden blood (FOBT/FIT test)? If so, what was the result?',
+    type: 'single_choice',
+    options: [
+      { value: 'positive', label: 'Positive (blood detected)', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'negative', label: 'Negative (normal)' },
+      { value: 'not_done', label: 'Not done / not sure' },
+    ],
+  },
+
+  iron_deficiency: {
+    key: 'iron_deficiency',
+    text: 'Have you been told you have low iron or anaemia?',
+    type: 'boolean',
+    isRedFlagScreen: true,
+    helpText: 'Iron deficiency anaemia in adults can be a sign of hidden bleeding and may need endoscopy.',
+  },
+
   // --- Age/sex-relevant and CC-specific questions ---
   aggravating_factors: {
     key: 'aggravating_factors',
@@ -714,6 +849,161 @@ export const QUESTION_BANK: Record<string, Question> = {
       { value: 'none', label: 'None of the above' },
     ],
   },
+
+  // --- Pre-operative assessment (ASA / fitness for surgery) ---
+  asa_exercise_tolerance: {
+    key: 'asa_exercise_tolerance',
+    text: 'How far can you walk on flat ground without stopping due to breathlessness or chest pain?',
+    type: 'single_choice',
+    options: [
+      { value: 'unlimited', label: 'No limit -- I can walk as far as I like' },
+      { value: 'over_200m', label: 'More than 200 metres (2 blocks)' },
+      { value: 'under_200m', label: 'Less than 200 metres', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'housebound', label: 'I can barely walk around the house', isRedFlag: true, urgencyIfSelected: 'urgent' },
+    ],
+    helpText: 'Exercise tolerance helps us assess your fitness for surgery and anaesthesia.',
+  },
+
+  asa_cardiac_history: {
+    key: 'asa_cardiac_history',
+    text: 'Do you have any of these heart conditions? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'hypertension', label: 'High blood pressure (hypertension)' },
+      { value: 'angina', label: 'Chest pain on exertion (angina)', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'heart_attack', label: 'Previous heart attack', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'heart_failure', label: 'Heart failure', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'valve_disease', label: 'Heart valve disease' },
+      { value: 'pacemaker', label: 'Pacemaker or defibrillator' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  asa_respiratory_history: {
+    key: 'asa_respiratory_history',
+    text: 'Do you have any of these breathing conditions? (Select all that apply)',
+    type: 'multi_choice',
+    options: [
+      { value: 'asthma', label: 'Asthma' },
+      { value: 'copd', label: 'COPD or emphysema', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'sleep_apnoea', label: 'Sleep apnoea (use a CPAP machine)' },
+      { value: 'home_oxygen', label: 'I use oxygen at home', isRedFlag: true, urgencyIfSelected: 'urgent' },
+      { value: 'none', label: 'None of the above' },
+    ],
+  },
+
+  anaesthesia_history: {
+    key: 'anaesthesia_history',
+    text: 'Have you had any problems with anaesthesia (being put to sleep for surgery) in the past?',
+    type: 'single_choice',
+    options: [
+      { value: 'none', label: 'No problems' },
+      { value: 'nausea', label: 'Severe nausea or vomiting after' },
+      { value: 'difficult_airway', label: 'I was told my airway was difficult', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'family_reaction', label: 'A family member had a bad reaction to anaesthesia', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'not_sure', label: 'Not sure' },
+    ],
+  },
+
+  blood_thinners_detail: {
+    key: 'blood_thinners_detail',
+    text: 'Are you taking any blood-thinning medicines? If so, which one?',
+    type: 'single_choice',
+    options: [
+      { value: 'none', label: 'None' },
+      { value: 'aspirin', label: 'Aspirin' },
+      { value: 'warfarin', label: 'Warfarin (Coumadin)' },
+      { value: 'rivaroxaban', label: 'Rivaroxaban (Xarelto)' },
+      { value: 'apixaban', label: 'Apixaban (Eliquis)' },
+      { value: 'clopidogrel', label: 'Clopidogrel (Plavix)' },
+      { value: 'other', label: 'Other blood thinner' },
+    ],
+    helpText: 'Blood thinners may need to be stopped before surgery -- this is important for planning.',
+  },
+
+  fasting_status: {
+    key: 'fasting_status',
+    text: 'When did you last eat or drink anything?',
+    type: 'single_choice',
+    options: [
+      { value: 'over_8h', label: 'More than 8 hours ago' },
+      { value: '6_8h', label: '6-8 hours ago' },
+      { value: '2_6h', label: '2-6 hours ago' },
+      { value: 'under_2h', label: 'Less than 2 hours ago', isRedFlag: true, urgencyIfSelected: 'priority' },
+    ],
+    helpText: 'Fasting before procedures reduces the risk of aspiration.',
+  },
+
+  // --- Second opinion pathway ---
+  external_diagnosis: {
+    key: 'external_diagnosis',
+    text: 'What diagnosis or condition were you given by your previous doctor?',
+    type: 'text',
+    helpText: 'If you have a letter or report, please bring it or upload it.',
+  },
+
+  previous_treatment: {
+    key: 'previous_treatment',
+    text: 'What treatment have you had so far for this condition?',
+    type: 'text',
+  },
+
+  second_opinion_reason: {
+    key: 'second_opinion_reason',
+    text: 'What is the main reason you are seeking a second opinion?',
+    type: 'single_choice',
+    options: [
+      { value: 'confirm_diagnosis', label: 'I want to confirm the diagnosis' },
+      { value: 'explore_options', label: 'I want to explore other treatment options' },
+      { value: 'surgery_recommended', label: 'Surgery was recommended and I want another view' },
+      { value: 'not_improving', label: 'Treatment is not working' },
+      { value: 'other', label: 'Other reason' },
+    ],
+  },
+
+  external_investigations: {
+    key: 'external_investigations',
+    text: 'Do you have any test results, scans, or reports to share?',
+    type: 'single_choice',
+    options: [
+      { value: 'have_physical', label: 'Yes -- I will bring paper copies' },
+      { value: 'have_digital', label: 'Yes -- I can upload them' },
+      { value: 'can_request', label: 'No, but I can request them from my doctor' },
+      { value: 'none', label: 'No investigations done' },
+    ],
+  },
+
+  // --- Follow-up specific ---
+  followup_since_last: {
+    key: 'followup_since_last',
+    text: 'Since your last visit, how are you doing overall?',
+    type: 'single_choice',
+    options: [
+      { value: 'much_better', label: 'Much better' },
+      { value: 'somewhat_better', label: 'Somewhat better' },
+      { value: 'same', label: 'About the same' },
+      { value: 'worse', label: 'Getting worse', isRedFlag: true, urgencyIfSelected: 'priority' },
+      { value: 'much_worse', label: 'Much worse', isRedFlag: true, urgencyIfSelected: 'urgent' },
+    ],
+  },
+
+  medication_compliance: {
+    key: 'medication_compliance',
+    text: 'Have you been taking your prescribed medicines as directed?',
+    type: 'single_choice',
+    options: [
+      { value: 'yes_all', label: 'Yes, all of them' },
+      { value: 'most', label: 'Most of them' },
+      { value: 'some', label: 'Some -- I stopped or missed doses' },
+      { value: 'none', label: 'I have not been taking them' },
+    ],
+  },
+
+  new_symptoms_since: {
+    key: 'new_symptoms_since',
+    text: 'Have you developed any new symptoms since your last visit?',
+    type: 'boolean',
+  },
 };
 
 export const SPECIALTY_QUEUES: Record<string, string[]> = {
@@ -816,6 +1106,62 @@ export const SPECIALTY_QUEUES: Record<string, string[]> = {
     'current_medications',
     'allergies',
   ],
+  pre_op: [
+    'surgery_type',
+    'asa_exercise_tolerance',
+    'asa_cardiac_history',
+    'asa_respiratory_history',
+    'anaesthesia_history',
+    'blood_thinners_detail',
+    'comorbidities',
+    'current_medications',
+    'allergies',
+    'smoking_status',
+    'alcohol_use',
+    'prior_surgery',
+    'ros_constitutional',
+    'ros_cardiovascular',
+    'ros_respiratory',
+    'fasting_status',
+  ],
+  second_opinion: [
+    'second_opinion_reason',
+    'external_diagnosis',
+    'previous_treatment',
+    'external_investigations',
+    'chief_complaint',
+    'symptom_duration',
+    'prior_surgery',
+    'current_medications',
+    'allergies',
+    'comorbidities',
+    'family_history_cancer',
+    'ros_constitutional',
+    'ros_gastrointestinal',
+  ],
+  follow_up: [
+    'followup_since_last',
+    'new_symptoms_since',
+    'medication_compliance',
+    'pain_severity',
+    'appetite_change',
+    'current_medications',
+    'allergies',
+  ],
+  new_consult: [
+    'chief_complaint',
+    'symptom_duration',
+    'pain_severity',
+    'associated_fever',
+    'prior_surgery',
+    'current_medications',
+    'allergies',
+    'smoking_status',
+    'family_history_cancer',
+    'ros_constitutional',
+    'ros_gastrointestinal',
+    'comorbidities',
+  ],
 };
 
 const ABDOMINAL_PAIN_KEYS = [
@@ -895,7 +1241,7 @@ function formatAnswerDisplay(question: Question, value: string | string[]): stri
   return labels.join(', ');
 }
 
-export function checkRedFlag(question: Question, value: string | string[]): RedFlag | null {
+export function checkRedFlag(question: Question, value: string | string[]): ApcqRedFlag | null {
   const values = toArray(value);
 
   if (question.type === 'scale') {
@@ -926,7 +1272,7 @@ export function checkRedFlag(question: Question, value: string | string[]): RedF
 
   if (!question.options) return null;
 
-  let worstFlag: RedFlag | null = null;
+  let worstFlag: ApcqRedFlag | null = null;
   const urgencyOrder: Urgency[] = ['routine', 'priority', 'urgent', 'emergency'];
 
   for (const v of values) {
@@ -972,7 +1318,8 @@ function applyChiefComplaintBranching(
     if (v === 'abdominal_pain') {
       additions.push(...ABDOMINAL_PAIN_KEYS);
       additions.push('aggravating_factors', 'relieving_factors', 'relation_to_meals', 'appetite_change');
-      // Female of reproductive age: consider gynaecological differentials
+      additions.push('biliary_pattern', 'pain_migration', 'appetite_lost_before_pain');
+      additions.push('obstruction_symptoms', 'pancreatitis_pattern');
       if (patientSex === 'female' && (patientAge === undefined || patientAge < 55)) {
         additions.push('menstrual_history', 'pregnancy_possible');
       }
@@ -980,14 +1327,19 @@ function applyChiefComplaintBranching(
     if (v === 'rectal_bleeding' || v === 'change_in_bowel_habit') {
       additions.push(...COLORECTAL_KEYS);
       additions.push('haemorrhoid_history', 'anal_symptoms', 'appetite_change');
-      // Over 45: higher malignancy risk — ensure screening questions
       if (patientAge !== undefined && patientAge >= 45) {
-        additions.push('alarm_features');
+        additions.push('alarm_features', 'iron_deficiency', 'fobt_result');
+      }
+      if (patientAge !== undefined && patientAge >= 50) {
+        additions.push('screening_age_appropriate');
       }
     }
     if (v === 'difficulty_swallowing' || v === 'acid_reflux' || v === 'blood_in_vomit_stool') {
       additions.push(...UPPER_GI_KEYS);
       additions.push('relation_to_meals', 'appetite_change');
+      if (v === 'blood_in_vomit_stool') {
+        additions.push('alcohol_binge');
+      }
     }
     if (v === 'breast_concern' || v === 'lump_or_mass') {
       additions.push(...BREAST_KEYS);
@@ -999,20 +1351,27 @@ function applyChiefComplaintBranching(
     }
     if (v === 'jaundice') {
       additions.push(...UPPER_GI_KEYS);
-      additions.push('appetite_change');
+      additions.push('appetite_change', 'pancreatitis_pattern', 'alcohol_binge');
     }
     if (v === 'nausea_vomiting') {
-      // Female of reproductive age: always screen for pregnancy
+      additions.push('obstruction_symptoms');
       if (patientSex === 'female' && (patientAge === undefined || patientAge < 55)) {
         additions.push('pregnancy_possible');
       }
     }
     if (v === 'weight_loss') {
-      additions.push('appetite_change');
+      additions.push('appetite_change', 'iron_deficiency');
+      if (patientAge !== undefined && patientAge >= 50) {
+        additions.push('screening_age_appropriate', 'fobt_result');
+      }
+    }
+    if (v === 'general_screening') {
+      if (patientAge !== undefined && patientAge >= 45) {
+        additions.push('screening_age_appropriate', 'fobt_result', 'iron_deficiency');
+      }
     }
   }
 
-  // All pathways: add comorbidities for patients over 50 or any red-flag CC
   if (patientAge !== undefined && patientAge >= 50) {
     additions.push('comorbidities');
   }
@@ -1042,6 +1401,72 @@ function applyOptionBranching(
   let queue = uniqKeys([...currentQueue, ...toAdd]);
   queue = queue.filter(k => !toRemove.has(k) && !answeredKeys.has(k));
   return queue;
+}
+
+function applyResponseBranching(
+  questionKey: string,
+  values: string[],
+  currentQueue: string[],
+  answeredKeys: Set<string>,
+  state: SessionState,
+): string[] {
+  const toAdd: string[] = [];
+
+  if (questionKey === 'pain_location') {
+    if (values.includes('ruq')) {
+      toAdd.push('biliary_pattern', 'relation_to_meals');
+    }
+    if (values.includes('rlq')) {
+      toAdd.push('pain_migration', 'appetite_lost_before_pain');
+    }
+    if (values.includes('central') || values.includes('diffuse')) {
+      toAdd.push('obstruction_symptoms');
+    }
+    if (values.includes('suprapubic')) {
+      toAdd.push('ros_urinary');
+      if (state.patientSex === 'female' && (state.patientAge === undefined || state.patientAge < 55)) {
+        toAdd.push('menstrual_history', 'pregnancy_possible');
+      }
+    }
+  }
+
+  if (questionKey === 'pain_radiation') {
+    if (values.includes('to_back')) {
+      toAdd.push('pancreatitis_pattern', 'alcohol_binge');
+    }
+    if (values.includes('to_groin')) {
+      toAdd.push('hernia_symptoms');
+    }
+  }
+
+  if (questionKey === 'biliary_pattern' && (values[0] === 'true' || values[0] === 'yes')) {
+    toAdd.push('associated_fever');
+  }
+
+  if (questionKey === 'nausea_vomiting') {
+    if (values.includes('unable_to_keep_fluids') || values.includes('repeated_vomiting')) {
+      toAdd.push('obstruction_symptoms');
+    }
+  }
+
+  if (questionKey === 'last_bowel_movement') {
+    if (values.includes('over_3_days')) {
+      toAdd.push('obstruction_symptoms');
+    }
+  }
+
+  if (questionKey === 'comorbidities') {
+    if (values.includes('diabetes')) {
+      toAdd.push('foot_wound_duration', 'foot_sensation');
+    }
+  }
+
+  if (questionKey === 'foot_wound_duration') {
+    toAdd.push('spreading_redness');
+  }
+
+  if (toAdd.length === 0) return currentQueue;
+  return uniqKeys([...currentQueue, ...toAdd]).filter(k => !answeredKeys.has(k));
 }
 
 export function estimateRemaining(state: SessionState): number {
@@ -1117,6 +1542,8 @@ export function processAnswer(
   } else {
     newQueue = applyOptionBranching(question, values, newQueue, newAnsweredKeys);
   }
+
+  newQueue = applyResponseBranching(answer.questionKey, values, newQueue, newAnsweredKeys, state);
 
   if (answer.questionKey === 'nipple_discharge' && (values[0] === 'true' || values[0] === 'yes')) {
     if (!newAnsweredKeys.has('nipple_discharge_type') && !newQueue.includes('nipple_discharge_type')) {

@@ -382,7 +382,7 @@ export default function ReceptionistView() {
                     const match = SL_COMMUNITIES.find(c => c.community.toLowerCase() === val.toLowerCase());
                     setQuarter(match ? match.quarter : '');
                   }}
-                  placeholder="e.g. Rodney Bay, Castries…"
+                  placeholder="e.g. Rodney Bay, Vieux Fort…"
                   style={{ padding: '10px 11px' }}
                 />
                 <datalist id="sl-communities">

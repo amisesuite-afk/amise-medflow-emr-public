@@ -19,7 +19,7 @@ type DocumentType =
 interface ReferringProvider {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
   provider_type: ProviderType;
   default_document_type: DocumentType;
   notes: string | null;
@@ -109,8 +109,8 @@ function AddProviderForm({ onAdded }: { onAdded: (provider: ReferringProvider) =
   const [err, setErr] = useState('');
 
   async function handleAdd() {
-    if (!form.name.trim() || !form.email.trim()) {
-      setErr('Name and email are required.');
+    if (!form.name.trim()) {
+      setErr('Name is required.');
       return;
     }
     setSaving(true);
@@ -121,7 +121,7 @@ function AddProviderForm({ onAdded }: { onAdded: (provider: ReferringProvider) =
         headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({
           name: form.name.trim(),
-          email: form.email.trim(),
+          email: form.email.trim() || undefined,
           provider_type: form.provider_type,
           default_document_type: form.default_document_type,
           notes: form.notes.trim() || undefined,
@@ -146,8 +146,8 @@ function AddProviderForm({ onAdded }: { onAdded: (provider: ReferringProvider) =
           <input style={inp} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Saint Lucia Diagnostic Imaging" />
         </div>
         <div>
-          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted, #64748b)', display: 'block', marginBottom: 4 }}>Email</label>
-          <input style={inp} type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="reports@example.com" />
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted, #64748b)', display: 'block', marginBottom: 4 }}>Email <span style={{ color: '#9ca3af', fontWeight: 400 }}>(optional)</span></label>
+          <input style={inp} value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="reports@example.com" />
         </div>
         <div>
           <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted, #64748b)', display: 'block', marginBottom: 4 }}>Provider type</label>
@@ -186,7 +186,7 @@ function ProviderRow({ provider, onChanged, onDeleted }: {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
     name: provider.name,
-    email: provider.email,
+    email: provider.email ?? '',
     provider_type: provider.provider_type,
     default_document_type: provider.default_document_type,
     notes: provider.notes ?? '',
@@ -216,13 +216,13 @@ function ProviderRow({ provider, onChanged, onDeleted }: {
   }
 
   async function handleSave() {
-    if (!form.name.trim() || !form.email.trim()) {
-      setErr('Name and email are required.');
+    if (!form.name.trim()) {
+      setErr('Name is required.');
       return;
     }
     const ok = await patch({
       name: form.name.trim(),
-      email: form.email.trim(),
+      email: form.email.trim() || null,
       provider_type: form.provider_type,
       default_document_type: form.default_document_type,
       notes: form.notes.trim() || null,
@@ -258,7 +258,7 @@ function ProviderRow({ provider, onChanged, onDeleted }: {
         <td colSpan={6} style={{ padding: '12px 14px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <input style={inp} value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Name" />
-            <input style={inp} type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="Email" />
+            <input style={inp} value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="Email (optional)" />
             <select style={inp} value={form.provider_type} onChange={e => setForm(f => ({ ...f, provider_type: e.target.value as ProviderType }))}>
               {PROVIDER_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
@@ -283,7 +283,7 @@ function ProviderRow({ provider, onChanged, onDeleted }: {
         {provider.name}
         {provider.notes && <div style={{ fontSize: 11, color: 'var(--muted, #64748b)', fontWeight: 400, marginTop: 2 }}>{provider.notes}</div>}
       </td>
-      <td style={{ padding: '10px 14px', color: '#374151' }}>{provider.email}</td>
+      <td style={{ padding: '10px 14px', color: provider.email ? '#374151' : '#9ca3af' }}>{provider.email || '—'}</td>
       <td style={{ padding: '10px 14px', color: '#374151' }}>{PROVIDER_TYPE_LABEL[provider.provider_type] ?? provider.provider_type}</td>
       <td style={{ padding: '10px 14px', color: '#374151' }}>{DOCUMENT_TYPE_LABEL[provider.default_document_type] ?? provider.default_document_type}</td>
       <td style={{ padding: '10px 14px' }}>

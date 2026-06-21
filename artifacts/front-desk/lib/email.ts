@@ -169,7 +169,7 @@ function buildEmailHtml(opts: {
               Tapion Hospital: <strong style="color:#0d9488;">459-2227 / 284-0557</strong>
             </div>
             <div style="font-size:13px;color:#64748b;margin-top:4px;">
-              Rodney Bay (Providence Building) &nbsp;·&nbsp; Castries
+              Rodney Bay (Providence Building) &nbsp;·&nbsp; Tapion Hospital
             </div>
           </div>
         </td></tr>

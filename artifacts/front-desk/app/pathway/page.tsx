@@ -40,7 +40,7 @@ const CHAINS: CareChain[] = [
       { label: 'Surgical Consult',   sub: 'Clinical assessment, imaging if needed' },
       { label: 'Pre-op Assessment',  sub: 'Blood tests, anaesthesia review' },
       { label: 'Lap / Open Repair',  sub: 'Tapion Hospital' },
-      { label: 'Post-op Review',     sub: 'Castries clinic, 2–4 weeks' },
+      { label: 'Post-op Review',     sub: 'Tapion Hospital, 2-4 weeks' },
     ],
   },
   {
@@ -159,7 +159,7 @@ const CHAINS: CareChain[] = [
     urgency:    'routine',
     bookHref:   '/book',
     steps: [
-      { label: 'Scheduled at Discharge', sub: 'Castries clinic' },
+      { label: 'Scheduled at Discharge', sub: 'Tapion Hospital or Rodney Bay' },
       { label: 'Wound Check',            sub: 'Suture removal / dressing review' },
       { label: 'Recovery Assessment',    sub: 'Activity, diet, return to work' },
       { label: 'Discharge or Plan',      sub: 'Pathology results / further care' },

@@ -332,7 +332,7 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
   } else {
     for (const booking of stale ?? []) {
       try {
-        await supa.from('appointment_requests').update({ status: 'cancelled', cancelled_at: now.toISOString() }).eq('id', booking.id);
+        await supa.from('appointment_requests').update({ status: 'cancelled', notes: 'Auto-cancelled after 8h with no staff action' }).eq('id', booking.id);
 
         if (booking.patient_phone) {
           const firstName = (booking.patient_name as string || 'there').split(' ')[0];

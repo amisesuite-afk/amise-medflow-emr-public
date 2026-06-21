@@ -11,6 +11,9 @@ import whatsappRouter from "./whatsapp";
 import portalRouter from "./portal";
 import investigationsRouter from "./investigations";
 import emailIntakeRouter from "./email-intake";
+import visitLifecycleRouter from "./visit-lifecycle";
+import billingRouter from "./billing";
+import preProcedureRouter from "./pre-procedure";
 
 const router: IRouter = Router();
 
@@ -26,5 +29,8 @@ router.use(whatsappRouter);
 router.use(portalRouter);
 router.use(investigationsRouter);
 router.use(emailIntakeRouter);
+router.use(visitLifecycleRouter);
+router.use(billingRouter);
+router.use(preProcedureRouter);
 
 export default router;

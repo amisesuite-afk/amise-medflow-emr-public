@@ -15,25 +15,52 @@ interface BookingRequest {
   patient_name: string;
   patient_email: string | null;
   patient_phone: string | null;
-  appointment_type: string;
-  location: string;
-  preferred_slot: string | null;
+  // New column names (app code canonical)
+  appointment_type?: string;
+  location?: string;
+  preferred_slot?: string | null;
+  triage_acuity?: string | null;
+  triage_score?: number | null;
+  // Production DB column names (may exist instead of the above)
+  chief_complaint?: string;
+  preferred_site?: string;
+  preferred_date?: string | null;
+  triage_level?: string | null;
+  // Common columns
   reason: string | null;
-  triage_acuity: string | null;
-  triage_score: number | null;
   status: string;
   notes: string | null;
   created_at: string;
-  confirmed_slot: string | null;
-  staff_confirmed_at: string | null;
-  patient_confirmed_at: string | null;
-  patient_ack_sent_at: string | null;
-  staff_notified_at: string | null;
-  staff_escalated_at: string | null;
-  prep_sms_sent: boolean;
-  reminder_sent_at: string | null;
+  confirmed_slot?: string | null;
+  staff_confirmed_at?: string | null;
+  patient_confirmed_at?: string | null;
+  patient_ack_sent_at?: string | null;
+  staff_notified_at?: string | null;
+  staff_escalated_at?: string | null;
+  prep_sms_sent?: boolean;
+  reminder_sent_at?: string | null;
   source?: string;
   whatsapp_from?: string | null;
+}
+
+/** Resolve appointment type from whichever column is populated. */
+function resolveApptType(r: BookingRequest): string {
+  return r.appointment_type || r.chief_complaint || 'consultation';
+}
+
+/** Resolve location from whichever column is populated. */
+function resolveLocation(r: BookingRequest): string {
+  return r.location || r.preferred_site || 'rodney_bay';
+}
+
+/** Resolve preferred slot from whichever column is populated. */
+function resolvePreferredSlot(r: BookingRequest): string | null | undefined {
+  return r.preferred_slot ?? r.preferred_date;
+}
+
+/** Resolve triage acuity from whichever column is populated. */
+function resolveTriageAcuity(r: BookingRequest): string | null | undefined {
+  return r.triage_acuity ?? r.triage_level;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -90,7 +117,6 @@ const PREP_INSTRUCTIONS: Record<string, string> = {
 
 const LOCATION_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay Clinic',
-  castries:   'Castries',
   tapion:     'Tapion Hospital / ERCP Suite',
 };
 
@@ -251,7 +277,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   // When a booking is selected, pre-fill location from its data and reset
   // any per-selection action state from the previously-viewed request
   useEffect(() => {
-    if (selected) setConfirmLoc(selected.location || 'rodney_bay');
+    if (selected) setConfirmLoc(resolveLocation(selected));
     setPortalOk(false);
     setPortalErr(null);
   }, [selected?.id]);
@@ -418,16 +444,16 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     pending: 0, waitlisted: 1, staff_confirmed: 2, patient_confirmed: 3, lapsed: 4, cancelled: 5,
   };
   const sorted = [...requests].sort((a, b) => {
-    const aUrgent = a.triage_acuity === 'urgent' ? 0 : 1;
-    const bUrgent = b.triage_acuity === 'urgent' ? 0 : 1;
+    const aUrgent = resolveTriageAcuity(a) === 'urgent' ? 0 : 1;
+    const bUrgent = resolveTriageAcuity(b) === 'urgent' ? 0 : 1;
     if (aUrgent !== bUrgent) return aUrgent - bUrgent;
 
-    const aProc = requiresPrep(a.appointment_type) ? 0 : 1;
-    const bProc = requiresPrep(b.appointment_type) ? 0 : 1;
+    const aProc = requiresPrep(resolveApptType(a)) ? 0 : 1;
+    const bProc = requiresPrep(resolveApptType(b)) ? 0 : 1;
     if (aProc !== bProc) return aProc - bProc;
 
-    const aAcuity = ACUITY_RANK[a.triage_acuity ?? 'routine'] ?? ACUITY_RANK.routine;
-    const bAcuity = ACUITY_RANK[b.triage_acuity ?? 'routine'] ?? ACUITY_RANK.routine;
+    const aAcuity = ACUITY_RANK[resolveTriageAcuity(a) ?? 'routine'] ?? ACUITY_RANK.routine;
+    const bAcuity = ACUITY_RANK[resolveTriageAcuity(b) ?? 'routine'] ?? ACUITY_RANK.routine;
     if (aAcuity !== bAcuity) return aAcuity - bAcuity;
 
     const aStatus = STATUS_RANK[a.status] ?? 9;
@@ -566,9 +592,9 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
 
                   {/* Row 2: Appt type + source + prep chip */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, color: '#374151' }}>{apptLabel(req.appointment_type)}</span>
+                    <span style={{ fontSize: 12, color: '#374151' }}>{apptLabel(resolveApptType(req))}</span>
                     <SourceBadge source={req.source} />
-                    {requiresPrep(req.appointment_type) && (
+                    {requiresPrep(resolveApptType(req)) && (
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa' }}>
                         PREP
                       </span>
@@ -591,9 +617,9 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                   </div>
 
                   {/* Preferred slot */}
-                  {req.preferred_slot && (
+                  {resolvePreferredSlot(req) && (
                     <div style={{ fontSize: 11, color: '#6b7280', marginTop: 3 }}>
-                      Preferred: {req.preferred_slot}
+                      Preferred: {resolvePreferredSlot(req)}
                     </div>
                   )}
                 </button>
@@ -706,7 +732,6 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                   style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
                 >
                   <option value="rodney_bay">Rodney Bay Clinic</option>
-                  <option value="castries">Castries</option>
                   <option value="tapion">Tapion Hospital / ERCP Suite</option>
                 </select>
               </div>
@@ -790,14 +815,14 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                 <StatusBadge status={selected.status} />
                 <span style={{ fontSize: 12, color: '#6b7280' }}>Submitted {timeAgo(selected.created_at)}</span>
-                {selected.triage_acuity && selected.triage_acuity !== 'routine' && (
+                {resolveTriageAcuity(selected) && resolveTriageAcuity(selected) !== 'routine' && (
                   <span style={{
                     fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 99,
-                    background: selected.triage_acuity === 'urgent' ? '#fef2f2' : '#fff7ed',
-                    color: selected.triage_acuity === 'urgent' ? '#dc2626' : '#c2410c',
-                    border: `1px solid ${selected.triage_acuity === 'urgent' ? '#fecaca' : '#fed7aa'}`,
+                    background: resolveTriageAcuity(selected) === 'urgent' ? '#fef2f2' : '#fff7ed',
+                    color: resolveTriageAcuity(selected) === 'urgent' ? '#dc2626' : '#c2410c',
+                    border: `1px solid ${resolveTriageAcuity(selected) === 'urgent' ? '#fecaca' : '#fed7aa'}`,
                   }}>
-                    {selected.triage_acuity.toUpperCase()}
+                    {(resolveTriageAcuity(selected) ?? '').toUpperCase()}
                   </span>
                 )}
               </div>
@@ -815,10 +840,10 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
             {[
               { label: 'Email',       value: selected.patient_email },
               { label: 'Phone',       value: fmtPhone(selected.patient_phone) || null },
-              { label: 'Appointment', value: apptLabel(selected.appointment_type) },
-              { label: 'Location',    value: LOCATION_LABELS[selected.location] ?? selected.location },
-              { label: 'Preferred slot', value: selected.preferred_slot ?? 'No preference' },
-              { label: 'Triage acuity', value: selected.triage_acuity ?? 'Not assessed' },
+              { label: 'Appointment', value: apptLabel(resolveApptType(selected)) },
+              { label: 'Location',    value: LOCATION_LABELS[resolveLocation(selected)] ?? resolveLocation(selected) },
+              { label: 'Preferred slot', value: resolvePreferredSlot(selected) ?? 'No preference' },
+              { label: 'Triage acuity', value: resolveTriageAcuity(selected) ?? 'Not assessed' },
             ].map(({ label, value }) => (
               <div key={label} style={{ background: '#f9fafb', borderRadius: 8, padding: '10px 12px' }}>
                 <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 3 }}>{label}</div>
@@ -840,13 +865,13 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
           )}
 
           {/* Prep instructions */}
-          {requiresPrep(selected.appointment_type) && (
+          {requiresPrep(resolveApptType(selected)) && (
             <div style={{ marginBottom: 16, padding: '12px 14px', borderRadius: 8, background: '#fff7ed', border: '1px solid #fed7aa' }}>
               <div style={{ fontSize: 12, fontWeight: 700, color: '#c2410c', marginBottom: 6 }}>
-                ⚠ Procedure Preparation Required — {apptLabel(selected.appointment_type)}
+                ⚠ Procedure Preparation Required — {apptLabel(resolveApptType(selected))}
               </div>
               <div style={{ fontSize: 12, color: '#7c2d12', lineHeight: 1.6 }}>
-                {PREP_INSTRUCTIONS[selected.appointment_type.toLowerCase()] ?? 'See procedure prep guidelines.'}
+                {PREP_INSTRUCTIONS[resolveApptType(selected).toLowerCase()] ?? 'See procedure prep guidelines.'}
               </div>
               <div style={{ fontSize: 11, color: '#c2410c', marginTop: 8, fontWeight: 600 }}>
                 {selected.prep_sms_sent
@@ -918,7 +943,6 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                   style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1.5px solid #d1d5db', fontSize: 13, boxSizing: 'border-box' }}
                 >
                   <option value="rodney_bay">Rodney Bay Clinic</option>
-                  <option value="castries">Castries</option>
                   <option value="tapion">Tapion Hospital / ERCP Suite</option>
                 </select>
               </div>
@@ -960,7 +984,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               </button>
 
               <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 8, textAlign: 'center' }}>
-                Patient will receive a confirmation SMS with slot details{requiresPrep(selected.appointment_type) ? ' and preparation instructions' : ''}.
+                Patient will receive a confirmation SMS with slot details{requiresPrep(resolveApptType(selected)) ? ' and preparation instructions' : ''}.
               </div>
 
               {waitlistErr && (
@@ -988,7 +1012,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
             <div style={{ marginBottom: 20, padding: '14px 16px', borderRadius: 10, background: '#eff6ff', border: '1px solid #93c5fd' }}>
               <div style={{ fontSize: 12, color: '#1d4ed8', fontWeight: 700, marginBottom: 4 }}>Confirmed Slot</div>
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a8a' }}>{fmtSlot(selected.confirmed_slot)}</div>
-              <div style={{ fontSize: 12, color: '#1d4ed8', marginTop: 4 }}>{LOCATION_LABELS[selected.location] ?? selected.location}</div>
+              <div style={{ fontSize: 12, color: '#1d4ed8', marginTop: 4 }}>{LOCATION_LABELS[resolveLocation(selected)] ?? resolveLocation(selected)}</div>
               {selected.notes && <div style={{ fontSize: 12, color: '#374151', marginTop: 6, fontStyle: 'italic' }}>{selected.notes}</div>}
             </div>
           )}
@@ -1083,7 +1107,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                 <AuditRow label="Reminder SMS sent" value={fmtSlot(selected.reminder_sent_at)} />
               )}
               {isAdmin && (
-                <AuditRow label="Prep SMS sent" value={selected.prep_sms_sent ? 'Yes' : 'Not yet'} />
+                <AuditRow label="Prep SMS sent" value={selected.prep_sms_sent === true ? 'Yes' : 'Not yet'} />
               )}
             </div>
           </div>

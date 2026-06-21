@@ -84,6 +84,9 @@
 -- 24. User default site: user_profiles.default_site
 \i supabase-user-default-site-migration.sql
 
+-- 25. Preferred slot type fix: appointment_requests.preferred_slot timestamptz -> text
+\i supabase-preferred-slot-text-migration.sql
+
 -- ============================================================
 -- FULL TABLE INVENTORY (after all migrations)
 -- ============================================================

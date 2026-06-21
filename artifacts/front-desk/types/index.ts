@@ -3,7 +3,7 @@ export type BookingTrack  = 'routine' | 'referral' | 'urgent';
 export type BookingStatus = 'pending' | 'staff_confirmed' | 'patient_confirmed' | 'declined' | 'lapsed';
 export type Channel = 'whatsapp' | 'email' | 'sms';
 export type ThreadStatus = 'active' | 'pending_approval' | 'resolved' | 'escalated';
-export type SiteCode = 'rodney_bay' | 'tapion' | 'castries';
+export type SiteCode = 'rodney_bay' | 'tapion';
 
 export interface TriageSnapshot {
   acuity: string;

@@ -26,8 +26,7 @@ If a message contains anything urgent (bleeding, severe pain, jaundice, post-op 
 
 Locations:
 - Rodney Bay (Providence Building) — new consultations, ERCP work-up, breast clinics
-- Castries — follow-ups and post-op reviews
-- Tapion Hospital (459-2227 / 284-0557) — ERCP procedures and emergencies
+- Tapion Hospital (La Toc, Castries) — surgery, endoscopy, ERCP, post-operative reviews, urgent reviews. Tel: 459-2227 / 284-0557
 
 Sign every reply as: "Front Desk, Amise Medical Services".`;
 
@@ -39,7 +38,7 @@ export const ClassificationSchema = z.object({
   patient_first_name: z.string().nullable(),
   reason_summary: z.string().max(200),
   preferred_dates: z.array(z.string()).max(5),
-  preferred_location: z.enum(['rodney_bay', 'castries', 'either', 'unknown']),
+  preferred_location: z.enum(['rodney_bay', 'tapion', 'either', 'unknown']),
   confidence: z.number().min(0).max(1),
 });
 
@@ -60,7 +59,7 @@ Schema:
   "patient_first_name": string | null,
   "reason_summary": string (max 200 chars, no clinical interpretation, just paraphrase what they said),
   "preferred_dates": string[] (ISO dates if mentioned, max 5),
-  "preferred_location": "rodney_bay" | "castries" | "either" | "unknown",
+  "preferred_location": "rodney_bay" | "tapion" | "either" | "unknown",
   "confidence": number 0-1
 }
 

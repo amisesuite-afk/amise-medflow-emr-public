@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
-import { requireStaffAuth, audit } from '../lib/supabase.js';
+import { getSupabaseAdmin, requireStaffAuth, audit } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
@@ -40,9 +40,11 @@ Respond with ONLY a JSON object, no markdown fences, matching this schema:
 
 "flag": "H" if the report marks the result high/elevated, "L" if low, "C" if critical/panic value, "N" if explicitly marked normal, "" if no flag is shown. "reportDate" should be an ISO date (YYYY-MM-DD) if visible, else null.`;
 
-// POST /api/investigations/extract-results — staff uploads a lab/imaging
-// report; Claude (vision) drafts the extracted results for a human to
-// review and confirm before they are saved into the patient record.
+// ---------------------------------------------------------------------------
+// POST /api/investigations/extract-results
+// Staff uploads a lab/imaging report; Claude (vision) drafts the extracted
+// results for a human to review and confirm before saving.
+// ---------------------------------------------------------------------------
 router.post('/api/investigations/extract-results', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
 
@@ -90,6 +92,392 @@ router.post('/api/investigations/extract-results', async (req, res) => {
     res.json(parsed);
   } catch (err) {
     logger.error({ err }, '[investigations/extract-results] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/lab-order -- create a lab order
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/lab-order', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const {
+    encounterId, patientId, testName, testCategory,
+    specimenType, notes, urgency,
+  } = (req.body ?? {}) as {
+    encounterId?: string; patientId?: string; testName?: string;
+    testCategory?: string; specimenType?: string; notes?: string;
+    urgency?: string;
+  };
+
+  if (!encounterId || !patientId || !testName || !testCategory) {
+    res.status(400).json({ error: 'encounterId, patientId, testName, and testCategory are required' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    const { data, error } = await supa
+      .from('investigation_results')
+      .insert({
+        encounter_id: encounterId,
+        patient_id: patientId,
+        test_name: testName,
+        test_category: testCategory,
+        specimen_type: specimenType ?? null,
+        notes: notes ?? null,
+        status: 'ordered',
+      })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    await audit({
+      action: 'book',
+      entityType: 'investigation_result',
+      entityId: data.id,
+      payload: { encounterId, patientId, testName, testCategory, urgency: urgency ?? 'routine' },
+    });
+
+    logger.info({ id: data.id, encounterId, testName }, '[investigations/lab-order] created');
+    res.json({ id: data.id, status: 'ordered' });
+  } catch (err) {
+    logger.error({ err }, '[investigations/lab-order] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/imaging-order -- create an imaging order
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/imaging-order', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const {
+    encounterId, patientId, orderType, bodyArea, clinicalIndication,
+    laterality, urgency, contrastRequired, patientPreparation, notes,
+  } = (req.body ?? {}) as {
+    encounterId?: string; patientId?: string; orderType?: string;
+    bodyArea?: string; clinicalIndication?: string; laterality?: string;
+    urgency?: string; contrastRequired?: boolean; patientPreparation?: string;
+    notes?: string;
+  };
+
+  if (!encounterId || !patientId || !orderType || !bodyArea || !clinicalIndication) {
+    res.status(400).json({ error: 'encounterId, patientId, orderType, bodyArea, and clinicalIndication are required' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    const { data, error } = await supa
+      .from('imaging_orders')
+      .insert({
+        encounter_id: encounterId,
+        patient_id: patientId,
+        order_type: orderType,
+        body_area: bodyArea,
+        clinical_indication: clinicalIndication,
+        laterality: laterality ?? null,
+        urgency: urgency ?? 'routine',
+        contrast_required: contrastRequired ?? false,
+        patient_preparation: patientPreparation ?? null,
+        notes: notes ?? null,
+        status: 'ordered',
+      })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    await audit({
+      action: 'book',
+      entityType: 'imaging_order',
+      entityId: data.id,
+      payload: { encounterId, patientId, orderType, bodyArea, urgency: urgency ?? 'routine' },
+    });
+
+    logger.info({ id: data.id, encounterId, orderType, bodyArea }, '[investigations/imaging-order] created');
+    res.json({ id: data.id, status: 'ordered' });
+  } catch (err) {
+    logger.error({ err }, '[investigations/imaging-order] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/result/:id -- record a result for a lab order
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/result/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+
+  const {
+    resultValue, analytes, resultUnit, referenceRange,
+    isAbnormal, isCritical, performingLab, notes,
+  } = (req.body ?? {}) as {
+    resultValue?: string; analytes?: unknown[]; resultUnit?: string;
+    referenceRange?: string; isAbnormal?: boolean; isCritical?: boolean;
+    performingLab?: string; notes?: string;
+  };
+
+  if (!resultValue && !analytes) {
+    res.status(400).json({ error: 'resultValue or analytes is required' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // Verify the investigation exists
+    const { data: existing, error: fetchErr } = await supa
+      .from('investigation_results')
+      .select('id, status')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr || !existing) {
+      res.status(404).json({ error: 'Investigation order not found' });
+      return;
+    }
+
+    const { error } = await supa
+      .from('investigation_results')
+      .update({
+        result_value: resultValue ?? null,
+        analytes: analytes ?? null,
+        result_unit: resultUnit ?? null,
+        reference_range: referenceRange ?? null,
+        is_abnormal: isAbnormal ?? false,
+        is_critical: isCritical ?? false,
+        performing_lab: performingLab ?? null,
+        notes: notes ?? null,
+        status: 'resulted',
+        reported_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    await audit({
+      action: 'extract',
+      entityType: 'investigation_result',
+      entityId: id,
+      payload: { status: 'resulted', isCritical: isCritical ?? false },
+    });
+
+    logger.info({ id, isCritical: isCritical ?? false }, '[investigations/result] recorded');
+    res.json({ id, status: 'resulted' });
+  } catch (err) {
+    logger.error({ err }, '[investigations/result] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/imaging-report/:id -- record a report for an imaging order
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/imaging-report/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+
+  const {
+    reportText, performingFacility, radiologist, notes,
+  } = (req.body ?? {}) as {
+    reportText?: string; performingFacility?: string;
+    radiologist?: string; notes?: string;
+  };
+
+  if (!reportText) {
+    res.status(400).json({ error: 'reportText is required' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // Verify the imaging order exists
+    const { data: existing, error: fetchErr } = await supa
+      .from('imaging_orders')
+      .select('id, status')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr || !existing) {
+      res.status(404).json({ error: 'Imaging order not found' });
+      return;
+    }
+
+    const { error } = await supa
+      .from('imaging_orders')
+      .update({
+        report_text: reportText,
+        performing_facility: performingFacility ?? null,
+        radiologist: radiologist ?? null,
+        notes: notes ?? null,
+        status: 'reported',
+        report_received_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    await audit({
+      action: 'extract',
+      entityType: 'imaging_order',
+      entityId: id,
+      payload: { status: 'reported' },
+    });
+
+    logger.info({ id }, '[investigations/imaging-report] recorded');
+    res.json({ id, status: 'reported' });
+  } catch (err) {
+    logger.error({ err }, '[investigations/imaging-report] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/review/:id -- doctor marks a result as reviewed
+// Works for both investigation_results and imaging_orders.
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/review/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+
+  const { table } = (req.body ?? {}) as {
+    table?: 'investigation_results' | 'imaging_orders';
+  };
+
+  if (!table || (table !== 'investigation_results' && table !== 'imaging_orders')) {
+    res.status(400).json({ error: 'table is required and must be "investigation_results" or "imaging_orders"' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // Verify the record exists
+    const { data: existing, error: fetchErr } = await supa
+      .from(table)
+      .select('id, status')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr || !existing) {
+      res.status(404).json({ error: 'Record not found' });
+      return;
+    }
+
+    const now = new Date().toISOString();
+
+    const { error } = await supa
+      .from(table)
+      .update({
+        status: 'reviewed',
+        reviewed_at: now,
+        updated_at: now,
+      })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    const entityType = table === 'investigation_results' ? 'investigation_result' : 'imaging_order';
+
+    await audit({
+      action: 'extract',
+      entityType,
+      entityId: id,
+      payload: { status: 'reviewed' },
+    });
+
+    logger.info({ id, table }, '[investigations/review] marked reviewed');
+    res.json({ id, status: 'reviewed' });
+  } catch (err) {
+    logger.error({ err }, '[investigations/review] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/investigations/pending -- list all unreviewed results
+// Returns lab results with status 'resulted' and imaging with status 'reported'.
+// ---------------------------------------------------------------------------
+router.get('/api/investigations/pending', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    const [labRes, imagingRes] = await Promise.all([
+      supa
+        .from('investigation_results')
+        .select('id, patient_id, encounter_id, test_name, test_category, result_value, analytes, is_abnormal, is_critical, status, reported_at, created_at')
+        .eq('status', 'resulted')
+        .order('reported_at', { ascending: false })
+        .limit(100),
+      supa
+        .from('imaging_orders')
+        .select('id, patient_id, encounter_id, order_type, body_area, clinical_indication, urgency, status, report_received_at, report_text, radiologist, created_at')
+        .eq('status', 'reported')
+        .order('report_received_at', { ascending: false })
+        .limit(100),
+    ]);
+
+    if (labRes.error) throw labRes.error;
+    if (imagingRes.error) throw imagingRes.error;
+
+    res.json({
+      labResults: labRes.data ?? [],
+      imagingOrders: imagingRes.data ?? [],
+    });
+  } catch (err) {
+    logger.error({ err }, '[investigations/pending] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/investigations/patient/:patientId -- all investigations for a patient
+// Returns both lab results and imaging orders ordered by date desc.
+// ---------------------------------------------------------------------------
+router.get('/api/investigations/patient/:patientId', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { patientId } = req.params;
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    const [labRes, imagingRes] = await Promise.all([
+      supa
+        .from('investigation_results')
+        .select('*')
+        .eq('patient_id', patientId)
+        .order('created_at', { ascending: false })
+        .limit(200),
+      supa
+        .from('imaging_orders')
+        .select('*')
+        .eq('patient_id', patientId)
+        .order('created_at', { ascending: false })
+        .limit(200),
+    ]);
+
+    if (labRes.error) throw labRes.error;
+    if (imagingRes.error) throw imagingRes.error;
+
+    res.json({
+      labResults: labRes.data ?? [],
+      imagingOrders: imagingRes.data ?? [],
+    });
+  } catch (err) {
+    logger.error({ err }, '[investigations/patient] error');
     res.status(502).json({ error: errStr(err) });
   }
 });
