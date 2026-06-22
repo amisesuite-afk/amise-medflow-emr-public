@@ -60,7 +60,7 @@ export function MobileNavMenu({ links }: { links: readonly { href: string; label
             </a>
           ))}
           <Link
-            href="/patient/request"
+            href="/intake"
             onClick={() => setOpen(false)}
             style={{
               padding: '14px 0', fontSize: 15, fontWeight: 700,

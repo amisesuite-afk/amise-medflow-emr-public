@@ -68,7 +68,7 @@ function Nav() {
           ))}
 
           {/* New patient / general info CTA */}
-          <Link href="/patient/request" style={{
+          <Link href="/intake" style={{
             fontSize: 14, fontWeight: 700, textDecoration: 'none',
             color: '#0d9488', whiteSpace: 'nowrap',
           }}>
@@ -169,7 +169,7 @@ function Hero() {
         </p>
 
         {/* New patient / general info CTA */}
-        <Link href="/patient/request" style={{
+        <Link href="/intake" style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
           padding: '10px 20px', marginBottom: 18,
           background: '#fff', color: '#0d9488',

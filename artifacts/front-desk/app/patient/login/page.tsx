@@ -464,7 +464,7 @@ function LoginContent() {
 
         <p style={{ marginTop: 20, textAlign: 'center', fontSize: 13, color: '#64748b' }}>
           New patient?{' '}
-          <a href="/patient/request" style={{ color: TEAL, fontWeight: 600, textDecoration: 'none' }}>
+          <a href="/intake" style={{ color: TEAL, fontWeight: 600, textDecoration: 'none' }}>
             Request a consultation →
           </a>
         </p>
