@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/components/ToastProvider';
+import { saveClinicalNote } from '@/lib/db';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
 import { escH as escHDoc, T, AMISE_LOGO_SVG } from './lib/docTemplate';
@@ -267,6 +269,7 @@ function ExamSection({ systemKey, label, chips, selected, onToggle, note, onNote
 export default function ProgressNotesTab() {
   const ctx = useAppContext();
   const { profile } = useAuth();
+  const { showToast } = useToast();
 
   const C = { navy: '#0B2545', teal: '#1F7A8C', gold: '#C8A24B', muted: '#6B7280', terra: '#9B5E3A' };
   const INP: React.CSSProperties = { width: '100%', padding: '6px 9px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 13, boxSizing: 'border-box' };
@@ -277,6 +280,7 @@ export default function ProgressNotesTab() {
   const today = new Date().toISOString().slice(0, 10);
   const [date, setDate] = useState(today);
   const [author, setAuthor] = useState(profile?.full_name ?? 'Dr. Dawit D Kabiye');
+  const [saving, setSaving] = useState(false);
   const [interval, setInterval] = useState('');
 
   // S — Subjective
@@ -331,36 +335,52 @@ export default function ProgressNotesTab() {
     return [chips.join('. '), note.trim()].filter(Boolean).join('. ');
   }
 
-  function handleSave() {
-    const intervalLabel = interval || (postOpDay !== null ? `Post-op Day ${postOpDay}` : '');
-    const note: ProgressNote = {
-      id: crypto.randomUUID(),
-      date, author, type: noteType, interval: intervalLabel,
-      chiefComplaint,
-      symptoms: selectedSymptoms,
-      intervalHistory,
-      vitals,
-      examGeneral: buildExamText('general'),
-      examCvs:     buildExamText('cvs'),
-      examRs:      buildExamText('rs'),
-      examAbdomen: buildExamText('abdomen'),
-      examWound:   buildExamText('wound'),
-      examLimbs:   buildExamText('limbs'),
-      examOther:   examNotes.other ?? '',
-      assessment,
-      plan,
-    };
-    ctx.setProgressNotes([note, ...ctx.progressNotes]);
-    // Reset form
-    setChiefComplaint(''); setSelectedSymptoms([]); setIntervalHistory('');
-    setVitals({});
-    setExamChips({ general: [], cvs: [], rs: [], abdomen: [], wound: [], limbs: [] });
-    setExamNotes({ general: '', cvs: '', rs: '', abdomen: '', wound: '', limbs: '', other: '' });
-    setAssessment(''); setPlan(''); setSelectedTemplate(''); setInterval('');
-    setDate(today);
+  async function handleSave() {
+    if (saving) return;
+    setSaving(true);
+    try {
+      const intervalLabel = interval || (postOpDay !== null ? `Post-op Day ${postOpDay}` : '');
+      const note: ProgressNote = {
+        id: crypto.randomUUID(),
+        date, author, type: noteType, interval: intervalLabel,
+        chiefComplaint,
+        symptoms: selectedSymptoms,
+        intervalHistory,
+        vitals,
+        examGeneral: buildExamText('general'),
+        examCvs:     buildExamText('cvs'),
+        examRs:      buildExamText('rs'),
+        examAbdomen: buildExamText('abdomen'),
+        examWound:   buildExamText('wound'),
+        examLimbs:   buildExamText('limbs'),
+        examOther:   examNotes.other ?? '',
+        assessment,
+        plan,
+      };
+      ctx.setProgressNotes([note, ...ctx.progressNotes]);
+
+      if (ctx.patientId && ctx.encounterId) {
+        const { error } = await saveClinicalNote(note, ctx.patientId, ctx.encounterId);
+        if (error) {
+          console.error('[progress-notes] save failed:', error);
+          showToast(`Save failed: ${error}`, 'error');
+          return;
+        }
+      }
+
+      // Reset form
+      setChiefComplaint(''); setSelectedSymptoms([]); setIntervalHistory('');
+      setVitals({});
+      setExamChips({ general: [], cvs: [], rs: [], abdomen: [], wound: [], limbs: [] });
+      setExamNotes({ general: '', cvs: '', rs: '', abdomen: '', wound: '', limbs: '', other: '' });
+      setAssessment(''); setPlan(''); setSelectedTemplate(''); setInterval('');
+      setDate(today);
+    } finally {
+      setSaving(false);
+    }
   }
 
-  const siteLabels: Record<string, string> = { rodney_bay: 'Rodney Bay', castries: 'Castries', tapion: 'Tapion Hospital' };
+  const siteLabels: Record<string, string> = { rodney_bay: 'Rodney Bay', tapion: 'Tapion Hospital' };
   const siteName = siteLabels[ctx.currentSite] ?? 'Amise Medical';
 
   return (
@@ -566,9 +586,9 @@ export default function ProgressNotesTab() {
         </div>
 
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button type="button" onClick={handleSave}
-            style={{ ...BTN, background: C.teal, color: '#fff', fontSize: 13, padding: '9px 20px' }}>
-            + Save Note
+          <button type="button" onClick={() => void handleSave()} disabled={saving}
+            style={{ ...BTN, background: saving ? '#9ca3af' : C.teal, color: '#fff', fontSize: 13, padding: '9px 20px', cursor: saving ? 'not-allowed' : 'pointer' }}>
+            {saving ? 'Saving...' : '+ Save Note'}
           </button>
         </div>
       </CollapsibleCard>

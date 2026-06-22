@@ -69,10 +69,7 @@ function validateConfig(): ConfigIssue[] {
 
 export const configIssues = validateConfig();
 
-// Log summary to console
-if (configIssues.length === 0) {
-  console.log('[supabase-config] ✓ URL and anon key both look valid');
-} else {
+if (configIssues.length > 0) {
   configIssues.forEach(i =>
     console.error(`[supabase-config] ${i.severity.toUpperCase()} ${i.variable}: ${i.message}`)
   );
@@ -96,7 +93,7 @@ declare global {
 export function getSupabase(): SupabaseClient | null {
   // Invalidate the cached client if the URL has changed (e.g. .env edit + restart)
   if (window.__supabase && window.__supabaseUrl !== effectiveUrl) {
-    console.log('[supabase-init] URL changed, resetting client singleton');
+    // URL changed (e.g. .env edit + restart) — reset singleton
     window.__supabase = undefined;
     window.__supabaseUrl = undefined;
   }
@@ -113,7 +110,6 @@ export function getSupabase(): SupabaseClient | null {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
     });
     window.__supabaseUrl = effectiveUrl;
-    console.log('[supabase-init] client created, effectiveUrl:', effectiveUrl);
   } catch (e: unknown) {
     console.error('[supabase-init] createClient threw:', serializeError(e));
   }

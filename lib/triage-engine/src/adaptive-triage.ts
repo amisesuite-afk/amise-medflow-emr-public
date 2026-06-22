@@ -1,4 +1,6 @@
-import { scanRedFlags, Severity, AppointmentType, PATHWAY_DEFINITIONS, PathwayPanel } from './rules.js';
+import { scanRedFlags, Severity, AppointmentType, PATHWAY_DEFINITIONS, PathwayPanel } from './rules';
+import { matchSurgicalPathologies, SurgicalPathology } from './surgical-dictionary';
+import { screenForCancer, detectReferrals, CancerScreenResult, ReferralRecommendation, ScreeningInput } from './cancer-screening';
 
 export type Sex = 'female' | 'male' | 'other' | 'unknown';
 
@@ -50,6 +52,14 @@ export interface AdaptiveTriageResult {
   frontDeskScript: string;
   suggestedBlocks: string[];
   missingCriticalFields: string[];
+  /** Surgical pathologies (with ICD-10/CPT codes) matched against the patient's reason/free text, most urgent first. */
+  surgicalMatches: SurgicalPathology[];
+  /** "Magnet first step" flag -- true when the patient's complaint matches a known surgical pathology. */
+  isPrimarilySurgical: boolean;
+  /** NICE NG12 cancer screening result when criteria are met. */
+  cancerScreen: CancerScreenResult | null;
+  /** Internal medicine / allied referral recommendations when pathology is non-surgical. */
+  referralRecommendations: ReferralRecommendation[];
 }
 
 const ERCP_TERMS = /(jaundice|yellow eyes|yellow skin|dark urine|pale stool|bile duct|cbd|stone|mrcp|ercp|cholangitis|pancreatitis|biliary)/i;
@@ -244,7 +254,41 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
   const activePathways = detectPathways(combined, data.vitalSigns);
   const missingCriticalFields = buildMissingFields(data, combined);
   const questionsToAsk = buildQuestions(data, combined, missingCriticalFields);
-  const suggestedBlocks = buildSuggestedBlocks(data, combined, appointmentType);
+  // "Magnet first step": flag patients whose complaint matches a known
+  // surgical pathology as early as booking/check-in, with suggested codes.
+  const surgicalMatches = matchSurgicalPathologies(combined);
+  const isPrimarilySurgical = surgicalMatches.length > 0;
+
+  const suggestedBlocks = buildSuggestedBlocks(data, combined, appointmentType, surgicalMatches);
+
+  // An urgent surgical pathology (e.g. strangulated hernia, GI bleed,
+  // diabetic foot gangrene) should never be triaged below "priority", even
+  // if the symptom-score rules above didn't already flag it.
+  if (surgicalMatches.some(m => m.surgicalPriority === 'urgent') && acuity !== 'urgent') {
+    acuity = 'priority';
+    if (recommendedAction === 'routine_booking' || recommendedAction === 'priority_24_48h') {
+      recommendedAction = 'same_day_call';
+    }
+  }
+
+  const screeningInput: ScreeningInput = {
+    age: data.age,
+    sex: data.sex === 'unknown' ? 'unknown' : data.sex,
+    chiefComplaints: data.symptoms,
+    symptoms: data.symptoms,
+    familyHistory: data.comorbidities.filter(c => /family|hereditary|brca|lynch/i.test(c)),
+    responses: {},
+  };
+  const cancerScreen = screenForCancer(screeningInput);
+  const referralRecommendations = detectReferrals(screeningInput);
+
+  if (cancerScreen.triggered && cancerScreen.referralUrgency === 'two_week_wait') {
+    addScore(true, 30, `Cancer screening triggered (${cancerScreen.cancerType}) -- 2-week-wait referral criteria met`, state);
+    if (acuity === 'routine' || acuity === 'review') {
+      acuity = 'priority';
+      recommendedAction = 'same_day_call';
+    }
+  }
 
   return {
     acuity,
@@ -261,6 +305,10 @@ export function adaptiveTriage(input: AdaptiveTriageInput): AdaptiveTriageResult
     frontDeskScript: buildFrontDeskScript(recommendedAction, questionsToAsk),
     suggestedBlocks,
     missingCriticalFields,
+    surgicalMatches,
+    isPrimarilySurgical,
+    cancerScreen: cancerScreen.triggered ? cancerScreen : null,
+    referralRecommendations,
   };
 }
 
@@ -294,7 +342,7 @@ function buildQuestions(data: NormalizedInput, combined: string, missing: string
   return uniq(questions).slice(0, 10);
 }
 
-function buildSuggestedBlocks(data: NormalizedInput, combined: string, appointmentType: AppointmentType): string[] {
+function buildSuggestedBlocks(data: NormalizedInput, combined: string, appointmentType: AppointmentType, surgicalMatches: SurgicalPathology[]): string[] {
   const blocks = ['Demographics', 'Contact details', 'PMH', 'Medication/allergy list', 'Reason for visit'];
   if (appointmentType === 'breast') blocks.push('Breast symptoms', 'Family history', 'Prior imaging/biopsy');
   if (appointmentType === 'ercp_workup') blocks.push('LFT/imaging summary', 'Anticoagulants', 'Previous ERCP/surgery');
@@ -303,6 +351,9 @@ function buildSuggestedBlocks(data: NormalizedInput, combined: string, appointme
   if (ENDOSCOPY_TERMS.test(combined)) blocks.push('GI alarm symptoms', 'Bowel habit', 'Anticoagulants');
   if (HERNIA_TERMS.test(combined)) blocks.push('Hernia reducibility', 'Obstruction symptoms', 'Prior repairs');
   if (data.vitalSigns.temperatureC || data.vitalSigns.spo2 || data.vitalSigns.heartRate) blocks.push('Vital signs trend');
+  for (const category of uniq(surgicalMatches.map(m => m.category))) {
+    blocks.push(`Surgical workup: ${category}`);
+  }
   return uniq(blocks);
 }
 

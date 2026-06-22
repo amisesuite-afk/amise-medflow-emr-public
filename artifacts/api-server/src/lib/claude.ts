@@ -26,8 +26,7 @@ If a message contains anything urgent (bleeding, severe pain, jaundice, post-op 
 
 Locations:
 - Rodney Bay (Providence Building) — new consultations, ERCP work-up, breast clinics
-- Castries — follow-ups and post-op reviews
-- Tapion Hospital (459-2227 / 284-0557) — ERCP procedures and emergencies
+- Tapion Hospital (La Toc, Castries) — surgery, endoscopy, ERCP, post-operative reviews, urgent reviews. Tel: 459-2227 / 284-0557
 
 Sign every reply as: "Front Desk, Amise Medical Services".`;
 
@@ -39,13 +38,19 @@ export const ClassificationSchema = z.object({
   patient_first_name: z.string().nullable(),
   reason_summary: z.string().max(200),
   preferred_dates: z.array(z.string()).max(5),
-  preferred_location: z.enum(['rodney_bay', 'castries', 'either', 'unknown']),
+  preferred_location: z.enum(['rodney_bay', 'tapion', 'either', 'unknown']),
   confidence: z.number().min(0).max(1),
 });
 
 export type Classification = z.infer<typeof ClassificationSchema>;
 
+const EMAIL_BODY_MAX_CHARS = 4000;
+
 export async function classifyMessage(emailBody: string, subject: string): Promise<Classification> {
+  const truncatedBody = emailBody.length > EMAIL_BODY_MAX_CHARS
+    ? emailBody.slice(0, EMAIL_BODY_MAX_CHARS) + '\n[truncated]'
+    : emailBody;
+
   const prompt = `Classify the following patient email. Respond with ONLY a JSON object, no preamble, no markdown fences.
 
 Schema:
@@ -54,13 +59,13 @@ Schema:
   "patient_first_name": string | null,
   "reason_summary": string (max 200 chars, no clinical interpretation, just paraphrase what they said),
   "preferred_dates": string[] (ISO dates if mentioned, max 5),
-  "preferred_location": "rodney_bay" | "castries" | "either" | "unknown",
+  "preferred_location": "rodney_bay" | "tapion" | "either" | "unknown",
   "confidence": number 0-1
 }
 
 Subject: ${subject}
 Body:
-${emailBody}`;
+${truncatedBody}`;
 
   const resp = await client.messages.create({
     model: MODEL,
@@ -82,10 +87,11 @@ ${emailBody}`;
 }
 
 export interface DraftReplyArgs {
-  template: 'slot_offer' | 'confirmation' | 'urgent_ack' | 'out_of_scope';
+  template: 'slot_offer' | 'confirmation' | 'urgent_ack' | 'out_of_scope' | 'general_enquiry';
   patientFirstName: string | null;
   slots?: { day: string; date: string; time: string; location: string }[];
   bookingDetails?: { day: string; date: string; time: string; location: string };
+  triageFormUrl?: string;
 }
 
 export async function draftReply(args: DraftReplyArgs): Promise<{ subject: string; body: string; safe: boolean; violations: string[] }> {
@@ -107,6 +113,15 @@ Draft a brief acknowledgement (NO clinical content). Address the patient as "${n
     out_of_scope: `Subject: Amise Medical Services — Your Enquiry
 
 Draft a brief reply (NO clinical content). Address the patient as "${name}". Tell them the query has been passed to Dr Kabiye or relevant clinical staff for a personal reply within 1-2 working days. End with the standard sign-off.`,
+
+    general_enquiry: `Subject: Amise Medical Services — Thanks for Reaching Out
+
+Draft a brief reply (NO clinical content) to a general enquiry. Address the patient as "${name}". Cover, in this order:
+1. A one-line description of the practice: general and endoscopic surgery with Dr Dawit Daniel Kabiye, MD, DM, in Saint Lucia (consultations, procedures such as colonoscopy/ERCP, and follow-up care).
+2. Invite them to complete the short triage form so the team can prepare for their visit: ${args.triageFormUrl}
+3. Tell them they may also reply to this email with their details and the team will guide them through triage directly.
+4. Offer the option to call the front desk instead — Tapion Hospital 459-2227 / 284-0557, or Rodney Bay 758-720-7111.
+End with the standard sign-off.`,
   };
 
   const resp = await client.messages.create({

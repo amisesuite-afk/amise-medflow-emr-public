@@ -1,0 +1,87 @@
+%%{init: {'theme':'base', 'themeVariables': {
+  'primaryColor':'#e0f2fe',
+  'primaryBorderColor':'#0284c7',
+  'primaryTextColor':'#0c4a6e',
+  'lineColor':'#64748b',
+  'fontFamily':'Arial',
+  'fontSize':'16px'
+}}}%%
+flowchart LR
+  A(["Patient / referrer\nmakes contact — A"]):::start --> B{"How do they\nreach us?"}:::decision
+
+  subgraph PHASE1[" 1 · GETTING AN APPOINTMENT "]
+    direction TB
+    B -->|"Online booking"| C["Booking request\ncreated"]:::booking
+    B -->|"GP referral form"| C
+    B -->|"Hospital / FHIR"| C
+    B -->|"Website enquiry"| C2["Consultation enquiry\nlogged"]:::booking
+
+    C2 --> O{"Staff\nfollows up?"}:::decision
+    O -->|"Yes"| C
+    O -->|"No"| Z9(["Closed — no visit"]):::endstate
+
+    C --> D{"Marked\nURGENT?"}:::decision
+    D -->|"YES"| E["Squeezed into next\navailable slot"]:::booking
+    D -->|"NO"| F["Placed in Booking\nInbox queue"]:::booking
+
+    E --> G{"Staff reviews\n& confirms?"}:::decision
+    F --> G
+    G -->|"Confirmed"| H["Confirmed +\nadded to calendar"]:::booking
+    G -->|"No slot"| I["Waitlisted"]:::booking
+    G -->|"No reply after\nfollow-ups"| J(["Lapsed — closed,\nno visit"]):::endstate
+    I -.->|"slot opens"| H
+  end
+
+  B -->|"Walk-in / phone call"| P
+
+  subgraph PHASE2[" 2 · BEFORE THE VISIT "]
+    direction TB
+    K["Reminders sent:\n48h SMS+prep, 24h email, 2h SMS"]:::previsit --> L{"Patient completes\npre-visit questionnaire?"}:::decision
+    L -->|"YES"| M["AI drafts visit summary\nfor nurse/doctor"]:::previsit
+    L -->|"NO"| N["Nurse takes full history\nat check-in instead"]:::previsit
+  end
+
+  H --> K
+
+  subgraph PHASE3[" 3 · ON THE DAY "]
+    direction TB
+    P["Front-desk check-in:\ndetails, insurance, referred-by"]:::checkin --> Q["Nurse pre-visit:\nvitals + chief complaint"]:::checkin
+    Q --> R{"Questionnaire summary\navailable for this visit?"}:::decision
+    R -->|"YES"| S["Doctor reviews AI summary\n+ adds notes"]:::clinic
+    R -->|"NO"| T["Doctor takes full history\nduring consultation"]:::clinic
+    S --> U["Consultation:\nhistory · exam · assessment · plan"]:::clinic
+    T --> U
+    U --> V{"Outpatient\nor Inpatient?"}:::decision
+    V -->|"Outpatient"| X["Final note (SOAP)\ncompleted"]:::clinic
+    V -->|"Inpatient"| Y["Admitted — ward /\ninpatient record"]:::clinic
+    Y --> Y2{"Discharged?"}:::decision
+    Y2 -->|"Yes"| X
+    Y2 -->|"Still admitted"| Y
+  end
+
+  M --> P
+  N --> P
+  X --> ZEND(["Encounter closed — Z"]):::endstate
+
+  subgraph PHASE4[" 4 · DOCUMENTS — runs in parallel "]
+    direction TB
+    DOC["Lab / imaging / referral\nletter arrives by email"]:::docs --> DOC2{"Sender recognised\nas referring doctor?"}:::decision
+    DOC2 -->|"YES"| DOC3["Auto-filed to\npatient's documents"]:::docs
+    DOC2 -->|"NO"| DOC4["Held for staff\nto review & file"]:::docs
+  end
+
+  DOC3 -.-> U
+  DOC4 -.-> U
+
+  classDef start fill:#bbf7d0,stroke:#15803d,stroke-width:2px,color:#14532d,font-weight:bold
+  classDef endstate fill:#fee2e2,stroke:#b91c1c,stroke-width:2px,color:#7f1d1d,font-weight:bold
+  classDef decision fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f,font-weight:bold
+  classDef booking fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#1e3a8a
+  classDef previsit fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#4c1d95
+  classDef checkin fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+  classDef clinic fill:#fae8ff,stroke:#a21caf,stroke-width:1.5px,color:#581c87
+  classDef docs fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+  style PHASE1 fill:#f8fafc,stroke:#94a3b8,stroke-width:1px
+  style PHASE2 fill:#f8fafc,stroke:#94a3b8,stroke-width:1px
+  style PHASE3 fill:#f8fafc,stroke:#94a3b8,stroke-width:1px
+  style PHASE4 fill:#f8fafc,stroke:#94a3b8,stroke-width:1px

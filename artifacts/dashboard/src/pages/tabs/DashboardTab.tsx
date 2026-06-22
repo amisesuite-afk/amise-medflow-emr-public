@@ -1,7 +1,8 @@
 import { useAppContext } from '@/context/AppContext';
+import { getApiOrigin } from '@/lib/api-origin';
 import { useAuth } from '@/context/AuthContext';
 import { SITE_LABELS } from '@/lib/supabase';
-import { PUBLIC_HOLIDAYS_SLU } from '@/lib/rules';
+import { PUBLIC_HOLIDAYS_SLU } from '@workspace/triage-engine';
 import { useState, useEffect } from 'react';
 import bundledCache from '@/data/calendar-cache.json';
 
@@ -99,7 +100,7 @@ function typeChip(type: string): React.CSSProperties {
 }
 
 // Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
-const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
@@ -173,7 +174,15 @@ export default function DashboardTab() {
         {!ctx.patientName.trim() ? (
           <div style={emptyStyle}>No patient loaded — start with New Patient in Intake</div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+            {ctx.patientPhoto && (
+              <img
+                src={ctx.patientPhoto}
+                alt=""
+                style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover', border: '1px solid #e2e8f0', flexShrink: 0 }}
+              />
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
             <div style={{ fontSize: 16, fontWeight: 800, color: '#1a2e2b' }}>{ctx.patientName}</div>
             {(ctx.age || ctx.sex !== 'unknown') && (
               <div style={{ fontSize: 12, color: 'var(--muted)' }}>
@@ -186,7 +195,28 @@ export default function DashboardTab() {
               <AcuityBadge acuity={r.acuity} score={r.score} />
               <span style={{ fontSize: 12, color: 'var(--muted)' }}>{ACTION_LABELS[r.recommendedAction] ?? r.recommendedAction}</span>
             </div>
-          </div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6 }}>
+              {[
+                { label: 'Intake', top: 'intake' as const, sec: 'intake' as const },
+                { label: 'Consult', top: 'consultation' as const, sec: 'triage' as const },
+                { label: 'Exam', top: 'consultation' as const, sec: 'examination' as const },
+                { label: 'Summary', top: 'finaldoc' as const, sec: 'intake' as const },
+              ].map(a => (
+                <button
+                  key={a.label}
+                  type="button"
+                  onClick={() => { ctx.setTopSection(a.top); ctx.setActiveSection(a.sec); }}
+                  style={{
+                    padding: '4px 10px', borderRadius: 5, fontSize: 11, fontWeight: 600,
+                    border: '1px solid #e2e8f0', background: '#f8fafc', color: '#334155',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {a.label} →
+                </button>
+              ))}
+            </div>
+          </div></div>
         )}
       </div>
 
@@ -301,7 +331,7 @@ export default function DashboardTab() {
 
         {!calLoading && dates.length === 0 && (
           <div style={emptyStyle}>
-            No upcoming appointments in cache — start the API server to load schedule
+            No upcoming appointments found
           </div>
         )}
 

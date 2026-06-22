@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { sb, upsertPatient, audit } from '../lib/supabase.js';
+import { sb, upsertPatient, audit, requireCronSecret } from '../lib/supabase.js';
+import { errStr } from '../lib/logger.js';
 import { listUnreadMessages, getMessage, markRead, sendOrDraft } from '../lib/gmail.js';
 import { classifyMessage, draftReply } from '../lib/claude.js';
 import { triage } from '../lib/triage-logic.js';
@@ -9,6 +10,8 @@ import { logger } from '../lib/logger.js';
 const router = Router();
 
 router.post('/api/intake/run', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
   const mode = (req.body?.mode as string) || process.env.MODE || 'dry_run';
   const maxMessages = Number(req.body?.max_messages ?? 10);
 
@@ -53,6 +56,29 @@ router.post('/api/intake/run', async (req, res) => {
 
         await audit({ action: 'escalate', entityType: 'gmail_message', entityId: id, payload: { severity: triageResult.severity, reasons: triageResult.reasons } });
         results.push({ id, action: `escalated_${triageResult.severity}`, reason: triageResult.reasons[0] });
+        await markRead(id);
+        continue;
+      }
+
+      if (classification.category === 'admin' && triageResult.recommendedAction !== 'draft_supervised') {
+        const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
+        const reply = await draftReply({
+          template: 'general_enquiry',
+          patientFirstName: classification.patient_first_name,
+          triageFormUrl: `${baseUrl}/patient/request`,
+        });
+
+        if (!reply.safe) {
+          req.log.warn({ violations: reply.violations }, '[intake] unsafe general-enquiry draft — saving to review queue');
+          await audit({ action: 'skip', entityType: 'gmail_message', entityId: id, payload: { violations: reply.violations } });
+          results.push({ id, action: 'skipped_unsafe', reason: 'Forbidden content in draft' });
+          await markRead(id);
+          continue;
+        }
+
+        await sendOrDraft({ to: msg.from, subject: reply.subject, body: reply.body, threadId: msg.threadId }, mode as 'dry_run' | 'supervised' | 'auto');
+        await audit({ action: 'send', entityType: 'gmail_message', entityId: id, payload: { reason: 'general_enquiry' } });
+        results.push({ id, action: 'auto_replied_general_enquiry' });
         await markRead(id);
         continue;
       }
@@ -104,8 +130,8 @@ router.post('/api/intake/run', async (req, res) => {
       await markRead(id);
     } catch (err) {
       req.log.error({ err, messageId: id }, '[intake] error processing message');
-      await audit({ action: 'error', entityType: 'gmail_message', entityId: id, payload: { error: String(err) } });
-      results.push({ id, action: 'error', reason: String(err) });
+      await audit({ action: 'error', entityType: 'gmail_message', entityId: id, payload: { error: errStr(err) } });
+      results.push({ id, action: 'error', reason: errStr(err) });
     }
   }
 

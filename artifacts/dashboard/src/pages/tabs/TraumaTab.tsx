@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useAppContext, EMPTY_TRAUMA_DATA } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { ManagementPanel } from '@/components/ManagementPanel';
+import { saveBlobAsPDF } from './lib/pdfExport';
 import {
   ISS_REGIONS, AIS_LABELS,
   issScore, nissScore, interpretIss,
@@ -340,6 +341,118 @@ export default function TraumaTab() {
     </div>
   );
 
+  // ── PDF HTML builder ────────────────────────────────────────────────────
+
+  function esc(s: string): string {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function buildTraumaPdfHtml(): string {
+    const css = `
+      body{font-family:'Helvetica Neue',Arial,sans-serif;font-size:11pt;color:#111;margin:24px 32px;line-height:1.4}
+      h1{font-size:16pt;font-weight:800;margin:0 0 4px;border-bottom:2px solid #111;padding-bottom:6px}
+      h2{font-size:12pt;font-weight:700;margin:14px 0 6px;background:#f3f4f6;padding:4px 8px;border-left:4px solid #dc2626}
+      .meta{font-size:10pt;color:#6b7280;margin-bottom:12px}
+      table{width:100%;border-collapse:collapse;margin-bottom:12px;font-size:10pt}
+      th{background:#f3f4f6;font-weight:700;padding:5px 8px;border:1px solid #d1d5db;text-align:left;font-size:9pt;text-transform:uppercase;letter-spacing:0.04em}
+      td{padding:5px 8px;border:1px solid #e5e7eb;vertical-align:top}
+      .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-bottom:12px;font-size:10pt}
+      .field{display:flex;flex-direction:column}
+      .field strong{font-size:8pt;text-transform:uppercase;color:#6b7280}
+      .score{font-size:20pt;font-weight:900}
+      .abcde{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#dc2626;color:#fff;font-weight:900;font-size:12pt;margin-right:6px}
+      .mist{font-size:10pt;font-style:italic;color:#374151;border:1px solid #d1d5db;padding:6px 10px;border-radius:4px}
+      .footer{margin-top:24px;padding-top:8px;border-top:1px solid #d1d5db;font-size:8pt;color:#6b7280}
+    `;
+
+    const mistRow = (label: string, val: string) =>
+      `<tr><th style="width:30%">${esc(label)}</th><td>${esc(val) || '&mdash;'}</td></tr>`;
+
+    const vitalsHtml = ADMISSION_VITALS_FIELDS
+      .filter(f => f.key !== 'timeAdmission')
+      .map(f => `<div class="field"><strong>${esc(f.label)}${f.unit ? ` (${esc(f.unit)})` : ''}</strong><span>${esc(td.admissionVitals[f.key] || '') || '&mdash;'}</span></div>`)
+      .join('\n');
+
+    const abcdeRows = ABCDE_CONFIG.map(({ key, title }) => {
+      let findings = esc(fmtAbcde(td.abcde, key));
+      if (key === 'D' && gcsTotal !== null) findings += ` | GCS: E${gcsE}V${gcsV}M${gcsM} = ${gcsTotal}`;
+      return `<tr><td><span class="abcde">${key}</span></td><td><strong>${esc(title)}</strong></td><td>${findings}</td></tr>`;
+    }).join('\n');
+
+    const issRows = ISS_REGIONS
+      .filter(r => (td.ais[r.key] ?? 0) > 0)
+      .map(r => `<tr><td>${esc(r.label)}</td><td>${td.ais[r.key]}</td><td>${esc(AIS_LABELS[td.ais[r.key] as keyof typeof AIS_LABELS] ?? '')}</td></tr>`)
+      .join('\n');
+
+    const secRows = SECONDARY_REGIONS
+      .map(r => {
+        const chips = td.secondaryDropdowns[r] ?? [];
+        const notes = td.secondary[r] ?? '';
+        if (!chips.length && !notes) return '';
+        return `<tr><td><strong>${esc(r)}</strong></td><td>${esc(chips.join(', ')) || '&mdash;'}</td><td>${esc(notes) || '&mdash;'}</td></tr>`;
+      })
+      .filter(Boolean)
+      .join('\n');
+
+    let burnsHtml = '';
+    if (hasBurns && tbsa > 0) {
+      burnsHtml = `
+        <h2>Burns Assessment</h2>
+        <div class="grid">
+          <div class="field"><strong>TBSA</strong><span>${tbsa.toFixed(1)}%</span></div>
+          <div class="field"><strong>Weight</strong><span>${wt} kg</span></div>
+          <div class="field"><strong>Inhalation injury</strong><span>${td.burnInhalation ? 'Yes' : 'No'}</span></div>
+          <div class="field"><strong>Parkland total (24 h)</strong><span>${parkland.total.toFixed(0)} mL LR</span></div>
+          <div class="field"><strong>First 8 h</strong><span>${parkland.first8h.toFixed(0)} mL @ ${parkland.rateNow.toFixed(0)} mL/hr</span></div>
+          <div class="field"><strong>Next 16 h</strong><span>${parkland.next16h.toFixed(0)} mL @ ${parkland.rateNext16h.toFixed(0)} mL/hr</span></div>
+          <div class="field"><strong>Revised Baux score</strong><span>${baux} &mdash; ${esc(bauxInterp.label)}</span></div>
+        </div>`;
+    }
+
+    return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<title>Trauma Assessment &mdash; ${esc(patientName || 'Patient')}</title>
+<style>${css}</style></head><body class="page">
+<h1>Trauma Assessment &mdash; ATLS 11th Edition</h1>
+<p class="meta">Patient: <strong>${esc(patientName || 'Unknown')}</strong> &nbsp;|&nbsp;
+Age: ${esc(age || '?')} &nbsp;|&nbsp; Sex: ${esc(sex)} &nbsp;|&nbsp;
+Printed: ${esc(nowStr)} &nbsp;|&nbsp; Facility: Amise Medical Services, Saint Lucia</p>
+
+<h2>MIST Handover</h2>
+<table><tbody>
+${mistRow('M — Mechanism', td.mechanism.join(', '))}
+${mistRow('I — Injuries suspected', td.mistInjuries)}
+${mistRow('S — Signs at scene', `GCS: ${td.gcScene || '?'} | ${td.mistSigns}`)}
+${mistRow('T — Treatment given', td.preHospital.join(', '))}
+</tbody></table>
+${mistNarration ? `<p class="mist">${esc(mistNarration)}</p>` : ''}
+
+<h2>Vitals on Admission</h2>
+<div class="grid">${vitalsHtml}</div>
+
+<h2>Primary Survey &mdash; ABCDE</h2>
+<table><thead><tr><th style="width:8%">Letter</th><th>System</th><th>Findings / Actions</th></tr></thead>
+<tbody>${abcdeRows}</tbody></table>
+
+<h2>Injury Severity Score</h2>
+<div class="grid">
+<div class="field"><strong>ISS</strong><span class="score" style="color:${issInterp.color}">${iss}</span><span>${esc(issInterp.label)}</span></div>
+<div class="field"><strong>NISS</strong><span class="score" style="color:${nissInterp.color}">${niss}</span><span>${esc(nissInterp.label)}</span></div>
+</div>
+${issRows ? `<table><thead><tr><th>Region</th><th>AIS Score</th><th>Severity</th></tr></thead><tbody>${issRows}</tbody></table>` : ''}
+
+<h2>Secondary Survey</h2>
+<table><thead><tr><th>Region</th><th>Findings</th><th>Notes</th></tr></thead>
+<tbody>${secRows}</tbody></table>
+
+${burnsHtml}
+
+<div class="footer">
+Generated by Amise MedFlow EMR &middot; Dr Dawit Daniel Kabiye, MD, DM &mdash; General / Endoscopic Surgery &middot;
+Amise Medical Services, Saint Lucia &middot; ${esc(nowStr)}<br><strong>CONFIDENTIAL &mdash; For medical use only</strong>
+</div>
+</body></html>`;
+  }
+
   // ── Inline helper ───────────────────────────────────────────────────────
 
   function admVital(key: string): string { return td.admissionVitals[key] ?? ''; }
@@ -353,8 +466,11 @@ export default function TraumaTab() {
       {/* Print summary — only visible via @media print */}
       <PrintSummary />
 
+      {/* Interactive form — hidden on print; PrintSummary above is shown instead */}
+      <div className="no-print">
+
       {/* ── Header ────────────────────────────────────────────────────────── */}
-      <div className="no-print" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
         <div style={{ fontSize: 18, fontWeight: 800, color: '#f87171' }}>
           ⚡ Trauma Assessment — ATLS 11th Edition
         </div>
@@ -364,7 +480,17 @@ export default function TraumaTab() {
             style={{ fontSize: 11, padding: '4px 12px', background: '#1e3a5f', borderColor: '#1e3a5f', color: '#7dd3fc' }}
             onClick={() => window.print()}
           >
-            🖨 Print Summary
+            🖨 Print
+          </button>
+          <button
+            className="chip"
+            style={{ fontSize: 11, padding: '4px 12px', background: '#0b8278', borderColor: '#0b8278', color: '#fff' }}
+            onClick={() => {
+              const slug = (patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+              void saveBlobAsPDF(buildTraumaPdfHtml(), `trauma-${slug}-${new Date().toISOString().slice(0, 10)}.pdf`);
+            }}
+          >
+            ↓ PDF
           </button>
           <button
             className="chip"
@@ -916,6 +1042,8 @@ export default function TraumaTab() {
           <ManagementPanel diseaseId={primaryDiseaseId} icdCode={null} />
         </CollapsibleCard>
       )}
+
+      </div>{/* end .no-print interactive form wrapper */}
     </div>
   );
 }

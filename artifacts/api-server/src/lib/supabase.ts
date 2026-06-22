@@ -17,15 +17,52 @@ export function sb(): SupabaseClient {
 }
 
 export function getSupabaseAdmin(): SupabaseClient {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set');
-  return createClient(url, key, { auth: { persistSession: false } });
+  return sb();
+}
+
+/**
+ * Gate for staff-only routes. Accepts either:
+ *  - x-staff-token: <CRON_SECRET>   (simple shared secret for internal tools)
+ *  - Authorization: Bearer <supabase-jwt>  (standard staff session)
+ */
+export async function requireStaffAuth(req: any, res: any): Promise<boolean> {
+  const cronSecret = process.env.CRON_SECRET;
+
+  if (cronSecret) {
+    const staffToken = req.headers['x-staff-token'];
+    if (staffToken === cronSecret) return true;
+  }
+
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    const jwt = authHeader.slice(7);
+    const { data, error } = await sb().auth.getUser(jwt);
+    if (!error && data?.user) return true;
+  }
+
+  res.status(401).json({ error: 'Unauthorised — provide x-staff-token or a valid Bearer token' });
+  return false;
+}
+
+export function requireCronSecret(req: any, res: any): boolean {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    logger.warn('[cron] CRON_SECRET not set — rejecting request');
+    res.status(503).json({ error: 'CRON_SECRET not configured' });
+    return false;
+  }
+  const provided = req.headers['x-cron-secret'] || req.query?.secret;
+  if (provided !== secret) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return false;
+  }
+  return true;
 }
 
 export type AuditAction =
   | 'classify' | 'triage' | 'draft' | 'send' | 'book'
-  | 'remind' | 'escalate' | 'error' | 'skip';
+  | 'remind' | 'escalate' | 'error' | 'skip'
+  | 'portal_invite_sent' | 'extract' | 'change_request' | 'auto_cancel';
 
 export async function audit(args: {
   action: AuditAction;
@@ -34,11 +71,15 @@ export async function audit(args: {
   payload?: Record<string, unknown>;
 }): Promise<void> {
   try {
-    await sb().from('audit_log').insert({
+    // audit_logs columns: table_name (text), record_id (uuid), new_values (jsonb)
+    // record_id is uuid — only set it when entityId looks like a valid UUID
+    const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const recordId = args.entityId && uuidRe.test(args.entityId) ? args.entityId : null;
+    await sb().from('audit_logs').insert({
       action: args.action,
-      entity_type: args.entityType,
-      entity_id: args.entityId,
-      payload: args.payload,
+      table_name: args.entityType ?? null,
+      record_id: recordId,
+      new_values: args.payload ?? null,
       mode: process.env.MODE,
     });
   } catch (err) {

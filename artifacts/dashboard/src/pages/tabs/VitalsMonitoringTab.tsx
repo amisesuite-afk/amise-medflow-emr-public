@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import { saveVitalsRecord, saveLabPanel } from '@/lib/db';
 import {
   LineChart, Line, XAxis, YAxis, ReferenceLine,
   ResponsiveContainer, Tooltip, CartesianGrid,
@@ -304,6 +305,18 @@ export default function VitalsMonitoringTab() {
   const [wardLevel, setWardLevel] = useState<WardLevel>(defaultWard);
   const proto = PROTOCOLS[wardLevel];
 
+  // ── Save-to-EMR feedback ─────────────────────────────────────────────────
+  const [vitalSaveStatus, setVitalSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [labSaveStatus, setLabSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+  const flashStatus = useCallback(
+    (set: (v: 'idle' | 'saving' | 'saved' | 'error') => void, status: 'saved' | 'error') => {
+      set(status);
+      setTimeout(() => set('idle'), 3000);
+    },
+    [],
+  );
+
   // ── Vitals entry form ────────────────────────────────────────────────────
   const [formVals, setFormVals] = useState<Record<string, string>>({});
   const [recorder, setRecorder] = useState(profile?.full_name ?? '');
@@ -311,7 +324,7 @@ export default function VitalsMonitoringTab() {
   const [recNotes, setRecNotes] = useState('');
   const [recTime, setRecTime] = useState(() => new Date().toISOString().slice(0, 16));
 
-  function handleRecord() {
+  async function handleRecord() {
     const hasAny = VFIELDS.some(f => formVals[f.key]?.trim());
     if (!hasAny) return;
     const rec: VitalRecord = {
@@ -329,6 +342,12 @@ export default function VitalsMonitoringTab() {
     setFormVals({});
     setRecNotes('');
     setRecTime(new Date().toISOString().slice(0, 16));
+
+    if (ctx.patientId && ctx.encounterId) {
+      setVitalSaveStatus('saving');
+      const { error } = await saveVitalsRecord(rec, ctx.patientId, ctx.encounterId);
+      flashStatus(setVitalSaveStatus, error ? 'error' : 'saved');
+    }
   }
 
   // ── Lab entry state ──────────────────────────────────────────────────────
@@ -338,7 +357,7 @@ export default function VitalsMonitoringTab() {
   const [labRecorder, setLabRecorder] = useState(profile?.full_name ?? 'Lab');
   const [labTime, setLabTime] = useState(() => new Date().toISOString().slice(0, 16));
 
-  function handleLabSave() {
+  async function handleLabSave() {
     const tests = (LAB_PANELS[labPanel] ?? [])
       .filter(t => labVals[t.name]?.trim())
       .map(t => ({
@@ -360,6 +379,12 @@ export default function VitalsMonitoringTab() {
     setLabVals({});
     setLabFlags({});
     setLabTime(new Date().toISOString().slice(0, 16));
+
+    if (ctx.patientId && ctx.encounterId) {
+      setLabSaveStatus('saving');
+      const { error } = await saveLabPanel(rec, ctx.patientId, ctx.encounterId);
+      flashStatus(setLabSaveStatus, error ? 'error' : 'saved');
+    }
   }
 
   const gaps = useGapAnalysis(ctx.vitalRecords, wardLevel);
@@ -517,8 +542,12 @@ export default function VitalsMonitoringTab() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-          <button type="button" onClick={handleRecord} style={{ ...BTN, background: C.teal, color: '#fff', fontSize: 13, padding: '9px 20px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 10, marginTop: 8 }}>
+          {vitalSaveStatus === 'saved' && <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>✓ Saved to patient record</span>}
+          {vitalSaveStatus === 'saving' && <span style={{ fontSize: 11, color: C.muted }}>Saving…</span>}
+          {vitalSaveStatus === 'error' && <span style={{ fontSize: 11, color: '#dc2626' }}>Save failed — check connection</span>}
+          {!ctx.patientId && <span style={{ fontSize: 11, color: C.muted }}>No patient loaded — recording locally only</span>}
+          <button type="button" onClick={() => { void handleRecord(); }} style={{ ...BTN, background: C.teal, color: '#fff', fontSize: 13, padding: '9px 20px' }}>
             + Record Vitals
           </button>
         </div>
@@ -644,8 +673,12 @@ export default function VitalsMonitoringTab() {
           })}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button type="button" onClick={handleLabSave} style={{ ...BTN, background: C.navy, color: '#fff' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 10 }}>
+          {labSaveStatus === 'saved' && <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>✓ Saved to patient record</span>}
+          {labSaveStatus === 'saving' && <span style={{ fontSize: 11, color: C.muted }}>Saving…</span>}
+          {labSaveStatus === 'error' && <span style={{ fontSize: 11, color: '#dc2626' }}>Save failed — check connection</span>}
+          {!ctx.patientId && <span style={{ fontSize: 11, color: C.muted }}>No patient loaded — recording locally only</span>}
+          <button type="button" onClick={() => { void handleLabSave(); }} style={{ ...BTN, background: C.navy, color: '#fff' }}>
             + Save Lab Results
           </button>
         </div>

@@ -47,6 +47,7 @@ create table if not exists patients (
   address             text,
   emergency_contact   text,
   emergency_phone     text,
+  photo_url           text,
   created_by          uuid references auth.users(id),
   updated_by          uuid references auth.users(id),
   created_at          timestamptz not null default now(),
@@ -435,7 +436,7 @@ create index if not exists idx_audit_created      on audit_logs(created_at desc)
 -- Without these, the authenticated role receives permission denied
 -- even if an RLS policy would otherwise allow the operation.
 -- ─────────────────────────────────────────────────────────────
-grant usage on schema public to anon, authenticated;
+grant usage on schema public to anon, authenticated, service_role;
 
 grant select, insert, update        on public.user_profiles   to authenticated;
 grant select, insert, update        on public.patients         to authenticated;
@@ -450,29 +451,61 @@ grant select, insert, update        on public.procedures       to authenticated;
 grant select, insert, update        on public.referrals        to authenticated;
 grant select, insert, update        on public.appointments     to authenticated;
 
+-- service_role (artifacts/api-server's sb() client) needs full table
+-- privileges on these core tables. RLS is bypassed for service_role, but
+-- the underlying GRANT is still required or Postgres returns
+-- "permission denied for table X" (42501) before RLS is even evaluated.
+grant select, insert, update, delete on public.user_profiles   to service_role;
+grant select, insert, update, delete on public.patients         to service_role;
+grant select, insert, update, delete on public.encounters       to service_role;
+grant select, insert, update, delete on public.vitals           to service_role;
+grant select, insert, update, delete on public.symptoms         to service_role;
+grant select, insert, update, delete on public.medications      to service_role;
+grant select, insert, update, delete on public.allergies        to service_role;
+grant select, insert, update, delete on public.assessments      to service_role;
+grant select, insert, update, delete on public.plans            to service_role;
+grant select, insert, update, delete on public.procedures       to service_role;
+grant select, insert, update, delete on public.referrals        to service_role;
+grant select, insert, update, delete on public.appointments     to service_role;
+
 -- ── Appointment requests (self-triage portal) ────────────────────────────────
 create table if not exists appointment_requests (
   id               uuid primary key default gen_random_uuid(),
   created_at       timestamptz not null default now(),
   patient_name     text not null,
-  patient_email    text not null,
+  patient_email    text,
   patient_phone    text,
   appointment_type text not null,
   location         text not null default 'rodney_bay',
-  preferred_slot   timestamptz,           -- patient's requested slot
+  preferred_slot   text,                  -- patient's requested slot (free text or ISO date)
   confirmed_slot   timestamptz,           -- slot confirmed by staff
   reason           text,
   triage_acuity    text,                  -- from self-triage engine
   triage_score     int,
   status           text not null default 'pending'
-                   check (status in ('pending','staff_confirmed','patient_confirmed','lapsed','cancelled')),
+                   check (status in ('pending','staff_confirmed','patient_confirmed','waitlisted','lapsed','cancelled')),
   staff_confirmed_at  timestamptz,
   patient_confirmed_at timestamptz,
   reminder_sent_at    timestamptz,
   google_event_id     text,
-  notes               text
+  notes               text,
+  patient_ack_sent_at timestamptz,
+  staff_notified_at   timestamptz,
+  staff_escalated_at  timestamptz,
+  prep_sms_sent       boolean not null default false,
+  source              text not null default 'web'
+                      check (source in ('web', 'whatsapp', 'manual', 'phone', 'email')),
+  whatsapp_from       text
 );
 
 alter table appointment_requests enable row level security;
 create policy "staff_all" on appointment_requests for all using (true);
+grant select, insert, update        on public.appointment_requests to authenticated, service_role;
+
+create index if not exists idx_appt_requests_pending_created
+  on appointment_requests (status, created_at)
+  where status = 'pending';
+create index if not exists idx_appt_requests_source
+  on appointment_requests (source, status, created_at);
 grant select, insert               on public.audit_logs       to authenticated;
+grant select, insert, update, delete on public.audit_logs     to service_role;

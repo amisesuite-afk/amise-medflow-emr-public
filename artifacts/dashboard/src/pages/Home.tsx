@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAppContext, Section, TopSection, type VitalsState } from '@/context/AppContext';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
@@ -35,7 +37,22 @@ import ProgressNotesTab from './tabs/ProgressNotesTab';
 import VitalsMonitoringTab from './tabs/VitalsMonitoringTab';
 import TraumaTab from './tabs/TraumaTab';
 import DictionaryTab from './tabs/DictionaryTab';
+import APCQTab from './tabs/APCQTab';
+import NurseAPCQTab from './tabs/NurseAPCQTab';
+import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
+import BookingInboxTab from './tabs/BookingInboxTab';
+import AnalyticsTab from './tabs/AnalyticsTab';
+import SettingsTab from './tabs/SettingsTab';
+import PortalIntakeTab from './tabs/PortalIntakeTab';
+import ReferringProvidersTab from './tabs/ReferringProvidersTab';
+import VisitManagerTab from './VisitManager';
 import FloatingActions from '@/components/FloatingActions';
+
+const API_ORIGIN = getApiOrigin();
+function apiUrl(path: string) {
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
+}
 
 function getAdaptivePath(
   symptoms: string[],
@@ -110,11 +127,30 @@ export default function HomePage() {
     symptoms,
     vitals,
     encounterMode, setEncounterMode,
+    patientPhoto,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
+  const [pendingBookingCount, setPendingBookingCount] = useState(0);
 
   const userRole = profile?.role ?? 'front_desk';
+
+  const fetchPendingBookings = useCallback(async () => {
+    if (!hasRole(userRole, 'admin')) return;
+    try {
+      const r = await fetch(apiUrl('/api/booking/requests?status=pending'), { headers: await staffAuthHeaders() });
+      if (r.ok) {
+        const d = await r.json() as { requests: unknown[] };
+        setPendingBookingCount((d.requests ?? []).length);
+      }
+    } catch { /* ignore */ }
+  }, [userRole]);
+
+  useEffect(() => {
+    void fetchPendingBookings();
+    const t = setInterval(() => void fetchPendingBookings(), 60_000);
+    return () => clearInterval(t);
+  }, [fetchPendingBookings]);
 
   const urgentCount = triageResult.vitalRedFlags.filter(f => f.severity === 'urgent').length
     + triageResult.reasons.length;
@@ -137,14 +173,26 @@ export default function HomePage() {
     >
       {/* ── Sticky header ── */}
       <header className="app-header">
-        <div className="header-brand">Amise Medical</div>
+        <div className="header-brand" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <img src="/amise-logo.jpg" alt="" style={{ height: 30, width: 'auto', objectFit: 'contain' }} />
+          Amise Medical
+        </div>
         {DEMO_MODE
           ? <span className="proto-pill" style={{ background: 'rgba(251,191,36,.15)', border: '1px solid rgba(251,191,36,.35)', color: '#fbbf24' }}>⚗ DEMO MODE — local trial only</span>
-          : <span className="proto-pill">⚗ PROTOTYPE</span>
+          : null
         }
-        <div className="header-patient">
-          <span className="header-name">{patientLabel}</span>
-          {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
+        <div className="header-patient" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {patientPhoto && (
+            <img
+              src={patientPhoto}
+              alt=""
+              style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover', border: '1px solid #e2e8f0' }}
+            />
+          )}
+          <div>
+            <span className="header-name">{patientLabel}</span>
+            {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
+          </div>
         </div>
         <div className="header-right">
           {/* Encounter mode pill — outpatient / inpatient */}
@@ -189,6 +237,17 @@ export default function HomePage() {
             <span className="ab-score">Score {triageResult.score}</span>
           </div>
 
+          {triageResult.isPrimarilySurgical && (
+            <div
+              className="surgical-badge"
+              title={`Surgical pathway match: ${triageResult.surgicalMatches.map(m => m.label).join(', ')}`}
+            >
+              <span className="ab-label">Surgical</span>
+              <span className="ab-level">{triageResult.surgicalMatches[0].label}</span>
+              <span className="ab-score">{triageResult.surgicalMatches[0].category}</span>
+            </div>
+          )}
+
           {/* User chip */}
           {profile && (
             <div className="user-chip">
@@ -214,6 +273,7 @@ export default function HomePage() {
         acuity={triageResult.acuity}
         pmhCount={comorbidities.length}
         encounterMode={encounterMode}
+        pendingBookingCount={pendingBookingCount}
       />
 
       {/* ── Main content ── */}
@@ -256,6 +316,43 @@ export default function HomePage() {
             </div>
           );
         })()}
+        {/* Consultation horizontal tab strip — reduces sidebar dependency */}
+        {topSection === 'consultation' && (
+          <div className="consult-tabstrip">
+            {([
+              { id: 'triage', label: 'Triage' },
+              { id: 'pmh', label: 'PMH' },
+              { id: 'surgical', label: 'Surgical' },
+              { id: 'medications', label: 'Meds' },
+              { id: 'allergies', label: 'Allergies' },
+              { id: 'toxic', label: 'Habits' },
+              { id: 'scales', label: 'Scales' },
+              { id: 'ros', label: 'ROS' },
+              ...(hasRole(userRole, 'nurse') ? [
+                { id: 'examination', label: 'Exam' },
+                { id: 'investigations', label: 'Labs' },
+                { id: 'radiology', label: 'Radiology' },
+                { id: 'attachments', label: 'Attach' },
+              ] : []),
+              ...(hasRole(userRole, 'doctor') ? [
+                { id: 'assessment', label: 'Assess' },
+                { id: 'plan', label: 'Plan' },
+              ] : []),
+              { id: 'progress', label: 'Notes' },
+              { id: 'monitoring', label: 'Monitor' },
+            ] as { id: Section; label: string }[]).map(tab => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
+                onClick={() => setActiveSection(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Clinical sections */}
         {topSection === 'intake'        && <IntakeTab />}
         {topSection === 'consultation'  && activeSection === 'triage'      && <TriageTab />}
@@ -285,10 +382,16 @@ export default function HomePage() {
         {topSection === 'dashboard'  && <DashboardTab />}
         {topSection === 'patients'   && <PatientSearchTab />}
         {topSection === 'scheduling' && <SchedulingTab />}
-        {topSection === 'analytics'  && hasRole(userRole, 'doctor') && <StubPanel title="Analytics" description="Volume trends, acuity distributions, wait-time reports, and outcome tracking — coming soon." />}
-        {topSection === 'settings'   && hasRole(userRole, 'admin')  && <StubPanel title="Settings" description="Practice configuration, user roles, notification preferences, and system settings — coming soon." />}
-        {topSection === 'trauma'     && hasRole(userRole, 'nurse')  && <TraumaTab />}
-        {topSection === 'vademecum'  && hasRole(userRole, 'nurse')  && <DictionaryTab />}
+        {topSection === 'analytics'  && hasRole(userRole, 'doctor') && <AnalyticsTab />}
+        {topSection === 'settings'   && hasRole(userRole, 'admin')  && <SettingsTab />}
+        {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
+        {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
+        {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
+        {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')        && <NurseAPCQTab />}
+        {topSection === 'booking_inbox'  && hasRole(userRole, 'admin')        && <BookingInboxTab />}
+        {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
+        {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
+        {topSection === 'visit_lifecycle'                                        && <VisitManagerTab />}
       </main>
 
       <FloatingActions />

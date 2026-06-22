@@ -10,7 +10,7 @@ export type AppointmentType =
   | 'telephone'
   | 'diabetic_foot';
 
-export type Location = 'rodney_bay' | 'castries' | 'tapion' | 'remote';
+export type Location = 'rodney_bay' | 'tapion' | 'remote';
 
 export interface SlotRule {
   durationMin: number;
@@ -34,7 +34,7 @@ export const SLOT_RULES: Record<AppointmentType, SlotRule> = {
   },
   follow_up: {
     durationMin: 15,
-    location: 'castries',
+    location: 'rodney_bay',
     days: [2, 4],
     windowStart: '09:00',
     windowEnd: '12:00',
@@ -43,7 +43,7 @@ export const SLOT_RULES: Record<AppointmentType, SlotRule> = {
   },
   post_op: {
     durationMin: 20,
-    location: 'castries',
+    location: 'tapion',
     days: [2, 4],
     windowStart: '09:00',
     windowEnd: '12:00',
@@ -51,6 +51,7 @@ export const SLOT_RULES: Record<AppointmentType, SlotRule> = {
     maxPerSession: 6,
   },
   ercp_workup: {
+    // Pre-procedure consultation at Rodney Bay (Providence Building)
     durationMin: 30,
     location: 'rodney_bay',
     days: [1],
@@ -60,6 +61,7 @@ export const SLOT_RULES: Record<AppointmentType, SlotRule> = {
     maxPerSession: 4,
   },
   ercp: {
+    // Procedure at Tapion Hospital — booked manually, not via the AI intake
     durationMin: 90,
     location: 'tapion',
     days: [],
@@ -78,20 +80,20 @@ export const SLOT_RULES: Record<AppointmentType, SlotRule> = {
     maxPerSession: 4,
   },
   telephone: {
-    durationMin: 10,
+    durationMin: 15,
     location: 'remote',
-    days: [5],
-    windowStart: '15:00',
-    windowEnd: '16:30',
-    bufferAfterMin: 0,
+    days: [1, 2, 3, 4, 5],
+    windowStart: '08:00',
+    windowEnd: '16:00',
+    bufferAfterMin: 5,
     maxPerSession: 8,
   },
   diabetic_foot: {
-    durationMin: 45,
+    durationMin: 30,
     location: 'rodney_bay',
-    days: [1, 3],
-    windowStart: '09:00',
-    windowEnd: '12:00',
+    days: [1, 3, 5],
+    windowStart: '10:00',
+    windowEnd: '14:00',
     bufferAfterMin: 10,
     maxPerSession: 4,
   },
@@ -170,12 +172,25 @@ export const RED_FLAGS: RedFlag[] = [
 ];
 
 export const FORBIDDEN_PATTERNS: RegExp[] = [
+  // Fees / financial
   /\$\s*\d/,
   /\b(EC\$|XCD|USD)\s*\d/i,
+  /\bfee[s]?\b.*\d/i,
+  // Drug doses
   /\b(take|increase|decrease|stop)\s+\d+\s*mg\b/i,
-  /\b(your (biopsy|histology|test|blood) result|the result (is|shows))\b/i,
+  /\b\d+\s*mg\b/i,
+  /\bmedication dose\b/i,
+  // Diagnoses and result disclosure
+  /\bdiagnos/i,
+  /\b(your (biopsy|histology|test|blood|scan|x.ray) result|the result (is|shows|confirms))\b/i,
   /\b(you (have|may have|likely have) (cancer|tumou?r|malignancy))\b/i,
   /\b(i diagnose|i can confirm you have)\b/i,
+  // Procedure-prep adjustments: never let a draft specify anticoagulant/diabetes
+  // medication stop-timing, dose changes, or bowel-prep product substitutions —
+  // those are clinical decisions for Dr Kabiye, not the assistant.
+  /\b(stop|hold|discontinue|restart|resume)\b[^.]{0,40}\b(warfarin|coumadin|apixaban|eliquis|rivaroxaban|xarelto|dabigatran|pradaxa|edoxaban|lixiana|clopidogrel|plavix|ticagrelor|aspirin|heparin|enoxaparin|lovenox|insulin|metformin|gliclazide)\b/i,
+  /\b(switch|change)\b[^.]{0,30}\b(insulin|dose|medication|prep)\b[^.]{0,20}\bto\b/i,
+  /\b(use|take|switch to)\b[^.]{0,20}\b(golytely|moviprep|miralax|picolax|citromag|fleet|dulcolax|peglyte|pico.?salax)\b/i,
 ];
 
 export interface PathwayPanel {

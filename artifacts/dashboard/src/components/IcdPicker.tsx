@@ -18,7 +18,7 @@ export default function IcdPicker() {
     : ICD_CODES.filter(c =>
         c.code.toLowerCase().includes(query.toLowerCase()) ||
         c.description.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 8);
+      ).slice(0, 20);
 
   // Group filtered results by category
   const grouped: Record<string, IcdCode[]> = {};

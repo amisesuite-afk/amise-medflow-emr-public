@@ -4,10 +4,19 @@ import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PathwaySuggestions from '@/components/PathwaySuggestions';
 import SmartSymptomPicker from '@/components/SmartSymptomPicker';
-import { VitalSigns } from '@/lib/adaptive-triage';
-import { SL_COMMUNITIES, SL_DOCTORS, formatSlPhone, isValidSlPhone } from '@/data/st-lucia';
+import PatientPhotoCapture from '@/components/PatientPhotoCapture';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
+import { Sex, VitalSigns } from '@workspace/triage-engine';
+import { SL_COMMUNITIES, SL_DOCTORS, formatSlPhone, isValidSlPhone, type SlDoctor } from '@/data/st-lucia';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
+
+const API_ORIGIN = getApiOrigin();
+function apiUrl(path: string) {
+  if (API_ORIGIN) return `${API_ORIGIN}${path}`;
+  return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
+}
 
 const VITAL_KEYS: { key: keyof VitalSigns; label: string; placeholder: string }[] = [
   { key: 'systolicBp',     label: 'SBP',      placeholder: '120' },
@@ -101,10 +110,28 @@ export default function IntakeTab() {
   const [referralQuery, setReferralQuery] = useState(referredBy);
   const [referralOpen, setReferralOpen] = useState(false);
   const referralRef = useRef<HTMLDivElement>(null);
+  const [referringDoctors, setReferringDoctors] = useState<SlDoctor[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch(apiUrl('/api/admin/referring-providers'), { headers: await staffAuthHeaders() });
+        if (r.ok) {
+          const d = await r.json() as { providers: { name: string; provider_type: string; notes: string | null; active: boolean }[] };
+          const doctors = (d.providers ?? [])
+            .filter(p => p.provider_type === 'referring_doctor' && p.active)
+            .map(p => ({ name: p.name, specialty: 'Referring Doctor', institution: p.notes ?? '', phone: '' }));
+          setReferringDoctors(doctors);
+        }
+      } catch { /* ignore — falls back to static list */ }
+    })();
+  }, []);
+
+  const allDoctors = [...referringDoctors, ...SL_DOCTORS];
 
   const filteredDoctors = referralQuery.trim().length === 0
-    ? SL_DOCTORS.slice(0, 8)
-    : SL_DOCTORS.filter(d =>
+    ? allDoctors.slice(0, 8)
+    : allDoctors.filter(d =>
         d.name.toLowerCase().includes(referralQuery.toLowerCase()) ||
         d.specialty.toLowerCase().includes(referralQuery.toLowerCase())
       ).slice(0, 8);
@@ -168,7 +195,8 @@ export default function IntakeTab() {
     <div className="gap-y">
       {/* Patient demographics */}
       <CollapsibleCard title="Patient" badge={triageResult.missingCriticalFields.length > 0 ? `${triageResult.missingCriticalFields.length} missing` : undefined} badgeVariant={triageResult.missingCriticalFields.length > 0 ? 'warn' : 'default'}>
-        <div className="form-grid">
+        <PatientPhotoCapture />
+        <div className="form-grid" style={{ marginTop: 10 }}>
           <div className="fld">
             <label>Full name</label>
             <input value={patientName} onChange={e => setPatientName(e.target.value)} placeholder="e.g. Marie Joseph" />
@@ -179,7 +207,7 @@ export default function IntakeTab() {
           </div>
           <div className="fld">
             <label>Sex</label>
-            <select value={sex} onChange={e => setSex(e.target.value as any)}>
+            <select value={sex} onChange={e => setSex(e.target.value as Sex)}>
               <option value="unknown">—</option>
               <option value="female">Female</option>
               <option value="male">Male</option>
@@ -272,7 +300,7 @@ export default function IntakeTab() {
               onFocus={() => setReferralOpen(true)}
               placeholder="Doctor or facility name…"
             />
-            {referralOpen && filteredDoctors.length > 0 && referralQuery.trim().length > 0 && (
+            {referralOpen && filteredDoctors.length > 0 && (
               <div style={{
                 position: 'absolute',
                 top: '100%',
@@ -305,7 +333,7 @@ export default function IntakeTab() {
                     }}
                   >
                     <span style={{ fontSize: 13, fontWeight: 500 }}>{d.name}</span>
-                    <span style={{ fontSize: 11, color: '#6b7280' }}>{d.specialty} · {d.institution}</span>
+                    <span style={{ fontSize: 11, color: '#6b7280' }}>{d.specialty}{d.institution ? ` · ${d.institution}` : ''}</span>
                   </button>
                 ))}
               </div>
@@ -314,11 +342,13 @@ export default function IntakeTab() {
 
           <div className="fld">
             <label>Duration (days)</label>
-            <input inputMode="numeric" value={durationDays} onChange={e => setDurationDays(e.target.value)} placeholder="e.g. 3" />
+            <input type="number" inputMode="numeric" min={0} step={1} value={durationDays} onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 3" />
           </div>
           <div className="fld">
             <label>Pain score (0–10)</label>
-            <input inputMode="numeric" value={painScore} onChange={e => setPainScore(e.target.value)} placeholder="0–10"
+            <input type="number" inputMode="numeric" min={0} max={10} step={1} value={painScore}
+              onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setPainScore(v && Number(v) > 10 ? '10' : v); }}
+              placeholder="0-10"
               className={painScore && Number(painScore) >= 8 ? 'danger' : painScore && Number(painScore) >= 5 ? 'warn' : ''} />
           </div>
         </div>
@@ -334,7 +364,7 @@ export default function IntakeTab() {
           {isPostOp && (
             <div className="inline-field">
               <span>Days since op:</span>
-              <input inputMode="numeric" value={postOpDays} onChange={e => setPostOpDays(e.target.value)} placeholder="days" />
+              <input type="number" inputMode="numeric" min={0} step={1} value={postOpDays} onChange={e => setPostOpDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="days" />
             </div>
           )}
         </div>

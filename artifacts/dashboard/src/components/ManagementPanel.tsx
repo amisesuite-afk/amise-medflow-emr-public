@@ -16,10 +16,14 @@ const PHASE_LABELS: Record<ManagementStep['phase'], string> = {
 
 const PHASE_ORDER: ManagementStep['phase'][] = ['immediate', 'conservative', 'surgical', 'followup'];
 
-const URGENCY_BADGE: Record<'stat' | 'urgent' | 'routine', string> = {
-  stat:    'bg-red-100 text-red-800 border-red-300',
-  urgent:  'bg-amber-100 text-amber-800 border-amber-300',
-  routine: 'bg-gray-100 text-gray-700 border-gray-300',
+const GOLD = '#C8A24B';
+const BODY = 'rgba(255,255,255,0.92)';
+const TEAL_LABEL = '#1F7A8C';
+
+const urgencyStyle: Record<'stat' | 'urgent' | 'routine', React.CSSProperties> = {
+  stat:    { background: '#5c1a1a', color: '#fca5a5', border: '1px solid #7f1d1d' },
+  urgent:  { background: '#5c3a0a', color: '#fcd34d', border: '1px solid #92400e' },
+  routine: { background: '#1e293b', color: '#94a3b8', border: '1px solid #374151' },
 };
 
 export function ManagementPanel({ diseaseId, icdCode }: Props) {
@@ -41,34 +45,39 @@ export function ManagementPanel({ diseaseId, icdCode }: Props) {
   );
 
   return (
-    <div className="border border-teal-300 rounded-lg overflow-hidden mb-3">
+    <div style={{ border: '1px solid #1F7A8C', borderRadius: 8, overflow: 'hidden', marginBottom: 12 }}>
       {/* Header */}
       <button
-        className="w-full flex items-center justify-between px-4 py-2 bg-teal-50 hover:bg-teal-100 transition-colors"
+        type="button"
         onClick={() => setOpen(o => !o)}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '8px 16px', background: '#0d2137', border: 'none', cursor: 'pointer',
+        }}
       >
-        <span className="font-semibold text-teal-800 text-sm">
+        <span style={{ fontWeight: 600, color: GOLD, fontSize: 14 }}>
           Management — {protocol.label}
         </span>
         <svg
-          className={`w-4 h-4 text-teal-600 transition-transform ${open ? 'rotate-180' : ''}`}
-          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          width={16} height={16} viewBox="0 0 24 24" fill="none"
+          stroke={TEAL_LABEL} strokeWidth={2}
+          style={{ transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'none' }}
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {open && (
-        <div className="px-4 py-3 space-y-4 text-sm">
+        <div style={{ padding: '12px 16px', background: '#0b1929', display: 'flex', flexDirection: 'column', gap: 16, fontSize: 13 }}>
           {/* Red Flags */}
           {protocol.redFlags.length > 0 && (
             <section>
-              <h4 className="text-xs font-semibold uppercase text-red-700 tracking-wide mb-1">Red Flags</h4>
-              <div className="flex flex-wrap gap-1">
+              <h4 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: '#ef4444', letterSpacing: '0.05em', marginBottom: 6, marginTop: 0 }}>Red Flags</h4>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {protocol.redFlags.map((flag, i) => (
                   <span
                     key={i}
-                    className="inline-block px-2 py-0.5 rounded bg-red-100 text-red-800 border border-red-300 text-xs"
+                    style={{ display: 'inline-block', padding: '3px 8px', borderRadius: 4, background: '#5c1a1a', color: '#fca5a5', border: '1px solid #7f1d1d', fontSize: 11 }}
                   >
                     {flag}
                   </span>
@@ -80,12 +89,12 @@ export function ManagementPanel({ diseaseId, icdCode }: Props) {
           {/* Key Points */}
           {protocol.keyPoints.length > 0 && (
             <section>
-              <h4 className="text-xs font-semibold uppercase text-teal-700 tracking-wide mb-1">Key Points</h4>
-              <ul className="space-y-0.5 text-gray-700">
+              <h4 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: GOLD, letterSpacing: '0.05em', marginBottom: 6, marginTop: 0 }}>Key Points</h4>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {protocol.keyPoints.map((pt, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-teal-500 mt-0.5">•</span>
-                    <span>{pt}</span>
+                  <li key={i} style={{ display: 'flex', gap: 8 }}>
+                    <span style={{ color: TEAL_LABEL, marginTop: 1 }}>&#x2022;</span>
+                    <span style={{ color: BODY }}>{pt}</span>
                   </li>
                 ))}
               </ul>
@@ -95,14 +104,14 @@ export function ManagementPanel({ diseaseId, icdCode }: Props) {
           {/* Investigations */}
           {protocol.investigations.length > 0 && (
             <section>
-              <h4 className="text-xs font-semibold uppercase text-teal-700 tracking-wide mb-1">Investigations</h4>
-              <table className="w-full text-xs">
+              <h4 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: GOLD, letterSpacing: '0.05em', marginBottom: 6, marginTop: 0 }}>Investigations</h4>
+              <table style={{ width: '100%', fontSize: 12, borderCollapse: 'collapse' }}>
                 <tbody>
                   {protocol.investigations.map((inv, i) => (
-                    <tr key={i} className={i % 2 === 0 ? 'bg-gray-50' : ''}>
-                      <td className="py-1 pr-2 text-gray-800">{inv.label}</td>
-                      <td className="py-1 w-20">
-                        <span className={`inline-block px-1.5 py-0.5 rounded border text-xs font-medium ${URGENCY_BADGE[inv.urgency]}`}>
+                    <tr key={i} style={{ background: i % 2 === 0 ? '#0f1f33' : 'transparent' }}>
+                      <td style={{ padding: '4px 8px', color: BODY }}>{inv.label}</td>
+                      <td style={{ padding: '4px 8px', width: 72 }}>
+                        <span style={{ display: 'inline-block', padding: '2px 6px', borderRadius: 4, fontSize: 10, fontWeight: 500, ...urgencyStyle[inv.urgency] }}>
                           {inv.urgency}
                         </span>
                       </td>
@@ -116,16 +125,16 @@ export function ManagementPanel({ diseaseId, icdCode }: Props) {
           {/* Management Steps */}
           {Object.keys(stepsByPhase).length > 0 && (
             <section>
-              <h4 className="text-xs font-semibold uppercase text-teal-700 tracking-wide mb-1">Management</h4>
-              <div className="space-y-2">
+              <h4 style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: GOLD, letterSpacing: '0.05em', marginBottom: 6, marginTop: 0 }}>Management</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {(Object.entries(stepsByPhase) as [ManagementStep['phase'], string[]][]).map(([phase, steps]) => (
                   <div key={phase}>
-                    <span className="text-xs font-semibold text-gray-500 uppercase">{PHASE_LABELS[phase]}</span>
-                    <ol className="mt-0.5 space-y-0.5 text-gray-700">
+                    <span style={{ fontSize: 11, fontWeight: 600, color: TEAL_LABEL, textTransform: 'uppercase' }}>{PHASE_LABELS[phase]}</span>
+                    <ol style={{ margin: '3px 0 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 2 }}>
                       {steps.map((step, i) => (
-                        <li key={i} className="flex gap-2">
-                          <span className="text-gray-400 shrink-0">{i + 1}.</span>
-                          <span>{step}</span>
+                        <li key={i} style={{ display: 'flex', gap: 8 }}>
+                          <span style={{ color: TEAL_LABEL, flexShrink: 0 }}>{i + 1}.</span>
+                          <span style={{ color: BODY }}>{step}</span>
                         </li>
                       ))}
                     </ol>
@@ -137,9 +146,9 @@ export function ManagementPanel({ diseaseId, icdCode }: Props) {
 
           {/* Referral */}
           {protocol.referral && (
-            <section className="border-t border-teal-100 pt-2">
-              <span className="text-xs font-semibold text-teal-700 uppercase">Referral: </span>
-              <span className="text-gray-700 text-xs">{protocol.referral}</span>
+            <section style={{ borderTop: '1px solid #1e3a50', paddingTop: 8 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: GOLD, textTransform: 'uppercase' }}>Referral: </span>
+              <span style={{ color: BODY, fontSize: 12 }}>{protocol.referral}</span>
             </section>
           )}
         </div>

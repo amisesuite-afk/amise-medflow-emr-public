@@ -1,8 +1,25 @@
 import { google, gmail_v1 } from 'googleapis';
 
 function getAuth() {
+  // OAuth2 path — personal account (amisesuite@gmail.com), no service account needed
+  if (
+    process.env.GOOGLE_OAUTH_CLIENT_ID &&
+    process.env.GOOGLE_OAUTH_CLIENT_SECRET &&
+    process.env.GOOGLE_OAUTH_REFRESH_TOKEN
+  ) {
+    const client = new google.auth.OAuth2(
+      process.env.GOOGLE_OAUTH_CLIENT_ID,
+      process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+      'urn:ietf:wg:oauth:2.0:oob'
+    );
+    client.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN });
+    return client;
+  }
+  // Service account fallback — requires Google Workspace domain-wide delegation
   if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-    throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON must be set');
+    throw new Error(
+      'No Google credentials. Set GOOGLE_OAUTH_CLIENT_ID/SECRET/REFRESH_TOKEN or GOOGLE_SERVICE_ACCOUNT_JSON.'
+    );
   }
   const creds = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
   return new google.auth.JWT({
@@ -39,6 +56,14 @@ export interface ParsedMessage {
   subject: string;
   body: string;
   receivedAt: Date;
+  attachments: AttachmentMeta[];
+}
+
+export interface AttachmentMeta {
+  filename: string;
+  mimeType: string;
+  attachmentId: string;
+  size: number;
 }
 
 export async function getMessage(id: string): Promise<ParsedMessage> {
@@ -53,6 +78,7 @@ export async function getMessage(id: string): Promise<ParsedMessage> {
   const fromEmail = fromRaw.match(/<([^>]+)>/)?.[1] || fromRaw;
 
   const body = extractPlainBody(data.payload);
+  const attachments = extractAttachments(data.payload);
 
   return {
     id,
@@ -62,7 +88,43 @@ export async function getMessage(id: string): Promise<ParsedMessage> {
     subject: get('Subject'),
     body,
     receivedAt: new Date(Number(data.internalDate)),
+    attachments,
   };
+}
+
+// Attachment parts can be nested arbitrarily deep inside payload.parts
+// (e.g. multipart/mixed > multipart/alternative > attachment), so this
+// walks the tree recursively.
+function extractAttachments(payload: gmail_v1.Schema$MessagePart | undefined): AttachmentMeta[] {
+  if (!payload) return [];
+  const attachments: AttachmentMeta[] = [];
+
+  function walk(part: gmail_v1.Schema$MessagePart) {
+    if (part.filename && part.body?.attachmentId) {
+      attachments.push({
+        filename: part.filename,
+        mimeType: part.mimeType || 'application/octet-stream',
+        attachmentId: part.body.attachmentId,
+        size: part.body.size || 0,
+      });
+    }
+    for (const child of part.parts || []) {
+      walk(child);
+    }
+  }
+
+  walk(payload);
+  return attachments;
+}
+
+export async function getAttachmentData(messageId: string, attachmentId: string): Promise<Buffer> {
+  const gmail = getGmail();
+  const { data } = await gmail.users.messages.attachments.get({
+    userId: 'me',
+    messageId,
+    id: attachmentId,
+  });
+  return Buffer.from(data.data || '', 'base64url');
 }
 
 function extractPlainBody(payload: gmail_v1.Schema$MessagePart | undefined): string {

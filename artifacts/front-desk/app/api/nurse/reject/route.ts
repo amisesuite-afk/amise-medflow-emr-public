@@ -9,12 +9,22 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
   }
 
-  const { threadId, nurseId, editedReply } = (await req.json()) as {
-    threadId: string; nurseId: string; editedReply: string;
-  };
+  let body: { threadId: string; nurseId: string; editedReply: string };
+  try {
+    body = await req.json();
+  } catch (err) {
+    console.error('[nurse/reject] Failed to parse request body:', err);
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+  }
+  const { threadId, nurseId, editedReply } = body;
 
-  await updateThread(threadId, { draft_reply: editedReply, status: 'pending_approval' });
-  await logAudit(threadId, 'draft_edited', `nurse:${nurseId}`, { editedReply });
+  try {
+    await updateThread(threadId, { draft_reply: editedReply, status: 'pending_approval' });
+    await logAudit(threadId, 'draft_edited', `nurse:${nurseId}`, { editedReply });
 
-  return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('[nurse/reject] Unhandled error:', err);
+    return NextResponse.json({ error: 'Could not save the edited reply. Please try again.' }, { status: 500 });
+  }
 }

@@ -4,7 +4,8 @@ import {
   PanelLeftClose, PanelLeftOpen, AlertTriangle, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
-  ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap,
+  ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, FileQuestion, Inbox,
+  Contact, HeartPulse,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -25,6 +26,7 @@ interface NavSidebarProps {
   acuity: string;
   pmhCount?: number;
   encounterMode?: 'outpatient' | 'inpatient';
+  pendingBookingCount?: number;
 }
 
 const CLINICAL_SUB: {
@@ -42,10 +44,10 @@ const CLINICAL_SUB: {
   { id: 'scales',      icon: ClipboardCheck, label: 'Scales' },
   { id: 'ros',         icon: ListChecks,     label: 'Review of Systems' },
   { id: 'examination',     icon: Stethoscope,    label: 'Examination',    minRole: 'nurse' },
+  { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },
   { id: 'investigations', icon: FlaskConical,   label: 'Investigations', minRole: 'nurse' },
   { id: 'radiology',      icon: ScanLine,       label: 'Radiology',      minRole: 'nurse' },
   { id: 'attachments',    icon: Paperclip,      label: 'Attachments',    minRole: 'nurse' },
-  { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },
   { id: 'plan',           icon: FileEdit,       label: 'Plan',           minRole: 'doctor' },
   { id: 'progress',       icon: FileText,       label: 'Progress Notes' },
   { id: 'monitoring',    icon: Activity,       label: 'Monitoring' },
@@ -71,12 +73,17 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'consultation', icon: Stethoscope,     label: 'Consultation', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'procedures',   icon: Scissors,        label: 'Procedures',   roles: ['doctor', 'admin'] },
   { id: 'scheduling',   icon: CalendarDays,    label: 'Scheduling',   roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
+  { id: 'visit_lifecycle', icon: HeartPulse,   label: 'Visits',       roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'finaldoc',     icon: FileCheck2,      label: 'Summary',      roles: ['nurse', 'doctor', 'admin'] },
   { id: 'billing',      icon: Receipt,         label: 'Billing',      roles: ['front_desk', 'admin'] },
   { id: 'analytics',    icon: BarChart2,       label: 'Analytics',    roles: ['doctor', 'admin'] },
   { id: 'trauma',       icon: Zap,             label: 'Trauma',       roles: ['nurse', 'doctor', 'admin'] },
-  { id: 'vademecum',    icon: BookOpen,        label: 'Disease Dict.', roles: ['nurse', 'doctor', 'admin'] },
-  { id: 'settings',     icon: Settings,        label: 'Settings',     roles: ['admin'] },
+  { id: 'vademecum',      icon: BookOpen,      label: 'Disease Dict.',  roles: ['nurse', 'doctor', 'admin'] },
+  { id: 'questionnaire',  icon: FileQuestion,  label: 'Questionnaire', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
+  { id: 'booking_inbox',  icon: Inbox,         label: 'Booking Inbox', roles: ['front_desk', 'nurse', 'admin'] },
+  { id: 'portal_intake',  icon: ClipboardCheck, label: 'Portal Intake', roles: ['doctor', 'admin'] },
+  { id: 'referring_providers', icon: Contact,  label: 'Referring Providers', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
+  { id: 'settings',       icon: Settings,      label: 'Settings',      roles: ['admin'] },
 ];
 
 export default function NavSidebar({
@@ -86,16 +93,18 @@ export default function NavSidebar({
   userRole, hasUrgentRedFlag, urgentCount, acuity,
   pmhCount = 0,
   encounterMode = 'outpatient',
+  pendingBookingCount = 0,
 }: NavSidebarProps) {
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
 
   function handleTop(item: TopItem) {
     onTopSection(item.id);
-    if (item.id === 'intake')        { onSection('intake'); }
-    if (item.id === 'procedures')    { onSection('procedures'); }
-    if (item.id === 'consultation')  { onSection('triage'); }
-    if (item.id === 'billing')       { onSection('billing'); }
+    if (item.id === 'intake')          { onSection('intake'); }
+    if (item.id === 'procedures')      { onSection('procedures'); }
+    if (item.id === 'consultation')    { onSection('triage'); }
+    if (item.id === 'billing')         { onSection('billing'); }
+    if (item.id === 'questionnaire')   { onSection('apcq'); }
   }
 
   function subActive(id: Section) {
@@ -128,6 +137,7 @@ export default function NavSidebar({
                 <span className="nsb-icon">
                   <Icon size={16} strokeWidth={2} />
                   {isTriage && <span className="nsb-dot" />}
+                  {item.id === 'booking_inbox' && pendingBookingCount > 0 && <span className="nsb-dot" />}
                 </span>
                 {!collapsed && (
                   <span className="nsb-label">
@@ -145,6 +155,9 @@ export default function NavSidebar({
                   <span className={`nsb-badge${acuity === 'urgent' ? '' : ' nsb-badge--warn'}`}>
                     {urgentCount}
                   </span>
+                )}
+                {!collapsed && item.id === 'booking_inbox' && pendingBookingCount > 0 && (
+                  <span className="nsb-badge nsb-badge--warn">{pendingBookingCount}</span>
                 )}
               </button>
 

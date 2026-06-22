@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { runIntakeTurn } from '@/lib/claude';
 import { getOrCreateThread, updateThread, logAudit } from '@/lib/supabase';
 import { sendWhatsApp, validateTwilioSignature, formatNurseAlert } from '@/lib/twilio';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -30,6 +31,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return new NextResponse('Forbidden', { status: 403 });
   }
 
+  // 10 messages per minute per number — prevents webhook replay / flooding
+  if (!checkRateLimit(`wa:${from}`, 10, 60_000)) {
+    return emptyTwiml();
+  }
+
   if (!from || !body) return emptyTwiml();
 
   try {
@@ -52,18 +58,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     if (merged.triage_level === 'URGENT') {
-      // Acknowledge immediately; queue nurse alert
       const nurseWa = process.env.NURSE_ALERT_WHATSAPP;
       if (nurseWa) {
-        setTimeout(() => {
-          void sendWhatsApp(nurseWa, formatNurseAlert(merged));
-        }, 2 * 60 * 1000); // 2 min delay
+        await sendWhatsApp(nurseWa, formatNurseAlert(merged));
+        await logAudit(thread.id, 'urgent_nurse_alert_sent', 'system', { to: nurseWa, channel: 'whatsapp' });
       }
       return twimlResponse('Thank you. Your message has been received and a member of our team will contact you shortly.');
     }
 
-    // ROUTINE / INFO — continue intake flow
-    return twimlResponse(reply);
+    // ROUTINE / INFO — continue intake flow. For 'active' threads, send the
+    // drafted reply if one was prepared (e.g. INFO-level appointment slots),
+    // otherwise fall back to the conversational reply.
+    const outbound = (merged.status === 'active' && merged.draft_reply) ? merged.draft_reply : reply;
+    return twimlResponse(outbound);
   } catch (err) {
     console.error('[webhook] Error:', err);
     return twimlResponse('Thank you for your message. We will be in touch shortly.');

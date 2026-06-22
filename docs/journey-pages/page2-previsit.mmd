@@ -1,0 +1,30 @@
+%%{init: {'theme':'base', 'themeVariables': {
+  'primaryColor':'#e0f2fe',
+  'primaryBorderColor':'#0284c7',
+  'primaryTextColor':'#0c4a6e',
+  'lineColor':'#64748b',
+  'fontFamily':'Arial',
+  'fontSize':'26px'
+}}}%%
+flowchart LR
+    TITLE["PAGE 2 of 4 — BEFORE THE VISIT"]:::title
+
+    PAGE1IN(["← Page 1:\nAppointment confirmed"]):::pagelink --> K["Reminders sent:\n48h SMS+prep, 24h email, 2h SMS"]:::previsit
+    K --> L{"Patient completes\npre-visit questionnaire (APCQ)?"}:::decision
+    L -->|"YES"| M["AI drafts visit summary\nfor nurse/doctor"]:::previsit
+    L -->|"NO"| N["Nurse takes full history\nat check-in instead"]:::previsit
+    M --> PAGE3B(["→ Page 3:\nFront-desk check-in"]):::pagelink
+    N --> PAGE3B
+
+    TITLE ~~~ PAGE1IN
+
+    classDef title fill:#1e293b,stroke:#1e293b,color:#fff,font-weight:bold,font-size:30px
+    classDef start fill:#bbf7d0,stroke:#15803d,stroke-width:2px,color:#14532d,font-weight:bold
+    classDef endstate fill:#fee2e2,stroke:#b91c1c,stroke-width:2px,color:#7f1d1d,font-weight:bold
+    classDef decision fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f,font-weight:bold
+    classDef booking fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#1e3a8a
+    classDef previsit fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#4c1d95
+    classDef checkin fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef clinic fill:#fae8ff,stroke:#a21caf,stroke-width:1.5px,color:#581c87
+    classDef docs fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+    classDef pagelink fill:#f1f5f9,stroke:#64748b,stroke-width:2px,stroke-dasharray: 5 3,color:#334155,font-weight:bold

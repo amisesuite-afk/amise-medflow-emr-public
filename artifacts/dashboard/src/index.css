@@ -179,6 +179,21 @@ textarea { resize: vertical; }
 .acuity-badge .ab-level { font-size: 14px; font-weight: 900; letter-spacing: -.01em; }
 .acuity-badge .ab-score { font-size: 10px; opacity: .8; }
 
+.surgical-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 8px;
+  background: #312e81;
+  color: #fff;
+  min-width: 90px;
+  cursor: default;
+}
+.surgical-badge .ab-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; opacity: .85; }
+.surgical-badge .ab-level { font-size: 13px; font-weight: 900; letter-spacing: -.01em; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.surgical-badge .ab-score { font-size: 10px; opacity: .8; }
+
 /* ── Nav Sidebar ─────────────────────────────────── */
 .nav-sidebar {
   display: flex;
@@ -1647,19 +1662,26 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
 .trauma-print-summary { display: none; }
 
 @media print {
-  * { visibility: hidden; }
-  .trauma-print-summary,
-  .trauma-print-summary * { visibility: visible; }
+  .no-print { display: none !important; }
   .trauma-print-summary {
     display: block !important;
     position: absolute;
     top: 0; left: 0;
     width: 100%;
+    z-index: 9999;
     background: #fff;
     color: #111;
     font-family: 'Helvetica Neue', Arial, sans-serif;
     font-size: 11pt;
     padding: 24px 32px;
+  }
+  /* Strip dark backgrounds from all form elements when printing */
+  select, input, textarea {
+    background: #fff !important;
+    color: #111 !important;
+    border-color: #999 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   .trauma-print-summary h1 {
     font-size: 16pt; font-weight: 800; margin: 0 0 4px;
@@ -1684,4 +1706,40 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   .tps-chip { display: inline-block; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 12px; padding: 2px 8px; font-size: 9pt; margin: 2px; }
   .tps-footer { margin-top: 24px; padding-top: 8px; border-top: 1px solid #d1d5db; font-size: 8pt; color: #6b7280; }
   .no-print { display: none !important; }
+}
+
+/* ── Consultation horizontal tab strip ───────────────────────────── */
+.consult-tabstrip {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  padding: 0 0 10px;
+  margin: 0 0 4px;
+  border-bottom: 1px solid #e2e8f0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+.consult-tabstrip::-webkit-scrollbar { height: 3px; }
+.consult-tabstrip::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.ct-tab {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.12s;
+}
+.ct-tab:hover { background: #f1f5f9; color: #334155; }
+.ct-tab--active {
+  background: #0d9488;
+  color: #fff;
+}
+.ct-tab--active:hover {
+  background: #0f766e;
+  color: #fff;
 }

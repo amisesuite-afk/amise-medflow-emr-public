@@ -1,4 +1,5 @@
 import CollapsibleCard from '@/components/CollapsibleCard';
+import IcdCodeBadge from '@/components/IcdCode';
 import { useAppContext } from '@/context/AppContext';
 import { usePane } from '@/hooks/usePane';
 
@@ -75,11 +76,7 @@ export default function PaneDifferential({ onAddDifferential, onExportDifferenti
                 >
                   {r.disease.label}
                 </button>
-                <span style={{
-                  flexShrink: 0, fontFamily: 'monospace', fontSize: 10, color: '#9ca3af',
-                }}>
-                  {r.disease.icd10}
-                </span>
+                <IcdCodeBadge code={r.disease.icd10} compact />
                 <ProbBar value={r.probability} />
               </div>
             );

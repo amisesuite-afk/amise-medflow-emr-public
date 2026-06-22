@@ -5,7 +5,7 @@ import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import WheelPicker from '@/components/WheelPicker';
 import { createEncounter, saveVitals, saveSymptoms, saveAllergyFreeText } from '@/lib/db';
-import type { VitalSigns } from '@/lib/adaptive-triage';
+import type { VitalSigns } from '@workspace/triage-engine';
 
 interface VitalField {
   key: keyof VitalSigns;
@@ -76,6 +76,7 @@ export default function NursePreVisitView() {
     currentSite, setCurrentSite,
     preVisitStatus, setPreVisitStatus,
     patientId, encounterId, setEncounterId,
+    triageResult,
   } = useAppContext();
 
   const { profile, signOut } = useAuth();
@@ -357,6 +358,28 @@ export default function NursePreVisitView() {
                 style={{ minHeight: 80, padding: '10px 11px', fontSize: 13 }}
               />
             </div>
+
+            {triageResult.isPrimarilySurgical && (
+              <div style={{
+                marginTop: 12,
+                padding: '10px 12px',
+                borderRadius: 8,
+                background: '#eef2ff',
+                border: '1px solid #c7d2fe',
+              }}>
+                <div style={{ fontSize: 12, fontWeight: 800, color: '#312e81', marginBottom: 6 }}>
+                  ⚑ Likely surgical pathway — flag for Dr Kabiye
+                </div>
+                {triageResult.surgicalMatches.slice(0, 3).map(m => (
+                  <div key={m.id} style={{ fontSize: 12, color: '#3730a3', marginBottom: 4 }}>
+                    <strong>{m.label}</strong> ({m.category})
+                    <div style={{ fontSize: 11, color: '#4338ca' }}>
+                      ICD-10: {m.icd10.map(c => c.code).join(', ')} · CPT: {m.cpt.map(c => c.code).join(', ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CollapsibleCard>
 
           {/* Card 4: Allergies */}

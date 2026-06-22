@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, listPatientsBySite, getLatestOpenEncounter, loadPMH, type PatientListRow } from '@/lib/db';
+import { listPatients, listPatientsBySite, getLatestOpenEncounter, loadPMH, loadEncounterData, type PatientListRow } from '@/lib/db';
 import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { DEMO_MODE } from '@/context/AuthContext';
+import { fmtPhone } from '@/lib/fmt';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
 
@@ -97,7 +98,12 @@ export default function PatientSearchTab() {
   const [selected,      setSelected]      = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { setPatientName, setAge, setSex, setDob, setPhone, setPatientId, setEncounterId, setComorbidities } = useAppContext();
+  const {
+    setPatientName, setAge, setSex, setDob, setPhone,
+    setPatientId, setEncounterId, setComorbidities,
+    setAssessment, setDifferentials, setIcdCodes, setPlan,
+    setAllergies, setMedications, setPatientPhoto,
+  } = useAppContext();
   const { showToast } = useToast();
 
   // ── Demo mode: load from localStorage ──────────────────────────────────────
@@ -159,12 +165,20 @@ export default function PatientSearchTab() {
     setSearching(true);
     try {
       if (!supabase) throw new Error('Supabase not configured — check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
-      const dbQuery = supabase
-        .from('patients')
-        .select('id, full_name, sex, phone, date_of_birth, created_at')
-        .ilike('full_name', `%${q}%`)
-        .order('created_at', { ascending: false })
-        .limit(30);
+      const isPhone = /^\+?\d[\d\s()-]{3,}$/.test(q.trim());
+      const dbQuery = isPhone
+        ? supabase
+            .from('patients')
+            .select('id, full_name, sex, phone, date_of_birth, created_at')
+            .ilike('phone', `%${q.replace(/[\s()-]/g, '')}%`)
+            .order('created_at', { ascending: false })
+            .limit(30)
+        : supabase
+            .from('patients')
+            .select('id, full_name, sex, phone, date_of_birth, created_at')
+            .ilike('full_name', `%${q}%`)
+            .order('created_at', { ascending: false })
+            .limit(30);
 
       const { data, error: err } = await dbQuery;
       if (err) throw err;
@@ -232,6 +246,17 @@ export default function PatientSearchTab() {
         ? ` · ${pmhResult.conditions.length} PMH condition${pmhResult.conditions.length !== 1 ? 's' : ''} loaded`
         : '';
       if (encResult.encounterId) {
+        // Restore clinical snapshot: assessment, plan, allergies, medications
+        const encData = await loadEncounterData(encResult.encounterId, p.id);
+        if (!encData.error && encData.data) {
+          const d = encData.data;
+          if (d.assessment)    setAssessment(d.assessment);
+          if (d.differentials) setDifferentials(d.differentials);
+          if (d.icdCodes.length) setIcdCodes(d.icdCodes);
+          if (d.plan)          setPlan(d.plan);
+          if (d.allergens.length) setAllergies(d.allergens.join(', '));
+          if (d.medications.length) setMedications(d.medications);
+        }
         showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
       } else {
         showToast(`Loaded: ${p.full_name ?? 'patient'} — no open encounter${pmhSuffix}.`, 'info');
@@ -326,12 +351,12 @@ export default function PatientSearchTab() {
           className="psearch-input"
           value={query}
           onChange={e => handleChange(e.target.value)}
-          placeholder="Filter by name…"
+          placeholder="Search by name or phone…"
           autoFocus
         />
         {(searching || loadingAll) && <span className="psearch-spinner">⟳</span>}
         {query && !searching && (
-          <button className="psearch-clear" onClick={() => { setQuery(''); setSearchResults(null); }}>✕</button>
+          <button className="psearch-clear" aria-label="Clear search" onClick={() => { setQuery(''); setSearchResults(null); }}>✕</button>
         )}
       </div>
 
@@ -355,7 +380,7 @@ export default function PatientSearchTab() {
                   </span>
                 )}
                 <span className="psearch-row-meta">
-                  {[p.age ? `Age ${p.age}` : ageFromDob(p.date_of_birth), p.sex, p.phone].filter(Boolean).join(' · ')}
+                  {[p.age ? `Age ${p.age}` : ageFromDob(p.date_of_birth), p.sex, fmtPhone(p.phone)].filter(Boolean).join(' · ')}
                 </span>
               </div>
               <div className="psearch-row-right">

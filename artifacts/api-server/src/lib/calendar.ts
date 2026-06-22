@@ -5,6 +5,11 @@ import {
 } from '@workspace/triage-engine';
 
 const TZ = 'America/St_Lucia';
+const ECT_OFFSET_MS = -4 * 60 * 60_000; // UTC-4, no DST
+
+function getDayECT(d: Date): number {
+  return new Date(d.getTime() + ECT_OFFSET_MS).getDay();
+}
 
 function getAuth() {
   // OAuth2 path — personal account (amisesuite@gmail.com), no service account needed
@@ -47,7 +52,6 @@ function getCalendar() {
 export function calendarIdFor(location: Location): string {
   switch (location) {
     case 'rodney_bay': return process.env.CALENDAR_ID_RODNEY_BAY!;
-    case 'castries':   return process.env.CALENDAR_ID_CASTRIES!;
     case 'tapion':     return process.env.CALENDAR_ID_TAPION_ERCP!;
     case 'remote':     return process.env.CALENDAR_ID_RODNEY_BAY!;
     default:           return process.env.CALENDAR_ID_RODNEY_BAY!;
@@ -100,7 +104,7 @@ export async function findSlots(
   cursor.setSeconds(0, 0);
 
   while (slots.length < max && cursor.getTime() < new Date(timeMax).getTime()) {
-    const dow = cursor.getDay();
+    const dow = getDayECT(cursor);
 
     if (rule.days.includes(dow) && !isPublicHoliday(cursor)) {
       const dayStart = setTime(cursor, rule.windowStart);
@@ -138,7 +142,7 @@ function overlapsBusy(start: Date, end: Date, busy: { start: Date; end: Date }[]
 
 function overlapsExclusion(start: Date, end: Date): boolean {
   for (const ex of EXCLUSIONS) {
-    if (!ex.days?.includes(start.getDay())) continue;
+    if (!ex.days?.includes(getDayECT(start))) continue;
     if (ex.allDay) return true;
     if (!ex.startTime || !ex.endTime) continue;
     const exStart = setTime(start, ex.startTime);
@@ -208,11 +212,12 @@ function labelFor(t: AppointmentType): string {
 export function formatSlotForDisplay(slot: AvailableSlot): { day: string; date: string; time: string; location: string } {
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const locLabel = ({ rodney_bay: 'Rodney Bay', castries: 'Castries', tapion: 'Tapion Hospital', remote: 'Telephone' } as Record<string, string>)[slot.location];
+  const locLabel = ({ rodney_bay: 'Rodney Bay', tapion: 'Tapion Hospital', remote: 'Telephone' } as Record<string, string>)[slot.location];
+  const ect = new Date(slot.start.getTime() + ECT_OFFSET_MS);
   return {
-    day: dayNames[slot.start.getDay()],
-    date: `${slot.start.getDate()} ${monthNames[slot.start.getMonth()]} ${slot.start.getFullYear()}`,
-    time: `${pad(slot.start.getHours())}:${pad(slot.start.getMinutes())}`,
+    day: dayNames[ect.getDay()],
+    date: `${ect.getDate()} ${monthNames[ect.getMonth()]} ${ect.getFullYear()}`,
+    time: `${pad(ect.getHours())}:${pad(ect.getMinutes())}`,
     location: locLabel,
   };
 }
@@ -237,7 +242,6 @@ export async function fetchUpcomingEvents(daysAhead = 30): Promise<CalendarEvent
 
   const calIds = [
     process.env.CALENDAR_ID_RODNEY_BAY,
-    process.env.CALENDAR_ID_CASTRIES,
     process.env.CALENDAR_ID_TAPION_ERCP,
   ].filter(Boolean) as string[];
 

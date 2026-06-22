@@ -1,6 +1,9 @@
 import { useState, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { getApiOrigin } from '@/lib/api-origin';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { AMISE_LOGO_SVG } from './lib/docTemplate';
+import { saveBlobAsPDF } from './lib/pdfExport';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -46,10 +49,9 @@ function soapTextToHtml(text: string): string {
   return out.join('\n');
 }
 
-const SITE_INFO: Record<string, { name: string; address: string }> = {
-  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay, Saint Lucia' },
-  castries:   { name: 'Castries Office',   address: 'Castries, Saint Lucia' },
-  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia' },
+const SITE_INFO: Record<string, { name: string; address: string; phone: string }> = {
+  rodney_bay: { name: 'Rodney Bay Office', address: 'Providence Building, First Floor, Apt#3, Rodney Bay, Saint Lucia', phone: '1 (758) 720 7111' },
+  tapion:     { name: 'Tapion Hospital',   address: 'Tapion, Saint Lucia', phone: '1 (758) 459 2227 / 1 (758) 284 0557' },
 };
 
 const APPT_LABELS: Record<string, string> = {
@@ -63,20 +65,7 @@ const APPT_LABELS: Record<string, string> = {
   diabetic_foot: 'Diabetic Foot Clinic',
 };
 
-const LOGO_SVG = `<svg width="150" height="52" viewBox="0 0 150 52" xmlns="http://www.w3.org/2000/svg">
-  <!-- Left figure — navy -->
-  <ellipse cx="15" cy="11" rx="6.5" ry="7.5" fill="#1a3a5c"/>
-  <path d="M8.5 19 C7 28 8 37 14 41 C17.5 43 21 41 21 38 C17.5 36 14.5 31 14.5 24.5 C14.5 20.5 16.5 19.5 18.5 19 C14 17 8.5 17.5 8.5 19Z" fill="#1a3a5c"/>
-  <!-- Right figure — crimson -->
-  <ellipse cx="29" cy="11" rx="6.5" ry="7.5" fill="#922b21"/>
-  <path d="M35.5 19 C37 28 36 37 30 41 C26.5 43 23 41 23 38 C26.5 36 29.5 31 29.5 24.5 C29.5 20.5 27.5 19.5 25.5 19 C30 17 35.5 17.5 35.5 19Z" fill="#922b21"/>
-  <!-- Divider -->
-  <line x1="48" y1="6" x2="48" y2="46" stroke="#ddd" stroke-width="1"/>
-  <!-- Practice name -->
-  <text x="56" y="24" font-family="Arial,Helvetica,sans-serif" font-size="19" font-weight="bold" fill="#1a3a5c" letter-spacing="1.2">AMISE</text>
-  <text x="56" y="37" font-family="Arial,Helvetica,sans-serif" font-size="7.5" fill="#666" letter-spacing="2.5">MEDICAL SERVICES</text>
-  <text x="56" y="47" font-family="Arial,Helvetica,sans-serif" font-size="6.5" fill="#999" letter-spacing="0.5">Saint Lucia</text>
-</svg>`;
+const LOGO_SVG = AMISE_LOGO_SVG;
 
 interface PrintMeta {
   patientName: string;
@@ -160,7 +149,7 @@ function buildPrintHtml(text: string, meta: PrintMeta): string {
 <div class="hdr">
   <div>
     <div class="hdr-brand">${escHtml(site.name)}</div>
-    <div class="hdr-addr">${escHtml(site.address)}<br>Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
+    <div class="hdr-addr">${escHtml(site.address)}<br>Tel: ${escHtml(site.phone)} &nbsp;·&nbsp; amisesuite@gmail.com</div>
   </div>
   <div>${LOGO_SVG}</div>
 </div>
@@ -200,78 +189,11 @@ ${bodyHtml}
 }
 
 // Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
-const API_ORIGIN = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
+const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   const base = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
   return `${base}${path}`;
-}
-
-const ANTHROPIC_API_KEY = (import.meta.env.VITE_ANTHROPIC_API_KEY as string | undefined) ?? '';
-
-const SUMMARY_SYSTEM_PROMPT =
-  'You are a clinical documentation assistant for Amise Medical Services, Saint Lucia. ' +
-  'Generate a professional SOAP-format clinical summary. ' +
-  'Never include fees, diagnoses beyond what the clinician provides, medication doses, or test results. ' +
-  'Output plain text with headings: SUBJECTIVE, OBJECTIVE, ASSESSMENT, PLAN.';
-
-const FEE_RE   = /\$[\d,]+|EC\$[\d,]+|\bXCD\b|\bfee\b|\bcharge\b|\bcost\b/gi;
-const DOSE_RE  = /\b\d+\s*mg\b|\b\d+\s*mcg\b/gi;
-
-function redactForbidden(text: string): string {
-  // Replace any sentence containing a forbidden pattern with a redaction notice.
-  return text
-    .split('\n')
-    .map(line => {
-      if (FEE_RE.test(line) || DOSE_RE.test(line)) {
-        // Reset lastIndex for global regexes
-        FEE_RE.lastIndex = 0;
-        DOSE_RE.lastIndex = 0;
-        return '[REDACTED — requires clinical review]';
-      }
-      FEE_RE.lastIndex = 0;
-      DOSE_RE.lastIndex = 0;
-      return line;
-    })
-    .join('\n');
-}
-
-interface AnthropicMessage {
-  id: string;
-  content: { type: string; text: string }[];
-}
-
-async function callAnthropicDirect(body: Record<string, unknown>): Promise<string> {
-  const userContent = JSON.stringify(body, null, 2);
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2048,
-      system: SUMMARY_SYSTEM_PROMPT,
-      messages: [
-        {
-          role: 'user',
-          content: `Please generate a SOAP clinical summary for the following patient intake data:\n\n${userContent}`,
-        },
-      ],
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({})) as { error?: { message?: string } };
-    throw new Error(err.error?.message ?? `Anthropic API error: HTTP ${res.status}`);
-  }
-
-  const data = await res.json() as AnthropicMessage;
-  const text = data.content.find(b => b.type === 'text')?.text ?? '';
-  return redactForbidden(text);
 }
 
 // ── Direct-export template builders ──────────────────────────────────────────
@@ -308,12 +230,12 @@ function sharedHead(title: string): string {
 <title>${escHtml(title)}</title>`;
 }
 
-function sharedHeader(site: { name: string; address: string }, consultDate: string): string {
+function sharedHeader(site: { name: string; address: string; phone: string }, consultDate: string): string {
   return `<div class="hdr">
   <div>
     <div class="hdr-office">${escHtml(site.name)}</div>
     <div class="hdr-sub">${escHtml(site.address)}</div>
-    <div class="hdr-sub">Tel: 1 (758) 720 7111 &nbsp;·&nbsp; amisesuite@gmail.com</div>
+    <div class="hdr-sub">Tel: ${escHtml(site.phone)} &nbsp;·&nbsp; amisesuite@gmail.com</div>
     <div class="hdr-sub" style="margin-top:2px;color:#1a3a5c">${escHtml(consultDate)}</div>
   </div>
   <div>${LOGO_SVG}</div>
@@ -513,7 +435,7 @@ ${referNotes ? `<div class="section">
   <div class="sig-line"></div>
   <div class="sig-name">Dr. Dawit D Kabiye</div>
   <div class="sig-title">MD, DM &nbsp;·&nbsp; General &amp; Endoscopic Surgery</div>
-  <div class="sig-lic">${escHtml(site.name)} &nbsp;·&nbsp; 1 (758) 720 7111</div>
+  <div class="sig-lic">${escHtml(site.name)} &nbsp;·&nbsp; ${escHtml(site.phone)}</div>
   <div class="sig-lic">Licence #: ............&nbsp;&nbsp;&nbsp;&nbsp; Date: ..................</div>
 </div>
 <div class="sig-right"></div>
@@ -639,11 +561,21 @@ function DirectExportPanel() {
     return buildDirectSummaryHtml(ctx, meta);
   }
 
-  function filename(): string {
+  function fileSlug(): { prefix: string; slug: string; date: string } {
     const slug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const date = new Date().toISOString().slice(0, 10);
     const prefix = docType === 'referral' ? 'referral' : docType === 'discharge' ? 'discharge' : 'clinical-note';
+    return { prefix, slug, date };
+  }
+
+  function filename(): string {
+    const { prefix, slug, date } = fileSlug();
     return `${prefix}-${slug}-${date}.html`;
+  }
+
+  function pdfFilename(): string {
+    const { prefix, slug, date } = fileSlug();
+    return `${prefix}-${slug}-${date}.pdf`;
   }
 
   return (
@@ -702,12 +634,17 @@ function DirectExportPanel() {
         <button type="button"
           onClick={() => printHtml(getHtml())}
           style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #1a5276', background: '#1a5276', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
-          🖨 Print / Save PDF
+          🖨 Print
+        </button>
+        <button type="button"
+          onClick={() => void saveBlobAsPDF(getHtml(), pdfFilename())}
+          style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #0b8278', background: '#0b8278', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
+          ↓ PDF
         </button>
         <button type="button"
           onClick={() => downloadHtml(getHtml(), filename())}
           style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #374151', background: '#f9fafb', color: '#374151', fontSize: 12, cursor: 'pointer' }}>
-          ↓ Download HTML
+          ↓ HTML
         </button>
       </div>
 
@@ -798,31 +735,18 @@ export default function SummaryTab() {
         const data = await res.json() as { document: string };
         summaryText = data.document;
       } else {
-        // No API_ORIGIN — try same-origin proxy, fall back to direct Anthropic call
-        let apiSucceeded = false;
-        try {
-          const res = await fetch(apiUrl('/api/summary/generate'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-          });
-          if (res.ok) {
-            const data = await res.json() as { document: string };
-            summaryText = data.document;
-            apiSucceeded = true;
-          }
-        } catch {
-          // API server not available — fall through to direct call
+        // No API_ORIGIN — use same-origin proxy (Vite dev proxy or production Next.js)
+        const res = await fetch(apiUrl('/api/summary/generate'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
         }
-
-        if (!apiSucceeded) {
-          if (!ANTHROPIC_API_KEY) {
-            throw new Error(
-              'Add VITE_ANTHROPIC_API_KEY to your .env.local to enable AI summaries, or connect to the API server.',
-            );
-          }
-          summaryText = await callAnthropicDirect(body);
-        }
+        const data = await res.json() as { document: string };
+        summaryText = data.document;
       }
 
       setDocument(summaryText ?? '');
@@ -856,6 +780,13 @@ export default function SummaryTab() {
   function printDoc() {
     if (!document) return;
     printHtml(buildPrintHtml(document, makePrintMeta()));
+  }
+
+  function downloadPdf() {
+    if (!document) return;
+    const patientSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    void saveBlobAsPDF(buildPrintHtml(document, makePrintMeta()), `clinical-summary-${patientSlug}-${dateStr}.pdf`);
   }
 
   function downloadDoc() {
@@ -921,8 +852,8 @@ export default function SummaryTab() {
                 <button className="summary-btn summary-btn--ghost" onClick={() => void copy()}>
                   {copied ? '✓ Copied' : '⎘ Copy'}
                 </button>
-                <button className="summary-btn summary-btn--ghost" onClick={downloadDoc}>
-                  ↓ Download
+                <button className="summary-btn summary-btn--ghost" onClick={downloadPdf}>
+                  ↓ PDF
                 </button>
                 <button className="summary-btn summary-btn--ghost" onClick={printDoc}>
                   🖨 Print
@@ -953,9 +884,8 @@ export default function SummaryTab() {
         {error && (
           <div className="summary-error" style={{ marginBottom: 10 }}>
             ⚠ {error}
-            {(error.includes('ANTHROPIC') || error.includes('API')) &&
-             !error.includes('VITE_ANTHROPIC_API_KEY') ? (
-              <span> — Check that ANTHROPIC_API_KEY is set in environment secrets.</span>
+            {error.includes('not configured') ? (
+              <span> — Check that ANTHROPIC_API_KEY is set on the API server.</span>
             ) : null}
           </div>
         )}

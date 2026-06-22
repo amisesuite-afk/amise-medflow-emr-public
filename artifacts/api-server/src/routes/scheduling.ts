@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { findSlots, formatSlotForDisplay, fetchUpcomingEvents, AvailableSlot } from '../lib/calendar';
 import { SLOT_RULES, AppointmentType, SlotRule, Location } from '@workspace/triage-engine';
+import { requireAuth } from '../middlewares/auth';
+import { requireCronSecret } from '../lib/supabase.js';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -76,7 +78,7 @@ router.get('/api/scheduling/slots', async (req, res) => {
 // ── /api/scheduling/sync ─────────────────────────────────────────────────────
 // Fetches live events from Google Calendar and writes calendar-cache.json.
 
-router.post('/api/scheduling/sync', async (_req, res) => {
+async function syncCalendarCache(): Promise<{ synced: boolean; eventCount?: number; syncedAt?: string; error?: string }> {
   try {
     const events = await fetchUpcomingEvents(45);
     const cache = {
@@ -86,11 +88,20 @@ router.post('/api/scheduling/sync', async (_req, res) => {
       events,
     };
     writeFileSync(CACHE_PATH, JSON.stringify(cache, null, 2), 'utf-8');
-    res.json({ synced: true, eventCount: events.length, syncedAt: cache.fetchedAt });
+    return { synced: true, eventCount: events.length, syncedAt: cache.fetchedAt };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    res.json({ synced: false, error: msg });
+    return { synced: false, error: msg };
   }
+}
+
+router.post('/api/scheduling/sync', requireAuth, async (_req, res) => {
+  res.json(await syncCalendarCache());
+});
+
+router.post('/api/cron/calendar-sync', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+  res.json(await syncCalendarCache());
 });
 
 // ── /api/scheduling/upcoming ─────────────────────────────────────────────────
@@ -122,7 +133,7 @@ function loadCache(): CalendarCache | null {
   }
 }
 
-router.get('/api/scheduling/upcoming', (req, res) => {
+router.get('/api/scheduling/upcoming', requireAuth, (req, res) => {
   const cache = loadCache();
   if (!cache) {
     res.status(503).json({ error: 'Calendar cache not available' });

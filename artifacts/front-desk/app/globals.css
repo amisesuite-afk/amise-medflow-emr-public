@@ -5,7 +5,144 @@
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; font-family: system-ui, -apple-system, sans-serif; }
 
+/* ── Focus styles ───────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  border-color: #0d9488 !important;
+  box-shadow: 0 0 0 3px rgba(13,148,136,0.15);
+}
+
+/* ── Skip-to-content ────────────────────────────── */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  z-index: 9999;
+  padding: 12px 24px;
+  background: #0d9488;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 0 0 8px 0;
+  text-decoration: none;
+}
+.skip-to-main:focus {
+  left: 0;
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
+}
+
+/* ── Nav responsive ──────────────────────────────────── */
+.amise-nav-links        { display: flex; gap: 32px; align-items: center; }
+.amise-nav-mobile-book  { display: none; }
+.amise-nav-hamburger    { display: flex; position: absolute; left: 2px; top: 14px; }
+
+@media (max-width: 1024px) {
+  .amise-nav-links       { display: none; }
+  .amise-nav-mobile-book { display: flex; }
+}
+
+/* ── Mobile responsive overrides (< 768px) ─────────── */
+@media (max-width: 768px) {
+  /* Nav padding */
+  .amise-nav           { padding: 0 16px !important; }
+
+  /* Hero */
+  .amise-hero-bg       { display: none !important; }
+  .amise-hero-fade     { display: none !important; }
+  .amise-hero-content  {
+    width: 100% !important;
+    padding: 60px 20px 50px !important;
+  }
+
+  /* Hero CTA buttons — full width */
+  .amise-hero-ctas     { flex-direction: column !important; }
+  .amise-hero-ctas > a { min-width: 0 !important; width: 100% !important; }
+
+  /* Hero WhatsApp contacts — full width stack */
+  .amise-hero-wa       { flex-direction: column !important; }
+  .amise-hero-wa > a   { width: 100% !important; }
+
+  /* WhatsApp strip */
+  .amise-wa-strip      { padding: 16px 16px !important; }
+  .amise-wa-strip-inner {
+    flex-direction: column !important;
+    text-align: center !important;
+    gap: 12px !important;
+  }
+  .amise-wa-strip-inner > div:first-child {
+    justify-content: center !important;
+  }
+  .amise-wa-strip-buttons {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  .amise-wa-strip-buttons > a {
+    flex: 1 !important;
+    text-align: center !important;
+  }
+
+  /* Services grid — 1 column */
+  .amise-services-grid { grid-template-columns: 1fr !important; }
+
+  /* Offices grid — 1 column */
+  .amise-offices-grid  { grid-template-columns: 1fr !important; }
+
+  /* Office card — stack vertically */
+  .amise-office-card   { flex-direction: column !important; }
+  .amise-office-card-img { width: 100% !important; height: 200px !important; }
+
+  /* Steps row — wrap on mobile */
+  .amise-hiw-steps     { flex-wrap: wrap !important; gap: 20px !important; }
+  .amise-hiw-steps > div { flex: 0 0 calc(50% - 10px) !important; }
+
+  /* Section padding */
+  .amise-section-padded { padding-left: 16px !important; padding-right: 16px !important; }
+
+  /* Footer */
+  .amise-footer        { padding: 32px 16px 20px !important; }
+  .amise-footer-main   { flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; }
+  .amise-footer-links  { flex-direction: column !important; gap: 24px !important; }
+
+  /* Provider strip */
+  .amise-provider-strip { padding: 40px 16px !important; }
+
+  /* Touch target minimum heights */
+  .amise-touch-target  { min-height: 44px; display: flex; align-items: center; }
+}
+
+/* ── Tablet breakpoint (481–768px) — 2-col services ── */
+@media (min-width: 481px) and (max-width: 768px) {
+  .amise-services-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ── Shared sub-page header ──────────────────────────── */
+.amise-sub-nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.97); backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e8f0ef; padding: 0 40px;
+}
+.amise-sub-nav-inner {
+  max-width: 1160px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.amise-sub-nav-secondary { display: inline-flex; }
+.amise-sub-nav-back-short { display: none; }
+
+@media (max-width: 480px) {
+  .amise-sub-nav            { padding: 0 20px; }
+  .amise-sub-nav-inner      { height: 56px; }
+  .amise-sub-nav-secondary  { display: none; }
+  .amise-sub-nav-back-full  { display: none; }
+  .amise-sub-nav-back-short { display: inline; }
 }

@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { DISEASES, getDiseaseSpecialty, getProtocol } from '@workspace/pane-engine';
+import IcdCodeBadge from '@/components/IcdCode';
 import { ManagementPanel } from '@/components/ManagementPanel';
 
 const SPECIALTY_LABELS: Record<string, string> = {
@@ -94,9 +95,8 @@ export default function DictionaryTab() {
               const isOpen  = expanded === d.id;
 
               return (
-                <>
+                <React.Fragment key={d.id}>
                   <tr
-                    key={d.id}
                     onClick={() => setExpanded(isOpen ? null : d.id)}
                     style={{
                       background: i % 2 === 0 ? '#0f172a' : '#1e293b',
@@ -108,7 +108,7 @@ export default function DictionaryTab() {
                     onMouseLeave={e => { (e.currentTarget as HTMLTableRowElement).style.background = i % 2 === 0 ? '#0f172a' : '#1e293b'; }}
                   >
                     <td style={{ padding: '8px 12px', color: '#e2e8f0', fontWeight: 500 }}>{d.label}</td>
-                    <td style={{ padding: '8px 12px', color: '#7dd3fc', fontFamily: 'monospace' }}>{d.icd10}</td>
+                    <td style={{ padding: '8px 12px' }}><IcdCodeBadge code={d.icd10} /></td>
                     <td style={{ padding: '8px 12px', color: '#a3e7df' }}>{SPECIALTY_LABELS[spec] ?? spec}</td>
                     <td style={{ padding: '8px 12px', textAlign: 'right', color: '#94a3b8' }}>
                       {(d.prior * 100).toFixed(2)}%
@@ -133,7 +133,7 @@ export default function DictionaryTab() {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
           </tbody>

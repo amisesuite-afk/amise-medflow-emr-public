@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { errMsg } from '@/lib/err';
 import CptPicker from '@/components/CptPicker';
+import { getApiOrigin } from '@/lib/api-origin';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -37,6 +40,29 @@ const PHASE_LABELS: Record<string, string> = {
   surgical:     'SURGICAL MANAGEMENT',
   followup:     'FOLLOW-UP',
 };
+
+// ── Review / follow-up scheduling ───────────────────────────────────────────
+
+const REVIEW_OPTIONS: { value: string; label: string; days: number | null }[] = [
+  { value: '1w',     label: '1 week',     days: 7 },
+  { value: '2w',     label: '2 weeks',    days: 14 },
+  { value: '4w',     label: '4 weeks',    days: 28 },
+  { value: '6w',     label: '6 weeks',    days: 42 },
+  { value: '3m',     label: '3 months',   days: 90 },
+  { value: 'custom', label: 'Custom date', days: null },
+];
+
+// Today's date in America/St_Lucia (UTC-4, no DST), as YYYY-MM-DD
+function stLuciaTodayISO(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/St_Lucia' });
+}
+
+function addDaysISO(isoDate: string, days: number): string {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + days);
+  return dt.toISOString().split('T')[0];
+}
 
 function buildPlanText(
   protocol: NonNullable<ReturnType<typeof getProtocol>>,
@@ -126,10 +152,59 @@ export default function PlanTab() {
     icdCodes,
     encounterMode,
     symptoms,
+    patientName, phone, currentSite,
   } = useAppContext();
 
   const acuity = triageResult.acuity;
   const bmiData = calcBmiClass(weightKg, heightCm);
+
+  // Review / follow-up scheduling
+  const [followUpNotes, setFollowUpNotes] = useState('');
+  const [reviewIn, setReviewIn] = useState('');
+  const [reviewCustomDate, setReviewCustomDate] = useState('');
+  const [scheduling, setScheduling] = useState(false);
+  const [scheduleErr, setScheduleErr] = useState<string | null>(null);
+  const [scheduleOk, setScheduleOk] = useState<string | null>(null);
+
+  async function handleScheduleReview() {
+    if (!reviewIn) return;
+    const opt = REVIEW_OPTIONS.find(o => o.value === reviewIn);
+    const targetDate = opt?.days != null
+      ? addDaysISO(stLuciaTodayISO(), opt.days)
+      : reviewCustomDate;
+    if (!targetDate) return;
+
+    setScheduling(true);
+    setScheduleErr(null);
+    setScheduleOk(null);
+    try {
+      const apiOrigin = getApiOrigin();
+      const url = apiOrigin ? `${apiOrigin}/api/booking/request` : '/api/booking/request';
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patient_name:     patientName.trim() || 'Unnamed patient',
+          patient_email:    `manual.${Date.now()}@noreply.amise.internal`,
+          patient_phone:    phone.trim() || null,
+          appointment_type: 'follow_up',
+          location:         currentSite,
+          preferred_slot:   targetDate,
+          reason:           followUpNotes.trim() || 'Doctor-requested review following consultation',
+          source:           'manual',
+        }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      setScheduleOk(targetDate);
+    } catch (e) {
+      setScheduleErr(errMsg(e));
+    } finally {
+      setScheduling(false);
+    }
+  }
 
   const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
     ? paneTop[0].disease.id
@@ -299,9 +374,70 @@ export default function PlanTab() {
         <div className="fld">
           <label>Follow-up plan and patient instructions</label>
           <textarea
+            value={followUpNotes}
+            onChange={e => setFollowUpNotes(e.target.value)}
             placeholder="Review in OPD in 2 weeks…&#10;Return immediately if: fever, increasing pain, vomiting…"
             style={{ minHeight: 100 }}
           />
+        </div>
+
+        <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #e5e7eb' }}>
+          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>
+            To be reviewed
+          </label>
+          <p style={{ fontSize: 12, color: 'var(--muted)', margin: '0 0 10px' }}>
+            Choosing a review timeframe creates a pending request in the Booking Inbox for staff to confirm a slot — it does not book the appointment automatically.
+          </p>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+            {REVIEW_OPTIONS.map(o => (
+              <button
+                key={o.value}
+                type="button"
+                className="chip"
+                onClick={() => { setReviewIn(o.value); setScheduleOk(null); setScheduleErr(null); }}
+                style={reviewIn === o.value ? { background: '#0d9488', color: '#fff', borderColor: '#0d9488' } : undefined}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+
+          {reviewIn === 'custom' && (
+            <div className="fld" style={{ marginBottom: 10, maxWidth: 220 }}>
+              <label>Review date</label>
+              <input
+                type="date"
+                value={reviewCustomDate}
+                onChange={e => { setReviewCustomDate(e.target.value); setScheduleOk(null); setScheduleErr(null); }}
+                min={stLuciaTodayISO()}
+              />
+            </div>
+          )}
+
+          {scheduleErr && (
+            <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+              {scheduleErr}
+            </div>
+          )}
+          {scheduleOk && (
+            <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontSize: 12, fontWeight: 600 }}>
+              ✓ Review request added to Booking Inbox — staff will confirm a slot around {scheduleOk}.
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="chip"
+            disabled={!reviewIn || (reviewIn === 'custom' && !reviewCustomDate) || scheduling || !!scheduleOk}
+            onClick={() => void handleScheduleReview()}
+            style={{
+              background: scheduleOk ? '#9ca3af' : '#0d9488',
+              color: '#fff', borderColor: scheduleOk ? '#9ca3af' : '#0d9488',
+              opacity: (!reviewIn || (reviewIn === 'custom' && !reviewCustomDate) || scheduling) && !scheduleOk ? 0.6 : 1,
+            }}
+          >
+            {scheduling ? 'Adding to Booking Inbox…' : scheduleOk ? '✓ Added to Booking Inbox' : 'Schedule review → Booking Inbox'}
+          </button>
         </div>
       </CollapsibleCard>
 

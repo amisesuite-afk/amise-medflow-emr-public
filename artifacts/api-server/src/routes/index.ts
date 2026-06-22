@@ -6,6 +6,14 @@ import cronRouter from "./cron";
 import summaryRouter from "./summary";
 import schedulingRouter from "./scheduling";
 import bookingRouter from "./booking";
+import questionnaireRouter from "./questionnaire";
+import whatsappRouter from "./whatsapp";
+import portalRouter from "./portal";
+import investigationsRouter from "./investigations";
+import emailIntakeRouter from "./email-intake";
+import visitLifecycleRouter from "./visit-lifecycle";
+import billingRouter from "./billing";
+import preProcedureRouter from "./pre-procedure";
 
 const router: IRouter = Router();
 
@@ -16,5 +24,13 @@ router.use(cronRouter);
 router.use(summaryRouter);
 router.use(schedulingRouter);
 router.use(bookingRouter);
+router.use(questionnaireRouter);
+router.use(whatsappRouter);
+router.use(portalRouter);
+router.use(investigationsRouter);
+router.use(emailIntakeRouter);
+router.use(visitLifecycleRouter);
+router.use(billingRouter);
+router.use(preProcedureRouter);
 
 export default router;

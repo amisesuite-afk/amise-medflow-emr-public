@@ -62,6 +62,7 @@ pnpm run build                                 # Typecheck + build all packages
 |---|---|
 | `VITE_SUPABASE_URL` | Supabase project URL |
 | `VITE_SUPABASE_ANON_KEY` | Supabase anon JWT key (`eyJ…`, ~200+ chars) — **not** the opaque `sb_publishable_…` format |
+| `VITE_SENTRY_DSN` | Sentry DSN for dashboard error monitoring (optional) |
 
 ### Backend
 
@@ -82,7 +83,15 @@ pnpm run build                                 # Typecheck + build all packages
 | `MODE` | `dry_run` (default) / `supervised` / `auto` |
 | `CRON_SECRET` | Shared secret for cron endpoint auth |
 | `DOCTOR_NOTIFY_EMAIL` | Email for escalations and daily summary |
+| `STAFF_NOTIFY_EMAIL` | Email for staff booking alerts (falls back to `DOCTOR_NOTIFY_EMAIL`) |
+| `STAFF_NOTIFY_PHONE` | Phone for staff SMS alerts on new bookings |
+| `PRACTICE_PHONE` | Practice phone shown in patient SMS (default `+17582840557`) |
 | `SMS_PROVIDER` | `dry_run` (default) / `twilio` / `digicel` |
+| `SENTRY_DSN` | Sentry DSN for API error monitoring (optional) |
+| `PORTAL_URL` | Front-desk portal URL for CORS and WhatsApp links |
+| `DASHBOARD_URL` | Dashboard URL for CORS |
+| `CLAUDE_MODEL` | Override Claude model (default `claude-haiku-4-5-20251001`) |
+| `LOG_LEVEL` | Pino log level (default `info`) |
 
 ## Gotchas
 
@@ -92,6 +101,7 @@ pnpm run build                                 # Typecheck + build all packages
 - Triage rules in `lib/triage-engine` must stay in sync with the copy in `artifacts/dashboard/src/lib/` until the dashboard imports the shared lib directly via Vite bundling.
 - Google service account needs domain-wide delegation for `gmail.modify`, `gmail.send`, and `calendar` scopes.
 - Patient records and audit logs live in Supabase — the Replit DB is not used.
+- **Every new table needs an explicit `grant ... to service_role` (in addition to `authenticated`).** `artifacts/api-server`'s `sb()` client connects as `service_role` — RLS is bypassed for that role, but the underlying table-level GRANT is still checked first, so a missing grant causes `permission denied for table X` (42501) → HTTP 502 on any endpoint touching that table. This bit `patients`, `documents`, `clinical_notes`, etc. (fixed in `supabase-service-role-grants-fix-migration.sql`) — when adding a new migration, grant `service_role` alongside `authenticated` from the start instead of patching it later.
 
 ## Tone
 

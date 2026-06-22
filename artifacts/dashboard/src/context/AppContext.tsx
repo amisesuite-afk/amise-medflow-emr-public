@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@/lib/adaptive-triage';
+import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -12,7 +12,7 @@ export type Section =
   | 'radiology' | 'attachments'
   | 'assessment' | 'plan' | 'progress'
   | 'procedures' | 'billing' | 'documents'
-  | 'monitoring';
+  | 'monitoring' | 'apcq' | 'nurse_apcq';
 
 export interface ProgressNote {
   id: string;
@@ -59,7 +59,8 @@ export interface LabRecord {
 export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
-  | 'trauma' | 'vademecum';
+  | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox' | 'portal_intake' | 'referring_providers'
+  | 'visit_lifecycle';
 
 /** Grouped trauma / burns state — stored as a single serialisable object. */
 export interface TraumaData {
@@ -140,6 +141,16 @@ export interface ClinicalAttachment {
   dateAdded: string;
 }
 
+export interface ExamPhoto {
+  id: string;
+  dataUrl: string;
+  mimeType: string;
+  bodyRegion: string;
+  description: string;
+  distanceCm: string;
+  dateAdded: string;
+}
+
 export interface RadiologyRequest {
   id: string;
   modality: string;
@@ -179,9 +190,12 @@ interface CtxValue {
   sex: Sex; setSex(v: Sex): void;
   dob: string; setDob(v: string): void;
   phone: string; setPhone(v: string): void;
+  email: string; setEmail(v: string): void;
   address: string; setAddress(v: string): void;
   quarter: string; setQuarter(v: string): void;
   referredBy: string; setReferredBy(v: string): void;
+  patientPhoto: string; setPatientPhoto(v: string): void;
+  examPhotos: ExamPhoto[]; setExamPhotos(v: ExamPhoto[] | ((prev: ExamPhoto[]) => ExamPhoto[])): void;
 
   durationDays: string; setDurationDays(v: string): void;
   painScore: string; setPainScore(v: string): void;
@@ -199,7 +213,7 @@ interface CtxValue {
   familyHistoryNotes: string; setFamilyHistoryNotes(v: string): void;
   surgicalHistory: string[]; toggleSurgical(v: string): void;
   surgicalNotes: string; setSurgicalNotes(v: string): void;
-  medications: string[]; toggleMedication(v: string): void;
+  medications: string[]; toggleMedication(v: string): void; setMedications(v: string[]): void;
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
   toxicHabits: string[]; toggleToxicHabit(v: string): void;
@@ -319,9 +333,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [sex, setSex] = useState<Sex>('unknown');
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
   const [quarter, setQuarter] = useState('');
   const [referredBy, setReferredBy] = useState('');
+  const [patientPhoto, setPatientPhoto] = useState('');
+  const [examPhotos, setExamPhotos] = useState<ExamPhoto[]>([]);
 
   const [durationDays, setDurationDays] = useState('');
   const [painScore, setPainScore] = useState('');
@@ -457,6 +474,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.address === 'string') setAddress(d.address);
       if (typeof d.quarter === 'string') setQuarter(d.quarter);
       if (typeof d.referredBy === 'string') setReferredBy(d.referredBy);
+      if (typeof d.patientPhoto === 'string') setPatientPhoto(d.patientPhoto);
+      if (Array.isArray(d.examPhotos)) setExamPhotos(d.examPhotos as ExamPhoto[]);
       if (d.examFindings && typeof d.examFindings === 'object') setExamFindings(d.examFindings as Record<string, string[]>);
       if (d.examNotes && typeof d.examNotes === 'object') setExamNotes(d.examNotes as Record<string, string>);
       if (Array.isArray(d.orderedInvestigations)) setOrderedInvestigations(d.orderedInvestigations as string[]);
@@ -487,10 +506,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.referringPhysician === 'string') setReferringPhysician(d.referringPhysician);
       if (d.paneState && typeof d.paneState === 'object') setPaneState(d.paneState as PaneState);
       if (d.traumaData && typeof d.traumaData === 'object') setTraumaData(d.traumaData as TraumaData);
-      // Attachments stored separately (can be large base64)
+      // Large blobs stored separately (can be large base64)
       try {
         const ar = localStorage.getItem('amise-attachments-v1');
         if (ar) setAttachments(JSON.parse(ar) as ClinicalAttachment[]);
+      } catch { /* ignore */ }
+      try {
+        const pp = localStorage.getItem('amise-patient-photo-v1');
+        if (pp) setPatientPhoto(pp);
+      } catch { /* ignore */ }
+      try {
+        const ep = localStorage.getItem('amise-exam-photos-v1');
+        if (ep) setExamPhotos(JSON.parse(ep) as ExamPhoto[]);
       } catch { /* ignore */ }
     } catch { /* ignore */ }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -521,8 +548,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
       paneState, traumaData,
     });
-    // Attachments saved separately — avoids 5 MB localStorage limit on the main key
+    // Large blobs saved separately — avoids 5 MB localStorage limit on the main key
     try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { /* ignore */ }
+    try { localStorage.setItem('amise-patient-photo-v1', patientPhoto); } catch { /* ignore */ }
+    try { localStorage.setItem('amise-exam-photos-v1', JSON.stringify(examPhotos)); } catch { /* ignore */ }
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
     isPostOp, postOpDays, pregnancyPossible,
@@ -537,7 +566,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
     radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
     encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
-    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData]);
+    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData,
+    patientPhoto, examPhotos]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
   function toggleSymptomDetail(sym: string, opt: string) {
@@ -555,7 +585,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   function clearPatient() {
     setPatientId(null); setEncounterId(null);
-    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone('');
+    setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto(''); setExamPhotos([]);
     setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
     setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
     setVitals({ systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '' });
@@ -583,6 +613,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
+      localStorage.removeItem('amise-patient-photo-v1');
+      localStorage.removeItem('amise-exam-photos-v1');
     } catch { /* ignore */ }
   }
 
@@ -632,10 +664,36 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         triageScore:   triageResult.score,
       });
       void savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan });
+      void syncMedicationList(patientId, encounterId, medications, medicationsText);
     }, 2000);
     return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score]);
+  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score, medications, medicationsText]);
+
+  // ── Autosave allergies (debounced 3 s — patient-level, no encounter needed) ─
+  const allergyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !allergies) return;
+    if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current);
+    allergyTimerRef.current = setTimeout(() => {
+      const allergenList = allergies.split(',').map(s => s.trim()).filter(Boolean);
+      if (allergenList.length) void syncAllergyList(patientId, allergenList);
+    }, 3000);
+    return () => { if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, allergies]);
+
+  // ── Autosave examination findings (debounced 3 s) ─────────────────────────
+  const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    if (examTimerRef.current) clearTimeout(examTimerRef.current);
+    examTimerRef.current = setTimeout(() => {
+      void saveExamFindings(examFindings, examNotes, patientId, encounterId);
+    }, 3000);
+    return () => { if (examTimerRef.current) clearTimeout(examTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, examFindings, examNotes]);
 
   const value: CtxValue = {
     activeSection, setActiveSection,
@@ -648,9 +706,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     sex, setSex,
     dob, setDob,
     phone, setPhone,
+    email, setEmail,
     address, setAddress,
     quarter, setQuarter,
     referredBy, setReferredBy,
+    patientPhoto, setPatientPhoto,
+    examPhotos, setExamPhotos,
     durationDays, setDurationDays,
     painScore, setPainScore,
     symptoms, toggleSymptom,
@@ -666,7 +727,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     familyHistoryNotes, setFamilyHistoryNotes,
     surgicalHistory, toggleSurgical,
     surgicalNotes, setSurgicalNotes,
-    medications, toggleMedication,
+    medications, toggleMedication, setMedications,
     medicationsText, setMedicationsText,
     allergies, setAllergies,
     toxicHabits, toggleToxicHabit,

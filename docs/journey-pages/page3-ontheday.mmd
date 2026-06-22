@@ -1,0 +1,40 @@
+%%{init: {'theme':'base', 'themeVariables': {
+  'primaryColor':'#e0f2fe',
+  'primaryBorderColor':'#0284c7',
+  'primaryTextColor':'#0c4a6e',
+  'lineColor':'#64748b',
+  'fontFamily':'Arial',
+  'fontSize':'26px'
+}}}%%
+flowchart LR
+    TITLE["PAGE 3 of 4 — ON THE DAY"]:::title
+
+    PAGE1IN(["← Page 1:\nWalk-in / phone call"]):::pagelink --> P
+    PAGE2IN(["← Page 2:\nBefore the Visit"]):::pagelink --> P
+    P["Front-desk check-in:\ndetails, insurance, referred-by"]:::checkin --> Q["Nurse pre-visit:\nvitals + chief complaint"]:::checkin
+    Q --> R{"Questionnaire summary\navailable for this visit?"}:::decision
+    R -->|"YES"| S["Doctor reviews AI summary\n+ adds notes"]:::clinic
+    R -->|"NO"| T["Doctor takes full history\nduring consultation"]:::clinic
+    PAGE4IN(["← Page 4:\nDocuments (auto-filed\nor held for review)"]):::pagelink -.-> U
+    S --> U["Consultation:\nhistory · exam · assessment · plan"]:::clinic
+    T --> U
+    U --> V{"Outpatient\nor Inpatient?"}:::decision
+    V -->|"Outpatient"| X["Final note (SOAP)\ncompleted"]:::clinic
+    V -->|"Inpatient"| Y["Admitted — ward /\ninpatient record"]:::clinic
+    Y --> Y2{"Discharged?"}:::decision
+    Y2 -->|"Yes"| X
+    Y2 -->|"Still admitted"| Y
+    X --> ZEND(["Encounter closed — Z"]):::endstate
+
+    TITLE ~~~ PAGE1IN
+
+    classDef title fill:#1e293b,stroke:#1e293b,color:#fff,font-weight:bold,font-size:30px
+    classDef start fill:#bbf7d0,stroke:#15803d,stroke-width:2px,color:#14532d,font-weight:bold
+    classDef endstate fill:#fee2e2,stroke:#b91c1c,stroke-width:2px,color:#7f1d1d,font-weight:bold
+    classDef decision fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f,font-weight:bold
+    classDef booking fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#1e3a8a
+    classDef previsit fill:#ede9fe,stroke:#7c3aed,stroke-width:1.5px,color:#4c1d95
+    classDef checkin fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+    classDef clinic fill:#fae8ff,stroke:#a21caf,stroke-width:1.5px,color:#581c87
+    classDef docs fill:#ffedd5,stroke:#ea580c,stroke-width:1.5px,color:#7c2d12
+    classDef pagelink fill:#f1f5f9,stroke:#64748b,stroke-width:2px,stroke-dasharray: 5 3,color:#334155,font-weight:bold

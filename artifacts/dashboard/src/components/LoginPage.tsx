@@ -16,7 +16,7 @@ const DEMO_ROLE_LABELS: Record<DemoRole, string> = {
   admin: 'Administrator',
 };
 
-export default function LoginPage() {
+export default function LoginPage({ sessionExpired }: { sessionExpired?: boolean } = {}) {
   const { signIn, configured, profileError } = useAuth();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
@@ -41,7 +41,6 @@ export default function LoginPage() {
   async function runNetworkTest() {
     setTesting(true);
     const result = await checkSupabaseReachable();
-    console.log('[diag] reachability test:', result);
     setReachable(result);
     setTesting(false);
   }
@@ -139,16 +138,23 @@ export default function LoginPage() {
   return (
     <div style={shell}>
       <div style={{ textAlign: 'center', marginBottom: 28 }}>
+        <img src="/amise-logo.jpg" alt="Amise Medical Services" style={{ width: 72, height: 72, objectFit: 'contain', marginBottom: 10, borderRadius: 8 }} />
         <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase', color: '#4db8ad', marginBottom: 8 }}>
           Amise Medical Services
         </div>
         <div style={{ fontSize: 24, fontWeight: 900, color: '#ffffff', letterSpacing: '-.02em' }}>
           MedFlow EMR
         </div>
-        <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 12px', borderRadius: 999, background: 'rgba(255,180,0,.1)', border: '1px solid rgba(255,180,0,.28)', color: '#fbbf24', fontSize: 10, fontWeight: 800, letterSpacing: '.08em' }}>
-          ⚗ INTERNAL PROTOTYPE — NOT FOR CLINICAL USE
+        <div style={{ marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 12px', borderRadius: 999, background: 'rgba(13,146,120,.12)', border: '1px solid rgba(13,146,120,.3)', color: '#4db8ad', fontSize: 10, fontWeight: 800, letterSpacing: '.08em' }}>
+          Staff Portal
         </div>
       </div>
+
+      {sessionExpired && (
+        <div style={{ width: '100%', maxWidth: 340, marginBottom: 12, background: 'rgba(251,191,36,.1)', border: '1px solid rgba(251,191,36,.3)', borderRadius: 10, padding: '10px 14px', color: '#fbbf24', fontSize: 12, fontWeight: 600, textAlign: 'center' }}>
+          Your session has expired. Please sign in again.
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} style={card}>
         <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 18 }}>
@@ -225,8 +231,8 @@ export default function LoginPage() {
       )}
 
       <p style={{ marginTop: 16, fontSize: 11, color: '#3d6056', textAlign: 'center', lineHeight: 1.6 }}>
-        Amise Medical Services · Verdance Software Division<br />
-        This tool is a supervised clinical prototype. All recommendations require clinical review.
+        Amise Medical Services<br />
+        All clinical recommendations require qualified review before action.
       </p>
     </div>
   );
