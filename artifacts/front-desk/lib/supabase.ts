@@ -3,8 +3,8 @@ import type { ConversationThread } from '@/types';
 
 // Service client — only used server-side in API routes (lazy to avoid build-time errors)
 export function getServiceClient(): SupabaseClient {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const svc = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
+  const svc = process.env.SUPABASE_SERVICE_ROLE_KEY || 'placeholder';
   return createClient(url, svc, { auth: { persistSession: false } });
 }
 

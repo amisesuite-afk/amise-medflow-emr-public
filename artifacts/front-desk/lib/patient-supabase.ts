@@ -5,8 +5,8 @@ let _client: SupabaseClient | null = null;
 export function getPatientClient(): SupabaseClient {
   if (_client) return _client;
 
-  const url  = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const url  = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder';
 
   _client = createClient(url, anon, {
     auth: {

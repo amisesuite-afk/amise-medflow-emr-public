@@ -6,7 +6,9 @@ import type {
 import { adaptiveTriage, checkForbiddenContent, FORBIDDEN_PATTERNS } from '@workspace/triage-engine';
 import { findSlots } from './calendar';
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+function getAnthropicClient() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY ?? '' });
+}
 
 const SYSTEM_PROMPT = `You are the AI intake assistant for Amise Medical Services, Saint Lucia — a general and endoscopic surgical practice led by Dr Dawit Daniel Kabiye, MD, DM.
 
@@ -125,7 +127,7 @@ export async function runIntakeTurn(
   // 3. Call Claude
   let result: ClaudeIntakeResult;
   try {
-    const response = await anthropic.messages.create({
+    const response = await getAnthropicClient().messages.create({
       model:      'claude-haiku-4-5-20251001',
       max_tokens: 1024,
       system:     SYSTEM_PROMPT,
@@ -309,7 +311,7 @@ If one or more ARE mentioned, write a short internal note (2-4 sentences max) fo
 
 Do NOT suggest a specific stop date, dose change, or alternative prep product yourself — that is for the clinical team to decide. Return ONLY the note text (or NONE), no preamble.`;
 
-  const response = await anthropic.messages.create({
+  const response = await getAnthropicClient().messages.create({
     model:      'claude-haiku-4-5-20251001',
     max_tokens: 300,
     messages:   [{ role: 'user', content: prompt }],
