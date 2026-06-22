@@ -115,18 +115,18 @@ jobs:
           print(f\"rootDirectory={r.get('rootDirectory')}  framework={r.get('framework')}\")
           " || true
 
-          # This is a public patient-facing site — disable Vercel Authentication /
-          # password protection so staff and patients don't need a Vercel account to view it.
+          # This is a public patient-facing site — disable ALL Vercel deployment
+          # protection so staff and patients don't need a Vercel account to view it.
           echo "=== Disabling deployment protection (public site) ==="
           curl -sf -X PATCH \
             "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
             -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"ssoProtection": null, "passwordProtection": null}' \
+            -d '{"ssoProtection": null, "passwordProtection": null, "vercelAuthentication": {"deploymentType": "none"}}' \
             | python3 -c "
           import sys, json
           r = json.load(sys.stdin)
-          print(f\"ssoProtection={r.get('ssoProtection')}  passwordProtection={r.get('passwordProtection')}\")
+          print(f\"ssoProtection={r.get('ssoProtection')}  passwordProtection={r.get('passwordProtection')}  vercelAuth={r.get('vercelAuthentication')}\")
           " || true
 
           # Upsert NEXT_PUBLIC env vars so they are available during Vercel's build
