@@ -1,17 +1,23 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { ConversationThread } from '@/types';
 
-const url  = process.env.SUPABASE_URL!;
-const anon = process.env.SUPABASE_ANON_KEY!;
-const svc  = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+function getUrl(): string {
+  return process.env.SUPABASE_URL ?? '';
+}
 
-// Anon client — used in dashboard for Realtime subscriptions
-export const supabaseAnon: SupabaseClient = createClient(url, anon);
-
-// Service client — only used server-side in API routes
-export function getServiceClient(): SupabaseClient {
+function getServiceClient(): SupabaseClient {
+  const url = getUrl();
+  const svc = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
   return createClient(url, svc, { auth: { persistSession: false } });
 }
+
+export function getAnonClient(): SupabaseClient {
+  const url = getUrl();
+  const anon = process.env.SUPABASE_ANON_KEY ?? '';
+  return createClient(url, anon);
+}
+
+export { getServiceClient };
 
 export async function getThread(id: string): Promise<ConversationThread | null> {
   const { data } = await getServiceClient()

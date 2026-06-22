@@ -1,7 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk';
 import type { ConversationThread, TriageLevel, PatientMessage } from '@/types';
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+function getClient() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY ?? '' });
+}
 
 const SYSTEM_PROMPT = `You are the AI intake assistant for Amise Medical Services, Saint Lucia — a general and endoscopic surgical practice led by Dr Dawit Daniel Kabiye, MD, DM.
 
@@ -69,7 +71,7 @@ export async function runIntakeTurn(
   let result: ClaudeIntakeResult;
 
   try {
-    const response = await anthropic.messages.create({
+    const response = await getClient().messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
