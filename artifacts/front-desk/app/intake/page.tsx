@@ -16,13 +16,18 @@ import type { SessionState, Question, ApcqRedFlag } from '@workspace/triage-engi
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-type Screen = 'cc' | 'details' | 'consent' | 'questions' | 'complete' | 'whatsapp_exit';
+type Screen = 'cc' | 'referral_check' | 'referral_upload' | 'details' | 'consent' | 'questions' | 'complete' | 'whatsapp_exit';
+
+type ReferralType = 'self' | 'doctor';
 
 interface PatientDetails {
   fullName: string;
   email: string;
   phone: string;
   dob: string;
+  referralType: ReferralType;
+  referringDoctor: string;
+  referringPractice: string;
 }
 
 const WHATSAPP_NUMBER = '17582840557';
@@ -276,9 +281,13 @@ export default function IntakePage() {
   // Chief complaint
   const [ccSelection, setCcSelection] = useState<string[]>([]);
 
+  // Referral
+  const [referralType, setReferralType] = useState<ReferralType>('self');
+
   // Patient details
   const [details, setDetails] = useState<PatientDetails>({
     fullName: '', email: '', phone: '', dob: '',
+    referralType: 'self', referringDoctor: '', referringPractice: '',
   });
 
   // APCQ engine state
@@ -292,10 +301,19 @@ export default function IntakePage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  // ── CC screen → Details ──────────────────────────────────────────────────
+  // ── CC screen → Referral check ─────────────────────────────────────────
   function handleCcNext() {
     if (ccSelection.length === 0) return;
-    setScreen('details');
+    setScreen('referral_check');
+  }
+
+  function handleReferralNext() {
+    setDetails(d => ({ ...d, referralType }));
+    if (referralType === 'doctor') {
+      setScreen('referral_upload');
+    } else {
+      setScreen('details');
+    }
   }
 
   // ── Details → Consent ────────────────────────────────────────────────────
@@ -477,6 +495,118 @@ export default function IntakePage() {
           </div>
         )}
 
+        {/* ── Step 1b: Referral check ── */}
+        {screen === 'referral_check' && (
+          <div>
+            <div style={S.card}>
+              <h2 style={S.sectionTitle}>Have you been referred by a doctor?</h2>
+              <p style={S.sectionSub}>
+                We accept referrals via scanned letter or WhatsApp. Referred patients receive priority scheduling.
+              </p>
+
+              <button type="button" onClick={() => setReferralType('self')}
+                style={S.optionBtn(referralType === 'self')}>
+                <span style={{ marginRight: 8 }}>{referralType === 'self' ? '●' : '○'}</span>
+                No — I&apos;m booking for myself
+              </button>
+              <button type="button" onClick={() => setReferralType('doctor')}
+                style={S.optionBtn(referralType === 'doctor')}>
+                <span style={{ marginRight: 8 }}>{referralType === 'doctor' ? '●' : '○'}</span>
+                Yes — I have a doctor&apos;s referral
+              </button>
+
+              <div style={S.navRow}>
+                <button type="button" onClick={() => setScreen('cc')} style={S.backBtn}>← Back</button>
+                <button type="button" onClick={handleReferralNext}
+                  style={{ ...S.primaryBtn(false), flex: 1 }}>
+                  Continue
+                </button>
+              </div>
+            </div>
+
+            <WhatsAppEscape url={whatsappUrl} />
+          </div>
+        )}
+
+        {/* ── Step 1c: Referral upload ── */}
+        {screen === 'referral_upload' && (
+          <div>
+            <div style={S.card}>
+              <h2 style={S.sectionTitle}>Referral details</h2>
+              <p style={S.sectionSub}>
+                Please provide your referring doctor&apos;s details. You can send the referral letter
+                via WhatsApp or bring it to your appointment.
+              </p>
+
+              <div style={S.fieldGroup}>
+                <label style={S.label}>Referring doctor&apos;s name</label>
+                <input type="text" value={details.referringDoctor}
+                  onChange={e => setDetails(d => ({ ...d, referringDoctor: e.target.value }))}
+                  placeholder="e.g. Dr Smith" style={S.input} />
+              </div>
+
+              <div style={S.fieldGroup}>
+                <label style={S.label}>Referring practice / hospital</label>
+                <select value={details.referringPractice}
+                  onChange={e => setDetails(d => ({ ...d, referringPractice: e.target.value }))}
+                  style={{ ...S.input, appearance: 'auto' as React.CSSProperties['appearance'] }}>
+                  <option value="">Select or type below…</option>
+                  <option value="Victoria Hospital">Victoria Hospital</option>
+                  <option value="Tapion Hospital">Tapion Hospital</option>
+                  <option value="St Jude Hospital">St Jude Hospital</option>
+                  <option value="Soufrière Hospital">Soufrière Hospital</option>
+                  <option value="Dennery Hospital">Dennery Hospital</option>
+                  <option value="Gros Islet Polyclinic">Gros Islet Polyclinic</option>
+                  <option value="Castries Polyclinic">Castries Polyclinic</option>
+                  <option value="Vieux Fort Polyclinic">Vieux Fort Polyclinic</option>
+                  <option value="Micoud Polyclinic">Micoud Polyclinic</option>
+                  <option value="Babonneau Polyclinic">Babonneau Polyclinic</option>
+                  <option value="Choiseul Polyclinic">Choiseul Polyclinic</option>
+                  <option value="Anse La Raye Polyclinic">Anse La Raye Polyclinic</option>
+                  <option value="Canaries Polyclinic">Canaries Polyclinic</option>
+                  <option value="Marigot Health Centre">Marigot Health Centre</option>
+                  <option value="Mon Repos Health Centre">Mon Repos Health Centre</option>
+                  <option value="Laborie Health Centre">Laborie Health Centre</option>
+                  <option value="Private practice">Private practice</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div style={{
+                padding: '0.875rem 1rem', borderRadius: 8, background: '#ecfdf5',
+                border: '1px solid #a7f3d0', marginBottom: 16,
+              }}>
+                <p style={{ margin: 0, fontSize: '0.8125rem', fontWeight: 600, color: '#065f46' }}>
+                  📄 Send your referral letter:
+                </p>
+                <p style={{ margin: '6px 0 0', fontSize: '0.8125rem', color: '#065f46', lineHeight: 1.5 }}>
+                  Scan or photograph the letter and send it via WhatsApp to{' '}
+                  <strong>{PRACTICE_PHONE_DISPLAY}</strong>, or bring it to your appointment.
+                </p>
+                <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                  `Good day, I have a referral letter from ${details.referringDoctor || 'my doctor'} for Amise Medical Services. I'd like to send it for review.\n\nPatient: ${details.fullName || '(will provide)'}`
+                )}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block', marginTop: 10, padding: '0.5rem 1rem',
+                    borderRadius: 6, background: '#16a34a', color: '#fff',
+                    fontSize: '0.8125rem', fontWeight: 600, textDecoration: 'none',
+                  }}>
+                  💬 Send referral via WhatsApp
+                </a>
+              </div>
+
+              <div style={S.navRow}>
+                <button type="button" onClick={() => setScreen('referral_check')} style={S.backBtn}>← Back</button>
+                <button type="button" onClick={() => setScreen('details')}
+                  style={{ ...S.primaryBtn(false), flex: 1 }}>
+                  Continue to your details
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Step 2: Patient Details ── */}
         {screen === 'details' && (
           <div>
@@ -513,7 +643,7 @@ export default function IntakePage() {
               </div>
 
               <div style={S.navRow}>
-                <button type="button" onClick={() => setScreen('cc')} style={S.backBtn}>← Back</button>
+                <button type="button" onClick={() => setScreen(referralType === 'doctor' ? 'referral_upload' : 'referral_check')} style={S.backBtn}>← Back</button>
                 <button type="button" onClick={handleDetailsNext}
                   disabled={!details.fullName.trim() || !details.phone.trim()}
                   style={{ ...S.primaryBtn(!details.fullName.trim() || !details.phone.trim()), flex: 1 }}>
