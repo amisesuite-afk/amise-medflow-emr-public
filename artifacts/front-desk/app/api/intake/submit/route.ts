@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
         triage_acuity: urgency,
         status: 'pending',
         notes: notesLines || null,
+        source: 'web',
       })
       .select('id')
       .single();
