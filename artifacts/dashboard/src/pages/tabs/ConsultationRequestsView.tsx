@@ -3,6 +3,7 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { errMsg } from '@/lib/err';
 import { fmtPhone } from '@/lib/fmt';
+import { supabase } from '@/lib/supabase';
 
 interface ConsultRequest {
   id: string;
@@ -71,8 +72,23 @@ export default function ConsultationRequestsView() {
       const d = await r.json() as { requests: ConsultRequest[] };
       setRequests(d.requests ?? []);
       setError(null);
-    } catch (e) {
-      setError(errMsg(e));
+    } catch (apiErr) {
+      // Fallback: query Supabase directly when the API server is unreachable
+      if (supabase) {
+        try {
+          const { data, error: sbErr } = await supabase
+            .from('consultation_requests')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(100);
+          if (!sbErr && data) {
+            setRequests(data as ConsultRequest[]);
+            setError(null);
+            return;
+          }
+        } catch { /* Supabase fallback also failed */ }
+      }
+      setError(errMsg(apiErr));
     } finally {
       setLoading(false);
     }

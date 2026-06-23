@@ -7,6 +7,7 @@ import { hasRole } from '@/lib/roles';
 import ConsultationRequestsView from './ConsultationRequestsView';
 import { errMsg } from '@/lib/err';
 import { fmtPhone } from '@/lib/fmt';
+import { supabase } from '@/lib/supabase';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -261,8 +262,27 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       setRequests(d.requests ?? []);
       setError(null);
       setLastRefresh(new Date());
-    } catch (e) {
-      setError(errMsg(e));
+    } catch (apiErr) {
+      // Fallback: query Supabase directly when the API server is unreachable
+      if (supabase) {
+        try {
+          let query = supabase
+            .from('appointment_requests')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(200);
+          if (statusFilter) query = query.eq('status', statusFilter);
+          const { data, error: sbErr } = await query;
+          if (sbErr) throw sbErr;
+          setRequests((data ?? []) as BookingRequest[]);
+          setError(null);
+          setLastRefresh(new Date());
+          return;
+        } catch {
+          // Supabase fallback also failed — show original API error
+        }
+      }
+      setError(errMsg(apiErr));
     } finally {
       setLoading(false);
     }

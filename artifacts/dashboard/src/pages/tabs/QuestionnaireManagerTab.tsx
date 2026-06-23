@@ -292,10 +292,34 @@ export default function QuestionnaireManagerTab() {
         setQueue((data.sessions ?? []).slice(0, 10));
         setQueueError(null);
       } else {
-        setQueueError('Unable to load recent sessions.');
+        throw new Error(`HTTP ${res.status}`);
       }
     } catch {
-      setQueueError('Unable to connect to server.');
+      // Fallback: query Supabase directly when the API server is unreachable
+      const client = getSupabase();
+      if (client) {
+        try {
+          const { data, error: sbErr } = await client
+            .from('questionnaire_sessions')
+            .select('session_token, patient_name, template_key, status, created_at, red_flags')
+            .in('status', ['in_progress', 'completed', 'nurse_reviewed'])
+            .order('created_at', { ascending: false })
+            .limit(10);
+          if (!sbErr && data) {
+            setQueue(data.map((s: Record<string, unknown>) => ({
+              sessionToken: s.session_token as string,
+              patientName: (s.patient_name as string) ?? null,
+              templateKey: s.template_key as string,
+              status: s.status as SessionStatus,
+              createdAt: s.created_at as string,
+              redFlags: Array.isArray(s.red_flags) ? s.red_flags as RedFlagItem[] : [],
+            })));
+            setQueueError(null);
+            return;
+          }
+        } catch { /* Supabase fallback also failed */ }
+      }
+      setQueueError('Unable to load queue. Please refresh.');
     } finally {
       setQueueLoading(false);
     }
