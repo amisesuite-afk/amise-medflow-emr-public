@@ -16,7 +16,7 @@ import type { SessionState, Question, ApcqRedFlag } from '@workspace/triage-engi
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-type Screen = 'cc' | 'referral_check' | 'referral_upload' | 'details' | 'consent' | 'questions' | 'complete' | 'whatsapp_exit' | 'emergency_redirect';
+type Screen = 'disclaimer' | 'cc' | 'referral_check' | 'referral_upload' | 'details' | 'consent' | 'questions' | 'complete' | 'whatsapp_exit' | 'emergency_redirect';
 
 type ReferralType = 'self' | 'doctor';
 
@@ -276,7 +276,7 @@ function QuestionInput({ question, value, onChange }: {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function IntakePage() {
-  const [screen, setScreen] = useState<Screen>('cc');
+  const [screen, setScreen] = useState<Screen>('disclaimer');
 
   // Chief complaint
   const [ccSelection, setCcSelection] = useState<string[]>([]);
@@ -472,19 +472,68 @@ export default function IntakePage() {
 
       <div style={S.body}>
 
+        {/* ── Step 0: Disclaimer ── */}
+        {screen === 'disclaimer' && (
+          <div>
+            <div style={S.card}>
+              <h2 style={{ ...S.sectionTitle, textAlign: 'center' }}>Welcome to Amise Medical Services</h2>
+              <p style={{ ...S.sectionSub, textAlign: 'center', marginBottom: 20 }}>
+                General &amp; Endoscopic Surgery — Dr Dawit Daniel Kabiye, MD, DM
+              </p>
+
+              <div style={{
+                padding: '1rem 1.25rem', borderRadius: 8, background: '#fef2f2',
+                border: '2px solid #dc2626', marginBottom: 16,
+              }}>
+                <p style={{ margin: '0 0 8px', fontSize: '0.9375rem', fontWeight: 700, color: '#991b1b' }}>
+                  If you are experiencing a medical emergency:
+                </p>
+                <ul style={{ margin: '0 0 12px', paddingLeft: 20, fontSize: '0.875rem', color: '#991b1b', lineHeight: 1.6 }}>
+                  <li>Severe chest pain or difficulty breathing</li>
+                  <li>Uncontrolled bleeding</li>
+                  <li>Loss of consciousness or stroke symptoms</li>
+                  <li>Inability to swallow anything (saliva only)</li>
+                  <li>Severe abdominal pain with fever or vomiting blood</li>
+                </ul>
+                <a href="tel:911" style={{
+                  display: 'block', width: '100%', padding: '0.75rem', borderRadius: 8,
+                  background: '#dc2626', color: '#fff', fontWeight: 700, fontSize: '1rem',
+                  textDecoration: 'none', textAlign: 'center',
+                }}>
+                  Call 911 or go to the nearest emergency department
+                </a>
+                <p style={{ margin: '8px 0 0', fontSize: '0.75rem', color: '#991b1b', textAlign: 'center' }}>
+                  Tapion Hospital: 758-459-2227 &middot; Victoria Hospital: 758-453-7059
+                </p>
+              </div>
+
+              <div style={{
+                padding: '1rem 1.25rem', borderRadius: 8, background: '#f0f9ff',
+                border: '1px solid #0284c7', marginBottom: 20,
+              }}>
+                <p style={{ margin: '0 0 8px', fontSize: '0.9375rem', fontWeight: 700, color: '#0c4a6e' }}>
+                  Important — please read before continuing:
+                </p>
+                <ul style={{ margin: 0, paddingLeft: 20, fontSize: '0.875rem', color: '#0c4a6e', lineHeight: 1.7 }}>
+                  <li>This is an <strong>administrative scheduling form</strong>, not a medical consultation.</li>
+                  <li>No diagnosis, treatment recommendation, or clinical opinion is provided.</li>
+                  <li>Your responses help us <strong>prepare for your visit</strong> and assign you to the right clinic.</li>
+                  <li>A member of our team will contact you to confirm your appointment.</li>
+                </ul>
+              </div>
+
+              <button type="button" onClick={() => setScreen('cc')} style={S.primaryBtn(false)}>
+                I understand — continue to booking
+              </button>
+            </div>
+
+            <WhatsAppEscape url={whatsappUrl} />
+          </div>
+        )}
+
         {/* ── Step 1: Chief Complaint ── */}
         {screen === 'cc' && (
           <div>
-            <div style={{
-              padding: '0.75rem 1rem', borderRadius: 8, background: '#eff6ff',
-              border: '1px solid #bfdbfe', fontSize: '0.8125rem', color: '#1e40af',
-              lineHeight: 1.5, marginBottom: 16,
-            }}>
-              This form helps us <strong>schedule and prepare</strong> for your visit. It is not a medical
-              consultation and does not provide diagnoses or treatment advice.
-              For emergencies, call <strong>911</strong>.
-            </div>
-
             <div style={S.card}>
               <h2 style={S.sectionTitle}>What brings you in today?</h2>
               <p style={S.sectionSub}>Select your main concern(s) so we can prepare for your visit.</p>
@@ -688,24 +737,13 @@ export default function IntakePage() {
               </p>
 
               <div style={{
-                padding: '0.875rem 1rem', borderRadius: 8, background: '#fef3c7',
-                border: '1px solid #f59e0b', fontSize: '0.8125rem', color: '#92400e',
-                lineHeight: 1.6, marginBottom: 16, fontWeight: 600,
-              }}>
-                This form is for <strong>administrative and scheduling purposes only</strong>. It does not
-                provide medical advice, diagnosis, or treatment recommendations. If you are experiencing
-                a medical emergency, please call <strong>911</strong> or go to the nearest emergency
-                department immediately.
-              </div>
-
-              <div style={{
                 padding: '0.875rem 1rem', borderRadius: 8, background: '#fafaf9',
                 border: '1px solid #e7e5e4', fontSize: '0.8125rem', color: '#78716c',
                 lineHeight: 1.6, marginBottom: 20,
               }}>
-                I understand this is an administrative intake form and not a medical consultation.
                 I consent to the collection of my health information for the purpose of scheduling
-                and preparing for my visit at Amise Medical Services. This information is confidential
+                and preparing for my visit at Amise Medical Services. I understand this is an
+                administrative process and not a medical consultation. This information is confidential
                 and accessible only to my care team. Data is stored securely in accordance with
                 Saint Lucia&apos;s Electronic Health Records Act.
               </div>
