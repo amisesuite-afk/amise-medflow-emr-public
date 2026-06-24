@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   QUESTION_BANK,
   createSession,
@@ -32,6 +32,18 @@ interface PatientDetails {
 
 const WHATSAPP_NUMBER = '17582840557';
 const PRACTICE_PHONE_DISPLAY = '758-284-0557';
+
+const STORAGE_KEY = 'amise_intake_state';
+
+function isValidPhone(phone: string): boolean {
+  const digits = phone.replace(/[\s\-()+ ]/g, '');
+  return digits.length >= 7 && digits.length <= 15 && /^\d+$/.test(digits);
+}
+
+function isValidEmail(email: string): boolean {
+  if (!email) return true;
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 const CHIEF_COMPLAINT = QUESTION_BANK.chief_complaint;
 
@@ -297,9 +309,47 @@ export default function IntakePage() {
   const [history, setHistory] = useState<Array<{ state: SessionState; value: string | string[] }>>([]);
   const [hasRedFlag, setHasRedFlag] = useState(false);
 
+  // Validation
+  const [phoneError, setPhoneError] = useState('');
+  const [emailError, setEmailError] = useState('');
+
   // Submission
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+
+  // Persist intake state to sessionStorage on each screen change
+  useEffect(() => {
+    if (screen === 'disclaimer' || screen === 'complete' || screen === 'emergency_redirect') return;
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        screen, ccSelection, referralType, details, questionNumber, hasRedFlag,
+      }));
+    } catch { /* quota exceeded — ignore */ }
+  }, [screen, ccSelection, referralType, details, questionNumber, hasRedFlag]);
+
+  // Restore state on mount
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (!saved) return;
+      const s = JSON.parse(saved) as {
+        screen?: Screen; ccSelection?: string[]; referralType?: ReferralType;
+        details?: PatientDetails; questionNumber?: number; hasRedFlag?: boolean;
+      };
+      if (s.ccSelection?.length) setCcSelection(s.ccSelection);
+      if (s.referralType) setReferralType(s.referralType);
+      if (s.details) setDetails(s.details);
+      if (s.questionNumber) setQuestionNumber(s.questionNumber);
+      if (s.hasRedFlag) setHasRedFlag(true);
+      // Restore screen but not past consent (APCQ state is not serialisable)
+      if (s.screen && s.screen !== 'questions' && s.screen !== 'complete'
+        && s.screen !== 'emergency_redirect' && s.screen !== 'whatsapp_exit') {
+        setScreen(s.screen);
+      } else if (s.screen === 'questions') {
+        setScreen('consent');
+      }
+    } catch { /* corrupt storage — start fresh */ }
+  }, []);
 
   // ── CC screen → Referral check ─────────────────────────────────────────
   function handleCcNext() {
@@ -319,6 +369,20 @@ export default function IntakePage() {
   // ── Details → Consent ────────────────────────────────────────────────────
   function handleDetailsNext() {
     if (!details.fullName.trim() || !details.phone.trim()) return;
+    let hasError = false;
+    if (!isValidPhone(details.phone)) {
+      setPhoneError('Please enter a valid phone number (e.g. +1 758 284 0557)');
+      hasError = true;
+    } else {
+      setPhoneError('');
+    }
+    if (details.email && !isValidEmail(details.email)) {
+      setEmailError('Please enter a valid email address');
+      hasError = true;
+    } else {
+      setEmailError('');
+    }
+    if (hasError) return;
     setScreen('consent');
   }
 
@@ -609,14 +673,14 @@ export default function IntakePage() {
               </p>
 
               <div style={S.fieldGroup}>
-                <label style={S.label}>Referring doctor&apos;s name</label>
+                <label style={S.label}>Referring doctor&apos;s name *</label>
                 <input type="text" value={details.referringDoctor}
                   onChange={e => setDetails(d => ({ ...d, referringDoctor: e.target.value }))}
-                  placeholder="e.g. Dr Smith" style={S.input} />
+                  placeholder="e.g. Dr Smith" style={S.input} required />
               </div>
 
               <div style={S.fieldGroup}>
-                <label style={S.label}>Referring practice / hospital</label>
+                <label style={S.label}>Referring practice / hospital *</label>
                 <select value={details.referringPractice}
                   onChange={e => setDetails(d => ({ ...d, referringPractice: e.target.value }))}
                   style={{ ...S.input, appearance: 'auto' as React.CSSProperties['appearance'] }}>
@@ -669,7 +733,8 @@ export default function IntakePage() {
               <div style={S.navRow}>
                 <button type="button" onClick={() => setScreen('referral_check')} style={S.backBtn}>← Back</button>
                 <button type="button" onClick={() => setScreen('details')}
-                  style={{ ...S.primaryBtn(false), flex: 1 }}>
+                  disabled={!details.referringDoctor.trim() || !details.referringPractice}
+                  style={{ ...S.primaryBtn(!details.referringDoctor.trim() || !details.referringPractice), flex: 1 }}>
                   Continue to your details
                 </button>
               </div>
@@ -694,15 +759,21 @@ export default function IntakePage() {
               <div style={S.fieldGroup}>
                 <label style={S.label}>Phone number *</label>
                 <input type="tel" value={details.phone}
-                  onChange={e => setDetails(d => ({ ...d, phone: e.target.value }))}
-                  placeholder="e.g. +1 758 284 0557" style={S.input} autoComplete="tel" />
+                  onChange={e => { setDetails(d => ({ ...d, phone: e.target.value })); setPhoneError(''); }}
+                  placeholder="e.g. +1 758 284 0557"
+                  style={{ ...S.input, ...(phoneError ? { borderColor: '#dc2626' } : {}) }}
+                  autoComplete="tel" />
+                {phoneError && <div style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: 4 }}>{phoneError}</div>}
               </div>
 
               <div style={S.fieldGroup}>
                 <label style={S.label}>Email address</label>
                 <input type="email" value={details.email}
-                  onChange={e => setDetails(d => ({ ...d, email: e.target.value }))}
-                  placeholder="e.g. john@example.com" style={S.input} autoComplete="email" />
+                  onChange={e => { setDetails(d => ({ ...d, email: e.target.value })); setEmailError(''); }}
+                  placeholder="e.g. john@example.com"
+                  style={{ ...S.input, ...(emailError ? { borderColor: '#dc2626' } : {}) }}
+                  autoComplete="email" />
+                {emailError && <div style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: 4 }}>{emailError}</div>}
               </div>
 
               <div style={S.fieldGroup}>

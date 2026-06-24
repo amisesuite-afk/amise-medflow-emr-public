@@ -126,6 +126,31 @@ export async function POST(req: NextRequest) {
       console.warn('[intake/submit] questionnaire session save failed (non-critical):', e);
     }
 
+    // Notify staff when red flags are detected (best-effort, non-blocking)
+    if (hasRedFlags && booking?.id) {
+      try {
+        const apiBase = process.env.API_SERVER_URL || process.env.NEXT_PUBLIC_API_SERVER_URL || '';
+        if (apiBase) {
+          await fetch(`${apiBase}/api/booking/notify-red-flags`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              bookingId: booking.id,
+              patientName: patient.fullName,
+              chiefComplaint: ccLabels,
+              redFlags: (redFlags ?? []).map((rf: { description?: string; severity?: string }) => ({
+                description: rf.description,
+                severity: rf.severity,
+              })),
+              urgency,
+            }),
+          });
+        }
+      } catch (e) {
+        console.warn('[intake/submit] red flag notification failed (non-critical):', e);
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       bookingId: booking?.id,

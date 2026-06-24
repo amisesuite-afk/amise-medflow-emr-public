@@ -364,4 +364,60 @@ router.get('/api/booking/requests', async (req, res) => {
   }
 });
 
+// POST /api/booking/notify-red-flags — called by front-desk after web intake with red flags
+router.post('/api/booking/notify-red-flags', async (req, res) => {
+  try {
+    const { bookingId, patientName, chiefComplaint, redFlags, urgency } = (req.body ?? {}) as {
+      bookingId?: string;
+      patientName?: string;
+      chiefComplaint?: string;
+      redFlags?: Array<{ description?: string; severity?: string }>;
+      urgency?: string;
+    };
+
+    if (!bookingId || !patientName) {
+      res.status(400).json({ error: 'bookingId and patientName are required' });
+      return;
+    }
+
+    const staffPhone = process.env.STAFF_NOTIFY_PHONE ?? null;
+    const staffEmail = process.env.STAFF_NOTIFY_EMAIL ?? process.env.DOCTOR_NOTIFY_EMAIL ?? null;
+
+    const flagSummary = (redFlags ?? []).map(f => `• ${f.description ?? 'Unknown'} (${f.severity ?? 'flagged'})`).join('\n');
+    const urgLabel = (urgency ?? 'unknown').toUpperCase();
+
+    if (staffPhone) {
+      const body = `RED FLAG [${urgLabel}] — ${patientName}: ${chiefComplaint ?? 'Web intake'}. ${(redFlags ?? []).length} flag(s). Review in dashboard. Booking ${(bookingId ?? '').slice(0, 8)}`;
+      await sendSms({ to: staffPhone, body });
+    }
+
+    if (staffEmail) {
+      await sendOrDraft({
+        to: staffEmail,
+        subject: `[RED FLAG ${urgLabel}] Web Intake — ${patientName}`,
+        body: `A web intake submission has been flagged.\n\nPatient: ${patientName}\nChief complaint: ${chiefComplaint ?? 'Not specified'}\nUrgency: ${urgLabel}\n\nRed flags:\n${flagSummary || '(none specified)'}\n\nBooking ID: ${bookingId}\n\nPlease review this case promptly in the Amise dashboard.`,
+      }, 'auto');
+    }
+
+    // Update the booking record to note staff were notified
+    const sb = getSupabaseAdmin();
+    await sb.from('appointment_requests')
+      .update({ staff_notified_at: new Date().toISOString() })
+      .eq('id', bookingId);
+
+    await audit({
+      action: 'notify',
+      entityType: 'appointment_request',
+      entityId: bookingId ?? 'unknown',
+      payload: { event: 'red_flag_notification', urgency, redFlagCount: (redFlags ?? []).length, staffPhone: !!staffPhone, staffEmail: !!staffEmail },
+    });
+
+    logger.info({ bookingId, urgency, flags: (redFlags ?? []).length }, '[booking/notify-red-flags] staff notified');
+    res.json({ notified: true, sms: !!staffPhone, email: !!staffEmail });
+  } catch (err) {
+    logger.error({ err }, '[booking/notify-red-flags] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 export default router;

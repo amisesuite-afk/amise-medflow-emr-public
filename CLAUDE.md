@@ -2,7 +2,7 @@
 
 ## Project
 
-Adaptive triage and scheduling assistant for **Amise Medical Services** (Saint Lucia), a general and endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM.
+Adaptive triage and scheduling assistant for **Amise Medical Services** (Saint Lucia), a general and endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM. The practice focuses primarily on surgical follow-up with broad screening and wellness/preventive care.
 
 ## Timezone
 

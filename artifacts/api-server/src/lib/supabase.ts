@@ -60,7 +60,7 @@ export function requireCronSecret(req: any, res: any): boolean {
 }
 
 export type AuditAction =
-  | 'classify' | 'triage' | 'draft' | 'send' | 'book'
+  | 'classify' | 'triage' | 'draft' | 'send' | 'book' | 'notify'
   | 'remind' | 'escalate' | 'error' | 'skip'
   | 'portal_invite_sent' | 'extract' | 'change_request' | 'auto_cancel';
 

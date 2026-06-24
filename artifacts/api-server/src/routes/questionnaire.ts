@@ -14,6 +14,7 @@ import {
   QUESTION_BANK,
   SPECIALTY_QUEUES,
 } from '@workspace/triage-engine/apcq.js';
+import { checkForbiddenContent, FORBIDDEN_PATTERNS } from '@workspace/triage-engine';
 import type {
   SessionState,
   Response as ApcqResponse,
@@ -319,8 +320,20 @@ ${responseSummaryText}`;
     try {
       parsed = JSON.parse(raw);
     } catch {
-      // Fallback: store raw text as summary
       parsed = { summary: raw, estimatedUrgency: 'routine' };
+    }
+
+    // Scan AI output for forbidden content (diagnoses, fees, drug doses)
+    if (parsed.summary && !checkForbiddenContent(parsed.summary).safe) {
+      parsed.summary = parsed.summary
+        .split('\n')
+        .map((line: string) =>
+          FORBIDDEN_PATTERNS.some(p => p.test(line))
+            ? '[REDACTED — clinical review required]'
+            : line,
+        )
+        .join('\n');
+      logger.warn({ sessionId }, '[questionnaire] AI summary contained forbidden content — redacted');
     }
 
     const validUrgencies = ['routine', 'priority', 'urgent', 'emergency'] as const;
