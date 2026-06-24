@@ -157,6 +157,8 @@ graph TD
         StateIssue[/ISSUE: State not persisted<br/>— refresh loses all data/]
         APCQ -.-> StateIssue
         APCQ -->|Red flags| RedBanner[Red Flag Banner<br/>shown to patient]
+        EmergIssue[/ISSUE: Emergency-severity<br/>symptoms not redirected<br/>to ER — 911/]
+        APCQ -.-> EmergIssue
     end
 
     APCQ --> Submit[POST /api/intake/submit]
@@ -184,7 +186,7 @@ graph TD
     classDef start fill:#9b59b6,stroke:#8e44ad,color:#fff
     classDef escape fill:#f39c12,stroke:#e67e22,color:#fff
 
-    class RefIssue,PhoneIssue,EmailIssue,StateIssue,NoLink,UXIssue issue
+    class RefIssue,PhoneIssue,EmailIssue,StateIssue,NoLink,UXIssue,EmergIssue issue
     class QSFixed fixed
     class Start,Done start
     class WA,Err escape
@@ -252,15 +254,20 @@ graph LR
 <!-- Diagram 3: Clinical Safety Gates -->
 <div id="safety" class="diagram-section">
   <h2>Clinical Safety Gates — Current vs Required</h2>
-  <p class="desc">The clinical workflow from intake to EMR population, showing 5 safety gaps (red) and the required improvements (green dashed).</p>
+  <p class="desc">The clinical workflow from intake to EMR population, showing 6 safety gaps (red) and the required improvements (green dashed). This is an outpatient clinic — emergency-severity symptoms should redirect to ER/911, not queue as bookings.</p>
   <div class="diagram-card">
     <pre class="mermaid">
 graph TD
-    Submit([Patient Submits Intake]) --> Gap1
+    Submit([Patient Submits Intake]) --> EmergCheck{Emergency<br/>severity?}
 
-    Gap1[GAP: No automatic<br/>staff notification]
+    EmergCheck -->|Yes| Gap0[GAP: No ER/911 redirect<br/>for emergency symptoms]
+    Gap0 --> Queue
+    Should0[SHOULD: Show ER/911<br/>redirect — not an ER]:::should
+    Gap0 -.->|Required| Should0
+
+    EmergCheck -->|No| Gap1[GAP: No automatic<br/>staff notification]
     Gap1 --> Queue[Booking in Queue]
-    Should1[SHOULD: SMS/email alert<br/>on urgent/emergency]:::should
+    Should1[SHOULD: SMS/email alert<br/>on red flag submissions]:::should
     Gap1 -.->|Required| Should1
 
     Queue --> Gap2[GAP: No priority sorting<br/>by red flag severity]
@@ -290,9 +297,9 @@ graph TD
     classDef normal fill:#3498db,stroke:#2980b9,color:#fff
     classDef endpoint fill:#9b59b6,stroke:#8e44ad,color:#fff
 
-    class Gap1,Gap2,Gap3,Gap4,Gap5 gap
-    class Should1,Should2,Should3,Should4 should
-    class Queue,Review,NurseQ,NurseRev,Doctor normal
+    class Gap0,Gap1,Gap2,Gap3,Gap4,Gap5 gap
+    class Should0,Should1,Should2,Should3,Should4 should
+    class Queue,Review,NurseQ,NurseRev,Doctor,EmergCheck normal
     class Submit,EMR endpoint
     </pre>
   </div>
