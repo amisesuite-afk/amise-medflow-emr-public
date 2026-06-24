@@ -16,7 +16,7 @@ import type { SessionState, Question, ApcqRedFlag } from '@workspace/triage-engi
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-type Screen = 'cc' | 'referral_check' | 'referral_upload' | 'details' | 'consent' | 'questions' | 'complete' | 'whatsapp_exit';
+type Screen = 'cc' | 'referral_check' | 'referral_upload' | 'details' | 'consent' | 'questions' | 'complete' | 'whatsapp_exit' | 'emergency_redirect';
 
 type ReferralType = 'self' | 'doctor';
 
@@ -356,7 +356,17 @@ export default function IntakePage() {
     setHistory(h => [...h, { state: prevState, value: questionValue }]);
     setQuestionNumber(n => n + 1);
 
-    if (newState.redFlags.length > 0) setHasRedFlag(true);
+    if (newState.redFlags.length > 0) {
+      setHasRedFlag(true);
+      const hasEmergency = newState.redFlags.some(
+        (rf: ApcqRedFlag) => rf.severity === 'emergency',
+      );
+      if (hasEmergency) {
+        setApcqState(newState);
+        setScreen('emergency_redirect');
+        return;
+      }
+    }
 
     setApcqState(newState);
     setQuestionValue(null);
@@ -381,7 +391,6 @@ export default function IntakePage() {
 
   // ── Complete: save to Supabase ───────────────────────────────────────────
   async function handleComplete(finalState: SessionState) {
-    setScreen('complete');
     setSubmitting(true);
     setSubmitError('');
 
@@ -402,9 +411,11 @@ export default function IntakePage() {
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         setSubmitError((err as { error?: string }).error ?? 'Failed to save. Please contact the practice.');
+      } else {
+        setScreen('complete');
       }
     } catch {
-      setSubmitError('Network error. Your responses were recorded locally. Please contact the practice.');
+      setSubmitError('Network error. Please try again or contact the practice on WhatsApp.');
     } finally {
       setSubmitting(false);
     }
@@ -464,6 +475,16 @@ export default function IntakePage() {
         {/* ── Step 1: Chief Complaint ── */}
         {screen === 'cc' && (
           <div>
+            <div style={{
+              padding: '0.75rem 1rem', borderRadius: 8, background: '#eff6ff',
+              border: '1px solid #bfdbfe', fontSize: '0.8125rem', color: '#1e40af',
+              lineHeight: 1.5, marginBottom: 16,
+            }}>
+              This form helps us <strong>schedule and prepare</strong> for your visit. It is not a medical
+              consultation and does not provide diagnoses or treatment advice.
+              For emergencies, call <strong>911</strong>.
+            </div>
+
             <div style={S.card}>
               <h2 style={S.sectionTitle}>What brings you in today?</h2>
               <p style={S.sectionSub}>Select your main concern(s) so we can prepare for your visit.</p>
@@ -667,18 +688,30 @@ export default function IntakePage() {
               </p>
 
               <div style={{
+                padding: '0.875rem 1rem', borderRadius: 8, background: '#fef3c7',
+                border: '1px solid #f59e0b', fontSize: '0.8125rem', color: '#92400e',
+                lineHeight: 1.6, marginBottom: 16, fontWeight: 600,
+              }}>
+                This form is for <strong>administrative and scheduling purposes only</strong>. It does not
+                provide medical advice, diagnosis, or treatment recommendations. If you are experiencing
+                a medical emergency, please call <strong>911</strong> or go to the nearest emergency
+                department immediately.
+              </div>
+
+              <div style={{
                 padding: '0.875rem 1rem', borderRadius: 8, background: '#fafaf9',
                 border: '1px solid #e7e5e4', fontSize: '0.8125rem', color: '#78716c',
                 lineHeight: 1.6, marginBottom: 20,
               }}>
-                I consent to the collection of my health information for the purpose of improving my
-                care at Amise Medical Services. This information is confidential and accessible only
-                to my care team. Data is stored securely in accordance with Saint Lucia&apos;s
-                Electronic Health Records Act.
+                I understand this is an administrative intake form and not a medical consultation.
+                I consent to the collection of my health information for the purpose of scheduling
+                and preparing for my visit at Amise Medical Services. This information is confidential
+                and accessible only to my care team. Data is stored securely in accordance with
+                Saint Lucia&apos;s Electronic Health Records Act.
               </div>
 
               <button type="button" onClick={handleConsentAccept} style={S.primaryBtn(false)}>
-                I consent — begin questionnaire
+                I understand and consent — begin questionnaire
               </button>
 
               <div style={S.navRow}>
@@ -719,19 +752,93 @@ export default function IntakePage() {
               />
 
               {submitError && (
-                <div style={{ color: '#dc2626', fontSize: '0.8125rem', marginTop: 10 }}>{submitError}</div>
+                <div style={{
+                  color: '#dc2626', fontSize: '0.8125rem', marginTop: 10,
+                  padding: '0.75rem 1rem', background: '#fef2f2', borderRadius: 8,
+                  border: '1px solid #fecaca',
+                }}>
+                  {submitError}
+                  <button type="button" onClick={() => { if (apcqState) handleComplete(apcqState); }}
+                    style={{ display: 'block', marginTop: 8, color: '#dc2626', fontWeight: 600,
+                      background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8125rem',
+                      textDecoration: 'underline' }}>
+                    Retry submission
+                  </button>
+                </div>
+              )}
+
+              {submitting && (
+                <div style={{ textAlign: 'center', marginTop: 12, color: '#78716c', fontSize: '0.875rem' }}>
+                  Saving your responses…
+                </div>
               )}
 
               <div style={S.navRow}>
-                <button type="button" onClick={handleBack} style={S.backBtn}>← Back</button>
-                <button type="button" onClick={submitAnswer} disabled={!isQuestionValid()}
-                  style={{ ...S.primaryBtn(!isQuestionValid()), flex: 1 }}>
-                  {apcqState.estimatedRemaining <= 1 ? 'Finish' : 'Next →'}
+                <button type="button" onClick={handleBack} style={S.backBtn} disabled={submitting}>← Back</button>
+                <button type="button" onClick={submitAnswer} disabled={!isQuestionValid() || submitting}
+                  style={{ ...S.primaryBtn(!isQuestionValid() || submitting), flex: 1 }}>
+                  {submitting ? 'Saving…' : apcqState.estimatedRemaining <= 1 ? 'Finish' : 'Next →'}
                 </button>
               </div>
             </div>
 
             <WhatsAppEscape url={whatsappUrl} />
+          </div>
+        )}
+
+        {/* ── Emergency redirect ── */}
+        {screen === 'emergency_redirect' && (
+          <div style={S.card}>
+            <div style={{
+              background: '#7f1d1d', borderRadius: 12, padding: '1.5rem 1.25rem',
+              color: '#fef2f2', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>🚨</div>
+              <h2 style={{ margin: '0 0 12px', fontSize: '1.25rem', fontWeight: 700, color: '#fecaca' }}>
+                Please seek immediate medical attention
+              </h2>
+              <p style={{ fontSize: '0.9375rem', lineHeight: 1.6, color: '#fecaca', marginBottom: 20 }}>
+                Based on the symptoms you have described, you should <strong>call 911</strong> or go to the
+                nearest emergency department <strong>immediately</strong>. This outpatient clinic is not
+                equipped to handle emergencies.
+              </p>
+
+              <a href="tel:911" style={{
+                display: 'block', width: '100%', padding: '1rem', borderRadius: 8,
+                background: '#dc2626', color: '#fff', fontWeight: 700, fontSize: '1.125rem',
+                textDecoration: 'none', textAlign: 'center', marginBottom: 12,
+              }}>
+                📞 Call 911
+              </a>
+
+              <div style={{
+                padding: '0.75rem 1rem', borderRadius: 8, background: '#991b1b',
+                fontSize: '0.8125rem', color: '#fecaca', lineHeight: 1.5,
+              }}>
+                <strong>Nearest hospitals:</strong><br />
+                Tapion Hospital — 758-459-2227<br />
+                Victoria Hospital — 758-453-7059
+              </div>
+
+              <p style={{ fontSize: '0.75rem', color: '#fca5a5', marginTop: 16, lineHeight: 1.5 }}>
+                Your responses have been recorded. If this is not an emergency, you may continue
+                the questionnaire or contact us on WhatsApp.
+              </p>
+
+              <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+                <button type="button" onClick={() => { setScreen('questions'); setQuestionValue(null); }}
+                  style={{ ...S.secondaryBtn, flex: 1, borderColor: '#fca5a5', color: '#fca5a5' }}>
+                  ← Continue questionnaire
+                </button>
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
+                  style={{
+                    ...S.secondaryBtn, flex: 1, borderColor: '#16a34a', color: '#16a34a',
+                    textDecoration: 'none', textAlign: 'center',
+                  }}>
+                  💬 WhatsApp
+                </a>
+              </div>
+            </div>
           </div>
         )}
 

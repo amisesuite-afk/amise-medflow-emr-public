@@ -168,11 +168,11 @@ graph TD
         Submit --> QS[questionnaire_sessions<br/>best-effort]
         Submit --> QR[questionnaire_responses<br/>best-effort]
         QSFixed[FIXED: delivery_method<br/>constraint added]
-        NoLink[/ISSUE: No FK link between<br/>booking and questionnaire/]
+        LinkFixed[FIXED: questionnaire_session_id<br/>FK links booking to questionnaire]
         QS -.-> QSFixed
-        QS -.-> NoLink
-        UXIssue[/ISSUE: Shows Thank You<br/>before confirming save/]
-        Submit -.-> UXIssue
+        AR -.-> LinkFixed
+        UXFixed[FIXED: Thank You waits<br/>for save confirmation]
+        Submit -.-> UXFixed
     end
 
     Submit -->|Success| Done([Thank You + Confirmation])
@@ -186,8 +186,8 @@ graph TD
     classDef start fill:#9b59b6,stroke:#8e44ad,color:#fff
     classDef escape fill:#f39c12,stroke:#e67e22,color:#fff
 
-    class RefIssue,PhoneIssue,EmailIssue,StateIssue,NoLink,UXIssue,EmergIssue issue
-    class QSFixed fixed
+    class RefIssue,PhoneIssue,EmailIssue,StateIssue,EmergIssue issue
+    class QSFixed,LinkFixed,UXFixed fixed
     class Start,Done start
     class WA,Err escape
     class CC,RefUpload,Details,Consent,APCQ,Submit,AR,QS,QR,RedBanner,RefCheck normal
@@ -260,10 +260,8 @@ graph LR
 graph TD
     Submit([Patient Submits Intake]) --> EmergCheck{Emergency<br/>severity?}
 
-    EmergCheck -->|Yes| Gap0[GAP: No ER/911 redirect<br/>for emergency symptoms]
-    Gap0 --> Queue
-    Should0[SHOULD: Show ER/911<br/>redirect — not an ER]:::should
-    Gap0 -.->|Required| Should0
+    EmergCheck -->|Yes| Fixed0[FIXED: ER/911 redirect<br/>screen with Call 911 button]
+    Fixed0 --> Queue
 
     EmergCheck -->|No| Gap1[GAP: No automatic<br/>staff notification]
     Gap1 --> Queue[Booking in Queue]
@@ -273,32 +271,29 @@ graph TD
     Queue --> Gap2[GAP: No priority sorting<br/>by red flag severity]
     Gap2 --> Review[Staff Reviews Booking]
 
-    Review --> Gap3[GAP: Cannot see questionnaire<br/>answers — no linkage]
-    Should4[SHOULD: Booking links to<br/>questionnaire via FK]:::should
-    Gap3 -.->|Required| Should4
+    Review --> Fixed3[FIXED: Booking linked to<br/>questionnaire via FK]
 
-    Gap3 --> NurseQ[Nurse Opens Queue]
+    Fixed3 --> NurseQ[Nurse Opens Queue]
     NurseQ --> NurseRev[Nurse Reviews Session]
 
-    NurseRev --> Gap4[GAP: Nurse review<br/>not enforced]
-    Should2[SHOULD: Mandatory nurse<br/>review before approval]:::should
-    Gap4 -.->|Required| Should2
+    NurseRev --> Fixed4[FIXED: Nurse review<br/>enforced before doctor approval]
 
-    Gap4 --> Doctor[Doctor Approves]
+    Fixed4 --> Doctor[Doctor Approves]
 
-    Doctor --> Gap5[GAP: AI urgency can<br/>override red flags]
-    Should3[SHOULD: Use max of<br/>questionnaire + AI urgency]:::should
-    Gap5 -.->|Required| Should3
+    Doctor --> Fixed5[FIXED: max of questionnaire<br/>+ AI urgency used]
 
-    Gap5 --> EMR([EMR Populated])
+    Fixed5 --> EMR([EMR Populated])
 
     classDef gap fill:#e74c3c,stroke:#c0392b,color:#fff,stroke-width:2px
     classDef should fill:#2ecc71,stroke:#27ae60,color:#fff,stroke-width:2px,stroke-dasharray: 5 5
     classDef normal fill:#3498db,stroke:#2980b9,color:#fff
     classDef endpoint fill:#9b59b6,stroke:#8e44ad,color:#fff
 
-    class Gap0,Gap1,Gap2,Gap3,Gap4,Gap5 gap
-    class Should0,Should1,Should2,Should3,Should4 should
+    classDef fixed fill:#2ecc71,stroke:#27ae60,color:#fff,stroke-width:2px
+
+    class Gap1,Gap2 gap
+    class Should1 should
+    class Fixed0,Fixed3,Fixed4,Fixed5 fixed
     class Queue,Review,NurseQ,NurseRev,Doctor,EmergCheck normal
     class Submit,EMR endpoint
     </pre>

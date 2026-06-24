@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Questionnaire session + responses (best-effort, don't fail the request)
+    let questionnaireSessionId: string | null = null;
     try {
       // Look up the general_screening template ID (required FK)
       const { data: template } = await sb
@@ -94,21 +95,31 @@ export async function POST(req: NextRequest) {
           .select('id')
           .single();
 
-        if (session?.id && responses?.length > 0) {
-          const rows = responses.map((r: {
-            questionKey: string; questionText: string; answerValue: string | string[];
-            answerDisplay: string; isRedFlag: boolean; sequenceNumber: number; answeredAt: string;
-          }) => ({
-            session_id: session.id,
-            question_key: r.questionKey,
-            question_text: r.questionText,
-            answer_value: Array.isArray(r.answerValue) ? JSON.stringify(r.answerValue) : r.answerValue,
-            answer_display: r.answerDisplay,
-            is_red_flag: r.isRedFlag,
-            sequence_number: r.sequenceNumber,
-            answered_at: r.answeredAt,
-          }));
-          await sb.from('questionnaire_responses').insert(rows);
+        if (session?.id) {
+          questionnaireSessionId = session.id;
+
+          // Link the questionnaire session to the appointment request
+          await sb
+            .from('appointment_requests')
+            .update({ questionnaire_session_id: session.id })
+            .eq('id', booking!.id);
+
+          if (responses?.length > 0) {
+            const rows = responses.map((r: {
+              questionKey: string; questionText: string; answerValue: string | string[];
+              answerDisplay: string; isRedFlag: boolean; sequenceNumber: number; answeredAt: string;
+            }) => ({
+              session_id: session.id,
+              question_key: r.questionKey,
+              question_text: r.questionText,
+              answer_value: Array.isArray(r.answerValue) ? JSON.stringify(r.answerValue) : r.answerValue,
+              answer_display: r.answerDisplay,
+              is_red_flag: r.isRedFlag,
+              sequence_number: r.sequenceNumber,
+              answered_at: r.answeredAt,
+            }));
+            await sb.from('questionnaire_responses').insert(rows);
+          }
         }
       }
     } catch (e) {
@@ -118,6 +129,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       ok: true,
       bookingId: booking?.id,
+      questionnaireSessionId,
       urgency,
       hasRedFlags,
     });

@@ -106,3 +106,29 @@ pnpm run build                                 # Typecheck + build all packages
 ## Tone
 
 British-Caribbean professional tone in all patient-facing copy. Never include clinical advice, fees, diagnoses, medication dosages, or results in any automated message.
+
+## Clinical context — outpatient practice
+
+This is an **outpatient general and endoscopic surgery practice**, not an emergency department. Key rules:
+
+- **Emergency-severity symptoms → ER/911.** Patients reporting symptoms flagged as `emergency` by the APCQ engine must be shown a prominent redirect to call 911/999 or go to the nearest ER. The clinic does not manage acute emergencies through its booking queue.
+- **Red flags ≠ emergencies.** Red flags (e.g., unintentional weight loss, progressive dysphagia) warrant expedited outpatient review and staff alerts — not ER redirect.
+- **Not medical advice.** The intake form is an administrative scheduling tool, not a clinical consultation. The entry point must state this clearly as part of consent. No diagnosis, treatment recommendation, or clinical opinion is provided through the intake flow.
+- **Human gates are mandatory.** Nurse review → doctor approval is the required safety workflow. AI-generated urgency must never downgrade a deterministic red-flag severity — always use `max(questionnaire_severity, ai_severity)`.
+
+## Cross-application data integrity
+
+The three apps (front-desk, API server, dashboard) share a Supabase backend. Key linkage rules:
+
+- **`appointment_requests` ↔ `questionnaire_sessions`**: Every web intake must link these via `questionnaire_session_id` FK on `appointment_requests`. Without this, staff cannot see questionnaire answers from the booking inbox.
+- **Supabase fallback mode**: When the API server (Render) is down, the dashboard falls back to direct Supabase queries for reads. Write actions (confirm/waitlist/cancel) still require the API server. A degraded-mode banner must be shown.
+- **`delivery_method` constraint**: The `questionnaire_sessions.delivery_method` CHECK constraint must include `'web_intake'`. Migration: `supabase-web-intake-delivery-method-migration.sql`.
+- **`source` column**: Always set `source: 'web'` on `appointment_requests` created via web intake so the dashboard can distinguish intake sources.
+- **`service_role` grants**: Every new table needs `GRANT ... TO service_role` — the API server connects as `service_role` and RLS bypass doesn't skip table-level GRANTs.
+
+## Audit trail
+
+Engineering audit completed 2026-06-23. Deliverables in repo root:
+- `AMISE-MedFlow-EMR-Audit-2026-06-23.pdf` — full findings report
+- `AMISE-MedFlow-EMR-Flowcharts.html` — interactive Mermaid diagrams
+- `supabase-web-intake-delivery-method-migration.sql` — pending migration

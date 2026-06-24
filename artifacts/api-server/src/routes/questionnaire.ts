@@ -324,11 +324,34 @@ ${responseSummaryText}`;
     }
 
     const validUrgencies = ['routine', 'priority', 'urgent', 'emergency'] as const;
-    const estimatedUrgency = validUrgencies.includes(
+    const urgencyRank: Record<string, number> = { routine: 0, priority: 1, urgent: 2, emergency: 3 };
+    const aiUrgency = validUrgencies.includes(
       parsed.estimatedUrgency as (typeof validUrgencies)[number],
     )
       ? (parsed.estimatedUrgency as (typeof validUrgencies)[number])
       : 'routine';
+
+    // Fetch questionnaire-detected red flag severity — never let AI downgrade it
+    const { data: sessionFlags } = await sb()
+      .from('questionnaire_sessions')
+      .select('red_flags_detected')
+      .eq('id', sessionId)
+      .single();
+
+    let questionnaireUrgency: (typeof validUrgencies)[number] = 'routine';
+    if (sessionFlags?.red_flags_detected && Array.isArray(sessionFlags.red_flags_detected)) {
+      for (const rf of sessionFlags.red_flags_detected) {
+        const sev = (rf as { severity?: string }).severity ?? 'routine';
+        if ((urgencyRank[sev] ?? 0) > (urgencyRank[questionnaireUrgency] ?? 0)) {
+          questionnaireUrgency = sev as (typeof validUrgencies)[number];
+        }
+      }
+    }
+
+    // Final urgency = max(questionnaire-detected, AI-estimated)
+    const estimatedUrgency = (urgencyRank[questionnaireUrgency] ?? 0) >= (urgencyRank[aiUrgency] ?? 0)
+      ? questionnaireUrgency
+      : aiUrgency;
 
     await sb()
       .from('intake_summaries')
@@ -1393,12 +1416,17 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
   try {
     const { data: sessionRow, error: sessErr } = await sb()
       .from('questionnaire_sessions')
-      .select('id, status, encounter_id, patient_id')
+      .select('id, status, encounter_id, patient_id, nurse_reviewed_at')
       .eq('session_token', token)
       .single();
 
     if (sessErr || !sessionRow) {
       res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    if (!sessionRow.nurse_reviewed_at) {
+      res.status(422).json({ error: 'Nurse review is required before doctor approval. This session has not been reviewed by a nurse.' });
       return;
     }
 
