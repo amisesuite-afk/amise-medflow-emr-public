@@ -118,16 +118,31 @@ jobs:
           # This is a public patient-facing site — disable ALL Vercel deployment
           # protection so staff and patients don't need a Vercel account to view it.
           echo "=== Disabling deployment protection (public site) ==="
-          curl -sf -X PATCH \
+          PROT_RESP=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X PATCH \
             "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
             -H "Authorization: Bearer $VERCEL_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"ssoProtection": null, "passwordProtection": null, "vercelAuthentication": {"deploymentType": "none"}}' \
-            | python3 -c "
+            -d '{"ssoProtection":null,"passwordProtection":null,"vercelAuthentication":null}')
+          PROT_STATUS=$(echo "$PROT_RESP" | grep "HTTP_STATUS:" | sed 's/HTTP_STATUS://')
+          PROT_BODY=$(echo "$PROT_RESP" | sed '/HTTP_STATUS:/d')
+          echo "HTTP $PROT_STATUS"
+          if [ "$PROT_STATUS" != "200" ]; then
+            echo "::warning::Failed to disable deployment protection (HTTP $PROT_STATUS)"
+            echo "$PROT_BODY" | head -20
+            # Retry with standard_protection=none approach
+            echo "=== Retry: setting standard_protection to none ==="
+            curl -s -X PATCH \
+              "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
+              -H "Authorization: Bearer $VERCEL_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"protection":{"deploymentType":"all","bypassForAutomation":true}}' || true
+          else
+            echo "$PROT_BODY" | python3 -c "
           import sys, json
           r = json.load(sys.stdin)
           print(f\"ssoProtection={r.get('ssoProtection')}  passwordProtection={r.get('passwordProtection')}  vercelAuth={r.get('vercelAuthentication')}\")
-          " || true
+          " || echo "$PROT_BODY" | head -5
+          fi
 
           # Upsert NEXT_PUBLIC env vars so they are available during Vercel's build
           echo "=== Setting env vars ==="

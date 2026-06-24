@@ -7,6 +7,7 @@ import { hasRole } from '@/lib/roles';
 import ConsultationRequestsView from './ConsultationRequestsView';
 import { errMsg } from '@/lib/err';
 import { fmtPhone } from '@/lib/fmt';
+import { supabase } from '@/lib/supabase';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -261,8 +262,27 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       setRequests(d.requests ?? []);
       setError(null);
       setLastRefresh(new Date());
-    } catch (e) {
-      setError(errMsg(e));
+    } catch (apiErr) {
+      // Fallback: query Supabase directly when the API server is unreachable
+      if (supabase) {
+        try {
+          let query = supabase
+            .from('appointment_requests')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(200);
+          if (statusFilter) query = query.eq('status', statusFilter);
+          const { data, error: sbErr } = await query;
+          if (sbErr) throw sbErr;
+          setRequests((data ?? []) as BookingRequest[]);
+          setError(null);
+          setLastRefresh(new Date());
+          return;
+        } catch {
+          // Supabase fallback also failed — show original API error
+        }
+      }
+      setError(errMsg(apiErr));
     } finally {
       setLoading(false);
     }
@@ -282,17 +302,21 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     setPortalErr(null);
   }, [selected?.id]);
 
+  const [degradedWrite, setDegradedWrite] = useState(false);
+
   async function handleConfirm() {
     if (!selected || !confirmDate) return;
     setSubmitting(true);
     setConfirmErr(null);
+    setDegradedWrite(false);
     try {
       const confirmed_slot = `${confirmDate}T${confirmTime}:00`;
+      const slotIso = new Date(confirmed_slot).toISOString();
       const r = await fetch(apiUrl(`/api/booking/staff-confirm/${selected.id}`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
         body: JSON.stringify({
-          confirmed_slot: new Date(confirmed_slot).toISOString(),
+          confirmed_slot: slotIso,
           notes: confirmNotes || null,
         }),
       });
@@ -309,8 +333,34 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         setConfirmTime('09:00');
         setConfirmNotes('');
       }, 2500);
-    } catch (e) {
-      setConfirmErr(errMsg(e));
+    } catch (apiErr) {
+      if (supabase) {
+        try {
+          const { error: sbErr } = await supabase
+            .from('appointment_requests')
+            .update({
+              status: 'staff_confirmed',
+              confirmed_slot: new Date(`${confirmDate}T${confirmTime}:00`).toISOString(),
+              staff_confirmed_at: new Date().toISOString(),
+              notes: confirmNotes || null,
+            })
+            .eq('id', selected.id);
+          if (sbErr) throw sbErr;
+          setDegradedWrite(true);
+          setConfirmOk(true);
+          await load();
+          setTimeout(() => {
+            setConfirmOk(false);
+            setDegradedWrite(false);
+            setSelected(null);
+            setConfirmDate('');
+            setConfirmTime('09:00');
+            setConfirmNotes('');
+          }, 5000);
+          return;
+        } catch { /* Supabase fallback also failed */ }
+      }
+      setConfirmErr(errMsg(apiErr));
     } finally {
       setSubmitting(false);
     }
@@ -320,6 +370,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     if (!selected) return;
     setWaitlisting(true);
     setWaitlistErr(null);
+    setDegradedWrite(false);
     try {
       const r = await fetch(apiUrl(`/api/booking/waitlist/${selected.id}`), {
         method: 'POST',
@@ -332,8 +383,21 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       }
       await load();
       setSelected(null);
-    } catch (e) {
-      setWaitlistErr(errMsg(e));
+    } catch (apiErr) {
+      if (supabase) {
+        try {
+          const { error: sbErr } = await supabase
+            .from('appointment_requests')
+            .update({ status: 'waitlisted', notes: confirmNotes || null })
+            .eq('id', selected.id);
+          if (sbErr) throw sbErr;
+          setDegradedWrite(true);
+          await load();
+          setSelected(null);
+          return;
+        } catch { /* Supabase fallback also failed */ }
+      }
+      setWaitlistErr(errMsg(apiErr));
     } finally {
       setWaitlisting(false);
     }
@@ -344,6 +408,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     if (!window.confirm(`Cancel this booking request for ${selected.patient_name}?`)) return;
     setCancelling(true);
     setCancelErr(null);
+    setDegradedWrite(false);
     try {
       const r = await fetch(apiUrl(`/api/booking/cancel/${selected.id}`), {
         method: 'POST',
@@ -356,8 +421,21 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       }
       await load();
       setSelected(null);
-    } catch (e) {
-      setCancelErr(errMsg(e));
+    } catch (apiErr) {
+      if (supabase) {
+        try {
+          const { error: sbErr } = await supabase
+            .from('appointment_requests')
+            .update({ status: 'cancelled', notes: 'Cancelled by staff' })
+            .eq('id', selected.id);
+          if (sbErr) throw sbErr;
+          setDegradedWrite(true);
+          await load();
+          setSelected(null);
+          return;
+        } catch { /* Supabase fallback also failed */ }
+      }
+      setCancelErr(errMsg(apiErr));
     } finally {
       setCancelling(false);
     }
@@ -392,6 +470,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     if (!nrName.trim() || !nrType) return;
     setNrSubmitting(true);
     setNrErr(null);
+    setDegradedWrite(false);
     try {
       const r = await fetch(apiUrl('/api/booking/request'), {
         method: 'POST',
@@ -420,8 +499,38 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         setNrType('consultation'); setNrLocation(currentSite);
         setNrSlot(''); setNrReason(''); setNrSource('manual');
       }, 2000);
-    } catch (e) {
-      setNrErr(errMsg(e));
+    } catch (apiErr) {
+      if (supabase) {
+        try {
+          const { error: sbErr } = await supabase
+            .from('appointment_requests')
+            .insert({
+              patient_name:     nrName.trim(),
+              patient_email:    nrEmail.trim() || null,
+              patient_phone:    nrPhone.trim() || null,
+              appointment_type: nrType,
+              location:         nrLocation,
+              preferred_slot:   nrSlot.trim() || null,
+              reason:           nrReason.trim() || null,
+              source:           nrSource,
+              status:           'pending',
+            });
+          if (sbErr) throw sbErr;
+          setDegradedWrite(true);
+          setNrOk(true);
+          await load();
+          setTimeout(() => {
+            setShowNewRequest(false);
+            setNrOk(false);
+            setDegradedWrite(false);
+            setNrName(''); setNrPhone(''); setNrEmail('');
+            setNrType('consultation'); setNrLocation(currentSite);
+            setNrSlot(''); setNrReason(''); setNrSource('manual');
+          }, 4000);
+          return;
+        } catch { /* Supabase fallback also failed */ }
+      }
+      setNrErr(errMsg(apiErr));
     } finally {
       setNrSubmitting(false);
     }
@@ -473,6 +582,12 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     borderBottom: active ? '2px solid #0d9488' : '2px solid transparent',
     cursor: 'pointer', transition: 'color .15s',
   });
+
+  const degradedBanner = degradedWrite ? (
+    <div role="alert" style={{ padding: '10px 16px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8, margin: '12px 20px 0', fontSize: 12, color: '#9a3412', fontWeight: 600 }}>
+      Saved directly to database (API server unavailable). Patient SMS/email notifications were not sent — follow up manually.
+    </div>
+  ) : null;
 
   const bookingsContent = loading ? (
     <div style={{ padding: '40px 24px', color: '#6b7280', textAlign: 'center' }}>
@@ -1127,6 +1242,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
           Public Enquiries
         </button>
       </div>
+      {degradedBanner}
       {view === 'consult_requests' ? (
         <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
           <ConsultationRequestsView />

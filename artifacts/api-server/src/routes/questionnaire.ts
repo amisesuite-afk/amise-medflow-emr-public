@@ -14,6 +14,7 @@ import {
   QUESTION_BANK,
   SPECIALTY_QUEUES,
 } from '@workspace/triage-engine/apcq.js';
+import { checkForbiddenContent, FORBIDDEN_PATTERNS } from '@workspace/triage-engine';
 import type {
   SessionState,
   Response as ApcqResponse,
@@ -319,16 +320,51 @@ ${responseSummaryText}`;
     try {
       parsed = JSON.parse(raw);
     } catch {
-      // Fallback: store raw text as summary
       parsed = { summary: raw, estimatedUrgency: 'routine' };
     }
 
+    // Scan AI output for forbidden content (diagnoses, fees, drug doses)
+    if (parsed.summary && !checkForbiddenContent(parsed.summary).safe) {
+      parsed.summary = parsed.summary
+        .split('\n')
+        .map((line: string) =>
+          FORBIDDEN_PATTERNS.some(p => p.test(line))
+            ? '[REDACTED — clinical review required]'
+            : line,
+        )
+        .join('\n');
+      logger.warn({ sessionId }, '[questionnaire] AI summary contained forbidden content — redacted');
+    }
+
     const validUrgencies = ['routine', 'priority', 'urgent', 'emergency'] as const;
-    const estimatedUrgency = validUrgencies.includes(
+    const urgencyRank: Record<string, number> = { routine: 0, priority: 1, urgent: 2, emergency: 3 };
+    const aiUrgency = validUrgencies.includes(
       parsed.estimatedUrgency as (typeof validUrgencies)[number],
     )
       ? (parsed.estimatedUrgency as (typeof validUrgencies)[number])
       : 'routine';
+
+    // Fetch questionnaire-detected red flag severity — never let AI downgrade it
+    const { data: sessionFlags } = await sb()
+      .from('questionnaire_sessions')
+      .select('red_flags_detected')
+      .eq('id', sessionId)
+      .single();
+
+    let questionnaireUrgency: (typeof validUrgencies)[number] = 'routine';
+    if (sessionFlags?.red_flags_detected && Array.isArray(sessionFlags.red_flags_detected)) {
+      for (const rf of sessionFlags.red_flags_detected) {
+        const sev = (rf as { severity?: string }).severity ?? 'routine';
+        if ((urgencyRank[sev] ?? 0) > (urgencyRank[questionnaireUrgency] ?? 0)) {
+          questionnaireUrgency = sev as (typeof validUrgencies)[number];
+        }
+      }
+    }
+
+    // Final urgency = max(questionnaire-detected, AI-estimated)
+    const estimatedUrgency = (urgencyRank[questionnaireUrgency] ?? 0) >= (urgencyRank[aiUrgency] ?? 0)
+      ? questionnaireUrgency
+      : aiUrgency;
 
     await sb()
       .from('intake_summaries')
@@ -1378,6 +1414,61 @@ router.post('/api/questionnaire/session/:token/nurse-review', async (req, res) =
   }
 });
 
+// POST /api/questionnaire/session/:token/staff-review
+router.post('/api/questionnaire/session/:token/staff-review', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { token } = req.params;
+  const { staffNotes, staffUserId } = (req.body ?? {}) as {
+    staffNotes?: string;
+    staffUserId?: string;
+  };
+
+  if (!staffUserId) {
+    res.status(400).json({ error: 'staffUserId is required' });
+    return;
+  }
+
+  try {
+    const { data: sessionRow, error: sessErr } = await sb()
+      .from('questionnaire_sessions')
+      .select('id, status')
+      .eq('session_token', token)
+      .single();
+
+    if (sessErr || !sessionRow) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    const { data: updated, error: updateErr } = await sb()
+      .from('questionnaire_sessions')
+      .update({
+        status: 'staff_reviewed',
+        staff_reviewed_by: staffUserId,
+        staff_reviewed_at: new Date().toISOString(),
+        staff_notes: staffNotes ?? null,
+      })
+      .eq('id', sessionRow.id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    await audit({
+      action: 'classify',
+      entityType: 'questionnaire_session',
+      entityId: sessionRow.id,
+      payload: { event: 'staff_reviewed', staffUserId },
+    });
+
+    res.json({ session: updated });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/staff-review] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 // POST /api/questionnaire/session/:token/doctor-approve
 router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
@@ -1393,12 +1484,17 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
   try {
     const { data: sessionRow, error: sessErr } = await sb()
       .from('questionnaire_sessions')
-      .select('id, status, encounter_id, patient_id')
+      .select('id, status, encounter_id, patient_id, nurse_reviewed_at, staff_reviewed_at')
       .eq('session_token', token)
       .single();
 
     if (sessErr || !sessionRow) {
       res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    if (!sessionRow.nurse_reviewed_at && !sessionRow.staff_reviewed_at) {
+      res.status(422).json({ error: 'Staff or nurse review is required before doctor approval. This session has not been reviewed.' });
       return;
     }
 

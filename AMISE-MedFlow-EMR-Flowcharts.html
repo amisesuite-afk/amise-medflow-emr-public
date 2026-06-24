@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMISE MedFlow EMR — System Flow Diagrams</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+    line-height: 1.6;
+  }
+  .header {
+    background: linear-gradient(135deg, #0d4f4a 0%, #0d9488 100%);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+  }
+  .header h1 { font-size: 1.5rem; font-weight: 700; }
+  .header p { font-size: 0.875rem; opacity: 0.8; margin-top: 0.25rem; }
+  .nav {
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.75rem 2rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav button {
+    padding: 0.5rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: #334155;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .nav button:hover { background: #f1f5f9; }
+  .nav button.active {
+    background: #0d9488;
+    color: white;
+    border-color: #0d9488;
+  }
+  .diagram-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: none;
+  }
+  .diagram-section.active { display: block; }
+  .diagram-section h2 {
+    font-size: 1.25rem;
+    color: #0d4f4a;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .diagram-section .desc {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 1rem;
+  }
+  .diagram-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    overflow-x: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .legend {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    font-size: 0.8125rem;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+  .footer {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+    font-size: 0.75rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>AMISE MedFlow EMR — System Flow Diagrams</h1>
+  <p>Engineering Audit — 23 June 2026 — Confidential</p>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="show('intake')">Patient Intake Flow</button>
+  <button onclick="show('dataflow')">Data Flow</button>
+  <button onclick="show('safety')">Clinical Safety Gates</button>
+  <button onclick="show('arch')">System Architecture</button>
+</div>
+
+<!-- Diagram 1: Patient Intake Flow -->
+<div id="intake" class="diagram-section active">
+  <h2>Patient Intake Flow (Current State)</h2>
+  <p class="desc">The complete patient-facing intake journey from chief complaint to submission. Red nodes indicate identified issues; green nodes indicate items fixed during this audit.</p>
+  <div class="diagram-card">
+    <pre class="mermaid">
+graph TD
+    Start([Patient Opens /intake]) --> CC[Chief Complaint Selection<br/>Multi-select from 13 clinical options]
+    CC --> RefCheck{Referral Check:<br/>Self or Doctor?}
+
+    RefCheck -->|Self-referred| Details
+    RefCheck -->|Doctor-referred| RefUpload
+
+    subgraph ref [Referral Upload]
+        RefUpload[Referral Details<br/>Doctor name + institution dropdown<br/>+ WhatsApp scan option]
+        RefIssue[/ISSUE: Referral fields<br/>not validated — can be empty/]
+        RefUpload -.-> RefIssue
+    end
+
+    RefUpload --> Details
+
+    subgraph det [Patient Details]
+        Details[Patient Details Form<br/>name*, phone*, email, DOB]
+        PhoneIssue[/ISSUE: No phone<br/>format validation/]
+        EmailIssue[/ISSUE: No email<br/>format validation/]
+        Details -.-> PhoneIssue
+        Details -.-> EmailIssue
+    end
+
+    Details --> Consent[Consent Screen<br/>Checkbox acceptance]
+    Consent --> APCQ
+
+    subgraph apcq [APCQ Questionnaire]
+        APCQ[Adaptive Questions<br/>3-18 questions, branching]
+        StateIssue[/ISSUE: State not persisted<br/>— refresh loses all data/]
+        APCQ -.-> StateIssue
+        APCQ -->|Red flags| RedBanner[Red Flag Banner<br/>shown to patient]
+        EmergIssue[/ISSUE: Emergency-severity<br/>symptoms not redirected<br/>to ER — 911/]
+        APCQ -.-> EmergIssue
+    end
+
+    APCQ --> Submit[POST /api/intake/submit]
+
+    subgraph sub [Submission]
+        Submit --> AR[appointment_requests<br/>source: web]
+        Submit --> QS[questionnaire_sessions<br/>best-effort]
+        Submit --> QR[questionnaire_responses<br/>best-effort]
+        QSFixed[FIXED: delivery_method<br/>constraint added]
+        LinkFixed[FIXED: questionnaire_session_id<br/>FK links booking to questionnaire]
+        QS -.-> QSFixed
+        AR -.-> LinkFixed
+        UXFixed[FIXED: Thank You waits<br/>for save confirmation]
+        Submit -.-> UXFixed
+    end
+
+    Submit -->|Success| Done([Thank You + Confirmation])
+    Submit -->|Failure| Err[Error + WhatsApp fallback]
+
+    APCQ -->|Skip| WA([WhatsApp Escape])
+
+    classDef issue fill:#ff6b6b,stroke:#c0392b,color:#fff,stroke-width:2px
+    classDef fixed fill:#2ecc71,stroke:#27ae60,color:#fff,stroke-width:2px
+    classDef normal fill:#3498db,stroke:#2980b9,color:#fff
+    classDef start fill:#9b59b6,stroke:#8e44ad,color:#fff
+    classDef escape fill:#f39c12,stroke:#e67e22,color:#fff
+
+    class RefIssue,PhoneIssue,EmailIssue,StateIssue,EmergIssue issue
+    class QSFixed,LinkFixed,UXFixed fixed
+    class Start,Done start
+    class WA,Err escape
+    class CC,RefUpload,Details,Consent,APCQ,Submit,AR,QS,QR,RedBanner,RefCheck normal
+    </pre>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div> Issue (open)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2ecc71"></div> Fixed</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> Normal flow</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f39c12"></div> Escape / error path</div>
+  </div>
+</div>
+
+<!-- Diagram 2: Data Flow -->
+<div id="dataflow" class="diagram-section">
+  <h2>Data Flow — Intake to Dashboard</h2>
+  <p class="desc">How patient data flows from the intake form through Supabase to the staff dashboard. Orange nodes indicate missing pathways that should exist.</p>
+  <div class="diagram-card">
+    <pre class="mermaid">
+graph LR
+    Browser([Patient]) --> Route[POST /api/intake/submit<br/>Next.js on Vercel]
+
+    Route -->|INSERT| AR[(appointment_requests)]
+    Route -->|INSERT best-effort| QS[(questionnaire_sessions)]
+    Route -->|INSERT best-effort| QR[(questionnaire_responses)]
+
+    NoSMS[/MISSING: No SMS/email<br/>notification to staff/]
+    NoAlert[/MISSING: No alert<br/>on red flags/]
+    Route -.->|Should trigger| NoSMS
+    Route -.->|Should trigger| NoAlert
+
+    Staff([Staff Dashboard]) -->|Primary| API[GET /api/booking/requests<br/>API Server on Render]
+    API -->|Query| AR
+
+    Staff -.->|Fallback when API down| AR
+    ReadOnly[/ISSUE: Fallback is<br/>read-only/]
+    Staff -.-> ReadOnly
+
+    Staff --> Actions[Confirm / Waitlist / Cancel]
+    ActFail[/ISSUE: Actions fail<br/>when API is down/]
+    Actions -.-> ActFail
+
+    classDef issue fill:#ff6b6b,stroke:#c0392b,color:#fff,stroke-width:2px
+    classDef missing fill:#e67e22,stroke:#d35400,color:#fff,stroke-width:2px
+    classDef db fill:#1abc9c,stroke:#16a085,color:#fff
+    classDef app fill:#3498db,stroke:#2980b9,color:#fff
+    classDef user fill:#9b59b6,stroke:#8e44ad,color:#fff
+
+    class ReadOnly,ActFail issue
+    class NoSMS,NoAlert missing
+    class AR,QS,QR db
+    class Route,API,Actions app
+    class Browser,Staff user
+    </pre>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div> Issue</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e67e22"></div> Missing path</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1abc9c"></div> Database</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> Application</div>
+  </div>
+</div>
+
+<!-- Diagram 3: Clinical Safety Gates -->
+<div id="safety" class="diagram-section">
+  <h2>Clinical Safety Gates — Current vs Required</h2>
+  <p class="desc">The clinical workflow from intake to EMR population, showing 6 safety gaps (red) and the required improvements (green dashed). This is an outpatient clinic — emergency-severity symptoms should redirect to ER/911, not queue as bookings.</p>
+  <div class="diagram-card">
+    <pre class="mermaid">
+graph TD
+    Submit([Patient Submits Intake]) --> EmergCheck{Emergency<br/>severity?}
+
+    EmergCheck -->|Yes| Fixed0[FIXED: ER/911 redirect<br/>screen with Call 911 button]
+    Fixed0 --> Queue
+
+    EmergCheck -->|No| Gap1[GAP: No automatic<br/>staff notification]
+    Gap1 --> Queue[Booking in Queue]
+    Should1[SHOULD: SMS/email alert<br/>on red flag submissions]:::should
+    Gap1 -.->|Required| Should1
+
+    Queue --> Gap2[GAP: No priority sorting<br/>by red flag severity]
+    Gap2 --> Review[Staff Reviews Booking]
+
+    Review --> Fixed3[FIXED: Booking linked to<br/>questionnaire via FK]
+
+    Fixed3 --> ReviewGate{Front desk or<br/>nurse review?}
+    ReviewGate -->|Front desk| StaffRev[Front Desk Staff Review<br/>first & last line]
+    ReviewGate -->|Nurse available| NurseRev[Nurse Reviews Session<br/>occasionally]
+
+    StaffRev --> Fixed4[FIXED: Staff or nurse review<br/>enforced before doctor approval]
+    NurseRev --> Fixed4
+
+    Fixed4 --> Doctor[Doctor Approves]
+
+    Doctor --> Fixed5[FIXED: max of questionnaire<br/>+ AI urgency used]
+
+    Fixed5 --> EMR([EMR Populated])
+
+    classDef gap fill:#e74c3c,stroke:#c0392b,color:#fff,stroke-width:2px
+    classDef should fill:#2ecc71,stroke:#27ae60,color:#fff,stroke-width:2px,stroke-dasharray: 5 5
+    classDef normal fill:#3498db,stroke:#2980b9,color:#fff
+    classDef endpoint fill:#9b59b6,stroke:#8e44ad,color:#fff
+
+    classDef fixed fill:#2ecc71,stroke:#27ae60,color:#fff,stroke-width:2px
+
+    class Gap1,Gap2 gap
+    class Should1 should
+    class Fixed0,Fixed3,Fixed4,Fixed5 fixed
+    class Queue,Review,StaffRev,NurseRev,Doctor,EmergCheck,ReviewGate normal
+    class Submit,EMR endpoint
+    </pre>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div> Safety gap</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2ecc71;border:2px dashed #27ae60"></div> Required fix</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> Current flow</div>
+  </div>
+</div>
+
+<!-- Diagram 4: Architecture -->
+<div id="arch" class="diagram-section">
+  <h2>System Architecture</h2>
+  <p class="desc">The complete system topology showing all applications, databases, and external services. The dashed red line indicates the unreliable API server connection.</p>
+  <div class="diagram-card">
+    <pre class="mermaid">
+graph TB
+    subgraph patients [Patient-Facing]
+        PB([Patient Browser])
+    end
+
+    subgraph staff [Staff-Facing]
+        SB([Staff Browser])
+    end
+
+    subgraph fd ["Front-Desk (Next.js — Vercel)"]
+        Intake[/intake]
+        Refer[/refer]
+        Book[/book]
+        QToken[/questionnaire/token]
+    end
+
+    subgraph dash ["Dashboard (React/Vite — Vercel)"]
+        BI[Booking Inbox]
+        QQ[Questionnaire Queue]
+        CR[Consultation Requests]
+    end
+
+    subgraph api ["API Server (Express — Render)"]
+        Routes[Express Routes]
+    end
+
+    subgraph sb ["Supabase"]
+        AR[(appointment_requests)]
+        QS[(questionnaire_sessions)]
+        QR[(questionnaire_responses)]
+        PT[(patients)]
+        AL[(audit_log)]
+    end
+
+    subgraph ext [External Services]
+        Claude[Claude AI]
+        Twilio[Twilio SMS]
+        Gmail[Gmail API]
+        GCal[Google Calendar]
+    end
+
+    PB --> Intake
+    PB --> Refer
+    PB --> QToken
+    Intake -->|anon key| AR
+    Intake -->|anon key| QS
+
+    SB --> BI
+    SB --> QQ
+    BI -->|Primary| Routes
+    QQ -->|Primary| Routes
+    BI -.->|Fallback read-only| AR
+
+    Routes --> AR
+    Routes --> QS
+    Routes --> PT
+    Routes --> Claude
+    Routes --> Twilio
+    Routes --> Gmail
+    Routes --> GCal
+
+    classDef patient fill:#9b59b6,stroke:#8e44ad,color:#fff
+    classDef staffc fill:#2980b9,stroke:#2471a3,color:#fff
+    classDef fe fill:#1abc9c,stroke:#16a085,color:#fff
+    classDef dashc fill:#3498db,stroke:#2980b9,color:#fff
+    classDef apic fill:#e67e22,stroke:#d35400,color:#fff
+    classDef dbc fill:#27ae60,stroke:#229954,color:#fff
+    classDef extc fill:#8e44ad,stroke:#7d3c98,color:#fff
+
+    class PB patient
+    class SB staffc
+    class Intake,Refer,Book,QToken fe
+    class BI,QQ,CR dashc
+    class Routes apic
+    class AR,QS,QR,PT,AL dbc
+    class Claude,Twilio,Gmail,GCal extc
+    </pre>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#9b59b6"></div> Patient</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#2980b9"></div> Staff</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1abc9c"></div> Front-desk app</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> Dashboard</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e67e22"></div> API Server</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#27ae60"></div> Database</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8e44ad"></div> External</div>
+  </div>
+</div>
+
+<div class="footer">
+  AMISE Medical Services — Saint Lucia — Confidential<br>
+  Engineering Audit — 23 June 2026
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+
+  function show(id) {
+    document.querySelectorAll('.diagram-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+</body>
+</html>

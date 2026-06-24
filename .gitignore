@@ -56,3 +56,4 @@ Thumbs.db
 
 # Claude Code settings
 .claude/
+artifacts/front-desk/.next/
