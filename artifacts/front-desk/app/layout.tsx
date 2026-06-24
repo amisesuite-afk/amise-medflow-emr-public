@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0, background: '#0f172a', color: '#e2e8f0' }}>
+      <body style={{ margin: 0, padding: 0, background: '#ffffff', color: '#1c1917' }}>
         <noscript>
           <div style={{ padding: '40px 20px', textAlign: 'center', fontFamily: 'system-ui, sans-serif', color: '#0f172a', background: '#f8fafc', minHeight: '100vh' }}>
             <h1 style={{ fontSize: 20, marginBottom: 16 }}>Amise Medical Services</h1>
