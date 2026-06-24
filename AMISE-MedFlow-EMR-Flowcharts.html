@@ -273,10 +273,12 @@ graph TD
 
     Review --> Fixed3[FIXED: Booking linked to<br/>questionnaire via FK]
 
-    Fixed3 --> NurseQ[Nurse Opens Queue]
-    NurseQ --> NurseRev[Nurse Reviews Session]
+    Fixed3 --> ReviewGate{Front desk or<br/>nurse review?}
+    ReviewGate -->|Front desk| StaffRev[Front Desk Staff Review<br/>first & last line]
+    ReviewGate -->|Nurse available| NurseRev[Nurse Reviews Session<br/>occasionally]
 
-    NurseRev --> Fixed4[FIXED: Nurse review<br/>enforced before doctor approval]
+    StaffRev --> Fixed4[FIXED: Staff or nurse review<br/>enforced before doctor approval]
+    NurseRev --> Fixed4
 
     Fixed4 --> Doctor[Doctor Approves]
 
@@ -294,7 +296,7 @@ graph TD
     class Gap1,Gap2 gap
     class Should1 should
     class Fixed0,Fixed3,Fixed4,Fixed5 fixed
-    class Queue,Review,NurseQ,NurseRev,Doctor,EmergCheck normal
+    class Queue,Review,StaffRev,NurseRev,Doctor,EmergCheck,ReviewGate normal
     class Submit,EMR endpoint
     </pre>
   </div>

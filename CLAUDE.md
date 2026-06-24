@@ -114,7 +114,8 @@ This is an **outpatient general and endoscopic surgery practice**, not an emerge
 - **Emergency-severity symptoms → ER/911.** Patients reporting symptoms flagged as `emergency` by the APCQ engine must be shown a prominent redirect to call 911/999 or go to the nearest ER. The clinic does not manage acute emergencies through its booking queue.
 - **Red flags ≠ emergencies.** Red flags (e.g., unintentional weight loss, progressive dysphagia) warrant expedited outpatient review and staff alerts — not ER redirect.
 - **Not medical advice.** The intake form is an administrative scheduling tool, not a clinical consultation. The entry point must state this clearly as part of consent. No diagnosis, treatment recommendation, or clinical opinion is provided through the intake flow.
-- **Human gates are mandatory.** Nurse review → doctor approval is the required safety workflow. AI-generated urgency must never downgrade a deterministic red-flag severity — always use `max(questionnaire_severity, ai_severity)`.
+- **Human gates are mandatory.** Front desk staff or nurse review → doctor approval is the required safety workflow. Front desk staff are the first and last line — they handle the booking inbox, triage queue, and most day-to-day review. Nurses are present occasionally, not full-time. Either a front desk staff review (`staff_reviewed_at`) or a nurse review (`nurse_reviewed_at`) satisfies the pre-approval gate; the doctor-approve endpoint enforces this.
+- **AI urgency floor.** AI-generated urgency must never downgrade a deterministic red-flag severity — always use `max(questionnaire_severity, ai_severity)`.
 
 ## Cross-application data integrity
 

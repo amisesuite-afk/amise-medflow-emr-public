@@ -1401,6 +1401,61 @@ router.post('/api/questionnaire/session/:token/nurse-review', async (req, res) =
   }
 });
 
+// POST /api/questionnaire/session/:token/staff-review
+router.post('/api/questionnaire/session/:token/staff-review', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { token } = req.params;
+  const { staffNotes, staffUserId } = (req.body ?? {}) as {
+    staffNotes?: string;
+    staffUserId?: string;
+  };
+
+  if (!staffUserId) {
+    res.status(400).json({ error: 'staffUserId is required' });
+    return;
+  }
+
+  try {
+    const { data: sessionRow, error: sessErr } = await sb()
+      .from('questionnaire_sessions')
+      .select('id, status')
+      .eq('session_token', token)
+      .single();
+
+    if (sessErr || !sessionRow) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    const { data: updated, error: updateErr } = await sb()
+      .from('questionnaire_sessions')
+      .update({
+        status: 'staff_reviewed',
+        staff_reviewed_by: staffUserId,
+        staff_reviewed_at: new Date().toISOString(),
+        staff_notes: staffNotes ?? null,
+      })
+      .eq('id', sessionRow.id)
+      .select()
+      .single();
+
+    if (updateErr) throw updateErr;
+
+    await audit({
+      action: 'classify',
+      entityType: 'questionnaire_session',
+      entityId: sessionRow.id,
+      payload: { event: 'staff_reviewed', staffUserId },
+    });
+
+    res.json({ session: updated });
+  } catch (err) {
+    req.log.info({ err }, '[questionnaire/staff-review] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 // POST /api/questionnaire/session/:token/doctor-approve
 router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
@@ -1416,7 +1471,7 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
   try {
     const { data: sessionRow, error: sessErr } = await sb()
       .from('questionnaire_sessions')
-      .select('id, status, encounter_id, patient_id, nurse_reviewed_at')
+      .select('id, status, encounter_id, patient_id, nurse_reviewed_at, staff_reviewed_at')
       .eq('session_token', token)
       .single();
 
@@ -1425,8 +1480,8 @@ router.post('/api/questionnaire/session/:token/doctor-approve', async (req, res)
       return;
     }
 
-    if (!sessionRow.nurse_reviewed_at) {
-      res.status(422).json({ error: 'Nurse review is required before doctor approval. This session has not been reviewed by a nurse.' });
+    if (!sessionRow.nurse_reviewed_at && !sessionRow.staff_reviewed_at) {
+      res.status(422).json({ error: 'Staff or nurse review is required before doctor approval. This session has not been reviewed.' });
       return;
     }
 
