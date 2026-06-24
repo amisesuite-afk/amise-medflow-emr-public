@@ -80,7 +80,7 @@ const S = {
   } as React.CSSProperties,
 
   confidential: {
-    margin: '0.5rem 0 0', fontSize: '0.6875rem', color: '#a8a29e',
+    margin: '0.5rem 0 0', fontSize: '0.6875rem', color: '#78716c',
     textTransform: 'uppercase' as const, letterSpacing: '0.05em',
   } as React.CSSProperties,
 
@@ -98,7 +98,7 @@ const S = {
   } as React.CSSProperties,
 
   sectionSub: {
-    margin: '0 0 1.25rem', fontSize: '0.8125rem', color: '#78716c', lineHeight: 1.5,
+    margin: '0 0 1.25rem', fontSize: '0.8125rem', color: '#57534e', lineHeight: 1.5,
   } as React.CSSProperties,
 
   optionBtn: (selected: boolean): React.CSSProperties => ({
@@ -121,13 +121,13 @@ const S = {
   input: {
     width: '100%', boxSizing: 'border-box' as const, padding: '0.75rem 1rem',
     borderRadius: 8, border: '1px solid #d6d3d1', fontSize: '0.9375rem',
-    fontFamily: 'inherit', color: '#1c1917', background: '#fafaf9', outline: 'none',
+    fontFamily: 'inherit', color: '#1c1917', background: '#fafaf9',
   } as React.CSSProperties,
 
   textarea: {
     width: '100%', boxSizing: 'border-box' as const, padding: '0.75rem 1rem',
     borderRadius: 8, border: '1px solid #d6d3d1', fontSize: '0.9375rem',
-    fontFamily: 'inherit', color: '#1c1917', background: '#fafaf9', outline: 'none',
+    fontFamily: 'inherit', color: '#1c1917', background: '#fafaf9',
     resize: 'vertical' as const, minHeight: 80,
   } as React.CSSProperties,
 
@@ -142,21 +142,23 @@ const S = {
 
   primaryBtn: (disabled: boolean): React.CSSProperties => ({
     width: '100%', padding: '0.875rem', borderRadius: 8, border: 'none',
-    background: disabled ? '#d6d3d1' : TEAL, color: disabled ? '#a8a29e' : '#fff',
+    background: disabled ? '#d6d3d1' : TEAL, color: disabled ? '#78716c' : '#fff',
     fontWeight: 700, fontSize: '0.9375rem',
     cursor: disabled ? 'not-allowed' : 'pointer', transition: 'background 0.15s',
+    minHeight: 44,
   }),
 
   secondaryBtn: {
     width: '100%', padding: '0.875rem', borderRadius: 8,
     border: '1px solid #d6d3d1', background: 'transparent',
-    color: '#78716c', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
-    marginTop: 10,
+    color: '#44403c', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
+    marginTop: 10, minHeight: 44,
   } as React.CSSProperties,
 
   backBtn: {
     padding: '0.75rem 1rem', borderRadius: 8, border: '1px solid #d6d3d1',
-    background: 'transparent', color: '#78716c', cursor: 'pointer', fontSize: '0.875rem',
+    background: 'transparent', color: '#44403c', cursor: 'pointer', fontSize: '0.875rem',
+    minHeight: 44,
   } as React.CSSProperties,
 
   navRow: {
@@ -193,12 +195,12 @@ const S = {
   } as React.CSSProperties,
 
   whatsappNote: {
-    fontSize: '0.75rem', color: '#a8a29e', marginTop: 6, lineHeight: 1.4,
+    fontSize: '0.75rem', color: '#78716c', marginTop: 6, lineHeight: 1.4,
   } as React.CSSProperties,
 
   footer: {
     marginTop: 24, paddingTop: 16, borderTop: '1px solid #e7e5e4',
-    fontSize: '0.6875rem', color: '#a8a29e', textAlign: 'center' as const, lineHeight: 1.7,
+    fontSize: '0.6875rem', color: '#78716c', textAlign: 'center' as const, lineHeight: 1.7,
   } as React.CSSProperties,
 };
 
@@ -217,9 +219,11 @@ function QuestionInput({ question, value, onChange }: {
   switch (question.type) {
     case 'single_choice':
       return (
-        <div>
+        <div role="radiogroup" aria-label={question.text}>
           {(question.options ?? []).map(opt => (
-            <button key={opt.value} type="button" onClick={() => onChange(opt.value)}
+            <button key={opt.value} type="button" role="radio"
+              aria-checked={strVal === opt.value}
+              onClick={() => onChange(opt.value)}
               style={S.optionBtn(strVal === opt.value)}>
               {opt.label}
             </button>
@@ -229,40 +233,44 @@ function QuestionInput({ question, value, onChange }: {
 
     case 'multi_choice':
       return (
-        <div>
+        <div role="group" aria-label={question.text}>
           {(question.options ?? []).map(opt => {
             const checked = arrVal.includes(opt.value);
             return (
-              <button key={opt.value} type="button"
+              <button key={opt.value} type="button" role="checkbox"
+                aria-checked={checked}
                 onClick={() => onChange(checked ? arrVal.filter(v => v !== opt.value) : [...arrVal, opt.value])}
                 style={S.optionBtn(checked)}>
-                <span style={{ marginRight: 8, opacity: 0.6 }}>{checked ? '☑' : '☐'}</span>
+                <span aria-hidden="true" style={{ marginRight: 8, opacity: 0.6 }}>{checked ? '☑' : '☐'}</span>
                 {opt.label}
               </button>
             );
           })}
-          <div style={{ fontSize: '0.6875rem', color: '#a8a29e', marginTop: 6 }}>Select all that apply.</div>
+          <div style={{ fontSize: '0.75rem', color: '#78716c', marginTop: 6 }}>Select all that apply.</div>
         </div>
       );
 
     case 'boolean':
       return (
-        <div style={{ display: 'flex', gap: 12 }}>
-          <button type="button" onClick={() => onChange('yes')} style={S.boolBtn(strVal === 'yes', true)}>Yes</button>
-          <button type="button" onClick={() => onChange('no')} style={S.boolBtn(strVal === 'no', false)}>No</button>
+        <div role="radiogroup" aria-label={question.text} style={{ display: 'flex', gap: 12 }}>
+          <button type="button" role="radio" aria-checked={strVal === 'yes'} onClick={() => onChange('yes')} style={S.boolBtn(strVal === 'yes', true)}>Yes</button>
+          <button type="button" role="radio" aria-checked={strVal === 'no'} onClick={() => onChange('no')} style={S.boolBtn(strVal === 'no', false)}>No</button>
         </div>
       );
 
     case 'scale':
       return (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.75rem', color: '#78716c' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.75rem', color: '#57534e' }}>
             <span>0 — None</span><span>10 — Severe</span>
           </div>
           <input type="range" min={0} max={10} step={1} value={strVal || '0'}
+            aria-label={question.text}
+            aria-valuenow={Number(strVal || '0')}
+            aria-valuemin={0} aria-valuemax={10}
             onChange={e => onChange(e.target.value)}
             style={{ width: '100%', accentColor: TEAL, cursor: 'pointer' }} />
-          <div style={{ textAlign: 'center', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', marginTop: 8 }} aria-hidden="true">
             <span style={{ display: 'inline-block', padding: '4px 16px', borderRadius: 16,
               background: TEAL, color: '#fff', fontWeight: 700, fontSize: '1.125rem' }}>
               {strVal || '0'}
@@ -273,10 +281,11 @@ function QuestionInput({ question, value, onChange }: {
 
     case 'text':
       return <textarea value={strVal} onChange={e => onChange(e.target.value)}
+        aria-label={question.text}
         placeholder="Type your answer here…" style={S.textarea} rows={3} />;
 
     case 'date':
-      return <input type="date" value={strVal} onChange={e => onChange(e.target.value)} style={S.input} />;
+      return <input type="date" value={strVal} aria-label={question.text} onChange={e => onChange(e.target.value)} style={S.input} />;
 
     default:
       return null;
@@ -518,11 +527,24 @@ export default function IntakePage() {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div style={S.page}>
+    <div className="intake-page" style={S.page}>
+      <style>{`
+        .intake-page button:focus-visible,
+        .intake-page a:focus-visible,
+        .intake-page input:focus-visible,
+        .intake-page select:focus-visible,
+        .intake-page textarea:focus-visible {
+          outline: 2px solid ${TEAL};
+          outline-offset: 2px;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .intake-page * { transition: none !important; }
+        }
+      `}</style>
       {/* Header */}
       <header style={S.header}>
         <div style={S.logoRow}>
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
             <rect width="28" height="28" rx="6" fill={TEAL} />
             <path d="M14 6v16M6 14h16" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
           </svg>
@@ -602,20 +624,23 @@ export default function IntakePage() {
               <h2 style={S.sectionTitle}>What brings you in today?</h2>
               <p style={S.sectionSub}>Select your main concern(s) so we can prepare for your visit.</p>
 
+              <div role="group" aria-label="Select your main concern(s)">
               {(CHIEF_COMPLAINT.options ?? []).map(opt => {
                 const checked = ccSelection.includes(opt.value);
                 return (
-                  <button key={opt.value} type="button"
+                  <button key={opt.value} type="button" role="checkbox"
+                    aria-checked={checked}
                     onClick={() => setCcSelection(checked
                       ? ccSelection.filter(v => v !== opt.value)
                       : [...ccSelection, opt.value])}
                     style={S.optionBtn(checked)}>
-                    <span style={{ marginRight: 8, opacity: 0.6 }}>{checked ? '☑' : '☐'}</span>
+                    <span aria-hidden="true" style={{ marginRight: 8, opacity: 0.6 }}>{checked ? '☑' : '☐'}</span>
                     {opt.label}
                   </button>
                 );
               })}
-              <div style={{ fontSize: '0.6875rem', color: '#a8a29e', marginTop: 4 }}>Select all that apply.</div>
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#78716c', marginTop: 4 }}>Select all that apply.</div>
 
               <div style={{ marginTop: 20 }}>
                 <button type="button" onClick={handleCcNext} disabled={ccSelection.length === 0}
@@ -673,15 +698,15 @@ export default function IntakePage() {
               </p>
 
               <div style={S.fieldGroup}>
-                <label style={S.label}>Referring doctor&apos;s name *</label>
-                <input type="text" value={details.referringDoctor}
+                <label htmlFor="intake-referring-doctor" style={S.label}>Referring doctor&apos;s name *</label>
+                <input id="intake-referring-doctor" type="text" value={details.referringDoctor}
                   onChange={e => setDetails(d => ({ ...d, referringDoctor: e.target.value }))}
                   placeholder="e.g. Dr Smith" style={S.input} required />
               </div>
 
               <div style={S.fieldGroup}>
-                <label style={S.label}>Referring practice / hospital *</label>
-                <select value={details.referringPractice}
+                <label htmlFor="intake-referring-practice" style={S.label}>Referring practice / hospital *</label>
+                <select id="intake-referring-practice" value={details.referringPractice}
                   onChange={e => setDetails(d => ({ ...d, referringPractice: e.target.value }))}
                   style={{ ...S.input, appearance: 'auto' as React.CSSProperties['appearance'] }}>
                   <option value="">Select or type below…</option>
@@ -722,9 +747,9 @@ export default function IntakePage() {
                 )}`}
                   target="_blank" rel="noopener noreferrer"
                   style={{
-                    display: 'inline-block', marginTop: 10, padding: '0.5rem 1rem',
+                    display: 'inline-flex', alignItems: 'center', marginTop: 10, padding: '0.625rem 1rem',
                     borderRadius: 6, background: '#16a34a', color: '#fff',
-                    fontSize: '0.8125rem', fontWeight: 600, textDecoration: 'none',
+                    fontSize: '0.8125rem', fontWeight: 600, textDecoration: 'none', minHeight: 44,
                   }}>
                   💬 Send referral via WhatsApp
                 </a>
@@ -750,35 +775,39 @@ export default function IntakePage() {
               <p style={S.sectionSub}>We need a few details to book your appointment and prepare for your visit.</p>
 
               <div style={S.fieldGroup}>
-                <label style={S.label}>Full name *</label>
-                <input type="text" value={details.fullName}
+                <label htmlFor="intake-fullname" style={S.label}>Full name *</label>
+                <input id="intake-fullname" type="text" value={details.fullName}
                   onChange={e => setDetails(d => ({ ...d, fullName: e.target.value }))}
                   placeholder="e.g. John Baptiste" style={S.input} autoComplete="name" />
               </div>
 
               <div style={S.fieldGroup}>
-                <label style={S.label}>Phone number *</label>
-                <input type="tel" value={details.phone}
+                <label htmlFor="intake-phone" style={S.label}>Phone number *</label>
+                <input id="intake-phone" type="tel" value={details.phone}
                   onChange={e => { setDetails(d => ({ ...d, phone: e.target.value })); setPhoneError(''); }}
                   placeholder="e.g. +1 758 284 0557"
+                  aria-invalid={!!phoneError}
+                  aria-describedby={phoneError ? 'intake-phone-error' : undefined}
                   style={{ ...S.input, ...(phoneError ? { borderColor: '#dc2626' } : {}) }}
                   autoComplete="tel" />
-                {phoneError && <div style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: 4 }}>{phoneError}</div>}
+                {phoneError && <div id="intake-phone-error" role="alert" style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: 4 }}>{phoneError}</div>}
               </div>
 
               <div style={S.fieldGroup}>
-                <label style={S.label}>Email address</label>
-                <input type="email" value={details.email}
+                <label htmlFor="intake-email" style={S.label}>Email address</label>
+                <input id="intake-email" type="email" value={details.email}
                   onChange={e => { setDetails(d => ({ ...d, email: e.target.value })); setEmailError(''); }}
                   placeholder="e.g. john@example.com"
+                  aria-invalid={!!emailError}
+                  aria-describedby={emailError ? 'intake-email-error' : undefined}
                   style={{ ...S.input, ...(emailError ? { borderColor: '#dc2626' } : {}) }}
                   autoComplete="email" />
-                {emailError && <div style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: 4 }}>{emailError}</div>}
+                {emailError && <div id="intake-email-error" role="alert" style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: 4 }}>{emailError}</div>}
               </div>
 
               <div style={S.fieldGroup}>
-                <label style={S.label}>Date of birth</label>
-                <input type="date" value={details.dob}
+                <label htmlFor="intake-dob" style={S.label}>Date of birth</label>
+                <input id="intake-dob" type="date" value={details.dob}
                   onChange={e => setDetails(d => ({ ...d, dob: e.target.value }))}
                   style={S.input} />
               </div>
@@ -809,7 +838,7 @@ export default function IntakePage() {
 
               <div style={{
                 padding: '0.875rem 1rem', borderRadius: 8, background: '#fafaf9',
-                border: '1px solid #e7e5e4', fontSize: '0.8125rem', color: '#78716c',
+                border: '1px solid #e7e5e4', fontSize: '0.8125rem', color: '#44403c',
                 lineHeight: 1.6, marginBottom: 20,
               }}>
                 I consent to the collection of my health information for the purpose of scheduling
@@ -836,18 +865,20 @@ export default function IntakePage() {
         {screen === 'questions' && apcqState?.currentQuestion && (
           <div>
             {hasRedFlag && (
-              <div style={S.redFlagBanner}>
-                <span style={{ fontSize: 18 }}>⚠️</span>
+              <div role="alert" style={S.redFlagBanner}>
+                <span aria-hidden="true" style={{ fontSize: 18 }}>⚠️</span>
                 <span>A symptom you reported has been flagged. Our team will prioritise your case.</span>
               </div>
             )}
 
             {/* Progress */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6875rem', color: '#a8a29e', marginBottom: 6 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#78716c', marginBottom: 6 }}>
               <span>Question {questionNumber}</span>
               <span>{progressPct}% complete</span>
             </div>
-            <div style={S.progressBar}>
+            <div style={S.progressBar} role="progressbar"
+              aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100}
+              aria-label={`Questionnaire progress: ${progressPct}%`}>
               <div style={S.progressFill(progressPct)} />
             </div>
 
@@ -877,7 +908,7 @@ export default function IntakePage() {
               )}
 
               {submitting && (
-                <div style={{ textAlign: 'center', marginTop: 12, color: '#78716c', fontSize: '0.875rem' }}>
+                <div role="status" style={{ textAlign: 'center', marginTop: 12, color: '#57534e', fontSize: '0.875rem' }}>
                   Saving your responses…
                 </div>
               )}
@@ -902,7 +933,7 @@ export default function IntakePage() {
               background: '#7f1d1d', borderRadius: 12, padding: '1.5rem 1.25rem',
               color: '#fef2f2', textAlign: 'center',
             }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🚨</div>
+              <div aria-hidden="true" style={{ fontSize: 48, marginBottom: 12 }}>🚨</div>
               <h2 style={{ margin: '0 0 12px', fontSize: '1.25rem', fontWeight: 700, color: '#fecaca' }}>
                 Please seek immediate medical attention
               </h2>
@@ -955,7 +986,7 @@ export default function IntakePage() {
         {screen === 'complete' && (
           <div style={S.card}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
+              <div aria-hidden="true" style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
               <h2 style={{ ...S.sectionTitle, color: '#16a34a' }}>Thank you, {details.fullName.split(' ')[0]}.</h2>
               <p style={{ ...S.sectionSub, marginBottom: 20 }}>
                 Your responses have been submitted. Our team will review your information and
@@ -980,7 +1011,7 @@ export default function IntakePage() {
 
               <div style={{
                 padding: '0.875rem 1rem', borderRadius: 8, background: '#fafaf9',
-                border: '1px solid #e7e5e4', fontSize: '0.75rem', color: '#a8a29e', lineHeight: 1.6,
+                border: '1px solid #e7e5e4', fontSize: '0.75rem', color: '#78716c', lineHeight: 1.6,
               }}>
                 Your information is confidential and has been shared only with your care team at
                 Amise Medical Services.
@@ -1000,7 +1031,7 @@ export default function IntakePage() {
         {screen === 'whatsapp_exit' && (
           <div style={S.card}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>💬</div>
+              <div aria-hidden="true" style={{ fontSize: 48, marginBottom: 12 }}>💬</div>
               <h2 style={S.sectionTitle}>Contact us on WhatsApp</h2>
               <p style={S.sectionSub}>
                 You can reach us directly on WhatsApp. A member of our team will assist you
