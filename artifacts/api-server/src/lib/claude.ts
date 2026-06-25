@@ -26,7 +26,7 @@ If a message contains anything urgent (bleeding, severe pain, jaundice, post-op 
 
 Locations:
 - Rodney Bay (Providence Building) — new consultations, ERCP work-up, breast clinics
-- Tapion Hospital (La Toc, Castries) — surgery, endoscopy, ERCP, post-operative reviews, urgent reviews. Tel: 459-2227 / 284-0557
+- Tapion Hospital (La Toc, Castries) — surgery, endoscopy, ERCP, post-operative reviews, urgent reviews. Tel: 758-284-0557 / 758-720-7111
 
 Sign every reply as: "Front Desk, Amise Medical Services".`;
 
@@ -108,7 +108,7 @@ Draft a booking confirmation for: ${JSON.stringify(args.bookingDetails)}. Addres
 
     urgent_ack: `Subject: Amise Medical Services — Message Received
 
-Draft a brief acknowledgement (NO clinical content). Address the patient as "${name}". Tell them their message has been received and forwarded to the clinical team, and that someone will contact them shortly. Add: if symptoms are severe or worsening, attend the nearest emergency department or call Tapion Hospital on 459-2227 or 284-0557. End with the standard sign-off.`,
+Draft a brief acknowledgement (NO clinical content). Address the patient as "${name}". Tell them their message has been received and forwarded to the clinical team, and that someone will contact them shortly. Add: if symptoms are severe or worsening, attend the nearest emergency department or call our office on 758-284-0557 or 284-0557. End with the standard sign-off.`,
 
     out_of_scope: `Subject: Amise Medical Services — Your Enquiry
 
@@ -120,7 +120,7 @@ Draft a brief reply (NO clinical content) to a general enquiry. Address the pati
 1. A one-line description of the practice: general and endoscopic surgery with Dr Dawit Daniel Kabiye, MD, DM, in Saint Lucia (consultations, procedures such as colonoscopy/ERCP, and follow-up care).
 2. Invite them to complete the short triage form so the team can prepare for their visit: ${args.triageFormUrl}
 3. Tell them they may also reply to this email with their details and the team will guide them through triage directly.
-4. Offer the option to call the front desk instead — Tapion Hospital 459-2227 / 284-0557, or Rodney Bay 758-720-7111.
+4. Offer the option to call the front desk instead — Tapion Hospital 758-284-0557 / 758-720-7111, or Rodney Bay 758-720-7111.
 End with the standard sign-off.`,
   };
 

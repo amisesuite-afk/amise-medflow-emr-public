@@ -12,7 +12,7 @@ function getDayECT(d: Date): number {
 
 export const LOCATION_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay (Providence Building)',
-  tapion:     'Tapion Hospital',
+  tapion:     'Tapion (Dr Kabiye\'s Office)',
   remote:     'Telephone consultation',
 };
 

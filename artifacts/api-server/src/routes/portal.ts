@@ -906,7 +906,7 @@ router.post('/api/patient/appointments/:id/request-change', async (req, res) => 
   const hoursUntil = (apptDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
   if (hoursUntil < CHANGE_REQUEST_MIN_NOTICE_HOURS) {
     res.status(400).json({
-      error: 'This appointment is too soon to change online. Please call us directly: Tapion Hospital 459-2227 / 284-0557.',
+      error: 'This appointment is too soon to change online. Please call us directly: Tapion Hospital 758-284-0557 / 758-720-7111.',
     });
     return;
   }

@@ -166,10 +166,10 @@ function buildEmailHtml(opts: {
           <div style="background:#1e293b;border-radius:8px;padding:16px 20px;text-align:center;">
             <div style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Questions?</div>
             <div style="font-size:14px;color:#cbd5e1;">
-              Tapion Hospital: <strong style="color:#0d9488;">459-2227 / 284-0557</strong>
+              Tapion: <strong style="color:#0d9488;">758-284-0557</strong> &nbsp;·&nbsp; Rodney Bay: <strong style="color:#0d9488;">758-720-7111</strong>
             </div>
             <div style="font-size:13px;color:#64748b;margin-top:4px;">
-              Rodney Bay (Providence Building) &nbsp;·&nbsp; Tapion Hospital
+              Rodney Bay (Providence Building) &nbsp;·&nbsp; Tapion (Dr Kabiye's Office)
             </div>
           </div>
         </td></tr>
@@ -281,7 +281,7 @@ export async function sendConfirmationEmail(opts: {
     'WHEN TO SEEK IMMEDIATE HELP',
     ...inst.urgentSigns.map(s => `• ${s}`),
     '',
-    'Questions? Call 459-2227 / 284-0557',
+    'Questions? Call 758-284-0557 (Tapion) or 758-720-7111 (Rodney Bay)',
     '',
     'Front Desk, Amise Medical Services',
     '',

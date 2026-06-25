@@ -562,7 +562,7 @@ export default function IntakePage() {
 
     if (insertError || !insertData) {
       console.error('[patient/intake] Failed to submit intake form:', insertError);
-      alert('Could not submit. Please check your connection and try again, or call us at 459-2227 / 284-0557.');
+      alert('Could not submit. Please check your connection and try again, or call us at 758-284-0557 / 758-720-7111.');
       return;
     }
 
@@ -608,7 +608,7 @@ export default function IntakePage() {
 
     if (insertError || !insertData) {
       console.error('[patient/intake] Failed to submit bailout intake:', insertError);
-      alert('Could not submit. Please check your connection and try again, or call us at 459-2227 / 284-0557.');
+      alert('Could not submit. Please check your connection and try again, or call us at 758-284-0557 / 758-720-7111.');
       return;
     }
 

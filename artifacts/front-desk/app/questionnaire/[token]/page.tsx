@@ -781,7 +781,7 @@ export default function QuestionnairePage({ params }: { params: { token: string 
         {/* Footer */}
         <div style={s.footer}>
           Amise Medical Services · Saint Lucia<br />
-          Tapion Hospital: 459-2227 / 284-0557<br />
+          Tapion Hospital: 758-284-0557 / 758-720-7111<br />
           Rodney Bay (Providence Building) · Tapion Hospital
         </div>
       </div>

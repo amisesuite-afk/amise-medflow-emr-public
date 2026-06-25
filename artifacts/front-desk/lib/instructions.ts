@@ -60,7 +60,7 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'Any prior surgical operation notes or pathology reports',
     ],
     urgentSigns: [
-      'Sudden worsening of the symptom that prompted the referral — go to the nearest emergency department or call Tapion Hospital: 459-2227 / 284-0557',
+      'Sudden worsening of the symptom that prompted the referral — go to the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
     ],
   },
 
@@ -175,7 +175,7 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'High fever (above 38.5 °C)',
       'Vomiting blood or passing black/tarry stools',
       'Inability to keep fluids down',
-      'Call Tapion Hospital immediately: 459-2227 / 284-0557',
+      'Call Tapion Hospital immediately: 758-284-0557 / 758-720-7111',
     ],
   },
 
@@ -217,7 +217,7 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'Severe abdominal pain or distension',
       'High fever above 38.5 °C',
       'Feeling faint or unable to stand',
-      'Go to the nearest emergency department or call Tapion Hospital: 459-2227 / 284-0557',
+      'Go to the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
     ],
   },
 
@@ -256,7 +256,7 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'Vomiting blood or material that looks like coffee grounds',
       'Difficulty swallowing that is new or worsening',
       'High fever',
-      'Contact Tapion Hospital immediately: 459-2227 / 284-0557',
+      'Contact Tapion Hospital immediately: 758-284-0557 / 758-720-7111',
     ],
   },
 
@@ -346,7 +346,7 @@ export const PROCEDURE_INSTRUCTIONS: Record<string, ProcedureInstructions> = {
       'Your questions and concerns written down',
     ],
     urgentSigns: [
-      'If your condition deteriorates before the call — do not wait, attend the nearest emergency department or call Tapion Hospital: 459-2227 / 284-0557',
+      'If your condition deteriorates before the call — do not wait, attend the nearest emergency department or call Tapion Hospital: 758-284-0557 / 758-720-7111',
     ],
   },
 
@@ -591,5 +591,5 @@ export function getInstructions(appointmentType: string): ProcedureInstructions 
 export function shortInstructions(appointmentType: string): string {
   const inst = getInstructions(appointmentType);
   const key  = inst.beforeVisit[0] ?? 'No special preparation required.';
-  return `Preparation: ${key} What to bring: ${inst.whatToBring.slice(0, 2).join('; ')}. Questions? Call 459-2227.`;
+  return `Preparation: ${key} What to bring: ${inst.whatToBring.slice(0, 2).join('; ')}. Questions? Call 758-284-0557.`;
 }

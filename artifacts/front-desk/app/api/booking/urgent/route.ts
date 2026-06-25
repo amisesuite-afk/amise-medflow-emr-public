@@ -27,7 +27,7 @@ function urgentConfirmation(
     `Location: ${locLabel}`,
     ``,
     `Please arrive 10 minutes early with a valid photo ID and any relevant medical records or referral letters.`,
-    `For urgent questions: Tapion Hospital 459-2227 / 284-0557.`,
+    `For urgent questions: Tapion Hospital 758-284-0557 / 758-720-7111.`,
     ``,
     `Front Desk, Amise Medical Services`,
     ``,

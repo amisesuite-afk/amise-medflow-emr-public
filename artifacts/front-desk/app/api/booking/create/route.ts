@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 // Shown to the patient when something unexpected blows up the request
 // (Supabase outage, missing env var, etc.) — gives them a way to reach the
 // office instead of the previous unhelpful generic "Network error".
-const FALLBACK_ERROR = 'We could not process your request online. Please call us at 459-2227 / 284-0557 and our front desk will book your appointment by phone.';
+const FALLBACK_ERROR = 'We could not process your request online. Please call us at 758-284-0557 / 758-720-7111 and our front desk will book your appointment by phone.';
 
 // Mints a pre-consult questionnaire link via api-server's privileged
 // provisioning endpoint, so the patient can complete it before their visit
@@ -75,7 +75,7 @@ function routineConfirmation(
       `Please complete your pre-visit questionnaire before your appointment: ${questionnaireUrl}`,
     ] : []),
     ``,
-    `For enquiries: Tapion Hospital 459-2227 / 284-0557.`,
+    `For enquiries: Tapion Hospital 758-284-0557 / 758-720-7111.`,
     ``,
     `Medical emergency? Call emergency services or go to the nearest emergency room — do not wait for this appointment.`,
     ``,

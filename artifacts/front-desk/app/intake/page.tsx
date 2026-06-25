@@ -589,7 +589,7 @@ export default function IntakePage() {
                   Call 911 or go to the nearest emergency department
                 </a>
                 <p style={{ margin: '8px 0 0', fontSize: '0.75rem', color: '#991b1b', textAlign: 'center' }}>
-                  Tapion Hospital: 758-459-2227 &middot; WhatsApp: 758-284-0557
+                  Tapion Hospital: 758-284-0557 &middot; WhatsApp: 758-284-0557
                 </p>
               </div>
 
@@ -956,7 +956,7 @@ export default function IntakePage() {
                 fontSize: '0.8125rem', color: '#fecaca', lineHeight: 1.5,
               }}>
                 <strong>Nearest hospitals:</strong><br />
-                Tapion Hospital — 758-459-2227<br />
+                Tapion Hospital — 758-284-0557<br />
                 WhatsApp — 758-284-0557
               </div>
 

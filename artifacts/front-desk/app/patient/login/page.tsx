@@ -128,7 +128,7 @@ function LoginContent() {
       if (msg.includes('not found') || msg.includes('not exist') || msg.includes('signups not allowed') || msg.includes('invalid login')) {
         setErrMsg('No patient account found for this email. Please contact our front desk to activate your portal access.');
       } else if (msg.includes('sending') || msg.includes('smtp') || msg.includes('email') || msg.includes('rate limit') || msg.includes('confirmation')) {
-        setErrMsg('We are having trouble sending emails right now. Please call 459-2227 / 284-0557 or try again in a few minutes.');
+        setErrMsg('We are having trouble sending emails right now. Please call 758-284-0557 / 758-720-7111 or try again in a few minutes.');
       } else {
         setErrMsg(error.message);
       }
@@ -441,7 +441,7 @@ function LoginContent() {
               Send a new link
             </button>
             <p style={{ margin: '14px 0 0', fontSize: 12, color: '#64748b', textAlign: 'center', lineHeight: 1.6 }}>
-              Still stuck? Call Tapion Hospital: 459-2227 / 284-0557 — our front desk can book you in directly.
+              Still stuck? Call Tapion Hospital: 758-284-0557 / 758-720-7111 — our front desk can book you in directly.
             </p>
           </div>
         )}
@@ -471,7 +471,7 @@ function LoginContent() {
 
         <p style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #1e3a5f', fontSize: 11, color: '#374151', textAlign: 'center', lineHeight: 1.6 }}>
           Portal access is by invitation from Amise Medical Services staff only.<br />
-          For help, call Tapion Hospital: 459-2227 / 284-0557.
+          For help, call Tapion Hospital: 758-284-0557 / 758-720-7111.
         </p>
 
       </div>

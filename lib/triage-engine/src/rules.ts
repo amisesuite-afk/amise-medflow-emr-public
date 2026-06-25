@@ -225,7 +225,7 @@ export const PATHWAY_DEFINITIONS: Array<{
       'NPO and IV access',
       'Contact biliary surgery / gastroenterology on-call',
     ],
-    contacts: ['Tapion Hospital: 459-2227 / 284-0557', 'Dr Kabiye on-call'],
+    contacts: ['Tapion Hospital: 758-284-0557 / 758-720-7111', 'Dr Kabiye on-call'],
     doctorNotes: "If Reynolds' pentad: urgent ERCP vs PTC vs emergency surgery. Start IV antibiotics (piperacillin-tazobactam or meropenem + metronidazole).",
   },
   {
@@ -243,7 +243,7 @@ export const PATHWAY_DEFINITIONS: Array<{
       'Call gastroenterology / surgery on-call',
       'Resuscitation — fluid / blood products',
     ],
-    contacts: ['Tapion Hospital emergency: 459-2227'],
+    contacts: ['Tapion office (urgent): 758-284-0557'],
     doctorNotes: 'Blatchford score for risk stratification. Upper GI: IV PPI. Varices: terlipressin + antibiotics. Urgent endoscopy if haemodynamically unstable.',
   },
   {
@@ -259,7 +259,7 @@ export const PATHWAY_DEFINITIONS: Array<{
       'NPO, IV access, analgesia',
       'Surgical review urgently',
     ],
-    contacts: ['Tapion Hospital: 459-2227 / 284-0557'],
+    contacts: ['Tapion Hospital: 758-284-0557 / 758-720-7111'],
     doctorNotes: 'Differential: perforation, ischaemia, obstruction, appendicitis, pancreatitis. CT abdomen/pelvis if stable and diagnosis unclear.',
   },
   {
@@ -292,7 +292,7 @@ export const PATHWAY_DEFINITIONS: Array<{
       'Fever + spreading cellulitis → urgent surgery referral',
       'IV antibiotics if systemically unwell',
     ],
-    contacts: ['Tapion Hospital: 459-2227', 'Dr Kabiye surgical on-call'],
+    contacts: ['Tapion office: 758-284-0557', 'Dr Kabiye surgical on-call'],
     doctorNotes: 'Wagner 3+: admit, IV antibiotics, vascular assessment, likely surgical debridement. PEDIS classification for research documentation.',
   },
   {

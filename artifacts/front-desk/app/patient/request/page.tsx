@@ -298,7 +298,7 @@ export default function RequestPage() {
               <strong style={{ color: '#dc2626' }}>Medical emergency? Call emergency services or go to the nearest emergency room.</strong><br />
               For urgent (non-emergency) concerns during clinic hours (Mon–Fri, 9am–5pm):<br />
               <strong style={{ color: '#475569' }}>Tapion Hospital</strong>{' '}
-              <a href="tel:+17584592227" style={{ color: TEAL, textDecoration: 'none', fontWeight: 700 }}>459-2227</a>
+              <a href="tel:+17582840557" style={{ color: TEAL, textDecoration: 'none', fontWeight: 700 }}>758-284-0557</a>
               {' · '}
               <a href="tel:+17582840557" style={{ color: TEAL, textDecoration: 'none', fontWeight: 700 }}>284-0557</a>
             </div>

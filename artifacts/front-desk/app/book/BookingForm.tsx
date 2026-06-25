@@ -12,7 +12,7 @@ interface Slot {
   display: string;
 }
 
-type Step = 'track' | 'details' | 'slots' | 'done';
+type Step = 'track' | 'procedure_info' | 'details' | 'slots' | 'done';
 
 const TRACK_INFO: Record<BookingTrack, { label: string; description: string; icon: string }> = {
   routine: {
@@ -72,6 +72,114 @@ const OPTGROUP_ORDER = [
 /** True when the appointment type requires endoscopy prep info */
 function needsPrepNotice(apptType: string): boolean {
   return ['colonoscopy', 'egd', 'ogd', 'ercp'].some(prefix => apptType.startsWith(prefix));
+}
+
+// ── Procedure-specific intake questions ──────────────────────────────────────
+
+interface ProcedureQuestion {
+  id: string;
+  label: string;
+  type: 'text' | 'select' | 'yesno' | 'textarea';
+  options?: string[];
+  placeholder?: string;
+  required?: boolean;
+}
+
+const PROCEDURE_QUESTIONS: Record<string, { heading: string; questions: ProcedureQuestion[] }> = {
+  ogd: {
+    heading: 'Gastroscopy (OGD) — clinical information',
+    questions: [
+      { id: 'primary_symptom', label: 'Primary symptom', type: 'select', options: ['Dyspepsia / heartburn', 'Dysphagia (difficulty swallowing)', 'Nausea / vomiting', 'Upper GI bleeding', 'Epigastric pain', 'Anaemia (iron-deficiency)', 'Weight loss', 'Other'], required: true },
+      { id: 'symptom_duration', label: 'How long have you had this symptom?', type: 'select', options: ['Less than 2 weeks', '2–4 weeks', '1–3 months', '3–6 months', 'More than 6 months'] },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners (e.g. warfarin, aspirin, clopidogrel)?', type: 'yesno' },
+      { id: 'previous_endoscopy', label: 'Have you had an endoscopy before?', type: 'yesno' },
+      { id: 'allergies', label: 'Any known drug allergies?', type: 'text', placeholder: 'e.g. penicillin, iodine, latex — or "none"' },
+      { id: 'other_info', label: 'Anything else we should know?', type: 'textarea', placeholder: 'e.g. relevant medical conditions, recent test results' },
+    ],
+  },
+  colonoscopy: {
+    heading: 'Colonoscopy — clinical information',
+    questions: [
+      { id: 'primary_symptom', label: 'Primary reason for colonoscopy', type: 'select', options: ['Change in bowel habit', 'Rectal bleeding', 'Screening / surveillance', 'Abdominal pain', 'Anaemia (iron-deficiency)', 'Family history of colorectal cancer', 'Polyp follow-up', 'Other'], required: true },
+      { id: 'symptom_duration', label: 'How long have you had this symptom?', type: 'select', options: ['Less than 2 weeks', '2–4 weeks', '1–3 months', '3–6 months', 'More than 6 months', 'N/A — screening'] },
+      { id: 'previous_colonoscopy', label: 'Have you had a colonoscopy before?', type: 'yesno' },
+      { id: 'family_history', label: 'Family history of bowel cancer?', type: 'yesno' },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners?', type: 'yesno' },
+      { id: 'allergies', label: 'Any known drug allergies?', type: 'text', placeholder: 'e.g. penicillin, iodine, latex — or "none"' },
+    ],
+  },
+  ercp_workup: {
+    heading: 'ERCP / Biliary investigation — clinical information',
+    questions: [
+      { id: 'primary_indication', label: 'Reason for ERCP referral', type: 'select', options: ['Bile duct stones (choledocholithiasis)', 'Jaundice — cause unknown', 'Biliary stricture', 'Stent replacement', 'Pancreatitis (biliary)', 'Other'], required: true },
+      { id: 'jaundice', label: 'Do you currently have jaundice (yellow skin/eyes)?', type: 'yesno' },
+      { id: 'prior_ercp', label: 'Have you had an ERCP before?', type: 'yesno' },
+      { id: 'stent_in_situ', label: 'Do you have a biliary stent in place?', type: 'yesno' },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners?', type: 'yesno' },
+      { id: 'recent_imaging', label: 'Recent imaging results available?', type: 'select', options: ['Ultrasound', 'CT scan', 'MRCP', 'Multiple', 'None yet'] },
+      { id: 'allergies', label: 'Any known drug allergies (especially contrast/iodine)?', type: 'text', placeholder: 'e.g. iodine, contrast dye, penicillin — or "none"' },
+    ],
+  },
+  flexi_sig: {
+    heading: 'Flexible sigmoidoscopy — clinical information',
+    questions: [
+      { id: 'primary_symptom', label: 'Primary reason', type: 'select', options: ['Rectal bleeding', 'Change in bowel habit', 'Screening', 'Polyp follow-up', 'Other'], required: true },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners?', type: 'yesno' },
+      { id: 'allergies', label: 'Any known drug allergies?', type: 'text', placeholder: 'e.g. penicillin — or "none"' },
+    ],
+  },
+  breast: {
+    heading: 'Breast clinic — clinical information',
+    questions: [
+      { id: 'primary_concern', label: 'Primary concern', type: 'select', options: ['New breast lump', 'Breast pain', 'Nipple discharge', 'Skin change', 'Screening / family history', 'Follow-up after treatment', 'Other'], required: true },
+      { id: 'duration', label: 'How long have you noticed this?', type: 'select', options: ['Less than 1 week', '1–4 weeks', '1–3 months', 'More than 3 months', 'N/A'] },
+      { id: 'family_history', label: 'Family history of breast or ovarian cancer?', type: 'yesno' },
+      { id: 'previous_imaging', label: 'Any previous breast imaging?', type: 'select', options: ['Mammogram', 'Ultrasound', 'Both', 'None'] },
+    ],
+  },
+  thyroid: {
+    heading: 'Thyroid clinic — clinical information',
+    questions: [
+      { id: 'primary_concern', label: 'Primary concern', type: 'select', options: ['Thyroid nodule / lump', 'Goitre (enlarged thyroid)', 'Abnormal thyroid function tests', 'Follow-up', 'Other'], required: true },
+      { id: 'thyroid_function', label: 'Most recent thyroid function test result', type: 'select', options: ['Normal', 'Overactive (hyperthyroid)', 'Underactive (hypothyroid)', 'Not tested / unknown'] },
+      { id: 'previous_imaging', label: 'Previous thyroid ultrasound?', type: 'yesno' },
+      { id: 'family_history', label: 'Family history of thyroid disease or thyroid cancer?', type: 'yesno' },
+    ],
+  },
+  pre_op: {
+    heading: 'Pre-operative assessment — clinical information',
+    questions: [
+      { id: 'planned_surgery', label: 'What surgery is planned?', type: 'text', placeholder: 'e.g. laparoscopic cholecystectomy', required: true },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners?', type: 'yesno' },
+      { id: 'anaesthetic_history', label: 'Any problems with previous anaesthetics?', type: 'yesno' },
+      { id: 'medical_conditions', label: 'Significant medical conditions', type: 'textarea', placeholder: 'e.g. diabetes, heart disease, asthma — or "none"' },
+      { id: 'allergies', label: 'Any known drug allergies?', type: 'text', placeholder: 'e.g. penicillin, latex — or "none"' },
+    ],
+  },
+  diabetic_foot: {
+    heading: 'Diabetic foot clinic — clinical information',
+    questions: [
+      { id: 'primary_concern', label: 'Primary concern', type: 'select', options: ['Non-healing wound / ulcer', 'Foot numbness / tingling', 'Foot pain', 'Routine diabetic foot check', 'Infection', 'Other'], required: true },
+      { id: 'diabetes_type', label: 'Diabetes type', type: 'select', options: ['Type 1', 'Type 2', 'Not sure'] },
+      { id: 'wound_present', label: 'Do you currently have a wound or ulcer on your foot?', type: 'yesno' },
+      { id: 'last_hba1c', label: 'Most recent HbA1c (if known)', type: 'text', placeholder: 'e.g. 7.2% — or "unknown"' },
+    ],
+  },
+};
+
+function buildReasonWithProcedureInfo(reason: string, answers: Record<string, string>, apptType: string): string {
+  const parts: string[] = [];
+  if (reason.trim()) parts.push(reason.trim());
+  const config = PROCEDURE_QUESTIONS[apptType];
+  if (config) {
+    const answerLines = config.questions
+      .filter(q => answers[q.id]?.trim())
+      .map(q => `${q.label}: ${answers[q.id]}`);
+    if (answerLines.length > 0) {
+      parts.push(`[${config.heading}] ${answerLines.join(' | ')}`);
+    }
+  }
+  return parts.join(' — ');
 }
 
 // ── Shared style primitives ───────────────────────────────────────────────────
@@ -144,9 +252,10 @@ function WhatsAppIcon() {
 
 // ── Step indicator ────────────────────────────────────────────────────────────
 
-function StepIndicator({ current }: { current: Step }) {
+function StepIndicator({ current, hasProcedureStep }: { current: Step; hasProcedureStep: boolean }) {
   const steps: { id: Step; label: string }[] = [
     { id: 'track',   label: 'Appointment type' },
+    ...(hasProcedureStep ? [{ id: 'procedure_info' as Step, label: 'Clinical info' }] : []),
     { id: 'details', label: 'Your details' },
     { id: 'slots',   label: 'Choose slot' },
   ];
@@ -202,6 +311,10 @@ export default function BookingForm() {
   const [submitting,       setSubmitting]     = useState(false);
   const [result,           setResult]         = useState<{ autoConfirmed: boolean; message: string } | null>(null);
   const [error,            setError]          = useState('');
+  const [procedureAnswers, setProcedureAnswers] = useState<Record<string, string>>({});
+
+  const hasProcedureQuestions = appointmentType in PROCEDURE_QUESTIONS;
+  const procedureConfig = PROCEDURE_QUESTIONS[appointmentType];
 
   // Load slots when reaching slot step
   useEffect(() => {
@@ -224,7 +337,9 @@ export default function BookingForm() {
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
           track, appointmentType, patientName, patientPhone, patientEmail: patientEmail.trim() || undefined,
-          patientDob, reason, referralDoctor, referralPractice,
+          patientDob,
+          reason: buildReasonWithProcedureInfo(reason, procedureAnswers, appointmentType),
+          referralDoctor, referralPractice,
           selectedSlot: selectedSlot ?? undefined,
         }),
       });
@@ -241,7 +356,7 @@ export default function BookingForm() {
         setStep('done');
       }
     } catch {
-      setError('Network error. Please check your connection and try again, or call us at 459-2227 / 284-0557 to book by phone.');
+      setError('Network error. Please check your connection and try again, or call us at 758-284-0557 / 758-720-7111 to book by phone.');
     } finally {
       setSubmitting(false);
     }
@@ -345,7 +460,7 @@ export default function BookingForm() {
                 }}
               >
                 <WhatsAppIcon />
-                WhatsApp Tapion →
+                WhatsApp Tapion Office →
               </a>
               <a
                 href="https://wa.me/17587207111"
@@ -360,7 +475,7 @@ export default function BookingForm() {
                 }}
               >
                 <WhatsAppIcon />
-                WhatsApp Rodney Bay →
+                WhatsApp Rodney Bay Office →
               </a>
             </div>
           </div>
@@ -384,7 +499,7 @@ export default function BookingForm() {
           className="amise-booking-card"
           >
             {/* Step indicator (hidden on done screen) */}
-            {step !== 'done' && <StepIndicator current={step} />}
+            {step !== 'done' && <StepIndicator current={step} hasProcedureStep={hasProcedureQuestions} />}
 
             {/* ── STEP: TRACK ────────────────────────────────────── */}
             {step === 'track' && (
@@ -443,11 +558,103 @@ export default function BookingForm() {
                 )}
 
                 <button
-                  onClick={() => setStep('details')}
+                  onClick={() => {
+                    setProcedureAnswers({});
+                    setStep(hasProcedureQuestions ? 'procedure_info' : 'details');
+                  }}
                   style={{ ...primaryBtnStyle, marginTop: 24, width: '100%' }}
                 >
                   Continue →
                 </button>
+              </div>
+            )}
+
+            {/* ── STEP: PROCEDURE-SPECIFIC QUESTIONS ────────────── */}
+            {step === 'procedure_info' && procedureConfig && (
+              <div>
+                <div style={stepLabelStyle}>{procedureConfig.heading}</div>
+                <div style={{
+                  marginBottom: 16, padding: '10px 14px', borderRadius: 8,
+                  background: '#f0fdf9', border: '1px solid #a7f3d0',
+                  fontSize: 12, color: '#065f46', lineHeight: 1.6,
+                }}>
+                  These questions help us prepare for your appointment. Your answers are shared with Dr Kabiye&apos;s team only.
+                </div>
+
+                {procedureConfig.questions.map(q => (
+                  <div key={q.id} style={{ marginBottom: 16 }}>
+                    <label style={labelStyle}>
+                      {q.label}
+                      {q.required && ' *'}
+                    </label>
+                    {q.type === 'select' && q.options && (
+                      <select
+                        value={procedureAnswers[q.id] ?? ''}
+                        onChange={e => setProcedureAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                        style={{ ...inputStyle, appearance: 'auto' }}
+                      >
+                        <option value="">Select…</option>
+                        {q.options.map(o => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                    )}
+                    {q.type === 'text' && (
+                      <input
+                        type="text"
+                        value={procedureAnswers[q.id] ?? ''}
+                        onChange={e => setProcedureAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                        placeholder={q.placeholder}
+                        style={inputStyle}
+                      />
+                    )}
+                    {q.type === 'textarea' && (
+                      <textarea
+                        value={procedureAnswers[q.id] ?? ''}
+                        onChange={e => setProcedureAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                        placeholder={q.placeholder}
+                        rows={2}
+                        style={{ ...inputStyle, resize: 'vertical' }}
+                      />
+                    )}
+                    {q.type === 'yesno' && (
+                      <div style={{ display: 'flex', gap: 10 }}>
+                        {['Yes', 'No'].map(v => (
+                          <button
+                            key={v}
+                            type="button"
+                            onClick={() => setProcedureAnswers(prev => ({ ...prev, [q.id]: v }))}
+                            style={{
+                              padding: '10px 24px', borderRadius: 8, cursor: 'pointer',
+                              fontFamily: 'inherit', fontSize: 14, fontWeight: 600,
+                              background: procedureAnswers[q.id] === v ? '#f0fdf9' : '#f8fafc',
+                              border: `2px solid ${procedureAnswers[q.id] === v ? '#0d9488' : '#e2e8f0'}`,
+                              color: procedureAnswers[q.id] === v ? '#0d9488' : '#6b7280',
+                            }}
+                          >
+                            {v}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
+                  <button onClick={() => setStep('track')} style={ghostBtnStyle}>
+                    ← Back
+                  </button>
+                  <button
+                    onClick={() => setStep('details')}
+                    disabled={procedureConfig.questions.some(q => q.required && !procedureAnswers[q.id]?.trim())}
+                    style={{
+                      ...primaryBtnStyle,
+                      background: procedureConfig.questions.some(q => q.required && !procedureAnswers[q.id]?.trim()) ? '#e2e8f0' : '#0d9488',
+                      color: procedureConfig.questions.some(q => q.required && !procedureAnswers[q.id]?.trim()) ? '#94a3b8' : '#fff',
+                      cursor: procedureConfig.questions.some(q => q.required && !procedureAnswers[q.id]?.trim()) ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Continue →
+                  </button>
+                </div>
               </div>
             )}
 
@@ -576,7 +783,7 @@ export default function BookingForm() {
 
                 <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
                   <button
-                    onClick={() => setStep('track')}
+                    onClick={() => setStep(hasProcedureQuestions ? 'procedure_info' : 'track')}
                     style={ghostBtnStyle}
                   >
                     ← Back
@@ -618,7 +825,7 @@ export default function BookingForm() {
                   }}>
                     {track === 'referral'
                       ? 'Our team will contact you to arrange a priority slot. Please submit your details and we will confirm within 24 hours.'
-                      : 'No slots are currently available online. Please contact us directly at Tapion Hospital (459-2227) and we will arrange an appointment for you.'}
+                      : 'No slots are currently available online. Please call our office at 758-284-0557 (Tapion) or 758-720-7111 (Rodney Bay) and we will arrange an appointment for you.'}
                   </div>
                 )}
 
@@ -665,10 +872,10 @@ export default function BookingForm() {
                     // appointment" button here would look broken. Point the
                     // patient straight at the phone number we just told them to call.
                     <a
-                      href="tel:+17584592227"
+                      href="tel:+17582840557"
                       style={{ ...primaryBtnStyle, textAlign: 'center', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                     >
-                      Call Tapion Hospital →
+                      Call our office →
                     </a>
                   ) : (
                     <button
@@ -746,7 +953,7 @@ export default function BookingForm() {
                 <button
                   onClick={() => {
                     setStep('track'); setName(''); setPhone(''); setEmail(''); setDob('');
-                    setReason(''); setRefDoctor(''); setRefPractice('');
+                    setReason(''); setRefDoctor(''); setRefPractice(''); setProcedureAnswers({});
                     setSelectedSlot(null); setResult(null); setError('');
                   }}
                   style={{ ...ghostBtnStyle, marginTop: 20, flex: 'none' }}
@@ -760,8 +967,8 @@ export default function BookingForm() {
           {/* Footer */}
           <div style={{ marginTop: 28, paddingTop: 16, borderTop: '1px solid #e2e8f0', fontSize: 11, color: '#94a3b8', textAlign: 'center', lineHeight: 1.8 }}>
             Amise Medical Services · Saint Lucia<br />
-            Tapion Hospital: 459-2227 / 284-0557<br />
-            Rodney Bay (Providence Building) · Tapion Hospital
+            Tapion: 758-284-0557 · Rodney Bay: 758-720-7111<br />
+            Rodney Bay (Providence Building) · Tapion (Dr Kabiye&apos;s Office)
           </div>
         </div>
       </div>
