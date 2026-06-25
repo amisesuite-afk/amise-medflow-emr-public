@@ -5,7 +5,7 @@ import {
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
   ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, FileQuestion, Inbox,
-  Contact, HeartPulse,
+  Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -49,8 +49,11 @@ const CLINICAL_SUB: {
   { id: 'radiology',      icon: ScanLine,       label: 'Radiology',      minRole: 'nurse' },
   { id: 'attachments',    icon: Paperclip,      label: 'Attachments',    minRole: 'nurse' },
   { id: 'plan',           icon: FileEdit,       label: 'Plan',           minRole: 'doctor' },
+  { id: 'prescriptions',  icon: FileSignature,  label: 'Prescriptions',  minRole: 'doctor' },
+  { id: 'ai_consultant',  icon: BrainCircuit,   label: 'AI Consultant',  minRole: 'doctor' },
   { id: 'progress',       icon: FileText,       label: 'Progress Notes' },
   { id: 'monitoring',    icon: Activity,       label: 'Monitoring' },
+  { id: 'tasks',         icon: CircleCheckBig, label: 'Tasks' },
 ];
 
 const BILLING_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string }[] = [
@@ -83,6 +86,9 @@ const TOP_ITEMS: TopItem[] = [
   { id: 'booking_inbox',  icon: Inbox,         label: 'Booking Inbox', roles: ['front_desk', 'nurse', 'admin'] },
   { id: 'portal_intake',  icon: ClipboardCheck, label: 'Portal Intake', roles: ['doctor', 'admin'] },
   { id: 'referring_providers', icon: Contact,  label: 'Referring Providers', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
+  { id: 'prescriptions',  icon: FileSignature, label: 'Prescriptions', roles: ['doctor', 'admin'] },
+  { id: 'ai_consultant',  icon: BrainCircuit,  label: 'AI Consultant', roles: ['doctor', 'admin'] },
+  { id: 'tasks',           icon: CircleCheckBig, label: 'Task Tracker', roles: ['front_desk', 'nurse', 'doctor', 'admin'] },
   { id: 'settings',       icon: Settings,      label: 'Settings',      roles: ['admin'] },
 ];
 

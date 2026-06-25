@@ -12,7 +12,8 @@ export type Section =
   | 'radiology' | 'attachments'
   | 'assessment' | 'plan' | 'progress'
   | 'procedures' | 'billing' | 'documents'
-  | 'monitoring' | 'apcq' | 'nurse_apcq';
+  | 'monitoring' | 'apcq' | 'nurse_apcq'
+  | 'prescriptions' | 'ai_consultant' | 'tasks';
 
 export interface ProgressNote {
   id: string;
@@ -60,7 +61,7 @@ export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
   | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox' | 'portal_intake' | 'referring_providers'
-  | 'visit_lifecycle';
+  | 'visit_lifecycle' | 'prescriptions' | 'ai_consultant' | 'tasks';
 
 /** Grouped trauma / burns state — stored as a single serialisable object. */
 export interface TraumaData {

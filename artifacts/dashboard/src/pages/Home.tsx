@@ -46,6 +46,10 @@ import SettingsTab from './tabs/SettingsTab';
 import PortalIntakeTab from './tabs/PortalIntakeTab';
 import ReferringProvidersTab from './tabs/ReferringProvidersTab';
 import VisitManagerTab from './VisitManager';
+import PrescriptionsTab from './tabs/PrescriptionsTab';
+import AiConsultantTab from './tabs/AiConsultantTab';
+import PatientTasksTab from './tabs/PatientTasksTab';
+import ResultsAlertBadge from '@/components/ResultsAlertBadge';
 import FloatingActions from '@/components/FloatingActions';
 
 const API_ORIGIN = getApiOrigin();
@@ -128,6 +132,7 @@ export default function HomePage() {
     vitals,
     encounterMode, setEncounterMode,
     patientPhoto,
+    patientId,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -230,6 +235,8 @@ export default function HomePage() {
               ))}
             </div>
           )}
+
+          <ResultsAlertBadge patientId={patientId ?? undefined} />
 
           <div className={`acuity-badge ${acuityClass(triageResult.acuity)}`}>
             <span className="ab-label">Acuity</span>
@@ -337,9 +344,12 @@ export default function HomePage() {
               ...(hasRole(userRole, 'doctor') ? [
                 { id: 'assessment', label: 'Assess' },
                 { id: 'plan', label: 'Plan' },
+                { id: 'prescriptions', label: 'RX' },
+                { id: 'ai_consultant', label: 'AI Consult' },
               ] : []),
               { id: 'progress', label: 'Notes' },
               { id: 'monitoring', label: 'Monitor' },
+              { id: 'tasks', label: 'Tasks' },
             ] as { id: Section; label: string }[]).map(tab => (
               <button
                 key={tab.id}
@@ -371,6 +381,9 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
         {topSection === 'consultation'  && activeSection === 'progress'    && <ProgressNotesTab />}
         {topSection === 'consultation'  && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
+        {topSection === 'consultation'  && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
+        {topSection === 'consultation'  && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
+        {topSection === 'consultation'  && activeSection === 'tasks'       && <PatientTasksTab />}
         {topSection === 'procedures'    && hasRole(userRole, 'doctor')     && <ProceduresTab />}
         {topSection === 'summary'       && <SummaryTab />}
         {topSection === 'finaldoc'      && encounterMode === 'outpatient' && <FinalDocTab />}
@@ -392,6 +405,9 @@ export default function HomePage() {
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
         {topSection === 'visit_lifecycle'                                        && <VisitManagerTab />}
+        {topSection === 'prescriptions'     && hasRole(userRole, 'doctor')     && <PrescriptionsTab />}
+        {topSection === 'ai_consultant'     && hasRole(userRole, 'doctor')     && <AiConsultantTab />}
+        {topSection === 'tasks'                                                && <PatientTasksTab />}
       </main>
 
       <FloatingActions />
