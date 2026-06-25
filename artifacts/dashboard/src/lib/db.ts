@@ -863,6 +863,27 @@ export interface EncounterData {
   plan: string;
   allergens: string[];
   medications: string[];
+  surgicalHistory: string[];
+  surgicalNotes: string;
+  toxicHabits: string[];
+  rosFindings: Record<string, { status: string; details: string[]; notes: string }>;
+  procedureData: Record<string, unknown>;
+  traumaData: {
+    mechanism: string[];
+    timeOfInjury: string;
+    preHospital: string[];
+    gcScene: string;
+    mistInjuries: string;
+    mistSigns: string;
+    admissionVitals: Record<string, string>;
+    abcde: Record<string, Record<string, string>>;
+    ais: Record<string, number>;
+    secondary: Record<string, string>;
+    secondaryDropdowns: Record<string, string[]>;
+    burnRegions: Record<string, { affected: boolean; degree: string }>;
+    burnTimeOfInjury: string;
+    burnInhalation: boolean;
+  } | null;
 }
 
 /** Fetches the clinical snapshot for an encounter: assessment, plan, allergies,
@@ -907,6 +928,14 @@ export async function loadEncounterData(
   const allergyRows = (allergyRes.data ?? []) as { allergen: string }[];
   const medRows     = (medRes.data   ?? []) as { drug_name: string }[];
 
+  const [surgRes, toxicRes, rosRes, procRes, traumaRes] = await Promise.all([
+    loadSurgicalHistory(patientId),
+    loadToxicHabits(patientId),
+    loadRosFindings(encounterId),
+    loadProcedureData(encounterId),
+    loadTraumaRecord(encounterId),
+  ]);
+
   return {
     data: {
       assessment:    assessRow?.diagnosis    ?? '',
@@ -917,6 +946,12 @@ export async function loadEncounterData(
       plan:          planRow?.description ?? '',
       allergens:     allergyRows.map(r => r.allergen),
       medications:   medRows.map(r => r.drug_name),
+      surgicalHistory: surgRes.procedures,
+      surgicalNotes:   surgRes.notes,
+      toxicHabits:     toxicRes,
+      rosFindings:     rosRes,
+      procedureData:   procRes,
+      traumaData:      traumaRes,
     },
     error: null,
   };
@@ -952,4 +987,339 @@ export function logPaneSession(input: PaneSessionLog): void {
   }).then(({ error }) => {
     if (error) console.warn('[db] logPaneSession:', error.message);
   });
+}
+
+// ─── syncSurgicalHistory ─────────────────────────────────────────────────────
+
+export async function syncSurgicalHistory(
+  patientId: string,
+  procedures: string[],
+  notes: string,
+): Promise<void> {
+  if (!supabase) return;
+  if (!procedures.length && !notes.trim()) return;
+
+  await supabase.from('surgical_history').delete().eq('patient_id', patientId);
+
+  const rows: Array<Record<string, unknown>> = procedures.map(p => ({
+    patient_id: patientId,
+    procedure_name: p,
+  }));
+
+  if (notes.trim()) {
+    rows.push({ patient_id: patientId, procedure_name: '[notes]', notes: notes.trim() });
+  }
+
+  if (rows.length) {
+    const { error } = await supabase.from('surgical_history').insert(rows);
+    if (error) console.error('[db] syncSurgicalHistory:', error);
+  }
+}
+
+export async function loadSurgicalHistory(
+  patientId: string,
+): Promise<{ procedures: string[]; notes: string }> {
+  if (!supabase) return { procedures: [], notes: '' };
+
+  const { data, error } = await supabase
+    .from('surgical_history')
+    .select('procedure_name, notes')
+    .eq('patient_id', patientId);
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return { procedures: [], notes: '' };
+    console.error('[db] loadSurgicalHistory:', error);
+    return { procedures: [], notes: '' };
+  }
+
+  const rows = (data ?? []) as Array<{ procedure_name: string; notes: string | null }>;
+  const noteRow = rows.find(r => r.procedure_name === '[notes]');
+  return {
+    procedures: rows.filter(r => r.procedure_name !== '[notes]').map(r => r.procedure_name),
+    notes: noteRow?.notes ?? '',
+  };
+}
+
+// ─── syncToxicHabits ─────────────────────────────────────────────────────────
+
+export async function syncToxicHabits(
+  patientId: string,
+  habits: string[],
+): Promise<void> {
+  if (!supabase) return;
+
+  await supabase.from('toxic_habits').delete().eq('patient_id', patientId);
+
+  if (!habits.length) return;
+
+  const rows = habits.map(h => ({
+    patient_id: patientId,
+    habit_type: 'other' as const,
+    status: 'current' as const,
+    details: h,
+  }));
+
+  const { error } = await supabase.from('toxic_habits').insert(rows);
+  if (error) console.error('[db] syncToxicHabits:', error);
+}
+
+export async function loadToxicHabits(
+  patientId: string,
+): Promise<string[]> {
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('toxic_habits')
+    .select('details')
+    .eq('patient_id', patientId);
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return [];
+    console.error('[db] loadToxicHabits:', error);
+    return [];
+  }
+
+  return (data ?? []).map((r: { details: string | null }) => r.details).filter(Boolean) as string[];
+}
+
+// ─── syncRosFindings ─────────────────────────────────────────────────────────
+
+export async function syncRosFindings(
+  patientId: string,
+  encounterId: string,
+  rosFindings: Record<string, { status: string; details: string[]; notes: string }>,
+): Promise<void> {
+  if (!supabase) return;
+
+  const systems = Object.entries(rosFindings).filter(([, f]) =>
+    f.status !== 'not-asked' || f.details.length > 0 || f.notes.trim()
+  );
+
+  if (!systems.length) return;
+
+  const rows = systems.map(([system, f]) => ({
+    patient_id: patientId,
+    encounter_id: encounterId,
+    system_name: system,
+    findings: { status: f.status, details: f.details },
+    notes: f.notes || null,
+  }));
+
+  const { error } = await supabase
+    .from('ros_findings')
+    .upsert(rows, { onConflict: 'encounter_id,system_name' });
+
+  if (error) console.error('[db] syncRosFindings:', error);
+}
+
+export async function loadRosFindings(
+  encounterId: string,
+): Promise<Record<string, { status: string; details: string[]; notes: string }>> {
+  if (!supabase) return {};
+
+  const { data, error } = await supabase
+    .from('ros_findings')
+    .select('system_name, findings, notes')
+    .eq('encounter_id', encounterId);
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return {};
+    console.error('[db] loadRosFindings:', error);
+    return {};
+  }
+
+  const result: Record<string, { status: string; details: string[]; notes: string }> = {};
+  for (const row of (data ?? []) as Array<{ system_name: string; findings: { status?: string; details?: string[] } | null; notes: string | null }>) {
+    result[row.system_name] = {
+      status: row.findings?.status ?? 'not-asked',
+      details: row.findings?.details ?? [],
+      notes: row.notes ?? '',
+    };
+  }
+  return result;
+}
+
+// ─── syncProcedureData ───────────────────────────────────────────────────────
+
+const PROC_LABELS: Record<string, string> = {
+  ogd: 'OGD (Oesophagogastroduodenoscopy)',
+  colonoscopy: 'Colonoscopy',
+  ercp: 'ERCP',
+  preop: 'Pre-Operative Assessment',
+  postop: 'Post-Operative Note',
+};
+
+const PROC_KEYS: Record<string, string> = Object.fromEntries(
+  Object.entries(PROC_LABELS).map(([k, v]) => [v, k]),
+);
+
+export async function syncProcedureData(
+  patientId: string,
+  encounterId: string,
+  procedureData: Record<string, unknown>,
+): Promise<void> {
+  if (!supabase) return;
+
+  await supabase.from('operative_notes').delete().eq('encounter_id', encounterId);
+
+  const entries = Object.entries(procedureData).filter(([, v]) =>
+    v && typeof v === 'object' && Object.keys(v as object).length > 0
+  );
+
+  if (!entries.length) return;
+
+  const rows = entries.map(([key, value]) => ({
+    patient_id: patientId,
+    encounter_id: encounterId,
+    procedure_name: PROC_LABELS[key] ?? key,
+    findings: JSON.stringify(value),
+    status: 'draft',
+  }));
+
+  const { error } = await supabase.from('operative_notes').insert(rows);
+  if (error) console.error('[db] syncProcedureData:', error);
+}
+
+export async function loadProcedureData(
+  encounterId: string,
+): Promise<Record<string, unknown>> {
+  if (!supabase) return {};
+
+  const { data, error } = await supabase
+    .from('operative_notes')
+    .select('procedure_name, findings')
+    .eq('encounter_id', encounterId);
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return {};
+    console.error('[db] loadProcedureData:', error);
+    return {};
+  }
+
+  const result: Record<string, unknown> = {};
+  for (const row of (data ?? []) as Array<{ procedure_name: string; findings: string | null }>) {
+    const key = PROC_KEYS[row.procedure_name] ?? row.procedure_name;
+    try {
+      result[key] = row.findings ? JSON.parse(row.findings) : {};
+    } catch {
+      result[key] = {};
+    }
+  }
+  return result;
+}
+
+// ─── syncTraumaRecord ────────────────────────────────────────────────────────
+
+export async function syncTraumaRecord(
+  patientId: string,
+  encounterId: string,
+  traumaData: {
+    mechanism: string[];
+    timeOfInjury: string;
+    preHospital: string[];
+    gcScene: string;
+    mistInjuries: string;
+    mistSigns: string;
+    admissionVitals: Record<string, string>;
+    abcde: Record<string, Record<string, string>>;
+    ais: Record<string, number>;
+    secondary: Record<string, string>;
+    secondaryDropdowns: Record<string, string[]>;
+    burnRegions: Record<string, { affected: boolean; degree: string }>;
+    burnTimeOfInjury: string;
+    burnInhalation: boolean;
+  },
+): Promise<void> {
+  if (!supabase) return;
+
+  const hasData = traumaData.mechanism.length > 0 ||
+    traumaData.preHospital.length > 0 ||
+    Object.keys(traumaData.admissionVitals).length > 0 ||
+    Object.keys(traumaData.abcde).length > 0 ||
+    Object.values(traumaData.ais).some(v => v > 0);
+
+  if (!hasData) return;
+
+  const aisValues = Object.values(traumaData.ais).filter(v => v > 0).sort((a, b) => b - a);
+  const issScore = aisValues.slice(0, 3).reduce((sum, v) => sum + v * v, 0);
+
+  const row: Record<string, unknown> = {
+    patient_id: patientId,
+    encounter_id: encounterId,
+    mechanism: traumaData.mechanism,
+    pre_hospital: traumaData.preHospital,
+    gc_scene: traumaData.gcScene || null,
+    mist_injuries: traumaData.mistInjuries || null,
+    mist_signs: traumaData.mistSigns || null,
+    admission_vitals: { ...traumaData.admissionVitals, timeOfInjury: traumaData.timeOfInjury },
+    abcde: traumaData.abcde,
+    ais: traumaData.ais,
+    secondary: traumaData.secondary,
+    secondary_dropdowns: traumaData.secondaryDropdowns,
+    burn_regions: { ...traumaData.burnRegions, burnTimeOfInjury: traumaData.burnTimeOfInjury },
+    burn_inhalation: traumaData.burnInhalation,
+    iss_score: issScore > 0 ? issScore : null,
+  };
+
+  const { error } = await supabase
+    .from('trauma_records')
+    .upsert(row, { onConflict: 'encounter_id' });
+
+  if (error) console.error('[db] syncTraumaRecord:', error);
+}
+
+export async function loadTraumaRecord(
+  encounterId: string,
+): Promise<{
+  mechanism: string[];
+  timeOfInjury: string;
+  preHospital: string[];
+  gcScene: string;
+  mistInjuries: string;
+  mistSigns: string;
+  admissionVitals: Record<string, string>;
+  abcde: Record<string, Record<string, string>>;
+  ais: Record<string, number>;
+  secondary: Record<string, string>;
+  secondaryDropdowns: Record<string, string[]>;
+  burnRegions: Record<string, { affected: boolean; degree: string }>;
+  burnTimeOfInjury: string;
+  burnInhalation: boolean;
+} | null> {
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from('trauma_records')
+    .select('*')
+    .eq('encounter_id', encounterId)
+    .maybeSingle();
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return null;
+    console.error('[db] loadTraumaRecord:', error);
+    return null;
+  }
+
+  if (!data) return null;
+
+  const r = data as Record<string, unknown>;
+  const vitals = (r.admission_vitals ?? {}) as Record<string, string>;
+  const burns = (r.burn_regions ?? {}) as Record<string, unknown>;
+
+  return {
+    mechanism: (r.mechanism as string[]) ?? [],
+    timeOfInjury: (vitals.timeOfInjury as string) ?? '',
+    preHospital: (r.pre_hospital as string[]) ?? [],
+    gcScene: (r.gc_scene as string) ?? '',
+    mistInjuries: (r.mist_injuries as string) ?? '',
+    mistSigns: (r.mist_signs as string) ?? '',
+    admissionVitals: vitals,
+    abcde: (r.abcde as Record<string, Record<string, string>>) ?? {},
+    ais: (r.ais as Record<string, number>) ?? {},
+    secondary: (r.secondary as Record<string, string>) ?? {},
+    secondaryDropdowns: (r.secondary_dropdowns as Record<string, string[]>) ?? {},
+    burnRegions: burns as Record<string, { affected: boolean; degree: string }>,
+    burnTimeOfInjury: ((burns as Record<string, unknown>).burnTimeOfInjury as string) ?? '',
+    burnInhalation: (r.burn_inhalation as boolean) ?? false,
+  };
 }

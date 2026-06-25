@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -213,12 +213,12 @@ interface CtxValue {
   pmhNotes: string; setPmhNotes(v: string): void;
   familyHistory: string[]; toggleFamilyHistory(v: string): void;
   familyHistoryNotes: string; setFamilyHistoryNotes(v: string): void;
-  surgicalHistory: string[]; toggleSurgical(v: string): void;
+  surgicalHistory: string[]; setSurgicalHistory(v: string[]): void; toggleSurgical(v: string): void;
   surgicalNotes: string; setSurgicalNotes(v: string): void;
   medications: string[]; toggleMedication(v: string): void; setMedications(v: string[]): void;
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
-  toxicHabits: string[]; toggleToxicHabit(v: string): void;
+  toxicHabits: string[]; setToxicHabits(v: string[]): void; toggleToxicHabit(v: string): void;
 
   clearPatient(): void;
 
@@ -697,6 +697,70 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, encounterId, examFindings, examNotes]);
 
+  // ── Autosave surgical history (patient-level, debounced 3 s) ───────────────
+  const surgicalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId) return;
+    if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current);
+    surgicalTimerRef.current = setTimeout(() => {
+      void syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes);
+    }, 3000);
+    return () => { if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, surgicalHistory, surgicalNotes]);
+
+  // ── Autosave toxic habits (patient-level, debounced 3 s) ───────────────────
+  const toxicTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !toxicHabits.length) return;
+    if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current);
+    toxicTimerRef.current = setTimeout(() => {
+      void syncToxicHabits(patientId, toxicHabits);
+    }, 3000);
+    return () => { if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, toxicHabits]);
+
+  // ── Autosave ROS findings (encounter-level, debounced 3 s) ────────────────
+  const rosTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    const hasFinding = Object.values(rosFindings).some(f => f.status !== 'not-asked' || f.details.length > 0 || f.notes);
+    if (!hasFinding) return;
+    if (rosTimerRef.current) clearTimeout(rosTimerRef.current);
+    rosTimerRef.current = setTimeout(() => {
+      void syncRosFindings(patientId, encounterId, rosFindings);
+    }, 3000);
+    return () => { if (rosTimerRef.current) clearTimeout(rosTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, rosFindings]);
+
+  // ── Autosave procedure data (encounter-level, debounced 3 s) ──────────────
+  const procedureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    const hasData = Object.values(procedureData).some(v => v && typeof v === 'object' && Object.keys(v as object).length > 0);
+    if (!hasData) return;
+    if (procedureTimerRef.current) clearTimeout(procedureTimerRef.current);
+    procedureTimerRef.current = setTimeout(() => {
+      void syncProcedureData(patientId, encounterId, procedureData);
+    }, 3000);
+    return () => { if (procedureTimerRef.current) clearTimeout(procedureTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, procedureData]);
+
+  // ── Autosave trauma data (encounter-level, debounced 3 s) ─────────────────
+  const traumaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    if (traumaTimerRef.current) clearTimeout(traumaTimerRef.current);
+    traumaTimerRef.current = setTimeout(() => {
+      void syncTraumaRecord(patientId, encounterId, traumaData);
+    }, 3000);
+    return () => { if (traumaTimerRef.current) clearTimeout(traumaTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, traumaData]);
+
   const value: CtxValue = {
     activeSection, setActiveSection,
     topSection, setTopSection,
@@ -727,12 +791,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     pmhNotes, setPmhNotes,
     familyHistory, toggleFamilyHistory,
     familyHistoryNotes, setFamilyHistoryNotes,
-    surgicalHistory, toggleSurgical,
+    surgicalHistory, setSurgicalHistory, toggleSurgical,
     surgicalNotes, setSurgicalNotes,
     medications, toggleMedication, setMedications,
     medicationsText, setMedicationsText,
     allergies, setAllergies,
-    toxicHabits, toggleToxicHabit,
+    toxicHabits, setToxicHabits, toggleToxicHabit,
     clearPatient,
     examGeneral, setExamGeneral,
     examCardio, setExamCardio,

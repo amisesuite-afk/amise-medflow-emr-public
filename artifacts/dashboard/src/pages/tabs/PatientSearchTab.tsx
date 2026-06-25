@@ -103,6 +103,8 @@ export default function PatientSearchTab() {
     setPatientId, setEncounterId, setComorbidities,
     setAssessment, setDifferentials, setIcdCodes, setPlan,
     setAllergies, setMedications, setPatientPhoto,
+    setSurgicalHistory, setSurgicalNotes, setToxicHabits,
+    setRosFindings, setProcedureData, setTraumaData,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -246,7 +248,6 @@ export default function PatientSearchTab() {
         ? ` · ${pmhResult.conditions.length} PMH condition${pmhResult.conditions.length !== 1 ? 's' : ''} loaded`
         : '';
       if (encResult.encounterId) {
-        // Restore clinical snapshot: assessment, plan, allergies, medications
         const encData = await loadEncounterData(encResult.encounterId, p.id);
         if (!encData.error && encData.data) {
           const d = encData.data;
@@ -256,6 +257,12 @@ export default function PatientSearchTab() {
           if (d.plan)          setPlan(d.plan);
           if (d.allergens.length) setAllergies(d.allergens.join(', '));
           if (d.medications.length) setMedications(d.medications);
+          if (d.surgicalHistory.length) setSurgicalHistory(d.surgicalHistory);
+          if (d.surgicalNotes) setSurgicalNotes(d.surgicalNotes);
+          if (d.toxicHabits.length) setToxicHabits(d.toxicHabits);
+          if (Object.keys(d.rosFindings).length) setRosFindings(d.rosFindings as Record<string, import('@/context/AppContext').RosFinding>);
+          if (Object.keys(d.procedureData).length) setProcedureData(d.procedureData);
+          if (d.traumaData) setTraumaData(d.traumaData);
         }
         showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
       } else {
