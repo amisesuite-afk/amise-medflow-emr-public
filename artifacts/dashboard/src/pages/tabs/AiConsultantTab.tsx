@@ -36,6 +36,166 @@ interface SuggestedLab { name: string; reason: string; added: boolean; }
 interface SuggestedImaging { modality: string; region: string; indication: string; urgency: string; added: boolean; }
 interface PrepItem { text: string; checked: boolean; }
 
+// ── Schedule Intelligence types ──
+
+interface ScheduleEntry {
+  id: string;
+  patientName: string;
+  startTime: string;
+  endTime: string | null;
+  appointmentType: string;
+  location: string;
+  status: 'confirmed' | 'pending' | 'staff_confirmed' | 'patient_confirmed' | 'waitlisted';
+  triageAcuity: string | null;
+  triageScore: number | null;
+  source: 'confirmed' | 'request';
+  notes: string | null;
+  prepRequired: boolean;
+}
+
+interface ScheduleAlert {
+  id: string;
+  type: 'urgent_reorder' | 'unconfirmed_gap' | 'prep_conflict' | 'uncommon_procedure' | 'overload' | 'gap';
+  severity: 'critical' | 'warning' | 'info';
+  title: string;
+  detail: string;
+  action?: string;
+  actionTarget?: string;
+}
+
+const UNCOMMON_PROCEDURES = new Set([
+  'ercp', 'ercp_workup', 'diabetic_foot', 'breast',
+]);
+
+const ACUITY_RANK: Record<string, number> = {
+  emergency: 0, urgent: 1, priority: 2, review: 3, routine: 4,
+};
+
+function analyseSchedule(entries: ScheduleEntry[]): ScheduleAlert[] {
+  const alerts: ScheduleAlert[] = [];
+  const sorted = [...entries].sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+
+  // 1. Unconfirmed cases that could leave gaps
+  const unconfirmed = sorted.filter(e => e.status === 'pending' || e.status === 'staff_confirmed');
+  if (unconfirmed.length > 0) {
+    alerts.push({
+      id: uid(), type: 'unconfirmed_gap', severity: 'warning',
+      title: `${unconfirmed.length} unconfirmed appointment${unconfirmed.length !== 1 ? 's' : ''}`,
+      detail: unconfirmed.map(e => `${e.patientName} (${fmtTime(e.startTime)} — ${apptLabel(e.appointmentType)})`).join('; '),
+      action: 'Send confirmation reminders',
+      actionTarget: 'front_desk',
+    });
+  }
+
+  // 2. Urgent cases not slotted early enough
+  const urgentLate = sorted.filter((e, i) => {
+    const acuity = e.triageAcuity?.toLowerCase() ?? 'routine';
+    if (acuity !== 'urgent' && acuity !== 'priority') return false;
+    const earlierRoutine = sorted.slice(0, i).filter(x => {
+      const a = x.triageAcuity?.toLowerCase() ?? 'routine';
+      return a === 'routine' || a === 'review';
+    });
+    return earlierRoutine.length > 0;
+  });
+  urgentLate.forEach(e => {
+    alerts.push({
+      id: uid(), type: 'urgent_reorder', severity: 'critical',
+      title: `Urgent case scheduled late: ${e.patientName}`,
+      detail: `${apptLabel(e.appointmentType)} at ${fmtTime(e.startTime)} — acuity: ${e.triageAcuity}. Routine cases are ahead in the schedule.`,
+      action: `Move ${e.patientName.split(' ')[0]} to earliest available slot`,
+      actionTarget: 'front_desk',
+    });
+  });
+
+  // 3. Uncommon procedures disrupting flow
+  const uncommon = sorted.filter(e => UNCOMMON_PROCEDURES.has(e.appointmentType.toLowerCase()));
+  uncommon.forEach(e => {
+    const idx = sorted.indexOf(e);
+    const neighbours = sorted.slice(Math.max(0, idx - 1), idx + 2).filter(x => x.id !== e.id);
+    const differentType = neighbours.filter(x => x.appointmentType !== e.appointmentType);
+    if (differentType.length > 0) {
+      alerts.push({
+        id: uid(), type: 'uncommon_procedure', severity: 'info',
+        title: `${apptLabel(e.appointmentType)} interrupts regular flow`,
+        detail: `${e.patientName} at ${fmtTime(e.startTime)}. Adjacent slots are ${differentType.map(x => apptLabel(x.appointmentType)).join(', ')}.`,
+        action: `Consider grouping ${apptLabel(e.appointmentType)} cases together`,
+      });
+    }
+  });
+
+  // 4. Prep conflicts — procedures needing prep back-to-back with no buffer
+  for (let i = 0; i < sorted.length - 1; i++) {
+    const curr = sorted[i];
+    const next = sorted[i + 1];
+    if (curr.prepRequired && next.prepRequired) {
+      const gap = (new Date(next.startTime).getTime() - new Date(curr.endTime ?? curr.startTime).getTime()) / 60_000;
+      if (gap < 30) {
+        alerts.push({
+          id: uid(), type: 'prep_conflict', severity: 'warning',
+          title: 'Back-to-back procedures with insufficient turnover',
+          detail: `${apptLabel(curr.appointmentType)} (${curr.patientName}) ends ${fmtTime(curr.endTime ?? curr.startTime)}, ${apptLabel(next.appointmentType)} (${next.patientName}) starts ${fmtTime(next.startTime)} — only ${Math.round(gap)}min gap.`,
+          action: 'Add 30min buffer between procedural cases',
+          actionTarget: 'front_desk',
+        });
+      }
+    }
+  }
+
+  // 5. Schedule overload — more than 8 cases in a single session
+  const amCases = sorted.filter(e => new Date(e.startTime).getHours() < 13);
+  const pmCases = sorted.filter(e => new Date(e.startTime).getHours() >= 13);
+  [{ label: 'Morning', cases: amCases }, { label: 'Afternoon', cases: pmCases }].forEach(({ label, cases }) => {
+    if (cases.length > 8) {
+      alerts.push({
+        id: uid(), type: 'overload', severity: 'warning',
+        title: `${label} session overloaded (${cases.length} cases)`,
+        detail: `Maximum recommended is 8. Consider deferring ${cases.length - 8} routine case${cases.length - 8 !== 1 ? 's' : ''}.`,
+        action: 'Reschedule lowest-acuity cases to next available day',
+        actionTarget: 'front_desk',
+      });
+    }
+  });
+
+  // 6. Gaps in schedule — wasted time
+  for (let i = 0; i < sorted.length - 1; i++) {
+    const currEnd = new Date(sorted[i].endTime ?? sorted[i].startTime).getTime();
+    const nextStart = new Date(sorted[i + 1].startTime).getTime();
+    const gapMin = (nextStart - currEnd) / 60_000;
+    if (gapMin > 60 && gapMin < 240) {
+      alerts.push({
+        id: uid(), type: 'gap', severity: 'info',
+        title: `${Math.round(gapMin)}min gap in schedule`,
+        detail: `Between ${sorted[i].patientName} (${fmtTime(sorted[i].endTime ?? sorted[i].startTime)}) and ${sorted[i + 1].patientName} (${fmtTime(sorted[i + 1].startTime)}).`,
+        action: 'Fill with waitlisted or telephone review case',
+        actionTarget: 'front_desk',
+      });
+    }
+  }
+
+  // Sort: critical first, then warning, then info
+  const sevRank: Record<string, number> = { critical: 0, warning: 1, info: 2 };
+  alerts.sort((a, b) => (sevRank[a.severity] ?? 9) - (sevRank[b.severity] ?? 9));
+  return alerts;
+}
+
+function fmtTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString('en-LC', {
+    timeZone: 'America/St_Lucia', hour: 'numeric', minute: '2-digit', hour12: true,
+  });
+}
+
+function fmtDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-LC', {
+    timeZone: 'America/St_Lucia', weekday: 'short', day: 'numeric', month: 'short',
+  });
+}
+
+function apptLabel(type: string): string {
+  return type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+const PREP_APPT_TYPES = new Set(['colonoscopy', 'ogd', 'egd', 'ercp', 'ercp_workup', 'pre_op', 'flexi_sig']);
+
 interface AiConsultResponse {
   assessmentSummary: string;
   recommendations: AiRecommendation[];
@@ -317,6 +477,13 @@ export default function AiConsultantTab() {
   const [suggestedImagingList, setSuggestedImagingList] = useState<SuggestedImaging[]>([]);
   const [prepItems, setPrepItems] = useState<PrepItem[]>([]);
 
+  // Schedule intelligence
+  const [scheduleEntries, setScheduleEntries] = useState<ScheduleEntry[]>([]);
+  const [scheduleAlerts, setScheduleAlerts] = useState<ScheduleAlert[]>([]);
+  const [scheduleDay, setScheduleDay] = useState<'today' | 'tomorrow' | 'week'>('today');
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+  const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
+
   // Guidelines
   const [guidelines, setGuidelines] = useState<ClinicalGuideline[]>([]);
   const [injectedIds, setInjectedIds] = useState<Set<string>>(new Set());
@@ -335,6 +502,113 @@ export default function AiConsultantTab() {
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symptoms.join(','), icdCodes.join(','), comorbidities.join(','), assessment, patientName]);
+
+  // ── Schedule intelligence fetch ──
+  const fetchSchedule = useCallback(async () => {
+    if (!supabase) return;
+    setScheduleLoading(true);
+    try {
+      const now = new Date();
+      const tz = 'America/St_Lucia';
+      const ectNow = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+
+      let rangeStart: Date;
+      let rangeEnd: Date;
+
+      if (scheduleDay === 'today') {
+        rangeStart = new Date(ectNow); rangeStart.setHours(0, 0, 0, 0);
+        rangeEnd = new Date(ectNow); rangeEnd.setHours(23, 59, 59, 999);
+      } else if (scheduleDay === 'tomorrow') {
+        rangeStart = new Date(ectNow); rangeStart.setDate(rangeStart.getDate() + 1); rangeStart.setHours(0, 0, 0, 0);
+        rangeEnd = new Date(rangeStart); rangeEnd.setHours(23, 59, 59, 999);
+      } else {
+        rangeStart = new Date(ectNow); rangeStart.setHours(0, 0, 0, 0);
+        rangeEnd = new Date(ectNow); rangeEnd.setDate(rangeEnd.getDate() + 7); rangeEnd.setHours(23, 59, 59, 999);
+      }
+
+      const entries: ScheduleEntry[] = [];
+
+      // Confirmed appointments
+      const { data: confirmed } = await supabase
+        .from('confirmed_appointments')
+        .select('id, patient_id, start_time, end_time, appointment_type, location, status, notes')
+        .gte('start_time', rangeStart.toISOString())
+        .lte('start_time', rangeEnd.toISOString())
+        .in('status', ['confirmed', 'completed']);
+
+      if (confirmed) {
+        // Fetch patient names for confirmed appointments
+        const patientIds = [...new Set(confirmed.filter(c => c.patient_id).map(c => c.patient_id as string))];
+        let patientNames: Record<string, string> = {};
+        if (patientIds.length > 0) {
+          const { data: patients } = await supabase
+            .from('patients')
+            .select('id, full_name')
+            .in('id', patientIds);
+          if (patients) {
+            patientNames = Object.fromEntries(patients.map(p => [p.id, p.full_name]));
+          }
+        }
+
+        confirmed.forEach(c => {
+          entries.push({
+            id: c.id,
+            patientName: patientNames[c.patient_id] ?? 'Unknown',
+            startTime: c.start_time,
+            endTime: c.end_time,
+            appointmentType: c.appointment_type ?? 'consultation',
+            location: c.location ?? 'rodney_bay',
+            status: 'confirmed',
+            triageAcuity: null,
+            triageScore: null,
+            source: 'confirmed',
+            notes: c.notes,
+            prepRequired: PREP_APPT_TYPES.has((c.appointment_type ?? '').toLowerCase()),
+          });
+        });
+      }
+
+      // Pending/staff-confirmed requests with slots
+      const { data: requests } = await supabase
+        .from('appointment_requests')
+        .select('id, patient_name, appointment_type, location, confirmed_slot, preferred_slot, status, triage_acuity, triage_score, notes')
+        .in('status', ['pending', 'staff_confirmed', 'patient_confirmed', 'waitlisted']);
+
+      if (requests) {
+        requests.forEach(r => {
+          const slot = r.confirmed_slot ?? r.preferred_slot;
+          if (!slot) return;
+          const slotDate = new Date(slot);
+          if (slotDate < rangeStart || slotDate > rangeEnd) return;
+
+          const apptType = r.appointment_type ?? 'consultation';
+          entries.push({
+            id: r.id,
+            patientName: r.patient_name,
+            startTime: slot,
+            endTime: null,
+            appointmentType: apptType,
+            location: r.location ?? 'rodney_bay',
+            status: r.status as ScheduleEntry['status'],
+            triageAcuity: r.triage_acuity,
+            triageScore: r.triage_score,
+            source: 'request',
+            notes: r.notes,
+            prepRequired: PREP_APPT_TYPES.has(apptType.toLowerCase()),
+          });
+        });
+      }
+
+      setScheduleEntries(entries);
+      setScheduleAlerts(analyseSchedule(entries));
+    } catch {
+      // Non-fatal — tables may not exist
+    } finally {
+      setScheduleLoading(false);
+    }
+  }, [scheduleDay]);
+
+  useEffect(() => { void fetchSchedule(); }, [fetchSchedule]);
 
   // ── API health check ──
   useEffect(() => {
@@ -480,6 +754,150 @@ export default function AiConsultantTab() {
       </div>
 
       {!apiAvailable && <div style={S.noApi}>API server unavailable — AI consultation offline. Pre-filled orders still work.</div>}
+
+      {/* ── SCHEDULE INTELLIGENCE ─────────────────────────────────── */}
+      <CollapsibleCard
+        title="Schedule intelligence"
+        badge={scheduleAlerts.filter(a => !dismissedAlerts.has(a.id)).length || undefined}
+        badgeVariant={scheduleAlerts.some(a => a.severity === 'critical' && !dismissedAlerts.has(a.id)) ? 'danger' : 'warn'}
+      >
+        {/* Day selector */}
+        <div style={{ display: 'flex', gap: 6, marginBottom: 10, alignItems: 'center' }}>
+          {(['today', 'tomorrow', 'week'] as const).map(d => (
+            <button key={d} type="button" onClick={() => setScheduleDay(d)}
+              style={{ ...S.chip, ...(scheduleDay === d ? S.chipActive : S.chipOff) }}>
+              {d === 'today' ? 'Today' : d === 'tomorrow' ? 'Tomorrow' : 'This week'}
+            </button>
+          ))}
+          <button type="button" onClick={() => { setDismissedAlerts(new Set()); void fetchSchedule(); }}
+            style={{ ...S.btn, ...S.btnGhost, padding: '4px 10px', fontSize: 11, marginLeft: 'auto' }}>
+            {scheduleLoading ? 'Loading…' : 'Refresh'}
+          </button>
+        </div>
+
+        {/* Schedule alerts */}
+        {scheduleAlerts.filter(a => !dismissedAlerts.has(a.id)).length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+            <div style={S.section}>Alerts</div>
+            {scheduleAlerts.filter(a => !dismissedAlerts.has(a.id)).map(alert => (
+              <div key={alert.id} style={{
+                display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 10px', borderRadius: 6,
+                background: alert.severity === 'critical' ? '#fef2f2' : alert.severity === 'warning' ? '#fffbeb' : '#eff6ff',
+                border: `1px solid ${alert.severity === 'critical' ? '#fca5a5' : alert.severity === 'warning' ? '#fde68a' : '#bfdbfe'}`,
+              }}>
+                <span style={{
+                  fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 999, whiteSpace: 'nowrap',
+                  ...(alert.severity === 'critical' ? S.urgStat : alert.severity === 'warning' ? S.urgUrgent : S.urgRoutine),
+                }}>
+                  {alert.severity === 'critical' ? 'CRITICAL' : alert.severity === 'warning' ? 'ALERT' : 'INFO'}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1f2937' }}>{alert.title}</div>
+                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{alert.detail}</div>
+                  {alert.action && (
+                    <div style={{ marginTop: 4, display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <button type="button" onClick={() => {
+                        setStaffDirectives(prev => [...prev, {
+                          id: uid(), text: alert.action!, urgency: alert.severity === 'critical' ? 'stat' : 'urgent',
+                          target: (alert.actionTarget ?? 'front_desk') as StaffDirective['target'], sent: false,
+                        }]);
+                        setDismissedAlerts(prev => new Set([...prev, alert.id]));
+                        showToast('Added to staff directives', 'success');
+                      }} style={{ ...S.btn, ...S.btnPri, padding: '3px 8px', fontSize: 11 }}>
+                        → Add directive
+                      </button>
+                      <button type="button" onClick={() => setDismissedAlerts(prev => new Set([...prev, alert.id]))}
+                        style={{ ...S.btn, ...S.btnGhost, padding: '3px 8px', fontSize: 11 }}>
+                        Dismiss
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Schedule overview */}
+        {scheduleEntries.length > 0 ? (
+          <div>
+            <div style={S.section}>
+              {scheduleDay === 'today' ? "Today's" : scheduleDay === 'tomorrow' ? "Tomorrow's" : 'This week\'s'} schedule
+              ({scheduleEntries.length} case{scheduleEntries.length !== 1 ? 's' : ''})
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {[...scheduleEntries]
+                .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+                .map(entry => (
+                  <div key={entry.id} style={{
+                    ...S.row, gap: 6,
+                    background: entry.status === 'confirmed' || entry.status === 'patient_confirmed' ? undefined : '#fffbeb',
+                  }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: '#374151', minWidth: 58, fontVariantNumeric: 'tabular-nums' }}>
+                      {fmtTime(entry.startTime)}
+                    </span>
+                    {scheduleDay === 'week' && (
+                      <span style={{ fontSize: 10, color: '#9ca3af', minWidth: 40 }}>{fmtDate(entry.startTime)}</span>
+                    )}
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 999,
+                      ...(entry.status === 'confirmed' || entry.status === 'patient_confirmed'
+                        ? { background: '#dcfce7', color: '#166534', border: '1px solid #86efac' }
+                        : entry.status === 'staff_confirmed'
+                          ? { background: '#dbeafe', color: '#1d4ed8', border: '1px solid #93c5fd' }
+                          : entry.status === 'waitlisted'
+                            ? { background: '#f3e8ff', color: '#7c3aed', border: '1px solid #c4b5fd' }
+                            : { background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a' }),
+                    }}>
+                      {entry.status === 'confirmed' || entry.status === 'patient_confirmed' ? 'CONF'
+                        : entry.status === 'staff_confirmed' ? 'SLOT'
+                        : entry.status === 'waitlisted' ? 'WAIT' : 'PEND'}
+                    </span>
+                    {entry.triageAcuity && (ACUITY_RANK[entry.triageAcuity.toLowerCase()] ?? 4) <= 2 && (
+                      <span style={{
+                        fontSize: 9, fontWeight: 700, padding: '2px 5px', borderRadius: 999,
+                        ...((entry.triageAcuity.toLowerCase() === 'urgent') ? S.urgStat : S.urgUrgent),
+                      }}>
+                        {entry.triageAcuity.toUpperCase()}
+                      </span>
+                    )}
+                    <span style={{ flex: 1, fontSize: 13, fontWeight: 500, color: '#1f2937', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {entry.patientName}
+                    </span>
+                    <span style={{ fontSize: 11, color: '#6b7280' }}>{apptLabel(entry.appointmentType)}</span>
+                    {entry.prepRequired && (
+                      <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 999, background: '#fef3c7', color: '#92400e', border: '1px solid #fde68a' }}>
+                        PREP
+                      </span>
+                    )}
+                  </div>
+                ))}
+            </div>
+
+            {/* Quick stats */}
+            <div style={{ display: 'flex', gap: 12, marginTop: 8, flexWrap: 'wrap' }}>
+              {(() => {
+                const confirmed = scheduleEntries.filter(e => e.status === 'confirmed' || e.status === 'patient_confirmed').length;
+                const pending = scheduleEntries.filter(e => e.status === 'pending' || e.status === 'staff_confirmed').length;
+                const urgent = scheduleEntries.filter(e => (ACUITY_RANK[e.triageAcuity?.toLowerCase() ?? 'routine'] ?? 4) <= 1).length;
+                const prep = scheduleEntries.filter(e => e.prepRequired).length;
+                return (
+                  <>
+                    <span style={{ fontSize: 11, color: '#166534' }}>{confirmed} confirmed</span>
+                    {pending > 0 && <span style={{ fontSize: 11, color: '#b45309' }}>{pending} unconfirmed</span>}
+                    {urgent > 0 && <span style={{ fontSize: 11, color: '#dc2626', fontWeight: 600 }}>{urgent} urgent</span>}
+                    {prep > 0 && <span style={{ fontSize: 11, color: '#7c3aed' }}>{prep} needing prep</span>}
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        ) : (
+          <div style={S.muted}>
+            {scheduleLoading ? 'Loading schedule…' : 'No appointments found for the selected period.'}
+          </div>
+        )}
+      </CollapsibleCard>
 
       {/* ── STAFF DIRECTIVES ─────────────────────────────────────── */}
       {staffDirectives.length > 0 && (
