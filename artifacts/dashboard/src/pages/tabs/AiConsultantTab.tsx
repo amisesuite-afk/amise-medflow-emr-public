@@ -34,6 +34,7 @@ interface StaffDirective {
 
 interface SuggestedLab { name: string; reason: string; added: boolean; }
 interface SuggestedImaging { modality: string; region: string; indication: string; urgency: string; added: boolean; }
+interface SuggestedPathology { specimenType: string; test: string; indication: string; fixative: string; added: boolean; }
 interface PrepItem { text: string; checked: boolean; }
 
 // ── Doctor Priority Inbox types ──
@@ -341,6 +342,43 @@ function suggestImaging(symptoms: string[], icdCodes: string[]): SuggestedImagin
   return imgs;
 }
 
+function suggestPathology(symptoms: string[], icdCodes: string[]): SuggestedPathology[] {
+  const paths: SuggestedPathology[] = [];
+  const s = symptoms.map(x => x.toLowerCase());
+  const codes = icdCodes.map(x => x.toUpperCase());
+
+  if (s.some(x => x.includes('breast lump'))) {
+    paths.push({ specimenType: 'FNA / Core biopsy', test: 'Cytology + Histopathology', indication: 'Breast lump — triple assessment', fixative: '10% Formalin', added: false });
+    paths.push({ specimenType: 'Core biopsy', test: 'ER/PR/HER2 receptor status', indication: 'If malignancy confirmed', fixative: '10% Formalin', added: false });
+  }
+  if (s.some(x => x.includes('thyroid') || x.includes('neck lump'))) {
+    paths.push({ specimenType: 'FNA', test: 'Cytology (Bethesda classification)', indication: 'Thyroid nodule ≥1cm or suspicious features', fixative: 'Air-dried + alcohol-fixed', added: false });
+  }
+  if (s.some(x => x.includes('rectal bleeding') || x.includes('polyp'))) {
+    paths.push({ specimenType: 'Endoscopic biopsy', test: 'Histopathology', indication: 'Colonic polyp / mucosal lesion', fixative: '10% Formalin', added: false });
+  }
+  if (s.some(x => x.includes('dysphagia') || x.includes('barrett'))) {
+    paths.push({ specimenType: 'Endoscopic biopsy', test: 'Histopathology (Seattle protocol)', indication: 'Oesophageal mucosal assessment', fixative: '10% Formalin', added: false });
+  }
+  if (codes.some(x => x.startsWith('C18') || x.startsWith('C19') || x.startsWith('C20'))) {
+    paths.push({ specimenType: 'Surgical specimen', test: 'Histopathology + MSI/MMR', indication: 'Colorectal cancer — staging & molecular', fixative: '10% Formalin', added: false });
+    paths.push({ specimenType: 'Surgical specimen', test: 'Lymph node assessment', indication: 'Minimum 12 nodes for staging', fixative: '10% Formalin', added: false });
+  }
+  if (codes.some(x => x.startsWith('K35') || x.startsWith('K36') || x.startsWith('K37'))) {
+    paths.push({ specimenType: 'Surgical specimen', test: 'Histopathology', indication: 'Appendicectomy specimen', fixative: '10% Formalin', added: false });
+  }
+  if (codes.some(x => x.startsWith('K80') || x.startsWith('K81'))) {
+    paths.push({ specimenType: 'Surgical specimen', test: 'Histopathology', indication: 'Cholecystectomy specimen', fixative: '10% Formalin', added: false });
+  }
+  if (s.some(x => x.includes('skin lesion') || x.includes('mole') || x.includes('melanoma'))) {
+    paths.push({ specimenType: 'Excision biopsy', test: 'Histopathology + margin assessment', indication: 'Skin lesion — rule out malignancy', fixative: '10% Formalin', added: false });
+  }
+  if (s.some(x => x.includes('abscess') || x.includes('wound'))) {
+    paths.push({ specimenType: 'Swab / aspirate', test: 'Microbiology C&S', indication: 'Abscess / wound — identify organism', fixative: 'Transport medium', added: false });
+  }
+  return paths;
+}
+
 function suggestProcedurePrep(symptoms: string[], icdCodes: string[]): PrepItem[] {
   const items: PrepItem[] = [];
   const s = symptoms.map(x => x.toLowerCase());
@@ -489,6 +527,7 @@ export default function AiConsultantTab() {
   const [staffDirectives, setStaffDirectives] = useState<StaffDirective[]>([]);
   const [suggestedLabsList, setSuggestedLabsList] = useState<SuggestedLab[]>([]);
   const [suggestedImagingList, setSuggestedImagingList] = useState<SuggestedImaging[]>([]);
+  const [suggestedPathologyList, setSuggestedPathologyList] = useState<SuggestedPathology[]>([]);
   const [prepItems, setPrepItems] = useState<PrepItem[]>([]);
 
   // Doctor priority inbox
@@ -513,6 +552,7 @@ export default function AiConsultantTab() {
   useEffect(() => {
     setSuggestedLabsList(suggestLabs(symptoms, icdCodeStrings, comorbidities));
     setSuggestedImagingList(suggestImaging(symptoms, icdCodeStrings));
+    setSuggestedPathologyList(suggestPathology(symptoms, icdCodeStrings));
     setPrepItems(suggestProcedurePrep(symptoms, icdCodeStrings));
     setStaffDirectives(
       buildStaffDirectives(symptoms, assessment, icdCodeStrings, suggestLabs(symptoms, icdCodeStrings, comorbidities), suggestImaging(symptoms, icdCodeStrings), patientName),
@@ -1149,6 +1189,36 @@ export default function AiConsultantTab() {
                     showToast(`Navigate to Radiology to complete ${img.modality} ${img.region} order`, 'info');
                   }} style={{ ...S.btn, ...S.btnPri, padding: '4px 10px', fontSize: 11 }}>
                     Add →
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </CollapsibleCard>
+      )}
+
+      {/* ── SUGGESTED PATHOLOGY ───────────────────────────────────── */}
+      {suggestedPathologyList.length > 0 && (
+        <CollapsibleCard title="Suggested pathology" badge={suggestedPathologyList.filter(p => !p.added).length || undefined}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {suggestedPathologyList.map((path, i) => (
+              <div key={i} style={{ ...S.row, opacity: path.added ? 0.5 : 1 }}>
+                <span style={{ ...S.chip, background: '#faf5ff', color: '#7c3aed', border: '1px solid #c4b5fd', fontSize: 9, padding: '2px 6px', cursor: 'default' }}>
+                  {path.specimenType}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: '#1f2937' }}>{path.test}</div>
+                  <div style={{ fontSize: 11, color: '#6b7280' }}>{path.indication}</div>
+                </div>
+                <span style={{ fontSize: 10, color: '#9ca3af', whiteSpace: 'nowrap' }}>{path.fixative}</span>
+                {path.added ? (
+                  <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>Noted</span>
+                ) : (
+                  <button type="button" onClick={() => {
+                    setSuggestedPathologyList(prev => prev.map((x, j) => j === i ? { ...x, added: true } : x));
+                    showToast(`Pathology noted: ${path.test}`, 'success');
+                  }} style={{ ...S.btn, ...S.btnPri, padding: '4px 10px', fontSize: 11 }}>
+                    Note ✓
                   </button>
                 )}
               </div>
