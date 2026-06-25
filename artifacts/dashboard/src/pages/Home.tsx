@@ -345,7 +345,8 @@ export default function HomePage() {
                 { id: 'assessment', label: 'Assess' },
                 { id: 'plan', label: 'Plan' },
                 { id: 'prescriptions', label: 'RX' },
-                { id: 'ai_consultant', label: 'AI Consult' },
+                { id: 'referring_providers', label: 'Referrals' },
+                { id: 'ai_consultant', label: 'AI Aid' },
               ] : []),
               { id: 'progress', label: 'Notes' },
               { id: 'monitoring', label: 'Monitor' },
@@ -382,6 +383,7 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'progress'    && <ProgressNotesTab />}
         {topSection === 'consultation'  && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
         {topSection === 'consultation'  && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
+        {topSection === 'consultation'  && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
         {topSection === 'consultation'  && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
         {topSection === 'consultation'  && activeSection === 'tasks'       && <PatientTasksTab />}
         {topSection === 'procedures'    && hasRole(userRole, 'doctor')     && <ProceduresTab />}

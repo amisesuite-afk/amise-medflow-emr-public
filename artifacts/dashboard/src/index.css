@@ -275,6 +275,22 @@ textarea { resize: vertical; }
 }
 .nsb-badge--warn { background: var(--priority); }
 
+/* Group headers */
+.nsb-group-header {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #4d7a70;
+  padding: 14px 14px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nsb-group-header:first-child {
+  padding-top: 6px;
+}
+
 /* Sub-items */
 .nsb-sub {
   background: rgba(0,0,0,.18);

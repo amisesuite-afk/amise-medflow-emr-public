@@ -13,7 +13,8 @@ export type Section =
   | 'assessment' | 'plan' | 'progress'
   | 'procedures' | 'billing' | 'documents'
   | 'monitoring' | 'apcq' | 'nurse_apcq'
-  | 'prescriptions' | 'ai_consultant' | 'tasks';
+  | 'prescriptions' | 'ai_consultant' | 'tasks'
+  | 'referring_providers';
 
 export interface ProgressNote {
   id: string;
