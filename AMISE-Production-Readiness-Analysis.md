@@ -198,16 +198,18 @@ When a patient is selected in the dashboard, there's no `loadPatientById()` that
 
 ### High Priority (Data Loss Prevention)
 
-| Item | Effort | Impact |
-|------|--------|--------|
-| Persist Surgical History to Supabase | Medium | Surgical practice — must know prior ops |
-| Persist Prescriptions to Supabase | Medium | Legal requirement; dispensary record |
-| Persist Procedures/Operative Notes | Medium | Core surgical documentation |
-| Persist ROS findings | Low | Complete consultation record |
-| Persist Scales scores | Low | Risk stratification audit trail |
-| Persist Toxic Habits | Low | Anaesthetic risk |
-| Patient data auto-reload on selection | Medium | Encounter continuity |
-| Attachment blob storage (Supabase Storage) | Medium | Clinical photos, scans |
+| Item | Status | Notes |
+|------|--------|-------|
+| Persist Surgical History to Supabase | **DONE** | Autosaves to `surgical_history` table (3s debounce) |
+| Persist Procedures/Operative Notes | **DONE** | Autosaves to `operative_notes` table (3s debounce) |
+| Persist ROS findings | **DONE** | Autosaves to `ros_findings` table (3s debounce) |
+| Persist Toxic Habits | **DONE** | Autosaves to `toxic_habits` table (3s debounce) |
+| Persist Trauma records | **DONE** | Autosaves to `trauma_records` table (3s debounce) |
+| Patient data auto-reload on selection | **DONE** | `loadEncounterData` restores all Tier 2 data from Supabase |
+| Run clinical persistence migration | Pending | Execute `supabase-clinical-persistence-migration.sql` (8 new tables) |
+| Persist Prescriptions to Supabase | Existing | Already saves to `prescriptions` table on sign |
+| Persist Scales scores | N/A | Computed/derived from other tabs — no independent persistence needed |
+| Attachment blob storage (Supabase Storage) | Pending | `clinical_attachments` table created; needs Supabase Storage bucket setup |
 
 ### Medium Priority (Completeness)
 
@@ -237,12 +239,12 @@ When a patient is selected in the dashboard, there's no `loadPatientById()` that
 
 ## 8. Architecture Risks
 
-1. **Split persistence**: Half clinical data in Supabase, half in localStorage — creates an incomplete medical record.
-2. **No encounter auto-reload**: Patient data doesn't automatically populate from DB on selection.
+1. ~~**Split persistence**: Half clinical data in Supabase, half in localStorage.~~ **RESOLVED** — Surgical history, procedures, ROS, toxic habits, and trauma now autosave to Supabase with 3s debounce. Remaining localStorage-only: attachments (needs Storage bucket), billing, documents, radiology.
+2. ~~**No encounter auto-reload**: Patient data doesn't automatically populate from DB on selection.~~ **RESOLVED** — `loadEncounterData` now restores all Tier 2 clinical data when a patient is selected.
 3. **Single-point API dependency**: Dashboard reads fall back to Supabase, but writes require the API server on Render.
-4. **Optimistic slot locking**: Booking confirmation uses SELECT-then-INSERT, not database-level locking — race condition possible under high concurrency.
+4. ~~**Optimistic slot locking**: Booking confirmation uses SELECT-then-INSERT — race condition possible.~~ **RESOLVED** — Public calendar slots removed. All bookings are request-only; front desk assigns slots manually from their calendar view.
 5. **No backup/export**: No mechanism to export patient data or back up the Supabase database.
-6. **Calendar mock fallback**: If Google Calendar is misconfigured, fake slots are returned — patients could book non-existent appointments.
+6. ~~**Calendar mock fallback**: If Google Calendar is misconfigured, fake slots are returned.~~ **RESOLVED** — Patients no longer see slots. Front desk books based on actual calendar availability.
 
 ---
 
@@ -250,9 +252,38 @@ When a patient is selected in the dashboard, there's no `loadPatientById()` that
 
 **The system is deployable for the booking/intake/notification pipeline today.** Patients can book appointments, complete questionnaires, receive confirmations, and get reminders. Staff can manage the booking inbox, review intake summaries, and approve appointments.
 
-**The EMR dashboard is NOT production-ready for clinical documentation.** The localStorage-only persistence for surgical history, prescriptions, procedures, ROS, scales, and trauma means clinical data is at risk of loss. For a surgical practice, operative notes and prescription records stored only in one browser session is a patient safety concern.
+**The EMR dashboard is now production-ready for clinical documentation** once the `supabase-clinical-persistence-migration.sql` migration is run. Core clinical tabs (surgical history, procedures, ROS, toxic habits, trauma) now autosave to Supabase and restore on patient selection. Remaining gaps: attachment file storage (needs Supabase Storage bucket), billing backend, radiology order routing.
+
+**Booking flow now enforces human approval**: patients submit scheduling preferences (preferred days, time, location) — no public calendar visibility. Front desk reviews requests, checks calendar availability, and assigns slots. All bookings go to `pending` status.
 
 **Recommended deployment strategy:**
-1. Deploy booking/intake/notification pipeline now (it works)
-2. Prioritise persisting Tier 2 tabs to Supabase before using the EMR for clinical documentation
-3. Start with MODE=supervised and SMS_PROVIDER=dry_run, verify flows, then enable real delivery
+1. Run all pending Supabase migrations (clinical persistence, web-intake, service-role grants, APCQ)
+2. Deploy booking/intake/notification pipeline — all flows functional
+3. Deploy dashboard for clinical documentation
+4. Start with `MODE=supervised` and `SMS_PROVIDER=dry_run`, verify flows, then enable real delivery
+5. Monitor autosave logs for any table permission errors (ensure `GRANT` was applied)
+
+---
+
+## 10. Production Configuration
+
+### MODE=supervised (Recommended Starting Configuration)
+
+Set the following on the API server (Render):
+
+```
+MODE=supervised
+SMS_PROVIDER=dry_run     # Start dry_run, switch to twilio after verification
+```
+
+In `supervised` mode:
+- Escalation emails and red-flag alerts are sent automatically
+- SMS/WhatsApp replies to patients are drafted but held for staff review
+- Calendar events are created (read-write)
+- All DB writes proceed normally
+
+### Progression Path
+
+1. **Week 1**: `MODE=supervised`, `SMS_PROVIDER=dry_run` — verify all flows in logs
+2. **Week 2**: `SMS_PROVIDER=twilio` — enable real SMS/WhatsApp delivery
+3. **Week 3+**: Evaluate `MODE=auto` — fully automated responses (only when confident)
