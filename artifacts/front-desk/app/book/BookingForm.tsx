@@ -1,23 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { BookingTrack } from '@/types';
 import { APPOINTMENT_TYPES, BOOKING_DISCLAIMER } from '@/lib/scheduling';
 import '../subpage-mobile.css';
 
-interface Slot {
-  start: string;
-  end: string;
-  location: string;
-  appointmentType: string;
-  display: string;
-}
-
-type Step = 'track' | 'procedure_info' | 'details' | 'slots' | 'done';
+type Step = 'track' | 'procedure_info' | 'details' | 'done';
 
 const TRACK_INFO: Record<BookingTrack, { label: string; description: string; icon: string }> = {
   routine: {
     label:       'Routine appointment',
-    description: 'Book directly for a standard consultation. Slots are confirmed immediately.',
+    description: 'Request a standard consultation. Our front desk team will check availability and contact you to confirm.',
     icon:        '📅',
   },
   referral: {
@@ -257,7 +249,6 @@ function StepIndicator({ current, hasProcedureStep }: { current: Step; hasProced
     { id: 'track',   label: 'Appointment type' },
     ...(hasProcedureStep ? [{ id: 'procedure_info' as Step, label: 'Clinical info' }] : []),
     { id: 'details', label: 'Your details' },
-    { id: 'slots',   label: 'Choose slot' },
   ];
   const currentIdx = steps.findIndex(s => s.id === current);
 
@@ -305,33 +296,27 @@ export default function BookingForm() {
   const [reason,           setReason]         = useState('');
   const [referralDoctor,   setRefDoctor]      = useState('');
   const [referralPractice, setRefPractice]    = useState('');
-  const [slots,            setSlots]          = useState<Slot[]>([]);
-  const [slotsLoading,     setSlotsLoading]   = useState(false);
-  const [selectedSlot,     setSelectedSlot]   = useState<Slot | null>(null);
   const [submitting,       setSubmitting]     = useState(false);
-  const [result,           setResult]         = useState<{ autoConfirmed: boolean; message: string } | null>(null);
+  const [result,           setResult]         = useState<{ message: string } | null>(null);
   const [error,            setError]          = useState('');
   const [procedureAnswers, setProcedureAnswers] = useState<Record<string, string>>({});
+  const [preferredDays,    setPreferredDays]  = useState('');
+  const [preferredTime,    setPreferredTime]  = useState('');
+  const [preferredLocation, setPreferredLoc]  = useState('');
 
   const hasProcedureQuestions = appointmentType in PROCEDURE_QUESTIONS;
   const procedureConfig = PROCEDURE_QUESTIONS[appointmentType];
-
-  // Load slots when reaching slot step
-  useEffect(() => {
-    if (step !== 'slots') return;
-    setSlotsLoading(true);
-    setSlots([]);
-    setSelectedSlot(null);
-    void fetch(`/api/booking/slots?type=${appointmentType}&track=${track}`)
-      .then(r => r.json())
-      .then((d: { slots: Slot[] }) => { setSlots(d.slots ?? []); setSlotsLoading(false); })
-      .catch(() => { setSlotsLoading(false); setError('Unable to load available slots. Please try again.'); });
-  }, [step, appointmentType, track]);
 
   async function submit() {
     setSubmitting(true);
     setError('');
     try {
+      const prefParts: string[] = [];
+      if (preferredDays) prefParts.push(`Days: ${preferredDays}`);
+      if (preferredTime) prefParts.push(`Time: ${preferredTime}`);
+      if (preferredLocation) prefParts.push(`Location: ${preferredLocation}`);
+      const preferences = prefParts.length > 0 ? prefParts.join(' | ') : undefined;
+
       const r = await fetch('/api/booking/create', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -340,18 +325,15 @@ export default function BookingForm() {
           patientDob,
           reason: buildReasonWithProcedureInfo(reason, procedureAnswers, appointmentType),
           referralDoctor, referralPractice,
-          selectedSlot: selectedSlot ?? undefined,
+          preferences,
         }),
       });
-      const data = await r.json() as { autoConfirmed?: boolean; error?: string };
+      const data = await r.json() as { error?: string };
       if (!r.ok || data.error) {
         setError(data.error ?? 'Something went wrong. Please try again.');
       } else {
         setResult({
-          autoConfirmed: data.autoConfirmed ?? false,
-          message: data.autoConfirmed
-            ? `Your appointment has been confirmed: ${selectedSlot?.display ?? ''}. A confirmation has been sent to ${patientPhone}${patientEmail.trim() ? ` and ${patientEmail.trim()}` : ''}.`
-            : `Your request has been received. You will be contacted at ${patientPhone} within ${track === 'referral' ? '24 hours' : '2 hours'} to confirm your appointment.`,
+          message: `Your request has been received. Our front desk team will review your request and contact you at ${patientPhone} to confirm your appointment${track === 'referral' ? ' within 24 hours' : ''}.`,
         });
         setStep('done');
       }
@@ -781,6 +763,66 @@ export default function BookingForm() {
                   </>
                 )}
 
+                {/* ── Scheduling preferences ──────────────────── */}
+                <div style={{
+                  marginTop: 20, marginBottom: 16, padding: '16px 18px',
+                  borderRadius: 10, background: '#f0fdf9', border: '1px solid #a7f3d0',
+                }}>
+                  <div style={{ ...labelStyle, color: '#065f46', marginBottom: 12, fontSize: 12, textTransform: 'none', letterSpacing: 0, fontWeight: 700 }}>
+                    Scheduling preferences <span style={{ color: '#6b7280', fontWeight: 400 }}>(optional — helps our team find the best time for you)</span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <div>
+                      <label style={{ ...labelStyle, fontSize: 10 }}>Preferred days</label>
+                      <select
+                        value={preferredDays}
+                        onChange={e => setPreferredDays(e.target.value)}
+                        style={{ ...inputStyle, appearance: 'auto' }}
+                      >
+                        <option value="">No preference</option>
+                        <option value="Monday–Wednesday">Early week (Mon–Wed)</option>
+                        <option value="Thursday–Friday">Late week (Thu–Fri)</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ ...labelStyle, fontSize: 10 }}>Preferred time</label>
+                      <select
+                        value={preferredTime}
+                        onChange={e => setPreferredTime(e.target.value)}
+                        style={{ ...inputStyle, appearance: 'auto' }}
+                      >
+                        <option value="">No preference</option>
+                        <option value="Morning (8 am – 12 pm)">Morning (8 am – 12 pm)</option>
+                        <option value="Afternoon (12 – 4 pm)">Afternoon (12 – 4 pm)</option>
+                        <option value="First available">First available</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 12 }}>
+                    <label style={{ ...labelStyle, fontSize: 10 }}>Preferred location</label>
+                    <select
+                      value={preferredLocation}
+                      onChange={e => setPreferredLoc(e.target.value)}
+                      style={{ ...inputStyle, appearance: 'auto' }}
+                    >
+                      <option value="">No preference</option>
+                      <option value="Rodney Bay (Providence Building)">Rodney Bay (Providence Building)</option>
+                      <option value="Tapion (Dr Kabiye's Office)">Tapion (Dr Kabiye&apos;s Office)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {error && (
+                  <div style={{ color: '#dc2626', fontSize: 13, marginBottom: 12 }}>{error}</div>
+                )}
+
                 <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
                   <button
                     onClick={() => setStep(hasProcedureQuestions ? 'procedure_info' : 'track')}
@@ -789,111 +831,18 @@ export default function BookingForm() {
                     ← Back
                   </button>
                   <button
-                    onClick={() => setStep('slots')}
-                    disabled={!canAdvanceDetails}
+                    onClick={() => void submit()}
+                    disabled={!canAdvanceDetails || submitting}
                     style={{
                       ...primaryBtnStyle,
-                      background: canAdvanceDetails ? '#0d9488' : '#e2e8f0',
-                      color: canAdvanceDetails ? '#fff' : '#94a3b8',
-                      cursor: canAdvanceDetails ? 'pointer' : 'not-allowed',
+                      background: canAdvanceDetails && !submitting ? '#0d9488' : '#e2e8f0',
+                      color: canAdvanceDetails && !submitting ? '#fff' : '#94a3b8',
+                      cursor: canAdvanceDetails && !submitting ? 'pointer' : 'not-allowed',
+                      opacity: submitting ? 0.7 : 1,
                     }}
                   >
-                    View available slots →
+                    {submitting ? 'Submitting…' : 'Submit request →'}
                   </button>
-                </div>
-              </div>
-            )}
-
-            {/* ── STEP: SLOTS ────────────────────────────────────── */}
-            {step === 'slots' && (
-              <div>
-                <div style={stepLabelStyle}>
-                  {track === 'referral' ? 'Preferred appointment slot' : 'Select your appointment'}
-                </div>
-
-                {slotsLoading && (
-                  <div style={{ textAlign: 'center', padding: 28, color: '#6b7280', fontSize: 13 }}>
-                    Checking availability…
-                  </div>
-                )}
-
-                {!slotsLoading && slots.length === 0 && (
-                  <div style={{
-                    padding: '14px 16px', borderRadius: 10, background: '#f8fafc',
-                    border: '1px solid #e2e8f0', color: '#64748b', fontSize: 13, marginBottom: 16,
-                    lineHeight: 1.6,
-                  }}>
-                    {track === 'referral'
-                      ? 'Our team will contact you to arrange a priority slot. Please submit your details and we will confirm within 24 hours.'
-                      : 'No slots are currently available online. Please call our office at 758-284-0557 (Tapion) or 758-720-7111 (Rodney Bay) and we will arrange an appointment for you.'}
-                  </div>
-                )}
-
-                {!slotsLoading && slots.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedSlot(s)}
-                    style={{
-                      display: 'block', width: '100%', marginBottom: 10,
-                      padding: '12px 16px', borderRadius: 10, cursor: 'pointer',
-                      background: selectedSlot?.start === s.start ? '#f0fdf9' : '#f8fafc',
-                      border: `2px solid ${selectedSlot?.start === s.start ? '#0d9488' : '#e2e8f0'}`,
-                      color: '#0f172a', textAlign: 'left', fontSize: 14,
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    {s.display}
-                  </button>
-                ))}
-
-                {track === 'referral' && (
-                  <div style={{
-                    padding: '10px 14px', borderRadius: 8, background: '#f8fafc',
-                    border: '1px solid #e2e8f0', fontSize: 12, color: '#6b7280',
-                    marginBottom: 14, lineHeight: 1.5,
-                  }}>
-                    Referral appointments are subject to staff confirmation and verification of the referral. You will receive a confirmation message within 24 hours.
-                  </div>
-                )}
-
-                {error && (
-                  <div style={{ color: '#dc2626', fontSize: 13, marginBottom: 12 }}>{error}</div>
-                )}
-
-                <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
-                  <button
-                    onClick={() => setStep('details')}
-                    style={ghostBtnStyle}
-                  >
-                    ← Back
-                  </button>
-                  {!slotsLoading && track === 'routine' && slots.length === 0 ? (
-                    // No online slots to confirm against — a disabled "Confirm
-                    // appointment" button here would look broken. Point the
-                    // patient straight at the phone number we just told them to call.
-                    <a
-                      href="tel:+17582840557"
-                      style={{ ...primaryBtnStyle, textAlign: 'center', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                      Call our office →
-                    </a>
-                  ) : (
-                    <button
-                      onClick={() => void submit()}
-                      disabled={
-                        submitting ||
-                        (track === 'routine' && !selectedSlot) ||
-                        (slots.length > 0 && !selectedSlot && track !== 'referral')
-                      }
-                      style={{
-                        ...primaryBtnStyle,
-                        opacity: submitting ? 0.7 : 1,
-                        cursor: submitting ? 'wait' : 'pointer',
-                      }}
-                    >
-                      {submitting ? 'Submitting…' : track === 'routine' ? 'Confirm appointment' : 'Submit request'}
-                    </button>
-                  )}
                 </div>
               </div>
             )}
@@ -901,20 +850,25 @@ export default function BookingForm() {
             {/* ── STEP: DONE ─────────────────────────────────────── */}
             {step === 'done' && result && (
               <div style={{ textAlign: 'center', padding: '16px 0 8px' }}>
-                <div style={{ fontSize: 44, marginBottom: 14 }}>
-                  {result.autoConfirmed ? '✅' : '📨'}
-                </div>
+                <div style={{ fontSize: 44, marginBottom: 14 }}>📨</div>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0d9488', margin: '0 0 12px' }}>
-                  {result.autoConfirmed ? 'Appointment confirmed' : 'Request received'}
+                  Request received
                 </h2>
                 <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.7, margin: '0 0 24px' }}>
                   {result.message}
                 </p>
 
-                {/* Add-to-WhatsApp + prep link */}
+                <div style={{
+                  padding: '14px 16px', borderRadius: 10, background: '#f0fdf9',
+                  border: '1px solid #a7f3d0', fontSize: 13, color: '#065f46',
+                  lineHeight: 1.6, marginBottom: 24, textAlign: 'left',
+                }}>
+                  <strong>What happens next:</strong> Our front desk team will check availability and contact you to confirm a specific date and time. If you have any questions in the meantime, WhatsApp or call us.
+                </div>
+
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginBottom: 24 }}>
                   <a
-                    href={`https://wa.me/17582840557?text=${encodeURIComponent(`Hi, I have an appointment booked — name: ${patientName}`)}`}
+                    href={`https://wa.me/17582840557?text=${encodeURIComponent(`Hi, I submitted a booking request — name: ${patientName}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -926,10 +880,10 @@ export default function BookingForm() {
                     }}
                   >
                     <WhatsAppIcon />
-                    Add to WhatsApp
+                    WhatsApp us
                   </a>
                   <a
-                    href="/guidance"
+                    href="tel:+17582840557"
                     style={{
                       display: 'inline-flex', alignItems: 'center',
                       padding: '10px 18px', borderRadius: 50,
@@ -938,7 +892,7 @@ export default function BookingForm() {
                       fontFamily: 'inherit',
                     }}
                   >
-                    Download prep instructions
+                    Call 758-284-0557
                   </a>
                 </div>
 
@@ -954,7 +908,8 @@ export default function BookingForm() {
                   onClick={() => {
                     setStep('track'); setName(''); setPhone(''); setEmail(''); setDob('');
                     setReason(''); setRefDoctor(''); setRefPractice(''); setProcedureAnswers({});
-                    setSelectedSlot(null); setResult(null); setError('');
+                    setPreferredDays(''); setPreferredTime(''); setPreferredLoc('');
+                    setResult(null); setError('');
                   }}
                   style={{ ...ghostBtnStyle, marginTop: 20, flex: 'none' }}
                 >
