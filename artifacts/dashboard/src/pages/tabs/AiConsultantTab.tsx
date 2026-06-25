@@ -36,6 +36,20 @@ interface SuggestedLab { name: string; reason: string; added: boolean; }
 interface SuggestedImaging { modality: string; region: string; indication: string; urgency: string; added: boolean; }
 interface PrepItem { text: string; checked: boolean; }
 
+// ── Doctor Priority Inbox types ──
+
+interface DoctorAlert {
+  id: string;
+  category: 'critical_result' | 'urgent_booking' | 'schedule_conflict' | 'pending_task' | 'prep_reminder';
+  severity: 'critical' | 'high' | 'medium';
+  title: string;
+  detail: string;
+  timestamp: string;
+  actionLabel?: string;
+  actionNav?: { top: string; section: string };
+  dismissed: boolean;
+}
+
 // ── Schedule Intelligence types ──
 
 interface ScheduleEntry {
@@ -477,6 +491,9 @@ export default function AiConsultantTab() {
   const [suggestedImagingList, setSuggestedImagingList] = useState<SuggestedImaging[]>([]);
   const [prepItems, setPrepItems] = useState<PrepItem[]>([]);
 
+  // Doctor priority inbox
+  const [doctorAlerts, setDoctorAlerts] = useState<DoctorAlert[]>([]);
+
   // Schedule intelligence
   const [scheduleEntries, setScheduleEntries] = useState<ScheduleEntry[]>([]);
   const [scheduleAlerts, setScheduleAlerts] = useState<ScheduleAlert[]>([]);
@@ -609,6 +626,110 @@ export default function AiConsultantTab() {
   }, [scheduleDay]);
 
   useEffect(() => { void fetchSchedule(); }, [fetchSchedule]);
+
+  // ── Doctor priority inbox fetch ──
+  useEffect(() => {
+    if (!supabase) return;
+    let off = false;
+    (async () => {
+      const alerts: DoctorAlert[] = [];
+
+      try {
+        // 1. Critical investigation results not acknowledged
+        const { data: critResults } = await supabase
+          .from('investigation_results')
+          .select('id, patient_id, panel, status, created_at')
+          .eq('is_critical', true)
+          .is('acknowledged_by', null)
+          .order('created_at', { ascending: false })
+          .limit(10);
+        if (critResults) {
+          const pIds = [...new Set(critResults.filter(r => r.patient_id).map(r => r.patient_id as string))];
+          let pNames: Record<string, string> = {};
+          if (pIds.length > 0) {
+            const { data: pts } = await supabase.from('patients').select('id, full_name').in('id', pIds);
+            if (pts) pNames = Object.fromEntries(pts.map(p => [p.id, p.full_name]));
+          }
+          critResults.forEach(r => {
+            alerts.push({
+              id: `crit-${r.id}`, category: 'critical_result', severity: 'critical',
+              title: `Critical result: ${r.panel || 'Lab'}`,
+              detail: `${pNames[r.patient_id] ?? 'Unknown patient'} — requires immediate review`,
+              timestamp: r.created_at, dismissed: false,
+              actionLabel: 'Review results', actionNav: { top: 'consultation', section: 'investigations' },
+            });
+          });
+        }
+      } catch { /* table may not exist */ }
+
+      try {
+        // 2. Urgent booking requests unactioned for > 2 hours
+        const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60_000).toISOString();
+        const { data: urgentBookings } = await supabase
+          .from('appointment_requests')
+          .select('id, patient_name, triage_acuity, triage_score, created_at, appointment_type')
+          .eq('status', 'pending')
+          .in('triage_acuity', ['urgent', 'priority'])
+          .lt('created_at', twoHoursAgo)
+          .order('created_at', { ascending: true })
+          .limit(5);
+        if (urgentBookings) {
+          urgentBookings.forEach(b => {
+            const hrs = Math.round((Date.now() - new Date(b.created_at).getTime()) / 3_600_000);
+            alerts.push({
+              id: `urg-${b.id}`, category: 'urgent_booking', severity: 'high',
+              title: `Urgent request pending ${hrs}h: ${b.patient_name}`,
+              detail: `${apptLabel(b.appointment_type || 'consult')} — acuity: ${b.triage_acuity}`,
+              timestamp: b.created_at, dismissed: false,
+              actionLabel: 'Open inbox', actionNav: { top: 'booking_inbox', section: 'booking_inbox' },
+            });
+          });
+        }
+      } catch { /* non-fatal */ }
+
+      try {
+        // 3. Overdue patient tasks
+        const now = new Date().toISOString();
+        const { data: overdueTasks } = await supabase
+          .from('patient_tasks')
+          .select('id, patient_id, title, task_type, due_date')
+          .eq('status', 'open')
+          .lt('due_date', now)
+          .order('due_date', { ascending: true })
+          .limit(5);
+        if (overdueTasks?.length) {
+          alerts.push({
+            id: 'overdue-tasks', category: 'pending_task', severity: 'medium',
+            title: `${overdueTasks.length} overdue task${overdueTasks.length !== 1 ? 's' : ''}`,
+            detail: overdueTasks.map(t => t.title).join('; '),
+            timestamp: new Date().toISOString(), dismissed: false,
+            actionLabel: 'View tasks', actionNav: { top: 'tasks', section: 'tasks' },
+          });
+        }
+      } catch { /* non-fatal */ }
+
+      // 4. Prep reminders from today's schedule
+      const todayEntries = scheduleEntries.filter(e => {
+        const d = new Date(e.startTime);
+        const now = new Date();
+        return d.toDateString() === now.toDateString() && e.prepRequired;
+      });
+      const unprepared = todayEntries.filter(e => e.status !== 'confirmed' && e.status !== 'patient_confirmed');
+      if (unprepared.length > 0) {
+        alerts.push({
+          id: 'prep-today', category: 'prep_reminder', severity: 'medium',
+          title: `${unprepared.length} procedure${unprepared.length !== 1 ? 's' : ''} today needing prep confirmation`,
+          detail: unprepared.map(e => `${e.patientName} — ${apptLabel(e.appointmentType)} at ${fmtTime(e.startTime)}`).join('; '),
+          timestamp: new Date().toISOString(), dismissed: false,
+          actionLabel: 'View schedule',
+        });
+      }
+
+      if (!off) setDoctorAlerts(alerts);
+    })();
+    return () => { off = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scheduleEntries.length]);
 
   // ── API health check ──
   useEffect(() => {
@@ -754,6 +875,52 @@ export default function AiConsultantTab() {
       </div>
 
       {!apiAvailable && <div style={S.noApi}>API server unavailable — AI consultation offline. Pre-filled orders still work.</div>}
+
+      {/* ── DOCTOR PRIORITY INBOX ─────────────────────────────────── */}
+      {doctorAlerts.filter(a => !a.dismissed).length > 0 && (
+        <CollapsibleCard
+          title="Priority inbox"
+          badge={doctorAlerts.filter(a => !a.dismissed).length}
+          badgeVariant={doctorAlerts.some(a => a.severity === 'critical' && !a.dismissed) ? 'danger' : 'warn'}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {doctorAlerts.filter(a => !a.dismissed).map(alert => (
+              <div key={alert.id} style={{
+                display: 'flex', alignItems: 'flex-start', gap: 8, padding: '8px 10px', borderRadius: 6,
+                background: alert.severity === 'critical' ? '#fef2f2' : alert.severity === 'high' ? '#fffbeb' : '#f9fafb',
+                border: `1px solid ${alert.severity === 'critical' ? '#fca5a5' : alert.severity === 'high' ? '#fde68a' : '#e5e7eb'}`,
+              }}>
+                <span style={{
+                  fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 999, whiteSpace: 'nowrap',
+                  ...(alert.severity === 'critical' ? S.urgStat : alert.severity === 'high' ? S.urgUrgent : { background: '#f3f4f6', color: '#6b7280', border: '1px solid #d1d5db' }),
+                }}>
+                  {alert.category === 'critical_result' ? 'RESULT'
+                    : alert.category === 'urgent_booking' ? 'BOOKING'
+                    : alert.category === 'schedule_conflict' ? 'SCHEDULE'
+                    : alert.category === 'prep_reminder' ? 'PREP'
+                    : 'TASK'}
+                </span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1f2937' }}>{alert.title}</div>
+                  <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>{alert.detail}</div>
+                  <div style={{ marginTop: 4, display: 'flex', gap: 6 }}>
+                    {alert.actionLabel && alert.actionNav && (
+                      <button type="button" onClick={() => navTo(alert.actionNav!.top, alert.actionNav!.section)}
+                        style={{ ...S.btn, ...S.btnPri, padding: '3px 8px', fontSize: 11 }}>
+                        {alert.actionLabel} →
+                      </button>
+                    )}
+                    <button type="button" onClick={() => setDoctorAlerts(prev => prev.map(a => a.id === alert.id ? { ...a, dismissed: true } : a))}
+                      style={{ ...S.btn, ...S.btnGhost, padding: '3px 8px', fontSize: 11 }}>
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CollapsibleCard>
+      )}
 
       {/* ── SCHEDULE INTELLIGENCE ─────────────────────────────────── */}
       <CollapsibleCard
