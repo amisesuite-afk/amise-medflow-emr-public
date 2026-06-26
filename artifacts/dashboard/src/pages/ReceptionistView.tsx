@@ -4,7 +4,6 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
-import CollapsibleCard from '@/components/CollapsibleCard';
 import { savePatientFull } from '@/lib/db';
 import type { Sex } from '@workspace/triage-engine';
 import BookingInboxTab from './tabs/BookingInboxTab';
@@ -299,176 +298,121 @@ export default function ReceptionistView() {
             </div>
           )}
 
-          {/* ── Registration form — hidden after save ── */}
-          {/* Card 1: Patient details */}
-          {!saved && <CollapsibleCard title="Patient Details">
-            <div className="form-grid cols-2" style={{ gap: 12 }}>
-              <div className="fld" style={{ gridColumn: '1 / -1' }}>
-                <label>Full name</label>
+          {/* ── Streamlined registration form ── */}
+          {!saved && (
+            <div style={{
+              background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb',
+              padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10,
+            }}>
+              {/* Row 1: Name (full width) */}
+              <div className="fld">
+                <label style={{ fontSize: 11, fontWeight: 700, color: '#374151' }}>Full name</label>
                 <input
                   value={patientName}
                   onChange={e => setPatientName(e.target.value)}
                   placeholder="e.g. Marie Joseph"
-                  style={{ fontSize: 15, padding: '10px 11px' }}
+                  autoFocus
+                  style={{ fontSize: 16, padding: '11px 12px', borderRadius: 8 }}
                 />
               </div>
 
-              <div className="fld">
-                <label>Date of birth</label>
-                <input
-                  type="date"
-                  value={dob}
-                  onChange={e => setDob(e.target.value)}
-                  style={{ padding: '10px 11px' }}
-                />
+              {/* Row 2: DOB · Age · Sex · Phone — all in one line */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.6fr 0.6fr 1fr', gap: 8 }}>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>DOB</label>
+                  <input type="date" value={dob} onChange={e => setDob(e.target.value)} style={{ padding: '8px 8px', fontSize: 13 }} />
+                </div>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>Age</label>
+                  <input inputMode="numeric" value={age} onChange={e => setAge(e.target.value)} placeholder="57" style={{ padding: '8px 8px', fontSize: 13, textAlign: 'center' }} />
+                </div>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>Sex</label>
+                  <select value={sex} onChange={e => setSex(e.target.value as Sex)} style={{ padding: '8px 6px', fontSize: 13 }}>
+                    <option value="unknown">—</option>
+                    <option value="male">M</option>
+                    <option value="female">F</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>Phone</label>
+                  <input inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 (758) XXX-XXXX" style={{ padding: '8px 8px', fontSize: 13 }} />
+                </div>
               </div>
 
-              <div className="fld">
-                <label>Age</label>
-                <input
-                  inputMode="numeric"
-                  value={age}
-                  onChange={e => setAge(e.target.value)}
-                  placeholder="e.g. 57"
-                  style={{ padding: '10px 11px' }}
-                />
+              {/* Row 3: Email · Community — split */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>Email <span style={{ color: '#9ca3af' }}>(portal)</span></label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="patient@example.com" style={{ padding: '8px 8px', fontSize: 13 }} />
+                </div>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>Community / Address</label>
+                  <input
+                    type="text" list="sl-communities" value={address}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setAddress(val);
+                      const match = SL_COMMUNITIES.find(c => c.community.toLowerCase() === val.toLowerCase());
+                      setQuarter(match ? match.quarter : '');
+                    }}
+                    placeholder="e.g. Rodney Bay"
+                    style={{ padding: '8px 8px', fontSize: 13 }}
+                  />
+                  <datalist id="sl-communities">
+                    {SL_COMMUNITIES.map(c => (
+                      <option key={`${c.quarter}-${c.community}`} value={c.community}>{c.quarter}</option>
+                    ))}
+                  </datalist>
+                </div>
               </div>
 
-              <div className="fld">
-                <label>Sex</label>
-                <select
-                  value={sex}
-                  onChange={e => setSex(e.target.value as Sex)}
-                  style={{ padding: '10px 11px' }}
-                >
-                  <option value="unknown">—</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
+              {/* Row 4: Referred by · Insurance — split */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>Referred by</label>
+                  <input
+                    type="text" list="referring-doctors" value={referredBy}
+                    onChange={e => setReferredBy(e.target.value)}
+                    placeholder="Doctor or facility…"
+                    style={{ padding: '8px 8px', fontSize: 13 }}
+                  />
+                  <datalist id="referring-doctors">
+                    {referringProviders.map(name => (
+                      <option key={name} value={name} />
+                    ))}
+                  </datalist>
+                </div>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>Insurance</label>
+                  <input type="text" value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="SAGICOR, CLICO…" style={{ padding: '8px 8px', fontSize: 13 }} />
+                </div>
               </div>
 
-              <div className="fld">
-                <label>Phone</label>
-                <input
-                  inputMode="tel"
-                  value={phone}
-                  onChange={e => setPhone(e.target.value)}
-                  placeholder="+1 (758) XXX-XXXX"
-                  style={{ padding: '10px 11px' }}
-                />
+              {/* Row 5: Policy · NHI · Pre-auth — compact row */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>Policy #</label>
+                  <input type="text" value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Member ID" style={{ padding: '8px 8px', fontSize: 13 }} />
+                </div>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>NHI #</label>
+                  <input type="text" value={nhiNumber} onChange={e => setNhiNumber(e.target.value)} placeholder="NHI number" style={{ padding: '8px 8px', fontSize: 13 }} />
+                </div>
+                <div className="fld">
+                  <label style={{ fontSize: 10 }}>Pre-auth</label>
+                  <select value={preAuthStatus} onChange={e => setPreAuthStatus(e.target.value)} style={{ padding: '8px 6px', fontSize: 13 }}>
+                    <option value="">N/A</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="declined">Declined</option>
+                  </select>
+                </div>
               </div>
-
-              <div className="fld">
-                <label>Email <span style={{ fontWeight: 400, color: '#9ca3af' }}>(for portal invite)</span></label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="patient@example.com"
-                  style={{ padding: '10px 11px' }}
-                />
-              </div>
-
-              <div className="fld" style={{ gridColumn: '1 / -1' }}>
-                <label>Community / Address</label>
-                <input
-                  type="text"
-                  list="sl-communities"
-                  value={address}
-                  onChange={e => {
-                    const val = e.target.value;
-                    setAddress(val);
-                    const match = SL_COMMUNITIES.find(c => c.community.toLowerCase() === val.toLowerCase());
-                    setQuarter(match ? match.quarter : '');
-                  }}
-                  placeholder="e.g. Rodney Bay, Vieux Fort…"
-                  style={{ padding: '10px 11px' }}
-                />
-                <datalist id="sl-communities">
-                  {SL_COMMUNITIES.map(c => (
-                    <option key={`${c.quarter}-${c.community}`} value={c.community}>
-                      {c.quarter}
-                    </option>
-                  ))}
-                </datalist>
-                {quarter && (
-                  <span style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
-                    Quarter: {quarter}
-                  </span>
-                )}
-              </div>
-
-              <div className="fld" style={{ gridColumn: '1 / -1' }}>
-                <label>Referred by</label>
-                <input
-                  type="text"
-                  list="referring-doctors"
-                  value={referredBy}
-                  onChange={e => setReferredBy(e.target.value)}
-                  placeholder="Doctor or facility name…"
-                  style={{ padding: '10px 11px' }}
-                />
-                <datalist id="referring-doctors">
-                  {referringProviders.map(name => (
-                    <option key={name} value={name} />
-                  ))}
-                </datalist>
-              </div>
+              {quarter && <span style={{ fontSize: 10, color: '#6b7280' }}>Quarter: {quarter}</span>}
             </div>
-          </CollapsibleCard>}
-
-          {/* Card 2: Insurance & billing */}
-          {!saved && <CollapsibleCard title="Insurance &amp; Billing">
-            <div className="form-grid cols-2" style={{ gap: 12 }}>
-              <div className="fld" style={{ gridColumn: '1 / -1' }}>
-                <label>Insurance provider</label>
-                <input
-                  type="text"
-                  value={insuranceProvider}
-                  onChange={e => setInsuranceProvider(e.target.value)}
-                  placeholder="e.g. SAGICOR, CLICO, S&P…"
-                  style={{ padding: '10px 11px' }}
-                />
-              </div>
-
-              <div className="fld">
-                <label>Policy number</label>
-                <input
-                  type="text"
-                  value={policyNumber}
-                  onChange={e => setPolicyNumber(e.target.value)}
-                  placeholder="Policy / member ID"
-                  style={{ padding: '10px 11px' }}
-                />
-              </div>
-
-              <div className="fld">
-                <label>NHI number</label>
-                <input
-                  type="text"
-                  value={nhiNumber}
-                  onChange={e => setNhiNumber(e.target.value)}
-                  placeholder="NHI / NHIA number"
-                  style={{ padding: '10px 11px' }}
-                />
-              </div>
-
-              <div className="fld" style={{ gridColumn: '1 / -1' }}>
-                <label>Pre-authorisation status</label>
-                <select
-                  value={preAuthStatus}
-                  onChange={e => setPreAuthStatus(e.target.value)}
-                  style={{ padding: '10px 11px' }}
-                >
-                  <option value="">Not required</option>
-                  <option value="pending">Pending</option>
-                  <option value="approved">Approved</option>
-                  <option value="declined">Declined</option>
-                </select>
-              </div>
-            </div>
-          </CollapsibleCard>}
+          )}
 
           {/* Action row — only shown when registering */}
           {!saved && saveError && (
