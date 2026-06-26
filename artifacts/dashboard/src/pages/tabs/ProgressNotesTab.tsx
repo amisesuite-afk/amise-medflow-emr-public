@@ -3,9 +3,12 @@ import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ToastProvider';
 import { saveClinicalNote } from '@/lib/db';
+import { getApiOrigin } from '@/lib/api-origin';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
 import { escH as escHDoc, T, AMISE_LOGO_SVG } from './lib/docTemplate';
+
+const API_ORIGIN = getApiOrigin();
 
 // ── Symptom chips (follow-up / post-op focused) ──────────────────────────────
 const FU_SYMPTOMS = [
@@ -281,6 +284,7 @@ export default function ProgressNotesTab() {
   const [date, setDate] = useState(today);
   const [author, setAuthor] = useState(profile?.full_name ?? 'Dr. Dawit D Kabiye');
   const [saving, setSaving] = useState(false);
+  const [polishing, setPolishing] = useState(false);
   const [interval, setInterval] = useState('');
 
   // S — Subjective
@@ -327,6 +331,148 @@ export default function ProgressNotesTab() {
 
   function handleExamChipToggle(sys: string, chip: string) {
     setExamChips(prev => ({ ...prev, [sys]: toggleChip(prev[sys] ?? [], chip) }));
+  }
+
+  // Map Examination tab system keys to Progress Notes SOAP exam system keys
+  const EXAM_KEY_MAP: Record<string, string> = {
+    general: 'general', cardiovascular: 'cvs', respiratory: 'rs',
+    abdomen: 'abdomen', wound: 'wound', extremities: 'limbs',
+  };
+
+  function compileFromConsultation() {
+    // S — Subjective: pull symptoms, freeText, duration, pain
+    const cc = ctx.symptoms.length
+      ? ctx.symptoms.join(', ')
+      : ctx.freeText || '';
+    setChiefComplaint(cc);
+
+    const matchedSymptoms = ctx.symptoms.filter(s => FU_SYMPTOMS.includes(s));
+    setSelectedSymptoms(matchedSymptoms);
+
+    const histParts: string[] = [];
+    if (ctx.freeText) histParts.push(ctx.freeText);
+    if (ctx.durationDays) histParts.push(`Duration: ${ctx.durationDays} day(s).`);
+    if (ctx.painScore) histParts.push(`Pain score: ${ctx.painScore}/10.`);
+    if (ctx.isPostOp) histParts.push(`Post-operative${ctx.postOpDays ? ` (${ctx.postOpDays} days post-op)` : ''}.`);
+    setIntervalHistory(histParts.join(' '));
+
+    // O — Objective: pull latest vitals + exam findings
+    const latest = ctx.vitalRecords.at(-1);
+    if (latest) {
+      setVitals({
+        bp: latest.sbp ? (latest.dbp ? `${latest.sbp}/${latest.dbp}` : latest.sbp) : '',
+        hr: latest.hr ?? '', temp: latest.temp ?? '', spo2: latest.spo2 ?? '',
+        rr: latest.rr ?? '', weight: latest.weight ?? '',
+      });
+    } else if (ctx.vitals.systolicBp || ctx.vitals.heartRate) {
+      setVitals({
+        bp: ctx.vitals.systolicBp ? (ctx.vitals.diastolicBp ? `${ctx.vitals.systolicBp}/${ctx.vitals.diastolicBp}` : ctx.vitals.systolicBp) : '',
+        hr: ctx.vitals.heartRate ?? '', temp: ctx.vitals.temperatureC ?? '',
+        spo2: ctx.vitals.spo2 ?? '', rr: ctx.vitals.respiratoryRate ?? '', weight: '',
+      });
+    }
+
+    // Map exam findings chips from Examination tab → SOAP exam chips
+    const newChips: Record<string, string[]> = { general: [], cvs: [], rs: [], abdomen: [], wound: [], limbs: [] };
+    const newNotes: Record<string, string> = { general: '', cvs: '', rs: '', abdomen: '', wound: '', limbs: '', other: '' };
+    const otherParts: string[] = [];
+
+    for (const [examKey, findings] of Object.entries(ctx.examFindings)) {
+      const soapKey = EXAM_KEY_MAP[examKey];
+      if (soapKey && findings.length) {
+        const soapChipList = EXAM_CHIPS[soapKey] ?? [];
+        const matched = findings.filter(f => soapChipList.includes(f));
+        const unmatched = findings.filter(f => !soapChipList.includes(f));
+        newChips[soapKey] = [...(newChips[soapKey] ?? []), ...matched];
+        if (unmatched.length) {
+          newNotes[soapKey] = [newNotes[soapKey], unmatched.join('. ')].filter(Boolean).join('. ');
+        }
+      } else if (findings.length) {
+        otherParts.push(`${examKey}: ${findings.join(', ')}`);
+      }
+    }
+
+    for (const [examKey, note] of Object.entries(ctx.examNotes)) {
+      const soapKey = EXAM_KEY_MAP[examKey];
+      if (soapKey && note) {
+        newNotes[soapKey] = [newNotes[soapKey], note].filter(Boolean).join('. ');
+      } else if (note) {
+        otherParts.push(note);
+      }
+    }
+
+    setExamChips(newChips);
+    setExamNotes({ ...newNotes, other: otherParts.join('; ') });
+
+    // A — Assessment
+    const aParts: string[] = [];
+    if (ctx.assessment) aParts.push(ctx.assessment);
+    if (ctx.differentials) aParts.push(`Differentials: ${ctx.differentials}`);
+    setAssessment(aParts.join('\n'));
+
+    // P — Plan
+    const pParts: string[] = [];
+    if (ctx.plan) pParts.push(ctx.plan);
+    if (ctx.orderedInvestigations.length) pParts.push(`Investigations: ${ctx.orderedInvestigations.join(', ')}`);
+    if (ctx.medications.length) pParts.push(`Medications: ${ctx.medications.join(', ')}`);
+    setPlan(pParts.join('\n'));
+
+    showToast('SOAP compiled from consultation data', 'success');
+  }
+
+  async function handleAiPolish() {
+    if (polishing) return;
+    setPolishing(true);
+    try {
+      const payload = {
+        subjective: {
+          chiefComplaint, symptoms: selectedSymptoms, intervalHistory,
+          painScore: ctx.painScore || '', durationDays: ctx.durationDays || '',
+          isPostOp: ctx.isPostOp, postOpDays: ctx.postOpDays || '',
+        },
+        objective: {
+          vitals,
+          examSystems: Object.fromEntries(
+            (['general', 'cvs', 'rs', 'abdomen', 'wound', 'limbs'] as const).map(
+              sys => [sys, buildExamText(sys)]
+            ).filter(([, v]) => v)
+          ),
+          examOther: examNotes.other ?? '',
+        },
+        assessment,
+        plan,
+        encounterMode: ctx.encounterMode,
+        patientName: ctx.patientName || undefined,
+        interval: interval || undefined,
+      };
+
+      const url = API_ORIGIN ? `${API_ORIGIN}/api/soap/polish` : '/api/soap/polish';
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        showToast('AI polish failed — check API server', 'error');
+        return;
+      }
+
+      const data = await res.json() as { subjective?: string; objective?: string; assessment?: string; plan?: string };
+
+      if (data.subjective) setIntervalHistory(data.subjective);
+      if (data.objective) {
+        setExamNotes(prev => ({ ...prev, other: [prev.other, data.objective].filter(Boolean).join('\n') }));
+      }
+      if (data.assessment) setAssessment(data.assessment);
+      if (data.plan) setPlan(data.plan);
+
+      showToast('SOAP polished by AI', 'success');
+    } catch {
+      showToast('AI polish unavailable — is the API server running?', 'error');
+    } finally {
+      setPolishing(false);
+    }
   }
 
   function buildExamText(sys: string): string {
@@ -456,6 +602,18 @@ export default function ProgressNotesTab() {
 
       {/* New note form */}
       <CollapsibleCard title="Add New Note" defaultOpen>
+
+        {/* Auto-compile + AI polish */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+          <button type="button" onClick={compileFromConsultation}
+            style={{ ...BTN, background: '#0369a1', color: '#fff', fontSize: 12, padding: '7px 14px' }}>
+            Compile from Consultation
+          </button>
+          <button type="button" onClick={() => void handleAiPolish()} disabled={polishing}
+            style={{ ...BTN, background: polishing ? '#9ca3af' : C.gold, color: '#fff', fontSize: 12, padding: '7px 14px', cursor: polishing ? 'not-allowed' : 'pointer' }}>
+            {polishing ? 'Polishing…' : 'AI Polish'}
+          </button>
+        </div>
 
         {/* Type + meta */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginBottom: 12 }}>

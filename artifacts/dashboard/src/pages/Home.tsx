@@ -324,45 +324,71 @@ export default function HomePage() {
           );
         })()}
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
-        {topSection === 'consultation' && (
-          <div className="consult-tabstrip">
-            {([
-              { id: 'triage', label: 'Triage' },
-              { id: 'pmh', label: 'PMH' },
-              { id: 'surgical', label: 'Surgical' },
-              { id: 'medications', label: 'Meds' },
-              { id: 'allergies', label: 'Allergies' },
-              { id: 'toxic', label: 'Habits' },
-              { id: 'scales', label: 'Scales' },
-              { id: 'ros', label: 'ROS' },
-              ...(hasRole(userRole, 'nurse') ? [
-                { id: 'examination', label: 'Exam' },
-                { id: 'investigations', label: 'Labs' },
-                { id: 'radiology', label: 'Radiology' },
-                { id: 'attachments', label: 'Attach' },
-              ] : []),
-              ...(hasRole(userRole, 'doctor') ? [
-                { id: 'assessment', label: 'Assess' },
-                { id: 'plan', label: 'Plan' },
-                { id: 'prescriptions', label: 'RX' },
-                { id: 'referring_providers', label: 'Referrals' },
-                { id: 'ai_consultant', label: 'AI Aid' },
-              ] : []),
-              { id: 'progress', label: 'Notes' },
-              { id: 'monitoring', label: 'Monitor' },
-              { id: 'tasks', label: 'Tasks' },
-            ] as { id: Section; label: string }[]).map(tab => (
-              <button
-                key={tab.id}
-                type="button"
-                className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
-                onClick={() => setActiveSection(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        )}
+        {topSection === 'consultation' && (() => {
+          const consultTabs: { id: Section; label: string }[] = [
+            { id: 'triage', label: 'Triage' },
+            { id: 'pmh', label: 'PMH' },
+            { id: 'surgical', label: 'Surgical' },
+            { id: 'medications', label: 'Meds' },
+            { id: 'allergies', label: 'Allergies' },
+            { id: 'toxic', label: 'Habits' },
+            { id: 'scales', label: 'Scales' },
+            { id: 'ros', label: 'ROS' },
+            ...(hasRole(userRole, 'nurse') ? [
+              { id: 'examination' as Section, label: 'Exam' },
+              { id: 'investigations' as Section, label: 'Labs' },
+              { id: 'radiology' as Section, label: 'Radiology' },
+              { id: 'attachments' as Section, label: 'Attach' },
+            ] : []),
+            ...(hasRole(userRole, 'doctor') ? [
+              { id: 'assessment' as Section, label: 'Assess' },
+              { id: 'plan' as Section, label: 'Plan' },
+              { id: 'prescriptions' as Section, label: 'RX' },
+              { id: 'referring_providers' as Section, label: 'Referrals' },
+              { id: 'ai_consultant' as Section, label: 'AI Aid' },
+            ] : []),
+            { id: 'progress', label: 'Notes' },
+            { id: 'monitoring', label: 'Monitor' },
+            { id: 'tasks', label: 'Tasks' },
+          ];
+          const curIdx = consultTabs.findIndex(t => t.id === activeSection);
+          const prevTab = curIdx > 0 ? consultTabs[curIdx - 1] : null;
+          const nextTab = curIdx >= 0 && curIdx < consultTabs.length - 1 ? consultTabs[curIdx + 1] : null;
+
+          return (
+            <>
+              <div className="consult-tabstrip">
+                {consultTabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
+                    onClick={() => setActiveSection(tab.id)}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0 8px', gap: 8 }}>
+                {prevTab ? (
+                  <button type="button" onClick={() => setActiveSection(prevTab.id)}
+                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1px solid #d1d5db', background: '#f9fafb', color: '#374151' }}>
+                    ← {prevTab.label}
+                  </button>
+                ) : <span />}
+                <span style={{ fontSize: 11, color: '#9ca3af', alignSelf: 'center' }}>
+                  {curIdx >= 0 ? `${curIdx + 1} / ${consultTabs.length}` : ''}
+                </span>
+                {nextTab ? (
+                  <button type="button" onClick={() => setActiveSection(nextTab.id)}
+                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#1F7A8C', color: '#fff' }}>
+                    {nextTab.label} →
+                  </button>
+                ) : <span />}
+              </div>
+            </>
+          );
+        })()}
 
         {/* Clinical sections */}
         {topSection === 'intake'        && <IntakeTab />}

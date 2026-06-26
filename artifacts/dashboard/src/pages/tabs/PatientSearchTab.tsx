@@ -105,6 +105,7 @@ export default function PatientSearchTab() {
     setAllergies, setMedications, setPatientPhoto,
     setSurgicalHistory, setSurgicalNotes, setToxicHabits,
     setRosFindings, setProcedureData, setTraumaData,
+    setTopSection, setActiveSection,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -265,8 +266,12 @@ export default function PatientSearchTab() {
           if (d.traumaData) setTraumaData(d.traumaData);
         }
         showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
+        setTopSection('consultation');
+        setActiveSection('triage');
       } else {
         showToast(`Loaded: ${p.full_name ?? 'patient'} — no open encounter${pmhSuffix}.`, 'info');
+        setTopSection('consultation');
+        setActiveSection('triage');
       }
     }
   }
