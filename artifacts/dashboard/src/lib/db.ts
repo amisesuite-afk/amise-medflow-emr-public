@@ -560,6 +560,108 @@ export async function getLatestAppointmentType(
   }
 }
 
+// ─── Questionnaire data for EMR population ───────────────────────────────────
+
+export interface QuestionnaireIntakeData {
+  sessionId: string;
+  status: string;
+  chiefComplaint: string | null;
+  symptoms: string[];
+  medications: string[];
+  allergies: string[];
+  pmh: string[];
+  surgicalHistory: string[];
+  familyHistory: string[];
+  socialHabits: string[];
+  aiSummary: string | null;
+  staffReviewedAt: string | null;
+  nurseReviewedAt: string | null;
+  doctorApprovedAt: string | null;
+  responses: Array<{ questionKey: string; questionText: string; answerValue: string; answerDisplay: string }>;
+}
+
+export async function getQuestionnaireIntake(
+  patientId: string,
+): Promise<QuestionnaireIntakeData | null> {
+  if (!supabase) return null;
+  try {
+    const { data: session } = await supabase
+      .from('questionnaire_sessions')
+      .select('id, status, staff_reviewed_at, nurse_reviewed_at, doctor_approved_at')
+      .eq('patient_id', patientId)
+      .in('status', ['completed', 'nurse_reviewed', 'doctor_approved'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!session) return null;
+    const sid = (session as { id: string }).id;
+
+    const { data: responses } = await supabase
+      .from('questionnaire_responses')
+      .select('question_key, question_text, answer_value, answer_display')
+      .eq('session_id', sid)
+      .order('sequence_number', { ascending: true });
+
+    const rows = (responses ?? []) as Array<{
+      question_key: string; question_text: string;
+      answer_value: string; answer_display: string;
+    }>;
+
+    const { data: summaryRow } = await supabase
+      .from('intake_summaries')
+      .select('ai_summary, chief_complaint, key_positives')
+      .eq('session_id', sid)
+      .maybeSingle();
+
+    const summary = summaryRow as { ai_summary: string; chief_complaint: string; key_positives: string[] } | null;
+
+    const symptoms: string[] = [];
+    const medications: string[] = [];
+    const allergies: string[] = [];
+    const pmh: string[] = [];
+    const surgicalHistory: string[] = [];
+    const familyHistory: string[] = [];
+    const socialHabits: string[] = [];
+
+    for (const r of rows) {
+      const val = r.answer_display || r.answer_value;
+      if (!val || val.toLowerCase() === 'no' || val.toLowerCase() === 'none') continue;
+      switch (r.question_key) {
+        case 'chief_complaint': break;
+        case 'current_medications': medications.push(val); break;
+        case 'allergies': allergies.push(val); break;
+        case 'smoking_status': case 'alcohol_use': socialHabits.push(`${r.question_text}: ${val}`); break;
+        case 'prior_surgery': case 'surgery_type': case 'surgery_date': surgicalHistory.push(`${r.question_text}: ${val}`); break;
+        case 'family_history_cancer': case 'family_history_breast': familyHistory.push(`${r.question_text}: ${val}`); break;
+        case 'colonoscopy_history': case 'mammogram_history': pmh.push(`${r.question_text}: ${val}`); break;
+        default: if (r.answer_value.toLowerCase() !== 'no') symptoms.push(r.question_text); break;
+      }
+    }
+
+    const s = session as { id: string; status: string; staff_reviewed_at: string | null; nurse_reviewed_at: string | null; doctor_approved_at: string | null };
+    return {
+      sessionId: sid,
+      status: s.status,
+      chiefComplaint: summary?.chief_complaint ?? null,
+      symptoms,
+      medications,
+      allergies,
+      pmh,
+      surgicalHistory,
+      familyHistory,
+      socialHabits,
+      aiSummary: summary?.ai_summary ?? null,
+      staffReviewedAt: s.staff_reviewed_at,
+      nurseReviewedAt: s.nurse_reviewed_at,
+      doctorApprovedAt: s.doctor_approved_at,
+      responses: rows.map(r => ({ questionKey: r.question_key, questionText: r.question_text, answerValue: r.answer_value, answerDisplay: r.answer_display })),
+    };
+  } catch {
+    return null;
+  }
+}
+
 // ─── saveVitalsRecord ─────────────────────────────────────────────────────────
 
 /** Maps a VitalRecord (from the monitoring tab's wheel-entry) to the `vitals`

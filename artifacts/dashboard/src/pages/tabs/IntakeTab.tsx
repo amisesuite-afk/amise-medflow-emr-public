@@ -5,6 +5,7 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import PathwaySuggestions from '@/components/PathwaySuggestions';
 import SmartSymptomPicker from '@/components/SmartSymptomPicker';
 import PatientPhotoCapture from '@/components/PatientPhotoCapture';
+import WheelPicker from '@/components/WheelPicker';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { Sex, VitalSigns } from '@workspace/triage-engine';
@@ -18,14 +19,24 @@ function apiUrl(path: string) {
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
 }
 
-const VITAL_KEYS: { key: keyof VitalSigns; label: string; placeholder: string }[] = [
-  { key: 'systolicBp',     label: 'SBP',      placeholder: '120' },
-  { key: 'diastolicBp',    label: 'DBP',      placeholder: '80'  },
-  { key: 'heartRate',      label: 'HR',       placeholder: '88'  },
-  { key: 'temperatureC',   label: 'Temp °C',  placeholder: '37.0'},
-  { key: 'respiratoryRate',label: 'RR',       placeholder: '16'  },
-  { key: 'spo2',           label: 'SpO₂ %',  placeholder: '98'  },
-  { key: 'glucoseMmol',    label: 'RBS',      placeholder: '6.4' },
+interface VitalField {
+  key: keyof VitalSigns;
+  label: string;
+  unit: string;
+  placeholder: string;
+  min: number; max: number; step: number; decimals: number;
+  defaultVal: number;
+  normalRange: [number, number];
+}
+
+const VITAL_FIELDS: VitalField[] = [
+  { key: 'systolicBp',      label: 'SBP',   unit: 'mmHg',   placeholder: '120', min: 60,  max: 260, step: 1,   decimals: 0, defaultVal: 120, normalRange: [90,  140] },
+  { key: 'diastolicBp',     label: 'DBP',   unit: 'mmHg',   placeholder: '80',  min: 40,  max: 160, step: 1,   decimals: 0, defaultVal: 80,  normalRange: [60,  90]  },
+  { key: 'heartRate',       label: 'P',     unit: 'bpm',    placeholder: '88',  min: 30,  max: 220, step: 1,   decimals: 0, defaultVal: 80,  normalRange: [60,  100] },
+  { key: 'temperatureC',    label: 'T',     unit: '°C',     placeholder: '37.0',min: 34.0,max: 43.0,step: 0.1, decimals: 1, defaultVal: 37.0,normalRange: [36.1,37.5]},
+  { key: 'respiratoryRate', label: 'R',     unit: '/min',   placeholder: '16',  min: 8,   max: 60,  step: 1,   decimals: 0, defaultVal: 16,  normalRange: [12,  20]  },
+  { key: 'spo2',            label: 'SpO₂',  unit: '%',      placeholder: '98',  min: 70,  max: 100, step: 1,   decimals: 0, defaultVal: 98,  normalRange: [95,  100] },
+  { key: 'glucoseMmol',     label: 'RBS',   unit: 'mmol/L', placeholder: '6.4', min: 1.0, max: 35.0,step: 0.1, decimals: 1, defaultVal: 6.0, normalRange: [4.0, 7.8] },
 ];
 
 function vitalClass(key: keyof VitalSigns, raw: string): string {
@@ -372,19 +383,62 @@ export default function IntakeTab() {
 
       {/* Vital signs */}
       <CollapsibleCard title="Vital signs" badge={triageResult.vitalRedFlags.length > 0 ? `${triageResult.vitalRedFlags.length} alert` : 'optional'} badgeVariant={triageResult.vitalRedFlags.length > 0 ? 'danger' : 'default'}>
-        <div className="form-grid cols-7">
-          {VITAL_KEYS.map(({ key, label, placeholder }) => (
-            <div className="fld" key={key}>
-              <label>{label}</label>
-              <input
-                inputMode="decimal"
-                value={vitals[key]}
-                onChange={e => updateVital(key, e.target.value)}
-                placeholder={placeholder}
-                className={vitalClass(key, vitals[key])}
-              />
-            </div>
-          ))}
+        <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 8px' }}>
+          Scroll wheel to set value · or type directly below each wheel
+        </p>
+        <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
+          <div style={{ display: 'flex', gap: 10, minWidth: 'max-content' }}>
+            {VITAL_FIELDS.map(({ key, label, unit, placeholder, min, max, step, decimals, defaultVal, normalRange }) => {
+              const val = vitals[key];
+              const isAbnormal = val.trim() !== '' && Number.isFinite(parseFloat(val)) &&
+                (parseFloat(val) < normalRange[0] || parseFloat(val) > normalRange[1]);
+              return (
+                <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 78 }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+                    textTransform: 'uppercase',
+                    color: isAbnormal ? '#dc2626' : 'var(--muted)',
+                  }}>
+                    {label}
+                  </span>
+
+                  <WheelPicker
+                    value={val}
+                    onChange={v => updateVital(key, v)}
+                    min={min} max={max} step={step}
+                    decimals={decimals}
+                    defaultVal={defaultVal}
+                    normalRange={normalRange}
+                  />
+
+                  <input
+                    inputMode="decimal"
+                    value={val}
+                    onChange={e => updateVital(key, e.target.value)}
+                    placeholder={placeholder}
+                    style={{
+                      width: 70,
+                      fontSize: 12,
+                      padding: '4px 5px',
+                      textAlign: 'center',
+                      borderRadius: 6,
+                      border: `1.5px solid ${isAbnormal ? '#fca5a5' : '#d1d5db'}`,
+                      background: isAbnormal ? '#fff5f5' : 'var(--bg)',
+                      color: isAbnormal ? '#dc2626' : 'var(--ink)',
+                      outline: 'none',
+                    }}
+                  />
+
+                  <span style={{
+                    fontSize: 9, color: isAbnormal ? '#dc2626' : 'var(--muted)',
+                    fontWeight: isAbnormal ? 700 : 400,
+                  }}>
+                    {isAbnormal ? '⚠ ' : ''}{unit}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
         {triageResult.vitalRedFlags.length > 0 && (
           <div className="vital-flags" style={{ marginTop: 8 }}>

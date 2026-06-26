@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, listPatientsBySite, getLatestOpenEncounter, getLatestAppointmentType, loadPMH, loadEncounterData, type PatientListRow } from '@/lib/db';
+import { listPatients, listPatientsBySite, getLatestOpenEncounter, getLatestAppointmentType, loadPMH, loadEncounterData, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
 import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { fmtPhone } from '@/lib/fmt';
@@ -98,6 +98,9 @@ export default function PatientSearchTab() {
   const [selected,      setSelected]      = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [questionnaireData, setQuestionnaireData] = useState<QuestionnaireIntakeData | null>(null);
+  const [qPopulated, setQPopulated] = useState(false);
+
   const {
     setPatientName, setAge, setSex, setDob, setPhone,
     setPatientId, setEncounterId, setComorbidities,
@@ -106,6 +109,9 @@ export default function PatientSearchTab() {
     setSurgicalHistory, setSurgicalNotes, setToxicHabits,
     setRosFindings, setProcedureData, setTraumaData,
     setTopSection, setActiveSection,
+    toggleSymptom, setFreeText, symptoms, freeText,
+    setMedicationsText,
+    comorbidities, surgicalHistory, toxicHabits,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -294,6 +300,51 @@ export default function PatientSearchTab() {
         routeByAppointmentType(apptType);
       }
     }
+
+    // Check for questionnaire intake data
+    setQuestionnaireData(null);
+    setQPopulated(false);
+    const qData = await getQuestionnaireIntake(p.id);
+    if (qData && qData.responses.length > 0) {
+      setQuestionnaireData(qData);
+    }
+  }
+
+  function populateFromQuestionnaire() {
+    if (!questionnaireData) return;
+    const q = questionnaireData;
+
+    if (q.chiefComplaint) {
+      const existing = freeText ?? '';
+      setFreeText(existing ? `${existing}\n\n[From questionnaire] ${q.chiefComplaint}` : q.chiefComplaint);
+    }
+
+    for (const s of q.symptoms) {
+      if (!symptoms.includes(s)) toggleSymptom(s);
+    }
+
+    if (q.medications.length) {
+      setMedicationsText(q.medications.join(', '));
+    }
+
+    if (q.allergies.length) {
+      setAllergies(q.allergies.join(', '));
+    }
+
+    if (q.pmh.length) {
+      setComorbidities([...comorbidities, ...q.pmh.filter(c => !comorbidities.includes(c))]);
+    }
+
+    if (q.surgicalHistory.length) {
+      setSurgicalHistory([...surgicalHistory, ...q.surgicalHistory.filter(s => !surgicalHistory.includes(s))]);
+    }
+
+    if (q.socialHabits.length) {
+      setToxicHabits([...toxicHabits, ...q.socialHabits.filter(h => !toxicHabits.includes(h))]);
+    }
+
+    setQPopulated(true);
+    showToast('Questionnaire data populated — please confirm with patient.', 'success');
   }
 
   /** Save current patient to the demo localStorage registry */
@@ -376,6 +427,66 @@ export default function PatientSearchTab() {
           </button>
         ))}
       </div>
+
+      {/* Questionnaire intake data banner */}
+      {questionnaireData && !qPopulated && (
+        <div style={{
+          background: '#eff6ff', border: '1px solid #93c5fd', borderRadius: 10,
+          padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 8,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 15 }}>📋</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: '#1e40af' }}>
+              Pre-visit questionnaire available
+            </span>
+            <span style={{
+              fontSize: 10, fontWeight: 600, padding: '2px 8px', borderRadius: 999,
+              background: questionnaireData.doctorApprovedAt ? '#dcfce7' : questionnaireData.staffReviewedAt || questionnaireData.nurseReviewedAt ? '#fef3c7' : '#fee2e2',
+              color: questionnaireData.doctorApprovedAt ? '#166534' : questionnaireData.staffReviewedAt || questionnaireData.nurseReviewedAt ? '#92400e' : '#991b1b',
+            }}>
+              {questionnaireData.doctorApprovedAt ? 'Doctor approved' : questionnaireData.staffReviewedAt || questionnaireData.nurseReviewedAt ? 'Staff reviewed' : 'Awaiting review'}
+            </span>
+          </div>
+          <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.6 }}>
+            {questionnaireData.chiefComplaint && <div><strong>CC:</strong> {questionnaireData.chiefComplaint}</div>}
+            {questionnaireData.symptoms.length > 0 && <div><strong>Symptoms:</strong> {questionnaireData.symptoms.slice(0, 5).join(', ')}{questionnaireData.symptoms.length > 5 ? ` +${questionnaireData.symptoms.length - 5} more` : ''}</div>}
+            {questionnaireData.medications.length > 0 && <div><strong>Medications:</strong> {questionnaireData.medications.join(', ')}</div>}
+            {questionnaireData.allergies.length > 0 && <div><strong>Allergies:</strong> {questionnaireData.allergies.join(', ')}</div>}
+            {questionnaireData.aiSummary && <div style={{ marginTop: 4, fontStyle: 'italic', color: '#6b7280', fontSize: 11 }}>{questionnaireData.aiSummary.slice(0, 200)}{questionnaireData.aiSummary.length > 200 ? '…' : ''}</div>}
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              type="button"
+              onClick={populateFromQuestionnaire}
+              style={{
+                padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 700,
+                background: '#1e40af', color: '#fff', border: 'none', cursor: 'pointer',
+              }}
+            >
+              Confirm & Populate EMR
+            </button>
+            <button
+              type="button"
+              onClick={() => setQuestionnaireData(null)}
+              style={{
+                padding: '6px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600,
+                background: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', cursor: 'pointer',
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
+      {qPopulated && (
+        <div style={{
+          background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8,
+          padding: '8px 12px', fontSize: 12, color: '#166534', fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 6,
+        }}>
+          ✓ Questionnaire data populated — confirm details with patient during consultation
+        </div>
+      )}
 
       <div className="psearch-bar">
         <span className="psearch-icon">🔍</span>
