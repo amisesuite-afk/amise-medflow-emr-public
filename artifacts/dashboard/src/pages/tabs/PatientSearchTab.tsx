@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, listPatientsBySite, getLatestOpenEncounter, loadPMH, loadEncounterData, type PatientListRow } from '@/lib/db';
+import { listPatients, listPatientsBySite, getLatestOpenEncounter, getLatestAppointmentType, loadPMH, loadEncounterData, type PatientListRow } from '@/lib/db';
 import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { fmtPhone } from '@/lib/fmt';
@@ -207,6 +207,26 @@ export default function PatientSearchTab() {
     debounceRef.current = setTimeout(() => void search(v), 350);
   }
 
+  function routeByAppointmentType(apptType: string | null) {
+    const t = (apptType ?? '').toLowerCase();
+    if (t.includes('follow') || t.includes('review') || t === 'follow_up') {
+      setTopSection('consultation');
+      setActiveSection('assessment');
+    } else if (t.includes('pre-op') || t.includes('preop') || t.includes('pre_op')) {
+      setTopSection('procedures');
+      setActiveSection('procedures');
+    } else if (t.includes('post-op') || t.includes('postop') || t.includes('post_op')) {
+      setTopSection('consultation');
+      setActiveSection('progress');
+    } else if (t.includes('endoscop') || t.includes('ercp') || t.includes('ogd') || t.includes('colonoscop')) {
+      setTopSection('procedures');
+      setActiveSection('procedures');
+    } else {
+      setTopSection('consultation');
+      setActiveSection('triage');
+    }
+  }
+
   async function loadPatient(p: PatientListRowEx) {
     setSelected(p.id);
 
@@ -266,12 +286,12 @@ export default function PatientSearchTab() {
           if (d.traumaData) setTraumaData(d.traumaData);
         }
         showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
-        setTopSection('consultation');
-        setActiveSection('triage');
+        const apptType = await getLatestAppointmentType(p.id);
+        routeByAppointmentType(apptType);
       } else {
         showToast(`Loaded: ${p.full_name ?? 'patient'} — no open encounter${pmhSuffix}.`, 'info');
-        setTopSection('consultation');
-        setActiveSection('triage');
+        const apptType = await getLatestAppointmentType(p.id);
+        routeByAppointmentType(apptType);
       }
     }
   }

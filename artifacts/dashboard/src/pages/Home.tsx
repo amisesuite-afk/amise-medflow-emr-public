@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAppContext, Section, TopSection, type VitalsState } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import { hasRole, roleIn } from '@/lib/roles';
+import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import NavSidebar from '@/components/NavSidebar';
 import ReceptionistView from './ReceptionistView';
 import NursePreVisitView from './NursePreVisitView';
@@ -139,6 +140,51 @@ export default function HomePage() {
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
 
   const userRole = profile?.role ?? 'front_desk';
+
+  /* ── Consultation tab list (role-aware) ── */
+  const consultTabs = useMemo<{ id: Section; label: string }[]>(() => [
+    { id: 'triage', label: 'Triage' },
+    { id: 'pmh', label: 'PMH' },
+    { id: 'surgical', label: 'Surgical' },
+    { id: 'medications', label: 'Meds' },
+    { id: 'allergies', label: 'Allergies' },
+    { id: 'toxic', label: 'Habits' },
+    { id: 'scales', label: 'Scales' },
+    { id: 'ros', label: 'ROS' },
+    ...(hasRole(userRole, 'nurse') ? [
+      { id: 'examination' as Section, label: 'Exam' },
+      { id: 'investigations' as Section, label: 'Labs' },
+      { id: 'radiology' as Section, label: 'Radiology' },
+      { id: 'attachments' as Section, label: 'Attach' },
+    ] : []),
+    ...(hasRole(userRole, 'doctor') ? [
+      { id: 'assessment' as Section, label: 'Assess' },
+      { id: 'plan' as Section, label: 'Plan' },
+      { id: 'prescriptions' as Section, label: 'RX' },
+      { id: 'referring_providers' as Section, label: 'Referrals' },
+      { id: 'ai_consultant' as Section, label: 'AI Aid' },
+    ] : []),
+    { id: 'progress', label: 'Notes' },
+    { id: 'monitoring', label: 'Monitor' },
+    { id: 'tasks', label: 'Tasks' },
+  ], [userRole]);
+
+  /* ── Swipe navigation for consultation tabs (iPad / mobile) ── */
+  const swipeRef = useSwipeNavigation<HTMLElement>({
+    onSwipeLeft: useCallback(() => {
+      const idx = consultTabs.findIndex(t => t.id === activeSection);
+      if (idx >= 0 && idx < consultTabs.length - 1) {
+        setActiveSection(consultTabs[idx + 1].id);
+      }
+    }, [consultTabs, activeSection, setActiveSection]),
+    onSwipeRight: useCallback(() => {
+      const idx = consultTabs.findIndex(t => t.id === activeSection);
+      if (idx > 0) {
+        setActiveSection(consultTabs[idx - 1].id);
+      }
+    }, [consultTabs, activeSection, setActiveSection]),
+    enabled: topSection === 'consultation',
+  });
 
   const fetchPendingBookings = useCallback(async () => {
     if (!hasRole(userRole, 'admin')) return;
@@ -284,7 +330,7 @@ export default function HomePage() {
       />
 
       {/* ── Main content ── */}
-      <main className="main-content">
+      <main ref={swipeRef} className="main-content">
         {/* Pre-visit status banner for doctor/admin */}
         {preVisitStatus === 'registered' && (
           <div style={{ margin: '0 0 12px', padding: '10px 16px', borderRadius: 8, background: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -325,32 +371,6 @@ export default function HomePage() {
         })()}
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
         {topSection === 'consultation' && (() => {
-          const consultTabs: { id: Section; label: string }[] = [
-            { id: 'triage', label: 'Triage' },
-            { id: 'pmh', label: 'PMH' },
-            { id: 'surgical', label: 'Surgical' },
-            { id: 'medications', label: 'Meds' },
-            { id: 'allergies', label: 'Allergies' },
-            { id: 'toxic', label: 'Habits' },
-            { id: 'scales', label: 'Scales' },
-            { id: 'ros', label: 'ROS' },
-            ...(hasRole(userRole, 'nurse') ? [
-              { id: 'examination' as Section, label: 'Exam' },
-              { id: 'investigations' as Section, label: 'Labs' },
-              { id: 'radiology' as Section, label: 'Radiology' },
-              { id: 'attachments' as Section, label: 'Attach' },
-            ] : []),
-            ...(hasRole(userRole, 'doctor') ? [
-              { id: 'assessment' as Section, label: 'Assess' },
-              { id: 'plan' as Section, label: 'Plan' },
-              { id: 'prescriptions' as Section, label: 'RX' },
-              { id: 'referring_providers' as Section, label: 'Referrals' },
-              { id: 'ai_consultant' as Section, label: 'AI Aid' },
-            ] : []),
-            { id: 'progress', label: 'Notes' },
-            { id: 'monitoring', label: 'Monitor' },
-            { id: 'tasks', label: 'Tasks' },
-          ];
           const curIdx = consultTabs.findIndex(t => t.id === activeSection);
           const prevTab = curIdx > 0 ? consultTabs[curIdx - 1] : null;
           const nextTab = curIdx >= 0 && curIdx < consultTabs.length - 1 ? consultTabs[curIdx + 1] : null;

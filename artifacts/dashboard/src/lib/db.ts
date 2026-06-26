@@ -542,6 +542,24 @@ export async function getLatestOpenEncounter(
   return { encounterId: (data as { id: string } | null)?.id ?? null, error: null };
 }
 
+export async function getLatestAppointmentType(
+  patient_id: string,
+): Promise<string | null> {
+  if (!supabase) return null;
+  try {
+    const { data } = await supabase
+      .from('appointment_requests')
+      .select('appointment_type')
+      .eq('patient_id', patient_id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return (data as { appointment_type: string } | null)?.appointment_type ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // ─── saveVitalsRecord ─────────────────────────────────────────────────────────
 
 /** Maps a VitalRecord (from the monitoring tab's wheel-entry) to the `vitals`
