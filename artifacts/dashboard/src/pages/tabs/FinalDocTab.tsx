@@ -673,6 +673,8 @@ export default function FinalDocTab() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
 
+  const [docFormat, setDocFormat] = useState<'note' | 'referral' | 'discharge'>('note');
+
   const [closing, setClosing] = useState(false);
   const [closeMsg, setCloseMsg] = useState('');
 
@@ -734,20 +736,43 @@ export default function FinalDocTab() {
         display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
         padding: '10px 0 10px', borderBottom: '1px solid #e5e7eb', marginBottom: 10,
       }}>
-        <button type="button" style={BTN_PRIMARY} onClick={() => setFinalDocument(buildDocument(ctx))}>
-          ↺ Populate
+        {/* Format selector + populate */}
+        <select
+          value={docFormat}
+          onChange={e => setDocFormat(e.target.value as 'note' | 'referral' | 'discharge')}
+          style={{
+            padding: '5px 8px', borderRadius: 7, fontSize: 12, fontWeight: 600,
+            border: '1px solid #d1d5db', background: '#f9fafb', cursor: 'pointer',
+            color: '#1a3a5c',
+          }}
+        >
+          <option value="note">Clinical Note</option>
+          <option value="referral">Referral Letter</option>
+          <option value="discharge">Discharge Summary</option>
+        </select>
+
+        <button type="button" style={BTN_PRIMARY} onClick={() => {
+          if (docFormat === 'note') {
+            setFinalDocument(buildDocument(ctx));
+          } else if (docFormat === 'referral') {
+            setShowReferral(true);
+          } else {
+            setShowDischarge(true);
+          }
+        }}>
+          ↺ Generate
+        </button>
+
+        <button type="button" style={hasFinal ? { ...BTN_PRIMARY, background: '#0b8278' } : btnDisabled({ ...BTN_PRIMARY, background: '#0b8278' })}
+          disabled={!hasFinal}
+          onClick={() => void saveBlobAsPDF(buildPrintHtml(finalDocument, ctx), `note-${patSlug}-${dateStr}.pdf`)}>
+          ↓ PDF
         </button>
 
         <button type="button" style={hasFinal ? BTN_GHOST : btnDisabled(BTN_GHOST)}
           disabled={!hasFinal}
           onClick={() => printDoc(buildPrintHtml(finalDocument, ctx))}>
           🖨 Print
-        </button>
-
-        <button type="button" style={hasFinal ? BTN_GHOST : btnDisabled(BTN_GHOST)}
-          disabled={!hasFinal}
-          onClick={() => void saveBlobAsPDF(buildPrintHtml(finalDocument, ctx), `note-${patSlug}-${dateStr}.pdf`)}>
-          ↓ PDF
         </button>
 
         <div style={{ width: 1, height: 20, background: '#e5e7eb', margin: '0 2px' }} />
@@ -824,12 +849,12 @@ export default function FinalDocTab() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="button" style={BTN_ACCENT}
-              onClick={() => printDoc(buildReferralHtml(ctx, referTo, referNotes))}>
-              🖨 Print
-            </button>
-            <button type="button" style={BTN_GHOST}
               onClick={() => void saveBlobAsPDF(buildReferralHtml(ctx, referTo, referNotes), `referral-${patSlug}-${dateStr}.pdf`)}>
               ↓ PDF
+            </button>
+            <button type="button" style={BTN_GHOST}
+              onClick={() => printDoc(buildReferralHtml(ctx, referTo, referNotes))}>
+              🖨 Print
             </button>
             <button type="button" style={{ ...BTN_GHOST, marginLeft: 'auto' }} onClick={() => setShowReferral(false)}>× Close</button>
           </div>
@@ -859,12 +884,12 @@ export default function FinalDocTab() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="button" style={BTN_ACCENT}
-              onClick={() => printDoc(buildDischargeHtml(ctx, dischargeNotes, followUp, warnings))}>
-              🖨 Print
-            </button>
-            <button type="button" style={BTN_GHOST}
               onClick={() => void saveBlobAsPDF(buildDischargeHtml(ctx, dischargeNotes, followUp, warnings), `discharge-${patSlug}-${dateStr}.pdf`)}>
               ↓ PDF
+            </button>
+            <button type="button" style={BTN_GHOST}
+              onClick={() => printDoc(buildDischargeHtml(ctx, dischargeNotes, followUp, warnings))}>
+              🖨 Print
             </button>
             <button type="button" style={{ ...BTN_GHOST, marginLeft: 'auto' }} onClick={() => setShowDischarge(false)}>× Close</button>
           </div>

@@ -292,6 +292,10 @@ interface CtxValue {
   /** Trauma / Burns assessment data. */
   traumaData: TraumaData;
   setTraumaData: React.Dispatch<React.SetStateAction<TraumaData>>;
+
+  /** Global save status for autosave operations. */
+  saveStatus: 'idle' | 'saving' | 'saved' | 'error';
+  lastSaveError: string | null;
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -422,6 +426,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [paneTop, setPaneTop] = useState<RankedDiagnosis[]>([]);
   const [paneConverged, setPaneConverged] = useState(false);
   const [traumaData, setTraumaData] = useState<TraumaData>(EMPTY_TRAUMA_DATA);
+
+  // ── Global save status tracking ───────────────────────────────────────────
+  const [saveStatus, _setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [lastSaveError, _setLastSaveError] = useState<string | null>(null);
+  const pendingSaves = useRef(0);
+  const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const trackedSave = useCallback(async <T,>(fn: () => Promise<T>): Promise<T | undefined> => {
+    pendingSaves.current++;
+    _setSaveStatus('saving');
+    try {
+      const result = await fn();
+      pendingSaves.current--;
+      if (pendingSaves.current === 0) {
+        _setSaveStatus('saved');
+        if (savedTimer.current) clearTimeout(savedTimer.current);
+        savedTimer.current = setTimeout(() => _setSaveStatus('idle'), 2000);
+      }
+      return result;
+    } catch (err) {
+      pendingSaves.current--;
+      _setSaveStatus('error');
+      _setLastSaveError(err instanceof Error ? err.message : 'Save failed');
+      console.error('[autosave] error:', err);
+      return undefined;
+    }
+  }, []);
 
   const ENC_KEY = 'amise-enc-v1';
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -655,7 +686,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId || !encounterId) return;
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     autoSaveTimerRef.current = setTimeout(() => {
-      void saveAssessment({
+      void trackedSave(() => saveAssessment({
         encounter_id:  encounterId,
         patient_id:    patientId,
         diagnosis:     assessment,
@@ -664,9 +695,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         cptCodes,
         acuity:        triageResult.acuity,
         triageScore:   triageResult.score,
-      });
-      void savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan });
-      void syncMedicationList(patientId, encounterId, medications, medicationsText);
+      }));
+      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }));
+      void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText));
     }, 2000);
     return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -679,7 +710,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current);
     allergyTimerRef.current = setTimeout(() => {
       const allergenList = allergies.split(',').map(s => s.trim()).filter(Boolean);
-      if (allergenList.length) void syncAllergyList(patientId, allergenList);
+      if (allergenList.length) void trackedSave(() => syncAllergyList(patientId, allergenList));
     }, 3000);
     return () => { if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -691,7 +722,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId || !encounterId) return;
     if (examTimerRef.current) clearTimeout(examTimerRef.current);
     examTimerRef.current = setTimeout(() => {
-      void saveExamFindings(examFindings, examNotes, patientId, encounterId);
+      void trackedSave(() => saveExamFindings(examFindings, examNotes, patientId, encounterId));
     }, 3000);
     return () => { if (examTimerRef.current) clearTimeout(examTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -703,7 +734,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId) return;
     if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current);
     surgicalTimerRef.current = setTimeout(() => {
-      void syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes);
+      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes));
     }, 3000);
     return () => { if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -715,7 +746,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId || !toxicHabits.length) return;
     if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current);
     toxicTimerRef.current = setTimeout(() => {
-      void syncToxicHabits(patientId, toxicHabits);
+      void trackedSave(() => syncToxicHabits(patientId, toxicHabits));
     }, 3000);
     return () => { if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -729,7 +760,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!hasFinding) return;
     if (rosTimerRef.current) clearTimeout(rosTimerRef.current);
     rosTimerRef.current = setTimeout(() => {
-      void syncRosFindings(patientId, encounterId, rosFindings);
+      void trackedSave(() => syncRosFindings(patientId, encounterId, rosFindings));
     }, 3000);
     return () => { if (rosTimerRef.current) clearTimeout(rosTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -743,7 +774,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!hasData) return;
     if (procedureTimerRef.current) clearTimeout(procedureTimerRef.current);
     procedureTimerRef.current = setTimeout(() => {
-      void syncProcedureData(patientId, encounterId, procedureData);
+      void trackedSave(() => syncProcedureData(patientId, encounterId, procedureData));
     }, 3000);
     return () => { if (procedureTimerRef.current) clearTimeout(procedureTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -755,11 +786,101 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId || !encounterId) return;
     if (traumaTimerRef.current) clearTimeout(traumaTimerRef.current);
     traumaTimerRef.current = setTimeout(() => {
-      void syncTraumaRecord(patientId, encounterId, traumaData);
+      void trackedSave(() => syncTraumaRecord(patientId, encounterId, traumaData));
     }, 3000);
     return () => { if (traumaTimerRef.current) clearTimeout(traumaTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, encounterId, traumaData]);
+
+  // ── Flush pending debounced saves on page close / hide ──────────────────
+  const flushPendingSaves = useCallback(() => {
+    if (autoSaveTimerRef.current && patientId && encounterId) {
+      clearTimeout(autoSaveTimerRef.current);
+      autoSaveTimerRef.current = null;
+      void trackedSave(() => saveAssessment({
+        encounter_id: encounterId, patient_id: patientId,
+        diagnosis: assessment, differentials, icdCodes, cptCodes,
+        acuity: triageResult.acuity, triageScore: triageResult.score,
+      }));
+      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }));
+      void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText));
+    }
+    if (allergyTimerRef.current && patientId) {
+      clearTimeout(allergyTimerRef.current);
+      allergyTimerRef.current = null;
+      const allergenList = allergies.split(',').map(s => s.trim()).filter(Boolean);
+      if (allergenList.length) void trackedSave(() => syncAllergyList(patientId, allergenList));
+    }
+    if (examTimerRef.current && patientId && encounterId) {
+      clearTimeout(examTimerRef.current);
+      examTimerRef.current = null;
+      void trackedSave(() => saveExamFindings(examFindings, examNotes, patientId, encounterId));
+    }
+    if (surgicalTimerRef.current && patientId) {
+      clearTimeout(surgicalTimerRef.current);
+      surgicalTimerRef.current = null;
+      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes));
+    }
+    if (toxicTimerRef.current && patientId) {
+      clearTimeout(toxicTimerRef.current);
+      toxicTimerRef.current = null;
+      void trackedSave(() => syncToxicHabits(patientId, toxicHabits));
+    }
+    if (rosTimerRef.current && patientId && encounterId) {
+      clearTimeout(rosTimerRef.current);
+      rosTimerRef.current = null;
+      void trackedSave(() => syncRosFindings(patientId, encounterId, rosFindings));
+    }
+    if (procedureTimerRef.current && patientId && encounterId) {
+      clearTimeout(procedureTimerRef.current);
+      procedureTimerRef.current = null;
+      void trackedSave(() => syncProcedureData(patientId, encounterId, procedureData));
+    }
+    if (traumaTimerRef.current && patientId && encounterId) {
+      clearTimeout(traumaTimerRef.current);
+      traumaTimerRef.current = null;
+      void trackedSave(() => syncTraumaRecord(patientId, encounterId, traumaData));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan,
+    triageResult.acuity, triageResult.score, medications, medicationsText,
+    allergies, examFindings, examNotes, surgicalHistory, surgicalNotes,
+    toxicHabits, rosFindings, procedureData, traumaData, trackedSave]);
+
+  // Stable ref so event handlers always see the latest flush function
+  const flushRef = useRef(flushPendingSaves);
+  useEffect(() => { flushRef.current = flushPendingSaves; }, [flushPendingSaves]);
+
+  // Track whether any debounce timer is pending (for beforeunload confirmation)
+  const hasPendingTimers = useCallback(() =>
+    !!(autoSaveTimerRef.current || allergyTimerRef.current || examTimerRef.current ||
+       surgicalTimerRef.current || toxicTimerRef.current || rosTimerRef.current ||
+       procedureTimerRef.current || traumaTimerRef.current), []);
+
+  useEffect(() => {
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      flushRef.current();
+      if (pendingSaves.current > 0 || hasPendingTimers()) {
+        e.preventDefault();
+      }
+    }
+    function handlePageHide() {
+      flushRef.current();
+    }
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'hidden') {
+        flushRef.current();
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [hasPendingTimers]);
 
   const value: CtxValue = {
     activeSection, setActiveSection,
@@ -850,6 +971,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     paneTop, setPaneTop,
     paneConverged, setPaneConverged,
     traumaData, setTraumaData,
+    saveStatus,
+    lastSaveError,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -134,6 +134,9 @@ export default function HomePage() {
     encounterMode, setEncounterMode,
     patientPhoto,
     patientId,
+    encounterId,
+    saveStatus,
+    lastSaveError,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -283,6 +286,46 @@ export default function HomePage() {
           )}
 
           <ResultsAlertBadge patientId={patientId ?? undefined} />
+
+          {/* Encounter status badge — red = open, green = closed/none */}
+          {patientId && (
+            <div
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                padding: '4px 10px', borderRadius: 999, fontSize: 11, fontWeight: 700,
+                background: encounterId ? '#fef2f2' : '#f0fdf4',
+                color: encounterId ? '#dc2626' : '#16a34a',
+                border: `1px solid ${encounterId ? '#fca5a5' : '#86efac'}`,
+              }}
+              title={encounterId ? `Encounter open (${encounterId.slice(0, 8)}…)` : 'No open encounter'}
+            >
+              <span style={{
+                width: 8, height: 8, borderRadius: '50%',
+                background: encounterId ? '#dc2626' : '#16a34a',
+                display: 'inline-block',
+              }} />
+              {encounterId ? 'Open' : 'Closed'}
+            </div>
+          )}
+
+          {/* Save status indicator */}
+          {saveStatus !== 'idle' && (
+            <div
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                padding: '3px 8px', borderRadius: 999, fontSize: 10, fontWeight: 600,
+                background: saveStatus === 'error' ? '#fef2f2' : saveStatus === 'saving' ? '#fffbeb' : '#f0fdf4',
+                color: saveStatus === 'error' ? '#dc2626' : saveStatus === 'saving' ? '#b45309' : '#16a34a',
+                border: `1px solid ${saveStatus === 'error' ? '#fca5a5' : saveStatus === 'saving' ? '#fde68a' : '#86efac'}`,
+                transition: 'opacity .3s',
+              }}
+              title={lastSaveError ?? undefined}
+            >
+              {saveStatus === 'saving' && '⏳ Saving…'}
+              {saveStatus === 'saved' && '✓ Saved'}
+              {saveStatus === 'error' && '⚠ Save failed'}
+            </div>
+          )}
 
           <div className={`acuity-badge ${acuityClass(triageResult.acuity)}`}>
             <span className="ab-label">Acuity</span>
