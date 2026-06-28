@@ -360,6 +360,13 @@ export default function IntakePage() {
     } catch { /* corrupt storage — start fresh */ }
   }, []);
 
+  // Clean up sessionStorage on unmount (e.g. navigating away mid-form)
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem(STORAGE_KEY);
+    };
+  }, []);
+
   // ── CC screen → Referral check ─────────────────────────────────────────
   function handleCcNext() {
     if (ccSelection.length === 0) return;
@@ -485,6 +492,8 @@ export default function IntakePage() {
         const err = await res.json().catch(() => ({}));
         setSubmitError((err as { error?: string }).error ?? 'Failed to save. Please contact the practice.');
       } else {
+        // Clean up sessionStorage on successful submission
+        sessionStorage.removeItem(STORAGE_KEY);
         setScreen('complete');
       }
     } catch {

@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { checkForbiddenContent } from '@workspace/triage-engine';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY!, timeout: 15_000 });
 const MODEL = process.env.CLAUDE_MODEL || 'claude-opus-4-5';
 
 export const SYSTEM_PROMPT = `You are the front desk administrative assistant for Amise Medical Services in Saint Lucia, a general and endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM.

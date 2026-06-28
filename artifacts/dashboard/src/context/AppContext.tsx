@@ -317,12 +317,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (seededForUserRef.current === profile.id) return; // already seeded for this user
     seededForUserRef.current = profile.id;
     _setCurrentSite(profile.default_site);
-    try { localStorage.setItem(SITE_STORAGE_KEY, profile.default_site); } catch { /* ignore */ }
+    try { localStorage.setItem(SITE_STORAGE_KEY, profile.default_site); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
   }, [profile]);
 
   function setCurrentSite(site: SiteCode) {
     _setCurrentSite(site);
-    try { localStorage.setItem(SITE_STORAGE_KEY, site); } catch { /* ignore */ }
+    try { localStorage.setItem(SITE_STORAGE_KEY, site); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
     // Debounce write-back to user_profiles.default_site (explicit switch only).
     if (siteDebounceRef.current) clearTimeout(siteDebounceRef.current);
     siteDebounceRef.current = setTimeout(() => {
@@ -432,12 +432,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [lastSaveError, _setLastSaveError] = useState<string | null>(null);
   const pendingSaves = useRef(0);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveEpoch = useRef(0);
 
   const trackedSave = useCallback(async <T,>(fn: () => Promise<T>): Promise<T | undefined> => {
+    const epoch = saveEpoch.current;
     pendingSaves.current++;
     _setSaveStatus('saving');
     try {
       const result = await fn();
+      if (saveEpoch.current !== epoch) return undefined;
       pendingSaves.current--;
       if (pendingSaves.current === 0) {
         _setSaveStatus('saved');
@@ -559,7 +562,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const scheduleSave = useCallback((data: Record<string, unknown>) => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      try { localStorage.setItem(ENC_KEY, JSON.stringify(data)); } catch { /* ignore */ }
+      try { localStorage.setItem(ENC_KEY, JSON.stringify(data)); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
     }, 500);
   }, []);
 
@@ -582,9 +585,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       paneState, traumaData,
     });
     // Large blobs saved separately — avoids 5 MB localStorage limit on the main key
-    try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { /* ignore */ }
-    try { localStorage.setItem('amise-patient-photo-v1', patientPhoto); } catch { /* ignore */ }
-    try { localStorage.setItem('amise-exam-photos-v1', JSON.stringify(examPhotos)); } catch { /* ignore */ }
+    try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
+    try { localStorage.setItem('amise-patient-photo-v1', patientPhoto); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
+    try { localStorage.setItem('amise-exam-photos-v1', JSON.stringify(examPhotos)); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
     isPostOp, postOpDays, pregnancyPossible,
@@ -616,7 +619,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   function toggleMedication(v: string) { setMedications(c => toggleList(c, v)); }
   function toggleToxicHabit(v: string) { setToxicHabits(c => toggleList(c, v)); }
 
+  // ── Timer refs for autosave debouncing (hoisted so clearPatient can cancel them) ─
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const allergyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const surgicalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const toxicTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rosTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const procedureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const traumaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   function clearPatient() {
+    // Invalidate in-flight saves and cancel all debounce timers
+    saveEpoch.current++;
+    if (autoSaveTimerRef.current) { clearTimeout(autoSaveTimerRef.current); autoSaveTimerRef.current = null; }
+    if (allergyTimerRef.current) { clearTimeout(allergyTimerRef.current); allergyTimerRef.current = null; }
+    if (examTimerRef.current) { clearTimeout(examTimerRef.current); examTimerRef.current = null; }
+    if (surgicalTimerRef.current) { clearTimeout(surgicalTimerRef.current); surgicalTimerRef.current = null; }
+    if (toxicTimerRef.current) { clearTimeout(toxicTimerRef.current); toxicTimerRef.current = null; }
+    if (rosTimerRef.current) { clearTimeout(rosTimerRef.current); rosTimerRef.current = null; }
+    if (procedureTimerRef.current) { clearTimeout(procedureTimerRef.current); procedureTimerRef.current = null; }
+    if (traumaTimerRef.current) { clearTimeout(traumaTimerRef.current); traumaTimerRef.current = null; }
     setPatientId(null); setEncounterId(null);
     setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto(''); setExamPhotos([]);
     setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
@@ -681,7 +704,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const triageResult = useMemo(() => adaptiveTriage(triageInput), [triageInput]);
 
   // ── Autosave doctor clinical data to Supabase (debounced 2 s) ────────────
-  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !encounterId) return;
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
@@ -704,7 +726,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score, medications, medicationsText]);
 
   // ── Autosave allergies (debounced 3 s — patient-level, no encounter needed) ─
-  const allergyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !allergies) return;
     if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current);
@@ -717,7 +738,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, allergies]);
 
   // ── Autosave examination findings (debounced 3 s) ─────────────────────────
-  const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !encounterId) return;
     if (examTimerRef.current) clearTimeout(examTimerRef.current);
@@ -729,7 +749,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, encounterId, examFindings, examNotes]);
 
   // ── Autosave surgical history (patient-level, debounced 3 s) ───────────────
-  const surgicalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId) return;
     if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current);
@@ -741,7 +760,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, surgicalHistory, surgicalNotes]);
 
   // ── Autosave toxic habits (patient-level, debounced 3 s) ───────────────────
-  const toxicTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !toxicHabits.length) return;
     if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current);
@@ -753,7 +771,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, toxicHabits]);
 
   // ── Autosave ROS findings (encounter-level, debounced 3 s) ────────────────
-  const rosTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !encounterId) return;
     const hasFinding = Object.values(rosFindings).some(f => f.status !== 'not-asked' || f.details.length > 0 || f.notes);
@@ -767,7 +784,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, encounterId, rosFindings]);
 
   // ── Autosave procedure data (encounter-level, debounced 3 s) ──────────────
-  const procedureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !encounterId) return;
     const hasData = Object.values(procedureData).some(v => v && typeof v === 'object' && Object.keys(v as object).length > 0);
@@ -781,7 +797,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, encounterId, procedureData]);
 
   // ── Autosave trauma data (encounter-level, debounced 3 s) ─────────────────
-  const traumaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !encounterId) return;
     if (traumaTimerRef.current) clearTimeout(traumaTimerRef.current);

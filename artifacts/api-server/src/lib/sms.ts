@@ -25,6 +25,14 @@ export interface SmsResult {
 const recentSends = new Map<string, number>();
 const SMS_DEDUP_MS = 60_000;
 
+// Periodic cleanup of stale dedup entries
+setInterval(() => {
+  const now = Date.now();
+  for (const [k, ts] of recentSends) {
+    if (now - ts > SMS_DEDUP_MS) recentSends.delete(k);
+  }
+}, 5 * 60 * 1000).unref();
+
 async function getTwilioClient() {
   const { default: twilio } = await import('twilio');
   return twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
@@ -41,12 +49,6 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
   if (lastSent && now - lastSent < SMS_DEDUP_MS) {
     logger.info({ to: args.to }, '[SMS] duplicate suppressed (cooldown)');
     return { action: 'skipped' };
-  }
-
-  if (recentSends.size > 200) {
-    for (const [k, ts] of recentSends) {
-      if (now - ts > SMS_DEDUP_MS) recentSends.delete(k);
-    }
   }
 
   if (provider === 'dry_run' || mode === 'dry_run') {

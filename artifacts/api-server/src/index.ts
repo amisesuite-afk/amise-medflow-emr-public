@@ -14,14 +14,24 @@ if (process.env.SENTRY_DSN) {
 const REQUIRED_ENV = [
   'SUPABASE_URL',
   'SUPABASE_SERVICE_ROLE_KEY',
-  'ANTHROPIC_API_KEY',
   'SESSION_SECRET',
-  'CRON_SECRET',
 ] as const;
 const missing = REQUIRED_ENV.filter(k => !process.env[k]);
 if (missing.length) {
   logger.fatal({ missing }, 'Missing required env vars');
   process.exit(1);
+}
+
+// Warn for optional integrations — the server can start without them but
+// the corresponding features will be degraded.
+const OPTIONAL_ENV = [
+  'ANTHROPIC_API_KEY',
+  'GOOGLE_SERVICE_ACCOUNT_JSON',
+  'TWILIO_ACCOUNT_SID',
+] as const;
+const missingOptional = OPTIONAL_ENV.filter(k => !process.env[k]);
+if (missingOptional.length) {
+  logger.warn({ missing: missingOptional }, 'Optional env vars not set — related features will be unavailable');
 }
 
 const rawPort = process.env["PORT"];

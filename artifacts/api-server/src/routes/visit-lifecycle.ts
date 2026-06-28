@@ -129,7 +129,7 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
 
     // Create referral if specified
     if (referralTo) {
-      await supa.from('referrals').insert({
+      const { error: refErr } = await supa.from('referrals').insert({
         patient_id: encounter.patient_id,
         encounter_id: encounterId,
         referral_to: referralTo,
@@ -138,6 +138,7 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
         urgency: referralUrgency ?? 'routine',
         status: 'pending',
       });
+      if (refErr) throw refErr;
     }
 
     // Close encounter
@@ -236,19 +237,23 @@ router.post('/api/visit/medication-reconciliation/:encounterId', async (req, res
       return;
     }
 
-    // Upsert each medication for this encounter
-    for (const med of medications) {
-      await supa.from('medications').upsert({
-        patient_id: encounter.patient_id,
-        encounter_id: encounterId,
-        drug_name: med.drugName,
-        dose: med.dose ?? null,
-        frequency: med.frequency ?? null,
-        route: med.route ?? 'oral',
-        indication: 'consultation-list',
-        status: med.status ?? 'active',
-      }, { onConflict: 'patient_id,encounter_id,drug_name,indication' });
-    }
+    // Batch upsert all medications atomically
+    const medicationsArray = medications.map((med: any) => ({
+      patient_id: encounter.patient_id,
+      encounter_id: encounterId,
+      drug_name: med.drugName,
+      dose: med.dose ?? null,
+      frequency: med.frequency ?? null,
+      route: med.route ?? 'oral',
+      indication: 'consultation-list',
+      status: med.status ?? 'active',
+    }));
+
+    const { error: medErr } = await supa
+      .from('medications')
+      .upsert(medicationsArray, { onConflict: 'patient_id,encounter_id,drug_name,indication' });
+
+    if (medErr) throw medErr;
 
     await audit({
       action: 'extract',

@@ -140,6 +140,16 @@ function generateSessionToken(): string {
   return randomBytes(16).toString('hex');
 }
 
+/** Session tokens expire after 72 hours from creation. */
+const SESSION_TOKEN_TTL_MS = 72 * 60 * 60 * 1000;
+
+/** Check if a session token has exceeded the 72-hour TTL based on created_at. */
+function isSessionTokenExpired(createdAt: string | null | undefined): boolean {
+  if (!createdAt) return false; // If no timestamp, allow (backwards compat)
+  const created = new Date(createdAt).getTime();
+  return Date.now() - created > SESSION_TOKEN_TTL_MS;
+}
+
 /**
  * Reconstruct an in-memory SessionState by replaying all persisted responses
  * for a session against the APCQ engine.
@@ -786,7 +796,7 @@ router.post('/api/questionnaire/session/:token/consent', async (req, res) => {
   try {
     const { data: sessionRow, error: sessErr } = await sb()
       .from('questionnaire_sessions')
-      .select('id, status, consent_given, expires_at')
+      .select('id, status, consent_given, expires_at, created_at')
       .eq('session_token', token)
       .single();
 
@@ -797,6 +807,11 @@ router.post('/api/questionnaire/session/:token/consent', async (req, res) => {
 
     if (sessionRow.expires_at && new Date(sessionRow.expires_at).getTime() < Date.now()) {
       res.status(410).json({ error: 'This questionnaire link has expired' });
+      return;
+    }
+
+    if (isSessionTokenExpired(sessionRow.created_at)) {
+      res.status(410).json({ error: 'This questionnaire link has expired (72-hour TTL exceeded)' });
       return;
     }
 
@@ -860,7 +875,7 @@ router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
     // Validate session
     const { data: sessionRow, error: sessErr } = await sb()
       .from('questionnaire_sessions')
-      .select('id, status, template_id, mode, patient_id, encounter_id, expires_at')
+      .select('id, status, template_id, mode, patient_id, encounter_id, expires_at, created_at')
       .eq('session_token', token)
       .single();
 
@@ -871,6 +886,11 @@ router.post('/api/questionnaire/session/:token/answer', async (req, res) => {
 
     if (sessionRow.expires_at && new Date(sessionRow.expires_at).getTime() < Date.now()) {
       res.status(410).json({ error: 'This questionnaire link has expired' });
+      return;
+    }
+
+    if (isSessionTokenExpired(sessionRow.created_at)) {
+      res.status(410).json({ error: 'This questionnaire link has expired (72-hour TTL exceeded)' });
       return;
     }
 
@@ -1042,6 +1062,11 @@ router.get('/api/questionnaire/session/:token', async (req, res) => {
 
     if (sessionRow.expires_at && new Date(sessionRow.expires_at).getTime() < Date.now()) {
       res.status(410).json({ error: 'This questionnaire link has expired' });
+      return;
+    }
+
+    if (isSessionTokenExpired(sessionRow.created_at as string | null)) {
+      res.status(410).json({ error: 'This questionnaire link has expired (72-hour TTL exceeded)' });
       return;
     }
 

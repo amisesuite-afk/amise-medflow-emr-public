@@ -13,6 +13,9 @@ router.post('/api/intake/run', async (req, res) => {
   if (!requireCronSecret(req, res)) return;
 
   const mode = (req.body?.mode as string) || process.env.MODE || 'dry_run';
+  // In auto mode, downgrade to supervised for patient-facing communications
+  // so a human always reviews outbound messages before they reach patients.
+  const intakeMode = (mode === 'auto' ? 'supervised' : mode) as 'dry_run' | 'supervised' | 'auto';
   const maxMessages = Number(req.body?.max_messages ?? 10);
 
   req.log.info({ mode, maxMessages }, '[intake] starting run');
@@ -44,7 +47,7 @@ router.post('/api/intake/run', async (req, res) => {
 
       if (triageResult.recommendedAction === 'escalate_urgent' || triageResult.recommendedAction === 'escalate_priority' || triageResult.recommendedAction === 'escalate_review') {
         const ack = await draftReply({ template: 'urgent_ack', patientFirstName: classification.patient_first_name });
-        await sendOrDraft({ to: msg.from, subject: ack.subject, body: ack.body, threadId: msg.threadId }, mode as 'dry_run' | 'supervised' | 'auto');
+        await sendOrDraft({ to: msg.from, subject: ack.subject, body: ack.body, threadId: msg.threadId }, intakeMode);
 
         if (process.env.DOCTOR_NOTIFY_EMAIL) {
           await sendOrDraft({
@@ -76,7 +79,7 @@ router.post('/api/intake/run', async (req, res) => {
           continue;
         }
 
-        await sendOrDraft({ to: msg.from, subject: reply.subject, body: reply.body, threadId: msg.threadId }, mode as 'dry_run' | 'supervised' | 'auto');
+        await sendOrDraft({ to: msg.from, subject: reply.subject, body: reply.body, threadId: msg.threadId }, intakeMode);
         await audit({ action: 'send', entityType: 'gmail_message', entityId: id, payload: { reason: 'general_enquiry' } });
         results.push({ id, action: 'auto_replied_general_enquiry' });
         await markRead(id);
@@ -113,7 +116,7 @@ router.post('/api/intake/run', async (req, res) => {
         continue;
       }
 
-      const sendResult = await sendOrDraft({ to: msg.from, subject: reply.subject, body: reply.body, threadId: msg.threadId }, mode as 'dry_run' | 'supervised' | 'auto');
+      const sendResult = await sendOrDraft({ to: msg.from, subject: reply.subject, body: reply.body, threadId: msg.threadId }, intakeMode);
 
       await sb().from('pending_bookings').insert({
         patient_id: patientId,

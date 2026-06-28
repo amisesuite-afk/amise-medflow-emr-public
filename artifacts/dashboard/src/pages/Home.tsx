@@ -52,6 +52,7 @@ import AiConsultantTab from './tabs/AiConsultantTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
 import FloatingActions from '@/components/FloatingActions';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -217,8 +218,8 @@ export default function HomePage() {
 
   const sidebarWidth = collapsed ? 52 : 182;
 
-  if (userRole === 'front_desk') return <ReceptionistView />;
-  if (userRole === 'nurse') return <NursePreVisitView />;
+  if (userRole === 'front_desk') return <ErrorBoundary><ReceptionistView /></ErrorBoundary>;
+  if (userRole === 'nurse') return <ErrorBoundary><NursePreVisitView /></ErrorBoundary>;
 
   return (
     <div
@@ -374,6 +375,7 @@ export default function HomePage() {
 
       {/* ── Main content ── */}
       <main ref={swipeRef} className="main-content">
+        <ErrorBoundary resetKeys={[topSection, activeSection]}>
         {/* Pre-visit status banner for doctor/admin */}
         {preVisitStatus === 'registered' && (
           <div style={{ margin: '0 0 12px', padding: '10px 16px', borderRadius: 8, background: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -499,6 +501,7 @@ export default function HomePage() {
         {topSection === 'prescriptions'     && hasRole(userRole, 'doctor')     && <PrescriptionsTab />}
         {topSection === 'ai_consultant'     && hasRole(userRole, 'doctor')     && <AiConsultantTab />}
         {topSection === 'tasks'                                                && <PatientTasksTab />}
+        </ErrorBoundary>
       </main>
 
       <FloatingActions />

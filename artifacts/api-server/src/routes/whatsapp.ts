@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { getSupabaseAdmin, audit } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
 import { sendSms, smsBodyStaffNewBooking } from '../lib/sms.js';
@@ -62,6 +63,36 @@ const TWIML_ERROR = `<?xml version="1.0" encoding="UTF-8"?>
 
 // POST /api/whatsapp/inbound — Twilio WhatsApp webhook
 router.post('/api/whatsapp/inbound', async (req, res) => {
+  // --- WhatsApp / Meta webhook signature validation ---
+  const whatsappAppSecret = process.env.WHATSAPP_APP_SECRET;
+  if (whatsappAppSecret) {
+    const hubSignature = req.headers['x-hub-signature-256'] as string | undefined;
+    if (!hubSignature) {
+      logger.warn('[whatsapp/inbound] missing x-hub-signature-256 header — rejecting');
+      res.status(401).json({ error: 'Missing signature' });
+      return;
+    }
+
+    try {
+      const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+      const expectedSig = 'sha256=' + createHmac('sha256', whatsappAppSecret).update(rawBody).digest('hex');
+      const sigBuffer = Buffer.from(hubSignature);
+      const expectedBuffer = Buffer.from(expectedSig);
+
+      if (sigBuffer.length !== expectedBuffer.length || !timingSafeEqual(sigBuffer, expectedBuffer)) {
+        logger.warn('[whatsapp/inbound] invalid x-hub-signature-256 — rejecting');
+        res.status(401).json({ error: 'Invalid signature' });
+        return;
+      }
+    } catch (err) {
+      logger.error({ err }, '[whatsapp/inbound] signature validation error — rejecting');
+      res.status(401).json({ error: 'Signature validation failed' });
+      return;
+    }
+  } else {
+    logger.warn('[whatsapp/inbound] WHATSAPP_APP_SECRET not set — skipping signature validation');
+  }
+
   const from: string         = (req.body?.From  as string) ?? '';
   const body: string         = (req.body?.Body  as string) ?? '';
   const profileName: string  = (req.body?.ProfileName as string) ?? '';

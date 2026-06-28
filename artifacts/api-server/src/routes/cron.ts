@@ -274,6 +274,7 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
   }
 
   const results: { id: string; action: string }[] = [];
+  const escalatedIds: string[] = [];
 
   for (const booking of pending ?? []) {
     try {
@@ -310,13 +311,18 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
         await sendSms({ to: staffPhone, body: smsBody });
       }
 
-      await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).eq('id', booking.id);
+      escalatedIds.push(booking.id);
       await audit({ action: 'escalate', entityType: 'appointment_request', entityId: booking.id, payload: { hours_waiting: hoursWaiting, doc_escalation: isDocEscalation } });
       results.push({ id: booking.id, action: isDocEscalation ? 'doctor_escalated' : 'staff_re_notified' });
     } catch (err) {
       logger.error({ error: err, bookingId: booking.id }, '[cron/staff-escalation] failed to process booking, continuing with remaining');
       results.push({ id: booking.id, action: 'error' });
     }
+  }
+
+  // Batch update all escalated bookings at once
+  if (escalatedIds.length) {
+    await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).in('id', escalatedIds);
   }
 
   // Auto-cancel bookings unactioned for > 8 hours — sends apology SMS to patient
@@ -330,10 +336,10 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
   if (staleErr) {
     logger.error({ error: staleErr }, '[cron/staff-escalation] stale query error');
   } else {
+    const cancelledIds: string[] = [];
+
     for (const booking of stale ?? []) {
       try {
-        await supa.from('appointment_requests').update({ status: 'cancelled', notes: 'Auto-cancelled after 8h with no staff action' }).eq('id', booking.id);
-
         if (booking.patient_phone) {
           const firstName = (booking.patient_name as string || 'there').split(' ')[0];
           await sendSms({
@@ -350,12 +356,18 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
           }, 'auto');
         }
 
+        cancelledIds.push(booking.id);
         await audit({ action: 'auto_cancel', entityType: 'appointment_request', entityId: booking.id, payload: { reason: 'unactioned_8h' } });
         results.push({ id: booking.id, action: 'auto_cancelled_8h' });
       } catch (err) {
         logger.error({ error: err, bookingId: booking.id }, '[cron/staff-escalation] auto-cancel error');
         results.push({ id: booking.id, action: 'error' });
       }
+    }
+
+    // Batch update all cancelled bookings at once
+    if (cancelledIds.length) {
+      await supa.from('appointment_requests').update({ status: 'cancelled', notes: 'Auto-cancelled after 8h with no staff action' }).in('id', cancelledIds);
     }
   }
 
