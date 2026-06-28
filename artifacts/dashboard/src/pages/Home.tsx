@@ -7,7 +7,7 @@ import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import { hasRole, roleIn } from '@/lib/roles';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
-import NavSidebar from '@/components/NavSidebar';
+import NavSidebar, { type SectionCompletion } from '@/components/NavSidebar';
 import ReceptionistView from './ReceptionistView';
 import NursePreVisitView from './NursePreVisitView';
 import IntakeTab from './tabs/IntakeTab';
@@ -138,6 +138,19 @@ export default function HomePage() {
     encounterId,
     saveStatus,
     lastSaveError,
+    freeText,
+    surgicalHistory, surgicalNotes,
+    medications, medicationsText,
+    allergies,
+    toxicHabits,
+    rosFindings,
+    examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+    orderedInvestigations,
+    radiologyRequests,
+    attachments,
+    assessment,
+    plan,
+    progressNotes,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -210,6 +223,31 @@ export default function HomePage() {
   const urgentCount = triageResult.vitalRedFlags.filter(f => f.severity === 'urgent').length
     + triageResult.reasons.length;
   const hasUrgentRedFlag = triageResult.acuity === 'urgent';
+
+  const sectionCompletion = useMemo<SectionCompletion>(() => {
+    const hasVitals = Object.values(vitals).some(v => v.trim());
+    const hasExam = !!(examGeneral || examCardio || examResp || examAbdomen || examNeuro || examExtremities || examBreast || examWound);
+    const hasRos = Object.values(rosFindings).some(f => f.status !== 'not-asked' || f.details.length > 0 || f.notes);
+    return {
+      triage:              symptoms.length > 0 || !!freeText.trim() || hasVitals,
+      pmh:                 comorbidities.length > 0,
+      surgical:            surgicalHistory.length > 0 || !!surgicalNotes.trim(),
+      medications:         medications.length > 0 || !!medicationsText.trim(),
+      allergies:           !!allergies.trim(),
+      toxic:               toxicHabits.length > 0,
+      ros:                 hasRos,
+      examination:         hasExam,
+      assessment:          !!assessment.trim(),
+      investigations:      orderedInvestigations.length > 0,
+      radiology:           radiologyRequests.length > 0,
+      attachments:         attachments.length > 0,
+      plan:                !!plan.trim(),
+      progress:            progressNotes.length > 0,
+    };
+  }, [symptoms, freeText, vitals, comorbidities, surgicalHistory, surgicalNotes,
+      medications, medicationsText, allergies, toxicHabits, rosFindings,
+      examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
+      assessment, orderedInvestigations, radiologyRequests, attachments, plan, progressNotes]);
 
   const patientLabel = patientName.trim() || 'No patient loaded';
   const metaParts: string[] = [];
@@ -371,6 +409,7 @@ export default function HomePage() {
         pmhCount={comorbidities.length}
         encounterMode={encounterMode}
         pendingBookingCount={pendingBookingCount}
+        sectionCompletion={sectionCompletion}
       />
 
       {/* ── Main content ── */}

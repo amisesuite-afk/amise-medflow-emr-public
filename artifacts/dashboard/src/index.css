@@ -316,6 +316,104 @@ textarea { resize: vertical; }
   content: none;
 }
 
+/* ── Phased clinical stepper ── */
+.nsb-phased { padding: 4px 0; }
+
+.nsb-phase { margin-bottom: 2px; }
+
+.nsb-phase-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px 3px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #4d7a70;
+}
+.nsb-phase-header--active { color: #a8d5ce; }
+.nsb-phase-header--done { color: #34d399; }
+
+.nsb-phase-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #3d6056;
+  font-size: 9px;
+  font-weight: 800;
+  color: #4d7a70;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.nsb-phase-step--active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(31,122,140,.15);
+}
+.nsb-phase-step--done {
+  border-color: #34d399;
+  background: #34d399;
+  color: #0d3025;
+}
+
+.nsb-phase-label { flex: 1; }
+
+.nsb-phase-count {
+  font-size: 9px;
+  font-weight: 600;
+  color: #3d6056;
+  font-variant-numeric: tabular-nums;
+}
+
+.nsb-phase-expand {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 3px 12px 3px 40px;
+  font-size: 10px;
+  color: #3d6056;
+  font-style: italic;
+  cursor: pointer;
+}
+.nsb-phase-expand:hover { color: #6b9e96; }
+
+/* Phased sub-item with completion check */
+.nsb-subitem--phased {
+  padding-left: 24px;
+  gap: 6px;
+}
+
+.nsb-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid #3d6056;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+.nsb-check--current {
+  border-color: var(--accent);
+  background: rgba(31,122,140,.2);
+  box-shadow: 0 0 0 2px rgba(31,122,140,.15);
+}
+.nsb-check--done {
+  border-color: #34d399;
+  background: #34d399;
+  color: #0d3025;
+}
+
+.nsb-subitem--done {
+  color: #34d399;
+  opacity: 0.7;
+}
+
 /* Collapse toggle */
 .nsb-toggle {
   display: flex;
@@ -1660,6 +1758,11 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
     white-space: nowrap; min-width: max-content; border-radius: 0;
     font-size: 11px;
   }
+  .nsb-phase-header { display: none; }
+  .nsb-phase { display: contents; }
+  .nsb-phase-expand { display: none; }
+  .nsb-subitem--phased { padding-left: 10px !important; }
+  .nsb-check { width: 12px; height: 12px; }
   .nsb-toggle { display: none !important; }
   .main-content { grid-row: 3 !important; grid-column: 1 !important; }
   /* Header compact */
