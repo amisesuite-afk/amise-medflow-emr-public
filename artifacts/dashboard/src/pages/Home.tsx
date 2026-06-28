@@ -158,8 +158,11 @@ export default function HomePage() {
 
   const userRole = profile?.role ?? 'front_desk';
 
-  /* ── Consultation tab list (role-aware) ── */
+  /* ── Consultation tab list (role-aware, matches phased sidebar) ── */
   const consultTabs = useMemo<{ id: Section; label: string }[]>(() => [
+    ...(hasRole(userRole, 'nurse') ? [
+      { id: 'nurse_apcq' as Section, label: 'CC' },
+    ] : []),
     { id: 'triage', label: 'Triage' },
     { id: 'pmh', label: 'PMH' },
     { id: 'surgical', label: 'Surgical' },
@@ -496,6 +499,7 @@ export default function HomePage() {
 
         {/* Clinical sections */}
         {topSection === 'intake'        && <IntakeTab />}
+        {topSection === 'consultation'  && activeSection === 'nurse_apcq'  && hasRole(userRole, 'nurse')  && <NurseAPCQTab />}
         {topSection === 'consultation'  && activeSection === 'triage'      && <TriageTab />}
         {topSection === 'consultation'  && activeSection === 'pmh'         && <PmhTab />}
         {topSection === 'consultation'  && activeSection === 'surgical'    && <SurgicalHistoryTab />}
@@ -532,7 +536,7 @@ export default function HomePage() {
         {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
         {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
         {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
-        {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')        && <NurseAPCQTab />}
+        {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')  && <NurseAPCQTab />}
         {topSection === 'booking_inbox'  && hasRole(userRole, 'admin')        && <BookingInboxTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
