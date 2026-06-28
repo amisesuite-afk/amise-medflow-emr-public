@@ -1,2 +1,2 @@
-https://dashboard-57g400zm2-amisesuite-afks-projects.vercel.app
+https://dashboard-nbfhzc5vx-amisesuite-afks-projects.vercel.app
 Login: /login  Dashboard: /  Booking Inbox: /?top=booking_inbox
