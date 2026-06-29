@@ -103,6 +103,7 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     minRole: 'doctor',
     items: [
       { id: 'plan',               icon: FileEdit,       label: 'Plan',           minRole: 'doctor' },
+      { id: 'procedures',         icon: Scissors,       label: 'Procedures',     minRole: 'doctor' },
       { id: 'prescriptions',      icon: FileSignature,  label: 'Prescriptions',  minRole: 'doctor' },
       { id: 'referring_providers', icon: Contact,        label: 'Referrals',      minRole: 'doctor' },
     ],

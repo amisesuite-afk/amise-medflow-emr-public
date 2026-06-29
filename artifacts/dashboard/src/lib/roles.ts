@@ -40,6 +40,7 @@ export const SECTION_MIN_ROLE: Partial<Record<Section, UserRole>> = {
   attachments:     'nurse',
   assessment:      'doctor',
   plan:            'doctor',
+  procedures:      'doctor',
   prescriptions:   'doctor',
   ai_consultant:   'doctor',
 };

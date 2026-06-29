@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import { hasRole, roleIn } from '@/lib/roles';
+import { usePathway } from '@/lib/usePathway';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import NavSidebar, { type SectionCompletion } from '@/components/NavSidebar';
 import ReceptionistView from './ReceptionistView';
@@ -160,8 +161,13 @@ export default function HomePage() {
 
   const [collapsed, setCollapsed] = useState(false);
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
+  const [showAiPanel, setShowAiPanel] = useState(false);
+  const [admissionDismissed, setAdmissionDismissed] = useState(false);
 
   const userRole = profile?.role ?? 'front_desk';
+  const { activePathway, matchedPathways } = usePathway();
+  const topMatchScore = matchedPathways[0]?.score ?? 0;
+  const highConfidence = topMatchScore >= 15 && activePathway !== null;
 
   /* ── Consultation tab list (role-aware, matches phased sidebar) ── */
   const consultTabs = useMemo<{ id: Section; label: string }[]>(() => [
@@ -185,9 +191,9 @@ export default function HomePage() {
     ...(hasRole(userRole, 'doctor') ? [
       { id: 'assessment' as Section, label: 'Assess' },
       { id: 'plan' as Section, label: 'Plan' },
+      { id: 'procedures' as Section, label: 'Procedures' },
       { id: 'prescriptions' as Section, label: 'RX' },
       { id: 'referring_providers' as Section, label: 'Referrals' },
-      { id: 'ai_consultant' as Section, label: 'AI Aid' },
     ] : []),
     { id: 'progress', label: 'Notes' },
     { id: 'monitoring', label: 'Monitor' },
@@ -461,6 +467,59 @@ export default function HomePage() {
             </div>
           );
         })()}
+
+        {/* Fix 3: Pathway confidence → auto-surface suggested investigations */}
+        {highConfidence && activePathway!.suggestedInvestigations.length > 0 && topSection === 'consultation' && (
+          <div style={{ margin: '0 0 12px', padding: '12px 16px', borderRadius: 8, background: '#eef2ff', border: '1px solid #c7d2fe', display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+            <span style={{ fontSize: 16 }}>⚑</span>
+            <div style={{ flex: 1, minWidth: 180 }}>
+              <div style={{ color: '#312e81', fontWeight: 700, fontSize: 13 }}>
+                Pathway match: {activePathway!.name}
+              </div>
+              <div style={{ color: '#3730a3', fontSize: 12, marginTop: 2 }}>
+                Suggested: {activePathway!.suggestedInvestigations.slice(0, 6).join(', ')}
+                {activePathway!.suggestedInvestigations.length > 6 ? ` (+${activePathway!.suggestedInvestigations.length - 6} more)` : ''}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveSection('investigations')}
+              style={{ padding: '7px 16px', borderRadius: 6, border: 'none', background: '#312e81', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              Go to Labs →
+            </button>
+          </div>
+        )}
+
+        {/* Fix 4: Admission escalation prompt */}
+        {!admissionDismissed && encounterMode === 'outpatient' && triageResult.acuity === 'urgent' && highConfidence && (
+          <div style={{ margin: '0 0 12px', padding: '12px 16px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+            <span style={{ fontSize: 16 }}>🏥</span>
+            <div style={{ flex: 1, minWidth: 180 }}>
+              <div style={{ color: '#991b1b', fontWeight: 700, fontSize: 13 }}>
+                Admission criteria may be met
+              </div>
+              <div style={{ color: '#b91c1c', fontSize: 12, marginTop: 2 }}>
+                Urgent acuity + {activePathway!.name} — consider switching to inpatient encounter.
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setEncounterMode('inpatient'); setAdmissionDismissed(true); }}
+              style={{ padding: '7px 16px', borderRadius: 6, border: 'none', background: '#991b1b', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}
+            >
+              Switch to Inpatient
+            </button>
+            <button
+              type="button"
+              onClick={() => setAdmissionDismissed(true)}
+              style={{ padding: '7px 12px', borderRadius: 6, border: '1px solid #fca5a5', background: '#fff', color: '#991b1b', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
         {topSection === 'consultation' && (() => {
           const curIdx = consultTabs.findIndex(t => t.id === activeSection);
@@ -519,6 +578,7 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'attachments'   && hasRole(userRole, 'nurse')  && <AttachmentsTab />}
         {topSection === 'consultation'  && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
         {topSection === 'consultation'  && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
+        {topSection === 'consultation'  && activeSection === 'procedures' && hasRole(userRole, 'doctor') && <ProceduresTab />}
         {topSection === 'consultation'  && activeSection === 'progress'    && <ProgressNotesTab />}
         {topSection === 'consultation'  && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
         {topSection === 'consultation'  && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
@@ -553,6 +613,44 @@ export default function HomePage() {
       </main>
 
       <FloatingActions />
+
+      {/* Fix 6: Floating AI co-pilot button + slide-in panel */}
+      {hasRole(userRole, 'doctor') && (
+        <>
+          <button
+            type="button"
+            onClick={() => setShowAiPanel(p => !p)}
+            aria-label="AI Consultant"
+            style={{
+              position: 'fixed', bottom: 24, right: 24, zIndex: 900,
+              width: 48, height: 48, borderRadius: '50%', border: 'none',
+              background: showAiPanel ? '#312e81' : '#1F7A8C', color: '#fff',
+              fontSize: 20, fontWeight: 700, cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(0,0,0,.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              transition: 'background .2s',
+            }}
+            title="AI Consultant co-pilot"
+          >
+            {showAiPanel ? '✕' : '🧠'}
+          </button>
+          {showAiPanel && (
+            <div style={{
+              position: 'fixed', top: 52, right: 0, bottom: 0, width: 420, maxWidth: '100vw',
+              zIndex: 850, background: 'var(--bg, #fff)', borderLeft: '1px solid #e2e8f0',
+              boxShadow: '-4px 0 24px rgba(0,0,0,.08)', overflowY: 'auto', padding: '16px 12px',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink, #1e293b)' }}>AI Consultant</span>
+                <button type="button" onClick={() => setShowAiPanel(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 16, color: '#6b7280' }}>✕</button>
+              </div>
+              <ErrorBoundary>
+                <AiConsultantTab />
+              </ErrorBoundary>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
