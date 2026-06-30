@@ -557,7 +557,9 @@ export default function InvestigationsTab() {
 
       {/* Clinical pathway suggestions — sex-filtered */}
       {(() => {
-        const pathways = getActivePathways(symptoms, symptomDetails);
+        const lcSymptoms = symptoms.map(s => s.toLowerCase());
+        const lcDetails = Object.fromEntries(Object.entries(symptomDetails).map(([k, v]) => [k.toLowerCase(), v]));
+        const pathways = getActivePathways(lcSymptoms, lcDetails);
         if (pathways.length === 0) return null;
 
         const allLabs = [...new Set(pathways.flatMap(p => p.labsImaging))];
@@ -606,7 +608,7 @@ export default function InvestigationsTab() {
       })()}
 
       {/* Laboratory Services Ltd catalogue */}
-      <CollapsibleCard title="Laboratory Services Ltd — Order Tests" defaultOpen={false}>
+      <CollapsibleCard title="Laboratory Services Ltd — Order Tests" defaultOpen={true}>
         <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>
           Tap any test to add it to the ordered list. Filtered by patient sex.
         </p>

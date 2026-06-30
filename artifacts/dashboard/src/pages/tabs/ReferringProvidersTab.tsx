@@ -56,6 +56,52 @@ const DOCUMENT_TYPE_LABEL: Record<DocumentType, string> = Object.fromEntries(
   DOCUMENT_TYPES.map(t => [t.value, t.label]),
 ) as Record<DocumentType, string>;
 
+// Static seed — shown immediately while the API loads; replaced by live data on success.
+const SEED_PROVIDERS: ReferringProvider[] = [
+  { id: 'seed-1',  name: 'Dr. Jeffers',                  email: 'jeffersclinic@gmail.com',              provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-2',  name: 'Dr. Grandison Didier',         email: 'dr.m.m.didiers@gmail.com',             provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-3',  name: 'Dr. Merle Clarke',             email: 'kidneycareslu@gmail.com',              provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: 'Nephrology',                      active: true, created_at: '' },
+  { id: 'seed-4',  name: 'Dr. Brathwaite',               email: 'davidbrathwaite@doctors.org.uk',       provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-5',  name: 'Dr. Samuel',                   email: 'urolgynaedrs@gmail.com',               provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: 'Urology / Gynaecology',           active: true, created_at: '' },
+  { id: 'seed-6',  name: 'Dr. J Bird',                   email: null,                                   provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-7',  name: 'Dr. L Surage',                 email: 'l.surage@gmail.com',                   provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-8',  name: 'Dr. R Daniel',                 email: 'drjrdaniel.tapioncardiology@gmail.com',provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: 'Cardiology',                      active: true, created_at: '' },
+  { id: 'seed-9',  name: 'Dr. T Remy',                   email: 'remsurg@gmail.com',                    provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-10', name: 'Dr. T Glasgow',                email: 'tglasgow@doctor.com',                  provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-11', name: 'Dr. Gillard',                  email: null,                                   provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-12', name: 'Dr. Augustin',                 email: 'dr.aaugustin@outlook.com',             provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-13', name: 'Dr. Benjamin',                 email: 'drbenjymd@outlook.com',                provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-14', name: 'Dr. K Cenac',                  email: 'drkcenac@gmail.com',                   provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: 'Alt: drkcenacoffice@gmail.com',   active: true, created_at: '' },
+  { id: 'seed-15', name: 'M Care / Member Clinic',       email: 'info@memberclinic.com',                provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-16', name: 'Dr. Mills',                    email: 'alli.mills.73@gmail.com',              provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-17', name: 'Dr. N Charles',                email: 'laury52@hotmail.com',                  provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-18', name: 'Dr. West Gustave',             email: 'kristinwest1206@gmail.com',            provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-19', name: 'Dr. John Mondesir',            email: 'dr.john.mondesir@gmail.com',           provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-20', name: 'Dr. G Melville',               email: 'drmelvillepractice@hotmail.com',       provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: 'Alt: gavindm@hotmail.com',        active: true, created_at: '' },
+  { id: 'seed-21', name: 'Dr. D Louisy',                 email: 'drdlouisy@gmail.com',                  provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-22', name: 'Dr. K Louisy',                 email: 'kemobo.louisy@gmail.com',              provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-23', name: 'Dr. Ndidi Dagbue',             email: 'nadagbue@hotmail.com',                 provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-24', name: 'Dr. Sherwin James',            email: 'sherwinjames@hotmail.com',             provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: 'Phone: 285-7766',                 active: true, created_at: '' },
+  { id: 'seed-25', name: 'Dr. Tanya Beaubrun',           email: 'tanyabeaubrun68@gmail.com',            provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-26', name: 'Dr. A James',                  email: 'drajam009@gmail.com',                  provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-27', name: 'Dr. Garriga',                  email: 'garrigastl2014@gmail.com',             provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-28', name: 'Dr. Nathaniel',                email: 'christynats04@gmail.com',              provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-29', name: 'Dr. Flemming',                 email: 'flemingsallapudi@gmail.com',           provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-30', name: 'Dr. Nega',                     email: null,                                   provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-31', name: 'Dr. Naomi Jude',               email: null,                                   provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-32', name: 'Dr. Alpha Augustin',           email: null,                                   provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-33', name: 'Dr. PV St Rose',               email: 'drpeterstroseclinic@gmail.com',        provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-34', name: 'Dr. Asha Martin',              email: 'ashamartin81@gmail.com',               provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-35', name: 'Dr. Volson',                   email: 'drwoc67@hotmail.com',                  provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-36', name: 'Dr. Altenor',                  email: 'caltenor@gmail.com',                   provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-37', name: 'Dr. Suarez',                   email: 'drlilysuarez61@gmail.com',             provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-38', name: 'Dr. Celia Mc. Connell Downes', email: 'cggmcconnell@gmail.com',               provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-39', name: 'Dr. Martin Plummer',           email: 'plummerpaediatrics@gmail.com',         provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: 'Paediatrics',                     active: true, created_at: '' },
+  { id: 'seed-40', name: 'Dr. Segun Tobias',             email: 'mcareassociates@gmail.com',            provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-41', name: 'Dr. Burt',                     email: 'richard_burt@hotmail.com',             provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+  { id: 'seed-42', name: 'Dr. Seema Gupta',              email: 'seedrgupta@gmail.com',                 provider_type: 'referring_doctor', default_document_type: 'referral_letter', notes: null,                              active: true, created_at: '' },
+];
+
 // ── Style helpers ─────────────────────────────────────────────────────────────
 
 const inp: React.CSSProperties = {
@@ -308,7 +354,7 @@ function ProviderRow({ provider, onChanged, onDeleted }: {
 
 export default function ReferringProvidersTab() {
   const { profile } = useAuth();
-  const [providers, setProviders] = useState<ReferringProvider[]>([]);
+  const [providers, setProviders] = useState<ReferringProvider[]>(SEED_PROVIDERS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -321,8 +367,11 @@ export default function ReferringProvidersTab() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || `HTTP ${res.status}`);
-      setProviders((data.providers ?? []) as ReferringProvider[]);
+      const live = (data.providers ?? []) as ReferringProvider[];
+      // Only replace seed data if the API returned real records
+      if (live.length > 0) setProviders(live);
     } catch (e) {
+      // Keep seed providers visible; show a non-blocking notice
       setError(e instanceof Error ? e.message : 'Could not load referring providers.');
     } finally {
       setLoading(false);
@@ -355,42 +404,38 @@ export default function ReferringProvidersTab() {
       </Section>
 
       <Section title="Directory">
-        {loading ? (
-          <div style={{ padding: 16, fontSize: 12, color: 'var(--muted, #64748b)' }}>Loading providers…</div>
-        ) : error ? (
-          <div style={{ padding: 16, fontSize: 12 }}>
-            <div style={{ color: 'var(--urgent, #ef4444)', marginBottom: 6 }}>{error}</div>
-            <button
-              type="button"
-              onClick={() => void load()}
-              style={{ fontSize: 12, color: '#0d9488', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
-            >↻ Retry</button>
+        {loading && (
+          <div style={{ padding: '8px 14px', fontSize: 11, color: 'var(--muted, #64748b)', borderBottom: '1px solid #f1f5f9' }}>
+            Syncing with server…
           </div>
-        ) : providers.length === 0 ? (
-          <div style={{ padding: 16, fontSize: 12, color: 'var(--muted, #64748b)' }}>No referring providers yet.</div>
-        ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-            <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                {['Name', 'Email', 'Type', 'Default Document Type', 'Status', ''].map(h => (
-                  <th key={h} style={{ padding: '8px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--muted, #64748b)' }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {providers.map(p => (
-                <ProviderRow
-                  key={p.id}
-                  provider={p}
-                  onChanged={updated => setProviders(prev => prev.map(x => x.id === updated.id ? updated : x))}
-                  onDeleted={id => setProviders(prev => prev.filter(x => x.id !== id))}
-                />
-              ))}
-            </tbody>
-          </table>
         )}
+        {!loading && error && (
+          <div style={{ padding: '8px 14px', fontSize: 11, borderBottom: '1px solid #fef2f2', background: '#fff5f5', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ color: '#ef4444' }}>Could not reach API — showing local directory.</span>
+            <button type="button" onClick={() => void load()} style={{ fontSize: 11, color: '#0d9488', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>↻ Retry</button>
+          </div>
+        )}
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <thead>
+            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+              {['Name', 'Email', 'Type', 'Default Document Type', 'Status', ''].map(h => (
+                <th key={h} style={{ padding: '8px 14px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--muted, #64748b)' }}>
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {providers.map(p => (
+              <ProviderRow
+                key={p.id}
+                provider={p}
+                onChanged={updated => setProviders(prev => prev.map(x => x.id === updated.id ? updated : x))}
+                onDeleted={id => setProviders(prev => prev.filter(x => x.id !== id))}
+              />
+            ))}
+          </tbody>
+        </table>
       </Section>
     </div>
   );
