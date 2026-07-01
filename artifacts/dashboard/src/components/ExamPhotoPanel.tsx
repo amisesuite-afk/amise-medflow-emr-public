@@ -21,6 +21,27 @@ const DISTANCE_OPTIONS = [
   { value: '120', label: '120 cm — full anatomical region' },
 ];
 
+// Standard clinical photographic views per body region group
+const VIEW_OPTIONS: Record<string, string[]> = {
+  breast:  ['Frontal (AP)', 'Left Lateral', 'Right Lateral', 'Left Oblique', 'Right Oblique'],
+  limb:    ['Anterior', 'Posterior', 'Medial', 'Lateral'],
+  head:    ['Frontal', 'Left Profile', 'Right Profile'],
+  neck:    ['Frontal', 'Left Lateral', 'Right Lateral'],
+  trunk:   ['Frontal', 'Left Lateral', 'Right Lateral', 'Posterior'],
+  wound:   ['Overview', 'Close-up', 'Macro detail'],
+  other:   ['Frontal', 'Lateral', 'Posterior'],
+};
+
+function viewGroup(region: string): string {
+  if (region.startsWith('Breast')) return 'breast';
+  if (region.toLowerCase().includes('limb')) return 'limb';
+  if (region.startsWith('Head')) return 'head';
+  if (region.startsWith('Neck')) return 'neck';
+  if (region.startsWith('Wound')) return 'wound';
+  if (['Chest / Thorax', 'Abdomen', 'Back / Flank', 'Groin / Inguinal', 'Perineum / Perianal'].includes(region)) return 'trunk';
+  return 'other';
+}
+
 function resizeImage(dataUrl: string): Promise<string> {
   return new Promise((resolve) => {
     const img = new Image();
@@ -49,9 +70,17 @@ export default function ExamPhotoPanel() {
   const cameraRef = useRef<HTMLInputElement>(null);
   const [region, setRegion] = useState(BODY_REGIONS[0]);
   const [distance, setDistance] = useState('30');
+  const [view, setView] = useState('');
   const [desc, setDesc] = useState('');
   const [showGuide, setShowGuide] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+
+  const views = VIEW_OPTIONS[viewGroup(region)] ?? VIEW_OPTIONS.other;
+
+  function handleRegionChange(r: string) {
+    setRegion(r);
+    setView(''); // reset view when region changes
+  }
 
   async function handleFile(file: File) {
     const reader = new FileReader();
@@ -62,6 +91,7 @@ export default function ExamPhotoPanel() {
         dataUrl: resized,
         mimeType: 'image/jpeg',
         bodyRegion: region,
+        view: view || undefined,
         description: desc,
         distanceCm: distance,
         dateAdded: new Date().toISOString(),
@@ -122,6 +152,12 @@ export default function ExamPhotoPanel() {
             </tbody>
           </table>
           <div style={{ marginTop: 8, color: '#475569' }}>
+            <strong>Standard views — Breast:</strong> 3-view minimum: Frontal (AP) + both obliques. 5-view adds bilateral laterals.
+          </div>
+          <div style={{ color: '#475569' }}>
+            <strong>Standard views — Limbs:</strong> Anterior + posterior as minimum; add medial/lateral for lesions.
+          </div>
+          <div style={{ color: '#475569' }}>
             <strong>Resolution:</strong> minimum 3000 × 2000 px (6 MP). Use rear camera, not selfie.
           </div>
           <div style={{ color: '#475569' }}>
@@ -138,36 +174,72 @@ export default function ExamPhotoPanel() {
 
       {/* Capture controls */}
       {!atLimit && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'flex-end', marginBottom: 12 }}>
-          <div style={{ flex: '1 1 140px', minWidth: 120 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 2 }}>Body region</label>
-            <select
-              value={region}
-              onChange={e => setRegion(e.target.value)}
-              style={{ width: '100%', fontSize: 13, padding: '5px 8px', borderRadius: 6, border: '1px solid #d1d5db' }}
-            >
-              {BODY_REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 12 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'flex-end' }}>
+            <div style={{ flex: '1 1 140px', minWidth: 120 }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 2 }}>Body region</label>
+              <select
+                value={region}
+                onChange={e => handleRegionChange(e.target.value)}
+                style={{ width: '100%', fontSize: 13, padding: '5px 8px', borderRadius: 6, border: '1px solid #d1d5db' }}
+              >
+                {BODY_REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <div style={{ flex: '1 1 140px', minWidth: 120 }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 2 }}>Distance</label>
+              <select
+                value={distance}
+                onChange={e => setDistance(e.target.value)}
+                style={{ width: '100%', fontSize: 13, padding: '5px 8px', borderRadius: 6, border: '1px solid #d1d5db' }}
+              >
+                {DISTANCE_OPTIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+              </select>
+            </div>
+            <div style={{ flex: '2 1 200px', minWidth: 140 }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 2 }}>Description</label>
+              <input
+                value={desc}
+                onChange={e => setDesc(e.target.value)}
+                placeholder="e.g. RUQ incision day 3"
+                style={{ width: '100%', fontSize: 13, padding: '5px 8px', borderRadius: 6, border: '1px solid #d1d5db' }}
+              />
+            </div>
           </div>
-          <div style={{ flex: '1 1 140px', minWidth: 120 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 2 }}>Distance</label>
-            <select
-              value={distance}
-              onChange={e => setDistance(e.target.value)}
-              style={{ width: '100%', fontSize: 13, padding: '5px 8px', borderRadius: 6, border: '1px solid #d1d5db' }}
-            >
-              {DISTANCE_OPTIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
-            </select>
+
+          {/* View selector chips */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#64748b', marginBottom: 4 }}>
+              View <span style={{ fontWeight: 400, color: '#94a3b8' }}>(standard clinical views for {region})</span>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+              {views.map(v => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => setView(view === v ? '' : v)}
+                  style={{
+                    padding: '4px 11px', borderRadius: 999, fontSize: 11, cursor: 'pointer',
+                    border: view === v ? '1.5px solid #0d9488' : '1px solid #d1d5db',
+                    background: view === v ? '#0d9488' : '#f9fafb',
+                    color: view === v ? '#fff' : '#374151',
+                    fontWeight: view === v ? 700 : 400,
+                  }}
+                >{v}</button>
+              ))}
+              {view && (
+                <button
+                  type="button"
+                  onClick={() => setView('')}
+                  style={{
+                    padding: '4px 8px', borderRadius: 999, fontSize: 11, cursor: 'pointer',
+                    border: '1px solid #fca5a5', background: '#fff1f2', color: '#ef4444',
+                  }}
+                >Clear</button>
+              )}
+            </div>
           </div>
-          <div style={{ flex: '2 1 200px', minWidth: 140 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 2 }}>Description</label>
-            <input
-              value={desc}
-              onChange={e => setDesc(e.target.value)}
-              placeholder="e.g. RUQ incision day 3"
-              style={{ width: '100%', fontSize: 13, padding: '5px 8px', borderRadius: 6, border: '1px solid #d1d5db' }}
-            />
-          </div>
+
           <div style={{ display: 'flex', gap: 6 }}>
             <button
               type="button"
@@ -214,6 +286,9 @@ export default function ExamPhotoPanel() {
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#1e293b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {photo.bodyRegion}
                 </div>
+                {photo.view && (
+                  <div style={{ fontSize: 10, color: '#0d9488', fontWeight: 600, marginTop: 1 }}>{photo.view}</div>
+                )}
                 <div style={{ fontSize: 10, color: '#64748b' }}>
                   {photo.distanceCm} cm · {new Date(photo.dateAdded).toLocaleDateString('en-LC', { day: 'numeric', month: 'short' })}
                 </div>
@@ -254,7 +329,7 @@ export default function ExamPhotoPanel() {
               style={{ width: '100%', maxHeight: 500, objectFit: 'contain', display: 'block' }}
             />
             <div style={{ padding: '8px 12px', background: '#1e293b', color: '#e2e8f0', fontSize: 12 }}>
-              {photo.bodyRegion} · {photo.distanceCm} cm · {photo.description || 'No description'}
+              {photo.bodyRegion}{photo.view ? ` · ${photo.view}` : ''} · {photo.distanceCm} cm · {photo.description || 'No description'}
             </div>
           </div>
         );

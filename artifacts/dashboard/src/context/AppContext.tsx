@@ -148,6 +148,7 @@ export interface ExamPhoto {
   dataUrl: string;
   mimeType: string;
   bodyRegion: string;
+  view?: string;
   description: string;
   distanceCm: string;
   dateAdded: string;
