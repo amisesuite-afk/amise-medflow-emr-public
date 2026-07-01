@@ -6,7 +6,7 @@ import {
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
   ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, Inbox,
   Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig, Check,
-  MessageSquare,
+  MessageSquare, Tags,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -73,9 +73,10 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     label: 'Review',
     minRole: 'nurse',
     items: [
-      { id: 'scales',       icon: ClipboardCheck, label: 'Scales' },
-      { id: 'ros',           icon: ListChecks,     label: 'Review of Systems' },
-      { id: 'examination',   icon: Stethoscope,    label: 'Examination',   minRole: 'nurse' },
+      { id: 'scales',          icon: ClipboardCheck, label: 'Scales' },
+      { id: 'ros',             icon: ListChecks,     label: 'Review of Systems' },
+      { id: 'examination',     icon: Stethoscope,    label: 'Examination',       minRole: 'nurse' },
+      { id: 'classifications', icon: Tags,           label: 'Classifications',   minRole: 'nurse' },
     ],
   },
   {

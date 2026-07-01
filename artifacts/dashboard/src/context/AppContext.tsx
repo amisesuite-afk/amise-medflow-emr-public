@@ -9,7 +9,7 @@ export { type SiteCode } from '@/lib/supabase';
 export type Section =
   | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
   | 'allergies' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations'
-  | 'radiology' | 'attachments'
+  | 'radiology' | 'attachments' | 'classifications'
   | 'assessment' | 'plan' | 'progress'
   | 'procedures' | 'billing' | 'documents'
   | 'monitoring' | 'apcq' | 'nurse_apcq'
@@ -254,6 +254,7 @@ interface CtxValue {
   procedures: string; setProcedures(v: string): void;
   billing: string; setBilling(v: string): void;
   documents: string; setDocuments(v: string): void;
+  surgicalClassifications: Record<string, string>; setSurgicalClassifications(v: Record<string, string>): void;
 
   insuranceProvider: string; setInsuranceProvider(v: string): void;
   policyNumber: string; setPolicyNumber(v: string): void;
@@ -398,6 +399,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [procedures, setProcedures] = useState('');
   const [billing, setBilling] = useState('');
   const [documents, setDocuments] = useState('');
+  const [surgicalClassifications, setSurgicalClassifications] = useState<Record<string, string>>({});
   const [insuranceProvider, setInsuranceProvider] = useState('');
   const [policyNumber, setPolicyNumber] = useState('');
   const [nhiNumber, setNhiNumber] = useState('');
@@ -954,6 +956,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     procedures, setProcedures,
     billing, setBilling,
     documents, setDocuments,
+    surgicalClassifications, setSurgicalClassifications,
     insuranceProvider, setInsuranceProvider,
     policyNumber, setPolicyNumber,
     nhiNumber, setNhiNumber,

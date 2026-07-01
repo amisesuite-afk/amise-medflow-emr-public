@@ -47,6 +47,7 @@ import AnalyticsTab from './tabs/AnalyticsTab';
 import SettingsTab from './tabs/SettingsTab';
 import PortalIntakeTab from './tabs/PortalIntakeTab';
 import ReferringProvidersTab from './tabs/ReferringProvidersTab';
+import SurgicalClassificationsTab from './tabs/SurgicalClassificationsTab';
 import VisitManagerTab from './VisitManager';
 import PrescriptionsTab from './tabs/PrescriptionsTab';
 import AiConsultantTab from './tabs/AiConsultantTab';
@@ -572,7 +573,8 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
         {topSection === 'consultation'  && activeSection === 'scales'      && <ScalesTab />}
         {topSection === 'consultation'  && activeSection === 'ros'         && <RosTab />}
-        {topSection === 'consultation'  && activeSection === 'examination'     && hasRole(userRole, 'nurse')  && <ExaminationTab />}
+        {topSection === 'consultation'  && activeSection === 'examination'        && hasRole(userRole, 'nurse')  && <ExaminationTab />}
+        {topSection === 'consultation'  && activeSection === 'classifications'    && hasRole(userRole, 'nurse')  && <SurgicalClassificationsTab />}
         {topSection === 'consultation'  && activeSection === 'investigations' && hasRole(userRole, 'nurse')  && <InvestigationsTab />}
         {topSection === 'consultation'  && activeSection === 'radiology'     && hasRole(userRole, 'nurse')  && <RadiologyTab />}
         {topSection === 'consultation'  && activeSection === 'attachments'   && hasRole(userRole, 'nurse')  && <AttachmentsTab />}
