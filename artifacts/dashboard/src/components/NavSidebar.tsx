@@ -48,45 +48,38 @@ interface ClinicalPhase {
   items: ClinicalSubItem[];
 }
 
+// Consultation sequence: fixed order, adaptive logic surfaces the next step.
+// Sequence: CC → History → Examination → Investigations → Assessment → Plan
 const CLINICAL_PHASES: ClinicalPhase[] = [
   {
-    key: 'cc_intake',
-    label: 'CC & Intake',
+    key: 'cc_hx',
+    label: 'CC & History',
     items: [
-      { id: 'nurse_apcq', icon: MessageSquare, label: 'CC & Questionnaire', minRole: 'nurse' },
-      { id: 'triage',     icon: AlertTriangle, label: 'Triage' },
-    ],
-  },
-  {
-    key: 'history',
-    label: 'History',
-    items: [
-      { id: 'pmh',         icon: FileText,     label: 'PMH' },
+      { id: 'nurse_apcq',  icon: MessageSquare, label: 'Chief Complaint',  minRole: 'nurse' },
+      { id: 'triage',      icon: AlertTriangle, label: 'Triage / Vitals' },
+      { id: 'pmh',         icon: FileText,      label: 'Past Medical Hx' },
       { id: 'surgical',    icon: Scissors,      label: 'Surgical Hx' },
       { id: 'medications', icon: Pill,          label: 'Medications' },
       { id: 'allergies',   icon: ShieldAlert,   label: 'Allergies' },
-      { id: 'toxic',       icon: Cigarette,     label: 'Toxic Habits' },
     ],
   },
   {
-    key: 'review',
-    label: 'Review',
+    key: 'examination',
+    label: 'Examination',
     minRole: 'nurse',
     items: [
-      { id: 'scales',          icon: ClipboardCheck, label: 'Scales' },
-      { id: 'ros',             icon: ListChecks,     label: 'Review of Systems' },
-      { id: 'examination',     icon: Stethoscope,    label: 'Examination',       minRole: 'nurse' },
-      { id: 'classifications', icon: Tags,           label: 'Classifications',   minRole: 'nurse' },
+      { id: 'examination', icon: Stethoscope, label: 'Examination', minRole: 'nurse' },
+      { id: 'ros',         icon: ListChecks,  label: 'Systems Review' },
     ],
   },
   {
     key: 'workup',
-    label: 'Workup',
+    label: 'Investigations',
     minRole: 'nurse',
     items: [
-      { id: 'investigations', icon: FlaskConical,   label: 'Investigations', minRole: 'nurse' },
-      { id: 'radiology',      icon: ScanLine,       label: 'Radiology',      minRole: 'nurse' },
-      { id: 'attachments',    icon: Paperclip,      label: 'Attachments',    minRole: 'nurse' },
+      { id: 'investigations', icon: FlaskConical, label: 'Bloods / Labs', minRole: 'nurse' },
+      { id: 'radiology',      icon: ScanLine,     label: 'Imaging',       minRole: 'nurse' },
+      { id: 'attachments',    icon: Paperclip,    label: 'Attachments',   minRole: 'nurse' },
     ],
   },
   {
@@ -94,28 +87,18 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     label: 'Assessment',
     minRole: 'doctor',
     items: [
-      { id: 'assessment',     icon: ClipboardCheck, label: 'Assessment',     minRole: 'doctor' },
-      { id: 'ai_consultant',  icon: BrainCircuit,   label: 'AI Aid',         minRole: 'doctor' },
+      { id: 'assessment',    icon: ClipboardCheck, label: 'Assessment', minRole: 'doctor' },
+      { id: 'ai_consultant', icon: BrainCircuit,   label: 'AI Aid',     minRole: 'doctor' },
     ],
   },
   {
-    key: 'disposition',
-    label: 'Disposition',
+    key: 'plan',
+    label: 'Plan',
     minRole: 'doctor',
     items: [
-      { id: 'plan',               icon: FileEdit,       label: 'Plan',           minRole: 'doctor' },
-      { id: 'procedures',         icon: Scissors,       label: 'Procedures',     minRole: 'doctor' },
-      { id: 'prescriptions',      icon: FileSignature,  label: 'Prescriptions',  minRole: 'doctor' },
-      { id: 'referring_providers', icon: Contact,        label: 'Referrals',      minRole: 'doctor' },
-    ],
-  },
-  {
-    key: 'ongoing',
-    label: 'Ongoing',
-    items: [
-      { id: 'progress',   icon: FileText,       label: 'Progress Notes' },
-      { id: 'monitoring',  icon: Activity,       label: 'Monitoring' },
-      { id: 'tasks',       icon: CircleCheckBig, label: 'Tasks' },
+      { id: 'plan',                icon: FileEdit,      label: 'Plan',          minRole: 'doctor' },
+      { id: 'prescriptions',       icon: FileSignature, label: 'Prescriptions', minRole: 'doctor' },
+      { id: 'referring_providers', icon: Contact,       label: 'Referrals',     minRole: 'doctor' },
     ],
   },
 ];
@@ -168,6 +151,7 @@ export default function NavSidebar({
   encounterMode = 'outpatient',
   pendingBookingCount = 0,
   sectionCompletion = {},
+  suggestedBlocks = [],
 }: NavSidebarProps) {
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
@@ -176,7 +160,7 @@ export default function NavSidebar({
     onTopSection(item.id);
     if (item.id === 'intake')          { onSection('intake'); }
     if (item.id === 'procedures')      { onSection('procedures'); }
-    if (item.id === 'consultation')    { onSection('triage'); }
+    if (item.id === 'consultation')    { onSection('nurse_apcq'); }
     if (item.id === 'billing')         { onSection('billing'); }
   }
 
@@ -282,6 +266,7 @@ export default function NavSidebar({
                           const SubIcon = sub.icon;
                           const done = !!sectionCompletion[sub.id];
                           const isCurrent = subActive(sub.id);
+                          const isNext = !done && !isCurrent && !!suggestedBlocks?.includes(sub.id);
                           return (
                             <button
                               key={sub.id}
@@ -297,6 +282,9 @@ export default function NavSidebar({
                                   ? `${sub.label} (${pmhCount})`
                                   : sub.label}
                               </span>
+                              {isNext && (
+                                <span style={{ marginLeft: 'auto', fontSize: 9, fontWeight: 700, color: '#0d9488', background: '#f0fdfa', borderRadius: 4, padding: '1px 4px', flexShrink: 0 }}>Next</span>
+                              )}
                             </button>
                           );
                         })}

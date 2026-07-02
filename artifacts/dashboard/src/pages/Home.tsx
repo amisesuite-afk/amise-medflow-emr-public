@@ -264,6 +264,19 @@ export default function HomePage() {
       examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
       assessment, orderedInvestigations, radiologyRequests, attachments, plan, progressNotes]);
 
+  // Consultation sequence — fixed order, logic surfaces the next incomplete step.
+  const suggestedBlocks = useMemo<string[]>(() => {
+    if (topSection !== 'consultation') return [];
+    const sequence: Section[] = [
+      'nurse_apcq', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'examination', 'ros', 'investigations', 'radiology', 'assessment', 'plan',
+    ];
+    const currentIdx = sequence.indexOf(activeSection as Section);
+    const fromCurrent = currentIdx >= 0 ? sequence.slice(currentIdx + 1) : sequence;
+    const next = fromCurrent.find(s => !sectionCompletion[s as Section]);
+    return next ? [next] : [];
+  }, [topSection, activeSection, sectionCompletion]);
+
   const patientLabel = patientName.trim() || 'No patient loaded';
   const metaParts: string[] = [];
   if (age) metaParts.push(`Age ${age}`);
@@ -425,6 +438,7 @@ export default function HomePage() {
         encounterMode={encounterMode}
         pendingBookingCount={pendingBookingCount}
         sectionCompletion={sectionCompletion}
+        suggestedBlocks={suggestedBlocks}
       />
 
       {/* ── Main content ── */}
