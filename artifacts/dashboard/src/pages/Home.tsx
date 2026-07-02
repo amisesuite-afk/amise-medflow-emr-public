@@ -576,6 +576,46 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Patient context banner — sticky at top of consultation */}
+        {topSection === 'consultation' && (() => {
+          const allergyList = allergies.split(',').map(a => a.trim()).filter(Boolean);
+          const acuityColors: Record<string, { bg: string; text: string }> = {
+            urgent:   { bg: '#7f1d1d', text: '#fca5a5' },
+            priority: { bg: '#431407', text: '#fb923c' },
+            review:   { bg: '#422006', text: '#fbbf24' },
+            routine:  { bg: '#052e16', text: '#86efac' },
+          };
+          const ac = acuityColors[triageResult.acuity] ?? { bg: '#1e293b', text: '#94a3b8' };
+          return (
+            <div style={{
+              position: 'sticky', top: 0, zIndex: 50, marginBottom: 8,
+              background: '#0f172a', borderBottom: '1px solid #1e293b',
+              display: 'flex', alignItems: 'center', gap: 12,
+              padding: '0 14px', height: 36, flexWrap: 'nowrap', overflow: 'hidden',
+            }}>
+              <span style={{ fontWeight: 700, fontSize: 13, color: '#f1f5f9', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                {patientName.trim() || '—'}
+              </span>
+              {(age || (sex && sex !== 'unknown')) && (
+                <span style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  {[age && `${age}y`, sex !== 'unknown' && sex].filter(Boolean).join(' · ')}
+                </span>
+              )}
+              {allergyList.length > 0 && (
+                <span style={{ fontSize: 11, color: '#fbbf24', background: '#422006', border: '1px solid #78350f', borderRadius: 4, padding: '1px 7px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  ⚠ {allergyList.slice(0, 2).join(', ')}{allergyList.length > 2 ? ` +${allergyList.length - 2}` : ''}
+                </span>
+              )}
+              {allergyList.length === 0 && (
+                <span style={{ fontSize: 11, color: '#334155', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
+              )}
+              <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: ac.text, background: ac.bg, borderRadius: 4, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                {triageResult.acuity}
+              </span>
+            </div>
+          );
+        })()}
+
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
         {topSection === 'consultation' && (() => {
           const curIdx = consultTabs.findIndex(t => t.id === activeSection);
