@@ -48,19 +48,28 @@ interface ClinicalPhase {
   items: ClinicalSubItem[];
 }
 
-// Consultation sequence: fixed order, adaptive logic surfaces the next step.
-// Sequence: CC → History → Examination → Investigations → Assessment → Plan
+// Consultation sequence mirrors Dr Kabiye's standard surgical consultation template.
+// Sequence: CC → HPI → PMH → Surgical → Meds → Allergies → Family Hx → Social Hx → ROS → Exam → Investigations → Assessment → Plan
 const CLINICAL_PHASES: ClinicalPhase[] = [
   {
-    key: 'cc_hx',
-    label: 'CC & History',
+    key: 'history',
+    label: 'History',
     items: [
-      { id: 'nurse_apcq',  icon: MessageSquare, label: 'Chief Complaint',  minRole: 'nurse' },
-      { id: 'triage',      icon: AlertTriangle, label: 'Triage / Vitals' },
+      { id: 'nurse_apcq',  icon: MessageSquare, label: 'Chief Complaint', minRole: 'nurse' },
+      { id: 'hpi',         icon: FileEdit,      label: 'HPI' },
       { id: 'pmh',         icon: FileText,      label: 'Past Medical Hx' },
       { id: 'surgical',    icon: Scissors,      label: 'Surgical Hx' },
       { id: 'medications', icon: Pill,          label: 'Medications' },
       { id: 'allergies',   icon: ShieldAlert,   label: 'Allergies' },
+    ],
+  },
+  {
+    key: 'social_ros',
+    label: 'Social & ROS',
+    items: [
+      { id: 'family_hx', icon: HeartPulse,  label: 'Family History' },
+      { id: 'toxic',     icon: Cigarette,   label: 'Social History' },
+      { id: 'ros',       icon: ListChecks,  label: 'Systems Review' },
     ],
   },
   {
@@ -69,7 +78,6 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     minRole: 'nurse',
     items: [
       { id: 'examination', icon: Stethoscope, label: 'Examination', minRole: 'nurse' },
-      { id: 'ros',         icon: ListChecks,  label: 'Systems Review' },
     ],
   },
   {

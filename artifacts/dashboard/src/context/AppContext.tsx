@@ -7,8 +7,8 @@ import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
-  | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
-  | 'allergies' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations'
+  | 'intake' | 'triage' | 'hpi' | 'pmh' | 'surgical' | 'medications'
+  | 'allergies' | 'family_hx' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations'
   | 'radiology' | 'attachments' | 'classifications'
   | 'assessment' | 'plan' | 'progress'
   | 'procedures' | 'billing' | 'documents'
@@ -220,6 +220,8 @@ interface CtxValue {
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
   toxicHabits: string[]; setToxicHabits(v: string[]): void; toggleToxicHabit(v: string): void;
+  occupation: string; setOccupation(v: string): void;
+  hpiNotes: string; setHpiNotes(v: string): void;
 
   clearPatient(): void;
 
@@ -370,6 +372,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [medicationsText, setMedicationsText] = useState('');
   const [allergies, setAllergies] = useState('');
   const [toxicHabits, setToxicHabits] = useState<string[]>([]);
+  const [occupation, setOccupation] = useState('');
+  const [hpiNotes, setHpiNotes] = useState('');
 
   const [examGeneral, setExamGeneral] = useState('');
   const [examCardio, setExamCardio] = useState('');
@@ -505,6 +509,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.allergies === 'string') setAllergies(d.allergies);
       if (Array.isArray(d.familyHistory)) setFamilyHistory(d.familyHistory as string[]);
       if (Array.isArray(d.toxicHabits)) setToxicHabits(d.toxicHabits as string[]);
+      if (typeof d.occupation === 'string') setOccupation(d.occupation);
+      if (typeof d.hpiNotes === 'string') setHpiNotes(d.hpiNotes);
       if (typeof d.patientName === 'string') setPatientName(d.patientName);
       if (typeof d.age === 'string') setAge(d.age);
       if (typeof d.sex === 'string') setSex(d.sex as Sex);
@@ -578,7 +584,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       assessment, differentials, plan, procedures, billing, documents,
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
-      medications, medicationsText, allergies, familyHistory, toxicHabits,
+      medications, medicationsText, allergies, familyHistory, toxicHabits, occupation, hpiNotes,
       patientName, age, sex, dob, phone, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
       weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
@@ -599,7 +605,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     assessment, differentials, plan, procedures, billing, documents,
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
-    medications, medicationsText, allergies, familyHistory, toxicHabits,
+    medications, medicationsText, allergies, familyHistory, toxicHabits, occupation, hpiNotes,
     patientName, age, sex, dob, phone, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
     weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
@@ -650,7 +656,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setVitals({ systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '' });
     setComorbidities([]); setPmhNotes(''); setFamilyHistory([]); setFamilyHistoryNotes('');
     setSurgicalHistory([]); setSurgicalNotes(''); setMedications([]); setMedicationsText('');
-    setAllergies(''); setToxicHabits([]);
+    setAllergies(''); setToxicHabits([]); setOccupation(''); setHpiNotes('');
     setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
     setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
     setExamFindings({}); setExamNotes({});
@@ -936,6 +942,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     medicationsText, setMedicationsText,
     allergies, setAllergies,
     toxicHabits, setToxicHabits, toggleToxicHabit,
+    occupation, setOccupation,
+    hpiNotes, setHpiNotes,
     clearPatient,
     examGeneral, setExamGeneral,
     examCardio, setExamCardio,

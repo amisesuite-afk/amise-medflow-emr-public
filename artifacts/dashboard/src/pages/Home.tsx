@@ -13,7 +13,9 @@ import ReceptionistView from './ReceptionistView';
 import NursePreVisitView from './NursePreVisitView';
 import IntakeTab from './tabs/IntakeTab';
 import TriageTab from './tabs/TriageTab';
+import HpiTab from './tabs/HpiTab';
 import PmhTab from './tabs/PmhTab';
+import FamilyHistoryTab from './tabs/FamilyHistoryTab';
 import SurgicalHistoryTab from './tabs/SurgicalHistoryTab';
 import MedicationsTab from './tabs/MedicationsTab';
 import AllergiesTab from './tabs/AllergiesTab';
@@ -150,6 +152,10 @@ export default function HomePage() {
     medications, medicationsText,
     allergies,
     toxicHabits,
+    occupation,
+    hpiNotes,
+    familyHistory,
+    familyHistoryNotes,
     rosFindings,
     examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
     orderedInvestigations,
@@ -175,14 +181,15 @@ export default function HomePage() {
     ...(hasRole(userRole, 'nurse') ? [
       { id: 'nurse_apcq' as Section, label: 'CC' },
     ] : []),
-    { id: 'triage', label: 'Triage' },
-    { id: 'pmh', label: 'PMH' },
-    { id: 'surgical', label: 'Surgical' },
-    { id: 'medications', label: 'Meds' },
-    { id: 'allergies', label: 'Allergies' },
-    { id: 'toxic', label: 'Habits' },
-    { id: 'scales', label: 'Scales' },
-    { id: 'ros', label: 'ROS' },
+    { id: 'hpi' as Section, label: 'HPI' },
+    { id: 'triage' as Section, label: 'Triage' },
+    { id: 'pmh' as Section, label: 'PMH' },
+    { id: 'surgical' as Section, label: 'Surgical' },
+    { id: 'medications' as Section, label: 'Meds' },
+    { id: 'allergies' as Section, label: 'Allergies' },
+    { id: 'family_hx' as Section, label: 'Family Hx' },
+    { id: 'toxic' as Section, label: 'Social' },
+    { id: 'ros' as Section, label: 'ROS' },
     ...(hasRole(userRole, 'nurse') ? [
       { id: 'examination' as Section, label: 'Exam' },
       { id: 'investigations' as Section, label: 'Labs' },
@@ -192,13 +199,12 @@ export default function HomePage() {
     ...(hasRole(userRole, 'doctor') ? [
       { id: 'assessment' as Section, label: 'Assess' },
       { id: 'plan' as Section, label: 'Plan' },
-      { id: 'procedures' as Section, label: 'Procedures' },
       { id: 'prescriptions' as Section, label: 'RX' },
       { id: 'referring_providers' as Section, label: 'Referrals' },
     ] : []),
-    { id: 'progress', label: 'Notes' },
-    { id: 'monitoring', label: 'Monitor' },
-    { id: 'tasks', label: 'Tasks' },
+    { id: 'progress' as Section, label: 'Notes' },
+    { id: 'monitoring' as Section, label: 'Monitor' },
+    { id: 'tasks' as Section, label: 'Tasks' },
   ], [userRole]);
 
   /* ── Swipe navigation for consultation tabs (iPad / mobile) ── */
@@ -245,11 +251,13 @@ export default function HomePage() {
     const hasRos = Object.values(rosFindings).some(f => f.status !== 'not-asked' || f.details.length > 0 || f.notes);
     return {
       triage:              symptoms.length > 0 || !!freeText.trim() || hasVitals,
+      hpi:                 !!hpiNotes.trim(),
       pmh:                 comorbidities.length > 0,
       surgical:            surgicalHistory.length > 0 || !!surgicalNotes.trim(),
       medications:         medications.length > 0 || !!medicationsText.trim(),
       allergies:           !!allergies.trim(),
-      toxic:               toxicHabits.length > 0,
+      family_hx:           familyHistory.length > 0 || !!familyHistoryNotes.trim(),
+      toxic:               toxicHabits.length > 0 || !!occupation.trim(),
       ros:                 hasRos,
       examination:         hasExam,
       assessment:          !!assessment.trim(),
@@ -259,8 +267,8 @@ export default function HomePage() {
       plan:                !!plan.trim(),
       progress:            progressNotes.length > 0,
     };
-  }, [symptoms, freeText, vitals, comorbidities, surgicalHistory, surgicalNotes,
-      medications, medicationsText, allergies, toxicHabits, rosFindings,
+  }, [symptoms, freeText, vitals, hpiNotes, comorbidities, surgicalHistory, surgicalNotes,
+      medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, rosFindings,
       examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
       assessment, orderedInvestigations, radiologyRequests, attachments, plan, progressNotes]);
 
@@ -268,8 +276,9 @@ export default function HomePage() {
   const suggestedBlocks = useMemo<string[]>(() => {
     if (topSection !== 'consultation') return [];
     const sequence: Section[] = [
-      'nurse_apcq', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
-      'examination', 'ros', 'investigations', 'radiology', 'assessment', 'plan',
+      'nurse_apcq', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
+      'family_hx', 'toxic', 'ros', 'examination', 'investigations', 'radiology',
+      'assessment', 'plan',
     ];
     const currentIdx = sequence.indexOf(activeSection as Section);
     const fromCurrent = currentIdx >= 0 ? sequence.slice(currentIdx + 1) : sequence;
@@ -579,11 +588,13 @@ export default function HomePage() {
         {/* Clinical sections */}
         {topSection === 'intake'        && <IntakeTab />}
         {topSection === 'consultation'  && activeSection === 'nurse_apcq'  && hasRole(userRole, 'nurse')  && <NurseAPCQTab />}
+        {topSection === 'consultation'  && activeSection === 'hpi'         && <HpiTab />}
         {topSection === 'consultation'  && activeSection === 'triage'      && <TriageTab />}
         {topSection === 'consultation'  && activeSection === 'pmh'         && <PmhTab />}
         {topSection === 'consultation'  && activeSection === 'surgical'    && <SurgicalHistoryTab />}
         {topSection === 'consultation'  && activeSection === 'medications' && <MedicationsTab />}
         {topSection === 'consultation'  && activeSection === 'allergies'   && <AllergiesTab />}
+        {topSection === 'consultation'  && activeSection === 'family_hx'   && <FamilyHistoryTab />}
         {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
         {topSection === 'consultation'  && activeSection === 'scales'      && <ScalesTab />}
         {topSection === 'consultation'  && activeSection === 'ros'         && <RosTab />}

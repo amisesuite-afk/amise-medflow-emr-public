@@ -13,15 +13,30 @@ const TOXIC_OPTIONS = [
 ];
 
 export default function ToxicHabitsTab() {
-  const { toxicHabits, toggleToxicHabit } = useAppContext();
+  const { toxicHabits, toggleToxicHabit, occupation, setOccupation } = useAppContext();
 
   return (
     <div className="gap-y">
-      <CollapsibleCard title="Toxic habits and substance use" badge={toxicHabits.length || undefined}>
+      <CollapsibleCard title="Occupation" badge={occupation.trim() ? '✓' : undefined}>
+        <div className="fld">
+          <label>Occupation / employment</label>
+          <input
+            type="text"
+            value={occupation}
+            onChange={e => setOccupation(e.target.value)}
+            placeholder="e.g. Nurse, retired teacher, manual labourer, self-employed…"
+          />
+        </div>
+        <p style={{ marginTop: 6, fontSize: 11, color: 'var(--muted)' }}>
+          Relevant to occupational exposures, physical demands, and sick-leave planning.
+        </p>
+      </CollapsibleCard>
+
+      <CollapsibleCard title="Substance use / toxic habits" badge={toxicHabits.length || undefined}>
         <ChipGroup options={TOXIC_OPTIONS} selected={toxicHabits} onToggle={toggleToxicHabit} />
         {toxicHabits.includes('Current smoker') && (
           <p style={{ marginTop: 8, fontSize: 12, color: 'var(--muted)' }}>
-            Remember to document pack-year history and offer smoking cessation advice (pre-op if applicable).
+            Document pack-year history and offer smoking cessation advice (pre-op if applicable).
           </p>
         )}
         {toxicHabits.some(h => h.includes('alcohol')) && (
