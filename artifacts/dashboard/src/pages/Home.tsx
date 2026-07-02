@@ -167,6 +167,7 @@ export default function HomePage() {
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
+  const [zenMode, setZenMode] = useState(false);
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
   const [showAiPanel, setShowAiPanel] = useState(false);
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
@@ -286,12 +287,23 @@ export default function HomePage() {
     return next ? [next] : [];
   }, [topSection, activeSection, sectionCompletion]);
 
+  // Exit zen mode when navigating away from consultation
+  useEffect(() => {
+    if (topSection !== 'consultation') setZenMode(false);
+  }, [topSection]);
+
+  // Activates zen mode when a consultation section is selected
+  const handleSectionSelect = useCallback((s: Section) => {
+    setActiveSection(s);
+    if (topSection === 'consultation') setZenMode(true);
+  }, [topSection, setActiveSection]);
+
   const patientLabel = patientName.trim() || 'No patient loaded';
   const metaParts: string[] = [];
   if (age) metaParts.push(`Age ${age}`);
   if (sex && sex !== 'unknown') metaParts.push(sex);
 
-  const sidebarWidth = collapsed ? 52 : 182;
+  const sidebarWidth = zenMode ? 0 : (collapsed ? 52 : 182);
 
   if (userRole === 'front_desk') return <ErrorBoundary><ReceptionistView /></ErrorBoundary>;
   if (userRole === 'nurse') return <ErrorBoundary><NursePreVisitView /></ErrorBoundary>;
@@ -299,7 +311,7 @@ export default function HomePage() {
   return (
     <div
       className="app"
-      style={{ gridTemplateColumns: `${sidebarWidth}px 1fr` }}
+      style={{ gridTemplateColumns: `${sidebarWidth}px 1fr`, transition: 'grid-template-columns 200ms ease' }}
     >
       {/* ── Sticky header ── */}
       <header className="app-header">
@@ -433,12 +445,12 @@ export default function HomePage() {
 
       {/* ── Collapsible sidebar ── */}
       <NavSidebar
-        collapsed={collapsed}
-        onToggle={() => setCollapsed(c => !c)}
+        collapsed={collapsed || zenMode}
+        onToggle={() => zenMode ? setZenMode(false) : setCollapsed(c => !c)}
         topSection={topSection}
-        onTopSection={setTopSection}
+        onTopSection={s => { setTopSection(s); setZenMode(false); }}
         activeSection={activeSection}
-        onSection={setActiveSection}
+        onSection={handleSectionSelect}
         userRole={userRole}
         hasUrgentRedFlag={hasUrgentRedFlag}
         urgentCount={urgentCount}
@@ -452,6 +464,26 @@ export default function HomePage() {
 
       {/* ── Main content ── */}
       <main ref={swipeRef} className="main-content">
+        {/* Zen mode exit chip */}
+        {zenMode && (
+          <button
+            onClick={() => setZenMode(false)}
+            title="Show navigation"
+            style={{
+              position: 'fixed', bottom: 20, left: 16, zIndex: 200,
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '7px 14px', borderRadius: 20,
+              background: '#1e293b', color: '#94a3b8',
+              border: '1px solid #334155', cursor: 'pointer',
+              fontSize: 12, fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+              transition: 'all 150ms ease',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#f1f5f9'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#475569'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = '#94a3b8'; (e.currentTarget as HTMLButtonElement).style.borderColor = '#334155'; }}
+          >
+            ☰ Nav
+          </button>
+        )}
         <ErrorBoundary resetKeys={[topSection, activeSection]}>
         {/* Pre-visit status banner for doctor/admin */}
         {preVisitStatus === 'registered' && (
