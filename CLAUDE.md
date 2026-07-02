@@ -1,8 +1,53 @@
 # Amise MedFlow EMR — Claude Code Guide
 
+## Product Vision
+
+AMISE MedFlow EMR is an **AI-assisted Surgical Clinical Operating System designed by surgeons for surgeons.** It supports the complete continuum of surgical care — from referral and consultation to emergency surgery, endoscopy, operative management, postoperative follow-up, quality improvement, research, billing, and long-term patient surveillance.
+
+### Guiding Principle
+
+The platform should feel like having an experienced medical AI, surgical registrar, medical secretary, theatre coordinator, perioperative nurse, quality and safety officer, clinical auditor, coding specialist, and clinical researcher working beside the surgeon during every patient encounter. The system should **anticipate the surgeon's next need**, organise information intelligently, identify missing or high-risk items, draft high-quality documentation, and provide timely, evidence-informed suggestions without interrupting clinical workflow.
+
+**The AI supports — but never replaces — the surgeon's judgment.**
+
+### The Medical AI Assistant must
+
+- Think like a consultant-trained surgical assistant, adapting to the patient's presentation rather than following rigid templates.
+- Highlight clinically significant positive findings and detect red flags requiring urgent intervention.
+- Generate concise, professional documentation in real time.
+- Recommend investigations, referrals, and evidence-based management options.
+- Produce operative notes, endoscopy reports, discharge summaries, referral letters, insurance reports, and patient instructions.
+- Monitor pathology, imaging, laboratory results, and postoperative follow-up.
+- Support clinical coding, billing, audit, quality improvement, and research data collection.
+- Learn the surgeon's preferred documentation style and workflow while remaining fully configurable.
+- Never conceal uncertainty and clearly distinguish confirmed facts from AI-generated suggestions.
+
+### Engineering gate — every feature must satisfy at least one of
+
+1. Improve patient safety
+2. Reduce clinician cognitive load
+3. Reduce clicks and documentation time
+4. Improve surgical decision support
+5. Improve communication between healthcare professionals
+6. Improve continuity of care
+7. Improve documentation quality
+8. Improve compliance with evidence-based practice
+9. Improve audit and research capability
+10. Improve patient experience
+
+**If a feature does not clearly contribute to one or more of these, it should not be included.**
+
+### Human authority — the surgeon always retains full responsibility for
+
+Clinical assessment · Diagnosis · Investigations · Treatment decisions · Operative planning · Procedures · Documentation approval · Prescribing · Referrals · Final sign-off.
+
+The AI may recommend, organise, summarise, and assist — but it must **never** independently diagnose, prescribe, order procedures, or modify the medical record without explicit clinician approval.
+
+---
+
 ## Project
 
-Adaptive triage and scheduling assistant for **Amise Medical Services** (Saint Lucia), a general and endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM. The practice focuses primarily on surgical follow-up with broad screening and wellness/preventive care.
+Specialist general and endoscopic surgery practice — **Amise Medical Services**, Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM. Covers surgical follow-up, elective and emergency surgery, endoscopy (including ERCP), and broad screening / wellness / preventive care.
 
 ## Timezone
 
