@@ -46,6 +46,23 @@ function SelectOpts({ chips, value, onChange }: { chips: string[]; value: string
   );
 }
 
+function CheckList({ items, value, onChange }: { items: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  function toggle(item: string) {
+    onChange(value.includes(item) ? value.filter(x => x !== item) : [...value, item]);
+  }
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '4px 12px', marginTop: 4 }}>
+      {items.map(item => (
+        <label key={item} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, cursor: 'pointer', color: '#374151' }}>
+          <input type="checkbox" checked={value.includes(item)} onChange={() => toggle(item)}
+            style={{ accentColor: '#0d9488', width: 13, height: 13, flexShrink: 0 }} />
+          {item}
+        </label>
+      ))}
+    </div>
+  );
+}
+
 function ProcSection({ title, children, defaultOpen = true, badge }: { title: string; children: React.ReactNode; defaultOpen?: boolean; badge?: string | number }) {
   return (
     <details open={defaultOpen} style={{ marginTop: 12 }}>
@@ -182,30 +199,22 @@ function DraftReportPanel({
 // ── OGD form ──────────────────────────────────────────────────────────────────
 
 interface OgdData {
-  indication: string; sedation: string; sedationType: string;
-  instrument: string; patientPosition: string; oxygenSupp: string;
-  oesophagus: string[]; stomach: string[]; duodenum: string[];
-  zLine: string; hiatalHernia: string;
+  indication: string; sedationType: string; instrument: string;
+  oesophagus: string; stomach: string; duodenum: string;
   biopsy: string; biopsySite: string;
-  cloTest: string; hpylori: string; hp_treatment: string;
-  complications: string[]; additionalNotes: string;
+  cloTest: string;
+  complications: string; additionalNotes: string;
 }
 
 const EMPTY_OGD: OgdData = {
-  indication: '', sedation: '', sedationType: '',
-  instrument: '', patientPosition: '', oxygenSupp: '',
-  oesophagus: [], stomach: [], duodenum: [],
-  zLine: '', hiatalHernia: '', biopsy: '', biopsySite: '',
-  cloTest: '', hpylori: '', hp_treatment: '',
-  complications: [], additionalNotes: '',
+  indication: '', sedationType: '', instrument: '',
+  oesophagus: '', stomach: '', duodenum: '',
+  biopsy: '', biopsySite: '', cloTest: '',
+  complications: '', additionalNotes: '',
 };
 
 function OgdForm({ data, onChange }: { data: OgdData; onChange: (d: OgdData) => void }) {
   function set<K extends keyof OgdData>(k: K, v: OgdData[K]) { onChange({ ...data, [k]: v }); }
-  function toggleArr(k: 'oesophagus' | 'stomach' | 'duodenum' | 'complications', c: string) {
-    const cur = data[k];
-    set(k, cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
-  }
 
   return (
     <div style={{ display: 'grid', gap: 10 }}>
@@ -215,8 +224,8 @@ function OgdForm({ data, onChange }: { data: OgdData; onChange: (d: OgdData) => 
             value={data.indication} onChange={v => set('indication', v)} />
         </Field>
         <Field label="Sedation">
-          <ChipRow chips={['None', 'Topical only', 'Conscious sedation', 'GA / propofol']}
-            value={[data.sedationType]} onToggle={v => set('sedationType', v)} />
+          <SelectOpts chips={['None (unsedated)', 'Topical spray only', 'Conscious sedation', 'GA / propofol']}
+            value={data.sedationType} onChange={v => set('sedationType', v)} />
         </Field>
         <Field label="Instrument">
           <input type="text" value={data.instrument} onChange={e => set('instrument', e.target.value)}
@@ -224,43 +233,42 @@ function OgdForm({ data, onChange }: { data: OgdData; onChange: (d: OgdData) => 
         </Field>
       </div>
 
-      <Field label="Oesophagus">
-        <ChipRow chips={['Normal', 'Oesophagitis (LA grade: see notes)', "Barrett's oesophagus", 'Stricture', 'Varices', 'Mass / polyp']}
-          value={data.oesophagus} onToggle={c => toggleArr('oesophagus', c)} />
-      </Field>
-
-      <Field label="Stomach">
-        <ChipRow chips={['Normal', 'Gastritis', 'Ulcer (site: see notes)', 'Polyp', 'Atrophic mucosa', 'Mass']}
-          value={data.stomach} onToggle={c => toggleArr('stomach', c)} />
-      </Field>
-
-      <Field label="Duodenum">
-        <ChipRow chips={['Normal', 'Duodenitis', 'Duodenal ulcer', 'Erosions', 'Mass']}
-          value={data.duodenum} onToggle={c => toggleArr('duodenum', c)} />
-      </Field>
-
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+        <Field label="Oesophagus">
+          <SelectOpts chips={['Normal', 'Oesophagitis grade A', 'Oesophagitis grade B', 'Oesophagitis grade C', 'Oesophagitis grade D', "Barrett's oesophagus", 'Stricture', 'Varices', 'Hiatal hernia', 'Mass / polyp']}
+            value={data.oesophagus} onChange={v => set('oesophagus', v)} />
+        </Field>
+        <Field label="Stomach">
+          <SelectOpts chips={['Normal', 'Gastritis (antral)', 'Gastritis (diffuse)', 'Ulcer (antrum)', 'Ulcer (lesser curve)', 'Polyp', 'Atrophic mucosa', 'Mass']}
+            value={data.stomach} onChange={v => set('stomach', v)} />
+        </Field>
+        <Field label="Duodenum">
+          <SelectOpts chips={['Normal', 'Duodenitis', 'Duodenal ulcer (D1)', 'Duodenal ulcer (D2)', 'Erosions', 'Mass']}
+            value={data.duodenum} onChange={v => set('duodenum', v)} />
+        </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 10 }}>
         <Field label="Biopsy">
-          <ChipRow chips={['Yes', 'No']} value={[data.biopsy]} onToggle={v => set('biopsy', v)} />
+          <SelectOpts chips={['Yes', 'No']} value={data.biopsy} onChange={v => set('biopsy', v)} />
         </Field>
         <Field label="Biopsy site(s)">
           <input type="text" value={data.biopsySite} onChange={e => set('biopsySite', e.target.value)}
             placeholder="e.g. antrum ×2, Z-line ×4" style={{ fontSize: 12 }} />
         </Field>
         <Field label="CLO / H. pylori">
-          <ChipRow chips={['Positive', 'Negative', 'Not done']} value={[data.cloTest]} onToggle={v => set('cloTest', v)} />
+          <SelectOpts chips={['Positive', 'Negative', 'Not done']} value={data.cloTest} onChange={v => set('cloTest', v)} />
+        </Field>
+        <Field label="Complications">
+          <SelectOpts chips={['None', 'Bleeding', 'Perforation', 'Aspiration', 'Poor tolerance', 'Incomplete procedure']}
+            value={data.complications} onChange={v => set('complications', v)} />
         </Field>
       </div>
 
-      <Field label="Complications">
-        <ChipRow chips={['None', 'Bleeding', 'Perforation', 'Poor tolerance', 'Incomplete procedure']}
-          value={data.complications} onToggle={c => toggleArr('complications', c)} />
-      </Field>
-
-      <Field label="Findings, plan & additional detail">
+      <Field label="Additional findings, grades, plan">
         <textarea value={data.additionalNotes} onChange={e => set('additionalNotes', e.target.value)}
-          placeholder="Grade of oesophagitis, GEJ / Z-line, hiatal hernia size, H. pylori treatment plan, surveillance interval, biopsy plan, next steps…"
-          style={{ fontSize: 12, minHeight: 64 }} />
+          placeholder="Z-line / GEJ, hiatal hernia size, LA grade of oesophagitis, HP treatment plan, biopsy sites, surveillance recommendation, next steps…"
+          style={{ fontSize: 12, minHeight: 60 }} />
       </Field>
     </div>
   );
@@ -273,11 +281,11 @@ interface ColonData {
   instrument: string;
   cecalIntubation: string; intubationTimeMin: string; withdrawalTimeMin: string;
   ileoscopy: string; appendixOrifice: string;
-  findings: string[];
+  findings: string;
   polyps: { site: string; size: string; morphology: string; intervention: string }[];
   tattoo: string; tattooSite: string;
   surveillanceInterval: string;
-  complications: string[]; additionalNotes: string;
+  complications: string; additionalNotes: string;
 }
 
 const EMPTY_COLON: ColonData = {
@@ -285,19 +293,15 @@ const EMPTY_COLON: ColonData = {
   instrument: '',
   cecalIntubation: '', intubationTimeMin: '', withdrawalTimeMin: '',
   ileoscopy: '', appendixOrifice: '',
-  findings: [],
+  findings: '',
   polyps: [],
   tattoo: '', tattooSite: '',
   surveillanceInterval: '',
-  complications: [], additionalNotes: '',
+  complications: '', additionalNotes: '',
 };
 
 function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonData) => void }) {
   function set<K extends keyof ColonData>(k: K, v: ColonData[K]) { onChange({ ...data, [k]: v }); }
-  function toggleArr(k: 'findings' | 'complications', c: string) {
-    const cur = data[k];
-    set(k, cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
-  }
   function addPolyp() {
     set('polyps', [...data.polyps, { site: '', size: '', morphology: '', intervention: '' }]);
   }
@@ -320,21 +324,27 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
             placeholder="e.g. Olympus CF-HQ190L" style={{ fontSize: 12 }} />
         </Field>
         <Field label="Bowel prep quality (Boston BSS)">
-          <ChipRow chips={['Excellent (≥8)', 'Adequate (6–7)', 'Poor (3–5)', 'Inadequate (<3)', 'Repeat required']}
-            value={[data.prepQuality]} onToggle={v => set('prepQuality', v)} />
+          <SelectOpts chips={['Excellent (≥8)', 'Adequate (6–7)', 'Poor (3–5)', 'Inadequate (<3)', 'Repeat required']}
+            value={data.prepQuality} onChange={v => set('prepQuality', v)} />
         </Field>
       </div>
 
-      <Field label="Sedation">
-        <ChipRow chips={['None', 'Entonox', 'Conscious sedation', 'GA / propofol']}
-          value={[data.sedationType]} onToggle={v => set('sedationType', v)} />
-      </Field>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-        <Field label="Caecal intubation">
-          <ChipRow chips={['Yes', 'No — splenic flexure', 'No — hepatic flexure', 'No — sigmoid']}
-            value={[data.cecalIntubation]} onToggle={v => set('cecalIntubation', v)} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+        <Field label="Sedation">
+          <SelectOpts chips={['None', 'Entonox', 'Conscious sedation', 'GA / propofol']}
+            value={data.sedationType} onChange={v => set('sedationType', v)} />
         </Field>
+        <Field label="Caecal intubation">
+          <SelectOpts chips={['Yes — complete', 'No — splenic flexure', 'No — hepatic flexure', 'No — sigmoid']}
+            value={data.cecalIntubation} onChange={v => set('cecalIntubation', v)} />
+        </Field>
+        <Field label="Ileoscopy">
+          <SelectOpts chips={['Performed — normal', 'Performed — abnormal', 'Not attempted']}
+            value={data.ileoscopy} onChange={v => set('ileoscopy', v)} />
+        </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Time to caecum (min)">
           <input type="number" value={data.intubationTimeMin} onChange={e => set('intubationTimeMin', e.target.value)}
             placeholder="—" style={{ fontSize: 12 }} />
@@ -343,16 +353,18 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
           <input type="number" value={data.withdrawalTimeMin} onChange={e => set('withdrawalTimeMin', e.target.value)}
             placeholder="≥6" style={{ fontSize: 12 }} />
         </Field>
-        <Field label="Ileoscopy">
-          <ChipRow chips={['Performed — normal', 'Performed — abnormal', 'Not attempted']}
-            value={[data.ileoscopy]} onToggle={v => set('ileoscopy', v)} />
-        </Field>
       </div>
 
-      <Field label="Colonic findings">
-        <ChipRow chips={['Normal', 'Diverticulosis', 'Angiodysplasia', 'Haemorrhoids', 'Mass / lesion', 'Stricture', 'IBD changes']}
-          value={data.findings} onToggle={c => toggleArr('findings', c)} />
-      </Field>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <Field label="Colonic findings (primary)">
+          <SelectOpts chips={['Normal', 'Diverticulosis', 'Angiodysplasia', 'Haemorrhoids', 'Mass / lesion', 'Stricture', 'IBD changes', 'Melanosis coli']}
+            value={data.findings} onChange={v => set('findings', v)} />
+        </Field>
+        <Field label="Complications">
+          <SelectOpts chips={['None', 'Post-polypectomy bleeding', 'Perforation', 'Poor tolerance / abandoned', 'Incomplete procedure']}
+            value={data.complications} onChange={v => set('complications', v)} />
+        </Field>
+      </div>
 
       <Field label="Polyps">
         {data.polyps.length === 0 && (
@@ -392,7 +404,7 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         <Field label="Tattoo">
-          <ChipRow chips={['Applied', 'Not required', 'Deferred']} value={[data.tattoo]} onToggle={v => set('tattoo', v)} />
+          <SelectOpts chips={['Not required', 'Applied', 'Deferred']} value={data.tattoo} onChange={v => set('tattoo', v)} />
         </Field>
         <Field label="Tattoo site">
           <input type="text" value={data.tattooSite} onChange={e => set('tattooSite', e.target.value)}
@@ -404,14 +416,9 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
         </Field>
       </div>
 
-      <Field label="Complications">
-        <ChipRow chips={['None', 'Post-polypectomy bleeding', 'Perforation', 'Poor tolerance / abandoned']}
-          value={data.complications} onToggle={c => toggleArr('complications', c)} />
-      </Field>
-
       <Field label="Additional findings / plan">
         <textarea value={data.additionalNotes} onChange={e => set('additionalNotes', e.target.value)}
-          placeholder="Additional findings, biopsy plan, surveillance interval…" style={{ fontSize: 12, minHeight: 60 }} />
+          placeholder="Additional findings, biopsy plan, IBD activity score, surveillance rationale…" style={{ fontSize: 12, minHeight: 60 }} />
       </Field>
     </div>
   );
@@ -423,34 +430,30 @@ interface ErcpData {
   indication: string; sedationType: string; instrument: string;
   papillaDescription: string;
   cannulation: string; contrastInjection: string;
-  cholangiogramFindings: string[]; cbdDiameter: string;
+  cholangiogramFindings: string; cbdDiameter: string;
   pancreatogramDone: string; cholangioscopy: string;
   sphincterotomy: string; precut: string;
   stoneExtraction: string; stoneCount: string; stoneSizeMm: string;
   stent: string; stentType: string; stentSizeFr: string; stentLengthCm: string;
   biliarySweep: string; fluoroscopyTimeMin: string;
-  complications: string[]; additionalNotes: string;
+  complications: string; additionalNotes: string;
 }
 
 const EMPTY_ERCP: ErcpData = {
   indication: '', sedationType: '', instrument: '',
   papillaDescription: '',
   cannulation: '', contrastInjection: '',
-  cholangiogramFindings: [], cbdDiameter: '',
+  cholangiogramFindings: '', cbdDiameter: '',
   pancreatogramDone: '', cholangioscopy: '',
   sphincterotomy: '', precut: '',
   stoneExtraction: '', stoneCount: '', stoneSizeMm: '',
   stent: '', stentType: '', stentSizeFr: '', stentLengthCm: '',
   biliarySweep: '', fluoroscopyTimeMin: '',
-  complications: [], additionalNotes: '',
+  complications: '', additionalNotes: '',
 };
 
 function ErcpForm({ data, onChange }: { data: ErcpData; onChange: (d: ErcpData) => void }) {
   function set<K extends keyof ErcpData>(k: K, v: ErcpData[K]) { onChange({ ...data, [k]: v }); }
-  function toggleArr(k: 'cholangiogramFindings' | 'complications', c: string) {
-    const cur = data[k];
-    set(k, cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
-  }
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
@@ -464,105 +467,106 @@ function ErcpForm({ data, onChange }: { data: ErcpData; onChange: (d: ErcpData) 
             placeholder="e.g. Olympus TJF-Q190V" style={{ fontSize: 12 }} />
         </Field>
         <Field label="Sedation / anaesthesia">
-          <ChipRow chips={['Conscious sedation', 'Propofol TIVA', 'GA', 'Monitored anaesthesia care']}
-            value={[data.sedationType]} onToggle={v => set('sedationType', v)} />
+          <SelectOpts chips={['Conscious sedation', 'Propofol TIVA', 'GA', 'Monitored anaesthesia care']}
+            value={data.sedationType} onChange={v => set('sedationType', v)} />
         </Field>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Papilla description">
-          <ChipRow chips={['Normal native papilla', 'Bulging / impacted stone', 'Stenotic orifice', 'Prior sphincterotomy', 'Peri-ampullary diverticulum', 'Tumour involvement']}
-            value={[data.papillaDescription]} onToggle={v => set('papillaDescription', v)} />
+          <SelectOpts chips={['Normal native papilla', 'Bulging / impacted stone', 'Stenotic orifice', 'Prior sphincterotomy', 'Peri-ampullary diverticulum', 'Tumour involvement']}
+            value={data.papillaDescription} onChange={v => set('papillaDescription', v)} />
         </Field>
-        <Field label="Cholangioscopy">
-          <ChipRow chips={['Not performed', 'Performed — normal', 'Performed — abnormal (see notes)']}
-            value={[data.cholangioscopy]} onToggle={v => set('cholangioscopy', v)} />
+        <Field label="Cannulation">
+          <SelectOpts chips={['Successful — native papilla', 'Successful — pancreatic duct', 'Failed', 'Previous sphincterotomy']}
+            value={data.cannulation} onChange={v => set('cannulation', v)} />
         </Field>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-        <Field label="Cannulation">
-          <ChipRow chips={['Successful — native papilla', 'Successful — pancreatic duct', 'Failed', 'Previous sphincterotomy']}
-            value={[data.cannulation]} onToggle={v => set('cannulation', v)} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 80px', gap: 12 }}>
+        <Field label="Cholangiogram findings">
+          <SelectOpts chips={['Normal biliary tree', 'CBD stones', 'Dilated CBD', 'Biliary stricture', 'Biliary leak', 'Hilar involvement', 'Post-surgical anatomy']}
+            value={data.cholangiogramFindings} onChange={v => set('cholangiogramFindings', v)} />
         </Field>
         <Field label="Contrast injection">
-          <ChipRow chips={['Full cholangiogram', 'Partial', 'Not performed']}
-            value={[data.contrastInjection]} onToggle={v => set('contrastInjection', v)} />
+          <SelectOpts chips={['Full cholangiogram', 'Partial', 'Not performed']}
+            value={data.contrastInjection} onChange={v => set('contrastInjection', v)} />
         </Field>
-        <Field label="CBD diameter (mm)">
+        <Field label="CBD (mm)">
           <input type="number" value={data.cbdDiameter} onChange={e => set('cbdDiameter', e.target.value)}
             placeholder="mm" style={{ fontSize: 12 }} />
         </Field>
       </div>
 
-      <Field label="Cholangiogram findings">
-        <ChipRow chips={['Normal biliary tree', 'CBD stones', 'Dilated CBD', 'Biliary stricture', 'Biliary leak', 'Hilar involvement', 'Post-surgical anatomy']}
-          value={data.cholangiogramFindings} onToggle={c => toggleArr('cholangiogramFindings', c)} />
-      </Field>
-
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Pancreatogram">
-          <ChipRow chips={['Not performed', 'Normal pancreatic duct', 'Pancreatic duct stricture', 'Pancreatic duct stones', 'IPMN findings']}
-            value={[data.pancreatogramDone]} onToggle={v => set('pancreatogramDone', v)} />
+          <SelectOpts chips={['Not performed', 'Normal pancreatic duct', 'Pancreatic duct stricture', 'Pancreatic duct stones', 'IPMN findings']}
+            value={data.pancreatogramDone} onChange={v => set('pancreatogramDone', v)} />
         </Field>
+        <Field label="Cholangioscopy">
+          <SelectOpts chips={['Not performed', 'Performed — normal', 'Performed — abnormal (see notes)']}
+            value={data.cholangioscopy} onChange={v => set('cholangioscopy', v)} />
+        </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         <Field label="Sphincterotomy">
-          <ChipRow chips={['Performed', 'Not performed', 'Extension of prior']}
-            value={[data.sphincterotomy]} onToggle={v => set('sphincterotomy', v)} />
+          <SelectOpts chips={['Not performed', 'Performed', 'Extension of prior']}
+            value={data.sphincterotomy} onChange={v => set('sphincterotomy', v)} />
         </Field>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         <Field label="Pre-cut sphincterotomy">
-          <ChipRow chips={['Performed', 'Not required', 'Attempted — failed']}
-            value={[data.precut]} onToggle={v => set('precut', v)} />
+          <SelectOpts chips={['Not required', 'Performed', 'Attempted — failed']}
+            value={data.precut} onChange={v => set('precut', v)} />
         </Field>
-        <Field label="Stone extraction">
-          <ChipRow chips={['Complete clearance', 'Partial — residual stones', 'Not possible', 'Not applicable']}
-            value={[data.stoneExtraction]} onToggle={v => set('stoneExtraction', v)} />
-        </Field>
-        <Field label="Stone count">
-          <input type="text" value={data.stoneCount} onChange={e => set('stoneCount', e.target.value)}
-            placeholder="e.g. 3" style={{ fontSize: 12 }} />
-        </Field>
-        <Field label="Stone size (mm)">
-          <input type="text" value={data.stoneSizeMm} onChange={e => set('stoneSizeMm', e.target.value)}
-            placeholder="e.g. 5–12" style={{ fontSize: 12 }} />
+        <Field label="Biliary sweep / balloon">
+          <SelectOpts chips={['Not performed', 'Performed — clear', 'Performed — residual']}
+            value={data.biliarySweep} onChange={v => set('biliarySweep', v)} />
         </Field>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px', gap: 12 }}>
+        <Field label="Stone extraction">
+          <SelectOpts chips={['Not applicable', 'Complete clearance', 'Partial — residual stones', 'Not possible']}
+            value={data.stoneExtraction} onChange={v => set('stoneExtraction', v)} />
+        </Field>
+        <Field label="Count">
+          <input type="text" value={data.stoneCount} onChange={e => set('stoneCount', e.target.value)}
+            placeholder="n" style={{ fontSize: 12 }} />
+        </Field>
+        <Field label="Max size (mm)">
+          <input type="text" value={data.stoneSizeMm} onChange={e => set('stoneSizeMm', e.target.value)}
+            placeholder="mm" style={{ fontSize: 12 }} />
+        </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 80px 80px', gap: 12 }}>
         <Field label="Stent placed">
-          <ChipRow chips={['Yes', 'No']} value={[data.stent]} onToggle={v => set('stent', v)} />
+          <SelectOpts chips={['No', 'Yes']} value={data.stent} onChange={v => set('stent', v)} />
         </Field>
         <Field label="Stent type">
           <SelectOpts chips={['Plastic (straight)', 'Plastic (pigtail)', 'SEMS (uncovered)', 'SEMS (partially covered)', 'SEMS (fully covered)', 'Nasobiliary drain']}
             value={data.stentType} onChange={v => set('stentType', v)} />
         </Field>
-        <Field label="Stent size (Fr)">
+        <Field label="Fr">
           <input type="number" value={data.stentSizeFr} onChange={e => set('stentSizeFr', e.target.value)}
             placeholder="Fr" style={{ fontSize: 12 }} />
         </Field>
-        <Field label="Stent length (cm)">
+        <Field label="cm">
           <input type="number" value={data.stentLengthCm} onChange={e => set('stentLengthCm', e.target.value)}
             placeholder="cm" style={{ fontSize: 12 }} />
         </Field>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <Field label="Biliary sweep / balloon">
-          <ChipRow chips={['Performed — clear', 'Performed — residual', 'Not performed']}
-            value={[data.biliarySweep]} onToggle={v => set('biliarySweep', v)} />
-        </Field>
         <Field label="Fluoroscopy time (min)">
           <input type="number" value={data.fluoroscopyTimeMin} onChange={e => set('fluoroscopyTimeMin', e.target.value)}
             placeholder="min" style={{ fontSize: 12 }} />
         </Field>
+        <Field label="Complications">
+          <SelectOpts chips={['None', 'Post-ERCP pancreatitis', 'Bleeding', 'Perforation', 'Cholangitis', 'Contrast reaction']}
+            value={data.complications} onChange={v => set('complications', v)} />
+        </Field>
       </div>
-
-      <Field label="Complications">
-        <ChipRow chips={['None', 'Post-ERCP pancreatitis', 'Bleeding', 'Perforation', 'Cholangitis']}
-          value={data.complications} onToggle={c => toggleArr('complications', c)} />
-      </Field>
 
       <Field label="Additional findings / plan">
         <textarea value={data.additionalNotes} onChange={e => set('additionalNotes', e.target.value)}
@@ -577,39 +581,37 @@ function ErcpForm({ data, onChange }: { data: ErcpData; onChange: (d: ErcpData) 
 interface BronchData {
   indication: string; bronchoscope: string; sedationType: string;
   vocalCords: string; carina: string;
-  rightAirways: string[]; leftAirways: string[];
+  rightAirways: string; leftAirways: string;
   overallFindings: string; lesionDescription: string;
   bal: string; balSite: string;
   biopsy: string; biopsySite: string;
   brushings: string; ebus: string;
   microbiology: string;
-  complications: string[]; additionalNotes: string;
+  complications: string; additionalNotes: string;
 }
 
 const EMPTY_BRONCH: BronchData = {
   indication: '', bronchoscope: '', sedationType: '',
   vocalCords: '', carina: '',
-  rightAirways: [], leftAirways: [],
+  rightAirways: '', leftAirways: '',
   overallFindings: '', lesionDescription: '',
   bal: '', balSite: '',
   biopsy: '', biopsySite: '',
   brushings: '', ebus: '',
   microbiology: '',
-  complications: [], additionalNotes: '',
+  complications: '', additionalNotes: '',
 };
 
 function BronchForm({ data, onChange }: { data: BronchData; onChange: (d: BronchData) => void }) {
   function set<K extends keyof BronchData>(k: K, v: BronchData[K]) { onChange({ ...data, [k]: v }); }
-  function toggleArr(k: 'rightAirways' | 'leftAirways' | 'complications', c: string) {
-    const cur = data[k];
-    set(k, cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
-  }
+  const showLesion = data.rightAirways.toLowerCase().includes('mass') || data.rightAirways.toLowerCase().includes('lesion') ||
+    data.leftAirways.toLowerCase().includes('mass') || data.leftAirways.toLowerCase().includes('lesion');
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         <Field label="Indication">
-          <SelectOpts chips={['Haemoptysis', 'Persistent cough', 'Suspected malignancy', 'Mediastinal mass', 'Recurrent pneumonia', 'Foreign body', 'Airway evaluation', 'Atelectasis workup', 'Pre-operative airway', 'Pleural effusion workup', 'Sarcoidosis', 'Interstitial lung disease']}
+          <SelectOpts chips={['Haemoptysis', 'Persistent cough', 'Suspected malignancy', 'Mediastinal mass', 'Recurrent pneumonia', 'Foreign body', 'Airway evaluation', 'Atelectasis workup', 'Pre-operative airway', 'Sarcoidosis', 'Interstitial lung disease']}
             value={data.indication} onChange={v => set('indication', v)} />
         </Field>
         <Field label="Bronchoscope">
@@ -617,83 +619,82 @@ function BronchForm({ data, onChange }: { data: BronchData; onChange: (d: Bronch
             placeholder="e.g. Olympus BF-H190" style={{ fontSize: 12 }} />
         </Field>
         <Field label="Sedation / anaesthesia">
-          <ChipRow chips={['Topical only (awake)', 'Conscious sedation', 'Propofol TIVA', 'GA / LMA', 'GA / ETT']}
-            value={[data.sedationType]} onToggle={v => set('sedationType', v)} />
+          <SelectOpts chips={['Topical only (awake)', 'Conscious sedation', 'Propofol TIVA', 'GA / LMA', 'GA / ETT']}
+            value={data.sedationType} onChange={v => set('sedationType', v)} />
         </Field>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Vocal cords">
-          <ChipRow chips={['Normal — full abduction', 'Reduced mobility (left)', 'Reduced mobility (right)', 'Bilateral paresis', 'Oedema / erythema', 'Lesion / polyp', 'Not assessed']}
-            value={[data.vocalCords]} onToggle={v => set('vocalCords', v)} />
+          <SelectOpts chips={['Normal — full abduction', 'Reduced mobility (left)', 'Reduced mobility (right)', 'Bilateral paresis', 'Oedema / erythema', 'Lesion / polyp', 'Not assessed']}
+            value={data.vocalCords} onChange={v => set('vocalCords', v)} />
         </Field>
         <Field label="Carina">
-          <ChipRow chips={['Sharp / normal', 'Blunted / widened', 'Infiltrated', 'Extrinsic compression']}
-            value={[data.carina]} onToggle={v => set('carina', v)} />
+          <SelectOpts chips={['Sharp / normal', 'Blunted / widened', 'Infiltrated', 'Extrinsic compression']}
+            value={data.carina} onChange={v => set('carina', v)} />
         </Field>
       </div>
 
-      <Field label="Right airways">
-        <ChipRow chips={['Normal', 'Secretions', 'Mucosal oedema', 'Endobronchial mass', 'Extrinsic compression', 'Lesion (site: see notes)']}
-          value={data.rightAirways} onToggle={c => toggleArr('rightAirways', c)} />
-      </Field>
-
-      <Field label="Left airways">
-        <ChipRow chips={['Normal', 'Secretions', 'Mucosal oedema', 'Endobronchial mass', 'Extrinsic compression', 'Lesion (site: see notes)']}
-          value={data.leftAirways} onToggle={c => toggleArr('leftAirways', c)} />
-      </Field>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <Field label="Right airways">
+          <SelectOpts chips={['Normal', 'Secretions', 'Mucosal oedema / erythema', 'Endobronchial mass', 'Extrinsic compression', 'Lesion (see notes)']}
+            value={data.rightAirways} onChange={v => set('rightAirways', v)} />
+        </Field>
+        <Field label="Left airways">
+          <SelectOpts chips={['Normal', 'Secretions', 'Mucosal oedema / erythema', 'Endobronchial mass', 'Extrinsic compression', 'Lesion (see notes)']}
+            value={data.leftAirways} onChange={v => set('leftAirways', v)} />
+        </Field>
+      </div>
 
       <Field label="Overall findings / impression">
         <textarea value={data.overallFindings} onChange={e => set('overallFindings', e.target.value)}
           placeholder="Overall bronchoscopic impression, airway patency, mucosal appearance…" style={{ fontSize: 12, minHeight: 60 }} />
       </Field>
 
-      {(data.rightAirways.some(x => x.includes('lesion') || x.includes('mass') || x.includes('Tumour')) ||
-        data.leftAirways.some(x => x.includes('lesion') || x.includes('mass') || x.includes('Tumour'))) && (
+      {showLesion && (
         <Field label="Lesion description">
           <textarea value={data.lesionDescription} onChange={e => set('lesionDescription', e.target.value)}
             placeholder="Location, size estimate, surface characteristics, obstructive fraction, vascularity, friability…" style={{ fontSize: 12, minHeight: 60 }} />
         </Field>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <Field label="Bronchoalveolar lavage (BAL)">
-          <ChipRow chips={['Performed', 'Not performed', 'Not indicated']}
-            value={[data.bal]} onToggle={v => set('bal', v)} />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
+        <Field label="BAL">
+          <SelectOpts chips={['Not performed', 'Performed', 'Not indicated']}
+            value={data.bal} onChange={v => set('bal', v)} />
         </Field>
         <Field label="BAL site">
           <input type="text" value={data.balSite} onChange={e => set('balSite', e.target.value)}
             placeholder="e.g. RML, LLL" style={{ fontSize: 12 }} />
         </Field>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         <Field label="Endobronchial biopsy">
-          <ChipRow chips={['Performed', 'Not performed']}
-            value={[data.biopsy]} onToggle={v => set('biopsy', v)} />
+          <SelectOpts chips={['Not performed', 'Performed']}
+            value={data.biopsy} onChange={v => set('biopsy', v)} />
         </Field>
         <Field label="Biopsy site(s)">
           <input type="text" value={data.biopsySite} onChange={e => set('biopsySite', e.target.value)}
             placeholder="e.g. RUL mass ×4" style={{ fontSize: 12 }} />
         </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         <Field label="Brushings">
-          <ChipRow chips={['Performed', 'Not performed']}
-            value={[data.brushings]} onToggle={v => set('brushings', v)} />
+          <SelectOpts chips={['Not performed', 'Performed']}
+            value={data.brushings} onChange={v => set('brushings', v)} />
         </Field>
         <Field label="EBUS">
-          <ChipRow chips={['Performed — see notes', 'Not performed', 'Planned separately']}
-            value={[data.ebus]} onToggle={v => set('ebus', v)} />
+          <SelectOpts chips={['Not performed', 'Performed — see notes', 'Planned separately']}
+            value={data.ebus} onChange={v => set('ebus', v)} />
+        </Field>
+        <Field label="Complications">
+          <SelectOpts chips={['None', 'Desaturation', 'Endobronchial bleeding', 'Bronchospasm', 'Poor tolerance / abandoned']}
+            value={data.complications} onChange={v => set('complications', v)} />
         </Field>
       </div>
 
       <Field label="Microbiology / specimens sent">
         <input type="text" value={data.microbiology} onChange={e => set('microbiology', e.target.value)}
           placeholder="e.g. BAL for MC&S, AFB, galactomannan, PCR; biopsy for histopathology" style={{ fontSize: 12 }} />
-      </Field>
-
-      <Field label="Complications">
-        <ChipRow chips={['None', 'Desaturation', 'Endobronchial bleeding', 'Bronchospasm', 'Poor tolerance / abandoned']}
-          value={data.complications} onToggle={c => toggleArr('complications', c)} />
       </Field>
 
       <Field label="Additional findings / plan">
@@ -728,10 +729,6 @@ const EMPTY_PREOP: PreopData = {
 
 function PreopForm({ data, onChange }: { data: PreopData; onChange: (d: PreopData) => void }) {
   function set<K extends keyof PreopData>(k: K, v: PreopData[K]) { onChange({ ...data, [k]: v }); }
-  function toggleArr(k: 'cardiacRisk' | 'respiratoryRisk' | 'prophylaxis', c: string) {
-    const cur = data[k];
-    set(k, cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
-  }
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
@@ -741,53 +738,54 @@ function PreopForm({ data, onChange }: { data: PreopData; onChange: (d: PreopDat
             placeholder="e.g. Laparoscopic cholecystectomy" style={{ fontSize: 12 }} />
         </Field>
         <Field label="Urgency">
-          <ChipRow chips={['Elective', 'Urgent (24–72 h)', 'Emergency (<24 h)', 'Semi-elective']}
-            value={[data.urgency]} onToggle={v => set('urgency', v)} />
+          <SelectOpts chips={['Elective', 'Semi-elective', 'Urgent (24–72 h)', 'Emergency (<24 h)']}
+            value={data.urgency} onChange={v => set('urgency', v)} />
         </Field>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         <Field label="ASA grade">
-          <ChipRow chips={['ASA I', 'ASA II', 'ASA III', 'ASA IV', 'ASA V', 'ASA VI']}
-            value={[data.asaGrade]} onToggle={v => set('asaGrade', v)} />
+          <SelectOpts chips={['ASA I', 'ASA II', 'ASA III', 'ASA IV', 'ASA V', 'ASA VI']}
+            value={data.asaGrade} onChange={v => set('asaGrade', v)} />
         </Field>
-        <Field label="Airway assessment">
-          <ChipRow chips={['Mallampati I', 'Mallampati II', 'Mallampati III', 'Mallampati IV', 'Difficult airway predicted', 'Previous difficult intubation']}
-            value={[data.airway]} onToggle={v => set('airway', v)} />
+        <Field label="Airway (Mallampati)">
+          <SelectOpts chips={['Mallampati I', 'Mallampati II', 'Mallampati III', 'Mallampati IV', 'Difficult airway predicted', 'Previous difficult intubation']}
+            value={data.airway} onChange={v => set('airway', v)} />
         </Field>
         <Field label="Dentition">
-          <ChipRow chips={['Good / intact', 'Loose teeth', 'Dentures / plates', 'Poor dentition']}
-            value={[data.dentition]} onToggle={v => set('dentition', v)} />
+          <SelectOpts chips={['Good / intact', 'Loose teeth', 'Dentures / plates', 'Poor dentition']}
+            value={data.dentition} onChange={v => set('dentition', v)} />
         </Field>
       </div>
 
-      <Field label="Cardiac risk factors">
-        <ChipRow chips={['None identified', 'Hypertension', 'IHD / angina', 'Prior MI', 'CCF', 'Arrhythmia']}
-          value={data.cardiacRisk} onToggle={c => toggleArr('cardiacRisk', c)} />
-      </Field>
-
-      <Field label="Respiratory risk factors">
-        <ChipRow chips={['None identified', 'Asthma', 'COPD', 'OSA / CPAP', 'Smoker (active)']}
-          value={data.respiratoryRisk} onToggle={c => toggleArr('respiratoryRisk', c)} />
-      </Field>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <Field label="Cardiac risk factors">
+          <CheckList items={['None identified', 'Hypertension', 'IHD / angina', 'Prior MI', 'CCF', 'Arrhythmia', 'Diabetes', 'Obesity (BMI >30)']}
+            value={data.cardiacRisk} onChange={v => set('cardiacRisk', v)} />
+        </Field>
+        <Field label="Respiratory risk factors">
+          <CheckList items={['None identified', 'Asthma', 'COPD', 'OSA / CPAP', 'Smoker (active)', 'Interstitial lung disease']}
+            value={data.respiratoryRisk} onChange={v => set('respiratoryRisk', v)} />
+        </Field>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
-        {([['bloodsOk', 'Bloods checked'], ['crossmatch', 'X-match / G&S'], ['ecg', 'ECG'], ['cxr', 'CXR'], ['imaging', 'Imaging reviewed']] as [keyof PreopData, string][]).map(([k, lbl]) => (
+        {([['bloodsOk', 'Bloods'], ['crossmatch', 'X-match / G&S'], ['ecg', 'ECG'], ['cxr', 'CXR'], ['imaging', 'Imaging']] as [keyof PreopData, string][]).map(([k, lbl]) => (
           <Field key={k} label={lbl}>
-            <ChipRow chips={['Done ✓', 'N/A', 'Pending']}
-              value={[data[k] as string]} onToggle={v => set(k, v)} />
+            <SelectOpts chips={['Done ✓', 'N/A', 'Pending']}
+              value={data[k] as string} onChange={v => set(k, v)} />
           </Field>
         ))}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Surgical consent">
-          <ChipRow chips={['Obtained — signed', 'Verbal (emergency)', 'Pending', 'Not applicable']}
-            value={[data.consentObtained]} onToggle={v => set('consentObtained', v)} />
+          <SelectOpts chips={['Obtained — signed', 'Verbal (emergency)', 'Pending', 'Not applicable']}
+            value={data.consentObtained} onChange={v => set('consentObtained', v)} />
         </Field>
         <Field label="Anaesthesia consent">
-          <ChipRow chips={['Obtained', 'Pending', 'N/A']}
-            value={[data.anaesthesiaConsent]} onToggle={v => set('anaesthesiaConsent', v)} />
+          <SelectOpts chips={['Obtained', 'Pending', 'N/A']}
+            value={data.anaesthesiaConsent} onChange={v => set('anaesthesiaConsent', v)} />
         </Field>
       </div>
 
@@ -796,15 +794,15 @@ function PreopForm({ data, onChange }: { data: PreopData; onChange: (d: PreopDat
           <input type="text" value={data.consentNotes} onChange={e => set('consentNotes', e.target.value)}
             placeholder="e.g. Bleeding, infection, conversion to open, bile leak discussed" style={{ fontSize: 12 }} />
         </Field>
-        <Field label="Last oral intake (time)">
+        <Field label="Last oral intake">
           <input type="text" value={data.lastOralIntake} onChange={e => set('lastOralIntake', e.target.value)}
             placeholder="e.g. Nil by mouth since 06:00" style={{ fontSize: 12 }} />
         </Field>
       </div>
 
       <Field label="Prophylaxis">
-        <ChipRow chips={['DVT prophylaxis (LMWH)', 'TED stockings', 'Antibiotic prophylaxis', 'Anticoagulant held / bridged', 'Bowel prep given']}
-          value={data.prophylaxis} onToggle={c => toggleArr('prophylaxis', c)} />
+        <CheckList items={['DVT prophylaxis (LMWH)', 'TED stockings', 'Antibiotic prophylaxis', 'Anticoagulant held / bridged', 'Bowel prep given', 'Metoclopramide / antacid']}
+          value={data.prophylaxis} onChange={v => set('prophylaxis', v)} />
       </Field>
 
       <Field label="Additional notes">
@@ -829,7 +827,7 @@ interface PostopData {
   drain: string; drainType: string; drainSite: string;
   closure: string; dressing: string;
   postopOrders: string[]; diet: string; ivAccess: string;
-  complications: string[]; additionalNotes: string;
+  complications: string; additionalNotes: string;
 }
 
 const EMPTY_POSTOP: PostopData = {
@@ -844,19 +842,14 @@ const EMPTY_POSTOP: PostopData = {
   drain: '', drainType: '', drainSite: '',
   closure: '', dressing: '',
   postopOrders: [], diet: '', ivAccess: '',
-  complications: [], additionalNotes: '',
+  complications: '', additionalNotes: '',
 };
 
 function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: PostopData) => void }) {
   function set<K extends keyof PostopData>(k: K, v: PostopData[K]) { onChange({ ...data, [k]: v }); }
-  function toggleArr(k: 'postopOrders' | 'complications' | 'safetyChecks', c: string) {
-    const cur = data[k];
-    set(k, cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
-  }
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      {/* Header section */}
       <div style={{ padding: '10px 14px', background: '#f0fdfa', borderRadius: 8, border: '1px solid #99f6e4' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#0f766e', marginBottom: 6 }}>THEATRE TEAM</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
@@ -885,19 +878,19 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
             placeholder="Full operative name e.g. Laparoscopic cholecystectomy" style={{ fontSize: 12 }} />
         </Field>
         <Field label="Approach">
-          <ChipRow chips={['Laparoscopic', 'Open', 'Converted to open', 'VATS', 'Robotic', 'Endoscopic']}
-            value={[data.approach]} onToggle={v => set('approach', v)} />
+          <SelectOpts chips={['Laparoscopic', 'Open', 'Converted to open', 'VATS', 'Robotic', 'Endoscopic']}
+            value={data.approach} onChange={v => set('approach', v)} />
         </Field>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         <Field label="Anaesthesia">
-          <ChipRow chips={['GA', 'Spinal', 'Epidural', 'Regional block', 'MAC / sedation', 'Local only']}
-            value={[data.anaesthesiaType]} onToggle={v => set('anaesthesiaType', v)} />
+          <SelectOpts chips={['GA', 'Spinal', 'Epidural', 'Regional block', 'MAC / sedation', 'Local only']}
+            value={data.anaesthesiaType} onChange={v => set('anaesthesiaType', v)} />
         </Field>
         <Field label="Patient position">
-          <ChipRow chips={['Supine', 'Lloyd-Davies / lithotomy', 'Left lateral', 'Right lateral', 'Prone', 'Reverse Trendelenburg', 'Trendelenburg']}
-            value={[data.position]} onToggle={v => set('position', v)} />
+          <SelectOpts chips={['Supine', 'Lloyd-Davies / lithotomy', 'Left lateral', 'Right lateral', 'Prone', 'Reverse Trendelenburg', 'Trendelenburg']}
+            value={data.position} onChange={v => set('position', v)} />
         </Field>
         <Field label="Duration (minutes)">
           <input type="number" value={data.duration} onChange={e => set('duration', e.target.value)}
@@ -911,24 +904,24 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
       </Field>
 
       <Field label="Critical safety checks performed">
-        <ChipRow chips={['WHO surgical safety checklist', 'Critical view of safety (CVS) confirmed', 'On-table cholangiogram', 'Correct site marking confirmed', 'Swab count correct ×2']}
-          value={data.safetyChecks} onToggle={c => toggleArr('safetyChecks', c)} />
+        <CheckList items={['WHO surgical safety checklist', 'Critical view of safety (CVS) confirmed', 'On-table cholangiogram', 'Correct site marking confirmed', 'Swab count correct ×2']}
+          value={data.safetyChecks} onChange={v => set('safetyChecks', v)} />
       </Field>
 
       <Field label="Intraoperative imaging">
-        <ChipRow chips={['None used', 'Fluoroscopy (C-arm)', 'Intraoperative ultrasound', 'On-table cholangiogram', 'Laparoscopic ultrasound', 'Neuro-navigation', 'ICG fluorescence']}
-          value={[data.intraopImaging]} onToggle={v => set('intraopImaging', v)} />
+        <SelectOpts chips={['None used', 'Fluoroscopy (C-arm)', 'Intraoperative ultrasound', 'On-table cholangiogram', 'Laparoscopic ultrasound', 'ICG fluorescence']}
+          value={data.intraopImaging} onChange={v => set('intraopImaging', v)} />
       </Field>
 
       <Field label="Key operative steps">
         <textarea value={data.operativeSteps} onChange={e => set('operativeSteps', e.target.value)}
-          placeholder="Describe key operative steps in sequence (e.g. Pneumoperitoneum established via Hasson technique. Gallbladder dissected from liver bed. Cystic artery and duct identified, clipped ×3 and divided. Gallbladder retrieved in EndoCatch bag. Haemostasis confirmed. Ports closed.)"
+          placeholder="Describe key operative steps in sequence…"
           style={{ fontSize: 12, minHeight: 100 }} />
       </Field>
 
       <Field label="Intraoperative findings">
         <textarea value={data.findings} onChange={e => set('findings', e.target.value)}
-          placeholder="Key intraoperative findings (e.g. distended gallbladder, multiple pigment stones, no CBD dilation, no intra-abdominal adhesions)…"
+          placeholder="Key intraoperative findings…"
           style={{ fontSize: 12, minHeight: 70 }} />
       </Field>
 
@@ -949,8 +942,8 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Specimen sent">
-          <ChipRow chips={['Yes — histopathology', 'Yes — microbiology', 'Yes — cytology', 'None']}
-            value={[data.specimenSent]} onToggle={v => set('specimenSent', v)} />
+          <SelectOpts chips={['None', 'Yes — histopathology', 'Yes — microbiology', 'Yes — cytology']}
+            value={data.specimenSent} onChange={v => set('specimenSent', v)} />
         </Field>
         <Field label="Specimen site / label">
           <input type="text" value={data.specimenSite} onChange={e => set('specimenSite', e.target.value)}
@@ -960,8 +953,8 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         <Field label="Drain">
-          <ChipRow chips={['Placed', 'Not placed', 'Removed intra-op']}
-            value={[data.drain]} onToggle={v => set('drain', v)} />
+          <SelectOpts chips={['Not placed', 'Placed', 'Removed intra-op']}
+            value={data.drain} onChange={v => set('drain', v)} />
         </Field>
         <Field label="Drain type">
           <SelectOpts chips={['Corrugated', 'Jackson-Pratt (JP)', 'Blake drain', 'T-tube', 'Chest drain', 'Pelvic drain', 'Nasobiliary']}
@@ -975,8 +968,8 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Wound closure">
-          <ChipRow chips={['Vicryl + skin staples', 'Monocryl (subcuticular)', 'Prolene (interrupted)', 'Clips', 'Glue', 'Wound left open', 'VAC dressing']}
-            value={[data.closure]} onToggle={v => set('closure', v)} />
+          <SelectOpts chips={['Monocryl (subcuticular)', 'Vicryl + skin staples', 'Prolene (interrupted)', 'Clips', 'Glue', 'Wound left open', 'VAC dressing']}
+            value={data.closure} onChange={v => set('closure', v)} />
         </Field>
         <Field label="Dressing">
           <input type="text" value={data.dressing} onChange={e => set('dressing', e.target.value)}
@@ -985,19 +978,20 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
       </div>
 
       <Field label="Post-operative orders">
-        <ChipRow chips={['NPO until tolerated', 'Antibiotic therapy', 'DVT prophylaxis', 'IDC — strict I&O', 'Continuous monitoring', 'Physiotherapy', 'Wound review in 2 days']}
-          value={data.postopOrders} onToggle={c => toggleArr('postopOrders', c)} />
+        <CheckList items={['NPO until tolerated', 'Antibiotic therapy', 'DVT prophylaxis', 'IDC — strict I&O', 'Continuous monitoring', 'Physiotherapy', 'Wound review in 2 days', 'Remove drain day 1']}
+          value={data.postopOrders} onChange={v => set('postopOrders', v)} />
       </Field>
 
-      <Field label="Intraoperative complications">
-        <ChipRow chips={['None', 'Haemorrhage', 'Visceral injury', 'Conversion to open', 'Anaesthetic complication']}
-          value={data.complications} onToggle={c => toggleArr('complications', c)} />
-      </Field>
-
-      <Field label="Additional operative notes">
-        <textarea value={data.additionalNotes} onChange={e => set('additionalNotes', e.target.value)}
-          placeholder="Any other intraoperative or post-op details…" style={{ fontSize: 12, minHeight: 60 }} />
-      </Field>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <Field label="Intraoperative complications">
+          <SelectOpts chips={['None', 'Haemorrhage', 'Visceral injury', 'Conversion to open', 'Anaesthetic complication', 'Inadvertent organ damage']}
+            value={data.complications} onChange={v => set('complications', v)} />
+        </Field>
+        <Field label="Additional operative notes">
+          <textarea value={data.additionalNotes} onChange={e => set('additionalNotes', e.target.value)}
+            placeholder="Any other intraoperative or post-op details…" style={{ fontSize: 12, minHeight: 60 }} />
+        </Field>
+      </div>
     </div>
   );
 }
@@ -1081,16 +1075,12 @@ function buildProcHtml(
     structuredBody = section('Upper GI Endoscopy (OGD)', [
       row('Indication', ogd.indication),
       row('Instrument', ogd.instrument),
-      row('Patient position', ogd.patientPosition),
       row('Sedation', ogd.sedationType),
-      row('O₂ supplementation', ogd.oxygenSupp),
       row('Oesophagus', ogd.oesophagus),
-      row('Z-line / GEJ', ogd.zLine),
       row('Stomach', ogd.stomach),
       row('Duodenum', ogd.duodenum),
       row('Biopsy', ogd.biopsy + (ogd.biopsySite ? ` — ${ogd.biopsySite}` : '')),
       row('CLO test', ogd.cloTest),
-      row('H. pylori treatment', ogd.hp_treatment),
       row('Complications', ogd.complications),
       row('Notes', ogd.additionalNotes),
     ].join(''));
