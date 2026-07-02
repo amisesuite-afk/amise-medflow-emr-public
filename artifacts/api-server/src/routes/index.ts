@@ -15,6 +15,7 @@ import visitLifecycleRouter from "./visit-lifecycle";
 import billingRouter from "./billing";
 import preProcedureRouter from "./pre-procedure";
 import aiConsultRouter from "./ai-consult";
+import procedureReportRouter from "./procedure-report";
 
 const router: IRouter = Router();
 
@@ -34,5 +35,6 @@ router.use(visitLifecycleRouter);
 router.use(billingRouter);
 router.use(preProcedureRouter);
 router.use(aiConsultRouter);
+router.use(procedureReportRouter);
 
 export default router;

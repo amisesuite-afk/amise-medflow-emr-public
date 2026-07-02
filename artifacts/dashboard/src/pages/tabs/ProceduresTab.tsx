@@ -45,22 +45,132 @@ function SelectOpts({ chips, value, onChange }: { chips: string[]; value: string
   );
 }
 
+// ── AI Draft Report Panel ─────────────────────────────────────────────────────
+
+function DraftReportPanel({
+  procType, draft, loading, onGenerate, onSave,
+}: {
+  procType: ProcType;
+  draft: string;
+  loading: boolean;
+  onGenerate: () => void;
+  onSave: (text: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [editText, setEditText] = useState('');
+
+  const typeLabels: Record<ProcType, string> = {
+    ogd: 'OGD', colonoscopy: 'Colonoscopy', ercp: 'ERCP',
+    preop: 'Pre-op Assessment', postop: 'Operative Note', other: 'Note',
+  };
+
+  return (
+    <div style={{ marginTop: 16, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+        <button
+          type="button"
+          onClick={onGenerate}
+          disabled={loading}
+          style={{
+            padding: '7px 16px', borderRadius: 7, fontSize: 12, fontWeight: 700,
+            background: loading ? '#e2e8f0' : '#0d9488',
+            color: loading ? '#94a3b8' : '#fff',
+            border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+            display: 'flex', alignItems: 'center', gap: 6,
+          }}
+        >
+          {loading ? (
+            <><span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', fontSize: 14 }}>⟳</span> Drafting…</>
+          ) : (
+            <><span>🤖</span> {draft ? 'Re-draft' : 'Draft'} {typeLabels[procType]} Report</>
+          )}
+        </button>
+        {draft && !editing && (
+          <>
+            <button
+              type="button"
+              onClick={() => { setEditText(draft); setEditing(true); }}
+              style={{ padding: '7px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600, border: '1px solid #d1d5db', background: '#f8fafc', color: '#374151', cursor: 'pointer' }}
+            >✏️ Edit</button>
+            <span style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>✓ Draft ready</span>
+          </>
+        )}
+      </div>
+
+      {loading && (
+        <div style={{ padding: '12px 16px', borderRadius: 8, background: '#f0fdfa', border: '1px solid #99f6e4', fontSize: 12, color: '#0f766e', fontStyle: 'italic' }}>
+          Generating professional report from structured data…
+        </div>
+      )}
+
+      {!loading && draft && !editing && (
+        <div style={{
+          padding: '14px 18px', borderRadius: 8,
+          background: '#f8fafc', border: '1px solid #e2e8f0',
+          fontSize: 12, lineHeight: 1.75, whiteSpace: 'pre-wrap',
+          maxHeight: 380, overflowY: 'auto',
+          fontFamily: 'Georgia, "Times New Roman", serif',
+          color: '#1e293b',
+        }}>
+          {draft}
+        </div>
+      )}
+
+      {editing && (
+        <div>
+          <textarea
+            value={editText}
+            onChange={e => setEditText(e.target.value)}
+            style={{
+              width: '100%', minHeight: 340, fontSize: 12, lineHeight: 1.75,
+              fontFamily: 'Georgia, "Times New Roman", serif',
+              padding: '12px 16px', borderRadius: 8, border: '2px solid #0d9488',
+              color: '#1e293b', resize: 'vertical',
+            }}
+          />
+          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <button
+              type="button"
+              onClick={() => { onSave(editText); setEditing(false); }}
+              style={{ padding: '6px 16px', borderRadius: 6, fontSize: 12, fontWeight: 700, background: '#0d9488', color: '#fff', border: 'none', cursor: 'pointer' }}
+            >Save changes</button>
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              style={{ padding: '6px 14px', borderRadius: 6, fontSize: 12, border: '1px solid #d1d5db', background: '#f9fafb', color: '#374151', cursor: 'pointer' }}
+            >Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {!loading && !draft && (
+        <div style={{ fontSize: 11, color: '#94a3b8', fontStyle: 'italic' }}>
+          Fill in the fields above, then click "Draft Report" to generate a professional narrative ready for review and filing.
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── OGD form ──────────────────────────────────────────────────────────────────
 
 interface OgdData {
   indication: string; sedation: string; sedationType: string;
+  instrument: string; patientPosition: string; oxygenSupp: string;
   oesophagus: string[]; stomach: string[]; duodenum: string[];
   zLine: string; hiatalHernia: string;
   biopsy: string; biopsySite: string;
-  cloTest: string; hpylori: string;
+  cloTest: string; hpylori: string; hp_treatment: string;
   complications: string[]; additionalNotes: string;
 }
 
 const EMPTY_OGD: OgdData = {
   indication: '', sedation: '', sedationType: '',
+  instrument: '', patientPosition: '', oxygenSupp: '',
   oesophagus: [], stomach: [], duodenum: [],
   zLine: '', hiatalHernia: '', biopsy: '', biopsySite: '',
-  cloTest: '', hpylori: '', complications: [], additionalNotes: '',
+  cloTest: '', hpylori: '', hp_treatment: '',
+  complications: [], additionalNotes: '',
 };
 
 function OgdForm({ data, onChange }: { data: OgdData; onChange: (d: OgdData) => void }) {
@@ -72,19 +182,29 @@ function OgdForm({ data, onChange }: { data: OgdData; onChange: (d: OgdData) => 
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         <Field label="Indication">
           <SelectOpts chips={['Dyspepsia', 'Dysphagia', 'Haematemesis', 'Anaemia workup', "Barrett's surveillance", 'Gastric ulcer follow-up', 'Oesophageal stricture', 'H. pylori testing', 'Post-op surveillance', 'Weight loss workup']}
             value={data.indication} onChange={v => set('indication', v)} />
         </Field>
+        <Field label="Instrument">
+          <input type="text" value={data.instrument} onChange={e => set('instrument', e.target.value)}
+            placeholder="e.g. Olympus GIF-H290" style={{ fontSize: 12 }} />
+        </Field>
+        <Field label="Patient position">
+          <ChipRow chips={['Left lateral decubitus', 'Supine']}
+            value={[data.patientPosition]} onToggle={v => set('patientPosition', v)} />
+        </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Sedation">
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 4 }}>
-            {['None (unsedated)', 'Topical spray only', 'Conscious sedation', 'GA / propofol'].map(s => (
-              <label key={s} style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <input type="radio" name="ogd-sed" checked={data.sedationType === s} onChange={() => set('sedationType', s)} /> {s}
-              </label>
-            ))}
-          </div>
+          <ChipRow chips={['None (unsedated)', 'Topical spray only', 'Conscious sedation', 'GA / propofol']}
+            value={[data.sedationType]} onToggle={v => set('sedationType', v)} />
+        </Field>
+        <Field label="Supplemental oxygen">
+          <ChipRow chips={['None required', 'Nasal prongs 2 L/min', 'Nasal prongs 4 L/min', 'Hudson mask']}
+            value={[data.oxygenSupp]} onToggle={v => set('oxygenSupp', v)} />
         </Field>
       </div>
 
@@ -108,7 +228,7 @@ function OgdForm({ data, onChange }: { data: OgdData; onChange: (d: OgdData) => 
           value={data.duodenum} onToggle={c => toggleArr('duodenum', c)} />
       </Field>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
         <Field label="Biopsy taken">
           <ChipRow chips={['Yes', 'No']} value={[data.biopsy]} onToggle={v => set('biopsy', v)} />
         </Field>
@@ -118,6 +238,10 @@ function OgdForm({ data, onChange }: { data: OgdData; onChange: (d: OgdData) => 
         </Field>
         <Field label="CLO test / H. pylori">
           <ChipRow chips={['Positive', 'Negative', 'Not done']} value={[data.cloTest]} onToggle={v => set('cloTest', v)} />
+        </Field>
+        <Field label="H. pylori treatment">
+          <ChipRow chips={['Triple therapy recommended', 'Quadruple therapy', 'Eradication confirmed', 'Not indicated']}
+            value={[data.hp_treatment]} onToggle={v => set('hp_treatment', v)} />
         </Field>
       </div>
 
@@ -138,21 +262,25 @@ function OgdForm({ data, onChange }: { data: OgdData; onChange: (d: OgdData) => 
 
 interface ColonData {
   indication: string; prepQuality: string; sedationType: string;
+  instrument: string;
   cecalIntubation: string; intubationTimeMin: string; withdrawalTimeMin: string;
   ileoscopy: string; appendixOrifice: string;
   findings: string[];
   polyps: { site: string; size: string; morphology: string; intervention: string }[];
   tattoo: string; tattooSite: string;
+  surveillanceInterval: string;
   complications: string[]; additionalNotes: string;
 }
 
 const EMPTY_COLON: ColonData = {
   indication: '', prepQuality: '', sedationType: '',
+  instrument: '',
   cecalIntubation: '', intubationTimeMin: '', withdrawalTimeMin: '',
   ileoscopy: '', appendixOrifice: '',
   findings: [],
   polyps: [],
   tattoo: '', tattooSite: '',
+  surveillanceInterval: '',
   complications: [], additionalNotes: '',
 };
 
@@ -166,8 +294,7 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
     set('polyps', [...data.polyps, { site: '', size: '', morphology: '', intervention: '' }]);
   }
   function updatePolyp(i: number, field: string, v: string) {
-    const updated = data.polyps.map((p, idx) => idx === i ? { ...p, [field]: v } : p);
-    set('polyps', updated);
+    set('polyps', data.polyps.map((p, idx) => idx === i ? { ...p, [field]: v } : p));
   }
   function removePolyp(i: number) {
     set('polyps', data.polyps.filter((_, idx) => idx !== i));
@@ -175,10 +302,14 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         <Field label="Indication">
           <SelectOpts chips={['Colorectal cancer screening', 'Polyp surveillance', 'Rectal bleeding', 'Change in bowel habit', 'Anaemia workup', 'IBD surveillance', 'Diarrhoea workup', 'Diverticular disease', 'Post-resection surveillance', 'Iron deficiency anaemia']}
             value={data.indication} onChange={v => set('indication', v)} />
+        </Field>
+        <Field label="Instrument">
+          <input type="text" value={data.instrument} onChange={e => set('instrument', e.target.value)}
+            placeholder="e.g. Olympus CF-HQ190L" style={{ fontSize: 12 }} />
         </Field>
         <Field label="Bowel prep quality (Boston BSS)">
           <ChipRow chips={['Excellent (≥8)', 'Adequate (6–7)', 'Poor (3–5)', 'Inadequate (<3)', 'Repeat required']}
@@ -215,7 +346,6 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
           value={data.findings} onToggle={c => toggleArr('findings', c)} />
       </Field>
 
-      {/* Polyp table */}
       <Field label="Polyps">
         {data.polyps.length === 0 && (
           <div style={{ fontSize: 12, color: '#9ca3af', margin: '4px 0' }}>No polyps recorded</div>
@@ -252,13 +382,17 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
         </button>
       </Field>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         <Field label="Tattoo">
           <ChipRow chips={['Applied', 'Not required', 'Deferred']} value={[data.tattoo]} onToggle={v => set('tattoo', v)} />
         </Field>
         <Field label="Tattoo site">
           <input type="text" value={data.tattooSite} onChange={e => set('tattooSite', e.target.value)}
             placeholder="e.g. 5 cm proximal to lesion, sigmoid colon" style={{ fontSize: 12 }} />
+        </Field>
+        <Field label="Surveillance recommendation">
+          <SelectOpts chips={['No follow-up required', '1 year', '3 years', '5 years', '10 years', 'As per histopathology', 'Annual (IBD / high-risk)']}
+            value={data.surveillanceInterval} onChange={v => set('surveillanceInterval', v)} />
         </Field>
       </div>
 
@@ -278,9 +412,11 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
 // ── ERCP form ─────────────────────────────────────────────────────────────────
 
 interface ErcpData {
-  indication: string; sedationType: string;
+  indication: string; sedationType: string; instrument: string;
+  papillaDescription: string;
   cannulation: string; contrastInjection: string;
   cholangiogramFindings: string[]; cbdDiameter: string;
+  pancreatogramDone: string; cholangioscopy: string;
   sphincterotomy: string; precut: string;
   stoneExtraction: string; stoneCount: string; stoneSizeMm: string;
   stent: string; stentType: string; stentSizeFr: string; stentLengthCm: string;
@@ -289,9 +425,11 @@ interface ErcpData {
 }
 
 const EMPTY_ERCP: ErcpData = {
-  indication: '', sedationType: '',
+  indication: '', sedationType: '', instrument: '',
+  papillaDescription: '',
   cannulation: '', contrastInjection: '',
   cholangiogramFindings: [], cbdDiameter: '',
+  pancreatogramDone: '', cholangioscopy: '',
   sphincterotomy: '', precut: '',
   stoneExtraction: '', stoneCount: '', stoneSizeMm: '',
   stent: '', stentType: '', stentSizeFr: '', stentLengthCm: '',
@@ -308,14 +446,29 @@ function ErcpForm({ data, onChange }: { data: ErcpData; onChange: (d: ErcpData) 
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         <Field label="Indication">
           <SelectOpts chips={['CBD stones (choledocholithiasis)', 'Biliary stricture (benign)', 'Biliary stricture (malignant)', 'Cholangitis', 'Biliary leak', 'Stent exchange', 'Pancreatic duct stones', 'Pancreatic stricture', 'Bile duct injury', 'PSC / cholangiopathy']}
             value={data.indication} onChange={v => set('indication', v)} />
         </Field>
+        <Field label="Instrument (duodenoscope)">
+          <input type="text" value={data.instrument} onChange={e => set('instrument', e.target.value)}
+            placeholder="e.g. Olympus TJF-Q190V" style={{ fontSize: 12 }} />
+        </Field>
         <Field label="Sedation / anaesthesia">
           <ChipRow chips={['Conscious sedation', 'Propofol TIVA', 'GA', 'Monitored anaesthesia care']}
             value={[data.sedationType]} onToggle={v => set('sedationType', v)} />
+        </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <Field label="Papilla description">
+          <ChipRow chips={['Normal native papilla', 'Bulging / impacted stone', 'Stenotic orifice', 'Prior sphincterotomy', 'Peri-ampullary diverticulum', 'Tumour involvement']}
+            value={[data.papillaDescription]} onToggle={v => set('papillaDescription', v)} />
+        </Field>
+        <Field label="Cholangioscopy">
+          <ChipRow chips={['Not performed', 'Performed — normal', 'Performed — abnormal (see notes)']}
+            value={[data.cholangioscopy]} onToggle={v => set('cholangioscopy', v)} />
         </Field>
       </div>
 
@@ -340,17 +493,21 @@ function ErcpForm({ data, onChange }: { data: ErcpData; onChange: (d: ErcpData) 
       </Field>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <Field label="Pancreatogram">
+          <ChipRow chips={['Not performed', 'Normal pancreatic duct', 'Pancreatic duct stricture', 'Pancreatic duct stones', 'IPMN findings']}
+            value={[data.pancreatogramDone]} onToggle={v => set('pancreatogramDone', v)} />
+        </Field>
         <Field label="Sphincterotomy">
           <ChipRow chips={['Performed', 'Not performed', 'Extension of prior']}
             value={[data.sphincterotomy]} onToggle={v => set('sphincterotomy', v)} />
         </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         <Field label="Pre-cut sphincterotomy">
           <ChipRow chips={['Performed', 'Not required', 'Attempted — failed']}
             value={[data.precut]} onToggle={v => set('precut', v)} />
         </Field>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         <Field label="Stone extraction">
           <ChipRow chips={['Complete clearance', 'Partial — residual stones', 'Not possible', 'Not applicable']}
             value={[data.stoneExtraction]} onToggle={v => set('stoneExtraction', v)} />
@@ -401,7 +558,7 @@ function ErcpForm({ data, onChange }: { data: ErcpData; onChange: (d: ErcpData) 
 
       <Field label="Additional findings / plan">
         <textarea value={data.additionalNotes} onChange={e => set('additionalNotes', e.target.value)}
-          placeholder="Cytology brushings, pancreatogram findings, follow-up plan…" style={{ fontSize: 12, minHeight: 60 }} />
+          placeholder="Cytology brushings, pancreatogram findings, cholangioscopy findings, follow-up plan…" style={{ fontSize: 12, minHeight: 60 }} />
       </Field>
     </div>
   );
@@ -518,11 +675,15 @@ function PreopForm({ data, onChange }: { data: PreopData; onChange: (d: PreopDat
   );
 }
 
-// ── Post-op form ──────────────────────────────────────────────────────────────
+// ── Operative Note form ───────────────────────────────────────────────────────
 
 interface PostopData {
   procedurePerformed: string; approach: string; anaesthesiaType: string;
   duration: string; surgeon: string; assistant: string;
+  anaesthetist: string; scrubNurse: string;
+  position: string; incision: string;
+  operativeSteps: string; safetyChecks: string[];
+  intraopImaging: string;
   findings: string; ebl: string; fluidIn: string; urineOut: string;
   specimenSent: string; specimenSite: string;
   drain: string; drainType: string; drainSite: string;
@@ -534,6 +695,10 @@ interface PostopData {
 const EMPTY_POSTOP: PostopData = {
   procedurePerformed: '', approach: '', anaesthesiaType: '',
   duration: '', surgeon: '', assistant: '',
+  anaesthetist: '', scrubNurse: '',
+  position: '', incision: '',
+  operativeSteps: '', safetyChecks: [],
+  intraopImaging: '',
   findings: '', ebl: '', fluidIn: '', urineOut: '',
   specimenSent: '', specimenSite: '',
   drain: '', drainType: '', drainSite: '',
@@ -544,17 +709,40 @@ const EMPTY_POSTOP: PostopData = {
 
 function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: PostopData) => void }) {
   function set<K extends keyof PostopData>(k: K, v: PostopData[K]) { onChange({ ...data, [k]: v }); }
-  function toggleArr(k: 'postopOrders' | 'complications', c: string) {
+  function toggleArr(k: 'postopOrders' | 'complications' | 'safetyChecks', c: string) {
     const cur = data[k];
     set(k, cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
   }
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
+      {/* Header section */}
+      <div style={{ padding: '10px 14px', background: '#f0fdfa', borderRadius: 8, border: '1px solid #99f6e4' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#0f766e', marginBottom: 6 }}>THEATRE TEAM</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+          <Field label="Surgeon">
+            <input type="text" value={data.surgeon} onChange={e => set('surgeon', e.target.value)}
+              placeholder="Dr Kabiye" style={{ fontSize: 12 }} />
+          </Field>
+          <Field label="Assistant">
+            <input type="text" value={data.assistant} onChange={e => set('assistant', e.target.value)}
+              placeholder="Name / grade" style={{ fontSize: 12 }} />
+          </Field>
+          <Field label="Anaesthetist">
+            <input type="text" value={data.anaesthetist} onChange={e => set('anaesthetist', e.target.value)}
+              placeholder="Dr name" style={{ fontSize: 12 }} />
+          </Field>
+          <Field label="Scrub nurse">
+            <input type="text" value={data.scrubNurse} onChange={e => set('scrubNurse', e.target.value)}
+              placeholder="Name" style={{ fontSize: 12 }} />
+          </Field>
+        </div>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12 }}>
         <Field label="Procedure performed">
           <input type="text" value={data.procedurePerformed} onChange={e => set('procedurePerformed', e.target.value)}
-            placeholder="Full operative name" style={{ fontSize: 12 }} />
+            placeholder="Full operative name e.g. Laparoscopic cholecystectomy" style={{ fontSize: 12 }} />
         </Field>
         <Field label="Approach">
           <ChipRow chips={['Laparoscopic', 'Open', 'Converted to open', 'VATS', 'Robotic', 'Endoscopic']}
@@ -567,19 +755,40 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
           <ChipRow chips={['GA', 'Spinal', 'Epidural', 'Regional block', 'MAC / sedation', 'Local only']}
             value={[data.anaesthesiaType]} onToggle={v => set('anaesthesiaType', v)} />
         </Field>
+        <Field label="Patient position">
+          <ChipRow chips={['Supine', 'Lloyd-Davies / lithotomy', 'Left lateral', 'Right lateral', 'Prone', 'Reverse Trendelenburg', 'Trendelenburg']}
+            value={[data.position]} onToggle={v => set('position', v)} />
+        </Field>
         <Field label="Duration (minutes)">
           <input type="number" value={data.duration} onChange={e => set('duration', e.target.value)}
             placeholder="min" style={{ fontSize: 12 }} />
         </Field>
-        <Field label="Surgeon">
-          <input type="text" value={data.surgeon} onChange={e => set('surgeon', e.target.value)}
-            placeholder="Dr Kabiye" style={{ fontSize: 12 }} />
-        </Field>
       </div>
+
+      <Field label="Incision / port placement">
+        <input type="text" value={data.incision} onChange={e => set('incision', e.target.value)}
+          placeholder="e.g. 12mm umbilical Hasson port, two 5mm ports RUQ and epigastrium" style={{ fontSize: 12 }} />
+      </Field>
+
+      <Field label="Critical safety checks performed">
+        <ChipRow chips={['WHO surgical safety checklist', 'Critical view of safety (CVS) confirmed', 'On-table cholangiogram performed', 'Ureteral identification confirmed', 'Bile duct visualised before division', 'Correct site marking confirmed', 'Intraoperative ultrasound', 'Nerve monitoring active', 'Swab count correct ×2']}
+          value={data.safetyChecks} onToggle={c => toggleArr('safetyChecks', c)} />
+      </Field>
+
+      <Field label="Intraoperative imaging">
+        <ChipRow chips={['None used', 'Fluoroscopy (C-arm)', 'Intraoperative ultrasound', 'On-table cholangiogram', 'Laparoscopic ultrasound', 'Neuro-navigation', 'ICG fluorescence']}
+          value={[data.intraopImaging]} onToggle={v => set('intraopImaging', v)} />
+      </Field>
+
+      <Field label="Key operative steps">
+        <textarea value={data.operativeSteps} onChange={e => set('operativeSteps', e.target.value)}
+          placeholder="Describe key operative steps in sequence (e.g. Pneumoperitoneum established via Hasson technique. Gallbladder dissected from liver bed. Cystic artery and duct identified, clipped ×3 and divided. Gallbladder retrieved in EndoCatch bag. Haemostasis confirmed. Ports closed.)"
+          style={{ fontSize: 12, minHeight: 100 }} />
+      </Field>
 
       <Field label="Intraoperative findings">
         <textarea value={data.findings} onChange={e => set('findings', e.target.value)}
-          placeholder="Describe key intraoperative findings (e.g. distended gallbladder, multiple stones, no CBD dilation observed)…"
+          placeholder="Key intraoperative findings (e.g. distended gallbladder, multiple pigment stones, no CBD dilation, no intra-abdominal adhesions)…"
           style={{ fontSize: 12, minHeight: 70 }} />
       </Field>
 
@@ -588,9 +797,9 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
           <input type="text" value={data.ebl} onChange={e => set('ebl', e.target.value)}
             placeholder="e.g. Minimal / 200" style={{ fontSize: 12 }} />
         </Field>
-        <Field label="IV fluid in (mL)">
+        <Field label="IV fluid in">
           <input type="text" value={data.fluidIn} onChange={e => set('fluidIn', e.target.value)}
-            placeholder="e.g. 1000 NaCl" style={{ fontSize: 12 }} />
+            placeholder="e.g. 1000 mL NaCl 0.9%" style={{ fontSize: 12 }} />
         </Field>
         <Field label="Urine output (mL)">
           <input type="text" value={data.urineOut} onChange={e => set('urineOut', e.target.value)}
@@ -635,12 +844,12 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
         </Field>
       </div>
 
-      <Field label="Post-op orders">
+      <Field label="Post-operative orders">
         <ChipRow chips={['NPO until tolerated', 'Fluids only × 24h', 'Soft diet', 'Antibiotic therapy', 'Analgesia PCA', 'DVT prophylaxis', 'Foley catheter', 'NG tube', 'IDC — strict I&O', 'Continuous monitoring', 'Nurse-led observations Q4H', 'Physiotherapy', 'Wound review in 2 days']}
           value={data.postopOrders} onToggle={c => toggleArr('postopOrders', c)} />
       </Field>
 
-      <Field label="Complications (intra-op)">
+      <Field label="Intraoperative complications">
         <ChipRow chips={['None', 'Haemorrhage', 'Bowel injury', 'Bile duct injury', 'Urinary tract injury', 'Vascular injury', 'Conversion to open', 'Prolonged adhesiolysis', 'Anaesthetic complication']}
           value={data.complications} onToggle={c => toggleArr('complications', c)} />
       </Field>
@@ -655,7 +864,12 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
 
 // ── Procedure PDF export ──────────────────────────────────────────────────────
 
-function buildProcHtml(type: ProcType, ogd: OgdData, colon: ColonData, ercp: ErcpData, preop: PreopData, postop: PostopData, freeText: string, patientName: string): string {
+function buildProcHtml(
+  type: ProcType,
+  ogd: OgdData, colon: ColonData, ercp: ErcpData, preop: PreopData, postop: PostopData,
+  freeText: string, patientName: string,
+  draft: string,
+): string {
   const now = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
   const row = (label: string, val: string | string[]) => {
     const v = Array.isArray(val) ? val.join(', ') : val;
@@ -665,76 +879,36 @@ function buildProcHtml(type: ProcType, ogd: OgdData, colon: ColonData, ercp: Erc
   const section = (title: string, rows: string) =>
     `<h3 style="margin:16px 0 6px;font-size:13px;color:#0d9488;border-bottom:1px solid #d1fae5;padding-bottom:4px">${title}</h3><table style="border-collapse:collapse;width:100%;font-size:12px">${rows}</table>`;
 
-  let body = '';
-  if (type === 'ogd') {
-    body = section('Upper GI Endoscopy (OGD)', [
-      row('Indication', ogd.indication),
-      row('Sedation', ogd.sedationType),
-      row('Oesophagus', ogd.oesophagus),
-      row('Z-line / GEJ', ogd.zLine),
-      row('Stomach', ogd.stomach),
-      row('Hiatal hernia', ogd.hiatalHernia),
-      row('Duodenum', ogd.duodenum),
-      row('Biopsy taken', ogd.biopsy),
-      row('Biopsy site', ogd.biopsySite),
-      row('CLO test', ogd.cloTest),
-      row('H. pylori', ogd.hpylori),
-      row('Complications', ogd.complications),
-      row('Notes', ogd.additionalNotes),
-    ].join(''));
-  } else if (type === 'colonoscopy') {
-    body = section('Colonoscopy', [
-      row('Indication', colon.indication),
-      row('Bowel prep quality', colon.prepQuality),
-      row('Cecal intubation', colon.cecalIntubation),
-      row('Intubation time', colon.intubationTimeMin ? `${colon.intubationTimeMin} min` : ''),
-      row('Withdrawal time', colon.withdrawalTimeMin ? `${colon.withdrawalTimeMin} min` : ''),
-      row('Findings', colon.findings),
-      row('Polyps', colon.polyps.length ? colon.polyps.map(p => `${p.site} — ${p.size}mm, ${p.morphology}, ${p.intervention}`).join('; ') : ''),
-      row('Tattoo placed', colon.tattoo),
-      row('Complications', colon.complications),
-      row('Notes', colon.additionalNotes),
-    ].join(''));
-  } else if (type === 'ercp') {
-    body = section('ERCP', [
-      row('Indication', ercp.indication),
-      row('Cannulation', ercp.cannulation),
-      row('Contrast injection', ercp.contrastInjection),
-      row('CBD diameter', ercp.cbdDiameter ? `${ercp.cbdDiameter} mm` : ''),
-      row('Cholangiogram findings', ercp.cholangiogramFindings),
-      row('Sphincterotomy', ercp.sphincterotomy),
-      row('Stone extraction', ercp.stoneExtraction && ercp.stoneExtraction !== 'Not applicable' ? `${ercp.stoneCount || ''} stone(s), max ${ercp.stoneSizeMm || ''}mm — ${ercp.stoneExtraction}` : ercp.stoneExtraction),
-      row('Stent', ercp.stent === 'Yes' ? `${ercp.stentType} ${ercp.stentSizeFr}Fr ${ercp.stentLengthCm}cm` : ercp.stent),
-      row('Biliary sweep', ercp.biliarySweep),
-      row('Fluoroscopy time', ercp.fluoroscopyTimeMin ? `${ercp.fluoroscopyTimeMin} min` : ''),
-      row('Complications', ercp.complications),
-      row('Notes', ercp.additionalNotes),
-    ].join(''));
-  } else if (type === 'preop') {
-    body = section('Pre-operative Assessment', [
-      row('Planned procedure', preop.plannedProcedure),
-      row('Urgency', preop.urgency),
-      row('ASA grade', preop.asaGrade),
-      row('Airway (Mallampati)', preop.airway),
-      row('Dentition', preop.dentition),
-      row('Cardiac risk', preop.cardiacRisk),
-      row('Respiratory risk', preop.respiratoryRisk),
-      row('Investigations', [preop.bloodsOk && `Bloods: ${preop.bloodsOk}`, preop.crossmatch && `X-match: ${preop.crossmatch}`, preop.ecg && `ECG: ${preop.ecg}`, preop.cxr && `CXR: ${preop.cxr}`, preop.imaging && `Imaging: ${preop.imaging}`].filter(Boolean).join(', ')),
-      row('Consent obtained', preop.consentObtained),
-      row('Consent notes', preop.consentNotes),
-      row('Prophylaxis', preop.prophylaxis),
-      row('Notes', preop.additionalNotes),
-    ].join(''));
-  } else if (type === 'postop') {
-    body = section('Post-operative Note', [
-      row('Procedure performed', postop.procedurePerformed),
+  const letterhead = `<div style="border-bottom:2px solid #0d9488;margin-bottom:16px;padding-bottom:12px">
+    <div style="font-size:16px;font-weight:700;color:#0d9488">Amise Medical Services</div>
+    <div style="font-size:12px;color:#6b7280">Dr Dawit Daniel Kabiye, MD, DM | General &amp; Endoscopic Surgery | Saint Lucia</div>
+  </div>`;
+
+  const draftBlock = draft
+    ? `<div style="margin-top:20px;padding:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px">
+        <h3 style="margin:0 0 10px;font-size:13px;color:#0d9488">Narrative Report</h3>
+        <div style="font-family:Georgia,serif;font-size:13px;line-height:1.8;white-space:pre-wrap;color:#111">${draft.replace(/</g, '&lt;')}</div>
+      </div>` : '';
+
+  let structuredBody = '';
+  if (type === 'postop') {
+    structuredBody = section('Operative Details', [
+      row('Procedure', postop.procedurePerformed),
       row('Approach', postop.approach),
       row('Anaesthesia', postop.anaesthesiaType),
       row('Duration', postop.duration ? `${postop.duration} min` : ''),
       row('Surgeon', postop.surgeon),
-      row('Intraoperative findings', postop.findings),
+      row('Assistant', postop.assistant),
+      row('Anaesthetist', postop.anaesthetist),
+      row('Scrub nurse', postop.scrubNurse),
+      row('Position', postop.position),
+      row('Incision / access', postop.incision),
+      row('Safety checks', postop.safetyChecks),
+      row('Intraop imaging', postop.intraopImaging),
+      row('Key steps', postop.operativeSteps),
+      row('Findings', postop.findings),
       row('EBL', postop.ebl ? `${postop.ebl} mL` : ''),
-      row('Fluid in', postop.fluidIn ? `${postop.fluidIn} mL` : ''),
+      row('Fluid in', postop.fluidIn),
       row('Urine out', postop.urineOut ? `${postop.urineOut} mL` : ''),
       row('Specimen', postop.specimenSent + (postop.specimenSite ? ` — ${postop.specimenSite}` : '')),
       row('Drain', postop.drain + (postop.drainType ? ` (${postop.drainType})` : '') + (postop.drainSite ? `, ${postop.drainSite}` : '')),
@@ -744,18 +918,94 @@ function buildProcHtml(type: ProcType, ogd: OgdData, colon: ColonData, ercp: Erc
       row('Complications', postop.complications),
       row('Notes', postop.additionalNotes),
     ].join(''));
+  } else if (type === 'ogd') {
+    structuredBody = section('Upper GI Endoscopy (OGD)', [
+      row('Indication', ogd.indication),
+      row('Instrument', ogd.instrument),
+      row('Patient position', ogd.patientPosition),
+      row('Sedation', ogd.sedationType),
+      row('O₂ supplementation', ogd.oxygenSupp),
+      row('Oesophagus', ogd.oesophagus),
+      row('Z-line / GEJ', ogd.zLine),
+      row('Stomach', ogd.stomach),
+      row('Duodenum', ogd.duodenum),
+      row('Biopsy', ogd.biopsy + (ogd.biopsySite ? ` — ${ogd.biopsySite}` : '')),
+      row('CLO test', ogd.cloTest),
+      row('H. pylori treatment', ogd.hp_treatment),
+      row('Complications', ogd.complications),
+      row('Notes', ogd.additionalNotes),
+    ].join(''));
+  } else if (type === 'colonoscopy') {
+    structuredBody = section('Colonoscopy', [
+      row('Indication', colon.indication),
+      row('Instrument', colon.instrument),
+      row('Bowel prep', colon.prepQuality),
+      row('Sedation', colon.sedationType),
+      row('Caecal intubation', colon.cecalIntubation),
+      row('Time to caecum', colon.intubationTimeMin ? `${colon.intubationTimeMin} min` : ''),
+      row('Withdrawal time', colon.withdrawalTimeMin ? `${colon.withdrawalTimeMin} min` : ''),
+      row('Findings', colon.findings),
+      row('Polyps', colon.polyps.length ? colon.polyps.map(p => `${p.site} — ${p.size}mm, ${p.morphology}, ${p.intervention}`).join('; ') : ''),
+      row('Tattoo', colon.tattoo + (colon.tattooSite ? ` — ${colon.tattooSite}` : '')),
+      row('Surveillance', colon.surveillanceInterval),
+      row('Complications', colon.complications),
+      row('Notes', colon.additionalNotes),
+    ].join(''));
+  } else if (type === 'ercp') {
+    structuredBody = section('ERCP', [
+      row('Indication', ercp.indication),
+      row('Instrument', ercp.instrument),
+      row('Sedation', ercp.sedationType),
+      row('Papilla', ercp.papillaDescription),
+      row('Cannulation', ercp.cannulation),
+      row('CBD diameter', ercp.cbdDiameter ? `${ercp.cbdDiameter} mm` : ''),
+      row('Cholangiogram', ercp.cholangiogramFindings),
+      row('Pancreatogram', ercp.pancreatogramDone),
+      row('Cholangioscopy', ercp.cholangioscopy),
+      row('Sphincterotomy', ercp.sphincterotomy),
+      row('Stone extraction', ercp.stoneExtraction && ercp.stoneExtraction !== 'Not applicable' ? `${ercp.stoneCount || ''} stone(s), max ${ercp.stoneSizeMm || ''}mm — ${ercp.stoneExtraction}` : ercp.stoneExtraction),
+      row('Stent', ercp.stent === 'Yes' ? `${ercp.stentType} ${ercp.stentSizeFr}Fr ${ercp.stentLengthCm}cm` : ercp.stent),
+      row('Biliary sweep', ercp.biliarySweep),
+      row('Fluoroscopy', ercp.fluoroscopyTimeMin ? `${ercp.fluoroscopyTimeMin} min` : ''),
+      row('Complications', ercp.complications),
+      row('Notes', ercp.additionalNotes),
+    ].join(''));
+  } else if (type === 'preop') {
+    structuredBody = section('Pre-operative Assessment', [
+      row('Planned procedure', preop.plannedProcedure),
+      row('Urgency', preop.urgency),
+      row('ASA grade', preop.asaGrade),
+      row('Airway', preop.airway),
+      row('Dentition', preop.dentition),
+      row('Cardiac risk', preop.cardiacRisk),
+      row('Respiratory risk', preop.respiratoryRisk),
+      row('Investigations', [preop.bloodsOk && `Bloods: ${preop.bloodsOk}`, preop.crossmatch && `X-match: ${preop.crossmatch}`, preop.ecg && `ECG: ${preop.ecg}`, preop.cxr && `CXR: ${preop.cxr}`, preop.imaging && `Imaging: ${preop.imaging}`].filter(Boolean).join(', ')),
+      row('Consent', preop.consentObtained + (preop.consentNotes ? ` — ${preop.consentNotes}` : '')),
+      row('Prophylaxis', preop.prophylaxis),
+      row('Notes', preop.additionalNotes),
+    ].join(''));
   } else {
-    body = `<p style="font-size:13px;white-space:pre-wrap">${freeText.replace(/</g, '&lt;')}</p>`;
+    structuredBody = `<p style="font-size:13px;white-space:pre-wrap">${freeText.replace(/</g, '&lt;')}</p>`;
   }
 
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Procedure Note</title>
-<style>body{font-family:Arial,sans-serif;max-width:700px;margin:32px auto;color:#111;font-size:13px}
-h1{font-size:16px;margin:0 0 4px}h2{font-size:13px;color:#6b7280;font-weight:400;margin:0 0 16px}
-@media print{body{margin:16px}}</style></head><body>
-<h1>Procedure Note — ${type.toUpperCase()}</h1>
-<h2>${patientName} &nbsp;|&nbsp; ${now}</h2>
-${body}
-<p style="margin-top:32px;font-size:10px;color:#9ca3af">Amise Medical Services · Dr Dawit Daniel Kabiye MD DM · Printed ${now}</p>
+  const typeLabel: Record<ProcType, string> = {
+    ogd: 'Upper GI Endoscopy (OGD)', colonoscopy: 'Colonoscopy', ercp: 'ERCP',
+    preop: 'Pre-operative Assessment', postop: 'Operative Note', other: 'Procedure Note',
+  };
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${typeLabel[type]}</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:720px;margin:32px auto;color:#111;font-size:13px}
+@media print{body{margin:16px}}
+.sig-line{margin-top:48px;border-top:1px solid #374151;width:260px;padding-top:6px;font-size:11px;color:#6b7280}
+</style></head><body>
+${letterhead}
+<h1 style="font-size:16px;margin:0 0 4px">${typeLabel[type]}</h1>
+<h2 style="font-size:13px;color:#6b7280;font-weight:400;margin:0 0 16px">${patientName} &nbsp;|&nbsp; ${now}</h2>
+${draftBlock || structuredBody}
+${!draftBlock ? '' : `<details style="margin-top:16px"><summary style="font-size:11px;color:#94a3b8;cursor:pointer">Structured data</summary>${structuredBody}</details>`}
+<div class="sig-line">Operating Surgeon</div>
+<p style="margin-top:32px;font-size:10px;color:#9ca3af">Amise Medical Services · Dr Dawit Daniel Kabiye MD DM · ${now}${draft ? ' · AI-ASSISTED DRAFT — SURGEON APPROVED' : ''}</p>
 </body></html>`;
 }
 
@@ -771,17 +1021,18 @@ function printProcNote(html: string) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 const PROC_TABS: { id: ProcType; label: string }[] = [
-  { id: 'ogd',        label: 'OGD' },
+  { id: 'ogd',         label: 'OGD' },
   { id: 'colonoscopy', label: 'Colonoscopy' },
-  { id: 'ercp',       label: 'ERCP' },
-  { id: 'preop',      label: 'Pre-op Assessment' },
-  { id: 'postop',     label: 'Post-op Note' },
-  { id: 'other',      label: 'Other / Notes' },
+  { id: 'ercp',        label: 'ERCP' },
+  { id: 'preop',       label: 'Pre-op Assessment' },
+  { id: 'postop',      label: 'Operative Note' },
+  { id: 'other',       label: 'Other / Notes' },
 ];
 
 export default function ProceduresTab() {
-  const { procedureData, setProcedureData, procedures, setProcedures, patientName } = useAppContext();
+  const { procedureData, setProcedureData, procedures, setProcedures, patientName, age, sex } = useAppContext();
   const [activeType, setActiveType] = useState<ProcType>('ogd');
+  const [draftLoading, setDraftLoading] = useState(false);
 
   function getTyped<T>(key: string, empty: T): T {
     return (procedureData[key] as T | undefined) ?? empty;
@@ -789,12 +1040,50 @@ export default function ProceduresTab() {
   function setTyped<T>(key: string, val: T) {
     setProcedureData({ ...procedureData, [key]: val });
   }
+  function getDraft(type: ProcType): string {
+    return (procedureData[`${type}_draft`] as string | undefined) ?? '';
+  }
+  function setDraft(type: ProcType, text: string) {
+    setProcedureData({ ...procedureData, [`${type}_draft`]: text });
+  }
 
   const ogd    = getTyped<OgdData>('ogd', EMPTY_OGD);
   const colon  = getTyped<ColonData>('colonoscopy', EMPTY_COLON);
   const ercp   = getTyped<ErcpData>('ercp', EMPTY_ERCP);
   const preop  = getTyped<PreopData>('preop', EMPTY_PREOP);
   const postop = getTyped<PostopData>('postop', EMPTY_POSTOP);
+
+  async function generateDraft(type: ProcType) {
+    const dataMap: Record<ProcType, unknown> = {
+      ogd, colonoscopy: colon, ercp, preop, postop, other: {},
+    };
+    setDraftLoading(true);
+    try {
+      const resp = await fetch('/api/ai/procedure-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type,
+          data: dataMap[type],
+          patientName: patientName || 'Patient',
+          patientAge: age || undefined,
+          patientSex: sex !== 'unknown' ? sex : undefined,
+          reportDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }),
+        }),
+      });
+      if (!resp.ok) throw new Error(`Server error ${resp.status}`);
+      const json = await resp.json() as { success: boolean; report: string; error?: string };
+      if (json.success) {
+        setDraft(type, json.report);
+      } else {
+        alert(`Draft generation failed: ${json.error ?? 'Unknown error'}`);
+      }
+    } catch (err) {
+      alert(`Failed to generate report: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setDraftLoading(false);
+    }
+  }
 
   return (
     <div className="gap-y">
@@ -808,39 +1097,60 @@ export default function ProceduresTab() {
               background: activeType === tab.id ? '#0d9488' : '#fff',
               color: activeType === tab.id ? '#fff' : '#374151',
               cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6,
             }}
           >
             {tab.label}
+            {getDraft(tab.id) && (
+              <span style={{ background: activeType === tab.id ? 'rgba(255,255,255,0.3)' : '#d1fae5', color: activeType === tab.id ? '#fff' : '#065f46', borderRadius: 999, fontSize: 10, fontWeight: 700, padding: '1px 5px' }}>
+                Draft ✓
+              </span>
+            )}
           </button>
         ))}
         <button
           type="button"
-          onClick={() => printProcNote(buildProcHtml(activeType, ogd, colon, ercp, preop, postop, procedures, patientName || 'Patient'))}
+          onClick={() => printProcNote(buildProcHtml(activeType, ogd, colon, ercp, preop, postop, procedures, patientName || 'Patient', getDraft(activeType)))}
           style={{
             marginLeft: 'auto',
             padding: '6px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600,
             border: '1px solid #0d9488', background: '#fff', color: '#0d9488', cursor: 'pointer',
           }}
         >
-          Print / Export PDF
+          🖨 Print / Export PDF
         </button>
       </div>
 
       {activeType === 'ogd' && (
         <CollapsibleCard title="Upper GI Endoscopy (OGD) Report">
           <OgdForm data={ogd} onChange={d => setTyped('ogd', d)} />
+          <DraftReportPanel
+            procType="ogd" draft={getDraft('ogd')} loading={draftLoading}
+            onGenerate={() => generateDraft('ogd')}
+            onSave={text => setDraft('ogd', text)}
+          />
         </CollapsibleCard>
       )}
 
       {activeType === 'colonoscopy' && (
         <CollapsibleCard title="Colonoscopy Report">
           <ColonForm data={colon} onChange={d => setTyped('colonoscopy', d)} />
+          <DraftReportPanel
+            procType="colonoscopy" draft={getDraft('colonoscopy')} loading={draftLoading}
+            onGenerate={() => generateDraft('colonoscopy')}
+            onSave={text => setDraft('colonoscopy', text)}
+          />
         </CollapsibleCard>
       )}
 
       {activeType === 'ercp' && (
         <CollapsibleCard title="ERCP Report">
           <ErcpForm data={ercp} onChange={d => setTyped('ercp', d)} />
+          <DraftReportPanel
+            procType="ercp" draft={getDraft('ercp')} loading={draftLoading}
+            onGenerate={() => generateDraft('ercp')}
+            onSave={text => setDraft('ercp', text)}
+          />
         </CollapsibleCard>
       )}
 
@@ -851,8 +1161,13 @@ export default function ProceduresTab() {
       )}
 
       {activeType === 'postop' && (
-        <CollapsibleCard title="Post-operative Note">
+        <CollapsibleCard title="Operative Note">
           <PostopForm data={postop} onChange={d => setTyped('postop', d)} />
+          <DraftReportPanel
+            procType="postop" draft={getDraft('postop')} loading={draftLoading}
+            onGenerate={() => generateDraft('postop')}
+            onSave={text => setDraft('postop', text)}
+          />
         </CollapsibleCard>
       )}
 
