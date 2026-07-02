@@ -21,9 +21,15 @@ Requirements:
 - Start with the line: [AI-ASSISTED DRAFT — REQUIRES SURGEON REVIEW AND APPROVAL BEFORE FILING]
 - End with a signature block for the operating surgeon`;
 
+interface ImageCapture {
+  label: string;
+  finding: string;
+}
+
 interface ReportRequest {
   type: string;
   data: Record<string, unknown>;
+  images?: ImageCapture[];
   patientName?: string;
   patientAge?: string;
   patientSex?: string;
@@ -38,7 +44,7 @@ function fmt(v: unknown): string {
 
 router.post('/api/ai/procedure-report', async (req, res) => {
   try {
-    const { type, data, patientName, patientAge, patientSex, reportDate } = req.body as ReportRequest;
+    const { type, data, images, patientName, patientAge, patientSex, reportDate } = req.body as ReportRequest;
 
     if (!type || !data) {
       res.status(400).json({ error: 'type and data are required' });
@@ -47,6 +53,10 @@ router.post('/api/ai/procedure-report', async (req, res) => {
 
     const patientInfo = [patientName || 'Unknown', patientAge ? `${patientAge} years` : '', patientSex].filter(Boolean).join(', ');
     const dateStr = reportDate || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    const imagesSection = images && images.length > 0
+      ? `\nCAPTURED IMAGES (${images.length}):\n${images.map((img, i) => `  Image ${i + 1}: Site — ${img.label || 'unlabelled'}${img.finding ? `; Finding — ${img.finding}` : ''}`).join('\n')}\n`
+      : '';
 
     let userPrompt = '';
 
@@ -81,7 +91,7 @@ Dressing: ${fmt(data.dressing)}
 Post-operative orders: ${fmt(data.postopOrders)}
 Intraoperative complications: ${fmt(data.complications)}
 Additional notes: ${fmt(data.additionalNotes)}
-
+${imagesSection}
 Write the note with these sections as applicable:
 OPERATIVE NOTE
 Patient / Date / Theatre Team
@@ -122,7 +132,7 @@ H. pylori status: ${fmt(data.hpylori)}
 H. pylori treatment recommendation: ${fmt(data.hp_treatment)}
 Complications: ${fmt(data.complications)}
 Additional notes: ${fmt(data.additionalNotes)}
-
+${imagesSection}
 Write the report with sections:
 UPPER GI ENDOSCOPY REPORT
 Patient / Date / Endoscopist
@@ -163,7 +173,7 @@ Tattoo: ${fmt(data.tattoo)} — site: ${fmt(data.tattooSite)}
 Complications: ${fmt(data.complications)}
 Surveillance interval: ${fmt(data.surveillanceInterval)}
 Additional notes: ${fmt(data.additionalNotes)}
-
+${imagesSection}
 Write the report with sections:
 COLONOSCOPY REPORT
 Patient / Date / Endoscopist
@@ -201,7 +211,7 @@ Biliary sweep: ${fmt(data.biliarySweep)}
 Fluoroscopy time: ${data.fluoroscopyTimeMin ? `${data.fluoroscopyTimeMin} minutes` : ''}
 Complications: ${fmt(data.complications)}
 Additional notes: ${fmt(data.additionalNotes)}
-
+${imagesSection}
 Write the report with sections:
 ERCP REPORT
 Patient / Date / Endoscopist
@@ -211,6 +221,43 @@ CHOLANGIOGRAM FINDINGS
 INTERVENTIONS PERFORMED
 IMPRESSION
 PLAN AND FOLLOW-UP
+[Signature block]`;
+
+    } else if (type === 'bronch') {
+      userPrompt = `Generate a formal Bronchoscopy Report. Include only sections for which data is provided.
+
+PATIENT: ${patientInfo}
+DATE: ${dateStr}
+BRONCHOSCOPIST: Dr Dawit Daniel Kabiye, MD, DM
+
+INPUT DATA:
+Indication: ${fmt(data.indication)}
+Bronchoscope: ${fmt(data.bronchoscope)}
+Sedation / anaesthesia: ${fmt(data.sedationType)}
+Vocal cords: ${fmt(data.vocalCords)}
+Carina: ${fmt(data.carina)}
+Right airways: ${fmt(data.rightAirways)}
+Left airways: ${fmt(data.leftAirways)}
+Overall findings: ${fmt(data.overallFindings)}
+Lesion description: ${fmt(data.lesionDescription)}
+Bronchoalveolar lavage (BAL): ${fmt(data.bal)}${data.balSite ? ` — site: ${fmt(data.balSite)}` : ''}
+Endobronchial biopsy: ${fmt(data.biopsy)}${data.biopsySite ? ` — ${fmt(data.biopsySite)}` : ''}
+Brushings: ${fmt(data.brushings)}
+EBUS: ${fmt(data.ebus)}
+Microbiology / specimens: ${fmt(data.microbiology)}
+Complications: ${fmt(data.complications)}
+Additional notes: ${fmt(data.additionalNotes)}
+${imagesSection}
+Write the report with sections:
+BRONCHOSCOPY REPORT
+Patient / Date / Bronchoscopist
+INDICATION
+PROCEDURE AND TECHNIQUE
+FINDINGS (subsections: Upper Airway and Vocal Cords, Trachea and Carina, Right Bronchial Tree, Left Bronchial Tree, Mucosal Appearances — include only subsections with findings)
+LESION DESCRIPTION (if applicable)
+SPECIMENS AND SAMPLING
+IMPRESSION
+PLAN AND RECOMMENDATIONS
 [Signature block]`;
 
     } else {

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import ProcedureImagePanel, { type ProcImage } from '@/components/ProcedureImagePanel';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-type ProcType = 'ogd' | 'colonoscopy' | 'ercp' | 'preop' | 'postop' | 'other';
+type ProcType = 'ogd' | 'colonoscopy' | 'ercp' | 'bronch' | 'preop' | 'postop' | 'other';
 
 // ── Field helpers ─────────────────────────────────────────────────────────────
 
@@ -60,7 +61,7 @@ function DraftReportPanel({
   const [editText, setEditText] = useState('');
 
   const typeLabels: Record<ProcType, string> = {
-    ogd: 'OGD', colonoscopy: 'Colonoscopy', ercp: 'ERCP',
+    ogd: 'OGD', colonoscopy: 'Colonoscopy', ercp: 'ERCP', bronch: 'Bronchoscopy',
     preop: 'Pre-op Assessment', postop: 'Operative Note', other: 'Note',
   };
 
@@ -564,6 +565,138 @@ function ErcpForm({ data, onChange }: { data: ErcpData; onChange: (d: ErcpData) 
   );
 }
 
+// ── Bronchoscopy form ─────────────────────────────────────────────────────────
+
+interface BronchData {
+  indication: string; bronchoscope: string; sedationType: string;
+  vocalCords: string; carina: string;
+  rightAirways: string[]; leftAirways: string[];
+  overallFindings: string; lesionDescription: string;
+  bal: string; balSite: string;
+  biopsy: string; biopsySite: string;
+  brushings: string; ebus: string;
+  microbiology: string;
+  complications: string[]; additionalNotes: string;
+}
+
+const EMPTY_BRONCH: BronchData = {
+  indication: '', bronchoscope: '', sedationType: '',
+  vocalCords: '', carina: '',
+  rightAirways: [], leftAirways: [],
+  overallFindings: '', lesionDescription: '',
+  bal: '', balSite: '',
+  biopsy: '', biopsySite: '',
+  brushings: '', ebus: '',
+  microbiology: '',
+  complications: [], additionalNotes: '',
+};
+
+function BronchForm({ data, onChange }: { data: BronchData; onChange: (d: BronchData) => void }) {
+  function set<K extends keyof BronchData>(k: K, v: BronchData[K]) { onChange({ ...data, [k]: v }); }
+  function toggleArr(k: 'rightAirways' | 'leftAirways' | 'complications', c: string) {
+    const cur = data[k];
+    set(k, cur.includes(c) ? cur.filter(x => x !== c) : [...cur, c]);
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+        <Field label="Indication">
+          <SelectOpts chips={['Haemoptysis', 'Persistent cough', 'Suspected malignancy', 'Mediastinal mass', 'Recurrent pneumonia', 'Foreign body', 'Airway evaluation', 'Atelectasis workup', 'Pre-operative airway', 'Pleural effusion workup', 'Sarcoidosis', 'Interstitial lung disease']}
+            value={data.indication} onChange={v => set('indication', v)} />
+        </Field>
+        <Field label="Bronchoscope">
+          <input type="text" value={data.bronchoscope} onChange={e => set('bronchoscope', e.target.value)}
+            placeholder="e.g. Olympus BF-H190" style={{ fontSize: 12 }} />
+        </Field>
+        <Field label="Sedation / anaesthesia">
+          <ChipRow chips={['Topical only (awake)', 'Conscious sedation', 'Propofol TIVA', 'GA / LMA', 'GA / ETT']}
+            value={[data.sedationType]} onToggle={v => set('sedationType', v)} />
+        </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <Field label="Vocal cords">
+          <ChipRow chips={['Normal — full abduction', 'Reduced mobility (left)', 'Reduced mobility (right)', 'Bilateral paresis', 'Oedema / erythema', 'Lesion / polyp', 'Not assessed']}
+            value={[data.vocalCords]} onToggle={v => set('vocalCords', v)} />
+        </Field>
+        <Field label="Carina">
+          <ChipRow chips={['Sharp / normal', 'Blunted / widened', 'Infiltrated', 'Extrinsic compression']}
+            value={[data.carina]} onToggle={v => set('carina', v)} />
+        </Field>
+      </div>
+
+      <Field label="Right airways">
+        <ChipRow chips={['Normal', 'RUL — normal', 'RUL — lesion', 'RML — normal', 'RML — lesion', 'RLL — normal', 'RLL — lesion', 'Secretions', 'Endobronchial mass', 'Mucosal oedema', 'Extrinsic compression', 'Tumour infiltration']}
+          value={data.rightAirways} onToggle={c => toggleArr('rightAirways', c)} />
+      </Field>
+
+      <Field label="Left airways">
+        <ChipRow chips={['Normal', 'LUL — normal', 'LUL — lesion', 'Lingula — normal', 'Lingula — lesion', 'LLL — normal', 'LLL — lesion', 'Secretions', 'Endobronchial mass', 'Mucosal oedema', 'Extrinsic compression', 'Tumour infiltration']}
+          value={data.leftAirways} onToggle={c => toggleArr('leftAirways', c)} />
+      </Field>
+
+      <Field label="Overall findings / impression">
+        <textarea value={data.overallFindings} onChange={e => set('overallFindings', e.target.value)}
+          placeholder="Overall bronchoscopic impression, airway patency, mucosal appearance…" style={{ fontSize: 12, minHeight: 60 }} />
+      </Field>
+
+      {(data.rightAirways.some(x => x.includes('lesion') || x.includes('mass') || x.includes('Tumour')) ||
+        data.leftAirways.some(x => x.includes('lesion') || x.includes('mass') || x.includes('Tumour'))) && (
+        <Field label="Lesion description">
+          <textarea value={data.lesionDescription} onChange={e => set('lesionDescription', e.target.value)}
+            placeholder="Location, size estimate, surface characteristics, obstructive fraction, vascularity, friability…" style={{ fontSize: 12, minHeight: 60 }} />
+        </Field>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <Field label="Bronchoalveolar lavage (BAL)">
+          <ChipRow chips={['Performed', 'Not performed', 'Not indicated']}
+            value={[data.bal]} onToggle={v => set('bal', v)} />
+        </Field>
+        <Field label="BAL site">
+          <input type="text" value={data.balSite} onChange={e => set('balSite', e.target.value)}
+            placeholder="e.g. RML, LLL" style={{ fontSize: 12 }} />
+        </Field>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+        <Field label="Endobronchial biopsy">
+          <ChipRow chips={['Performed', 'Not performed']}
+            value={[data.biopsy]} onToggle={v => set('biopsy', v)} />
+        </Field>
+        <Field label="Biopsy site(s)">
+          <input type="text" value={data.biopsySite} onChange={e => set('biopsySite', e.target.value)}
+            placeholder="e.g. RUL mass ×4" style={{ fontSize: 12 }} />
+        </Field>
+        <Field label="Brushings">
+          <ChipRow chips={['Performed', 'Not performed']}
+            value={[data.brushings]} onToggle={v => set('brushings', v)} />
+        </Field>
+        <Field label="EBUS">
+          <ChipRow chips={['Performed — see notes', 'Not performed', 'Planned separately']}
+            value={[data.ebus]} onToggle={v => set('ebus', v)} />
+        </Field>
+      </div>
+
+      <Field label="Microbiology / specimens sent">
+        <input type="text" value={data.microbiology} onChange={e => set('microbiology', e.target.value)}
+          placeholder="e.g. BAL for MC&S, AFB, galactomannan, PCR; biopsy for histopathology" style={{ fontSize: 12 }} />
+      </Field>
+
+      <Field label="Complications">
+        <ChipRow chips={['None', 'Desaturation (transient)', 'Epistaxis', 'Bleeding (endobronchial)', 'Bronchospasm', 'Pneumothorax', 'Poor tolerance / abandoned', 'Laryngospasm']}
+          value={data.complications} onToggle={c => toggleArr('complications', c)} />
+      </Field>
+
+      <Field label="Additional findings / plan">
+        <textarea value={data.additionalNotes} onChange={e => set('additionalNotes', e.target.value)}
+          placeholder="Additional findings, cytology, plan, follow-up…" style={{ fontSize: 12, minHeight: 60 }} />
+      </Field>
+    </div>
+  );
+}
+
 // ── Pre-op form ───────────────────────────────────────────────────────────────
 
 interface PreopData {
@@ -867,8 +1000,10 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
 function buildProcHtml(
   type: ProcType,
   ogd: OgdData, colon: ColonData, ercp: ErcpData, preop: PreopData, postop: PostopData,
+  bronch: BronchData,
   freeText: string, patientName: string,
   draft: string,
+  images: ProcImage[],
 ): string {
   const now = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
   const row = (label: string, val: string | string[]) => {
@@ -889,6 +1024,23 @@ function buildProcHtml(
         <h3 style="margin:0 0 10px;font-size:13px;color:#0d9488">Narrative Report</h3>
         <div style="font-family:Georgia,serif;font-size:13px;line-height:1.8;white-space:pre-wrap;color:#111">${draft.replace(/</g, '&lt;')}</div>
       </div>` : '';
+
+  const imageGrid = images.length > 0
+    ? `<div style="margin-top:20px">
+        <h3 style="margin:0 0 10px;font-size:13px;color:#0d9488;border-bottom:1px solid #d1fae5;padding-bottom:4px">ENDOSCOPIC / OPERATIVE IMAGES</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px">
+          ${images.map((img, i) => `<div style="border:1px solid #e2e8f0;border-radius:6px;overflow:hidden">
+            <div style="position:relative;background:#0a0a0a">
+              <img src="${img.dataUrl}" alt="${img.label || `Image ${i + 1}`}" style="width:100%;aspect-ratio:4/3;object-fit:contain;display:block" />
+            </div>
+            <div style="padding:4px 6px;font-size:10px">
+              <div style="font-weight:700;color:#0d9488">${i + 1}. ${img.label || '—'}</div>
+              ${img.finding ? `<div style="color:#374151;margin-top:2px">${img.finding.replace(/</g, '&lt;')}</div>` : ''}
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`
+    : '';
 
   let structuredBody = '';
   if (type === 'postop') {
@@ -984,18 +1136,38 @@ function buildProcHtml(
       row('Prophylaxis', preop.prophylaxis),
       row('Notes', preop.additionalNotes),
     ].join(''));
+  } else if (type === 'bronch') {
+    structuredBody = section('Bronchoscopy', [
+      row('Indication', bronch.indication),
+      row('Bronchoscope', bronch.bronchoscope),
+      row('Sedation', bronch.sedationType),
+      row('Vocal cords', bronch.vocalCords),
+      row('Carina', bronch.carina),
+      row('Right airways', bronch.rightAirways),
+      row('Left airways', bronch.leftAirways),
+      row('Overall findings', bronch.overallFindings),
+      bronch.lesionDescription ? row('Lesion', bronch.lesionDescription) : '',
+      row('BAL', bronch.bal + (bronch.balSite ? ` — ${bronch.balSite}` : '')),
+      row('Biopsy', bronch.biopsy + (bronch.biopsySite ? ` — ${bronch.biopsySite}` : '')),
+      row('Brushings', bronch.brushings),
+      row('EBUS', bronch.ebus),
+      row('Microbiology / specimens', bronch.microbiology),
+      row('Complications', bronch.complications),
+      row('Notes', bronch.additionalNotes),
+    ].join(''));
   } else {
     structuredBody = `<p style="font-size:13px;white-space:pre-wrap">${freeText.replace(/</g, '&lt;')}</p>`;
   }
 
   const typeLabel: Record<ProcType, string> = {
     ogd: 'Upper GI Endoscopy (OGD)', colonoscopy: 'Colonoscopy', ercp: 'ERCP',
+    bronch: 'Bronchoscopy',
     preop: 'Pre-operative Assessment', postop: 'Operative Note', other: 'Procedure Note',
   };
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${typeLabel[type]}</title>
 <style>
-body{font-family:Arial,sans-serif;max-width:720px;margin:32px auto;color:#111;font-size:13px}
+body{font-family:Arial,sans-serif;max-width:760px;margin:32px auto;color:#111;font-size:13px}
 @media print{body{margin:16px}}
 .sig-line{margin-top:48px;border-top:1px solid #374151;width:260px;padding-top:6px;font-size:11px;color:#6b7280}
 </style></head><body>
@@ -1004,6 +1176,7 @@ ${letterhead}
 <h2 style="font-size:13px;color:#6b7280;font-weight:400;margin:0 0 16px">${patientName} &nbsp;|&nbsp; ${now}</h2>
 ${draftBlock || structuredBody}
 ${!draftBlock ? '' : `<details style="margin-top:16px"><summary style="font-size:11px;color:#94a3b8;cursor:pointer">Structured data</summary>${structuredBody}</details>`}
+${imageGrid}
 <div class="sig-line">Operating Surgeon</div>
 <p style="margin-top:32px;font-size:10px;color:#9ca3af">Amise Medical Services · Dr Dawit Daniel Kabiye MD DM · ${now}${draft ? ' · AI-ASSISTED DRAFT — SURGEON APPROVED' : ''}</p>
 </body></html>`;
@@ -1024,6 +1197,7 @@ const PROC_TABS: { id: ProcType; label: string }[] = [
   { id: 'ogd',         label: 'OGD' },
   { id: 'colonoscopy', label: 'Colonoscopy' },
   { id: 'ercp',        label: 'ERCP' },
+  { id: 'bronch',      label: 'Bronchoscopy' },
   { id: 'preop',       label: 'Pre-op Assessment' },
   { id: 'postop',      label: 'Operative Note' },
   { id: 'other',       label: 'Other / Notes' },
@@ -1046,17 +1220,25 @@ export default function ProceduresTab() {
   function setDraft(type: ProcType, text: string) {
     setProcedureData({ ...procedureData, [`${type}_draft`]: text });
   }
+  function getImages(type: ProcType): ProcImage[] {
+    return (procedureData[`${type}_images`] as ProcImage[] | undefined) ?? [];
+  }
+  function setImages(type: ProcType, imgs: ProcImage[]) {
+    setProcedureData({ ...procedureData, [`${type}_images`]: imgs });
+  }
 
   const ogd    = getTyped<OgdData>('ogd', EMPTY_OGD);
   const colon  = getTyped<ColonData>('colonoscopy', EMPTY_COLON);
   const ercp   = getTyped<ErcpData>('ercp', EMPTY_ERCP);
+  const bronch = getTyped<BronchData>('bronch', EMPTY_BRONCH);
   const preop  = getTyped<PreopData>('preop', EMPTY_PREOP);
   const postop = getTyped<PostopData>('postop', EMPTY_POSTOP);
 
   async function generateDraft(type: ProcType) {
     const dataMap: Record<ProcType, unknown> = {
-      ogd, colonoscopy: colon, ercp, preop, postop, other: {},
+      ogd, colonoscopy: colon, ercp, bronch, preop, postop, other: {},
     };
+    const imgs = getImages(type).map(img => ({ label: img.label, finding: img.finding }));
     setDraftLoading(true);
     try {
       const resp = await fetch('/api/ai/procedure-report', {
@@ -1065,6 +1247,7 @@ export default function ProceduresTab() {
         body: JSON.stringify({
           type,
           data: dataMap[type],
+          images: imgs.length > 0 ? imgs : undefined,
           patientName: patientName || 'Patient',
           patientAge: age || undefined,
           patientSex: sex !== 'unknown' ? sex : undefined,
@@ -1110,7 +1293,7 @@ export default function ProceduresTab() {
         ))}
         <button
           type="button"
-          onClick={() => printProcNote(buildProcHtml(activeType, ogd, colon, ercp, preop, postop, procedures, patientName || 'Patient', getDraft(activeType)))}
+          onClick={() => printProcNote(buildProcHtml(activeType, ogd, colon, ercp, preop, postop, bronch, procedures, patientName || 'Patient', getDraft(activeType), getImages(activeType)))}
           style={{
             marginLeft: 'auto',
             padding: '6px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600,
@@ -1124,6 +1307,11 @@ export default function ProceduresTab() {
       {activeType === 'ogd' && (
         <CollapsibleCard title="Upper GI Endoscopy (OGD) Report">
           <OgdForm data={ogd} onChange={d => setTyped('ogd', d)} />
+          <ProcedureImagePanel
+            images={getImages('ogd')} onChange={imgs => setImages('ogd', imgs)}
+            title="OGD Images"
+            siteLabels={['Lips / mouth', 'Oesophagus', 'GEJ / Z-line', 'Fundus', 'Body of stomach', 'Antrum', 'Pylorus', 'Duodenal bulb', 'D2 / papilla', 'Incisura angularis']}
+          />
           <DraftReportPanel
             procType="ogd" draft={getDraft('ogd')} loading={draftLoading}
             onGenerate={() => generateDraft('ogd')}
@@ -1135,6 +1323,11 @@ export default function ProceduresTab() {
       {activeType === 'colonoscopy' && (
         <CollapsibleCard title="Colonoscopy Report">
           <ColonForm data={colon} onChange={d => setTyped('colonoscopy', d)} />
+          <ProcedureImagePanel
+            images={getImages('colonoscopy')} onChange={imgs => setImages('colonoscopy', imgs)}
+            title="Colonoscopy Images"
+            siteLabels={['Anus / rectum', 'Sigmoid colon', 'Descending colon', 'Splenic flexure', 'Transverse colon', 'Hepatic flexure', 'Ascending colon', 'Caecum', 'Ileocaecal valve', 'Terminal ileum', 'Polyp', 'Post-polypectomy site']}
+          />
           <DraftReportPanel
             procType="colonoscopy" draft={getDraft('colonoscopy')} loading={draftLoading}
             onGenerate={() => generateDraft('colonoscopy')}
@@ -1146,10 +1339,31 @@ export default function ProceduresTab() {
       {activeType === 'ercp' && (
         <CollapsibleCard title="ERCP Report">
           <ErcpForm data={ercp} onChange={d => setTyped('ercp', d)} />
+          <ProcedureImagePanel
+            images={getImages('ercp')} onChange={imgs => setImages('ercp', imgs)}
+            title="ERCP Images"
+            siteLabels={['Papilla', 'Post-sphincterotomy', 'Cholangiogram', 'CBD with stones', 'Stent in situ', 'Balloon trawl', 'Pancreatogram', 'Fluoroscopy frame', 'Cholangioscopy view']}
+          />
           <DraftReportPanel
             procType="ercp" draft={getDraft('ercp')} loading={draftLoading}
             onGenerate={() => generateDraft('ercp')}
             onSave={text => setDraft('ercp', text)}
+          />
+        </CollapsibleCard>
+      )}
+
+      {activeType === 'bronch' && (
+        <CollapsibleCard title="Bronchoscopy Report">
+          <BronchForm data={bronch} onChange={d => setTyped('bronch', d)} />
+          <ProcedureImagePanel
+            images={getImages('bronch')} onChange={imgs => setImages('bronch', imgs)}
+            title="Bronchoscopy Images"
+            siteLabels={['Vocal cords', 'Subglottis / trachea', 'Carina', 'Right main bronchus', 'RUL bronchus', 'RML bronchus', 'RLL bronchus', 'Left main bronchus', 'LUL bronchus', 'Lingula', 'LLL bronchus', 'Lesion / mass', 'BAL site', 'Post-biopsy']}
+          />
+          <DraftReportPanel
+            procType="bronch" draft={getDraft('bronch')} loading={draftLoading}
+            onGenerate={() => generateDraft('bronch')}
+            onSave={text => setDraft('bronch', text)}
           />
         </CollapsibleCard>
       )}
@@ -1163,6 +1377,11 @@ export default function ProceduresTab() {
       {activeType === 'postop' && (
         <CollapsibleCard title="Operative Note">
           <PostopForm data={postop} onChange={d => setTyped('postop', d)} />
+          <ProcedureImagePanel
+            images={getImages('postop')} onChange={imgs => setImages('postop', imgs)}
+            title="Operative / Laparoscopic Images"
+            siteLabels={['Port placement', 'Initial findings', 'Dissection', 'Critical structure', 'Critical view of safety', 'Specimen', 'Haemostasis confirmed', 'Drain in situ', 'Port closure', 'Other']}
+          />
           <DraftReportPanel
             procType="postop" draft={getDraft('postop')} loading={draftLoading}
             onGenerate={() => generateDraft('postop')}
