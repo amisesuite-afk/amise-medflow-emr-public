@@ -57,6 +57,7 @@ import PatientTasksTab from './tabs/PatientTasksTab';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
 import FloatingActions from '@/components/FloatingActions';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import CommandPalette from '@/components/CommandPalette';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -750,6 +751,13 @@ export default function HomePage() {
           )}
         </>
       )}
+
+      <CommandPalette
+        onSection={handleSectionSelect}
+        onTopSection={s => { setTopSection(s); setZenMode(false); }}
+        topSection={topSection}
+        userRole={userRole}
+      />
     </div>
   );
 }
