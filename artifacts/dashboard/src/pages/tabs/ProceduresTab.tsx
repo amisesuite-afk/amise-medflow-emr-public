@@ -208,78 +208,59 @@ function OgdForm({ data, onChange }: { data: OgdData; onChange: (d: OgdData) => 
   }
 
   return (
-    <div style={{ display: 'grid', gap: 12 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+    <div style={{ display: 'grid', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
         <Field label="Indication">
           <SelectOpts chips={['Dyspepsia', 'Dysphagia', 'Haematemesis', 'Anaemia workup', "Barrett's surveillance", 'Gastric ulcer follow-up', 'Oesophageal stricture', 'H. pylori testing', 'Post-op surveillance', 'Weight loss workup']}
             value={data.indication} onChange={v => set('indication', v)} />
+        </Field>
+        <Field label="Sedation">
+          <ChipRow chips={['None', 'Topical only', 'Conscious sedation', 'GA / propofol']}
+            value={[data.sedationType]} onToggle={v => set('sedationType', v)} />
         </Field>
         <Field label="Instrument">
           <input type="text" value={data.instrument} onChange={e => set('instrument', e.target.value)}
             placeholder="e.g. Olympus GIF-H290" style={{ fontSize: 12 }} />
         </Field>
-        <Field label="Patient position">
-          <ChipRow chips={['Left lateral decubitus', 'Supine']}
-            value={[data.patientPosition]} onToggle={v => set('patientPosition', v)} />
-        </Field>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <Field label="Sedation">
-          <ChipRow chips={['None (unsedated)', 'Topical spray only', 'Conscious sedation', 'GA / propofol']}
-            value={[data.sedationType]} onToggle={v => set('sedationType', v)} />
-        </Field>
-        <Field label="Supplemental oxygen">
-          <ChipRow chips={['None required', 'Nasal prongs 2 L/min', 'Nasal prongs 4 L/min', 'Hudson mask']}
-            value={[data.oxygenSupp]} onToggle={v => set('oxygenSupp', v)} />
-        </Field>
-      </div>
-
-      <Field label="Oesophagus findings">
-        <ChipRow chips={['Normal', 'Oesophagitis grade A', 'Oesophagitis grade B', 'Oesophagitis grade C', 'Oesophagitis grade D', "Barrett's oesophagus", 'Stricture', 'Varices', 'Ulcer', 'Hiatal hernia', 'Candidiasis', 'Extrinsic compression', 'Mass / polyp']}
+      <Field label="Oesophagus">
+        <ChipRow chips={['Normal', 'Oesophagitis (LA grade: see notes)', "Barrett's oesophagus", 'Stricture', 'Varices', 'Mass / polyp']}
           value={data.oesophagus} onToggle={c => toggleArr('oesophagus', c)} />
       </Field>
 
-      <Field label="Z-line / GEJ">
-        <ChipRow chips={['Normal (at diaphragm)', 'Irregular Z-line', "Short segment Barrett's", "Long segment Barrett's", 'Hiatal hernia (cm): see notes']}
-          value={[data.zLine]} onToggle={v => set('zLine', v)} />
-      </Field>
-
-      <Field label="Stomach findings">
-        <ChipRow chips={['Normal', 'Gastritis (antral)', 'Gastritis (diffuse)', 'Ulcer (lesser curve)', 'Ulcer (greater curve)', 'Ulcer (antrum)', 'Polyp', 'Atrophic mucosa', 'Intestinal metaplasia', 'Mass', 'Surgical changes']}
+      <Field label="Stomach">
+        <ChipRow chips={['Normal', 'Gastritis', 'Ulcer (site: see notes)', 'Polyp', 'Atrophic mucosa', 'Mass']}
           value={data.stomach} onToggle={c => toggleArr('stomach', c)} />
       </Field>
 
-      <Field label="Duodenum findings">
-        <ChipRow chips={['Normal', 'Duodenitis', 'Duodenal ulcer (D1)', 'Duodenal ulcer (D2)', 'Erosions', 'Polyp', 'Mass', 'Mucosal nodularity', 'Bile reflux']}
+      <Field label="Duodenum">
+        <ChipRow chips={['Normal', 'Duodenitis', 'Duodenal ulcer', 'Erosions', 'Mass']}
           value={data.duodenum} onToggle={c => toggleArr('duodenum', c)} />
       </Field>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12 }}>
-        <Field label="Biopsy taken">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+        <Field label="Biopsy">
           <ChipRow chips={['Yes', 'No']} value={[data.biopsy]} onToggle={v => set('biopsy', v)} />
         </Field>
         <Field label="Biopsy site(s)">
           <input type="text" value={data.biopsySite} onChange={e => set('biopsySite', e.target.value)}
             placeholder="e.g. antrum ×2, Z-line ×4" style={{ fontSize: 12 }} />
         </Field>
-        <Field label="CLO test / H. pylori">
+        <Field label="CLO / H. pylori">
           <ChipRow chips={['Positive', 'Negative', 'Not done']} value={[data.cloTest]} onToggle={v => set('cloTest', v)} />
-        </Field>
-        <Field label="H. pylori treatment">
-          <ChipRow chips={['Triple therapy recommended', 'Quadruple therapy', 'Eradication confirmed', 'Not indicated']}
-            value={[data.hp_treatment]} onToggle={v => set('hp_treatment', v)} />
         </Field>
       </div>
 
       <Field label="Complications">
-        <ChipRow chips={['None', 'Bleeding', 'Perforation', 'Aspiration', 'Respiratory depression', 'Poor tolerance', 'Incomplete procedure']}
+        <ChipRow chips={['None', 'Bleeding', 'Perforation', 'Poor tolerance', 'Incomplete procedure']}
           value={data.complications} onToggle={c => toggleArr('complications', c)} />
       </Field>
 
-      <Field label="Additional findings / plan">
+      <Field label="Findings, plan & additional detail">
         <textarea value={data.additionalNotes} onChange={e => set('additionalNotes', e.target.value)}
-          placeholder="Free text findings, biopsy plan, next steps…" style={{ fontSize: 12, minHeight: 60 }} />
+          placeholder="Grade of oesophagitis, GEJ / Z-line, hiatal hernia size, H. pylori treatment plan, surveillance interval, biopsy plan, next steps…"
+          style={{ fontSize: 12, minHeight: 64 }} />
       </Field>
     </div>
   );
@@ -369,7 +350,7 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
       </div>
 
       <Field label="Colonic findings">
-        <ChipRow chips={['Normal colon', 'Diverticulosis (mild)', 'Diverticulosis (moderate)', 'Diverticulosis (severe)', 'Diverticulitis changes', 'Angiodysplasia', 'Melanosis coli', 'Haemorrhoids (internal)', 'Active bleeding', 'Old blood', 'Mass / lesion', 'Stricture', 'Anastomotic changes', 'IBD changes']}
+        <ChipRow chips={['Normal', 'Diverticulosis', 'Angiodysplasia', 'Haemorrhoids', 'Mass / lesion', 'Stricture', 'IBD changes']}
           value={data.findings} onToggle={c => toggleArr('findings', c)} />
       </Field>
 
@@ -424,7 +405,7 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
       </div>
 
       <Field label="Complications">
-        <ChipRow chips={['None', 'Post-polypectomy bleeding', 'Perforation', 'Haematoma', 'Aspiration', 'Incomplete resection', 'Poor tolerance / abandoned']}
+        <ChipRow chips={['None', 'Post-polypectomy bleeding', 'Perforation', 'Poor tolerance / abandoned']}
           value={data.complications} onToggle={c => toggleArr('complications', c)} />
       </Field>
 
@@ -515,7 +496,7 @@ function ErcpForm({ data, onChange }: { data: ErcpData; onChange: (d: ErcpData) 
       </div>
 
       <Field label="Cholangiogram findings">
-        <ChipRow chips={['Normal biliary tree', 'CBD stones (filling defects)', 'Dilated CBD', 'Biliary stricture (proximal)', 'Biliary stricture (mid)', 'Biliary stricture (distal)', 'Biliary leak', 'Cystic duct stump leak', 'Hilar involvement', 'Pancreatic duct filling', 'Post-surgical anatomy']}
+        <ChipRow chips={['Normal biliary tree', 'CBD stones', 'Dilated CBD', 'Biliary stricture', 'Biliary leak', 'Hilar involvement', 'Post-surgical anatomy']}
           value={data.cholangiogramFindings} onToggle={c => toggleArr('cholangiogramFindings', c)} />
       </Field>
 
@@ -579,7 +560,7 @@ function ErcpForm({ data, onChange }: { data: ErcpData; onChange: (d: ErcpData) 
       </div>
 
       <Field label="Complications">
-        <ChipRow chips={['None', 'Post-ERCP pancreatitis', 'Bleeding (immediate)', 'Bleeding (delayed)', 'Perforation', 'Cholangitis', 'Cholecystitis', 'Stent migration', 'Basket impaction', 'Contrast reaction']}
+        <ChipRow chips={['None', 'Post-ERCP pancreatitis', 'Bleeding', 'Perforation', 'Cholangitis']}
           value={data.complications} onToggle={c => toggleArr('complications', c)} />
       </Field>
 
@@ -653,12 +634,12 @@ function BronchForm({ data, onChange }: { data: BronchData; onChange: (d: Bronch
       </div>
 
       <Field label="Right airways">
-        <ChipRow chips={['Normal', 'RUL — normal', 'RUL — lesion', 'RML — normal', 'RML — lesion', 'RLL — normal', 'RLL — lesion', 'Secretions', 'Endobronchial mass', 'Mucosal oedema', 'Extrinsic compression', 'Tumour infiltration']}
+        <ChipRow chips={['Normal', 'Secretions', 'Mucosal oedema', 'Endobronchial mass', 'Extrinsic compression', 'Lesion (site: see notes)']}
           value={data.rightAirways} onToggle={c => toggleArr('rightAirways', c)} />
       </Field>
 
       <Field label="Left airways">
-        <ChipRow chips={['Normal', 'LUL — normal', 'LUL — lesion', 'Lingula — normal', 'Lingula — lesion', 'LLL — normal', 'LLL — lesion', 'Secretions', 'Endobronchial mass', 'Mucosal oedema', 'Extrinsic compression', 'Tumour infiltration']}
+        <ChipRow chips={['Normal', 'Secretions', 'Mucosal oedema', 'Endobronchial mass', 'Extrinsic compression', 'Lesion (site: see notes)']}
           value={data.leftAirways} onToggle={c => toggleArr('leftAirways', c)} />
       </Field>
 
@@ -711,7 +692,7 @@ function BronchForm({ data, onChange }: { data: BronchData; onChange: (d: Bronch
       </Field>
 
       <Field label="Complications">
-        <ChipRow chips={['None', 'Desaturation (transient)', 'Epistaxis', 'Bleeding (endobronchial)', 'Bronchospasm', 'Pneumothorax', 'Poor tolerance / abandoned', 'Laryngospasm']}
+        <ChipRow chips={['None', 'Desaturation', 'Endobronchial bleeding', 'Bronchospasm', 'Poor tolerance / abandoned']}
           value={data.complications} onToggle={c => toggleArr('complications', c)} />
       </Field>
 
@@ -781,12 +762,12 @@ function PreopForm({ data, onChange }: { data: PreopData; onChange: (d: PreopDat
       </div>
 
       <Field label="Cardiac risk factors">
-        <ChipRow chips={['None identified', 'Hypertension', 'IHD / angina', 'Prior MI', 'CCF', 'Arrhythmia', 'Pacemaker / ICD', 'Valvular disease', 'Poor exercise tolerance (<4 METs)']}
+        <ChipRow chips={['None identified', 'Hypertension', 'IHD / angina', 'Prior MI', 'CCF', 'Arrhythmia']}
           value={data.cardiacRisk} onToggle={c => toggleArr('cardiacRisk', c)} />
       </Field>
 
       <Field label="Respiratory risk factors">
-        <ChipRow chips={['None identified', 'Asthma', 'COPD', 'OSA / CPAP', 'Pulmonary hypertension', 'Active respiratory infection', 'Smoker (active)']}
+        <ChipRow chips={['None identified', 'Asthma', 'COPD', 'OSA / CPAP', 'Smoker (active)']}
           value={data.respiratoryRisk} onToggle={c => toggleArr('respiratoryRisk', c)} />
       </Field>
 
@@ -822,7 +803,7 @@ function PreopForm({ data, onChange }: { data: PreopData; onChange: (d: PreopDat
       </div>
 
       <Field label="Prophylaxis">
-        <ChipRow chips={['DVT prophylaxis (LMWH)', 'TED stockings', 'Antibiotic prophylaxis', 'Aspirin held', 'Anticoagulant held / bridged', 'Metformin held', 'Bowel prep given']}
+        <ChipRow chips={['DVT prophylaxis (LMWH)', 'TED stockings', 'Antibiotic prophylaxis', 'Anticoagulant held / bridged', 'Bowel prep given']}
           value={data.prophylaxis} onToggle={c => toggleArr('prophylaxis', c)} />
       </Field>
 
@@ -930,7 +911,7 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
       </Field>
 
       <Field label="Critical safety checks performed">
-        <ChipRow chips={['WHO surgical safety checklist', 'Critical view of safety (CVS) confirmed', 'On-table cholangiogram performed', 'Ureteral identification confirmed', 'Bile duct visualised before division', 'Correct site marking confirmed', 'Intraoperative ultrasound', 'Nerve monitoring active', 'Swab count correct ×2']}
+        <ChipRow chips={['WHO surgical safety checklist', 'Critical view of safety (CVS) confirmed', 'On-table cholangiogram', 'Correct site marking confirmed', 'Swab count correct ×2']}
           value={data.safetyChecks} onToggle={c => toggleArr('safetyChecks', c)} />
       </Field>
 
@@ -1004,12 +985,12 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
       </div>
 
       <Field label="Post-operative orders">
-        <ChipRow chips={['NPO until tolerated', 'Fluids only × 24h', 'Soft diet', 'Antibiotic therapy', 'Analgesia PCA', 'DVT prophylaxis', 'Foley catheter', 'NG tube', 'IDC — strict I&O', 'Continuous monitoring', 'Nurse-led observations Q4H', 'Physiotherapy', 'Wound review in 2 days']}
+        <ChipRow chips={['NPO until tolerated', 'Antibiotic therapy', 'DVT prophylaxis', 'IDC — strict I&O', 'Continuous monitoring', 'Physiotherapy', 'Wound review in 2 days']}
           value={data.postopOrders} onToggle={c => toggleArr('postopOrders', c)} />
       </Field>
 
       <Field label="Intraoperative complications">
-        <ChipRow chips={['None', 'Haemorrhage', 'Bowel injury', 'Bile duct injury', 'Urinary tract injury', 'Vascular injury', 'Conversion to open', 'Prolonged adhesiolysis', 'Anaesthetic complication']}
+        <ChipRow chips={['None', 'Haemorrhage', 'Visceral injury', 'Conversion to open', 'Anaesthetic complication']}
           value={data.complications} onToggle={c => toggleArr('complications', c)} />
       </Field>
 
