@@ -46,16 +46,37 @@ function SelectOpts({ chips, value, onChange }: { chips: string[]; value: string
   );
 }
 
+function ProcSection({ title, children, defaultOpen = true, badge }: { title: string; children: React.ReactNode; defaultOpen?: boolean; badge?: string | number }) {
+  return (
+    <details open={defaultOpen} style={{ marginTop: 12 }}>
+      <summary style={{
+        cursor: 'pointer', fontSize: 11, fontWeight: 700, color: '#64748b',
+        letterSpacing: '0.06em', userSelect: 'none', listStyle: 'none',
+        display: 'flex', alignItems: 'center', gap: 6,
+        padding: '7px 12px', background: '#f8fafc', borderRadius: 6, border: '1px solid #e2e8f0',
+      }}>
+        <span style={{ fontSize: 8, color: '#0d9488' }}>▶</span>
+        {title.toUpperCase()}
+        {badge !== undefined && String(badge) !== '0' && (
+          <span style={{ marginLeft: 'auto', background: '#d1fae5', color: '#065f46', borderRadius: 999, fontSize: 10, fontWeight: 700, padding: '1px 6px' }}>{badge}</span>
+        )}
+      </summary>
+      <div style={{ paddingTop: 12 }}>{children}</div>
+    </details>
+  );
+}
+
 // ── AI Draft Report Panel ─────────────────────────────────────────────────────
 
 function DraftReportPanel({
-  procType, draft, loading, onGenerate, onSave,
+  procType, draft, loading, onGenerate, onSave, hero = false,
 }: {
   procType: ProcType;
   draft: string;
   loading: boolean;
   onGenerate: () => void;
   onSave: (text: string) => void;
+  hero?: boolean;
 }) {
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState('');
@@ -66,7 +87,10 @@ function DraftReportPanel({
   };
 
   return (
-    <div style={{ marginTop: 16, borderTop: '1px solid #e2e8f0', paddingTop: 16 }}>
+    <div style={hero
+      ? { background: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: 8, padding: '14px 16px' }
+      : { marginTop: 16, borderTop: '1px solid #e2e8f0', paddingTop: 16 }
+    }>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
         <button
           type="button"
@@ -145,8 +169,10 @@ function DraftReportPanel({
       )}
 
       {!loading && !draft && (
-        <div style={{ fontSize: 11, color: '#94a3b8', fontStyle: 'italic' }}>
-          Fill in the fields above, then click "Draft Report" to generate a professional narrative ready for review and filing.
+        <div style={{ fontSize: 11, color: hero ? '#0f766e' : '#94a3b8', fontStyle: 'italic' }}>
+          {hero
+            ? 'Expand "Clinical findings" below to add structured data, then click Draft — or click now to generate from indication alone.'
+            : 'Fill in the structured data, then click "Draft Report" to generate a professional narrative for review and filing.'}
         </div>
       )}
     </div>
@@ -1305,88 +1331,110 @@ export default function ProceduresTab() {
       </div>
 
       {activeType === 'ogd' && (
-        <CollapsibleCard title="Upper GI Endoscopy (OGD) Report">
-          <OgdForm data={ogd} onChange={d => setTyped('ogd', d)} />
-          <ProcedureImagePanel
-            images={getImages('ogd')} onChange={imgs => setImages('ogd', imgs)}
-            title="OGD Images"
-            siteLabels={['Lips / mouth', 'Oesophagus', 'GEJ / Z-line', 'Fundus', 'Body of stomach', 'Antrum', 'Pylorus', 'Duodenal bulb', 'D2 / papilla', 'Incisura angularis']}
-          />
-          <DraftReportPanel
+        <CollapsibleCard title="Upper GI Endoscopy (OGD)">
+          <DraftReportPanel hero
             procType="ogd" draft={getDraft('ogd')} loading={draftLoading}
             onGenerate={() => generateDraft('ogd')}
             onSave={text => setDraft('ogd', text)}
           />
+          <ProcSection title="Clinical findings & structured data">
+            <OgdForm data={ogd} onChange={d => setTyped('ogd', d)} />
+          </ProcSection>
+          <ProcSection title="Endoscopic images" defaultOpen={false} badge={getImages('ogd').length || undefined}>
+            <ProcedureImagePanel
+              images={getImages('ogd')} onChange={imgs => setImages('ogd', imgs)}
+              title="OGD Images"
+              siteLabels={['Lips / mouth', 'Oesophagus', 'GEJ / Z-line', 'Fundus', 'Body of stomach', 'Antrum', 'Pylorus', 'Duodenal bulb', 'D2 / papilla', 'Incisura angularis']}
+            />
+          </ProcSection>
         </CollapsibleCard>
       )}
 
       {activeType === 'colonoscopy' && (
-        <CollapsibleCard title="Colonoscopy Report">
-          <ColonForm data={colon} onChange={d => setTyped('colonoscopy', d)} />
-          <ProcedureImagePanel
-            images={getImages('colonoscopy')} onChange={imgs => setImages('colonoscopy', imgs)}
-            title="Colonoscopy Images"
-            siteLabels={['Anus / rectum', 'Sigmoid colon', 'Descending colon', 'Splenic flexure', 'Transverse colon', 'Hepatic flexure', 'Ascending colon', 'Caecum', 'Ileocaecal valve', 'Terminal ileum', 'Polyp', 'Post-polypectomy site']}
-          />
-          <DraftReportPanel
+        <CollapsibleCard title="Colonoscopy">
+          <DraftReportPanel hero
             procType="colonoscopy" draft={getDraft('colonoscopy')} loading={draftLoading}
             onGenerate={() => generateDraft('colonoscopy')}
             onSave={text => setDraft('colonoscopy', text)}
           />
+          <ProcSection title="Clinical findings & structured data">
+            <ColonForm data={colon} onChange={d => setTyped('colonoscopy', d)} />
+          </ProcSection>
+          <ProcSection title="Colonoscopy images" defaultOpen={false} badge={getImages('colonoscopy').length || undefined}>
+            <ProcedureImagePanel
+              images={getImages('colonoscopy')} onChange={imgs => setImages('colonoscopy', imgs)}
+              title="Colonoscopy Images"
+              siteLabels={['Anus / rectum', 'Sigmoid colon', 'Descending colon', 'Splenic flexure', 'Transverse colon', 'Hepatic flexure', 'Ascending colon', 'Caecum', 'Ileocaecal valve', 'Terminal ileum', 'Polyp', 'Post-polypectomy site']}
+            />
+          </ProcSection>
         </CollapsibleCard>
       )}
 
       {activeType === 'ercp' && (
-        <CollapsibleCard title="ERCP Report">
-          <ErcpForm data={ercp} onChange={d => setTyped('ercp', d)} />
-          <ProcedureImagePanel
-            images={getImages('ercp')} onChange={imgs => setImages('ercp', imgs)}
-            title="ERCP Images"
-            siteLabels={['Papilla', 'Post-sphincterotomy', 'Cholangiogram', 'CBD with stones', 'Stent in situ', 'Balloon trawl', 'Pancreatogram', 'Fluoroscopy frame', 'Cholangioscopy view']}
-          />
-          <DraftReportPanel
+        <CollapsibleCard title="ERCP">
+          <DraftReportPanel hero
             procType="ercp" draft={getDraft('ercp')} loading={draftLoading}
             onGenerate={() => generateDraft('ercp')}
             onSave={text => setDraft('ercp', text)}
           />
+          <ProcSection title="Clinical findings & structured data">
+            <ErcpForm data={ercp} onChange={d => setTyped('ercp', d)} />
+          </ProcSection>
+          <ProcSection title="ERCP images" defaultOpen={false} badge={getImages('ercp').length || undefined}>
+            <ProcedureImagePanel
+              images={getImages('ercp')} onChange={imgs => setImages('ercp', imgs)}
+              title="ERCP Images"
+              siteLabels={['Papilla', 'Post-sphincterotomy', 'Cholangiogram', 'CBD with stones', 'Stent in situ', 'Balloon trawl', 'Pancreatogram', 'Fluoroscopy frame', 'Cholangioscopy view']}
+            />
+          </ProcSection>
         </CollapsibleCard>
       )}
 
       {activeType === 'bronch' && (
-        <CollapsibleCard title="Bronchoscopy Report">
-          <BronchForm data={bronch} onChange={d => setTyped('bronch', d)} />
-          <ProcedureImagePanel
-            images={getImages('bronch')} onChange={imgs => setImages('bronch', imgs)}
-            title="Bronchoscopy Images"
-            siteLabels={['Vocal cords', 'Subglottis / trachea', 'Carina', 'Right main bronchus', 'RUL bronchus', 'RML bronchus', 'RLL bronchus', 'Left main bronchus', 'LUL bronchus', 'Lingula', 'LLL bronchus', 'Lesion / mass', 'BAL site', 'Post-biopsy']}
-          />
-          <DraftReportPanel
+        <CollapsibleCard title="Bronchoscopy">
+          <DraftReportPanel hero
             procType="bronch" draft={getDraft('bronch')} loading={draftLoading}
             onGenerate={() => generateDraft('bronch')}
             onSave={text => setDraft('bronch', text)}
           />
+          <ProcSection title="Clinical findings & structured data">
+            <BronchForm data={bronch} onChange={d => setTyped('bronch', d)} />
+          </ProcSection>
+          <ProcSection title="Bronchoscopy images" defaultOpen={false} badge={getImages('bronch').length || undefined}>
+            <ProcedureImagePanel
+              images={getImages('bronch')} onChange={imgs => setImages('bronch', imgs)}
+              title="Bronchoscopy Images"
+              siteLabels={['Vocal cords', 'Subglottis / trachea', 'Carina', 'Right main bronchus', 'RUL bronchus', 'RML bronchus', 'RLL bronchus', 'Left main bronchus', 'LUL bronchus', 'Lingula', 'LLL bronchus', 'Lesion / mass', 'BAL site', 'Post-biopsy']}
+            />
+          </ProcSection>
         </CollapsibleCard>
       )}
 
       {activeType === 'preop' && (
         <CollapsibleCard title="Pre-operative Assessment">
-          <PreopForm data={preop} onChange={d => setTyped('preop', d)} />
+          <ProcSection title="Assessment checklist">
+            <PreopForm data={preop} onChange={d => setTyped('preop', d)} />
+          </ProcSection>
         </CollapsibleCard>
       )}
 
       {activeType === 'postop' && (
         <CollapsibleCard title="Operative Note">
-          <PostopForm data={postop} onChange={d => setTyped('postop', d)} />
-          <ProcedureImagePanel
-            images={getImages('postop')} onChange={imgs => setImages('postop', imgs)}
-            title="Operative / Laparoscopic Images"
-            siteLabels={['Port placement', 'Initial findings', 'Dissection', 'Critical structure', 'Critical view of safety', 'Specimen', 'Haemostasis confirmed', 'Drain in situ', 'Port closure', 'Other']}
-          />
-          <DraftReportPanel
+          <DraftReportPanel hero
             procType="postop" draft={getDraft('postop')} loading={draftLoading}
             onGenerate={() => generateDraft('postop')}
             onSave={text => setDraft('postop', text)}
           />
+          <ProcSection title="Operative details & structured data">
+            <PostopForm data={postop} onChange={d => setTyped('postop', d)} />
+          </ProcSection>
+          <ProcSection title="Operative images" defaultOpen={false} badge={getImages('postop').length || undefined}>
+            <ProcedureImagePanel
+              images={getImages('postop')} onChange={imgs => setImages('postop', imgs)}
+              title="Operative / Laparoscopic Images"
+              siteLabels={['Port placement', 'Initial findings', 'Dissection', 'Critical structure', 'Critical view of safety', 'Specimen', 'Haemostasis confirmed', 'Drain in situ', 'Port closure', 'Other']}
+            />
+          </ProcSection>
         </CollapsibleCard>
       )}
 
