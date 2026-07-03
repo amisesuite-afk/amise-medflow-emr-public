@@ -696,12 +696,12 @@ export default function NurseAPCQTab() {
       >
         <div>
           <h2 className="text-sm font-bold" style={{ color: '#111827' }}>
-            Patient Questionnaires
+            Intake Questionnaire Review
           </h2>
           <p className="text-xs" style={{ color: '#6b7280' }}>
             {sessions.length > 0
-              ? `${sessions.filter(s => s.status === 'completed').length} awaiting review`
-              : 'No pending questionnaires'}
+              ? `${sessions.filter(s => s.status === 'completed').length} awaiting review — completed by patients before or during visit`
+              : 'No completed questionnaires awaiting review'}
           </p>
         </div>
         <button

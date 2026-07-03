@@ -99,12 +99,14 @@ function fmtSlot(iso: string): string {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; border: string }> = {
-  pending:           { label: 'Pending',          bg: '#fffbeb', color: '#b45309', border: '#fcd34d' },
-  waitlisted:        { label: 'Waitlisted',       bg: '#faf5ff', color: '#7c3aed', border: '#c4b5fd' },
-  staff_confirmed:   { label: 'Slot Confirmed',   bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
-  patient_confirmed: { label: 'Patient Confirmed',bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
-  lapsed:            { label: 'Lapsed',           bg: '#f9fafb', color: '#9ca3af', border: '#e5e7eb' },
-  cancelled:         { label: 'Cancelled',        bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
+  pending:             { label: 'Pending',             bg: '#fffbeb', color: '#b45309', border: '#fcd34d' },
+  waitlisted:          { label: 'Waitlisted',          bg: '#faf5ff', color: '#7c3aed', border: '#c4b5fd' },
+  staff_confirmed:     { label: 'Slot Confirmed',      bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
+  staff_pending:       { label: 'Staff Booking',       bg: '#f0f9ff', color: '#0369a1', border: '#7dd3fc' },
+  doctor_confirmed:    { label: 'Doctor Confirmed',    bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
+  patient_confirmed:   { label: 'Patient Confirmed',   bg: '#dcfce7', color: '#166534', border: '#4ade80' },
+  lapsed:              { label: 'Lapsed',              bg: '#f9fafb', color: '#9ca3af', border: '#e5e7eb' },
+  cancelled:           { label: 'Cancelled',           bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
 };
 
 const PREP_INSTRUCTIONS: Record<string, string> = {
@@ -550,7 +552,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   //   5. Oldest first, as a fair tiebreaker.
   const ACUITY_RANK: Record<string, number> = { urgent: 0, priority: 1, routine: 2 };
   const STATUS_RANK: Record<string, number> = {
-    pending: 0, waitlisted: 1, staff_confirmed: 2, patient_confirmed: 3, lapsed: 4, cancelled: 5,
+    pending: 0, waitlisted: 1, staff_confirmed: 2, doctor_confirmed: 3, patient_confirmed: 4, lapsed: 5, cancelled: 6,
   };
   const sorted = [...requests].sort((a, b) => {
     const aUrgent = resolveTriageAcuity(a) === 'urgent' ? 0 : 1;
@@ -649,7 +651,8 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               { value: '', label: 'All' },
               { value: 'pending', label: 'Pending' },
               { value: 'waitlisted', label: 'Waitlisted' },
-              { value: 'staff_confirmed', label: 'Confirmed' },
+              { value: 'staff_confirmed', label: 'Needs Dr ✓' },
+              { value: 'doctor_confirmed', label: 'Dr Confirmed' },
               { value: 'patient_confirmed', label: 'Patient OK' },
               { value: 'lapsed', label: 'Lapsed' },
               { value: 'cancelled', label: 'Cancelled' },
@@ -735,6 +738,13 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                   {resolvePreferredSlot(req) && (
                     <div style={{ fontSize: 11, color: '#6b7280', marginTop: 3 }}>
                       Preferred: {resolvePreferredSlot(req)}
+                    </div>
+                  )}
+
+                  {/* Dual-confirmation reminder */}
+                  {req.status === 'staff_confirmed' && (
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#7c3aed', marginTop: 3 }}>
+                      ⏳ Awaiting doctor sign-off before complete
                     </div>
                   )}
                 </button>
@@ -1129,6 +1139,41 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a8a' }}>{fmtSlot(selected.confirmed_slot)}</div>
               <div style={{ fontSize: 12, color: '#1d4ed8', marginTop: 4 }}>{LOCATION_LABELS[resolveLocation(selected)] ?? resolveLocation(selected)}</div>
               {selected.notes && <div style={{ fontSize: 12, color: '#374151', marginTop: 6, fontStyle: 'italic' }}>{selected.notes}</div>}
+            </div>
+          )}
+
+          {/* Doctor sign-off — for staff_confirmed bookings awaiting doctor review */}
+          {selected.status === 'staff_confirmed' && (
+            <div style={{ marginBottom: 20, padding: '14px 16px', borderRadius: 10, background: '#faf5ff', border: '1.5px solid #c4b5fd' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#5b21b6', marginBottom: 6 }}>
+                Doctor Sign-off Required
+              </div>
+              <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 10, lineHeight: 1.5 }}>
+                Front desk has confirmed the slot. Please review and approve to complete the booking. The patient will remain on the scheduling reminder until you sign off.
+              </div>
+              <button
+                onClick={async () => {
+                  if (!selected) return;
+                  try {
+                    await fetch(apiUrl(`/api/booking/staff-confirm/${selected.id}`), {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+                      body: JSON.stringify({ confirmed_slot: selected.confirmed_slot, notes: (selected.notes ?? '') + ' [Doctor reviewed]', status_override: 'doctor_confirmed' }),
+                    });
+                  } catch { /* degraded mode */ }
+                  if (supabase) {
+                    try { await supabase.from('appointment_requests').update({ status: 'doctor_confirmed' }).eq('id', selected.id); } catch { /* ignore */ }
+                  }
+                  await load();
+                  setSelected(null);
+                }}
+                style={{
+                  width: '100%', padding: '10px', borderRadius: 8, border: 'none',
+                  background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                }}
+              >
+                ✓ Doctor Sign-off — Approve Schedule
+              </button>
             </div>
           )}
 

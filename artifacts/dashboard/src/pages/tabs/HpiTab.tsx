@@ -20,14 +20,19 @@ export default function HpiTab() {
     <div className="gap-y">
       <CollapsibleCard title="History of present illness" badge={hpiNotes.trim() ? '✓' : undefined}>
         <div className="fld">
-          <label>HPI narrative</label>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+            <label style={{ marginBottom: 0 }}>HPI narrative</label>
+            <span style={{ fontSize: 11, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4 }}>
+              🎤 Tap mic to dictate · type <code style={{ fontSize: 10, background: '#f1f5f9', padding: '1px 4px', borderRadius: 3 }}>.hpi</code> for template
+            </span>
+          </div>
           <SmartTextarea
             value={hpiNotes}
             onChange={setHpiNotes}
             placeholder={
               'Document the presenting illness in the patient\'s own words and the clinician\'s synthesis.\n\n' +
               'SOCRATES — Site · Onset · Character · Radiation · Associations · Timing · Exacerbating/Relieving · Severity\n\n' +
-              'Tip: type .hpi or .hpiabd to expand a template'
+              'Tap the 🎤 microphone button (top-right corner) to dictate by voice\nOr type .hpi / .hpiabd to expand a template'
             }
             style={{ minHeight: 180, width: '100%' }}
           />

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { SLOT_RULES, AppointmentType } from '@workspace/triage-engine';
 import TheatreBookingCard from '@/components/TheatreBookingCard';
 import PreopDayChecklist from '@/components/PreopDayChecklist';
 import PostOpMilestonesCard from '@/components/PostOpMilestonesCard';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 
 // Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
 const API_ORIGIN = getApiOrigin();
@@ -99,6 +100,38 @@ const ACUITY_PATHWAY_LABEL: Record<string, string> = {
   routine:  'routine pathway',
 };
 
+interface PendingBooking {
+  id: string;
+  patient_name: string;
+  appointment_type?: string;
+  chief_complaint?: string;
+  location?: string;
+  preferred_site?: string;
+  confirmed_slot?: string | null;
+  preferred_slot?: string | null;
+  preferred_date?: string | null;
+  status: string;
+  created_at: string;
+  triage_acuity?: string | null;
+  triage_level?: string | null;
+}
+
+function fmtBookingSlot(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('en-LC', {
+    timeZone: 'America/St_Lucia',
+    weekday: 'short', day: 'numeric', month: 'short',
+    hour: 'numeric', minute: '2-digit', hour12: true,
+  });
+}
+
+const BOOKING_STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
+  pending:           { bg: '#fffbeb', color: '#b45309', label: 'Pending' },
+  staff_confirmed:   { bg: '#eff6ff', color: '#1d4ed8', label: 'Awaiting Doctor' },
+  patient_confirmed: { bg: '#f0fdf4', color: '#15803d', label: 'Patient OK' },
+  waitlisted:        { bg: '#faf5ff', color: '#7c3aed', label: 'Waitlisted' },
+};
+
 export default function SchedulingTab() {
   const ctx = useAppContext();
   const [apptType, setApptType] = useState<AppointmentType>(ctx.triageResult.appointmentType);
@@ -107,6 +140,31 @@ export default function SchedulingTab() {
   const [mock, setMock] = useState(false);
   const [booked, setBooked] = useState<SlotResult | null>(null);
   const [confirmed, setConfirmed] = useState(false);
+
+  // Pending bookings reminder panel
+  const [pendingBookings, setPendingBookings] = useState<PendingBooking[]>([]);
+  const [reminderCollapsed, setReminderCollapsed] = useState(false);
+
+  const fetchPendingBookings = useCallback(async () => {
+    try {
+      const headers = await staffAuthHeaders();
+      const r = await fetch(apiUrl('/api/booking/requests'), { headers });
+      if (r.ok) {
+        const d = await r.json() as { requests: PendingBooking[] };
+        // Show pending and staff_confirmed bookings as reminders for doctor sign-off
+        const reminders = (d.requests ?? []).filter(b =>
+          b.status === 'pending' || b.status === 'staff_confirmed' || b.status === 'waitlisted'
+        );
+        setPendingBookings(reminders);
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    void fetchPendingBookings();
+    const t = setInterval(() => void fetchPendingBookings(), 60_000);
+    return () => clearInterval(t);
+  }, [fetchPendingBookings]);
 
   // Sync appointment type when triage result changes (e.g. navigating from TriageTab)
   useEffect(() => {
@@ -154,7 +212,9 @@ export default function SchedulingTab() {
   const staticDays = rule.days.map(d => DAY_NAMES[d]).join(', ') || 'By arrangement';
 
   return (
-    <div className="gap-y" style={{ maxWidth: 720 }}>
+    <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+    {/* ── Main scheduling area ── */}
+    <div className="gap-y" style={{ flex: 1, minWidth: 0 }}>
       {/* Acuity banner */}
       {ctx.patientName.trim() && (
         <div style={{
@@ -288,6 +348,132 @@ export default function SchedulingTab() {
       <TheatreBookingCard />
       <PreopDayChecklist />
       <PostOpMilestonesCard />
+    </div>
+
+    {/* ── Right: Pending Booking Reminders ── */}
+    <div style={{
+      width: reminderCollapsed ? 36 : 280,
+      flexShrink: 0,
+      background: '#fff',
+      border: '1px solid #e5e7eb',
+      borderRadius: 10,
+      overflow: 'hidden',
+      transition: 'width .2s ease',
+      alignSelf: 'flex-start',
+    }}>
+      {/* Header row */}
+      <div
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: reminderCollapsed ? '10px 6px' : '10px 12px',
+          background: pendingBookings.length > 0 ? '#fffbeb' : '#f9fafb',
+          borderBottom: reminderCollapsed ? 'none' : '1px solid #e5e7eb',
+          cursor: 'pointer',
+        }}
+        onClick={() => setReminderCollapsed(c => !c)}
+        title={reminderCollapsed ? 'Show booking reminders' : 'Collapse'}
+      >
+        {reminderCollapsed ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: 14 }}>📋</span>
+            {pendingBookings.length > 0 && (
+              <span style={{
+                fontSize: 10, fontWeight: 800, background: '#b45309', color: '#fff',
+                borderRadius: 99, padding: '1px 5px', lineHeight: 1.4,
+              }}>
+                {pendingBookings.length}
+              </span>
+            )}
+          </div>
+        ) : (
+          <>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>Booking Reminders</div>
+              <div style={{ fontSize: 10, color: '#6b7280', marginTop: 1 }}>
+                {pendingBookings.length === 0
+                  ? 'No pending bookings'
+                  : `${pendingBookings.length} awaiting action`}
+              </div>
+            </div>
+            <span style={{ fontSize: 12, color: '#9ca3af' }}>✕</span>
+          </>
+        )}
+      </div>
+
+      {/* Booking list */}
+      {!reminderCollapsed && (
+        <div style={{ maxHeight: 480, overflowY: 'auto' }}>
+          {pendingBookings.length === 0 ? (
+            <div style={{ padding: '20px 12px', textAlign: 'center', fontSize: 12, color: '#9ca3af' }}>
+              All bookings actioned ✓
+            </div>
+          ) : (
+            pendingBookings.map(b => {
+              const apptType = b.appointment_type || b.chief_complaint || 'consultation';
+              const slot = b.confirmed_slot || b.preferred_slot || b.preferred_date;
+              const sc = BOOKING_STATUS_COLORS[b.status] ?? { bg: '#f3f4f6', color: '#6b7280', label: b.status };
+              const acuity = b.triage_acuity || b.triage_level;
+
+              return (
+                <div
+                  key={b.id}
+                  style={{
+                    padding: '10px 12px',
+                    borderBottom: '1px solid #f3f4f6',
+                    background: b.status === 'pending' && acuity === 'urgent' ? '#fff8f8' : '#fff',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 4, marginBottom: 3 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                      {b.patient_name}
+                    </div>
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 99, flexShrink: 0,
+                      background: sc.bg, color: sc.color, border: `1px solid ${sc.color}33`,
+                    }}>
+                      {sc.label}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 3 }}>
+                    {apptType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+                  </div>
+                  {slot && (
+                    <div style={{ fontSize: 10, color: '#1d4ed8', fontWeight: 600 }}>
+                      {b.status === 'staff_confirmed' ? '✓ Slot: ' : 'Pref: '}{fmtBookingSlot(slot)}
+                    </div>
+                  )}
+                  {acuity && acuity !== 'routine' && (
+                    <div style={{
+                      marginTop: 3, fontSize: 9, fontWeight: 700,
+                      color: acuity === 'urgent' ? '#dc2626' : '#c2410c',
+                      textTransform: 'uppercase', letterSpacing: '0.05em',
+                    }}>
+                      ⚠ {acuity}
+                    </div>
+                  )}
+                  {b.status === 'staff_confirmed' && (
+                    <div style={{ marginTop: 4, fontSize: 10, color: '#7c3aed', fontStyle: 'italic' }}>
+                      Awaiting doctor sign-off
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+      {!reminderCollapsed && (
+        <div style={{ padding: '8px 12px', borderTop: '1px solid #f3f4f6' }}>
+          <button
+            type="button"
+            onClick={() => void fetchPendingBookings()}
+            style={{ width: '100%', fontSize: 11, color: '#6b7280', background: 'none', border: '1px solid #e5e7eb', borderRadius: 6, padding: '4px 0', cursor: 'pointer' }}
+          >
+            Refresh
+          </button>
+        </div>
+      )}
+    </div>
     </div>
   );
 }

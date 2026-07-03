@@ -186,7 +186,7 @@ export default function HomePage() {
 
   /* ── Consultation tab list (role-aware, matches phased sidebar) ── */
   const consultTabs = useMemo<{ id: Section; label: string }[]>(() => [
-    { id: 'nurse_apcq' as Section, label: 'CC' },
+    { id: 'nurse_apcq' as Section, label: 'Intake Q' },
     ...(roleIn(userRole, 'front_desk') || hasRole(userRole, 'nurse') ? [
       { id: 'apcq' as Section, label: 'Record Q' },
     ] : []),
@@ -673,7 +673,6 @@ export default function HomePage() {
 
         {/* Clinical sections */}
         {topSection === 'intake'        && <IntakeTab />}
-        {topSection === 'consultation'  && activeSection === 'nurse_apcq'  && hasRole(userRole, 'nurse')  && <NurseAPCQTab />}
         {topSection === 'consultation'  && activeSection === 'hpi'         && <HpiTab />}
         {topSection === 'consultation'  && activeSection === 'triage'      && <TriageTab />}
         {topSection === 'consultation'  && activeSection === 'pmh'         && <PmhTab />}
@@ -698,7 +697,7 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
         {topSection === 'consultation'  && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
         {topSection === 'consultation'  && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
-        {topSection === 'consultation'  && activeSection === 'apcq'            && <APCQTab />}
+        {topSection === 'consultation'  && activeSection === 'apcq'            && <APCQTab compact />}
         {topSection === 'consultation'  && activeSection === 'tasks'          && <PatientTasksTab />}
         {topSection === 'consultation'  && activeSection === 'who_checklist'  && <WhoChecklistTab />}
         {topSection === 'consultation'  && activeSection === 'consent'        && <SurgicalConsentTab />}
