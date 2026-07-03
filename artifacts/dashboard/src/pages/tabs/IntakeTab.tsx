@@ -248,148 +248,7 @@ export default function IntakeTab() {
         </div>
       </CollapsibleCard>
 
-      {/* ── 2. CHIEF COMPLAINT / REASON FOR VISIT ───────────────────────────── */}
-      <CollapsibleCard
-        title="Chief complaint / reason for visit"
-        badge={symptoms.length > 0 ? `${symptoms.length} symptom${symptoms.length !== 1 ? 's' : ''}` : undefined}
-        badgeVariant={symptoms.length > 0 ? 'default' : undefined}
-      >
-        <SmartSymptomPicker />
-
-        <div className="form-grid cols-2" style={{ marginTop: 12 }}>
-          <div className="fld">
-            <label>Duration of symptoms (days)</label>
-            <input type="number" inputMode="numeric" min={0} step={1} value={durationDays} onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 3" />
-          </div>
-          <div className="fld">
-            <label>Pain score (0–10)</label>
-            <input type="number" inputMode="numeric" min={0} max={10} step={1} value={painScore}
-              onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setPainScore(v && Number(v) > 10 ? '10' : v); }}
-              placeholder="0-10"
-              className={painScore && Number(painScore) >= 8 ? 'danger' : painScore && Number(painScore) >= 5 ? 'warn' : ''} />
-          </div>
-        </div>
-
-        <div className="check-row" style={{ marginTop: 8 }}>
-          <label>
-            <input type="checkbox" checked={isPostOp} onChange={e => setIsPostOp(e.target.checked)} />
-            Post-op / recent procedure
-          </label>
-          <label>
-            <input type="checkbox" checked={pregnancyPossible} onChange={e => setPregnancyPossible(e.target.checked)} />
-            Pregnancy possible
-          </label>
-          {isPostOp && (
-            <div className="inline-field">
-              <span>Days since op:</span>
-              <input type="number" inputMode="numeric" min={0} step={1} value={postOpDays} onChange={e => setPostOpDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="days" />
-            </div>
-          )}
-        </div>
-
-        <div className="fld" style={{ marginTop: 10 }}>
-          <label>Patient message / additional notes</label>
-          <textarea
-            value={freeText}
-            onChange={e => setFreeText(e.target.value)}
-            placeholder="Paste patient email or WhatsApp message here, or add presenting history notes…"
-            style={{ minHeight: 80 }}
-          />
-        </div>
-      </CollapsibleCard>
-
-      {/* Clinical pathway suggestions — shown when specific combos detected */}
-      <PathwaySuggestions />
-
-      {/* ── 3. VITAL SIGNS ──────────────────────────────────────────────────── */}
-      <CollapsibleCard title="Vital signs" badge={triageResult.vitalRedFlags.length > 0 ? `${triageResult.vitalRedFlags.length} alert` : 'optional'} badgeVariant={triageResult.vitalRedFlags.length > 0 ? 'danger' : 'default'}>
-        <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 8px' }}>
-          Scroll wheel to set value · or type directly below each wheel
-        </p>
-        <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
-          <div style={{ display: 'flex', gap: 10, minWidth: 'max-content' }}>
-            {VITAL_FIELDS.map(({ key, label, unit, placeholder, min, max, step, decimals, defaultVal, normalRange }) => {
-              const val = vitals[key];
-              const isAbnormal = val.trim() !== '' && Number.isFinite(parseFloat(val)) &&
-                (parseFloat(val) < normalRange[0] || parseFloat(val) > normalRange[1]);
-              return (
-                <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 78 }}>
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
-                    textTransform: 'uppercase',
-                    color: isAbnormal ? '#dc2626' : 'var(--muted)',
-                  }}>
-                    {label}
-                  </span>
-
-                  <WheelPicker
-                    value={val}
-                    onChange={v => updateVital(key, v)}
-                    min={min} max={max} step={step}
-                    decimals={decimals}
-                    defaultVal={defaultVal}
-                    normalRange={normalRange}
-                  />
-
-                  <input
-                    inputMode="decimal"
-                    value={val}
-                    onChange={e => updateVital(key, e.target.value)}
-                    placeholder={placeholder}
-                    style={{
-                      width: 70,
-                      fontSize: 12,
-                      padding: '4px 5px',
-                      textAlign: 'center',
-                      borderRadius: 6,
-                      border: `1.5px solid ${isAbnormal ? '#fca5a5' : '#d1d5db'}`,
-                      background: isAbnormal ? '#fff5f5' : 'var(--bg)',
-                      color: isAbnormal ? '#dc2626' : 'var(--ink)',
-                      outline: 'none',
-                    }}
-                  />
-
-                  <span style={{
-                    fontSize: 9, color: isAbnormal ? '#dc2626' : 'var(--muted)',
-                    fontWeight: isAbnormal ? 700 : 400,
-                  }}>
-                    {isAbnormal ? '⚠ ' : ''}{unit}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        {triageResult.vitalRedFlags.length > 0 && (
-          <div className="vital-flags" style={{ marginTop: 8 }}>
-            {triageResult.vitalRedFlags.map(f => (
-              <span key={f.label} className={`vflag ${f.severity}`}>{f.label}: {f.value}</span>
-            ))}
-          </div>
-        )}
-        <div className="form-grid cols-2" style={{ marginTop: 10 }}>
-          <div className="fld">
-            <label>Weight (kg)</label>
-            <input inputMode="decimal" value={weightKg} onChange={e => setWeightKg(e.target.value)} placeholder="e.g. 72" />
-          </div>
-          <div className="fld">
-            <label>Height (cm)</label>
-            <input inputMode="decimal" value={heightCm} onChange={e => setHeightCm(e.target.value)} placeholder="e.g. 165" />
-          </div>
-        </div>
-        {calcBmi() && (() => {
-          const b = calcBmi()!;
-          return (
-            <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 8, background: `${b.color}15`, border: `1px solid ${b.color}40`, display: 'flex', gap: 12, alignItems: 'center' }}>
-              <span style={{ fontWeight: 700, fontSize: 15, color: b.color }}>BMI {b.bmi.toFixed(1)}</span>
-              <span style={{ fontWeight: 600, color: b.color, fontSize: 13 }}>{b.class}</span>
-              <span style={{ color: '#6b7280', fontSize: 12, flex: 1 }}>{b.rec}</span>
-            </div>
-          );
-        })()}
-      </CollapsibleCard>
-
-      {/* ── 4. CONTACT & ADMINISTRATIVE (collapsed by default) ──────────────── */}
+      {/* ── 2. CONTACT & ADMINISTRATIVE ─────────────────────────────────────── */}
       <CollapsibleCard title="Contact &amp; administrative details" defaultOpen={false}>
         <div className="form-grid">
           {/* Address / community picker */}
@@ -476,6 +335,165 @@ export default function IntakeTab() {
             <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
           </div>
         </div>
+      </CollapsibleCard>
+
+      {/* ── 3. CHIEF COMPLAINT / REASON FOR VISIT ───────────────────────────── */}
+      <CollapsibleCard
+        title="Chief complaint / reason for visit"
+        badge={symptoms.length > 0 ? `${symptoms.length} symptom${symptoms.length !== 1 ? 's' : ''}` : undefined}
+        badgeVariant={symptoms.length > 0 ? 'default' : undefined}
+      >
+        <SmartSymptomPicker />
+
+        <div className="form-grid cols-2" style={{ marginTop: 12 }}>
+          <div className="fld">
+            <label>Duration of symptoms (days)</label>
+            <input type="number" inputMode="numeric" min={0} step={1} value={durationDays} onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 3" />
+          </div>
+          <div className="fld">
+            <label>Pain score (0–10)</label>
+            <input type="number" inputMode="numeric" min={0} max={10} step={1} value={painScore}
+              onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setPainScore(v && Number(v) > 10 ? '10' : v); }}
+              placeholder="0-10"
+              className={painScore && Number(painScore) >= 8 ? 'danger' : painScore && Number(painScore) >= 5 ? 'warn' : ''} />
+          </div>
+        </div>
+
+        <div className="check-row" style={{ marginTop: 8 }}>
+          <label>
+            <input type="checkbox" checked={isPostOp} onChange={e => setIsPostOp(e.target.checked)} />
+            Post-op / recent procedure
+          </label>
+          <label>
+            <input type="checkbox" checked={pregnancyPossible} onChange={e => setPregnancyPossible(e.target.checked)} />
+            Pregnancy possible
+          </label>
+          {isPostOp && (
+            <div className="inline-field">
+              <span>Days since op:</span>
+              <input type="number" inputMode="numeric" min={0} step={1} value={postOpDays} onChange={e => setPostOpDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="days" />
+            </div>
+          )}
+        </div>
+
+        <div className="fld" style={{ marginTop: 10 }}>
+          <label>Patient message / additional notes</label>
+          <textarea
+            value={freeText}
+            onChange={e => setFreeText(e.target.value)}
+            placeholder="Paste patient email or WhatsApp message here, or add presenting history notes…"
+            style={{ minHeight: 80 }}
+          />
+        </div>
+      </CollapsibleCard>
+
+      {/* Clinical pathway suggestions — shown when specific combos detected */}
+      <PathwaySuggestions />
+
+      {/* ── 3. VITAL SIGNS ──────────────────────────────────────────────────── */}
+      <CollapsibleCard title="Vital signs" badge={triageResult.vitalRedFlags.length > 0 ? `${triageResult.vitalRedFlags.length} alert` : 'optional'} badgeVariant={triageResult.vitalRedFlags.length > 0 ? 'danger' : 'default'}>
+        <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 8px' }}>
+          Scroll wheel to set value · or type directly below each wheel
+        </p>
+        <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
+          <div style={{ display: 'flex', gap: 0, alignItems: 'flex-start', minWidth: 'max-content' }}>
+            {/* Vital signs */}
+            <div style={{ display: 'flex', gap: 10 }}>
+              {VITAL_FIELDS.map(({ key, label, unit, placeholder, min, max, step, decimals, defaultVal, normalRange }) => {
+                const val = vitals[key];
+                const isAbnormal = val.trim() !== '' && Number.isFinite(parseFloat(val)) &&
+                  (parseFloat(val) < normalRange[0] || parseFloat(val) > normalRange[1]);
+                return (
+                  <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 78 }}>
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
+                      color: isAbnormal ? '#dc2626' : 'var(--muted)',
+                    }}>
+                      {label}
+                    </span>
+                    <WheelPicker
+                      value={val}
+                      onChange={v => updateVital(key, v)}
+                      min={min} max={max} step={step}
+                      decimals={decimals}
+                      defaultVal={defaultVal}
+                      normalRange={normalRange}
+                    />
+                    <input
+                      inputMode="decimal"
+                      value={val}
+                      onChange={e => updateVital(key, e.target.value)}
+                      placeholder={placeholder}
+                      style={{
+                        width: 70, fontSize: 12, padding: '4px 5px', textAlign: 'center',
+                        borderRadius: 6, border: `1.5px solid ${isAbnormal ? '#fca5a5' : '#d1d5db'}`,
+                        background: isAbnormal ? '#fff5f5' : 'var(--bg)',
+                        color: isAbnormal ? '#dc2626' : 'var(--ink)', outline: 'none',
+                      }}
+                    />
+                    <span style={{ fontSize: 9, color: isAbnormal ? '#dc2626' : 'var(--muted)', fontWeight: isAbnormal ? 700 : 400 }}>
+                      {isAbnormal ? '⚠ ' : ''}{unit}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Separator */}
+            <div style={{ width: 1, background: '#e2e8f0', alignSelf: 'stretch', margin: '0 16px', minHeight: 130, flexShrink: 0 }} />
+
+            {/* Anthropometrics: Weight + Height */}
+            <div style={{ display: 'flex', gap: 10 }}>
+              {[
+                { label: 'Wt', unit: 'kg', value: weightKg, onChange: setWeightKg, min: 20, max: 300, step: 0.5, decimals: 1, defaultVal: 70, placeholder: 'kg' },
+                { label: 'Ht', unit: 'cm', value: heightCm, onChange: setHeightCm, min: 50, max: 220, step: 1,   decimals: 0, defaultVal: 165, placeholder: 'cm' },
+              ].map(f => (
+                <div key={f.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 78 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)' }}>
+                    {f.label}
+                  </span>
+                  <WheelPicker
+                    value={f.value}
+                    onChange={f.onChange}
+                    min={f.min} max={f.max} step={f.step}
+                    decimals={f.decimals} defaultVal={f.defaultVal}
+                    normalRange={[f.min, f.max]}
+                  />
+                  <input
+                    inputMode="decimal"
+                    value={f.value}
+                    onChange={e => f.onChange(e.target.value)}
+                    placeholder={f.placeholder}
+                    style={{
+                      width: 70, fontSize: 12, padding: '4px 5px', textAlign: 'center',
+                      borderRadius: 6, border: '1.5px solid #d1d5db',
+                      background: 'var(--bg)', color: 'var(--ink)', outline: 'none',
+                    }}
+                  />
+                  <span style={{ fontSize: 9, color: 'var(--muted)' }}>{f.unit}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        {triageResult.vitalRedFlags.length > 0 && (
+          <div className="vital-flags" style={{ marginTop: 8 }}>
+            {triageResult.vitalRedFlags.map(f => (
+              <span key={f.label} className={`vflag ${f.severity}`}>{f.label}: {f.value}</span>
+            ))}
+          </div>
+        )}
+        {calcBmi() && (() => {
+          const b = calcBmi()!;
+          return (
+            <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 8, background: `${b.color}15`, border: `1px solid ${b.color}40`, display: 'flex', gap: 12, alignItems: 'center' }}>
+              <span style={{ fontWeight: 700, fontSize: 15, color: b.color }}>BMI {b.bmi.toFixed(1)}</span>
+              <span style={{ fontWeight: 600, color: b.color, fontSize: 13 }}>{b.class}</span>
+              <span style={{ color: '#6b7280', fontSize: 12, flex: 1 }}>{b.rec}</span>
+            </div>
+          );
+        })()}
       </CollapsibleCard>
 
       {/* ── 5. INPATIENT ADMISSION DETAILS ──────────────────────────────────── */}
