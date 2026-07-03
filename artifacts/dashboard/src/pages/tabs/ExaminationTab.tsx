@@ -2,6 +2,7 @@ import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import AnatomicalSketch from '@/components/AnatomicalSketch';
 import ExamPhotoPanel from '@/components/ExamPhotoPanel';
+import WoundAssessmentCard from '@/components/WoundAssessmentCard';
 
 interface ExamSystem {
   key: string;
@@ -195,6 +196,8 @@ export default function ExaminationTab() {
           })}
         </div>
       </CollapsibleCard>
+
+      <WoundAssessmentCard />
     </div>
   );
 }

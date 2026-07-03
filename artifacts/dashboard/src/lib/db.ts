@@ -1511,3 +1511,122 @@ export async function removePatientProblem(problemId: string): Promise<{ error: 
     .eq('id', problemId);
   return { error: error?.message ?? null };
 }
+
+// ── Wound assessments ───────────────────────────────────────────────────────
+
+export type WoundClass = 'clean' | 'clean_contaminated' | 'contaminated' | 'dirty';
+export type WoundClosure = 'primary' | 'secondary' | 'delayed_primary' | 'vac' | 'open';
+export type WoundStatus = 'healing' | 'superficial_ssi' | 'deep_ssi' | 'dehiscence' | 'seroma' | 'haematoma' | 'necrosis' | 'closed';
+export type DrainStatus = 'none' | 'in_situ' | 'removed';
+
+export interface AsepsisDetails {
+  serous: number;       // % wound with serous discharge (0,<20,20-39,40-59,60-79,>=80 → 0,1,2,3,4,5)
+  erythema: number;     // same bands → 0,1,2,3,4,5
+  purulent: number;     // bands → 0,2,4,6,8,10
+  separation: number;   // bands → 0,2,4,6,8,10
+  isolatedBacteria: boolean;
+  prolongedStay: boolean;
+  additionalTx: 0 | 5 | 10 | 15;  // 0=none, 5=antibiotics, 10=drainage LA, 15=debridement GA
+}
+
+export interface WoundAssessment {
+  id: string;
+  label: string;
+  location: string;
+  woundClass: WoundClass | '';
+  closure: WoundClosure | '';
+  status: WoundStatus;
+  dressing: string;
+  drain: DrainStatus;
+  drainOutputMl: string;
+  asepsisScore: number;
+  asepsisDetails: AsepsisDetails;
+  notes: string;
+  assessedDate: string;
+}
+
+export function calcAsepsisScore(d: AsepsisDetails): number {
+  return d.serous + d.erythema + d.purulent + d.separation +
+    (d.isolatedBacteria ? 10 : 0) +
+    (d.prolongedStay ? 5 : 0) +
+    d.additionalTx;
+}
+
+export function emptyWound(label = 'Wound'): WoundAssessment {
+  return {
+    id: `tmp-${Date.now()}`,
+    label,
+    location: '',
+    woundClass: '',
+    closure: '',
+    status: 'healing',
+    dressing: '',
+    drain: 'none',
+    drainOutputMl: '',
+    asepsisScore: 0,
+    asepsisDetails: { serous: 0, erythema: 0, purulent: 0, separation: 0, isolatedBacteria: false, prolongedStay: false, additionalTx: 0 },
+    notes: '',
+    assessedDate: new Date().toISOString().slice(0, 10),
+  };
+}
+
+export async function saveWoundAssessment(
+  patientId: string,
+  encounterId: string | null,
+  wound: WoundAssessment,
+): Promise<{ id: string | null; error: string | null }> {
+  if (!supabase) return { id: null, error: notConfigured('saveWoundAssessment') };
+  const row = {
+    patient_id:      patientId,
+    encounter_id:    encounterId ?? null,
+    label:           wound.label,
+    location:        wound.location || null,
+    wound_class:     wound.woundClass || null,
+    closure:         wound.closure || null,
+    status:          wound.status,
+    dressing:        wound.dressing || null,
+    drain:           wound.drain,
+    drain_output_ml: wound.drainOutputMl ? parseInt(wound.drainOutputMl) : null,
+    asepsis_score:   wound.asepsisScore,
+    asepsis_details: wound.asepsisDetails as unknown as Record<string, unknown>,
+    notes:           wound.notes || null,
+    assessed_date:   wound.assessedDate,
+    updated_at:      new Date().toISOString(),
+  };
+  if (wound.id.startsWith('tmp-')) {
+    const { data, error } = await supabase.from('wound_assessments').insert(row).select('id').single();
+    if (error) return { id: null, error: error.message };
+    return { id: (data as Record<string, string>).id, error: null };
+  }
+  const { error } = await supabase.from('wound_assessments').update(row).eq('id', wound.id);
+  return { id: wound.id, error: error?.message ?? null };
+}
+
+export async function loadWoundAssessments(patientId: string, encounterId?: string): Promise<WoundAssessment[]> {
+  if (!supabase) return [];
+  let q = supabase.from('wound_assessments').select('*').eq('patient_id', patientId);
+  if (encounterId) q = q.eq('encounter_id', encounterId);
+  const { data, error } = await q.order('assessed_date', { ascending: false });
+  if (error || !data) return [];
+  return (data as Array<Record<string, unknown>>).map(r => ({
+    id:            r.id as string,
+    label:         (r.label as string) ?? 'Wound',
+    location:      (r.location as string) ?? '',
+    woundClass:    (r.wound_class as WoundClass) ?? '',
+    closure:       (r.closure as WoundClosure) ?? '',
+    status:        (r.status as WoundStatus) ?? 'healing',
+    dressing:      (r.dressing as string) ?? '',
+    drain:         (r.drain as DrainStatus) ?? 'none',
+    drainOutputMl: r.drain_output_ml != null ? String(r.drain_output_ml) : '',
+    asepsisScore:  (r.asepsis_score as number) ?? 0,
+    asepsisDetails:(r.asepsis_details as AsepsisDetails) ?? { serous: 0, erythema: 0, purulent: 0, separation: 0, isolatedBacteria: false, prolongedStay: false, additionalTx: 0 },
+    notes:         (r.notes as string) ?? '',
+    assessedDate:  (r.assessed_date as string) ?? new Date().toISOString().slice(0, 10),
+  }));
+}
+
+export async function deleteWoundAssessment(woundId: string): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('deleteWoundAssessment') };
+  const { error } = await supabase.from('wound_assessments').delete().eq('id', woundId);
+  return { error: error?.message ?? null };
+}

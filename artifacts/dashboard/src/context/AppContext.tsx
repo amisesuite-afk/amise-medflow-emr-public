@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -303,6 +303,12 @@ interface CtxValue {
   updateProblemStatus(id: string, status: PatientProblem['status']): Promise<void>;
   deleteProblem(id: string): Promise<void>;
 
+  /** Wound assessments for current encounter. */
+  wounds: WoundAssessment[];
+  setWounds: React.Dispatch<React.SetStateAction<WoundAssessment[]>>;
+  saveWound(wound: WoundAssessment): Promise<void>;
+  removeWound(id: string): Promise<void>;
+
   /** Global save status for autosave operations. */
   saveStatus: 'idle' | 'saving' | 'saved' | 'error';
   lastSaveError: string | null;
@@ -441,6 +447,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [traumaData, setTraumaData] = useState<TraumaData>(EMPTY_TRAUMA_DATA);
 
   const [problems, setProblems] = useState<PatientProblem[]>([]);
+  const [wounds, setWounds] = useState<WoundAssessment[]>([]);
 
   // ── Global save status tracking ───────────────────────────────────────────
   const [saveStatus, _setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -684,6 +691,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPaneState(null); setPaneTop([]); setPaneConverged(false);
     setTraumaData(EMPTY_TRAUMA_DATA);
     setProblems([]);
+    setWounds([]);
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
@@ -726,6 +734,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId) { setProblems([]); return; }
     void loadPatientProblems(patientId).then(setProblems);
   }, [patientId]);
+
+  // ── Load wound assessments whenever encounter changes ─────────────────────
+  useEffect(() => {
+    if (!patientId || !encounterId) { setWounds([]); return; }
+    void loadWoundAssessments(patientId, encounterId).then(setWounds);
+  }, [patientId, encounterId]);
 
   // ── Autosave doctor clinical data to Supabase (debounced 2 s) ────────────
   useEffect(() => {
@@ -1035,6 +1049,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setProblems(prev => prev.filter(p => p.id !== id));
       const { error } = await removePatientProblem(id);
       if (error) console.error('[problems] delete error:', error);
+    },
+    wounds,
+    setWounds,
+    saveWound: async (wound) => {
+      if (!patientId) return;
+      const { id, error } = await saveWoundAssessment(patientId, encounterId, wound);
+      if (error) { console.error('[wounds] save error:', error); return; }
+      if (id && wound.id.startsWith('tmp-')) {
+        setWounds(prev => prev.map(w => w.id === wound.id ? { ...w, id } : w));
+      }
+    },
+    removeWound: async (id) => {
+      setWounds(prev => prev.filter(w => w.id !== id));
+      if (!id.startsWith('tmp-')) {
+        const { error } = await deleteWoundAssessment(id);
+        if (error) console.error('[wounds] delete error:', error);
+      }
     },
     saveStatus,
     lastSaveError,
