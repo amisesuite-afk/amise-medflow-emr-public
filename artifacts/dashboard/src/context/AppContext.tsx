@@ -244,6 +244,9 @@ interface CtxValue {
 
   weightKg: string; setWeightKg(v: string): void;
   heightCm: string; setHeightCm(v: string): void;
+  waistCm: string; setWaistCm(v: string): void;
+  hipCm: string; setHipCm(v: string): void;
+  muacCm: string; setMuacCm(v: string): void;
 
   anatomicalFindings: AnatomicalFinding[]; setAnatomicalFindings(v: AnatomicalFinding[]): void;
   rosFindings: Record<string, RosFinding>; setRosFindings(v: Record<string, RosFinding>): void;
@@ -406,6 +409,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [weightKg, setWeightKg] = useState('');
   const [heightCm, setHeightCm] = useState('');
+  const [waistCm, setWaistCm] = useState('');
+  const [hipCm, setHipCm] = useState('');
+  const [muacCm, setMuacCm] = useState('');
   const [anatomicalFindings, setAnatomicalFindings] = useState<AnatomicalFinding[]>([]);
   const [rosFindings, setRosFindings] = useState<Record<string, RosFinding>>({});
   const [procedureData, setProcedureData] = useState<Record<string, unknown>>({});
@@ -545,6 +551,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.cptCodes)) setCptCodes(d.cptCodes as string[]);
       if (typeof d.weightKg === 'string') setWeightKg(d.weightKg);
       if (typeof d.heightCm === 'string') setHeightCm(d.heightCm);
+      if (typeof d.waistCm === 'string') setWaistCm(d.waistCm);
+      if (typeof d.hipCm === 'string') setHipCm(d.hipCm);
+      if (typeof d.muacCm === 'string') setMuacCm(d.muacCm);
       if (Array.isArray(d.anatomicalFindings)) setAnatomicalFindings(d.anatomicalFindings as AnatomicalFinding[]);
       if (d.rosFindings && typeof d.rosFindings === 'object') setRosFindings(d.rosFindings as Record<string, RosFinding>);
       if (d.procedureData && typeof d.procedureData === 'object') setProcedureData(d.procedureData as Record<string, unknown>);
@@ -603,7 +612,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       medications, medicationsText, allergies, familyHistory, toxicHabits, occupation, hpiNotes,
       patientName, age, sex, dob, phone, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
-      weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
+      weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
       radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords,
       encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
@@ -624,7 +633,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     medications, medicationsText, allergies, familyHistory, toxicHabits, occupation, hpiNotes,
     patientName, age, sex, dob, phone, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
-    weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
+    weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
     radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
     encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
     nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData,
@@ -678,7 +687,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setExamFindings({}); setExamNotes({});
     setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]); setCptCodes([]);
     setAddress(''); setQuarter(''); setReferredBy('');
-    setWeightKg(''); setHeightCm(''); setAnatomicalFindings([]);
+    setWeightKg(''); setHeightCm(''); setWaistCm(''); setHipCm(''); setMuacCm(''); setAnatomicalFindings([]);
     setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
@@ -1002,6 +1011,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     preAuthStatus, setPreAuthStatus,
     weightKg, setWeightKg,
     heightCm, setHeightCm,
+    waistCm, setWaistCm,
+    hipCm, setHipCm,
+    muacCm, setMuacCm,
     anatomicalFindings, setAnatomicalFindings,
     rosFindings, setRosFindings,
     procedureData, setProcedureData,

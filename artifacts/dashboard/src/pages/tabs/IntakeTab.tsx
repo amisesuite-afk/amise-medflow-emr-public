@@ -67,6 +67,9 @@ export default function IntakeTab() {
     currentSite,
     weightKg, setWeightKg,
     heightCm, setHeightCm,
+    waistCm, setWaistCm,
+    hipCm, setHipCm,
+    muacCm, setMuacCm,
     encounterMode,
     mrNumber, setMrNumber,
     ward, setWard,
@@ -401,7 +404,7 @@ export default function IntakeTab() {
           Scroll wheel to set value · or type directly below each wheel
         </p>
         <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
-          <div style={{ display: 'flex', gap: 0, alignItems: 'flex-start', minWidth: 'max-content' }}>
+          <div style={{ display: 'flex', gap: 0, alignItems: 'stretch', minWidth: 'max-content' }}>
             {/* Vital signs */}
             <div style={{ display: 'flex', gap: 10 }}>
               {VITAL_FIELDS.map(({ key, label, unit, placeholder, min, max, step, decimals, defaultVal, normalRange }) => {
@@ -446,13 +449,16 @@ export default function IntakeTab() {
             </div>
 
             {/* Separator */}
-            <div style={{ width: 1, background: '#e2e8f0', alignSelf: 'stretch', margin: '0 16px', minHeight: 130, flexShrink: 0 }} />
+            <div style={{ width: 1, background: '#e2e8f0', margin: '0 16px', flexShrink: 0 }} />
 
-            {/* Anthropometrics: Weight + Height */}
-            <div style={{ display: 'flex', gap: 10 }}>
+            {/* Anthropometrics */}
+            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
               {[
-                { label: 'Wt', unit: 'kg', value: weightKg, onChange: setWeightKg, min: 20, max: 300, step: 0.5, decimals: 1, defaultVal: 70, placeholder: 'kg' },
-                { label: 'Ht', unit: 'cm', value: heightCm, onChange: setHeightCm, min: 50, max: 220, step: 1,   decimals: 0, defaultVal: 165, placeholder: 'cm' },
+                { label: 'Wt',    unit: 'kg', value: weightKg, onChange: setWeightKg, min: 20,  max: 300, step: 0.5, decimals: 1, defaultVal: 70  },
+                { label: 'Ht',    unit: 'cm', value: heightCm, onChange: setHeightCm, min: 50,  max: 220, step: 1,   decimals: 0, defaultVal: 165 },
+                { label: 'Waist', unit: 'cm', value: waistCm,  onChange: setWaistCm,  min: 40,  max: 200, step: 0.5, decimals: 1, defaultVal: 88  },
+                { label: 'Hip',   unit: 'cm', value: hipCm,    onChange: setHipCm,    min: 40,  max: 200, step: 0.5, decimals: 1, defaultVal: 100 },
+                { label: 'MUAC',  unit: 'cm', value: muacCm,   onChange: setMuacCm,   min: 10,  max: 60,  step: 0.5, decimals: 1, defaultVal: 28  },
               ].map(f => (
                 <div key={f.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 78 }}>
                   <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)' }}>
@@ -469,7 +475,7 @@ export default function IntakeTab() {
                     inputMode="decimal"
                     value={f.value}
                     onChange={e => f.onChange(e.target.value)}
-                    placeholder={f.placeholder}
+                    placeholder={f.unit}
                     style={{
                       width: 70, fontSize: 12, padding: '4px 5px', textAlign: 'center',
                       borderRadius: 6, border: '1.5px solid #d1d5db',
@@ -496,6 +502,46 @@ export default function IntakeTab() {
               <span style={{ fontWeight: 700, fontSize: 15, color: b.color }}>BMI {b.bmi.toFixed(1)}</span>
               <span style={{ fontWeight: 600, color: b.color, fontSize: 13 }}>{b.class}</span>
               <span style={{ color: '#6b7280', fontSize: 12, flex: 1 }}>{b.rec}</span>
+            </div>
+          );
+        })()}
+        {(() => {
+          const w = parseFloat(waistCm), h = parseFloat(hipCm), muac = parseFloat(muacCm);
+          const items: React.ReactNode[] = [];
+          if (w && h && h > 0) {
+            const ratio = w / h;
+            const sex_ = sex === 'female' ? 'female' : 'male';
+            const highRisk = sex_ === 'male' ? ratio > 0.9 : ratio > 0.85;
+            const color = highRisk ? '#dc2626' : '#16a34a';
+            items.push(
+              <span key="whr" style={{ fontWeight: 600, fontSize: 12, color }}>
+                WHR {ratio.toFixed(2)} — {highRisk ? '⚠ High cardiovascular risk' : 'Normal'}
+              </span>
+            );
+          }
+          if (w) {
+            const sex_ = sex === 'female' ? 'female' : 'male';
+            const highWaist = sex_ === 'male' ? w >= 94 : w >= 80;
+            const vHighWaist = sex_ === 'male' ? w >= 102 : w >= 88;
+            const wColor = vHighWaist ? '#dc2626' : highWaist ? '#ea580c' : '#16a34a';
+            items.push(
+              <span key="waist" style={{ fontWeight: 600, fontSize: 12, color: wColor }}>
+                Waist {w} cm — {vHighWaist ? '⚠ Very high metabolic risk' : highWaist ? 'Elevated metabolic risk' : 'Normal'}
+              </span>
+            );
+          }
+          if (muac) {
+            const malnutrition = muac < 23.5;
+            items.push(
+              <span key="muac" style={{ fontWeight: 600, fontSize: 12, color: malnutrition ? '#dc2626' : '#374151' }}>
+                MUAC {muac} cm{malnutrition ? ' — ⚠ Nutritional risk (pre-op assessment recommended)' : ''}
+              </span>
+            );
+          }
+          if (!items.length) return null;
+          return (
+            <div style={{ marginTop: 6, padding: '7px 12px', borderRadius: 8, background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', flexWrap: 'wrap', gap: '4px 16px' }}>
+              {items}
             </div>
           );
         })()}
