@@ -204,8 +204,9 @@ export default function IntakeTab() {
 
   return (
     <div className="gap-y">
-      {/* Patient demographics */}
-      <CollapsibleCard title="Patient" badge={triageResult.missingCriticalFields.length > 0 ? `${triageResult.missingCriticalFields.length} missing` : undefined} badgeVariant={triageResult.missingCriticalFields.length > 0 ? 'warn' : 'default'}>
+
+      {/* ── 1. PATIENT IDENTITY ──────────────────────────────────────────────── */}
+      <CollapsibleCard title="Patient identity" badge={triageResult.missingCriticalFields.length > 0 ? `${triageResult.missingCriticalFields.length} missing` : undefined} badgeVariant={triageResult.missingCriticalFields.length > 0 ? 'warn' : 'default'}>
         <PatientPhotoCapture />
         <div className="form-grid" style={{ marginTop: 10 }}>
           <div className="fld">
@@ -244,115 +245,20 @@ export default function IntakeTab() {
               </span>
             )}
           </div>
+        </div>
+      </CollapsibleCard>
 
-          {/* Address / community picker */}
-          <div className="fld" ref={addressRef} style={{ position: 'relative' }}>
-            <label>Community / Address</label>
-            <input
-              type="text"
-              value={addressQuery}
-              onChange={e => { setAddressQuery(e.target.value); setAddressOpen(true); }}
-              onFocus={() => setAddressOpen(true)}
-              placeholder="e.g. Rodney Bay, Gros Islet…"
-            />
-            {quarter && (
-              <span style={{ fontSize: 11, color: '#6b7280', marginTop: 2, display: 'block' }}>
-                Quarter: {quarter}
-              </span>
-            )}
-            {addressOpen && filteredCommunities.length > 0 && (
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                zIndex: 50,
-                background: '#fff',
-                border: '1px solid #e5e7eb',
-                borderRadius: 8,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                maxHeight: 220,
-                overflowY: 'auto',
-                marginTop: 2,
-              }}>
-                {filteredCommunities.map(c => (
-                  <button
-                    key={`${c.quarter}-${c.community}`}
-                    type="button"
-                    onMouseDown={() => selectCommunity(c)}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      padding: '7px 12px',
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      borderBottom: '1px solid #f3f4f6',
-                      fontSize: 13,
-                    }}
-                  >
-                    <span>{c.community}</span>
-                    <span style={{ color: '#9ca3af', fontSize: 11 }}>{c.quarter}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+      {/* ── 2. CHIEF COMPLAINT / REASON FOR VISIT ───────────────────────────── */}
+      <CollapsibleCard
+        title="Chief complaint / reason for visit"
+        badge={symptoms.length > 0 ? `${symptoms.length} symptom${symptoms.length !== 1 ? 's' : ''}` : undefined}
+        badgeVariant={symptoms.length > 0 ? 'default' : undefined}
+      >
+        <SmartSymptomPicker />
 
-          {/* Referred by */}
-          <div className="fld" ref={referralRef} style={{ position: 'relative' }}>
-            <label>Referred by</label>
-            <input
-              type="text"
-              value={referralQuery}
-              onChange={e => { setReferralQuery(e.target.value); setReferredBy(e.target.value); setReferralOpen(true); }}
-              onFocus={() => setReferralOpen(true)}
-              placeholder="Doctor or facility name…"
-            />
-            {referralOpen && filteredDoctors.length > 0 && (
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                zIndex: 50,
-                background: '#fff',
-                border: '1px solid #e5e7eb',
-                borderRadius: 8,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                maxHeight: 220,
-                overflowY: 'auto',
-                marginTop: 2,
-              }}>
-                {filteredDoctors.map(d => (
-                  <button
-                    key={d.name}
-                    type="button"
-                    onMouseDown={() => { setReferredBy(d.name); setReferralQuery(d.name); setReferralOpen(false); }}
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      width: '100%',
-                      padding: '7px 12px',
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      borderBottom: '1px solid #f3f4f6',
-                    }}
-                  >
-                    <span style={{ fontSize: 13, fontWeight: 500 }}>{d.name}</span>
-                    <span style={{ fontSize: 11, color: '#6b7280' }}>{d.specialty}{d.institution ? ` · ${d.institution}` : ''}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
+        <div className="form-grid cols-2" style={{ marginTop: 12 }}>
           <div className="fld">
-            <label>Duration (days)</label>
+            <label>Duration of symptoms (days)</label>
             <input type="number" inputMode="numeric" min={0} step={1} value={durationDays} onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 3" />
           </div>
           <div className="fld">
@@ -363,7 +269,8 @@ export default function IntakeTab() {
               className={painScore && Number(painScore) >= 8 ? 'danger' : painScore && Number(painScore) >= 5 ? 'warn' : ''} />
           </div>
         </div>
-        <div className="check-row" style={{ marginTop: 10 }}>
+
+        <div className="check-row" style={{ marginTop: 8 }}>
           <label>
             <input type="checkbox" checked={isPostOp} onChange={e => setIsPostOp(e.target.checked)} />
             Post-op / recent procedure
@@ -379,9 +286,22 @@ export default function IntakeTab() {
             </div>
           )}
         </div>
+
+        <div className="fld" style={{ marginTop: 10 }}>
+          <label>Patient message / additional notes</label>
+          <textarea
+            value={freeText}
+            onChange={e => setFreeText(e.target.value)}
+            placeholder="Paste patient email or WhatsApp message here, or add presenting history notes…"
+            style={{ minHeight: 80 }}
+          />
+        </div>
       </CollapsibleCard>
 
-      {/* Vital signs */}
+      {/* Clinical pathway suggestions — shown when specific combos detected */}
+      <PathwaySuggestions />
+
+      {/* ── 3. VITAL SIGNS ──────────────────────────────────────────────────── */}
       <CollapsibleCard title="Vital signs" badge={triageResult.vitalRedFlags.length > 0 ? `${triageResult.vitalRedFlags.length} alert` : 'optional'} badgeVariant={triageResult.vitalRedFlags.length > 0 ? 'danger' : 'default'}>
         <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 8px' }}>
           Scroll wheel to set value · or type directly below each wheel
@@ -469,31 +389,96 @@ export default function IntakeTab() {
         })()}
       </CollapsibleCard>
 
-      {/* Smart adaptive symptom picker + differential inference */}
-      <CollapsibleCard
-        title="Symptoms / reason for visit"
-        badge={symptoms.length || undefined}
-      >
-        <SmartSymptomPicker />
-      </CollapsibleCard>
+      {/* ── 4. CONTACT & ADMINISTRATIVE (collapsed by default) ──────────────── */}
+      <CollapsibleCard title="Contact &amp; administrative details" defaultOpen={false}>
+        <div className="form-grid">
+          {/* Address / community picker */}
+          <div className="fld" ref={addressRef} style={{ position: 'relative' }}>
+            <label>Community / Address</label>
+            <input
+              type="text"
+              value={addressQuery}
+              onChange={e => { setAddressQuery(e.target.value); setAddressOpen(true); }}
+              onFocus={() => setAddressOpen(true)}
+              placeholder="e.g. Rodney Bay, Gros Islet…"
+            />
+            {quarter && (
+              <span style={{ fontSize: 11, color: '#6b7280', marginTop: 2, display: 'block' }}>
+                Quarter: {quarter}
+              </span>
+            )}
+            {addressOpen && filteredCommunities.length > 0 && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+                background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)', maxHeight: 220, overflowY: 'auto', marginTop: 2,
+              }}>
+                {filteredCommunities.map(c => (
+                  <button
+                    key={`${c.quarter}-${c.community}`}
+                    type="button"
+                    onMouseDown={() => selectCommunity(c)}
+                    style={{
+                      display: 'flex', justifyContent: 'space-between', width: '100%',
+                      padding: '7px 12px', background: 'transparent', border: 'none',
+                      cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid #f3f4f6', fontSize: 13,
+                    }}
+                  >
+                    <span>{c.community}</span>
+                    <span style={{ color: '#9ca3af', fontSize: 11 }}>{c.quarter}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-      {/* Clinical pathway suggestions — shown when specific combos detected */}
-      <PathwaySuggestions />
+          {/* Referred by */}
+          <div className="fld" ref={referralRef} style={{ position: 'relative' }}>
+            <label>Referred by</label>
+            <input
+              type="text"
+              value={referralQuery}
+              onChange={e => { setReferralQuery(e.target.value); setReferredBy(e.target.value); setReferralOpen(true); }}
+              onFocus={() => setReferralOpen(true)}
+              placeholder="Doctor or facility name…"
+            />
+            {referralOpen && filteredDoctors.length > 0 && (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+                background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.12)', maxHeight: 220, overflowY: 'auto', marginTop: 2,
+              }}>
+                {filteredDoctors.map(d => (
+                  <button
+                    key={d.name}
+                    type="button"
+                    onMouseDown={() => { setReferredBy(d.name); setReferralQuery(d.name); setReferralOpen(false); }}
+                    style={{
+                      display: 'flex', flexDirection: 'column', width: '100%',
+                      padding: '7px 12px', background: 'transparent', border: 'none',
+                      cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid #f3f4f6',
+                    }}
+                  >
+                    <span style={{ fontSize: 13, fontWeight: 500 }}>{d.name}</span>
+                    <span style={{ fontSize: 11, color: '#6b7280' }}>{d.specialty}{d.institution ? ` · ${d.institution}` : ''}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-      {/* Free text */}
-      <CollapsibleCard title="Patient message / notes" defaultOpen={false}>
-        <div className="fld">
-          <label>Patient message (paste or type)</label>
-          <textarea
-            value={freeText}
-            onChange={e => setFreeText(e.target.value)}
-            placeholder="Paste patient email or WhatsApp message here…"
-            style={{ minHeight: 100 }}
-          />
+          <div className="fld">
+            <label>Insurance Provider</label>
+            <input value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="CLICO / GEL / Self-pay" />
+          </div>
+          <div className="fld">
+            <label>Policy / NHI Number</label>
+            <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
+          </div>
         </div>
       </CollapsibleCard>
 
-      {/* Inpatient admission details — only in inpatient mode */}
+      {/* ── 5. INPATIENT ADMISSION DETAILS ──────────────────────────────────── */}
       {encounterMode === 'inpatient' && (
         <CollapsibleCard title="Inpatient Admission Details" badge="Inpatient" badgeVariant="warn">
           <div className="form-grid">
@@ -527,14 +512,6 @@ export default function IntakeTab() {
             <div className="fld">
               <label>Referring Physician</label>
               <input value={referringPhysician} onChange={e => setReferringPhysician(e.target.value)} placeholder="Name / facility" />
-            </div>
-            <div className="fld">
-              <label>Insurance Provider</label>
-              <input value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="CLICO / GEL / Self-pay" />
-            </div>
-            <div className="fld">
-              <label>Policy / NHI Number</label>
-              <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
             </div>
           </div>
           <div className="form-grid" style={{ marginTop: 8 }}>
