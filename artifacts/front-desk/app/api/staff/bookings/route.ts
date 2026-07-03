@@ -8,7 +8,7 @@ export async function GET(): Promise<NextResponse> {
 
   const { data, error } = await getServiceClient()
     .from('appointment_requests')
-    .select('id, patient_name, appointment_type, location, preferred_slot, status, created_at, reason')
+    .select('id, patient_name, appointment_type, location, preferred_slot, status, created_at, reason, result_alert_email, result_alert_pending, result_alert_sent_at')
     .eq('source', 'staff')
     .gte('created_at', since)
     .order('created_at', { ascending: false })

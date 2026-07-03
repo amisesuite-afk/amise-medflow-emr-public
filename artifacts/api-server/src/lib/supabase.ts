@@ -62,7 +62,8 @@ export function requireCronSecret(req: any, res: any): boolean {
 export type AuditAction =
   | 'classify' | 'triage' | 'draft' | 'send' | 'book' | 'notify'
   | 'remind' | 'escalate' | 'error' | 'skip'
-  | 'portal_invite_sent' | 'extract' | 'change_request' | 'auto_cancel';
+  | 'portal_invite_sent' | 'extract' | 'change_request' | 'auto_cancel'
+  | 'lab_alert_sent';
 
 export async function audit(args: {
   action: AuditAction;

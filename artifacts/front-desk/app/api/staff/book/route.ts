@@ -123,21 +123,26 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   const sb = getServiceClient();
 
+  const hasLabAlert = payload.category === 'lab' && !!payload.result_alert_email?.trim();
+
   const { data: row, error } = await sb
     .from('appointment_requests')
     .insert({
-      patient_name:     payload.patient_name.trim(),
-      patient_email:    payload.patient_email?.trim() || null,
-      patient_phone:    payload.patient_phone?.trim() || null,
+      patient_name:          payload.patient_name.trim(),
+      patient_email:         payload.patient_email?.trim() || null,
+      patient_phone:         payload.patient_phone?.trim() || null,
+      patient_dob:           payload.patient_dob?.trim() || null,
       appointment_type,
       location,
       preferred_slot,
       reason,
-      triage_acuity:    payload.surgery_priority === 'emergency' ? 'emergency' :
-                        payload.surgery_priority === 'urgent'    ? 'urgent' :
-                        payload.consult_track   === 'urgent'     ? 'urgent' : 'routine',
-      status:           'staff_pending',
-      source:           'staff',
+      triage_acuity:         payload.surgery_priority === 'emergency' ? 'emergency' :
+                             payload.surgery_priority === 'urgent'    ? 'urgent' :
+                             payload.consult_track   === 'urgent'     ? 'urgent' : 'routine',
+      status:                'staff_pending',
+      source:                'staff',
+      result_alert_email:    hasLabAlert ? payload.result_alert_email!.trim() : null,
+      result_alert_pending:  false,
     })
     .select('id')
     .single();

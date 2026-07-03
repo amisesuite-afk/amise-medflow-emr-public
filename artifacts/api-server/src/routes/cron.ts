@@ -375,4 +375,70 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
   res.json({ processed: results.length, results });
 });
 
+// ── Lab result alerts ──────────────────────────────────────────────────────
+// Called by cron (or triggered manually). Finds lab appointment_requests where
+// result_alert_pending = true, result_alert_sent_at IS NULL, and result_alert_email
+// is set. Sends a plain email to the alert address and marks result_alert_sent_at.
+router.post('/api/cron/lab-alerts', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const now = new Date();
+  const supa = getSupabaseAdmin();
+
+  const { data: pending, error } = await supa
+    .from('appointment_requests')
+    .select('id, patient_name, appointment_type, preferred_slot, result_alert_email')
+    .eq('result_alert_pending', true)
+    .is('result_alert_sent_at', null)
+    .not('result_alert_email', 'is', null);
+
+  if (error) {
+    logger.error({ error }, '[cron/lab-alerts] db error');
+    res.status(502).json({ error: 'DB error' });
+    return;
+  }
+
+  const results: { id: string; action: string }[] = [];
+
+  for (const row of pending ?? []) {
+    try {
+      const dateLabel = row.preferred_slot
+        ? new Date(row.preferred_slot).toLocaleDateString('en-LC', { timeZone: 'America/St_Lucia', weekday: 'short', day: 'numeric', month: 'short' })
+        : 'recently';
+
+      const subject = `Lab results available — ${row.patient_name}`;
+      const body = [
+        `This is an automated notification from Amise Medical Services.`,
+        ``,
+        `Lab results are now available for:`,
+        `  Patient:    ${row.patient_name}`,
+        `  Test type:  ${(row.appointment_type as string).replace(/_/g, ' ')}`,
+        `  Collected:  ${dateLabel}`,
+        ``,
+        `Please review the results and follow up with the patient as clinically appropriate.`,
+        ``,
+        `-- Amise Medical Services`,
+        `   Saint Lucia`,
+      ].join('\n');
+
+      await sendOrDraft({ to: row.result_alert_email as string, subject, body }, 'auto');
+
+      await supa
+        .from('appointment_requests')
+        .update({ result_alert_pending: false, result_alert_sent_at: now.toISOString() })
+        .eq('id', row.id);
+
+      await audit({ action: 'lab_alert_sent', entityType: 'appointment_request', entityId: row.id, payload: { to: row.result_alert_email } });
+
+      results.push({ id: row.id, action: 'lab_alert_sent' });
+    } catch (err) {
+      logger.error({ error: err, id: row.id }, '[cron/lab-alerts] send error');
+      results.push({ id: row.id, action: 'error' });
+    }
+  }
+
+  logger.info({ count: results.length }, '[cron/lab-alerts] done');
+  res.json({ processed: results.length, results });
+});
+
 export default router;

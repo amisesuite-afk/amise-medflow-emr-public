@@ -96,20 +96,26 @@ export interface BookingRow {
   patient_name: string;
   patient_email: string | null;
   patient_phone: string | null;
+  patient_dob: string | null;
   appointment_type: string;
   location: string;
   preferred_slot: string | null;
   reason: string | null;
   triage_acuity: string | null;
   status: string;
+  source: string | null;
   notes: string | null;
   confirmed_slot: string | null;
   google_event_id: string | null;
+  result_alert_email: string | null;
+  result_alert_pending: boolean;
+  result_alert_sent_at: string | null;
   created_at: string;
 }
 
 export async function createBookingRequest(
-  row: Omit<BookingRow, 'id' | 'created_at'>,
+  row: Omit<BookingRow, 'id' | 'created_at' | 'patient_dob' | 'source' | 'result_alert_email' | 'result_alert_pending' | 'result_alert_sent_at'>
+    & Partial<Pick<BookingRow, 'patient_dob' | 'source' | 'result_alert_email' | 'result_alert_pending' | 'result_alert_sent_at'>>,
 ): Promise<BookingRow> {
   const sb = getServiceClient();
   const { data, error } = await sb
