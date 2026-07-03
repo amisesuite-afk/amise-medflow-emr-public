@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
+import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 
 const API_ORIGIN = getApiOrigin();
@@ -358,6 +359,7 @@ function AISummaryBox({ summary, loading }: { summary: AISummary | null | undefi
 
 export default function NurseAPCQTab() {
   const { profile } = useAuth();
+  const { hpiNotes, setHpiNotes, assessment, setAssessment, plan, setPlan } = useAppContext();
   const userRole = profile?.role ?? 'front_desk';
   const isDoctor = userRole === 'doctor' || userRole === 'admin';
 
@@ -379,6 +381,7 @@ export default function NurseAPCQTab() {
   const [vitalsForm, setVitalsForm] = useState<Record<string, string>>({});
   const [vitalsSubmitting, setVitalsSubmitting] = useState<'confirm' | 'reject' | null>(null);
   const [vitalsActionErr, setVitalsActionErr] = useState<string | null>(null);
+  const [applied, setApplied] = useState(false);
 
   const fetchQueue = useCallback(async () => {
     try {
@@ -428,6 +431,7 @@ export default function NurseAPCQTab() {
       setApproveErr(null);
       setVitalsForm({});
       setVitalsActionErr(null);
+      setApplied(false);
       return;
     }
     setSelectedToken(token);
@@ -439,6 +443,7 @@ export default function NurseAPCQTab() {
     setApproveErr(null);
     setVitalsForm({});
     setVitalsActionErr(null);
+    setApplied(false);
     setLoadingDetail(true);
     setLoadingAI(true);
 
@@ -662,6 +667,26 @@ export default function NurseAPCQTab() {
 
   const selectedSession = sessions.find(s => s.sessionToken === selectedToken);
 
+  function applyToConsultation() {
+    if (!aiSummary) return;
+    const tag = '[AI — Questionnaire]';
+    const hpiBlock = [
+      `${tag}\n${aiSummary.overallImpression || ''}`,
+      aiSummary.keyPositives.length
+        ? `Key positives:\n${aiSummary.keyPositives.map(k => `• ${k}`).join('\n')}`
+        : '',
+    ].filter(Boolean).join('\n\n');
+    setHpiNotes(hpiNotes ? `${hpiNotes}\n\n${hpiBlock}` : hpiBlock);
+
+    if (!assessment && aiSummary.redFlags.length > 0) {
+      setAssessment(`[AI draft — review before saving]\nConcerns from intake:\n${aiSummary.redFlags.map(f => `• ${f}`).join('\n')}`);
+    }
+    if (!plan && aiSummary.recommendedFocusAreas.length > 0) {
+      setPlan(`[AI draft — review before saving]\n${aiSummary.recommendedFocusAreas.map(f => `• ${f}`).join('\n')}`);
+    }
+    setApplied(true);
+  }
+
   return (
     <div className="gap-y" style={{ height: '100%' }}>
       {/* Header bar */}
@@ -796,6 +821,30 @@ export default function NurseAPCQTab() {
 
                 {/* AI Summary */}
                 <AISummaryBox summary={aiSummary} loading={loadingAI} />
+
+                {/* Apply AI summary to active consultation */}
+                {aiSummary && !loadingAI && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    {applied ? (
+                      <div style={{ fontSize: 12, fontWeight: 600, color: '#065f46', background: '#d1fae5', border: '1px solid #34d399', borderRadius: 8, padding: '7px 14px' }}>
+                        ✓ Applied to HPI / Assessment / Plan — review and amend before saving
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={applyToConsultation}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 6,
+                          padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                          background: '#1e40af', color: '#fff', border: 'none', cursor: 'pointer',
+                        }}
+                      >
+                        <span>⚡</span> Apply to consultation (HPI · Assessment · Plan)
+                      </button>
+                    )}
+                    <span style={{ fontSize: 11, color: '#9ca3af' }}>AI-drafted · clinician review required</span>
+                  </div>
+                )}
 
                 {/* Q&A Responses */}
                 {detail?.responses && detail.responses.length > 0 && (

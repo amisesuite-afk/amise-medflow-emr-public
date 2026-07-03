@@ -1,7 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { supabase } from '@/lib/supabase';
 
 const MAX_SIZE = 800;
+const BUCKET = 'patient-photos';
 
 function resizeImage(dataUrl: string): Promise<string> {
   return new Promise((resolve) => {
@@ -25,16 +27,51 @@ function resizeImage(dataUrl: string): Promise<string> {
   });
 }
 
+async function uploadToStorage(patientId: string, dataUrl: string): Promise<string | null> {
+  if (!supabase) return null;
+  try {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const path = `${patientId}/id-photo.jpg`;
+    const { error } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+    if (error) return null;
+    const { data: { publicUrl } } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    await supabase.from('patients').update({ photo_url: publicUrl }).eq('id', patientId);
+    return publicUrl;
+  } catch {
+    return null;
+  }
+}
+
 export default function PatientPhotoCapture() {
-  const { patientPhoto, setPatientPhoto } = useAppContext();
+  const { patientPhoto, setPatientPhoto, patientId } = useAppContext();
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
+
+  // Load persisted photo from patient record when patientId is known and no local photo
+  useEffect(() => {
+    if (!patientId || patientPhoto || !supabase) return;
+    void supabase
+      .from('patients')
+      .select('photo_url')
+      .eq('id', patientId)
+      .single()
+      .then(({ data }) => {
+        if (data?.photo_url) setPatientPhoto(data.photo_url as string);
+      });
+  }, [patientId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleFile(file: File) {
     const reader = new FileReader();
     reader.onload = async () => {
       const resized = await resizeImage(reader.result as string);
-      setPatientPhoto(resized);
+      setPatientPhoto(resized); // immediate local preview
+      if (patientId) {
+        const url = await uploadToStorage(patientId, resized);
+        if (url) setPatientPhoto(url); // replace base64 with persistent URL
+      }
     };
     reader.readAsDataURL(file);
   }
@@ -44,6 +81,8 @@ export default function PatientPhotoCapture() {
     if (f) void handleFile(f);
     e.target.value = '';
   }
+
+  const isUrl = patientPhoto.startsWith('http');
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '4px 0' }}>
@@ -68,6 +107,13 @@ export default function PatientPhotoCapture() {
             }}
             title="Remove photo"
           >×</button>
+          {isUrl && (
+            <span style={{
+              position: 'absolute', bottom: -6, left: 0, right: 0, textAlign: 'center',
+              fontSize: 9, fontWeight: 700, color: '#fff', background: '#16a34a',
+              borderRadius: 3, padding: '1px 3px',
+            }}>SAVED</span>
+          )}
         </div>
       ) : (
         <div style={{
@@ -88,7 +134,7 @@ export default function PatientPhotoCapture() {
               padding: '5px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600,
               background: '#0d9488', color: '#fff', border: 'none', cursor: 'pointer',
             }}
-          >📷 Camera</button>
+          >📷 Selfie / Camera</button>
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
@@ -99,7 +145,7 @@ export default function PatientPhotoCapture() {
           >📁 Upload</button>
         </div>
         <span style={{ fontSize: 11, color: '#94a3b8' }}>
-          ID / demographic photo · max 800 × 800 px
+          Patient ID photo · selfie or upload · {patientId ? 'saved to record' : 'save patient first to persist'}
         </span>
       </div>
       <input ref={cameraRef} type="file" accept="image/*" capture="user" onChange={onFileChange} style={{ display: 'none' }} />

@@ -186,8 +186,9 @@ export default function HomePage() {
 
   /* ── Consultation tab list (role-aware, matches phased sidebar) ── */
   const consultTabs = useMemo<{ id: Section; label: string }[]>(() => [
-    ...(hasRole(userRole, 'nurse') ? [
-      { id: 'nurse_apcq' as Section, label: 'CC' },
+    { id: 'nurse_apcq' as Section, label: 'CC' },
+    ...(roleIn(userRole, 'front_desk') || hasRole(userRole, 'nurse') ? [
+      { id: 'apcq' as Section, label: 'Record Q' },
     ] : []),
     { id: 'hpi' as Section, label: 'HPI' },
     { id: 'triage' as Section, label: 'Triage' },
@@ -696,6 +697,8 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
         {topSection === 'consultation'  && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
         {topSection === 'consultation'  && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
+        {topSection === 'consultation'  && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
+        {topSection === 'consultation'  && activeSection === 'apcq'            && <APCQTab />}
         {topSection === 'consultation'  && activeSection === 'tasks'          && <PatientTasksTab />}
         {topSection === 'consultation'  && activeSection === 'who_checklist'  && <WhoChecklistTab />}
         {topSection === 'consultation'  && activeSection === 'consent'        && <SurgicalConsentTab />}
@@ -717,7 +720,7 @@ export default function HomePage() {
         {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
         {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
         {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
-        {topSection === 'questionnaire'  && hasRole(userRole, 'nurse')  && <NurseAPCQTab />}
+        {topSection === 'questionnaire'  && (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor'))  && <NurseAPCQTab />}
         {topSection === 'booking_inbox'  && hasRole(userRole, 'admin')        && <BookingInboxTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
