@@ -1,6 +1,9 @@
+import { useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import SmartTextarea from '@/components/SmartTextarea';
+import { computeRankedDifferentials } from '@/lib/symptom-inference';
+import { getSuggestedPhrases } from '@/data/dot-phrases';
 
 const SOCRATES_PROMPTS = [
   { label: 'Site', hint: 'Where is the problem? Any radiation?' },
@@ -14,7 +17,35 @@ const SOCRATES_PROMPTS = [
 ];
 
 export default function HpiTab() {
-  const { hpiNotes, setHpiNotes, freeText, durationDays } = useAppContext();
+  const { hpiNotes, setHpiNotes, freeText, durationDays, symptoms, symptomDetails, age, sex } = useAppContext();
+
+  const ageNum = age ? Number(age) : null;
+
+  const ranked = useMemo(
+    () => computeRankedDifferentials({ symptoms, symptomDetails, age: ageNum, sex }),
+    [symptoms, symptomDetails, ageNum, sex],
+  );
+
+  // Use the top-ranked dx (if confidence ≥ 40%) to drive contextual suggestions
+  const leadingDxId = useMemo(
+    () => (ranked[0]?.confidence ?? 0) >= 40 ? ranked[0].id : null,
+    [ranked],
+  );
+
+  const leadingDxName = useMemo(
+    () => (ranked[0]?.confidence ?? 0) >= 40 ? ranked[0].name : null,
+    [ranked],
+  );
+
+  const suggestedPhrases = useMemo(
+    () => getSuggestedPhrases(leadingDxId, 4),
+    [leadingDxId],
+  );
+
+  function insertPhrase(text: string) {
+    const sep = hpiNotes && !hpiNotes.endsWith('\n') ? '\n\n' : '';
+    setHpiNotes(hpiNotes + sep + text);
+  }
 
   return (
     <div className="gap-y">
@@ -26,6 +57,38 @@ export default function HpiTab() {
               🎤 Tap mic to dictate · type <code style={{ fontSize: 10, background: '#f1f5f9', padding: '1px 4px', borderRadius: 3 }}>.hpi</code> for template
             </span>
           </div>
+
+          {/* Context-aware phrase suggestions based on leading differential */}
+          {suggestedPhrases.length > 0 && (
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+                Suggested for {leadingDxName}
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {suggestedPhrases.map(p => (
+                  <button
+                    key={p.trigger}
+                    type="button"
+                    onClick={() => insertPhrase(p.text)}
+                    title={`Insert: .${p.trigger}`}
+                    style={{
+                      fontSize: 11,
+                      padding: '3px 9px',
+                      borderRadius: 5,
+                      border: '1px solid #c7d2fe',
+                      background: '#eef2ff',
+                      color: '#4338ca',
+                      cursor: 'pointer',
+                      fontWeight: 500,
+                    }}
+                  >
+                    + {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <SmartTextarea
             value={hpiNotes}
             onChange={setHpiNotes}

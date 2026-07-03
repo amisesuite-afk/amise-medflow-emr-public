@@ -97,3 +97,46 @@ export function matchDotPhrases(trigger: string): DotPhrase[] {
   const q = trigger.toLowerCase();
   return DOT_PHRASES.filter(p => p.trigger.startsWith(q) || p.label.toLowerCase().includes(q)).slice(0, 8);
 }
+
+// Differential ID → relevant dot-phrase triggers in order of clinical usefulness
+const DX_PHRASE_MAP: Record<string, string[]> = {
+  acute_cholecystitis:    ['hpiercp', 'acholecystitis', 'abdsurg', 'planop', 'opnote'],
+  acute_cholangitis:      ['hpiercp', 'abdsurg', 'planop', 'opnote'],
+  cbd_obstruction:        ['hpiercp', 'abdsurg', 'planop'],
+  gallstone_pancreatitis: ['hpiercp', 'abdsurg', 'planop'],
+  acute_appendicitis:     ['hpiabd', 'aappendix', 'abdsurg', 'planop', 'opnote'],
+  diverticulitis:         ['hpiabd', 'abdsurg', 'plan', 'planop'],
+  hernia_reducible:       ['hpihernia', 'plan', 'planop', 'opnote'],
+  hernia_strangulated:    ['hpihernia', 'planop', 'opnote'],
+  breast_cancer:          ['hpibr', 'plan', 'planop'],
+  fibroadenoma:           ['hpibr', 'plan'],
+  upper_gi_bleed:         ['hpiabd', 'abdnml', 'plan'],
+  lower_gi_bleed:         ['hpiabd', 'abdnml', 'plan'],
+  colorectal_cancer:      ['hpiabd', 'plan'],
+  oesophageal_cancer:     ['hpi', 'plan'],
+  peptic_ulcer:           ['hpiabd', 'abdnml', 'plan'],
+  gord:                   ['hpi', 'plan'],
+  haemorrhoids:           ['hpiabd', 'plan'],
+  liver_disease:          ['hpi', 'abdnml', 'plan'],
+  postop_complication:    ['hpi', 'planf', 'fua'],
+  acs:                    ['hpi', 'cvsnml', 'plan'],
+  aortic_dissection:      ['hpitx', 'plan'],
+  pulmonary_embolism:     ['hpi', 'rsnml', 'plan'],
+  pneumonia:              ['hpi', 'rsnml', 'plan'],
+  renal_colic:            ['hpi', 'plan'],
+  uti:                    ['hpi', 'plan'],
+  pyelonephritis:         ['hpi', 'plan'],
+  sepsis:                 ['hpi', 'exnml', 'plan'],
+  diabetic_foot:          ['hpi', 'exnml', 'plan', 'planop'],
+  skin_abscess:           ['hpi', 'planop', 'opnote'],
+  necrotising_fasciitis:  ['hpi', 'planop', 'opnote'],
+};
+
+export function getSuggestedPhrases(dxId: string | null, count = 4): DotPhrase[] {
+  if (!dxId) return [];
+  const triggers = DX_PHRASE_MAP[dxId] ?? ['hpi', 'plan'];
+  return triggers
+    .slice(0, count)
+    .map(t => DOT_PHRASES.find(p => p.trigger === t))
+    .filter((p): p is DotPhrase => p !== undefined);
+}
