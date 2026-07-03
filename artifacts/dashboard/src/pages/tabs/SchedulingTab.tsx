@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { SLOT_RULES, AppointmentType } from '@workspace/triage-engine';
+import TheatreBookingCard from '@/components/TheatreBookingCard';
 
 // Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
 const API_ORIGIN = getApiOrigin();
@@ -281,6 +282,8 @@ export default function SchedulingTab() {
           Select an appointment type and click <strong>Find available slots</strong>.
         </div>
       )}
+
+      <TheatreBookingCard />
     </div>
   );
 }

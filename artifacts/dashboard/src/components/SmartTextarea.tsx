@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect, type TextareaHTMLAttributes } from 'react';
 import { matchDotPhrases, type DotPhrase } from '@/data/dot-phrases';
+import { useSpeechInput } from '@/hooks/useSpeechInput';
 
 // Matches a dot-trigger at the end of text before the cursor: .word
 const TRIGGER_RE = /\.(\w*)$/;
@@ -15,6 +16,7 @@ export default function SmartTextarea({ value, onChange, onKeyDown: parentKeyDow
   const [triggerStart, setTriggerStart] = useState<number | null>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const { listening, supported: speechSupported, start: startSpeech, stop: stopSpeech } = useSpeechInput();
 
   // Check text before cursor for a dot-trigger
   function detectTrigger(el: HTMLTextAreaElement) {
@@ -91,6 +93,17 @@ export default function SmartTextarea({ value, onChange, onKeyDown: parentKeyDow
     el?.scrollIntoView({ block: 'nearest' });
   }, [cursorIdx]);
 
+  function handleMicClick() {
+    if (listening) {
+      stopSpeech();
+    } else {
+      startSpeech(transcript => {
+        const sep = value && !value.endsWith('\n') && !value.endsWith(' ') ? ' ' : '';
+        onChange(value + sep + transcript);
+      });
+    }
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       <textarea
@@ -99,8 +112,28 @@ export default function SmartTextarea({ value, onChange, onKeyDown: parentKeyDow
         onChange={e => { onChange(e.target.value); detectTrigger(e.target); }}
         onKeyDown={handleKeyDown}
         onClick={e => detectTrigger(e.currentTarget)}
+        style={{ paddingRight: speechSupported ? 36 : undefined, ...(rest.style ?? {}) }}
         {...rest}
       />
+      {speechSupported && (
+        <button
+          type="button"
+          title={listening ? 'Stop recording' : 'Dictate (voice input)'}
+          onClick={handleMicClick}
+          style={{
+            position: 'absolute', right: 6, top: 6,
+            width: 26, height: 26, borderRadius: '50%',
+            border: 'none', cursor: 'pointer', padding: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: listening ? '#ef4444' : '#f1f5f9',
+            color: listening ? '#fff' : '#64748b',
+            fontSize: 13,
+            boxShadow: listening ? '0 0 0 3px rgba(239,68,68,0.2)' : 'none',
+          }}
+        >
+          {listening ? '■' : '🎤'}
+        </button>
+      )}
 
       {matches.length > 0 && (
         <div

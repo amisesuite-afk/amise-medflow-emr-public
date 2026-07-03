@@ -3,6 +3,7 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import AnatomicalSketch from '@/components/AnatomicalSketch';
 import ExamPhotoPanel from '@/components/ExamPhotoPanel';
 import WoundAssessmentCard from '@/components/WoundAssessmentCard';
+import ExamGuidePanel from '@/components/ExamGuidePanel';
 
 interface ExamSystem {
   key: string;
@@ -133,6 +134,7 @@ export default function ExaminationTab() {
 
   return (
     <div className="gap-y">
+      <ExamGuidePanel />
       <CollapsibleCard title="Anatomical findings" badge={anatomicalFindings.length > 0 ? `${anatomicalFindings.length} zones` : undefined}>
         <AnatomicalSketch />
       </CollapsibleCard>

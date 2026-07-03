@@ -2,6 +2,7 @@ import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
 import DrugInteractionAlert from '@/components/DrugInteractionAlert';
+import MedicationReconciliationCard from '@/components/MedicationReconciliationCard';
 
 const MEDICATION_OPTIONS = [
   'Aspirin', 'Clopidogrel', 'Ticagrelor', 'Prasugrel',
@@ -42,6 +43,7 @@ export default function MedicationsTab() {
           />
         </div>
       </CollapsibleCard>
+      <MedicationReconciliationCard />
     </div>
   );
 }
