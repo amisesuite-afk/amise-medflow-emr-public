@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -297,6 +297,12 @@ interface CtxValue {
   traumaData: TraumaData;
   setTraumaData: React.Dispatch<React.SetStateAction<TraumaData>>;
 
+  /** Persistent problem list — survives encounters. */
+  problems: PatientProblem[];
+  addProblem(problem: Omit<PatientProblem, 'id'>): Promise<void>;
+  updateProblemStatus(id: string, status: PatientProblem['status']): Promise<void>;
+  deleteProblem(id: string): Promise<void>;
+
   /** Global save status for autosave operations. */
   saveStatus: 'idle' | 'saving' | 'saved' | 'error';
   lastSaveError: string | null;
@@ -433,6 +439,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [paneTop, setPaneTop] = useState<RankedDiagnosis[]>([]);
   const [paneConverged, setPaneConverged] = useState(false);
   const [traumaData, setTraumaData] = useState<TraumaData>(EMPTY_TRAUMA_DATA);
+
+  const [problems, setProblems] = useState<PatientProblem[]>([]);
 
   // ── Global save status tracking ───────────────────────────────────────────
   const [saveStatus, _setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -675,6 +683,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
     setPaneState(null); setPaneTop([]); setPaneConverged(false);
     setTraumaData(EMPTY_TRAUMA_DATA);
+    setProblems([]);
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
@@ -711,6 +720,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }), [age, sex, symptoms, symptomDetails, freeText, comorbidities, surgicalHistory, medications, medicationsText, allergies, toxicHabits, vitals, durationDays, painScore, isPostOp, postOpDays, pregnancyPossible]);
 
   const triageResult = useMemo(() => adaptiveTriage(triageInput), [triageInput]);
+
+  // ── Load problem list whenever patient changes ────────────────────────────
+  useEffect(() => {
+    if (!patientId) { setProblems([]); return; }
+    void loadPatientProblems(patientId).then(setProblems);
+  }, [patientId]);
 
   // ── Autosave doctor clinical data to Supabase (debounced 2 s) ────────────
   useEffect(() => {
@@ -998,6 +1013,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     paneTop, setPaneTop,
     paneConverged, setPaneConverged,
     traumaData, setTraumaData,
+    problems,
+    addProblem: async (problem) => {
+      const tmp: PatientProblem = { ...problem, id: `tmp-${Date.now()}` };
+      setProblems(prev => [...prev, tmp]);
+      if (!patientId) return;
+      const { id, error } = await savePatientProblem(patientId, problem);
+      if (id) {
+        setProblems(prev => prev.map(p => p.id === tmp.id ? { ...p, id } : p));
+      } else if (error) {
+        setProblems(prev => prev.filter(p => p.id !== tmp.id));
+        console.error('[problems] save error:', error);
+      }
+    },
+    updateProblemStatus: async (id, status) => {
+      setProblems(prev => prev.map(p => p.id === id ? { ...p, status } : p));
+      const { error } = await updatePatientProblemStatus(id, status);
+      if (error) console.error('[problems] update error:', error);
+    },
+    deleteProblem: async (id) => {
+      setProblems(prev => prev.filter(p => p.id !== id));
+      const { error } = await removePatientProblem(id);
+      if (error) console.error('[problems] delete error:', error);
+    },
     saveStatus,
     lastSaveError,
   };

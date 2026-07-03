@@ -58,6 +58,7 @@ import ResultsAlertBadge from '@/components/ResultsAlertBadge';
 import FloatingActions from '@/components/FloatingActions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import CommandPalette from '@/components/CommandPalette';
+import ProblemListStrip from '@/components/ProblemListStrip';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -616,6 +617,9 @@ export default function HomePage() {
             </div>
           );
         })()}
+
+        {/* Problem list strip — shown in consultation below patient banner */}
+        {topSection === 'consultation' && <ProblemListStrip />}
 
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
         {topSection === 'consultation' && (() => {

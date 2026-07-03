@@ -1443,3 +1443,71 @@ export async function loadTraumaRecord(
     burnInhalation: (r.burn_inhalation as boolean) ?? false,
   };
 }
+
+// ── Patient problem list ────────────────────────────────────────────────────
+
+export interface PatientProblem {
+  id: string;
+  title: string;
+  status: 'active' | 'chronic' | 'resolved';
+  icd10Code?: string;
+  onsetDate?: string;
+}
+
+export async function loadPatientProblems(patientId: string): Promise<PatientProblem[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('patient_problems')
+    .select('id, title, status, icd10_code, onset_date')
+    .eq('patient_id', patientId)
+    .order('created_at', { ascending: true });
+  if (error || !data) return [];
+  return (data as Array<Record<string, unknown>>).map(r => ({
+    id:        r.id as string,
+    title:     r.title as string,
+    status:    r.status as PatientProblem['status'],
+    icd10Code: (r.icd10_code as string | null) ?? undefined,
+    onsetDate: (r.onset_date as string | null) ?? undefined,
+  }));
+}
+
+export async function savePatientProblem(
+  patientId: string,
+  problem: Omit<PatientProblem, 'id'>,
+): Promise<{ id: string | null; error: string | null }> {
+  if (!supabase) return { id: null, error: notConfigured('savePatientProblem') };
+  const { data, error } = await supabase
+    .from('patient_problems')
+    .insert({
+      patient_id: patientId,
+      title:      problem.title,
+      status:     problem.status,
+      icd10_code: problem.icd10Code ?? null,
+      onset_date: problem.onsetDate ?? null,
+    })
+    .select('id')
+    .single();
+  if (error) return { id: null, error: error.message };
+  return { id: (data as Record<string, string>).id, error: null };
+}
+
+export async function updatePatientProblemStatus(
+  problemId: string,
+  status: PatientProblem['status'],
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('updatePatientProblemStatus') };
+  const { error } = await supabase
+    .from('patient_problems')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', problemId);
+  return { error: error?.message ?? null };
+}
+
+export async function removePatientProblem(problemId: string): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('removePatientProblem') };
+  const { error } = await supabase
+    .from('patient_problems')
+    .delete()
+    .eq('id', problemId);
+  return { error: error?.message ?? null };
+}
