@@ -1848,16 +1848,21 @@ function computeRawScore(
   { symptoms, symptomDetails, age, sex }: InferenceInput,
 ): number {
   let score = dx.basePrior;
+  let symptomHit = false;
 
   for (const sym of symptoms) {
-    score += dx.symptomWeights[sym] ?? 0;
+    const sw = dx.symptomWeights[sym] ?? 0;
+    score += sw;
     score += dx.negativeWeights?.[sym] ?? 0;
+    if (sw > 0) symptomHit = true;
   }
 
   for (const [sym, details] of Object.entries(symptomDetails)) {
     for (const detail of details) {
       const key = `${sym}.${detail}`;
-      score += dx.detailWeights?.[key] ?? 0;
+      const dw = dx.detailWeights?.[key] ?? 0;
+      score += dw;
+      if (dw > 0) symptomHit = true;
     }
   }
 
@@ -1867,6 +1872,12 @@ function computeRawScore(
   if (dx.sexModifier && sex === dx.sexModifier.sex) {
     score += dx.sexModifier.add;
   }
+
+  // When the clinician has selected symptoms but none appear in this differential's
+  // weight tables, apply a strong relevance penalty (×0.15) so high-basePrior /
+  // demographically-boosted conditions cannot dominate unrelated presentations.
+  // (e.g. acute cholecystitis must not rank #1 when the only symptom is facial weakness)
+  if (symptoms.length > 0 && !symptomHit) score *= 0.15;
 
   return Math.max(0, score);
 }
