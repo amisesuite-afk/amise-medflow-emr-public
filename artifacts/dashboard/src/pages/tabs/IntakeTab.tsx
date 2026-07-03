@@ -205,9 +205,11 @@ export default function IntakeTab() {
   return (
     <div className="gap-y">
 
-      {/* ── 1. PATIENT IDENTITY ──────────────────────────────────────────────── */}
-      <CollapsibleCard title="Patient identity" badge={triageResult.missingCriticalFields.length > 0 ? `${triageResult.missingCriticalFields.length} missing` : undefined} badgeVariant={triageResult.missingCriticalFields.length > 0 ? 'warn' : 'default'}>
+      {/* ── 1. PATIENT IDENTITY & REGISTRATION ──────────────────────────────── */}
+      <CollapsibleCard title="Patient identity &amp; registration" badge={triageResult.missingCriticalFields.length > 0 ? `${triageResult.missingCriticalFields.length} missing` : undefined} badgeVariant={triageResult.missingCriticalFields.length > 0 ? 'warn' : 'default'}>
         <PatientPhotoCapture />
+
+        {/* Core demographics */}
         <div className="form-grid" style={{ marginTop: 10 }}>
           <div className="fld">
             <label>Full name</label>
@@ -246,98 +248,101 @@ export default function IntakeTab() {
             )}
           </div>
         </div>
-      </CollapsibleCard>
 
-      {/* ── 2. CONTACT & ADMINISTRATIVE ─────────────────────────────────────── */}
-      <CollapsibleCard title="Contact &amp; administrative details" defaultOpen={false}>
-        <div className="form-grid">
-          {/* Address / community picker */}
-          <div className="fld" ref={addressRef} style={{ position: 'relative' }}>
-            <label>Community / Address</label>
-            <input
-              type="text"
-              value={addressQuery}
-              onChange={e => { setAddressQuery(e.target.value); setAddressOpen(true); }}
-              onFocus={() => setAddressOpen(true)}
-              placeholder="e.g. Rodney Bay, Gros Islet…"
-            />
-            {quarter && (
-              <span style={{ fontSize: 11, color: '#6b7280', marginTop: 2, display: 'block' }}>
-                Quarter: {quarter}
-              </span>
-            )}
-            {addressOpen && filteredCommunities.length > 0 && (
-              <div style={{
-                position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
-                background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.12)', maxHeight: 220, overflowY: 'auto', marginTop: 2,
-              }}>
-                {filteredCommunities.map(c => (
-                  <button
-                    key={`${c.quarter}-${c.community}`}
-                    type="button"
-                    onMouseDown={() => selectCommunity(c)}
-                    style={{
-                      display: 'flex', justifyContent: 'space-between', width: '100%',
-                      padding: '7px 12px', background: 'transparent', border: 'none',
-                      cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid #f3f4f6', fontSize: 13,
-                    }}
-                  >
-                    <span>{c.community}</span>
-                    <span style={{ color: '#9ca3af', fontSize: 11 }}>{c.quarter}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+        {/* Contact & administrative — inline with demographics */}
+        <div style={{ borderTop: '1px solid #f1f5f9', marginTop: 12, paddingTop: 12 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
+            Contact &amp; administrative
           </div>
+          <div className="form-grid">
+            {/* Address / community picker */}
+            <div className="fld" ref={addressRef} style={{ position: 'relative' }}>
+              <label>Community / Address</label>
+              <input
+                type="text"
+                value={addressQuery}
+                onChange={e => { setAddressQuery(e.target.value); setAddressOpen(true); }}
+                onFocus={() => setAddressOpen(true)}
+                placeholder="e.g. Rodney Bay, Gros Islet…"
+              />
+              {quarter && (
+                <span style={{ fontSize: 11, color: '#6b7280', marginTop: 2, display: 'block' }}>
+                  Quarter: {quarter}
+                </span>
+              )}
+              {addressOpen && filteredCommunities.length > 0 && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+                  background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.12)', maxHeight: 220, overflowY: 'auto', marginTop: 2,
+                }}>
+                  {filteredCommunities.map(c => (
+                    <button
+                      key={`${c.quarter}-${c.community}`}
+                      type="button"
+                      onMouseDown={() => selectCommunity(c)}
+                      style={{
+                        display: 'flex', justifyContent: 'space-between', width: '100%',
+                        padding: '7px 12px', background: 'transparent', border: 'none',
+                        cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid #f3f4f6', fontSize: 13,
+                      }}
+                    >
+                      <span>{c.community}</span>
+                      <span style={{ color: '#9ca3af', fontSize: 11 }}>{c.quarter}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          {/* Referred by */}
-          <div className="fld" ref={referralRef} style={{ position: 'relative' }}>
-            <label>Referred by</label>
-            <input
-              type="text"
-              value={referralQuery}
-              onChange={e => { setReferralQuery(e.target.value); setReferredBy(e.target.value); setReferralOpen(true); }}
-              onFocus={() => setReferralOpen(true)}
-              placeholder="Doctor or facility name…"
-            />
-            {referralOpen && filteredDoctors.length > 0 && (
-              <div style={{
-                position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
-                background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.12)', maxHeight: 220, overflowY: 'auto', marginTop: 2,
-              }}>
-                {filteredDoctors.map(d => (
-                  <button
-                    key={d.name}
-                    type="button"
-                    onMouseDown={() => { setReferredBy(d.name); setReferralQuery(d.name); setReferralOpen(false); }}
-                    style={{
-                      display: 'flex', flexDirection: 'column', width: '100%',
-                      padding: '7px 12px', background: 'transparent', border: 'none',
-                      cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid #f3f4f6',
-                    }}
-                  >
-                    <span style={{ fontSize: 13, fontWeight: 500 }}>{d.name}</span>
-                    <span style={{ fontSize: 11, color: '#6b7280' }}>{d.specialty}{d.institution ? ` · ${d.institution}` : ''}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+            {/* Referred by */}
+            <div className="fld" ref={referralRef} style={{ position: 'relative' }}>
+              <label>Referred by</label>
+              <input
+                type="text"
+                value={referralQuery}
+                onChange={e => { setReferralQuery(e.target.value); setReferredBy(e.target.value); setReferralOpen(true); }}
+                onFocus={() => setReferralOpen(true)}
+                placeholder="Doctor or facility name…"
+              />
+              {referralOpen && filteredDoctors.length > 0 && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50,
+                  background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.12)', maxHeight: 220, overflowY: 'auto', marginTop: 2,
+                }}>
+                  {filteredDoctors.map(d => (
+                    <button
+                      key={d.name}
+                      type="button"
+                      onMouseDown={() => { setReferredBy(d.name); setReferralQuery(d.name); setReferralOpen(false); }}
+                      style={{
+                        display: 'flex', flexDirection: 'column', width: '100%',
+                        padding: '7px 12px', background: 'transparent', border: 'none',
+                        cursor: 'pointer', textAlign: 'left', borderBottom: '1px solid #f3f4f6',
+                      }}
+                    >
+                      <span style={{ fontSize: 13, fontWeight: 500 }}>{d.name}</span>
+                      <span style={{ fontSize: 11, color: '#6b7280' }}>{d.specialty}{d.institution ? ` · ${d.institution}` : ''}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          <div className="fld">
-            <label>Insurance Provider</label>
-            <input value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="CLICO / GEL / Self-pay" />
-          </div>
-          <div className="fld">
-            <label>Policy / NHI Number</label>
-            <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
+            <div className="fld">
+              <label>Insurance Provider</label>
+              <input value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="CLICO / GEL / Self-pay" />
+            </div>
+            <div className="fld">
+              <label>Policy / NHI Number</label>
+              <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
+            </div>
           </div>
         </div>
       </CollapsibleCard>
 
-      {/* ── 3. CHIEF COMPLAINT / REASON FOR VISIT ───────────────────────────── */}
+      {/* ── 2. CHIEF COMPLAINT / REASON FOR VISIT ───────────────────────────── */}
       <CollapsibleCard
         title="Chief complaint / reason for visit"
         badge={symptoms.length > 0 ? `${symptoms.length} symptom${symptoms.length !== 1 ? 's' : ''}` : undefined}
