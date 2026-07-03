@@ -1,5 +1,6 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import SmartTextarea from '@/components/SmartTextarea';
 
 const SOCRATES_PROMPTS = [
   { label: 'Site', hint: 'Where is the problem? Any radiation?' },
@@ -20,14 +21,15 @@ export default function HpiTab() {
       <CollapsibleCard title="History of present illness" badge={hpiNotes.trim() ? '✓' : undefined}>
         <div className="fld">
           <label>HPI narrative</label>
-          <textarea
+          <SmartTextarea
             value={hpiNotes}
-            onChange={e => setHpiNotes(e.target.value)}
+            onChange={setHpiNotes}
             placeholder={
               'Document the presenting illness in the patient\'s own words and the clinician\'s synthesis.\n\n' +
-              'SOCRATES — Site · Onset · Character · Radiation · Associations · Timing · Exacerbating/Relieving · Severity'
+              'SOCRATES — Site · Onset · Character · Radiation · Associations · Timing · Exacerbating/Relieving · Severity\n\n' +
+              'Tip: type .hpi or .hpiabd to expand a template'
             }
-            style={{ minHeight: 180 }}
+            style={{ minHeight: 180, width: '100%' }}
           />
         </div>
 

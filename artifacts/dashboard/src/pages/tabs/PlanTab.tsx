@@ -3,6 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { errMsg } from '@/lib/err';
+import SmartTextarea from '@/components/SmartTextarea';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
 
@@ -296,11 +297,11 @@ export default function PlanTab() {
 
         <div className="fld">
           <label>Plan</label>
-          <textarea
+          <SmartTextarea
             value={plan}
-            onChange={e => setPlan(e.target.value)}
-            placeholder="Management steps in order…"
-            style={{ minHeight: 200 }}
+            onChange={setPlan}
+            placeholder="Management steps in order… (type .plan, .planop, .plandc to expand)"
+            style={{ minHeight: 200, width: '100%' }}
           />
         </div>
 

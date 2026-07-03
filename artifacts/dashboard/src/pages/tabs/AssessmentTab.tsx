@@ -3,6 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
 import { ManagementPanel } from '@/components/ManagementPanel';
+import SmartTextarea from '@/components/SmartTextarea';
 import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
 import { useSpeechInput } from '@/hooks/useSpeechInput';
@@ -484,10 +485,10 @@ export default function AssessmentTab() {
               }}
             />
           </div>
-          <textarea
+          <SmartTextarea
             value={assessment}
-            onChange={e => setAssessment(e.target.value)}
-            placeholder="Clinical impression, supporting evidence, reasoning, degree of certainty…"
+            onChange={setAssessment}
+            placeholder="Clinical impression, supporting evidence, reasoning, degree of certainty… (type .asx or .acholecystitis to expand)"
             style={{ minHeight: 90, width: '100%' }}
           />
         </div>
