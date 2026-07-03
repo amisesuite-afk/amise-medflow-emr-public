@@ -1694,11 +1694,153 @@ export const DIFFERENTIALS: DifferentialEntry[] = [
 
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
-interface InferenceInput {
+export interface InferenceInput {
   symptoms: string[];
   symptomDetails: Record<string, string[]>;
   age?: number | null;
   sex?: string;
+}
+
+// ─── Dual-marker system ───────────────────────────────────────────────────────
+
+/**
+ * For each differential in the ranked list, indicates which explanatory
+ * "best-by" marker applies:
+ *
+ *  mostCommonId     — highest base prior (most prevalent in this practice)
+ *  clinicalBestId   — highest symptom + detail score, ignoring demographics
+ *  demographicBestId— dx that receives the biggest age/sex uplift for THIS patient
+ *  anatomicalBestId — top-ranked dx in the dominant anatomical body region
+ *  temporalBestId   — best match for selected temporal detail clues
+ */
+export interface DxMarkerSet {
+  mostCommonId: string;
+  clinicalBestId: string | null;
+  demographicBestId: string | null;
+  anatomicalBestId: string | null;
+  temporalBestId: string | null;
+}
+
+// Words in a detailWeight key that indicate temporal clues
+const TEMPORAL_KEYWORDS = [
+  'sudden', 'onset', 'acute', 'gradual', 'progressive', 'constant', 'continuous',
+  'intermittent', 'nocturnal', 'morning', 'evening', 'duration', 'chronic',
+  'weeks', 'months', 'hours', 'days', 'tarry', 'tearing', 'episodic',
+  'recurrent', 'worsening', 'fluctuating',
+];
+
+// Category → broad anatomical body region
+const CATEGORY_REGION: Record<string, string> = {
+  'Biliary': 'Abdominal',
+  'GI Bleed': 'Abdominal',
+  'Colorectal': 'Abdominal',
+  'Upper GI': 'Abdominal',
+  'Abdominal': 'Abdominal',
+  'Hernia': 'Abdominal',
+  'Appendix': 'Abdominal',
+  'Liver': 'Abdominal',
+  'Respiratory': 'Thoracic',
+  'Cardiovascular': 'Thoracic',
+  'Vascular': 'Vascular / Limb',
+  'Neurological': 'Head / Neurological',
+  'Endocrine': 'Systemic',
+  'Rheumatology': 'Systemic',
+  'Haematology': 'Systemic',
+  'Infectious': 'Systemic',
+  'Skin': 'Skin',
+  'Renal': 'Urogenital',
+  'Urogenital': 'Urogenital',
+  'ENT': 'Head / ENT',
+  'Musculoskeletal': 'Musculoskeletal',
+  'Breast': 'Breast',
+  'Gynaecological': 'Urogenital',
+  'Psychiatric': 'Systemic',
+};
+
+export function computeDxMarkers(
+  ranked: RankedDifferential[],
+  input: InferenceInput,
+): DxMarkerSet {
+  const { symptoms, symptomDetails, age, sex } = input;
+  const hasSymptoms = symptoms.length > 0;
+
+  // ── 1. Most common: highest basePrior ──
+  const mostCommon = DIFFERENTIALS.reduce((best, dx) =>
+    dx.basePrior > best.basePrior ? dx : best,
+  DIFFERENTIALS[0]);
+
+  // ── 2. Clinical best: symptom + detail score, no demographics ──
+  let clinicalBestId: string | null = null;
+  if (hasSymptoms) {
+    let best = -Infinity;
+    for (const dx of DIFFERENTIALS) {
+      let s = dx.basePrior;
+      for (const sym of symptoms) {
+        s += dx.symptomWeights[sym] ?? 0;
+        s += dx.negativeWeights?.[sym] ?? 0;
+      }
+      for (const [sym, details] of Object.entries(symptomDetails)) {
+        for (const d of details) s += dx.detailWeights?.[`${sym}.${d}`] ?? 0;
+      }
+      if (s > best) { best = s; clinicalBestId = dx.id; }
+    }
+  }
+
+  // ── 3. Demographic best: biggest age + sex modifier for this patient ──
+  let demographicBestId: string | null = null;
+  let bestDemoBoost = 0;
+  for (const dx of DIFFERENTIALS) {
+    let boost = 0;
+    if (dx.ageModifier && age != null && age > dx.ageModifier.gt) boost += dx.ageModifier.add;
+    if (dx.sexModifier && sex === dx.sexModifier.sex) boost += dx.sexModifier.add;
+    if (boost > bestDemoBoost) { bestDemoBoost = boost; demographicBestId = dx.id; }
+  }
+
+  // ── 4. Anatomical best: top-ranked dx in the dominant body region ──
+  let anatomicalBestId: string | null = null;
+  if (hasSymptoms && ranked.length > 0) {
+    const regionCount: Record<string, number> = {};
+    for (const r of ranked.slice(0, 6)) {
+      const entry = DIFFERENTIALS.find(d => d.id === r.id);
+      if (entry) {
+        const region = CATEGORY_REGION[entry.category] ?? entry.category;
+        regionCount[region] = (regionCount[region] ?? 0) + 1;
+      }
+    }
+    const dominantRegion = Object.entries(regionCount)
+      .sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (dominantRegion) {
+      const topInRegion = ranked.find(r => {
+        const entry = DIFFERENTIALS.find(d => d.id === r.id);
+        return entry && (CATEGORY_REGION[entry.category] ?? entry.category) === dominantRegion;
+      });
+      if (topInRegion) anatomicalBestId = topInRegion.id;
+    }
+  }
+
+  // ── 5. Temporal best: best match for temporal detail clues selected ──
+  let temporalBestId: string | null = null;
+  if (hasSymptoms) {
+    const temporalDetails: string[] = [];
+    for (const [sym, details] of Object.entries(symptomDetails)) {
+      for (const d of details) {
+        const key = `${sym}.${d}`;
+        if (TEMPORAL_KEYWORDS.some(kw => key.toLowerCase().includes(kw))) {
+          temporalDetails.push(key);
+        }
+      }
+    }
+    if (temporalDetails.length > 0) {
+      let bestT = 0;
+      for (const dx of DIFFERENTIALS) {
+        let ts = 0;
+        for (const key of temporalDetails) ts += dx.detailWeights?.[key] ?? 0;
+        if (ts > bestT) { bestT = ts; temporalBestId = dx.id; }
+      }
+    }
+  }
+
+  return { mostCommonId: mostCommon.id, clinicalBestId, demographicBestId, anatomicalBestId, temporalBestId };
 }
 
 function computeRawScore(

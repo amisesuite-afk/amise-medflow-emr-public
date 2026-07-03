@@ -3,9 +3,11 @@ import { useAppContext } from '@/context/AppContext';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 import {
   computeRankedDifferentials,
+  computeDxMarkers,
   getSuggestedSymptoms,
   getLeadingDiagnosis,
   type RankedDifferential,
+  type DxMarkerSet,
 } from '@/lib/symptom-inference';
 import { ALL_SYMPTOMS_FLAT } from '@/data/symptoms-db';
 
@@ -28,7 +30,15 @@ function ConfBar({ pct, color }: { pct: number; color: string }) {
   );
 }
 
-function DxPanel({ ranked, symptoms }: { ranked: RankedDifferential[]; symptoms: string[] }) {
+const DX_MARKER_CONFIG: { key: keyof DxMarkerSet; label: string; bg: string; fg: string }[] = [
+  { key: 'mostCommonId',     label: '★ COMMON',      bg: '#dbeafe', fg: '#1d4ed8' },
+  { key: 'clinicalBestId',   label: '⚕ CLINICAL',    bg: '#d1fae5', fg: '#065f46' },
+  { key: 'demographicBestId',label: '♟ DEMOGRAPHIC',  bg: '#ede9fe', fg: '#5b21b6' },
+  { key: 'anatomicalBestId', label: '⊕ ANATOMICAL',  bg: '#fef3c7', fg: '#92400e' },
+  { key: 'temporalBestId',   label: '⏱ TEMPORAL',    bg: '#e0e7ff', fg: '#3730a3' },
+];
+
+function DxPanel({ ranked, symptoms, markers }: { ranked: RankedDifferential[]; symptoms: string[]; markers: DxMarkerSet | null }) {
   if (!symptoms.length) return null;
   const top3 = ranked.slice(0, 4).filter(d => d.confidence > 3);
   if (!top3.length) return null;
@@ -36,28 +46,51 @@ function DxPanel({ ranked, symptoms }: { ranked: RankedDifferential[]; symptoms:
   return (
     <div className="ssp-dx-panel">
       <div className="ssp-dx-label">Working differentials</div>
-      {top3.map((dx, i) => (
-        <div key={dx.id} className="ssp-dx-row">
-          <div className="ssp-dx-name">
-            <span className="ssp-dx-rank">{i + 1}</span>
-            <span>{dx.name}</span>
-            {dx.urgency !== 'routine' && (
-              <span
-                className="ssp-dx-urgency"
-                style={{ background: URGENCY_COLOR[dx.urgency] }}
-              >
-                {dx.urgency.toUpperCase()}
+      {top3.map((dx, i) => {
+        const pills = markers
+          ? DX_MARKER_CONFIG.filter(m => markers[m.key] === dx.id)
+          : [];
+        return (
+          <div key={dx.id} className="ssp-dx-row">
+            <div className="ssp-dx-name">
+              <span className="ssp-dx-rank">{i + 1}</span>
+              <span>{dx.name}</span>
+              {dx.urgency !== 'routine' && (
+                <span
+                  className="ssp-dx-urgency"
+                  style={{ background: URGENCY_COLOR[dx.urgency] }}
+                >
+                  {dx.urgency.toUpperCase()}
+                </span>
+              )}
+              {pills.map(p => (
+                <span
+                  key={p.key}
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 700,
+                    letterSpacing: '0.04em',
+                    padding: '1px 5px',
+                    borderRadius: 4,
+                    background: p.bg,
+                    color: p.fg,
+                    marginLeft: 3,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {p.label}
+                </span>
+              ))}
+            </div>
+            <div className="ssp-dx-bar-row">
+              <ConfBar pct={dx.confidence} color={i === 0 ? URGENCY_COLOR[dx.urgency] : '#ccc'} />
+              <span className="ssp-dx-pct" style={{ color: i === 0 ? URGENCY_COLOR[dx.urgency] : undefined }}>
+                {dx.confidence}%
               </span>
-            )}
+            </div>
           </div>
-          <div className="ssp-dx-bar-row">
-            <ConfBar pct={dx.confidence} color={i === 0 ? URGENCY_COLOR[dx.urgency] : '#ccc'} />
-            <span className="ssp-dx-pct" style={{ color: i === 0 ? URGENCY_COLOR[dx.urgency] : undefined }}>
-              {dx.confidence}%
-            </span>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -95,6 +128,13 @@ export default function SmartSymptomPicker() {
   const leadingDx = useMemo(
     () => getLeadingDiagnosis(ranked, symptoms),
     [ranked, symptoms],
+  );
+
+  const dxMarkers = useMemo(
+    () => symptoms.length > 0
+      ? computeDxMarkers(ranked, { symptoms, symptomDetails, age: ageNum, sex })
+      : null,
+    [ranked, symptoms, symptomDetails, ageNum, sex],
   );
 
   const tier1 = suggested.filter(s => s.tier === 1);
@@ -153,7 +193,7 @@ export default function SmartSymptomPicker() {
       )}
 
       {/* ── Differential confidence panel ── */}
-      <DxPanel ranked={ranked} symptoms={symptoms} />
+      <DxPanel ranked={ranked} symptoms={symptoms} markers={dxMarkers} />
 
       {/* ── Priority suggestions ── */}
       {(tier1.length > 0 || tier2.length > 0) && (
