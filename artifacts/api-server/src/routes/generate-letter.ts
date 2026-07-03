@@ -19,6 +19,27 @@ const TYPE_INSTRUCTIONS: Record<string, string> = {
   sick_cert: `Write a brief sick certificate / fit note. Include: (1) Patient name and date of birth, (2) Date assessed, (3) Medical condition (may be general — 'a medical condition under specialist review'), (4) Period of incapacity from __ to __ (estimate based on diagnosis and plan), (5) Restrictions or modified duties if partial capacity. Signed block at bottom. 100-150 words.`,
 
   patient_discharge: `Write patient-facing discharge instructions. Use simple, clear language (8th-grade reading level). Include: (1) What was done today, (2) What to expect during recovery (normal symptoms vs. concerning symptoms), (3) Wound care instructions if relevant, (4) Medications prescribed, (5) Activity restrictions, (6) Diet advice if relevant, (7) When to return for follow-up, (8) WHEN TO GO TO THE ER IMMEDIATELY (in bold). Friendly, reassuring tone. 300-450 words.`,
+
+  clinical_discharge: `Write a formal clinical discharge summary for the medical record and for the patient's GP/referring doctor. This is a clinician-to-clinician document. Structure:
+1. DISCHARGE SUMMARY (practice header, date of discharge)
+2. PATIENT DETAILS — name, DOB, age/sex
+3. DATE OF ADMISSION / CONSULTATION — and date of discharge
+4. ADMITTING DIAGNOSIS / PRESENTING COMPLAINT
+5. RELEVANT BACKGROUND — key PMH, surgical history, regular medications, allergies
+6. EXAMINATION FINDINGS — relevant positive and negative findings
+7. INVESTIGATIONS — results of bloods, imaging, histology
+8. PROCEDURE / OPERATION PERFORMED (if applicable)
+9. DIAGNOSIS — confirmed diagnosis with ICD code if available
+10. TREATMENT PROVIDED — medications, procedures, interventions
+11. COURSE IN HOSPITAL — clinical progress
+12. CONDITION ON DISCHARGE
+13. DISCHARGE MEDICATIONS — full list with doses and duration
+14. FOLLOW-UP ARRANGEMENTS — dates, who with, what for
+15. OUTSTANDING RESULTS — pending tests, follow-up of histology/imaging
+16. GP ACTIONS REQUIRED — specific requests for the GP
+17. SIGNATURE BLOCK
+
+Tone: formal, professional, clinician-to-clinician. Third person. Past tense for events. 500-700 words.`,
 };
 
 router.post('/', async (req: Request, res: Response) => {

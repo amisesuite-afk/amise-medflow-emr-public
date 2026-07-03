@@ -3,14 +3,15 @@ import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { getApiOrigin } from '@/lib/api-origin';
 
-type LetterType = 'referral' | 'gp_summary' | 'insurance' | 'sick_cert' | 'patient_discharge';
+type LetterType = 'referral' | 'gp_summary' | 'insurance' | 'sick_cert' | 'patient_discharge' | 'clinical_discharge';
 
 const LETTER_TYPES: { id: LetterType; label: string; icon: string; hint: string }[] = [
-  { id: 'referral',          label: 'Referral letter',       icon: '📋', hint: 'Formal referral to specialist or facility' },
-  { id: 'gp_summary',        label: 'GP summary',            icon: '🏥', hint: 'Summary letter to family physician / GP' },
-  { id: 'insurance',         label: 'Insurance report',      icon: '📑', hint: 'Medical report for insurance company' },
-  { id: 'sick_cert',         label: 'Sick certificate',      icon: '📄', hint: 'Fit note / sick certificate for employer' },
-  { id: 'patient_discharge', label: 'Discharge summary',     icon: '🏠', hint: 'Patient-facing discharge instructions' },
+  { id: 'referral',          label: 'Referral letter',            icon: '📋', hint: 'Formal referral to specialist or facility' },
+  { id: 'gp_summary',        label: 'GP summary',                 icon: '🏥', hint: 'Summary letter to family physician / GP' },
+  { id: 'insurance',         label: 'Insurance report',           icon: '📑', hint: 'Medical report for insurance company' },
+  { id: 'sick_cert',         label: 'Sick certificate',           icon: '📄', hint: 'Fit note / sick certificate for employer' },
+  { id: 'patient_discharge', label: 'Patient discharge advice',   icon: '🏠', hint: 'Patient-facing discharge instructions (simple language)' },
+  { id: 'clinical_discharge', label: 'Clinical discharge summary', icon: '📝', hint: 'Formal clinical summary for the medical record and referring doctor' },
 ];
 
 function apiUrl(path: string) {

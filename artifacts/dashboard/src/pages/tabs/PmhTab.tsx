@@ -4,6 +4,7 @@ import { useToast } from '@/components/ToastProvider';
 import { savePMHItem, removePMHItem, savePmhNotes } from '@/lib/db';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
+import NutritionalAssessmentCard from '@/components/NutritionalAssessmentCard';
 
 const COMORBIDITY_OPTIONS = [
   'Type 1 diabetes', 'Type 2 diabetes', 'Hypertension', 'Ischaemic heart disease',
@@ -100,6 +101,7 @@ export default function PmhTab() {
           />
         </div>
       </CollapsibleCard>
+      <NutritionalAssessmentCard />
     </div>
   );
 }

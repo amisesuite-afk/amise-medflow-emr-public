@@ -7,6 +7,7 @@ import SmartTextarea from '@/components/SmartTextarea';
 import FollowUpSchedulerCard, { type FollowUpEntry } from '@/components/FollowUpSchedulerCard';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
+import PreopRiskScoringCard from '@/components/PreopRiskScoringCard';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -463,6 +464,8 @@ export default function PlanTab() {
           />
         </div>
       </CollapsibleCard>
+
+      <PreopRiskScoringCard />
     </div>
   );
 }

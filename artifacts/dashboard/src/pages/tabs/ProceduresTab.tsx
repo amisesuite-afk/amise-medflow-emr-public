@@ -4,6 +4,7 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import ProcedureImagePanel, { type ProcImage } from '@/components/ProcedureImagePanel';
 import ClavienDindoGrader from '@/components/ClavienDindoGrader';
 import PathologySpecimenTracker from '@/components/PathologySpecimenTracker';
+import OperativeNoteGenerator from '@/components/OperativeNoteGenerator';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -1428,6 +1429,8 @@ export default function ProceduresTab() {
           <ClavienDindoGrader />
         </>
       )}
+
+      <OperativeNoteGenerator />
     </div>
   );
 }
