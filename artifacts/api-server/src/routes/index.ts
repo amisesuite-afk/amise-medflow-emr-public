@@ -19,6 +19,8 @@ import procedureReportRouter from "./procedure-report";
 import dischargeSummaryRouter from "./discharge-summary";
 import generateLetterRouter from "./generate-letter";
 import generateOperativeNoteRouter from "./generate-operative-note";
+import generateEndoscopyReportRouter from "./generate-endoscopy-report";
+import suggestCodesRouter from "./suggest-codes";
 
 const router: IRouter = Router();
 
@@ -42,5 +44,7 @@ router.use(procedureReportRouter);
 router.use(dischargeSummaryRouter);
 router.use('/generate-letter', generateLetterRouter);
 router.use('/generate-operative-note', generateOperativeNoteRouter);
+router.use('/generate-endoscopy-report', generateEndoscopyReportRouter);
+router.use('/suggest-codes', suggestCodesRouter);
 
 export default router;

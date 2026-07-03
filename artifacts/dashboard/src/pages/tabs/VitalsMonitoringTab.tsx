@@ -8,6 +8,7 @@ import { useAppContext, type VitalRecord, type LabRecord } from '@/context/AppCo
 import { useAuth } from '@/context/AuthContext';
 import WheelPicker from '@/components/WheelPicker';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import FluidBalanceTracker from '@/components/FluidBalanceTracker';
 
 // ── Colours ───────────────────────────────────────────────────────────────────
 const C = {
@@ -712,6 +713,8 @@ export default function VitalsMonitoringTab() {
           </div>
         </CollapsibleCard>
       )}
+
+      <FluidBalanceTracker />
 
     </div>
   );

@@ -6,6 +6,7 @@ import ClavienDindoGrader from '@/components/ClavienDindoGrader';
 import PathologySpecimenTracker from '@/components/PathologySpecimenTracker';
 import OperativeNoteGenerator from '@/components/OperativeNoteGenerator';
 import PostopCarePlan from '@/components/PostopCarePlan';
+import EndoscopyReportGenerator from '@/components/EndoscopyReportGenerator';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -1431,6 +1432,9 @@ export default function ProceduresTab() {
         </>
       )}
 
+      {(['ogd', 'colonoscopy', 'ercp', 'bronch'] as ProcType[]).includes(activeType) && (
+        <EndoscopyReportGenerator type={activeType as 'ogd' | 'colonoscopy' | 'ercp' | 'bronch'} />
+      )}
       <OperativeNoteGenerator />
       <PostopCarePlan />
     </div>

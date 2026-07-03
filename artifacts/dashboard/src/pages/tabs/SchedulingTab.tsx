@@ -4,6 +4,7 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { SLOT_RULES, AppointmentType } from '@workspace/triage-engine';
 import TheatreBookingCard from '@/components/TheatreBookingCard';
 import PreopDayChecklist from '@/components/PreopDayChecklist';
+import PostOpMilestonesCard from '@/components/PostOpMilestonesCard';
 
 // Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
 const API_ORIGIN = getApiOrigin();
@@ -286,6 +287,7 @@ export default function SchedulingTab() {
 
       <TheatreBookingCard />
       <PreopDayChecklist />
+      <PostOpMilestonesCard />
     </div>
   );
 }

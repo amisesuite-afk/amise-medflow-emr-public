@@ -1,5 +1,6 @@
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
+import CodingAssistant from '@/components/CodingAssistant';
 
 const APPT_LABELS: Record<string, string> = {
   new_consult:   'New Consultation',
@@ -93,6 +94,7 @@ export default function BillingTab() {
           </div>
         </div>
       </CollapsibleCard>
+      <CodingAssistant />
     </div>
   );
 }
