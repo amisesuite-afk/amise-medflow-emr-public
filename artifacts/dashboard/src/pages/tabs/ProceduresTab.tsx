@@ -5,6 +5,7 @@ import ProcedureImagePanel, { type ProcImage } from '@/components/ProcedureImage
 import ClavienDindoGrader from '@/components/ClavienDindoGrader';
 import PathologySpecimenTracker from '@/components/PathologySpecimenTracker';
 import OperativeNoteGenerator from '@/components/OperativeNoteGenerator';
+import PostopCarePlan from '@/components/PostopCarePlan';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -1431,6 +1432,7 @@ export default function ProceduresTab() {
       )}
 
       <OperativeNoteGenerator />
+      <PostopCarePlan />
     </div>
   );
 }

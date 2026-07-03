@@ -4,6 +4,7 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import { getActivePathways } from '@/lib/clinical-pathways';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import ResultsTrackerCard from '@/components/ResultsTrackerCard';
 
 function filterBySex(lab: string, sex: string): boolean {
   if (lab.includes('(M)') && sex === 'female') return false;
@@ -618,6 +619,7 @@ export default function InvestigationsTab() {
           setOrderedInvestigations={setOrderedInvestigations}
         />
       </CollapsibleCard>
+      <ResultsTrackerCard />
     </div>
   );
 }
