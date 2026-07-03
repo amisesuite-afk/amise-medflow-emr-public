@@ -66,6 +66,61 @@ const URGENCY_STYLE: Record<string, { bg: string; border: string; color: string;
   consider: { bg: '#f0fdf4', border: '#86efac', color: '#14532d', dot: '#22c55e' },
 };
 
+// ── ICD auto-suggest from assessment text ─────────────────────────────────────
+
+function IcdAutoSuggest() {
+  const { assessment, differentials, icdCodes, setIcdCodes } = useAppContext();
+  const [suggestions, setSuggestions] = useState<typeof ICD_CODES>([]);
+  const [shown, setShown] = useState(false);
+
+  function suggest() {
+    const text = [assessment, differentials].join(' ').toLowerCase();
+    if (!text.trim()) return;
+    const hits = ICD_CODES.filter(c => {
+      const desc = c.description.toLowerCase();
+      const words = desc.split(/\s+/).filter(w => w.length > 4);
+      return words.some(w => text.includes(w));
+    }).slice(0, 12);
+    setSuggestions(hits);
+    setShown(true);
+  }
+
+  function add(c: (typeof ICD_CODES)[0]) {
+    const label = `${c.code} — ${c.description}`;
+    if (!icdCodes.includes(label)) setIcdCodes([...icdCodes, label]);
+  }
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button type="button" onClick={() => { suggest(); }}
+        title="Auto-suggest ICD codes from assessment text"
+        style={{ fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 5, border: '1px solid #3b82f6', background: '#eff6ff', color: '#1d4ed8', cursor: 'pointer' }}>
+        AI code suggest
+      </button>
+      {shown && suggestions.length > 0 && (
+        <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 80, marginTop: 4, background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: 300, maxHeight: 280, overflowY: 'auto' }}>
+          <div style={{ padding: '6px 10px 4px', fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            Suggested ICD codes
+            <button type="button" onClick={() => setShown(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14 }}>×</button>
+          </div>
+          {suggestions.map(c => {
+            const label = `${c.code} — ${c.description}`;
+            const added = icdCodes.includes(label);
+            return (
+              <button key={c.code} type="button" onClick={() => add(c)} disabled={added}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', padding: '7px 10px', border: 'none', background: added ? '#f0fdf4' : 'transparent', cursor: added ? 'default' : 'pointer', borderBottom: '1px solid #f8fafc' }}>
+                <code style={{ fontSize: 11, fontWeight: 700, color: '#1d4ed8', flexShrink: 0 }}>{c.code}</code>
+                <span style={{ fontSize: 12, color: '#334155', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.description}</span>
+                {added && <span style={{ fontSize: 10, color: '#15803d', flexShrink: 0 }}>✓</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Diagnosis search + ICD picker ────────────────────────────────────────────
 
 function splitLabel(label: string): { code: string; desc: string } {
@@ -460,6 +515,7 @@ export default function AssessmentTab() {
                 Search by name or code — first selected = primary diagnosis
               </div>
             </div>
+            <IcdAutoSuggest />
           </div>
           <DiagnosisPicker />
         </div>

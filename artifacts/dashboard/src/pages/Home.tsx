@@ -53,12 +53,17 @@ import SurgicalClassificationsTab from './tabs/SurgicalClassificationsTab';
 import VisitManagerTab from './VisitManager';
 import PrescriptionsTab from './tabs/PrescriptionsTab';
 import AiConsultantTab from './tabs/AiConsultantTab';
+import WhoChecklistTab from './tabs/WhoChecklistTab';
+import SurgicalConsentTab from './tabs/SurgicalConsentTab';
+import LetterGeneratorTab from './tabs/LetterGeneratorTab';
+import PatientEducationTab from './tabs/PatientEducationTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
 import FloatingActions from '@/components/FloatingActions';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import CommandPalette from '@/components/CommandPalette';
 import ProblemListStrip from '@/components/ProblemListStrip';
+import CriticalResultAlert from '@/components/CriticalResultAlert';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -618,6 +623,9 @@ export default function HomePage() {
           );
         })()}
 
+        {/* Critical result alerts — vitals / investigation thresholds */}
+        {topSection === 'consultation' && <CriticalResultAlert />}
+
         {/* Problem list strip — shown in consultation below patient banner */}
         {topSection === 'consultation' && <ProblemListStrip />}
 
@@ -688,8 +696,12 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
         {topSection === 'consultation'  && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
         {topSection === 'consultation'  && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
-        {topSection === 'consultation'  && activeSection === 'tasks'       && <PatientTasksTab />}
-        {topSection === 'procedures'    && hasRole(userRole, 'doctor')     && <ProceduresTab />}
+        {topSection === 'consultation'  && activeSection === 'tasks'          && <PatientTasksTab />}
+        {topSection === 'consultation'  && activeSection === 'who_checklist'  && <WhoChecklistTab />}
+        {topSection === 'consultation'  && activeSection === 'consent'        && <SurgicalConsentTab />}
+        {topSection === 'consultation'  && activeSection === 'letters'        && <LetterGeneratorTab />}
+        {topSection === 'consultation'  && activeSection === 'patient_education' && <PatientEducationTab />}
+        {topSection === 'procedures'    && hasRole(userRole, 'doctor')        && <ProceduresTab />}
         {topSection === 'summary'       && <SummaryTab />}
         {topSection === 'finaldoc'      && encounterMode === 'outpatient' && <FinalDocTab />}
         {topSection === 'finaldoc'      && encounterMode === 'inpatient'  && <InpatientTab />}

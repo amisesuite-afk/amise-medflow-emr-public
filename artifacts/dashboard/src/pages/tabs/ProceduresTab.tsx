@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ProcedureImagePanel, { type ProcImage } from '@/components/ProcedureImagePanel';
+import ClavienDindoGrader from '@/components/ClavienDindoGrader';
+import PathologySpecimenTracker from '@/components/PathologySpecimenTracker';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -1410,17 +1412,21 @@ export default function ProceduresTab() {
       )}
 
       {activeType === 'other' && (
-        <CollapsibleCard title="Procedure Notes / Other">
-          <div className="fld">
-            <label>Free-text procedure notes</label>
-            <textarea
-              value={procedures}
-              onChange={e => setProcedures(e.target.value)}
-              placeholder="Any other procedure notes — consent, operator grade, planned procedures, complications…"
-              style={{ minHeight: 160, fontSize: 13 }}
-            />
-          </div>
-        </CollapsibleCard>
+        <>
+          <CollapsibleCard title="Procedure Notes / Other">
+            <div className="fld">
+              <label>Free-text procedure notes</label>
+              <textarea
+                value={procedures}
+                onChange={e => setProcedures(e.target.value)}
+                placeholder="Any other procedure notes — consent, operator grade, planned procedures, complications…"
+                style={{ minHeight: 160, fontSize: 13 }}
+              />
+            </div>
+          </CollapsibleCard>
+          <PathologySpecimenTracker />
+          <ClavienDindoGrader />
+        </>
       )}
     </div>
   );

@@ -34,8 +34,12 @@ const CONSULT_SECTIONS: Array<{ id: Section; label: string }> = [
   { id: 'assessment',        label: 'Assessment' },
   { id: 'ai_consultant',     label: 'AI Aid' },
   { id: 'plan',              label: 'Plan' },
-  { id: 'prescriptions',     label: 'Prescriptions' },
+  { id: 'prescriptions',       label: 'Prescriptions' },
   { id: 'referring_providers', label: 'Referrals' },
+  { id: 'who_checklist',       label: 'WHO Safety Checklist' },
+  { id: 'consent',             label: 'Surgical Consent' },
+  { id: 'letters',             label: 'Letter / Document Generator' },
+  { id: 'patient_education',   label: 'Patient Education' },
 ];
 
 const TOP_SECTIONS: Array<{ id: TopSection; label: string }> = [

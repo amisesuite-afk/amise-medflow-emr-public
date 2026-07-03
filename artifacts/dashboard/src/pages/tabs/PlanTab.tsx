@@ -4,6 +4,7 @@ import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { errMsg } from '@/lib/err';
 import SmartTextarea from '@/components/SmartTextarea';
+import FollowUpSchedulerCard, { type FollowUpEntry } from '@/components/FollowUpSchedulerCard';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
 
@@ -158,6 +159,8 @@ export default function PlanTab() {
 
   const acuity = triageResult.acuity;
   const bmiData = calcBmiClass(weightKg, heightCm);
+
+  const [followUpEntries, setFollowUpEntries] = useState<FollowUpEntry[]>([]);
 
   // Review / follow-up scheduling
   const [followUpNotes, setFollowUpNotes] = useState('');
@@ -448,6 +451,8 @@ export default function PlanTab() {
         </p>
         <CptPicker />
       </CollapsibleCard>
+
+      <FollowUpSchedulerCard entries={followUpEntries} onChange={setFollowUpEntries} />
 
       <CollapsibleCard title="Referrals" defaultOpen={false}>
         <div className="fld">
