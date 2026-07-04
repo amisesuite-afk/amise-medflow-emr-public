@@ -88,7 +88,8 @@ const EMPTY_CASE: Omit<MMCase, 'id'> = {
 
 function GradeChip({ grade }: { grade: ClavienGrade | '' }) {
   if (!grade) return <span style={{ fontSize: 11, color: '#94a3b8' }}>—</span>;
-  const g = GRADES.find(x => x.id === grade)!;
+  const g = GRADES.find(x => x.id === grade);
+  if (!g) return <span style={{ fontSize: 11, color: '#94a3b8' }}>{grade}</span>;
   return (
     <span style={{
       fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 4,
@@ -99,12 +100,12 @@ function GradeChip({ grade }: { grade: ClavienGrade | '' }) {
 }
 
 function CategoryChip({ cat }: { cat: CompCategory }) {
-  const c = CATEGORIES.find(x => x.id === cat)!;
+  const c = CATEGORIES.find(x => x.id === cat);
   return (
     <span style={{
       fontSize: 10, padding: '1px 6px', borderRadius: 3,
       background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1',
-    }}>{c.label}</span>
+    }}>{c?.label ?? cat}</span>
   );
 }
 

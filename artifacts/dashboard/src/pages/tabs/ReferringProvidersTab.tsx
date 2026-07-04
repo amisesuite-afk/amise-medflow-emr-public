@@ -401,9 +401,7 @@ export default function ReferringProvidersTab() {
   const [loading, setLoading] = useState(true);
 
   /* ── Outbound referral state ── */
-  const [outbound, setOutbound] = useState<OutboundReferral[]>(() =>
-    updateOverdue(loadReferrals(patientId, encounterId))
-  );
+  const [outbound, setOutbound] = useState<OutboundReferral[]>([]);
   const [refForm, setRefForm] = useState({ recipient: '', specialty: '', reason: '', expectedDays: 7 });
   const [addingRef, setAddingRef] = useState(false);
 

@@ -38,9 +38,14 @@ export default function EncounterTimelineTab() {
     if (!patientId) return;
     setLoading(true);
     setError(null);
-    const rows = await listPatientEncounters(patientId);
-    setEncounters(rows);
-    setLoading(false);
+    try {
+      const rows = await listPatientEncounters(patientId);
+      setEncounters(rows);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load encounters');
+    } finally {
+      setLoading(false);
+    }
   }, [patientId]);
 
   useEffect(() => { void load(); }, [load]);
@@ -48,7 +53,14 @@ export default function EncounterTimelineTab() {
   async function loadEncounter(enc: EncounterSummary) {
     if (!patientId) return;
     setLoadingId(enc.id);
-    const result = await loadEncounterData(enc.id, patientId);
+    let result: Awaited<ReturnType<typeof loadEncounterData>>;
+    try {
+      result = await loadEncounterData(enc.id, patientId);
+    } catch (err) {
+      setLoadingId(null);
+      setError(err instanceof Error ? err.message : 'Failed to load encounter');
+      return;
+    }
     setLoadingId(null);
     if (result.error || !result.data) {
       setError(result.error ?? 'Failed to load encounter');

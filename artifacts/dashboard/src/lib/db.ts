@@ -1667,10 +1667,13 @@ export async function listPatientEncounters(patientId: string): Promise<Encounte
 
   const aMap = new Map<string, { diagnosis: string; icd10_code: string }>();
   for (const a of ((aData ?? []) as Array<Record<string, unknown>>)) {
-    aMap.set(a.encounter_id as string, {
-      diagnosis: (a.diagnosis as string) ?? '',
-      icd10_code: (a.icd10_code as string) ?? '',
-    });
+    const eid = a.encounter_id as string;
+    if (!aMap.has(eid)) {
+      aMap.set(eid, {
+        diagnosis: (a.diagnosis as string) ?? '',
+        icd10_code: (a.icd10_code as string) ?? '',
+      });
+    }
   }
 
   return rows.map(r => {

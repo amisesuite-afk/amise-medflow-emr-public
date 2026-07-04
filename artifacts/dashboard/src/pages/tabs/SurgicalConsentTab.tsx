@@ -14,9 +14,14 @@ function SignaturePad({ label, value, onChange }: SigPadProps) {
   const ref = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
+  // Tracks whether the upcoming `value` change originated from the user
+  // drawing (canvas already correct) vs. an external update (needs repaint).
+  const ownChange = useRef(false);
 
-  // Initialise canvas from saved value
+  // Sync canvas whenever `value` changes externally (e.g. CollapsibleCard
+  // collapse → remount, or parent resets the signature).
   useEffect(() => {
+    if (ownChange.current) { ownChange.current = false; return; }
     const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d')!;
@@ -24,11 +29,10 @@ function SignaturePad({ label, value, onChange }: SigPadProps) {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     if (value) {
       const img = new Image();
-      img.onload = () => ctx.drawImage(img, 0, 0);
+      img.onload = () => { if (ref.current) ctx.drawImage(img, 0, 0); };
       img.src = value;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);   // run once on mount
+  }, [value]);
 
   function getPos(e: React.MouseEvent | React.TouchEvent): { x: number; y: number } {
     const rect = ref.current!.getBoundingClientRect();
@@ -62,13 +66,17 @@ function SignaturePad({ label, value, onChange }: SigPadProps) {
   }
 
   const endDraw = useCallback(() => {
+    if (!drawing.current) return;       // ignore mouseleave/touchend without pen-down
     drawing.current = false;
     lastPos.current = null;
-    onChange(ref.current!.toDataURL());
+    if (!ref.current) return;
+    ownChange.current = true;
+    onChange(ref.current.toDataURL());
   }, [onChange]);
 
   function clear() {
-    const canvas = ref.current!;
+    const canvas = ref.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d')!;
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
