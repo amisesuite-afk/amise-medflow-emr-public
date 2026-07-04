@@ -30,6 +30,9 @@ import {
   childPughScore, interpretChildPugh, type ChildPughInputs,
   apfelScore, interpretApfel, APFEL_RISK, type ApfelInputs,
   meldScore, meldNaScore, interpretMeld,
+  chads2VascScore, interpretChads2Vasc, type Chads2VascInputs,
+  hasBledScore, interpretHasBled, type HasBledInputs,
+  qSofaScore, interpretQsofa,
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
@@ -1048,6 +1051,108 @@ function MeldCard() {
   );
 }
 
+// ── CHA₂DS₂-VASc ─────────────────────────────────────────────────────────────
+
+function Chads2VascCard() {
+  const [v, setV] = useState<Chads2VascInputs>({
+    heartFailure: false, hypertension: false, age75plus: false,
+    diabetes: false, strokeOrTia: false, vascularDisease: false,
+    age65to74: false, femaleSex: false,
+  });
+  const tog = (k: keyof Chads2VascInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const score  = chads2VascScore(v);
+  const result = interpretChads2Vasc(score, v.femaleSex);
+  return (
+    <div>
+      <Chk label="Congestive heart failure / LV dysfunction" checked={v.heartFailure}    onChange={() => tog('heartFailure')}    pts={1} />
+      <Chk label="Hypertension"                               checked={v.hypertension}    onChange={() => tog('hypertension')}    pts={1} />
+      <Chk label="Age ≥ 75 years"                             checked={v.age75plus}       onChange={() => tog('age75plus')}       pts={2} />
+      <Chk label="Diabetes mellitus"                          checked={v.diabetes}        onChange={() => tog('diabetes')}        pts={1} />
+      <Chk label="Stroke / TIA / thromboembolism history"     checked={v.strokeOrTia}     onChange={() => tog('strokeOrTia')}     pts={2} />
+      <Chk label="Vascular disease (prior MI, PAD, aortic plaque)" checked={v.vascularDisease} onChange={() => tog('vascularDisease')} pts={1} />
+      <Chk label="Age 65–74 years"                            checked={v.age65to74}       onChange={() => tog('age65to74')}       pts={1} />
+      <Chk label="Female sex"                                 checked={v.femaleSex}       onChange={() => tog('femaleSex')}       pts={1} />
+      <ScoreRow label="CHA₂DS₂-VASc Score" value={`${score}/9`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── HAS-BLED ──────────────────────────────────────────────────────────────────
+
+function HasBledCard() {
+  const [v, setV] = useState<HasBledInputs>({
+    hypertensionUncontrolled: false, renalDisease: false, liverDisease: false,
+    strokeHistory: false, bleedingHistory: false, labileInr: false,
+    elderlyAge65: false, drugsOrAlcohol: false, alcoholUse: false,
+  });
+  const tog = (k: keyof HasBledInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const score  = hasBledScore(v);
+  const result = interpretHasBled(score);
+  return (
+    <div>
+      <Chk label="Hypertension (uncontrolled, SBP > 160 mmHg)"        checked={v.hypertensionUncontrolled} onChange={() => tog('hypertensionUncontrolled')} pts={1} />
+      <Chk label="Abnormal renal function (dialysis / Cr > 200 µmol/L)" checked={v.renalDisease}            onChange={() => tog('renalDisease')}            pts={1} />
+      <Chk label="Abnormal liver function (cirrhosis / bilirubin > 2×ULN)" checked={v.liverDisease}        onChange={() => tog('liverDisease')}            pts={1} />
+      <Chk label="Stroke history"                                      checked={v.strokeHistory}            onChange={() => tog('strokeHistory')}            pts={1} />
+      <Chk label="Bleeding history or predisposition"                  checked={v.bleedingHistory}          onChange={() => tog('bleedingHistory')}          pts={1} />
+      <Chk label="Labile INR (TTR < 60% or unstable)"                  checked={v.labileInr}                onChange={() => tog('labileInr')}                pts={1} />
+      <Chk label="Elderly (age ≥ 65)"                                   checked={v.elderlyAge65}             onChange={() => tog('elderlyAge65')}             pts={1} />
+      <Chk label="Drugs (antiplatelet agents / NSAIDs)"                 checked={v.drugsOrAlcohol}           onChange={() => tog('drugsOrAlcohol')}           pts={1} />
+      <Chk label="Alcohol (≥ 8 drinks / week)"                          checked={v.alcoholUse}               onChange={() => tog('alcoholUse')}               pts={1} />
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 6 }}>Maximum score 9 (drugs + alcohol each count +1)</div>
+      <ScoreRow label="HAS-BLED Score" value={`${score}/9`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── qSOFA ─────────────────────────────────────────────────────────────────────
+
+function QsofaCard() {
+  const ctx = useAppContext();
+  const preRr  = ctx.vitals?.respiratoryRate  ? parseFloat(ctx.vitals.respiratoryRate)  : null;
+  const preSbp = ctx.vitals?.systolicBp       ? parseFloat(ctx.vitals.systolicBp)       : null;
+
+  const [altered,  setAltered]  = useState(false);
+  const [rr,       setRr]       = useState(isNaN(preRr  ?? NaN) ? '' : String(preRr));
+  const [sbp,      setSbp]      = useState(isNaN(preSbp ?? NaN) ? '' : String(preSbp));
+
+  const rrVal  = rr  !== '' ? parseFloat(rr)  : null;
+  const sbpVal = sbp !== '' ? parseFloat(sbp) : null;
+  const score  = qSofaScore(altered, rrVal, sbpVal);
+  const result = interpretQsofa(score);
+
+  const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2 };
+
+  return (
+    <div>
+      {(preRr !== null || preSbp !== null) && (
+        <div style={{ fontSize: 11, color: '#059669', marginBottom: 8, padding: '4px 8px', background: '#ecfdf5', borderRadius: 6 }}>
+          ⚡ Pre-populated from vitals tab
+        </div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
+        <label style={lblStyle}>Respiratory rate (/min)
+          <input style={inpStyle} type="number" min="0" value={rr} onChange={e => setRr(e.target.value)} placeholder="e.g. 24" />
+        </label>
+        <label style={lblStyle}>Systolic BP (mmHg)
+          <input style={inpStyle} type="number" min="0" value={sbp} onChange={e => setSbp(e.target.value)} placeholder="e.g. 95" />
+        </label>
+      </div>
+      <Chk
+        label="Altered mental status (GCS < 15 / new confusion)"
+        checked={altered}
+        onChange={() => setAltered(p => !p)}
+        pts={1}
+      />
+      <ScoreRow label="qSOFA Score" value={`${score}/3`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
 // ── Scale registry ────────────────────────────────────────────────────────────
 
 const SCALE_COMPONENTS: Record<string, React.FC> = {
@@ -1077,6 +1182,9 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   childPugh:        ChildPughCard,
   apfel:            ApfelCard,
   meld:             MeldCard,
+  chads2Vasc:       Chads2VascCard,
+  hasBled:          HasBledCard,
+  qsofa:            QsofaCard,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
@@ -1106,6 +1214,9 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   childPugh:        'Child-Pugh Score — Liver Disease Surgical Risk',
   apfel:            'Apfel Score — PONV Risk (Pre-operative)',
   meld:             'MELD / MELD-Na — End-stage Liver Disease',
+  chads2Vasc:       'CHA₂DS₂-VASc — AF Stroke Risk',
+  hasBled:          'HAS-BLED — Bleeding Risk on Anticoagulation',
+  qsofa:            'qSOFA — Bedside Sepsis Screen',
 };
 
 const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }> = {

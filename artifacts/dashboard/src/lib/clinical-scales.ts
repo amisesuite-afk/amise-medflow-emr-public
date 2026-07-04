@@ -28,6 +28,9 @@
  *   23. Child-Pugh score (liver disease surgical risk)
  *   24. Apfel PONV score (post-operative nausea and vomiting)
  *   25. MELD / MELD-Na (end-stage liver disease severity)
+ *   26. CHA₂DS₂-VASc (AF stroke risk / anticoagulation)
+ *   27. HAS-BLED (bleeding risk on anticoagulation)
+ *   28. qSOFA (quick SOFA — bedside sepsis screen)
  */
 
 export interface ScaleResult {
@@ -1454,6 +1457,146 @@ export function interpretMeld(score: number): ScaleResult {
     score, band: `MELD ${score} — Very high / Critical`, color: 'red',
     description: 'Critical disease severity. Estimated 90-day mortality > 52%.',
     action: 'Highest-priority transplant listing. Surgery carries extreme risk. Intensive medical stabilisation. Goals-of-care discussion with patient and family.',
+    evidence,
+  };
+}
+
+// ── CHA₂DS₂-VASc — AF Stroke Risk / Anticoagulation Decision ─────────────────
+// Ref: Lip GY et al., Chest 2010;137(2):263-272.
+// ESC 2020 AF guidelines recommend anticoagulation for men ≥2, women ≥3.
+
+export interface Chads2VascInputs {
+  heartFailure:       boolean; // +1
+  hypertension:       boolean; // +1
+  age75plus:          boolean; // +2 (takes precedence over age65to74)
+  diabetes:           boolean; // +1
+  strokeOrTia:        boolean; // +2
+  vascularDisease:    boolean; // +1 (prior MI, PAD, or aortic plaque)
+  age65to74:          boolean; // +1 (only if NOT age75plus)
+  femaleSex:          boolean; // +1 (modifier — doesn't independently confer risk)
+}
+
+export function chads2VascScore(i: Chads2VascInputs): number {
+  let s = 0;
+  if (i.heartFailure)    s += 1;
+  if (i.hypertension)    s += 1;
+  if (i.age75plus)       s += 2;
+  else if (i.age65to74)  s += 1;
+  if (i.diabetes)        s += 1;
+  if (i.strokeOrTia)     s += 2;
+  if (i.vascularDisease) s += 1;
+  if (i.femaleSex)       s += 1;
+  return s;
+}
+
+export function interpretChads2Vasc(score: number, femaleSex: boolean): ScaleResult {
+  const evidence = 'Lip GYH et al., Chest 2010;137:263-272. ESC 2020 AF Guidelines (Hindricks G et al., Eur Heart J 2021;42:373-498).';
+  // Female sex alone (score=1, female=true with only that point) = effectively score 0 for men
+  // ESC: Men ≥2, Women ≥3 → anticoagulate; Men 1, Women 2 → consider
+  const effectiveScore = femaleSex ? score - 1 : score; // net score excluding sex modifier
+
+  if (effectiveScore <= 0) return {
+    score, band: `CHA₂DS₂-VASc ${score} — Very low stroke risk`, color: 'green',
+    description: 'Very low annual stroke risk. Anticoagulation not indicated.',
+    action: 'No anticoagulation required. Reassess annually or if clinical status changes. Review CHA₂DS₂-VASc at each clinical encounter.',
+    evidence,
+  };
+  if (effectiveScore === 1) return {
+    score, band: `CHA₂DS₂-VASc ${score} — Low–moderate stroke risk`, color: 'amber',
+    description: 'Low–moderate annual stroke risk (~1–2%/year). Anticoagulation may be considered after weighing stroke risk against bleeding risk (HAS-BLED).',
+    action: 'Consider oral anticoagulation (DOAC preferred over warfarin). Calculate HAS-BLED score. Discuss risks and benefits with patient. Address modifiable bleeding risk factors before deciding.',
+    evidence,
+  };
+  return {
+    score, band: `CHA₂DS₂-VASc ${score} — Significant stroke risk`, color: 'red',
+    description: `Significant annual stroke risk (~${score >= 5 ? '>6' : score >= 3 ? '3–4' : '2–3'}%/year). Oral anticoagulation strongly recommended unless absolute contraindication exists.`,
+    action: 'Initiate oral anticoagulation (DOAC preferred: apixaban, rivaroxaban, or dabigatran). If valvular AF or mechanical valve — warfarin only. Calculate HAS-BLED — a high score should prompt correction of modifiable bleeding risks, not withholding anticoagulation. Refer to cardiology if uncertain.',
+    evidence,
+  };
+}
+
+// ── HAS-BLED — Bleeding Risk on Anticoagulation ───────────────────────────────
+// Ref: Pisters R et al., Chest 2010;138(5):1093-1100.
+// Used alongside CHA₂DS₂-VASc — high HAS-BLED prompts risk-factor correction, not withholding OAC.
+
+export interface HasBledInputs {
+  hypertensionUncontrolled: boolean; // SBP > 160 mmHg — +1
+  renalDisease:             boolean; // dialysis / transplant / creatinine > 200 µmol/L — +1
+  liverDisease:             boolean; // cirrhosis / bilirubin > 2× ULN / ALT/AST/ALP > 3× ULN — +1
+  strokeHistory:            boolean; // +1
+  bleedingHistory:          boolean; // prior major bleed or bleeding predisposition — +1
+  labileInr:                boolean; // unstable/high INR or time-in-therapeutic-range < 60% — +1
+  elderlyAge65:             boolean; // age ≥ 65 years — +1
+  drugsOrAlcohol:           boolean; // antiplatelet / NSAIDs (1 pt) OR ≥8 alcohol drinks/week (1 pt); max 2 pts
+  alcoholUse:               boolean; // ≥ 8 drinks / week (combined with drugs above for up to +2)
+}
+
+export function hasBledScore(i: HasBledInputs): number {
+  let s = 0;
+  if (i.hypertensionUncontrolled) s += 1;
+  if (i.renalDisease)             s += 1;
+  if (i.liverDisease)             s += 1;
+  if (i.strokeHistory)            s += 1;
+  if (i.bleedingHistory)          s += 1;
+  if (i.labileInr)                s += 1;
+  if (i.elderlyAge65)             s += 1;
+  if (i.drugsOrAlcohol)           s += 1;
+  if (i.alcoholUse)               s += 1;
+  return Math.min(s, 9);
+}
+
+export function interpretHasBled(score: number): ScaleResult {
+  const evidence = 'Pisters R et al., Chest 2010;138(5):1093-1100. ESC 2020 AF Guidelines recommend HAS-BLED to identify correctable bleeding risks — a high score should not withhold OAC but prompt risk-factor modification.';
+  if (score <= 1) return {
+    score, band: `HAS-BLED ${score} — Low bleeding risk`, color: 'green',
+    description: 'Low annual major bleeding risk (~1–2%/year). Anticoagulation can be started with routine monitoring.',
+    action: 'Proceed with anticoagulation per CHA₂DS₂-VASc recommendation. Annual review of bleeding risk factors. Educate patient on signs of bleeding.',
+    evidence,
+  };
+  if (score === 2) return {
+    score, band: `HAS-BLED ${score} — Moderate bleeding risk`, color: 'amber',
+    description: 'Moderate annual major bleeding risk (~2–4%/year). Benefits of anticoagulation for stroke prevention likely outweigh bleeding risk at CHA₂DS₂-VASc ≥2.',
+    action: 'Anticoagulate if stroke risk justifies. Address modifiable risk factors: control blood pressure, review concomitant NSAIDs/antiplatelets, optimise INR control (or switch to DOAC). More frequent follow-up. Patient education essential.',
+    evidence,
+  };
+  return {
+    score, band: `HAS-BLED ${score} — High bleeding risk`, color: 'red',
+    description: `High annual major bleeding risk (≥4%/year). HAS-BLED ≥3 signals a need to correct modifiable bleeding risk factors — it should NOT by itself justify withholding anticoagulation if stroke risk is high.`,
+    action: 'Identify and correct modifiable risk factors: treat hypertension, stop NSAIDs/antiplatelets if possible, stabilise INR (consider DOAC), address alcohol use, review renal and liver function. Use the lowest effective anticoagulant dose. Increased monitoring frequency. Consider haematology or cardiology input. Document risk-benefit discussion.',
+    evidence,
+  };
+}
+
+// ── qSOFA — Quick SOFA (Bedside Sepsis Screen) ───────────────────────────────
+// Ref: Seymour CW et al., JAMA 2016;315(8):762-774.
+// Score ≥ 2 → high risk of organ dysfunction — initiate sepsis workup / response.
+
+export function qSofaScore(alteredMentalStatus: boolean, respiratoryRatePerMin: number | null, systolicBpMmHg: number | null): number {
+  let s = 0;
+  if (alteredMentalStatus)                                s += 1;
+  if (respiratoryRatePerMin !== null && respiratoryRatePerMin >= 22)  s += 1;
+  if (systolicBpMmHg !== null && systolicBpMmHg <= 100)              s += 1;
+  return s;
+}
+
+export function interpretQsofa(score: number): ScaleResult {
+  const evidence = 'Seymour CW et al., JAMA 2016;315(8):762-774. Sepsis-3 Task Force. qSOFA is a bedside screening tool — does not replace full SOFA for ICU scoring.';
+  if (score === 0) return {
+    score, band: 'qSOFA 0 — Low probability of organ dysfunction', color: 'green',
+    description: 'Low likelihood of sepsis-related organ dysfunction at this time.',
+    action: 'Continue monitoring. Reassess if clinical status changes. Consider infection source investigation if clinically suspected.',
+    evidence,
+  };
+  if (score === 1) return {
+    score, band: 'qSOFA 1 — Intermediate concern', color: 'amber',
+    description: 'One criterion met. Monitor closely for deterioration. Infection should be actively considered.',
+    action: 'Assess for source of infection. Check lactate, FBC, CRP, blood cultures if clinically indicated. Increase observation frequency. Reassess within 30–60 minutes.',
+    evidence,
+  };
+  return {
+    score, band: `qSOFA ${score} — High risk of sepsis / organ dysfunction`, color: 'red',
+    description: '≥2 criteria met. High risk of sepsis with organ dysfunction. Immediate senior review required.',
+    action: 'Activate Sepsis 6 / sepsis bundle within 1 hour: blood cultures × 2, IV antibiotics, IV fluids, urine output monitoring, lactate, high-flow O₂. Urgent senior/intensivist review. Consider ICU escalation. Identify and control source of infection.',
     evidence,
   };
 }

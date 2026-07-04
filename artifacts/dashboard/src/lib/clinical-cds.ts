@@ -579,6 +579,59 @@ const RULES: CdsRule[] = [
     },
     labsPresent: ctx => hasLab(ctx, 'bilirubin', 'INR', 'creatinine', 'sodium'),
   },
+  // ── CHA₂DS₂-VASc — AF stroke risk ────────────────────────────────────────────
+  {
+    scaleKey: 'chads2Vasc',
+    title: 'CHA₂DS₂-VASc — AF Stroke Risk',
+    urgency: 'urgent',
+    needsLabs: false,
+    categoryTag: 'Cardiovascular',
+    trigger: ctx => {
+      if (hasComorbidity(ctx, 'atrial fibrillation', 'AF', 'paroxysmal AF', 'persistent AF', 'permanent AF'))
+        return 'atrial fibrillation in PMH — stroke risk stratification and anticoagulation decision required';
+      if (hasSym(ctx, 'palpitations') && hasComorbidity(ctx, 'hypertension', 'diabetes', 'heart failure', 'stroke', 'TIA'))
+        return 'palpitations with cardiovascular risk factors — consider AF and CHA₂DS₂-VASc if AF confirmed';
+      return null;
+    },
+  },
+
+  // ── HAS-BLED — bleeding risk on anticoagulation ───────────────────────────────
+  {
+    scaleKey: 'hasBled',
+    title: 'HAS-BLED — Bleeding Risk on Anticoagulation',
+    urgency: 'relevant',
+    needsLabs: false,
+    categoryTag: 'Cardiovascular',
+    trigger: ctx => {
+      if (hasComorbidity(ctx, 'atrial fibrillation', 'AF'))
+        return 'AF present — HAS-BLED required alongside CHA₂DS₂-VASc to quantify bleeding risk before anticoagulation';
+      if (hasComorbidity(ctx, 'anticoagulation', 'warfarin', 'DOAC', 'apixaban', 'rivaroxaban', 'dabigatran', 'edoxaban'))
+        return 'patient on anticoagulation — periodic bleeding risk reassessment with HAS-BLED recommended';
+      return null;
+    },
+  },
+
+  // ── qSOFA — bedside sepsis screen ────────────────────────────────────────────
+  {
+    scaleKey: 'qsofa',
+    title: 'qSOFA — Sepsis Screening',
+    urgency: 'urgent',
+    needsLabs: false,
+    categoryTag: 'Critical Care',
+    trigger: ctx => {
+      const triggers: string[] = [];
+      if (hasSym(ctx, 'fever', 'rigors', 'chills', 'sepsis', 'infection'))
+        triggers.push('fever/infection symptoms — screen for sepsis with qSOFA');
+      if (hasComorbidity(ctx, 'sepsis', 'bacteraemia', 'peritonitis', 'pneumonia', 'UTI', 'wound infection'))
+        triggers.push('infection-related PMH — qSOFA to detect organ dysfunction');
+      const sbp = parseFloat(ctx.vitals?.systolicBp ?? '');
+      const rr  = parseFloat(ctx.vitals?.respiratoryRate ?? '');
+      if (!isNaN(sbp) && sbp <= 100) triggers.push('hypotension (SBP ≤ 100) — qSOFA criterion met');
+      if (!isNaN(rr)  && rr  >= 22)  triggers.push('tachypnoea (RR ≥ 22) — qSOFA criterion met');
+      if (triggers.length > 0) return triggers.join('; ');
+      return null;
+    },
+  },
 ];
 
 // ── Public API ─────────────────────────────────────────────────────────────────
