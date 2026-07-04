@@ -309,6 +309,65 @@ const RULES: CdsRule[] = [
     },
   },
 
+  // ── P-POSSUM — surgical risk ─────────────────────────────────────────────────
+  {
+    scaleKey: 'ppossuml',
+    title: 'P-POSSUM — Surgical Mortality / Morbidity',
+    urgency: 'consider',
+    needsLabs: true,
+    categoryTag: 'Surgical risk',
+    trigger: ctx => {
+      const isPreop = (ctx.procedureData as { preop?: unknown }).preop !== undefined;
+      const hasOp = ['ogd', 'colonoscopy', 'ercp'].some(k =>
+        (ctx.procedureData as Record<string, unknown>)[k] !== undefined
+      );
+      if (isPreop || hasOp) return 'Pre-operative assessment or operative procedure active — calculate P-POSSUM surgical risk';
+      return null;
+    },
+    labsPresent: ctx => hasLab(ctx, 'haematocrit', 'haemoglobin', 'WBC', 'urea', 'sodium', 'potassium'),
+  },
+
+  // ── MUST — nutritional screening ─────────────────────────────────────────────
+  {
+    scaleKey: 'must',
+    title: 'MUST — Malnutrition Screening',
+    urgency: 'consider',
+    needsLabs: false,
+    categoryTag: 'Nutrition',
+    trigger: ctx => {
+      const isPreop = (ctx.procedureData as { preop?: unknown }).preop !== undefined;
+      const hasMalnutritionRisk = hasComorbidity(ctx, 'cancer', 'malignancy', 'Crohn', 'IBD', 'weight loss', 'dysphagia');
+      if (isPreop || hasMalnutritionRisk) {
+        return hasMalnutritionRisk
+          ? 'Malnutrition risk factor identified — screen with MUST before surgery'
+          : 'Pre-operative assessment active — mandatory nutritional screening';
+      }
+      return null;
+    },
+  },
+
+  // ── Caprini — VTE risk ───────────────────────────────────────────────────────
+  {
+    scaleKey: 'caprini',
+    title: 'Caprini VTE Risk Score — Thromboprophylaxis',
+    urgency: 'relevant',
+    needsLabs: false,
+    categoryTag: 'VTE prevention',
+    trigger: ctx => {
+      const isPreop = (ctx.procedureData as { preop?: unknown }).preop !== undefined;
+      const hasOp = ['ogd', 'colonoscopy', 'ercp'].some(k =>
+        (ctx.procedureData as Record<string, unknown>)[k] !== undefined
+      );
+      const hasVteRisk = hasComorbidity(ctx, 'DVT', 'PE', 'thrombophilia', 'malignancy', 'cancer', 'immobil');
+      if (isPreop || hasOp || hasVteRisk) {
+        return isPreop || hasOp
+          ? 'Surgical procedure active — calculate VTE risk and prescribe thromboprophylaxis'
+          : 'VTE risk factor in history — assess thromboprophylaxis requirement';
+      }
+      return null;
+    },
+  },
+
   // ── Ranson — pancreatitis ────────────────────────────────────────────────────
   {
     scaleKey: 'ranson',

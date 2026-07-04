@@ -833,3 +833,207 @@ export function interpretBaux(score: number): { label: string; color: string } {
   if (score < 101) return { label: 'Severe',             color: '#dc2626' };
   return            { label: 'Critical / Lethal',        color: '#7f1d1d' };
 }
+
+// ── P-POSSUM (Portsmouth-POSSUM) ─────────────────────────────────────────────
+// Ref: Prytherch et al., Br J Surg 1998;85:1217-1220.
+// Predicts 30-day mortality and morbidity from physiological + operative scores.
+
+export interface PpossumlPhysInputs {
+  age:             1 | 2 | 4 | 8;   // <60=1, 60-69=2, 70-79=4, ≥80=8
+  cardiac:         1 | 2 | 4 | 8;   // no failure=1, controlled HF=2, oedema/warfarin=4, raised JVP/cardiomegaly=8
+  respiratory:     1 | 2 | 4 | 8;   // no dyspnoea=1, exertional/mild COPD=2, limiting/moderate COPD=4, rest/severe COPD=8
+  ecg:             1 | 4 | 8;       // normal=1, AF 60-90=4, other change=8
+  systolicBp:      1 | 2 | 4 | 8;   // 110-130=1, 131-170 or 100-109=2, ≥171 or 90-99=4, <90=8
+  pulse:           1 | 2 | 4 | 8;   // 50-80=1, 81-100 or 40-49=2, 101-120=4, ≥121 or <40=8
+  gcs:             1 | 2 | 4 | 8;   // 15=1, 12-14=2, 9-11=4, ≤8=8
+  haematocrit:     1 | 2 | 4;       // ≥36%=1, 26-35%=2, ≤25%=4
+  wbc:             1 | 2 | 4;       // 4-10=1, 10.1-20 or 3.1-3.9=2, ≥20.1 or ≤3=4
+  urea:            1 | 2 | 4 | 8;   // <7.5=1, 7.6-10=2, 10.1-15=4, >15=8
+  sodium:          1 | 2 | 4 | 8;   // ≥136=1, 131-135=2, 126-130=4, ≤125=8
+  potassium:       1 | 2 | 4 | 8;   // 3.5-5.0=1, 3.2-3.4 or 5.1-5.3=2, 2.9-3.1 or 5.4-5.9=4, ≤2.8 or ≥6.0=8
+}
+
+export interface PpossumlOpInputs {
+  severity:        1 | 2 | 4 | 8;   // minor=1, moderate=2, major=4, major+=8
+  procedures:      1 | 4 | 8;       // 1=1, 2=4, >2=8
+  bloodLoss:       1 | 2 | 4 | 8;   // <100mL=1, 101-500=2, 501-999=4, ≥1000=8
+  soiling:         1 | 2 | 4 | 8;   // none=1, minor=2, local pus=4, free pus/blood/stool=8
+  malignancy:      1 | 2 | 4 | 8;   // no/no nodes=1, primary only=2, lymph nodes=4, distant mets=8
+  urgency:         1 | 4 | 8;       // elective=1, emergency (resus possible)=4, emergency (resus impossible)=8
+}
+
+export function ppossumlPhysScore(i: PpossumlPhysInputs): number {
+  return i.age + i.cardiac + i.respiratory + i.ecg + i.systolicBp +
+         i.pulse + i.gcs + i.haematocrit + i.wbc + i.urea + i.sodium + i.potassium;
+}
+
+export function ppossumlOpScore(i: PpossumlOpInputs): number {
+  return i.severity + i.procedures + i.bloodLoss + i.soiling + i.malignancy + i.urgency;
+}
+
+export function ppossumlPredict(physScore: number, opScore: number): { mortality: number; morbidity: number } {
+  const logMort = -9.065 + (0.1692 * physScore) + (0.1550 * opScore);
+  const logMorb = -5.91  + (0.1612 * physScore) + (0.1248 * opScore);
+  const mortality  = (1 / (1 + Math.exp(-logMort))) * 100;
+  const morbidity  = (1 / (1 + Math.exp(-logMorb))) * 100;
+  return { mortality, morbidity };
+}
+
+export function interpretPpossuml(physScore: number, opScore: number): ScaleResult {
+  const { mortality, morbidity } = ppossumlPredict(physScore, opScore);
+  const color = mortality < 2 ? 'green' : mortality < 10 ? 'amber' : 'red';
+  const evidence = 'Prytherch et al., Br J Surg 1998;85:1217-1220. P-POSSUM Portsmouth modification.';
+  return {
+    score: physScore + opScore,
+    band:  `P-POSSUM — Phys ${physScore} / Op ${opScore}`,
+    color,
+    description: `Predicted 30-day mortality: ${mortality.toFixed(1)}% · Predicted morbidity: ${morbidity.toFixed(1)}%`,
+    action: mortality < 2
+      ? 'Low predicted risk. Proceed with planned surgery. Standard peri-operative care.'
+      : mortality < 5
+      ? 'Moderate risk. Discuss risk/benefit with patient. Optimise co-morbidities. Consider HDU post-op.'
+      : mortality < 10
+      ? 'Elevated risk. Full informed consent documentation. Consider ICU booking. Anaesthetic pre-assessment essential. Multi-disciplinary review.'
+      : 'High risk. Senior surgeon involvement. ICU booking. Formal risk discussion with patient and family. Consider non-operative alternatives.',
+    evidence,
+  };
+}
+
+// ── MUST (Malnutrition Universal Screening Tool) ──────────────────────────────
+// Ref: BAPEN (2003). Simple 3-criterion nutritional risk screen.
+
+export interface MustInputs {
+  bmiScore:        0 | 1 | 2;  // BMI >20=0, 18.5-20=1, <18.5=2
+  weightLossScore: 0 | 1 | 2;  // unintentional loss: <5%=0, 5-10%=1, >10%=2
+  acuteDiseaseScore: 0 | 2;    // acutely ill + no nutrition >5d: no=0, yes=2
+}
+
+export function mustScore(i: MustInputs): number {
+  return i.bmiScore + i.weightLossScore + i.acuteDiseaseScore;
+}
+
+export function interpretMust(score: number): ScaleResult {
+  const evidence = 'BAPEN Malnutrition Universal Screening Tool (MUST), 2003.';
+  if (score === 0) return {
+    score, band: 'MUST 0 — Low Risk', color: 'green',
+    description: 'Low nutritional risk.',
+    action: 'Routine clinical care. Repeat MUST in hospital every week, or monthly in the community.',
+    evidence,
+  };
+  if (score === 1) return {
+    score, band: 'MUST 1 — Medium Risk', color: 'amber',
+    description: 'Medium nutritional risk.',
+    action: 'Observe. Document dietary intake for 3 days. If adequate, little concern. If not adequate, clinical concern — act according to local policy. Repeat every week.',
+    evidence,
+  };
+  return {
+    score, band: `MUST ${score} — High Risk`, color: 'red',
+    description: 'High nutritional risk.',
+    action: 'Refer to dietitian or implement local nutrition support policy. Set goals, improve and increase nutritional intake. Monitor and review care plan every week. Consider nutritional supplementation or specialist input.',
+    evidence,
+  };
+}
+
+// ── Caprini VTE Risk Score ────────────────────────────────────────────────────
+// Ref: Caprini JA, Dis Mon 2005;51:70-78. Updated 2010 model.
+
+export interface CapriniInputs {
+  // 1-point factors
+  age41_60:            boolean;
+  minorSurgery:        boolean;
+  bmi25:               boolean;
+  swollenLegs:         boolean;
+  varicoseVeins:       boolean;
+  pregnancy_postpartum: boolean;
+  ocp_hrt:             boolean;
+  sepsis_3m:           boolean;
+  seriousLungDisease:  boolean;
+  abnormalPfts:        boolean;
+  acuteMI:             boolean;
+  chf:                 boolean;
+  ibd:                 boolean;
+  conservativelyManaged: boolean;
+  // 2-point factors
+  age61_74:            boolean;
+  arthroscopy:         boolean;
+  malignancy:          boolean;
+  majorSurgery60m:     boolean;
+  laparoscopy60m:      boolean;
+  bedRest3d:           boolean;
+  immobilisingCast:    boolean;
+  centralVenousAccess: boolean;
+  // 3-point factors
+  age75plus:           boolean;
+  vteHistory:          boolean;
+  familyHistoryVte:    boolean;
+  factorVLeiden:       boolean;
+  prothrombinG20210a:  boolean;
+  lupusAnticoagulant:  boolean;
+  elevatedAntiphospholipid: boolean;
+  homocysteine:        boolean;
+  hepInducedThrombocytopenia: boolean;
+  otherCongenitalThrombophilia: boolean;
+  // 5-point factors
+  strokeUnder1m:       boolean;
+  electiveLowerExtremityArthroplasty: boolean;
+  hipPelvicFracture:   boolean;
+  acuteSpinalCordInjury: boolean;
+  multipleTrauma:      boolean;
+}
+
+export function capriniScore(i: CapriniInputs): number {
+  let s = 0;
+  // 1-point
+  [i.age41_60, i.minorSurgery, i.bmi25, i.swollenLegs, i.varicoseVeins,
+   i.pregnancy_postpartum, i.ocp_hrt, i.sepsis_3m, i.seriousLungDisease,
+   i.abnormalPfts, i.acuteMI, i.chf, i.ibd, i.conservativelyManaged,
+  ].forEach(v => { if (v) s += 1; });
+  // 2-point
+  [i.age61_74, i.arthroscopy, i.malignancy, i.majorSurgery60m,
+   i.laparoscopy60m, i.bedRest3d, i.immobilisingCast, i.centralVenousAccess,
+  ].forEach(v => { if (v) s += 2; });
+  // 3-point
+  [i.age75plus, i.vteHistory, i.familyHistoryVte, i.factorVLeiden,
+   i.prothrombinG20210a, i.lupusAnticoagulant, i.elevatedAntiphospholipid,
+   i.homocysteine, i.hepInducedThrombocytopenia, i.otherCongenitalThrombophilia,
+  ].forEach(v => { if (v) s += 3; });
+  // 5-point
+  [i.strokeUnder1m, i.electiveLowerExtremityArthroplasty, i.hipPelvicFracture,
+   i.acuteSpinalCordInjury, i.multipleTrauma,
+  ].forEach(v => { if (v) s += 5; });
+  return s;
+}
+
+export function interpretCaprini(score: number): ScaleResult {
+  const evidence = 'Caprini JA, Dis Mon 2005;51:70-78. ACCP 9th Edition guidelines.';
+  if (score === 0) return {
+    score, band: 'Caprini 0 — Very Low Risk', color: 'green',
+    description: 'VTE risk <0.5% without prophylaxis.',
+    action: 'Early ambulation. No pharmacological prophylaxis required.',
+    evidence,
+  };
+  if (score <= 2) return {
+    score, band: `Caprini ${score} — Low Risk`, color: 'green',
+    description: 'VTE risk ~1.5% without prophylaxis.',
+    action: 'Mechanical prophylaxis (TED stockings / IPC). Encourage early ambulation.',
+    evidence,
+  };
+  if (score <= 4) return {
+    score, band: `Caprini ${score} — Moderate Risk`, color: 'amber',
+    description: 'VTE risk ~3% without prophylaxis.',
+    action: 'LMWH (enoxaparin 40 mg SC daily) or UFH 5000 IU TDS. Mechanical prophylaxis. Continue 7–10 days post-op.',
+    evidence,
+  };
+  if (score <= 6) return {
+    score, band: `Caprini ${score} — High Risk`, color: 'red',
+    description: 'VTE risk ~6% without prophylaxis.',
+    action: 'LMWH + mechanical prophylaxis. Extend prophylaxis 28 days in major abdominal/pelvic cancer surgery. Consider fondaparinux if LMWH contraindicated.',
+    evidence,
+  };
+  return {
+    score, band: `Caprini ${score} — Highest Risk`, color: 'red',
+    description: 'VTE risk ≥6% without prophylaxis. Bleeding risk must be weighed.',
+    action: 'LMWH + mechanical prophylaxis mandatory. Extended prophylaxis 28–35 days. Consider haematology review if multiple thrombophilia factors. Inferior vena cava filter if LMWH absolutely contraindicated.',
+    evidence,
+  };
+}

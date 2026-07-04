@@ -16,6 +16,10 @@ import {
   preRockallScore, interpretPreRockall, type PreRockallInputs,
   rcriScore, interpretRcri, type RcriInputs,
   ransonAdmissionScore, interpretRansonAdmission, type RansonAdmissionInputs,
+  ppossumlPhysScore, ppossumlOpScore, interpretPpossuml,
+  type PpossumlPhysInputs, type PpossumlOpInputs,
+  mustScore, interpretMust, type MustInputs,
+  capriniScore, interpretCaprini, type CapriniInputs,
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
@@ -487,6 +491,239 @@ function RansonCard() {
   );
 }
 
+// ── P-POSSUM card ─────────────────────────────────────────────────────────────
+
+const PHYS_OPTS: {
+  field: keyof PpossumlPhysInputs;
+  label: string;
+  options: { label: string; value: number }[];
+}[] = [
+  { field: 'age',         label: 'Age',
+    options: [{label:'<60',value:1},{label:'60–69',value:2},{label:'70–79',value:4},{label:'≥80',value:8}] },
+  { field: 'cardiac',     label: 'Cardiac signs',
+    options: [{label:'No failure',value:1},{label:'Diuretic/digoxin/antihypertensive',value:2},{label:'Oedema / on warfarin',value:4},{label:'Raised JVP / cardiomegaly',value:8}] },
+  { field: 'respiratory', label: 'Respiratory history',
+    options: [{label:'No dyspnoea / mild (not limiting)',value:1},{label:'Exertional dyspnoea / mild COPD',value:2},{label:'Limiting dyspnoea / moderate COPD',value:4},{label:'Dyspnoea at rest / severe COPD',value:8}] },
+  { field: 'ecg',         label: 'ECG',
+    options: [{label:'Normal',value:1},{label:'AF rate 60–90',value:4},{label:'Any other abnormal change',value:8}] },
+  { field: 'systolicBp',  label: 'Systolic BP (mmHg)',
+    options: [{label:'110–130',value:1},{label:'131–170 or 100–109',value:2},{label:'≥171 or 90–99',value:4},{label:'<90',value:8}] },
+  { field: 'pulse',       label: 'Pulse rate (bpm)',
+    options: [{label:'50–80',value:1},{label:'81–100 or 40–49',value:2},{label:'101–120',value:4},{label:'≥121 or <40',value:8}] },
+  { field: 'gcs',         label: 'GCS',
+    options: [{label:'15 (fully alert)',value:1},{label:'12–14',value:2},{label:'9–11',value:4},{label:'≤8',value:8}] },
+  { field: 'haematocrit', label: 'Haematocrit (%)',
+    options: [{label:'≥36',value:1},{label:'26–35',value:2},{label:'≤25',value:4}] },
+  { field: 'wbc',         label: 'WBC (×10⁹/L)',
+    options: [{label:'4–10',value:1},{label:'10.1–20 or 3.1–3.9',value:2},{label:'≥20.1 or ≤3',value:4}] },
+  { field: 'urea',        label: 'Urea (mmol/L)',
+    options: [{label:'<7.5',value:1},{label:'7.6–10',value:2},{label:'10.1–15',value:4},{label:'>15',value:8}] },
+  { field: 'sodium',      label: 'Sodium (mmol/L)',
+    options: [{label:'≥136',value:1},{label:'131–135',value:2},{label:'126–130',value:4},{label:'≤125',value:8}] },
+  { field: 'potassium',   label: 'Potassium (mmol/L)',
+    options: [{label:'3.5–5.0',value:1},{label:'3.2–3.4 or 5.1–5.3',value:2},{label:'2.9–3.1 or 5.4–5.9',value:4},{label:'≤2.8 or ≥6.0',value:8}] },
+];
+
+const OP_OPTS: {
+  field: keyof PpossumlOpInputs;
+  label: string;
+  options: { label: string; value: number }[];
+}[] = [
+  { field: 'severity',   label: 'Operative severity',
+    options: [{label:'Minor (e.g. drainage, biopsy)',value:1},{label:'Moderate (e.g. appendicectomy, cholecystectomy)',value:2},{label:'Major (e.g. hemicolectomy, total hip)',value:4},{label:'Major+ (e.g. oesophagectomy, liver resection)',value:8}] },
+  { field: 'procedures', label: 'Number of procedures',
+    options: [{label:'1',value:1},{label:'2',value:4},{label:'>2',value:8}] },
+  { field: 'bloodLoss',  label: 'Total blood loss (mL)',
+    options: [{label:'<100',value:1},{label:'101–500',value:2},{label:'501–999',value:4},{label:'≥1000',value:8}] },
+  { field: 'soiling',    label: 'Peritoneal soiling',
+    options: [{label:'None',value:1},{label:'Minor (serous fluid)',value:2},{label:'Local pus',value:4},{label:'Free bowel content / pus / blood',value:8}] },
+  { field: 'malignancy', label: 'Malignancy',
+    options: [{label:'No malignancy / no node involvement',value:1},{label:'Primary only',value:2},{label:'Lymph node metastasis',value:4},{label:'Distant metastasis',value:8}] },
+  { field: 'urgency',    label: 'Operative urgency',
+    options: [{label:'Elective',value:1},{label:'Emergency (resuscitation possible >2h)',value:4},{label:'Emergency (resuscitation impossible)',value:8}] },
+];
+
+function PpossumlCard() {
+  const [phys, setPhys] = useState<PpossumlPhysInputs>({
+    age:1, cardiac:1, respiratory:1, ecg:1, systolicBp:1, pulse:1,
+    gcs:1, haematocrit:1, wbc:1, urea:1, sodium:1, potassium:1,
+  });
+  const [op, setOp] = useState<PpossumlOpInputs>({
+    severity:1, procedures:1, bloodLoss:1, soiling:1, malignancy:1, urgency:1,
+  });
+  const physScore = ppossumlPhysScore(phys);
+  const opScore   = ppossumlOpScore(op);
+  const result    = interpretPpossuml(physScore, opScore);
+  const selStyle  = (active: boolean): React.CSSProperties => ({
+    fontSize: 11, padding: '3px 8px', borderRadius: 4, cursor: 'pointer',
+    border: active ? '1.5px solid #0f172a' : '1px solid #e2e8f0',
+    background: active ? '#0f172a' : '#fff',
+    color: active ? '#fff' : '#374151',
+    whiteSpace: 'nowrap',
+  });
+  return (
+    <div>
+      <div style={{ fontSize: 12, fontWeight: 700, color: '#6b7280', marginBottom: 10 }}>PHYSIOLOGICAL SCORE</div>
+      {PHYS_OPTS.map(row => (
+        <div key={row.field} style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 4 }}>{row.label}</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {row.options.map(o => (
+              <button key={o.value} type="button" style={selStyle(phys[row.field] === o.value)}
+                onClick={() => setPhys(p => ({ ...p, [row.field]: o.value as PpossumlPhysInputs[typeof row.field] }))}>
+                {o.label} ({o.value})
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <div style={{ fontSize: 12, fontWeight: 700, color: '#6b7280', marginTop: 16, marginBottom: 10 }}>OPERATIVE SCORE</div>
+      {OP_OPTS.map(row => (
+        <div key={row.field} style={{ marginBottom: 10 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 4 }}>{row.label}</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+            {row.options.map(o => (
+              <button key={o.value} type="button" style={selStyle(op[row.field] === o.value)}
+                onClick={() => setOp(p => ({ ...p, [row.field]: o.value as PpossumlOpInputs[typeof row.field] }))}>
+                {o.label} ({o.value})
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <ScoreRow label="Physiological score" value={physScore} />
+      <ScoreRow label="Operative score" value={opScore} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── MUST card ─────────────────────────────────────────────────────────────────
+
+function MustCard() {
+  const [v, setV] = useState<MustInputs>({ bmiScore: 0, weightLossScore: 0, acuteDiseaseScore: 0 });
+  const score  = mustScore(v);
+  const result = interpretMust(score);
+  const selStyle = (active: boolean): React.CSSProperties => ({
+    fontSize: 12, padding: '5px 10px', borderRadius: 5, cursor: 'pointer',
+    border: active ? '1.5px solid #0f172a' : '1px solid #e2e8f0',
+    background: active ? '#0f172a' : '#fff',
+    color: active ? '#fff' : '#374151',
+  });
+  return (
+    <div>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>BMI</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {([{label:'>20 (healthy/overweight)',value:0},{label:'18.5–20',value:1},{label:'<18.5 (underweight)',value:2}] as const).map(o => (
+            <button key={o.value} type="button" style={selStyle(v.bmiScore===o.value)} onClick={() => setV(p=>({...p,bmiScore:o.value}))}>{o.label}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Unintentional weight loss in past 3–6 months</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {([{label:'<5%',value:0},{label:'5–10%',value:1},{label:'>10%',value:2}] as const).map(o => (
+            <button key={o.value} type="button" style={selStyle(v.weightLossScore===o.value)} onClick={() => setV(p=>({...p,weightLossScore:o.value}))}>{o.label}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 6 }}>Acutely ill — no nutritional intake for &gt;5 days?</div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {([{label:'No',value:0},{label:'Yes (add 2 points)',value:2}] as const).map(o => (
+            <button key={o.value} type="button" style={selStyle(v.acuteDiseaseScore===o.value)} onClick={() => setV(p=>({...p,acuteDiseaseScore:o.value}))}>{o.label}</button>
+          ))}
+        </div>
+      </div>
+      <ScoreRow label="MUST total" value={score} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── Caprini VTE card ──────────────────────────────────────────────────────────
+
+const CAPRINI_FACTORS: { field: keyof CapriniInputs; label: string; pts: number }[] = [
+  // 1-point
+  { field: 'age41_60',              label: 'Age 41–60',                             pts: 1 },
+  { field: 'minorSurgery',          label: 'Minor surgery planned',                 pts: 1 },
+  { field: 'bmi25',                 label: 'BMI >25',                               pts: 1 },
+  { field: 'swollenLegs',           label: 'Swollen legs (current)',                pts: 1 },
+  { field: 'varicoseVeins',         label: 'Varicose veins',                        pts: 1 },
+  { field: 'pregnancy_postpartum',  label: 'Pregnancy or postpartum (<1 month)',    pts: 1 },
+  { field: 'ocp_hrt',               label: 'OCP or HRT',                            pts: 1 },
+  { field: 'sepsis_3m',             label: 'Sepsis in past 3 months',               pts: 1 },
+  { field: 'seriousLungDisease',    label: 'Serious lung disease (pneumonia/COPD)', pts: 1 },
+  { field: 'abnormalPfts',          label: 'Abnormal pulmonary function',           pts: 1 },
+  { field: 'acuteMI',               label: 'Acute myocardial infarction',           pts: 1 },
+  { field: 'chf',                   label: 'Congestive heart failure',              pts: 1 },
+  { field: 'ibd',                   label: 'Inflammatory bowel disease',            pts: 1 },
+  { field: 'conservativelyManaged', label: 'Medical patient at bed rest',           pts: 1 },
+  // 2-point
+  { field: 'age61_74',              label: 'Age 61–74',                             pts: 2 },
+  { field: 'arthroscopy',           label: 'Arthroscopic surgery',                  pts: 2 },
+  { field: 'malignancy',            label: 'Malignancy (present or previous)',      pts: 2 },
+  { field: 'majorSurgery60m',       label: 'Major surgery (>45 min) in past 60 days', pts: 2 },
+  { field: 'laparoscopy60m',        label: 'Laparoscopic surgery >45 min',          pts: 2 },
+  { field: 'bedRest3d',             label: 'Confined to bed >72h',                  pts: 2 },
+  { field: 'immobilisingCast',      label: 'Immobilising plaster cast',             pts: 2 },
+  { field: 'centralVenousAccess',   label: 'Central venous access',                 pts: 2 },
+  // 3-point
+  { field: 'age75plus',             label: 'Age ≥75',                               pts: 3 },
+  { field: 'vteHistory',            label: 'History of DVT / PE',                   pts: 3 },
+  { field: 'familyHistoryVte',      label: 'Family history of VTE',                 pts: 3 },
+  { field: 'factorVLeiden',         label: 'Factor V Leiden',                       pts: 3 },
+  { field: 'prothrombinG20210a',    label: 'Prothrombin G20210A mutation',          pts: 3 },
+  { field: 'lupusAnticoagulant',    label: 'Lupus anticoagulant',                   pts: 3 },
+  { field: 'elevatedAntiphospholipid', label: 'Elevated anticardiolipin antibody',  pts: 3 },
+  { field: 'homocysteine',          label: 'Elevated serum homocysteine',           pts: 3 },
+  { field: 'hepInducedThrombocytopenia', label: 'HIT (heparin-induced thrombocytopenia)', pts: 3 },
+  { field: 'otherCongenitalThrombophilia', label: 'Other congenital thrombophilia', pts: 3 },
+  // 5-point
+  { field: 'strokeUnder1m',         label: 'Stroke (<1 month)',                     pts: 5 },
+  { field: 'electiveLowerExtremityArthroplasty', label: 'Elective lower limb arthroplasty', pts: 5 },
+  { field: 'hipPelvicFracture',     label: 'Hip, pelvis or leg fracture',           pts: 5 },
+  { field: 'acuteSpinalCordInjury', label: 'Acute spinal cord injury',              pts: 5 },
+  { field: 'multipleTrauma',        label: 'Multiple trauma (<1 month)',            pts: 5 },
+];
+
+const EMPTY_CAPRINI = Object.fromEntries(
+  CAPRINI_FACTORS.map(f => [f.field, false])
+) as unknown as CapriniInputs;
+
+function CapriniCard() {
+  const [v, setV] = useState<CapriniInputs>(EMPTY_CAPRINI);
+  const score  = capriniScore(v);
+  const result = interpretCaprini(score);
+  const grouped = [1, 2, 3, 5].map(pts => CAPRINI_FACTORS.filter(f => f.pts === pts));
+
+  return (
+    <div>
+      {grouped.map((group, gi) => (
+        <div key={gi} style={{ marginBottom: 16 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', marginBottom: 8 }}>
+            {group[0].pts}-POINT RISK FACTOR{group[0].pts === 1 ? '' : 'S'}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 4 }}>
+            {group.map(f => (
+              <Chk
+                key={f.field}
+                label={f.label}
+                pts={f.pts}
+                checked={v[f.field]}
+                onChange={() => setV(p => ({ ...p, [f.field]: !p[f.field] }))}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+      <ScoreRow label="Caprini score" value={score} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
 // ── Scale registry ────────────────────────────────────────────────────────────
 
 const SCALE_COMPONENTS: Record<string, React.FC> = {
@@ -504,6 +741,9 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   preRockall:       PreRockallCard,
   rcri:             RcriCard,
   ranson:           RansonCard,
+  ppossuml:         PpossumlCard,
+  must:             MustCard,
+  caprini:          CapriniCard,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
@@ -521,6 +761,9 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   preRockall:       'Pre-endoscopy Rockall — GI Bleed Risk',
   rcri:             'RCRI — Pre-operative Cardiac Risk',
   ranson:           "Ranson's Criteria — Pancreatitis",
+  ppossuml:         'P-POSSUM — Surgical Mortality / Morbidity Prediction',
+  must:             'MUST — Malnutrition Universal Screening',
+  caprini:          'Caprini VTE Risk Score — Thromboprophylaxis',
 };
 
 const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }> = {
