@@ -23,6 +23,10 @@ import {
   stopBangScore, interpretStopBang, type StopBangInputs,
   CFS_LEVELS, interpretCfs,
   ECOG_LEVELS, interpretEcog,
+  PHQ9_QUESTIONS, phq9Score, interpretPhq9,
+  GAD7_QUESTIONS, gad7Score, interpretGad7,
+  GERDQ_QUESTIONS, GERDQ_FREQ_OPTS, gerdqScore, interpretGerdq,
+  LIKERT_OPTS,
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
@@ -813,6 +817,108 @@ function EcogCard() {
   );
 }
 
+// ── Shared Likert row ─────────────────────────────────────────────────────────
+
+function LikertRow({ qNum, text, value, opts, onChange }: {
+  qNum: number; text: string; value: number;
+  opts: readonly string[]; onChange: (v: number) => void;
+}) {
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div style={{ fontSize: 12, color: '#374151', marginBottom: 4 }}>
+        <span style={{ fontWeight: 700, marginRight: 6, color: '#6b7280' }}>{qNum}.</span>{text}
+      </div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {opts.map((opt, i) => (
+          <button key={i} type="button" onClick={() => onChange(i)} style={{
+            padding: '3px 10px', borderRadius: 12, cursor: 'pointer', fontSize: 11,
+            border: value === i ? '1px solid #0d9488' : '1px solid #d1d5db',
+            background: value === i ? '#0d9488' : '#f9fafb',
+            color: value === i ? '#fff' : '#374151',
+            fontWeight: value === i ? 600 : 400,
+          }}>{opt}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── PHQ-9 Card ────────────────────────────────────────────────────────────────
+
+function Phq9Card() {
+  const [answers, setAnswers] = useState<number[]>(Array(9).fill(0));
+  const score = phq9Score(answers);
+  const result = interpretPhq9(score);
+  const q9Positive = answers[8] > 0;
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 10 }}>
+        Over the <strong>last 2 weeks</strong>, how often have you been bothered by the following problems?
+      </div>
+      {PHQ9_QUESTIONS.map((q, i) => (
+        <LikertRow key={i} qNum={i + 1} text={q} value={answers[i]} opts={LIKERT_OPTS}
+          onChange={v => setAnswers(a => a.map((x, j) => j === i ? v : x))} />
+      ))}
+      {q9Positive && (
+        <div style={{ background: '#fff1f2', border: '1px solid #fca5a5', borderRadius: 6, padding: '8px 12px', marginBottom: 8, fontSize: 12, color: '#b91c1c', fontWeight: 600 }}>
+          ⚠ Q9 positive — assess suicide risk immediately. Enquire directly about thoughts, intent, and plan.
+        </div>
+      )}
+      <ScoreRow label="PHQ-9 Score" value={`${score}/27`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── GAD-7 Card ────────────────────────────────────────────────────────────────
+
+function Gad7Card() {
+  const [answers, setAnswers] = useState<number[]>(Array(7).fill(0));
+  const score = gad7Score(answers);
+  const result = interpretGad7(score);
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 10 }}>
+        Over the <strong>last 2 weeks</strong>, how often have you been bothered by the following problems?
+      </div>
+      {GAD7_QUESTIONS.map((q, i) => (
+        <LikertRow key={i} qNum={i + 1} text={q} value={answers[i]} opts={LIKERT_OPTS}
+          onChange={v => setAnswers(a => a.map((x, j) => j === i ? v : x))} />
+      ))}
+      <ScoreRow label="GAD-7 Score" value={`${score}/21`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── GERD-Q Card ───────────────────────────────────────────────────────────────
+
+function GerdqCard() {
+  const [answers, setAnswers] = useState<number[]>(Array(6).fill(0));
+  const score = gerdqScore(answers);
+  const result = interpretGerdq(score);
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 10 }}>
+        Thinking about the <strong>past week</strong>, how often did you experience the following?
+      </div>
+      {GERDQ_QUESTIONS.map((q, i) => (
+        <div key={i}>
+          <LikertRow qNum={i + 1} text={q.text} value={answers[i]} opts={GERDQ_FREQ_OPTS}
+            onChange={v => setAnswers(a => a.map((x, j) => j === i ? v : x))} />
+          {q.reversed && answers[i] > 0 && (
+            <div style={{ fontSize: 10, color: '#9ca3af', marginTop: -6, marginBottom: 6, paddingLeft: 18 }}>
+              (Symptom reduces GORD likelihood)
+            </div>
+          )}
+        </div>
+      ))}
+      <ScoreRow label="GERD-Q Score" value={`${score}/18`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
 // ── Scale registry ────────────────────────────────────────────────────────────
 
 const SCALE_COMPONENTS: Record<string, React.FC> = {
@@ -836,6 +942,9 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   stopBang:         StopBangCard,
   cfs:              CfsCard,
   ecog:             EcogCard,
+  phq9:             Phq9Card,
+  gad7:             Gad7Card,
+  gerdq:            GerdqCard,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
@@ -859,6 +968,9 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   stopBang:         'STOP-BANG — OSA Pre-operative Screening',
   cfs:              'Clinical Frailty Scale (CFS)',
   ecog:             'ECOG Performance Status',
+  phq9:             'PHQ-9 — Depression Screening',
+  gad7:             'GAD-7 — Generalised Anxiety Screening',
+  gerdq:            'GERD-Q — Reflux Disease Questionnaire',
 };
 
 const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }> = {

@@ -22,6 +22,9 @@
  *   17. STOP-BANG (OSA pre-operative screening)
  *   18. Clinical Frailty Scale (CFS)
  *   19. ECOG Performance Status
+ *   20. PHQ-9 (depression screening)
+ *   21. GAD-7 (generalised anxiety screening)
+ *   22. GERD-Q (gastro-oesophageal reflux disease questionnaire)
  */
 
 export interface ScaleResult {
@@ -1177,6 +1180,150 @@ export function interpretEcog(level: number): ScaleResult {
     score: level, band: 'ECOG 4 — Completely Disabled', color: 'red',
     description: 'Severe functional impairment. Very high surgical risk.',
     action: 'Palliative management strongly preferred. Surgical intervention rarely appropriate. Comprehensive goals-of-care discussion. Hospice referral if appropriate.',
+    evidence,
+  };
+}
+
+// ── PHQ-9 — Patient Health Questionnaire (Depression) ────────────────────────
+// Ref: Kroenke K et al., J Gen Intern Med 2001;16(9):606-613.
+
+export const PHQ9_QUESTIONS: string[] = [
+  'Little interest or pleasure in doing things',
+  'Feeling down, depressed, or hopeless',
+  'Trouble falling or staying asleep, or sleeping too much',
+  'Feeling tired or having little energy',
+  'Poor appetite or overeating',
+  'Feeling bad about yourself — or that you are a failure or have let yourself or your family down',
+  'Trouble concentrating on things, such as reading the newspaper or watching television',
+  'Moving or speaking so slowly that other people could have noticed; or the opposite — being so fidgety or restless that you have been moving around a lot more than usual',
+  'Thoughts that you would be better off dead, or of hurting yourself in some way',
+];
+
+export const LIKERT_OPTS = ['Not at all', 'Several days', 'More than half the days', 'Nearly every day'] as const;
+
+export function phq9Score(answers: number[]): number {
+  return answers.reduce((s, v) => s + (v ?? 0), 0);
+}
+
+export function interpretPhq9(score: number): ScaleResult {
+  const evidence = 'Kroenke K et al., J Gen Intern Med 2001;16(9):606-613. Sensitivity 88%, specificity 88% at cut-off ≥10.';
+  if (score <= 4) return {
+    score, band: `PHQ-9 ${score} — None / Minimal`, color: 'green',
+    description: 'Minimal depressive symptoms.',
+    action: 'Routine monitoring. Reassess at follow-up. Safety net as standard.',
+    evidence,
+  };
+  if (score <= 9) return {
+    score, band: `PHQ-9 ${score} — Mild`, color: 'green',
+    description: 'Mild depressive symptoms.',
+    action: 'Watchful waiting. Discuss psychosocial stressors. Consider GP referral for talking therapy. Reassess in 4 weeks.',
+    evidence,
+  };
+  if (score <= 14) return {
+    score, band: `PHQ-9 ${score} — Moderate`, color: 'amber',
+    description: 'Moderate depression.',
+    action: 'Psychological treatment (CBT) or pharmacotherapy. Consider referral to mental health services. Review in 2–4 weeks. Assess suicide risk (Q9).',
+    evidence,
+  };
+  if (score <= 19) return {
+    score, band: `PHQ-9 ${score} — Moderately Severe`, color: 'red',
+    description: 'Moderately severe depression.',
+    action: 'Active treatment with antidepressant and/or psychotherapy. Refer to mental health services. Assess suicide risk (Q9) — urgent review if positive. Safety plan.',
+    evidence,
+  };
+  return {
+    score, band: `PHQ-9 ${score} — Severe`, color: 'red',
+    description: 'Severe depression.',
+    action: 'Immediate mental health referral. Combined antidepressant + psychotherapy. Assess suicide risk (Q9) urgently. Consider psychiatric admission if risk high.',
+    evidence,
+  };
+}
+
+// ── GAD-7 — Generalised Anxiety Disorder Scale ────────────────────────────────
+// Ref: Spitzer RL et al., Arch Intern Med 2006;166(10):1092-1097.
+
+export const GAD7_QUESTIONS: string[] = [
+  'Feeling nervous, anxious, or on edge',
+  'Not being able to stop or control worrying',
+  'Worrying too much about different things',
+  'Trouble relaxing',
+  'Being so restless that it is hard to sit still',
+  'Becoming easily annoyed or irritable',
+  'Feeling afraid as if something awful might happen',
+];
+
+export function gad7Score(answers: number[]): number {
+  return answers.reduce((s, v) => s + (v ?? 0), 0);
+}
+
+export function interpretGad7(score: number): ScaleResult {
+  const evidence = 'Spitzer RL et al., Arch Intern Med 2006;166(10):1092-1097. Cut-off ≥10: sensitivity 89%, specificity 82%.';
+  if (score <= 4) return {
+    score, band: `GAD-7 ${score} — Minimal`, color: 'green',
+    description: 'Minimal anxiety symptoms.',
+    action: 'Routine clinical care. Reassess at follow-up.',
+    evidence,
+  };
+  if (score <= 9) return {
+    score, band: `GAD-7 ${score} — Mild`, color: 'green',
+    description: 'Mild anxiety.',
+    action: 'Watchful waiting. Psychoeducation. Consider self-help resources or brief counselling. Reassess in 4 weeks.',
+    evidence,
+  };
+  if (score <= 14) return {
+    score, band: `GAD-7 ${score} — Moderate`, color: 'amber',
+    description: 'Moderate anxiety disorder likely.',
+    action: 'CBT or other evidence-based psychological therapy. Consider pharmacotherapy (SSRI/SNRI). Refer to mental health services. Review in 2–4 weeks.',
+    evidence,
+  };
+  return {
+    score, band: `GAD-7 ${score} — Severe`, color: 'red',
+    description: 'Severe anxiety disorder.',
+    action: 'Active treatment essential. Combined CBT and pharmacotherapy. Urgent mental health referral. Assess for panic disorder, OCD, PTSD, and social anxiety. Safety plan.',
+    evidence,
+  };
+}
+
+// ── GERD-Q — Gastro-oesophageal Reflux Disease Questionnaire ─────────────────
+// Ref: Jones R et al., Aliment Pharmacol Ther 2009;30(10):1030-1038.
+// Validated for primary care and pre-endoscopy diagnosis of GORD.
+
+export const GERDQ_QUESTIONS: { text: string; reversed: boolean }[] = [
+  { text: 'How often did you have a burning feeling behind your breastbone (heartburn)?', reversed: false },
+  { text: 'How often did you have stomach contents (liquid or food) moving upwards to your throat or mouth (regurgitation)?', reversed: false },
+  { text: 'How often did you have a pain in the centre of the upper stomach area (epigastric pain)?', reversed: true },
+  { text: 'How often did you have nausea?', reversed: true },
+  { text: 'How often did you have difficulty getting a good night\'s sleep because of your heartburn or regurgitation?', reversed: false },
+  { text: 'How often did you take additional medication for your heartburn or regurgitation, other than what the doctor told you to take?', reversed: false },
+];
+
+export const GERDQ_FREQ_OPTS = ['0 days', '1 day', '2–3 days', '4–7 days'] as const;
+
+export function gerdqScore(answers: number[]): number {
+  return GERDQ_QUESTIONS.reduce((s, q, i) => {
+    const raw = answers[i] ?? 0;
+    return s + (q.reversed ? (3 - raw) : raw);
+  }, 0);
+}
+
+export function interpretGerdq(score: number): ScaleResult {
+  const evidence = 'Jones R et al., Aliment Pharmacol Ther 2009;30(10):1030-1038. Cut-off ≥8: sensitivity 65%, specificity 71%.';
+  if (score <= 7) return {
+    score, band: `GERD-Q ${score} — GORD Unlikely`, color: 'green',
+    description: 'Symptoms do not strongly suggest gastro-oesophageal reflux disease.',
+    action: 'Consider functional dyspepsia, IBS, or other diagnosis. Test and treat for H. pylori if dyspepsia. Upper GI endoscopy if alarm features present.',
+    evidence,
+  };
+  if (score <= 10) return {
+    score, band: `GERD-Q ${score} — GORD Likely`, color: 'amber',
+    description: 'Symptoms consistent with GORD. No significant impact on daily life.',
+    action: 'Empirical trial of PPI (e.g. omeprazole 20 mg od) for 4–8 weeks. Lifestyle advice (weight loss, head-of-bed elevation, avoid trigger foods/alcohol/late meals). Review response.',
+    evidence,
+  };
+  return {
+    score, band: `GERD-Q ${score} — GORD Likely + Impact`, color: 'red',
+    description: 'GORD likely with significant impact on quality of life and sleep.',
+    action: 'PPI therapy (omeprazole 20–40 mg od for 4–8 weeks). Lifestyle modification. Endoscopy recommended — especially if alarm features, age >55, or inadequate PPI response. Consider 24-h pH/impedance if diagnosis uncertain.',
     evidence,
   };
 }

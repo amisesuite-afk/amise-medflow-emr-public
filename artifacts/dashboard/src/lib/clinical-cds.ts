@@ -455,6 +455,71 @@ const RULES: CdsRule[] = [
       return null;
     },
   },
+
+  // ── PHQ-9 — depression screening ─────────────────────────────────────────────
+  {
+    scaleKey: 'phq9',
+    title: 'PHQ-9 — Depression Screening',
+    urgency: 'consider',
+    needsLabs: false,
+    categoryTag: 'Mental Health',
+    trigger: ctx => {
+      const triggers: string[] = [];
+      if (hasSym(ctx, 'low mood', 'depression', 'hopeless', 'anhedonia', 'fatigue', 'sleep disturbance', 'insomnia'))
+        triggers.push('mood / affective symptoms');
+      if (hasComorbidity(ctx, 'depression', 'anxiety', 'bipolar', 'PTSD', 'mental health'))
+        triggers.push('mental health condition in PMH');
+      if (hasRos(ctx, 'psychiatric', 'depression', 'mood', 'sleep'))
+        triggers.push('positive psychiatric ROS');
+      const isPreop = (ctx.procedureData as { preop?: unknown }).preop !== undefined;
+      if (isPreop && (hasComorbidity(ctx, 'obesity', 'bariatric') || ctx.symptoms.some(s => s.toLowerCase().includes('weight'))))
+        triggers.push('pre-bariatric surgery — mandatory psych screening');
+      if (triggers.length > 0) return triggers.join(', ');
+      return null;
+    },
+  },
+
+  // ── GAD-7 — anxiety screening ─────────────────────────────────────────────────
+  {
+    scaleKey: 'gad7',
+    title: 'GAD-7 — Generalised Anxiety Screening',
+    urgency: 'consider',
+    needsLabs: false,
+    categoryTag: 'Mental Health',
+    trigger: ctx => {
+      const triggers: string[] = [];
+      if (hasSym(ctx, 'anxiety', 'panic', 'worry', 'palpitations', 'restless', 'nervous'))
+        triggers.push('anxiety / autonomic symptoms');
+      if (hasComorbidity(ctx, 'anxiety', 'GAD', 'panic disorder', 'OCD', 'PTSD', 'depression'))
+        triggers.push('anxiety / psychiatric condition in PMH');
+      if (hasRos(ctx, 'psychiatric', 'anxiety', 'panic', 'worry'))
+        triggers.push('positive anxiety ROS');
+      if (triggers.length > 0) return triggers.join(', ');
+      return null;
+    },
+  },
+
+  // ── GERD-Q — gastro-oesophageal reflux disease ────────────────────────────────
+  {
+    scaleKey: 'gerdq',
+    title: 'GERD-Q — Reflux Disease Questionnaire',
+    urgency: 'relevant',
+    needsLabs: false,
+    categoryTag: 'Upper GI',
+    trigger: ctx => {
+      const triggers: string[] = [];
+      if (hasSym(ctx, 'heartburn', 'regurgitation', 'acid reflux', 'GORD', 'GERD'))
+        triggers.push('heartburn / regurgitation as presenting symptom');
+      if (hasSym(ctx, 'dyspepsia', 'epigastric pain', 'indigestion', 'waterbrash'))
+        triggers.push('dyspepsia / epigastric pain — GORD in differential');
+      if (hasComorbidity(ctx, 'GORD', 'GERD', 'reflux', 'hiatus hernia', 'Barrett'))
+        triggers.push('GORD / hiatus hernia / Barrett\'s in PMH');
+      if (ctx.symptoms.some(s => s.toLowerCase().includes('night')) && hasSym(ctx, 'cough', 'regurgitation'))
+        triggers.push('nocturnal cough / reflux symptoms');
+      if (triggers.length > 0) return triggers.join(', ');
+      return null;
+    },
+  },
 ];
 
 // ── Public API ─────────────────────────────────────────────────────────────────
