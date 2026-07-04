@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { InteractiveProtocolPanel } from '@/components/InteractiveProtocolPanel';
 import { errMsg } from '@/lib/err';
 import SmartTextarea from '@/components/SmartTextarea';
 import FollowUpSchedulerCard, { type FollowUpEntry } from '@/components/FollowUpSchedulerCard';
@@ -245,57 +246,27 @@ export default function PlanTab() {
 
   return (
     <div className="gap-y">
-      <CollapsibleCard title="Management plan">
-        {/* Dynamic plan generation from active diagnosis */}
-        {protocol && (
-          <div style={{
-            marginBottom: 12,
-            padding: '10px 14px',
-            background: '#0c2233',
-            border: '1px solid #0d9488',
-            borderRadius: 8,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 12, color: '#5eead4', fontWeight: 600 }}>
-                Protocol matched: {protocol.label}
-              </span>
-              <button
-                type="button"
-                className="chip"
-                onClick={handleGeneratePlan}
-                style={{ background: '#0d9488', color: '#fff', borderColor: '#0d9488' }}
-              >
-                Generate plan from {protocol.label}
-              </button>
-              {isInpatient && (
-                <button
-                  type="button"
-                  className="chip"
-                  onClick={handleGenerateNursing}
-                  title="Append nursing directives to plan"
-                >
-                  + Nursing directives
-                </button>
-              )}
-            </div>
-            {protocol.redFlags.length > 0 && (
-              <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {protocol.redFlags.slice(0, 3).map((rf, i) => (
-                  <span key={i} style={{
-                    fontSize: 10, padding: '2px 8px', borderRadius: 12,
-                    background: '#7f1d1d22', border: '1px solid #ef444455', color: '#fca5a5',
-                  }}>
-                    ⚑ {rf.length > 60 ? rf.slice(0, 57) + '…' : rf}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+      <CollapsibleCard title="Interactive Protocol">
+        <InteractiveProtocolPanel
+          paneTop={paneTop}
+          paneConverged={paneConverged}
+          icdCode={activeIcdCode}
+          weightKg={weightKg}
+          onApplyPlan={(planText, _disposition) => {
+            setPlan(plan ? `${plan}\n\n${planText}` : planText);
+          }}
+        />
+      </CollapsibleCard>
 
+      <CollapsibleCard title="Plan (free text)">
         {!protocol && acuity === 'urgent' && (
           <div style={{ marginBottom: 10, padding: '8px 12px', background: '#7f1d1d22', border: '1px solid #ef444455', borderRadius: 6, fontSize: 12, color: '#fca5a5' }}>
             Urgent acuity — no matched protocol. Use emergency template below or enter plan manually.
+          </div>
+        )}
+        {isInpatient && (
+          <div style={{ marginBottom: 8 }}>
+            <button type="button" className="chip" onClick={handleGenerateNursing}>+ Nursing directives</button>
           </div>
         )}
 
