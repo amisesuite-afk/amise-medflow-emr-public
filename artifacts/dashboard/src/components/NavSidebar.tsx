@@ -115,6 +115,7 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     label: 'Documents',
     minRole: 'nurse',
     items: [
+      { id: 'periop',            icon: ShieldAlert,    label: 'Perioperative Safety', minRole: 'nurse' },
       { id: 'who_checklist',    icon: ShieldCheck,    label: 'WHO Safety Checklist', minRole: 'nurse' },
       { id: 'consent',          icon: ScrollText,     label: 'Surgical Consent',     minRole: 'doctor' },
       { id: 'letters',          icon: MailOpen,       label: 'Letters',              minRole: 'doctor' },

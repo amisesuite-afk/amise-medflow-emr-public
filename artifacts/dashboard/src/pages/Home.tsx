@@ -54,6 +54,7 @@ import VisitManagerTab from './VisitManager';
 import PrescriptionsTab from './tabs/PrescriptionsTab';
 import AiConsultantTab from './tabs/AiConsultantTab';
 import WhoChecklistTab from './tabs/WhoChecklistTab';
+import PerioperativeTab from './tabs/PerioperativeTab';
 import SurgicalConsentTab from './tabs/SurgicalConsentTab';
 import EncounterTimelineTab from './tabs/EncounterTimelineTab';
 import QualityImprovementTab from './tabs/QualityImprovementTab';
@@ -722,6 +723,7 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
         {topSection === 'consultation'  && activeSection === 'apcq'            && <APCQTab compact />}
         {topSection === 'consultation'  && activeSection === 'tasks'          && <PatientTasksTab />}
+        {topSection === 'consultation'  && activeSection === 'periop'         && <PerioperativeTab />}
         {topSection === 'consultation'  && activeSection === 'who_checklist'  && <WhoChecklistTab />}
         {topSection === 'consultation'  && activeSection === 'consent'        && <SurgicalConsentTab />}
         {topSection === 'consultation'  && activeSection === 'letters'        && <LetterGeneratorTab />}
