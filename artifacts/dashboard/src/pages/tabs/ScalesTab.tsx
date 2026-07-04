@@ -45,6 +45,39 @@ import {
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
 
+// ── Context-derive helpers for pre-population ─────────────────────────────────
+// Cards call useAppContext() and use these to seed useState at mount (lazy init).
+// Values are read once on mount — the clinician can override any pre-filled field.
+
+type AppCtx = ReturnType<typeof useAppContext>;
+
+const _co = (ctx: AppCtx, ...terms: string[]): boolean =>
+  terms.some(t => (ctx.comorbidities ?? []).some(c => c.toLowerCase().includes(t.toLowerCase())));
+
+const _sy = (ctx: AppCtx, ...terms: string[]): boolean =>
+  terms.some(t => (ctx.symptoms ?? []).some(s => s.toLowerCase().includes(t.toLowerCase())));
+
+const _vn = (ctx: AppCtx, key: string): number | null => {
+  const n = parseFloat((ctx.vitals as Record<string, string>)[key] ?? '');
+  return isNaN(n) ? null : n;
+};
+
+const _ageN = (ctx: AppCtx): number | null => {
+  const n = parseInt(ctx.age as string, 10);
+  return isNaN(n) ? null : n;
+};
+
+function PrePopBadge() {
+  return (
+    <div style={{
+      fontSize: 11, color: '#059669', marginBottom: 8, padding: '4px 8px',
+      background: '#ecfdf5', borderRadius: 6,
+    }}>
+      ⚡ Pre-populated from clinical data — review and adjust before scoring
+    </div>
+  );
+}
+
 // ── Result badge ──────────────────────────────────────────────────────────────
 
 function ResultBadge({ result }: { result: ScaleResult }) {
@@ -90,10 +123,17 @@ function ScoreRow({ label, value }: { label: string; value: string | number }) {
 // ── Scale card components ─────────────────────────────────────────────────────
 
 function News2Card() {
-  const [v, setV] = useState<News2Inputs>({
-    respiratoryRate: 15, spo2: 98, supplementalO2: false,
-    systolicBp: 120, heartRate: 75, consciousnessAvpu: 'A', temperatureC: 37.0,
-  });
+  const ctx = useAppContext();
+  const [v, setV] = useState<News2Inputs>(() => ({
+    respiratoryRate: _vn(ctx, 'respiratoryRate') ?? 15,
+    spo2:            _vn(ctx, 'spo2')            ?? 98,
+    supplementalO2:  false,
+    systolicBp:      _vn(ctx, 'systolicBp')      ?? 120,
+    heartRate:       _vn(ctx, 'heartRate')        ?? 75,
+    consciousnessAvpu: 'A' as const,
+    temperatureC:    _vn(ctx, 'temperatureC')     ?? 37.0,
+  }));
+  const prePop = !!(ctx.vitals.respiratoryRate || ctx.vitals.spo2 || ctx.vitals.systolicBp || ctx.vitals.heartRate || ctx.vitals.temperatureC);
   const score = news2Score(v);
   const result = interpretNews2(score);
   const num = (k: keyof News2Inputs) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -103,6 +143,7 @@ function News2Card() {
   const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <div style={gridStyle}>
         <label style={lblStyle}>Resp rate (/min)<input style={inpStyle} type="number" value={v.respiratoryRate ?? ''} onChange={num('respiratoryRate')} /></label>
         <label style={lblStyle}>SpO₂ (%)<input style={inpStyle} type="number" value={v.spo2 ?? ''} onChange={num('spo2')} /></label>
@@ -152,10 +193,14 @@ function AlvaradoCard() {
 }
 
 function HeartCard() {
-  const [v, setV] = useState<HeartInputs>({
-    historyScore: 1, ecgScore: 0, age: null,
-    riskFactorScore: 0, troponinScore: 0,
-  });
+  const ctx = useAppContext();
+  const [v, setV] = useState<HeartInputs>(() => ({
+    historyScore: 1, ecgScore: 0,
+    age: _ageN(ctx),
+    riskFactorScore: _co(ctx, 'CAD', 'coronary artery disease', 'IHD', 'angina', 'MI', 'CABG', 'stent', 'atherosclerosis', 'hypertension', 'diabetes', 'hyperlipidaemia', 'smoking', 'family history cardiac') ? 1 : 0,
+    troponinScore: 0,
+  }));
+  const prePop = _ageN(ctx) !== null;
   const score = heartScore(v);
   const result = interpretHeart(score);
   const numSel = (k: keyof HeartInputs) => (e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -164,6 +209,7 @@ function HeartCard() {
   const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <label style={lblStyle}>History
         <select style={inpStyle} value={v.historyScore} onChange={numSel('historyScore')}>
           <option value={2}>Highly suspicious (2)</option>
@@ -202,15 +248,26 @@ function HeartCard() {
 }
 
 function WellsPeCard() {
-  const [v, setV] = useState<WellsPeInputs>({
-    dvtSigns: false, altDiagnosisLessLikely: false, hrAbove100: false,
-    immobilised: false, priorDvtPe: false, haemoptysis: false, cancer: false,
+  const ctx = useAppContext();
+  const [v, setV] = useState<WellsPeInputs>(() => {
+    const hr = _vn(ctx, 'heartRate');
+    return {
+      dvtSigns:              _sy(ctx, 'leg swelling', 'calf swelling', 'DVT', 'leg pain') || _co(ctx, 'DVT', 'deep vein thrombosis'),
+      altDiagnosisLessLikely: false,
+      hrAbove100:            hr !== null && hr > 100,
+      immobilised:           _co(ctx, 'immobility', 'bedridden', 'plaster') || _sy(ctx, 'immobile', 'bed rest'),
+      priorDvtPe:            _co(ctx, 'DVT', 'PE', 'pulmonary embolism', 'deep vein thrombosis'),
+      haemoptysis:           _sy(ctx, 'haemoptysis', 'coughing blood', 'blood-stained sputum'),
+      cancer:                _co(ctx, 'cancer', 'malignancy', 'carcinoma', 'lymphoma', 'leukaemia', 'metastatic', 'tumour'),
+    };
   });
+  const prePop = v.hrAbove100 || v.priorDvtPe || v.cancer || v.dvtSigns || v.haemoptysis;
   const score = wellsPeScore(v);
   const result = interpretWellsPe(score);
   const tog = (k: keyof WellsPeInputs) => setV(p => ({ ...p, [k]: !p[k] }));
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <Chk label="Clinical signs / symptoms of DVT" checked={v.dvtSigns} onChange={() => tog('dvtSigns')} pts={3} />
       <Chk label="Alternative diagnosis less likely than PE" checked={v.altDiagnosisLessLikely} onChange={() => tog('altDiagnosisLessLikely')} pts={3} />
       <Chk label="Heart rate > 100 bpm" checked={v.hrAbove100} onChange={() => tog('hrAbove100')} pts={1.5} />
@@ -253,15 +310,22 @@ function WellsDvtCard() {
 }
 
 function Abcd2Card() {
-  const [v, setV] = useState<Abcd2Inputs>({
-    age: null, sbp: null, clinicalFeatureScore: 0, durationScore: 0, diabetes: false,
-  });
+  const ctx = useAppContext();
+  const [v, setV] = useState<Abcd2Inputs>(() => ({
+    age: _ageN(ctx),
+    sbp: _vn(ctx, 'systolicBp'),
+    clinicalFeatureScore: 0,
+    durationScore: 0,
+    diabetes: _co(ctx, 'diabetes', 'DM', 'T2DM', 'T1DM', 'diabetic'),
+  }));
+  const prePop = _ageN(ctx) !== null || !!ctx.vitals.systolicBp || v.diabetes;
   const score = abcd2Score(v);
   const result = interpretAbcd2(score);
   const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
   const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <label style={lblStyle}>Age (years) — ≥ 60 scores 1 pt
         <input style={inpStyle} type="number" value={v.age ?? ''} onChange={e => setV(p => ({ ...p, age: e.target.value ? +e.target.value : null }))} />
       </label>
@@ -379,15 +443,26 @@ function WagnerCard() {
 }
 
 function Curb65Card() {
-  const [v, setV] = useState<Curb65Inputs>({
-    confusion: false, ureaMmolAbove7: false, respiratoryRateAbove30: false,
-    bpLow: false, age65orAbove: false,
+  const ctx = useAppContext();
+  const [v, setV] = useState<Curb65Inputs>(() => {
+    const rr  = _vn(ctx, 'respiratoryRate');
+    const sbp = _vn(ctx, 'systolicBp');
+    const dbp = _vn(ctx, 'diastolicBp');
+    return {
+      confusion:              _sy(ctx, 'confusion', 'disoriented', 'altered mental status'),
+      ureaMmolAbove7:         false,
+      respiratoryRateAbove30: rr  !== null && rr  >= 30,
+      bpLow:                  (sbp !== null && sbp < 90) || (dbp !== null && dbp <= 60),
+      age65orAbove:           (_ageN(ctx) ?? 0) >= 65,
+    };
   });
+  const prePop = v.confusion || v.respiratoryRateAbove30 || v.bpLow || v.age65orAbove;
   const score = curb65Score(v);
   const result = interpretCurb65(score);
   const tog = (k: keyof Curb65Inputs) => setV(p => ({ ...p, [k]: !p[k] }));
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <Chk label="Confusion (new onset, AMTS ≤ 8)" checked={v.confusion} onChange={() => tog('confusion')} pts={1} />
       <Chk label="Urea > 7 mmol/L (BUN > 19 mg/dL)" checked={v.ureaMmolAbove7} onChange={() => tog('ureaMmolAbove7')} pts={1} />
       <Chk label="Respiratory rate ≥ 30/min" checked={v.respiratoryRateAbove30} onChange={() => tog('respiratoryRateAbove30')} pts={1} />
@@ -400,11 +475,24 @@ function Curb65Card() {
 }
 
 function GlasgowBlatchfordCard() {
-  const [v, setV] = useState<GlasgowBlatchfordInputs>({
-    ureaMmol: null, haemoglobinMale: null, haemoglobinFemale: null,
-    isMale: true, systolicBp: null, heartRateAbove100: false,
-    melaena: false, syncope: false, liverDisease: false, cardiacFailure: false,
+  const ctx = useAppContext();
+  const [v, setV] = useState<GlasgowBlatchfordInputs>(() => {
+    const sbp = _vn(ctx, 'systolicBp');
+    const hr  = _vn(ctx, 'heartRate');
+    return {
+      ureaMmol:          null,
+      haemoglobinMale:   null,
+      haemoglobinFemale: null,
+      isMale:            ctx.sex !== 'female',
+      systolicBp:        sbp,
+      heartRateAbove100: hr !== null && hr > 100,
+      melaena:           _sy(ctx, 'melaena', 'black stool', 'tarry stool', 'malaena'),
+      syncope:           _sy(ctx, 'syncope', 'collapse', 'faint', 'blackout'),
+      liverDisease:      _co(ctx, 'cirrhosis', 'liver disease', 'liver failure', 'hepatitis', 'portal hypertension'),
+      cardiacFailure:    _co(ctx, 'heart failure', 'cardiac failure', 'CHF', 'CCF', 'LVF'),
+    };
   });
+  const prePop = v.systolicBp !== null || v.heartRateAbove100 || v.melaena || v.syncope || v.liverDisease || v.cardiacFailure || ctx.sex !== null;
   const score = glasgowBlatchfordScore(v);
   const result = interpretGlasgowBlatchford(score);
   const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
@@ -412,6 +500,7 @@ function GlasgowBlatchfordCard() {
   const grid: React.CSSProperties = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 };
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <div style={grid}>
         <label style={lblStyle}>Urea (mmol/L)<input style={inpStyle} type="number" step="0.1" value={v.ureaMmol ?? ''} onChange={e => setV(p => ({ ...p, ureaMmol: e.target.value ? +e.target.value : null }))} /></label>
         <label style={lblStyle}>Systolic BP<input style={inpStyle} type="number" value={v.systolicBp ?? ''} onChange={e => setV(p => ({ ...p, systolicBp: e.target.value ? +e.target.value : null }))} /></label>
@@ -434,15 +523,26 @@ function GlasgowBlatchfordCard() {
 }
 
 function PreRockallCard() {
-  const [v, setV] = useState<PreRockallInputs>({
-    age: null, haemodynamicShock: 'none', comorbidity: 'none',
+  const ctx = useAppContext();
+  const [v, setV] = useState<PreRockallInputs>(() => {
+    const sbp = _vn(ctx, 'systolicBp');
+    const hr  = _vn(ctx, 'heartRate');
+    const shock: PreRockallInputs['haemodynamicShock'] =
+      sbp !== null && sbp < 100 ? 'hypotension' :
+      sbp !== null && sbp >= 100 && hr !== null && hr >= 100 ? 'tachycardia' : 'none';
+    const comorb: PreRockallInputs['comorbidity'] =
+      _co(ctx, 'renal failure', 'hepatic failure', 'liver failure', 'metastatic', 'metastasis', 'disseminated cancer') ? 'liver_cancer' :
+      _co(ctx, 'heart failure', 'IHD', 'CAD', 'ischaemic heart disease', 'cardiac failure') ? 'cardiac_renal' : 'none';
+    return { age: _ageN(ctx), haemodynamicShock: shock, comorbidity: comorb };
   });
+  const prePop = v.age !== null || v.haemodynamicShock !== 'none' || v.comorbidity !== 'none';
   const score = preRockallScore(v);
   const result = interpretPreRockall(score);
   const inpStyle: React.CSSProperties = { border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 8px', fontSize: 13, width: '100%' };
   const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 8 };
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <label style={lblStyle}>Age (years) — ≥ 60 scores 1 pt, ≥ 80 scores 2 pts
         <input style={inpStyle} type="number" value={v.age ?? ''} onChange={e => setV(p => ({ ...p, age: e.target.value ? +e.target.value : null }))} />
       </label>
@@ -467,15 +567,22 @@ function PreRockallCard() {
 }
 
 function RcriCard() {
-  const [v, setV] = useState<RcriInputs>({
-    highRiskSurgery: false, ischemicHeartDisease: false, congestiveHeartFailure: false,
-    cerebrovascularDisease: false, insulinDependentDiabetes: false, creatinineAbove177: false,
-  });
+  const ctx = useAppContext();
+  const [v, setV] = useState<RcriInputs>(() => ({
+    highRiskSurgery:          false,
+    ischemicHeartDisease:     _co(ctx, 'ischaemic heart disease', 'IHD', 'CAD', 'coronary artery disease', 'myocardial infarction', 'MI', 'angina', 'CABG', 'coronary stent', 'PTCA', 'Q wave'),
+    congestiveHeartFailure:   _co(ctx, 'heart failure', 'CCF', 'CHF', 'cardiac failure', 'LVF', 'left ventricular failure', 'pulmonary oedema'),
+    cerebrovascularDisease:   _co(ctx, 'stroke', 'TIA', 'CVA', 'cerebrovascular', 'transient ischaemic attack'),
+    insulinDependentDiabetes: _co(ctx, 'insulin', 'type 1 diabetes', 'T1DM', 'insulin-dependent diabetes', 'basal bolus', 'insulin pump'),
+    creatinineAbove177:       _co(ctx, 'CKD', 'chronic kidney disease', 'renal failure', 'dialysis', 'ESRD', 'renal impairment', 'CKD 4', 'CKD 5'),
+  }));
+  const prePop = v.ischemicHeartDisease || v.congestiveHeartFailure || v.cerebrovascularDisease || v.insulinDependentDiabetes || v.creatinineAbove177;
   const score = rcriScore(v);
   const result = interpretRcri(score);
   const tog = (k: keyof RcriInputs) => setV(p => ({ ...p, [k]: !p[k] }));
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <Chk label="High-risk surgery (intrathoracic / intraperitoneal / suprainguinal vascular)" checked={v.highRiskSurgery} onChange={() => tog('highRiskSurgery')} pts={1} />
       <Chk label="Ischaemic heart disease (hx of MI / positive stress / angina / nitrates / Q waves)" checked={v.ischemicHeartDisease} onChange={() => tog('ischemicHeartDisease')} pts={1} />
       <Chk label="Congestive heart failure (hx / pulmonary oedema / S3 / bilateral rales)" checked={v.congestiveHeartFailure} onChange={() => tog('congestiveHeartFailure')} pts={1} />
@@ -748,15 +855,24 @@ function CapriniCard() {
 // ── STOP-BANG Card ────────────────────────────────────────────────────────────
 
 function StopBangCard() {
-  const [v, setV] = useState<StopBangInputs>({
-    snoring: false, tired: false, observed: false, pressure: false,
-    bmiAbove35: false, ageAbove50: false, neckAbove40: false, genderMale: false,
-  });
+  const ctx = useAppContext();
+  const [v, setV] = useState<StopBangInputs>(() => ({
+    snoring:    _co(ctx, 'OSA', 'sleep apnoea', 'sleep apnea', 'snoring', 'CPAP') || _sy(ctx, 'snoring', 'snores'),
+    tired:      _sy(ctx, 'fatigue', 'tired', 'daytime sleepiness', 'hypersomnolence', 'excessive sleepiness'),
+    observed:   _co(ctx, 'OSA', 'sleep apnoea') && (_sy(ctx, 'witnessed apnoea', 'stop breathing', 'choking in sleep')),
+    pressure:   _co(ctx, 'hypertension', 'HTN', 'high blood pressure'),
+    bmiAbove35: _co(ctx, 'morbid obesity', 'BMI > 35', 'BMI >35', 'BMI ≥ 35', 'class III obesity'),
+    ageAbove50: (_ageN(ctx) ?? 0) > 50,
+    neckAbove40: false,
+    genderMale: ctx.sex === 'male',
+  }));
+  const prePop = v.snoring || v.pressure || v.bmiAbove35 || v.ageAbove50 || ctx.sex !== null;
   const score = stopBangScore(v);
   const result = interpretStopBang(score);
   const tog = (k: keyof StopBangInputs) => setV(p => ({ ...p, [k]: !p[k] }));
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <div style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', marginBottom: 6 }}>STOP</div>
       <Chk label="Snoring — do you snore loudly (heard through closed door)?" checked={v.snoring} onChange={() => tog('snoring')} />
       <Chk label="Tired — often feel tired, fatigued, or sleepy during daytime?" checked={v.tired} onChange={() => tog('tired')} />
@@ -985,16 +1101,21 @@ function ChildPughCard() {
 // ── Apfel Card ────────────────────────────────────────────────────────────────
 
 function ApfelCard() {
-  const [v, setV] = useState<ApfelInputs>({
-    femaleSex: false, nonSmoker: false,
-    priorPonvOrMotionSickness: false, postopOpioids: false,
-  });
+  const ctx = useAppContext();
+  const [v, setV] = useState<ApfelInputs>(() => ({
+    femaleSex:                 ctx.sex === 'female',
+    nonSmoker:                 !_co(ctx, 'smoking', 'smoker', 'cigarettes', 'tobacco', 'ex-smoker'),
+    priorPonvOrMotionSickness: _co(ctx, 'PONV', 'motion sickness', 'travel sickness', 'post-operative nausea', 'post-op nausea', 'nausea with anaesthesia'),
+    postopOpioids: false,
+  }));
+  const prePop = ctx.sex !== null || _co(ctx, 'smoking', 'smoker', 'PONV', 'motion sickness');
   const score = apfelScore(v);
   const result = interpretApfel(score);
   const risk = APFEL_RISK[score];
   const tog = (k: keyof ApfelInputs) => setV(p => ({ ...p, [k]: !p[k] }));
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <Chk label="Female sex" checked={v.femaleSex} onChange={() => tog('femaleSex')} pts={1} />
       <Chk label="Non-smoker" checked={v.nonSmoker} onChange={() => tog('nonSmoker')} pts={1} />
       <Chk label="Prior PONV or motion sickness" checked={v.priorPonvOrMotionSickness} onChange={() => tog('priorPonvOrMotionSickness')} pts={1} />
@@ -1062,16 +1183,24 @@ function MeldCard() {
 // ── CHA₂DS₂-VASc ─────────────────────────────────────────────────────────────
 
 function Chads2VascCard() {
-  const [v, setV] = useState<Chads2VascInputs>({
-    heartFailure: false, hypertension: false, age75plus: false,
-    diabetes: false, strokeOrTia: false, vascularDisease: false,
-    age65to74: false, femaleSex: false,
-  });
+  const ctx = useAppContext();
+  const [v, setV] = useState<Chads2VascInputs>(() => ({
+    heartFailure:    _co(ctx, 'heart failure', 'CHF', 'CCF', 'LVF', 'cardiac failure', 'left ventricular failure'),
+    hypertension:    _co(ctx, 'hypertension', 'HTN', 'high blood pressure'),
+    age75plus:       (_ageN(ctx) ?? 0) >= 75,
+    diabetes:        _co(ctx, 'diabetes', 'DM', 'T2DM', 'T1DM', 'diabetic'),
+    strokeOrTia:     _co(ctx, 'stroke', 'TIA', 'CVA', 'cerebral embolism', 'thromboembolism', 'transient ischaemic attack'),
+    vascularDisease: _co(ctx, 'myocardial infarction', 'MI', 'PAD', 'peripheral arterial disease', 'aortic plaque', 'atherosclerosis', 'CABG', 'coronary stent'),
+    age65to74:       (_ageN(ctx) ?? 0) >= 65 && (_ageN(ctx) ?? 0) < 75,
+    femaleSex:       ctx.sex === 'female',
+  }));
+  const prePop = Object.values(v).some(Boolean);
   const tog = (k: keyof Chads2VascInputs) => setV(p => ({ ...p, [k]: !p[k] }));
   const score  = chads2VascScore(v);
   const result = interpretChads2Vasc(score, v.femaleSex);
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <Chk label="Congestive heart failure / LV dysfunction" checked={v.heartFailure}    onChange={() => tog('heartFailure')}    pts={1} />
       <Chk label="Hypertension"                               checked={v.hypertension}    onChange={() => tog('hypertension')}    pts={1} />
       <Chk label="Age ≥ 75 years"                             checked={v.age75plus}       onChange={() => tog('age75plus')}       pts={2} />
@@ -1089,16 +1218,28 @@ function Chads2VascCard() {
 // ── HAS-BLED ──────────────────────────────────────────────────────────────────
 
 function HasBledCard() {
-  const [v, setV] = useState<HasBledInputs>({
-    hypertensionUncontrolled: false, renalDisease: false, liverDisease: false,
-    strokeHistory: false, bleedingHistory: false, labileInr: false,
-    elderlyAge65: false, drugsOrAlcohol: false, alcoholUse: false,
+  const ctx = useAppContext();
+  const [v, setV] = useState<HasBledInputs>(() => {
+    const sbp = _vn(ctx, 'systolicBp');
+    return {
+      hypertensionUncontrolled: _co(ctx, 'hypertension', 'HTN') && (sbp !== null ? sbp > 160 : _co(ctx, 'uncontrolled hypertension', 'poorly controlled hypertension')),
+      renalDisease:             _co(ctx, 'CKD', 'chronic kidney disease', 'renal failure', 'dialysis', 'ESRD', 'renal impairment'),
+      liverDisease:             _co(ctx, 'cirrhosis', 'liver disease', 'liver failure', 'alcoholic liver disease', 'portal hypertension', 'hepatitis C'),
+      strokeHistory:            _co(ctx, 'stroke', 'CVA', 'TIA', 'cerebrovascular', 'transient ischaemic attack'),
+      bleedingHistory:          _co(ctx, 'GI bleed', 'upper GI bleed', 'lower GI bleed', 'haemorrhage', 'bleeding disorder', 'thrombocytopenia', 'haemophilia', 'anticoagulant bleed'),
+      labileInr:                false,
+      elderlyAge65:             (_ageN(ctx) ?? 0) >= 65,
+      drugsOrAlcohol:           _co(ctx, 'NSAIDs', 'ibuprofen', 'aspirin', 'antiplatelet', 'clopidogrel', 'dual antiplatelet'),
+      alcoholUse:               _co(ctx, 'alcohol', 'ETOH', 'alcohol dependence', 'hazardous drinking', 'alcoholic'),
+    };
   });
+  const prePop = Object.values(v).some(Boolean);
   const tog = (k: keyof HasBledInputs) => setV(p => ({ ...p, [k]: !p[k] }));
   const score  = hasBledScore(v);
   const result = interpretHasBled(score);
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <Chk label="Hypertension (uncontrolled, SBP > 160 mmHg)"        checked={v.hypertensionUncontrolled} onChange={() => tog('hypertensionUncontrolled')} pts={1} />
       <Chk label="Abnormal renal function (dialysis / Cr > 200 µmol/L)" checked={v.renalDisease}            onChange={() => tog('renalDisease')}            pts={1} />
       <Chk label="Abnormal liver function (cirrhosis / bilirubin > 2×ULN)" checked={v.liverDisease}        onChange={() => tog('liverDisease')}            pts={1} />
@@ -1196,15 +1337,21 @@ function AsaCard() {
 // ── BISAP ─────────────────────────────────────────────────────────────────────
 
 function BisapCard() {
-  const [v, setV] = useState<BisapInputs>({
-    bunAbove25: false, impairedMentalStatus: false, sirs: false,
-    ageAbove60: false, pleuralEffusion: false,
-  });
+  const ctx = useAppContext();
+  const [v, setV] = useState<BisapInputs>(() => ({
+    bunAbove25:           false,
+    impairedMentalStatus: false,
+    sirs:                 false,
+    ageAbove60:           (_ageN(ctx) ?? 0) > 60,
+    pleuralEffusion:      false,
+  }));
+  const prePop = v.ageAbove60;
   const tog = (k: keyof BisapInputs) => setV(p => ({ ...p, [k]: !p[k] }));
   const score  = bisapScore(v);
   const result = interpretBisap(score);
   return (
     <div>
+      {prePop && <PrePopBadge />}
       <Chk label="BUN > 25 mg/dL (8.9 mmol/L)"                    checked={v.bunAbove25}           onChange={() => tog('bunAbove25')}           pts={1} />
       <Chk label="Impaired mental status (GCS < 15 / disoriented)" checked={v.impairedMentalStatus} onChange={() => tog('impairedMentalStatus')} pts={1} />
       <Chk label="SIRS (≥ 2 criteria: temp, HR, RR / PaCO₂, WBC)" checked={v.sirs}                 onChange={() => tog('sirs')}                 pts={1} />
@@ -1286,7 +1433,14 @@ function ClavienDindoCard() {
 // ── GCS ───────────────────────────────────────────────────────────────────────
 
 function GcsCard() {
-  const [v, setV] = useState<GcsInputs>({ eyeOpening: 4, verbalResponse: 5, motorResponse: 6 });
+  const ctx = useAppContext();
+  const altered = _sy(ctx, 'confusion', 'disoriented', 'drowsy', 'altered mental', 'encephalopathy', 'coma', 'obtunded', 'unresponsive');
+  const [v, setV] = useState<GcsInputs>(() => ({
+    eyeOpening:     4,
+    verbalResponse: altered ? 4 : 5,
+    motorResponse:  6,
+  }));
+  const prePop = altered;
   const score  = gcsScore(v);
   const result = interpretGcs(score);
   const selStyle: React.CSSProperties = {
@@ -1318,6 +1472,7 @@ function GcsCard() {
           </select>
         </label>
       </div>
+      {prePop && <PrePopBadge />}
       <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 6 }}>
         E{v.eyeOpening} V{v.verbalResponse} M{v.motorResponse}
       </div>
