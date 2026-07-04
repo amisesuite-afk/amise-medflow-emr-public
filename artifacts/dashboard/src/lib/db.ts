@@ -1630,3 +1630,60 @@ export async function deleteWoundAssessment(woundId: string): Promise<{ error: s
   const { error } = await supabase.from('wound_assessments').delete().eq('id', woundId);
   return { error: error?.message ?? null };
 }
+
+/* ── Encounter timeline ───────────────────────────────────────────────────── */
+
+export interface EncounterSummary {
+  id: string;
+  createdAt: string;
+  status: string;
+  encounterType: string;
+  chiefComplaint: string | null;
+  site: string | null;
+  diagnosis: string | null;
+  icd10Code: string | null;
+}
+
+export async function listPatientEncounters(patientId: string): Promise<EncounterSummary[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('encounters')
+    .select('id, created_at, status, encounter_type, chief_complaint, site')
+    .eq('patient_id', patientId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+  if (error || !data) return [];
+
+  const rows = data as Array<Record<string, unknown>>;
+
+  // Fetch assessments for these encounters in one query
+  const ids = rows.map(r => r.id as string);
+  const { data: aData } = ids.length
+    ? await supabase
+        .from('assessments')
+        .select('encounter_id, diagnosis, icd10_code')
+        .in('encounter_id', ids)
+    : { data: [] };
+
+  const aMap = new Map<string, { diagnosis: string; icd10_code: string }>();
+  for (const a of ((aData ?? []) as Array<Record<string, unknown>>)) {
+    aMap.set(a.encounter_id as string, {
+      diagnosis: (a.diagnosis as string) ?? '',
+      icd10_code: (a.icd10_code as string) ?? '',
+    });
+  }
+
+  return rows.map(r => {
+    const a = aMap.get(r.id as string);
+    return {
+      id:            r.id as string,
+      createdAt:     r.created_at as string,
+      status:        (r.status as string) ?? '',
+      encounterType: (r.encounter_type as string) ?? 'outpatient',
+      chiefComplaint:(r.chief_complaint as string | null) ?? null,
+      site:          (r.site as string | null) ?? null,
+      diagnosis:     a?.diagnosis ?? null,
+      icd10Code:     a?.icd10_code ?? null,
+    };
+  });
+}

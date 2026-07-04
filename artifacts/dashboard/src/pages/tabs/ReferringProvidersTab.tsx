@@ -2,6 +2,48 @@ import { useState, useEffect, useCallback } from 'react';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
+import { useAppContext } from '@/context/AppContext';
+
+/* ── Outbound referral types ─────────────────────────────────────────────── */
+interface OutboundReferral {
+  id: string;
+  recipient: string;
+  specialty: string;
+  reason: string;
+  dateSent: string;
+  expectedDays: number;
+  status: 'pending' | 'received' | 'overdue';
+}
+
+function storageKey(patientId: string | null, encounterId: string | null): string {
+  return `outbound_referrals_${patientId ?? 'local'}_${encounterId ?? 'none'}`;
+}
+
+function loadReferrals(patientId: string | null, encounterId: string | null): OutboundReferral[] {
+  try {
+    const raw = localStorage.getItem(storageKey(patientId, encounterId));
+    return raw ? (JSON.parse(raw) as OutboundReferral[]) : [];
+  } catch { return []; }
+}
+
+function saveReferrals(patientId: string | null, encounterId: string | null, refs: OutboundReferral[]) {
+  try { localStorage.setItem(storageKey(patientId, encounterId), JSON.stringify(refs)); } catch { /* ignore */ }
+}
+
+function updateOverdue(refs: OutboundReferral[]): OutboundReferral[] {
+  const now = Date.now();
+  return refs.map(r => {
+    if (r.status === 'received') return r;
+    const due = new Date(r.dateSent).getTime() + r.expectedDays * 86_400_000;
+    return { ...r, status: now > due ? 'overdue' : 'pending' };
+  });
+}
+
+const STATUS_STYLE: Record<OutboundReferral['status'], { bg: string; fg: string; bd: string; label: string }> = {
+  pending:  { bg: '#fffbeb', fg: '#92400e', bd: '#fcd34d', label: 'Pending' },
+  overdue:  { bg: '#fef2f2', fg: '#b91c1c', bd: '#fca5a5', label: 'Overdue' },
+  received: { bg: '#f0fdf4', fg: '#166534', bd: '#86efac', label: 'Received' },
+};
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -354,8 +396,51 @@ function ProviderRow({ provider, onChanged, onDeleted }: {
 
 export default function ReferringProvidersTab() {
   const { profile } = useAuth();
+  const { patientId, encounterId } = useAppContext();
   const [providers, setProviders] = useState<ReferringProvider[]>(SEED_PROVIDERS);
   const [loading, setLoading] = useState(true);
+
+  /* ── Outbound referral state ── */
+  const [outbound, setOutbound] = useState<OutboundReferral[]>(() =>
+    updateOverdue(loadReferrals(patientId, encounterId))
+  );
+  const [refForm, setRefForm] = useState({ recipient: '', specialty: '', reason: '', expectedDays: 7 });
+  const [addingRef, setAddingRef] = useState(false);
+
+  useEffect(() => {
+    const refreshed = updateOverdue(loadReferrals(patientId, encounterId));
+    setOutbound(refreshed);
+  }, [patientId, encounterId]);
+
+  function addReferral() {
+    if (!refForm.recipient.trim()) return;
+    const ref: OutboundReferral = {
+      id: `ref-${Date.now()}`,
+      recipient: refForm.recipient.trim(),
+      specialty: refForm.specialty.trim(),
+      reason: refForm.reason.trim(),
+      dateSent: new Date().toISOString().slice(0, 10),
+      expectedDays: refForm.expectedDays,
+      status: 'pending',
+    };
+    const next = [ref, ...outbound];
+    setOutbound(next);
+    saveReferrals(patientId, encounterId, next);
+    setRefForm({ recipient: '', specialty: '', reason: '', expectedDays: 7 });
+    setAddingRef(false);
+  }
+
+  function markReceived(id: string) {
+    const next = outbound.map(r => r.id === id ? { ...r, status: 'received' as const } : r);
+    setOutbound(next);
+    saveReferrals(patientId, encounterId, next);
+  }
+
+  function removeReferral(id: string) {
+    const next = outbound.filter(r => r.id !== id);
+    setOutbound(next);
+    saveReferrals(patientId, encounterId, next);
+  }
   const [error, setError] = useState('');
 
   const load = useCallback(async () => {
@@ -398,6 +483,110 @@ export default function ReferringProvidersTab() {
           Labs, imaging centres, and referring doctors recognised by the email document intake pipeline.
         </div>
       </div>
+
+      {/* ── Outbound referral tracker ── */}
+      <Section title="Outbound referrals">
+        <div style={{ padding: '12px 16px' }}>
+          {/* Summary chips */}
+          {outbound.length > 0 && (
+            <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+              {(['pending', 'overdue', 'received'] as const).map(s => {
+                const n = outbound.filter(r => r.status === s).length;
+                if (!n) return null;
+                const st = STATUS_STYLE[s];
+                return (
+                  <span key={s} style={{ fontSize: 11, padding: '2px 9px', borderRadius: 10, background: st.bg, color: st.fg, border: `1px solid ${st.bd}`, fontWeight: 700 }}>
+                    {n} {st.label.toLowerCase()}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Referral rows */}
+          {outbound.length === 0 && !addingRef && (
+            <div style={{ fontSize: 12, color: 'var(--muted, #64748b)', fontStyle: 'italic', marginBottom: 10 }}>
+              No outbound referrals recorded for this encounter.
+            </div>
+          )}
+          {outbound.map(r => {
+            const st = STATUS_STYLE[r.status];
+            const due = new Date(new Date(r.dateSent).getTime() + r.expectedDays * 86_400_000);
+            return (
+              <div key={r.id} style={{
+                marginBottom: 8,
+                padding: '9px 12px',
+                borderRadius: 7,
+                border: `1px solid ${st.bd}`,
+                borderLeft: `3px solid ${st.fg}`,
+                background: r.status === 'received' ? '#f0fdf4' : 'var(--surface, #fff)',
+                display: 'grid',
+                gridTemplateColumns: '1fr auto',
+                gap: 8,
+                alignItems: 'start',
+              }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' }}>
+                    <span style={{ fontWeight: 700, fontSize: 13 }}>{r.recipient}</span>
+                    {r.specialty && (
+                      <span style={{ fontSize: 11, color: 'var(--muted, #64748b)' }}>· {r.specialty}</span>
+                    )}
+                    <span style={{ fontSize: 10, padding: '1px 6px', borderRadius: 3, background: st.bg, color: st.fg, border: `1px solid ${st.bd}`, fontWeight: 700 }}>
+                      {st.label}
+                    </span>
+                  </div>
+                  {r.reason && <div style={{ fontSize: 12, color: 'var(--muted, #64748b)', marginBottom: 2 }}>{r.reason}</div>}
+                  <div style={{ fontSize: 11, color: 'var(--faint, #94a3b8)', fontVariantNumeric: 'tabular-nums' }}>
+                    Sent {r.dateSent} · Expected by {due.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
+                  {r.status !== 'received' && (
+                    <button onClick={() => markReceived(r.id)} style={{ fontSize: 11, padding: '3px 8px', borderRadius: 5, border: '1px solid #86efac', background: '#f0fdf4', color: '#166534', cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                      ✓ Received
+                    </button>
+                  )}
+                  <button onClick={() => removeReferral(r.id)} style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, border: '1px solid #fca5a5', background: '#fef2f2', color: '#b91c1c', cursor: 'pointer' }}>
+                    Remove
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Add form */}
+          {addingRef ? (
+            <div style={{ border: '1px solid #e2e8f0', borderRadius: 8, padding: '12px 14px', marginTop: 8 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted, #64748b)', display: 'block', marginBottom: 3 }}>Recipient *</label>
+                  <input value={refForm.recipient} onChange={e => setRefForm(f => ({ ...f, recipient: e.target.value }))} placeholder="Dr. Smith / Radiology Dept" style={inp} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted, #64748b)', display: 'block', marginBottom: 3 }}>Specialty</label>
+                  <input value={refForm.specialty} onChange={e => setRefForm(f => ({ ...f, specialty: e.target.value }))} placeholder="Cardiology, Oncology…" style={inp} />
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted, #64748b)', display: 'block', marginBottom: 3 }}>Reason</label>
+                  <input value={refForm.reason} onChange={e => setRefForm(f => ({ ...f, reason: e.target.value }))} placeholder="e.g. Further workup of incidental finding" style={inp} />
+                </div>
+                <div>
+                  <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted, #64748b)', display: 'block', marginBottom: 3 }}>Expected response (days)</label>
+                  <input type="number" min={1} max={365} value={refForm.expectedDays} onChange={e => setRefForm(f => ({ ...f, expectedDays: Number(e.target.value) }))} style={inp} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={addReferral} disabled={!refForm.recipient.trim()} style={btn(true)}>Log referral</button>
+                <button onClick={() => setAddingRef(false)} style={btn()}>Cancel</button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => setAddingRef(true)} style={{ ...btn(), marginTop: 4, fontSize: 12 }}>
+              + Log outbound referral
+            </button>
+          )}
+        </div>
+      </Section>
 
       <Section title="Add Provider">
         <AddProviderForm onAdded={p => setProviders(prev => [...prev, p].sort((a, b) => a.name.localeCompare(b.name)))} />

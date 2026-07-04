@@ -14,7 +14,7 @@ export type Section =
   | 'procedures' | 'billing' | 'documents'
   | 'monitoring' | 'apcq' | 'nurse_apcq'
   | 'prescriptions' | 'ai_consultant' | 'tasks'
-  | 'referring_providers'
+  | 'referring_providers' | 'encounter_history'
   | 'who_checklist' | 'consent' | 'letters' | 'patient_education';
 
 export interface ProgressNote {

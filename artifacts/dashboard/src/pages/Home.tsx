@@ -55,6 +55,7 @@ import PrescriptionsTab from './tabs/PrescriptionsTab';
 import AiConsultantTab from './tabs/AiConsultantTab';
 import WhoChecklistTab from './tabs/WhoChecklistTab';
 import SurgicalConsentTab from './tabs/SurgicalConsentTab';
+import EncounterTimelineTab from './tabs/EncounterTimelineTab';
 import LetterGeneratorTab from './tabs/LetterGeneratorTab';
 import PatientEducationTab from './tabs/PatientEducationTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
@@ -210,6 +211,7 @@ export default function HomePage() {
       { id: 'plan' as Section, label: 'Plan' },
       { id: 'prescriptions' as Section, label: 'RX' },
       { id: 'referring_providers' as Section, label: 'Referrals' },
+      { id: 'encounter_history' as Section, label: 'History' },
     ] : []),
     { id: 'progress' as Section, label: 'Notes' },
     { id: 'monitoring' as Section, label: 'Monitor' },
@@ -695,6 +697,7 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
         {topSection === 'consultation'  && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
         {topSection === 'consultation'  && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
+        {topSection === 'consultation'  && activeSection === 'encounter_history'   && hasRole(userRole, 'doctor') && <EncounterTimelineTab />}
         {topSection === 'consultation'  && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
         {topSection === 'consultation'  && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
         {topSection === 'consultation'  && activeSection === 'apcq'            && <APCQTab compact />}
