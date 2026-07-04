@@ -287,7 +287,7 @@ interface ColonData {
   cecalIntubation: string; intubationTimeMin: string; withdrawalTimeMin: string;
   ileoscopy: string; appendixOrifice: string;
   findings: string;
-  polyps: { site: string; size: string; morphology: string; intervention: string }[];
+  polyps: { site: string; size: string; morphology: string; intervention: string; histology: string }[];
   tattoo: string; tattooSite: string;
   surveillanceInterval: string;
   complications: string; additionalNotes: string;
@@ -305,10 +305,79 @@ const EMPTY_COLON: ColonData = {
   complications: '', additionalNotes: '',
 };
 
+interface BsgResult {
+  interval: string;
+  risk: 'none' | 'low' | 'intermediate' | 'high' | 'urgent';
+  rationale: string;
+}
+
+function parseSizeMm(sizeStr: string): number {
+  const n = parseFloat(sizeStr.replace(/[^0-9.]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+function calcBsgSurveillance(polyps: ColonData['polyps']): BsgResult | null {
+  const relevant = polyps.filter(p => p.histology && p.histology !== 'Hyperplastic polyp' && p.histology !== 'Pending histology');
+  if (relevant.length === 0) return null;
+
+  if (relevant.some(p => p.histology === 'Suspected carcinoma')) {
+    return { interval: 'Urgent MDT referral', risk: 'urgent', rationale: 'Suspected carcinoma — urgent MDT / colorectal surgery referral required' };
+  }
+
+  const hasHgd = relevant.some(p => p.histology === 'High-grade dysplasia (HGD)');
+  const adenomas = relevant.filter(p =>
+    p.histology === 'Tubular adenoma' || p.histology === 'Tubulovillous adenoma' ||
+    p.histology === 'Villous adenoma' || p.histology === 'High-grade dysplasia (HGD)'
+  );
+  const hasVillous = relevant.some(p => p.histology === 'Villous adenoma' || p.histology === 'Tubulovillous adenoma');
+  const adenomaCount = adenomas.length;
+  const adenomaSizes = adenomas.map(p => parseSizeMm(p.size));
+  const maxAdenomaSize = adenomaSizes.length > 0 ? Math.max(...adenomaSizes) : 0;
+
+  const ssls = relevant.filter(p => p.histology === 'Sessile serrated lesion (SSL)');
+  const hasLargeSsl = ssls.some(p => parseSizeMm(p.size) >= 10);
+  const hasSslDysplasia = relevant.some(p => p.histology === 'High-grade dysplasia (HGD)' && polyps.some(q => q.histology === 'Sessile serrated lesion (SSL)'));
+
+  if (adenomaCount >= 5 || maxAdenomaSize >= 20 || hasHgd || hasVillous) {
+    const reasons: string[] = [];
+    if (adenomaCount >= 5) reasons.push(`${adenomaCount} adenomas`);
+    if (maxAdenomaSize >= 20) reasons.push(`≥20mm adenoma (${maxAdenomaSize}mm)`);
+    if (hasVillous) reasons.push('villous/tubulovillous histology');
+    if (hasHgd) reasons.push('HGD');
+    return { interval: '1 year', risk: 'high', rationale: `High risk — ${reasons.join('; ')}` };
+  }
+
+  if (adenomaCount >= 3 || (maxAdenomaSize >= 10 && maxAdenomaSize < 20) || hasLargeSsl || hasSslDysplasia) {
+    const reasons: string[] = [];
+    if (adenomaCount >= 3) reasons.push(`${adenomaCount} adenomas`);
+    if (maxAdenomaSize >= 10 && maxAdenomaSize < 20) reasons.push(`${maxAdenomaSize}mm adenoma`);
+    if (hasLargeSsl) reasons.push('SSL ≥10mm');
+    return { interval: '3 years', risk: 'intermediate', rationale: `Intermediate risk — ${reasons.join('; ')}` };
+  }
+
+  if (ssls.length > 0 && !hasLargeSsl) {
+    return { interval: '5 years', risk: 'low', rationale: 'Sessile serrated lesion(s) <10mm without dysplasia' };
+  }
+
+  if (adenomaCount >= 1 && adenomaCount <= 2 && maxAdenomaSize < 10) {
+    return { interval: 'No surveillance required', risk: 'none', rationale: '1–2 small (<10mm) tubular adenomas — return to population screening (BSG 2019)' };
+  }
+
+  return null;
+}
+
+const BSG_RISK_STYLE: Record<string, { bg: string; border: string; color: string; label: string }> = {
+  none:         { bg: '#f0fdf4', border: '#86efac', color: '#15803d', label: 'Low risk' },
+  low:          { bg: '#f0fdf4', border: '#86efac', color: '#15803d', label: 'Low risk' },
+  intermediate: { bg: '#fffbeb', border: '#fcd34d', color: '#b45309', label: 'Intermediate risk' },
+  high:         { bg: '#fff1f2', border: '#fca5a5', color: '#b91c1c', label: 'High risk' },
+  urgent:       { bg: '#fff1f2', border: '#f87171', color: '#7f1d1d', label: 'URGENT' },
+};
+
 function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonData) => void }) {
   function set<K extends keyof ColonData>(k: K, v: ColonData[K]) { onChange({ ...data, [k]: v }); }
   function addPolyp() {
-    set('polyps', [...data.polyps, { site: '', size: '', morphology: '', intervention: '' }]);
+    set('polyps', [...data.polyps, { site: '', size: '', morphology: '', intervention: '', histology: '' }]);
   }
   function updatePolyp(i: number, field: string, v: string) {
     set('polyps', data.polyps.map((p, idx) => idx === i ? { ...p, [field]: v } : p));
@@ -376,7 +445,7 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
           <div style={{ fontSize: 12, color: '#9ca3af', margin: '4px 0' }}>No polyps recorded</div>
         )}
         {data.polyps.map((polyp, i) => (
-          <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 1fr 1fr auto', gap: 6, marginBottom: 6, background: '#f9fafb', borderRadius: 6, padding: 8 }}>
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 70px 1fr 1fr 1fr auto', gap: 6, marginBottom: 6, background: '#f9fafb', borderRadius: 6, padding: 8 }}>
             <div>
               <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 2 }}>Site</div>
               <SelectOpts chips={['Rectum', 'Sigmoid', 'Descending colon', 'Splenic flexure', 'Transverse colon', 'Hepatic flexure', 'Ascending colon', 'Caecum', 'Terminal ileum']}
@@ -393,6 +462,11 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
                 value={polyp.morphology} onChange={v => updatePolyp(i, 'morphology', v)} />
             </div>
             <div>
+              <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 2 }}>Histology</div>
+              <SelectOpts chips={['Tubular adenoma', 'Tubulovillous adenoma', 'Villous adenoma', 'Sessile serrated lesion (SSL)', 'Hyperplastic polyp', 'High-grade dysplasia (HGD)', 'Suspected carcinoma', 'Pending histology']}
+                value={polyp.histology} onChange={v => updatePolyp(i, 'histology', v)} />
+            </div>
+            <div>
               <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 2 }}>Intervention</div>
               <SelectOpts chips={['Biopsy only', 'Hot snare polypectomy', 'Cold snare polypectomy', 'EMR', 'ESD', 'APC', 'Clip haemostasis', 'Left in situ — refer']}
                 value={polyp.intervention} onChange={v => updatePolyp(i, 'intervention', v)} />
@@ -407,6 +481,33 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
         </button>
       </Field>
 
+
+      {(() => {
+        const bsg = calcBsgSurveillance(data.polyps);
+        if (!bsg) return null;
+        const style = BSG_RISK_STYLE[bsg.risk];
+        return (
+          <div style={{ background: style.bg, border: `1px solid ${style.border}`, borderRadius: 8, padding: '10px 14px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: style.color, marginBottom: 2 }}>
+                BSG 2019 Surveillance — {style.label}
+              </div>
+              <div style={{ fontSize: 12, color: '#374151' }}>{bsg.rationale}</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: style.color }}>{bsg.interval}</div>
+              {data.surveillanceInterval !== bsg.interval && (
+                <button type="button"
+                  onClick={() => set('surveillanceInterval', bsg.interval)}
+                  style={{ fontSize: 11, padding: '2px 8px', borderRadius: 4, border: `1px solid ${style.border}`, background: style.bg, color: style.color, cursor: 'pointer', fontWeight: 600 }}>
+                  Apply
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
         <Field label="Tattoo">
           <SelectOpts chips={['Not required', 'Applied', 'Deferred']} value={data.tattoo} onChange={v => set('tattoo', v)} />
@@ -416,7 +517,7 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
             placeholder="e.g. 5 cm proximal to lesion, sigmoid colon" style={{ fontSize: 12 }} />
         </Field>
         <Field label="Surveillance recommendation">
-          <SelectOpts chips={['No follow-up required', '1 year', '3 years', '5 years', '10 years', 'As per histopathology', 'Annual (IBD / high-risk)']}
+          <SelectOpts chips={['No surveillance required', '1 year', '3 years', '5 years', '10 years', 'As per histopathology', 'Annual (IBD / high-risk)', 'Urgent MDT referral']}
             value={data.surveillanceInterval} onChange={v => set('surveillanceInterval', v)} />
         </Field>
       </div>

@@ -6,7 +6,7 @@ import {
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
   ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, Inbox,
   Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig, Check,
-  MessageSquare, Tags, ClipboardMinus,
+  MessageSquare, Tags, ClipboardMinus, ScrollText, MailOpen, GraduationCap, ShieldCheck,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -108,6 +108,17 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
       { id: 'plan',                icon: FileEdit,      label: 'Plan',          minRole: 'doctor' },
       { id: 'prescriptions',       icon: FileSignature, label: 'Prescriptions', minRole: 'doctor' },
       { id: 'referring_providers', icon: Contact,       label: 'Referrals',     minRole: 'doctor' },
+    ],
+  },
+  {
+    key: 'documents',
+    label: 'Documents',
+    minRole: 'nurse',
+    items: [
+      { id: 'who_checklist',    icon: ShieldCheck,    label: 'WHO Safety Checklist', minRole: 'nurse' },
+      { id: 'consent',          icon: ScrollText,     label: 'Surgical Consent',     minRole: 'doctor' },
+      { id: 'letters',          icon: MailOpen,       label: 'Letters',              minRole: 'doctor' },
+      { id: 'patient_education', icon: GraduationCap, label: 'Patient Education',    minRole: 'doctor' },
     ],
   },
 ];
