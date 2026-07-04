@@ -30,7 +30,7 @@ interface ClassCategory {
 
 // ── Calculator types ───────────────────────────────────────────────────────────
 
-type FieldType = 'radio' | 'checkbox' | 'number' | 'select';
+type FieldType = 'radio' | 'checkbox' | 'number' | 'select' | 'divider';
 
 interface CalcField {
   id: string;
@@ -42,6 +42,7 @@ interface CalcField {
   max?: number;
   step?: number;
   placeholder?: string;
+  horizontal?: boolean;
 }
 
 interface CalcResult {
@@ -622,6 +623,172 @@ const CALCULATORS: CalcSystem[] = [
       return { label, score: `${riskPts} pts`, detail, color };
     },
   },
+  // ── P-POSSUM ────────────────────────────────────────────────────────────────
+  {
+    id: 'calc_ppossum',
+    title: 'P-POSSUM — Portsmouth Physiological & Operative Severity Score',
+    subtitle: 'Predicts 30-day mortality and morbidity for major surgery — 12 physiological + 6 operative factors',
+    reference: 'Prytherch DR et al., Br J Surg 1998;85:1217–1220',
+    fields: [
+      { id: '_ph', label: 'Physiological factors', type: 'divider' },
+      { id: 'pp_age', label: 'Age', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '<60 yr' }, { value: '2', label: '60–69 yr' },
+        { value: '4', label: '70–79 yr' }, { value: '8', label: '≥80 yr' },
+      ]},
+      { id: 'pp_cardiac', label: 'Cardiac history', type: 'radio', options: [
+        { value: '1', label: 'No failure / no cardiac medication' },
+        { value: '2', label: 'Diuretic / digoxin / anti-anginal or antihypertensive Rx' },
+        { value: '4', label: 'Peripheral oedema / warfarin / borderline cardiomegaly' },
+        { value: '8', label: 'Raised JVP or cardiomegaly on CXR' },
+      ]},
+      { id: 'pp_resp', label: 'Respiratory', type: 'radio', options: [
+        { value: '1', label: 'No dyspnoea' },
+        { value: '2', label: 'SOB on exertion or mild COPD on CXR' },
+        { value: '4', label: 'Limiting dyspnoea or moderate COPD' },
+        { value: '8', label: 'Dyspnoea at rest or severe COPD' },
+      ]},
+      { id: 'pp_ecg', label: 'ECG', type: 'radio', horizontal: true, options: [
+        { value: '1', label: 'Normal' },
+        { value: '4', label: 'AF, rate 60–90 bpm' },
+        { value: '8', label: 'Any other change' },
+      ]},
+      { id: 'pp_sbp', label: 'Systolic BP (mmHg)', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '110–130' }, { value: '2', label: '131–170 or 100–109' },
+        { value: '4', label: '≥171 or 90–99' }, { value: '8', label: '<90' },
+      ]},
+      { id: 'pp_pulse', label: 'Pulse (bpm)', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '50–80' }, { value: '2', label: '81–100 or 40–49' },
+        { value: '4', label: '101–120' }, { value: '8', label: '≥121 or <40' },
+      ]},
+      { id: 'pp_gcs', label: 'GCS', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '15' }, { value: '2', label: '12–14' },
+        { value: '4', label: '9–11' }, { value: '8', label: '≤8' },
+      ]},
+      { id: 'pp_hct', label: 'Haematocrit (%)', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '≥36' }, { value: '2', label: '26–35' }, { value: '4', label: '≤25' },
+      ]},
+      { id: 'pp_wbc', label: 'WBC (×10⁹/L)', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '4.0–10.0' }, { value: '2', label: '10.1–20.0 or 3.1–3.9' }, { value: '4', label: '≥20.1 or ≤3.0' },
+      ]},
+      { id: 'pp_urea', label: 'Urea (mmol/L)', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '<7.5' }, { value: '2', label: '7.5–10.0' },
+        { value: '4', label: '10.1–15.0' }, { value: '8', label: '>15.0' },
+      ]},
+      { id: 'pp_na', label: 'Sodium (mmol/L)', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '≥136' }, { value: '2', label: '131–135' },
+        { value: '4', label: '126–130' }, { value: '8', label: '≤125' },
+      ]},
+      { id: 'pp_k', label: 'Potassium (mmol/L)', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '3.5–5.0' }, { value: '2', label: '3.2–3.4 or 5.1–5.3' },
+        { value: '4', label: '2.9–3.1 or 5.4–5.9' }, { value: '8', label: '≤2.8 or ≥6.0' },
+      ]},
+      { id: '_op', label: 'Operative factors', type: 'divider' },
+      { id: 'pp_sev', label: 'Operation severity', type: 'radio', options: [
+        { value: '1', label: 'Minor — e.g. excision of lesion, hernia repair' },
+        { value: '2', label: 'Moderate — e.g. cholecystectomy, TURP, appendicectomy' },
+        { value: '4', label: 'Major — e.g. bowel resection / anastomosis, liver resection' },
+        { value: '8', label: 'Major+ — e.g. oesophagectomy, Whipple, aortic procedure' },
+      ]},
+      { id: 'pp_procs', label: 'Number of procedures at same operation', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '1' }, { value: '4', label: '2' }, { value: '8', label: '>2' },
+      ]},
+      { id: 'pp_blood', label: 'Intraoperative blood loss (mL)', type: 'radio', horizontal: true, options: [
+        { value: '1', label: '<100' }, { value: '2', label: '101–500' },
+        { value: '4', label: '501–999' }, { value: '8', label: '≥1000' },
+      ]},
+      { id: 'pp_soil', label: 'Peritoneal soiling', type: 'radio', options: [
+        { value: '1', label: 'None' },
+        { value: '2', label: 'Minor (serous fluid)' },
+        { value: '4', label: 'Local pus' },
+        { value: '8', label: 'Free pus / blood / faecal soiling' },
+      ]},
+      { id: 'pp_malig', label: 'Malignancy', type: 'radio', options: [
+        { value: '1', label: 'No malignancy' },
+        { value: '2', label: 'Primary only (no nodal or distant spread)' },
+        { value: '4', label: 'Nodal metastases' },
+        { value: '8', label: 'Distant metastases' },
+      ]},
+      { id: 'pp_urgency', label: 'Mode of surgery', type: 'radio', options: [
+        { value: '1', label: 'Elective' },
+        { value: '4', label: 'Emergency — resuscitation possible before surgery' },
+        { value: '8', label: 'Emergency — resuscitation impossible; immediate surgery' },
+      ]},
+    ],
+    compute(v) {
+      const physKeys = ['pp_age','pp_cardiac','pp_resp','pp_ecg','pp_sbp','pp_pulse','pp_gcs','pp_hct','pp_wbc','pp_urea','pp_na','pp_k'];
+      const opKeys   = ['pp_sev','pp_procs','pp_blood','pp_soil','pp_malig','pp_urgency'];
+      if ([...physKeys, ...opKeys].some(k => !v[k])) return null;
+      const physScore = physKeys.reduce((s, k) => s + Number(v[k]), 0);
+      const opScore   = opKeys.reduce((s, k) => s + Number(v[k]), 0);
+      const logMort = -9.065 + (0.1692 * physScore) + (0.1550 * opScore);
+      const logMorb = -5.91  + (0.1612 * physScore) + (0.1248 * opScore);
+      const mortality = (1 / (1 + Math.exp(-logMort))) * 100;
+      const morbidity = (1 / (1 + Math.exp(-logMorb))) * 100;
+      const color: Hue = mortality < 2 ? 'green' : mortality < 10 ? 'amber' : 'red';
+      const action = mortality < 2
+        ? 'Low predicted risk. Standard peri-operative care.'
+        : mortality < 5
+        ? 'Moderate risk. Risk/benefit discussion with patient. Optimise co-morbidities. Consider HDU post-operatively.'
+        : mortality < 10
+        ? 'Elevated risk. Full informed consent documentation. ICU booking consideration. Anaesthetic pre-assessment essential.'
+        : 'High risk. Senior surgeon involvement. ICU booking. Formal risk discussion with patient and family. Consider non-operative alternatives.';
+      return {
+        label: `Mortality ${mortality.toFixed(1)}%  ·  Morbidity ${morbidity.toFixed(1)}%`,
+        score: `Phys ${physScore} / Op ${opScore}`,
+        detail: action,
+        color,
+      };
+    },
+  },
+  // ── RCRI ────────────────────────────────────────────────────────────────────
+  {
+    id: 'calc_rcri',
+    title: 'RCRI — Revised Cardiac Risk Index',
+    subtitle: 'Pre-operative major adverse cardiac event (MACE) risk — 6 clinical criteria',
+    reference: 'Lee TH et al., Circulation 1999. Endorsed by ACC/AHA peri-operative cardiac risk guidelines.',
+    fields: [
+      { id: 'rcri_surgery', label: 'High-risk surgery (intraperitoneal, intrathoracic, or suprainguinal vascular)', type: 'radio', horizontal: true,
+        options: [{ value: '0', label: 'No' }, { value: '1', label: 'Yes' }],
+      },
+      { id: 'rcri_ihd', label: 'Ischaemic heart disease (Hx MI, angina, positive stress test, nitrates, ECG Q-waves)', type: 'radio', horizontal: true,
+        options: [{ value: '0', label: 'No' }, { value: '1', label: 'Yes' }],
+      },
+      { id: 'rcri_chf', label: 'Congestive heart failure (Hx CHF, pulmonary oedema, PND, S3 gallop, CXR redistribution)', type: 'radio', horizontal: true,
+        options: [{ value: '0', label: 'No' }, { value: '1', label: 'Yes' }],
+      },
+      { id: 'rcri_cvd', label: 'Cerebrovascular disease (Hx stroke or TIA)', type: 'radio', horizontal: true,
+        options: [{ value: '0', label: 'No' }, { value: '1', label: 'Yes' }],
+      },
+      { id: 'rcri_dm', label: 'Insulin-dependent diabetes mellitus', type: 'radio', horizontal: true,
+        options: [{ value: '0', label: 'No' }, { value: '1', label: 'Yes' }],
+      },
+      { id: 'rcri_ckd', label: 'Pre-operative creatinine >177 µmol/L (>2.0 mg/dL)', type: 'radio', horizontal: true,
+        options: [{ value: '0', label: 'No' }, { value: '1', label: 'Yes' }],
+      },
+    ],
+    compute(v) {
+      const keys = ['rcri_surgery','rcri_ihd','rcri_chf','rcri_cvd','rcri_dm','rcri_ckd'];
+      if (keys.some(k => v[k] === undefined || v[k] === '')) return null;
+      const score = keys.reduce((s, k) => s + Number(v[k]), 0);
+      const riskLabels = ['Very Low', 'Low', 'Moderate', 'High'];
+      const colors: Hue[] = ['green', 'green', 'amber', 'red'];
+      const maceRisk = ['<1%', '~1%', '~7%', '~11%'];
+      const idx = Math.min(score, 3);
+      const detail = score === 0
+        ? 'Very low cardiac risk. No additional cardiac workup required. Standard pre-operative assessment.'
+        : score === 1
+        ? 'Low cardiac risk (~1% MACE). Optimise modifiable risk factors. Pre-op ECG if not recent.'
+        : score === 2
+        ? 'Moderate cardiac risk (~7% MACE). Consider cardiology review. Optimise medical therapy. Peri-operative monitoring.'
+        : `High cardiac risk (≥11% MACE). Cardiology referral recommended. Weigh surgical risk vs benefit carefully. Discuss with patient.`;
+      return {
+        label: `RCRI ${score}/6 — ${riskLabels[idx]} Risk`,
+        score: `MACE ${maceRisk[idx]}`,
+        detail,
+        color: colors[idx],
+      };
+    },
+  },
 ];
 
 // ── Colour maps ────────────────────────────────────────────────────────────────
@@ -717,54 +884,65 @@ function CalcCard({ calc, values, onChange }: {
         {calc.reference && <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1, fontStyle: 'italic' }}>{calc.reference}</div>}
       </div>
 
-      {calc.fields.map(field => (
-        <div key={field.id} style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 5 }}>{field.label}</div>
-          {(field.type === 'radio' || field.type === 'select') && field.options && field.type === 'radio' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              {field.options.map(opt => {
-                const isActive = values[field.id] === opt.value;
-                return (
-                  <button key={opt.value} type="button"
-                    onClick={() => onChange(field.id, isActive ? '' : opt.value)}
-                    style={{
-                      padding: '6px 12px', borderRadius: 7, fontSize: 12, cursor: 'pointer', textAlign: 'left',
-                      border: isActive ? '2px solid #0d9488' : '1px solid #e2e8f0',
-                      background: isActive ? '#f0fdfa' : '#f8fafc',
-                      color: isActive ? '#0f766e' : '#374151',
-                      fontWeight: isActive ? 700 : 400,
-                    }}
-                  >{opt.label}</button>
-                );
-              })}
-            </div>
-          )}
-          {field.type === 'select' && field.options && (
-            <select
-              value={values[field.id] ?? ''}
-              onChange={e => onChange(field.id, e.target.value)}
-              style={{ width: '100%', fontSize: 12, padding: '6px 8px', borderRadius: 6, border: '1px solid #d1d5db', background: '#fff' }}
-            >
-              {field.options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
-          )}
-          {field.type === 'number' && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <input
-                type="number"
+      {calc.fields.map(field => {
+        if (field.type === 'divider') {
+          return (
+            <div key={field.id} style={{
+              fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase',
+              letterSpacing: '0.07em', borderTop: '1.5px solid #e2e8f0',
+              paddingTop: 10, marginTop: 4, marginBottom: 10,
+            }}>{field.label}</div>
+          );
+        }
+        return (
+          <div key={field.id} style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 5 }}>{field.label}</div>
+            {field.type === 'radio' && field.options && (
+              <div style={{ display: 'flex', flexDirection: field.horizontal ? 'row' : 'column', flexWrap: field.horizontal ? 'wrap' : 'nowrap', gap: 5 }}>
+                {field.options.map(opt => {
+                  const isActive = values[field.id] === opt.value;
+                  return (
+                    <button key={opt.value} type="button"
+                      onClick={() => onChange(field.id, isActive ? '' : opt.value)}
+                      style={{
+                        padding: '6px 12px', borderRadius: 7, fontSize: 12, cursor: 'pointer', textAlign: 'left',
+                        border: isActive ? '2px solid #0d9488' : '1px solid #e2e8f0',
+                        background: isActive ? '#f0fdfa' : '#f8fafc',
+                        color: isActive ? '#0f766e' : '#374151',
+                        fontWeight: isActive ? 700 : 400,
+                      }}
+                    >{opt.label}</button>
+                  );
+                })}
+              </div>
+            )}
+            {field.type === 'select' && field.options && (
+              <select
                 value={values[field.id] ?? ''}
                 onChange={e => onChange(field.id, e.target.value)}
-                min={field.min}
-                max={field.max}
-                step={field.step}
-                placeholder={field.placeholder}
-                style={{ width: 110, fontSize: 13, padding: '5px 8px', borderRadius: 6, border: '1px solid #d1d5db' }}
-              />
-              {field.unit && <span style={{ fontSize: 12, color: '#64748b' }}>{field.unit}</span>}
-            </div>
-          )}
-        </div>
-      ))}
+                style={{ width: '100%', fontSize: 12, padding: '6px 8px', borderRadius: 6, border: '1px solid #d1d5db', background: '#fff' }}
+              >
+                {field.options.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+              </select>
+            )}
+            {field.type === 'number' && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <input
+                  type="number"
+                  value={values[field.id] ?? ''}
+                  onChange={e => onChange(field.id, e.target.value)}
+                  min={field.min}
+                  max={field.max}
+                  step={field.step}
+                  placeholder={field.placeholder}
+                  style={{ width: 110, fontSize: 13, padding: '5px 8px', borderRadius: 6, border: '1px solid #d1d5db' }}
+                />
+                {field.unit && <span style={{ fontSize: 12, color: '#64748b' }}>{field.unit}</span>}
+              </div>
+            )}
+          </div>
+        );
+      })}
 
       {/* Result */}
       {result ? (
@@ -799,7 +977,6 @@ function CalcCard({ calc, values, onChange }: {
 
 function SuggestedToolsPanel() {
   const tools = [
-    { name: 'P-POSSUM', use: 'Physiological & Operative Severity Score — predicted morbidity and mortality for major surgery' },
     { name: 'APACHE II', use: 'Acute Physiology and Chronic Health Evaluation II — ICU mortality prediction' },
     { name: 'Thyroid TIRADS (ACR)', use: 'Thyroid Imaging Reporting and Data System — ultrasound-based malignancy risk for thyroid nodules' },
     { name: 'Bethesda System (Thyroid)', use: 'Cytopathological classification for thyroid FNA — guides surgical vs. surveillance decisions' },
