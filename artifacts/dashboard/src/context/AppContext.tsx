@@ -17,6 +17,23 @@ export type Section =
   | 'referring_providers' | 'encounter_history'
   | 'who_checklist' | 'consent' | 'letters' | 'patient_education' | 'periop' | 'dosing' | 'fluid_nutrition' | 'blood_gas' | 'wounds';
 
+/**
+ * Encounter complexity tier. Controls which consultation sections are
+ * surfaced by default — the "accordion" effect. Persisted per-session.
+ *
+ * quick_consult    — Simple outpatient visit (hernia, haemorrhoids, thyroid nodule, breast lump)
+ * endoscopy        — OGD, colonoscopy, ERCP — scope-first workflow
+ * surgical_consult — Full preoperative surgical assessment (default)
+ * office_procedure — Minor in-clinic procedure (FNAC, excision, dressing)
+ * major_emergency  — Major elective admission or ER/trauma on-call
+ */
+export type EncounterType =
+  | 'quick_consult'
+  | 'endoscopy'
+  | 'surgical_consult'
+  | 'office_procedure'
+  | 'major_emergency';
+
 export interface ProgressNote {
   id: string;
   date: string;
@@ -279,6 +296,7 @@ interface CtxValue {
   labRecords: LabRecord[]; setLabRecords(v: LabRecord[]): void;
 
   encounterMode: 'outpatient' | 'inpatient'; setEncounterMode(v: 'outpatient' | 'inpatient'): void;
+  encounterType: EncounterType; setEncounterType(v: EncounterType): void;
   mrNumber: string; setMrNumber(v: string): void;
   ward: string; setWard(v: string): void;
   dateAdmission: string; setDateAdmission(v: string): void;
@@ -438,6 +456,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [labRecords, setLabRecords] = useState<LabRecord[]>([]);
 
   const [encounterMode, setEncounterMode] = useState<'outpatient' | 'inpatient'>('outpatient');
+  const [encounterType, setEncounterType] = useState<EncounterType>('surgical_consult');
   const [mrNumber, setMrNumber] = useState('');
   const [ward, setWard] = useState('');
   const [dateAdmission, setDateAdmission] = useState('');
@@ -565,6 +584,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.vitalRecords)) setVitalRecords(d.vitalRecords as VitalRecord[]);
       if (Array.isArray(d.labRecords)) setLabRecords(d.labRecords as LabRecord[]);
       if (d.encounterMode === 'inpatient') setEncounterMode('inpatient');
+      if (d.encounterType === 'quick_consult' || d.encounterType === 'endoscopy' || d.encounterType === 'office_procedure' || d.encounterType === 'major_emergency') setEncounterType(d.encounterType as EncounterType);
       if (typeof d.mrNumber === 'string') setMrNumber(d.mrNumber);
       if (typeof d.ward === 'string') setWard(d.ward);
       if (typeof d.dateAdmission === 'string') setDateAdmission(d.dateAdmission);
@@ -615,7 +635,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
       weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
       radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords,
-      encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
+      encounterMode, encounterType, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
       paneState, traumaData,
     });
@@ -696,6 +716,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setProgressNotes([]);
     setVitalRecords([]); setLabRecords([]);
     setEncounterMode('outpatient');
+    setEncounterType('surgical_consult');
     setMrNumber(''); setWard(''); setDateAdmission(''); setDateDischarge('');
     setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
     setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
@@ -1027,6 +1048,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     vitalRecords, setVitalRecords,
     labRecords, setLabRecords,
     encounterMode, setEncounterMode,
+    encounterType, setEncounterType,
     mrNumber, setMrNumber,
     ward, setWard,
     dateAdmission, setDateAdmission,

@@ -10,7 +10,7 @@ import {
   Calculator, Droplets, Bandage,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
-import type { Section, TopSection } from '@/context/AppContext';
+import type { Section, TopSection, EncounterType } from '@/context/AppContext';
 import { hasRole } from '@/lib/roles';
 
 export type { TopSection };
@@ -30,6 +30,7 @@ interface NavSidebarProps {
   acuity: string;
   pmhCount?: number;
   encounterMode?: 'outpatient' | 'inpatient';
+  encounterType?: EncounterType;
   pendingBookingCount?: number;
   criticalResultCount?: number;
   sectionCompletion?: SectionCompletion;
@@ -129,6 +130,15 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
   },
 ];
 
+// Phases shown for each encounter type. surgical_consult = full set (default).
+const ENCOUNTER_PHASE_VISIBILITY: Record<EncounterType, ReadonlySet<string>> = {
+  quick_consult:    new Set(['history', 'examination', 'assessment', 'plan']),
+  endoscopy:        new Set(['history', 'examination', 'workup', 'assessment', 'plan', 'documents']),
+  surgical_consult: new Set(['history', 'social_ros', 'examination', 'workup', 'assessment', 'plan', 'documents']),
+  office_procedure: new Set(['history', 'examination', 'workup', 'assessment', 'plan', 'documents']),
+  major_emergency:  new Set(['history', 'social_ros', 'examination', 'workup', 'assessment', 'plan', 'documents']),
+};
+
 const BILLING_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string }[] = [
   { id: 'billing',   icon: Receipt,   label: 'Billing' },
   { id: 'documents', icon: FolderOpen, label: 'Documents' },
@@ -177,6 +187,7 @@ export default function NavSidebar({
   userRole, hasUrgentRedFlag, urgentCount, acuity,
   pmhCount = 0,
   encounterMode = 'outpatient',
+  encounterType = 'surgical_consult',
   pendingBookingCount = 0,
   criticalResultCount = 0,
   sectionCompletion = {},
@@ -202,7 +213,9 @@ export default function NavSidebar({
 
   const visibleItems = NAV_ITEMS.filter(item => item.roles.includes(userRole));
 
+  const allowedPhases = ENCOUNTER_PHASE_VISIBILITY[encounterType];
   const visiblePhases = CLINICAL_PHASES
+    .filter(phase => allowedPhases.has(phase.key))
     .filter(phase => !phase.minRole || hasRole(userRole, phase.minRole))
     .map(phase => {
       const items = phase.items.filter(s => !s.minRole || hasRole(userRole, s.minRole));

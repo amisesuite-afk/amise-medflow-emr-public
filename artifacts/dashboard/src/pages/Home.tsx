@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useAppContext, Section, TopSection, type VitalsState } from '@/context/AppContext';
+import { useAppContext, Section, TopSection, type EncounterType, type VitalsState } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
@@ -157,6 +157,7 @@ export default function HomePage() {
     symptoms,
     vitals,
     encounterMode, setEncounterMode,
+    encounterType, setEncounterType,
     patientPhoto,
     patientId,
     encounterId,
@@ -193,38 +194,82 @@ export default function HomePage() {
   const topMatchScore = matchedPathways[0]?.score ?? 0;
   const highConfidence = topMatchScore >= 15 && activePathway !== null;
 
-  /* ── Consultation tab list (role-aware, matches phased sidebar) ── */
-  const consultTabs = useMemo<{ id: Section; label: string }[]>(() => [
-    { id: 'nurse_apcq' as Section, label: 'Intake Q' },
-    ...(roleIn(userRole, 'front_desk') || hasRole(userRole, 'nurse') ? [
-      { id: 'apcq' as Section, label: 'Record Q' },
-    ] : []),
-    { id: 'hpi' as Section, label: 'HPI' },
-    { id: 'triage' as Section, label: 'Triage' },
-    { id: 'pmh' as Section, label: 'PMH' },
-    { id: 'surgical' as Section, label: 'Surgical' },
-    { id: 'medications' as Section, label: 'Meds' },
-    { id: 'allergies' as Section, label: 'Allergies' },
-    { id: 'family_hx' as Section, label: 'Family Hx' },
-    { id: 'toxic' as Section, label: 'Social' },
-    { id: 'ros' as Section, label: 'ROS' },
-    ...(hasRole(userRole, 'nurse') ? [
-      { id: 'examination' as Section, label: 'Exam' },
-      { id: 'investigations' as Section, label: 'Labs' },
-      { id: 'radiology' as Section, label: 'Radiology' },
-      { id: 'attachments' as Section, label: 'Attach' },
-    ] : []),
-    ...(hasRole(userRole, 'doctor') ? [
-      { id: 'assessment' as Section, label: 'Assess' },
-      { id: 'plan' as Section, label: 'Plan' },
-      { id: 'prescriptions' as Section, label: 'RX' },
-      { id: 'referring_providers' as Section, label: 'Referrals' },
-      { id: 'encounter_history' as Section, label: 'History' },
-    ] : []),
-    { id: 'progress' as Section, label: 'Notes' },
-    { id: 'monitoring' as Section, label: 'Monitor' },
-    { id: 'tasks' as Section, label: 'Tasks' },
-  ], [userRole]);
+  /* ── Sections shown per encounter type — accordion effect ── */
+  const ENCOUNTER_TAB_SETS: Record<EncounterType, ReadonlySet<Section>> = useMemo(() => ({
+    quick_consult: new Set<Section>([
+      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'medications', 'allergies',
+      'examination', 'assessment', 'plan', 'prescriptions', 'referring_providers',
+      'encounter_history', 'progress', 'monitoring', 'tasks',
+    ]),
+    endoscopy: new Set<Section>([
+      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'examination', 'investigations', 'radiology', 'attachments',
+      'assessment', 'plan', 'prescriptions', 'referring_providers',
+      'encounter_history', 'progress', 'monitoring', 'tasks',
+    ]),
+    surgical_consult: new Set<Section>([
+      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'family_hx', 'toxic', 'ros',
+      'examination', 'investigations', 'radiology', 'attachments',
+      'assessment', 'plan', 'prescriptions', 'referring_providers',
+      'encounter_history', 'progress', 'monitoring', 'tasks',
+    ]),
+    office_procedure: new Set<Section>([
+      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'medications', 'allergies',
+      'examination', 'investigations', 'attachments',
+      'assessment', 'plan', 'prescriptions',
+      'encounter_history', 'progress', 'monitoring', 'tasks',
+    ]),
+    major_emergency: new Set<Section>([
+      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'family_hx', 'toxic', 'ros',
+      'examination', 'wounds', 'investigations', 'blood_gas', 'radiology', 'attachments',
+      'assessment', 'plan', 'prescriptions', 'dosing', 'fluid_nutrition', 'referring_providers',
+      'encounter_history', 'progress', 'monitoring', 'tasks',
+    ]),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), []);
+
+  /* ── Consultation tab list (role-aware + encounter-type filtered) ── */
+  const consultTabs = useMemo<{ id: Section; label: string }[]>(() => {
+    const allowed = ENCOUNTER_TAB_SETS[encounterType];
+    const all: { id: Section; label: string }[] = [
+      { id: 'nurse_apcq', label: 'Intake Q' },
+      ...(roleIn(userRole, 'front_desk') || hasRole(userRole, 'nurse') ? [
+        { id: 'apcq' as Section, label: 'Record Q' },
+      ] : []),
+      { id: 'hpi', label: 'HPI' },
+      { id: 'triage', label: 'Triage' },
+      { id: 'pmh', label: 'PMH' },
+      { id: 'surgical', label: 'Surgical' },
+      { id: 'medications', label: 'Meds' },
+      { id: 'allergies', label: 'Allergies' },
+      { id: 'family_hx', label: 'Family Hx' },
+      { id: 'toxic', label: 'Social' },
+      { id: 'ros', label: 'ROS' },
+      ...(hasRole(userRole, 'nurse') ? [
+        { id: 'examination' as Section, label: 'Exam' },
+        { id: 'wounds' as Section, label: 'Wounds' },
+        { id: 'investigations' as Section, label: 'Labs' },
+        { id: 'blood_gas' as Section, label: 'ABG' },
+        { id: 'radiology' as Section, label: 'Radiology' },
+        { id: 'attachments' as Section, label: 'Attach' },
+      ] : []),
+      ...(hasRole(userRole, 'doctor') ? [
+        { id: 'assessment' as Section, label: 'Assess' },
+        { id: 'plan' as Section, label: 'Plan' },
+        { id: 'prescriptions' as Section, label: 'RX' },
+        { id: 'dosing' as Section, label: 'Dosing' },
+        { id: 'fluid_nutrition' as Section, label: 'Fluids' },
+        { id: 'referring_providers' as Section, label: 'Referrals' },
+        { id: 'encounter_history' as Section, label: 'History' },
+      ] : []),
+      { id: 'progress', label: 'Notes' },
+      { id: 'monitoring', label: 'Monitor' },
+      { id: 'tasks', label: 'Tasks' },
+    ];
+    return all.filter(t => allowed.has(t.id));
+  }, [userRole, encounterType, ENCOUNTER_TAB_SETS]);
 
   /* ── Swipe navigation for consultation tabs (iPad / mobile) ── */
   const swipeRef = useSwipeNavigation<HTMLElement>({
@@ -391,6 +436,36 @@ export default function HomePage() {
             ))}
           </div>
 
+          {/* Encounter type selector — accordion control */}
+          {encounterMode === 'outpatient' && (
+            <div className="site-pill" aria-label="Encounter type" title="Select encounter complexity — controls which sections are shown">
+              {(
+                [
+                  { id: 'quick_consult',    label: 'Quick'    },
+                  { id: 'endoscopy',        label: 'Scope'    },
+                  { id: 'surgical_consult', label: 'Surgical' },
+                  { id: 'office_procedure', label: 'Office'   },
+                  { id: 'major_emergency',  label: 'Major/ER' },
+                ] as const
+              ).map(({ id, label }) => (
+                <button
+                  key={id}
+                  className={`site-pill__btn${encounterType === id ? ' site-pill__btn--active' : ''}`}
+                  onClick={() => setEncounterType(id)}
+                  title={{
+                    quick_consult:    'Quick Consult — simple outpatient visit (hernia, thyroid nodule, breast lump)',
+                    endoscopy:        'Endoscopy — OGD, colonoscopy, or ERCP',
+                    surgical_consult: 'Surgical Consult — full preoperative assessment (default)',
+                    office_procedure: 'Office Procedure — minor in-clinic procedure (FNAC, excision)',
+                    major_emergency:  'Major / Emergency — major elective or ER / trauma admission',
+                  }[id]}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Site selector pill — outpatient only (inpatient = Tapion always) */}
           {encounterMode === 'outpatient' && (
             <div className="site-pill" aria-label="Active clinic site">
@@ -491,6 +566,7 @@ export default function HomePage() {
         acuity={triageResult.acuity}
         pmhCount={comorbidities.length}
         encounterMode={encounterMode}
+        encounterType={encounterType}
         pendingBookingCount={pendingBookingCount}
         criticalResultCount={criticalResultCount}
         sectionCompletion={sectionCompletion}
