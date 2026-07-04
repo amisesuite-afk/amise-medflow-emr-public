@@ -1,7 +1,120 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import SmartTextarea from '@/components/SmartTextarea';
+
+/* ── Canvas signature pad ───────────────────────────────────────────────── */
+interface SigPadProps {
+  label: string;
+  value: string;         // data URL or ''
+  onChange: (v: string) => void;
+}
+
+function SignaturePad({ label, value, onChange }: SigPadProps) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const drawing = useRef(false);
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+
+  // Initialise canvas from saved value
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (value) {
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0);
+      img.src = value;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);   // run once on mount
+
+  function getPos(e: React.MouseEvent | React.TouchEvent): { x: number; y: number } {
+    const rect = ref.current!.getBoundingClientRect();
+    if ('touches' in e) {
+      const t = e.touches[0];
+      return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+    }
+    return { x: (e as React.MouseEvent).clientX - rect.left, y: (e as React.MouseEvent).clientY - rect.top };
+  }
+
+  function startDraw(e: React.MouseEvent | React.TouchEvent) {
+    e.preventDefault();
+    drawing.current = true;
+    lastPos.current = getPos(e);
+  }
+
+  function draw(e: React.MouseEvent | React.TouchEvent) {
+    e.preventDefault();
+    if (!drawing.current || !lastPos.current) return;
+    const ctx = ref.current!.getContext('2d')!;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastPos.current.x, lastPos.current.y);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    lastPos.current = pos;
+  }
+
+  const endDraw = useCallback(() => {
+    drawing.current = false;
+    lastPos.current = null;
+    onChange(ref.current!.toDataURL());
+  }, [onChange]);
+
+  function clear() {
+    const canvas = ref.current!;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    onChange('');
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+        <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</label>
+        {value && (
+          <button type="button" onClick={clear} style={{ fontSize: 11, color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+            Clear
+          </button>
+        )}
+      </div>
+      <canvas
+        ref={ref}
+        width={480}
+        height={100}
+        style={{
+          width: '100%',
+          height: 100,
+          border: `1px solid ${value ? '#86efac' : '#d1d5db'}`,
+          borderRadius: 6,
+          cursor: 'crosshair',
+          touchAction: 'none',
+          background: '#fff',
+          display: 'block',
+        }}
+        onMouseDown={startDraw}
+        onMouseMove={draw}
+        onMouseUp={endDraw}
+        onMouseLeave={endDraw}
+        onTouchStart={startDraw}
+        onTouchMove={draw}
+        onTouchEnd={endDraw}
+      />
+      {!value && (
+        <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 3, fontStyle: 'italic' }}>
+          Sign above using mouse or finger
+        </div>
+      )}
+    </div>
+  );
+}
 
 const COMMON_RISKS = [
   'Bleeding requiring transfusion',
@@ -48,6 +161,9 @@ export default function SurgicalConsentTab() {
   const [interpreterUsed, setInterpreterUsed] = useState(false);
   const [consentDate, setConsentDate] = useState(new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState('');
+  const [patientSig, setPatientSig] = useState('');
+  const [clinicianSig, setClinicianSig] = useState('');
+  const [clinicianName, setClinicianName] = useState('');
   const [signed, setSigned] = useState(false);
 
   const procedureSpecific = procedureRisks(procedure);
@@ -143,23 +259,68 @@ export default function SurgicalConsentTab() {
         </div>
       </CollapsibleCard>
 
+      {/* Signatures */}
+      <CollapsibleCard title="Signatures">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <SignaturePad label="Patient signature" value={patientSig} onChange={setPatientSig} />
+          <div>
+            <label style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 3 }}>Clinician name</label>
+            <input
+              value={clinicianName}
+              onChange={e => setClinicianName(e.target.value)}
+              placeholder="Dr …"
+              style={inp}
+            />
+          </div>
+          <SignaturePad label="Clinician signature" value={clinicianSig} onChange={setClinicianSig} />
+        </div>
+      </CollapsibleCard>
+
       {/* Sign off */}
       {!signed ? (
-        <button type="button" onClick={() => setSigned(true)} disabled={!procedure || !capacity}
-          style={{ padding: '12px', borderRadius: 8, border: 'none', background: procedure && capacity ? '#15803d' : '#d1d5db', color: '#fff', fontWeight: 700, fontSize: 14, cursor: procedure && capacity ? 'pointer' : 'default', width: '100%' }}>
-          Confirm consent documented
+        <button
+          type="button"
+          onClick={() => setSigned(true)}
+          disabled={!procedure || !capacity || !patientSig || !clinicianSig}
+          style={{
+            padding: '12px',
+            borderRadius: 8,
+            border: 'none',
+            background: (procedure && capacity && patientSig && clinicianSig) ? '#15803d' : '#d1d5db',
+            color: '#fff',
+            fontWeight: 700,
+            fontSize: 14,
+            cursor: (procedure && capacity && patientSig && clinicianSig) ? 'pointer' : 'default',
+            width: '100%',
+          }}
+        >
+          {!patientSig || !clinicianSig ? 'Both signatures required to finalise' : 'Finalise consent'}
         </button>
       ) : (
         <div style={{ padding: '14px 16px', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8 }}>
-          <div style={{ fontWeight: 700, fontSize: 14, color: '#15803d', marginBottom: 4 }}>✓ Consent documented — {consentDate}</div>
-          <div style={{ fontSize: 13, color: '#166534' }}>
+          <div style={{ fontWeight: 700, fontSize: 14, color: '#15803d', marginBottom: 6 }}>✓ Consent finalised — {consentDate}</div>
+          <div style={{ fontSize: 13, color: '#166534', marginBottom: 10 }}>
             <b>Procedure:</b> {procedure}<br />
             <b>Anaesthesia:</b> {anaesthesia}<br />
             {[...generalRisks, ...specificRisks].length > 0 && <><b>Risks discussed:</b> {[...generalRisks, ...specificRisks].join(', ')}<br /></>}
             {alternatives && <><b>Alternatives:</b> {alternatives}<br /></>}
-            {interpreterUsed && <b>Interpreter used</b>}
+            {interpreterUsed && <><b>Interpreter used</b><br /></>}
+            {clinicianName && <><b>Clinician:</b> {clinicianName}</>}
           </div>
-          <button type="button" onClick={() => setSigned(false)} style={{ marginTop: 8, fontSize: 11, color: '#15803d', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>Edit</button>
+          {/* Signature thumbnails */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#166534', marginBottom: 2 }}>PATIENT</div>
+              <img src={patientSig} alt="patient signature" style={{ width: '100%', height: 60, objectFit: 'contain', border: '1px solid #86efac', borderRadius: 4, background: '#fff' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#166534', marginBottom: 2 }}>CLINICIAN</div>
+              <img src={clinicianSig} alt="clinician signature" style={{ width: '100%', height: 60, objectFit: 'contain', border: '1px solid #86efac', borderRadius: 4, background: '#fff' }} />
+            </div>
+          </div>
+          <button type="button" onClick={() => setSigned(false)} style={{ fontSize: 11, color: '#15803d', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+            Edit
+          </button>
         </div>
       )}
     </div>
