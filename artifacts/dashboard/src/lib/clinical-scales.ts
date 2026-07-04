@@ -34,6 +34,9 @@
  *   29. ASA Physical Status Classification (pre-operative risk)
  *   30. BISAP (bedside index of severity in acute pancreatitis)
  *   31. Forrest Classification (endoscopic peptic ulcer bleeding stigmata)
+ *   32. Clavien-Dindo Classification (post-operative complication grading)
+ *   33. Glasgow Coma Scale (GCS)
+ *   34. AUDIT (WHO alcohol use disorders identification test)
  */
 
 export interface ScaleResult {
@@ -1791,6 +1794,241 @@ export function interpretForrest(cls: ForrestClass): ScaleResult {
     color: highRisk ? 'red' : moderate ? 'amber' : 'green',
     description: `${level.description} Re-bleeding risk: ${level.rebleedRisk}.`,
     action: level.management,
+    evidence,
+  };
+}
+
+// ── Clavien-Dindo Classification — Post-operative Complication Grading ────────
+// Ref: Dindo D, Demartines N, Clavien PA. Ann Surg 2004;240(2):205-213.
+// The international standard for grading surgical complications — used in every
+// audit, publication, M&M meeting, and quality improvement process.
+
+export type ClavienDindoGrade = 'I' | 'II' | 'IIIa' | 'IIIb' | 'IVa' | 'IVb' | 'V';
+
+export interface ClavienDindoLevelInfo {
+  grade: ClavienDindoGrade;
+  label: string;
+  description: string;
+  examples: string;
+}
+
+export const CLAVIEN_DINDO_LEVELS: ClavienDindoLevelInfo[] = [
+  {
+    grade: 'I',
+    label: 'Grade I — Minor deviation, no pharmacological treatment',
+    description: 'Any deviation from normal postoperative course not requiring pharmacological treatment, surgical, endoscopic, or radiological intervention. Allowed: analgesics, antipyretics, antiemetics, electrolytes, physiotherapy, wound dressings.',
+    examples: 'Superficial wound dehiscence dressed conservatively, postoperative fever managed with paracetamol, atelectasis treated with physiotherapy.',
+  },
+  {
+    grade: 'II',
+    label: 'Grade II — Pharmacological treatment required',
+    description: 'Requiring pharmacological treatment with drugs other than those allowed for Grade I. Blood transfusions and total parenteral nutrition are also included.',
+    examples: 'Urinary tract infection treated with antibiotics, DVT treated with anticoagulants, pneumonia treated with antibiotics, blood transfusion for anaemia.',
+  },
+  {
+    grade: 'IIIa',
+    label: 'Grade IIIa — Intervention (no general anaesthesia)',
+    description: 'Requiring surgical, endoscopic, or radiological intervention without general anaesthesia.',
+    examples: 'Wound re-opening under local anaesthesia, endoscopic haemostasis for post-operative GI bleed, percutaneous drainage of collection under ultrasound/CT guidance.',
+  },
+  {
+    grade: 'IIIb',
+    label: 'Grade IIIb — Intervention (under general anaesthesia)',
+    description: 'Requiring surgical, endoscopic, or radiological intervention under general anaesthesia.',
+    examples: 'Return to theatre for anastomotic leak, re-laparoscopy for post-operative haemorrhage, ERCP under general anaesthesia for retained stone.',
+  },
+  {
+    grade: 'IVa',
+    label: 'Grade IVa — Life-threatening, single organ dysfunction',
+    description: 'Life-threatening complication including CNS complications requiring intensive care management. Single organ dysfunction.',
+    examples: 'Single-organ failure (respiratory, renal, cardiac, hepatic), pulmonary embolism requiring ICU, post-operative myocardial infarction with single organ compromise.',
+  },
+  {
+    grade: 'IVb',
+    label: 'Grade IVb — Life-threatening, multi-organ dysfunction',
+    description: 'Life-threatening complication requiring ICU management with multi-organ dysfunction.',
+    examples: 'Multi-organ failure following anastomotic leak, septic shock with renal and respiratory failure, post-operative DIC with multi-system involvement.',
+  },
+  {
+    grade: 'V',
+    label: 'Grade V — Death',
+    description: 'Death of the patient as a result of the complication or its management.',
+    examples: 'Death from anastomotic leak, death from post-operative pulmonary embolism.',
+  },
+];
+
+export function interpretClavienDindo(grade: ClavienDindoGrade, suffixD: boolean): ScaleResult {
+  const level = CLAVIEN_DINDO_LEVELS.find(l => l.grade === grade)!;
+  const evidence = 'Dindo D, Demartines N, Clavien PA. Ann Surg 2004;240(2):205-213. Clavien PA et al., Ann Surg 2009;250(2):187-196. Adopted by ESGE, ACS-NSQIP, and ISSGR as the international standard.';
+  const gradeNum = { I: 1, II: 2, IIIa: 3, IIIb: 3, IVa: 4, IVb: 4, V: 5 }[grade];
+  const color: ScaleResult['color'] = gradeNum <= 2 ? 'green' : gradeNum === 3 ? 'amber' : 'red';
+  const dNote = suffixD ? ' ("d" suffix: complication still present at discharge — continued outpatient management required).' : '';
+  return {
+    score: 0,
+    band: `Clavien-Dindo ${grade}${suffixD ? 'd' : ''} — ${level.label.split('—')[1].trim()}`,
+    color,
+    description: `${level.description}${dNote}`,
+    action: gradeNum <= 2
+      ? 'Document complication in operative notes and discharge summary. Report in M&M / audit database. No return to theatre required.'
+      : gradeNum === 3
+      ? `Return to theatre or interventional radiology/endoscopy required. Senior surgeon and anaesthetic team involvement. Document indication and consent. Report in M&M register.${suffixD ? ' Arrange close outpatient follow-up.' : ''}`
+      : grade === 'V'
+      ? 'Complete Serious Adverse Event report. Notify Medical Director and Quality & Patient Safety. Root cause analysis / M&M review mandatory. Coroner notification per local/national requirements.'
+      : `Immediate ICU admission / senior ICU physician review. Multidisciplinary management. Complete critical incident report. Inform patient and family. Document in M&M register.${suffixD ? ' Discharge planning with specialist rehabilitation input.' : ''}`,
+    evidence,
+  };
+}
+
+// ── Glasgow Coma Scale (GCS) ──────────────────────────────────────────────────
+// Ref: Teasdale G, Jennett B. Lancet 1974;2(7872):81-84.
+// Fundamental neurological assessment — used post-op, head injury, encephalopathy,
+// and as a component of BISAP, qSOFA, and APACHE scoring.
+
+export interface GcsInputs {
+  eyeOpening:      1 | 2 | 3 | 4;
+  verbalResponse:  1 | 2 | 3 | 4 | 5;
+  motorResponse:   1 | 2 | 3 | 4 | 5 | 6;
+}
+
+export const GCS_EYE_OPTIONS: { value: number; label: string }[] = [
+  { value: 4, label: '4 — Spontaneous' },
+  { value: 3, label: '3 — To voice / command' },
+  { value: 2, label: '2 — To pain' },
+  { value: 1, label: '1 — None' },
+];
+
+export const GCS_VERBAL_OPTIONS: { value: number; label: string }[] = [
+  { value: 5, label: '5 — Oriented and converses' },
+  { value: 4, label: '4 — Confused / disoriented' },
+  { value: 3, label: '3 — Inappropriate words' },
+  { value: 2, label: '2 — Incomprehensible sounds' },
+  { value: 1, label: '1 — None' },
+];
+
+export const GCS_MOTOR_OPTIONS: { value: number; label: string }[] = [
+  { value: 6, label: '6 — Obeys commands' },
+  { value: 5, label: '5 — Localises pain' },
+  { value: 4, label: '4 — Withdraws from pain' },
+  { value: 3, label: '3 — Abnormal flexion (decorticate)' },
+  { value: 2, label: '2 — Extension (decerebrate)' },
+  { value: 1, label: '1 — None' },
+];
+
+export function gcsScore(i: GcsInputs): number {
+  return i.eyeOpening + i.verbalResponse + i.motorResponse;
+}
+
+export function interpretGcs(score: number): ScaleResult {
+  const evidence = 'Teasdale G, Jennett B. Lancet 1974;2(7872):81-84. Teasdale G et al., BMJ 2014;348:g3765 (structured GCS).';
+  if (score >= 14) return {
+    score, band: `GCS ${score}/15 — Mild / no significant impairment`, color: 'green',
+    description: 'Minimal neurological compromise. Patient alert with minor disorientation at most.',
+    action: 'Continue current monitoring. Reassess GCS at regular intervals. Investigate any acute change from baseline. Ensure airway self-protection adequate.',
+    evidence,
+  };
+  if (score >= 9) return {
+    score, band: `GCS ${score}/15 — Moderate impairment`, color: 'amber',
+    description: 'Moderate consciousness impairment — significant neurological compromise present.',
+    action: 'Urgent senior review. Continuous monitoring, consider HDU. Assess airway — patient may not self-protect. Establish cause: metabolic, structural, pharmacological. CT head/brain if indicated. Involve neurology or neurosurgery if not already. Repeat GCS every 30 minutes.',
+    evidence,
+  };
+  return {
+    score, band: `GCS ${score}/15 — Severe impairment / coma`, color: 'red',
+    description: `Severe neurological compromise. GCS ≤ 8 defines clinical coma — airway is at immediate risk.`,
+    action: 'Immediate airway management — GCS ≤ 8 is an intubation threshold. Call anaesthetics/ICU urgently. Establish IV access. Bloods: glucose, FBC, U&E, LFTs, ammonia, toxicology screen. CT head/brain urgently. Consider antidotes (naloxone, flumazenil) only if clear indication. Neurosurgery and neurology on standby. Document GCS components (E, V, M) separately — composite score alone is insufficient.',
+    evidence,
+  };
+}
+
+// ── AUDIT — WHO Alcohol Use Disorders Identification Test ─────────────────────
+// Ref: Saunders JB et al., Addiction 1993;88(6):791-804.
+// Babor TF et al., AUDIT: The Alcohol Use Disorders Identification Test, WHO 2001.
+// 10-item WHO questionnaire — gold standard for hazardous and harmful alcohol use.
+
+export type AuditFreqOpt = 0 | 1 | 2 | 3 | 4;
+export type AuditBinaryOpt = 0 | 2 | 4;
+
+export interface AuditInputs {
+  q1:  AuditFreqOpt;  // frequency of drinking
+  q2:  AuditFreqOpt;  // typical quantity
+  q3:  AuditFreqOpt;  // frequency of heavy drinking (≥6 drinks)
+  q4:  AuditFreqOpt;  // impaired control
+  q5:  AuditFreqOpt;  // increased salience
+  q6:  AuditFreqOpt;  // morning drinking
+  q7:  AuditFreqOpt;  // guilt/remorse
+  q8:  AuditFreqOpt;  // memory blackouts
+  q9:  AuditBinaryOpt; // injury due to drinking
+  q10: AuditBinaryOpt; // others concerned
+}
+
+export const AUDIT_Q1_OPTS = [
+  { value: 0, label: 'Never' },
+  { value: 1, label: 'Monthly or less' },
+  { value: 2, label: '2–4 times a month' },
+  { value: 3, label: '2–3 times a week' },
+  { value: 4, label: '4 or more times a week' },
+];
+export const AUDIT_Q2_OPTS = [
+  { value: 0, label: '1 or 2' },
+  { value: 1, label: '3 or 4' },
+  { value: 2, label: '5 or 6' },
+  { value: 3, label: '7, 8, or 9' },
+  { value: 4, label: '10 or more' },
+];
+export const AUDIT_Q3TO8_OPTS = [
+  { value: 0, label: 'Never' },
+  { value: 1, label: 'Less than monthly' },
+  { value: 2, label: 'Monthly' },
+  { value: 3, label: 'Weekly' },
+  { value: 4, label: 'Daily or almost daily' },
+];
+export const AUDIT_Q9TO10_OPTS = [
+  { value: 0, label: 'No' },
+  { value: 2, label: 'Yes, but not in the last year' },
+  { value: 4, label: 'Yes, during the last year' },
+];
+
+export const AUDIT_QUESTIONS: { key: keyof AuditInputs; text: string }[] = [
+  { key: 'q1',  text: 'How often do you have a drink containing alcohol?' },
+  { key: 'q2',  text: 'How many drinks containing alcohol do you have on a typical day when you are drinking?' },
+  { key: 'q3',  text: 'How often do you have six or more drinks on one occasion?' },
+  { key: 'q4',  text: 'How often during the last year have you found that you were not able to stop drinking once you had started?' },
+  { key: 'q5',  text: 'How often during the last year have you failed to do what was normally expected from you because of drinking?' },
+  { key: 'q6',  text: 'How often during the last year have you needed a first drink in the morning to get yourself going after a heavy drinking session?' },
+  { key: 'q7',  text: 'How often during the last year have you had a feeling of guilt or remorse after drinking?' },
+  { key: 'q8',  text: 'How often during the last year have you been unable to remember what happened the night before because you had been drinking?' },
+  { key: 'q9',  text: 'Have you or someone else been injured as a result of your drinking?' },
+  { key: 'q10', text: 'Has a relative, friend, doctor or other health worker been concerned about your drinking or suggested you cut down?' },
+];
+
+export function auditScore(i: AuditInputs): number {
+  return i.q1 + i.q2 + i.q3 + i.q4 + i.q5 + i.q6 + i.q7 + i.q8 + i.q9 + i.q10;
+}
+
+export function interpretAudit(score: number): ScaleResult {
+  const evidence = 'Saunders JB et al., Addiction 1993;88(6):791-804. WHO AUDIT Manual (Babor TF et al., 2nd ed., 2001). NICE PH24 and CG115. Pre-operative alcohol cessation: Tonnesen H et al., BMJ 2009;338:b477.';
+  if (score <= 7) return {
+    score, band: `AUDIT ${score} — Low-risk / abstinent`, color: 'green',
+    description: 'Low-risk or abstinent drinking. No evidence of hazardous, harmful, or dependent use.',
+    action: 'Provide positive reinforcement and brief education on sensible drinking limits. No specific pre-operative alcohol intervention required. Document in pre-op assessment.',
+    evidence,
+  };
+  if (score <= 15) return {
+    score, band: `AUDIT ${score} — Hazardous drinking`, color: 'amber',
+    description: 'Hazardous alcohol use — above recommended limits with risk of harm. Not yet dependent.',
+    action: 'Brief intervention (5–10 min structured advice) recommended — the FRAMES approach. Pre-operatively: advise alcohol cessation ≥4 weeks before elective surgery (reduces complications by ~50%). Refer to alcohol liaison service if available. Inform anaesthetist — increased anaesthetic requirements, risk of withdrawal. Monitor for AWS post-operatively (CIWA-Ar). Liver function tests.',
+    evidence,
+  };
+  if (score <= 19) return {
+    score, band: `AUDIT ${score} — Harmful drinking`, color: 'red',
+    description: 'Harmful alcohol use — physical or psychological harm is already occurring.',
+    action: 'Extended brief intervention + referral to alcohol liaison service or community alcohol team. Pre-operative: consider postponing elective surgery until ≥4 weeks abstinence achieved — significant reduction in post-operative complications. Assess liver function (Child-Pugh/MELD if cirrhosis suspected). Thiamine supplementation. Post-operative AWS monitoring with CIWA-Ar protocol. Clonidine or lorazepam protocols per local guideline.',
+    evidence,
+  };
+  return {
+    score, band: `AUDIT ${score} — Probable alcohol dependence`, color: 'red',
+    description: 'Probable alcohol dependence — high risk of withdrawal syndrome, significant perioperative morbidity.',
+    action: 'Urgent referral to alcohol liaison / addiction medicine before elective surgery. Do NOT abruptly withdraw alcohol pre-operatively without medical supervision — risk of seizures and delirium tremens. Assess for Wernicke\'s encephalopathy — prophylactic thiamine (Pabrinex IV) if malnourished or high-risk. Elective surgery should be deferred until medically supervised detoxification complete and abstinence maintained ≥4 weeks. If emergency surgery: anaesthetic team must be informed, post-op ICU/HDU for AWS monitoring with CIWA-Ar protocol. Liver assessment mandatory.',
     evidence,
   };
 }

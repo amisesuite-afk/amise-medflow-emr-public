@@ -36,6 +36,11 @@ import {
   ASA_LEVELS, interpretAsa, type AsaClass,
   bisapScore, interpretBisap, type BisapInputs,
   FORREST_LEVELS, interpretForrest, type ForrestClass,
+  CLAVIEN_DINDO_LEVELS, interpretClavienDindo, type ClavienDindoGrade,
+  GCS_EYE_OPTIONS, GCS_VERBAL_OPTIONS, GCS_MOTOR_OPTIONS,
+  gcsScore, interpretGcs, type GcsInputs,
+  AUDIT_QUESTIONS, AUDIT_Q1_OPTS, AUDIT_Q2_OPTS, AUDIT_Q3TO8_OPTS, AUDIT_Q9TO10_OPTS,
+  auditScore, interpretAudit, type AuditInputs,
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
@@ -1243,6 +1248,125 @@ function ForrestCard() {
   );
 }
 
+// ── Clavien-Dindo ─────────────────────────────────────────────────────────────
+
+function ClavienDindoCard() {
+  const [grade, setGrade] = useState<ClavienDindoGrade>('I');
+  const [suffixD, setSuffixD] = useState(false);
+  const result = interpretClavienDindo(grade, suffixD);
+  const selected = CLAVIEN_DINDO_LEVELS.find(l => l.grade === grade)!;
+  const selStyle: React.CSSProperties = {
+    border: '1px solid #d1d5db', borderRadius: 6, padding: '6px 10px',
+    fontSize: 13, width: '100%', marginBottom: 10,
+  };
+  return (
+    <div>
+      <label style={{ fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        Grade
+        <select style={selStyle} value={grade} onChange={e => setGrade(e.target.value as ClavienDindoGrade)}>
+          {CLAVIEN_DINDO_LEVELS.map(l => (
+            <option key={l.grade} value={l.grade}>{l.label}</option>
+          ))}
+        </select>
+      </label>
+      <div style={{ fontSize: 12, color: '#374151', background: '#f9fafb', borderRadius: 6, padding: '8px 12px', marginBottom: 8 }}>
+        <div style={{ marginBottom: 4 }}>{selected.description}</div>
+        <div style={{ color: '#6b7280' }}><strong>Examples:</strong> {selected.examples}</div>
+      </div>
+      <Chk
+        label={'Add "d" suffix — complication still present at time of discharge'}
+        checked={suffixD}
+        onChange={() => setSuffixD(p => !p)}
+      />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── GCS ───────────────────────────────────────────────────────────────────────
+
+function GcsCard() {
+  const [v, setV] = useState<GcsInputs>({ eyeOpening: 4, verbalResponse: 5, motorResponse: 6 });
+  const score  = gcsScore(v);
+  const result = interpretGcs(score);
+  const selStyle: React.CSSProperties = {
+    border: '1px solid #d1d5db', borderRadius: 6, padding: '5px 8px', fontSize: 13, width: '100%',
+  };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 3 };
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8, marginBottom: 8 }}>
+        <label style={lblStyle}>
+          Eye opening (E)
+          <select style={selStyle} value={v.eyeOpening}
+            onChange={e => setV(p => ({ ...p, eyeOpening: parseInt(e.target.value) as GcsInputs['eyeOpening'] }))}>
+            {GCS_EYE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </label>
+        <label style={lblStyle}>
+          Verbal response (V)
+          <select style={selStyle} value={v.verbalResponse}
+            onChange={e => setV(p => ({ ...p, verbalResponse: parseInt(e.target.value) as GcsInputs['verbalResponse'] }))}>
+            {GCS_VERBAL_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </label>
+        <label style={lblStyle}>
+          Best motor response (M)
+          <select style={selStyle} value={v.motorResponse}
+            onChange={e => setV(p => ({ ...p, motorResponse: parseInt(e.target.value) as GcsInputs['motorResponse'] }))}>
+            {GCS_MOTOR_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </label>
+      </div>
+      <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 6 }}>
+        E{v.eyeOpening} V{v.verbalResponse} M{v.motorResponse}
+      </div>
+      <ScoreRow label="GCS Total" value={`${score}/15`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── AUDIT ─────────────────────────────────────────────────────────────────────
+
+function AuditCard() {
+  const [v, setV] = useState<AuditInputs>({
+    q1: 0, q2: 0, q3: 0, q4: 0, q5: 0,
+    q6: 0, q7: 0, q8: 0, q9: 0, q10: 0,
+  });
+  const score  = auditScore(v);
+  const result = interpretAudit(score);
+  const selStyle: React.CSSProperties = {
+    border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 6px', fontSize: 12, width: '100%',
+  };
+  const getOpts = (key: keyof AuditInputs) => {
+    if (key === 'q1')  return AUDIT_Q1_OPTS;
+    if (key === 'q2')  return AUDIT_Q2_OPTS;
+    if (key === 'q9' || key === 'q10') return AUDIT_Q9TO10_OPTS;
+    return AUDIT_Q3TO8_OPTS;
+  };
+  return (
+    <div>
+      {AUDIT_QUESTIONS.map((q, idx) => (
+        <div key={q.key} style={{ marginBottom: 8, display: 'grid', gridTemplateColumns: '1fr 160px', gap: 8, alignItems: 'start' }}>
+          <div style={{ fontSize: 12, color: '#374151', paddingTop: 6 }}>
+            <span style={{ color: '#9ca3af', marginRight: 4 }}>{idx + 1}.</span>{q.text}
+          </div>
+          <select
+            style={selStyle}
+            value={v[q.key]}
+            onChange={e => setV(p => ({ ...p, [q.key]: parseInt(e.target.value) as never }))}
+          >
+            {getOpts(q.key).map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </div>
+      ))}
+      <ScoreRow label="AUDIT Score" value={`${score}/40`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
 // ── Scale registry ────────────────────────────────────────────────────────────
 
 const SCALE_COMPONENTS: Record<string, React.FC> = {
@@ -1278,6 +1402,9 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   asa:              AsaCard,
   bisap:            BisapCard,
   forrest:          ForrestCard,
+  clavienDindo:     ClavienDindoCard,
+  gcs:              GcsCard,
+  audit:            AuditCard,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
@@ -1313,6 +1440,9 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   asa:              'ASA Physical Status Classification',
   bisap:            'BISAP — Pancreatitis Severity',
   forrest:          'Forrest Classification — Upper GI Bleed Endoscopy',
+  clavienDindo:     'Clavien-Dindo Classification — Post-operative Complications',
+  gcs:              'Glasgow Coma Scale (GCS)',
+  audit:            'AUDIT — Alcohol Use Disorders Identification Test',
 };
 
 const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }> = {

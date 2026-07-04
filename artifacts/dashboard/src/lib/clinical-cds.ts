@@ -684,6 +684,59 @@ const RULES: CdsRule[] = [
       return null;
     },
   },
+
+  // ── Clavien-Dindo — post-operative complication grading ───────────────────────
+  {
+    scaleKey: 'clavienDindo',
+    title: 'Clavien-Dindo Classification — Post-operative Complications',
+    urgency: 'relevant',
+    needsLabs: false,
+    categoryTag: 'Post-operative',
+    trigger: ctx => {
+      if (ctx.isPostOp || hasSym(ctx, 'post-op', 'post-operative', 'postoperative', 'after surgery', 'after operation'))
+        return 'post-operative context — document any complications using Clavien-Dindo for audit and M&M';
+      if (hasSym(ctx, 'wound', 'dehiscence', 'anastomotic', 'return to theatre', 're-operation', 'leak'))
+        return 'post-operative complication documented — classify with Clavien-Dindo for surgical audit';
+      return null;
+    },
+  },
+
+  // ── GCS — neurological assessment ────────────────────────────────────────────
+  {
+    scaleKey: 'gcs',
+    title: 'Glasgow Coma Scale (GCS)',
+    urgency: 'urgent',
+    needsLabs: false,
+    categoryTag: 'Neurology',
+    trigger: ctx => {
+      if (hasSym(ctx, 'confusion', 'altered mental status', 'drowsy', 'unresponsive', 'unconscious', 'encephalopathy', 'coma'))
+        return 'altered mental status / reduced consciousness — GCS required for baseline documentation and monitoring';
+      if (hasExam(ctx, 'neurology', 'Confusion', 'Disorientation', 'Reduced GCS', 'Encephalopathy'))
+        return 'neurological signs on examination — document GCS for serial monitoring';
+      if (hasComorbidity(ctx, 'hepatic encephalopathy', 'cirrhosis', 'liver failure', 'portal hypertension'))
+        return 'liver disease with encephalopathy risk — GCS for neurological baseline alongside Child-Pugh/MELD';
+      return null;
+    },
+  },
+
+  // ── AUDIT — alcohol use screening ─────────────────────────────────────────────
+  {
+    scaleKey: 'audit',
+    title: 'AUDIT — Alcohol Use Disorders Identification Test',
+    urgency: 'relevant',
+    needsLabs: false,
+    categoryTag: 'Pre-operative',
+    trigger: ctx => {
+      if (hasComorbidity(ctx, 'alcohol', 'alcoholic', 'alcohol dependence', 'alcohol misuse', 'ETOH', 'cirrhosis', 'alcoholic hepatitis'))
+        return 'alcohol use / liver disease documented — AUDIT to quantify use and guide pre-operative management';
+      if (hasSym(ctx, 'pre-op', 'preoperative', 'pre-operative', 'elective') &&
+          hasComorbidity(ctx, 'alcohol', 'ETOH', 'drinking', 'beer', 'wine', 'spirits'))
+        return 'pre-operative alcohol screening — quantify use with AUDIT before elective procedure';
+      if (hasComorbidity(ctx, 'pancreatitis', 'alcoholic liver disease', 'Wernicke', 'delirium tremens', 'alcohol withdrawal'))
+        return 'alcohol-related condition — full AUDIT to characterise use pattern and severity';
+      return null;
+    },
+  },
 ];
 
 // ── Public API ─────────────────────────────────────────────────────────────────
