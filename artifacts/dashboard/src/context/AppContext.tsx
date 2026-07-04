@@ -15,7 +15,7 @@ export type Section =
   | 'monitoring' | 'apcq' | 'nurse_apcq'
   | 'prescriptions' | 'ai_consultant' | 'tasks'
   | 'referring_providers' | 'encounter_history'
-  | 'who_checklist' | 'consent' | 'letters' | 'patient_education' | 'periop';
+  | 'who_checklist' | 'consent' | 'letters' | 'patient_education' | 'periop' | 'dosing';
 
 export interface ProgressNote {
   id: string;

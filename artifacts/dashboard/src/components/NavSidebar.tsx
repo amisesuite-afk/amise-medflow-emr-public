@@ -7,6 +7,7 @@ import {
   ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, Inbox,
   Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig, Check,
   MessageSquare, Tags, ClipboardMinus, ScrollText, MailOpen, GraduationCap, ShieldCheck,
+  Calculator,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection } from '@/context/AppContext';
@@ -105,9 +106,10 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     label: 'Plan',
     minRole: 'doctor',
     items: [
-      { id: 'plan',                icon: FileEdit,      label: 'Plan',          minRole: 'doctor' },
-      { id: 'prescriptions',       icon: FileSignature, label: 'Prescriptions', minRole: 'doctor' },
-      { id: 'referring_providers', icon: Contact,       label: 'Referrals',     minRole: 'doctor' },
+      { id: 'plan',                icon: FileEdit,      label: 'Plan',             minRole: 'doctor' },
+      { id: 'prescriptions',       icon: FileSignature, label: 'Prescriptions',    minRole: 'doctor' },
+      { id: 'dosing',              icon: Calculator,    label: 'Dose Calculator',  minRole: 'nurse' },
+      { id: 'referring_providers', icon: Contact,       label: 'Referrals',        minRole: 'doctor' },
     ],
   },
   {
