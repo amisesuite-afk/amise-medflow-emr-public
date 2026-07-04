@@ -14,15 +14,26 @@ export interface DifferentialEntry {
   name: string;
   category: string;
   urgency: DxUrgency;
-  /** Base probability before any symptoms (0–60). Higher = more common in this practice. */
+  /** Base probability before any symptoms (1–20). Higher = more common in this practice. */
   basePrior: number;
+  /** Flag for predominantly paediatric conditions. */
+  paediatric?: boolean;
+  /** Short plain-language summary of classic presentation (shown in DxPanel). */
+  keywords?: string[];
+  /** Key investigations that help confirm / exclude this diagnosis. */
+  investigations?: string[];
   /** Top-level symptom chip → score added when present */
   symptomWeights: Record<string, number>;
   /** "symptom.detail" → score added when symptom detail is selected */
   detailWeights?: Record<string, number>;
   /** Symptoms that reduce the score when present */
   negativeWeights?: Record<string, number>;
-  ageModifier?: { gt: number; add: number };
+  /**
+   * Age modifier — gt: lower bound (exclusive), lt: upper bound (exclusive).
+   * Omit gt to match all ages from 0; omit lt for no upper cap.
+   * Example paediatric: { lt: 16, add: 20 }
+   */
+  ageModifier?: { gt?: number; lt?: number; add: number };
   sexModifier?: { sex: string; add: number };
 }
 
@@ -1739,10 +1750,14 @@ const CATEGORY_REGION: Record<string, string> = {
   'Hernia': 'Abdominal',
   'Appendix': 'Abdominal',
   'Liver': 'Abdominal',
+  'HPB': 'Abdominal',
+  'Anorectal': 'Abdominal',
+  'Paediatric Surgical': 'Abdominal',
   'Respiratory': 'Thoracic',
   'Cardiovascular': 'Thoracic',
   'Vascular': 'Vascular / Limb',
   'Neurological': 'Head / Neurological',
+  'Paediatric Medical': 'Systemic',
   'Endocrine': 'Systemic',
   'Rheumatology': 'Systemic',
   'Haematology': 'Systemic',
@@ -1752,9 +1767,12 @@ const CATEGORY_REGION: Record<string, string> = {
   'Urogenital': 'Urogenital',
   'ENT': 'Head / ENT',
   'Musculoskeletal': 'Musculoskeletal',
+  'Orthopaedic': 'Musculoskeletal',
   'Breast': 'Breast',
   'Gynaecological': 'Urogenital',
   'Psychiatric': 'Systemic',
+  'Oncology': 'Systemic',
+  'Tropical': 'Systemic',
 };
 
 export function computeDxMarkers(
@@ -1791,7 +1809,10 @@ export function computeDxMarkers(
   let bestDemoBoost = 0;
   for (const dx of DIFFERENTIALS) {
     let boost = 0;
-    if (dx.ageModifier && age != null && age > dx.ageModifier.gt) boost += dx.ageModifier.add;
+    if (dx.ageModifier && age != null) {
+      const { gt, lt, add } = dx.ageModifier;
+      if ((gt === undefined || age > gt) && (lt === undefined || age < lt)) boost += add;
+    }
     if (dx.sexModifier && sex === dx.sexModifier.sex) boost += dx.sexModifier.add;
     if (boost > bestDemoBoost) { bestDemoBoost = boost; demographicBestId = dx.id; }
   }
@@ -1866,8 +1887,11 @@ function computeRawScore(
     }
   }
 
-  if (dx.ageModifier && age != null && age > dx.ageModifier.gt) {
-    score += dx.ageModifier.add;
+  if (dx.ageModifier && age != null) {
+    const { gt, lt, add } = dx.ageModifier;
+    const aboveFloor = gt === undefined || age > gt;
+    const belowCeiling = lt === undefined || age < lt;
+    if (aboveFloor && belowCeiling) score += add;
   }
   if (dx.sexModifier && sex === dx.sexModifier.sex) {
     score += dx.sexModifier.add;
