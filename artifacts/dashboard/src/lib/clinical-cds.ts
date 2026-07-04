@@ -386,6 +386,75 @@ const RULES: CdsRule[] = [
     },
     labsPresent: ctx => hasLab(ctx, 'amylase', 'lipase', 'LDH', 'AST', 'glucose', 'WBC'),
   },
+
+  // ── STOP-BANG — OSA pre-operative screening ───────────────────────────────────
+  {
+    scaleKey: 'stopBang',
+    title: 'STOP-BANG — OSA Pre-operative Screening',
+    urgency: 'consider',
+    needsLabs: false,
+    categoryTag: 'Pre-operative',
+    trigger: ctx => {
+      const isPreop = (ctx.procedureData as { preop?: unknown }).preop !== undefined;
+      const hasOsaSymptoms = hasSym(ctx, 'snoring', 'sleep apnoea', 'daytime sleepiness', 'fatigue', 'OSA');
+      const hasOsaComorbidity = hasComorbidity(ctx, 'sleep apnoea', 'OSA', 'obesity');
+      const isObese = hasComorbidity(ctx, 'obesity', 'BMI');
+      if (isPreop || hasOsaSymptoms || hasOsaComorbidity || isObese) {
+        if (isPreop) return 'Pre-operative assessment — OSA screening mandatory before anaesthesia';
+        if (hasOsaSymptoms) return 'OSA-related symptoms documented — screen before any sedation or general anaesthesia';
+        return 'Obesity or known OSA in PMH — assess risk before surgery or sedation';
+      }
+      return null;
+    },
+  },
+
+  // ── Clinical Frailty Scale — surgical risk in elderly ─────────────────────────
+  {
+    scaleKey: 'cfs',
+    title: 'Clinical Frailty Scale — Pre-operative Frailty',
+    urgency: 'consider',
+    needsLabs: false,
+    categoryTag: 'Pre-operative',
+    trigger: ctx => {
+      const isPreop = (ctx.procedureData as { preop?: unknown }).preop !== undefined;
+      const ageNum = parseInt(ctx.age, 10);
+      const isElderly = !isNaN(ageNum) && ageNum >= 65;
+      const hasMultiMorbidity = ctx.comorbidities.length >= 3;
+      const frailtyMentioned = ctx.assessment.toLowerCase().includes('frail') ||
+        hasComorbidity(ctx, 'frailty', 'sarcopenia', 'dementia', 'falls');
+      if (isPreop || isElderly || hasMultiMorbidity || frailtyMentioned) {
+        if (frailtyMentioned) return 'Frailty or dementia noted in PMH/assessment — formal CFS grading required';
+        if (isElderly && isPreop) return `Patient aged ${ctx.age} — frailty assessment mandatory before surgery in patients ≥65`;
+        if (isElderly) return `Patient aged ${ctx.age} — frailty screening recommended`;
+        if (hasMultiMorbidity) return `${ctx.comorbidities.length} comorbidities documented — frailty assessment recommended`;
+        return 'Pre-operative assessment — document frailty status';
+      }
+      return null;
+    },
+  },
+
+  // ── ECOG — oncology and surgical performance status ───────────────────────────
+  {
+    scaleKey: 'ecog',
+    title: 'ECOG Performance Status',
+    urgency: 'consider',
+    needsLabs: false,
+    categoryTag: 'Oncology / Surgical risk',
+    trigger: ctx => {
+      const hasCancer = hasComorbidity(ctx, 'cancer', 'malignancy', 'carcinoma', 'tumour', 'lymphoma', 'sarcoma');
+      const assessmentHasCancer = ctx.assessment.toLowerCase().match(/cancer|malignan|carcinoma|tumour|lymphoma|sarcoma/);
+      const isPreop = (ctx.procedureData as { preop?: unknown }).preop !== undefined;
+      if (hasCancer || assessmentHasCancer) {
+        return hasCancer
+          ? 'Malignancy in PMH — document performance status for surgical / oncological planning'
+          : 'Cancer/malignancy in assessment — ECOG required for treatment planning';
+      }
+      if (isPreop && ctx.comorbidities.length >= 2) {
+        return 'Pre-operative assessment with multiple comorbidities — document functional performance status';
+      }
+      return null;
+    },
+  },
 ];
 
 // ── Public API ─────────────────────────────────────────────────────────────────

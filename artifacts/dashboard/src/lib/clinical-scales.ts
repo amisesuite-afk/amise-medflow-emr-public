@@ -3,13 +3,25 @@
  * All functions are pure and deterministic — no AI involved.
  *
  * Scales included:
- *   1. Alvarado (appendicitis probability)
- *   2. HEART (chest pain 6-week MACE risk)
- *   3. Wells PE (pulmonary embolism probability)
- *   4. ABCD2 (TIA → 2-day stroke risk)
- *   5. TG18 Cholangitis severity
- *   6. ASGE CBD stone probability
- *   7. Tokyo Guidelines Cholecystitis (TG18-X)
+ *   1.  Alvarado (appendicitis probability)
+ *   2.  HEART (chest pain 6-week MACE risk)
+ *   3.  Wells PE (pulmonary embolism probability)
+ *   4.  ABCD2 (TIA → 2-day stroke risk)
+ *   5.  TG18 Cholangitis severity
+ *   6.  ASGE CBD stone probability
+ *   7.  Tokyo Guidelines Cholecystitis (TG18-X)
+ *   8.  Glasgow-Blatchford (upper GI bleed)
+ *   9.  RCRI (pre-operative cardiac risk)
+ *   10. Pre-Rockall (GI bleed mortality)
+ *   11. Ranson's Criteria (pancreatitis)
+ *   12. ISS / NISS (trauma)
+ *   13. Burns: Rule of Nines, Parkland, Baux
+ *   14. P-POSSUM (surgical mortality/morbidity)
+ *   15. MUST (malnutrition screening)
+ *   16. Caprini (VTE risk)
+ *   17. STOP-BANG (OSA pre-operative screening)
+ *   18. Clinical Frailty Scale (CFS)
+ *   19. ECOG Performance Status
  */
 
 export interface ScaleResult {
@@ -1034,6 +1046,137 @@ export function interpretCaprini(score: number): ScaleResult {
     score, band: `Caprini ${score} — Highest Risk`, color: 'red',
     description: 'VTE risk ≥6% without prophylaxis. Bleeding risk must be weighed.',
     action: 'LMWH + mechanical prophylaxis mandatory. Extended prophylaxis 28–35 days. Consider haematology review if multiple thrombophilia factors. Inferior vena cava filter if LMWH absolutely contraindicated.',
+    evidence,
+  };
+}
+
+// ── STOP-BANG — Obstructive Sleep Apnoea Pre-operative Screening ──────────────
+// Ref: Chung F et al., Anesthesiology 2008;108(5):812-821.
+
+export interface StopBangInputs {
+  snoring: boolean;       // S: snores loudly
+  tired: boolean;         // T: often tired / fatigued / sleepy during daytime
+  observed: boolean;      // O: observed stopping breathing / choking / gasping in sleep
+  pressure: boolean;      // P: high blood pressure (or being treated for it)
+  bmiAbove35: boolean;    // B: BMI > 35 kg/m²
+  ageAbove50: boolean;    // A: age > 50 years
+  neckAbove40: boolean;   // N: neck circumference > 40 cm
+  genderMale: boolean;    // G: gender = male
+}
+
+export function stopBangScore(i: StopBangInputs): number {
+  return [
+    i.snoring, i.tired, i.observed, i.pressure,
+    i.bmiAbove35, i.ageAbove50, i.neckAbove40, i.genderMale,
+  ].filter(Boolean).length;
+}
+
+export function interpretStopBang(score: number): ScaleResult {
+  const evidence = 'Chung F et al., Anesthesiology 2008;108(5):812-821. Validated for pre-operative OSA screening.';
+  if (score <= 2) return {
+    score, band: `STOP-BANG ${score} — Low Risk`, color: 'green',
+    description: 'Low risk of moderate/severe obstructive sleep apnoea.',
+    action: 'Standard pre-operative assessment. No specific OSA precautions required unless clinical suspicion remains.',
+    evidence,
+  };
+  if (score <= 4) return {
+    score, band: `STOP-BANG ${score} — Intermediate Risk`, color: 'amber',
+    description: 'Intermediate risk of moderate/severe OSA.',
+    action: 'Inform anaesthetist of STOP-BANG score. Avoid post-operative opioids if possible. Continuous pulse oximetry post-op. Consider sleep study if elective surgery allows.',
+    evidence,
+  };
+  return {
+    score, band: `STOP-BANG ${score} — High Risk`, color: 'red',
+    description: 'High risk of moderate/severe OSA.',
+    action: 'Anaesthetic pre-assessment essential. Inform anaesthetist. ICU/HDU monitoring post-op. Avoid deep sedation. Apply CPAP if pre-diagnosed. Consider formal sleep study before elective surgery.',
+    evidence,
+  };
+}
+
+// ── Clinical Frailty Scale (CFS) — Rockwood ───────────────────────────────────
+// Ref: Rockwood K et al., CMAJ 2005;173(5):489-495.
+
+export const CFS_LEVELS: { level: 1|2|3|4|5|6|7|8|9; label: string; description: string }[] = [
+  { level: 1, label: 'Very Fit',            description: 'Robust, active, energetic and motivated. Exercise regularly. Among fittest for their age.' },
+  { level: 2, label: 'Well',                description: 'No active disease symptoms but less fit than category 1. Occasionally active or exercises.' },
+  { level: 3, label: 'Managing Well',       description: 'Medical problems well controlled, but not regularly active beyond routine walking.' },
+  { level: 4, label: 'Vulnerable',          description: 'Not dependent but often slowed by symptoms. Complain of being "slowed up" or tired during the day.' },
+  { level: 5, label: 'Mildly Frail',        description: 'Evident slowing, dependent on others for IADLs (finances, transport, heavy housework, medications).' },
+  { level: 6, label: 'Moderately Frail',    description: 'Needs help with all outside activities and keeping house. Indoor: difficulty with stairs; help needed with bathing.' },
+  { level: 7, label: 'Severely Frail',      description: 'Completely dependent for personal care from any cause (physical or cognitive). Stable, not at imminent risk of dying.' },
+  { level: 8, label: 'Very Severely Frail', description: 'Completely dependent, approaching end of life. Typically cannot recover even from a minor illness.' },
+  { level: 9, label: 'Terminally Ill',      description: 'Life expectancy < 6 months. Not otherwise evidently frail by above criteria.' },
+];
+
+export function interpretCfs(level: number): ScaleResult {
+  const evidence = 'Rockwood K et al., CMAJ 2005;173(5):489-495. Validated for pre-operative frailty risk stratification.';
+  if (level <= 3) return {
+    score: level, band: `CFS ${level} — Not Frail`, color: 'green',
+    description: 'No significant frailty. Perioperative risk not substantially elevated by frailty alone.',
+    action: 'Standard pre-operative assessment. Manage other risk factors as per usual.',
+    evidence,
+  };
+  if (level === 4) return {
+    score: level, band: 'CFS 4 — Vulnerable', color: 'amber',
+    description: 'Vulnerable — increased perioperative risk. Not dependent but symptoms limit activity.',
+    action: 'Multidisciplinary pre-operative assessment. Prehabilitation if surgery is elective. Optimise nutrition, mobility, and medications. Geriatric input if appropriate.',
+    evidence,
+  };
+  if (level <= 6) return {
+    score: level, band: `CFS ${level} — Frail`, color: 'amber',
+    description: 'Frail — significantly elevated perioperative mortality and morbidity risk.',
+    action: 'Comprehensive geriatric assessment. Weigh risk vs benefit carefully. Prehabilitation, nutrition optimisation, polypharmacy review. HDU/ICU plan. Advance care planning discussion.',
+    evidence,
+  };
+  return {
+    score: level, band: `CFS ${level} — Severely Frail`, color: 'red',
+    description: 'Severe frailty or terminal illness. Very high perioperative risk. Major surgery unlikely tolerated.',
+    action: 'Goals-of-care discussion with patient and family essential. Consider non-operative alternatives or palliative management. Senior surgical and anaesthetic involvement. Formal advance care plan.',
+    evidence,
+  };
+}
+
+// ── ECOG Performance Status ───────────────────────────────────────────────────
+// Ref: Oken MM et al., Am J Clin Oncol 1982;5:649-655.
+
+export const ECOG_LEVELS: { level: 0|1|2|3|4; label: string; description: string }[] = [
+  { level: 0, label: 'Fully Active',        description: 'Fully active, able to carry on all pre-disease activities without restriction.' },
+  { level: 1, label: 'Restricted',          description: 'Restricted in physically strenuous activity but ambulatory; able to carry out light or sedentary work.' },
+  { level: 2, label: 'Ambulatory',          description: 'Ambulatory and capable of all self-care but unable to carry out work activities; up and about > 50% of waking hours.' },
+  { level: 3, label: 'Limited Self-care',   description: 'Capable of only limited self-care; confined to bed or chair > 50% of waking hours.' },
+  { level: 4, label: 'Completely Disabled', description: 'Completely disabled; cannot carry on any self-care; totally confined to bed or chair.' },
+];
+
+export function interpretEcog(level: number): ScaleResult {
+  const evidence = 'Oken MM et al., Am J Clin Oncol 1982;5:649-655. Eastern Cooperative Oncology Group performance scale.';
+  if (level === 0) return {
+    score: level, band: 'ECOG 0 — Fully Active', color: 'green',
+    description: 'No functional limitation. Full treatment options available.',
+    action: 'All treatment modalities appropriate. Standard surgical/oncological management.',
+    evidence,
+  };
+  if (level === 1) return {
+    score: level, band: 'ECOG 1 — Restricted', color: 'green',
+    description: 'Minor functional limitation. Good candidate for most surgical interventions.',
+    action: 'All treatment modalities generally appropriate. Minor dose/procedure modifications may be considered.',
+    evidence,
+  };
+  if (level === 2) return {
+    score: level, band: 'ECOG 2 — Ambulatory', color: 'amber',
+    description: 'Moderate functional limitation. Increased surgical and post-operative risk.',
+    action: 'Selected treatment approaches. Full risk/benefit discussion. Multidisciplinary team involvement. Enhanced recovery programme.',
+    evidence,
+  };
+  if (level === 3) return {
+    score: level, band: 'ECOG 3 — Limited Self-care', color: 'red',
+    description: 'Significant functional limitation. Major surgery carries high risk.',
+    action: 'Palliative or minimally invasive approaches preferred. MDT essential. Goals-of-care discussion. Avoid major elective surgery unless life-saving.',
+    evidence,
+  };
+  return {
+    score: level, band: 'ECOG 4 — Completely Disabled', color: 'red',
+    description: 'Severe functional impairment. Very high surgical risk.',
+    action: 'Palliative management strongly preferred. Surgical intervention rarely appropriate. Comprehensive goals-of-care discussion. Hospice referral if appropriate.',
     evidence,
   };
 }

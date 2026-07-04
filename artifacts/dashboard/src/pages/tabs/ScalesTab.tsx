@@ -20,6 +20,9 @@ import {
   type PpossumlPhysInputs, type PpossumlOpInputs,
   mustScore, interpretMust, type MustInputs,
   capriniScore, interpretCaprini, type CapriniInputs,
+  stopBangScore, interpretStopBang, type StopBangInputs,
+  CFS_LEVELS, interpretCfs,
+  ECOG_LEVELS, interpretEcog,
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
@@ -724,6 +727,92 @@ function CapriniCard() {
   );
 }
 
+// ── STOP-BANG Card ────────────────────────────────────────────────────────────
+
+function StopBangCard() {
+  const [v, setV] = useState<StopBangInputs>({
+    snoring: false, tired: false, observed: false, pressure: false,
+    bmiAbove35: false, ageAbove50: false, neckAbove40: false, genderMale: false,
+  });
+  const score = stopBangScore(v);
+  const result = interpretStopBang(score);
+  const tog = (k: keyof StopBangInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  return (
+    <div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', marginBottom: 6 }}>STOP</div>
+      <Chk label="Snoring — do you snore loudly (heard through closed door)?" checked={v.snoring} onChange={() => tog('snoring')} />
+      <Chk label="Tired — often feel tired, fatigued, or sleepy during daytime?" checked={v.tired} onChange={() => tog('tired')} />
+      <Chk label="Observed — anyone observed you stop breathing / choking in sleep?" checked={v.observed} onChange={() => tog('observed')} />
+      <Chk label="Pressure — do you have or are you being treated for high blood pressure?" checked={v.pressure} onChange={() => tog('pressure')} />
+      <div style={{ fontSize: 11, fontWeight: 700, color: '#6b7280', margin: '10px 0 6px' }}>BANG</div>
+      <Chk label="BMI > 35 kg/m²" checked={v.bmiAbove35} onChange={() => tog('bmiAbove35')} />
+      <Chk label="Age > 50 years" checked={v.ageAbove50} onChange={() => tog('ageAbove50')} />
+      <Chk label="Neck circumference > 40 cm" checked={v.neckAbove40} onChange={() => tog('neckAbove40')} />
+      <Chk label="Gender = Male" checked={v.genderMale} onChange={() => tog('genderMale')} />
+      <ScoreRow label="STOP-BANG Score" value={`${score}/8`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── Clinical Frailty Scale Card ───────────────────────────────────────────────
+
+function CfsCard() {
+  const [level, setLevel] = useState<number>(1);
+  const result = interpretCfs(level);
+  const current = CFS_LEVELS.find(l => l.level === level)!;
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+        {CFS_LEVELS.map(l => (
+          <button key={l.level} onClick={() => setLevel(l.level)} style={{
+            minWidth: 36, padding: '5px 10px', borderRadius: 6,
+            border: '1px solid #d1d5db',
+            background: level === l.level ? '#1d4ed8' : '#fff',
+            color: level === l.level ? '#fff' : '#374151',
+            fontWeight: level === l.level ? 700 : 400,
+            cursor: 'pointer', fontSize: 13,
+          }}>
+            {l.level}
+          </button>
+        ))}
+      </div>
+      <div style={{ marginBottom: 4, fontWeight: 600, fontSize: 14 }}>CFS {level} — {current.label}</div>
+      <p style={{ fontSize: 13, color: '#374151', margin: '0 0 8px' }}>{current.description}</p>
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── ECOG Performance Status Card ──────────────────────────────────────────────
+
+function EcogCard() {
+  const [level, setLevel] = useState<number>(0);
+  const result = interpretEcog(level);
+  const current = ECOG_LEVELS.find(l => l.level === level)!;
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+        {ECOG_LEVELS.map(l => (
+          <button key={l.level} onClick={() => setLevel(l.level)} style={{
+            minWidth: 36, padding: '5px 10px', borderRadius: 6,
+            border: '1px solid #d1d5db',
+            background: level === l.level ? '#1d4ed8' : '#fff',
+            color: level === l.level ? '#fff' : '#374151',
+            fontWeight: level === l.level ? 700 : 400,
+            cursor: 'pointer', fontSize: 13,
+          }}>
+            {l.level}
+          </button>
+        ))}
+      </div>
+      <div style={{ marginBottom: 4, fontWeight: 600, fontSize: 14 }}>ECOG {level} — {current.label}</div>
+      <p style={{ fontSize: 13, color: '#374151', margin: '0 0 8px' }}>{current.description}</p>
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
 // ── Scale registry ────────────────────────────────────────────────────────────
 
 const SCALE_COMPONENTS: Record<string, React.FC> = {
@@ -744,6 +833,9 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   ppossuml:         PpossumlCard,
   must:             MustCard,
   caprini:          CapriniCard,
+  stopBang:         StopBangCard,
+  cfs:              CfsCard,
+  ecog:             EcogCard,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
@@ -764,6 +856,9 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   ppossuml:         'P-POSSUM — Surgical Mortality / Morbidity Prediction',
   must:             'MUST — Malnutrition Universal Screening',
   caprini:          'Caprini VTE Risk Score — Thromboprophylaxis',
+  stopBang:         'STOP-BANG — OSA Pre-operative Screening',
+  cfs:              'Clinical Frailty Scale (CFS)',
+  ecog:             'ECOG Performance Status',
 };
 
 const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }> = {
