@@ -170,7 +170,7 @@ const NAV_ITEMS: TopItem[] = [
   { id: 'results_inbox',   icon: ClipboardMinus, label: 'Results Inbox',  roles: ['nurse', 'doctor', 'admin'],               group: 'Post-Visit' },
   { id: 'visit_lifecycle', icon: HeartPulse,     label: 'Visits',         roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Post-Visit' },
   { id: 'finaldoc',       icon: FileCheck2,      label: 'Summary',        roles: ['nurse', 'doctor', 'admin'],               group: 'Post-Visit' },
-  { id: 'billing',        icon: Receipt,         label: 'Billing',        roles: ['front_desk', 'admin'],                    group: 'Post-Visit' },
+  { id: 'billing',        icon: Receipt,         label: 'Billing',        roles: ['front_desk', 'doctor', 'admin'],          group: 'Post-Visit' },
 
   // ── Admin ──
   { id: 'patients',       icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Admin' },
