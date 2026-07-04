@@ -4,7 +4,7 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
-import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
+import { supabase, ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
 import { hasRole, roleIn } from '@/lib/roles';
 import { usePathway } from '@/lib/usePathway';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
@@ -57,6 +57,7 @@ import WhoChecklistTab from './tabs/WhoChecklistTab';
 import SurgicalConsentTab from './tabs/SurgicalConsentTab';
 import EncounterTimelineTab from './tabs/EncounterTimelineTab';
 import QualityImprovementTab from './tabs/QualityImprovementTab';
+import ResultsInboxTab from './tabs/ResultsInboxTab';
 import LetterGeneratorTab from './tabs/LetterGeneratorTab';
 import PatientEducationTab from './tabs/PatientEducationTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
@@ -178,6 +179,7 @@ export default function HomePage() {
   const [collapsed, setCollapsed] = useState(false);
   const [zenMode, setZenMode] = useState(false);
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
+  const [criticalResultCount, setCriticalResultCount] = useState(0);
   const [showAiPanel, setShowAiPanel] = useState(false);
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
 
@@ -252,6 +254,22 @@ export default function HomePage() {
     const t = setInterval(() => void fetchPendingBookings(), 60_000);
     return () => clearInterval(t);
   }, [fetchPendingBookings]);
+
+  useEffect(() => {
+    if (!hasRole(userRole, 'nurse')) return;
+    async function pollCritical() {
+      if (!supabase) return;
+      const { count } = await supabase
+        .from('investigation_results')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_critical', true)
+        .is('reviewed_by', null);
+      setCriticalResultCount(count ?? 0);
+    }
+    void pollCritical();
+    const t = setInterval(() => void pollCritical(), 120_000);
+    return () => clearInterval(t);
+  }, [userRole]);
 
   const urgentCount = triageResult.vitalRedFlags.filter(f => f.severity === 'urgent').length
     + triageResult.reasons.length;
@@ -469,6 +487,7 @@ export default function HomePage() {
         pmhCount={comorbidities.length}
         encounterMode={encounterMode}
         pendingBookingCount={pendingBookingCount}
+        criticalResultCount={criticalResultCount}
         sectionCompletion={sectionCompletion}
         suggestedBlocks={suggestedBlocks}
       />
@@ -719,7 +738,8 @@ export default function HomePage() {
         {topSection === 'patients'   && <PatientSearchTab />}
         {topSection === 'scheduling' && <SchedulingTab />}
         {topSection === 'analytics'   && hasRole(userRole, 'doctor') && <AnalyticsTab />}
-        {topSection === 'quality'     && hasRole(userRole, 'doctor') && <QualityImprovementTab />}
+        {topSection === 'quality'       && hasRole(userRole, 'doctor') && <QualityImprovementTab />}
+        {topSection === 'results_inbox' && hasRole(userRole, 'nurse')  && <ResultsInboxTab />}
         {topSection === 'settings'   && hasRole(userRole, 'admin')  && <SettingsTab />}
         {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
         {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
