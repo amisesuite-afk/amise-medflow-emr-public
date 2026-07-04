@@ -27,6 +27,9 @@ import {
   GAD7_QUESTIONS, gad7Score, interpretGad7,
   GERDQ_QUESTIONS, GERDQ_FREQ_OPTS, gerdqScore, interpretGerdq,
   LIKERT_OPTS,
+  childPughScore, interpretChildPugh, type ChildPughInputs,
+  apfelScore, interpretApfel, APFEL_RISK, type ApfelInputs,
+  meldScore, meldNaScore, interpretMeld,
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
@@ -919,6 +922,132 @@ function GerdqCard() {
   );
 }
 
+// ── Child-Pugh Card ───────────────────────────────────────────────────────────
+
+type CpParam = 1 | 2 | 3;
+interface CpOpt { value: CpParam; label: string }
+
+function CpRow({ label, opts, value, onChange }: { label: string; opts: CpOpt[]; value: CpParam; onChange: (v: CpParam) => void }) {
+  return (
+    <div style={{ marginBottom: 8 }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 4 }}>{label}</div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {opts.map(o => (
+          <button key={o.value} type="button" onClick={() => onChange(o.value)} style={{
+            padding: '3px 12px', borderRadius: 12, cursor: 'pointer', fontSize: 11,
+            border: value === o.value ? '1px solid #0d9488' : '1px solid #d1d5db',
+            background: value === o.value ? '#0d9488' : '#f9fafb',
+            color: value === o.value ? '#fff' : '#374151',
+            fontWeight: value === o.value ? 600 : 400,
+          }}>{o.label}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ChildPughCard() {
+  const [v, setV] = useState<ChildPughInputs>({
+    bilirubin: 1, albumin: 1, inr: 1, ascites: 1, encephalopathy: 1,
+  });
+  const score = childPughScore(v);
+  const result = interpretChildPugh(score);
+  const set = (k: keyof ChildPughInputs) => (val: CpParam) => setV(p => ({ ...p, [k]: val }));
+  return (
+    <div>
+      <CpRow label="Bilirubin" value={v.bilirubin} onChange={set('bilirubin')}
+        opts={[{ value: 1, label: '< 34 µmol/L' }, { value: 2, label: '34–50 µmol/L' }, { value: 3, label: '> 50 µmol/L' }]} />
+      <CpRow label="Albumin" value={v.albumin} onChange={set('albumin')}
+        opts={[{ value: 1, label: '> 35 g/L' }, { value: 2, label: '28–35 g/L' }, { value: 3, label: '< 28 g/L' }]} />
+      <CpRow label="INR" value={v.inr} onChange={set('inr')}
+        opts={[{ value: 1, label: '< 1.7' }, { value: 2, label: '1.7–2.3' }, { value: 3, label: '> 2.3' }]} />
+      <CpRow label="Ascites" value={v.ascites} onChange={set('ascites')}
+        opts={[{ value: 1, label: 'Absent' }, { value: 2, label: 'Mild / controlled' }, { value: 3, label: 'Severe / refractory' }]} />
+      <CpRow label="Hepatic encephalopathy" value={v.encephalopathy} onChange={set('encephalopathy')}
+        opts={[{ value: 1, label: 'None' }, { value: 2, label: 'Grade I–II' }, { value: 3, label: 'Grade III–IV' }]} />
+      <ScoreRow label="Child-Pugh score" value={`${score}/15`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── Apfel Card ────────────────────────────────────────────────────────────────
+
+function ApfelCard() {
+  const [v, setV] = useState<ApfelInputs>({
+    femaleSex: false, nonSmoker: false,
+    priorPonvOrMotionSickness: false, postopOpioids: false,
+  });
+  const score = apfelScore(v);
+  const result = interpretApfel(score);
+  const risk = APFEL_RISK[score];
+  const tog = (k: keyof ApfelInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  return (
+    <div>
+      <Chk label="Female sex" checked={v.femaleSex} onChange={() => tog('femaleSex')} pts={1} />
+      <Chk label="Non-smoker" checked={v.nonSmoker} onChange={() => tog('nonSmoker')} pts={1} />
+      <Chk label="Prior PONV or motion sickness" checked={v.priorPonvOrMotionSickness} onChange={() => tog('priorPonvOrMotionSickness')} pts={1} />
+      <Chk label="Post-operative opioids anticipated" checked={v.postopOpioids} onChange={() => tog('postopOpioids')} pts={1} />
+      <ScoreRow label="Apfel score" value={`${score}/4 — PONV risk ${risk?.label ?? '?'}`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── MELD Card ─────────────────────────────────────────────────────────────────
+
+function MeldCard() {
+  const [bilirubin, setBilirubin] = useState('');   // mg/dL
+  const [inr, setInr] = useState('');
+  const [creatinine, setCreatinine] = useState(''); // mg/dL
+  const [sodium, setSodium] = useState('');          // mmol/L — for MELD-Na
+
+  const bili = parseFloat(bilirubin);
+  const inrVal = parseFloat(inr);
+  const cr = parseFloat(creatinine);
+  const na = parseFloat(sodium);
+  const ready = !isNaN(bili) && !isNaN(inrVal) && !isNaN(cr) && bili > 0 && inrVal > 0 && cr > 0;
+
+  const meld = ready ? meldScore(bili, inrVal, cr) : null;
+  const meldNa = ready && !isNaN(na) && na > 0 ? meldNaScore(meld!, na) : null;
+  const result = meld !== null ? interpretMeld(meld) : null;
+
+  const inpStyle: React.CSSProperties = {
+    border: '1px solid #d1d5db', borderRadius: 6, padding: '5px 8px',
+    fontSize: 13, width: '100%',
+  };
+  const lblStyle: React.CSSProperties = { fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 10 };
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 4 }}>
+        <label style={lblStyle}>Bilirubin (mg/dL)
+          <input style={inpStyle} type="number" min="0" step="0.1" value={bilirubin} onChange={e => setBilirubin(e.target.value)} placeholder="e.g. 1.2" />
+        </label>
+        <label style={lblStyle}>INR
+          <input style={inpStyle} type="number" min="0" step="0.1" value={inr} onChange={e => setInr(e.target.value)} placeholder="e.g. 1.1" />
+        </label>
+        <label style={lblStyle}>Creatinine (mg/dL)
+          <input style={inpStyle} type="number" min="0" step="0.1" value={creatinine} onChange={e => setCreatinine(e.target.value)} placeholder="e.g. 0.9" />
+        </label>
+        <label style={lblStyle}>Sodium (mmol/L) — for MELD-Na
+          <input style={inpStyle} type="number" min="0" value={sodium} onChange={e => setSodium(e.target.value)} placeholder="e.g. 138 (optional)" />
+        </label>
+      </div>
+      {meld !== null && (
+        <>
+          <ScoreRow label="MELD score" value={meld} />
+          {meldNa !== null && <ScoreRow label="MELD-Na score" value={meldNa} />}
+          <ResultBadge result={result!} />
+        </>
+      )}
+      {meld === null && (
+        <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 8 }}>Enter bilirubin, INR, and creatinine to calculate.</div>
+      )}
+    </div>
+  );
+}
+
 // ── Scale registry ────────────────────────────────────────────────────────────
 
 const SCALE_COMPONENTS: Record<string, React.FC> = {
@@ -945,6 +1074,9 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   phq9:             Phq9Card,
   gad7:             Gad7Card,
   gerdq:            GerdqCard,
+  childPugh:        ChildPughCard,
+  apfel:            ApfelCard,
+  meld:             MeldCard,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
@@ -971,6 +1103,9 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   phq9:             'PHQ-9 — Depression Screening',
   gad7:             'GAD-7 — Generalised Anxiety Screening',
   gerdq:            'GERD-Q — Reflux Disease Questionnaire',
+  childPugh:        'Child-Pugh Score — Liver Disease Surgical Risk',
+  apfel:            'Apfel Score — PONV Risk (Pre-operative)',
+  meld:             'MELD / MELD-Na — End-stage Liver Disease',
 };
 
 const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }> = {

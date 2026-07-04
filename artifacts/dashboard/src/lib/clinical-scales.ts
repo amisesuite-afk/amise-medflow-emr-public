@@ -25,6 +25,9 @@
  *   20. PHQ-9 (depression screening)
  *   21. GAD-7 (generalised anxiety screening)
  *   22. GERD-Q (gastro-oesophageal reflux disease questionnaire)
+ *   23. Child-Pugh score (liver disease surgical risk)
+ *   24. Apfel PONV score (post-operative nausea and vomiting)
+ *   25. MELD / MELD-Na (end-stage liver disease severity)
  */
 
 export interface ScaleResult {
@@ -1324,6 +1327,133 @@ export function interpretGerdq(score: number): ScaleResult {
     score, band: `GERD-Q ${score} — GORD Likely + Impact`, color: 'red',
     description: 'GORD likely with significant impact on quality of life and sleep.',
     action: 'PPI therapy (omeprazole 20–40 mg od for 4–8 weeks). Lifestyle modification. Endoscopy recommended — especially if alarm features, age >55, or inadequate PPI response. Consider 24-h pH/impedance if diagnosis uncertain.',
+    evidence,
+  };
+}
+
+// ── Child-Pugh Score — Liver Disease Surgical Risk ────────────────────────────
+// Ref: Pugh RN et al., Br J Surg 1973;60(8):646-649. Modified Child-Turcotte-Pugh.
+
+export interface ChildPughInputs {
+  bilirubin:    1 | 2 | 3;   // µmol/L: <34=1, 34-50=2, >50=3
+  albumin:      1 | 2 | 3;   // g/L: >35=1, 28-35=2, <28=3
+  inr:          1 | 2 | 3;   // <1.7=1, 1.7-2.3=2, >2.3=3
+  ascites:      1 | 2 | 3;   // absent=1, mild=2, severe=3
+  encephalopathy: 1 | 2 | 3; // none=1, grade I-II=2, grade III-IV=3
+}
+
+export function childPughScore(i: ChildPughInputs): number {
+  return i.bilirubin + i.albumin + i.inr + i.ascites + i.encephalopathy;
+}
+
+export function interpretChildPugh(score: number): ScaleResult {
+  const evidence = 'Pugh RN et al., Br J Surg 1973;60(8):646-649. Modified Child-Turcotte-Pugh (CTP). Predicts peri-operative mortality in chronic liver disease.';
+  if (score <= 6) return {
+    score, band: `Child-Pugh A (score ${score}) — Well-compensated`, color: 'green',
+    description: 'Well-compensated cirrhosis. Estimated operative mortality ≈ 10%.',
+    action: 'Surgery generally feasible. Standard peri-operative optimisation. Hepatology review recommended. Correct coagulopathy pre-operatively. Monitor for decompensation post-op.',
+    evidence,
+  };
+  if (score <= 9) return {
+    score, band: `Child-Pugh B (score ${score}) — Significant impairment`, color: 'amber',
+    description: 'Significantly impaired hepatic function. Estimated operative mortality ≈ 30%.',
+    action: 'High surgical risk. Hepatology referral mandatory. Optimise nutrition, coagulopathy, and ascites pre-operatively. MELD score should also be calculated. Weigh risk vs benefit carefully with patient. Consider TIPS for refractory ascites before elective surgery.',
+    evidence,
+  };
+  return {
+    score, band: `Child-Pugh C (score ${score}) — Decompensated`, color: 'red',
+    description: 'Decompensated cirrhosis. Estimated operative mortality ≈ 80%.',
+    action: 'Major elective surgery contraindicated. Hepatology referral essential. Liver transplantation evaluation if appropriate. Palliative / minimal-access procedures only if surgery unavoidable. Full goals-of-care discussion.',
+    evidence,
+  };
+}
+
+// ── Apfel Score — Post-operative Nausea and Vomiting (PONV) ──────────────────
+// Ref: Apfel CC et al., Anesthesiology 1999;91(3):693-700.
+
+export interface ApfelInputs {
+  femaleSex: boolean;           // female gender
+  nonSmoker: boolean;           // non-smoker
+  priorPonvOrMotionSickness: boolean; // history of PONV or motion sickness
+  postopOpioids: boolean;       // post-operative opioid use expected
+}
+
+export const APFEL_RISK: { score: number; risk: number; label: string }[] = [
+  { score: 0, risk: 10, label: '~10%' },
+  { score: 1, risk: 21, label: '~21%' },
+  { score: 2, risk: 39, label: '~39%' },
+  { score: 3, risk: 61, label: '~61%' },
+  { score: 4, risk: 79, label: '~79%' },
+];
+
+export function apfelScore(i: ApfelInputs): number {
+  return [i.femaleSex, i.nonSmoker, i.priorPonvOrMotionSickness, i.postopOpioids].filter(Boolean).length;
+}
+
+export function interpretApfel(score: number): ScaleResult {
+  const evidence = 'Apfel CC et al., Anesthesiology 1999;91(3):693-700. Validated for predicting PONV within 24 h after general anaesthesia.';
+  const risk = APFEL_RISK[score]?.risk ?? 79;
+  if (score <= 1) return {
+    score, band: `Apfel ${score} — Low PONV Risk (${risk}%)`, color: 'green',
+    description: `PONV risk approximately ${risk}%. Prophylaxis may not be routinely required.`,
+    action: 'Consider single antiemetic if risk factors present. TIVA not required. Standard anaesthetic technique acceptable.',
+    evidence,
+  };
+  if (score === 2) return {
+    score, band: `Apfel ${score} — Moderate PONV Risk (${risk}%)`, color: 'amber',
+    description: `PONV risk approximately ${risk}%. Multimodal prophylaxis recommended.`,
+    action: 'Give 2 antiemetics from different classes (e.g. ondansetron 4 mg IV + dexamethasone 4 mg IV at induction). Minimise opioids (NSAIDs, paracetamol, regional techniques). Consider TIVA if high-risk surgery.',
+    evidence,
+  };
+  return {
+    score, band: `Apfel ${score} — High PONV Risk (${risk}%)`, color: 'red',
+    description: `PONV risk approximately ${risk}%. Aggressive multimodal prophylaxis essential.`,
+    action: 'Give ≥3 antiemetics (ondansetron + dexamethasone + scopolamine patch or droperidol). TIVA strongly recommended (avoids volatile anaesthetic trigger). Minimise opioids — regional/neuraxial anaesthesia if feasible. Discuss with anaesthetist pre-operatively.',
+    evidence,
+  };
+}
+
+// ── MELD / MELD-Na — End-stage Liver Disease Severity ────────────────────────
+// Ref: Kamath PS et al., Hepatology 2001;33(2):464-470.
+// MELD-Na ref: Kim WR et al., Hepatology 2008;48(4):1106-1111.
+
+export function meldScore(bilirubinMgDl: number, inr: number, creatinineMgDl: number): number {
+  const safeBili   = Math.max(bilirubinMgDl, 1);
+  const safeInr    = Math.max(inr, 1);
+  const safeCr     = Math.min(Math.max(creatinineMgDl, 1), 4); // capped at 4 mg/dL per UNOS
+  const raw = 3.78 * Math.log(safeBili) + 11.2 * Math.log(safeInr) + 9.57 * Math.log(safeCr) + 6.43;
+  return Math.round(Math.max(6, raw));
+}
+
+export function meldNaScore(meld: number, sodiumMmol: number): number {
+  const na = Math.min(Math.max(sodiumMmol, 125), 137); // clamped 125-137
+  return Math.round(meld + 1.32 * (137 - na) - 0.033 * meld * (137 - na));
+}
+
+export function interpretMeld(score: number): ScaleResult {
+  const evidence = 'Kamath PS et al., Hepatology 2001;33(2):464-470. UNOS/OPTN liver allocation metric. Predicts 90-day waitlist mortality.';
+  if (score < 10) return {
+    score, band: `MELD ${score} — Low severity`, color: 'green',
+    description: 'Low disease severity. Estimated 90-day mortality < 2% on waitlist.',
+    action: 'Ongoing hepatology follow-up. Optimise comorbidities. Assess for varices and HCC surveillance. Elective surgery generally feasible with appropriate precautions.',
+    evidence,
+  };
+  if (score < 20) return {
+    score, band: `MELD ${score} — Moderate severity`, color: 'amber',
+    description: 'Moderate liver disease severity. Estimated 90-day mortality 6–20%.',
+    action: 'Hepatology co-management essential. Transplant evaluation if not already initiated. High surgical risk — avoid elective major surgery if possible. Optimise nutrition and ascites.',
+    evidence,
+  };
+  if (score < 30) return {
+    score, band: `MELD ${score} — High severity`, color: 'red',
+    description: 'High severity. Estimated 90-day mortality 20–52%.',
+    action: 'Urgent transplant evaluation. Elective surgery contraindicated. Emergency-only procedures with ICU-level perioperative care. Hepatology and anaesthetic input essential.',
+    evidence,
+  };
+  return {
+    score, band: `MELD ${score} — Very high / Critical`, color: 'red',
+    description: 'Critical disease severity. Estimated 90-day mortality > 52%.',
+    action: 'Highest-priority transplant listing. Surgery carries extreme risk. Intensive medical stabilisation. Goals-of-care discussion with patient and family.',
     evidence,
   };
 }

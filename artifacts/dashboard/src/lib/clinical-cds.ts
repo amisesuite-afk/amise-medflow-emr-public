@@ -520,6 +520,65 @@ const RULES: CdsRule[] = [
       return null;
     },
   },
+
+  // ── Child-Pugh — liver disease surgical risk ──────────────────────────────────
+  {
+    scaleKey: 'childPugh',
+    title: 'Child-Pugh Score — Liver Disease Surgical Risk',
+    urgency: 'urgent',
+    needsLabs: true,
+    categoryTag: 'Hepatic',
+    trigger: ctx => {
+      const triggers: string[] = [];
+      if (hasComorbidity(ctx, 'cirrhosis', 'hepatitis', 'liver disease', 'portal hypertension', 'varices', 'ascites'))
+        triggers.push('chronic liver disease / cirrhosis in PMH');
+      if (hasSym(ctx, 'jaundice', 'ascites', 'confusion') && hasComorbidity(ctx, 'liver', 'hepatitis', 'alcohol'))
+        triggers.push('jaundice or hepatic decompensation features');
+      if (hasExam(ctx, 'abdomen', 'Ascites', 'Hepatomegaly', 'Splenomegaly', 'Jaundice'))
+        triggers.push('hepatic signs on examination');
+      if (triggers.length > 0) return triggers.join(', ');
+      return null;
+    },
+    labsPresent: ctx => hasLab(ctx, 'bilirubin', 'albumin', 'INR', 'PT', 'liver'),
+  },
+
+  // ── Apfel — PONV risk ─────────────────────────────────────────────────────────
+  {
+    scaleKey: 'apfel',
+    title: 'Apfel Score — PONV Risk (Anaesthetic Planning)',
+    urgency: 'consider',
+    needsLabs: false,
+    categoryTag: 'Pre-operative',
+    trigger: ctx => {
+      const isPreop = (ctx.procedureData as { preop?: unknown }).preop !== undefined;
+      const hasOp = ['ogd', 'colonoscopy', 'ercp'].some(k =>
+        (ctx.procedureData as Record<string, unknown>)[k] !== undefined
+      );
+      if (isPreop || hasOp) return 'Pre-operative / procedural assessment — calculate PONV risk to guide antiemetic prophylaxis';
+      const hasPriorPonv = hasComorbidity(ctx, 'PONV', 'nausea', 'motion sickness', 'post-op nausea');
+      if (hasPriorPonv) return 'Prior PONV or motion sickness — inform anaesthetic team and plan prophylaxis';
+      return null;
+    },
+  },
+
+  // ── MELD — end-stage liver disease ───────────────────────────────────────────
+  {
+    scaleKey: 'meld',
+    title: 'MELD / MELD-Na — Liver Disease Severity',
+    urgency: 'urgent',
+    needsLabs: true,
+    categoryTag: 'Hepatic',
+    trigger: ctx => {
+      const triggers: string[] = [];
+      if (hasComorbidity(ctx, 'cirrhosis', 'liver failure', 'end-stage liver', 'portal hypertension', 'hepatic encephalopathy'))
+        triggers.push('advanced liver disease in PMH — MELD needed for surgical risk and transplant listing');
+      if (hasExam(ctx, 'abdomen', 'Ascites', 'Hepatomegaly') && hasComorbidity(ctx, 'liver', 'hepatitis', 'alcohol'))
+        triggers.push('hepatic signs in context of liver disease');
+      if (triggers.length > 0) return triggers.join(', ');
+      return null;
+    },
+    labsPresent: ctx => hasLab(ctx, 'bilirubin', 'INR', 'creatinine', 'sodium'),
+  },
 ];
 
 // ── Public API ─────────────────────────────────────────────────────────────────
