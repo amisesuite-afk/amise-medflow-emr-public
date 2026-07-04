@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { aiDisabledMiddleware } from "../lib/ai-guard.js";
 import healthRouter from "./health";
 import intakeRouter from "./intake";
 import triagePreviewRouter from "./triage-preview";
@@ -42,9 +43,9 @@ router.use(preProcedureRouter);
 router.use(aiConsultRouter);
 router.use(procedureReportRouter);
 router.use(dischargeSummaryRouter);
-router.use('/generate-letter', generateLetterRouter);
-router.use('/generate-operative-note', generateOperativeNoteRouter);
-router.use('/generate-endoscopy-report', generateEndoscopyReportRouter);
-router.use('/suggest-codes', suggestCodesRouter);
+router.use('/generate-letter', aiDisabledMiddleware, generateLetterRouter);
+router.use('/generate-operative-note', aiDisabledMiddleware, generateOperativeNoteRouter);
+router.use('/generate-endoscopy-report', aiDisabledMiddleware, generateEndoscopyReportRouter);
+router.use('/suggest-codes', aiDisabledMiddleware, suggestCodesRouter);
 
 export default router;

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { AI_DISABLED } from '../lib/ai-guard.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -68,6 +69,14 @@ interface ConsultRequest {
 }
 
 router.post('/api/ai-consult', async (req, res) => {
+  if (AI_DISABLED) {
+    res.status(503).json({
+      error: 'AI features are temporarily disabled (DISABLE_AI=true). Re-enable the service to use this feature.',
+      disabled: true,
+    });
+    return;
+  }
+
   try {
     const body = req.body as ConsultRequest;
     const { patientContext, consultationType, specificQuestion, icd10Codes, guidelinesContext } = body;
