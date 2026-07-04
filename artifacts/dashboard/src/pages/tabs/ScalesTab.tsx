@@ -33,6 +33,9 @@ import {
   chads2VascScore, interpretChads2Vasc, type Chads2VascInputs,
   hasBledScore, interpretHasBled, type HasBledInputs,
   qSofaScore, interpretQsofa,
+  ASA_LEVELS, interpretAsa, type AsaClass,
+  bisapScore, interpretBisap, type BisapInputs,
+  FORREST_LEVELS, interpretForrest, type ForrestClass,
   type ScaleResult,
 } from '@/lib/clinical-scales';
 import { getCdsSuggestions, type CdsContext } from '@/lib/clinical-cds';
@@ -1153,6 +1156,93 @@ function QsofaCard() {
   );
 }
 
+// ── ASA Physical Status ───────────────────────────────────────────────────────
+
+function AsaCard() {
+  const [asaClass, setAsaClass] = useState<AsaClass>(1);
+  const [emergency, setEmergency] = useState(false);
+  const result = interpretAsa(asaClass, emergency);
+  const selStyle: React.CSSProperties = {
+    border: '1px solid #d1d5db', borderRadius: 6, padding: '6px 10px',
+    fontSize: 13, width: '100%', marginBottom: 10,
+  };
+  const selected = ASA_LEVELS.find(l => l.class === asaClass)!;
+  return (
+    <div>
+      <label style={{ fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        ASA Class
+        <select style={selStyle} value={asaClass} onChange={e => setAsaClass(parseInt(e.target.value) as AsaClass)}>
+          {ASA_LEVELS.map(l => (
+            <option key={l.class} value={l.class}>{l.label}</option>
+          ))}
+        </select>
+      </label>
+      <div style={{ fontSize: 12, color: '#374151', background: '#f9fafb', borderRadius: 6, padding: '8px 12px', marginBottom: 8 }}>
+        <div style={{ marginBottom: 4 }}>{selected.description}</div>
+        <div style={{ color: '#6b7280' }}><strong>Examples:</strong> {selected.examples}</div>
+        <div style={{ color: '#6b7280', marginTop: 2 }}><strong>Perioperative mortality:</strong> {selected.mortalityApprox}</div>
+      </div>
+      <Chk label="Emergency surgery (add 'E' suffix — mortality ~3× higher)" checked={emergency} onChange={() => setEmergency(p => !p)} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── BISAP ─────────────────────────────────────────────────────────────────────
+
+function BisapCard() {
+  const [v, setV] = useState<BisapInputs>({
+    bunAbove25: false, impairedMentalStatus: false, sirs: false,
+    ageAbove60: false, pleuralEffusion: false,
+  });
+  const tog = (k: keyof BisapInputs) => setV(p => ({ ...p, [k]: !p[k] }));
+  const score  = bisapScore(v);
+  const result = interpretBisap(score);
+  return (
+    <div>
+      <Chk label="BUN > 25 mg/dL (8.9 mmol/L)"                    checked={v.bunAbove25}           onChange={() => tog('bunAbove25')}           pts={1} />
+      <Chk label="Impaired mental status (GCS < 15 / disoriented)" checked={v.impairedMentalStatus} onChange={() => tog('impairedMentalStatus')} pts={1} />
+      <Chk label="SIRS (≥ 2 criteria: temp, HR, RR / PaCO₂, WBC)" checked={v.sirs}                 onChange={() => tog('sirs')}                 pts={1} />
+      <Chk label="Age > 60 years"                                   checked={v.ageAbove60}           onChange={() => tog('ageAbove60')}           pts={1} />
+      <Chk label="Pleural effusion on imaging"                       checked={v.pleuralEffusion}      onChange={() => tog('pleuralEffusion')}      pts={1} />
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 6 }}>
+        SIRS ≥ 2 of: temp &lt; 36 °C or &gt; 38 °C · HR &gt; 90 · RR &gt; 20 or PaCO₂ &lt; 32 mmHg · WBC &lt; 4k or &gt; 12k or &gt; 10% bands
+      </div>
+      <ScoreRow label="BISAP Score" value={`${score}/5`} />
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
+// ── Forrest Classification ────────────────────────────────────────────────────
+
+function ForrestCard() {
+  const [cls, setCls] = useState<ForrestClass>('III');
+  const result = interpretForrest(cls);
+  const selected = FORREST_LEVELS.find(l => l.class === cls)!;
+  const selStyle: React.CSSProperties = {
+    border: '1px solid #d1d5db', borderRadius: 6, padding: '6px 10px',
+    fontSize: 13, width: '100%', marginBottom: 10,
+  };
+  return (
+    <div>
+      <label style={{ fontSize: 12, color: '#6b7280', display: 'flex', flexDirection: 'column', gap: 4 }}>
+        Endoscopic appearance
+        <select style={selStyle} value={cls} onChange={e => setCls(e.target.value as ForrestClass)}>
+          {FORREST_LEVELS.map(l => (
+            <option key={l.class} value={l.class}>{l.label}</option>
+          ))}
+        </select>
+      </label>
+      <div style={{ fontSize: 12, color: '#374151', background: '#f9fafb', borderRadius: 6, padding: '8px 12px', marginBottom: 8 }}>
+        <div style={{ marginBottom: 4 }}>{selected.description}</div>
+        <div style={{ color: '#6b7280' }}><strong>Re-bleeding risk:</strong> {selected.rebleedRisk}</div>
+      </div>
+      <ResultBadge result={result} />
+    </div>
+  );
+}
+
 // ── Scale registry ────────────────────────────────────────────────────────────
 
 const SCALE_COMPONENTS: Record<string, React.FC> = {
@@ -1185,6 +1275,9 @@ const SCALE_COMPONENTS: Record<string, React.FC> = {
   chads2Vasc:       Chads2VascCard,
   hasBled:          HasBledCard,
   qsofa:            QsofaCard,
+  asa:              AsaCard,
+  bisap:            BisapCard,
+  forrest:          ForrestCard,
 };
 
 const ALL_SCALE_TITLES: Record<string, string> = {
@@ -1217,6 +1310,9 @@ const ALL_SCALE_TITLES: Record<string, string> = {
   chads2Vasc:       'CHA₂DS₂-VASc — AF Stroke Risk',
   hasBled:          'HAS-BLED — Bleeding Risk on Anticoagulation',
   qsofa:            'qSOFA — Bedside Sepsis Screen',
+  asa:              'ASA Physical Status Classification',
+  bisap:            'BISAP — Pancreatitis Severity',
+  forrest:          'Forrest Classification — Upper GI Bleed Endoscopy',
 };
 
 const URGENCY_LABELS: Record<string, { tag: string; color: string; bg: string }> = {

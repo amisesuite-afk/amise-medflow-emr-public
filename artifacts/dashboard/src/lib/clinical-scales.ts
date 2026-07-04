@@ -31,6 +31,9 @@
  *   26. CHA₂DS₂-VASc (AF stroke risk / anticoagulation)
  *   27. HAS-BLED (bleeding risk on anticoagulation)
  *   28. qSOFA (quick SOFA — bedside sepsis screen)
+ *   29. ASA Physical Status Classification (pre-operative risk)
+ *   30. BISAP (bedside index of severity in acute pancreatitis)
+ *   31. Forrest Classification (endoscopic peptic ulcer bleeding stigmata)
  */
 
 export interface ScaleResult {
@@ -1597,6 +1600,197 @@ export function interpretQsofa(score: number): ScaleResult {
     score, band: `qSOFA ${score} — High risk of sepsis / organ dysfunction`, color: 'red',
     description: '≥2 criteria met. High risk of sepsis with organ dysfunction. Immediate senior review required.',
     action: 'Activate Sepsis 6 / sepsis bundle within 1 hour: blood cultures × 2, IV antibiotics, IV fluids, urine output monitoring, lactate, high-flow O₂. Urgent senior/intensivist review. Consider ICU escalation. Identify and control source of infection.',
+    evidence,
+  };
+}
+
+// ── ASA Physical Status Classification ───────────────────────────────────────
+// Ref: ASA House of Delegates, October 2014 (updated 2020).
+// Used on every operative patient — documents anaesthetic/surgical risk.
+
+export type AsaClass = 1 | 2 | 3 | 4 | 5 | 6;
+
+export interface AsaLevelInfo {
+  class: AsaClass;
+  label: string;
+  description: string;
+  examples: string;
+  mortalityApprox: string;
+}
+
+export const ASA_LEVELS: AsaLevelInfo[] = [
+  {
+    class: 1,
+    label: 'ASA I — Normal healthy patient',
+    description: 'No organic, physiological, or psychiatric disturbance. Excludes very young and very old.',
+    examples: 'Healthy, non-smoking, no or minimal alcohol use.',
+    mortalityApprox: '< 0.1%',
+  },
+  {
+    class: 2,
+    label: 'ASA II — Mild systemic disease',
+    description: 'Mild disease without substantive functional limitations.',
+    examples: 'Current smoker, social alcohol drinker, pregnancy, obesity (BMI 30–40), well-controlled DM/HTN/asthma, mild lung disease.',
+    mortalityApprox: '0.3%',
+  },
+  {
+    class: 3,
+    label: 'ASA III — Severe systemic disease',
+    description: 'Substantive functional limitations; ≥1 moderate to severe disease.',
+    examples: 'Poorly controlled DM/HTN, COPD, morbid obesity (BMI ≥ 40), active hepatitis, alcohol dependence, implanted pacemaker, moderate EF reduction, ESRD on regular dialysis, premature infant PCA < 60 wk, history (> 3 months) of MI, CVA, TIA, CAD/stents.',
+    mortalityApprox: '1.4%',
+  },
+  {
+    class: 4,
+    label: 'ASA IV — Severe systemic disease, constant threat to life',
+    description: 'Severe systemic disease that is a constant threat to life.',
+    examples: 'Recent (< 3 months) MI, CVA, TIA or CAD/stents, ongoing cardiac ischaemia or severe valve dysfunction, severe EF reduction, sepsis, DIC, ARD, ESRD not undergoing regularly scheduled dialysis.',
+    mortalityApprox: '7.8%',
+  },
+  {
+    class: 5,
+    label: 'ASA V — Moribund patient',
+    description: 'Moribund patient not expected to survive without the operation.',
+    examples: 'Ruptured abdominal/thoracic aneurysm, massive trauma, intracranial bleed with mass effect, ischaemic bowel facing significant cardiac pathology or multi-organ/system dysfunction.',
+    mortalityApprox: '9.4%',
+  },
+  {
+    class: 6,
+    label: 'ASA VI — Brain-dead organ donor',
+    description: 'A declared brain-dead patient whose organs are being removed for donor purposes.',
+    examples: 'Organ procurement surgery.',
+    mortalityApprox: 'N/A',
+  },
+];
+
+export function interpretAsa(asaClass: AsaClass, emergency: boolean): ScaleResult {
+  const level = ASA_LEVELS.find(l => l.class === asaClass)!;
+  const eSuffix = emergency ? 'E' : '';
+  const evidence = 'American Society of Anesthesiologists Physical Status Classification System (2014, updated 2020). Saklad M, Anesthesiology 1941;2:281-284.';
+  const colorMap: Record<AsaClass, ScaleResult['color']> = { 1: 'green', 2: 'green', 3: 'amber', 4: 'red', 5: 'red', 6: 'red' };
+  return {
+    score: asaClass,
+    band: `ASA ${asaClass}${eSuffix} — ${level.label.split('—')[1].trim()}`,
+    color: colorMap[asaClass],
+    description: `${level.description}${emergency ? ' Emergency surgery — operative mortality approximately 3× higher than elective.' : ''} Approximate perioperative mortality: ${level.mortalityApprox}.`,
+    action: asaClass <= 2
+      ? `Proceed with standard anaesthetic and surgical care. Document ASA ${asaClass}${eSuffix} in operative note and consent form. Routine postoperative monitoring.`
+      : asaClass === 3
+      ? `Optimise comorbidities pre-operatively where possible. Anaesthetic pre-assessment required. Senior surgeon and anaesthetist involvement. Enhanced monitoring and recovery facilities. Document ASA ${asaClass}${eSuffix}.`
+      : `High-risk patient — multidisciplinary pre-operative assessment. ICU/HDU bed reservation recommended. Consultant anaesthetist involvement. Senior surgeon only. Document ASA ${asaClass}${eSuffix}. Detailed consent including risk of perioperative death. Consider goals-of-care discussion.`,
+    evidence,
+  };
+}
+
+// ── BISAP — Bedside Index of Severity in Acute Pancreatitis ─────────────────
+// Ref: Wu BU et al., Am J Gastroenterol 2009;104(4):966-971.
+// Validated for in-hospital mortality prediction at 24 h; simpler than Ranson's.
+
+export interface BisapInputs {
+  bunAbove25:          boolean; // BUN > 25 mg/dL (8.9 mmol/L)
+  impairedMentalStatus: boolean; // GCS < 15 / disorientation / lethargy
+  sirs:                boolean; // ≥ 2 SIRS criteria present
+  ageAbove60:          boolean; // age > 60 years
+  pleuralEffusion:     boolean; // pleural effusion on imaging
+}
+
+export function bisapScore(i: BisapInputs): number {
+  return [i.bunAbove25, i.impairedMentalStatus, i.sirs, i.ageAbove60, i.pleuralEffusion]
+    .filter(Boolean).length;
+}
+
+export function interpretBisap(score: number): ScaleResult {
+  const evidence = 'Wu BU et al., Am J Gastroenterol 2009;104(4):966-971. Validated against Ranson\'s in multiple prospective cohorts.';
+  if (score <= 1) return {
+    score, band: `BISAP ${score} — Mild pancreatitis`, color: 'green',
+    description: 'Low predicted in-hospital mortality (< 1%). Likely mild acute pancreatitis.',
+    action: 'IV fluid resuscitation (lactated Ringer\'s preferred over normal saline), early oral feeding when tolerated, analgesics. Standard ward monitoring. No routine ICU needed. Reassess at 24 and 48 h. Investigate aetiology (gallstones, alcohol, lipids, medications).',
+    evidence,
+  };
+  if (score === 2) return {
+    score, band: `BISAP ${score} — Moderate pancreatitis`, color: 'amber',
+    description: 'Moderate predicted mortality (~2%). Increased risk of organ failure and local complications.',
+    action: 'Aggressive IV resuscitation. Step-up to HDU or closely monitored ward. Gastroenterology or surgical review. Monitor urine output, renal function, haematocrit, CRP at 24–48 h. CT with contrast (CECT) if no clinical improvement at 48–72 h. Nutritional support — early enteral feeding preferred.',
+    evidence,
+  };
+  return {
+    score, band: `BISAP ${score} — Severe pancreatitis`, color: 'red',
+    description: `High predicted in-hospital mortality (score 3: ~5–6%; score 4: ~13%; score 5: ~22%). Severe acute pancreatitis — expect organ failure and/or local complications.`,
+    action: 'ICU admission. Aggressive fluid resuscitation with close haemodynamic monitoring. Urgent CECT pancreas at 72 h (or sooner if clinical deterioration). Surgical and gastroenterology involvement. Nutritional support via nasojejunal tube. Antibiotics only if infected necrosis suspected. ERCP within 24 h if cholangitis or CBD obstruction. Monitor for ARDS, AKI, abdominal compartment syndrome.',
+    evidence,
+  };
+}
+
+// ── Forrest Classification — Endoscopic Peptic Ulcer Bleeding Stigmata ───────
+// Ref: Forrest JA et al., Lancet 1974;2(7877):394-397. Updated in ACG/ESGE guidelines.
+// Essential classification for any endoscopic GI bleed workup.
+
+export type ForrestClass = 'Ia' | 'Ib' | 'IIa' | 'IIb' | 'IIc' | 'III';
+
+export interface ForrestLevelInfo {
+  class: ForrestClass;
+  label: string;
+  description: string;
+  rebleedRisk: string;
+  management: string;
+}
+
+export const FORREST_LEVELS: ForrestLevelInfo[] = [
+  {
+    class: 'Ia',
+    label: 'Ia — Active arterial spurting',
+    description: 'Active pulsatile arterial haemorrhage from the ulcer base.',
+    rebleedRisk: '55–90%',
+    management: 'Endoscopic haemostasis required (dual therapy: adrenaline injection + thermal or mechanical method). Repeat endoscopy at 24 h if haemostasis uncertain. High-dose PPI infusion (80 mg bolus → 8 mg/h for 72 h). Interventional radiology or surgical back-up on standby.',
+  },
+  {
+    class: 'Ib',
+    label: 'Ib — Active oozing',
+    description: 'Non-pulsatile active bleeding — continuous ooze from the ulcer.',
+    rebleedRisk: '55%',
+    management: 'Endoscopic haemostasis required (as for Ia). High-dose PPI infusion. Monitor in HDU/ICU. Blood transfusion threshold Hb < 80 g/L (restrictive strategy).',
+  },
+  {
+    class: 'IIa',
+    label: 'IIa — Non-bleeding visible vessel (NBVV)',
+    description: 'Adherent clot has separated or was not present — pigmented protuberance in ulcer base. Sentinel clot.',
+    rebleedRisk: '43%',
+    management: 'Endoscopic haemostasis strongly recommended. High-dose PPI infusion × 72 h, then oral PPI. Close inpatient monitoring × 48–72 h.',
+  },
+  {
+    class: 'IIb',
+    label: 'IIb — Adherent clot',
+    description: 'Adherent organised clot overlying the ulcer base, not dislodged by vigorous irrigation.',
+    rebleedRisk: '22%',
+    management: 'Controversial — consider clot removal and treat underlying stigmata if NBVV found underneath. High-dose PPI infusion × 72 h. Close monitoring. Endoscopic therapy if clot is removed and active vessel found.',
+  },
+  {
+    class: 'IIc',
+    label: 'IIc — Flat pigmented spot (haematin)',
+    description: 'Flat black or red haematin spot in ulcer base — no raised vessel, no clot.',
+    rebleedRisk: '10%',
+    management: 'Endoscopic therapy NOT required. Oral high-dose PPI. Can consider early discharge with close outpatient follow-up if clinically stable and low-risk Rockall score. HP testing and NSAID review.',
+  },
+  {
+    class: 'III',
+    label: 'III — Clean base / fibrin',
+    description: 'Clean ulcer base with fibrin slough — no active bleeding, no vessel, no clot, no haematin.',
+    rebleedRisk: '5%',
+    management: 'Endoscopic therapy NOT required. Oral PPI twice daily. Suitable for early discharge in clinically stable low-risk patients (Rockall ≤ 2). H. pylori testing mandatory. Stop NSAIDs/aspirin if possible, or add PPI if aspirin must continue.',
+  },
+];
+
+export function interpretForrest(cls: ForrestClass): ScaleResult {
+  const level = FORREST_LEVELS.find(l => l.class === cls)!;
+  const evidence = 'Forrest JAH et al., Lancet 1974;2(7877):394-397. ESGE Guideline: Gralnek IM et al., Endoscopy 2021;53(3):300-332. ACG Clinical Guideline: Laine L et al., Am J Gastroenterol 2012;107(3):345-360.';
+  const highRisk = cls === 'Ia' || cls === 'Ib' || cls === 'IIa';
+  const moderate  = cls === 'IIb';
+  return {
+    score: 0,
+    band: `Forrest ${cls} — ${level.label.split('—')[1].trim()}`,
+    color: highRisk ? 'red' : moderate ? 'amber' : 'green',
+    description: `${level.description} Re-bleeding risk: ${level.rebleedRisk}.`,
+    action: level.management,
     evidence,
   };
 }

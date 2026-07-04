@@ -632,6 +632,58 @@ const RULES: CdsRule[] = [
       return null;
     },
   },
+
+  // ── ASA Physical Status — universal pre-operative risk classification ─────────
+  {
+    scaleKey: 'asa',
+    title: 'ASA Physical Status Classification',
+    urgency: 'relevant',
+    needsLabs: false,
+    categoryTag: 'Pre-operative',
+    trigger: ctx => {
+      const isPreop = hasSym(ctx, 'pre-op', 'preoperative', 'pre-operative', 'elective', 'surgical', 'operation', 'surgery', 'anaesthetic', 'laparoscopic', 'colonoscopy', 'endoscopy', 'ERCP');
+      if (isPreop) return 'operative / procedural context — ASA physical status classification required for anaesthetic risk documentation';
+      if (hasComorbidity(ctx, 'diabetes', 'hypertension', 'COPD', 'heart failure', 'CKD', 'obesity', 'cirrhosis', 'dialysis', 'pacemaker', 'cardiac'))
+        return 'multiple comorbidities requiring pre-operative risk stratification — document ASA class in operative consent';
+      return null;
+    },
+  },
+
+  // ── BISAP — bedside pancreatitis severity ─────────────────────────────────────
+  {
+    scaleKey: 'bisap',
+    title: 'BISAP — Pancreatitis Severity',
+    urgency: 'urgent',
+    needsLabs: true,
+    categoryTag: 'GI / Hepatobiliary',
+    trigger: ctx => {
+      if (hasSym(ctx, 'pancreatitis', 'acute pancreatitis', 'epigastric pain') &&
+          hasComorbidity(ctx, 'pancreatitis', 'alcohol', 'gallstones', 'hyperlipidaemia'))
+        return 'pancreatitis presentation — BISAP for 24-hour severity and ICU disposition decision';
+      if (hasComorbidity(ctx, 'acute pancreatitis', 'pancreatitis'))
+        return 'pancreatitis in PMH — BISAP to track severity if recurrence';
+      if (hasSym(ctx, 'pancreatitis'))
+        return 'pancreatitis symptoms — BISAP for triage and severity classification';
+      return null;
+    },
+    labsPresent: ctx => hasLab(ctx, 'BUN', 'urea', 'amylase', 'lipase', 'CRP'),
+  },
+
+  // ── Forrest Classification — endoscopic peptic ulcer bleeding ─────────────────
+  {
+    scaleKey: 'forrest',
+    title: 'Forrest Classification — Upper GI Bleed Endoscopy',
+    urgency: 'urgent',
+    needsLabs: false,
+    categoryTag: 'GI / Hepatobiliary',
+    trigger: ctx => {
+      if (hasSym(ctx, 'haematemesis', 'coffee-ground', 'melaena', 'upper GI bleed', 'UGIB'))
+        return 'upper GI haemorrhage — Forrest classification needed to guide endoscopic therapy decision';
+      if (hasComorbidity(ctx, 'peptic ulcer', 'gastric ulcer', 'duodenal ulcer', 'PUD', 'upper GI bleed'))
+        return 'peptic ulcer disease / prior UGIB — document Forrest class at endoscopy to guide management';
+      return null;
+    },
+  },
 ];
 
 // ── Public API ─────────────────────────────────────────────────────────────────
