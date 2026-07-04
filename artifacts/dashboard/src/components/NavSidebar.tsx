@@ -87,9 +87,10 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     label: 'Investigations',
     minRole: 'nurse',
     items: [
-      { id: 'investigations', icon: FlaskConical, label: 'Bloods / Labs', minRole: 'nurse' },
-      { id: 'radiology',      icon: ScanLine,     label: 'Imaging',       minRole: 'nurse' },
-      { id: 'attachments',    icon: Paperclip,    label: 'Attachments',   minRole: 'nurse' },
+      { id: 'investigations', icon: FlaskConical, label: 'Bloods / Labs',       minRole: 'nurse' },
+      { id: 'blood_gas',     icon: Activity,     label: 'Blood Gas / ABG',    minRole: 'nurse' },
+      { id: 'radiology',     icon: ScanLine,     label: 'Imaging',            minRole: 'nurse' },
+      { id: 'attachments',   icon: Paperclip,    label: 'Attachments',        minRole: 'nurse' },
     ],
   },
   {
