@@ -63,7 +63,8 @@ export type TopSection =
   | 'dashboard' | 'patients' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
   | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox' | 'portal_intake' | 'referring_providers'
-  | 'visit_lifecycle' | 'prescriptions' | 'ai_consultant' | 'tasks';
+  | 'visit_lifecycle' | 'prescriptions' | 'ai_consultant' | 'tasks'
+  | 'quality';
 
 /** Grouped trauma / burns state — stored as a single serialisable object. */
 export interface TraumaData {

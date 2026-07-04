@@ -1,0 +1,608 @@
+import { useState, useMemo } from 'react';
+import { useAppContext } from '@/context/AppContext';
+
+/* ── Types ─────────────────────────────────────────────────────────────── */
+
+type ClavienGrade = 'I' | 'II' | 'IIIa' | 'IIIb' | 'IVa' | 'IVb' | 'V';
+type CompCategory = 'intraoperative' | 'early_postop' | 'late_postop' | 'near_miss' | 'adverse_event';
+type ReviewStatus = 'pending' | 'reviewed' | 'actioned';
+type ContribFactor = 'technical' | 'judgment' | 'system' | 'communication' | 'protocol' | 'patient';
+
+interface MMCase {
+  id: string;
+  date: string;
+  patientRef: string;
+  procedure: string;
+  complication: string;
+  category: CompCategory;
+  grade: ClavienGrade | '';
+  gradeSuffix: boolean;
+  contributing: ContribFactor[];
+  reOperation: boolean;
+  icuAdmission: boolean;
+  death: boolean;
+  lessonsLearned: string;
+  actionItems: string;
+  reviewStatus: ReviewStatus;
+  reviewDate: string;
+  reviewedBy: string;
+}
+
+/* ── Constants ──────────────────────────────────────────────────────────── */
+
+const GRADES: { id: ClavienGrade; label: string; color: string; bg: string; desc: string }[] = [
+  { id: 'I',    color: '#16a34a', bg: '#f0fdf4', label: 'Grade I',    desc: 'Deviation from normal recovery, no pharmacological/surgical/radiological intervention' },
+  { id: 'II',   color: '#0d9488', bg: '#f0fdfa', label: 'Grade II',   desc: 'Pharmacological treatment including blood transfusion, TPN' },
+  { id: 'IIIa', color: '#d97706', bg: '#fffbeb', label: 'Grade IIIa', desc: 'Surgical, endoscopic or radiological intervention — not under GA' },
+  { id: 'IIIb', color: '#b45309', bg: '#fef3c7', label: 'Grade IIIb', desc: 'Surgical, endoscopic or radiological intervention — under GA' },
+  { id: 'IVa',  color: '#dc2626', bg: '#fef2f2', label: 'Grade IVa',  desc: 'Single organ dysfunction (including dialysis) — ICU management' },
+  { id: 'IVb',  color: '#b91c1c', bg: '#fee2e2', label: 'Grade IVb',  desc: 'Multi-organ dysfunction — ICU management' },
+  { id: 'V',    color: '#7f1d1d', bg: '#450a0a', label: 'Grade V',    desc: 'Death' },
+];
+
+const CATEGORIES: { id: CompCategory; label: string }[] = [
+  { id: 'intraoperative', label: 'Intraoperative' },
+  { id: 'early_postop',   label: 'Early postoperative (≤30 days)' },
+  { id: 'late_postop',    label: 'Late postoperative (>30 days)' },
+  { id: 'near_miss',      label: 'Near miss' },
+  { id: 'adverse_event',  label: 'Adverse event (non-surgical)' },
+];
+
+const FACTORS: { id: ContribFactor; label: string }[] = [
+  { id: 'technical',      label: 'Technical / procedural' },
+  { id: 'judgment',       label: 'Clinical judgement' },
+  { id: 'system',         label: 'System / process' },
+  { id: 'communication',  label: 'Communication' },
+  { id: 'protocol',       label: 'Protocol deviation' },
+  { id: 'patient',        label: 'Patient factors' },
+];
+
+const REVIEW_STYLE: Record<ReviewStatus, { bg: string; fg: string; bd: string; label: string }> = {
+  pending:  { bg: '#fffbeb', fg: '#92400e', bd: '#fcd34d', label: 'Pending review' },
+  reviewed: { bg: '#eff6ff', fg: '#1d4ed8', bd: '#bfdbfe', label: 'Reviewed' },
+  actioned: { bg: '#f0fdf4', fg: '#166534', bd: '#86efac', label: 'Actioned' },
+};
+
+const STORAGE_KEY = 'mm_case_register_v1';
+
+function loadCases(): MMCase[] {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as MMCase[]; }
+  catch { return []; }
+}
+function saveCases(cases: MMCase[]) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cases)); } catch { /**/ }
+}
+
+function uid() { return `mm-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`; }
+
+const EMPTY_CASE: Omit<MMCase, 'id'> = {
+  date: new Date().toISOString().slice(0, 10),
+  patientRef: '', procedure: '', complication: '',
+  category: 'early_postop', grade: '', gradeSuffix: false,
+  contributing: [], reOperation: false, icuAdmission: false, death: false,
+  lessonsLearned: '', actionItems: '',
+  reviewStatus: 'pending', reviewDate: '', reviewedBy: '',
+};
+
+/* ── Sub-components ─────────────────────────────────────────────────────── */
+
+function GradeChip({ grade }: { grade: ClavienGrade | '' }) {
+  if (!grade) return <span style={{ fontSize: 11, color: '#94a3b8' }}>—</span>;
+  const g = GRADES.find(x => x.id === grade)!;
+  return (
+    <span style={{
+      fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 4,
+      background: g.bg, color: g.color,
+      border: `1px solid ${g.color}40`,
+    }}>{grade}</span>
+  );
+}
+
+function CategoryChip({ cat }: { cat: CompCategory }) {
+  const c = CATEGORIES.find(x => x.id === cat)!;
+  return (
+    <span style={{
+      fontSize: 10, padding: '1px 6px', borderRadius: 3,
+      background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1',
+    }}>{c.label}</span>
+  );
+}
+
+/* ── Case form ──────────────────────────────────────────────────────────── */
+
+function CaseForm({ initial, onSave, onCancel }: {
+  initial?: MMCase;
+  onSave: (c: MMCase) => void;
+  onCancel: () => void;
+}) {
+  const [form, setForm] = useState<Omit<MMCase, 'id'>>(
+    initial ? { ...initial } : { ...EMPTY_CASE }
+  );
+  const selectedGrade = GRADES.find(g => g.id === form.grade);
+
+  const inp: React.CSSProperties = {
+    width: '100%', padding: '7px 10px', border: '1px solid #d1d5db',
+    borderRadius: 6, fontSize: 13, background: 'var(--surface)',
+    color: 'var(--fg)',
+  };
+
+  function toggleFactor(f: ContribFactor) {
+    setForm(v => ({
+      ...v,
+      contributing: v.contributing.includes(f)
+        ? v.contributing.filter(x => x !== f)
+        : [...v.contributing, f],
+    }));
+  }
+
+  function save() {
+    if (!form.procedure.trim() || !form.complication.trim()) return;
+    onSave({ id: initial?.id ?? uid(), ...form });
+  }
+
+  return (
+    <div style={{ border: '1px solid var(--border)', borderRadius: 10, padding: 16, background: 'var(--surface)' }}>
+      <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 14, color: 'var(--fg)' }}>
+        {initial ? 'Edit case' : 'Log new case'}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>DATE</label>
+          <input type="date" style={inp} value={form.date} onChange={e => setForm(v => ({ ...v, date: e.target.value }))} />
+        </div>
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>PATIENT REF <span style={{ fontWeight: 400, color: '#94a3b8' }}>(initials / ID)</span></label>
+          <input style={inp} value={form.patientRef} onChange={e => setForm(v => ({ ...v, patientRef: e.target.value }))} placeholder="e.g. J.D. / MR-1234" />
+        </div>
+        <div style={{ gridColumn: '1/-1' }}>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>PROCEDURE *</label>
+          <input style={inp} value={form.procedure} onChange={e => setForm(v => ({ ...v, procedure: e.target.value }))} placeholder="e.g. Laparoscopic cholecystectomy" />
+        </div>
+        <div style={{ gridColumn: '1/-1' }}>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>COMPLICATION *</label>
+          <input style={inp} value={form.complication} onChange={e => setForm(v => ({ ...v, complication: e.target.value }))} placeholder="e.g. Bile duct injury identified intraoperatively" />
+        </div>
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>CATEGORY</label>
+          <select style={inp} value={form.category} onChange={e => setForm(v => ({ ...v, category: e.target.value as CompCategory }))}>
+            {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+          </select>
+        </div>
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>CLAVIEN-DINDO GRADE</label>
+          <select style={inp} value={form.grade} onChange={e => setForm(v => ({ ...v, grade: e.target.value as ClavienGrade | '' }))}>
+            <option value="">— not graded —</option>
+            {GRADES.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
+          </select>
+          {selectedGrade && (
+            <div style={{ fontSize: 11, color: selectedGrade.color, marginTop: 3 }}>{selectedGrade.desc}</div>
+          )}
+        </div>
+      </div>
+
+      {/* Suffix + outcome checkboxes */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginBottom: 12 }}>
+        {[
+          { key: 'gradeSuffix',   label: 'Grade "(d)" — complication at discharge' },
+          { key: 'reOperation',   label: 'Re-operation required' },
+          { key: 'icuAdmission',  label: 'ICU admission' },
+          { key: 'death',         label: 'Death' },
+        ].map(({ key, label }) => (
+          <label key={key} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={!!form[key as keyof typeof form]}
+              onChange={e => setForm(v => ({ ...v, [key]: e.target.checked }))}
+            />
+            {label}
+          </label>
+        ))}
+      </div>
+
+      {/* Contributing factors */}
+      <div style={{ marginBottom: 12 }}>
+        <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 5 }}>CONTRIBUTING FACTORS</label>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {FACTORS.map(f => {
+            const on = form.contributing.includes(f.id);
+            return (
+              <button key={f.id} type="button" onClick={() => toggleFactor(f.id)} style={{
+                padding: '3px 10px', borderRadius: 12, fontSize: 12, cursor: 'pointer',
+                border: `1px solid ${on ? '#6366f1' : '#d1d5db'}`,
+                background: on ? '#eef2ff' : 'var(--surface)',
+                color: on ? '#4338ca' : 'var(--muted)',
+                fontWeight: on ? 700 : 400,
+              }}>{f.label}</button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Lessons + actions */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>LESSONS LEARNED</label>
+          <textarea rows={3} style={{ ...inp, resize: 'vertical' }} value={form.lessonsLearned} onChange={e => setForm(v => ({ ...v, lessonsLearned: e.target.value }))} placeholder="Key learning points from this case…" />
+        </div>
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>ACTION ITEMS</label>
+          <textarea rows={3} style={{ ...inp, resize: 'vertical' }} value={form.actionItems} onChange={e => setForm(v => ({ ...v, actionItems: e.target.value }))} placeholder="Protocol changes, training needs, system fixes…" />
+        </div>
+      </div>
+
+      {/* Review */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 16 }}>
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>REVIEW STATUS</label>
+          <select style={inp} value={form.reviewStatus} onChange={e => setForm(v => ({ ...v, reviewStatus: e.target.value as ReviewStatus }))}>
+            <option value="pending">Pending review</option>
+            <option value="reviewed">Reviewed at M&M</option>
+            <option value="actioned">Actioned / closed</option>
+          </select>
+        </div>
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>REVIEW DATE</label>
+          <input type="date" style={inp} value={form.reviewDate} onChange={e => setForm(v => ({ ...v, reviewDate: e.target.value }))} />
+        </div>
+        <div>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>REVIEWED BY</label>
+          <input style={inp} value={form.reviewedBy} onChange={e => setForm(v => ({ ...v, reviewedBy: e.target.value }))} placeholder="Dr. …" />
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button onClick={save} disabled={!form.procedure.trim() || !form.complication.trim()} style={{
+          padding: '9px 18px', borderRadius: 7, border: 'none',
+          background: form.procedure && form.complication ? '#0b2545' : '#d1d5db',
+          color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+        }}>
+          {initial ? 'Save changes' : 'Log case'}
+        </button>
+        <button onClick={onCancel} style={{ padding: '9px 18px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--muted)', fontSize: 13, cursor: 'pointer' }}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Main component ─────────────────────────────────────────────────────── */
+
+type QIView = 'register' | 'metrics';
+
+export default function QualityImprovementTab() {
+  const { patientName } = useAppContext();
+
+  const [cases, setCases] = useState<MMCase[]>(loadCases);
+  const [view, setView] = useState<QIView>('register');
+  const [adding, setAdding] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<ReviewStatus | 'all'>('all');
+  const [filterGrade, setFilterGrade] = useState<ClavienGrade | 'all'>('all');
+
+  function saveCase(c: MMCase) {
+    const next = cases.some(x => x.id === c.id)
+      ? cases.map(x => x.id === c.id ? c : x)
+      : [c, ...cases];
+    setCases(next);
+    saveCases(next);
+    setAdding(false);
+    setEditId(null);
+  }
+
+  function deleteCase(id: string) {
+    const next = cases.filter(x => x.id !== id);
+    setCases(next);
+    saveCases(next);
+  }
+
+  function cycleStatus(id: string) {
+    const ORDER: ReviewStatus[] = ['pending', 'reviewed', 'actioned'];
+    const next = cases.map(c => {
+      if (c.id !== id) return c;
+      const idx = ORDER.indexOf(c.reviewStatus);
+      return { ...c, reviewStatus: ORDER[(idx + 1) % ORDER.length] };
+    });
+    setCases(next);
+    saveCases(next);
+  }
+
+  /* ── Filtered list ── */
+  const filtered = useMemo(() => cases.filter(c =>
+    (filterStatus === 'all' || c.reviewStatus === filterStatus) &&
+    (filterGrade === 'all' || c.grade === filterGrade)
+  ), [cases, filterStatus, filterGrade]);
+
+  /* ── Metrics ── */
+  const metrics = useMemo(() => {
+    const n = cases.length;
+    if (!n) return null;
+    const deaths     = cases.filter(c => c.death || c.grade === 'V').length;
+    const reOps      = cases.filter(c => c.reOperation).length;
+    const icu        = cases.filter(c => c.icuAdmission).length;
+    const pending    = cases.filter(c => c.reviewStatus === 'pending').length;
+    const gradeCount: Record<string, number> = {};
+    for (const g of GRADES) gradeCount[g.id] = cases.filter(c => c.grade === g.id).length;
+    const catCount: Record<string, number> = {};
+    for (const cat of CATEGORIES) catCount[cat.id] = cases.filter(c => c.category === cat.id).length;
+    const factorCount: Record<string, number> = {};
+    for (const f of FACTORS) factorCount[f.id] = cases.filter(c => c.contributing.includes(f.id)).length;
+    return { n, deaths, reOps, icu, pending, gradeCount, catCount, factorCount };
+  }, [cases]);
+
+  const pill: React.CSSProperties = {
+    padding: '5px 12px', borderRadius: 6, border: '1px solid var(--border)',
+    background: 'var(--surface)', color: 'var(--muted)',
+    fontSize: 12, fontWeight: 600, cursor: 'pointer',
+  };
+  const pillActive: React.CSSProperties = {
+    ...pill,
+    background: '#0b2545', color: '#fff', border: '1px solid #0b2545',
+  };
+
+  return (
+    <div style={{ maxWidth: 900 }}>
+      {/* Header */}
+      <div style={{ background: '#0b2545', color: '#fff', borderRadius: 10, padding: '14px 18px', marginBottom: 16 }}>
+        <div style={{ fontWeight: 800, fontSize: 15 }}>Quality Improvement &amp; M&amp;M Register</div>
+        <div style={{ fontSize: 12, color: '#93c5fd', marginTop: 2 }}>
+          Morbidity &amp; Mortality case log · RACS-aligned peer review workflow
+          {patientName.trim() ? ` · ${patientName}` : ''}
+        </div>
+      </div>
+
+      {/* Quick stats */}
+      {metrics && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 16 }}>
+          {[
+            { label: 'Total cases', value: metrics.n, color: '#0b2545' },
+            { label: 'Pending review', value: metrics.pending, color: metrics.pending > 0 ? '#d97706' : '#16a34a' },
+            { label: 'Re-operations', value: metrics.reOps, color: metrics.reOps > 0 ? '#dc2626' : '#16a34a' },
+            { label: 'Deaths', value: metrics.deaths, color: metrics.deaths > 0 ? '#7f1d1d' : '#16a34a' },
+          ].map(({ label, value, color }) => (
+            <div key={label} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: '12px 14px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</div>
+              <div style={{ fontSize: 26, fontWeight: 800, color, fontVariantNumeric: 'tabular-nums', marginTop: 2 }}>{value}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* View tabs */}
+      <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
+        <button style={view === 'register' ? pillActive : pill} onClick={() => setView('register')}>
+          Case register
+          {metrics?.pending ? <span style={{ marginLeft: 6, background: '#dc2626', color: '#fff', fontSize: 10, fontWeight: 800, padding: '1px 5px', borderRadius: 10 }}>{metrics.pending}</span> : null}
+        </button>
+        <button style={view === 'metrics' ? pillActive : pill} onClick={() => setView('metrics')}>QI metrics</button>
+      </div>
+
+      {/* ── Register view ── */}
+      {view === 'register' && (
+        <>
+          {/* Filters + add */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value as ReviewStatus | 'all')}
+              style={{ ...pill, cursor: 'pointer' }}>
+              <option value="all">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="reviewed">Reviewed</option>
+              <option value="actioned">Actioned</option>
+            </select>
+            <select value={filterGrade} onChange={e => setFilterGrade(e.target.value as ClavienGrade | 'all')}
+              style={{ ...pill, cursor: 'pointer' }}>
+              <option value="all">All grades</option>
+              {GRADES.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}
+            </select>
+            <div style={{ flex: 1 }} />
+            {!adding && !editId && (
+              <button onClick={() => setAdding(true)} style={{
+                padding: '7px 14px', borderRadius: 6, border: 'none',
+                background: '#0b2545', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+              }}>
+                + Log case
+              </button>
+            )}
+          </div>
+
+          {/* Add form */}
+          {adding && (
+            <div style={{ marginBottom: 14 }}>
+              <CaseForm onSave={saveCase} onCancel={() => setAdding(false)} />
+            </div>
+          )}
+
+          {/* Case list */}
+          {filtered.length === 0 && !adding ? (
+            <div style={{ textAlign: 'center', padding: 48, color: 'var(--muted)', fontSize: 13 }}>
+              {cases.length === 0
+                ? 'No M&M cases logged. Click "Log case" to begin.'
+                : 'No cases match the current filter.'}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {filtered.map(c => {
+                const rs = REVIEW_STYLE[c.reviewStatus];
+                const gradeInfo = GRADES.find(g => g.id === c.grade);
+                if (editId === c.id) {
+                  return (
+                    <CaseForm key={c.id} initial={c} onSave={saveCase} onCancel={() => setEditId(null)} />
+                  );
+                }
+                return (
+                  <div key={c.id} style={{
+                    background: 'var(--surface)',
+                    border: `1px solid var(--border)`,
+                    borderLeft: `3px solid ${gradeInfo?.color ?? 'var(--border)'}`,
+                    borderRadius: 8,
+                    padding: '11px 14px',
+                  }}>
+                    {/* Row 1 */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 5 }}>
+                      <span style={{ fontWeight: 700, fontSize: 12 }}>{c.date}</span>
+                      {c.patientRef && <span style={{ fontSize: 11, color: 'var(--muted)' }}>{c.patientRef}</span>}
+                      <GradeChip grade={c.grade} />
+                      {c.gradeSuffix && <span style={{ fontSize: 10, color: '#94a3b8' }}>(d)</span>}
+                      <CategoryChip cat={c.category} />
+                      {c.reOperation && <span style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: '#fef2f2', color: '#b91c1c', border: '1px solid #fca5a5', fontWeight: 600 }}>Re-op</span>}
+                      {c.icuAdmission && <span style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: '#fef2f2', color: '#b91c1c', border: '1px solid #fca5a5', fontWeight: 600 }}>ICU</span>}
+                      {c.death && <span style={{ fontSize: 10, padding: '1px 5px', borderRadius: 3, background: '#450a0a', color: '#fca5a5', border: '1px solid #7f1d1d', fontWeight: 700 }}>Death</span>}
+                      <span style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+                        <button onClick={() => cycleStatus(c.id)} style={{
+                          fontSize: 10, padding: '2px 8px', borderRadius: 4, cursor: 'pointer',
+                          background: rs.bg, color: rs.fg, border: `1px solid ${rs.bd}`, fontWeight: 700,
+                        }}>
+                          {rs.label}
+                        </button>
+                      </span>
+                    </div>
+
+                    {/* Row 2 — procedure + complication */}
+                    <div style={{ marginBottom: 4 }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg)' }}>{c.procedure}</span>
+                      <span style={{ fontSize: 12, color: 'var(--muted)' }}> — {c.complication}</span>
+                    </div>
+
+                    {/* Contributing factors */}
+                    {c.contributing.length > 0 && (
+                      <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 4 }}>
+                        {c.contributing.map(f => (
+                          <span key={f} style={{ fontSize: 10, padding: '1px 6px', borderRadius: 3, background: '#eef2ff', color: '#4338ca', border: '1px solid #c7d2fe' }}>
+                            {FACTORS.find(x => x.id === f)?.label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Lessons + actions */}
+                    {(c.lessonsLearned || c.actionItems) && (
+                      <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 4 }}>
+                        {c.lessonsLearned && <div><b style={{ color: 'var(--fg)' }}>Lessons:</b> {c.lessonsLearned}</div>}
+                        {c.actionItems   && <div><b style={{ color: 'var(--fg)' }}>Actions:</b> {c.actionItems}</div>}
+                      </div>
+                    )}
+
+                    {/* Review info */}
+                    {(c.reviewDate || c.reviewedBy) && (
+                      <div style={{ fontSize: 11, color: '#94a3b8' }}>
+                        {c.reviewedBy && `Reviewed by ${c.reviewedBy}`}{c.reviewDate && ` · ${c.reviewDate}`}
+                      </div>
+                    )}
+
+                    {/* Actions */}
+                    <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                      <button onClick={() => setEditId(c.id)} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 4, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--muted)', cursor: 'pointer' }}>
+                        Edit
+                      </button>
+                      <button onClick={() => { if (confirm('Remove this case?')) deleteCase(c.id); }} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 4, border: '1px solid #fca5a5', background: '#fef2f2', color: '#b91c1c', cursor: 'pointer' }}>
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ── Metrics view ── */}
+      {view === 'metrics' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {!metrics ? (
+            <div style={{ textAlign: 'center', padding: 48, color: 'var(--muted)', fontSize: 13 }}>
+              Log cases in the Case register to generate QI metrics.
+            </div>
+          ) : (
+            <>
+              {/* Clavien-Dindo distribution */}
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+                  Clavien-Dindo grade distribution
+                </div>
+                {GRADES.map(g => {
+                  const n = metrics.gradeCount[g.id] ?? 0;
+                  const pct = metrics.n > 0 ? (n / metrics.n) * 100 : 0;
+                  return (
+                    <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 7 }}>
+                      <span style={{ width: 44, fontSize: 11, fontWeight: 700, color: g.color }}>{g.id}</span>
+                      <div style={{ flex: 1, height: 10, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${pct}%`, background: g.color, borderRadius: 4 }} />
+                      </div>
+                      <span style={{ width: 30, fontSize: 12, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: n > 0 ? g.color : 'var(--faint)', textAlign: 'right' }}>{n}</span>
+                      <span style={{ width: 36, fontSize: 11, color: 'var(--muted)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{pct.toFixed(0)}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Category distribution */}
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+                  Complication category
+                </div>
+                {CATEGORIES.map(cat => {
+                  const n = metrics.catCount[cat.id] ?? 0;
+                  const pct = metrics.n > 0 ? (n / metrics.n) * 100 : 0;
+                  return (
+                    <div key={cat.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 7 }}>
+                      <span style={{ width: 200, fontSize: 12, color: 'var(--fg)' }}>{cat.label}</span>
+                      <div style={{ flex: 1, height: 8, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${pct}%`, background: '#0d9488', borderRadius: 4 }} />
+                      </div>
+                      <span style={{ width: 30, fontSize: 12, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: n > 0 ? '#0d9488' : 'var(--faint)', textAlign: 'right' }}>{n}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Contributing factors */}
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+                  Contributing factors
+                </div>
+                {FACTORS.map(f => {
+                  const n = metrics.factorCount[f.id] ?? 0;
+                  const pct = metrics.n > 0 ? (n / metrics.n) * 100 : 0;
+                  return (
+                    <div key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 7 }}>
+                      <span style={{ width: 170, fontSize: 12, color: 'var(--fg)' }}>{f.label}</span>
+                      <div style={{ flex: 1, height: 8, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${pct}%`, background: '#6366f1', borderRadius: 4 }} />
+                      </div>
+                      <span style={{ width: 30, fontSize: 12, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: n > 0 ? '#6366f1' : 'var(--faint)', textAlign: 'right' }}>{n}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Key rate summary */}
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+                  Key rates (across all logged cases)
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                  {[
+                    { label: 'Mortality rate', n: metrics.deaths, pct: (metrics.deaths / metrics.n * 100).toFixed(1) },
+                    { label: 'Re-operation rate', n: metrics.reOps, pct: (metrics.reOps / metrics.n * 100).toFixed(1) },
+                    { label: 'ICU admission rate', n: metrics.icu, pct: (metrics.icu / metrics.n * 100).toFixed(1) },
+                  ].map(({ label, n, pct }) => (
+                    <div key={label} style={{ textAlign: 'center', padding: '10px 8px', background: 'var(--bg, #f8f9fb)', borderRadius: 7, border: '1px solid var(--border)' }}>
+                      <div style={{ fontSize: 22, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: Number(n) > 0 ? '#dc2626' : '#16a34a' }}>{pct}%</div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)', marginTop: 2, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</div>
+                      <div style={{ fontSize: 11, color: 'var(--faint)', marginTop: 1 }}>{n} of {metrics.n} cases</div>
+                    </div>
+                  ))}
+                </div>
+                <div style={{ marginTop: 10, fontSize: 11, color: 'var(--muted)', fontStyle: 'italic' }}>
+                  Rates reflect logged M&M cases only — not all procedures. Log completeness determines accuracy.
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

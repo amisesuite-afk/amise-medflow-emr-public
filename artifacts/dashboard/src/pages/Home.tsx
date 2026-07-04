@@ -56,6 +56,7 @@ import AiConsultantTab from './tabs/AiConsultantTab';
 import WhoChecklistTab from './tabs/WhoChecklistTab';
 import SurgicalConsentTab from './tabs/SurgicalConsentTab';
 import EncounterTimelineTab from './tabs/EncounterTimelineTab';
+import QualityImprovementTab from './tabs/QualityImprovementTab';
 import LetterGeneratorTab from './tabs/LetterGeneratorTab';
 import PatientEducationTab from './tabs/PatientEducationTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
@@ -717,7 +718,8 @@ export default function HomePage() {
         {topSection === 'dashboard'  && <DashboardTab />}
         {topSection === 'patients'   && <PatientSearchTab />}
         {topSection === 'scheduling' && <SchedulingTab />}
-        {topSection === 'analytics'  && hasRole(userRole, 'doctor') && <AnalyticsTab />}
+        {topSection === 'analytics'   && hasRole(userRole, 'doctor') && <AnalyticsTab />}
+        {topSection === 'quality'     && hasRole(userRole, 'doctor') && <QualityImprovementTab />}
         {topSection === 'settings'   && hasRole(userRole, 'admin')  && <SettingsTab />}
         {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
         {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}

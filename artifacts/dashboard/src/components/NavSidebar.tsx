@@ -146,6 +146,7 @@ const NAV_ITEMS: TopItem[] = [
   // ── Admin ──
   { id: 'patients',       icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Admin' },
   { id: 'analytics',      icon: BarChart2,       label: 'Analytics',      roles: ['doctor', 'admin'],                        group: 'Admin' },
+  { id: 'quality',        icon: Activity,        label: 'QI / M&M',       roles: ['doctor', 'admin'],                        group: 'Admin' },
   { id: 'vademecum',      icon: BookOpen,        label: 'Disease Dict.',  roles: ['nurse', 'doctor', 'admin'],               group: 'Admin' },
   { id: 'settings',       icon: Settings,        label: 'Settings',       roles: ['admin'],                                  group: 'Admin' },
 ];
