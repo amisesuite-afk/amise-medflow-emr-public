@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
 
@@ -81,6 +81,27 @@ function CheckList({ items, checked, setChecked, accent }: {
   );
 }
 
+function ScoreBadge({ score, max, bg, border, color, label, detail }: {
+  score: number; max: number; bg: string; border: string; color: string; label: string; detail?: string;
+}) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 16,
+      padding: '14px 18px', borderRadius: 10,
+      background: bg, border: `2px solid ${border}`,
+    }}>
+      <div style={{ textAlign: 'center', flexShrink: 0 }}>
+        <div style={{ fontSize: 32, fontWeight: 900, color, lineHeight: 1 }}>{score}</div>
+        <div style={{ fontSize: 10, color, fontWeight: 600 }}>/ {max}</div>
+      </div>
+      <div>
+        <div style={{ fontSize: 14, fontWeight: 800, color }}>{label}</div>
+        {detail && <div style={{ fontSize: 11, color, marginTop: 2, opacity: 0.8 }}>{detail}</div>}
+      </div>
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 // Alvarado Score — Acute Appendicitis
 // ══════════════════════════════════════════════════════════════════════════════
@@ -143,24 +164,10 @@ function AlvaradoCalc() {
           </label>
         ))}
       </div>
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 16,
-        padding: '14px 18px', borderRadius: 10,
-        background: badge.bg, border: `2px solid ${badge.border}`,
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 32, fontWeight: 900, color: badge.color, lineHeight: 1 }}>{score}</div>
-          <div style={{ fontSize: 10, color: badge.color, fontWeight: 600 }}>/ 10</div>
-        </div>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 800, color: badge.color }}>{badge.label}</div>
-          <div style={{ fontSize: 11, color: badge.color, marginTop: 2, opacity: 0.8 }}>
-            {score >= 9 ? 'Consider immediate appendicectomy without further imaging in males.'
-              : score >= 7 ? 'USS ± CT to confirm. Surgical review mandatory.'
-              : 'Active observation, repeat bloods at 6–8 h, USS if uncertain.'}
-          </div>
-        </div>
-      </div>
+      <ScoreBadge score={score} max={10} {...badge}
+        detail={score >= 9 ? 'Consider immediate appendicectomy without further imaging in males.'
+          : score >= 7 ? 'USS ± CT to confirm. Surgical review mandatory.'
+          : 'Active observation, repeat bloods at 6–8 h, USS if uncertain.'} />
     </div>
   );
 }
@@ -221,24 +228,10 @@ function RansonCalc() {
         <CheckList items={RANSON_48H} checked={h48} setChecked={setH48} accent="#7c3aed" />
       </div>
 
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 16,
-        padding: '14px 18px', borderRadius: 10,
-        background: badge.bg, border: `2px solid ${badge.border}`,
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 32, fontWeight: 900, color: badge.color, lineHeight: 1 }}>{score}</div>
-          <div style={{ fontSize: 10, color: badge.color, fontWeight: 600 }}>/ 11</div>
-        </div>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 800, color: badge.color }}>{badge.label}</div>
-          <div style={{ fontSize: 11, color: badge.color, marginTop: 2, opacity: 0.8 }}>
-            {score >= 5 ? 'ICU admission, aggressive resuscitation, consider ERCP if biliary.'
-              : score >= 3 ? 'HDU/monitored bed. CT at 48–72 h. Aggressive IV fluids 250–500 mL/h.'
-              : 'Ward-level care. IV fluids, analgesia, NBM. Reassess at 48 h.'}
-          </div>
-        </div>
-      </div>
+      <ScoreBadge score={score} max={11} {...badge}
+        detail={score >= 5 ? 'ICU admission, aggressive resuscitation, consider ERCP if biliary.'
+          : score >= 3 ? 'HDU/monitored bed. CT at 48–72 h. Aggressive IV fluids 250–500 mL/h.'
+          : 'Ward-level care. IV fluids, analgesia, NBM. Reassess at 48 h.'} />
     </div>
   );
 }
@@ -318,11 +311,11 @@ function BlatchfordCalc() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 16 }}>
         {[
-          { label: 'HR ≥ 100 bpm (+1)', val: tachyc, set: setTachyc, pts: 1 },
-          { label: 'Melaena (+1)', val: melaena, set: setMelaena, pts: 1 },
-          { label: 'Syncope (+2)', val: syncope, set: setSyncope, pts: 2 },
-          { label: 'Hepatic disease (+2)', val: hepatic, set: setHepatic, pts: 2 },
-          { label: 'Cardiac failure (+2)', val: cardiac, set: setCardiac, pts: 2 },
+          { label: 'HR ≥ 100 bpm (+1)', val: tachyc, set: setTachyc },
+          { label: 'Melaena (+1)', val: melaena, set: setMelaena },
+          { label: 'Syncope (+2)', val: syncope, set: setSyncope },
+          { label: 'Hepatic disease (+2)', val: hepatic, set: setHepatic },
+          { label: 'Cardiac failure (+2)', val: cardiac, set: setCardiac },
         ].map(({ label, val, set }) => (
           <label key={label} style={{
             display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
@@ -339,24 +332,10 @@ function BlatchfordCalc() {
         ))}
       </div>
 
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 16,
-        padding: '14px 18px', borderRadius: 10,
-        background: badge.bg, border: `2px solid ${badge.border}`,
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 32, fontWeight: 900, color: badge.color, lineHeight: 1 }}>{score}</div>
-          <div style={{ fontSize: 10, color: badge.color, fontWeight: 600 }}>pts</div>
-        </div>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 800, color: badge.color }}>{badge.label}</div>
-          <div style={{ fontSize: 11, color: badge.color, marginTop: 2, opacity: 0.8 }}>
-            {score === 0
-              ? 'No intervention needed before discharge. Outpatient OGD acceptable.'
-              : 'Resuscitate first. Target Hb 70–90 g/L (80–100 if ACS/varices). OGD within 24 h; within 12 h if active haemorrhage.'}
-          </div>
-        </div>
-      </div>
+      <ScoreBadge score={score} max={23} {...badge}
+        detail={score === 0
+          ? 'No intervention needed before discharge. Outpatient OGD acceptable.'
+          : 'Resuscitate first. Target Hb 70–90 g/L (80–100 if ACS/varices). OGD within 24 h; within 12 h if active haemorrhage.'} />
     </div>
   );
 }
@@ -365,7 +344,7 @@ function BlatchfordCalc() {
 // Light's Criteria — Pleural Fluid Analysis
 // ══════════════════════════════════════════════════════════════════════════════
 
-const LDHULN = 200; // typical ULN for serum LDH (IU/L) — 2/3 = 133
+const LDHULN = 200;
 
 function LightsCriteriaCalc() {
   const [plLDH,  setPlLDH]  = useState('');
@@ -405,7 +384,7 @@ function LightsCriteriaCalc() {
   return (
     <div>
       <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
-        <strong>Light's Criteria (1972)</strong> — exudate if ANY criterion met.
+        <strong>Light&apos;s Criteria (1972)</strong> — exudate if ANY criterion met.
         If exudate, consider: parapneumonic, malignancy, PE, TB, pancreatitis.
         If transudate, consider: cardiac failure, hepatic hydrothorax, nephrotic syndrome.
       </div>
@@ -417,7 +396,6 @@ function LightsCriteriaCalc() {
         <Num label="Serum Protein"   value={seProt} unit="g/L"   onChange={setSeProt} />
       </div>
 
-      {/* Criteria results */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
         {[
           { label: `Pleural protein / serum protein > 0.5 (${!isNaN(parseFloat(plProt)) && !isNaN(parseFloat(seProt)) && parseFloat(seProt) > 0 ? (parseFloat(plProt) / parseFloat(seProt)).toFixed(2) : '—'})`, met: result.c1 },
@@ -442,7 +420,6 @@ function LightsCriteriaCalc() {
         ))}
       </div>
 
-      {/* Verdict */}
       <div style={{
         padding: '12px 16px', borderRadius: 10,
         background: verdictBg, border: `2px solid ${verdictBdr}`,
@@ -539,7 +516,7 @@ function CodeStrokeTPA() {
       };
     }
 
-    if (!within3h && (warn45hCount > 0 || !isNaN(nih) && nih > 25)) {
+    if (!within3h && (warn45hCount > 0 || (!isNaN(nih) && nih > 25))) {
       return {
         tpa: false,
         thrombectomy: true,
@@ -573,7 +550,6 @@ function CodeStrokeTPA() {
         This tool is a decision aid only — clinical judgement and team consensus are mandatory.
       </div>
 
-      {/* Step 1 — CT & onset */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10, marginBottom: 16 }}>
         <div>
           <div style={{ fontSize: 11, fontWeight: 600, color: '#374151', marginBottom: 5 }}>CT brain — no haemorrhage?</div>
@@ -597,7 +573,6 @@ function CodeStrokeTPA() {
         <Num label="NIHSS" value={nihss} unit="" onChange={setNihss} hint="0 = no deficit · 42 = max" />
       </div>
 
-      {/* Time badge */}
       {!isNaN(mins) && (
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 13px', borderRadius: 8, marginBottom: 14,
@@ -611,7 +586,6 @@ function CodeStrokeTPA() {
         </div>
       )}
 
-      {/* Absolute exclusions */}
       <div style={{ marginBottom: 14 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#dc2626', marginBottom: 7 }}>
           ■ Absolute contraindications (check ALL that apply)
@@ -619,7 +593,6 @@ function CodeStrokeTPA() {
         <CheckList items={ABSOLUTE_EXCLUSIONS} checked={absExcl} setChecked={setAbsExcl} accent="#dc2626" />
       </div>
 
-      {/* Relative warnings 3h */}
       <div style={{ marginBottom: 14 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#d97706', marginBottom: 7 }}>
           ⚠ Relative warnings (3 h window)
@@ -627,7 +600,6 @@ function CodeStrokeTPA() {
         <CheckList items={WARNINGS_3H} checked={warn3h} setChecked={setWarn3h} accent="#d97706" />
       </div>
 
-      {/* Additional warnings 4.5h */}
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#7c3aed', marginBottom: 7 }}>
           ⚠ Additional exclusions (3–4.5 h window only)
@@ -635,7 +607,6 @@ function CodeStrokeTPA() {
         <CheckList items={WARNINGS_45H} checked={warn45h} setChecked={setWarn45h} accent="#7c3aed" />
       </div>
 
-      {/* Decision */}
       <div style={{
         padding: '14px 16px', borderRadius: 10, marginTop: 4,
         background: tpaBg, border: `2px solid ${tpaBdr}`,
@@ -667,10 +638,426 @@ function CodeStrokeTPA() {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// qSOFA — Quick Sequential Organ Failure Assessment (Sepsis-3)
+// ══════════════════════════════════════════════════════════════════════════════
+
+function QsofaCalc() {
+  const [checks, setChecks] = useState<boolean[]>([false, false, false]);
+
+  const score = checks.filter(Boolean).length;
+
+  const badge = score >= 2
+    ? { label: 'HIGH RISK — suspect sepsis, full SOFA assessment', bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' }
+    : score === 1
+    ? { label: 'Intermediate — monitor, reassess if deteriorates', bg: '#fffbeb', color: '#92400e', border: '#fcd34d' }
+    : { label: 'Criteria not met — sepsis less likely on bedside assessment', bg: '#f0fdf4', color: '#166534', border: '#86efac' };
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
+        <strong>qSOFA (Sepsis-3)</strong> — bedside screening tool. Score ≥2 = high risk for
+        sepsis-related organ dysfunction; warrants full SOFA, source investigation, and early intervention.
+      </div>
+      <CheckList
+        items={[
+          'Altered mentation (GCS < 15 or new confusion)',
+          'Respiratory rate ≥ 22 /min',
+          'Systolic BP ≤ 100 mmHg',
+        ]}
+        checked={checks}
+        setChecked={setChecks}
+        accent="#dc2626"
+      />
+      <div style={{ marginTop: 14 }}>
+        <ScoreBadge score={score} max={3} {...badge}
+          detail={score >= 2
+            ? 'Blood cultures × 2, lactate, IV access, 30 mL/kg IVF bolus, empiric antibiotics within 1 h. Calculate full SOFA.'
+            : 'Continue assessment. Recheck vitals at 30–60 min. Escalate if worsening.'} />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// NEWS2 — National Early Warning Score 2
+// ══════════════════════════════════════════════════════════════════════════════
+
+function news2RR(v: number) { return v <= 8 ? 3 : v <= 11 ? 1 : v <= 20 ? 0 : v <= 24 ? 2 : 3; }
+function news2SpO2(v: number) { return v <= 91 ? 3 : v <= 93 ? 2 : v <= 95 ? 1 : 0; }
+function news2SBP(v: number) { return v <= 90 ? 3 : v <= 100 ? 2 : v <= 110 ? 1 : v <= 219 ? 0 : 3; }
+function news2HR(v: number) { return v <= 40 ? 3 : v <= 50 ? 1 : v <= 90 ? 0 : v <= 110 ? 1 : v <= 130 ? 2 : 3; }
+function news2Temp(v: number) { return v <= 35.0 ? 3 : v <= 36.0 ? 1 : v <= 38.0 ? 0 : v <= 39.0 ? 1 : 2; }
+
+function NEWS2Calc() {
+  const [rr,      setRr]      = useState('');
+  const [spo2,    setSpo2]    = useState('');
+  const [onO2,    setOnO2]    = useState(false);
+  const [sbp,     setSbp]     = useState('');
+  const [hr,      setHr]      = useState('');
+  const [temp,    setTemp]    = useState('');
+  const [cvpu,    setCvpu]    = useState(false);
+
+  const rrV   = parseFloat(rr);
+  const spo2V = parseFloat(spo2);
+  const sbpV  = parseFloat(sbp);
+  const hrV   = parseFloat(hr);
+  const tempV = parseFloat(temp);
+
+  const scores = {
+    rr:   !isNaN(rrV)   ? news2RR(rrV)     : null,
+    spo2: !isNaN(spo2V) ? news2SpO2(spo2V) : null,
+    o2:   onO2 ? 2 : 0,
+    sbp:  !isNaN(sbpV)  ? news2SBP(sbpV)   : null,
+    hr:   !isNaN(hrV)   ? news2HR(hrV)      : null,
+    temp: !isNaN(tempV) ? news2Temp(tempV)  : null,
+    cons: cvpu ? 3 : 0,
+  };
+
+  const filledScores = Object.values(scores).filter(s => s !== null) as number[];
+  const total = filledScores.reduce((a, b) => a + b, 0);
+  const hasAny3 = filledScores.some(s => s === 3);
+  const anyFilled = filledScores.length > 0;
+
+  const risk = anyFilled
+    ? (total >= 7 || (hasAny3 && total >= 5)) ? 'high'
+    : (total >= 5 || hasAny3) ? 'medium'
+    : total >= 1 ? 'low-medium'
+    : 'low'
+    : null;
+
+  const badge = risk === 'high'
+    ? { label: 'HIGH RISK — emergency assessment', bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' }
+    : risk === 'medium'
+    ? { label: 'MEDIUM — urgent review within 30 min', bg: '#fffbeb', color: '#92400e', border: '#fcd34d' }
+    : risk === 'low-medium'
+    ? { label: 'LOW-MEDIUM — reassess 4–6 hourly', bg: '#eff6ff', color: '#1e40af', border: '#bfdbfe' }
+    : { label: 'LOW — minimum monitoring (12 hourly)', bg: '#f0fdf4', color: '#166534', border: '#86efac' };
+
+  const PARAMS: { label: string; value: string; unit: string; onChange: (v: string) => void; hint: string }[] = [
+    { label: 'Respiratory Rate', value: rr,   unit: '/min', onChange: setRr,   hint: scores.rr !== null ? `+${scores.rr}` : '' },
+    { label: 'SpO₂',            value: spo2,  unit: '%',    onChange: setSpo2, hint: scores.spo2 !== null ? `+${scores.spo2}` : '' },
+    { label: 'Systolic BP',     value: sbp,   unit: 'mmHg', onChange: setSbp,  hint: scores.sbp !== null ? `+${scores.sbp}` : '' },
+    { label: 'Heart Rate',      value: hr,    unit: 'bpm',  onChange: setHr,   hint: scores.hr !== null ? `+${scores.hr}` : '' },
+    { label: 'Temperature',     value: temp,  unit: '°C',   onChange: setTemp, hint: scores.temp !== null ? `+${scores.temp}` : '' },
+  ];
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
+        <strong>NEWS2 (Royal College of Physicians 2017)</strong> — aggregate score: Low=0, Low-Med=1–4,
+        Medium=5–6 or any single 3, High≥7. Any single parameter score of 3 alone warrants urgent review.
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(185px, 1fr))', gap: 10, marginBottom: 14 }}>
+        {PARAMS.map(p => <Num key={p.label} {...p} />)}
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <label style={{
+          display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1,
+          padding: '7px 11px', borderRadius: 7, fontSize: 12,
+          background: onO2 ? '#fef9c312' : '#f9fafb',
+          border: `1px solid ${onO2 ? '#fcd34d' : '#e5e7eb'}`,
+          color: onO2 ? '#92400e' : '#374151', fontWeight: onO2 ? 600 : 400,
+        }}>
+          <input type="checkbox" checked={onO2} onChange={e => setOnO2(e.target.checked)}
+            style={{ accentColor: '#d97706', flexShrink: 0 }} />
+          Supplemental O₂ (+2)
+        </label>
+        <label style={{
+          display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', flex: 1,
+          padding: '7px 11px', borderRadius: 7, fontSize: 12,
+          background: cvpu ? '#fef2f212' : '#f9fafb',
+          border: `1px solid ${cvpu ? '#fca5a5' : '#e5e7eb'}`,
+          color: cvpu ? '#dc2626' : '#374151', fontWeight: cvpu ? 600 : 400,
+        }}>
+          <input type="checkbox" checked={cvpu} onChange={e => setCvpu(e.target.checked)}
+            style={{ accentColor: '#dc2626', flexShrink: 0 }} />
+          New confusion / CVPU (+3)
+        </label>
+      </div>
+
+      {anyFilled && badge ? (
+        <ScoreBadge score={total} max={20} {...badge}
+          detail={risk === 'high'
+            ? 'Continuous monitoring. Emergency assessment by competent clinician. Consider HDU/ICU.'
+            : risk === 'medium'
+            ? 'Urgent review by clinician competent in acute illness. Consider critical care liaison.'
+            : 'Increase frequency of monitoring. Inform nurse in charge.'} />
+      ) : (
+        <div style={{ padding: '12px 16px', borderRadius: 10, background: '#f9fafb', border: '2px solid #e5e7eb', color: '#6b7280', fontSize: 13 }}>
+          Enter vital signs to calculate NEWS2 score
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Caprini VTE Risk Score — Surgical patients
+// ══════════════════════════════════════════════════════════════════════════════
+
+const CAPRINI_1PT = [
+  'Age 41–60 years',
+  'Minor surgery (<45 min)',
+  'BMI > 25 kg/m²',
+  'Swollen legs (current)',
+  'Varicose veins',
+  'Oral contraceptives or HRT',
+  'Pregnancy or ≤1 month postpartum',
+  'History of recurrent spontaneous abortion',
+  'Sepsis or serious infection within 1 month',
+  'Bed rest >72 hours pre-operatively',
+  'Central venous access',
+];
+
+const CAPRINI_2PT = [
+  'Age 61–74 years',
+  'Open surgery or laparoscopy >45 min',
+  'Malignancy (current or prior)',
+  'Confined to bed >72 hours',
+  'Personal or family history DVT/PE',
+  'Known thrombophilia (Factor V Leiden, protein C/S deficiency, etc.)',
+];
+
+const CAPRINI_3PT = [
+  'Age ≥75 years',
+  'Prior DVT or PE (personal)',
+];
+
+const CAPRINI_5PT = [
+  'Stroke or TIA within 1 month',
+  'Hip, pelvis, or femur fracture within 1 month',
+  'Acute spinal cord injury / paralysis within 1 month',
+  'Multiple trauma within 1 month',
+  'Elective major lower limb arthroplasty',
+];
+
+function CapriniCalc() {
+  const [c1, setC1] = useState<boolean[]>(Array(CAPRINI_1PT.length).fill(false));
+  const [c2, setC2] = useState<boolean[]>(Array(CAPRINI_2PT.length).fill(false));
+  const [c3, setC3] = useState<boolean[]>(Array(CAPRINI_3PT.length).fill(false));
+  const [c5, setC5] = useState<boolean[]>(Array(CAPRINI_5PT.length).fill(false));
+
+  const score =
+    c1.filter(Boolean).length * 1 +
+    c2.filter(Boolean).length * 2 +
+    c3.filter(Boolean).length * 3 +
+    c5.filter(Boolean).length * 5;
+
+  const badge = score >= 9
+    ? { label: 'HIGHEST RISK (≥9) — extended prophylaxis', bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' }
+    : score >= 5
+    ? { label: 'HIGH RISK (5–8) — pharmacoprophylaxis + compression', bg: '#fffbeb', color: '#92400e', border: '#fcd34d' }
+    : score >= 3
+    ? { label: 'MODERATE RISK (3–4) — pharmacoprophylaxis ± compression', bg: '#eff6ff', color: '#1e40af', border: '#bfdbfe' }
+    : score >= 2
+    ? { label: 'LOW-MODERATE RISK (2) — compression ± pharmacoprophylaxis', bg: '#fefce8', color: '#713f12', border: '#fde68a' }
+    : { label: 'LOW RISK (0–1) — early mobilisation + compression stockings', bg: '#f0fdf4', color: '#166534', border: '#86efac' };
+
+  const groupStyle = {
+    fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
+    letterSpacing: '0.07em', marginBottom: 6, marginTop: 4,
+  };
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
+        <strong>Caprini VTE Risk Score</strong> — validated for surgical patients.
+        Score ≥5 = high risk VTE; pharmacoprophylaxis strongly recommended unless contraindicated.
+        Score ≥9 = highest risk; consider 30-day extended prophylaxis post-discharge.
+      </div>
+
+      <div style={{ ...groupStyle, color: '#374151' }}>1 point each</div>
+      <CheckList items={CAPRINI_1PT} checked={c1} setChecked={setC1} accent="#6b7280" />
+
+      <div style={{ ...groupStyle, color: '#2563eb', marginTop: 12 }}>2 points each</div>
+      <CheckList items={CAPRINI_2PT} checked={c2} setChecked={setC2} accent="#2563eb" />
+
+      <div style={{ ...groupStyle, color: '#7c3aed', marginTop: 12 }}>3 points each</div>
+      <CheckList items={CAPRINI_3PT} checked={c3} setChecked={setC3} accent="#7c3aed" />
+
+      <div style={{ ...groupStyle, color: '#dc2626', marginTop: 12 }}>5 points each</div>
+      <CheckList items={CAPRINI_5PT} checked={c5} setChecked={setC5} accent="#dc2626" />
+
+      <div style={{ marginTop: 14 }}>
+        <ScoreBadge score={score} max={50} {...badge}
+          detail={score >= 9
+            ? 'LMWH × 30 days post-discharge + sequential compression device + early mobilisation.'
+            : score >= 5
+            ? 'LMWH or unfractionated heparin BD/TDS + sequential compression device.'
+            : score >= 3
+            ? 'LMWH or UFH + compression stockings. Assess bleeding risk before initiating.'
+            : 'Compression stockings throughout hospital stay. Encourage early mobilisation.'} />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ASA Physical Status Classification
+// ══════════════════════════════════════════════════════════════════════════════
+
+const ASA_CLASSES = [
+  {
+    grade: 'ASA I',
+    desc: 'Normal, healthy patient',
+    examples: 'No organic, physiological, biochemical, or psychiatric disturbance. Healthy, non-smoking, minimal alcohol use.',
+    bg: '#f0fdf4', color: '#166534', border: '#86efac',
+  },
+  {
+    grade: 'ASA II',
+    desc: 'Mild systemic disease — no functional limitation',
+    examples: 'Well-controlled DM or HTN, obesity (BMI <40), mild lung disease, current smoker, social alcohol, pregnancy.',
+    bg: '#f0fdf4', color: '#15803d', border: '#86efac',
+  },
+  {
+    grade: 'ASA III',
+    desc: 'Severe systemic disease — substantive functional limitation',
+    examples: 'Poorly controlled DM/HTN, COPD, morbid obesity (BMI ≥40), active hepatitis, alcohol dependence, implanted pacemaker, moderate ESRD, history of MI >3 months, CVA >3 months.',
+    bg: '#fffbeb', color: '#92400e', border: '#fcd34d',
+  },
+  {
+    grade: 'ASA IV',
+    desc: 'Severe systemic disease — constant threat to life',
+    examples: 'Recent MI or CVA (<3 months), severe cardiac valve dysfunction, refractory CHF, severe ESRD, ongoing cardiac ischaemia, sepsis.',
+    bg: '#fff7ed', color: '#c2410c', border: '#fb923c',
+  },
+  {
+    grade: 'ASA V',
+    desc: 'Moribund — not expected to survive without the operation',
+    examples: 'Ruptured aortic aneurysm, massive trauma, intracranial bleed with mass effect, ischaemic bowel with multi-organ failure, haemodynamically unstable.',
+    bg: '#fef2f2', color: '#991b1b', border: '#fca5a5',
+  },
+  {
+    grade: 'ASA VI',
+    desc: 'Brain-dead — organ donation',
+    examples: 'Declared brain-dead patient maintained for organ donation purposes.',
+    bg: '#f3f4f6', color: '#374151', border: '#d1d5db',
+  },
+];
+
+function AsaCalc() {
+  const [selected, setSelected] = useState<number | null>(null);
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
+        <strong>ASA Physical Status Classification (ASA 2020)</strong> — click to select.
+        Emergency modifier (E): add "E" suffix for emergency surgery at same grade (e.g. ASA IIE).
+        Higher ASA correlates with increased perioperative morbidity and mortality.
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {ASA_CLASSES.map((c, i) => {
+          const isSel = selected === i;
+          return (
+            <button
+              key={c.grade}
+              type="button"
+              onClick={() => setSelected(isSel ? null : i)}
+              style={{
+                display: 'flex', alignItems: 'flex-start', gap: 12, width: '100%',
+                padding: '10px 13px', borderRadius: 8, cursor: 'pointer', textAlign: 'left',
+                border: `2px solid ${isSel ? c.border : '#e5e7eb'}`,
+                background: isSel ? c.bg : '#fafafa',
+                transition: 'all 0.12s',
+              }}
+            >
+              <div style={{
+                flexShrink: 0, fontSize: 11, fontWeight: 900, letterSpacing: '0.04em',
+                color: isSel ? c.color : '#6b7280',
+                minWidth: 52,
+              }}>
+                {c.grade}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: isSel ? 700 : 500, color: isSel ? c.color : '#374151' }}>
+                  {c.desc}
+                </div>
+                {isSel && (
+                  <div style={{ fontSize: 11, color: c.color, marginTop: 4, opacity: 0.85 }}>
+                    {c.examples}
+                  </div>
+                )}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {selected !== null && (
+        <div style={{
+          marginTop: 12, padding: '10px 14px', borderRadius: 8,
+          background: ASA_CLASSES[selected].bg,
+          border: `2px solid ${ASA_CLASSES[selected].border}`,
+          color: ASA_CLASSES[selected].color,
+          fontSize: 13, fontWeight: 700,
+        }}>
+          Selected: {ASA_CLASSES[selected].grade} — {ASA_CLASSES[selected].desc}
+          <div style={{ fontSize: 11, fontWeight: 400, marginTop: 4 }}>
+            Add "E" suffix for emergency procedures (e.g. {ASA_CLASSES[selected].grade}E).
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RCRI — Revised Cardiac Risk Index (Lee 1999)
+// ══════════════════════════════════════════════════════════════════════════════
+
+const RCRI_ITEMS = [
+  'High-risk surgery (intraperitoneal, intrathoracic, or supra-inguinal vascular)',
+  'History of ischaemic heart disease (MI, positive stress test, current angina, nitrate use, ECG Q-waves)',
+  'History of congestive heart failure (pulmonary oedema, S3 gallop, paroxysmal nocturnal dyspnoea)',
+  'History of cerebrovascular disease (TIA or stroke)',
+  'Insulin-dependent diabetes mellitus',
+  'Preoperative creatinine > 177 μmol/L (2.0 mg/dL) — or on dialysis',
+];
+
+function RcriCalc() {
+  const [checked, setChecked] = useState<boolean[]>(Array(RCRI_ITEMS.length).fill(false));
+
+  const score = checked.filter(Boolean).length;
+
+  const mace = score === 0 ? '0.4%' : score === 1 ? '1.0%' : score === 2 ? '2.4%' : '5.4%';
+
+  const badge = score >= 3
+    ? { label: `HIGH RISK — MACE ~${mace}`, bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' }
+    : score === 2
+    ? { label: `ELEVATED RISK — MACE ~${mace}`, bg: '#fffbeb', color: '#92400e', border: '#fcd34d' }
+    : score === 1
+    ? { label: `LOW RISK — MACE ~${mace}`, bg: '#eff6ff', color: '#1e40af', border: '#bfdbfe' }
+    : { label: `VERY LOW RISK — MACE ~${mace}`, bg: '#f0fdf4', color: '#166534', border: '#86efac' };
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
+        <strong>RCRI (Lee Criteria, 1999)</strong> — predicts major adverse cardiac events (MACE)
+        in patients undergoing non-cardiac surgery. Each criterion = 1 point.
+        Score ≥3 warrants cardiology review and optimisation before elective surgery.
+      </div>
+      <CheckList items={RCRI_ITEMS} checked={checked} setChecked={setChecked} accent="#2563eb" />
+      <div style={{ marginTop: 14 }}>
+        <ScoreBadge score={score} max={6} {...badge}
+          detail={score >= 3
+            ? 'Cardiology review recommended. Consider non-invasive cardiac testing and optimisation before elective surgery. Discuss risk/benefit.'
+            : score === 2
+            ? 'Elevated perioperative cardiac risk. Consider cardiology review for major elective procedures. Optimise medical therapy.'
+            : 'Proceed with planned surgery. Standard perioperative monitoring.'} />
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // Main panel — tool selector
 // ══════════════════════════════════════════════════════════════════════════════
 
-type AlgoTool = 'alvarado' | 'ranson' | 'blatchford' | 'lights' | 'stroke';
+type AlgoTool = 'alvarado' | 'ranson' | 'blatchford' | 'lights' | 'stroke'
+  | 'qsofa' | 'news2' | 'caprini' | 'asa' | 'rcri';
 
 const TOOLS: { id: AlgoTool; icon: string; label: string; hint: string }[] = [
   { id: 'alvarado',   icon: '⚡', label: 'Alvarado Score',    hint: 'Acute appendicitis — surgical decision' },
@@ -678,6 +1065,11 @@ const TOOLS: { id: AlgoTool; icon: string; label: string; hint: string }[] = [
   { id: 'blatchford', icon: '🩸', label: 'Glasgow-Blatchford', hint: 'Upper GI bleed — risk stratification' },
   { id: 'lights',     icon: '💧', label: "Light's Criteria",   hint: 'Pleural fluid — transudate vs exudate' },
   { id: 'stroke',     icon: '🧠', label: 'Code Stroke tPA',    hint: 'AHA/ASA 2019 — IV thrombolysis decision' },
+  { id: 'qsofa',      icon: '🚨', label: 'qSOFA',              hint: 'Sepsis-3 bedside screening' },
+  { id: 'news2',      icon: '📊', label: 'NEWS2',              hint: 'National Early Warning Score 2' },
+  { id: 'caprini',    icon: '🩺', label: 'Caprini VTE',        hint: 'VTE risk — surgical prophylaxis' },
+  { id: 'asa',        icon: '🏥', label: 'ASA Status',         hint: 'Anaesthetic risk classification' },
+  { id: 'rcri',       icon: '❤️', label: 'RCRI',              hint: 'Cardiac risk — non-cardiac surgery' },
 ];
 
 const CC_TOOL_MAP: Partial<Record<string, AlgoTool>> = {
@@ -688,84 +1080,155 @@ const CC_TOOL_MAP: Partial<Record<string, AlgoTool>> = {
   'empyema':            'lights',
 };
 
-export default function ClinicalAlgorithmPanel() {
+interface ClinicalAlgorithmPanelProps {
+  requestedTool?: string | null;
+}
+
+export default function ClinicalAlgorithmPanel({ requestedTool }: ClinicalAlgorithmPanelProps) {
   const { activeCcKey } = useAppContext();
   const [active, setActive] = useState<AlgoTool | null>(null);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   // Auto-activate matching tool when CC changes; clear if no mapping
   useEffect(() => {
     const mapped = activeCcKey ? CC_TOOL_MAP[activeCcKey] : undefined;
     setActive(mapped ?? null);
+    if (mapped) setPanelOpen(true);
   }, [activeCcKey]);
 
+  // Open and activate when a tool is requested from CDS panel
+  useEffect(() => {
+    if (!requestedTool) return;
+    const valid = TOOLS.find(t => t.id === requestedTool);
+    if (valid) {
+      setActive(requestedTool as AlgoTool);
+      setPanelOpen(true);
+      setTimeout(() => {
+        panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+  }, [requestedTool]);
+
   return (
-    <CollapsibleCard title="Clinical Algorithms" defaultOpen={false}>
-      {/* Tool selector */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: active ? 16 : 0 }}>
-        {TOOLS.map(t => {
-          const isSel = active === t.id;
-          return (
-            <button key={t.id} type="button" onClick={() => setActive(isSel ? null : t.id)}
-              style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-                padding: '10px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
-                border: `2px solid ${isSel ? '#2563eb' : '#e2e8f0'}`,
-                background: isSel ? '#eff6ff' : '#fff',
-                minWidth: 140, transition: 'all 0.12s',
-              }}>
-              <div style={{ fontSize: 18, marginBottom: 4 }}>{t.icon}</div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: isSel ? '#1d4ed8' : '#111827' }}>{t.label}</div>
-              <div style={{ fontSize: 11, color: '#6b7280', marginTop: 1 }}>{t.hint}</div>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Active tool */}
-      {active === 'alvarado' && (
-        <div style={{ marginTop: 4 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#c2410c', marginBottom: 10 }}>
-            ⚡ ALVARADO SCORE — Acute Appendicitis
-          </div>
-          <AlvaradoCalc />
+    <div ref={panelRef}>
+      <CollapsibleCard
+        title="Clinical Algorithms & Scoring Tools"
+        open={panelOpen}
+        onOpenChange={setPanelOpen}
+      >
+        {/* Tool selector */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: active ? 16 : 0 }}>
+          {TOOLS.map(t => {
+            const isSel = active === t.id;
+            return (
+              <button key={t.id} type="button" onClick={() => setActive(isSel ? null : t.id)}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                  padding: '10px 14px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
+                  border: `2px solid ${isSel ? '#2563eb' : '#e2e8f0'}`,
+                  background: isSel ? '#eff6ff' : '#fff',
+                  minWidth: 130, transition: 'all 0.12s',
+                }}>
+                <div style={{ fontSize: 18, marginBottom: 4 }}>{t.icon}</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: isSel ? '#1d4ed8' : '#111827' }}>{t.label}</div>
+                <div style={{ fontSize: 10, color: '#6b7280', marginTop: 1 }}>{t.hint}</div>
+              </button>
+            );
+          })}
         </div>
-      )}
 
-      {active === 'ranson' && (
-        <div style={{ marginTop: 4 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#b45309', marginBottom: 10 }}>
-            🔥 RANSON CRITERIA — Acute Pancreatitis Severity
+        {/* Active tool */}
+        {active === 'alvarado' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#c2410c', marginBottom: 10 }}>
+              ⚡ ALVARADO SCORE — Acute Appendicitis
+            </div>
+            <AlvaradoCalc />
           </div>
-          <RansonCalc />
-        </div>
-      )}
+        )}
 
-      {active === 'blatchford' && (
-        <div style={{ marginTop: 4 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#dc2626', marginBottom: 10 }}>
-            🩸 GLASGOW-BLATCHFORD — Upper GI Bleed Risk
+        {active === 'ranson' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#b45309', marginBottom: 10 }}>
+              🔥 RANSON CRITERIA — Acute Pancreatitis Severity
+            </div>
+            <RansonCalc />
           </div>
-          <BlatchfordCalc />
-        </div>
-      )}
+        )}
 
-      {active === 'lights' && (
-        <div style={{ marginTop: 4 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2563eb', marginBottom: 10 }}>
-            💧 LIGHT&apos;S CRITERIA — Pleural Fluid Classification
+        {active === 'blatchford' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#dc2626', marginBottom: 10 }}>
+              🩸 GLASGOW-BLATCHFORD — Upper GI Bleed Risk
+            </div>
+            <BlatchfordCalc />
           </div>
-          <LightsCriteriaCalc />
-        </div>
-      )}
+        )}
 
-      {active === 'stroke' && (
-        <div style={{ marginTop: 4 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#dc2626', marginBottom: 10 }}>
-            🧠 CODE STROKE — IV tPA Decision (AHA/ASA 2019)
+        {active === 'lights' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2563eb', marginBottom: 10 }}>
+              💧 LIGHT&apos;S CRITERIA — Pleural Fluid Classification
+            </div>
+            <LightsCriteriaCalc />
           </div>
-          <CodeStrokeTPA />
-        </div>
-      )}
-    </CollapsibleCard>
+        )}
+
+        {active === 'stroke' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#dc2626', marginBottom: 10 }}>
+              🧠 CODE STROKE — IV tPA Decision (AHA/ASA 2019)
+            </div>
+            <CodeStrokeTPA />
+          </div>
+        )}
+
+        {active === 'qsofa' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#dc2626', marginBottom: 10 }}>
+              🚨 qSOFA — Sepsis-3 Bedside Screen
+            </div>
+            <QsofaCalc />
+          </div>
+        )}
+
+        {active === 'news2' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#1e40af', marginBottom: 10 }}>
+              📊 NEWS2 — National Early Warning Score
+            </div>
+            <NEWS2Calc />
+          </div>
+        )}
+
+        {active === 'caprini' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#7c3aed', marginBottom: 10 }}>
+              🩺 CAPRINI VTE RISK — Surgical Patients
+            </div>
+            <CapriniCalc />
+          </div>
+        )}
+
+        {active === 'asa' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0369a1', marginBottom: 10 }}>
+              🏥 ASA PHYSICAL STATUS CLASSIFICATION
+            </div>
+            <AsaCalc />
+          </div>
+        )}
+
+        {active === 'rcri' && (
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#be185d', marginBottom: 10 }}>
+              ❤️ RCRI — Revised Cardiac Risk Index
+            </div>
+            <RcriCalc />
+          </div>
+        )}
+      </CollapsibleCard>
+    </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
@@ -531,6 +531,13 @@ export default function AssessmentTab() {
   const apptType = triageResult.appointmentType;
   const ddxOptions: DiffOption[] = DIFFERENTIAL_PROMPTS[apptType] ?? DIFFERENTIAL_PROMPTS['new_consult'];
 
+  const [requestedTool, setRequestedTool] = useState<string | null>(null);
+
+  const requestTool = useCallback((scaleKey: string) => {
+    setRequestedTool(null);
+    requestAnimationFrame(() => setRequestedTool(scaleKey));
+  }, []);
+
   const assessmentMic = useSpeechInput();
   const differentialsMic = useSpeechInput();
 
@@ -552,16 +559,28 @@ export default function AssessmentTab() {
         <CollapsibleCard
           title={`Clinical Decision Support — ${cdsSuggestions.length} active suggestion${cdsSuggestions.length > 1 ? 's' : ''}`}
         >
+          <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 8 }}>
+            Click a row to open the scoring tool inline below.
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {cdsSuggestions.map(s => {
               const style = URGENCY_STYLE[s.urgency];
               return (
-                <div key={s.scaleKey} style={{
-                  background: style.bg, border: `1px solid ${style.border}`,
-                  borderRadius: 8, padding: '8px 12px',
-                  display: 'flex', alignItems: 'flex-start', gap: 10,
-                }}>
-                  <span style={{ color: style.dot, fontSize: 10, marginTop: 3 }}>●</span>
+                <button
+                  key={s.scaleKey}
+                  type="button"
+                  onClick={() => requestTool(s.scaleKey)}
+                  style={{
+                    background: style.bg, border: `1px solid ${style.border}`,
+                    borderRadius: 8, padding: '8px 12px',
+                    display: 'flex', alignItems: 'flex-start', gap: 10,
+                    width: '100%', textAlign: 'left', cursor: 'pointer',
+                    transition: 'filter 0.1s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.filter = 'brightness(0.95)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.filter = ''; }}
+                >
+                  <span style={{ color: style.dot, fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 600, fontSize: 13, color: style.color }}>{s.title}</div>
                     <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{s.triggerReason}</div>
@@ -571,18 +590,18 @@ export default function AssessmentTab() {
                       </div>
                     )}
                   </div>
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
-                    color: style.color, background: style.border, borderRadius: 4, padding: '2px 6px', whiteSpace: 'nowrap',
-                  }}>
-                    {s.categoryTag}
-                  </span>
-                </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
+                      color: style.color, background: style.border, borderRadius: 4, padding: '2px 6px', whiteSpace: 'nowrap',
+                    }}>
+                      {s.categoryTag}
+                    </span>
+                    <span style={{ fontSize: 10, color: style.color, opacity: 0.7 }}>Open score ↓</span>
+                  </div>
+                </button>
               );
             })}
-          </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: '#9ca3af' }}>
-            Navigate to the <strong>Scales</strong> tab to complete and score each tool.
           </div>
         </CollapsibleCard>
       )}
@@ -728,7 +747,7 @@ export default function AssessmentTab() {
         </div>
       </CollapsibleCard>
 
-      <ClinicalAlgorithmPanel />
+      <ClinicalAlgorithmPanel requestedTool={requestedTool} />
 
     </div>
   );
