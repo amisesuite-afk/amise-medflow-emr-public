@@ -193,7 +193,7 @@ export default function HomePage() {
   const [criticalResultCount, setCriticalResultCount] = useState(0);
   const [showAiPanel, setShowAiPanel] = useState(false);
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
-  const [visitType, setVisitType] = useState<'new' | 'followup' | null>(null);
+  const [visitType, setVisitType] = useState<'new' | 'followup'>('new');
 
   const userRole = profile?.role ?? 'front_desk';
   const { activePathway, matchedPathways } = usePathway();
@@ -390,11 +390,8 @@ export default function HomePage() {
     if (topSection !== 'consultation') setZenMode(false);
   }, [topSection]);
 
-  // Reset visitType when patient is cleared
-  useEffect(() => { if (!patientId) setVisitType(null); }, [patientId]);
-
-  // Reset visitType when CC is cleared
-  useEffect(() => { if (!activeCcKey) setVisitType(null); }, [activeCcKey]);
+  // Reset to new consultation when patient or CC changes
+  useEffect(() => { setVisitType('new'); }, [patientId, activeCcKey]);
 
   // Auto-generate MRN when consultation starts without one (only for a loaded patient)
   useEffect(() => {
@@ -732,7 +729,24 @@ export default function HomePage() {
               {allergyList.length === 0 && (
                 <span style={{ fontSize: 11, color: '#334155', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
               )}
-              <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: ac.text, background: ac.bg, borderRadius: 4, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              {/* New / Follow-up toggle */}
+              <div style={{ display: 'flex', gap: 3, marginLeft: 'auto', flexShrink: 0 }}>
+                {(['new', 'followup'] as const).map(vt => (
+                  <button key={vt} type="button" onClick={() => {
+                    setVisitType(vt);
+                    if (vt === 'followup') setActiveSection('progress');
+                  }} style={{
+                    padding: '2px 9px', borderRadius: 5, border: 'none', cursor: 'pointer',
+                    fontSize: 10, fontWeight: 700,
+                    background: visitType === vt ? '#0d9488' : '#1e293b',
+                    color: visitType === vt ? '#fff' : '#64748b',
+                    transition: 'all 0.1s',
+                  }}>
+                    {vt === 'new' ? 'New' : 'Follow-up'}
+                  </button>
+                ))}
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: ac.text, background: ac.bg, borderRadius: 4, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 {triageResult.acuity}
               </span>
             </div>
@@ -751,72 +765,6 @@ export default function HomePage() {
         {/* Encounter context picker — zen venue + type selector */}
         {topSection === 'consultation' && <EncounterContextPicker />}
 
-        {/* Visit type selector — inline card shown after CC is picked, before sections open */}
-        {topSection === 'consultation' && activeCcKey !== null && visitType === null && (() => {
-          const matrix = getMatrix(activeCcKey);
-          return (
-            <div style={{
-              margin: '20px 16px', borderRadius: 14,
-              background: '#111827', border: '1px solid #1e293b',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, padding: '28px 24px',
-            }}>
-              {matrix && (
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: 28, marginBottom: 4 }}>{matrix.icon}</div>
-                  <div style={{ fontSize: 17, fontWeight: 800, color: '#f1f5f9' }}>{matrix.name}</div>
-                  <div style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 6,
-                    padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700,
-                    background: matrix.urgency === 'emergency' ? '#7f1d1d' : matrix.urgency === 'urgent' ? '#431407' : '#052e16',
-                    color: matrix.urgency === 'emergency' ? '#fca5a5' : matrix.urgency === 'urgent' ? '#fb923c' : '#86efac',
-                    border: `1px solid ${matrix.urgency === 'emergency' ? '#fca5a5' : matrix.urgency === 'urgent' ? '#fb923c' : '#86efac'}`,
-                  }}>
-                    {matrix.urgency.toUpperCase()}
-                  </div>
-                </div>
-              )}
-              <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>First visit or returning patient?</div>
-              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setVisitType('new');
-                    if (consultTabs.length > 0) setActiveSection(consultTabs[0].id);
-                  }}
-                  style={{
-                    padding: '16px 24px', borderRadius: 12, border: '2px solid #0d9488',
-                    background: '#0d948820', color: '#f1f5f9', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.15s',
-                  }}
-                >
-                  <span style={{ fontSize: 28 }}>🩺</span>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontSize: 14, fontWeight: 800 }}>New Consultation</div>
-                    <div style={{ fontSize: 11, color: '#94a3b8' }}>Full history &amp; examination</div>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setVisitType('followup');
-                    setActiveSection('progress');
-                  }}
-                  style={{
-                    padding: '16px 24px', borderRadius: 12, border: '2px solid #3b82f6',
-                    background: '#3b82f620', color: '#f1f5f9', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.15s',
-                  }}
-                >
-                  <span style={{ fontSize: 28 }}>📋</span>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontSize: 14, fontWeight: 800 }}>Follow-up Visit</div>
-                    <div style={{ fontSize: 11, color: '#94a3b8' }}>Review progress, update plan</div>
-                  </div>
-                </button>
-              </div>
-            </div>
-          );
-        })()}
 
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
         {topSection === 'consultation' && (() => {
