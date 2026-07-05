@@ -440,9 +440,6 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Encounter context picker — zen accordion */}
-          <EncounterContextPicker />
-
           {/* Site selector pill — outpatient only (inpatient = Tapion always) */}
           {encounterMode === 'outpatient' && (
             <div className="site-pill" aria-label="Active clinic site">
@@ -709,6 +706,9 @@ export default function HomePage() {
 
         {/* Problem list strip — shown in consultation below patient banner */}
         {topSection === 'consultation' && <ProblemListStrip />}
+
+        {/* Encounter context picker — zen venue + type selector */}
+        {topSection === 'consultation' && <EncounterContextPicker />}
 
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
         {topSection === 'consultation' && (() => {
