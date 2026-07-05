@@ -1,558 +1,594 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function parseNum(s: string): number | null {
   const n = parseFloat(s);
   return isNaN(n) || n <= 0 ? null : n;
 }
+function round1(n: number): string { return (Math.round(n * 10) / 10).toFixed(1); }
+function round0(n: number): number { return Math.round(n); }
 
-function round2(n: number): string {
-  return (Math.round(n * 10) / 10).toFixed(1);
-}
-
-/** Cockcroft-Gault CrCl (mL/min) */
 function calcCrCl(age: number, weightKg: number, creatUmol: number, sex: 'M' | 'F'): number {
   const creatMg = creatUmol / 88.42;
   const base = ((140 - age) * weightKg) / (72 * creatMg);
   return sex === 'F' ? base * 0.85 : base;
 }
-
-/** IBW — Devine formula (kg) */
 function calcIBW(heightCm: number, sex: 'M' | 'F'): number {
   const inchesOver5ft = (heightCm / 2.54) - 60;
-  const base = sex === 'M' ? 50 : 45.5;
-  return base + 2.3 * inchesOver5ft;
+  return (sex === 'M' ? 50 : 45.5) + 2.3 * inchesOver5ft;
 }
-
-/** Adjusted Body Weight (for obesity dosing) */
-function calcABW(actualKg: number, ibwKg: number): number {
-  return ibwKg + 0.4 * (actualKg - ibwKg);
-}
-
-/** BMI */
 function calcBMI(weightKg: number, heightCm: number): number {
-  const h = heightCm / 100;
-  return weightKg / (h * h);
+  const h = heightCm / 100; return weightKg / (h * h);
 }
 
-// ─── Opioid equianalgesic table ───────────────────────────────────────────────
+// ─── Pain order data ──────────────────────────────────────────────────────────
 
-interface Opioid {
-  name: string;
-  oralMg: number;       // oral mg equivalent to 10 mg oral morphine
-  ivMg: number | null;  // IV mg equivalent; null = route not standard
+interface MedOption {
+  id: string;
+  drug: string;
+  dose: string;
+  route: string;
+  frequency: string;
+  warn?: string;
   note?: string;
 }
 
-const OPIOIDS: Opioid[] = [
-  { name: 'Morphine (oral)', oralMg: 10, ivMg: null },
-  { name: 'Morphine (IV/SC)', oralMg: 30, ivMg: 10 },
-  { name: 'Oxycodone (oral)', oralMg: 6.67, ivMg: null, note: '10 mg oral oxycodone ≈ 15 mg oral morphine' },
-  { name: 'Codeine (oral)', oralMg: 100, ivMg: null, note: '~10% converted to morphine; weak' },
-  { name: 'Tramadol (oral)', oralMg: 100, ivMg: null, note: 'Ceiling effect; weak opioid' },
-  { name: 'Fentanyl (IV/SC mcg)', oralMg: null as unknown as number, ivMg: null, note: '100 mcg IV fentanyl ≈ 10 mg IV morphine' },
-  { name: 'Hydromorphone (oral)', oralMg: 1.5, ivMg: null, note: '≈ 6.7:1 potency ratio to oral morphine' },
-  { name: 'Hydromorphone (IV)', oralMg: null as unknown as number, ivMg: 1.5, note: '1.5 mg IV hydro ≈ 10 mg IV morphine' },
+const STEP1: MedOption[] = [
+  { id: 'paracetamol', drug: 'Paracetamol',   dose: '1 g',        route: 'PO',    frequency: 'QDS',             note: 'Max 4 g/day. Safe post-op.' },
+  { id: 'ibuprofen',   drug: 'Ibuprofen',      dose: '400 mg',     route: 'PO',    frequency: 'TDS (with food)', warn: 'Avoid: post-op anastomosis, CKD, peptic ulcer, anticoagulation' },
+  { id: 'naproxen',    drug: 'Naproxen',       dose: '500 mg',     route: 'PO',    frequency: 'BD (with food)',  warn: 'Avoid: CKD, CVD, GI history' },
+  { id: 'ketorolac',   drug: 'Ketorolac',      dose: '15–30 mg',   route: 'IV/IM', frequency: 'Q6h (max 5 days)', warn: 'Short-term only; avoid CKD/GI risk' },
 ];
 
-// Conversion to oral morphine equivalents per given dose
-function toOME(opioidName: string, doseMg: number): number | null {
-  if (opioidName === 'Morphine (oral)') return doseMg;
-  if (opioidName === 'Morphine (IV/SC)') return doseMg * 3;
-  if (opioidName === 'Oxycodone (oral)') return doseMg * 1.5;
-  if (opioidName === 'Codeine (oral)') return doseMg * 0.1;
-  if (opioidName === 'Tramadol (oral)') return doseMg * 0.1;
-  if (opioidName === 'Hydromorphone (oral)') return doseMg * 6.67;
-  if (opioidName === 'Hydromorphone (IV)') return doseMg * 20;
-  return null;
-}
+const STEP2: MedOption[] = [
+  { id: 'codeine',     drug: 'Codeine',         dose: '30–60 mg',   route: 'PO',    frequency: 'QDS PRN',         warn: 'CYP2D6 variable; avoid post-tonsillectomy / breastfeeding' },
+  { id: 'tramadol',    drug: 'Tramadol',        dose: '50–100 mg',  route: 'PO',    frequency: 'QDS PRN',         warn: 'Max 400 mg/day. Lowers seizure threshold. Avoid MAOIs.' },
+  { id: 'dhc',         drug: 'Dihydrocodeine',  dose: '30 mg',      route: 'PO',    frequency: 'QDS PRN',         note: 'Max 120 mg/day' },
+];
 
-// ─── Antimicrobial dosing logic ───────────────────────────────────────────────
+const STEP3: MedOption[] = [
+  { id: 'morphine_po', drug: 'Morphine IR',     dose: '5–10 mg',    route: 'PO',    frequency: 'Q4h PRN',         note: 'Start low, titrate. Co-prescribe laxative.' },
+  { id: 'morphine_sc', drug: 'Morphine SC',     dose: '2.5–5 mg',   route: 'SC',    frequency: 'Q4h PRN',         note: 'Monitor RR / sedation score.' },
+  { id: 'morphine_iv', drug: 'Morphine IV',     dose: '1–2.5 mg',   route: 'IV',    frequency: 'Q4h PRN (slow)',  warn: 'Titrate in 1–2 mg increments. Monitor RR.' },
+  { id: 'oxycodone',   drug: 'Oxycodone IR',    dose: '5 mg',       route: 'PO',    frequency: 'Q4–6h PRN',       note: 'Step up from morphine oral if tolerated.' },
+];
 
-interface AntimicrobialDose {
+const ADJUVANTS: MedOption[] = [
+  { id: 'ondansetron', drug: 'Ondansetron',     dose: '4 mg',       route: 'IV / PO', frequency: 'TDS PRN',       note: 'Antiemetic — first 48–72 h with opioids.' },
+  { id: 'metoclopramide', drug: 'Metoclopramide', dose: '10 mg',    route: 'IV / PO', frequency: 'TDS PRN',       note: 'Avoid if bowel obstruction suspected.' },
+  { id: 'lactulose',   drug: 'Lactulose',        dose: '15 mL',     route: 'PO',    frequency: 'BD',              note: 'Mandatory laxative with any opioid.' },
+  { id: 'naloxone',    drug: 'Naloxone (rescue)', dose: '400 mcg', route: 'IV/IM', frequency: 'PRN — repeat Q2–3 min, max 10 mg', warn: 'Must be available whenever opioids prescribed.' },
+  { id: 'gabapentin',  drug: 'Gabapentin',       dose: '100–300 mg', route: 'PO',  frequency: 'TDS',             note: 'Neuropathic adjuvant. Titrate slowly. Renal dose if CKD.' },
+];
+
+// ─── Antimicrobial / anticoagulant orders ─────────────────────────────────────
+
+interface AntibioticOrder {
+  id: string;
   drug: string;
-  indication: string;
-  dose: string;
-  frequency: string;
-  notes: string[];
-  caution?: string;
+  getDose: (wt: number, crcl: number, ibw: number, age: number) => { dose: string; frequency: string; note: string; caution?: string };
 }
 
-function enoxaparinDoses(crcl: number, weightKg: number, indication: 'treatment' | 'prophylaxis'): AntimicrobialDose {
-  if (indication === 'prophylaxis') {
-    if (crcl < 30) {
+const ANTIBIOTIC_ORDERS: AntibioticOrder[] = [
+  {
+    id: 'enox_px',
+    drug: 'Enoxaparin — VTE Prophylaxis',
+    getDose: (_wt, crcl) => crcl < 30
+      ? { dose: '20 mg SC', frequency: 'OD', note: 'Reduced dose: CrCl < 30. Monitor anti-Xa.', caution: 'Renal impairment' }
+      : { dose: '40 mg SC', frequency: 'OD', note: 'Start 12 h pre-op or 6–12 h post-op. Continue until ambulant.' },
+  },
+  {
+    id: 'enox_tx',
+    drug: 'Enoxaparin — DVT/PE Treatment',
+    getDose: (wt, crcl) => {
+      const dose = round0(wt * 1);
+      return crcl < 30
+        ? { dose: `${dose} mg SC`, frequency: 'OD (renal adj.)', note: `1 mg/kg OD. CrCl < 30. Monitor anti-Xa (target 0.5–1.0 IU/mL).`, caution: 'Renal impairment — once daily' }
+        : { dose: `${dose} mg SC`, frequency: 'BD', note: `1 mg/kg BD. Wt: ${wt} kg. Max single dose ~100 mg.` };
+    },
+  },
+  {
+    id: 'gent',
+    drug: 'Gentamicin — Extended Interval',
+    getDose: (wt, crcl, ibw, age) => {
+      const dw = wt > ibw * 1.2 ? ibw + 0.4 * (wt - ibw) : wt;
+      const dose = round0(dw * 5);
+      const interval = crcl < 20 ? 'SEEK PHARMACY — contraindicated'
+        : crcl < 40 ? 'Q48h'
+        : crcl < 60 ? 'Q36h'
+        : 'Q24h';
       return {
-        drug: 'Enoxaparin (prophylaxis)', indication: 'VTE Prophylaxis',
-        dose: '20 mg SC once daily', frequency: 'OD',
-        notes: ['Renal dose reduction: CrCl < 30 mL/min', 'Monitor anti-Xa if available', 'Continue until fully ambulant or per consultant direction'],
-        caution: 'Renal impairment — reduced dose',
+        dose: `${dose} mg IV over 30 min`,
+        frequency: interval,
+        note: `Dosing wt: ${round1(dw)} kg. Level 6–14 h post-dose (Hartford nomogram). Trough < 1 mg/L.${age >= 65 ? ' Elderly — limit duration.' : ''}`,
+        caution: crcl < 40 ? 'Significant renal impairment — seek ID/pharmacy' : undefined,
       };
-    }
-    return {
-      drug: 'Enoxaparin (prophylaxis)', indication: 'VTE Prophylaxis',
-      dose: '40 mg SC once daily', frequency: 'OD',
-      notes: ['Start 12h pre-op or 6–12h post-op', 'Continue until fully ambulant', 'High-risk patients: consider extended 28-day course post-major surgery'],
-    };
-  }
+    },
+  },
+  {
+    id: 'vanc',
+    drug: 'Vancomycin — MRSA / Gram+',
+    getDose: (wt, crcl) => {
+      const load = Math.min(round0(wt * 25), 3000);
+      const maint = crcl >= 70 ? `${round0(wt * 15)}–${round0(wt * 20)} mg Q12h`
+        : crcl >= 50 ? `${round0(wt * 10)}–${round0(wt * 15)} mg Q24h`
+        : crcl >= 30 ? `${round0(wt * 10)} mg Q24–36h`
+        : 'PHARMACY REVIEW REQUIRED';
+      return {
+        dose: `Loading: ${load} mg IV over 1–2 h, then ${maint}`,
+        frequency: 'As above',
+        note: 'AUC/MIC target 400–600 mg·h/L. Max infusion 1 g/h (Red Man). Monitor renal function Q48h.',
+        caution: crcl < 30 ? 'Severe renal impairment — pharmacy review before prescribing' : undefined,
+      };
+    },
+  },
+];
 
-  // Treatment
-  const dosePerKg = crcl < 30 ? 1.0 : 1.0; // 1 mg/kg BD; renally adjust to 1 mg/kg OD if CrCl<30
-  const singleDose = Math.round(weightKg * dosePerKg);
-  if (crcl < 30) {
-    return {
-      drug: 'Enoxaparin (treatment)', indication: 'DVT/PE Treatment',
-      dose: `${singleDose} mg SC once daily`, frequency: 'OD',
-      notes: [`Weight-based: 1 mg/kg OD (weight: ${weightKg} kg)`, 'CrCl < 30 — once daily dosing', 'Monitor anti-Xa levels at 4h post-dose (target 0.5–1.0 IU/mL)'],
-      caution: 'Renal impairment — once-daily dosing; monitor anti-Xa',
-    };
-  }
-  return {
-    drug: 'Enoxaparin (treatment)', indication: 'DVT/PE Treatment',
-    dose: `${singleDose} mg SC twice daily`, frequency: 'BD',
-    notes: [`Weight-based: 1 mg/kg BD (weight: ${weightKg} kg)`, 'Max single dose typically 100 mg (obese: use ABW if BMI > 40)'],
-  };
+// ─── Opioid conversion ────────────────────────────────────────────────────────
+
+interface OpioidDef { name: string; toOme: number | null; fromOme: number | null }
+const OPIOIDS: OpioidDef[] = [
+  { name: 'Morphine IR (oral)',   toOme: 1,     fromOme: 1    },
+  { name: 'Morphine (IV/SC)',     toOme: 3,     fromOme: 1/3  },
+  { name: 'Oxycodone (oral)',     toOme: 1.5,   fromOme: 1/1.5 },
+  { name: 'Codeine (oral)',       toOme: 0.1,   fromOme: 1/0.1 },
+  { name: 'Tramadol (oral)',      toOme: 0.1,   fromOme: 1/0.1 },
+  { name: 'Hydromorphone (oral)', toOme: 6.67,  fromOme: 1/6.67 },
+  { name: 'Hydromorphone (IV)',   toOme: 20,    fromOme: 1/20 },
+];
+
+// ─── Shared toggle row ────────────────────────────────────────────────────────
+
+function MedRow({
+  opt, checked, onToggle, stepColor,
+}: {
+  opt: MedOption; checked: boolean; onToggle: () => void; stepColor: string;
+}) {
+  return (
+    <label
+      style={{
+        display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 10px',
+        borderRadius: 7,
+        background: checked ? `${stepColor}12` : 'transparent',
+        border: `1px solid ${checked ? stepColor : '#e2e8f0'}`,
+        cursor: 'pointer', transition: 'all 0.12s',
+      }}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onToggle}
+        style={{ marginTop: 3, width: 16, height: 16, cursor: 'pointer', accentColor: stepColor, flexShrink: 0 }}
+      />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
+          <span style={{ fontWeight: 700, fontSize: 13, color: '#0f172a' }}>{opt.drug}</span>
+          <span style={{ fontSize: 13, color: stepColor, fontWeight: 600 }}>{opt.dose}</span>
+          <span style={{ fontSize: 12, color: '#64748b' }}>{opt.route} · {opt.frequency}</span>
+        </div>
+        {opt.warn && (
+          <div style={{ fontSize: 11, color: '#b45309', marginTop: 2 }}>⚠ {opt.warn}</div>
+        )}
+        {opt.note && (
+          <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 1 }}>{opt.note}</div>
+        )}
+      </div>
+    </label>
+  );
 }
 
-function gentamicinDose(weightKg: number, ibw: number, crcl: number, age: number): AntimicrobialDose {
-  const dosingWeight = weightKg > ibw * 1.2 ? ibw + 0.4 * (weightKg - ibw) : weightKg;
-  const dose = Math.round(dosingWeight * 5); // 5 mg/kg extended-interval
-
-  let interval = '24h';
-  if (crcl < 20) interval = 'Seek pharmacy / ID advice — contraindicated / extreme caution';
-  else if (crcl < 40) interval = '48h';
-  else if (crcl < 60) interval = '36h';
-
-  return {
-    drug: 'Gentamicin (extended-interval)', indication: 'Gram-negative bacteraemia / serious infection',
-    dose: `${dose} mg IV over 30 min`,
-    frequency: `Every ${interval}`,
-    notes: [
-      `Dosing weight: ${round2(dosingWeight)} kg (${weightKg > ibw * 1.2 ? 'ABW used — obese' : 'actual weight'})`,
-      'Hartford nomogram: draw level 6–14h post dose; plot on nomogram to confirm interval',
-      'Target: Cmax/MIC ≥ 10 (Cmax ~20 mg/L), trough < 1 mg/L',
-      age >= 65 ? '⚠ Elderly — heightened ototoxicity & nephrotoxicity risk; limit duration' : 'Monitor U&E, creatinine every 48–72h',
-    ],
-    caution: crcl < 40 ? 'Significant renal impairment — extended interval required; seek ID advice' : undefined,
-  };
+function formatOrder(opt: MedOption): string {
+  return `${opt.drug} ${opt.dose} ${opt.route} ${opt.frequency}`;
 }
 
-function vancomycinDose(weightKg: number, crcl: number): AntimicrobialDose {
-  const loadDose = Math.min(Math.round(weightKg * 25), 3000);
-  let maintDose: string;
-  let maintFreq: string;
+// ─── Main component ───────────────────────────────────────────────────────────
 
-  if (crcl >= 70) { maintDose = `${Math.round(weightKg * 15)}–${Math.round(weightKg * 20)} mg`; maintFreq = 'Q12h'; }
-  else if (crcl >= 50) { maintDose = `${Math.round(weightKg * 10)}–${Math.round(weightKg * 15)} mg`; maintFreq = 'Q24h'; }
-  else if (crcl >= 30) { maintDose = `${Math.round(weightKg * 10)} mg`; maintFreq = 'Q24–36h'; }
-  else { maintDose = 'Seek pharmacy input'; maintFreq = '— renal dose'; }
-
-  return {
-    drug: 'Vancomycin', indication: 'MRSA / gram-positive serious infection',
-    dose: `Loading: ${loadDose} mg IV over 1–2h, then ${maintDose} maintenance`,
-    frequency: `Loading then ${maintFreq}`,
-    notes: [
-      'AUC-guided dosing preferred (AUC/MIC target 400–600 mg·h/L)',
-      'Trough monitoring acceptable: target 15–20 mg/L for serious infections',
-      'Infuse at max 1 g/hr to avoid Red Man Syndrome (vancomycin flushing)',
-      crcl < 50 ? '⚠ Renal impairment — increase monitoring frequency' : 'Monitor renal function every 48–72h',
-    ],
-    caution: crcl < 30 ? 'Severe renal impairment — pharmacy review essential before prescribing' : undefined,
-  };
-}
-
-// ─── Component ───────────────────────────────────────────────────────────────
-
-type AntimicrobialKey = 'enox_prophylaxis' | 'enox_treatment' | 'gentamicin' | 'vancomycin';
+type PainStep = 'step1' | 'step2' | 'step3' | 'uncertain';
 
 export default function DosingTab() {
   const ctx = useAppContext();
+  const { plan, setPlan } = ctx;
 
-  // Patient parameter inputs — pre-populate from ctx
+  // Patient params
   const [weightStr, setWeightStr] = useState(ctx.weightKg || '');
   const [heightStr, setHeightStr] = useState(ctx.heightCm || '');
   const [ageStr, setAgeStr]       = useState(ctx.age || '');
-  const [sexInput, setSexInput]   = useState<'M' | 'F'>(
-    ctx.sex === 'male' ? 'M' : ctx.sex === 'female' ? 'F' : 'M'
-  );
-  const [creatStr, setCreatStr]   = useState(''); // µmol/L
+  const [sexInput, setSexInput]   = useState<'M' | 'F'>(ctx.sex === 'female' ? 'F' : 'M');
+  const [creatStr, setCreatStr]   = useState('');
 
-  // Derived patient parameters
   const params = useMemo(() => {
-    const wt   = parseNum(weightStr);
-    const ht   = parseNum(heightStr);
-    const ag   = parseNum(ageStr);
-    const cr   = parseNum(creatStr);
-
+    const wt = parseNum(weightStr), ht = parseNum(heightStr), ag = parseNum(ageStr), cr = parseNum(creatStr);
     if (!wt || !ht || !ag) return null;
-
     const ibw  = calcIBW(ht, sexInput);
     const bmi  = calcBMI(wt, ht);
-    const abw  = wt > ibw * 1.2 ? calcABW(wt, ibw) : null;
+    const abw  = wt > ibw * 1.2 ? ibw + 0.4 * (wt - ibw) : null;
     const crcl = cr ? calcCrCl(ag, abw ?? wt, cr, sexInput) : null;
-
     return { wt, ht, ag, ibw, bmi, abw, crcl };
   }, [weightStr, heightStr, ageStr, sexInput, creatStr]);
 
-  // Selected antimicrobial
-  const [selectedDrug, setSelectedDrug] = useState<AntimicrobialKey>('enox_prophylaxis');
+  // Pain order builder
+  const [painStep, setPainStep] = useState<PainStep>('uncertain');
+  const [checkedMeds, setCheckedMeds] = useState<Set<string>>(new Set());
 
-  const antimicrobialResult = useMemo((): AntimicrobialDose | null => {
-    if (!params) return null;
-    const wt = params.wt;
-    const crcl = params.crcl ?? 80; // default if no creatinine entered
+  const visibleSteps = useMemo(() => {
+    if (painStep === 'step1') return ['step1'];
+    if (painStep === 'step2') return ['step1', 'step2'];
+    if (painStep === 'step3') return ['step1', 'step3'];
+    return ['step1', 'step2', 'step3']; // uncertain → all visible
+  }, [painStep]);
 
-    if (selectedDrug === 'enox_prophylaxis') return enoxaparinDoses(crcl, wt, 'prophylaxis');
-    if (selectedDrug === 'enox_treatment')  return enoxaparinDoses(crcl, wt, 'treatment');
-    if (selectedDrug === 'gentamicin')      return gentamicinDose(wt, params.ibw, crcl, params.ag);
-    if (selectedDrug === 'vancomycin')      return vancomycinDose(wt, crcl);
-    return null;
-  }, [params, selectedDrug]);
+  function toggleMed(id: string) {
+    setCheckedMeds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
 
-  // Opioid converter
-  const [opioidFrom, setOpioidFrom] = useState(OPIOIDS[0].name);
-  const [opioidDoseStr, setOpioidDoseStr] = useState('');
-  const [opioidTo, setOpioidTo] = useState(OPIOIDS[0].name);
+  const allMedOptions = [...STEP1, ...STEP2, ...STEP3, ...ADJUVANTS];
+  const selectedMeds = allMedOptions.filter(m => checkedMeds.has(m.id));
 
-  const opioidResult = useMemo(() => {
-    const dose = parseNum(opioidDoseStr);
-    if (!dose) return null;
-    const ome = toOME(opioidFrom, dose);
-    if (ome === null) return null;
+  // Antibiotic orders
+  const [checkedAbx, setCheckedAbx] = useState<Set<string>>(new Set());
+  function toggleAbx(id: string) {
+    setCheckedAbx(prev => { const n = new Set(prev); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  }
 
-    // Convert OME to target opioid
-    const reverseConvert = (targetName: string, ome: number) => {
-      if (targetName === 'Morphine (oral)') return ome;
-      if (targetName === 'Morphine (IV/SC)') return ome / 3;
-      if (targetName === 'Oxycodone (oral)') return ome / 1.5;
-      if (targetName === 'Codeine (oral)') return ome / 0.1;
-      if (targetName === 'Tramadol (oral)') return ome / 0.1;
-      if (targetName === 'Hydromorphone (oral)') return ome / 6.67;
-      if (targetName === 'Hydromorphone (IV)') return ome / 20;
-      return null;
-    };
+  const selectedAbxOrders = useMemo(() => {
+    if (!params) return [];
+    const crcl = params.crcl ?? 80;
+    return ANTIBIOTIC_ORDERS.filter(o => checkedAbx.has(o.id)).map(o => {
+      const r = o.getDose(params.wt, crcl, params.ibw, params.ag);
+      return { ...o, result: r };
+    });
+  }, [checkedAbx, params]);
 
-    const targetDose = reverseConvert(opioidTo, ome);
-    const reducedDose = targetDose ? targetDose * 0.75 : null; // 25% reduction for rotation
+  // Opioid rotation
+  const [rotFrom, setRotFrom]   = useState(OPIOIDS[0].name);
+  const [rotDose, setRotDose]   = useState('');
+  const [rotTo, setRotTo]       = useState(OPIOIDS[1].name);
 
-    return { ome: Math.round(ome * 10) / 10, targetDose, reducedDose };
-  }, [opioidFrom, opioidDoseStr, opioidTo]);
+  const rotResult = useMemo(() => {
+    const d = parseNum(rotDose);
+    const fromOp = OPIOIDS.find(o => o.name === rotFrom);
+    const toOp   = OPIOIDS.find(o => o.name === rotTo);
+    if (!d || !fromOp?.toOme || !toOp?.fromOme) return null;
+    const ome       = d * fromOp.toOme;
+    const equiv     = ome * toOp.fromOme;
+    const rotation  = equiv * 0.75;
+    return { ome: round1(ome), equiv: round1(equiv), rotation: round1(rotation) };
+  }, [rotFrom, rotDose, rotTo]);
 
-  const crclLabel = params?.crcl
-    ? `${round2(params.crcl)} mL/min`
-    : creatStr
-    ? '—'
-    : 'Enter creatinine';
+  // Build order text for "Add to Plan"
+  const buildOrderText = useCallback(() => {
+    const lines: string[] = [];
+    if (selectedMeds.length > 0) {
+      lines.push('PAIN MANAGEMENT:');
+      selectedMeds.forEach(m => lines.push(`  ${formatOrder(m)}`));
+    }
+    if (selectedAbxOrders.length > 0) {
+      lines.push('');
+      lines.push('ANTIMICROBIAL / ANTICOAGULANT:');
+      selectedAbxOrders.forEach(o => lines.push(`  ${o.drug}: ${o.result.dose} ${o.result.frequency}`));
+    }
+    return lines.join('\n').trim();
+  }, [selectedMeds, selectedAbxOrders]);
 
-  const ckdStage = (crcl: number | null): string => {
-    if (!crcl) return '—';
-    if (crcl >= 90) return 'G1 (≥90)';
-    if (crcl >= 60) return 'G2 (60–89)';
-    if (crcl >= 45) return 'G3a (45–59)';
-    if (crcl >= 30) return 'G3b (30–44)';
-    if (crcl >= 15) return 'G4 (15–29)';
-    return 'G5 (<15)';
-  };
+  function addToPlan() {
+    const text = buildOrderText();
+    if (!text) return;
+    const sep = plan && !plan.endsWith('\n') ? '\n\n' : '';
+    setPlan(plan + sep + text);
+  }
 
-  const crclColor = (crcl: number | null): string => {
-    if (!crcl) return '#64748b';
-    if (crcl >= 60) return '#15803d';
-    if (crcl >= 30) return '#b45309';
-    return '#dc2626';
+  const hasSelections = selectedMeds.length > 0 || selectedAbxOrders.length > 0;
+
+  const STEP_COLORS: Record<string, string> = { step1: '#15803d', step2: '#b45309', step3: '#dc2626', adjuvant: '#7c3aed' };
+  const STEP_META: Record<PainStep, { label: string; hint: string; color: string }> = {
+    step1:    { label: 'Mild',          hint: 'Non-opioid analgesia',                color: '#15803d' },
+    step2:    { label: 'Mild–Moderate', hint: 'Weak opioid added',                   color: '#b45309' },
+    step3:    { label: 'Moderate–Severe',hint: 'Strong opioid',                      color: '#dc2626' },
+    uncertain:{ label: 'Uncertain',     hint: 'Show all — select what applies',      color: '#475569' },
   };
 
   return (
     <div className="gap-y">
 
-      {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div style={{ background: '#0f172a', borderRadius: 10, padding: '16px 20px', color: '#fff' }}>
-        <div style={{ fontWeight: 800, fontSize: 15 }}>Drug Dose Calculator</div>
-        <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>
-          Weight- and renal-adjusted dosing reference — all calculations must be verified by a clinician
-        </div>
-      </div>
-
-      {/* ── Patient Parameters ─────────────────────────────────────────── */}
-      <CollapsibleCard title="Patient Parameters">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 10 }}>
-          {/* Weight */}
-          <label style={labelStyle}>
-            <span style={labelText}>Weight (kg)</span>
-            <input style={inputStyle} type="number" min="1" max="300" value={weightStr}
-              onChange={e => setWeightStr(e.target.value)} placeholder="e.g. 75" />
-          </label>
-          {/* Height */}
-          <label style={labelStyle}>
-            <span style={labelText}>Height (cm)</span>
-            <input style={inputStyle} type="number" min="50" max="250" value={heightStr}
-              onChange={e => setHeightStr(e.target.value)} placeholder="e.g. 170" />
-          </label>
-          {/* Age */}
-          <label style={labelStyle}>
-            <span style={labelText}>Age (years)</span>
-            <input style={inputStyle} type="number" min="1" max="120" value={ageStr}
-              onChange={e => setAgeStr(e.target.value)} placeholder="e.g. 45" />
-          </label>
-          {/* Sex */}
-          <label style={labelStyle}>
-            <span style={labelText}>Sex</span>
-            <select style={inputStyle} value={sexInput} onChange={e => setSexInput(e.target.value as 'M' | 'F')}>
+      {/* ── Patient Parameters ─────────────────────────────────────────────── */}
+      <CollapsibleCard title="Patient Parameters" defaultOpen={!params}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 10 }}>
+          {([
+            { label: 'Weight (kg)',   val: weightStr, set: setWeightStr, ph: '75' },
+            { label: 'Height (cm)',   val: heightStr, set: setHeightStr, ph: '170' },
+            { label: 'Age (years)',   val: ageStr,    set: setAgeStr,    ph: '45' },
+            { label: 'Creatinine (µmol/L)', val: creatStr, set: setCreatStr, ph: '88 (optional)' },
+          ] as const).map(f => (
+            <label key={f.label} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{f.label}</span>
+              <input type="number" value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.ph}
+                style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13 }} />
+            </label>
+          ))}
+          <label style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Sex</span>
+            <select value={sexInput} onChange={e => setSexInput(e.target.value as 'M' | 'F')}
+              style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13 }}>
               <option value="M">Male</option>
               <option value="F">Female</option>
             </select>
           </label>
-          {/* Creatinine */}
-          <label style={labelStyle}>
-            <span style={labelText}>Serum creatinine (µmol/L)</span>
-            <input style={inputStyle} type="number" min="1" max="2000" value={creatStr}
-              onChange={e => setCreatStr(e.target.value)} placeholder="e.g. 88" />
-          </label>
         </div>
-
-        {params ? (
-          <div style={{ marginTop: 14, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
-            <StatChip label="BMI" value={round2(params.bmi)} unit="kg/m²"
-              color={params.bmi >= 30 ? '#b45309' : '#15803d'} />
-            <StatChip label="IBW (Devine)" value={round2(params.ibw)} unit="kg" color="#1d4ed8" />
-            {params.abw && <StatChip label="Adj Body Wt" value={round2(params.abw)} unit="kg" color="#7c3aed"
-              subtitle="IBW + 0.4×(actual−IBW)" />}
-            <StatChip label="CrCl (CG)" value={crclLabel} unit="" color={crclColor(params.crcl)}
-              subtitle={`CKD Stage ${ckdStage(params.crcl)}`} />
-          </div>
-        ) : (
-          <div style={{ marginTop: 10, fontSize: 12, color: '#94a3b8' }}>
-            Enter weight, height, and age to calculate derived parameters.
-          </div>
-        )}
-
-        {!creatStr && (
-          <div style={{ marginTop: 8, fontSize: 11, color: '#b45309', background: '#fefce8', border: '1px solid #fde047', borderRadius: 6, padding: '6px 10px' }}>
-            ⚠ Creatinine not entered — renal dosing adjustments cannot be calculated. Antimicrobial doses will default to CrCl ≥ 60.
-          </div>
-        )}
-      </CollapsibleCard>
-
-      {/* ── Antimicrobial / Anticoagulant Dosing ──────────────────────── */}
-      <CollapsibleCard title="Antimicrobial & Anticoagulant Dosing">
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
-          {(
-            [
-              { key: 'enox_prophylaxis', label: 'Enoxaparin — Prophylaxis' },
-              { key: 'enox_treatment',   label: 'Enoxaparin — Treatment' },
-              { key: 'gentamicin',       label: 'Gentamicin (EI)' },
-              { key: 'vancomycin',       label: 'Vancomycin' },
-            ] as { key: AntimicrobialKey; label: string }[]
-          ).map(opt => (
-            <button key={opt.key} type="button"
-              onClick={() => setSelectedDrug(opt.key)}
-              style={{
-                padding: '6px 12px', borderRadius: 6, border: 'none', fontSize: 12, fontWeight: 600,
-                background: selectedDrug === opt.key ? '#1d4ed8' : '#f1f5f9',
-                color: selectedDrug === opt.key ? '#fff' : '#334155',
-                cursor: 'pointer',
-              }}>
-              {opt.label}
-            </button>
-          ))}
-        </div>
-
-        {!params ? (
-          <div style={{ fontSize: 12, color: '#94a3b8' }}>Enter patient parameters above to calculate doses.</div>
-        ) : antimicrobialResult ? (
-          <AntimicrobialCard result={antimicrobialResult} />
-        ) : null}
-
-        <div style={{ marginTop: 12, fontSize: 11, color: '#64748b', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 6, padding: '8px 12px' }}>
-          <strong>Reference:</strong> BNF, Therapeutic Guidelines, ASHP. Always verify against current local antibiogram and pharmacy guidance. Doses shown are for adults with normal organ function unless otherwise stated.
-        </div>
-      </CollapsibleCard>
-
-      {/* ── Opioid Equianalgesic Converter ─────────────────────────────── */}
-      <CollapsibleCard title="Opioid Equianalgesic Converter">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', gap: 10, alignItems: 'end' }}>
-          <div>
-            <label style={labelText}>From</label>
-            <select style={{ ...inputStyle, marginTop: 4 }} value={opioidFrom}
-              onChange={e => setOpioidFrom(e.target.value)}>
-              {OPIOIDS.map(o => (
-                <option key={o.name} value={o.name} disabled={o.oralMg === null && o.ivMg === null}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
-            <label style={{ ...labelText, marginTop: 6 }}>Dose (mg)</label>
-            <input style={{ ...inputStyle, marginTop: 4 }} type="number" min="0" step="0.5"
-              value={opioidDoseStr} onChange={e => setOpioidDoseStr(e.target.value)} placeholder="e.g. 30" />
-          </div>
-
-          <div style={{ textAlign: 'center', fontSize: 22, color: '#94a3b8', paddingBottom: 8 }}>→</div>
-
-          <div>
-            <label style={labelText}>To</label>
-            <select style={{ ...inputStyle, marginTop: 4 }} value={opioidTo}
-              onChange={e => setOpioidTo(e.target.value)}>
-              {OPIOIDS.filter(o => o.name !== 'Fentanyl (IV/SC mcg)').map(o => (
-                <option key={o.name} value={o.name}>{o.name}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {opioidResult ? (
-          <div style={{ marginTop: 14 }}>
-            <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 8, padding: '12px 16px' }}>
-              <div style={{ fontSize: 12, color: '#15803d', fontWeight: 700 }}>Oral Morphine Equivalent (OME)</div>
-              <div style={{ fontSize: 22, fontWeight: 800, color: '#15803d' }}>{opioidResult.ome} mg</div>
-            </div>
-            {opioidResult.targetDose !== null && opioidTo !== opioidFrom && (
-              <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '10px 14px' }}>
-                  <div style={{ fontSize: 11, color: '#1d4ed8', fontWeight: 700 }}>Direct equivalent dose</div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: '#1d4ed8' }}>
-                    {round2(opioidResult.targetDose)} mg
-                  </div>
-                  <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>Equianalgesic (theoretical)</div>
-                </div>
-                {opioidResult.reducedDose !== null && (
-                  <div style={{ background: '#fefce8', border: '1px solid #fde047', borderRadius: 8, padding: '10px 14px' }}>
-                    <div style={{ fontSize: 11, color: '#854d0e', fontWeight: 700 }}>Rotation dose (−25%)</div>
-                    <div style={{ fontSize: 18, fontWeight: 800, color: '#854d0e' }}>
-                      {round2(opioidResult.reducedDose)} mg
-                    </div>
-                    <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>Recommended when rotating</div>
-                  </div>
-                )}
+        {params && (
+          <div style={{ marginTop: 10, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {[
+              { label: 'BMI', val: round1(params.bmi), unit: 'kg/m²', color: params.bmi >= 30 ? '#b45309' : '#15803d' },
+              { label: 'IBW', val: round1(params.ibw), unit: 'kg',    color: '#1d4ed8' },
+              params.abw ? { label: 'ABW', val: round1(params.abw), unit: 'kg', color: '#7c3aed' } : null,
+              params.crcl ? { label: 'CrCl', val: round1(params.crcl), unit: 'mL/min', color: params.crcl >= 60 ? '#15803d' : params.crcl >= 30 ? '#b45309' : '#dc2626' } : null,
+            ].filter(Boolean).map(c => c && (
+              <div key={c.label} style={{ background: '#f8fafc', border: `1px solid ${c.color}30`, borderRadius: 7, padding: '6px 12px' }}>
+                <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase' }}>{c.label}</div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: c.color }}>{c.val} <span style={{ fontSize: 10, fontWeight: 400 }}>{c.unit}</span></div>
               </div>
-            )}
-            <div style={{ marginTop: 8, fontSize: 11, color: '#64748b' }}>
-              Fentanyl special cases: 100 mcg IV fentanyl ≈ 10 mg IV morphine ≈ 30 mg oral morphine.
-            </div>
+            ))}
           </div>
-        ) : opioidDoseStr ? (
-          <div style={{ marginTop: 10, fontSize: 12, color: '#94a3b8' }}>Select a supported opioid to calculate.</div>
-        ) : null}
-
-        <div style={{ marginTop: 10, fontSize: 11, color: '#dc2626', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 6, padding: '8px 12px' }}>
-          <strong>Caution:</strong> Equianalgesic conversions are approximate. Reduce by 25–50% when rotating due to incomplete cross-tolerance. Always titrate individually; ensure adequate naloxone access. Codeine is not recommended in post-tonsillectomy / paediatric patients.
-        </div>
+        )}
       </CollapsibleCard>
 
-      {/* ── WHO Analgesic Ladder ────────────────────────────────────────── */}
-      <CollapsibleCard title="WHO Analgesic Ladder (Reference)">
+      {/* ── Pain Management Order Builder ──────────────────────────────────── */}
+      <CollapsibleCard title="Pain Management Orders">
+
+        {/* Step selector */}
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+            Pain level
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {(Object.entries(STEP_META) as [PainStep, typeof STEP_META[PainStep]][]).map(([key, meta]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setPainStep(key)}
+                style={{
+                  padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none',
+                  background: painStep === key ? meta.color : '#f1f5f9',
+                  color: painStep === key ? '#fff' : '#475569',
+                  transition: 'all 0.12s',
+                }}
+              >
+                {meta.label}
+                {painStep === key && <span style={{ fontSize: 10, fontWeight: 400, marginLeft: 5, opacity: 0.85 }}>— {meta.hint}</span>}
+              </button>
+            ))}
+          </div>
+          {painStep === 'uncertain' && (
+            <div style={{ marginTop: 6, fontSize: 11, color: '#64748b', fontStyle: 'italic' }}>
+              All options shown — check what applies. Both selections will appear in the order output.
+            </div>
+          )}
+        </div>
+
+        {/* Step 1 */}
+        {visibleSteps.includes('step1') && (
+          <StepBlock
+            label="Step 1 — Non-opioid" color={STEP_COLORS.step1}
+            options={STEP1} checked={checkedMeds} onToggle={toggleMed}
+          />
+        )}
+
+        {/* Step 2 */}
+        {visibleSteps.includes('step2') && (
+          <StepBlock
+            label="Step 2 — Weak opioid (add to Step 1)" color={STEP_COLORS.step2}
+            options={STEP2} checked={checkedMeds} onToggle={toggleMed}
+          />
+        )}
+
+        {/* Step 3 */}
+        {visibleSteps.includes('step3') && (
+          <StepBlock
+            label="Step 3 — Strong opioid" color={STEP_COLORS.step3}
+            options={STEP3} checked={checkedMeds} onToggle={toggleMed}
+          />
+        )}
+
+        {/* Adjuvants */}
+        <StepBlock
+          label="Adjuvants / supportive" color={STEP_COLORS.adjuvant}
+          options={ADJUVANTS} checked={checkedMeds} onToggle={toggleMed}
+        />
+
+      </CollapsibleCard>
+
+      {/* ── Anticoagulant / Antimicrobial Orders ──────────────────────────── */}
+      <CollapsibleCard title="Anticoagulant & Antimicrobial Orders">
+        {!params && (
+          <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 10 }}>
+            Enter patient parameters above for weight- and renal-adjusted doses.
+          </div>
+        )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {WHO_LADDER.map(step => (
-            <div key={step.step} style={{
-              border: `2px solid ${step.color}20`, borderLeft: `4px solid ${step.color}`,
-              borderRadius: 8, padding: '10px 14px', background: `${step.color}08`,
-            }}>
-              <div style={{ fontWeight: 700, fontSize: 13, color: step.color }}>
-                Step {step.step} — {step.severity}
-              </div>
-              <div style={{ fontSize: 12, color: '#334155', marginTop: 4 }}>
-                <strong>Agents:</strong> {step.agents}
-              </div>
-              {step.examples && (
-                <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
-                  <strong>Examples:</strong> {step.examples}
+          {ANTIBIOTIC_ORDERS.map(o => {
+            const isChecked = checkedAbx.has(o.id);
+            const result = params
+              ? o.getDose(params.wt, params.crcl ?? 80, params.ibw, params.ag)
+              : null;
+            return (
+              <label
+                key={o.id}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 12px',
+                  borderRadius: 7, cursor: 'pointer', transition: 'all 0.12s',
+                  background: isChecked ? '#eff6ff' : '#f8fafc',
+                  border: `1px solid ${isChecked ? '#3b82f6' : '#e2e8f0'}`,
+                }}
+              >
+                <input type="checkbox" checked={isChecked} onChange={() => toggleAbx(o.id)}
+                  style={{ marginTop: 3, width: 16, height: 16, cursor: 'pointer', accentColor: '#1d4ed8', flexShrink: 0 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13, color: '#0f172a' }}>{o.drug}</div>
+                  {result ? (
+                    <>
+                      {result.caution && (
+                        <div style={{ fontSize: 11, color: '#dc2626', marginTop: 2 }}>⚠ {result.caution}</div>
+                      )}
+                      <div style={{ fontSize: 13, color: '#1d4ed8', fontWeight: 600, marginTop: 3 }}>
+                        {result.dose} · {result.frequency}
+                      </div>
+                      <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>{result.note}</div>
+                    </>
+                  ) : (
+                    <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>
+                      Enter patient parameters to see calculated dose
+                    </div>
+                  )}
                 </div>
-              )}
-              {step.note && (
-                <div style={{ fontSize: 11, color: '#94a3b8', marginTop: 2, fontStyle: 'italic' }}>
-                  {step.note}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 10, fontSize: 11, color: '#64748b' }}>
-          Adjuvants (gabapentinoids, tricyclics, SNRIs, ketamine, alpha-2 agonists) may be added at any step. By-the-clock dosing preferred over PRN for persistent pain.
+              </label>
+            );
+          })}
         </div>
       </CollapsibleCard>
+
+      {/* ── Opioid Rotation ────────────────────────────────────────────────── */}
+      <CollapsibleCard title="Opioid Rotation Calculator" defaultOpen={false}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', gap: 8, alignItems: 'end' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={smallLabel}>Current opioid</label>
+            <select value={rotFrom} onChange={e => setRotFrom(e.target.value)} style={selectStyle}>
+              {OPIOIDS.map(o => <option key={o.name} value={o.name}>{o.name}</option>)}
+            </select>
+            <label style={smallLabel}>Current dose (mg)</label>
+            <input type="number" value={rotDose} onChange={e => setRotDose(e.target.value)}
+              placeholder="e.g. 30" style={inputStyle} />
+          </div>
+          <div style={{ textAlign: 'center', fontSize: 20, color: '#94a3b8', paddingBottom: 6 }}>→</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <label style={smallLabel}>New opioid</label>
+            <select value={rotTo} onChange={e => setRotTo(e.target.value)} style={selectStyle}>
+              {OPIOIDS.filter(o => o.name !== rotFrom).map(o => <option key={o.name} value={o.name}>{o.name}</option>)}
+            </select>
+          </div>
+        </div>
+        {rotResult && (
+          <div style={{ marginTop: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '10px 14px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8', textTransform: 'uppercase' }}>Equianalgesic dose</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#1d4ed8' }}>{rotResult.equiv} mg</div>
+              <div style={{ fontSize: 11, color: '#64748b' }}>OME: {rotResult.ome} mg oral morphine</div>
+            </div>
+            <div style={{ background: '#fefce8', border: '1px solid #fde047', borderRadius: 8, padding: '10px 14px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#854d0e', textTransform: 'uppercase' }}>Rotation dose (−25%)</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#854d0e' }}>{rotResult.rotation} mg</div>
+              <div style={{ fontSize: 11, color: '#64748b' }}>Recommended — incomplete cross-tolerance</div>
+            </div>
+          </div>
+        )}
+        {rotResult && (
+          <button
+            type="button"
+            onClick={() => {
+              const fromOp = OPIOIDS.find(o => o.name === rotFrom);
+              const toOp   = OPIOIDS.find(o => o.name === rotTo);
+              if (!fromOp || !toOp || !rotResult) return;
+              const line = `Opioid rotation: ${rotFrom} ${rotDose} mg → ${rotTo} ${rotResult.rotation} mg (−25% rotation dose; equianalgesic ${rotResult.equiv} mg)`;
+              const sep = plan && !plan.endsWith('\n') ? '\n' : '';
+              setPlan(plan + sep + line);
+            }}
+            style={{ marginTop: 10, padding: '6px 16px', borderRadius: 6, border: 'none', background: '#1d4ed8', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+          >
+            Add rotation to Plan
+          </button>
+        )}
+        <div style={{ marginTop: 8, fontSize: 11, color: '#dc2626', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 6, padding: '7px 10px' }}>
+          ⚠ Conversions are approximate. Reduce 25–50% when rotating (incomplete cross-tolerance). Titrate individually. Ensure naloxone is available.
+        </div>
+      </CollapsibleCard>
+
+      {/* ── Selected Orders + Add to Plan ─────────────────────────────────── */}
+      <div style={{
+        position: 'sticky', bottom: 0, background: '#fff', borderTop: '1px solid #e2e8f0',
+        padding: '12px 0 4px', zIndex: 10,
+      }}>
+        {hasSelections ? (
+          <>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+              Selected orders ({selectedMeds.length + selectedAbxOrders.length})
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 10, maxHeight: 120, overflowY: 'auto' }}>
+              {selectedMeds.map(m => (
+                <div key={m.id} style={{ fontSize: 12, color: '#0f172a', display: 'flex', gap: 6, alignItems: 'baseline' }}>
+                  <span style={{ color: '#15803d', flexShrink: 0 }}>✓</span>
+                  <span><strong>{m.drug}</strong> {m.dose} {m.route} {m.frequency}</span>
+                </div>
+              ))}
+              {selectedAbxOrders.map(o => (
+                <div key={o.id} style={{ fontSize: 12, color: '#0f172a', display: 'flex', gap: 6, alignItems: 'baseline' }}>
+                  <span style={{ color: '#1d4ed8', flexShrink: 0 }}>✓</span>
+                  <span><strong>{o.drug}</strong>: {o.result.dose} · {o.result.frequency}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                onClick={addToPlan}
+                style={{ padding: '8px 20px', borderRadius: 7, border: 'none', background: '#0d9488', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', flex: 1 }}
+              >
+                Add to Plan →
+              </button>
+              <button
+                type="button"
+                onClick={() => { setCheckedMeds(new Set()); setCheckedAbx(new Set()); }}
+                style={{ padding: '8px 14px', borderRadius: 7, border: '1px solid #e2e8f0', background: '#f8fafc', color: '#64748b', fontSize: 12, cursor: 'pointer' }}
+              >
+                Clear all
+              </button>
+            </div>
+          </>
+        ) : (
+          <div style={{ fontSize: 12, color: '#94a3b8', fontStyle: 'italic' }}>
+            Tick medications above — selected orders appear here and can be added to the Plan.
+          </div>
+        )}
+      </div>
 
     </div>
   );
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── Step block sub-component ─────────────────────────────────────────────────
 
-function StatChip({ label, value, unit, color, subtitle }: {
-  label: string; value: string; unit: string; color: string; subtitle?: string;
+function StepBlock({
+  label, color, options, checked, onToggle,
+}: {
+  label: string; color: string;
+  options: MedOption[]; checked: Set<string>; onToggle: (id: string) => void;
 }) {
   return (
-    <div style={{ background: '#f8fafc', border: `1px solid ${color}40`, borderRadius: 8, padding: '8px 12px' }}>
-      <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{label}</div>
-      <div style={{ fontSize: 18, fontWeight: 800, color, marginTop: 2 }}>
-        {value} <span style={{ fontSize: 11, fontWeight: 500 }}>{unit}</span>
+    <div style={{ marginBottom: 12 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+        {label}
       </div>
-      {subtitle && <div style={{ fontSize: 10, color: '#94a3b8', marginTop: 1 }}>{subtitle}</div>}
-    </div>
-  );
-}
-
-function AntimicrobialCard({ result }: { result: AntimicrobialDose }) {
-  return (
-    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 10, padding: '14px 16px' }}>
-      {result.caution && (
-        <div style={{ marginBottom: 10, background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6, padding: '6px 12px', fontSize: 12, color: '#dc2626', fontWeight: 600 }}>
-          ⚠ {result.caution}
-        </div>
-      )}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-        <div>
-          <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Dose</div>
-          <div style={{ fontSize: 15, fontWeight: 800, color: '#0f172a', marginTop: 2 }}>{result.dose}</div>
-        </div>
-        <div>
-          <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Frequency</div>
-          <div style={{ fontSize: 15, fontWeight: 700, color: '#1d4ed8', marginTop: 2 }}>{result.frequency}</div>
-        </div>
-      </div>
-      <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
-        {result.notes.map((n, i) => (
-          <div key={i} style={{ fontSize: 12, color: n.startsWith('⚠') ? '#b45309' : '#475569', display: 'flex', gap: 6 }}>
-            <span style={{ color: '#94a3b8', flexShrink: 0 }}>•</span>
-            <span>{n}</span>
-          </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+        {options.map(opt => (
+          <MedRow key={opt.id} opt={opt} checked={checked.has(opt.id)} onToggle={() => onToggle(opt.id)} stepColor={color} />
         ))}
       </div>
     </div>
   );
 }
 
-// ─── WHO Ladder data ──────────────────────────────────────────────────────────
-
-const WHO_LADDER = [
-  {
-    step: 1, severity: 'Mild pain', color: '#15803d',
-    agents: 'Non-opioid ± adjuvant',
-    examples: 'Paracetamol 1 g QDS; Ibuprofen 400 mg TDS (with food); Naproxen 500 mg BD',
-    note: 'Avoid NSAIDs post-op (anastomosis, renal impairment, peptic ulcer history, anticoagulation)',
-  },
-  {
-    step: 2, severity: 'Mild–moderate pain', color: '#b45309',
-    agents: 'Weak opioid ± non-opioid ± adjuvant',
-    examples: 'Codeine 30–60 mg QDS; Tramadol 50–100 mg QDS (max 400 mg/day); Dihydrocodeine 30 mg QDS',
-    note: 'Codeine requires CYP2D6 metabolism — high variability; avoid in breastfeeding, post-tonsillectomy',
-  },
-  {
-    step: 3, severity: 'Moderate–severe pain', color: '#dc2626',
-    agents: 'Strong opioid ± non-opioid ± adjuvant',
-    examples: 'Morphine IR 5–10 mg Q4h; Oxycodone IR 5 mg Q4–6h; Fentanyl patch (stable, chronic only)',
-    note: 'Always co-prescribe laxative; consider antiemetic for first 48–72h; naloxone available',
-  },
-];
-
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const labelStyle: React.CSSProperties = {
-  display: 'flex', flexDirection: 'column', gap: 4,
-};
-const labelText: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em',
+const smallLabel: React.CSSProperties = {
+  fontSize: 10, fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.04em',
 };
 const inputStyle: React.CSSProperties = {
-  padding: '7px 10px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, color: '#0f172a',
-  background: '#fff', width: '100%', boxSizing: 'border-box',
+  padding: '7px 10px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13, color: '#0f172a', width: '100%',
+};
+const selectStyle: React.CSSProperties = {
+  padding: '7px 10px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 12, color: '#0f172a', width: '100%',
 };
