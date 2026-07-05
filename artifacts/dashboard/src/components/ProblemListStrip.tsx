@@ -10,7 +10,7 @@ const STATUS_CONFIG: Record<PatientProblem['status'], { bg: string; text: string
 
 export default function ProblemListStrip() {
   const { problems, addProblem, updateProblemStatus, deleteProblem, patientId } = useAppContext();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const [adding, setAdding] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);

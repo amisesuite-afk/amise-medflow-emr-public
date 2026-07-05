@@ -133,7 +133,7 @@ function PromptField({
 export default function ChiefComplaintStrip() {
   const {
     symptoms, procedureData, setProcedureData,
-    setEncounterType, setActiveCcKey,
+    setEncounterType, setActiveCcKey, setActiveSection,
   } = useAppContext();
 
   const [expanded, setExpanded]       = useState<number | null>(null);
@@ -359,6 +359,36 @@ export default function ChiefComplaintStrip() {
                 )}
               </div>
             )}
+
+            {/* Closed-loop trigger — once all fields answered, surface HPI */}
+            <div style={{
+              padding: '10px 16px 14px',
+              borderTop: '1px solid #1e293b',
+              display: 'flex',
+              justifyContent: allDone ? 'flex-end' : 'space-between',
+              alignItems: 'center',
+              gap: 8,
+            }}>
+              {!allDone && (
+                <span style={{ fontSize: 11, color: '#475569' }}>
+                  {prog.total - prog.answered} field{prog.total - prog.answered !== 1 ? 's' : ''} remaining
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => { setExpanded(null); setActiveSection('hpi'); }}
+                style={{
+                  padding: '7px 18px', borderRadius: 7, cursor: 'pointer',
+                  fontWeight: 700, fontSize: 12,
+                  border: allDone ? 'none' : '1px solid #334155',
+                  background: allDone ? '#0d9488' : '#1e293b',
+                  color: allDone ? '#fff' : '#64748b',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {allDone ? '✓ CC done — Review HPI →' : 'Skip to HPI →'}
+              </button>
+            </div>
           </div>
         );
       })()}

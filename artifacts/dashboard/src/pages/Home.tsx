@@ -376,7 +376,7 @@ export default function HomePage() {
   const suggestedBlocks = useMemo<string[]>(() => {
     if (topSection !== 'consultation') return [];
     const sequence: Section[] = [
-      'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros', 'examination', 'investigations', 'radiology',
       'assessment', 'plan',
     ];
@@ -757,14 +757,14 @@ export default function HomePage() {
         {/* Critical result alerts — vitals / investigation thresholds */}
         {topSection === 'consultation' && <CriticalResultAlert />}
 
-        {/* Problem list strip — shown in consultation below patient banner */}
-        {topSection === 'consultation' && <ProblemListStrip />}
+        {/* Encounter context picker — set venue + type before CC entry */}
+        {topSection === 'consultation' && <EncounterContextPicker />}
 
         {/* Chief complaint strip — 1–3 structured complaints with targeted SOCRATES fields */}
         {topSection === 'consultation' && <ChiefComplaintStrip />}
 
-        {/* Encounter context picker — zen venue + type selector */}
-        {topSection === 'consultation' && <EncounterContextPicker />}
+        {/* Problem list strip — collapsed by default; badge shows count */}
+        {topSection === 'consultation' && <ProblemListStrip />}
 
 
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
