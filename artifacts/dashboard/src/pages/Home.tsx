@@ -73,6 +73,7 @@ import CommandPalette from '@/components/CommandPalette';
 import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
+import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -420,7 +421,8 @@ export default function HomePage() {
           </div>
         </div>
         <div className="header-right">
-          {/* Encounter mode pill — outpatient / inpatient */}
+          {/* Encounter mode pill — hidden in consultation (EncounterContextPicker handles it) */}
+          {topSection !== 'consultation' && (
           <div className="site-pill" aria-label="Encounter mode">
             {(['outpatient', 'inpatient'] as const).map(mode => (
               <button
@@ -439,9 +441,10 @@ export default function HomePage() {
               </button>
             ))}
           </div>
+          )}
 
           {/* Site selector pill — outpatient only (inpatient = Tapion always) */}
-          {encounterMode === 'outpatient' && (
+          {topSection !== 'consultation' && encounterMode === 'outpatient' && (
             <div className="site-pill" aria-label="Active clinic site">
               {SITE_CODES.map(site => (
                 <button
@@ -706,6 +709,9 @@ export default function HomePage() {
 
         {/* Problem list strip — shown in consultation below patient banner */}
         {topSection === 'consultation' && <ProblemListStrip />}
+
+        {/* Chief complaint strip — 1–3 structured complaints with targeted SOCRATES fields */}
+        {topSection === 'consultation' && <ChiefComplaintStrip />}
 
         {/* Encounter context picker — zen venue + type selector */}
         {topSection === 'consultation' && <EncounterContextPicker />}

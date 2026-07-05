@@ -7,6 +7,7 @@ import SmartTextarea from '@/components/SmartTextarea';
 import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
 import { useSpeechInput } from '@/hooks/useSpeechInput';
+import ClinicalAlgorithmPanel from '@/components/ClinicalAlgorithmPanel';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -726,6 +727,8 @@ export default function AssessmentTab() {
           ))}
         </div>
       </CollapsibleCard>
+
+      <ClinicalAlgorithmPanel />
 
     </div>
   );
