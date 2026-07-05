@@ -9,7 +9,7 @@
  *  - Disposition selector (admit / discharge / follow-up / refer)
  *  - "Apply to Plan" generates text only from ticked items
  */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   getProtocol,
   getAllProtocols,
@@ -17,6 +17,39 @@ import {
   type ManagementStep,
 } from '@workspace/pane-engine';
 import type { RankedDiagnosis } from '@workspace/pane-engine';
+import { useAppContext } from '@/context/AppContext';
+
+// ─── Investigation label matcher ─────────────────────────────────────────────
+// Returns true if the protocol investigation label plausibly matches any
+// item already in the ordered-investigations list.
+// Strategy: (1) uppercase abbreviation overlap, (2) significant keyword overlap.
+
+const MED_STOP = new Set(['blood', 'urine', 'serum', 'plasma', 'total', 'level',
+  'tests', 'panel', 'screen', 'rapid', 'fluid', 'whole', 'study', 'assay']);
+
+function medAbbrevs(s: string): string[] {
+  // Capture 2-6 uppercase letter runs optionally followed by lowercase 's'
+  return [...s.matchAll(/\b([A-Z]{2,6})s?\b/g)].map(m => m[1].toLowerCase());
+}
+
+function medTokens(s: string): string[] {
+  return s.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(t => t.length >= 5 && !MED_STOP.has(t));
+}
+
+function matchesOrdered(invLabel: string, orderedInvestigations: string[]): boolean {
+  const invAbbr = new Set(medAbbrevs(invLabel));
+  const invTok  = new Set(medTokens(invLabel));
+  for (const ord of orderedInvestigations) {
+    const ordAbbr = new Set(medAbbrevs(ord));
+    const ordTok  = new Set(medTokens(ord));
+    for (const a of invAbbr) if (ordAbbr.has(a)) return true;
+    for (const t of invTok)  if (ordTok.has(t))  return true;
+  }
+  return false;
+}
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -130,6 +163,7 @@ function buildPlanFromSelections(
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function InteractiveProtocolPanel({ paneTop, paneConverged, icdCode, weightKg, onApplyPlan }: Props) {
+  const { orderedInvestigations } = useAppContext();
   const allProtocols = useMemo(() => getAllProtocols(), []);
 
   // ── Diagnosis selection ──
@@ -161,14 +195,37 @@ export function InteractiveProtocolPanel({ paneTop, paneConverged, icdCode, weig
   const [checkedInvx, setCheckedInvx]   = useState<Set<number>>(new Set());
   const [disposition, setDisposition]   = useState<Disposition>('');
 
-  // Reset tick state when protocol changes
+  // Reset tick state when protocol changes; pre-populate investigations that are
+  // already ordered so the plan reflects work already done in the Investigations tab.
   const [lastProtocol, setLastProtocol] = useState<string | null>(null);
   if (protocol && protocol.diseaseId !== lastProtocol) {
     setLastProtocol(protocol.diseaseId);
     setCheckedSteps(new Set());
-    setCheckedInvx(new Set());
     setDisposition('');
+    const preChecked = new Set<number>(
+      protocol.investigations
+        .map((inv, i) => matchesOrdered(inv.label, orderedInvestigations) ? i : -1)
+        .filter((i): i is number => i >= 0)
+    );
+    setCheckedInvx(preChecked);
   }
+
+  // Keep investigation ticks in sync whenever orderedInvestigations changes
+  // (additive only — never removes a tick the clinician manually set).
+  useEffect(() => {
+    if (!protocol) return;
+    setCheckedInvx(prev => {
+      let changed = false;
+      const next = new Set(prev);
+      protocol.investigations.forEach((inv, i) => {
+        if (!next.has(i) && matchesOrdered(inv.label, orderedInvestigations)) {
+          next.add(i);
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [orderedInvestigations, protocol]);
 
   function toggleStep(i: number) {
     setCheckedSteps(prev => { const s = new Set(prev); s.has(i) ? s.delete(i) : s.add(i); return s; });
