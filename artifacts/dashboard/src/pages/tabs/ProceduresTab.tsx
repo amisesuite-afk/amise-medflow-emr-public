@@ -7,6 +7,7 @@ import PathologySpecimenTracker from '@/components/PathologySpecimenTracker';
 import OperativeNoteGenerator from '@/components/OperativeNoteGenerator';
 import PostopCarePlan from '@/components/PostopCarePlan';
 import EndoscopyReportGenerator from '@/components/EndoscopyReportGenerator';
+import SurveillanceProtocolCard from '@/components/SurveillanceProtocolCard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -1787,6 +1788,7 @@ export default function ProceduresTab() {
       )}
       <OperativeNoteGenerator />
       <PostopCarePlan />
+      <SurveillanceProtocolCard />
     </div>
   );
 }
