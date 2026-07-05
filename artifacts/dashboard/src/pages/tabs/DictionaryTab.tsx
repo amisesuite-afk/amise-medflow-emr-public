@@ -2,6 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { DISEASES, getDiseaseSpecialty, getProtocol } from '@workspace/pane-engine';
 import IcdCodeBadge from '@/components/IcdCode';
 import { ManagementPanel } from '@/components/ManagementPanel';
+import { useAppContext } from '@/context/AppContext';
+import { getMatrixByName } from '@/lib/cc-matrices';
 
 const SPECIALTY_LABELS: Record<string, string> = {
   general_surgery: 'General Surgery',
@@ -21,9 +23,19 @@ const SPECIALTIES = Array.from(
 ).sort();
 
 export default function DictionaryTab() {
+  const { setActiveCcKey, setEncounterType, setProcedureData, procedureData, setTopSection, setActiveSection } = useAppContext();
   const [query, setQuery]       = useState('');
   const [specialty, setSpecialty] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
+
+  function launchMatrix(diseaseLabel: string) {
+    const matrix = getMatrixByName(diseaseLabel);
+    setActiveCcKey(matrix.id);
+    setEncounterType(matrix.encounterType);
+    setProcedureData({ ...procedureData, cc: [{ complaint: diseaseLabel, answers: {} }] });
+    setTopSection('consultation');
+    setActiveSection(matrix.sections[0] ?? 'hpi');
+  }
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
@@ -86,6 +98,7 @@ export default function DictionaryTab() {
               <th style={{ padding: '8px 12px', textAlign: 'left' }}>Specialty</th>
               <th style={{ padding: '8px 12px', textAlign: 'right' }}>Prior</th>
               <th style={{ padding: '8px 12px', textAlign: 'center' }}>Protocol</th>
+              <th style={{ padding: '8px 12px', textAlign: 'center' }}>Launch</th>
             </tr>
           </thead>
           <tbody>
@@ -119,11 +132,24 @@ export default function DictionaryTab() {
                         : <span style={{ color: '#4b5563' }}>—</span>
                       }
                     </td>
+                    <td style={{ padding: '6px 10px', textAlign: 'center' }}>
+                      <button
+                        type="button"
+                        onClick={e => { e.stopPropagation(); launchMatrix(d.label); }}
+                        style={{
+                          padding: '3px 10px', borderRadius: 6, border: 'none',
+                          background: '#0d9488', color: '#fff', fontSize: 11,
+                          fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
+                        }}
+                      >
+                        Start →
+                      </button>
+                    </td>
                   </tr>
 
                   {isOpen && (
                     <tr key={`${d.id}-proto`} style={{ background: '#0c1a2e' }}>
-                      <td colSpan={5} style={{ padding: '12px 16px' }}>
+                      <td colSpan={6} style={{ padding: '12px 16px' }}>
                         {hasProto
                           ? <ManagementPanel diseaseId={d.id} icdCode={null} />
                           : <div style={{ color: '#6b7280', fontSize: 12, padding: '8px 0' }}>

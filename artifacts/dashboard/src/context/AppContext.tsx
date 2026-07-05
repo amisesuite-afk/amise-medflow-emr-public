@@ -335,6 +335,10 @@ interface CtxValue {
   /** Global save status for autosave operations. */
   saveStatus: 'idle' | 'saving' | 'saved' | 'error';
   lastSaveError: string | null;
+
+  /** Active CC matrix ID — drives tab visibility and clinical pre-loading. */
+  activeCcKey: string | null;
+  setActiveCcKey(v: string | null): void;
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -472,6 +476,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [paneTop, setPaneTop] = useState<RankedDiagnosis[]>([]);
   const [paneConverged, setPaneConverged] = useState(false);
   const [traumaData, setTraumaData] = useState<TraumaData>(EMPTY_TRAUMA_DATA);
+  const [activeCcKey, setActiveCcKey] = useState<string | null>(null);
 
   const [problems, setProblems] = useState<PatientProblem[]>([]);
   const [wounds, setWounds] = useState<WoundAssessment[]>([]);
@@ -722,6 +727,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
     setPaneState(null); setPaneTop([]); setPaneConverged(false);
     setTraumaData(EMPTY_TRAUMA_DATA);
+    setActiveCcKey(null);
     setProblems([]);
     setWounds([]);
     try {
@@ -1105,6 +1111,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     },
     saveStatus,
     lastSaveError,
+    activeCcKey,
+    setActiveCcKey,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -1,121 +1,63 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CCTemplate } from '@/lib/cc-matrices';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-interface PromptField { key: string; label: string; hint: string }
-interface CCEntry     { complaint: string; answers: Record<string, string> }
-interface Template    { name: string; icon: string; prompts: PromptField[] }
+interface CCEntry { complaint: string; answers: Record<string, string> }
 
-// ── Surgical complaint templates ──────────────────────────────────────────────
+// ── Category display config ───────────────────────────────────────────────────
 
-const TEMPLATES: Template[] = [
-  { name: 'Abdominal pain', icon: '🫃', prompts: [
-    { key: 'site',      label: 'Site',          hint: 'RUQ · Epigastric · Periumbilical · RIF · LIF · Generalised' },
-    { key: 'onset',     label: 'Onset',         hint: 'Sudden / gradual · Duration' },
-    { key: 'character', label: 'Character',     hint: 'Colicky · Constant · Burning · Sharp · Dull ache' },
-    { key: 'radiation', label: 'Radiation',     hint: 'Back · Shoulder tip · Groin · Scapula' },
-    { key: 'severity',  label: 'Severity 0–10', hint: '' },
-    { key: 'assoc',     label: 'Associated',    hint: 'Nausea · Vomiting · Fever · Jaundice · Anorexia' },
-  ]},
-  { name: 'Dysphagia', icon: '🍽️', prompts: [
-    { key: 'level',       label: 'Level',        hint: 'Solids only · Solids + liquids · Liquids only' },
-    { key: 'progression', label: 'Progression',  hint: 'Progressive (malignancy) · Intermittent (motility)' },
-    { key: 'duration',    label: 'Duration',     hint: 'When started, over what period' },
-    { key: 'odynophagia', label: 'Odynophagia',  hint: 'Pain on swallowing' },
-    { key: 'weightloss',  label: 'Weight loss',  hint: 'kg over how long' },
-  ]},
-  { name: 'Jaundice', icon: '🟡', prompts: [
-    { key: 'onset',    label: 'Onset',                    hint: 'Progressive · Fluctuating · Duration' },
-    { key: 'pain',     label: 'Pain',                     hint: 'RUQ pain (stones) · Painless (malignancy — Courvoisier)' },
-    { key: 'urine',    label: 'Dark urine / pale stools',  hint: 'Obstructive pattern' },
-    { key: 'pruritus', label: 'Pruritus',                  hint: 'Suggests cholestasis' },
-    { key: 'fever',    label: 'Fever / rigors',            hint: "Charcot's triad → cholangitis" },
-    { key: 'weight',   label: 'Weight loss',               hint: 'Malignant jaundice — pancreas / cholangiocarcinoma' },
-  ]},
-  { name: 'Rectal bleeding', icon: '🩸', prompts: [
-    { key: 'colour',  label: 'Colour',       hint: 'Bright red (anorectal) · Dark / melaena (upper GI)' },
-    { key: 'amount',  label: 'Amount',       hint: 'Spots · Coating stool · Mixed with stool · Profuse' },
-    { key: 'pain',    label: 'Pain',         hint: 'Painful (fissure) · Painless (haemorrhoids · Ca)' },
-    { key: 'bowel',   label: 'Bowel habit',  hint: 'Constipation · Diarrhoea · Alternating' },
-    { key: 'weight',  label: 'Weight loss',  hint: 'Red flag — colorectal malignancy' },
-  ]},
-  { name: 'Change in bowel habit', icon: '🔄', prompts: [
-    { key: 'direction', label: 'Direction',    hint: 'Constipation · Diarrhoea · Alternating' },
-    { key: 'duration',  label: 'Duration',     hint: 'How long · Was there a preceding normal habit' },
-    { key: 'blood',     label: 'Blood / mucus',hint: 'Amount · Colour' },
-    { key: 'tenesmus',  label: 'Tenesmus',     hint: 'Incomplete evacuation — suggests rectal lesion' },
-  ]},
-  { name: 'Hernia / groin lump', icon: '🦵', prompts: [
-    { key: 'site',  label: 'Site',          hint: 'R / L · Inguinal · Femoral · Umbilical · Incisional · Epigastric' },
-    { key: 'reduc', label: 'Reducibility',  hint: 'Reducible · Irreducible · Obstructed · Strangulated' },
-    { key: 'onset', label: 'Onset',         hint: 'Sudden · Gradual · Cough / strain precipitant' },
-    { key: 'pain',  label: 'Pain',          hint: 'On exertion · At rest · Constant (strangulation!)' },
-  ]},
-  { name: 'Neck lump', icon: '🔵', prompts: [
-    { key: 'site',      label: 'Site',       hint: 'Anterior / posterior triangle · Midline' },
-    { key: 'duration',  label: 'Duration',   hint: 'When noticed · Growing' },
-    { key: 'character', label: 'Character',  hint: 'Hard · Soft · Mobile · Fixed · Tender · Pulsatile' },
-    { key: 'assoc',     label: 'Associated', hint: 'Dysphagia · Voice change · Weight loss · B symptoms' },
-  ]},
-  { name: 'Breast lump', icon: '🎯', prompts: [
-    { key: 'site',      label: 'Site',         hint: 'Quadrant · Subareolar' },
-    { key: 'duration',  label: 'Duration',     hint: 'When noticed · Growing' },
-    { key: 'character', label: 'Character',    hint: 'Hard · Soft · Mobile · Irregular · Tethered to skin / chest wall' },
-    { key: 'discharge', label: 'Nipple discharge', hint: 'Bloody (malignancy) · Serous · Purulent' },
-    { key: 'famhx',     label: 'Family history', hint: 'First-degree relatives — breast / ovarian cancer' },
-  ]},
-  { name: 'Weight loss', icon: '⚖️', prompts: [
-    { key: 'amount',   label: 'Amount',      hint: 'kg over what time period — unintentional?' },
-    { key: 'anorexia', label: 'Anorexia',    hint: 'Reduced appetite · Early satiety' },
-    { key: 'gi',       label: 'GI symptoms', hint: 'Dysphagia · Abdominal pain · Bowel habit change' },
-    { key: 'systemic', label: 'B symptoms',  hint: 'Fever · Night sweats · Fatigue (lymphoma / TB)' },
-  ]},
-  { name: 'Reflux / heartburn', icon: '🔥', prompts: [
-    { key: 'duration',  label: 'Duration',       hint: 'Daily · Intermittent · How long' },
-    { key: 'triggers',  label: 'Triggers',       hint: 'Postprandial · Lying flat · Fatty / spicy' },
-    { key: 'response',  label: 'PPI response',   hint: 'Complete · Partial · None' },
-    { key: 'alarm',     label: 'Alarm features', hint: 'Dysphagia · Weight loss · Haematemesis · Anaemia' },
-  ]},
-  { name: 'Nausea / vomiting', icon: '🤢', prompts: [
-    { key: 'onset',    label: 'Onset & frequency', hint: '' },
-    { key: 'character',label: 'Character',         hint: 'Bilious · Faeculent · Blood-stained · Undigested food' },
-    { key: 'timing',   label: 'Timing re meals',   hint: 'Immediately / delayed — gastroparesis / obstruction' },
-    { key: 'assoc',    label: 'Associated',        hint: 'Abdominal pain · Fever · Headache' },
-  ]},
-  { name: 'Post-op concern', icon: '🏥', prompts: [
-    { key: 'procedure', label: 'Procedure & date',  hint: '' },
-    { key: 'concern',   label: 'Nature of concern', hint: 'Pain · Discharge · Swelling · Dehiscence · Fever' },
-    { key: 'onset',     label: 'Onset post-op',     hint: 'Days after surgery when problem started' },
-    { key: 'systemic',  label: 'Systemic',           hint: 'Fever · Malaise · Rigors' },
-  ]},
-  { name: 'Other', icon: '✏️', prompts: [
-    { key: 'onset',     label: 'Onset',     hint: 'When · How started' },
-    { key: 'character', label: 'Character', hint: 'Nature of symptom' },
-    { key: 'assoc',     label: 'Associated',hint: 'Other symptoms' },
-    { key: 'severity',  label: 'Severity',  hint: '0–10' },
-  ]},
-];
+const CAT_ICONS: Record<CCCategory, string> = {
+  'Acute Abdomen':          '🚨',
+  'GI / Hepatobiliary':     '🫃',
+  'Colorectal / Lower GI':  '🔵',
+  'Hernia & Abdominal Wall':'🦵',
+  'Breast & Endocrine':     '🎯',
+  'Endoscopy & ERCP':       '🔭',
+  'Anorectal / Perianal':   '🩹',
+  'Vascular & Soft Tissue': '🫀',
+  'Post-op / Follow-up':    '✅',
+  'Other Surgical':         '✏️',
+};
 
-function matchTemplate(name: string): Template {
-  const l = name.toLowerCase();
-  return TEMPLATES.find(t =>
-    l.includes(t.name.toLowerCase().split(' ')[0]) || t.name.toLowerCase().includes(l.split(' ')[0])
-  ) ?? TEMPLATES[TEMPLATES.length - 1]!;
-}
+const URGENCY_BADGE: Record<string, { bg: string; text: string }> = {
+  emergency: { bg: '#7f1d1d', text: '#fca5a5' },
+  urgent:    { bg: '#431407', text: '#fb923c' },
+  soon:      { bg: '#422006', text: '#fbbf24' },
+  routine:   { bg: '#052e16', text: '#86efac' },
+};
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function ChiefComplaintStrip() {
-  const { symptoms, procedureData, setProcedureData, hpiNotes, setHpiNotes } = useAppContext();
-  const [expanded, setExpanded] = useState<number | null>(null);
+  const {
+    symptoms, procedureData, setProcedureData,
+    hpiNotes, setHpiNotes,
+    setEncounterType, setActiveCcKey,
+  } = useAppContext();
+
+  const [expanded, setExpanded]     = useState<number | null>(null);
   const [showPicker, setShowPicker] = useState(false);
   const [customInput, setCustomInput] = useState('');
+  const [catFilter, setCatFilter]   = useState<CCCategory | ''>('');
+  const [searchQ, setSearchQ]       = useState('');
 
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
 
+  function activateMatrix(complaint: string) {
+    const matrix = getMatrixByName(complaint);
+    setActiveCcKey(matrix.id);
+    setEncounterType(matrix.encounterType);
+  }
+
   function setEntries(next: CCEntry[]) {
     setProcedureData({ ...procedureData, cc: next });
+    if (next.length > 0) {
+      activateMatrix(next[0]!.complaint);
+    } else {
+      setActiveCcKey(null);
+    }
   }
 
   function addComplaint(name: string) {
@@ -126,24 +68,27 @@ export default function ChiefComplaintStrip() {
     setExpanded(next.length - 1);
     setShowPicker(false);
     setCustomInput('');
+    setSearchQ('');
   }
 
   function removeComplaint(idx: number) {
-    setEntries(entries.filter((_, i) => i !== idx));
+    const next = entries.filter((_, i) => i !== idx);
+    setEntries(next);
     if (expanded === idx) setExpanded(null);
     else if (expanded !== null && expanded > idx) setExpanded(expanded - 1);
   }
 
   function setAnswer(entryIdx: number, key: string, value: string) {
-    setEntries(entries.map((e, i) =>
+    const next = entries.map((e, i) =>
       i === entryIdx ? { ...e, answers: { ...e.answers, [key]: value } } : e
-    ));
+    );
+    setProcedureData({ ...procedureData, cc: next });
   }
 
   function insertHpi() {
     const lines: string[] = [];
     entries.forEach(entry => {
-      const tpl = matchTemplate(entry.complaint);
+      const tpl = getMatrixByName(entry.complaint);
       lines.push(entry.complaint.toUpperCase());
       tpl.prompts.forEach(p => {
         const ans = entry.answers[p.key]?.trim();
@@ -156,27 +101,45 @@ export default function ChiefComplaintStrip() {
   }
 
   const intakeSuggestions = symptoms.filter(s => !entries.some(e => e.complaint === s));
+  const categories = Object.keys(CC_BY_CATEGORY) as CCCategory[];
+
+  const filteredTemplates: CCTemplate[] = CC_TEMPLATES.filter(t => {
+    const matchCat = !catFilter || t.category === catFilter;
+    const matchQ   = !searchQ || t.name.toLowerCase().includes(searchQ.toLowerCase());
+    return matchCat && matchQ && !entries.some(e => e.complaint === t.name);
+  });
 
   return (
-    <div style={{ borderRadius: 10, border: '1px solid #1e293b', background: '#0f172a', marginBottom: 8, overflow: 'hidden' }}>
+    <div style={{
+      borderRadius: 10, border: '1px solid #1e293b', background: '#0f172a',
+      marginBottom: 8, overflow: 'hidden',
+    }}>
 
       {/* ── Header ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 14px', borderBottom: (entries.length > 0 || showPicker) ? '1px solid #1e293b' : 'none' }}>
-        <span style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#475569' }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 10, padding: '8px 14px',
+        borderBottom: (entries.length > 0 || showPicker) ? '1px solid #1e293b' : 'none',
+        flexWrap: 'wrap',
+      }}>
+        <span style={{
+          fontSize: 10, fontWeight: 800, textTransform: 'uppercase',
+          letterSpacing: '0.1em', color: '#475569', flexShrink: 0,
+        }}>
           Chief Complaint
         </span>
 
-        {/* Active CC summary when not expanded */}
+        {/* Active CC chips */}
         {entries.length > 0 && (
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flex: 1 }}>
             {entries.map((entry, i) => {
-              const tpl = matchTemplate(entry.complaint);
+              const tpl    = getMatrixByName(entry.complaint);
               const answered = Object.values(entry.answers).filter(Boolean).length;
               const isOpen = expanded === i;
+              const ub     = URGENCY_BADGE[tpl.urgency];
               return (
                 <button key={i} type="button" onClick={() => setExpanded(isOpen ? null : i)}
                   style={{
-                    display: 'inline-flex', alignItems: 'center', gap: 5,
+                    display: 'inline-flex', alignItems: 'center', gap: 6,
                     padding: '4px 11px', borderRadius: 8, cursor: 'pointer',
                     border: `1.5px solid ${isOpen ? '#0d9488' : '#334155'}`,
                     background: isOpen ? '#0d948818' : '#1e293b',
@@ -185,8 +148,16 @@ export default function ChiefComplaintStrip() {
                   }}>
                   <span>{tpl.icon}</span>
                   <span>{entry.complaint}</span>
+                  {ub && (
+                    <span style={{
+                      fontSize: 9, background: ub.bg, color: ub.text,
+                      borderRadius: 3, padding: '1px 5px',
+                    }}>{tpl.urgency}</span>
+                  )}
                   {answered > 0 && (
-                    <span style={{ fontSize: 10, background: '#0d9488', color: '#fff', borderRadius: 999, padding: '1px 5px' }}>{answered}</span>
+                    <span style={{ fontSize: 10, background: '#0d9488', color: '#fff', borderRadius: 999, padding: '1px 5px' }}>
+                      {answered}✓
+                    </span>
                   )}
                   <span style={{ fontSize: 11, color: '#64748b' }}>{isOpen ? '▲' : '▼'}</span>
                   <span role="button" onClick={e => { e.stopPropagation(); removeComplaint(i); }}
@@ -198,106 +169,228 @@ export default function ChiefComplaintStrip() {
         )}
 
         {entries.length === 0 && !showPicker && (
-          <span style={{ fontSize: 12, color: '#475569', fontStyle: 'italic', flex: 1 }}>No complaint selected — tap below to add</span>
+          <span style={{ fontSize: 12, color: '#475569', fontStyle: 'italic', flex: 1 }}>
+            Select presenting complaint → clinical matrix opens automatically
+          </span>
         )}
 
         <div style={{ display: 'flex', gap: 6, marginLeft: 'auto', flexShrink: 0 }}>
           {entries.length > 0 && (
             <button type="button" onClick={insertHpi}
-              style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>
+              style={{
+                fontSize: 11, padding: '4px 10px', borderRadius: 6,
+                border: '1px solid #334155', background: 'transparent',
+                color: '#94a3b8', cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap',
+              }}>
               → Insert HPI
             </button>
           )}
           {entries.length < 3 && (
             <button type="button" onClick={() => { setShowPicker(p => !p); setExpanded(null); }}
-              style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none', background: showPicker ? '#334155' : '#0d9488', color: '#fff', cursor: 'pointer', fontWeight: 700, whiteSpace: 'nowrap' }}>
-              {showPicker ? 'Close' : '+ Add'}
+              style={{
+                fontSize: 11, padding: '4px 10px', borderRadius: 6, border: 'none',
+                background: showPicker ? '#334155' : '#0d9488',
+                color: '#fff', cursor: 'pointer', fontWeight: 700, whiteSpace: 'nowrap',
+              }}>
+              {showPicker ? '✕ Close' : '+ Add CC'}
             </button>
           )}
         </div>
       </div>
 
-      {/* ── Expanded accordion for active complaint ── */}
+      {/* ── Expanded SOCRATES accordion ── */}
       {expanded !== null && entries[expanded] && (() => {
         const entry = entries[expanded]!;
-        const tpl = matchTemplate(entry.complaint);
+        const tpl   = getMatrixByName(entry.complaint);
         return (
-          <div style={{ padding: '12px 14px', background: '#0f172a', borderBottom: showPicker ? '1px solid #1e293b' : 'none' }}>
-            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#0d9488', marginBottom: 10 }}>
+          <div style={{
+            padding: '12px 14px', background: '#0f172a',
+            borderBottom: showPicker ? '1px solid #1e293b' : 'none',
+          }}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
+              letterSpacing: '0.08em', color: '#0d9488', marginBottom: 8,
+            }}>
               {tpl.icon} {entry.complaint} — targeted history (SOCRATES)
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 10 }}>
+
+            {tpl.pearl && (
+              <div style={{
+                fontSize: 11, color: '#94a3b8', background: '#1e293b',
+                borderLeft: '3px solid #0d9488', padding: '6px 10px',
+                borderRadius: '0 6px 6px 0', marginBottom: 10,
+              }}>
+                💡 {tpl.pearl}
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 10 }}>
               {tpl.prompts.map(p => (
                 <div key={p.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <label style={{ fontSize: 11, fontWeight: 600, color: '#94a3b8' }}>
                     {p.label}
-                    {p.hint && <span style={{ fontWeight: 400, color: '#475569', marginLeft: 4, fontSize: 10 }}>— {p.hint}</span>}
+                    {p.hint && (
+                      <span style={{ fontWeight: 400, color: '#475569', marginLeft: 4, fontSize: 10 }}>
+                        — {p.hint}
+                      </span>
+                    )}
                   </label>
                   <input
                     type="text"
                     value={entry.answers[p.key] ?? ''}
                     onChange={e => setAnswer(expanded, p.key, e.target.value)}
-                    style={{ padding: '6px 10px', borderRadius: 7, border: '1px solid #334155', fontSize: 13, color: '#f1f5f9', background: '#1e293b', outline: 'none' }}
+                    style={{
+                      padding: '6px 10px', borderRadius: 7, border: '1px solid #334155',
+                      fontSize: 13, color: '#f1f5f9', background: '#1e293b', outline: 'none',
+                    }}
                   />
                 </div>
               ))}
             </div>
+
+            {/* Key investigation hints */}
+            {(tpl.labs.length > 0 || tpl.imaging.length > 0) && (
+              <div style={{ marginTop: 10, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                {tpl.labs.length > 0 && (
+                  <div style={{ fontSize: 10, color: '#475569' }}>
+                    <span style={{ fontWeight: 700, color: '#64748b' }}>Labs: </span>
+                    {tpl.labs.slice(0, 5).join(' · ')}
+                    {tpl.labs.length > 5 ? ' …' : ''}
+                  </div>
+                )}
+                {tpl.imaging.length > 0 && (
+                  <div style={{ fontSize: 10, color: '#475569' }}>
+                    <span style={{ fontWeight: 700, color: '#64748b' }}>Imaging: </span>
+                    {tpl.imaging.slice(0, 3).join(' · ')}
+                    {tpl.imaging.length > 3 ? ' …' : ''}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         );
       })()}
 
-      {/* ── Complaint picker ── */}
+      {/* ── Picker ── */}
       {showPicker && (
         <div style={{ padding: '12px 14px', background: '#0f172a' }}>
-          {/* Freetext input */}
-          <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-            <input
-              type="text" value={customInput}
-              onChange={e => setCustomInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && addComplaint(customInput)}
-              placeholder="Type any complaint and press Enter…"
-              autoFocus
-              style={{ flex: 1, padding: '7px 12px', borderRadius: 8, border: '1px solid #334155', fontSize: 13, color: '#f1f5f9', background: '#1e293b', outline: 'none' }}
-            />
-            {customInput.trim() && (
-              <button type="button" onClick={() => addComplaint(customInput)}
-                style={{ padding: '7px 14px', borderRadius: 8, border: 'none', background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-                Add
-              </button>
-            )}
-          </div>
 
           {/* Intake suggestions */}
           {intakeSuggestions.length > 0 && (
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#475569', marginBottom: 5 }}>
-                From questionnaire
+              <div style={{
+                fontSize: 10, fontWeight: 700, color: '#475569',
+                textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6,
+              }}>
+                From intake questionnaire
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {intakeSuggestions.map(s => (
                   <button key={s} type="button" onClick={() => addComplaint(s)}
-                    style={{ padding: '4px 12px', borderRadius: 7, border: '1px solid #3730a3', background: '#1e1b4b', color: '#a5b4fc', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
-                    {s}
+                    style={{
+                      padding: '4px 10px', borderRadius: 20, border: '1px solid #0d9488',
+                      background: '#0d948820', color: '#2dd4bf', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                    }}>
+                    + {s}
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Template list */}
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#475569', marginBottom: 5 }}>
-              Common surgical complaints
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-              {TEMPLATES.filter(t => !entries.some(e => e.complaint === t.name)).map(t => (
-                <button key={t.name} type="button" onClick={() => addComplaint(t.name)}
-                  style={{ padding: '5px 12px', borderRadius: 7, border: '1px solid #334155', background: '#1e293b', color: '#94a3b8', fontSize: 12, cursor: 'pointer', transition: 'all 0.1s' }}>
-                  {t.icon} {t.name}
-                </button>
-              ))}
-            </div>
+          {/* Search + custom */}
+          <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+            <input
+              type="text" value={searchQ}
+              onChange={e => setSearchQ(e.target.value)}
+              placeholder="Search all 50+ complaints…"
+              autoFocus
+              style={{
+                flex: 1, minWidth: 160, padding: '6px 10px', borderRadius: 7,
+                border: '1px solid #334155', fontSize: 13, color: '#f1f5f9',
+                background: '#1e293b', outline: 'none',
+              }}
+            />
+            <input
+              type="text" value={customInput}
+              onChange={e => setCustomInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && addComplaint(customInput)}
+              placeholder="Custom (press Enter)"
+              style={{
+                flex: 1, minWidth: 140, padding: '6px 10px', borderRadius: 7,
+                border: '1px solid #334155', fontSize: 13, color: '#f1f5f9',
+                background: '#1e293b', outline: 'none',
+              }}
+            />
           </div>
+
+          {/* Category pills */}
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 10 }}>
+            <button type="button" onClick={() => setCatFilter('')}
+              style={{
+                padding: '3px 9px', borderRadius: 20, border: 'none', cursor: 'pointer',
+                fontSize: 11, fontWeight: catFilter === '' ? 700 : 500,
+                background: catFilter === '' ? '#0d9488' : '#1e293b',
+                color: catFilter === '' ? '#fff' : '#94a3b8',
+              }}>All</button>
+            {categories.map(cat => (
+              <button key={cat} type="button" onClick={() => setCatFilter(catFilter === cat ? '' : cat)}
+                style={{
+                  padding: '3px 9px', borderRadius: 20, border: 'none', cursor: 'pointer',
+                  fontSize: 11, fontWeight: catFilter === cat ? 700 : 500,
+                  background: catFilter === cat ? '#0d9488' : '#1e293b',
+                  color: catFilter === cat ? '#fff' : '#94a3b8',
+                }}>
+                {CAT_ICONS[cat]} {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Template grid */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))',
+            gap: 5, maxHeight: 320, overflowY: 'auto',
+          }}>
+            {filteredTemplates.map(t => {
+              const ub = URGENCY_BADGE[t.urgency];
+              return (
+                <button key={t.id} type="button" onClick={() => addComplaint(t.name)}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2,
+                    padding: '8px 11px', borderRadius: 8, border: '1px solid #1e293b',
+                    background: '#1e293b', color: '#cbd5e1', cursor: 'pointer', textAlign: 'left',
+                    transition: 'background 0.1s, border-color 0.1s',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.background = '#0d948820';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#0d9488';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.background = '#1e293b';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#1e293b';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, width: '100%' }}>
+                    <span style={{ fontSize: 14 }}>{t.icon}</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>{t.name}</span>
+                    {ub && (
+                      <span style={{
+                        fontSize: 9, background: ub.bg, color: ub.text,
+                        borderRadius: 3, padding: '1px 4px', flexShrink: 0,
+                      }}>{t.urgency}</span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: 10, color: '#475569' }}>{t.category}</div>
+                </button>
+              );
+            })}
+          </div>
+
+          {filteredTemplates.length === 0 && (
+            <div style={{ fontSize: 12, color: '#475569', textAlign: 'center', padding: '16px 0' }}>
+              No matches — press Enter in the custom field to add your own.
+            </div>
+          )}
         </div>
       )}
     </div>

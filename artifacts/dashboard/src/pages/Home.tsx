@@ -74,6 +74,7 @@ import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
 import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
+import { getMatrix } from '@/lib/cc-matrices';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -160,6 +161,7 @@ export default function HomePage() {
     vitals,
     encounterMode, setEncounterMode,
     encounterType, setEncounterType,
+    activeCcKey,
     patientPhoto,
     patientId,
     encounterId,
@@ -234,9 +236,12 @@ export default function HomePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), []);
 
-  /* ── Consultation tab list (role-aware + encounter-type filtered) ── */
+  /* ── Consultation tab list (role-aware + CC matrix or encounter-type filtered) ── */
   const consultTabs = useMemo<{ id: Section; label: string }[]>(() => {
-    const allowed = ENCOUNTER_TAB_SETS[encounterType];
+    const matrix  = activeCcKey ? getMatrix(activeCcKey) : null;
+    const allowed = matrix
+      ? new Set<Section>(matrix.sections)
+      : ENCOUNTER_TAB_SETS[encounterType];
     const all: { id: Section; label: string }[] = [
       { id: 'nurse_apcq', label: 'Intake Q' },
       ...(roleIn(userRole, 'front_desk') || hasRole(userRole, 'nurse') ? [
@@ -274,7 +279,7 @@ export default function HomePage() {
       { id: 'tasks', label: 'Tasks' },
     ];
     return all.filter(t => allowed.has(t.id));
-  }, [userRole, encounterType, ENCOUNTER_TAB_SETS]);
+  }, [userRole, encounterType, activeCcKey, ENCOUNTER_TAB_SETS]);
 
   /* ── Swipe navigation for consultation tabs (iPad / mobile) ── */
   const swipeRef = useSwipeNavigation<HTMLElement>({
