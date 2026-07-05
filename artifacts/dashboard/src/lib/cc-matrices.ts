@@ -56,7 +56,7 @@ export interface CCTemplate {
 // ── Reusable section sets ─────────────────────────────────────────────────────
 
 const S_EMERGENCY: Section[] = [
-  'triage', 'hpi', 'pmh', 'medications', 'allergies',
+  'triage', 'pmh', 'medications', 'allergies',
   'examination', 'wounds',
   'investigations', 'blood_gas', 'radiology', 'attachments',
   'assessment', 'plan', 'dosing', 'fluid_nutrition',
@@ -64,7 +64,7 @@ const S_EMERGENCY: Section[] = [
 ];
 
 const S_SURGICAL: Section[] = [
-  'hpi', 'pmh', 'surgical', 'medications', 'allergies',
+  'pmh', 'surgical', 'medications', 'allergies',
   'examination', 'investigations', 'radiology', 'attachments',
   'assessment', 'plan', 'procedures',
   'prescriptions', 'referring_providers',
@@ -72,27 +72,27 @@ const S_SURGICAL: Section[] = [
 ];
 
 const S_QUICK: Section[] = [
-  'hpi', 'pmh', 'medications', 'allergies',
+  'pmh', 'medications', 'allergies',
   'examination', 'assessment', 'plan',
   'prescriptions', 'progress', 'tasks',
 ];
 
 const S_ENDOSCOPY: Section[] = [
-  'hpi', 'pmh', 'surgical', 'medications', 'allergies',
+  'pmh', 'surgical', 'medications', 'allergies',
   'investigations', 'procedures', 'attachments',
   'assessment', 'plan', 'prescriptions',
   'referring_providers', 'progress', 'tasks',
 ];
 
 const S_MALIGNANCY: Section[] = [
-  'hpi', 'pmh', 'surgical', 'medications', 'allergies', 'family_hx',
+  'pmh', 'surgical', 'medications', 'allergies', 'family_hx',
   'examination', 'investigations', 'radiology', 'attachments',
   'assessment', 'plan', 'procedures',
   'referring_providers', 'progress', 'monitoring', 'tasks',
 ];
 
 const S_URGENT_SURGICAL: Section[] = [
-  'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
+  'triage', 'pmh', 'surgical', 'medications', 'allergies',
   'examination', 'investigations', 'radiology',
   'assessment', 'plan', 'dosing',
   'prescriptions', 'referring_providers', 'progress', 'monitoring',

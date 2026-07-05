@@ -184,6 +184,7 @@ export default function HomePage() {
     assessment,
     plan,
     progressNotes,
+    mrNumber, setMrNumber,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -192,6 +193,7 @@ export default function HomePage() {
   const [criticalResultCount, setCriticalResultCount] = useState(0);
   const [showAiPanel, setShowAiPanel] = useState(false);
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
+  const [visitType, setVisitType] = useState<'new' | 'followup' | null>(null);
 
   const userRole = profile?.role ?? 'front_desk';
   const { activePathway, matchedPathways } = usePathway();
@@ -201,19 +203,19 @@ export default function HomePage() {
   /* ── Sections shown per encounter type — accordion effect ── */
   const ENCOUNTER_TAB_SETS: Record<EncounterType, ReadonlySet<Section>> = useMemo(() => ({
     quick_consult: new Set<Section>([
-      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'medications', 'allergies',
+      'triage', 'pmh', 'medications', 'allergies',
       'examination', 'assessment', 'plan', 'prescriptions', 'referring_providers',
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     endoscopy: new Set<Section>([
-      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'triage', 'pmh', 'surgical', 'medications', 'allergies',
       'examination', 'investigations', 'radiology', 'attachments',
       'assessment', 'plan', 'procedures',
       'prescriptions', 'referring_providers',
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     surgical_consult: new Set<Section>([
-      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'triage', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros',
       'examination', 'investigations', 'radiology', 'attachments',
       'assessment', 'plan', 'procedures',
@@ -221,13 +223,13 @@ export default function HomePage() {
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     office_procedure: new Set<Section>([
-      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'medications', 'allergies',
+      'triage', 'pmh', 'medications', 'allergies',
       'examination', 'investigations', 'attachments',
       'assessment', 'plan', 'prescriptions',
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     major_emergency: new Set<Section>([
-      'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'triage', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros',
       'examination', 'wounds', 'investigations', 'blood_gas', 'radiology', 'attachments',
       'assessment', 'plan', 'prescriptions', 'dosing', 'fluid_nutrition', 'referring_providers',
@@ -236,6 +238,18 @@ export default function HomePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), []);
 
+  /* ── Section icon map for encounter progress rail ── */
+  const SECTION_ICONS: Partial<Record<Section, string>> = {
+    triage: '⚡', hpi: '📝', pmh: '🏥', surgical: '⚕️',
+    medications: '💊', allergies: '⚠', family_hx: '👨‍👩‍👧', toxic: '🚬',
+    ros: '📋', examination: '🩺', wounds: '🩹',
+    investigations: '🧪', blood_gas: '💨', radiology: '📡', attachments: '📎',
+    assessment: '🎯', plan: '📄', procedures: '⚕️',
+    prescriptions: '💊', dosing: '💉', fluid_nutrition: '💧',
+    referring_providers: '↗', encounter_history: '📅',
+    progress: '📝', monitoring: '📊', tasks: '✓',
+  };
+
   /* ── Consultation tab list (role-aware + CC matrix or encounter-type filtered) ── */
   const consultTabs = useMemo<{ id: Section; label: string }[]>(() => {
     const matrix  = activeCcKey ? getMatrix(activeCcKey) : null;
@@ -243,11 +257,6 @@ export default function HomePage() {
       ? new Set<Section>(matrix.sections)
       : ENCOUNTER_TAB_SETS[encounterType];
     const all: { id: Section; label: string }[] = [
-      { id: 'nurse_apcq', label: 'Intake Q' },
-      ...(roleIn(userRole, 'front_desk') || hasRole(userRole, 'nurse') ? [
-        { id: 'apcq' as Section, label: 'Record Q' },
-      ] : []),
-      { id: 'hpi', label: 'HPI' },
       { id: 'triage', label: 'Triage' },
       { id: 'pmh', label: 'PMH' },
       { id: 'surgical', label: 'Surgical' },
@@ -366,7 +375,7 @@ export default function HomePage() {
   const suggestedBlocks = useMemo<string[]>(() => {
     if (topSection !== 'consultation') return [];
     const sequence: Section[] = [
-      'nurse_apcq', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
+      'triage', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros', 'examination', 'investigations', 'radiology',
       'assessment', 'plan',
     ];
@@ -381,6 +390,21 @@ export default function HomePage() {
     if (topSection !== 'consultation') setZenMode(false);
   }, [topSection]);
 
+  // Reset visitType when patient is cleared
+  useEffect(() => { if (!patientId) setVisitType(null); }, [patientId]);
+
+  // Reset visitType when CC is cleared
+  useEffect(() => { if (!activeCcKey) setVisitType(null); }, [activeCcKey]);
+
+  // Auto-generate MRN when consultation starts without one
+  useEffect(() => {
+    if (topSection !== 'consultation') return;
+    if (mrNumber) return;
+    const year = new Date().getFullYear();
+    const suffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+    setMrNumber(`AM-${year}-${suffix}`);
+  }, [topSection, mrNumber, setMrNumber, patientId]);
+
   // Activates zen mode when a consultation section is selected
   const handleSectionSelect = useCallback((s: Section) => {
     setActiveSection(s);
@@ -392,7 +416,7 @@ export default function HomePage() {
   if (age) metaParts.push(`Age ${age}`);
   if (sex && sex !== 'unknown') metaParts.push(sex);
 
-  const sidebarWidth = zenMode ? 0 : (collapsed ? 52 : 182);
+  const sidebarWidth = topSection === 'consultation' ? 0 : zenMode ? 0 : (collapsed ? 52 : 182);
 
   if (userRole === 'front_desk') return <ErrorBoundary><ReceptionistView /></ErrorBoundary>;
   if (userRole === 'nurse') return <ErrorBoundary><NursePreVisitView /></ErrorBoundary>;
@@ -534,29 +558,73 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* ── Collapsible sidebar ── */}
-      <NavSidebar
-        collapsed={collapsed || zenMode}
-        onToggle={() => zenMode ? setZenMode(false) : setCollapsed(c => !c)}
-        topSection={topSection}
-        onTopSection={s => { setTopSection(s); setZenMode(false); }}
-        activeSection={activeSection}
-        onSection={handleSectionSelect}
-        userRole={userRole}
-        hasUrgentRedFlag={hasUrgentRedFlag}
-        urgentCount={urgentCount}
-        acuity={triageResult.acuity}
-        pmhCount={comorbidities.length}
-        encounterMode={encounterMode}
-        encounterType={encounterType}
-        pendingBookingCount={pendingBookingCount}
-        criticalResultCount={criticalResultCount}
-        sectionCompletion={sectionCompletion}
-        suggestedBlocks={suggestedBlocks}
-      />
+      {/* ── Collapsible sidebar — hidden during active consultation ── */}
+      {topSection !== 'consultation' && (
+        <NavSidebar
+          collapsed={collapsed || zenMode}
+          onToggle={() => zenMode ? setZenMode(false) : setCollapsed(c => !c)}
+          topSection={topSection}
+          onTopSection={s => { setTopSection(s); setZenMode(false); }}
+          activeSection={activeSection}
+          onSection={handleSectionSelect}
+          userRole={userRole}
+          hasUrgentRedFlag={hasUrgentRedFlag}
+          urgentCount={urgentCount}
+          acuity={triageResult.acuity}
+          pmhCount={comorbidities.length}
+          encounterMode={encounterMode}
+          encounterType={encounterType}
+          pendingBookingCount={pendingBookingCount}
+          criticalResultCount={criticalResultCount}
+          sectionCompletion={sectionCompletion}
+          suggestedBlocks={suggestedBlocks}
+        />
+      )}
+
+      {/* ── Encounter progress rail — replaces sidebar during active consultation ── */}
+      {topSection === 'consultation' && (
+        <aside style={{
+          position: 'fixed', left: 0, top: 50, bottom: 0, width: 44,
+          background: '#0f172a', borderRight: '1px solid #1e293b',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          gap: 0, overflowY: 'auto', zIndex: 100,
+        }}>
+          {consultTabs.map((tab, idx) => {
+            const isActive = activeSection === tab.id;
+            const isDone = sectionCompletion[tab.id as keyof typeof sectionCompletion] === true;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveSection(tab.id)}
+                title={tab.label}
+                style={{
+                  width: '100%', minHeight: 44, padding: '6px 2px',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  gap: 2, border: 'none', cursor: 'pointer',
+                  background: isActive ? '#0d9488' : 'transparent',
+                  borderLeft: isActive ? '3px solid #14b8a6' : '3px solid transparent',
+                  transition: 'background 0.12s',
+                }}
+              >
+                <span style={{ fontSize: 14, lineHeight: 1 }}>
+                  {isDone && !isActive ? '✓' : (SECTION_ICONS[tab.id] ?? String(idx + 1))}
+                </span>
+                <span style={{
+                  fontSize: 8, fontWeight: 600, color: isActive ? '#fff' : isDone ? '#14b8a6' : '#475569',
+                  lineHeight: 1, textAlign: 'center', maxWidth: 38, overflow: 'hidden',
+                  whiteSpace: 'nowrap', textOverflow: 'ellipsis',
+                }}>
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
+        </aside>
+      )}
 
       {/* ── Main content ── */}
-      <main ref={swipeRef} className="main-content">
+      <main ref={swipeRef} className="main-content" style={topSection === 'consultation' ? { marginLeft: 44 } : undefined}>
         {/* Zen mode exit chip */}
         {zenMode && (
           <button
@@ -689,6 +757,11 @@ export default function HomePage() {
               <span style={{ fontWeight: 700, fontSize: 13, color: '#f1f5f9', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 {patientName.trim() || '—'}
               </span>
+              {mrNumber && (
+                <span style={{ fontSize: 10, color: '#0d9488', background: '#0d948818', borderRadius: 4, padding: '1px 6px', fontWeight: 700, letterSpacing: '0.05em', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  {mrNumber}
+                </span>
+              )}
               {(age || (sex && sex !== 'unknown')) && (
                 <span style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>
                   {[age && `${age}y`, sex !== 'unknown' && sex].filter(Boolean).join(' · ')}
@@ -721,8 +794,79 @@ export default function HomePage() {
         {/* Encounter context picker — zen venue + type selector */}
         {topSection === 'consultation' && <EncounterContextPicker />}
 
+        {/* Visit type selector — shown once per CC selection before sections open */}
+        {topSection === 'consultation' && activeCcKey !== null && visitType === null && (() => {
+          const matrix = getMatrix(activeCcKey);
+          return (
+            <div style={{
+              position: 'fixed', inset: 0, top: 50, left: 44, zIndex: 200,
+              background: '#0f172a', display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: 24, padding: 32,
+            }}>
+              {matrix && (
+                <div style={{ textAlign: 'center', marginBottom: 8 }}>
+                  <div style={{ fontSize: 32, marginBottom: 6 }}>{matrix.icon}</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: '#f1f5f9' }}>{matrix.name}</div>
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 6,
+                    padding: '3px 12px', borderRadius: 999, fontSize: 11, fontWeight: 700,
+                    background: matrix.urgency === 'emergency' ? '#7f1d1d' : matrix.urgency === 'urgent' ? '#431407' : '#052e16',
+                    color: matrix.urgency === 'emergency' ? '#fca5a5' : matrix.urgency === 'urgent' ? '#fb923c' : '#86efac',
+                    border: `1px solid ${matrix.urgency === 'emergency' ? '#fca5a5' : matrix.urgency === 'urgent' ? '#fb923c' : '#86efac'}`,
+                  }}>
+                    {matrix.urgency.toUpperCase()}
+                  </div>
+                </div>
+              )}
+              <div style={{ fontSize: 14, color: '#64748b', fontWeight: 600 }}>
+                Select visit type to begin
+              </div>
+              <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVisitType('new');
+                    if (consultTabs.length > 0) setActiveSection(consultTabs[0].id);
+                  }}
+                  style={{
+                    width: 200, padding: '28px 20px', borderRadius: 16, border: '2px solid #0d9488',
+                    background: '#0d948820', color: '#f1f5f9', cursor: 'pointer',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <span style={{ fontSize: 36 }}>🩺</span>
+                  <span style={{ fontSize: 16, fontWeight: 800 }}>New Consultation</span>
+                  <span style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>
+                    First visit — full history and examination
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVisitType('followup');
+                    setActiveSection('progress');
+                  }}
+                  style={{
+                    width: 200, padding: '28px 20px', borderRadius: 16, border: '2px solid #3b82f6',
+                    background: '#3b82f620', color: '#f1f5f9', cursor: 'pointer',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <span style={{ fontSize: 36 }}>📋</span>
+                  <span style={{ fontSize: 16, fontWeight: 800 }}>Follow-up Visit</span>
+                  <span style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>
+                    Review progress, update plan
+                  </span>
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
-        {topSection === 'consultation' && (() => {
+        {topSection === 'consultation' && visitType !== null && (() => {
           const curIdx = consultTabs.findIndex(t => t.id === activeSection);
           const prevTab = curIdx > 0 ? consultTabs[curIdx - 1] : null;
           const nextTab = curIdx >= 0 && curIdx < consultTabs.length - 1 ? consultTabs[curIdx + 1] : null;

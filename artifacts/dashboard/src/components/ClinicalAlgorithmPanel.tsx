@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { useAppContext } from '@/context/AppContext';
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 
@@ -44,6 +45,319 @@ function ResultPill({
     }}>
       {txt}
     </span>
+  );
+}
+
+// ── Checkbox helper ───────────────────────────────────────────────────────────
+
+function CheckList({ items, checked, setChecked, accent }: {
+  items: string[]; checked: boolean[]; setChecked: (v: boolean[]) => void; accent: string;
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+      {items.map((item, i) => (
+        <label key={i} style={{
+          display: 'flex', alignItems: 'flex-start', gap: 8, cursor: 'pointer',
+          padding: '7px 11px', borderRadius: 7, fontSize: 12,
+          background: checked[i] ? `${accent}12` : '#f9fafb',
+          border: `1px solid ${checked[i] ? accent : '#e5e7eb'}`,
+          color: checked[i] ? accent : '#374151',
+          fontWeight: checked[i] ? 600 : 400,
+        }}>
+          <input
+            type="checkbox"
+            checked={checked[i]}
+            onChange={e => {
+              const n = [...checked];
+              n[i] = e.target.checked;
+              setChecked(n);
+            }}
+            style={{ marginTop: 1, accentColor: accent, flexShrink: 0 }}
+          />
+          {item}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Alvarado Score — Acute Appendicitis
+// ══════════════════════════════════════════════════════════════════════════════
+
+const ALVARADO_ITEMS = [
+  { label: 'Migration of pain to RIF', points: 1 },
+  { label: 'Anorexia', points: 1 },
+  { label: 'Nausea / Vomiting', points: 1 },
+  { label: 'RIF tenderness', points: 2 },
+  { label: 'Rebound tenderness', points: 1 },
+  { label: 'Elevated temperature >37.3°C', points: 1 },
+  { label: 'Leucocytosis WBC >10,000', points: 2 },
+  { label: 'Left shift (neutrophilia)', points: 1 },
+];
+
+function AlvaradoCalc() {
+  const [checked, setChecked] = useState<boolean[]>(Array(ALVARADO_ITEMS.length).fill(false));
+
+  const score = useMemo(() =>
+    ALVARADO_ITEMS.reduce((sum, item, i) => sum + (checked[i] ? item.points : 0), 0),
+    [checked]);
+
+  const badge = score >= 9
+    ? { label: 'Near-certain appendicitis', bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' }
+    : score >= 7
+    ? { label: 'Likely appendicitis — surgical review', bg: '#fffbeb', color: '#92400e', border: '#fcd34d' }
+    : { label: 'Low probability — observe / repeat', bg: '#f0fdf4', color: '#166534', border: '#86efac' };
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
+        <strong>Alvarado Score (MANTRELS)</strong> — max 10 points. Score ≥7 = likely; ≥9 = near-certain.
+        RIF tenderness and leucocytosis each score 2 points.
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 16 }}>
+        {ALVARADO_ITEMS.map((item, i) => (
+          <label key={i} style={{
+            display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer',
+            padding: '8px 12px', borderRadius: 7, fontSize: 12,
+            background: checked[i] ? '#fff7ed' : '#f9fafb',
+            border: `1px solid ${checked[i] ? '#fb923c' : '#e5e7eb'}`,
+            color: checked[i] ? '#c2410c' : '#374151',
+            fontWeight: checked[i] ? 600 : 400,
+          }}>
+            <input
+              type="checkbox"
+              checked={checked[i]}
+              onChange={e => {
+                const n = [...checked];
+                n[i] = e.target.checked;
+                setChecked(n);
+              }}
+              style={{ accentColor: '#fb923c', flexShrink: 0 }}
+            />
+            <span style={{ flex: 1 }}>{item.label}</span>
+            <span style={{
+              fontWeight: 700, fontSize: 13,
+              color: checked[i] ? '#c2410c' : '#9ca3af',
+            }}>+{item.points}</span>
+          </label>
+        ))}
+      </div>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 16,
+        padding: '14px 18px', borderRadius: 10,
+        background: badge.bg, border: `2px solid ${badge.border}`,
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 32, fontWeight: 900, color: badge.color, lineHeight: 1 }}>{score}</div>
+          <div style={{ fontSize: 10, color: badge.color, fontWeight: 600 }}>/ 10</div>
+        </div>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 800, color: badge.color }}>{badge.label}</div>
+          <div style={{ fontSize: 11, color: badge.color, marginTop: 2, opacity: 0.8 }}>
+            {score >= 9 ? 'Consider immediate appendicectomy without further imaging in males.'
+              : score >= 7 ? 'USS ± CT to confirm. Surgical review mandatory.'
+              : 'Active observation, repeat bloods at 6–8 h, USS if uncertain.'}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Ranson Criteria — Acute Pancreatitis Severity
+// ══════════════════════════════════════════════════════════════════════════════
+
+const RANSON_ADMISSION = [
+  'Age > 55 years',
+  'WBC > 16,000 /mm³',
+  'Glucose > 11 mmol/L (200 mg/dL)',
+  'LDH > 350 IU/L',
+  'AST > 250 IU/L',
+];
+
+const RANSON_48H = [
+  'Haematocrit fall > 10%',
+  'BUN rise > 1.8 mmol/L (5 mg/dL)',
+  'Calcium < 2 mmol/L (8 mg/dL)',
+  'PO₂ < 60 mmHg',
+  'Base deficit > 4 mEq/L',
+  'Fluid sequestration > 6 L',
+];
+
+function RansonCalc() {
+  const [adm, setAdm] = useState<boolean[]>(Array(RANSON_ADMISSION.length).fill(false));
+  const [h48, setH48] = useState<boolean[]>(Array(RANSON_48H.length).fill(false));
+
+  const score = adm.filter(Boolean).length + h48.filter(Boolean).length;
+
+  const badge = score >= 5
+    ? { label: 'CRITICAL — mortality >40%', bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' }
+    : score >= 3
+    ? { label: 'SEVERE — mortality ~15%', bg: '#fffbeb', color: '#92400e', border: '#fcd34d' }
+    : score >= 2
+    ? { label: 'MILD — monitor closely', bg: '#eff6ff', color: '#1e40af', border: '#bfdbfe' }
+    : { label: 'MILD — mortality <1%', bg: '#f0fdf4', color: '#166534', border: '#86efac' };
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
+        <strong>Ranson Criteria</strong> — 5 at admission + 6 at 48 h = 11 total.
+        Score 0–2 mild, 3–4 severe (~15% mortality), ≥5 critical (&gt;40% mortality).
+      </div>
+
+      <div style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#374151', marginBottom: 8 }}>
+          At Admission
+        </div>
+        <CheckList items={RANSON_ADMISSION} checked={adm} setChecked={setAdm} accent="#2563eb" />
+      </div>
+
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#374151', marginBottom: 8 }}>
+          At 48 Hours
+        </div>
+        <CheckList items={RANSON_48H} checked={h48} setChecked={setH48} accent="#7c3aed" />
+      </div>
+
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 16,
+        padding: '14px 18px', borderRadius: 10,
+        background: badge.bg, border: `2px solid ${badge.border}`,
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 32, fontWeight: 900, color: badge.color, lineHeight: 1 }}>{score}</div>
+          <div style={{ fontSize: 10, color: badge.color, fontWeight: 600 }}>/ 11</div>
+        </div>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 800, color: badge.color }}>{badge.label}</div>
+          <div style={{ fontSize: 11, color: badge.color, marginTop: 2, opacity: 0.8 }}>
+            {score >= 5 ? 'ICU admission, aggressive resuscitation, consider ERCP if biliary.'
+              : score >= 3 ? 'HDU/monitored bed. CT at 48–72 h. Aggressive IV fluids 250–500 mL/h.'
+              : 'Ward-level care. IV fluids, analgesia, NBM. Reassess at 48 h.'}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Glasgow-Blatchford Score — Upper GI Bleed Risk Stratification
+// ══════════════════════════════════════════════════════════════════════════════
+
+function BlatchfordCalc() {
+  const [bun,      setBun]      = useState('');
+  const [hb,       setHb]       = useState('');
+  const [sbp,      setSbp]      = useState('');
+  const [tachyc,   setTachyc]   = useState(false);
+  const [melaena,  setMelaena]  = useState(false);
+  const [syncope,  setSyncope]  = useState(false);
+  const [hepatic,  setHepatic]  = useState(false);
+  const [cardiac,  setCardiac]  = useState(false);
+  const [sex,      setSex]      = useState<'male' | 'female' | ''>('');
+
+  const bunVal = parseFloat(bun);
+  const hbVal  = parseFloat(hb);
+  const sbpVal = parseFloat(sbp);
+
+  const bunPts = !isNaN(bunVal)
+    ? bunVal >= 25 ? 6 : bunVal >= 10 ? 4 : bunVal >= 8 ? 3 : bunVal >= 6.5 ? 2 : 0
+    : 0;
+
+  const hbPts = !isNaN(hbVal) && sex
+    ? sex === 'male'
+      ? hbVal < 100 ? 6 : hbVal < 120 ? 3 : 0
+      : hbVal < 100 ? 6 : hbVal < 120 ? 1 : 0
+    : 0;
+
+  const sbpPts = !isNaN(sbpVal)
+    ? sbpVal < 90 ? 3 : sbpVal < 100 ? 2 : sbpVal < 110 ? 1 : 0
+    : 0;
+
+  const score = bunPts + hbPts + sbpPts
+    + (tachyc ? 1 : 0)
+    + (melaena ? 1 : 0)
+    + (syncope ? 2 : 0)
+    + (hepatic ? 2 : 0)
+    + (cardiac ? 2 : 0);
+
+  const badge = score === 0
+    ? { label: 'LOW RISK — outpatient management', bg: '#f0fdf4', color: '#166534', border: '#86efac' }
+    : { label: 'ADMIT + OGD within 24 h', bg: '#fef2f2', color: '#991b1b', border: '#fca5a5' };
+
+  return (
+    <div>
+      <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 14 }}>
+        <strong>Glasgow-Blatchford Score</strong> — score 0 = low risk (outpatient).
+        ≥1 = hospital admission + OGD. Hb thresholds differ by sex.
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 10, marginBottom: 14 }}>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: '#374151', marginBottom: 5 }}>Sex</div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {(['male', 'female'] as const).map(s => (
+              <button key={s} type="button" onClick={() => setSex(s)}
+                style={{
+                  flex: 1, padding: '7px 0', borderRadius: 7, border: 'none', cursor: 'pointer',
+                  fontWeight: 700, fontSize: 12,
+                  background: sex === s ? '#2563eb' : '#f3f4f6',
+                  color: sex === s ? '#fff' : '#6b7280',
+                }}>
+                {s.charAt(0).toUpperCase() + s.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <Num label="BUN" value={bun} unit="mmol/L" onChange={setBun} hint={bunPts > 0 ? `+${bunPts}` : ''} />
+        <Num label={`Hb${sex ? ` (${sex})` : ''}`} value={hb} unit="g/L" onChange={setHb} hint={hbPts > 0 ? `+${hbPts}` : ''} />
+        <Num label="Systolic BP" value={sbp} unit="mmHg" onChange={setSbp} hint={sbpPts > 0 ? `+${sbpPts}` : ''} />
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginBottom: 16 }}>
+        {[
+          { label: 'HR ≥ 100 bpm (+1)', val: tachyc, set: setTachyc, pts: 1 },
+          { label: 'Melaena (+1)', val: melaena, set: setMelaena, pts: 1 },
+          { label: 'Syncope (+2)', val: syncope, set: setSyncope, pts: 2 },
+          { label: 'Hepatic disease (+2)', val: hepatic, set: setHepatic, pts: 2 },
+          { label: 'Cardiac failure (+2)', val: cardiac, set: setCardiac, pts: 2 },
+        ].map(({ label, val, set }) => (
+          <label key={label} style={{
+            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
+            padding: '7px 11px', borderRadius: 7, fontSize: 12,
+            background: val ? '#fef2f218' : '#f9fafb',
+            border: `1px solid ${val ? '#fca5a5' : '#e5e7eb'}`,
+            color: val ? '#dc2626' : '#374151',
+            fontWeight: val ? 600 : 400,
+          }}>
+            <input type="checkbox" checked={val} onChange={e => set(e.target.checked)}
+              style={{ accentColor: '#dc2626', flexShrink: 0 }} />
+            {label}
+          </label>
+        ))}
+      </div>
+
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 16,
+        padding: '14px 18px', borderRadius: 10,
+        background: badge.bg, border: `2px solid ${badge.border}`,
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 32, fontWeight: 900, color: badge.color, lineHeight: 1 }}>{score}</div>
+          <div style={{ fontSize: 10, color: badge.color, fontWeight: 600 }}>pts</div>
+        </div>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 800, color: badge.color }}>{badge.label}</div>
+          <div style={{ fontSize: 11, color: badge.color, marginTop: 2, opacity: 0.8 }}>
+            {score === 0
+              ? 'No intervention needed before discharge. Outpatient OGD acceptable.'
+              : 'Resuscitate first. Target Hb 70–90 g/L (80–100 if ACS/varices). OGD within 24 h; within 12 h if active haemorrhage.'}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -209,7 +523,6 @@ function CodeStrokeTPA() {
   const within45h = !isNaN(mins) && mins <= 270;
 
   const anyAbsExcl   = absExcl.some(Boolean);
-  const warn3hCount  = warn3h.filter(Boolean).length;
   const warn45hCount = warn45h.filter(Boolean).length;
 
   const decision = useMemo<{ tpa: boolean | null; thrombectomy: boolean | null; reason: string }>(() => {
@@ -239,37 +552,6 @@ function CodeStrokeTPA() {
       reason: `Within ${within3h ? '3 h' : '4.5 h'} window — tPA INDICATED if BP controlled. ${within45h ? 'Also evaluate for LVO/thrombectomy.' : ''}`,
     };
   }, [ctNeg, mins, anyAbsExcl, within3h, within45h, warn45hCount, nih]);
-
-  function CheckList({ items, checked, setChecked, accent }: {
-    items: string[]; checked: boolean[]; setChecked: (v: boolean[]) => void; accent: string;
-  }) {
-    return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-        {items.map((item, i) => (
-          <label key={i} style={{
-            display: 'flex', alignItems: 'flex-start', gap: 8, cursor: 'pointer',
-            padding: '7px 11px', borderRadius: 7, fontSize: 12,
-            background: checked[i] ? `${accent}12` : '#f9fafb',
-            border: `1px solid ${checked[i] ? accent : '#e5e7eb'}`,
-            color: checked[i] ? accent : '#374151',
-            fontWeight: checked[i] ? 600 : 400,
-          }}>
-            <input
-              type="checkbox"
-              checked={checked[i]}
-              onChange={e => {
-                const n = [...checked];
-                n[i] = e.target.checked;
-                setChecked(n);
-              }}
-              style={{ marginTop: 1, accentColor: accent, flexShrink: 0 }}
-            />
-            {item}
-          </label>
-        ))}
-      </div>
-    );
-  }
 
   const tpaColor   = decision.tpa === true ? '#16a34a' : decision.tpa === false ? '#dc2626' : '#6b7280';
   const tpaBg      = decision.tpa === true ? '#f0fdf4' : decision.tpa === false ? '#fef2f2' : '#f9fafb';
@@ -379,15 +661,34 @@ function CodeStrokeTPA() {
 // Main panel — tool selector
 // ══════════════════════════════════════════════════════════════════════════════
 
-type AlgoTool = 'lights' | 'stroke';
+type AlgoTool = 'alvarado' | 'ranson' | 'blatchford' | 'lights' | 'stroke';
 
 const TOOLS: { id: AlgoTool; icon: string; label: string; hint: string }[] = [
-  { id: 'lights', icon: '💧', label: "Light's Criteria",  hint: 'Pleural fluid — transudate vs exudate' },
-  { id: 'stroke', icon: '🧠', label: 'Code Stroke tPA',   hint: 'AHA/ASA 2019 — IV thrombolysis decision' },
+  { id: 'alvarado',   icon: '⚡', label: 'Alvarado Score',    hint: 'Acute appendicitis — surgical decision' },
+  { id: 'ranson',     icon: '🔥', label: 'Ranson Criteria',   hint: 'Acute pancreatitis severity' },
+  { id: 'blatchford', icon: '🩸', label: 'Glasgow-Blatchford', hint: 'Upper GI bleed — risk stratification' },
+  { id: 'lights',     icon: '💧', label: "Light's Criteria",   hint: 'Pleural fluid — transudate vs exudate' },
+  { id: 'stroke',     icon: '🧠', label: 'Code Stroke tPA',    hint: 'AHA/ASA 2019 — IV thrombolysis decision' },
 ];
 
+const CC_TOOL_MAP: Partial<Record<string, AlgoTool>> = {
+  'acute_appendicitis': 'alvarado',
+  'acute_pancreatitis': 'ranson',
+  'gi_bleed_upper':     'blatchford',
+  'acute_cholangitis':  'lights',
+  'bowel_obstruction':  'lights',
+};
+
 export default function ClinicalAlgorithmPanel() {
+  const { activeCcKey } = useAppContext();
   const [active, setActive] = useState<AlgoTool | null>(null);
+
+  // Auto-activate matching tool when CC changes
+  useEffect(() => {
+    if (!activeCcKey) return;
+    const mapped = CC_TOOL_MAP[activeCcKey];
+    if (mapped) setActive(mapped);
+  }, [activeCcKey]);
 
   return (
     <CollapsibleCard title="Clinical Algorithms" defaultOpen={false}>
@@ -402,7 +703,7 @@ export default function ClinicalAlgorithmPanel() {
                 padding: '10px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
                 border: `2px solid ${isSel ? '#2563eb' : '#e2e8f0'}`,
                 background: isSel ? '#eff6ff' : '#fff',
-                minWidth: 160, transition: 'all 0.12s',
+                minWidth: 140, transition: 'all 0.12s',
               }}>
               <div style={{ fontSize: 18, marginBottom: 4 }}>{t.icon}</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: isSel ? '#1d4ed8' : '#111827' }}>{t.label}</div>
@@ -413,6 +714,33 @@ export default function ClinicalAlgorithmPanel() {
       </div>
 
       {/* Active tool */}
+      {active === 'alvarado' && (
+        <div style={{ marginTop: 4 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#c2410c', marginBottom: 10 }}>
+            ⚡ ALVARADO SCORE — Acute Appendicitis
+          </div>
+          <AlvaradoCalc />
+        </div>
+      )}
+
+      {active === 'ranson' && (
+        <div style={{ marginTop: 4 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#b45309', marginBottom: 10 }}>
+            🔥 RANSON CRITERIA — Acute Pancreatitis Severity
+          </div>
+          <RansonCalc />
+        </div>
+      )}
+
+      {active === 'blatchford' && (
+        <div style={{ marginTop: 4 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#dc2626', marginBottom: 10 }}>
+            🩸 GLASGOW-BLATCHFORD — Upper GI Bleed Risk
+          </div>
+          <BlatchfordCalc />
+        </div>
+      )}
+
       {active === 'lights' && (
         <div style={{ marginTop: 4 }}>
           <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#2563eb', marginBottom: 10 }}>
