@@ -200,7 +200,7 @@ export default function NavSidebar({
     onTopSection(item.id);
     if (item.id === 'intake')          { onSection('intake'); }
     if (item.id === 'procedures')      { onSection('procedures'); }
-    if (item.id === 'consultation')    { onSection('nurse_apcq'); }
+    if (item.id === 'consultation')    { onSection('pmh'); }
     if (item.id === 'billing')         { onSection('billing'); }
   }
 

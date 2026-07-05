@@ -34,7 +34,7 @@ export default function DictionaryTab() {
     setEncounterType(matrix.encounterType);
     setProcedureData({ ...procedureData, cc: [{ complaint: diseaseLabel, answers: {} }] });
     setTopSection('consultation');
-    setActiveSection(matrix.sections[0] ?? 'hpi');
+    setActiveSection(matrix.sections[0] ?? 'pmh');
   }
 
   const filtered = useMemo(() => {

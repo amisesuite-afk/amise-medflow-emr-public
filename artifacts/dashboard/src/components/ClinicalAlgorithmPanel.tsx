@@ -523,6 +523,7 @@ function CodeStrokeTPA() {
   const within45h = !isNaN(mins) && mins <= 270;
 
   const anyAbsExcl   = absExcl.some(Boolean);
+  const warn3hCount  = warn3h.filter(Boolean).length;
   const warn45hCount = warn45h.filter(Boolean).length;
 
   const decision = useMemo<{ tpa: boolean | null; thrombectomy: boolean | null; reason: string }>(() => {
@@ -546,12 +547,20 @@ function CodeStrokeTPA() {
       };
     }
 
+    if (warn3hCount > 0) {
+      return {
+        tpa: null,
+        thrombectomy: within45h,
+        reason: `${warn3hCount} relative contraindication${warn3hCount > 1 ? 's' : ''} present in ≤3 h window — team consensus required before tPA. Each must be individually weighed (AHA/ASA 2019).`,
+      };
+    }
+
     return {
       tpa: true,
       thrombectomy: within45h,
       reason: `Within ${within3h ? '3 h' : '4.5 h'} window — tPA INDICATED if BP controlled. ${within45h ? 'Also evaluate for LVO/thrombectomy.' : ''}`,
     };
-  }, [ctNeg, mins, anyAbsExcl, within3h, within45h, warn45hCount, nih]);
+  }, [ctNeg, mins, anyAbsExcl, within3h, within45h, warn3hCount, warn45hCount, nih]);
 
   const tpaColor   = decision.tpa === true ? '#16a34a' : decision.tpa === false ? '#dc2626' : '#6b7280';
   const tpaBg      = decision.tpa === true ? '#f0fdf4' : decision.tpa === false ? '#fef2f2' : '#f9fafb';
@@ -675,19 +684,18 @@ const CC_TOOL_MAP: Partial<Record<string, AlgoTool>> = {
   'acute_appendicitis': 'alvarado',
   'acute_pancreatitis': 'ranson',
   'gi_bleed_upper':     'blatchford',
-  'acute_cholangitis':  'lights',
-  'bowel_obstruction':  'lights',
+  'pleural_effusion':   'lights',
+  'empyema':            'lights',
 };
 
 export default function ClinicalAlgorithmPanel() {
   const { activeCcKey } = useAppContext();
   const [active, setActive] = useState<AlgoTool | null>(null);
 
-  // Auto-activate matching tool when CC changes
+  // Auto-activate matching tool when CC changes; clear if no mapping
   useEffect(() => {
-    if (!activeCcKey) return;
-    const mapped = CC_TOOL_MAP[activeCcKey];
-    if (mapped) setActive(mapped);
+    const mapped = activeCcKey ? CC_TOOL_MAP[activeCcKey] : undefined;
+    setActive(mapped ?? null);
   }, [activeCcKey]);
 
   return (

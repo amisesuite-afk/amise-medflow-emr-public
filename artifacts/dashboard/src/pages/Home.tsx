@@ -396,12 +396,13 @@ export default function HomePage() {
   // Reset visitType when CC is cleared
   useEffect(() => { if (!activeCcKey) setVisitType(null); }, [activeCcKey]);
 
-  // Auto-generate MRN when consultation starts without one
+  // Auto-generate MRN when consultation starts without one (only for a loaded patient)
   useEffect(() => {
     if (topSection !== 'consultation') return;
+    if (!patientId) return;
     if (mrNumber) return;
     const year = new Date().getFullYear();
-    const suffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+    const suffix = Math.random().toString(36).substring(2, 9).toUpperCase();
     setMrNumber(`AM-${year}-${suffix}`);
   }, [topSection, mrNumber, setMrNumber, patientId]);
 
@@ -416,7 +417,7 @@ export default function HomePage() {
   if (age) metaParts.push(`Age ${age}`);
   if (sex && sex !== 'unknown') metaParts.push(sex);
 
-  const sidebarWidth = topSection === 'consultation' ? 0 : zenMode ? 0 : (collapsed ? 52 : 182);
+  const sidebarWidth = zenMode ? 0 : (collapsed || topSection === 'consultation') ? 52 : 182;
 
   if (userRole === 'front_desk') return <ErrorBoundary><ReceptionistView /></ErrorBoundary>;
   if (userRole === 'nurse') return <ErrorBoundary><NursePreVisitView /></ErrorBoundary>;
@@ -558,73 +559,29 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* ── Collapsible sidebar — hidden during active consultation ── */}
-      {topSection !== 'consultation' && (
-        <NavSidebar
-          collapsed={collapsed || zenMode}
-          onToggle={() => zenMode ? setZenMode(false) : setCollapsed(c => !c)}
-          topSection={topSection}
-          onTopSection={s => { setTopSection(s); setZenMode(false); }}
-          activeSection={activeSection}
-          onSection={handleSectionSelect}
-          userRole={userRole}
-          hasUrgentRedFlag={hasUrgentRedFlag}
-          urgentCount={urgentCount}
-          acuity={triageResult.acuity}
-          pmhCount={comorbidities.length}
-          encounterMode={encounterMode}
-          encounterType={encounterType}
-          pendingBookingCount={pendingBookingCount}
-          criticalResultCount={criticalResultCount}
-          sectionCompletion={sectionCompletion}
-          suggestedBlocks={suggestedBlocks}
-        />
-      )}
-
-      {/* ── Encounter progress rail — replaces sidebar during active consultation ── */}
-      {topSection === 'consultation' && (
-        <aside style={{
-          position: 'fixed', left: 0, top: 50, bottom: 0, width: 44,
-          background: '#0f172a', borderRight: '1px solid #1e293b',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: 0, overflowY: 'auto', zIndex: 100,
-        }}>
-          {consultTabs.map((tab, idx) => {
-            const isActive = activeSection === tab.id;
-            const isDone = sectionCompletion[tab.id as keyof typeof sectionCompletion] === true;
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => setActiveSection(tab.id)}
-                title={tab.label}
-                style={{
-                  width: '100%', minHeight: 44, padding: '6px 2px',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  gap: 2, border: 'none', cursor: 'pointer',
-                  background: isActive ? '#0d9488' : 'transparent',
-                  borderLeft: isActive ? '3px solid #14b8a6' : '3px solid transparent',
-                  transition: 'background 0.12s',
-                }}
-              >
-                <span style={{ fontSize: 14, lineHeight: 1 }}>
-                  {isDone && !isActive ? '✓' : (SECTION_ICONS[tab.id] ?? String(idx + 1))}
-                </span>
-                <span style={{
-                  fontSize: 8, fontWeight: 600, color: isActive ? '#fff' : isDone ? '#14b8a6' : '#475569',
-                  lineHeight: 1, textAlign: 'center', maxWidth: 38, overflow: 'hidden',
-                  whiteSpace: 'nowrap', textOverflow: 'ellipsis',
-                }}>
-                  {tab.label}
-                </span>
-              </button>
-            );
-          })}
-        </aside>
-      )}
+      {/* ── Collapsible sidebar — auto-collapsed (icon-only) during active consultation ── */}
+      <NavSidebar
+        collapsed={collapsed || zenMode || topSection === 'consultation'}
+        onToggle={() => zenMode ? setZenMode(false) : setCollapsed(c => !c)}
+        topSection={topSection}
+        onTopSection={s => { setTopSection(s); setZenMode(false); }}
+        activeSection={activeSection}
+        onSection={handleSectionSelect}
+        userRole={userRole}
+        hasUrgentRedFlag={hasUrgentRedFlag}
+        urgentCount={urgentCount}
+        acuity={triageResult.acuity}
+        pmhCount={comorbidities.length}
+        encounterMode={encounterMode}
+        encounterType={encounterType}
+        pendingBookingCount={pendingBookingCount}
+        criticalResultCount={criticalResultCount}
+        sectionCompletion={sectionCompletion}
+        suggestedBlocks={suggestedBlocks}
+      />
 
       {/* ── Main content ── */}
-      <main ref={swipeRef} className="main-content" style={topSection === 'consultation' ? { marginLeft: 44 } : undefined}>
+      <main ref={swipeRef} className="main-content">
         {/* Zen mode exit chip */}
         {zenMode && (
           <button
@@ -794,22 +751,22 @@ export default function HomePage() {
         {/* Encounter context picker — zen venue + type selector */}
         {topSection === 'consultation' && <EncounterContextPicker />}
 
-        {/* Visit type selector — shown once per CC selection before sections open */}
+        {/* Visit type selector — inline card shown after CC is picked, before sections open */}
         {topSection === 'consultation' && activeCcKey !== null && visitType === null && (() => {
           const matrix = getMatrix(activeCcKey);
           return (
             <div style={{
-              position: 'fixed', inset: 0, top: 50, left: 44, zIndex: 200,
-              background: '#0f172a', display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center', gap: 24, padding: 32,
+              margin: '20px 16px', borderRadius: 14,
+              background: '#111827', border: '1px solid #1e293b',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, padding: '28px 24px',
             }}>
               {matrix && (
-                <div style={{ textAlign: 'center', marginBottom: 8 }}>
-                  <div style={{ fontSize: 32, marginBottom: 6 }}>{matrix.icon}</div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: '#f1f5f9' }}>{matrix.name}</div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: 28, marginBottom: 4 }}>{matrix.icon}</div>
+                  <div style={{ fontSize: 17, fontWeight: 800, color: '#f1f5f9' }}>{matrix.name}</div>
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 6,
-                    padding: '3px 12px', borderRadius: 999, fontSize: 11, fontWeight: 700,
+                    padding: '2px 10px', borderRadius: 999, fontSize: 10, fontWeight: 700,
                     background: matrix.urgency === 'emergency' ? '#7f1d1d' : matrix.urgency === 'urgent' ? '#431407' : '#052e16',
                     color: matrix.urgency === 'emergency' ? '#fca5a5' : matrix.urgency === 'urgent' ? '#fb923c' : '#86efac',
                     border: `1px solid ${matrix.urgency === 'emergency' ? '#fca5a5' : matrix.urgency === 'urgent' ? '#fb923c' : '#86efac'}`,
@@ -818,10 +775,8 @@ export default function HomePage() {
                   </div>
                 </div>
               )}
-              <div style={{ fontSize: 14, color: '#64748b', fontWeight: 600 }}>
-                Select visit type to begin
-              </div>
-              <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div style={{ fontSize: 12, color: '#64748b', fontWeight: 600 }}>First visit or returning patient?</div>
+              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
                 <button
                   type="button"
                   onClick={() => {
@@ -829,17 +784,16 @@ export default function HomePage() {
                     if (consultTabs.length > 0) setActiveSection(consultTabs[0].id);
                   }}
                   style={{
-                    width: 200, padding: '28px 20px', borderRadius: 16, border: '2px solid #0d9488',
+                    padding: '16px 24px', borderRadius: 12, border: '2px solid #0d9488',
                     background: '#0d948820', color: '#f1f5f9', cursor: 'pointer',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-                    transition: 'all 0.15s',
+                    display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.15s',
                   }}
                 >
-                  <span style={{ fontSize: 36 }}>🩺</span>
-                  <span style={{ fontSize: 16, fontWeight: 800 }}>New Consultation</span>
-                  <span style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>
-                    First visit — full history and examination
-                  </span>
+                  <span style={{ fontSize: 28 }}>🩺</span>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontSize: 14, fontWeight: 800 }}>New Consultation</div>
+                    <div style={{ fontSize: 11, color: '#94a3b8' }}>Full history &amp; examination</div>
+                  </div>
                 </button>
                 <button
                   type="button"
@@ -848,17 +802,16 @@ export default function HomePage() {
                     setActiveSection('progress');
                   }}
                   style={{
-                    width: 200, padding: '28px 20px', borderRadius: 16, border: '2px solid #3b82f6',
+                    padding: '16px 24px', borderRadius: 12, border: '2px solid #3b82f6',
                     background: '#3b82f620', color: '#f1f5f9', cursor: 'pointer',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10,
-                    transition: 'all 0.15s',
+                    display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.15s',
                   }}
                 >
-                  <span style={{ fontSize: 36 }}>📋</span>
-                  <span style={{ fontSize: 16, fontWeight: 800 }}>Follow-up Visit</span>
-                  <span style={{ fontSize: 12, color: '#94a3b8', textAlign: 'center' }}>
-                    Review progress, update plan
-                  </span>
+                  <span style={{ fontSize: 28 }}>📋</span>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontSize: 14, fontWeight: 800 }}>Follow-up Visit</div>
+                    <div style={{ fontSize: 11, color: '#94a3b8' }}>Review progress, update plan</div>
+                  </div>
                 </button>
               </div>
             </div>
@@ -866,7 +819,7 @@ export default function HomePage() {
         })()}
 
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
-        {topSection === 'consultation' && visitType !== null && (() => {
+        {topSection === 'consultation' && (() => {
           const curIdx = consultTabs.findIndex(t => t.id === activeSection);
           const prevTab = curIdx > 0 ? consultTabs[curIdx - 1] : null;
           const nextTab = curIdx >= 0 && curIdx < consultTabs.length - 1 ? consultTabs[curIdx + 1] : null;
