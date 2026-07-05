@@ -203,19 +203,19 @@ export default function HomePage() {
   /* ── Sections shown per encounter type — accordion effect ── */
   const ENCOUNTER_TAB_SETS: Record<EncounterType, ReadonlySet<Section>> = useMemo(() => ({
     quick_consult: new Set<Section>([
-      'triage', 'pmh', 'medications', 'allergies',
+      'triage', 'hpi', 'pmh', 'medications', 'allergies',
       'examination', 'assessment', 'plan', 'prescriptions', 'referring_providers',
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     endoscopy: new Set<Section>([
-      'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
       'examination', 'investigations', 'radiology', 'attachments',
       'assessment', 'plan', 'procedures',
       'prescriptions', 'referring_providers',
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     surgical_consult: new Set<Section>([
-      'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros',
       'examination', 'investigations', 'radiology', 'attachments',
       'assessment', 'plan', 'procedures',
@@ -223,13 +223,13 @@ export default function HomePage() {
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     office_procedure: new Set<Section>([
-      'triage', 'pmh', 'medications', 'allergies',
+      'triage', 'hpi', 'pmh', 'medications', 'allergies',
       'examination', 'investigations', 'attachments',
       'assessment', 'plan', 'prescriptions',
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     major_emergency: new Set<Section>([
-      'triage', 'pmh', 'surgical', 'medications', 'allergies',
+      'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros',
       'examination', 'wounds', 'investigations', 'blood_gas', 'radiology', 'attachments',
       'assessment', 'plan', 'prescriptions', 'dosing', 'fluid_nutrition', 'referring_providers',
@@ -258,6 +258,7 @@ export default function HomePage() {
       : ENCOUNTER_TAB_SETS[encounterType];
     const all: { id: Section; label: string }[] = [
       { id: 'triage', label: 'Triage' },
+      { id: 'hpi', label: 'HPI' },
       { id: 'pmh', label: 'PMH' },
       { id: 'surgical', label: 'Surgical' },
       { id: 'medications', label: 'Meds' },
@@ -846,9 +847,9 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'letters'        && <LetterGeneratorTab />}
         {topSection === 'consultation'  && activeSection === 'patient_education' && <PatientEducationTab />}
         {topSection === 'procedures'    && hasRole(userRole, 'doctor')        && <ProceduresTab />}
-        {topSection === 'summary'       && <SummaryTab />}
-        {topSection === 'finaldoc'      && encounterMode === 'outpatient' && <FinalDocTab />}
-        {topSection === 'finaldoc'      && encounterMode === 'inpatient'  && <InpatientTab />}
+        {topSection === 'summary'        && <SummaryTab />}
+        {topSection === 'finaldoc'       && encounterMode === 'outpatient' && <SummaryTab />}
+        {topSection === 'finaldoc'       && encounterMode === 'inpatient'  && <InpatientTab />}
         {topSection === 'billing'       && activeSection === 'billing'   && roleIn(userRole, 'front_desk', 'admin') && <BillingTab />}
         {topSection === 'billing'       && activeSection === 'documents' && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
 

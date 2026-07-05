@@ -1,9 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import SmartTextarea from '@/components/SmartTextarea';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getSuggestedPhrases } from '@/data/dot-phrases';
+import { getMatrixByName } from '@/lib/cc-matrices';
+
+interface CCEntry { complaint: string; answers: Record<string, string> }
 
 const SOCRATES_PROMPTS = [
   { label: 'Site', hint: 'Where is the problem? Any radiation?' },
@@ -17,7 +20,8 @@ const SOCRATES_PROMPTS = [
 ];
 
 export default function HpiTab() {
-  const { hpiNotes, setHpiNotes, freeText, durationDays, symptoms, symptomDetails, age, sex } = useAppContext();
+  const { hpiNotes, setHpiNotes, freeText, durationDays, painScore, symptoms, symptomDetails, age, sex, procedureData } = useAppContext();
+  const entries = useMemo(() => (procedureData['cc'] as CCEntry[] | undefined) ?? [], [procedureData]);
 
   const ageNum = age ? Number(age) : null;
 
@@ -47,15 +51,66 @@ export default function HpiTab() {
     setHpiNotes(hpiNotes + sep + text);
   }
 
+  const autoFill = useCallback(() => {
+    const lines: string[] = [];
+    const agePart  = age  ? `${age}-year-old` : '';
+    const sexPart  = sex && sex !== 'unknown' ? sex : '';
+    const demoParts = [agePart, sexPart].filter(Boolean);
+    if (demoParts.length) {
+      lines.push(`${demoParts.join(' ')} presenting with:`);
+      lines.push('');
+    }
+    if (entries.length > 0) {
+      entries.forEach(entry => {
+        const tpl = getMatrixByName(entry.complaint);
+        lines.push(entry.complaint.toUpperCase());
+        tpl.prompts.forEach(p => {
+          const ans = entry.answers[p.key]?.trim();
+          if (ans) lines.push(`  ${p.label}: ${ans}`);
+        });
+        lines.push('');
+      });
+    } else if (symptoms.length > 0) {
+      lines.push(`Presenting complaints: ${symptoms.join(', ')}`);
+      lines.push('');
+    }
+    if (durationDays) lines.push(`Duration: ${durationDays} days`);
+    if (painScore)    lines.push(`Pain score: ${painScore}/10`);
+    if (freeText.trim()) {
+      lines.push('');
+      lines.push(`Patient description: ${freeText.trim()}`);
+    }
+    const draft = lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    if (draft) setHpiNotes(draft);
+  }, [age, sex, entries, symptoms, durationDays, painScore, freeText, setHpiNotes]);
+
+  const hasAutoFillData = entries.length > 0 || symptoms.length > 0 || freeText.trim();
+
   return (
     <div className="gap-y">
       <CollapsibleCard title="History of present illness" badge={hpiNotes.trim() ? '✓' : undefined}>
         <div className="fld">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4, flexWrap: 'wrap', gap: 6 }}>
             <label style={{ marginBottom: 0 }}>HPI narrative</label>
-            <span style={{ fontSize: 11, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4 }}>
-              🎤 Tap mic to dictate · type <code style={{ fontSize: 10, background: '#f1f5f9', padding: '1px 4px', borderRadius: 3 }}>.hpi</code> for template
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              {hasAutoFillData && (
+                <button
+                  type="button"
+                  onClick={autoFill}
+                  style={{
+                    fontSize: 11, padding: '3px 10px', borderRadius: 5, cursor: 'pointer',
+                    border: '1px solid #0d9488', background: hpiNotes.trim() ? '#f0fdfa' : '#0d9488',
+                    color: hpiNotes.trim() ? '#0d9488' : '#fff', fontWeight: 600,
+                  }}
+                  title="Populate HPI from chief complaint matrix and intake data"
+                >
+                  {hpiNotes.trim() ? '↺ Re-fill from CC' : '⬇ Fill from CC data'}
+                </button>
+              )}
+              <span style={{ fontSize: 11, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4 }}>
+                🎤 Tap mic to dictate · type <code style={{ fontSize: 10, background: '#f1f5f9', padding: '1px 4px', borderRadius: 3 }}>.hpi</code> for template
+              </span>
+            </div>
           </div>
 
           {/* Context-aware phrase suggestions based on leading differential */}
