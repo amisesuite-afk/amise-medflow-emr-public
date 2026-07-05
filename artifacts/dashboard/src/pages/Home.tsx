@@ -72,6 +72,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import CommandPalette from '@/components/CommandPalette';
 import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
+import EncounterContextPicker from '@/components/EncounterContextPicker';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -439,35 +440,8 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Encounter type selector — accordion control */}
-          {encounterMode === 'outpatient' && (
-            <div className="site-pill" aria-label="Encounter type" title="Select encounter complexity — controls which sections are shown">
-              {(
-                [
-                  { id: 'quick_consult',    label: 'Quick'    },
-                  { id: 'endoscopy',        label: 'Scope'    },
-                  { id: 'surgical_consult', label: 'Surgical' },
-                  { id: 'office_procedure', label: 'Office'   },
-                  { id: 'major_emergency',  label: 'Major/ER' },
-                ] as const
-              ).map(({ id, label }) => (
-                <button
-                  key={id}
-                  className={`site-pill__btn${encounterType === id ? ' site-pill__btn--active' : ''}`}
-                  onClick={() => setEncounterType(id)}
-                  title={{
-                    quick_consult:    'Quick Consult — simple outpatient visit (hernia, thyroid nodule, breast lump)',
-                    endoscopy:        'Endoscopy — OGD, colonoscopy, or ERCP',
-                    surgical_consult: 'Surgical Consult — full preoperative assessment (default)',
-                    office_procedure: 'Office Procedure — minor in-clinic procedure (FNAC, excision)',
-                    major_emergency:  'Major / Emergency — major elective or ER / trauma admission',
-                  }[id]}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Encounter context picker — zen accordion */}
+          <EncounterContextPicker />
 
           {/* Site selector pill — outpatient only (inpatient = Tapion always) */}
           {encounterMode === 'outpatient' && (
