@@ -416,6 +416,10 @@ function ColonForm({ data, onChange }: { data: ColonData; onChange: (d: ColonDat
           <SelectOpts chips={['Performed — normal', 'Performed — abnormal', 'Not attempted']}
             value={data.ileoscopy} onChange={v => set('ileoscopy', v)} />
         </Field>
+        <Field label="Appendix orifice">
+          <SelectOpts chips={['Visualised', 'Not visualised', 'Previous appendicectomy']}
+            value={data.appendixOrifice} onChange={v => set('appendixOrifice', v)} />
+        </Field>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -1087,6 +1091,17 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
         <CheckList items={['NPO until tolerated', 'Antibiotic therapy', 'DVT prophylaxis', 'IDC — strict I&O', 'Continuous monitoring', 'Physiotherapy', 'Wound review in 2 days', 'Remove drain day 1']}
           value={data.postopOrders} onChange={v => set('postopOrders', v)} />
       </Field>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <Field label="Post-op diet">
+          <SelectOpts chips={['NBM / NPO', 'Sips only', 'Free fluids', 'Light diet', 'Normal diet', 'TPN / Enteral feed']}
+            value={data.diet} onChange={v => set('diet', v)} />
+        </Field>
+        <Field label="IV access">
+          <SelectOpts chips={['PIV × 1', 'PIV × 2', 'PICC', 'Central (CVC)', 'Arterial line', 'None / removed']}
+            value={data.ivAccess} onChange={v => set('ivAccess', v)} />
+        </Field>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <Field label="Intraoperative complications">

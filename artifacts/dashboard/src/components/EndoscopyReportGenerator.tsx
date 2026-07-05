@@ -18,14 +18,32 @@ const TYPE_LABELS: Record<EndoProcType, string> = {
   bronch: 'Bronchoscopy',
 };
 
-// Pull the relevant fields from procedureData for each type
+// Pull the relevant fields from procedureData for each type.
+// Handles string[], number, boolean, and nested object arrays (e.g. polyp lists).
 function extractFields(type: EndoProcType, procedureData: Record<string, unknown>): Record<string, string> {
   const raw = (procedureData[type] ?? {}) as Record<string, unknown>;
   const fields: Record<string, string> = {};
   for (const [k, v] of Object.entries(raw)) {
-    if (typeof v === 'string' && v.trim()) fields[k] = v;
-    else if (typeof v === 'number') fields[k] = String(v);
-    else if (typeof v === 'boolean') fields[k] = v ? 'Yes' : 'No';
+    if (typeof v === 'string' && v.trim()) {
+      fields[k] = v;
+    } else if (typeof v === 'number') {
+      fields[k] = String(v);
+    } else if (typeof v === 'boolean') {
+      fields[k] = v ? 'Yes' : 'No';
+    } else if (Array.isArray(v) && v.length > 0) {
+      if (typeof v[0] === 'string') {
+        // string[] — checkboxes (cardiacRisk, postopOrders, safetyChecks …)
+        fields[k] = (v as string[]).join(', ');
+      } else if (typeof v[0] === 'object' && v[0] !== null) {
+        // object[] — polyp list, specimen list etc.
+        fields[k] = (v as Record<string, unknown>[]).map((item, i) =>
+          `[${i + 1}] ` + Object.entries(item)
+            .filter(([, val]) => val !== '' && val !== null && val !== undefined)
+            .map(([key, val]) => `${key}: ${val}`)
+            .join(', ')
+        ).join(' | ');
+      }
+    }
   }
   return fields;
 }

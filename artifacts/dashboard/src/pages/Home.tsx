@@ -204,14 +204,16 @@ export default function HomePage() {
     endoscopy: new Set<Section>([
       'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
       'examination', 'investigations', 'radiology', 'attachments',
-      'assessment', 'plan', 'prescriptions', 'referring_providers',
+      'assessment', 'plan', 'procedures',
+      'prescriptions', 'referring_providers',
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     surgical_consult: new Set<Section>([
       'nurse_apcq', 'apcq', 'hpi', 'triage', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros',
       'examination', 'investigations', 'radiology', 'attachments',
-      'assessment', 'plan', 'prescriptions', 'referring_providers',
+      'assessment', 'plan', 'procedures',
+      'prescriptions', 'referring_providers',
       'encounter_history', 'progress', 'monitoring', 'tasks',
     ]),
     office_procedure: new Set<Section>([
@@ -258,6 +260,7 @@ export default function HomePage() {
       ...(hasRole(userRole, 'doctor') ? [
         { id: 'assessment' as Section, label: 'Assess' },
         { id: 'plan' as Section, label: 'Plan' },
+        { id: 'procedures' as Section, label: 'Procedure' },
         { id: 'prescriptions' as Section, label: 'RX' },
         { id: 'dosing' as Section, label: 'Dosing' },
         { id: 'fluid_nutrition' as Section, label: 'Fluids' },
