@@ -3,6 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { SLOT_RULES, AppointmentType } from '@workspace/triage-engine';
 import TheatreBookingCard from '@/components/TheatreBookingCard';
+import TheatreListBuilderCard from '@/components/TheatreListBuilderCard';
 import PreopDayChecklist from '@/components/PreopDayChecklist';
 import PostOpMilestonesCard from '@/components/PostOpMilestonesCard';
 import { staffAuthHeaders } from '@/lib/staff-auth';
@@ -345,6 +346,7 @@ export default function SchedulingTab() {
         </div>
       )}
 
+      <TheatreListBuilderCard />
       <TheatreBookingCard />
       <PreopDayChecklist />
       <PostOpMilestonesCard />
