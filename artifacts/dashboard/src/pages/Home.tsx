@@ -74,6 +74,7 @@ import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
 import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
+import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import { getMatrix } from '@/lib/cc-matrices';
 
 const API_ORIGIN = getApiOrigin();
@@ -766,6 +767,9 @@ export default function HomePage() {
         {/* Problem list strip — collapsed by default; badge shows count */}
         {topSection === 'consultation' && <ProblemListStrip />}
 
+        {/* Clinical prompts — inferred from demographics, CC, PMH, Fhx, social Hx */}
+        {topSection === 'consultation' && <ClinicalPromptsStrip />}
+
 
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
         {topSection === 'consultation' && (() => {
@@ -787,22 +791,35 @@ export default function HomePage() {
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0 8px', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0 8px', gap: 8, alignItems: 'center' }}>
                 {prevTab ? (
                   <button type="button" onClick={() => setActiveSection(prevTab.id)}
                     style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1px solid #d1d5db', background: '#f9fafb', color: '#374151' }}>
                     ← {prevTab.label}
                   </button>
                 ) : <span />}
-                <span style={{ fontSize: 11, color: '#9ca3af', alignSelf: 'center' }}>
+                <span style={{ fontSize: 11, color: '#9ca3af' }}>
                   {curIdx >= 0 ? `${curIdx + 1} / ${consultTabs.length}` : ''}
                 </span>
-                {nextTab ? (
-                  <button type="button" onClick={() => setActiveSection(nextTab.id)}
-                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#1F7A8C', color: '#fff' }}>
-                    {nextTab.label} →
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  {nextTab && (
+                    <button type="button" onClick={() => setActiveSection(nextTab.id)}
+                      style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#1F7A8C', color: '#fff' }}>
+                      {nextTab.label} →
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setTopSection('finaldoc')}
+                    title="Open encounter summary, export, and sign-off"
+                    style={{
+                      padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                      border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488',
+                    }}
+                  >
+                    📋 Summary
                   </button>
-                ) : <span />}
+                </div>
               </div>
             </>
           );
