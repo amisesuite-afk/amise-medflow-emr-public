@@ -52,6 +52,8 @@ function apiUrl(path: string) {
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
 }
 
+const NOK_RELATIONS = ['Spouse', 'Partner', 'Parent', 'Child', 'Sibling', 'Grandparent', 'Aunt/Uncle', 'Friend', 'Guardian', 'Carer', 'Other'];
+
 export default function ReceptionistView() {
   const {
     patientName, setPatientName,
@@ -67,6 +69,10 @@ export default function ReceptionistView() {
     policyNumber, setPolicyNumber,
     nhiNumber, setNhiNumber,
     preAuthStatus, setPreAuthStatus,
+    occupation, setOccupation,
+    nokName, setNokName,
+    nokRelation, setNokRelation,
+    nokTel, setNokTel,
     clearPatient,
     currentSite, setCurrentSite,
     preVisitStatus, setPreVisitStatus,
@@ -74,7 +80,8 @@ export default function ReceptionistView() {
     patientPhoto, setPatientPhoto,
   } = useAppContext();
 
-  const photoInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const { profile, signOut } = useAuth();
   const [saving, setSaving] = useState(false);
@@ -157,6 +164,8 @@ export default function ReceptionistView() {
     clearPatient();
     setPatientPhoto('');
     setSaveError(null);
+    setOccupation('');
+    setNokName(''); setNokRelation(''); setNokTel('');
   }
 
   async function handleInvitePortal() {
@@ -358,89 +367,74 @@ export default function ReceptionistView() {
               background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb',
               padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10,
             }}>
-              {/* Photo capture strip */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottom: '1px solid #f3f4f6' }}>
-                <button
-                  type="button"
-                  title="Take or upload patient photo"
-                  onClick={() => photoInputRef.current?.click()}
-                  style={{ flexShrink: 0, padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '50%', position: 'relative' }}
-                >
+              {/* ── Photo capture strip ── */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingBottom: 12, borderBottom: '1px solid #f3f4f6' }}>
+                {/* Photo circle */}
+                <div style={{ flexShrink: 0, position: 'relative' }}>
                   {patientPhoto ? (
-                    <img src={patientPhoto} alt="Patient" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '2.5px solid #0d9488', display: 'block' }} />
+                    <img src={patientPhoto} alt="Patient" style={{ width: 76, height: 76, borderRadius: '50%', objectFit: 'cover', border: '2.5px solid #0d9488', display: 'block' }} />
                   ) : (
-                    <div style={{
-                      width: 72, height: 72, borderRadius: '50%',
-                      background: '#f9fafb', border: '2px dashed #d1d5db',
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
-                    }}>
-                      <span style={{ fontSize: 22, lineHeight: 1 }}>📷</span>
-                      <span style={{ fontSize: 8, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>PHOTO</span>
+                    <div style={{ width: 76, height: 76, borderRadius: '50%', background: '#f1f5f9', border: '2px dashed #cbd5e1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                      <span style={{ fontSize: 24, lineHeight: 1 }}>👤</span>
+                      <span style={{ fontSize: 7, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em' }}>PHOTO</span>
                     </div>
                   )}
-                  {/* Camera badge overlay */}
-                  <div style={{
-                    position: 'absolute', bottom: 0, right: 0,
-                    width: 22, height: 22, borderRadius: '50%',
-                    background: '#0d9488', border: '2px solid #fff',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11,
-                  }}>
-                    +
-                  </div>
-                </button>
-                <input
-                  ref={photoInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  style={{ display: 'none' }}
-                  onChange={e => {
-                    const f = e.target.files?.[0];
-                    if (f) void resizeImageToBase64(f).then(b64 => { if (b64) setPatientPhoto(b64); });
-                    e.target.value = '';
-                  }}
-                />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>
+                </div>
+
+                {/* Photo action buttons */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#374151', marginBottom: 2 }}>
                     Patient photo <span style={{ color: '#9ca3af', fontWeight: 400 }}>(optional)</span>
                   </div>
-                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
-                    Tap circle to take photo or choose from gallery
-                  </div>
-                  {patientPhoto && (
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     <button
                       type="button"
-                      onClick={() => setPatientPhoto('')}
-                      style={{ marginTop: 5, fontSize: 11, color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontWeight: 600 }}
+                      onClick={() => cameraInputRef.current?.click()}
+                      style={{ fontSize: 11, fontWeight: 600, padding: '5px 12px', borderRadius: 6, border: '1.5px solid #0d9488', background: '#f0fdfa', color: '#0d9488', cursor: 'pointer' }}
                     >
-                      Remove photo
+                      📷 Camera
                     </button>
-                  )}
+                    <button
+                      type="button"
+                      onClick={() => galleryInputRef.current?.click()}
+                      style={{ fontSize: 11, fontWeight: 600, padding: '5px 12px', borderRadius: 6, border: '1.5px solid #d1d5db', background: '#f9fafb', color: '#374151', cursor: 'pointer' }}
+                    >
+                      🖼 Gallery / File
+                    </button>
+                    {patientPhoto && (
+                      <button
+                        type="button"
+                        onClick={() => setPatientPhoto('')}
+                        style={{ fontSize: 11, fontWeight: 600, padding: '5px 10px', borderRadius: 6, border: '1.5px solid #fca5a5', background: '#fef2f2', color: '#dc2626', cursor: 'pointer' }}
+                      >
+                        ✕ Remove
+                      </button>
+                    )}
+                  </div>
                 </div>
+
+                {/* Hidden file inputs */}
+                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }}
+                  onChange={e => { const f = e.target.files?.[0]; if (f) void resizeImageToBase64(f).then(b64 => { if (b64) setPatientPhoto(b64); }); e.target.value = ''; }} />
+                <input ref={galleryInputRef} type="file" accept="image/*" style={{ display: 'none' }}
+                  onChange={e => { const f = e.target.files?.[0]; if (f) void resizeImageToBase64(f).then(b64 => { if (b64) setPatientPhoto(b64); }); e.target.value = ''; }} />
               </div>
 
-              {/* Row 1: Name (full width) */}
+              {/* ── Full name ── */}
               <div className="fld">
                 <label style={{ fontSize: 11, fontWeight: 700, color: '#374151' }}>Full name</label>
-                <input
-                  value={patientName}
-                  onChange={e => setPatientName(e.target.value)}
-                  placeholder="e.g. Marie Joseph"
-                  autoFocus
-                  style={{ fontSize: 16, padding: '11px 12px', borderRadius: 8 }}
-                />
+                <input value={patientName} onChange={e => setPatientName(e.target.value)} placeholder="e.g. Marie Joseph" autoFocus style={{ fontSize: 16, padding: '11px 12px', borderRadius: 8 }} />
               </div>
 
-              {/* Row 2: DOB · Age · Sex · Phone — all in one line */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.6fr 0.6fr 1fr', gap: 8 }}>
+              {/* ── DOB · Age · Sex · Phone ── */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.5fr 0.5fr 1fr', gap: 8 }}>
                 <div className="fld">
-                  <label style={{ fontSize: 10 }}>DOB</label>
-                  <input type="date" value={dob} onChange={e => setDob(e.target.value)} style={{ padding: '8px 8px', fontSize: 13 }} />
+                  <label style={{ fontSize: 10 }}>Date of birth</label>
+                  <input type="date" value={dob} onChange={e => setDob(e.target.value)} style={{ padding: '8px', fontSize: 13 }} />
                 </div>
                 <div className="fld">
                   <label style={{ fontSize: 10 }}>Age</label>
-                  <input inputMode="numeric" value={age} onChange={e => setAge(e.target.value)} placeholder="57" style={{ padding: '8px 8px', fontSize: 13, textAlign: 'center' }} />
+                  <input inputMode="numeric" value={age} onChange={e => setAge(e.target.value)} placeholder="57" style={{ padding: '8px', fontSize: 13, textAlign: 'center' }} />
                 </div>
                 <div className="fld">
                   <label style={{ fontSize: 10 }}>Sex</label>
@@ -452,72 +446,113 @@ export default function ReceptionistView() {
                   </select>
                 </div>
                 <div className="fld">
-                  <label style={{ fontSize: 10 }}>Phone</label>
-                  <input inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 (758) XXX-XXXX" style={{ padding: '8px 8px', fontSize: 13 }} />
+                  <label style={{ fontSize: 10 }}>Mobile phone</label>
+                  <input inputMode="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+1 (758) XXX-XXXX" style={{ padding: '8px', fontSize: 13 }} />
                 </div>
               </div>
 
-              {/* Row 3: Email · Community — split */}
+              {/* ── Email · Occupation ── */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 <div className="fld">
-                  <label style={{ fontSize: 10 }}>Email <span style={{ color: '#9ca3af' }}>(portal)</span></label>
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="patient@example.com" style={{ padding: '8px 8px', fontSize: 13 }} />
+                  <label style={{ fontSize: 10 }}>Email <span style={{ color: '#9ca3af' }}>(patient portal)</span></label>
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="patient@example.com" style={{ padding: '8px', fontSize: 13 }} />
                 </div>
                 <div className="fld">
-                  <label style={{ fontSize: 10 }}>Community / Address</label>
-                  <input
-                    type="text" list="sl-communities" value={address}
-                    onChange={e => {
-                      const val = e.target.value;
-                      setAddress(val);
-                      const match = SL_COMMUNITIES.find(c => c.community.toLowerCase() === val.toLowerCase());
-                      setQuarter(match ? match.quarter : '');
-                    }}
-                    placeholder="e.g. Rodney Bay"
-                    style={{ padding: '8px 8px', fontSize: 13 }}
-                  />
-                  <datalist id="sl-communities">
-                    {SL_COMMUNITIES.map(c => (
-                      <option key={`${c.quarter}-${c.community}`} value={c.community}>{c.quarter}</option>
-                    ))}
-                  </datalist>
+                  <label style={{ fontSize: 10 }}>Occupation</label>
+                  <input type="text" value={occupation} onChange={e => setOccupation(e.target.value)} placeholder="e.g. Teacher, Nurse, Farmer…" style={{ padding: '8px', fontSize: 13 }} />
                 </div>
               </div>
 
-              {/* Row 4: Referred by · Insurance — split */}
+              {/* ── Address section ── */}
+              <div style={{ padding: '10px 12px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', letterSpacing: '0.06em' }}>ADDRESS</div>
+                <div className="fld" style={{ marginBottom: 0 }}>
+                  <label style={{ fontSize: 10 }}>Street / house number</label>
+                  <input type="text" value={address} onChange={e => setAddress(e.target.value)} placeholder="e.g. 14 Choc Bay Lane" style={{ padding: '8px', fontSize: 13 }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div className="fld" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 10 }}>Community / Village</label>
+                    <input
+                      type="text" list="sl-communities" value={quarter}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setQuarter(val);
+                      }}
+                      placeholder="e.g. Rodney Bay"
+                      style={{ padding: '8px', fontSize: 13 }}
+                    />
+                    <datalist id="sl-communities">
+                      {SL_COMMUNITIES.map(c => (
+                        <option key={`${c.quarter}-${c.community}`} value={c.community}>{c.quarter}</option>
+                      ))}
+                    </datalist>
+                  </div>
+                  <div className="fld" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 10 }}>District / Quarter</label>
+                    <select
+                      value={quarter}
+                      onChange={e => setQuarter(e.target.value)}
+                      style={{ padding: '8px 6px', fontSize: 13 }}
+                    >
+                      <option value="">— Select district —</option>
+                      {Array.from(new Set(SL_COMMUNITIES.map(c => c.quarter))).map(q => (
+                        <option key={q} value={q}>{q}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Next of kin ── */}
+              <div style={{ padding: '10px 12px', background: '#fff7ed', borderRadius: 8, border: '1px solid #fed7aa', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#92400e', letterSpacing: '0.06em' }}>NEXT OF KIN</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.7fr 1fr', gap: 8 }}>
+                  <div className="fld" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 10 }}>Full name</label>
+                    <input type="text" value={nokName} onChange={e => setNokName(e.target.value)} placeholder="e.g. Jean Joseph" style={{ padding: '8px', fontSize: 13 }} />
+                  </div>
+                  <div className="fld" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 10 }}>Relationship</label>
+                    <select value={nokRelation} onChange={e => setNokRelation(e.target.value)} style={{ padding: '8px 6px', fontSize: 13 }}>
+                      <option value="">— Select —</option>
+                      {NOK_RELATIONS.map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                  </div>
+                  <div className="fld" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 10 }}>Contact phone</label>
+                    <input inputMode="tel" type="tel" value={nokTel} onChange={e => setNokTel(e.target.value)} placeholder="+1 (758) XXX-XXXX" style={{ padding: '8px', fontSize: 13 }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Referred by · Insurance ── */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 <div className="fld">
                   <label style={{ fontSize: 10 }}>Referred by</label>
-                  <input
-                    type="text" list="referring-doctors" value={referredBy}
-                    onChange={e => setReferredBy(e.target.value)}
-                    placeholder="Doctor or facility…"
-                    style={{ padding: '8px 8px', fontSize: 13 }}
-                  />
+                  <input type="text" list="referring-doctors" value={referredBy} onChange={e => setReferredBy(e.target.value)} placeholder="Doctor or facility…" style={{ padding: '8px', fontSize: 13 }} />
                   <datalist id="referring-doctors">
-                    {referringProviders.map(name => (
-                      <option key={name} value={name} />
-                    ))}
+                    {referringProviders.map(name => <option key={name} value={name} />)}
                   </datalist>
                 </div>
                 <div className="fld">
-                  <label style={{ fontSize: 10 }}>Insurance</label>
-                  <input type="text" value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="SAGICOR, CLICO…" style={{ padding: '8px 8px', fontSize: 13 }} />
+                  <label style={{ fontSize: 10 }}>Insurance provider</label>
+                  <input type="text" value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="SAGICOR, CLICO, CIBC…" style={{ padding: '8px', fontSize: 13 }} />
                 </div>
               </div>
 
-              {/* Row 5: Policy · NHI · Pre-auth — compact row */}
+              {/* ── Policy · NHI · Pre-auth ── */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                 <div className="fld">
-                  <label style={{ fontSize: 10 }}>Policy #</label>
-                  <input type="text" value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Member ID" style={{ padding: '8px 8px', fontSize: 13 }} />
+                  <label style={{ fontSize: 10 }}>Policy / Member #</label>
+                  <input type="text" value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Member ID" style={{ padding: '8px', fontSize: 13 }} />
                 </div>
                 <div className="fld">
                   <label style={{ fontSize: 10 }}>NHI #</label>
-                  <input type="text" value={nhiNumber} onChange={e => setNhiNumber(e.target.value)} placeholder="NHI number" style={{ padding: '8px 8px', fontSize: 13 }} />
+                  <input type="text" value={nhiNumber} onChange={e => setNhiNumber(e.target.value)} placeholder="NHI number" style={{ padding: '8px', fontSize: 13 }} />
                 </div>
                 <div className="fld">
-                  <label style={{ fontSize: 10 }}>Pre-auth</label>
+                  <label style={{ fontSize: 10 }}>Pre-authorisation</label>
                   <select value={preAuthStatus} onChange={e => setPreAuthStatus(e.target.value)} style={{ padding: '8px 6px', fontSize: 13 }}>
                     <option value="">N/A</option>
                     <option value="pending">Pending</option>
@@ -526,7 +561,6 @@ export default function ReceptionistView() {
                   </select>
                 </div>
               </div>
-              {quarter && <span style={{ fontSize: 10, color: '#6b7280' }}>Quarter: {quarter}</span>}
             </div>
           )}
 
