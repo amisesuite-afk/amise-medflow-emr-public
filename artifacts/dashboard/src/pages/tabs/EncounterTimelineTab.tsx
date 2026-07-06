@@ -1,6 +1,18 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { listPatientEncounters, loadEncounterData, type EncounterSummary } from '@/lib/db';
+import { listPatientEncounters, loadEncounterData, type EncounterSummary, type PatientListRow } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
+import { DEMO_MODE } from '@/context/AuthContext';
+
+const DEMO_PATIENTS_KEY = 'amise-patients-v1';
+interface DemoPatient { id: string; full_name: string; age?: string; sex?: string; dob?: string; phone?: string; savedAt?: string }
+
+function loadDemoPatients(): DemoPatient[] {
+  try {
+    const raw = localStorage.getItem(DEMO_PATIENTS_KEY);
+    return raw ? (JSON.parse(raw) as DemoPatient[]) : [];
+  } catch { return []; }
+}
 
 const SITE_LABEL: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
@@ -28,7 +40,62 @@ export default function EncounterTimelineTab() {
     setToxicHabits,
     setActiveSection,
     referredBy, procedureData,
+    setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
   } = useAppContext();
+
+  // ── Patient search (shown when no patient loaded) ────────────────────────
+  const [searchQ, setSearchQ] = useState('');
+  const [searchResults, setSearchResults] = useState<PatientListRow[]>([]);
+  const [searching, setSearching] = useState(false);
+  const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  async function runSearch(q: string) {
+    if (!q.trim()) { setSearchResults([]); return; }
+    if (DEMO_MODE) {
+      const all = loadDemoPatients();
+      const lower = q.toLowerCase();
+      setSearchResults(
+        all.filter(p => p.full_name.toLowerCase().includes(lower))
+           .slice(0, 10)
+           .map(p => ({ id: p.id, full_name: p.full_name, sex: p.sex ?? null, phone: p.phone ?? null, date_of_birth: p.dob ?? null, created_at: p.savedAt ?? null }))
+      );
+      return;
+    }
+    setSearching(true);
+    try {
+      if (!supabase) return;
+      const isPhone = /^\+?\d[\d\s()-]{3,}$/.test(q.trim());
+      const { data } = isPhone
+        ? await supabase.from('patients').select('id,full_name,sex,phone,date_of_birth,created_at').ilike('phone', `%${q.replace(/[\s()-]/g,'')}%`).limit(20)
+        : await supabase.from('patients').select('id,full_name,sex,phone,date_of_birth,created_at').ilike('full_name', `%${q}%`).order('created_at', { ascending: false }).limit(20);
+      setSearchResults((data ?? []) as PatientListRow[]);
+    } finally { setSearching(false); }
+  }
+
+  function handleSearchChange(v: string) {
+    setSearchQ(v);
+    if (searchDebounce.current) clearTimeout(searchDebounce.current);
+    if (!v.trim()) { setSearchResults([]); return; }
+    searchDebounce.current = setTimeout(() => void runSearch(v), 300);
+  }
+
+  function selectFromSearch(p: PatientListRow) {
+    setPatientName(p.full_name ?? '');
+    if (p.date_of_birth) {
+      setDob(p.date_of_birth);
+      const dob = new Date(p.date_of_birth);
+      const today = new Date();
+      let a = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) a--;
+      setAge(String(a));
+    }
+    if (p.sex) setSex(p.sex as Parameters<typeof setSex>[0]);
+    if (p.phone) setPhone(p.phone);
+    setPatientId(p.id);
+    setSearchQ('');
+    setSearchResults([]);
+  }
 
   interface ReferralData { date: string; dx: string; summary: string }
   const referralData = (procedureData['referral'] as ReferralData | undefined) ?? null;
@@ -86,8 +153,59 @@ export default function EncounterTimelineTab() {
 
   if (!patientId) {
     return (
-      <div style={{ padding: 24, color: 'var(--muted)', textAlign: 'center', fontSize: 13 }}>
-        Load a patient to view their encounter history.
+      <div style={{ padding: '0 2px' }}>
+        <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--fg)', marginBottom: 4 }}>Patient lookup</div>
+        <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 12 }}>
+          Search to load a patient and view their encounter history and referral details.
+        </div>
+        <input
+          type="text"
+          value={searchQ}
+          onChange={e => handleSearchChange(e.target.value)}
+          placeholder="Search by name or phone…"
+          autoFocus
+          style={{
+            width: '100%', padding: '8px 12px', borderRadius: 7,
+            border: '1.5px solid var(--border)', fontSize: 13,
+            background: 'var(--surface)', color: 'var(--fg)',
+            marginBottom: 8, boxSizing: 'border-box',
+          }}
+        />
+        {searching && (
+          <div style={{ fontSize: 12, color: 'var(--muted)', padding: '8px 0' }}>Searching…</div>
+        )}
+        {searchResults.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {searchResults.map(p => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => selectFromSearch(p)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '9px 12px', borderRadius: 7,
+                  border: '1px solid var(--border)', background: 'var(--surface)',
+                  cursor: 'pointer', textAlign: 'left', width: '100%',
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg)' }}>{p.full_name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                    {p.sex ? p.sex.charAt(0).toUpperCase() + p.sex.slice(1) : ''}
+                    {p.date_of_birth ? ` · DOB ${new Date(p.date_of_birth).toLocaleDateString('en-GB')}` : ''}
+                    {p.phone ? ` · ${p.phone}` : ''}
+                  </div>
+                </div>
+                <span style={{ fontSize: 11, color: '#0d9488', fontWeight: 700, flexShrink: 0 }}>Load history →</span>
+              </button>
+            ))}
+          </div>
+        )}
+        {searchQ.trim() && !searching && searchResults.length === 0 && (
+          <div style={{ fontSize: 12, color: 'var(--muted)', padding: '16px 0', textAlign: 'center' }}>
+            No patients found matching "{searchQ}"
+          </div>
+        )}
       </div>
     );
   }
