@@ -4,7 +4,6 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import ProcedureImagePanel, { type ProcImage } from '@/components/ProcedureImagePanel';
 import ClavienDindoGrader from '@/components/ClavienDindoGrader';
 import PathologySpecimenTracker from '@/components/PathologySpecimenTracker';
-import OperativeNoteGenerator from '@/components/OperativeNoteGenerator';
 import PostopCarePlan from '@/components/PostopCarePlan';
 import EndoscopyReportGenerator from '@/components/EndoscopyReportGenerator';
 import SurveillanceProtocolCard from '@/components/SurveillanceProtocolCard';
@@ -956,159 +955,384 @@ const EMPTY_POSTOP: PostopData = {
   complications: '', additionalNotes: '',
 };
 
-// ── Operative note templates ─────────────────────────────────────────────────
+// ── Surgical templates ────────────────────────────────────────────────────────
 
-const OPERATIVE_TEMPLATES: { group: string; name: string; steps: string }[] = [
+interface SurgicalTemplate {
+  group: string; name: string;
+  approach: string; anaesthesiaType: string; position: string; incision: string;
+  safetyChecks: string[]; intraopImaging: string;
+  operativeSteps: string; findingsTemplate: string;
+  ebl: string; specimenSent: string; specimenSite: string;
+  drain: string; drainType: string; drainSite: string;
+  closure: string; dressing: string;
+  postopOrders: string[]; diet: string; ivAccess: string;
+  postOpNotes: string;
+}
+
+function applyTemplate(tpl: SurgicalTemplate, current: PostopData): PostopData {
+  return {
+    ...current,
+    procedurePerformed: tpl.name,
+    approach: tpl.approach,
+    anaesthesiaType: tpl.anaesthesiaType,
+    position: tpl.position,
+    incision: tpl.incision,
+    safetyChecks: tpl.safetyChecks,
+    intraopImaging: tpl.intraopImaging,
+    operativeSteps: tpl.operativeSteps,
+    findings: tpl.findingsTemplate,
+    ebl: tpl.ebl,
+    specimenSent: tpl.specimenSent,
+    specimenSite: tpl.specimenSite,
+    drain: tpl.drain,
+    drainType: tpl.drainType,
+    drainSite: tpl.drainSite,
+    closure: tpl.closure,
+    dressing: tpl.dressing,
+    postopOrders: tpl.postopOrders,
+    diet: tpl.diet,
+    ivAccess: tpl.ivAccess,
+    additionalNotes: tpl.postOpNotes,
+  };
+}
+
+const SURGICAL_TEMPLATES: SurgicalTemplate[] = [
   // Hepatobiliary
-  { group: 'Hepatobiliary', name: 'Laparoscopic cholecystectomy', steps:
-`1. Patient positioned supine under general anaesthesia with prophylactic antibiotics administered.
-2. Pneumoperitoneum established to 12 mmHg using Veress needle technique via umbilical incision.
-3. 10 mm umbilical port inserted under direct vision. Three 5 mm working ports placed in right upper quadrant and epigastric positions.
-4. Peritoneal cavity inspected. No unexpected findings noted.
-5. Infundibulum of gallbladder grasped and retracted laterally. Peritoneum over Calot's triangle divided with hook diathermy.
-6. Critical view of safety established with cystic artery and cystic duct clearly identified and skeletonised.
-7. Cystic duct and cystic artery individually clipped twice proximally and once distally, then divided.
-8. Gallbladder mobilised from liver bed using hook diathermy with excellent haemostasis.
-9. Gallbladder retrieved in retrieval bag through umbilical port. Specimen sent for histopathology.
-10. Liver bed inspected — haemostasis confirmed. Ports removed under direct vision.
-11. 10 mm umbilical port site closed with Vicryl 0 (J-needle). Skin closed with Monocryl 3/0 subcuticular.
-12. Patient tolerated procedure well. Transferred to recovery in stable condition.` },
+  { group: 'Hepatobiliary', name: 'Laparoscopic cholecystectomy',
+    approach: 'Laparoscopic', anaesthesiaType: 'GA', position: 'Supine',
+    incision: '12 mm umbilical Hassan port; 5 mm epigastric port; 5 mm right subcostal port; 5 mm right lateral port',
+    safetyChecks: ['WHO surgical safety checklist', 'Critical view of safety (CVS) confirmed', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient supine under GA. Cefazolin 2 g IV at induction. TED stockings + LMWH.
+2. Hassan technique at umbilicus — 12 mm port under direct vision. Pneumoperitoneum CO₂ 15 mmHg.
+3. 5 mm epigastric, 5 mm right subcostal, 5 mm right lateral ports inserted under vision.
+4. Patient positioned head-up, left lateral tilt.
+5. Systematic laparoscopic inspection of peritoneal cavity.
+6. Gallbladder fundus retracted cephalad. Infundibulum retracted laterally.
+7. Calot's triangle dissected — posterior then anterior peritoneum divided with hook diathermy.
+8. Critical view of safety (CVS) established: two structures entering gallbladder; lower one-third cleared from liver bed. CVS documented with still image.
+9. Cystic artery: 2 clips proximal, 1 clip distal — divided.
+10. Cystic duct: 2 clips proximal, 1 clip distal — divided.
+11. Gallbladder dissected from liver bed using diathermy — haemostasis confirmed.
+12. Specimen in endobag — retrieved through umbilical port. Liver bed irrigated and aspirated.
+13. Ports removed under direct vision. Pneumoperitoneum released.
+14. 12 mm umbilical fascial defect closed: Vicryl 0, J-needle. All ports: subcuticular Monocryl 3/0.
+15. Specimen to histopathology. Patient tolerated procedure well. Transferred to recovery.`,
+    findingsTemplate: `Gallbladder: [inflamed / oedematous / normal]. Wall: [thickened / normal]. Stone(s): [single large stone in neck / multiple stones]. No bile spillage. CVS achieved. CBD: not dilated. Liver: normal. No unexpected intra-abdominal pathology.`,
+    ebl: '<50 ml', specimenSent: 'Yes — histopathology', specimenSite: 'Gallbladder + stone(s)',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['DVT prophylaxis', 'Wound review in 2 days'], diet: 'Free fluids', ivAccess: 'PIV × 1',
+    postOpNotes: `Analgesia: paracetamol 1 g QID + ibuprofen 400 mg TDS + PRN oxycodone 5 mg.
+Anti-emetic: ondansetron 4 mg PRN.
+Discharge: same-day / overnight — tolerating fluids, pain controlled, voiding, mobile.
+Follow-up: 2 weeks — wound check + histology.
+Red flags: fever >38°C, jaundice, severe RUQ pain, shoulder-tip pain → ED.` },
 
-  { group: 'Hepatobiliary', name: 'Laparoscopic cholecystectomy + on-table cholangiogram', steps:
-`1. Patient positioned supine under general anaesthesia with prophylactic antibiotics administered.
-2. Pneumoperitoneum established to 12 mmHg. Four ports inserted in standard positions.
-3. Critical view of safety established in Calot's triangle.
-4. Cystic duct clipped proximally, then cholangiogram clip applied distally. Anterior cystic duct incised.
-5. IOC catheter inserted into cystic duct and secured. Contrast injected under fluoroscopy.
-6. Cholangiogram findings: [normal biliary anatomy / CBD stones identified / CBD dilated to ___ mm — describe].
-7. IOC catheter removed. Cystic duct divided. Cystic artery clipped and divided.
-8. Gallbladder removed from liver bed. Retrieved in bag through umbilical port.
-9. Haemostasis confirmed. Ports removed. Fascia and skin closed as per standard technique.
-10. Patient tolerated procedure well.` },
-
-  { group: 'Hepatobiliary', name: 'Laparoscopic CBD exploration (LCBDE)', steps:
-`1. Patient positioned supine under general anaesthesia.
-2. Four-port laparoscopic access established. Critical view of safety obtained.
-3. Cystic duct divided after IOC confirmed CBD stones.
-4. Cystic duct stump dilated with graduated dilators. Flexible choledochoscope advanced into CBD via cystic duct.
-5. Choledochoscopy performed — [number] stones identified in [segment of CBD].
-6. Stones retrieved using Dormia basket under choledochoscopic visualisation. CBD cleared. Completion choledochoscopy confirmed clearance.
-7. T-tube / choledochotomy closure performed with Vicryl 4/0.
-8. Completion cholangiogram confirmed CBD clearance.
-9. Cholecystectomy completed. Drain placed in subhepatic space.
-10. Ports removed. Fascia and skin closed. Patient tolerated procedure well.` },
+  { group: 'Hepatobiliary', name: 'Laparoscopic cholecystectomy + on-table cholangiogram (IOC)',
+    approach: 'Laparoscopic', anaesthesiaType: 'GA', position: 'Supine',
+    incision: '12 mm umbilical Hassan port; 5 mm epigastric port; 5 mm right subcostal port; 5 mm right lateral port',
+    safetyChecks: ['WHO surgical safety checklist', 'Critical view of safety (CVS) confirmed', 'On-table cholangiogram', 'Swab count correct ×2'],
+    intraopImaging: 'On-table cholangiogram',
+    operativeSteps:
+`1. Patient supine under GA. Cefazolin 2 g IV at induction. TED stockings + LMWH.
+2. Hassan technique umbilical 12 mm port. Pneumoperitoneum 15 mmHg. Three 5 mm working ports.
+3. CVS established in Calot's triangle — documented with image.
+4. Cystic duct: proximal clip applied, anterior wall incised — IOC catheter inserted and secured.
+5. Contrast injected under fluoroscopy: [CBD ___ mm, no filling defect / stone(s) at ___ — describe].
+6. IOC catheter removed. Cystic duct: 2 proximal clips, 1 distal — divided.
+7. Cystic artery: 2 proximal, 1 distal clip — divided.
+8. Gallbladder dissected from liver bed. Specimen in endobag — retrieved through umbilical port.
+9. Liver bed haemostasis, irrigation, aspiration — clear.
+10. Ports removed under vision. Fascial defect closed. Skin subcuticular Monocryl.
+11. Specimen to histopathology. Patient tolerated procedure well.`,
+    findingsTemplate: `Gallbladder: [inflamed / normal]. IOC: CBD [___ mm, normal calibre / filling defect at ___]. No contrast extravasation. Biliary anatomy: [normal / variant]. Post-IOC: [CBD clear / stones → ERCP planned / LCBDE performed].`,
+    ebl: '<50 ml', specimenSent: 'Yes — histopathology', specimenSite: 'Gallbladder + stone(s)',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['DVT prophylaxis', 'Wound review in 2 days'], diet: 'Free fluids', ivAccess: 'PIV × 1',
+    postOpNotes: `Analgesia: paracetamol 1 g QID + ibuprofen 400 mg TDS + PRN oxycodone.
+Discharge: same-day / overnight.
+Follow-up: 2 weeks — wound + histology. If CBD stones on IOC → ERCP within 2–4 weeks.` },
 
   // Hernia
-  { group: 'Hernia', name: 'Inguinal hernia repair — TAPP', steps:
-`1. Patient positioned supine under general anaesthesia. Prophylactic antibiotics administered.
-2. Pneumoperitoneum established. Three ports: 10 mm umbilical, 5 mm right and left iliac fossa.
-3. Hernia defect visualised: [direct / indirect / combined / bilateral]. Contralateral side inspected — [normal / defect noted].
-4. Peritoneum incised from ASIS to medial umbilical ligament. Preperitoneal space developed.
-5. Cooper's ligament, iliopubic tract, epigastric vessels and cord structures (vas deferens, testicular vessels) clearly identified and preserved.
-6. Hernia sac dissected free and reduced. Direct defect / indirect sac managed.
-7. Lightweight polypropylene mesh (15 × 10 cm) deployed to cover all three potential hernia spaces.
-8. Mesh fixed to Cooper's ligament with two titanium tacks. No tacks placed below iliopubic tract (triangle of pain avoided).
-9. Peritoneal flap closed over mesh with running Prolene 2/0 or ProTack, ensuring complete mesh coverage.
-10. Pneumoperitoneum released. Port sites closed. Patient tolerated procedure well.` },
+  { group: 'Hernia', name: 'Inguinal hernia repair — TAPP (laparoscopic)',
+    approach: 'Laparoscopic', anaesthesiaType: 'GA', position: 'Supine',
+    incision: '12 mm umbilical Hassan port; 5 mm right iliac fossa port; 5 mm left iliac fossa port',
+    safetyChecks: ['WHO surgical safety checklist', 'Correct site marking confirmed', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient supine under GA. Cefazolin 2 g IV. TED stockings + LMWH. IDC inserted.
+2. Hassan umbilical 12 mm port. Pneumoperitoneum 12 mmHg. Trendelenburg 15°.
+3. 5 mm right and left iliac fossa ports inserted under vision.
+4. Both inguinal regions inspected: [direct / indirect / combined / bilateral / contralateral normal].
+5. Peritoneal incision: transverse from ASIS medially over defect, extended above medial umbilical ligament.
+6. Preperitoneal space developed: Cooper's ligament, iliopubic tract, epigastric vessels, vas deferens, gonadal vessels identified and preserved. Triangle of doom and triangle of pain respected.
+7. Hernia sac fully reduced. [Indirect sac: parietalized / endoloop ligation at deep ring.]
+8. Mesh (15 × 10 cm lightweight polypropylene) introduced, unfurled to cover direct, indirect, and femoral spaces.
+9. Mesh secured: 2 tacks to Cooper's ligament; 1 tack above iliopubic tract. No fixation below iliopubic tract.
+10. Peritoneal closure: running absorbable 2/0 Vicryl — complete mesh coverage.
+11. IDC removed. Ports removed. Fascial defect closed. Skin Monocryl. Patient tolerated procedure well.`,
+    findingsTemplate: `Hernia: [right / left / bilateral] [direct / indirect / combined]. Defect size: [___ cm]. Content: [omentum / empty sac]. Contralateral: [normal / defect repaired]. Mesh: 15 × 10 cm, tension-free, complete peritoneal coverage confirmed.`,
+    ebl: '<20 ml', specimenSent: 'None', specimenSite: '',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['DVT prophylaxis', 'Wound review in 2 days'], diet: 'Light diet', ivAccess: 'PIV × 1',
+    postOpNotes: `Analgesia: paracetamol 1 g QID + ibuprofen 400 mg TDS + PRN oxycodone 5 mg.
+Scrotal support (male) — reduce haematoma/seroma risk.
+No heavy lifting >5 kg for 4 weeks. Discharge: day surgery.
+Follow-up: 2 weeks — seroma/wound; 6 weeks — return to strenuous activity.` },
 
-  { group: 'Hernia', name: 'Inguinal hernia repair — Lichtenstein', steps:
-`1. Patient positioned supine under spinal/general anaesthesia.
-2. Oblique groin incision made in Langer's lines. External oblique aponeurosis opened in line with fibres from external ring.
-3. Hernia sac identified and dissected free. [Indirect sac: ligated at level of internal ring. / Direct defect: plicated with Prolene 2/0.]
-4. Ilioinguinal and iliohypogastric nerves identified and preserved.
-5. Lightweight polypropylene mesh (7.5 × 15 cm) positioned over the posterior wall with no tension. Tail placed around cord.
-6. Mesh secured to pubic tubercle and inguinal ligament with running Prolene 2/0. Superior edge secured to conjoint tendon with interrupted sutures. External ring reconstructed snugly around cord.
-7. External oblique closed with Vicryl 2/0. Skin closed with Monocryl 3/0.
-8. Patient tolerated procedure well.` },
+  { group: 'Hernia', name: 'Inguinal hernia repair — Lichtenstein (open)',
+    approach: 'Open', anaesthesiaType: 'Spinal', position: 'Supine',
+    incision: 'Oblique groin incision 1 cm above midpoint of inguinal ligament toward pubic tubercle',
+    safetyChecks: ['WHO surgical safety checklist', 'Correct site marking confirmed', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient supine under spinal / GA. Prophylactic antibiotics. TED stockings.
+2. Oblique groin incision in Langer's lines. Scarpa's fascia divided. External oblique aponeurosis opened from external ring along fibres.
+3. Ilioinguinal and iliohypogastric nerves identified and preserved throughout.
+4. Cord structures mobilised at pubic tubercle. Cremasteric fibres divided.
+5. Hernia sac: [indirect — high ligation with Vicryl 0 at deep ring / direct — plicated with Prolene 2/0].
+6. Lightweight polypropylene mesh (7.5 × 15 cm) placed tension-free over posterior wall.
+7. Mesh secured: pubic tubercle (Prolene 2/0 × 2); inguinal ligament (running Prolene 2/0); conjoint tendon (interrupted Prolene 2/0). Lateral slit around cord — tails sutured to create new internal ring.
+8. External oblique closed (Vicryl 2/0 continuous). Scarpa's fascia (Vicryl 3/0). Skin subcuticular Monocryl 3/0.
+9. Patient tolerated procedure well.`,
+    findingsTemplate: `Hernia: [right / left] [direct: Hesselbach defect ___ cm / indirect: sac at deep ring]. Content: [omentum / empty]. Mesh: 7.5 × 15 cm lightweight polypropylene, tension-free.`,
+    ebl: '<20 ml', specimenSent: 'None', specimenSite: '',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['DVT prophylaxis', 'Wound review in 2 days'], diet: 'Normal diet', ivAccess: 'PIV × 1',
+    postOpNotes: `Analgesia: paracetamol 1 g QID + ibuprofen 400 mg TDS + PRN oxycodone.
+No heavy lifting >10 kg for 4 weeks. Discharge: same-day / next day.
+Follow-up: 2 weeks — wound; 6 weeks — return to strenuous activity.` },
+
+  { group: 'Hernia', name: 'Umbilical hernia repair (open, suture)',
+    approach: 'Open', anaesthesiaType: 'GA', position: 'Supine',
+    incision: 'Transverse infraumbilical / circumumbilical incision',
+    safetyChecks: ['WHO surgical safety checklist', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient supine under GA. Prophylactic antibiotics. TED stockings.
+2. Transverse infraumbilical incision. Skin flap raised to expose hernia sac and neck.
+3. Sac dissected free. Sac opened, contents inspected and reduced. Sac excised.
+4. Fascial edges freshened. Defect repaired with interrupted non-absorbable sutures (Prolene 0) — Mayo technique if defect >2 cm.
+5. Subcutaneous (Vicryl 3/0). Skin subcuticular Monocryl 3/0 (clip to umbilicus).
+6. Patient tolerated procedure well.`,
+    findingsTemplate: `Umbilical defect: [___ cm]. Content: [omentum / empty sac]. Fascia: [healthy / attenuated]. Repair: [primary suture <2 cm / Mayo repair 2–4 cm].`,
+    ebl: '<20 ml', specimenSent: 'None', specimenSite: '',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['DVT prophylaxis', 'Wound review in 2 days'], diet: 'Normal diet', ivAccess: 'PIV × 1',
+    postOpNotes: `Analgesia: paracetamol 1 g QID + ibuprofen 400 mg TDS.
+Discharge: same-day. Follow-up: 2 weeks — wound check.` },
 
   // Colorectal
-  { group: 'Colorectal', name: 'Laparoscopic appendicectomy', steps:
-`1. Patient positioned supine under general anaesthesia. Prophylactic antibiotics administered.
-2. Pneumoperitoneum established to 12 mmHg. Three-port technique: 10 mm umbilical, 5 mm suprapubic, 5 mm right iliac fossa.
-3. Systematic inspection of peritoneal cavity. Appendix identified — [describe appearance: acutely inflamed / gangrenous / perforated / with faecalith].
-4. Mesoappendix divided sequentially with clips / LigaSure, taking care to identify and preserve surrounding structures.
-5. Appendix base defined. Stump ligated with two Endoloop ligatures. Appendix divided. [Base oversewn / not oversewn.]
-6. Appendix retrieved in retrieval bag through umbilical port.
-7. Peritoneal toilet with warm saline. Drain placed in pelvis [if contamination present].
-8. Port sites closed. 10 mm fascia closed with Vicryl 0. Skin with Monocryl 3/0.
-9. Specimen sent for histopathology. Patient tolerated procedure well.` },
+  { group: 'Colorectal', name: 'Laparoscopic appendicectomy',
+    approach: 'Laparoscopic', anaesthesiaType: 'GA', position: 'Supine',
+    incision: '12 mm umbilical Hassan port; 5 mm suprapubic port; 5 mm left iliac fossa port',
+    safetyChecks: ['WHO surgical safety checklist', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient supine under GA (RSI if emergency). Cefazolin 2 g + metronidazole 500 mg IV at induction. TED stockings. IDC inserted.
+2. Hassan umbilical 12 mm port. Pneumoperitoneum 15 mmHg. 5 mm suprapubic + 5 mm LIF ports.
+3. Systematic peritoneal inspection. Appendix identified at tenia coli confluence.
+4. Appendix retracted anterosuperiorly. Mesoappendix divided with clips / LigaSure, securing appendicular artery.
+5. Appendix base skeletonised. Two Endoloops at base (1 mm apart); third Endoloop on specimen side. Appendix divided.
+6. Specimen in endobag — retrieved through umbilical port.
+7. [If perforated: warm saline lavage 1–2 L × 3; Blake drain in RIF.]
+8. Ports removed under vision. 12 mm fascial defect closed (Vicryl 0, J-needle). Skin Monocryl 3/0.
+9. Specimen to histopathology. Patient tolerated procedure well.`,
+    findingsTemplate: `Appendix: [acutely inflamed / gangrenous / perforated at base / mid / normal]. Position: [standard / retrocaecal / pelvic]. Faecalith: [present / absent]. Contamination: [none / localised pus / free pus]. No other pathology.`,
+    ebl: '<30 ml', specimenSent: 'Yes — histopathology', specimenSite: 'Appendix',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['Antibiotic therapy', 'DVT prophylaxis', 'IDC — strict I&O', 'Wound review in 2 days'],
+    diet: 'Free fluids', ivAccess: 'PIV × 1',
+    postOpNotes: `Antibiotics: continue IV cefazolin + metronidazole if perforated (48–72h IV → oral co-amoxiclav).
+Analgesia: paracetamol + ibuprofen + PRN oxycodone.
+Discharge: day 1–2 (simple); day 3–5 (perforated).
+Follow-up: 2 weeks — wound + histology (exclude carcinoid/Crohn's).` },
 
-  { group: 'Colorectal', name: 'Laparoscopic right hemicolectomy', steps:
-`1. Patient positioned supine under general anaesthesia. Enhanced recovery protocol. Prophylactic antibiotics and DVT prophylaxis administered.
+  { group: 'Colorectal', name: 'Laparoscopic right hemicolectomy',
+    approach: 'Laparoscopic', anaesthesiaType: 'GA', position: 'Supine',
+    incision: 'Five-port laparoscopic access; 4–5 cm right transverse minilaparotomy for extraction',
+    safetyChecks: ['WHO surgical safety checklist', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient supine under GA. ERAS protocol. Prophylactic antibiotics + DVT prophylaxis. IDC inserted.
 2. Five-port laparoscopic access established.
-3. Medial-to-lateral mobilisation: ileocolic vessels identified, divided at origin between clips / with linear vascular stapler. Superior mesenteric vein and artery identified and preserved.
-4. Hepatic flexure mobilised. Duodenum swept posteriorly (Kocherisation). Lateral attachments divided.
-5. Specimen exteriorised through 4 cm right transverse mini-laparotomy.
-6. Extracorporeal stapled side-to-side / functional end-to-end ileocolic anastomosis fashioned.
-7. Anastomosis returned to abdominal cavity. Mesenteric defect closed.
-8. Fascia closed with loop PDS 1. Skin with Monocryl 3/0. No drain placed.
-9. Specimen sent for histopathology. Patient tolerated procedure well.` },
+3. Medial-to-lateral mobilisation: ileocolic vessels divided at origin (vascular stapler). SMA and SMV identified and preserved.
+4. Hepatic flexure mobilised. Kocherisation. Lateral attachments divided.
+5. Specimen exteriorised through 4–5 cm right transverse minilaparotomy with wound protector.
+6. Extracorporeal functional end-to-end ileocolic anastomosis (linear stapler 60 mm × 2). Enterotomy closed (Vicryl 3/0).
+7. Anastomosis returned. Mesenteric defect closed (Vicryl 3/0).
+8. Minilaparotomy: loop PDS 1. Ports ≥10 mm: Vicryl 0 J-needle. Skin Monocryl 3/0.
+9. Specimen to histopathology. Patient tolerated procedure well.`,
+    findingsTemplate: `Pathology: [caecum / ascending colon / hepatic flexure; size ___ cm]. Liver: [no metastases visible / lesion at ___]. Peritoneum: [clear]. Anastomosis: air-leak test negative.`,
+    ebl: '<100 ml', specimenSent: 'Yes — histopathology', specimenSite: 'Right hemicolectomy specimen',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['DVT prophylaxis', 'IDC — strict I&O', 'Physiotherapy', 'Wound review in 2 days'],
+    diet: 'Sips only', ivAccess: 'PIV × 2',
+    postOpNotes: `ERAS: paracetamol + NSAID + PRN opioid; early ambulation; sips at 4h → free fluids → light diet.
+IDC remove day 1. Discharge day 3–5 on return of bowel function.
+Follow-up: 4 weeks — wound + histology + oncology MDT if malignancy.` },
 
-  { group: 'Colorectal', name: 'Laparoscopic anterior resection', steps:
-`1. Patient positioned in Lloyd-Davies (lithotomy) under general anaesthesia. Prophylactic antibiotics, DVT prophylaxis, and bowel prep administered.
-2. Five-port laparoscopic access established. Uterine manipulator/rectal catheter placed.
-3. IMA divided at its origin after identification of left ureter. Total mesorectal excision (TME) performed to level of pelvic floor.
-4. Inferior hypogastric plexus and autonomic nerves identified and preserved.
-5. Rectum divided distally with [2–3 linear cartridges] below the tumour. Specimen exteriorised through Pfannenstiel/left iliac fossa incision.
-6. Proximal margin confirmed. Anvil of 29 mm circular stapler inserted in proximal colon.
-7. Colorectal anastomosis fashioned using 29 mm circular stapler. Air leak test negative.
-8. Protecting loop ileostomy fashioned [if deemed necessary].
-9. Pelvic drain placed. Fascia closed. Patient tolerated procedure well.` },
+  { group: 'Colorectal', name: 'Laparoscopic anterior resection',
+    approach: 'Laparoscopic', anaesthesiaType: 'GA', position: 'Lloyd-Davies / lithotomy',
+    incision: 'Five-port laparoscopic access; Pfannenstiel / left iliac fossa extraction incision',
+    safetyChecks: ['WHO surgical safety checklist', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient Lloyd-Davies under GA. ERAS. Prophylactic antibiotics + DVT prophylaxis + bowel prep. IDC inserted.
+2. Five-port laparoscopic access. Rectal catheter placed.
+3. IMA divided at origin after identification of left ureter. Total mesorectal excision (TME) to pelvic floor.
+4. Inferior hypogastric plexus and autonomic nerves preserved.
+5. Rectum divided distally (2–3 linear stapler cartridges) below tumour. Specimen exteriorised.
+6. Anvil 29 mm circular stapler inserted in proximal colon. Colorectal anastomosis. Air-leak test: negative.
+7. [Protecting loop ileostomy if high-risk anastomosis.]
+8. Pelvic drain placed. Fascial closure loop PDS. Skin Monocryl.
+9. Patient tolerated procedure well.`,
+    findingsTemplate: `Tumour: [mid / lower rectum at ___ cm from anal verge; T stage on imaging]. TME: complete plane. Margins: [proximal and distal clear — distal ___ cm]. Anastomosis: [___ cm from anal verge; air-leak test negative]. Autonomic nerves: identified and preserved.`,
+    ebl: '', specimenSent: 'Yes — histopathology', specimenSite: 'Sigmoid / rectal specimen (anterior resection)',
+    drain: 'Placed', drainType: 'Blake drain', drainSite: 'Pelvis',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['DVT prophylaxis', 'IDC — strict I&O', 'Physiotherapy', 'Wound review in 2 days'],
+    diet: 'Sips only', ivAccess: 'PIV × 2',
+    postOpNotes: `ERAS protocol: early diet, analgesia ladder, ambulation.
+IDC remove day 1–2. Drain remove day 2–3 if serous output.
+Discharge: day 4–6 on return of bowel function.
+Follow-up: 4 weeks — wound + histology; oncology MDT.` },
 
-  { group: 'Colorectal', name: "Hartmann's procedure", steps:
-`1. Patient positioned in Lloyd-Davies under general anaesthesia. Prophylactic antibiotics and DVT prophylaxis administered.
-2. Midline laparotomy / four-port laparoscopic access established.
-3. Peritoneal contamination assessed and peritoneal toilet commenced.
-4. Sigmoid colon and rectum mobilised. IMA divided. Ureters identified and preserved.
-5. Rectum divided below the peritoneal reflection with linear stapler. Proximal colon divided at appropriate level.
-6. Specimen removed. Stump closed and marked with non-absorbable suture.
-7. Left iliac fossa end-colostomy fashioned through trephine incision. Matured with interrupted Vicryl 3/0.
-8. Pelvic drain placed. Abdomen closed with loop PDS 1. Skin with clips/staples.
-9. Patient tolerated procedure well. Reversal planned in 3–6 months once clinical condition allows.` },
+  { group: 'Colorectal', name: "Hartmann's procedure",
+    approach: 'Open', anaesthesiaType: 'GA', position: 'Lloyd-Davies / lithotomy',
+    incision: 'Midline laparotomy — xiphoid to pubis',
+    safetyChecks: ['WHO surgical safety checklist', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient Lloyd-Davies under GA (RSI). Prophylactic antibiotics + DVT prophylaxis. IDC inserted.
+2. Midline laparotomy. Peritoneal contamination assessed — peritoneal toilet with warm saline commenced.
+3. Sigmoid colon and rectum mobilised — avascular plane lateral to sigmoid into pelvis.
+4. IMA divided. Ureters identified and preserved bilaterally.
+5. Rectum divided below peritoneal reflection with linear stapler. Stump oversewn (Prolene 3/0) and marked with long non-absorbable suture.
+6. Proximal colon divided at disease-free margin. Specimen removed.
+7. Peritoneal toilet (3–5 L warm saline) — aspirated.
+8. LIF colostomy trephine. End colostomy fashioned and matured (Brooke technique, Vicryl 3/0). Stoma appliance applied.
+9. Pelvic Blake drain exited through stab incision. Abdomen: mass closure loop PDS 1. Skin: clips.
+10. Specimen to histopathology. Patient tolerated procedure.`,
+    findingsTemplate: `Pathology: [perforated diverticulitis / sigmoid volvulus / obstructing carcinoma — Hinchey grade ___: localised abscess / pelvic abscess / purulent peritonitis / faecal peritonitis]. Proximal colon: viable. Stump: mid-rectum. Reversal planned: 3–6 months.`,
+    ebl: '', specimenSent: 'Yes — histopathology', specimenSite: 'Sigmoid colon + rectum specimen',
+    drain: 'Placed', drainType: 'Blake drain', drainSite: 'Pelvis / presacral',
+    closure: 'Vicryl + skin staples', dressing: 'Mepore',
+    postopOrders: ['Antibiotic therapy', 'DVT prophylaxis', 'IDC — strict I&O', 'Continuous monitoring', 'Physiotherapy'],
+    diet: 'NBM / NPO', ivAccess: 'PIV × 2',
+    postOpNotes: `IV antibiotics: co-amoxiclav or cefazolin + metronidazole × 3–5 days.
+Analgesia: PCA morphine 48h → oral ladder.
+IDC: UO ≥0.5 ml/kg/h; remove at 48h. Drain: remove day 3–4 if serous <100 ml.
+Stoma nurse: review day 1. Discharge: day 5–10.
+Follow-up: 4 weeks — wound, stoma, histology, reversal planning.` },
 
   // Upper GI
-  { group: 'Upper GI', name: 'Laparoscopic Nissen fundoplication', steps:
-`1. Patient positioned supine in reverse Trendelenburg with split-leg table under general anaesthesia.
-2. Five-port access established. Liver retractor deployed.
-3. Pars flaccida divided. Short gastric vessels divided with LigaSure.
-4. Oesophageal hiatus dissected. Posterior oesophageal window created. Hiatal crura dissected posteriorly.
-5. Mediastinal oesophagus mobilised to provide at least 3 cm intra-abdominal length confirmed with 56 Fr bougie in situ.
-6. Posterior cruroplasty with [2–3] interrupted Ethibond 2/0 sutures.
-7. 360-degree floppy fundoplication fashioned over 56 Fr bougie with three sutures incorporating the oesophageal wall.
-8. Bougie removed. Fundoplication inspected — no tension, reduced below diaphragm.
-9. Ports removed. Port sites closed. Patient tolerated procedure well.` },
+  { group: 'Upper GI', name: 'Laparoscopic Nissen fundoplication',
+    approach: 'Laparoscopic', anaesthesiaType: 'GA', position: 'Reverse Trendelenburg',
+    incision: 'Five-port: 12 mm umbilical, two 5 mm LUQ ports, 5 mm RUQ port, 5 mm epigastric liver retractor',
+    safetyChecks: ['WHO surgical safety checklist', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient reverse Trendelenburg with split-leg table under GA. Five-port access. Liver retractor deployed.
+2. Pars flaccida divided. Short gastric vessels divided with LigaSure (5–6 vessels).
+3. Oesophageal hiatus dissected — posterior window created. Hiatal crura exposed anteriorly and posteriorly.
+4. Mediastinal oesophagus mobilised — minimum 3 cm tension-free intra-abdominal length confirmed with 52 Fr bougie in situ.
+5. Posterior cruroplasty: [2–3] interrupted Ethibond 2/0 — hiatus snug around bougie.
+6. Fundus passed through posterior window (shoe-shine test: fundus stays without traction).
+7. 360° floppy fundoplication fashioned over 52 Fr bougie: 3 × Ethibond 2/0 incorporating oesophageal wall. Wrap 2 cm in length.
+8. Bougie removed. Wrap tension-free, below diaphragm.
+9. Ports removed. Fascial defects >10 mm closed (Vicryl 0, J-needle). Skin Monocryl 3/0. Patient tolerated procedure well.`,
+    findingsTemplate: `Hiatal hernia: [___ cm / absent]. Oesophageal length: [___ cm intra-abdominal achieved]. Short gastric vessels: [5–6 divided]. Crural defect: [___ cm, closed with ___ sutures]. Fundoplication: 2 cm floppy 360°, passes bougie without tension.`,
+    ebl: '<50 ml', specimenSent: 'None', specimenSite: '',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['DVT prophylaxis', 'Physiotherapy', 'Wound review in 2 days'], diet: 'Sips only', ivAccess: 'PIV × 1',
+    postOpNotes: `Diet: sips day 0 → pureed week 1 → soft diet week 2–6 → normal at 6 weeks.
+PPI: omeprazole 20 mg OD for 8 weeks. Avoid carbonated drinks × 6 weeks.
+Discharge: day 1–2. Follow-up: 2 weeks (diet); 3 months (symptom review).` },
 
-  { group: 'Upper GI', name: 'Laparoscopic sleeve gastrectomy (LSG)', steps:
-`1. Patient positioned supine with split legs under general anaesthesia. 36 Fr bougie passed by anaesthetist.
-2. Five-port access established.
-3. Greater curve mobilised from 4 cm proximal to pylorus to angle of His using LigaSure, preserving gastroepiploic arcade.
-4. Short gastric vessels divided. Fundus fully mobilised.
-5. Sleeve fashioned using sequential linear stapler firings (6–8 cartridges, green or blue loads) along 36 Fr bougie from 4 cm proximal to pylorus to angle of His.
-6. Staple line inspected. Air leak test performed with methylene blue / air under saline — negative.
-7. Staple line reinforced with running Vicryl 3/0 oversew [if performed].
-8. Drain placed along staple line and removed Day 1 [if placed].
-9. Ports closed. Patient tolerated procedure well. Resected stomach sent for histopathology.` },
+  { group: 'Upper GI', name: 'Laparoscopic sleeve gastrectomy (LSG)',
+    approach: 'Laparoscopic', anaesthesiaType: 'GA', position: 'Supine',
+    incision: 'Five-port: 12 mm umbilical, four 5 mm working ports (split-leg table)',
+    safetyChecks: ['WHO surgical safety checklist', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient supine, split legs, under GA. 36 Fr bougie passed by anaesthetist. Five-port access.
+2. Greater curve mobilised from 4 cm proximal to pylorus to angle of His using LigaSure — gastroepiploic arcade preserved.
+3. Short gastric vessels divided. Fundus fully mobilised.
+4. Sleeve fashioned along 36 Fr bougie using sequential linear stapler firings (6–8 cartridges, green/blue load) from 4 cm proximal to pylorus to angle of His.
+5. Staple line inspected. Air-leak test (methylene blue / air under saline) — negative.
+6. Staple line oversewn with running Vicryl 3/0 [if performed].
+7. Blake drain along staple line [if placed — remove day 1 if no leak].
+8. Ports closed. Patient tolerated procedure well. Resected stomach to histopathology.`,
+    findingsTemplate: `Bougie size: 36 Fr. Sleeve length: [adequate — angle of His to 4 cm proximal pylorus]. Staple line: [intact, no leak on air test]. Pylorus: [preserved, no injury].`,
+    ebl: '<50 ml', specimenSent: 'Yes — histopathology', specimenSite: 'Resected gastric sleeve',
+    drain: 'Placed', drainType: 'Blake drain', drainSite: 'Along staple line',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepore',
+    postopOrders: ['DVT prophylaxis', 'IDC — strict I&O', 'Physiotherapy', 'Remove drain day 1'], diet: 'Sips only', ivAccess: 'PIV × 1',
+    postOpNotes: `Bariatric enhanced recovery: sips at 4h, protein supplements from day 1.
+Drain remove day 1 if no signs of leak (output <30 ml, non-bilious).
+VTE: LMWH × 28 days post-op (bariatric extended prophylaxis).
+Follow-up: 1 week (drain removal, wound); 1 month; 3 months; 6 months.` },
 
   // Endoscopy
-  { group: 'Endoscopy', name: 'OGD — diagnostic', steps:
+  { group: 'Endoscopy', name: 'OGD — diagnostic',
+    approach: 'Endoscopic', anaesthesiaType: 'MAC / sedation', position: 'Left lateral',
+    incision: 'Transoral — no incision', safetyChecks: ['WHO surgical safety checklist'],
+    intraopImaging: 'None used',
+    operativeSteps:
 `1. Patient positioned left lateral under topical oropharyngeal anaesthesia / conscious sedation.
 2. GIF-H290 gastroscope passed under direct vision through cricopharyngeus.
 3. Oesophagus inspected to gastro-oesophageal junction — [describe findings].
 4. Retroflexion performed in stomach. Fundus, cardia, body, antrum and pylorus inspected — [describe findings].
 5. Duodenum intubated. D1 and D2 inspected — [describe findings].
 6. Scope withdrawn with careful inspection. Biopsies taken from [sites] as clinically indicated.
-7. Patient tolerated procedure well. No immediate complications.` },
+7. Patient tolerated procedure well. No immediate complications.`,
+    findingsTemplate: 'Oesophagus: [normal / describe]. Stomach: [normal / describe]. Duodenum: [normal / describe]. Biopsies: [sites and indication].',
+    ebl: 'Nil', specimenSent: 'Yes — histopathology', specimenSite: 'Gastric / duodenal biopsies',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: '', dressing: 'N/A',
+    postopOrders: ['Continuous monitoring'],
+    diet: 'Sips only', ivAccess: 'PIV × 1',
+    postOpNotes: `Post-OGD: observations ×30 min. Resume diet when gag reflex fully returned.
+Histopathology results to be reviewed at follow-up.
+If H. pylori positive on biopsy — prescribe eradication therapy and arrange UBT at 6 weeks.` },
 
-  { group: 'Endoscopy', name: 'Colonoscopy — diagnostic', steps:
+  { group: 'Endoscopy', name: 'Colonoscopy — diagnostic',
+    approach: 'Endoscopic', anaesthesiaType: 'MAC / sedation', position: 'Left lateral',
+    incision: 'Transanal — no incision', safetyChecks: ['WHO surgical safety checklist'],
+    intraopImaging: 'None used',
+    operativeSteps:
 `1. Patient positioned left lateral under conscious sedation. Bowel preparation: [adequate / excellent / poor].
 2. CF-HQ190 colonoscope inserted per rectum. Rectal ampulla inspected.
 3. Scope advanced through sigmoid, descending colon, splenic flexure, transverse colon, hepatic flexure, ascending colon to caecum.
 4. Caecal intubation confirmed by identification of appendix orifice, ileocaecal valve and caecal pole. Ileoscopy performed — [normal / abnormal].
 5. Careful withdrawal with four-quadrant inspection at each segment. Total withdrawal time: ___ minutes.
 6. Findings: [describe any polyps, diverticulosis, inflammation, masses].
-7. Patient tolerated procedure well. No immediate complications.` },
+7. Patient tolerated procedure well. No immediate complications.`,
+    findingsTemplate: 'Caecal intubation: confirmed. Bowel prep: [adequate/excellent/poor]. Mucosa: [normal throughout / describe lesions]. Polyps: [none / describe site, size, Paris classification]. Diverticula: [none / describe segment]. Other: [describe].',
+    ebl: 'Nil', specimenSent: 'None', specimenSite: '',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: '', dressing: 'N/A',
+    postopOrders: ['Continuous monitoring'],
+    diet: 'Normal diet', ivAccess: 'PIV × 1',
+    postOpNotes: `Post-colonoscopy: observations ×30 min. Normal diet when fully awake.
+BSG surveillance interval calculated based on findings.
+Histopathology results (if biopsies taken) to be reviewed at follow-up.` },
 
-  { group: 'Endoscopy', name: 'Colonoscopy + polypectomy / EMR', steps:
+  { group: 'Endoscopy', name: 'Colonoscopy + polypectomy / EMR',
+    approach: 'Endoscopic', anaesthesiaType: 'MAC / sedation', position: 'Left lateral',
+    incision: 'Transanal — no incision', safetyChecks: ['WHO surgical safety checklist'],
+    intraopImaging: 'None used',
+    operativeSteps:
 `1. Patient positioned left lateral under conscious sedation. Bowel preparation: [adequate / excellent].
 2. Colonoscope advanced to caecum. Withdrawal performed with systematic inspection.
 3. Polyp(s) identified and characterised (NICE/Paris classification) — see findings section.
@@ -1117,9 +1341,23 @@ const OPERATIVE_TEMPLATES: { group: string; name: string; steps: string }[] = [
 5. Haemostasis confirmed at all polypectomy sites. [Haemostatic clips applied if required.]
 6. [Tattoo applied at ___ cm for subsequent surgical planning.]
 7. Specimens labelled individually and sent for histopathology.
-8. Patient tolerated procedure well. No immediate complications. BSG surveillance interval calculated.` },
+8. Patient tolerated procedure well. No immediate complications. BSG surveillance interval calculated.`,
+    findingsTemplate: 'Caecal intubation: confirmed. Polyp 1: [site] cm, [size] mm, Paris [classification], removed by [cold snare / hot snare / EMR]. Polyp 2: [describe]. Haemostasis: confirmed. Tattoo: [placed / not required]. Specimens: individually labelled.',
+    ebl: 'Minimal', specimenSent: 'Yes — histopathology', specimenSite: 'Colonic polyp(s) — individually labelled',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: '', dressing: 'N/A',
+    postopOrders: ['Continuous monitoring'],
+    diet: 'Light diet', ivAccess: 'PIV × 1',
+    postOpNotes: `Post-polypectomy: observations ×60 min. Light diet after procedure; normal diet next day.
+Warn patient: delayed bleeding risk up to 14 days — attend ER if significant rectal bleeding.
+BSG surveillance interval: [calculate based on polyp number, size, histology].
+Histopathology results to be reviewed; communicate results and surveillance plan to patient.` },
 
-  { group: 'Endoscopy', name: 'ERCP — sphincterotomy + stone extraction', steps:
+  { group: 'Endoscopy', name: 'ERCP — sphincterotomy + stone extraction',
+    approach: 'Endoscopic', anaesthesiaType: 'MAC / sedation', position: 'Prone',
+    incision: 'Transoral — no incision', safetyChecks: ['WHO surgical safety checklist'],
+    intraopImaging: 'Fluoroscopy (C-arm)',
+    operativeSteps:
 `1. Patient positioned prone under propofol TIVA / deep sedation with CO₂ insufflation.
 2. ERCP duodenoscope (TJF-Q180V) advanced to second part of duodenum. Papilla identified — [describe].
 3. Deep biliary cannulation achieved with sphincterotome / guidewire technique. Contrast injected.
@@ -1129,52 +1367,138 @@ const OPERATIVE_TEMPLATES: { group: string; name: string; steps: string }[] = [
 7. CBD stones extracted using extraction balloon / Dormia basket — [number] stones retrieved. Completion sweep confirmed clearance.
 8. Completion cholangiogram confirmed CBD clearance / residual stones [describe].
 9. [Biliary stent placed as bridge if required.]
-10. Patient tolerated procedure well. No immediate complications. Post-ERCP observations commenced.` },
+10. Patient tolerated procedure well. No immediate complications. Post-ERCP observations commenced.`,
+    findingsTemplate: 'Papilla: [normal / periampullary diverticulum / describe]. Cholangiogram: CBD ___ mm, [number] calculi in [location]. Sphincterotomy: performed to superior fold. Stones extracted: [number], largest ___ mm. Completion cholangiogram: [clear / residual stones — describe]. Stent: [placed / not required].',
+    ebl: 'Minimal', specimenSent: 'None', specimenSite: '',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: '', dressing: 'N/A',
+    postopOrders: ['NPO until tolerated', 'Continuous monitoring', 'Antibiotic therapy'],
+    diet: 'NBM / NPO', ivAccess: 'PIV × 1',
+    postOpNotes: `Post-ERCP: 4–6 hours fasting, observations ×4 hours. Lipase/amylase at 4h.
+Warn patient: post-ERCP pancreatitis risk (~3–5%). If severe abdominal pain develops — admit for observation.
+Post-sphincterotomy: delayed bleeding risk; monitor stool.
+Follow-up: arrange MRCP or ultrasound at 6 weeks; outpatient review for cholecystectomy planning if gallstones present.` },
 
-  // Breast / Thyroid
-  { group: 'Breast & Thyroid', name: 'Total thyroidectomy', steps:
-`1. Patient positioned supine with neck extended over shoulder roll under general anaesthesia. NIM tube placed and baseline neuromonitoring signals confirmed.
-2. Collar incision marked in natural skin crease. Full-thickness skin flaps raised with Ligasure.
-3. Strap muscles separated in midline, retracted laterally.
-4. Right lobe: superior pole vessels divided. Superior laryngeal nerve preserved.
-   External laryngeal nerve (ELN) identified / identified by signal loss avoided.
-5. Inferior thyroid artery identified. RLN identified in tracheo-oesophageal groove and traced from entry into larynx. NIM confirmed continuous RLN signal throughout.
-6. Right lobe dissected off trachea. Parathyroid glands identified — upper and lower [in situ / autotransplanted to sternomastoid].
-7. Left lobe: same technique applied. Left RLN identified and preserved. NIM final signal confirmed.
-8. Specimen excised intact. [Total weight ___ g. Specimen sent for histopathology.]
-9. Haemostasis confirmed. [Hemovac drain placed.] Strap muscles reapproximated. Platysma with Vicryl 3/0. Skin with Monocryl 4/0 subcuticular.
-10. Post-operative calcium and PTH levels to be checked at 6 hours. Patient to commence calcium/calcitriol supplements per protocol.` },
+  // Breast & Thyroid
+  { group: 'Breast & Thyroid', name: 'Total thyroidectomy',
+    approach: 'Open', anaesthesiaType: 'GA', position: 'Supine',
+    incision: 'Collar (Kocher) incision in natural skin crease, 1–2 cm above clavicle',
+    safetyChecks: ['WHO surgical safety checklist', 'Correct site marking confirmed', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient supine, neck extended over shoulder roll under GA. NIM ETT placed; baseline neuromonitoring (bilateral V1/R1/L1) confirmed.
+2. Collar incision marked in natural skin crease. Full-thickness subplatysmal flaps raised superiorly to thyroid cartilage, inferiorly to sternal notch.
+3. Midline raphe divided. Strap muscles separated and retracted laterally.
+4. RIGHT LOBE: Superior pole vessels divided sequentially close to thyroid capsule (preserving external laryngeal nerve — stimulated and confirmed).
+5. Lateral dissection: middle thyroid vein divided. Inferior thyroid artery identified medial to carotid.
+6. Right RLN identified in tracheo-oesophageal groove, traced to laryngeal entry. Continuous NIM signal confirmed throughout dissection.
+7. Right upper and lower parathyroid glands identified — [in situ with intact pedicle / devascularised → autotransplanted to sternomastoid].
+8. Right lobe dissected off trachea and isthmus divided.
+9. LEFT LOBE: Same technique applied. Left RLN identified and confirmed by NIM. Left parathyroids identified and preserved.
+10. Specimen excised en bloc. Final NIM signals confirmed bilaterally (V2/R2/L2).
+11. Haemostasis achieved with Ligasure and haemostatic clips. [Small-bore suction drain placed in thyroid bed.]
+12. Strap muscles re-approximated with Vicryl 3/0. Platysma closed Vicryl 3/0. Skin closed Monocryl 4/0 subcuticular.
+13. Specimen weight ___ g. Sent for histopathology.`,
+    findingsTemplate: 'Thyroid: [describe size, consistency, nodule(s), capsule integrity]. RLN (right): [identified and preserved, NIM signal maintained]. RLN (left): [identified and preserved, NIM signal maintained]. Parathyroids (right): [upper in situ / lower in situ / autotransplanted]. Parathyroids (left): [upper in situ / lower in situ / autotransplanted]. Specimen weight: ___ g.',
+    ebl: '50–100', specimenSent: 'Yes — histopathology', specimenSite: 'Total thyroid specimen + any nodules',
+    drain: 'Placed', drainType: 'Blake drain', drainSite: 'Thyroid bed',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepilex / Tegaderm',
+    postopOrders: ['NPO until tolerated', 'DVT prophylaxis', 'Continuous monitoring', 'Wound review in 2 days'],
+    diet: 'Sips only', ivAccess: 'PIV × 1',
+    postOpNotes: `CALCIUM PROTOCOL: Check PTH and corrected calcium at 6 hours post-op.
+If PTH <10 pmol/L or Ca²⁺ <2.0 mmol/L: commence calcium carbonate 1.5 g TDS + calcitriol 0.25 mcg BD.
+If symptomatic hypocalcaemia (perioral tingling, Chvostek/Trousseau positive): IV calcium gluconate 10 mL 10% over 10 min.
+Drain removal: when output <30 mL/24h (usually day 1).
+Thyroxine: commence levothyroxine 100 mcg daily (adjust per TFTs at 6 weeks).
+Histopathology follow-up: results at 2-week clinic; MDT referral if malignancy confirmed.
+Follow-up: 2 weeks (drain review, Ca²⁺, wound); 6 weeks (TFTs, histopathology discussion).` },
 
-  { group: 'Breast & Thyroid', name: 'Wide local excision (WLE) of breast', steps:
-`1. Patient positioned supine with arm extended under general anaesthesia. Wire/seed localisation confirmed in theatre.
-2. Elliptical incision designed to include skin overlying tumour [if indicated] / cosmetic incision in Langer's lines.
-3. WLE performed with macroscopic clear margins in all planes, guided by specimen orientation.
-4. Specimen oriented with marker clips/sutures (superior, medial, lateral, deep) and sent fresh for histopathology / intraoperative frozen section.
-5. [Margin shavings taken from any suspicious areas.]
-6. Haemostasis secured. Dead space closed with Vicryl 2/0. [Drain placed if large cavity.]
-7. Skin closed with Monocryl 3/0. Mammographic clips placed in tumour bed for radiotherapy planning.
-8. [Sentinel node biopsy performed — see separate note.]
-9. Patient tolerated procedure well. Histopathology results awaited.` },
+  { group: 'Breast & Thyroid', name: 'Wide local excision (WLE) of breast',
+    approach: 'Open', anaesthesiaType: 'GA', position: 'Supine',
+    incision: 'Periareolar / radial / elliptical excision — cosmetic incision in Langer\'s lines overlying tumour',
+    safetyChecks: ['WHO surgical safety checklist', 'Correct site marking confirmed', 'Swab count correct ×2'],
+    intraopImaging: 'None used',
+    operativeSteps:
+`1. Patient supine, arm extended on arm board. Wire/seed/ROLL localisation confirmed in theatre with imaging review.
+2. Skin incision designed: [elliptical / periareolar / radial] to include skin overlying tumour if indicated.
+3. Skin incision made. Subcutaneous flaps raised.
+4. WLE performed with macroscopic clear margins in all planes (target ≥1 mm microscopic). Specimen orientated with sutures/clips (superior — short, lateral — long, deep — medium, medial — double).
+5. Specimen sent fresh to histopathology for margin assessment ± intraoperative frozen section.
+6. [Margin shavings taken from [direction] margin on surgeon's assessment.]
+7. Haemostasis secured with diathermy. Dead space closed with interrupted Vicryl 2/0.
+8. [Small corrugated drain placed if large cavity — remove day 1.]
+9. Skin closed with Monocryl 3/0 subcuticular. Dressing applied.
+10. Mammographic titanium clips placed in tumour bed for radiotherapy planning.
+11. [Sentinel node biopsy performed — see addendum.]`,
+    findingsTemplate: 'Tumour location: [quadrant, distance from nipple]. Localisation wire/seed: confirmed in situ. Specimen: [dimensions] cm × [dimensions] cm × [dimensions] cm, orientated [superior/lateral/deep/medial]. Macroscopic margins: [describe]. Frozen section (if performed): [margin status]. Clips placed in tumour bed: yes. SLNB (if performed): [hot/blue node(s) identified — describe].',
+    ebl: 'Minimal', specimenSent: 'Yes — histopathology', specimenSite: 'WLE specimen orientated (superior/lateral/deep/medial) ± margin shavings',
+    drain: 'Not placed', drainType: '', drainSite: '',
+    closure: 'Monocryl (subcuticular)', dressing: 'Mepilex / Tegaderm',
+    postopOrders: ['DVT prophylaxis', 'Wound review in 2 days'],
+    diet: 'Normal diet', ivAccess: 'PIV × 1',
+    postOpNotes: `Post-op: same-day discharge if no drain. Sling for comfort if required.
+Wound review at 48–72 hours (practice nurse).
+Histopathology and margin status: discuss at MDT within 1–2 weeks.
+If margins involved: re-excision or completion mastectomy discussion at MDT.
+Radiotherapy referral: arrange if breast-conserving surgery confirmed oncologically appropriate.
+Breast care nurse: referral for psychological support and post-op information.
+Follow-up: 2 weeks clinic (histopathology discussion, treatment planning).` },
 ];
 
 function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: PostopData) => void }) {
-  const [templateKey, setTemplateKey] = useState('');
+  const [surgeryKey, setSurgeryKey] = useState('');
   function set<K extends keyof PostopData>(k: K, v: PostopData[K]) { onChange({ ...data, [k]: v }); }
 
-  function loadTemplate(name: string) {
-    setTemplateKey(name);
+  function loadSurgery(name: string) {
+    setSurgeryKey(name);
     if (!name) return;
-    const tpl = OPERATIVE_TEMPLATES.find(t => t.name === name);
+    const tpl = SURGICAL_TEMPLATES.find(t => t.name === name);
     if (!tpl) return;
     if (data.operativeSteps && data.operativeSteps.trim()) {
-      if (!window.confirm('Replace existing operative steps with this template?')) return;
+      if (!window.confirm('Replace the existing operative note with this template?')) return;
     }
-    set('operativeSteps', tpl.steps);
-    if (!data.procedurePerformed) set('procedurePerformed', tpl.name);
+    onChange(applyTemplate(tpl, data));
   }
 
   return (
     <div style={{ display: 'grid', gap: 12 }}>
+
+      {/* ── Surgery type selector (prominent, at top) ── */}
+      <div style={{ padding: '12px 14px', background: '#0f172a', borderRadius: 8, border: '2px solid #0d9488' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', marginBottom: 8, letterSpacing: '0.06em' }}>
+          SELECT SURGERY TYPE — auto-fills all fields
+        </div>
+        <select
+          value={surgeryKey}
+          onChange={e => loadSurgery(e.target.value)}
+          style={{
+            width: '100%', fontSize: 13, fontWeight: 600,
+            padding: '9px 12px', borderRadius: 7,
+            border: '1px solid #0d9488', background: '#0a1628', color: '#f1f5f9',
+            cursor: 'pointer',
+          }}
+        >
+          <option value="">— Select procedure to auto-populate all fields —</option>
+          {Array.from(new Set(SURGICAL_TEMPLATES.map(t => t.group))).map(g => (
+            <optgroup key={g} label={g}>
+              {SURGICAL_TEMPLATES.filter(t => t.group === g).map(t => (
+                <option key={t.name} value={t.name}>{t.name}</option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+        {surgeryKey && (
+          <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 11, color: '#10b981' }}>✓ Template loaded — all fields pre-filled. Edit below as needed.</span>
+            <button type="button"
+              onClick={() => { setSurgeryKey(''); onChange({ ...data, operativeSteps: '', findings: '', procedurePerformed: '' }); }}
+              style={{ fontSize: 11, padding: '2px 10px', borderRadius: 5, border: '1px solid #334155', background: 'transparent', color: '#94a3b8', cursor: 'pointer' }}>
+              Clear
+            </button>
+          </div>
+        )}
+      </div>
+
       <div style={{ padding: '10px 14px', background: '#f0fdfa', borderRadius: 8, border: '1px solid #99f6e4' }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#0f766e', marginBottom: 6 }}>THEATRE TEAM</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
@@ -1239,29 +1563,9 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
       </Field>
 
       <Field label="Key operative steps">
-        <div style={{ marginBottom: 6, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 11, color: '#6b7280', whiteSpace: 'nowrap' }}>Load template:</span>
-          <select value={templateKey} onChange={e => loadTemplate(e.target.value)}
-            style={{ flex: 1, minWidth: 200, padding: '4px 8px', fontSize: 11, borderRadius: 6, border: '1px solid #d1d5db' }}>
-            <option value="">— Select procedure to auto-fill steps —</option>
-            {Array.from(new Set(OPERATIVE_TEMPLATES.map(t => t.group))).map(g => (
-              <optgroup key={g} label={g}>
-                {OPERATIVE_TEMPLATES.filter(t => t.group === g).map(t => (
-                  <option key={t.name} value={t.name}>{t.name}</option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-          {templateKey && (
-            <button type="button" onClick={() => { setTemplateKey(''); set('operativeSteps', ''); }}
-              style={{ fontSize: 11, padding: '4px 10px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#f9fafb', cursor: 'pointer', color: '#6b7280' }}>
-              Clear
-            </button>
-          )}
-        </div>
         <textarea value={data.operativeSteps} onChange={e => set('operativeSteps', e.target.value)}
-          placeholder="Describe key operative steps in sequence, or load a template above…"
-          style={{ fontSize: 12, minHeight: 140 }} />
+          placeholder="Select a surgery type above to auto-fill, or type operative steps here…"
+          style={{ fontSize: 12, minHeight: 160 }} />
       </Field>
 
       <Field label="Intraoperative findings">
@@ -1786,7 +2090,6 @@ export default function ProceduresTab() {
       {(['ogd', 'colonoscopy', 'ercp', 'bronch'] as ProcType[]).includes(activeType) && (
         <EndoscopyReportGenerator type={activeType as 'ogd' | 'colonoscopy' | 'ercp' | 'bronch'} />
       )}
-      <OperativeNoteGenerator />
       <PostopCarePlan />
       <SurveillanceProtocolCard />
     </div>
