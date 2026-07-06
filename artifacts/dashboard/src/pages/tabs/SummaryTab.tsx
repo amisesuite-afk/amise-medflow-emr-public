@@ -545,6 +545,7 @@ function DirectExportPanel() {
   const [dischargeNotes, setDischargeNotes] = useState('');
   const [followUp, setFollowUp] = useState('');
   const [warningSign, setWarningSign] = useState('');
+  const [showPreview, setShowPreview] = useState(true);
 
   function makeMeta(): PrintMeta {
     return {
@@ -630,7 +631,7 @@ function DirectExportPanel() {
       )}
 
       {/* Actions */}
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <button type="button"
           onClick={() => printHtml(getHtml())}
           style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #1a5276', background: '#1a5276', color: '#fff', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
@@ -646,11 +647,39 @@ function DirectExportPanel() {
           style={{ padding: '6px 16px', borderRadius: 6, border: '1px solid #374151', background: '#f9fafb', color: '#374151', fontSize: 12, cursor: 'pointer' }}>
           ↓ HTML
         </button>
+        <button type="button"
+          onClick={() => setShowPreview(p => !p)}
+          style={{ marginLeft: 'auto', padding: '6px 14px', borderRadius: 6, border: '1.5px solid #0d9488', background: showPreview ? '#f0fdfa' : '#fff', color: '#0d9488', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
+          {showPreview ? '▲ Hide Preview' : '👁 Preview'}
+        </button>
       </div>
 
       <div style={{ fontSize: 11, color: '#9ca3af' }}>
         Generated directly from entered data — no AI required. Review before printing.
       </div>
+
+      {/* ── Inline document preview ── */}
+      {showPreview && (
+        <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
+          <div style={{
+            padding: '7px 14px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Document Preview
+            </span>
+            <span style={{ fontSize: 11, color: '#94a3b8' }}>Review before printing · updates live</span>
+          </div>
+          <div style={{ background: '#e5e7eb', padding: '16px 0', overflowY: 'auto', maxHeight: 740 }}>
+            <iframe
+              srcDoc={getHtml()}
+              title="Document preview"
+              style={{ display: 'block', width: '96%', maxWidth: 720, margin: '0 auto', minHeight: 640, border: 'none', background: '#fff', borderRadius: 4, boxShadow: '0 1px 6px rgba(0,0,0,0.12)' }}
+              sandbox="allow-same-origin"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
