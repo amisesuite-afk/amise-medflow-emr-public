@@ -75,6 +75,7 @@ import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
 import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
+import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import { getMatrix } from '@/lib/cc-matrices';
 
 const API_ORIGIN = getApiOrigin();
@@ -767,8 +768,11 @@ export default function HomePage() {
         {/* Problem list strip — collapsed by default; badge shows count */}
         {topSection === 'consultation' && <ProblemListStrip />}
 
-        {/* Clinical prompts — inferred from demographics, CC, PMH, Fhx, social Hx */}
+        {/* Clinical prompts — inferred from demographics, CC, PMH, Fhx, social Hx, exam, labs, imaging */}
         {topSection === 'consultation' && <ClinicalPromptsStrip />}
+
+        {/* Follow-up queue — localStorage-persisted recurring reminders */}
+        {topSection === 'consultation' && <FollowUpQueueStrip />}
 
 
         {/* Consultation horizontal tab strip — reduces sidebar dependency */}
