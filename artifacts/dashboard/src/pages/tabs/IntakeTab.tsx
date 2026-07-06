@@ -83,7 +83,19 @@ export default function IntakeTab() {
     referringPhysician, setReferringPhysician,
     insuranceProvider, setInsuranceProvider,
     policyNumber, setPolicyNumber,
+    procedureData, setProcedureData,
+    hpiNotes, setHpiNotes,
+    setTopSection,
   } = useAppContext();
+
+  // Referral detail — stored in procedureData['referral'] to avoid context bloat
+  interface ReferralData { date: string; dx: string; summary: string }
+  const referralData = (procedureData['referral'] as ReferralData | undefined) ?? { date: '', dx: '', summary: '' };
+  function setReferral(patch: Partial<ReferralData>) {
+    setProcedureData({ ...procedureData, referral: { ...referralData, ...patch } });
+  }
+
+  const [checkedIn, setCheckedIn] = useState(false);
 
   function calcBmi(): { bmi: number; class: string; color: string; rec: string } | null {
     const w = parseFloat(weightKg);
@@ -342,6 +354,114 @@ export default function IntakeTab() {
               <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
             </div>
           </div>
+        </div>
+
+        {/* ── Referral clinical details ── */}
+        {referredBy.trim().length > 0 && (
+          <div style={{
+            marginTop: 14, padding: '12px 14px', borderRadius: 8,
+            background: 'rgba(30,58,138,0.06)', border: '1px solid #bfdbfe',
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 800, color: '#1d4ed8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>
+              📋 Referral details — from {referredBy}
+            </div>
+            <div className="form-grid cols-2" style={{ marginBottom: 10 }}>
+              <div className="fld">
+                <label>Referral date</label>
+                <input
+                  type="date"
+                  value={referralData.date}
+                  onChange={e => setReferral({ date: e.target.value })}
+                />
+              </div>
+              <div className="fld">
+                <label>Referring diagnosis / reason</label>
+                <input
+                  type="text"
+                  value={referralData.dx}
+                  onChange={e => setReferral({ dx: e.target.value })}
+                  placeholder="e.g. Right inguinal hernia, query appendicitis…"
+                />
+              </div>
+            </div>
+            <div className="fld" style={{ marginBottom: 10 }}>
+              <label>Clinical summary from referral letter</label>
+              <textarea
+                value={referralData.summary}
+                onChange={e => setReferral({ summary: e.target.value })}
+                placeholder="Paste or type the referring doctor's clinical summary, prior investigations, treatment history…"
+                style={{ minHeight: 80 }}
+              />
+            </div>
+            {referralData.summary.trim().length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  const prefix = `[Referral from ${referredBy}${referralData.dx ? ` — ${referralData.dx}` : ''}]\n${referralData.summary}\n\n`;
+                  setHpiNotes(hpiNotes ? prefix + hpiNotes : prefix);
+                  showToast('Referral summary imported to HPI', 'success');
+                }}
+                style={{
+                  padding: '6px 16px', borderRadius: 6, border: 'none',
+                  background: '#1d4ed8', color: '#fff',
+                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                }}
+              >
+                Import to HPI →
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* ── Front-desk check-in action ── */}
+        <div style={{
+          marginTop: 14, padding: '10px 14px', borderRadius: 8,
+          background: checkedIn ? 'rgba(16,185,129,0.08)' : 'rgba(15,118,110,0.06)',
+          border: `1px solid ${checkedIn ? '#6ee7b7' : '#99f6e4'}`,
+          display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          {checkedIn ? (
+            <>
+              <span style={{ fontSize: 16 }}>✅</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#065f46' }}>Patient checked in</div>
+                <div style={{ fontSize: 11, color: '#047857' }}>{patientName || 'Patient'} is queued for Dr Kabiye's consultation.</div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTopSection('consultation')}
+                style={{
+                  padding: '6px 16px', borderRadius: 6, border: 'none',
+                  background: '#0d9488', color: '#fff',
+                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                }}
+              >
+                Open Consultation →
+              </button>
+            </>
+          ) : (
+            <>
+              <span style={{ fontSize: 16 }}>🪑</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#0f766e' }}>Front desk: patient ready</div>
+                <div style={{ fontSize: 11, color: '#0d9488' }}>Check in and queue for Dr Kabiye once registration is complete.</div>
+              </div>
+              <button
+                type="button"
+                disabled={!patientName.trim()}
+                onClick={() => { savePatient(); setCheckedIn(true); }}
+                style={{
+                  padding: '6px 16px', borderRadius: 6, border: 'none',
+                  background: patientName.trim() ? '#0d9488' : '#d1d5db',
+                  color: '#fff', fontSize: 12, fontWeight: 700,
+                  cursor: patientName.trim() ? 'pointer' : 'default',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ✓ Check in &amp; Queue
+              </button>
+            </>
+          )}
         </div>
       </CollapsibleCard>
 

@@ -27,7 +27,11 @@ export default function EncounterTimelineTab() {
     setSurgicalHistory, setSurgicalNotes,
     setToxicHabits,
     setActiveSection,
+    referredBy, procedureData,
   } = useAppContext();
+
+  interface ReferralData { date: string; dx: string; summary: string }
+  const referralData = (procedureData['referral'] as ReferralData | undefined) ?? null;
 
   const [encounters, setEncounters] = useState<EncounterSummary[]>([]);
   const [loading, setLoading] = useState(false);
@@ -117,6 +121,52 @@ export default function EncounterTimelineTab() {
       {error && (
         <div style={{ padding: '10px 14px', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8, fontSize: 12, color: '#b91c1c', marginBottom: 12 }}>
           {error}
+        </div>
+      )}
+
+      {/* Referral card — pinned at top if referral details captured in intake */}
+      {(referredBy.trim() || (referralData && (referralData.dx || referralData.summary))) && (
+        <div style={{
+          background: 'rgba(239,246,255,0.6)',
+          border: '1px solid #bfdbfe',
+          borderLeft: '3px solid #2563eb',
+          borderRadius: 8,
+          padding: '10px 13px',
+          marginBottom: 10,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <span style={{ fontSize: 14 }}>📨</span>
+            <span style={{ fontWeight: 700, fontSize: 12, color: '#1e40af' }}>Referred by</span>
+            {referredBy.trim() && (
+              <span style={{
+                fontSize: 11, fontWeight: 600, color: '#1d4ed8',
+                background: '#dbeafe', borderRadius: 4, padding: '1px 8px',
+              }}>
+                {referredBy}
+              </span>
+            )}
+            {referralData?.date && (
+              <span style={{ fontSize: 11, color: '#6b7280' }}>
+                {new Date(referralData.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+            )}
+          </div>
+          {referralData?.dx && (
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#1e3a8a', marginBottom: 4 }}>
+              Referring diagnosis: {referralData.dx}
+            </div>
+          )}
+          {referralData?.summary && (
+            <div style={{
+              fontSize: 11, color: '#374151', lineHeight: 1.55,
+              background: 'rgba(219,234,254,0.4)', borderRadius: 5,
+              padding: '6px 10px', marginTop: 4,
+              maxHeight: 120, overflowY: 'auto',
+              whiteSpace: 'pre-wrap',
+            }}>
+              {referralData.summary}
+            </div>
+          )}
         </div>
       )}
 
