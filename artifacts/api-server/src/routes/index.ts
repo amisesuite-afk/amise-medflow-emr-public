@@ -22,6 +22,7 @@ import generateLetterRouter from "./generate-letter";
 import generateOperativeNoteRouter from "./generate-operative-note";
 import generateEndoscopyReportRouter from "./generate-endoscopy-report";
 import suggestCodesRouter from "./suggest-codes";
+import documentScanRouter from "./document-scan";
 
 const router: IRouter = Router();
 
@@ -47,5 +48,6 @@ router.use('/generate-letter', aiDisabledMiddleware, generateLetterRouter);
 router.use('/generate-operative-note', aiDisabledMiddleware, generateOperativeNoteRouter);
 router.use('/generate-endoscopy-report', aiDisabledMiddleware, generateEndoscopyReportRouter);
 router.use('/suggest-codes', aiDisabledMiddleware, suggestCodesRouter);
+router.use('/document-scan', aiDisabledMiddleware, documentScanRouter);
 
 export default router;
