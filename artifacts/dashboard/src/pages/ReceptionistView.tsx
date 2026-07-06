@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
@@ -9,6 +9,40 @@ import type { Sex } from '@workspace/triage-engine';
 import BookingInboxTab from './tabs/BookingInboxTab';
 import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
 import { SL_COMMUNITIES } from '@/data/st-lucia';
+
+const QUEUE_KEY = 'amise-patients-v1';
+
+function pushToTodayQueue(entry: { id: string; full_name: string; age?: string; sex?: string; dob?: string; phone?: string }): void {
+  try {
+    const raw = localStorage.getItem(QUEUE_KEY);
+    const all: Array<Record<string, string>> = raw ? JSON.parse(raw) as Array<Record<string, string>> : [];
+    const filtered = all.filter(p => p.id !== entry.id);
+    filtered.push({ ...entry, savedAt: new Date().toISOString() });
+    localStorage.setItem(QUEUE_KEY, JSON.stringify(filtered));
+  } catch { /* ignore */ }
+}
+
+function resizeImageToBase64(file: File, size = 320): Promise<string> {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { resolve(''); return; }
+        const min = Math.min(img.width, img.height);
+        const sx = (img.width - min) / 2;
+        const sy = (img.height - min) / 2;
+        ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 type ReceptionistTab = 'checkin' | 'inbox' | 'questionnaire';
 
@@ -37,7 +71,10 @@ export default function ReceptionistView() {
     currentSite, setCurrentSite,
     preVisitStatus, setPreVisitStatus,
     patientId, setPatientId,
+    patientPhoto, setPatientPhoto,
   } = useAppContext();
+
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const { profile, signOut } = useAuth();
   const [saving, setSaving] = useState(false);
@@ -93,6 +130,9 @@ export default function ReceptionistView() {
     setSaving(false);
     if (error) {
       if (error.includes('not configured')) {
+        // Demo / offline mode — generate local ID and push to queue
+        const localId = `local_${Date.now()}`;
+        pushToTodayQueue({ id: localId, full_name: patientName, age, sex: sex !== 'unknown' ? sex : undefined, dob: dob || undefined, phone: phone || undefined });
         setSavedName(patientName);
         setPreVisitStatus('registered');
         setSaved(true);
@@ -101,7 +141,10 @@ export default function ReceptionistView() {
       setSaveError(error);
       return;
     }
-    if (patient) setPatientId(patient.id);
+    if (patient) {
+      setPatientId(patient.id);
+      pushToTodayQueue({ id: patient.id, full_name: patientName, age, sex: sex !== 'unknown' ? sex : undefined, dob: dob || undefined, phone: phone || undefined });
+    }
     setSavedName(patientName);
     setPreVisitStatus('registered');
     setSaved(true);
@@ -112,6 +155,7 @@ export default function ReceptionistView() {
     setSavedName('');
     setInviteResult(null);
     clearPatient();
+    setPatientPhoto('');
     setSaveError(null);
   }
 
@@ -230,18 +274,28 @@ export default function ReceptionistView() {
           {saved && (
             <div style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center',
-              gap: 18, padding: '48px 24px 40px', textAlign: 'center',
+              gap: 18, padding: '36px 24px 32px', textAlign: 'center',
               background: '#f0fdf4', borderRadius: 14, border: '1px solid #86efac',
             }}>
-              <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ fontSize: 30, color: '#fff' }}>✓</span>
-              </div>
+              {patientPhoto ? (
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <img src={patientPhoto} alt={savedName} style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', border: '3px solid #16a34a' }} />
+                  <div style={{ position: 'absolute', bottom: 0, right: 0, width: 26, height: 26, borderRadius: '50%', background: '#16a34a', border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 13, fontWeight: 800 }}>✓</div>
+                </div>
+              ) : (
+                <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: 30, color: '#fff' }}>✓</span>
+                </div>
+              )}
               <div>
                 <div style={{ fontSize: 20, fontWeight: 800, color: '#166534', marginBottom: 4 }}>
                   Checked In Successfully
                 </div>
                 <div style={{ fontSize: 15, color: '#374151' }}>
-                  <strong>{savedName || 'Patient'}</strong> has been registered and is awaiting the nurse.
+                  <strong>{savedName || 'Patient'}</strong> has been added to today's queue.
+                </div>
+                <div style={{ fontSize: 12, color: '#6b7280', marginTop: 6 }}>
+                  Visible in Booking Inbox → Today's Queue
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
@@ -304,6 +358,68 @@ export default function ReceptionistView() {
               background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb',
               padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 10,
             }}>
+              {/* Photo capture strip */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottom: '1px solid #f3f4f6' }}>
+                <button
+                  type="button"
+                  title="Take or upload patient photo"
+                  onClick={() => photoInputRef.current?.click()}
+                  style={{ flexShrink: 0, padding: 0, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: '50%', position: 'relative' }}
+                >
+                  {patientPhoto ? (
+                    <img src={patientPhoto} alt="Patient" style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '2.5px solid #0d9488', display: 'block' }} />
+                  ) : (
+                    <div style={{
+                      width: 72, height: 72, borderRadius: '50%',
+                      background: '#f9fafb', border: '2px dashed #d1d5db',
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
+                    }}>
+                      <span style={{ fontSize: 22, lineHeight: 1 }}>📷</span>
+                      <span style={{ fontSize: 8, fontWeight: 700, color: '#9ca3af', letterSpacing: '0.05em' }}>PHOTO</span>
+                    </div>
+                  )}
+                  {/* Camera badge overlay */}
+                  <div style={{
+                    position: 'absolute', bottom: 0, right: 0,
+                    width: 22, height: 22, borderRadius: '50%',
+                    background: '#0d9488', border: '2px solid #fff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 11,
+                  }}>
+                    +
+                  </div>
+                </button>
+                <input
+                  ref={photoInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  style={{ display: 'none' }}
+                  onChange={e => {
+                    const f = e.target.files?.[0];
+                    if (f) void resizeImageToBase64(f).then(b64 => { if (b64) setPatientPhoto(b64); });
+                    e.target.value = '';
+                  }}
+                />
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>
+                    Patient photo <span style={{ color: '#9ca3af', fontWeight: 400 }}>(optional)</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
+                    Tap circle to take photo or choose from gallery
+                  </div>
+                  {patientPhoto && (
+                    <button
+                      type="button"
+                      onClick={() => setPatientPhoto('')}
+                      style={{ marginTop: 5, fontSize: 11, color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontWeight: 600 }}
+                    >
+                      Remove photo
+                    </button>
+                  )}
+                </div>
+              </div>
+
               {/* Row 1: Name (full width) */}
               <div className="fld">
                 <label style={{ fontSize: 11, fontWeight: 700, color: '#374151' }}>Full name</label>
