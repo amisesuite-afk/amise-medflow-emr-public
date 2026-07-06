@@ -13,6 +13,19 @@ import { SL_COMMUNITIES, SL_DOCTORS, formatSlPhone, isValidSlPhone, type SlDocto
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
 
+const VISIT_TYPES = [
+  { id: 'new_consult',      label: 'First Consult' },
+  { id: 'follow_up',        label: 'Follow-up' },
+  { id: 'post_op',          label: 'Post-op Review' },
+  { id: 'ercp',             label: 'ERCP' },
+  { id: 'endoscopy_ogd',    label: 'OGD' },
+  { id: 'endoscopy_col',    label: 'Colonoscopy' },
+  { id: 'breast',           label: 'Breast Clinic' },
+  { id: 'telephone',        label: 'Telephone' },
+  { id: 'diabetic_foot',    label: 'Diabetic Foot' },
+  { id: 'urgent',           label: 'Urgent Referral' },
+] as const;
+
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
@@ -64,13 +77,13 @@ export default function IntakeTab() {
     symptoms,
     freeText, setFreeText,
     triageResult,
-    currentSite,
     weightKg, setWeightKg,
     heightCm, setHeightCm,
     waistCm, setWaistCm,
     hipCm, setHipCm,
     muacCm, setMuacCm,
     encounterMode,
+    currentSite, setCurrentSite,
     mrNumber, setMrNumber,
     ward, setWard,
     dateAdmission, setDateAdmission,
@@ -181,6 +194,16 @@ export default function IntakeTab() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  // Sync local query states when demographics arrive from check-in after mount
+  useEffect(() => {
+    if (address && !addressQuery.trim()) setAddressQuery(address);
+  }, [address]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (referredBy && !referralQuery.trim()) setReferralQuery(referredBy);
+  }, [referredBy]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const visitType = (procedureData['visitType'] as string | undefined) ?? '';
 
   function savePatient() {
     if (!patientName.trim()) return;
@@ -462,6 +485,61 @@ export default function IntakeTab() {
               </button>
             </>
           )}
+        </div>
+      </CollapsibleCard>
+
+      {/* ── 1b. VISIT CLASSIFICATION — staff fills before consultation ────── */}
+      <CollapsibleCard title="Visit" defaultOpen>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* Site */}
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Clinic site</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {(['rodney_bay', 'tapion'] as const).map(s => (
+                <button key={s} type="button" onClick={() => setCurrentSite(s)} style={{
+                  padding: '7px 22px', borderRadius: 8, fontSize: 13, fontWeight: 700,
+                  border: currentSite === s ? '2px solid #0d9488' : '1.5px solid #e2e8f0',
+                  background: currentSite === s ? '#0d9488' : '#f8fafc',
+                  color: currentSite === s ? '#fff' : '#64748b', cursor: 'pointer',
+                }}>
+                  {s === 'rodney_bay' ? 'Rodney Bay' : 'Tapion'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Visit type */}
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Visit type</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {VISIT_TYPES.map(vt => (
+                <button key={vt.id} type="button"
+                  onClick={() => setProcedureData({ ...procedureData, visitType: vt.id })}
+                  style={{
+                    padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
+                    border: visitType === vt.id ? '2px solid #1d4ed8' : '1.5px solid #e2e8f0',
+                    background: visitType === vt.id ? '#1d4ed8' : '#f8fafc',
+                    color: visitType === vt.id ? '#fff' : '#374151', cursor: 'pointer',
+                  }}>
+                  {vt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Scan document shortcut */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8, borderTop: '1px solid #f1f5f9' }}>
+            <span style={{ fontSize: 12, color: '#6b7280' }}>
+              {hpiNotes.includes('[Referral')
+                ? '📄 Referral letter imported to HPI'
+                : 'Referral letter or previous reports available?'}
+            </span>
+            <button type="button" onClick={() => setTopSection('doc_scan')}
+              style={{ padding: '5px 14px', borderRadius: 7, border: '1.5px solid #0d9488', background: '#f0fdfa', color: '#0d9488', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
+              📄 Scan Document
+            </button>
+          </div>
         </div>
       </CollapsibleCard>
 

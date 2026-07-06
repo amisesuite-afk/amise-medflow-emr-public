@@ -154,11 +154,12 @@ interface TopItem {
 
 const NAV_ITEMS: TopItem[] = [
   // ── Front Desk ──
-  { id: 'checkin',        icon: UserCheck,       label: 'Check-In',       roles: ['front_desk', 'admin'],                    group: 'Front Desk' },
-  { id: 'doc_scan',       icon: ScanLine,        label: 'Scan Document',  roles: ['front_desk', 'admin'],                    group: 'Front Desk' },
-  { id: 'dashboard',      icon: LayoutDashboard, label: 'Dashboard',      roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
-  { id: 'booking_inbox',  icon: Inbox,           label: 'Booking Inbox',  roles: ['front_desk', 'nurse', 'admin'],           group: 'Front Desk' },
-  { id: 'scheduling',     icon: CalendarDays,    label: 'Scheduling',     roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
+  { id: 'checkin',        icon: UserCheck,       label: 'Check-In',         roles: ['front_desk', 'admin'],                    group: 'Front Desk' },
+  { id: 'doc_scan',       icon: ScanLine,        label: 'Scan Document',    roles: ['front_desk', 'admin'],                    group: 'Front Desk' },
+  { id: 'patients',       icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
+  { id: 'dashboard',      icon: LayoutDashboard, label: 'Dashboard',        roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
+  { id: 'booking_inbox',  icon: Inbox,           label: 'Booking Inbox',    roles: ['front_desk', 'nurse', 'admin'],           group: 'Front Desk' },
+  { id: 'scheduling',     icon: CalendarDays,    label: 'Scheduling',       roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
 
   // ── Pre-Visit ──
   { id: 'intake',         icon: ClipboardList,   label: 'Intake',         roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Pre-Visit' },
@@ -175,7 +176,6 @@ const NAV_ITEMS: TopItem[] = [
   { id: 'billing',        icon: Receipt,         label: 'Billing',        roles: ['front_desk', 'doctor', 'admin'],          group: 'Post-Visit' },
 
   // ── Admin ──
-  { id: 'patients',       icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Admin' },
   { id: 'analytics',      icon: BarChart2,       label: 'Analytics',      roles: ['doctor', 'admin'],                        group: 'Admin' },
   { id: 'quality',        icon: Activity,        label: 'QI / M&M',       roles: ['doctor', 'admin'],                        group: 'Admin' },
   { id: 'vademecum',      icon: BookOpen,        label: 'Disease Dict.',  roles: ['nurse', 'doctor', 'admin'],               group: 'Admin' },
