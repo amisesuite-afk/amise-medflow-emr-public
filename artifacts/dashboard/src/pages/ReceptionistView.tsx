@@ -4,7 +4,7 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
-import { savePatientFull } from '@/lib/db';
+import { savePatientFull, uploadPatientPhoto } from '@/lib/db';
 import type { Sex } from '@workspace/triage-engine';
 import BookingInboxTab from './tabs/BookingInboxTab';
 import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
@@ -133,6 +133,7 @@ export default function ReceptionistView() {
       full_name: patientName, age, dob, sex, phone, email,
       address, quarter, referredBy, insuranceProvider,
       policyNumber, nhiNumber, preAuthStatus,
+      occupation, nokName, nokRelation, nokTel,
     });
     setSaving(false);
     if (error) {
@@ -151,6 +152,12 @@ export default function ReceptionistView() {
     if (patient) {
       setPatientId(patient.id);
       pushToTodayQueue({ id: patient.id, full_name: patientName, age, sex: sex !== 'unknown' ? sex : undefined, dob: dob || undefined, phone: phone || undefined });
+      // Upload photo to Supabase Storage if one was captured (non-fatal on failure)
+      if (patientPhoto && patientPhoto.startsWith('data:')) {
+        void uploadPatientPhoto(patient.id, patientPhoto).then(url => {
+          if (url) setPatientPhoto(url);
+        });
+      }
     }
     setSavedName(patientName);
     setPreVisitStatus('registered');

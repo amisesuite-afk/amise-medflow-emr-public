@@ -58,6 +58,10 @@ export interface FullPatientInput {
   policyNumber: string;
   nhiNumber: string;
   preAuthStatus: string;
+  occupation?: string;
+  nokName?: string;
+  nokRelation?: string;
+  nokTel?: string;
 }
 
 export interface VitalsInput {
@@ -125,7 +129,11 @@ export async function savePatientFull(
   if (input.insuranceProvider.trim())  row.insurance_provider   = input.insuranceProvider.trim();
   if (input.policyNumber.trim())       row.policy_number        = input.policyNumber.trim();
   if (input.nhiNumber.trim())          row.nhi_number           = input.nhiNumber.trim();
-  if (input.preAuthStatus)             row.pre_auth_status      = input.preAuthStatus;
+  if (input.preAuthStatus)                   row.pre_auth_status = input.preAuthStatus;
+  if (input.occupation?.trim())              row.occupation      = input.occupation.trim();
+  if (input.nokName?.trim())                 row.nok_name        = input.nokName.trim();
+  if (input.nokRelation && input.nokRelation !== 'Other') row.nok_relation = input.nokRelation;
+  if (input.nokTel?.trim())                  row.nok_phone       = input.nokTel.trim();
 
   const { data, error } = await supabase
     .from('patients')
@@ -138,6 +146,35 @@ export async function savePatientFull(
     return { patient: null, error: error.message };
   }
   return { patient: data as SavedPatient, error: null };
+}
+
+// ─── uploadPatientPhoto ───────────────────────────────────────────────────────
+
+/** Uploads a base64 data-URL photo to the patient-photos bucket and writes
+ *  the resulting public URL back to patients.photo_url. Returns the URL on
+ *  success, null if the bucket doesn't exist or upload fails (non-fatal). */
+export async function uploadPatientPhoto(
+  patientId: string,
+  dataUrl: string,
+): Promise<string | null> {
+  if (!supabase || !dataUrl.startsWith('data:')) return null;
+  try {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const path = `${patientId}/id-photo.jpg`;
+    const { error: upErr } = await supabase.storage
+      .from('patient-photos')
+      .upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+    if (upErr) {
+      console.warn('[db] uploadPatientPhoto:', upErr.message);
+      return null;
+    }
+    const { data: { publicUrl } } = supabase.storage.from('patient-photos').getPublicUrl(path);
+    await supabase.from('patients').update({ photo_url: publicUrl }).eq('id', patientId);
+    return publicUrl;
+  } catch {
+    return null;
+  }
 }
 
 // ─── saveVitals ───────────────────────────────────────────────────────────────
