@@ -388,6 +388,26 @@ export async function listPatients(): Promise<
   return { patients: (data ?? []) as PatientListRow[], error: null };
 }
 
+// ─── searchPatients ───────────────────────────────────────────────────────────
+
+/** Full-text search on full_name (ilike) and phone (ilike).
+ *  Returns up to 20 matches ordered by most recently registered. */
+export async function searchPatients(query: string): Promise<PatientListRow[]> {
+  if (!supabase || !query.trim()) return [];
+  const q = `%${query.trim()}%`;
+  const { data, error } = await supabase
+    .from('patients')
+    .select('id, full_name, sex, phone, date_of_birth, created_at')
+    .or(`full_name.ilike.${q},phone.ilike.${q}`)
+    .order('created_at', { ascending: false })
+    .limit(20);
+  if (error) {
+    console.error('[db] searchPatients:', error);
+    return [];
+  }
+  return (data ?? []) as PatientListRow[];
+}
+
 // ─── updateDefaultSite ───────────────────────────────────────────────────────
 
 /**
