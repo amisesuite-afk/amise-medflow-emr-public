@@ -155,6 +155,7 @@ interface TopItem {
 const NAV_ITEMS: TopItem[] = [
   // ── Front Desk ──
   { id: 'checkin',        icon: UserCheck,       label: 'Check-In',       roles: ['front_desk', 'admin'],                    group: 'Front Desk' },
+  { id: 'doc_scan',       icon: ScanLine,        label: 'Scan Document',  roles: ['front_desk', 'admin'],                    group: 'Front Desk' },
   { id: 'dashboard',      icon: LayoutDashboard, label: 'Dashboard',      roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
   { id: 'booking_inbox',  icon: Inbox,           label: 'Booking Inbox',  roles: ['front_desk', 'nurse', 'admin'],           group: 'Front Desk' },
   { id: 'scheduling',     icon: CalendarDays,    label: 'Scheduling',     roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },

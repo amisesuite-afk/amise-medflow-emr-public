@@ -887,6 +887,7 @@ export default function HomePage() {
         {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
         {topSection === 'questionnaire'  && (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor'))  && <NurseAPCQTab />}
         {topSection === 'checkin'                                              && <CheckInTab />}
+        {topSection === 'doc_scan'   && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
         {topSection === 'booking_inbox'  && roleIn(userRole, 'front_desk', 'admin') && <BookingInboxTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}

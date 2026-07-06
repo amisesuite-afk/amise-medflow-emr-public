@@ -122,6 +122,7 @@ export default function CheckInTab() {
     encounterId, setEncounterId,
     patientPhoto, setPatientPhoto,
     setPreVisitStatus,
+    setTopSection,
   } = useAppContext();
 
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -561,6 +562,10 @@ export default function CheckInTab() {
 
           {/* Actions */}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <button type="button" onClick={() => setTopSection('doc_scan')}
+              style={{ flex: '1 1 160px', padding: '12px 18px', borderRadius: 10, border: '1.5px solid #0d9488', background: '#f0fdfa', color: '#0d9488', fontWeight: 700, fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 7 }}>
+              📄 <span>Scan Document</span>
+            </button>
             <button type="button" onClick={() => void handleInvite()} disabled={!email.trim() || inviting}
               style={{ flex: '1 1 160px', padding: '12px 18px', borderRadius: 10, border: '1.5px solid #d1d5db', background: '#fff', color: '#374151', fontWeight: 600, fontSize: 14, cursor: email.trim() ? 'pointer' : 'not-allowed', opacity: email.trim() ? 1 : 0.5, display: 'flex', alignItems: 'center', gap: 7 }}>
               📧 <span>{inviting ? 'Sending…' : 'Invite to Portal'}</span>
