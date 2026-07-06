@@ -59,6 +59,7 @@ export default function ClinicalPromptsStrip() {
     plan, setPlan, encounterType,
     examGeneral, examAbdomen, examBreast, examCardio, examResp, examNeuro, examExtremities,
     investigationResults, radiologyRequests,
+    vitals, assessment,
     patientName,
   } = useAppContext();
 
@@ -81,6 +82,8 @@ export default function ClinicalPromptsStrip() {
       resultNotes: r.resultNotes,
       indication: r.indication,
     })),
+    vitals,
+    assessment,
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), [age, sex, symptoms.join(), comorbidities.join(), familyHistory.join(),
        toxicHabits.join(), medications.join(), medicationsText, pregnancyPossible,
@@ -90,7 +93,9 @@ export default function ClinicalPromptsStrip() {
        // eslint-disable-next-line react-hooks/exhaustive-deps
        JSON.stringify(investigationResults),
        // eslint-disable-next-line react-hooks/exhaustive-deps
-       JSON.stringify(radiologyRequests.map(r => r.resultNotes + r.resultReceived))]);
+       JSON.stringify(radiologyRequests.map(r => r.resultNotes + r.resultReceived)),
+       // eslint-disable-next-line react-hooks/exhaustive-deps
+       JSON.stringify(vitals), assessment]);
 
   const activePrompts = allPrompts.filter(p => !dismissed.has(p.id) && !confirmed.has(p.id));
   const actionableCount = activePrompts.filter(p => p.urgency !== 'routine').length;

@@ -63,6 +63,8 @@ export interface InferenceInput {
     resultNotes: string;
     indication: string;
   }>;
+  vitals?: Record<string, string>;
+  assessment?: string;
 }
 
 // ── Pattern helpers ────────────────────────────────────────────────────────────
@@ -121,6 +123,15 @@ function hasLabKey(results: Record<string, string>, ...keyFragments: string[]): 
   return Object.keys(results).some(k => keyFragments.some(f => lo(k).includes(lo(f))));
 }
 
+/** Parse a vital sign numeric value. Keys: systolicBp, diastolicBp, heartRate, temperatureC, respiratoryRate, spo2, glucoseMmol */
+function numVital(vitals: Record<string, string> | undefined, key: string): number | null {
+  if (!vitals) return null;
+  const val = vitals[key] ?? '';
+  if (!val.trim()) return null;
+  const n = parseFloat(val);
+  return Number.isFinite(n) ? n : null;
+}
+
 // ── Main engine ────────────────────────────────────────────────────────────────
 
 export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] {
@@ -129,6 +140,7 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
     medications, medicationsText, pregnancyPossible, ccEntries, encounterType,
     examGeneral, examAbdomen, examBreast, examExtremities,
     investigationResults, radiologyRequests,
+    vitals, assessment,
   } = input;
 
   const ageNum = parseInt(age, 10);
@@ -1183,6 +1195,740 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
         { step: 6, text: 'Document BP + BMI + waist circumference', addToPlan: '• Document BP, BMI, waist circumference — cardiovascular risk profiling.' },
       ],
       followUp: { label: 'Annual wellness review', daysFromNow: 365, recurring: true, recurringDays: 365 },
+    });
+  }
+
+  void assessment; // reserved for future AI narrative integration
+
+  // ── VITAL SIGN CASCADES ─────────────────────────────────────────────────────
+
+  const sbp  = numVital(vitals, 'systolicBp');
+  const dbp  = numVital(vitals, 'diastolicBp');
+  const hr   = numVital(vitals, 'heartRate');
+  const temp = numVital(vitals, 'temperatureC');
+  const rr   = numVital(vitals, 'respiratoryRate');
+  const spo2 = numVital(vitals, 'spo2');
+  const bgl  = numVital(vitals, 'glucoseMmol');
+
+  void rr; // available for future respiratory cascade rules
+
+  const hasFeverVital   = temp !== null && temp >= 38.0;
+  const hasTachyVital   = hr   !== null && hr   >  100;
+  const hasHypotension  = sbp  !== null && sbp  <   90;
+  const hasHypoxia      = spo2 !== null && spo2 <   94;
+  const hasBradycardia  = hr   !== null && hr   <   50;
+  const hasHyperBP      = sbp  !== null && sbp  >= 180;
+
+  // Sepsis criteria: fever + tachycardia (± hypotension)
+  if (hasFeverVital && hasTachyVital) {
+    const sepsisActions: ClinicalAction[] = [
+      { step: 1, text: 'Blood cultures × 2 (peripheral + central if line in situ) — BEFORE antibiotics', addToPlan: '• Blood cultures × 2 before antibiotics.' },
+      { step: 2, text: 'Broad-spectrum IV antibiotics within 1 hour', addToPlan: hasHypotension ? '• IV Meropenem 1g TDS + Vancomycin 25mg/kg (septic shock — broad cover).' : '• IV Piperacillin-tazobactam 4.5g TDS — empirical sepsis cover.' },
+      { step: 3, text: 'IV fluid bolus 30ml/kg Hartmann\'s (if hypotensive)', addToPlan: hasHypotension ? '• IV fluid resuscitation: 30ml/kg Hartmann\'s bolus — reassess lactate and BP at 30 min.' : '• IV Hartmann\'s 1L over 4h — ensure adequate hydration.' },
+      { step: 4, text: 'Sepsis bloods: FBC, CRP, lactate, U&E, LFTs, procalcitonin', addToInvestigations: 'Lactate' },
+      { step: 5, text: 'Urine output monitoring — catheterise, target ≥ 0.5ml/kg/h', addToPlan: '• Urinary catheter — strict fluid balance, urine output ≥ 0.5ml/kg/h.' },
+    ];
+    if (hasHypotension) {
+      sepsisActions.push({ step: 6, text: 'Vasopressors if fluid-unresponsive: Noradrenaline — target MAP ≥ 65 mmHg', addToPlan: '• Vasopressors: Noradrenaline 0.01–0.5 mcg/kg/min if MAP < 65 after 30ml/kg fluid.' });
+      sepsisActions.push({ step: 7, text: 'HDU/ICU admission — continuous monitoring', addToPlan: '• HDU/ICU admission — continuous BP monitoring, lactate trend.' });
+    }
+    sepsisActions.push({ step: hasHypotension ? 8 : 6, text: 'Identify source: CT abdomen/pelvis, CXR, urine dipstick, wound review', addToPlan: '• Identify source of infection: CXR + urine dipstick + abdominal CT if no clear focus.' });
+    add({
+      id: 'sepsis_vitals',
+      type: 'safety',
+      urgency: hasHypotension ? 'urgent' : 'priority',
+      icon: '🌡️',
+      finding: `Fever ${temp}°C + HR ${hr} bpm${hasHypotension ? ` + SBP ${sbp} mmHg — septic shock` : ''}`,
+      diagnosis: hasHypotension ? 'Septic Shock' : 'Sepsis (SIRS criteria)',
+      text: hasHypotension ? 'Septic Shock → Immediate Bundle' : 'Sepsis Criteria → Hour-1 Bundle',
+      rationale: hasHypotension
+        ? `SBP ${sbp} mmHg + fever ${temp}°C + HR ${hr} bpm — septic shock (Sepsis-3). Organ dysfunction requiring immediate resuscitation and vasopressors if fluid-unresponsive.`
+        : `Fever ${temp}°C + tachycardia ${hr} bpm — SIRS/sepsis criteria met. Identify source; begin hour-1 bundle.`,
+      actions: sepsisActions,
+      followUp: hasHypotension
+        ? { label: 'Post-septic shock HDU review', daysFromNow: 1 }
+        : { label: 'Sepsis source review + culture results', daysFromNow: 2 },
+    });
+  }
+
+  // Hypotension without fever → haemorrhagic / cardiogenic shock workup
+  if (hasHypotension && !hasFeverVital) {
+    add({
+      id: 'shock_non_infective',
+      type: 'safety',
+      urgency: 'urgent',
+      icon: '🚨',
+      finding: `SBP ${sbp} mmHg — hypotension`,
+      diagnosis: 'Shock — haemorrhagic / cardiogenic / obstructive',
+      text: `SBP ${sbp} mmHg → Shock Protocol`,
+      rationale: `Blood pressure ${sbp}/${dbp ?? '?'} mmHg — hypotension without fever. Differential: haemorrhagic (GI bleed, AAA, ectopic), cardiogenic (MI, tamponade), obstructive (PE, tension pneumothorax).`,
+      actions: [
+        { step: 1, text: '2 × large-bore IV access — 1L Hartmann\'s bolus, reassess', addToPlan: '• 2 × large-bore IV cannulae, Hartmann\'s 1L bolus — reassess BP and HR at 15 min.' },
+        { step: 2, text: 'FBC + Group & Screen + Crossmatch 4 units, U&E, troponin, D-dimer, BNP', addToInvestigations: 'Blood Group & Type' },
+        { step: 3, text: '12-lead ECG — MI / arrhythmia', addToPlan: '• 12-lead ECG — ST elevation MI, arrhythmia, right heart strain (PE).' },
+        { step: 4, text: 'Portable CXR — cardiac silhouette, pulmonary oedema, pneumothorax', addToPlan: '• Portable CXR — cardiac outline, pulmonary oedema, pneumothorax.' },
+        { step: 5, text: 'POCUS (point-of-care USS) — cardiac, IVC, pleural, aorta', addToPlan: '• POCUS: cardiac (effusion/tamponade), aorta (AAA), IVC collapsibility.' },
+        { step: 6, text: 'Urgent cardiology or surgical review per source', addToPlan: '• Contact appropriate specialty immediately: cardiology (MI/tamponade), surgery (haemorrhage/AAA), emergency medicine (PE).' },
+      ],
+    });
+  }
+
+  // Hypoxia: SpO2 < 94%
+  if (hasHypoxia) {
+    const hypoxiaActions: ClinicalAction[] = [
+      { step: 1, text: 'Supplemental O₂ — titrate to SpO₂ ≥ 94% (COPD: target 88–92%)', addToPlan: '• Supplemental O₂: Hudson mask 5–10L/min, titrate to SpO₂ ≥ 94%.' },
+      { step: 2, text: 'ABG — type I vs type II failure, pH, pCO₂', addToInvestigations: 'Arterial Blood Gas (ABG)' },
+      { step: 3, text: 'CXR — pneumonia, effusion, pneumothorax, pulmonary oedema', addToPlan: '• CXR — identify cause: consolidation, pneumothorax, effusion, cardiomegaly.' },
+      { step: 4, text: 'D-dimer (if PE probability ≥ moderate — Wells score)', addToInvestigations: 'D-dimer' },
+    ];
+    if (spo2 !== null && spo2 < 90) {
+      hypoxiaActions.push({ step: 5, text: 'Consider CPAP / NIV / intubation if SpO₂ < 90% or fatigue', addToPlan: '• Escalate: CPAP/NIV if SpO₂ < 90% or increasing respiratory effort — ITU review.' });
+    }
+    hypoxiaActions.push({ step: spo2 !== null && spo2 < 90 ? 6 : 5, text: 'CT pulmonary angiogram if PE likely (Wells ≥ 2)', addToPlan: '• CTPA if Wells score ≥ 2 and D-dimer positive — exclude pulmonary embolism.' });
+    add({
+      id: 'hypoxia_vitals',
+      type: 'safety',
+      urgency: spo2 !== null && spo2 < 90 ? 'urgent' : 'priority',
+      icon: '🫁',
+      finding: `SpO₂ ${spo2}% — hypoxia`,
+      diagnosis: 'Hypoxaemic respiratory failure',
+      text: `SpO₂ ${spo2}% → Respiratory Escalation`,
+      rationale: `SpO₂ ${spo2}% — below safe threshold (target ≥ 94%). Underlying cause (PE, pneumonia, pneumothorax, LVF, ARDS) must be identified urgently.`,
+      actions: hypoxiaActions,
+    });
+  }
+
+  // Bradycardia < 50 bpm
+  if (hasBradycardia) {
+    const bradyActions: ClinicalAction[] = [
+      { step: 1, text: '12-lead ECG — heart block, junctional, SSS', addToPlan: '• 12-lead ECG — P-wave morphology, PR interval, heart block grade.' },
+      { step: 2, text: 'U&E (hyperkalaemia), TFTs (hypothyroidism), digoxin level if applicable', addToInvestigations: 'Urea & Electrolytes (U&E)' },
+    ];
+    if (hr !== null && hr < 40) {
+      bradyActions.push({ step: 3, text: 'Atropine 500mcg IV — if symptomatic (dizziness, syncope, hypotension)', addToPlan: '• Atropine 500mcg IV if symptomatic bradycardia — repeat to max 3mg. Prepare temporary pacing.' });
+    }
+    bradyActions.push({ step: 4, text: 'Hold beta-blockers, rate-limiting CCBs, digoxin pending review', addToPlan: '• Hold beta-blockers, diltiazem/verapamil, digoxin — pending cardiology review.' });
+    bradyActions.push({ step: 5, text: 'Cardiology referral — pacing assessment', addToPlan: '• Urgent cardiology review — temporary or permanent pacing assessment.' });
+    add({
+      id: 'bradycardia_vitals',
+      type: 'safety',
+      urgency: hr !== null && hr < 40 ? 'urgent' : 'priority',
+      icon: '🫀',
+      finding: `HR ${hr} bpm — bradycardia`,
+      diagnosis: 'Bradyarrhythmia',
+      text: `HR ${hr} bpm → Bradycardia Protocol`,
+      rationale: `Heart rate ${hr} bpm — symptomatic bradycardia. Causes: complete heart block, SSS, hypothyroidism, drug toxicity (beta-blocker, digoxin), hyperkalemia.`,
+      actions: bradyActions,
+    });
+  }
+
+  // Hypertensive urgency: SBP ≥ 180
+  if (hasHyperBP && !hasHypotension) {
+    const hyperBpActions: ClinicalAction[] = [
+      { step: 1, text: 'Exclude end-organ damage: neurological exam, fundoscopy, ECG, troponin', addToPlan: '• Assess for end-organ damage: headache (SAH), visual change (papilloedema), focal neurology (stroke), chest pain (aortic dissection).' },
+      { step: 2, text: 'U&E + creatinine (renal crisis), troponin (cardiac), urinalysis', addToInvestigations: 'Urea & Electrolytes (U&E)' },
+      { step: 3, text: 'CXR — cardiomegaly, pulmonary oedema, mediastinal widening', addToPlan: '• CXR — mediastinal widening (dissection), pulmonary oedema (LVF).' },
+      { step: 4, text: 'Oral antihypertensives: amlodipine 5mg + bisoprolol 2.5mg if not already on treatment', addToPlan: '• Oral antihypertensives: Amlodipine 5mg OD. Aim to reduce SBP by 25% over 24–48h (not acutely — risk of stroke).' },
+    ];
+    if (sbp !== null && sbp >= 220) {
+      hyperBpActions.push({ step: 5, text: 'IV labetalol or GTN if hypertensive emergency (end-organ damage)', addToPlan: '• If hypertensive emergency: IV labetalol 20mg bolus or GTN infusion — target MAP reduction 20–25% over 1h.' });
+    }
+    hyperBpActions.push({ step: 6, text: 'Defer elective surgery — SBP must be < 180 mmHg pre-operatively', addToPlan: '• Elective surgery deferred — SBP must be controlled < 180/110 mmHg pre-operatively.' });
+    add({
+      id: 'hypertensive_urgency',
+      type: 'safety',
+      urgency: sbp !== null && sbp >= 220 ? 'urgent' : 'priority',
+      icon: '📈',
+      finding: `SBP ${sbp} mmHg — hypertensive urgency`,
+      diagnosis: 'Hypertensive urgency / emergency',
+      text: `SBP ${sbp} mmHg → Hypertension Management`,
+      rationale: `SBP ${sbp} mmHg — hypertensive urgency (≥ 180 mmHg). If end-organ damage present (headache, chest pain, visual change, focal neurology) → hypertensive emergency requiring controlled IV reduction.`,
+      actions: hyperBpActions,
+    });
+  }
+
+  // Tachycardia without fever (HR > 110, no fever) — PE / hypovolaemia / arrhythmia
+  if (hasTachyVital && hr !== null && hr > 110 && !hasFeverVital) {
+    add({
+      id: 'tachycardia_afebrile',
+      type: 'safety',
+      urgency: 'priority',
+      icon: '💗',
+      finding: `HR ${hr} bpm — unexplained tachycardia`,
+      diagnosis: 'Tachycardia — PE / hypovolaemia / arrhythmia',
+      text: `HR ${hr} bpm → Tachycardia Workup`,
+      rationale: `Tachycardia ${hr} bpm without fever — differential: pulmonary embolism, hypovolaemia, pain, anaemia, arrhythmia, thyrotoxicosis. Must not be attributed to pain alone without workup.`,
+      actions: [
+        { step: 1, text: '12-lead ECG — AF, flutter, SVT, right heart strain (S1Q3T3)', addToPlan: '• 12-lead ECG — arrhythmia, right heart strain pattern (PE).' },
+        { step: 2, text: 'FBC (anaemia), U&E, TFTs (thyrotoxicosis), D-dimer', addToInvestigations: 'D-dimer' },
+        { step: 3, text: 'CTPA if D-dimer positive + Wells ≥ 2', addToPlan: '• CTPA if Wells score ≥ 2 — exclude pulmonary embolism.' },
+        { step: 4, text: 'IV fluid challenge if hypovolaemia suspected — 500ml Hartmann\'s', addToPlan: '• IV fluid challenge 500ml if hypovolaemia likely — reassess HR at 30 min.' },
+      ],
+    });
+  }
+
+  // BGL > 15 mmol/L from vitals
+  if (bgl !== null && bgl > 15) {
+    add({
+      id: 'hyperglycaemia_vitals',
+      type: 'safety',
+      urgency: bgl > 20 ? 'urgent' : 'priority',
+      icon: '🍬',
+      finding: `BGL ${bgl} mmol/L — severe hyperglycaemia`,
+      diagnosis: 'DKA / HHS — exclude',
+      text: `BGL ${bgl} mmol/L → DKA / HHS Screen`,
+      rationale: `Blood glucose ${bgl} mmol/L — DKA (type 1, elevated ketones) or HHS (type 2, extreme hyperglycaemia, no ketones) must be excluded before any operative intervention.`,
+      actions: [
+        { step: 1, text: 'Ketones — blood or urine (> 3 mmol/L = DKA)', addToPlan: '• Ketones urgently — blood ketones > 3 mmol/L = DKA; urine ketones > 2+ = DKA screen positive.' },
+        { step: 2, text: 'ABG — pH (< 7.3 = acidosis = DKA), bicarbonate', addToInvestigations: 'Arterial Blood Gas (ABG)' },
+        { step: 3, text: 'U&E — potassium (hypokalaemia in DKA on insulin), sodium', addToInvestigations: 'Urea & Electrolytes (U&E)' },
+        { step: 4, text: 'VRIII — variable-rate insulin infusion + potassium replacement', addToPlan: '• Variable-rate insulin infusion (VRIII): DKA fixed-rate 0.1 units/kg/h. Monitor K⁺ hourly.' },
+        { step: 5, text: 'Defer elective surgery until glucose < 12 mmol/L and ketones < 0.5', addToPlan: '• Defer elective surgery — target glucose 6–10 mmol/L, ketones < 0.5 mmol/L pre-operatively.' },
+      ],
+    });
+  }
+
+  // ── ADDITIONAL LAB CASCADES ─────────────────────────────────────────────────
+
+  // Amylase 300–1000 → mild/moderate pancreatitis
+  const amylaseMild = numLab(investigationResults, 'amylase', 'lipase');
+  if (amylaseMild !== null && amylaseMild >= 300 && amylaseMild <= 1000) {
+    add({
+      id: 'pancreatitis_mild',
+      type: 'safety',
+      urgency: 'priority',
+      icon: '🔥',
+      finding: `Amylase/lipase ${amylaseMild} U/L — 3–10× upper limit`,
+      diagnosis: 'Acute Pancreatitis — mild/moderate',
+      text: `Amylase ${amylaseMild} → Pancreatitis Management`,
+      rationale: `Amylase/lipase ${amylaseMild} U/L — consistent with mild to moderate acute pancreatitis. Severity stratification at 48h guides escalation.`,
+      actions: [
+        { step: 1, text: 'NBM + IV Hartmann\'s 150ml/h + analgesia (morphine PRN)', addToPlan: '• NBM, IV Hartmann\'s 150ml/h, paracetamol 1g QDS + morphine 5mg PRN.' },
+        { step: 2, text: 'USS abdomen — gallstone aetiology, CBD dilation', addToPlan: '• USS abdomen — biliary aetiology (gallstones, CBD calibre).' },
+        { step: 3, text: 'Repeat amylase + CRP at 48h — Glasgow score (≥ 3 = severe)', addToInvestigations: 'CRP' },
+        { step: 4, text: 'LFTs — obstructive (ALP/GGT rise) vs alcoholic (AST > ALT × 2)', addToInvestigations: 'Liver Function Tests (LFTs)' },
+        { step: 5, text: 'CECT pancreas if no improvement at 48–72h', addToPlan: '• CT pancreas (contrast-enhanced) at 72h if no improvement — necrosis, collections.' },
+        { step: 6, text: 'Interval cholecystectomy if gallstone aetiology — within 2 weeks of discharge', addToPlan: '• Plan interval laparoscopic cholecystectomy — same admission or within 2 weeks (gallstone pancreatitis).' },
+      ],
+      followUp: { label: 'Post-pancreatitis cholecystectomy planning', daysFromNow: 21 },
+    });
+  }
+
+  // Low sodium < 130 → hyponatraemia workup
+  const sodium = numLab(investigationResults, 'sodium', 'na+', 'na ');
+  if (sodium !== null && sodium < 130) {
+    add({
+      id: 'hyponatraemia',
+      type: 'safety',
+      urgency: sodium < 125 ? 'urgent' : 'priority',
+      icon: '🧂',
+      finding: `Sodium ${sodium} mmol/L — hyponatraemia`,
+      diagnosis: 'Hyponatraemia — classify and treat',
+      text: `Na⁺ ${sodium} mmol/L → Hyponatraemia Workup`,
+      rationale: `Sodium ${sodium} mmol/L — hyponatraemia (< 130 mmol/L). Severity classification (mild 130–134 / moderate 125–129 / profound < 125) guides rate of correction. Rapid correction causes osmotic demyelination.`,
+      actions: [
+        { step: 1, text: 'Urine sodium + osmolality + serum osmolality — classify aetiology', addToPlan: '• Urine Na (> 20: SIADH/renal loss; < 20: hypovolaemic/oedematous states), urine osmolality, serum osmolality.' },
+        { step: 2, text: 'Review medications — diuretics, SSRIs, NSAIDs, carbamazepine (SIADH)', addToPlan: '• Review medications for SIADH causes: diuretics, SSRIs, carbamazepine.' },
+        { step: 3, text: 'CXR + CT head if SIADH — exclude malignancy (lung, brain), meningitis', addToPlan: '• Exclude secondary SIADH causes: CXR (lung malignancy), CT head (CNS lesion/meningitis).' },
+        { step: 4, text: sodium < 125 ? 'IV hypertonic saline 3% — 1–2ml/kg/h; target Na rise ≤ 10 mmol/L/24h' : 'Fluid restriction 1L/day if euvolaemic SIADH', addToPlan: sodium < 125 ? '• IV 3% saline 1–2ml/kg/h — raise Na by max 10 mmol/L in first 24h (osmotic demyelination risk). Endocrinology input.' : '• Fluid restriction 1L/day — euvolaemic SIADH. Correct slowly.' },
+        { step: 5, text: 'Defer elective surgery until Na ≥ 130 mmol/L', addToPlan: '• Elective surgery deferred — sodium < 130 mmol/L anaesthetic risk; target ≥ 130 pre-op.' },
+      ],
+    });
+  }
+
+  // Hyperkalaemia > 5.5 → ECG + treatment
+  const potassium = numLab(investigationResults, 'potassium', 'k+', ' k ');
+  if (potassium !== null && potassium > 5.5) {
+    const kActions: ClinicalAction[] = [
+      { step: 1, text: '12-lead ECG — peaked T-waves, wide QRS, sine wave (K⁺ > 6.5)', addToPlan: '• 12-lead ECG urgently — peaked T-waves, widened QRS, AV block, sine wave pattern.' },
+    ];
+    if (potassium > 6.5) {
+      kActions.push({ step: 2, text: 'IV Calcium gluconate 10ml 10% — cardiac membrane stabilisation (if ECG changes)', addToPlan: '• IV Calcium gluconate 10ml 10% — cardiac membrane protection (not lowering K⁺). Onset 1–3 min, repeat at 5 min if ECG not improving.' });
+    }
+    kActions.push({ step: 3, text: 'IV Actrapid 10 units + 50ml 50% dextrose — drive K⁺ intracellularly', addToPlan: '• IV Actrapid 10 units + 50ml 50% dextrose — shift K⁺ intracellularly. Onset 15–30 min, duration 6h. Monitor BGL.' });
+    kActions.push({ step: 4, text: 'Salbutamol 10–20mg nebulised — adjunct (if no cardiac disease)', addToPlan: '• Nebulised salbutamol 10–20mg — adjunct K⁺ shift (additive to insulin-dextrose).' });
+    kActions.push({ step: 5, text: 'Identify cause: AKI, ACE-I, spironolactone, haemolysis, rhabdomyolysis', addToPlan: '• Identify and treat cause: hold ACE-I/ARBs/spironolactone; assess for AKI, rhabdomyolysis.' });
+    kActions.push({ step: 6, text: 'Defer ALL surgery until K⁺ < 5.5 mmol/L', addToPlan: '• Surgery DEFERRED — K⁺ must be < 5.5 mmol/L before any general or regional anaesthesia.' });
+    add({
+      id: 'hyperkalaemia',
+      type: 'safety',
+      urgency: potassium > 6.5 ? 'urgent' : 'priority',
+      icon: '⚡',
+      finding: `Potassium ${potassium} mmol/L — hyperkalaemia`,
+      diagnosis: 'Hyperkalaemia — cardiac arrest risk',
+      text: `K⁺ ${potassium} mmol/L → Hyperkalaemia Protocol`,
+      rationale: `Potassium ${potassium} mmol/L — hyperkalaemia. K⁺ > 6.5 mmol/L: cardiac arrest risk from ventricular fibrillation. Must be treated before any surgery.`,
+      actions: kActions,
+    });
+  }
+
+  // Low albumin < 30 → malnutrition / hepatic / nephrotic
+  const albumin = numLab(investigationResults, 'albumin');
+  if (albumin !== null && albumin < 30) {
+    add({
+      id: 'hypoalbuminaemia',
+      type: 'safety',
+      urgency: 'priority',
+      icon: '🥗',
+      finding: `Albumin ${albumin} g/L — hypoalbuminaemia`,
+      diagnosis: 'Malnutrition / hepatic / nephrotic syndrome',
+      text: `Albumin ${albumin} g/L → Nutritional and Surgical Risk`,
+      rationale: `Albumin ${albumin} g/L (normal 35–50 g/L) — marker of malnutrition, hepatic synthetic failure, or protein-losing nephropathy. Associated with 5× increased post-operative complication risk.`,
+      actions: [
+        { step: 1, text: 'LFTs + PT/INR — hepatic synthetic function', addToInvestigations: 'Liver Function Tests (LFTs)' },
+        { step: 2, text: 'Urine protein:creatinine ratio — nephrotic syndrome', addToPlan: '• Urine protein:creatinine ratio — nephrotic syndrome (PCR > 300mg/mmol).' },
+        { step: 3, text: 'Dietitian referral — pre-operative nutritional optimisation', addToPlan: '• Dietitian referral — pre-operative nutritional support. Delay elective surgery ≥ 4 weeks if possible.' },
+        { step: 4, text: 'Pre-operative oral nutritional supplements (ONS) ×2 weeks if elective', addToPlan: '• Prescribe ONS (Ensure/Fortisip) ×2 — pre-op nutritional optimisation (ERAS).' },
+        { step: 5, text: 'Consider NG or TPN if severely malnourished and urgent surgery required', addToPlan: '• If albumin < 25 g/L and surgery urgent: parenteral nutrition pre-operatively with nutrition team support.' },
+      ],
+    });
+  }
+
+  // HbA1c > 8.5% → poor DM control — delay elective surgery
+  const hba1c = numLab(investigationResults, 'hba1c', 'glycated', 'glycohaemoglobin');
+  if (hba1c !== null && hba1c > 8.5) {
+    add({
+      id: 'poor_dm_control',
+      type: 'safety',
+      urgency: 'priority',
+      icon: '📊',
+      finding: `HbA1c ${hba1c}% — poorly controlled diabetes`,
+      diagnosis: 'Suboptimal glycaemic control — surgical risk elevated',
+      text: `HbA1c ${hba1c}% → Optimise Before Elective Surgery`,
+      rationale: `HbA1c ${hba1c}% — above recommended pre-operative threshold (target < 8.5% / 69 mmol/mol). Poorly controlled diabetes doubles surgical infection risk and impairs wound healing.`,
+      actions: [
+        { step: 1, text: 'Diabetology referral — insulin regimen optimisation', addToPlan: '• Refer diabetology — insulin regimen intensification or OHG escalation.' },
+        { step: 2, text: 'Delay elective surgery 4–8 weeks for glycaemic optimisation if possible', addToPlan: '• Delay elective surgery 4–8 weeks — target HbA1c < 8.5% / 69 mmol/mol pre-operatively.' },
+        { step: 3, text: 'Pre-operative VRIII protocol if HbA1c > 10%', addToPlan: '• If HbA1c > 10%: pre-operative VRIII on day of surgery — glucose target 6–10 mmol/L intraoperatively.' },
+        { step: 4, text: 'Foot exam + urine ACR — DM complication screen', addToPlan: '• Diabetic foot exam + urine ACR — complication screen before anaesthetic.' },
+      ],
+    });
+  }
+
+  // ── SURGICAL PATHWAY CASCADE — OPERATIVE PLANS ────────────────────────────────────────────────
+  // Fires when surgery is strongly indicated. addToPlan pre-populates the Plan tab
+  // with a complete pre-op / operative steps / post-op block for surgeon to review and edit.
+
+  const hasGallstoneIndication =
+    exam(examAbdomen, "murphy", "murphy's") ||
+    hasRadResult(radiologyRequests, 'cholecystitis', 'gallstone', 'gallbladder wall', 'pericholecystic') ||
+    hasSx(symptoms, 'right upper quadrant', 'biliary colic', 'cholecystitis') ||
+    hasCc(ccEntries, 'cholecystitis', 'cholecyst', 'biliary colic', 'gallstone');
+
+  const hasAppendicitisIndication =
+    hasRadResult(radiologyRequests, 'appendicitis', 'appendix', '>6mm', 'inflamed') ||
+    exam(examAbdomen, 'rovsing', 'mcburney', 'rebound', 'guarding') ||
+    hasCc(ccEntries, 'appendic') ||
+    hasSx(symptoms, 'appendic');
+
+  const hasHerniaIndication =
+    exam(examAbdomen, 'hernia', 'inguinal', 'groin lump', 'umbilical hernia', 'incisional') ||
+    hasCc(ccEntries, 'hernia', 'groin lump', 'inguinal', 'umbilical') ||
+    hasSx(symptoms, 'hernia', 'groin lump', 'groin swelling');
+
+  // Cholecystectomy pathway
+  if (hasGallstoneIndication) {
+    add({
+      id: 'lap_chole_pathway',
+      type: 'safety',
+      urgency: hasFever || hasFeverVital ? 'urgent' : 'priority',
+      icon: '⚕️',
+      finding: 'Cholecystitis / gallstone disease — surgical indication',
+      diagnosis: 'Laparoscopic Cholecystectomy',
+      text: 'Gallstone Disease → Operative Plan Pre-populated',
+      rationale: 'Laparoscopic cholecystectomy is the gold standard for symptomatic cholelithiasis and acute cholecystitis. Early surgery (< 72h from onset) preferred over delayed interval if fit.',
+      actions: [
+        { step: 1, text: 'USS RUQ — confirm diagnosis, wall thickness, CBD dilation', addToPlan: '• USS RUQ — gallbladder wall thickness (> 4mm), pericholecystic fluid, stones, CBD diameter.' },
+        { step: 2, text: 'FBC, CRP, LFTs, amylase — severity stratification', addToInvestigations: 'Full Blood Count (FBC)' },
+        { step: 3, text: 'Pre-op bloods: Group & Screen, U&E, ECG (if ≥ 40)', addToInvestigations: 'Blood Group & Type' },
+        { step: 4, text: 'Consent: laparoscopic cholecystectomy — risks and alternatives', addToPlan: '• Consent: laparoscopic cholecystectomy — bile duct injury (0.3%), haemorrhage, conversion to open, bile leak, retained stone, wound infection.' },
+        {
+          step: 5,
+          text: 'Pre-populate operative plan and post-op orders',
+          addToPlan: `LAPAROSCOPIC CHOLECYSTECTOMY — OPERATIVE PLAN
+─────────────────────────────────────────────
+PRE-OPERATIVE:
+• NBM from midnight (or ≥ 6h solids / 2h clear fluids).
+• IV Co-amoxiclav 1.2g at induction (single prophylactic dose).
+• LMWH (Enoxaparin 40mg SC) night before + day of surgery; TED stockings.
+• IV access; identify allergy status.
+• Consent signed and documented.
+
+ANAESTHESIA: General anaesthesia + neuromuscular blockade.
+POSITION: Supine, arms out, reverse Trendelenburg + right-side-up tilt.
+SURGEON: Dr Dawit Daniel Kabiye MD DM.
+
+OPERATIVE STEPS:
+1. Hassan technique (or Veress needle) → 12mm umbilical port → CO₂ insufflation to 12mmHg.
+2. 5mm epigastric port (subxiphoid), 5mm right anterior axillary, 5mm right mid-clavicular ports.
+3. Inspect abdomen — adhesions, gallbladder distension, anatomy.
+4. Grasp fundus → retract cephalad and laterally. Grasp Hartmann's pouch.
+5. Dissect Calot's triangle — peritoneum over anterior and posterior aspects.
+6. Achieve Critical View of Safety (CVS): two structures entering gallbladder base, lower third of gallbladder cleared of fat/peritoneum. [DOCUMENT CVS before clipping.]
+7. Clip-clip-cut cystic artery → clip-clip-cut cystic duct.
+8. On-table cholangiogram if: CBD dilated, LFTs raised, clinical indication. [or: Not performed — anatomy clear.]
+9. Retrograde cholecystectomy — diathermy dissection off liver bed. Control bleeding points.
+10. Place gallbladder in retrieval bag → extract via umbilical port.
+11. Inspect gallbladder bed and Calot's triangle — haemostasis confirmed, no bile leak.
+12. No drain placed (routine). [or: RUQ drain if complicated / bile spillage.]
+13. Desufflate. Port closure: umbilical fascia 2/0 Vicryl; all wounds 4/0 Monocryl subcuticular; Steri-Strips.
+
+INTRAOPERATIVE FINDINGS: [dictate findings here]
+EBL: [X] ml. Specimen: gallbladder to histopathology. Swab count correct × 2.
+
+POST-OPERATIVE ORDERS:
+• Paracetamol 1g QDS (regular) + Ibuprofen 400mg TDS (if eGFR normal).
+• Morphine 2.5–5mg SC/IV PRN for pain > 5/10.
+• Free fluids at 2h post-op; light diet same evening if tolerating fluids.
+• IV antibiotics: Co-amoxiclav 1.2g TDS × 24h (complicated cholecystitis only).
+• Remove IV cannula when tolerating PO.
+• Discharge criteria: pain controlled on oral analgesia, tolerating diet, mobile.
+• Wound review at 7 days (GP or nurse-led).
+• Outpatient review 6 weeks post-op — histology, diet tolerance, return to activity.
+• Return to normal activity in 2 weeks; heavy lifting avoid for 4 weeks.
+• Low-fat diet initially; normal diet expected by 4–6 weeks.`,
+        },
+      ],
+      followUp: { label: 'Post-cholecystectomy review + histology', daysFromNow: 42 },
+    });
+  }
+
+  // Appendicectomy pathway
+  if (hasAppendicitisIndication) {
+    add({
+      id: 'appendicectomy_pathway',
+      type: 'safety',
+      urgency: 'urgent',
+      icon: '⚕️',
+      finding: 'Appendicitis — emergency surgical indication',
+      diagnosis: 'Emergency Laparoscopic Appendicectomy',
+      text: 'Appendicitis → Emergency Operative Plan',
+      rationale: 'Acute appendicitis — emergency laparoscopic appendicectomy is indicated. Perforation rate increases 5% per 12h delay beyond 24h of symptoms.',
+      actions: [
+        { step: 1, text: 'Alvarado score — document all 8 criteria', addToPlan: '• Alvarado score: migration of pain (1), anorexia (1), nausea (1), RIF tenderness (2), rebound (1), elevated temp > 37.3 (1), leucocytosis (2), left shift (1). Score ≥ 7 = highly likely appendicitis.' },
+        { step: 2, text: 'FBC + CRP + Group & Screen pre-op', addToInvestigations: 'Blood Group & Type' },
+        { step: 3, text: 'IV Piperacillin-tazobactam 4.5g + Metronidazole 500mg at induction', addToPlan: '• IV Pip-Tazo 4.5g + Metronidazole 500mg — antibiotic prophylaxis at induction.' },
+        { step: 4, text: 'β-HCG if female of reproductive age', addToInvestigations: isReproductiveAgeFemale ? 'Urine Pregnancy Test (F)' : undefined },
+        {
+          step: 5,
+          text: 'Pre-populate emergency appendicectomy plan',
+          addToPlan: `LAPAROSCOPIC APPENDICECTOMY — OPERATIVE PLAN
+─────────────────────────────────────────────
+PRE-OPERATIVE:
+• NBM — emergency case, starved status documented.
+• IV Pip-Tazo 4.5g + Metronidazole 500mg at induction.
+• LMWH + TED stockings (DVT prophylaxis).
+• Consent obtained (emergency consent if incapacitated): perforation risk, conversion to open, wound infection, right-sided port-site hernia, stump leak (< 1%), Hartmann's pouch if appendix not identifiable.
+• β-HCG confirmed negative (female of reproductive age).
+• Group & Screen available; cross-match if perforated or unstable.
+
+ANAESTHESIA: General anaesthesia + endotracheal intubation. OGT / NG decompression if ileus.
+POSITION: Supine, Trendelenburg + left lateral tilt (pelvis access). Arms tucked.
+SURGEON: Dr Dawit Daniel Kabiye MD DM.
+
+OPERATIVE STEPS:
+1. 12mm umbilical Hassan port → CO₂ to 12mmHg.
+2. 5mm suprapubic midline port. 5mm left iliac fossa port (operating port).
+3. Systematic inspection: peritoneal soiling grade, caecum, appendix, terminal ileum (Meckel's), pelvis (female: ovary, fallopian tube).
+4. Appendix identification — grasp mesoappendix, expose base at caecum.
+5. Mesoappendix: LigaSure / harmonic sealing and division (or clips and scissors).
+6. Appendix base: two Endoloops proximal (tied firmly), one Endoloop distal → divide appendix between.
+7. Specimen in bag — extract via umbilical port. Send to histopathology.
+8. Peritoneal lavage if perforated or faecal contamination: warm 0.9% NaCl 1–2L; irrigate RIF + pelvis; suction dry.
+9. Drain: RIF closed suction drain (Blake/JP) if perforated — remove day 2 if < 30ml.
+10. Port-site closure: umbilical fascia 2/0 Vicryl; all wounds 4/0 Monocryl subcuticular.
+
+INTRAOPERATIVE FINDINGS: Appendix [inflamed/perforated/gangrenous/normal] at [position]. Soiling: [localised/generalised]. [Other findings].
+EBL: [X] ml. Swab count correct × 2.
+
+POST-OPERATIVE ORDERS:
+• Simple appendicitis: IV Amoxiclav 1.2g TDS × 24h → oral Co-amoxiclav × 5 days.
+• Perforated appendicitis: IV Pip-Tazo 4.5g TDS + Metronidazole 500mg TDS × 5 days; convert to oral when tolerating PO.
+• Paracetamol 1g QDS + Ibuprofen 400mg TDS (regular).
+• Morphine 5mg PRN if pain > 5/10.
+• Regular diet as tolerated (day 1 if simple; day 2–3 if perforated).
+• Mobilise day 1 — physiotherapy if perforated.
+• Wound review 10–14 days.
+• Outpatient review 4 weeks — histology result, recovery assessment.
+• Return to work: sedentary 1 week; manual 4 weeks.`,
+        },
+      ],
+      followUp: { label: 'Post-appendicectomy wound review + histology', daysFromNow: 14 },
+    });
+  }
+
+  // Inguinal / groin hernia → repair pathway
+  if (hasHerniaIndication) {
+    const isIncarcerated = exam(examAbdomen, 'irreducible', 'tender', 'incarcerat', 'strangulat')
+      || hasCc(ccEntries, 'irreducible', 'incarcerat', 'strangulat', 'obstructed');
+    const herniaPreOpActions: ClinicalAction[] = isIncarcerated
+      ? [
+          { step: 1, text: 'Attempt gentle manual reduction under analgesia (Trendelenburg position)', addToPlan: '• Attempt manual reduction: Trendelenburg + analgesia. Do NOT forcibly reduce if tender — strangulation risk.' },
+          { step: 2, text: 'Emergency Theatre — irreducible / strangulated hernia', addToPlan: '• Emergency Theatre: irreducible / strangulated hernia — bowel resection risk, consent accordingly.' },
+        ]
+      : [
+          { step: 1, text: 'Confirm hernia type: inguinal (direct vs indirect), femoral, umbilical, incisional', addToPlan: '• Document: side, type (inguinal direct/indirect/femoral), reducibility, skin changes, scrotal extension.' },
+          { step: 2, text: 'Pre-op: FBC, Group & Screen, ECG (if ≥ 40), PSA if male ≥ 50 and not done', addToInvestigations: 'Full Blood Count (FBC)' },
+        ];
+    add({
+      id: 'hernia_repair_pathway',
+      type: 'safety',
+      urgency: isIncarcerated ? 'urgent' : 'priority',
+      icon: '⚕️',
+      finding: isIncarcerated ? 'Incarcerated / strangulated hernia' : 'Hernia — elective repair indicated',
+      diagnosis: 'Hernia Repair',
+      text: isIncarcerated ? 'Strangulated Hernia → Emergency Repair' : 'Hernia → Elective Repair Plan',
+      rationale: isIncarcerated
+        ? 'Irreducible tender hernia — strangulation risk. Emergency operative repair required without delay; bowel viability must be assessed.'
+        : 'Symptomatic inguinal/groin hernia — laparoscopic TAPP repair is preferred (bilateral disease, recurrence, bilateral, active patients). Lichtenstein for high anaesthetic risk.',
+      actions: [
+        ...herniaPreOpActions,
+        { step: 3, text: 'Consent — recurrence, chronic pain, mesh, cord/nerve injury, contralateral risk', addToPlan: '• Consent: hernia repair — recurrence (1–2% TAPP), chronic groin pain (5%), mesh infection (< 1%), testicular ischaemia/vas injury (< 1%), haematoma.' },
+        {
+          step: 4,
+          text: 'Pre-populate TAPP operative plan',
+          addToPlan: `${isIncarcerated ? 'EMERGENCY ' : ''}LAPAROSCOPIC INGUINAL HERNIA REPAIR (TAPP) — OPERATIVE PLAN
+─────────────────────────────────────────────────────────────
+PRE-OPERATIVE:
+• NBM from midnight. Consent signed.
+• Antibiotics: Co-amoxiclav 1.2g IV at induction (optional — low infection risk if no mesh contamination).
+• LMWH + TED stockings.
+• Urinary catheter for bilateral or complex repairs (optional for unilateral).
+
+ANAESTHESIA: General anaesthesia. Spinal ± sedation for high anaesthetic risk (Lichtenstein alternative).
+POSITION: Supine, Trendelenburg. Arms tucked.
+SURGEON: Dr Dawit Daniel Kabiye MD DM.
+
+OPERATIVE STEPS (TAPP):
+1. 12mm umbilical port → CO₂ to 12mmHg. 5mm bilateral iliac fossa ports.
+2. Inspect: hernia site, bowel viability (strangulated cases — resect if non-viable).
+3. Open peritoneum: transverse incision 2cm above hernia defect, medial to ASIS to pubic symphysis.
+4. Develop preperitoneal space (Retzius + Bogros spaces): blunt dissection.
+5. Identify anatomical landmarks: iliopubic tract, Cooper's ligament, inferior epigastric vessels, spermatic cord, vas deferens, gonadal vessels.
+6. Reduce hernia sac: direct (invert peritoneum); indirect (dissect sac off cord structures — avoid vas and vessels).
+7. Ensure adequate space for mesh (≥ 15×10cm) — medial to pubic symphysis, lateral past ASIS.
+8. Mesh: 15×10cm lightweight polypropylene — lay flat, cover direct + indirect + femoral spaces. No wrinkles.
+9. Tack fixation (optional): Cooper's ligament and lateral abdominal wall. [AVOID triangle of pain (lateral to iliopubic tract) and triangle of doom (medial cord structures).]
+10. Peritoneal closure: running 2/0 Vicryl — completely cover mesh.
+11. Port closure: umbilical fascia 2/0 Vicryl; wounds 4/0 Monocryl subcuticular.
+
+INTRAOPERATIVE FINDINGS: [Side] inguinal hernia — [direct/indirect/combined]. Sac: [lipoma/bowel/omentum]. Bowel viable: [yes/no]. [Other findings].
+EBL: [X] ml. Mesh: [brand/size]. Swab count correct × 2.
+
+POST-OPERATIVE ORDERS:
+• Paracetamol 1g QDS + Ibuprofen 400mg TDS (regular analgesia).
+• Morphine 5mg PRN if pain > 5/10.
+• Scrotal support 48h if male (reduces haematoma).
+• Ice pack to groin PRN × 24h.
+• Day-case discharge: pain controlled on oral analgesia, tolerating oral fluids, voiding.
+• Activity: walking from day 1; avoid heavy lifting (> 10kg) for 4 weeks; driving after 1–2 weeks (when emergency stop possible).
+• Wound review at 10 days.
+• Outpatient review 6 weeks — check for recurrence, chronic pain, mesh complications.`,
+        },
+      ],
+      followUp: { label: 'Post-hernia repair review', daysFromNow: 42 },
+    });
+  }
+
+  // Bowel obstruction → management cascade
+  const hasBowelObstruction =
+    (exam(examAbdomen, 'distend', 'distension', 'tympan', 'hyperactive', 'absent bowel sounds') &&
+     (hasSx(symptoms, 'vomiting', 'abdominal pain', 'constipation', 'obstipation') ||
+      hasCc(ccEntries, 'obstruct', 'bowel obstruct', 'distension'))) ||
+    hasRadResult(radiologyRequests, 'small bowel obstruction', 'sbo', 'large bowel obstruction', 'lbo', 'dilated bowel', 'transition point');
+
+  if (hasBowelObstruction) {
+    add({
+      id: 'bowel_obstruction_pathway',
+      type: 'safety',
+      urgency: 'urgent',
+      icon: '🚨',
+      finding: 'Bowel obstruction — clinical or imaging evidence',
+      diagnosis: 'Small / Large Bowel Obstruction',
+      text: 'Bowel Obstruction → Conservative Trial / Operative Plan',
+      rationale: 'Bowel obstruction — initial conservative management (NGT decompression, IV fluids, NBM, serial exams). Urgent surgery if: vascular compromise, closed-loop obstruction, failure to resolve at 48–72h.',
+      actions: [
+        { step: 1, text: 'NG tube (Ryle\'s) — nasogastric decompression, free drainage', addToPlan: '• NG tube (16Fr): free drainage + 4-hourly aspiration. Document aspirate volume and character.' },
+        { step: 2, text: 'IV Hartmann\'s 1L over 4h + strict fluid balance + IDC', addToPlan: '• IV Hartmann\'s 1–2L + IDC — fluid balance, electrolyte replacement (check K⁺ daily).' },
+        { step: 3, text: 'AXR + CT abdomen/pelvis (contrast) — level, transition point, viability', addToPlan: '• CT abdomen/pelvis with IV contrast — level (SBO/LBO), transition point, closed loop, ischaemia (pneumatosis).' },
+        { step: 4, text: 'FBC, CRP, U&E, lactate — ischaemia markers', addToInvestigations: 'Lactate' },
+        { step: 5, text: 'Colonoscopy + stenting for obstructing left-sided colonic cancer (bridge to elective surgery)', addToPlan: '• If LBO due to colonic malignancy: colonic stent as bridge to elective resection (vs emergency Hartmann\'s).' },
+        {
+          step: 6,
+          text: 'Operative plan if surgical indication (ischaemia / failure to resolve)',
+          addToPlan: `BOWEL OBSTRUCTION — OPERATIVE PLAN (if conservative fails or signs of ischaemia)
+─────────────────────────────────────────────────────────────────────────────────
+INDICATIONS FOR SURGERY:
+• Signs of bowel ischaemia (peritonism, lactate rising, pneumatosis on CT)
+• Closed-loop obstruction on CT
+• Complete SBO failing conservative management > 48h
+• Strangulating hernia as cause
+
+PRE-OPERATIVE:
+• Resuscitate: IV fluids, NG drainage, IDC, electrolyte correction.
+• Group & Crossmatch 2–4 units, FBC, coagulation.
+• Broad-spectrum antibiotics: Pip-Tazo 4.5g + Metronidazole 500mg IV.
+• ICU/HDU notification.
+• Consent: laparotomy or laparoscopic adhesiolysis, possible bowel resection, possible stoma, ICU post-op.
+
+ANAESTHESIA: GA + endotracheal intubation. NG in situ.
+POSITION: Supine. Arms out.
+
+OPERATIVE STEPS:
+1. Midline laparotomy — xiphoid to pubis (or laparoscopic if adhesions likely manageable).
+2. Systematic abdominal survey — identify dilated vs collapsed bowel, transition point.
+3. Cause identification: adhesional band, hernia, volvulus, malignancy.
+4. Adhesiolysis — sharp division of obstructing band; enter correct tissue planes.
+5. Assess bowel viability: colour, peristalsis, Doppler signal. Warm pack × 5 min if borderline.
+6. Bowel resection if non-viable: resect with adequate margins. Primary anastomosis vs defunctioning stoma based on: contamination, patient stability, nutritional state.
+7. If volvulus: de-tort + assess viability; resect if necrotic.
+8. Thorough lavage if contaminated.
+9. Fascial closure: looped mass PDS (Jenkins rule). Skin: primary if clean; delayed (day 3–5) if contaminated.
+
+POST-OPERATIVE ORDERS:
+• ICU/HDU — strict fluid balance, vasopressors if required.
+• IV Pip-Tazo + Metronidazole × 5 days.
+• NG tube until bowel sounds return / passing flatus.
+• DVT prophylaxis: LMWH from day 1 post-op.
+• Nutrition: NG feeding early if prolonged ileus likely; TPN if unable to feed enterally.
+• Second-look laparotomy 48h if bowel viability marginal.`,
+        },
+      ],
+      followUp: { label: 'Post-bowel obstruction review', daysFromNow: 7 },
+    });
+  }
+
+  // Thyroidectomy pathway — triggered by FNAC result or Bethesda III+
+  if (hasRadResult(radiologyRequests, 'bethesda', 'malignant', 'suspicious', 'follicular neoplasm', 'papillary', 'thyroid cancer')
+    || (exam(examGeneral, 'thyroid nodule', 'neck mass', 'goitre')
+    && (hasCc(ccEntries, 'thyroid', 'neck mass') || hasSx(symptoms, 'thyroid', 'neck mass')))) {
+    add({
+      id: 'thyroidectomy_pathway',
+      type: 'safety',
+      urgency: 'priority',
+      icon: '🦋',
+      finding: 'Thyroid malignancy / Bethesda suspicious cytology',
+      diagnosis: 'Total / Hemithyroidectomy',
+      text: 'Thyroid Malignancy → Thyroidectomy Plan',
+      rationale: 'Bethesda class III–VI or clinical thyroid malignancy — total thyroidectomy (bilateral/malignant) or hemithyroidectomy (Bethesda III/IV unilateral, low-risk) per BAETS/BTA guidelines.',
+      actions: [
+        { step: 1, text: 'ENT/endocrine surgery referral — staging and operative planning', addToPlan: '• Endocrine surgery referral — total vs hemithyroidectomy decision per Bethesda class and staging.' },
+        { step: 2, text: 'Pre-op: USS neck (nodes), TFTs, calcium + PTH, vocal cord assessment (ENT nasal endoscopy)', addToInvestigations: 'Calcium (corrected)' },
+        { step: 3, text: 'CT neck/chest if large goitre, substernal extension, or lymphadenopathy', addToPlan: '• CT neck + chest — retrosternal extension, lymphadenopathy staging.' },
+        {
+          step: 4,
+          text: 'Pre-populate thyroidectomy operative plan',
+          addToPlan: `TOTAL THYROIDECTOMY — OPERATIVE PLAN
+──────────────────────────────────────
+PRE-OPERATIVE:
+• TFTs normal (euthyroid) pre-operatively — propylthiouracil / carbimazole if thyrotoxic.
+• Ca²⁺ + PTH baseline. Vitamin D level — supplement if deficient (reduce post-op hypocalcaemia risk).
+• Vocal cord assessment: ENT nasal endoscopy — document cord function pre-op.
+• Consent: hypoparathyroidism (transient 10%, permanent 1–2%), recurrent laryngeal nerve (RLN) injury (unilateral 1–2%, bilateral < 0.5%), haemorrhage / haematoma (1%), need for lifelong thyroxine, chyle leak.
+• Group & Screen. IV access. IV Dexamethasone 8mg at induction (reduces post-op nausea).
+• Intraoperative neuromonitoring (IONM) set-up.
+
+ANAESTHESIA: GA + endotracheal intubation (IONM tube if available).
+POSITION: Supine, neck extended (shoulder roll / ring), arms tucked, table tilted 20° reverse Trendelenburg.
+SURGEON: Dr Dawit Daniel Kabiye MD DM.
+
+OPERATIVE STEPS:
+1. Transverse (Kocher) cervical incision — 2cm below cricoid cartilage, in skin crease, 5–6cm length.
+2. Raise subplatysmal flaps — superior to thyroid notch, inferior to sternal notch.
+3. Midline fascial incision — split strap muscles vertically (divide sternohyoid/thyrohyoid if needed for exposure).
+4. Medial rotation of thyroid lobe — expose lateral surface.
+5. Superior pole dissection: identify and preserve superior parathyroid + external branch of SLN (EBSLN). Ligate superior thyroid vessels close to capsule.
+6. Identify and preserve RLN: trace from entry into larynx (cricothyroid junction) to inferior thyroid artery crossing. IONM monitoring throughout.
+7. Inferior pole: identify inferior parathyroid. Ligate inferior thyroid artery branches lateral to gland (preserve parathyroid blood supply).
+8. Parathyroid identification: if inadvertently devascularised — auto-transplant to sternomastoid (mince to 1mm³ fragments × 6–8, place in muscle pocket, mark with clip).
+9. Remove lobe + isthmus + contralateral lobe (total) or lobe alone (hemithyroidectomy).
+10. Haemostasis: bipolar diathermy; no drain if haemostasis perfect; Blake drain if any concern.
+11. Strap muscle repair. Platysma: 3/0 Vicryl continuous. Skin: 4/0 Monocryl subcuticular + Steri-Strips.
+
+INTRAOPERATIVE FINDINGS: [Thyroid size, nodule location, lymph nodes, parathyroid glands identified]. RLN: [intact bilaterally]. Haemostasis: [complete]. Specimen to histopathology.
+EBL: [X] ml. Swab count correct × 2.
+
+POST-OPERATIVE ORDERS:
+• Monitor calcium at 4h, 24h, and 48h post-op. Parathyroid at 24h.
+• Calcium supplementation prophylactic: Calcium Carbonate 1.5g TDS + Alfacalcidol 1mcg OD (total thyroidectomy).
+• Chvostek / Trousseau sign monitoring — nurse education.
+• If Ca²⁺ < 2.0 mmol/L symptomatic: IV Calcium gluconate 10ml 10% over 10 min.
+• Thyroxine: Levothyroxine 1.6mcg/kg/day — start day 1 post-op (total thyroidectomy).
+• RLN: dysphonia assessment at 24h — refer ENT if voice change persists > 48h.
+• Diet: soft diet day of surgery; normal day 1.
+• Drain (if placed): remove < 30ml/shift (day 1–2).
+• Wound: no submersion × 2 weeks; Steri-Strips until clinic.
+• Outpatient review: 2 weeks (wound, voice, calcium); 6 weeks (TFTs, histology, RAI discussion).`,
+        },
+      ],
+      followUp: { label: 'Thyroid histology + endocrine review', daysFromNow: 14 },
+    });
+  }
+
+  // Breast cancer — operative plan
+  const hasBreastMalignancy =
+    hasRadResult(radiologyRequests, 'malignant', 'bi-rads 5', 'bi-rads 4', 'invasive carcinoma', 'ductal carcinoma', 'lobular carcinoma', 'suspicious breast') ||
+    (exam(examBreast, 'hard', 'fixed', 'tethering', 'peau') && exam(examBreast, 'mass', 'lump', 'nodule'));
+
+  if (hasBreastMalignancy) {
+    add({
+      id: 'breast_cancer_pathway',
+      type: 'safety',
+      urgency: 'priority',
+      icon: '🎗️',
+      finding: 'Breast malignancy — imaging or examination features',
+      diagnosis: 'Breast carcinoma — surgical planning',
+      text: 'Breast Malignancy → Breast MDT + Operative Plan',
+      rationale: 'Suspicious / malignant breast mass — breast oncology MDT discussion required before definitive surgery. Wide local excision (WLE) + SLNB vs mastectomy ± immediate reconstruction per tumour characteristics and patient preference.',
+      actions: [
+        { step: 1, text: 'Breast MDT referral — staging, receptor status, surgical options', addToPlan: '• Breast oncology MDT referral — tumour size, grade, ER/PR/HER2 status, nodal staging.' },
+        { step: 2, text: 'Staging CT chest/abdomen/pelvis + bone scan (if stage II–III)', addToPlan: '• Staging CT C/A/P + bone scan (if clinically node-positive or stage ≥ IIA).' },
+        { step: 3, text: 'Sentinel lymph node biopsy (SLNB) planning — isotope + blue dye', addToPlan: '• SLNB: Tc99m isotope injection day before; patent blue dye at induction. Gamma probe harvesting.' },
+        {
+          step: 4,
+          text: 'Pre-populate WLE + SLNB operative plan',
+          addToPlan: `WIDE LOCAL EXCISION (WLE) + SENTINEL LYMPH NODE BIOPSY (SLNB) — OPERATIVE PLAN
+────────────────────────────────────────────────────────────────────────────────
+PRE-OPERATIVE:
+• Sentinel node isotope injection: Tc99m 0.4ml × 4 injections periareolar — day before surgery.
+• Wire / ultrasound-guided seed localisation if impalpable lesion — radiology day of surgery.
+• Patent blue dye: 1–2ml intradermal perilesional at induction.
+• Consent: WLE — incomplete excision requiring re-excision (15–25%), SLNB — lymphoedema (< 5%), seroma, blue skin discolouration permanent.
+• Pre-op: FBC, Group & Screen, ECG (if ≥ 40), CXR.
+
+ANAESTHESIA: GA.
+POSITION: Supine, ipsilateral arm abducted 90° on arm board. Ipsilateral shoulder roll.
+SURGEON: Dr Dawit Daniel Kabiye MD DM.
+
+OPERATIVE STEPS:
+1. Mark tumour position (wire/seed localisation confirmed by radiology).
+2. Elliptical excision of skin overlying tumour (if skin involved) or transverse incision over Langer's lines.
+3. WLE: excise tumour with minimum 1cm macroscopic margin in all directions.
+4. Orient specimen: sutures — superior (short), lateral (long), medial (double). Send fresh for margin assessment / frozen section.
+5. Cavity shavings: superior, inferior, medial, lateral, anterior, posterior — send separately if margins close.
+6. SLNB: transverse axillary incision 4cm. Use gamma probe — identify hot node (≥ 10× ex-vivo background count). Blue node identification. Retrieve all hot/blue nodes (typically 1–3).
+7. Haemostasis in WLE cavity. Consider cavity marking clips (for radiotherapy planning).
+8. Reconstruction: advancement flap if large defect; or oncoplastic reshaping (if breast surgery trained).
+9. Wound closure: deep 2/0 Vicryl, subcuticular 4/0 Monocryl. Axillary: deep 2/0 Vicryl, subcuticular 4/0 Monocryl.
+10. Drain: axilla — JP drain × 1 (remove < 30ml/day, usually day 1–2). Breast cavity: no drain (routine).
+
+INTRAOPERATIVE FINDINGS: [Tumour size, location, skin involvement]. SLNB: [number of nodes retrieved, hot/blue/both]. [Other].
+Specimen orientation: [Superior-short/Lateral-long/Medial-double]. To radiology for specimen x-ray, then histopathology.
+EBL: [X] ml. Swab count correct × 2.
+
+POST-OPERATIVE ORDERS:
+• Paracetamol 1g QDS + Ibuprofen 400mg TDS regular.
+• Morphine 5mg PRN.
+• Drain removal: when < 30ml / 24h (axilla, usually day 1–2).
+• Arm exercises from day 1 — physiotherapy referral.
+• Wound review 7–10 days.
+• Histology result at 2-week clinic: margin status, SLN status, grade/receptor result.
+• If margins involved: plan re-excision or mastectomy (MDT decision).
+• If SLNB positive: axillary clearance vs radiotherapy (AMAROS trial approach per MDT).
+• Oncology referral: adjuvant chemotherapy (if indicated), radiotherapy (mandatory post-WLE), hormone therapy (ER+), Herceptin (HER2+).`,
+        },
+      ],
+      followUp: { label: 'Breast MDT + histology + oncology referral', daysFromNow: 14 },
     });
   }
 
