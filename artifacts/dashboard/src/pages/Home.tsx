@@ -66,6 +66,7 @@ import ResultsInboxTab from './tabs/ResultsInboxTab';
 import LetterGeneratorTab from './tabs/LetterGeneratorTab';
 import PatientEducationTab from './tabs/PatientEducationTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
+import CheckInTab from './tabs/CheckInTab';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
 import FloatingActions from '@/components/FloatingActions';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -419,7 +420,6 @@ export default function HomePage() {
 
   const sidebarWidth = zenMode ? 0 : (collapsed || topSection === 'consultation') ? 52 : 182;
 
-  if (userRole === 'front_desk') return <ErrorBoundary><ReceptionistView /></ErrorBoundary>;
   if (userRole === 'nurse') return <ErrorBoundary><NursePreVisitView /></ErrorBoundary>;
 
   return (
@@ -886,7 +886,8 @@ export default function HomePage() {
         {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
         {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
         {topSection === 'questionnaire'  && (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor'))  && <NurseAPCQTab />}
-        {topSection === 'booking_inbox'  && hasRole(userRole, 'admin')        && <BookingInboxTab />}
+        {topSection === 'checkin'                                              && <CheckInTab />}
+        {topSection === 'booking_inbox'  && roleIn(userRole, 'front_desk', 'admin') && <BookingInboxTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
         {topSection === 'visit_lifecycle'                                        && <VisitManagerTab />}

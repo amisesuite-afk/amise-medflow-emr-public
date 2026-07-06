@@ -77,7 +77,7 @@ export interface LabRecord {
 }
 
 export type TopSection =
-  | 'dashboard' | 'patients' | 'intake' | 'consultation'
+  | 'dashboard' | 'patients' | 'checkin' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
   | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox' | 'portal_intake' | 'referring_providers'
   | 'visit_lifecycle' | 'prescriptions' | 'ai_consultant' | 'tasks'

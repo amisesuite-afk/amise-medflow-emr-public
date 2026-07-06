@@ -7,7 +7,7 @@ import {
   ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, Inbox,
   Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig, Check,
   MessageSquare, Tags, ClipboardMinus, ScrollText, MailOpen, GraduationCap, ShieldCheck,
-  Calculator, Droplets, Bandage,
+  Calculator, Droplets, Bandage, UserCheck,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection, EncounterType } from '@/context/AppContext';
@@ -154,6 +154,7 @@ interface TopItem {
 
 const NAV_ITEMS: TopItem[] = [
   // ── Front Desk ──
+  { id: 'checkin',        icon: UserCheck,       label: 'Check-In',       roles: ['front_desk', 'admin'],                    group: 'Front Desk' },
   { id: 'dashboard',      icon: LayoutDashboard, label: 'Dashboard',      roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
   { id: 'booking_inbox',  icon: Inbox,           label: 'Booking Inbox',  roles: ['front_desk', 'nurse', 'admin'],           group: 'Front Desk' },
   { id: 'scheduling',     icon: CalendarDays,    label: 'Scheduling',     roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
