@@ -68,6 +68,7 @@ import PatientEducationTab from './tabs/PatientEducationTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
 import CheckInTab from './tabs/CheckInTab';
 import EncounterStartWizard from '@/components/EncounterStartWizard';
+import VisitTypeOpeningPanel from '@/components/VisitTypeOpeningPanel';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
 import FloatingActions from '@/components/FloatingActions';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -167,6 +168,7 @@ export default function HomePage() {
     encounterMode, setEncounterMode,
     encounterType, setEncounterType,
     activeCcKey,
+    visitType: ctxVisitType,
     patientPhoto,
     patientId,
     encounterId,
@@ -198,7 +200,7 @@ export default function HomePage() {
   const [criticalResultCount, setCriticalResultCount] = useState(0);
   const [showAiPanel, setShowAiPanel] = useState(false);
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
-  const [visitType, setVisitType] = useState<'new' | 'followup'>('new');
+  const [headerVisitMode, setHeaderVisitMode] = useState<'new' | 'followup'>('new');
   const [wizardSkipped, setWizardSkipped] = useState(false);
   const prevPatientIdRef = useRef<string | null>(null);
 
@@ -407,7 +409,7 @@ export default function HomePage() {
   }, [topSection]);
 
   // Reset to new consultation when patient or CC changes
-  useEffect(() => { setVisitType('new'); }, [patientId, activeCcKey]);
+  useEffect(() => { setHeaderVisitMode('new'); }, [patientId, activeCcKey]);
 
   // Auto-generate MRN when consultation starts without one (only for a loaded patient)
   useEffect(() => {
@@ -748,13 +750,13 @@ export default function HomePage() {
               <div style={{ display: 'flex', gap: 3, marginLeft: 'auto', flexShrink: 0 }}>
                 {(['new', 'followup'] as const).map(vt => (
                   <button key={vt} type="button" onClick={() => {
-                    setVisitType(vt);
+                    setHeaderVisitMode(vt);
                     if (vt === 'followup') setActiveSection('progress');
                   }} style={{
                     padding: '2px 9px', borderRadius: 5, border: 'none', cursor: 'pointer',
                     fontSize: 10, fontWeight: 700,
-                    background: visitType === vt ? '#0d9488' : '#1e293b',
-                    color: visitType === vt ? '#fff' : '#64748b',
+                    background: headerVisitMode === vt ? '#0d9488' : '#1e293b',
+                    color: headerVisitMode === vt ? '#fff' : '#64748b',
                     transition: 'all 0.1s',
                   }}>
                     {vt === 'new' ? 'New' : 'Follow-up'}
@@ -779,11 +781,21 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Encounter start wizard — shown once per new patient until CC entered or skipped */}
-        {topSection === 'consultation' && !!patientId && !activeCcKey && !wizardSkipped && (
+        {/* Encounter start wizard — new consult only; suppressed for typed visit flows */}
+        {topSection === 'consultation' && !!patientId && !activeCcKey && !wizardSkipped &&
+         (!ctxVisitType || ctxVisitType === 'new_consult') && (
           <EncounterStartWizard
             onComplete={() => setWizardSkipped(true)}
             onSkip={() => setWizardSkipped(true)}
+          />
+        )}
+
+        {/* Visit type opening panel — focused intake for follow-up, post-op, endoscopy, etc. */}
+        {topSection === 'consultation' && !!patientId && !wizardSkipped &&
+         ctxVisitType && ctxVisitType !== 'new_consult' && (
+          <VisitTypeOpeningPanel
+            onComplete={() => setWizardSkipped(true)}
+            onGoToTriage={() => { setActiveSection('triage'); setWizardSkipped(true); }}
           />
         )}
 

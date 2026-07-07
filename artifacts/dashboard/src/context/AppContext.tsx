@@ -273,6 +273,10 @@ interface CtxValue {
 
   preVisitStatus: PreVisitStatus; setPreVisitStatus(v: PreVisitStatus): void;
 
+  visitType: string; setVisitType(v: string): void;
+  postOpDate: string; setPostOpDate(v: string): void;
+  postOpReviewNum: number; setPostOpReviewNum(v: number): void;
+
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
   plan: string; setPlan(v: string): void;
@@ -439,6 +443,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [rosFindings, setRosFindings] = useState<Record<string, RosFinding>>({});
   const [procedureData, setProcedureData] = useState<Record<string, unknown>>({});
   const [preVisitStatus, setPreVisitStatus] = useState<PreVisitStatus>('new');
+  const [visitType, setVisitType] = useState('');
+  const [postOpDate, setPostOpDate] = useState('');
+  const [postOpReviewNum, setPostOpReviewNum] = useState(1);
 
   const [assessment, setAssessment] = useState('');
   const [differentials, setDifferentials] = useState('');
@@ -715,6 +722,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setAddress(''); setQuarter(''); setReferredBy('');
     setWeightKg(''); setHeightCm(''); setWaistCm(''); setHipCm(''); setMuacCm(''); setAnatomicalFindings([]);
     setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
+    setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1);
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
@@ -1046,6 +1054,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     rosFindings, setRosFindings,
     procedureData, setProcedureData,
     preVisitStatus, setPreVisitStatus,
+    visitType, setVisitType,
+    postOpDate, setPostOpDate,
+    postOpReviewNum, setPostOpReviewNum,
     triageResult,
     attachments, setAttachments,
     radiologyRequests, setRadiologyRequests,

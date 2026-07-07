@@ -22,6 +22,21 @@ function apiUrl(path: string) {
 }
 
 const QUEUE_KEY = 'amise-patients-v1';
+
+export const VISIT_TYPES = [
+  { id: 'new_consult',      label: 'First Consult',   icon: '🩺', color: '#0d9488', desc: 'New patient or new problem' },
+  { id: 'follow_up',        label: 'Follow-up',       icon: '🔄', color: '#2563eb', desc: 'Interval review — SOAP format' },
+  { id: 'post_op',          label: 'Post-op Review',  icon: '🩹', color: '#7c3aed', desc: 'Wound/recovery review after surgery' },
+  { id: 'ercp',             label: 'ERCP',            icon: '🔭', color: '#0891b2', desc: 'Endoscopic retrograde cholangiopancreatography' },
+  { id: 'endoscopy_ogd',    label: 'OGD',             icon: '🔭', color: '#0891b2', desc: 'Upper GI endoscopy' },
+  { id: 'endoscopy_col',    label: 'Colonoscopy',     icon: '🔭', color: '#0891b2', desc: 'Lower GI endoscopy' },
+  { id: 'breast',           label: 'Breast Clinic',   icon: '🩺', color: '#db2777', desc: 'Focused breast assessment' },
+  { id: 'telephone',        label: 'Telephone',       icon: '📞', color: '#d97706', desc: 'Remote/telephone consultation' },
+  { id: 'diabetic_foot',    label: 'Diabetic Foot',   icon: '🦶', color: '#dc2626', desc: 'Foot wound/vascular assessment' },
+  { id: 'urgent',           label: 'Urgent Referral', icon: '🚨', color: '#dc2626', desc: 'Urgent/emergency triage required' },
+] as const;
+
+export type VisitTypeId = typeof VISIT_TYPES[number]['id'];
 function pushToQueue(entry: { id: string; full_name: string; age?: string; sex?: string; dob?: string; phone?: string }) {
   try {
     const raw = localStorage.getItem(QUEUE_KEY);
@@ -123,6 +138,11 @@ export default function CheckInTab() {
     patientPhoto, setPatientPhoto,
     setPreVisitStatus,
     setTopSection,
+    visitType, setVisitType,
+    postOpDate, setPostOpDate,
+    postOpReviewNum, setPostOpReviewNum,
+    setIsPostOp, setPostOpDays,
+    setEncounterType,
   } = useAppContext();
 
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -560,10 +580,78 @@ export default function CheckInTab() {
             <div style={{ flex: 1, height: 2, background: 'linear-gradient(270deg, #0d9488, transparent)' }} />
           </div>
 
+          {/* Visit Type selector */}
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 800, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
+              Visit type
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {VISIT_TYPES.map(vt => {
+                const isSelected = visitType === vt.id;
+                return (
+                  <button key={vt.id} type="button"
+                    onClick={() => {
+                      setVisitType(vt.id);
+                      if (vt.id === 'post_op') { setIsPostOp(true); }
+                      else { setIsPostOp(false); }
+                      if (vt.id === 'ercp' || vt.id === 'endoscopy_ogd' || vt.id === 'endoscopy_col') {
+                        setEncounterType('endoscopy');
+                      } else if (vt.id === 'urgent') {
+                        setEncounterType('major_emergency');
+                      } else if (vt.id === 'post_op' || vt.id === 'follow_up') {
+                        setEncounterType('quick_consult');
+                      } else {
+                        setEncounterType('surgical_consult');
+                      }
+                    }}
+                    style={{
+                      padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
+                      border: `2px solid ${isSelected ? vt.color : '#e2e8f0'}`,
+                      background: isSelected ? vt.color : '#fff',
+                      color: isSelected ? '#fff' : '#374151',
+                      fontWeight: isSelected ? 700 : 500, fontSize: 12,
+                      display: 'flex', alignItems: 'center', gap: 5,
+                      transition: 'all 0.15s',
+                    }}>
+                    <span>{vt.icon}</span>
+                    <span>{vt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Post-op date + review number */}
+            {visitType === 'post_op' && (
+              <div style={{ marginTop: 10, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <div style={{ flex: '1 1 160px' }}>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: '#7c3aed', display: 'block', marginBottom: 3 }}>DATE OF OPERATION</label>
+                  <input type="date" value={postOpDate} onChange={e => {
+                    setPostOpDate(e.target.value);
+                    if (e.target.value) {
+                      const days = Math.round((Date.now() - new Date(e.target.value).getTime()) / 86400000);
+                      setPostOpDays(String(days));
+                    }
+                  }} style={{ padding: '7px 10px', borderRadius: 7, border: '1.5px solid #c4b5fd', fontSize: 13, width: '100%' }} />
+                </div>
+                <div style={{ flex: '1 1 120px' }}>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: '#7c3aed', display: 'block', marginBottom: 3 }}>REVIEW NUMBER</label>
+                  <select value={postOpReviewNum} onChange={e => setPostOpReviewNum(Number(e.target.value))}
+                    style={{ padding: '7px 10px', borderRadius: 7, border: '1.5px solid #c4b5fd', fontSize: 13, width: '100%' }}>
+                    {[1, 2, 3, 4, 5, 6].map(n => (
+                      <option key={n} value={n}>{n === 1 ? '1st review' : n === 2 ? '2nd review' : n === 3 ? '3rd review' : `${n}th review`}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Primary CTA — go straight to consultation */}
           <button type="button" onClick={() => setTopSection('consultation')}
             style={{ width: '100%', padding: '14px 20px', borderRadius: 10, border: 'none', background: '#0d9488', color: '#fff', fontWeight: 800, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            Start Consultation →
+            {visitType && visitType !== 'new_consult'
+              ? `${VISIT_TYPES.find(v => v.id === visitType)?.icon} Start ${VISIT_TYPES.find(v => v.id === visitType)?.label} →`
+              : 'Start Consultation →'}
           </button>
 
           {/* Actions */}
