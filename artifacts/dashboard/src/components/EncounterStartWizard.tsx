@@ -174,13 +174,17 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
     if (ccText.trim()) ctx.setFreeText(ccText.trim());
 
     // PMH → comorbidities
-    if (noPmh === false) {
+    if (noPmh === true) {
+      ctx.setPmhNotes('No known past medical history (NKPMH)');
+    } else if (noPmh === false) {
       const all = [...pmhSelected, ...(pmhOther.trim() ? pmhOther.split(',').map(s => s.trim()).filter(Boolean) : [])];
       ctx.setComorbidities(all);
     }
 
     // Surgery history
-    if (noSurgery === false) {
+    if (noSurgery === true) {
+      ctx.setSurgicalHistory(['No prior surgery']);
+    } else if (noSurgery === false) {
       const all = [...surgSelected, ...(surgOther.trim() ? surgOther.split(',').map(s => s.trim()).filter(Boolean) : [])];
       ctx.setSurgicalHistory(all);
     }
@@ -308,7 +312,7 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
             <div style={{ fontSize: 19, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Significant medical history?</div>
             <div style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Any known medical conditions?</div>
 
-            <YNToggle value={noPmh} onChange={v => setNoPmh(!v)} yLabel="No known conditions" nLabel="Yes, has conditions" />
+            <YNToggle value={noPmh} onChange={setNoPmh} yLabel="No known conditions" nLabel="Yes, has conditions" />
 
             {noPmh === false && (
               <div style={{ marginTop: 18 }}>
@@ -330,7 +334,7 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
             <div style={{ fontSize: 19, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Prior surgery?</div>
             <div style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Any previous operations or procedures?</div>
 
-            <YNToggle value={noSurgery} onChange={v => setNoSurgery(!v)} yLabel="No prior surgery" nLabel="Yes, had surgery" />
+            <YNToggle value={noSurgery} onChange={setNoSurgery} yLabel="No prior surgery" nLabel="Yes, had surgery" />
 
             {noSurgery === false && (
               <div style={{ marginTop: 18 }}>
@@ -353,7 +357,7 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
 
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginBottom: 10 }}>Drug allergies or adverse reactions?</div>
-              <YNToggle value={noAllergy} onChange={v => setNoAllergy(!v)} yLabel="None — NKDA" nLabel="Yes, has allergies" />
+              <YNToggle value={noAllergy} onChange={setNoAllergy} yLabel="None — NKDA" nLabel="Yes, has allergies" />
               {noAllergy === false && (
                 <div style={{ marginTop: 14 }}>
                   <ChipGrid items={ALLERGENS} selected={allergySelected}
@@ -368,7 +372,7 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
 
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 18 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginBottom: 10 }}>Current regular medications?</div>
-              <YNToggle value={noMeds} onChange={v => setNoMeds(!v)} yLabel="None" nLabel="Yes, on medications" />
+              <YNToggle value={noMeds} onChange={setNoMeds} yLabel="None" nLabel="Yes, on medications" />
               {noMeds === false && (
                 <textarea value={medsText} onChange={e => setMedsText(e.target.value)}
                   placeholder={'One medication per line:\nAmlodipine 5 mg OD\nMetformin 500 mg BD\nAtorvastatin 20 mg ON'}
