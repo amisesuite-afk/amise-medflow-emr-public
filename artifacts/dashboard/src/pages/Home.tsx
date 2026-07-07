@@ -75,6 +75,7 @@ import CommandPalette from '@/components/CommandPalette';
 import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
+import PreviousVisitStrip from '@/components/PreviousVisitStrip';
 import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
@@ -788,6 +789,9 @@ export default function HomePage() {
 
         {/* Encounter context picker — set venue + type before CC entry */}
         {topSection === 'consultation' && <EncounterContextPicker />}
+
+        {/* Previous visit reference strip — collapsed summary of past encounters */}
+        {topSection === 'consultation' && !!patientId && <PreviousVisitStrip />}
 
         {/* Chief complaint strip — 1–3 structured complaints with targeted SOCRATES fields */}
         {topSection === 'consultation' && <ChiefComplaintStrip />}

@@ -129,6 +129,10 @@ function ChipGrid({
   );
 }
 
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+type StepMode = 'bypass' | 'edit';
+
 // ── Main wizard ───────────────────────────────────────────────────────────────
 
 interface Props {
@@ -141,94 +145,69 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
   const STEPS = 4;
   const [step, setStep] = useState(0);
 
-  // Step 0 — CC
+  // ── Step mode — lazy-initialized from context ──────────────────────────────
+  const [pmhMode, setPmhMode] = useState<StepMode>(() =>
+    ctx.comorbidities.length > 0 || ctx.pmhNotes.includes('NKPMH') ? 'bypass' : 'edit');
+  const [surgMode, setSurgMode] = useState<StepMode>(() =>
+    ctx.surgicalHistory.length > 0 ? 'bypass' : 'edit');
+  const [allergyMode, setAllergyMode] = useState<StepMode>(() =>
+    ctx.allergies.length > 0 ? 'bypass' : 'edit');
+  const [medsMode, setMedsMode] = useState<StepMode>(() =>
+    ctx.medications.length > 0 ? 'bypass' : 'edit');
+
+  // ── Step 0 — CC (always fresh) ─────────────────────────────────────────────
   const [ccSelected, setCcSelected] = useState<string[]>([]);
   const [ccText, setCcText] = useState('');
 
-  // Step 1 — PMH
-  const [noPmh, setNoPmh] = useState<boolean | null>(null);
-  const [pmhSelected, setPmhSelected] = useState<string[]>([]);
+  // ── Step 1 — PMH (pre-filled from context) ─────────────────────────────────
+  const [noPmh, setNoPmh] = useState<boolean | null>(() => {
+    if (ctx.pmhNotes.includes('NKPMH')) return true;
+    if (ctx.comorbidities.length > 0) return false;
+    return null;
+  });
+  const [pmhSelected, setPmhSelected] = useState<string[]>(() =>
+    ctx.comorbidities.filter(c => PMH_CONDITIONS.includes(c)));
   const [pmhOther, setPmhOther] = useState('');
 
-  // Step 2 — Surgery
-  const [noSurgery, setNoSurgery] = useState<boolean | null>(null);
-  const [surgSelected, setSurgSelected] = useState<string[]>([]);
+  // ── Step 2 — Surgery (pre-filled from context) ─────────────────────────────
+  const [noSurgery, setNoSurgery] = useState<boolean | null>(() => {
+    if (ctx.surgicalHistory.includes('No prior surgery')) return true;
+    if (ctx.surgicalHistory.length > 0) return false;
+    return null;
+  });
+  const [surgSelected, setSurgSelected] = useState<string[]>(() =>
+    ctx.surgicalHistory.filter(s => SURGERY_LIST.includes(s)));
   const [surgOther, setSurgOther] = useState('');
 
-  // Step 3 — Allergies + Medications
-  const [noAllergy, setNoAllergy] = useState<boolean | null>(null);
-  const [allergySelected, setAllergySelected] = useState<string[]>([]);
-  const [allergyOther, setAllergyOther] = useState('');
-  const [noMeds, setNoMeds] = useState<boolean | null>(null);
-  const [medsText, setMedsText] = useState('');
+  // ── Step 3 — Allergies (pre-filled from context) ───────────────────────────
+  const [noAllergy, setNoAllergy] = useState<boolean | null>(() => {
+    if (ctx.allergies === 'NKDA') return true;
+    if (ctx.allergies) return false;
+    return null;
+  });
+  const [allergySelected, setAllergySelected] = useState<string[]>(() =>
+    ctx.allergies === 'NKDA' ? [] :
+    ctx.allergies.split(',').map(s => s.trim()).filter(a => ALLERGENS.includes(a)));
+  const [allergyOther, setAllergyOther] = useState(() => {
+    if (!ctx.allergies || ctx.allergies === 'NKDA') return '';
+    return ctx.allergies.split(',').map(s => s.trim())
+      .filter(a => !ALLERGENS.includes(a) && a !== 'NKDA').join(', ');
+  });
+
+  // ── Step 3 — Medications (pre-filled from context) ─────────────────────────
+  const [noMeds, setNoMeds] = useState<boolean | null>(() => {
+    if (ctx.medications.includes('None')) return true;
+    if (ctx.medications.length > 0) return false;
+    return null;
+  });
+  const [medsText, setMedsText] = useState(() =>
+    ctx.medications.filter(m => m !== 'None').join('\n'));
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
 
   function toggleCC(id: string) {
     setCcSelected(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
   }
-
-  function apply() {
-    // CC → HPI notes
-    const ccLabels = ccSelected.map(id => CC_CHIPS.find(c => c.id === id)?.label ?? id);
-    const ccLine = ccLabels.length > 0 ? ccLabels.join(', ') + (ccText.trim() ? ` — ${ccText.trim()}` : '') : ccText.trim();
-    if (ccLine) ctx.setHpiNotes(ccLine);
-    if (ccText.trim()) ctx.setFreeText(ccText.trim());
-
-    // PMH → comorbidities
-    if (noPmh === true) {
-      ctx.setPmhNotes('No known past medical history (NKPMH)');
-    } else if (noPmh === false) {
-      const all = [...pmhSelected, ...(pmhOther.trim() ? pmhOther.split(',').map(s => s.trim()).filter(Boolean) : [])];
-      ctx.setComorbidities(all);
-    }
-
-    // Surgery history
-    if (noSurgery === true) {
-      ctx.setSurgicalHistory(['No prior surgery']);
-    } else if (noSurgery === false) {
-      const all = [...surgSelected, ...(surgOther.trim() ? surgOther.split(',').map(s => s.trim()).filter(Boolean) : [])];
-      ctx.setSurgicalHistory(all);
-    }
-
-    // Allergies
-    if (noAllergy === false) {
-      const all = [...allergySelected, ...(allergyOther.trim() ? [allergyOther.trim()] : [])];
-      ctx.setAllergies(all.join(', '));
-    } else if (noAllergy === true) {
-      ctx.setAllergies('NKDA');
-    }
-
-    // Medications
-    if (noMeds === false && medsText.trim()) {
-      const meds = medsText.split('\n').map(s => s.trim()).filter(Boolean);
-      ctx.setMedications(meds);
-    } else if (noMeds === true) {
-      ctx.setMedications(['None']);
-    }
-
-    onComplete();
-  }
-
-  const canAdvanceStep0 = ccSelected.length > 0 || ccText.trim().length > 2;
-  const canAdvanceStep1 = noPmh !== null;
-  const canAdvanceStep2 = noSurgery !== null;
-  const canAdvanceStep3 = noAllergy !== null && noMeds !== null;
-
-  const s: React.CSSProperties = {
-    background: '#fff', borderRadius: 14, border: '1px solid #e2e8f0',
-    boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: '28px 28px 24px',
-    maxWidth: 620, margin: '0 auto',
-  };
-
-  const btnPrimary: React.CSSProperties = {
-    padding: '11px 28px', borderRadius: 10, border: 'none',
-    background: '#0d9488', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer',
-    display: 'flex', alignItems: 'center', gap: 8,
-  };
-
-  const btnSkip: React.CSSProperties = {
-    padding: '10px 16px', borderRadius: 8, border: 'none',
-    background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer',
-  };
 
   function YNToggle({ value, onChange, yLabel = 'Yes', nLabel = 'No' }: {
     value: boolean | null; onChange: (v: boolean) => void; yLabel?: string; nLabel?: string;
@@ -251,6 +230,135 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
     );
   }
 
+  function BypassCard({ label, summary, onConfirm, onUpdate }: {
+    label: string; summary: string; onConfirm: () => void; onUpdate: () => void;
+  }) {
+    return (
+      <div style={{ background: '#f0fdf4', border: '1.5px solid #86efac', borderRadius: 10, padding: '14px 16px', marginTop: 8 }}>
+        <div style={{ fontSize: 10, fontWeight: 800, color: '#15803d', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>
+          ✓ On record — {label}
+        </div>
+        <div style={{ fontSize: 13, color: '#166534', marginBottom: 14, lineHeight: 1.6 }}>{summary}</div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" onClick={onConfirm}
+            style={{ flex: 1, padding: '9px', borderRadius: 8, border: 'none', background: '#0d9488', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+            ✓ Still accurate — Continue
+          </button>
+          <button type="button" onClick={onUpdate}
+            style={{ padding: '9px 16px', borderRadius: 8, border: '1px solid #d1d5db', background: '#fff', color: '#374151', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
+            Update
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── apply ──────────────────────────────────────────────────────────────────
+
+  function apply() {
+    // CC → HPI notes (always applied — step 0 is never bypassed)
+    const ccLabels = ccSelected.map(id => CC_CHIPS.find(c => c.id === id)?.label ?? id);
+    const ccLine = ccLabels.length > 0 ? ccLabels.join(', ') + (ccText.trim() ? ` — ${ccText.trim()}` : '') : ccText.trim();
+    if (ccLine) ctx.setHpiNotes(ccLine);
+    if (ccText.trim()) ctx.setFreeText(ccText.trim());
+
+    // PMH — only write if in edit mode
+    if (pmhMode === 'edit') {
+      if (noPmh === true) {
+        ctx.setPmhNotes('No known past medical history (NKPMH)');
+      } else if (noPmh === false) {
+        const all = [...pmhSelected, ...(pmhOther.trim() ? pmhOther.split(',').map(s => s.trim()).filter(Boolean) : [])];
+        ctx.setComorbidities(all);
+      }
+    }
+
+    // Surgery — only write if in edit mode
+    if (surgMode === 'edit') {
+      if (noSurgery === true) {
+        ctx.setSurgicalHistory(['No prior surgery']);
+      } else if (noSurgery === false) {
+        const all = [...surgSelected, ...(surgOther.trim() ? surgOther.split(',').map(s => s.trim()).filter(Boolean) : [])];
+        ctx.setSurgicalHistory(all);
+      }
+    }
+
+    // Allergies — only write if in edit mode
+    if (allergyMode === 'edit') {
+      if (noAllergy === false) {
+        const all = [...allergySelected, ...(allergyOther.trim() ? [allergyOther.trim()] : [])];
+        ctx.setAllergies(all.join(', '));
+      } else if (noAllergy === true) {
+        ctx.setAllergies('NKDA');
+      }
+    }
+
+    // Medications — only write if in edit mode
+    if (medsMode === 'edit') {
+      if (noMeds === false && medsText.trim()) {
+        const meds = medsText.split('\n').map(s => s.trim()).filter(Boolean);
+        ctx.setMedications(meds);
+      } else if (noMeds === true) {
+        ctx.setMedications(['None']);
+      }
+    }
+
+    onComplete();
+  }
+
+  // ── canAdvance ─────────────────────────────────────────────────────────────
+
+  const canAdvanceStep0 = ccSelected.length > 0 || ccText.trim().length > 2;
+  const canAdvanceStep1 = pmhMode === 'bypass' || noPmh !== null;
+  const canAdvanceStep2 = surgMode === 'bypass' || noSurgery !== null;
+  const canAdvanceStep3 = (allergyMode === 'bypass' || noAllergy !== null) && (medsMode === 'bypass' || noMeds !== null);
+
+  // ── Styles ─────────────────────────────────────────────────────────────────
+
+  const s: React.CSSProperties = {
+    background: '#fff', borderRadius: 14, border: '1px solid #e2e8f0',
+    boxShadow: '0 4px 24px rgba(0,0,0,0.08)', padding: '28px 28px 24px',
+    maxWidth: 620, margin: '0 auto',
+  };
+
+  const btnPrimary: React.CSSProperties = {
+    padding: '11px 28px', borderRadius: 10, border: 'none',
+    background: '#0d9488', color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer',
+    display: 'flex', alignItems: 'center', gap: 8,
+  };
+
+  const btnSkip: React.CSSProperties = {
+    padding: '10px 16px', borderRadius: 8, border: 'none',
+    background: 'transparent', color: '#94a3b8', fontSize: 13, cursor: 'pointer',
+  };
+
+  // ── PMH summary helper ─────────────────────────────────────────────────────
+
+  function pmhBypassSummary(): string {
+    if (noPmh === true) return 'No known past medical history (NKPMH)';
+    if (ctx.comorbidities.length > 0) return ctx.comorbidities.join(' · ');
+    return 'On record';
+  }
+
+  function surgBypassSummary(): string {
+    if (noSurgery === true || ctx.surgicalHistory.includes('No prior surgery')) return 'No prior surgery';
+    if (ctx.surgicalHistory.length > 0) return ctx.surgicalHistory.join(' · ');
+    return 'On record';
+  }
+
+  function allergyBypassSummary(): string {
+    if (ctx.allergies === 'NKDA') return 'No known drug allergies (NKDA)';
+    if (ctx.allergies) return ctx.allergies;
+    return 'On record';
+  }
+
+  function medssBypassSummary(): string {
+    const activeMeds = ctx.medications.filter(m => m !== 'None');
+    if (ctx.medications.includes('None') || activeMeds.length === 0) return 'No regular medications';
+    return activeMeds.join(' · ');
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+
   return (
     <div style={{ padding: '24px 16px' }}>
       <div style={s}>
@@ -271,7 +379,7 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
           <button type="button" onClick={onSkip} style={{ ...btnSkip, marginLeft: 'auto' }}>Skip wizard</button>
         </div>
 
-        {/* ── STEP 0: Chief Complaint ── */}
+        {/* ── STEP 0: Chief Complaint (always fresh — never bypassed) ── */}
         {step === 0 && (
           <>
             <div style={{ fontSize: 19, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>What brings them in today?</div>
@@ -299,7 +407,7 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
             <textarea
               value={ccText}
               onChange={e => setCcText(e.target.value)}
-              placeholder={"In the patient’s own words: “I have a lump in my groin that appeared 3 months ago…”"}
+              placeholder={"In the patient's own words: \"I have a lump in my groin that appeared 3 months ago…\""}
               rows={3}
               style={{ width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px 12px', fontSize: 13, resize: 'vertical', outline: 'none', fontFamily: 'inherit', color: '#374151' }}
             />
@@ -310,20 +418,30 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
         {step === 1 && (
           <>
             <div style={{ fontSize: 19, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Significant medical history?</div>
-            <div style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Any known medical conditions?</div>
+            <div style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>Any known medical conditions?</div>
 
-            <YNToggle value={noPmh} onChange={setNoPmh} yLabel="No known conditions" nLabel="Yes, has conditions" />
-
-            {noPmh === false && (
-              <div style={{ marginTop: 18 }}>
-                <ChipGrid items={PMH_CONDITIONS} selected={pmhSelected}
-                  onToggle={v => setPmhSelected(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v])}
-                  searchable label="Select all that apply" />
-                <textarea value={pmhOther} onChange={e => setPmhOther(e.target.value)}
-                  placeholder="Additional conditions (comma-separated)…"
-                  rows={2}
-                  style={{ marginTop: 12, width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 12px', fontSize: 13, resize: 'none', outline: 'none', fontFamily: 'inherit', color: '#374151' }} />
-              </div>
+            {pmhMode === 'bypass' ? (
+              <BypassCard
+                label="Past medical history"
+                summary={pmhBypassSummary()}
+                onConfirm={() => setStep(s => s + 1)}
+                onUpdate={() => setPmhMode('edit')}
+              />
+            ) : (
+              <>
+                <YNToggle value={noPmh} onChange={setNoPmh} yLabel="No known conditions" nLabel="Yes, has conditions" />
+                {noPmh === false && (
+                  <div style={{ marginTop: 18 }}>
+                    <ChipGrid items={PMH_CONDITIONS} selected={pmhSelected}
+                      onToggle={v => setPmhSelected(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v])}
+                      searchable label="Select all that apply" />
+                    <textarea value={pmhOther} onChange={e => setPmhOther(e.target.value)}
+                      placeholder="Additional conditions (comma-separated)…"
+                      rows={2}
+                      style={{ marginTop: 12, width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 12px', fontSize: 13, resize: 'none', outline: 'none', fontFamily: 'inherit', color: '#374151' }} />
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
@@ -332,20 +450,30 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
         {step === 2 && (
           <>
             <div style={{ fontSize: 19, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Prior surgery?</div>
-            <div style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>Any previous operations or procedures?</div>
+            <div style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>Any previous operations or procedures?</div>
 
-            <YNToggle value={noSurgery} onChange={setNoSurgery} yLabel="No prior surgery" nLabel="Yes, had surgery" />
-
-            {noSurgery === false && (
-              <div style={{ marginTop: 18 }}>
-                <ChipGrid items={SURGERY_LIST} selected={surgSelected}
-                  onToggle={v => setSurgSelected(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v])}
-                  searchable label="Select all that apply" />
-                <textarea value={surgOther} onChange={e => setSurgOther(e.target.value)}
-                  placeholder="Other procedures (comma-separated)…"
-                  rows={2}
-                  style={{ marginTop: 12, width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 12px', fontSize: 13, resize: 'none', outline: 'none', fontFamily: 'inherit', color: '#374151' }} />
-              </div>
+            {surgMode === 'bypass' ? (
+              <BypassCard
+                label="Surgical history"
+                summary={surgBypassSummary()}
+                onConfirm={() => setStep(s => s + 1)}
+                onUpdate={() => setSurgMode('edit')}
+              />
+            ) : (
+              <>
+                <YNToggle value={noSurgery} onChange={setNoSurgery} yLabel="No prior surgery" nLabel="Yes, had surgery" />
+                {noSurgery === false && (
+                  <div style={{ marginTop: 18 }}>
+                    <ChipGrid items={SURGERY_LIST} selected={surgSelected}
+                      onToggle={v => setSurgSelected(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v])}
+                      searchable label="Select all that apply" />
+                    <textarea value={surgOther} onChange={e => setSurgOther(e.target.value)}
+                      placeholder="Other procedures (comma-separated)…"
+                      rows={2}
+                      style={{ marginTop: 12, width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 12px', fontSize: 13, resize: 'none', outline: 'none', fontFamily: 'inherit', color: '#374151' }} />
+                  </div>
+                )}
+              </>
             )}
           </>
         )}
@@ -355,29 +483,53 @@ export default function EncounterStartWizard({ onComplete, onSkip }: Props) {
           <>
             <div style={{ fontSize: 19, fontWeight: 700, color: '#0f172a', marginBottom: 18 }}>Allergies &amp; current medications</div>
 
+            {/* Allergies sub-section */}
             <div style={{ marginBottom: 20 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginBottom: 10 }}>Drug allergies or adverse reactions?</div>
-              <YNToggle value={noAllergy} onChange={setNoAllergy} yLabel="None — NKDA" nLabel="Yes, has allergies" />
-              {noAllergy === false && (
-                <div style={{ marginTop: 14 }}>
-                  <ChipGrid items={ALLERGENS} selected={allergySelected}
-                    onToggle={v => setAllergySelected(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v])}
-                    searchable />
-                  <input value={allergyOther} onChange={e => setAllergyOther(e.target.value)}
-                    placeholder="Other allergen / reaction details…"
-                    style={{ marginTop: 10, width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 12px', fontSize: 13, outline: 'none', fontFamily: 'inherit', color: '#374151' }} />
-                </div>
+              {allergyMode === 'bypass' ? (
+                <BypassCard
+                  label="Drug allergies"
+                  summary={allergyBypassSummary()}
+                  onConfirm={() => {/* still accurate — canAdvanceStep3 handles progression */}}
+                  onUpdate={() => setAllergyMode('edit')}
+                />
+              ) : (
+                <>
+                  <YNToggle value={noAllergy} onChange={setNoAllergy} yLabel="None — NKDA" nLabel="Yes, has allergies" />
+                  {noAllergy === false && (
+                    <div style={{ marginTop: 14 }}>
+                      <ChipGrid items={ALLERGENS} selected={allergySelected}
+                        onToggle={v => setAllergySelected(p => p.includes(v) ? p.filter(x => x !== v) : [...p, v])}
+                        searchable />
+                      <input value={allergyOther} onChange={e => setAllergyOther(e.target.value)}
+                        placeholder="Other allergen / reaction details…"
+                        style={{ marginTop: 10, width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', padding: '8px 12px', fontSize: 13, outline: 'none', fontFamily: 'inherit', color: '#374151' }} />
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
+            {/* Medications sub-section */}
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 18 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginBottom: 10 }}>Current regular medications?</div>
-              <YNToggle value={noMeds} onChange={setNoMeds} yLabel="None" nLabel="Yes, on medications" />
-              {noMeds === false && (
-                <textarea value={medsText} onChange={e => setMedsText(e.target.value)}
-                  placeholder={'One medication per line:\nAmlodipine 5 mg OD\nMetformin 500 mg BD\nAtorvastatin 20 mg ON'}
-                  rows={5}
-                  style={{ marginTop: 14, width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px 12px', fontSize: 13, resize: 'vertical', outline: 'none', fontFamily: 'inherit', color: '#374151' }} />
+              {medsMode === 'bypass' ? (
+                <BypassCard
+                  label="Medications"
+                  summary={medssBypassSummary()}
+                  onConfirm={() => {/* still accurate — canAdvanceStep3 handles progression */}}
+                  onUpdate={() => setMedsMode('edit')}
+                />
+              ) : (
+                <>
+                  <YNToggle value={noMeds} onChange={setNoMeds} yLabel="None" nLabel="Yes, on medications" />
+                  {noMeds === false && (
+                    <textarea value={medsText} onChange={e => setMedsText(e.target.value)}
+                      placeholder={'One medication per line:\nAmlodipine 5 mg OD\nMetformin 500 mg BD\nAtorvastatin 20 mg ON'}
+                      rows={5}
+                      style={{ marginTop: 14, width: '100%', borderRadius: 8, border: '1px solid #e2e8f0', padding: '10px 12px', fontSize: 13, resize: 'vertical', outline: 'none', fontFamily: 'inherit', color: '#374151' }} />
+                  )}
+                </>
               )}
             </div>
           </>

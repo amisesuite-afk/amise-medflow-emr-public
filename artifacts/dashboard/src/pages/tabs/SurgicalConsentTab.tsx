@@ -149,12 +149,177 @@ const PROCEDURE_RISKS: Record<string, string[]> = {
   'mastectomy': ['Lymphoedema', 'Seroma', 'Shoulder stiffness', 'Altered body image'],
 };
 
+interface ProcedureTemplate {
+  procedure: string;
+  anaesthesia: string;
+  alternatives: string;
+  generalRisks: string[];
+  specificRisks: string[];
+}
+
+const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
+  {
+    procedure: 'Laparoscopic cholecystectomy',
+    anaesthesia: 'General anaesthesia',
+    alternatives: 'Open cholecystectomy; conservative management with dietary modification',
+    generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Pulmonary embolism (PE)', 'Anaesthetic complications', 'Conversion to open surgery'],
+    specificRisks: ['Bile duct injury', 'Bile leak', 'Retained stone in CBD', 'Port site hernia', 'Bowel injury'],
+  },
+  {
+    procedure: 'Appendicectomy (laparoscopic)',
+    anaesthesia: 'General anaesthesia',
+    alternatives: 'Open appendicectomy; non-operative antibiotic management (selected cases)',
+    generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Anaesthetic complications', 'Conversion to open surgery'],
+    specificRisks: ['Intra-abdominal collection', 'Stump leak', 'Bowel obstruction'],
+  },
+  {
+    procedure: 'Inguinal hernia repair (laparoscopic, mesh)',
+    anaesthesia: 'General anaesthesia',
+    alternatives: 'Open tension-free mesh repair; watchful waiting for asymptomatic hernias',
+    generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Anaesthetic complications', 'Hernia at port / incision site'],
+    specificRisks: ['Mesh infection', 'Chronic groin pain', 'Testicular atrophy (inguinal)', 'Recurrence'],
+  },
+  {
+    procedure: 'Colonoscopy ± polypectomy',
+    anaesthesia: 'Sedation',
+    alternatives: 'CT colonography; flexible sigmoidoscopy (limited); watchful waiting',
+    generalRisks: ['Anaesthetic complications'],
+    specificRisks: ['Perforation', 'Bleeding post-polypectomy', 'Incomplete examination'],
+  },
+  {
+    procedure: 'ERCP ± sphincterotomy / stone extraction',
+    anaesthesia: 'Sedation',
+    alternatives: 'Laparoscopic bile duct exploration; percutaneous transhepatic cholangiography (PTC)',
+    generalRisks: ['Anaesthetic complications', 'Bleeding requiring transfusion'],
+    specificRisks: ['Pancreatitis', 'Cholangitis', 'Perforation', 'Bleeding', 'Incomplete duct clearance'],
+  },
+  {
+    procedure: 'OGD (upper GI endoscopy)',
+    anaesthesia: 'Sedation',
+    alternatives: 'Barium swallow (limited diagnostic value); capsule endoscopy',
+    generalRisks: ['Anaesthetic complications'],
+    specificRisks: ['Perforation', 'Bleeding post-polypectomy', 'Incomplete examination'],
+  },
+  {
+    procedure: 'Thyroidectomy (total / hemithyroidectomy)',
+    anaesthesia: 'General anaesthesia',
+    alternatives: 'Radioactive iodine therapy; anti-thyroid medication; surveillance',
+    generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Anaesthetic complications'],
+    specificRisks: ['Recurrent laryngeal nerve injury', 'Hypocalcaemia', 'Hypothyroidism'],
+  },
+  {
+    procedure: 'Mastectomy ± sentinel lymph node biopsy',
+    anaesthesia: 'General anaesthesia',
+    alternatives: 'Wide local excision (breast conservation); neoadjuvant chemotherapy then reassess',
+    generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Anaesthetic complications'],
+    specificRisks: ['Lymphoedema', 'Seroma', 'Shoulder stiffness', 'Altered body image'],
+  },
+  {
+    procedure: 'Wide local excision (skin lesion / melanoma)',
+    anaesthesia: 'Local anaesthesia',
+    alternatives: 'Surveillance with repeat biopsy (benign lesions only)',
+    generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection'],
+    specificRisks: ['Hernia at port / incision site', 'Recurrence of condition'],
+  },
+  {
+    procedure: 'Anterior resection (laparoscopic)',
+    anaesthesia: 'General anaesthesia',
+    alternatives: 'Hartmann\'s procedure; palliative stoma alone; neoadjuvant radiotherapy',
+    generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Pulmonary embolism (PE)', 'Anaesthetic complications', 'Conversion to open surgery'],
+    specificRisks: ['Anastomotic leak', 'Temporary stoma', 'Bladder / sexual dysfunction', 'Ileus'],
+  },
+];
+
 function procedureRisks(procedure: string): string[] {
   const p = procedure.toLowerCase();
   for (const [key, risks] of Object.entries(PROCEDURE_RISKS)) {
     if (p.includes(key)) return risks;
   }
   return [];
+}
+
+function printConsentPdf(opts: {
+  patientName: string; age: string; sex: string;
+  procedure: string; anaesthesia: string; alternatives: string;
+  generalRisks: string[]; specificRisks: string[];
+  capacity: boolean; interpreterUsed: boolean;
+  patientQuestions: string; notes: string;
+  clinicianName: string; consentDate: string;
+  patientSig: string; clinicianSig: string;
+}) {
+  const allRisks = [...opts.generalRisks, ...opts.specificRisks];
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Surgical Consent — ${opts.patientName}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #1a1a1a; padding: 28px; }
+  h1 { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+  .subtitle { font-size: 12px; color: #555; margin-bottom: 18px; }
+  .section { margin-bottom: 16px; }
+  .section-title { font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.06em; color: #1e3a5f; border-bottom: 1px solid #c7d2fe; padding-bottom: 3px; margin-bottom: 8px; }
+  .field { margin-bottom: 6px; }
+  .field label { font-weight: bold; }
+  .risks { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+  .risk-chip { background: #eff6ff; border: 1px solid #93c5fd; border-radius: 12px; padding: 2px 9px; font-size: 11px; }
+  .sig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
+  .sig-box { border-top: 1px solid #aaa; padding-top: 6px; }
+  .sig-box label { font-size: 10px; text-transform: uppercase; color: #666; }
+  img.sig { width: 100%; height: 70px; object-fit: contain; border: 1px solid #e2e8f0; background: #fff; margin: 4px 0; }
+  .footer { margin-top: 24px; font-size: 10px; color: #888; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+  .badge { display: inline-block; background: #f0fdf4; border: 1px solid #86efac; border-radius: 4px; padding: 2px 8px; font-size: 11px; color: #166534; font-weight: bold; }
+  @media print { body { padding: 16px; } }
+</style></head><body>
+<h1>Surgical Consent Form</h1>
+<div class="subtitle">Amise Medical Services · ${opts.consentDate}</div>
+
+<div class="section">
+  <div class="section-title">Patient details</div>
+  <div class="field"><label>Name:</label> ${opts.patientName || '—'}</div>
+  <div class="field"><label>Age / Sex:</label> ${[opts.age && `${opts.age}y`, opts.sex].filter(Boolean).join(' · ') || '—'}</div>
+</div>
+
+<div class="section">
+  <div class="section-title">Procedure</div>
+  <div class="field"><label>Operation:</label> ${opts.procedure}</div>
+  <div class="field"><label>Anaesthesia:</label> ${opts.anaesthesia}</div>
+  ${opts.alternatives ? `<div class="field"><label>Alternatives discussed:</label> ${opts.alternatives}</div>` : ''}
+</div>
+
+${allRisks.length > 0 ? `<div class="section">
+  <div class="section-title">Risks discussed</div>
+  <div class="risks">${allRisks.map(r => `<span class="risk-chip">${r}</span>`).join('')}</div>
+</div>` : ''}
+
+<div class="section">
+  <div class="section-title">Capacity and consent</div>
+  <div class="field">${opts.capacity ? '✓ Patient has capacity to consent' : '⚠ Capacity assessment required'}</div>
+  ${opts.interpreterUsed ? '<div class="field">✓ Interpreter used</div>' : ''}
+  ${opts.patientQuestions ? `<div class="field"><label>Patient questions / notes:</label> ${opts.patientQuestions}</div>` : ''}
+  ${opts.notes ? `<div class="field"><label>Additional notes:</label> ${opts.notes}</div>` : ''}
+</div>
+
+<div class="sig-row">
+  <div class="sig-box">
+    <label>Patient signature</label>
+    ${opts.patientSig ? `<img class="sig" src="${opts.patientSig}" alt="patient signature" />` : '<div style="height:70px;border:1px dashed #aaa;margin:4px 0;"></div>'}
+    <div style="font-size:11px;color:#555;margin-top:2px;">${opts.patientName || ''} — ${opts.consentDate}</div>
+  </div>
+  <div class="sig-box">
+    <label>Clinician signature</label>
+    ${opts.clinicianSig ? `<img class="sig" src="${opts.clinicianSig}" alt="clinician signature" />` : '<div style="height:70px;border:1px dashed #aaa;margin:4px 0;"></div>'}
+    <div style="font-size:11px;color:#555;margin-top:2px;">${opts.clinicianName || 'Clinician'} — ${opts.consentDate}</div>
+  </div>
+</div>
+
+<div class="footer">
+  This consent form was completed on ${opts.consentDate} at Amise Medical Services, Saint Lucia.
+  The patient confirms they have been given the opportunity to ask questions and that they understand the procedure, anaesthesia, risks, and alternatives described above.
+</div>
+<script>window.onload = () => { window.print(); }</script>
+</body></html>`;
+
+  const w = window.open('', '_blank', 'width=800,height=900');
+  if (w) { w.document.write(html); w.document.close(); }
 }
 
 export default function SurgicalConsentTab() {
@@ -187,6 +352,37 @@ export default function SurgicalConsentTab() {
         <div style={{ fontWeight: 800, fontSize: 15 }}>Surgical Consent Documentation</div>
         <div style={{ fontSize: 12, color: '#93c5fd', marginTop: 2 }}>
           {patientName || 'Patient'}{age ? `, ${age}y` : ''}{sex && sex !== 'unknown' ? ` · ${sex}` : ''}
+        </div>
+      </div>
+
+      {/* Quick-fill templates */}
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 10, fontWeight: 700, color: '#1e3a5f', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 6 }}>
+          Quick-fill templates
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+          {PROCEDURE_TEMPLATES.map(t => (
+            <button
+              key={t.procedure}
+              type="button"
+              onClick={() => {
+                setProcedure(t.procedure);
+                setAnaesthesia(t.anaesthesia);
+                setAlternatives(t.alternatives);
+                setGeneralRisks(t.generalRisks);
+                setSpecificRisks(t.specificRisks);
+              }}
+              style={{
+                fontSize: 11, padding: '4px 10px', borderRadius: 20, cursor: 'pointer',
+                border: `1px solid ${procedure === t.procedure ? '#1e3a5f' : '#d1d5db'}`,
+                background: procedure === t.procedure ? '#1e3a5f' : '#f8fafc',
+                color: procedure === t.procedure ? '#fff' : '#374151',
+                fontWeight: procedure === t.procedure ? 700 : 400,
+              }}
+            >
+              {t.procedure.split('(')[0].trim()}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -326,9 +522,27 @@ export default function SurgicalConsentTab() {
               <img src={clinicianSig} alt="clinician signature" style={{ width: '100%', height: 60, objectFit: 'contain', border: '1px solid #86efac', borderRadius: 4, background: '#fff' }} />
             </div>
           </div>
-          <button type="button" onClick={() => setSigned(false)} style={{ fontSize: 11, color: '#15803d', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
-            Edit
-          </button>
+          <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+            <button
+              type="button"
+              onClick={() => printConsentPdf({
+                patientName, age, sex,
+                procedure, anaesthesia, alternatives,
+                generalRisks, specificRisks,
+                capacity, interpreterUsed,
+                patientQuestions, notes,
+                clinicianName, consentDate,
+                patientSig, clinicianSig,
+              })}
+              style={{ flex: 1, padding: '8px', borderRadius: 7, border: '1.5px solid #1e3a5f', background: '#fff', color: '#1e3a5f', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+            >
+              🖨 Print / Save PDF
+            </button>
+            <button type="button" onClick={() => setSigned(false)}
+              style={{ padding: '8px 14px', borderRadius: 7, border: '1px solid #d1d5db', background: '#fff', color: '#6b7280', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>
+              Edit
+            </button>
+          </div>
         </div>
       )}
     </div>
