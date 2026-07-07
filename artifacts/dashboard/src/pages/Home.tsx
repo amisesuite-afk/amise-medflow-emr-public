@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useAppContext, Section, TopSection, type EncounterType, type VitalsState } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
@@ -67,6 +67,7 @@ import LetterGeneratorTab from './tabs/LetterGeneratorTab';
 import PatientEducationTab from './tabs/PatientEducationTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
 import CheckInTab from './tabs/CheckInTab';
+import EncounterStartWizard from '@/components/EncounterStartWizard';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
 import FloatingActions from '@/components/FloatingActions';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -197,6 +198,16 @@ export default function HomePage() {
   const [showAiPanel, setShowAiPanel] = useState(false);
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
   const [visitType, setVisitType] = useState<'new' | 'followup'>('new');
+  const [wizardSkipped, setWizardSkipped] = useState(false);
+  const prevPatientIdRef = useRef<string | null>(null);
+
+  // Reset wizard whenever a different patient is loaded
+  useEffect(() => {
+    if (patientId !== prevPatientIdRef.current) {
+      prevPatientIdRef.current = patientId;
+      if (patientId) setWizardSkipped(false);
+    }
+  }, [patientId]);
 
   const userRole = profile?.role ?? 'front_desk';
   const { activePathway, matchedPathways } = usePathway();
@@ -758,6 +769,22 @@ export default function HomePage() {
 
         {/* Critical result alerts — vitals / investigation thresholds */}
         {topSection === 'consultation' && <CriticalResultAlert />}
+
+        {/* No-patient guard */}
+        {topSection === 'consultation' && !patientId && (
+          <div style={{ background: '#fef9c3', border: '1.5px solid #fbbf24', borderRadius: 10, padding: '14px 18px', color: '#92400e', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 20 }}>👤</span>
+            No patient loaded — check in a patient first.
+          </div>
+        )}
+
+        {/* Encounter start wizard — shown once per new patient until CC entered or skipped */}
+        {topSection === 'consultation' && !!patientId && !activeCcKey && !wizardSkipped && (
+          <EncounterStartWizard
+            onComplete={() => setWizardSkipped(true)}
+            onSkip={() => setWizardSkipped(true)}
+          />
+        )}
 
         {/* Encounter context picker — set venue + type before CC entry */}
         {topSection === 'consultation' && <EncounterContextPicker />}

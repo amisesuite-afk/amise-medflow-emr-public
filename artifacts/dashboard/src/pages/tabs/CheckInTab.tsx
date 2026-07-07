@@ -560,6 +560,12 @@ export default function CheckInTab() {
             <div style={{ flex: 1, height: 2, background: 'linear-gradient(270deg, #0d9488, transparent)' }} />
           </div>
 
+          {/* Primary CTA — go straight to consultation */}
+          <button type="button" onClick={() => setTopSection('consultation')}
+            style={{ width: '100%', padding: '14px 20px', borderRadius: 10, border: 'none', background: '#0d9488', color: '#fff', fontWeight: 800, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            Start Consultation →
+          </button>
+
           {/* Actions */}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button type="button" onClick={() => setTopSection('doc_scan')}
