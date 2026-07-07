@@ -83,20 +83,23 @@ function venueForState(type: EncounterType, mode: EncounterMode): string {
   }
 }
 
-// Map encounter type to a human-readable description for the summary line
 const TYPE_DESC: Record<EncounterType, string> = {
   quick_consult:    'Quick Review',
   surgical_consult: 'Surgical Consult',
   office_procedure: 'Office Procedure',
-  endoscopy:        'Endoscopy Encounter',
+  endoscopy:        'Endoscopy',
   major_emergency:  'Major Emergency',
 };
 
 export default function EncounterContextPicker() {
   const { encounterType, setEncounterType, encounterMode, setEncounterMode, setCurrentSite, setTopSection } = useAppContext();
   const [expandedVenue, setExpandedVenue] = useState<string | null>(null);
+  // Once an explicit choice is made, collapse to a compact summary tag
+  const [chosen, setChosen] = useState(false);
 
   const currentVenueKey = venueForState(encounterType, encounterMode);
+  const activeVenue = VENUES.find(v => v.key === currentVenueKey)!;
+  const expandedVenueObj = expandedVenue ? VENUES.find(v => v.key === expandedVenue) : null;
 
   function selectSubtype(sub: SubType) {
     setEncounterType(sub.type);
@@ -104,14 +107,45 @@ export default function EncounterContextPicker() {
     if (sub.site) setCurrentSite(sub.site);
     if (sub.topSec) setTopSection(sub.topSec as Parameters<typeof setTopSection>[0]);
     setExpandedVenue(null);
+    setChosen(true);
   }
 
-  const activeVenue = VENUES.find(v => v.key === currentVenueKey)!;
-  const expandedVenueObj = expandedVenue ? VENUES.find(v => v.key === expandedVenue) : null;
+  // ── Compact mode — shown after explicit selection ───────────────────────────
+  if (chosen) {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '5px 0', marginBottom: 4,
+      }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 5,
+          padding: '4px 10px', borderRadius: 6,
+          background: `${activeVenue.accentColor}14`,
+          border: `1.5px solid ${activeVenue.accentColor}40`,
+          fontSize: 12, fontWeight: 700, color: activeVenue.accentColor,
+        }}>
+          <span style={{ fontSize: 13 }}>{activeVenue.icon}</span>
+          {activeVenue.label} · {TYPE_DESC[encounterType]}
+        </span>
+        <button
+          type="button"
+          onClick={() => setChosen(false)}
+          style={{
+            padding: '3px 9px', borderRadius: 5, border: '1px solid #e2e8f0',
+            background: '#fff', fontSize: 11, fontWeight: 600,
+            color: '#6b7280', cursor: 'pointer',
+          }}
+        >
+          Change
+        </button>
+      </div>
+    );
+  }
 
+  // ── Full picker ─────────────────────────────────────────────────────────────
   return (
     <div style={{ marginBottom: 8 }}>
-      {/* ── Venue strip ── */}
+      {/* Venue strip */}
       <div style={{
         display: 'flex', gap: 6, padding: '6px 0',
         borderBottom: expandedVenueObj ? 'none' : '1px solid #e2e8f0',
@@ -159,14 +193,9 @@ export default function EncounterContextPicker() {
             </button>
           );
         })}
-
-        {/* Current context summary on the right */}
-        <span style={{ marginLeft: 'auto', fontSize: 11, color: '#9ca3af' }}>
-          Tap a venue to change encounter type
-        </span>
       </div>
 
-      {/* ── Sub-type accordion — only shown for the expanded venue ── */}
+      {/* Sub-type accordion */}
       {expandedVenueObj && (
         <div style={{
           padding: '12px 14px', marginTop: 0,

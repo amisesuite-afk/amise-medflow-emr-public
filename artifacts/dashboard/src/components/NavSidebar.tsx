@@ -1,17 +1,18 @@
 import {
   LayoutDashboard, Users, ClipboardList, Stethoscope,
   Scissors, CalendarDays, Receipt, BarChart2, Settings,
-  PanelLeftClose, PanelLeftOpen, AlertTriangle, FileText,
+  PanelLeftClose, PanelLeftOpen, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
   ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, Inbox,
   Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig, Check,
   MessageSquare, Tags, ClipboardMinus, ScrollText, MailOpen, GraduationCap, ShieldCheck,
-  Calculator, Droplets, Bandage, UserCheck,
+  Calculator, Droplets, Bandage, UserCheck, ArrowLeftRight,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection, EncounterType } from '@/context/AppContext';
 import { hasRole } from '@/lib/roles';
+import { useState } from 'react';
 
 export type { TopSection };
 
@@ -51,8 +52,7 @@ interface ClinicalPhase {
   items: ClinicalSubItem[];
 }
 
-// Consultation sequence mirrors Dr Kabiye's standard surgical consultation template.
-// Sequence: CC → HPI → PMH → Surgical → Meds → Allergies → Family Hx → Social Hx → ROS → Exam → Investigations → Assessment → Plan
+// Consultation sub-nav — Dr Kabiye's standard surgical consultation sequence
 const CLINICAL_PHASES: ClinicalPhase[] = [
   {
     key: 'history',
@@ -89,10 +89,10 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     label: 'Investigations',
     minRole: 'nurse',
     items: [
-      { id: 'investigations', icon: FlaskConical, label: 'Bloods / Labs',       minRole: 'nurse' },
-      { id: 'blood_gas',     icon: Activity,     label: 'Blood Gas / ABG',    minRole: 'nurse' },
-      { id: 'radiology',     icon: ScanLine,     label: 'Imaging',            minRole: 'nurse' },
-      { id: 'attachments',   icon: Paperclip,    label: 'Attachments',        minRole: 'nurse' },
+      { id: 'investigations', icon: FlaskConical, label: 'Bloods / Labs',    minRole: 'nurse' },
+      { id: 'blood_gas',      icon: Activity,     label: 'Blood Gas / ABG',  minRole: 'nurse' },
+      { id: 'radiology',      icon: ScanLine,     label: 'Imaging',          minRole: 'nurse' },
+      { id: 'attachments',    icon: Paperclip,    label: 'Attachments',      minRole: 'nurse' },
     ],
   },
   {
@@ -111,9 +111,9 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     items: [
       { id: 'plan',                icon: FileEdit,      label: 'Plan',             minRole: 'doctor' },
       { id: 'prescriptions',       icon: FileSignature, label: 'Prescriptions',    minRole: 'doctor' },
-      { id: 'dosing',              icon: Calculator,    label: 'Dose Calculator',      minRole: 'nurse' },
-      { id: 'fluid_nutrition',     icon: Droplets,      label: 'Fluid & Nutrition',    minRole: 'nurse' },
-      { id: 'referring_providers', icon: Contact,       label: 'Referrals',            minRole: 'doctor' },
+      { id: 'dosing',              icon: Calculator,    label: 'Dose Calculator',  minRole: 'nurse' },
+      { id: 'fluid_nutrition',     icon: Droplets,      label: 'Fluid & Nutrition',minRole: 'nurse' },
+      { id: 'referring_providers', icon: Contact,       label: 'Referrals',        minRole: 'doctor' },
     ],
   },
   {
@@ -121,16 +121,15 @@ const CLINICAL_PHASES: ClinicalPhase[] = [
     label: 'Documents',
     minRole: 'nurse',
     items: [
-      { id: 'periop',            icon: ShieldAlert,    label: 'Perioperative Safety', minRole: 'nurse' },
-      { id: 'who_checklist',    icon: ShieldCheck,    label: 'WHO Safety Checklist', minRole: 'nurse' },
-      { id: 'consent',          icon: ScrollText,     label: 'Surgical Consent',     minRole: 'doctor' },
-      { id: 'letters',          icon: MailOpen,       label: 'Letters',              minRole: 'doctor' },
-      { id: 'patient_education', icon: GraduationCap, label: 'Patient Education',    minRole: 'doctor' },
+      { id: 'periop',             icon: ShieldAlert,   label: 'Perioperative Safety', minRole: 'nurse' },
+      { id: 'who_checklist',      icon: ShieldCheck,   label: 'WHO Safety Checklist', minRole: 'nurse' },
+      { id: 'consent',            icon: ScrollText,    label: 'Surgical Consent',     minRole: 'doctor' },
+      { id: 'letters',            icon: MailOpen,      label: 'Letters',              minRole: 'doctor' },
+      { id: 'patient_education',  icon: GraduationCap, label: 'Patient Education',    minRole: 'doctor' },
     ],
   },
 ];
 
-// Phases shown for each encounter type. surgical_consult = full set (default).
 const ENCOUNTER_PHASE_VISIBILITY: Record<EncounterType, ReadonlySet<string>> = {
   quick_consult:    new Set(['history', 'examination', 'assessment', 'plan']),
   endoscopy:        new Set(['history', 'examination', 'workup', 'assessment', 'plan', 'documents']),
@@ -140,7 +139,7 @@ const ENCOUNTER_PHASE_VISIBILITY: Record<EncounterType, ReadonlySet<string>> = {
 };
 
 const BILLING_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string }[] = [
-  { id: 'billing',   icon: Receipt,   label: 'Billing' },
+  { id: 'billing',   icon: Receipt,    label: 'Billing' },
   { id: 'documents', icon: FolderOpen, label: 'Documents' },
 ];
 
@@ -152,34 +151,39 @@ interface TopItem {
   group: string;
 }
 
-const NAV_ITEMS: TopItem[] = [
-  // ── Front Desk ──
-  { id: 'checkin',        icon: UserCheck,       label: 'Check-In',         roles: ['front_desk', 'admin'],                    group: 'Front Desk' },
-  { id: 'doc_scan',       icon: ScanLine,        label: 'Scan Document',    roles: ['front_desk', 'admin'],                    group: 'Front Desk' },
-  { id: 'patients',       icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
-  { id: 'dashboard',      icon: LayoutDashboard, label: 'Dashboard',        roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
-  { id: 'booking_inbox',  icon: Inbox,           label: 'Booking Inbox',    roles: ['front_desk', 'nurse', 'admin'],           group: 'Front Desk' },
-  { id: 'scheduling',     icon: CalendarDays,    label: 'Scheduling',       roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Front Desk' },
+// ── Doctor / Nurse navigation — clinical workflow order ───────────────────────
+const DR_NAV_ITEMS: TopItem[] = [
+  // Clinical
+  { id: 'intake',          icon: ClipboardList,   label: 'Intake',          roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
+  { id: 'consultation',    icon: Stethoscope,     label: 'Consultation',    roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
+  { id: 'procedures',      icon: Scissors,        label: 'Procedures',      roles: ['doctor', 'admin'],          group: 'Clinical' },
+  { id: 'trauma',          icon: Zap,             label: 'Trauma',          roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
+  // Results & Summary
+  { id: 'results_inbox',   icon: ClipboardMinus,  label: 'Results Inbox',   roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
+  { id: 'finaldoc',        icon: FileCheck2,      label: 'Summary',         roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
+  { id: 'visit_lifecycle', icon: HeartPulse,      label: 'Visits',          roles: ['doctor', 'admin'],          group: 'Results' },
+  // Reference
+  { id: 'analytics',       icon: BarChart2,       label: 'Analytics',       roles: ['doctor', 'admin'],          group: 'Reference' },
+  { id: 'quality',         icon: Activity,        label: 'QI / M&M',        roles: ['doctor', 'admin'],          group: 'Reference' },
+  { id: 'vademecum',       icon: BookOpen,        label: 'Disease Dict.',   roles: ['nurse', 'doctor', 'admin'], group: 'Reference' },
+  { id: 'patients',        icon: Users,           label: 'Patient List',    roles: ['doctor', 'admin'],          group: 'Reference' },
+  { id: 'settings',        icon: Settings,        label: 'Settings',        roles: ['admin'],                    group: 'Reference' },
+];
 
-  // ── Pre-Visit ──
-  { id: 'intake',         icon: ClipboardList,   label: 'Intake',         roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Pre-Visit' },
-
-  // ── Clinical ──
-  { id: 'consultation',   icon: Stethoscope,     label: 'Consultation',   roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Clinical' },
-  { id: 'procedures',     icon: Scissors,        label: 'Procedures',     roles: ['doctor', 'admin'],                        group: 'Clinical' },
-  { id: 'trauma',         icon: Zap,             label: 'Trauma',         roles: ['nurse', 'doctor', 'admin'],               group: 'Clinical' },
-
-  // ── Post-Visit ──
-  { id: 'results_inbox',   icon: ClipboardMinus, label: 'Results Inbox',  roles: ['nurse', 'doctor', 'admin'],               group: 'Post-Visit' },
-  { id: 'visit_lifecycle', icon: HeartPulse,     label: 'Visits',         roles: ['front_desk', 'nurse', 'doctor', 'admin'], group: 'Post-Visit' },
-  { id: 'finaldoc',       icon: FileCheck2,      label: 'Summary',        roles: ['nurse', 'doctor', 'admin'],               group: 'Post-Visit' },
-  { id: 'billing',        icon: Receipt,         label: 'Billing',        roles: ['front_desk', 'doctor', 'admin'],          group: 'Post-Visit' },
-
-  // ── Admin ──
-  { id: 'analytics',      icon: BarChart2,       label: 'Analytics',      roles: ['doctor', 'admin'],                        group: 'Admin' },
-  { id: 'quality',        icon: Activity,        label: 'QI / M&M',       roles: ['doctor', 'admin'],                        group: 'Admin' },
-  { id: 'vademecum',      icon: BookOpen,        label: 'Disease Dict.',  roles: ['nurse', 'doctor', 'admin'],               group: 'Admin' },
-  { id: 'settings',       icon: Settings,        label: 'Settings',       roles: ['admin'],                                  group: 'Admin' },
+// ── Front Desk / Admin navigation — administrative workflow order ─────────────
+const FD_NAV_ITEMS: TopItem[] = [
+  // Check-In
+  { id: 'checkin',         icon: UserCheck,       label: 'Check-In',         roles: ['front_desk', 'admin'], group: 'Check-In' },
+  { id: 'doc_scan',        icon: ScanLine,        label: 'Scan Document',    roles: ['front_desk', 'admin'], group: 'Check-In' },
+  { id: 'booking_inbox',   icon: Inbox,           label: 'Booking Inbox',    roles: ['front_desk', 'admin'], group: 'Check-In' },
+  { id: 'intake',          icon: ClipboardList,   label: 'Intake',           roles: ['front_desk', 'admin'], group: 'Check-In' },
+  // Administrative
+  { id: 'scheduling',      icon: CalendarDays,    label: 'Scheduling',       roles: ['front_desk', 'admin'], group: 'Admin' },
+  { id: 'patients',        icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'admin'], group: 'Admin' },
+  { id: 'billing',         icon: Receipt,         label: 'Billing',          roles: ['front_desk', 'admin'], group: 'Admin' },
+  { id: 'dashboard',       icon: LayoutDashboard, label: 'Dashboard',        roles: ['front_desk', 'admin'], group: 'Admin' },
+  { id: 'analytics',       icon: BarChart2,       label: 'Analytics',        roles: ['admin'],               group: 'Admin' },
+  { id: 'settings',        icon: Settings,        label: 'Settings',         roles: ['admin'],               group: 'Admin' },
 ];
 
 export default function NavSidebar({
@@ -195,15 +199,30 @@ export default function NavSidebar({
   sectionCompletion = {},
   suggestedBlocks = [],
 }: NavSidebarProps) {
+  // Admin users can toggle between clinical and admin views
+  const [adminView, setAdminView] = useState<'clinical' | 'admin'>('clinical');
+
+  const isFrontDesk = userRole === 'front_desk';
+  const isAdmin = userRole === 'admin';
+
+  // Choose nav list based on role / admin view toggle
+  const navList = isFrontDesk
+    ? FD_NAV_ITEMS
+    : isAdmin && adminView === 'admin'
+      ? FD_NAV_ITEMS
+      : DR_NAV_ITEMS;
+
+  const visibleItems = navList.filter(item => item.roles.includes(userRole));
+
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
 
   function handleTop(item: TopItem) {
     onTopSection(item.id);
-    if (item.id === 'intake')          { onSection('intake'); }
-    if (item.id === 'procedures')      { onSection('procedures'); }
-    if (item.id === 'consultation')    { onSection('pmh'); }
-    if (item.id === 'billing')         { onSection('billing'); }
+    if (item.id === 'intake')       onSection('intake');
+    if (item.id === 'procedures')   onSection('procedures');
+    if (item.id === 'consultation') onSection('hpi');
+    if (item.id === 'billing')      onSection('billing');
   }
 
   function subActive(id: Section) {
@@ -212,8 +231,6 @@ export default function NavSidebar({
   function billingSubActive(id: Section) {
     return topSection === 'billing' && activeSection === id;
   }
-
-  const visibleItems = NAV_ITEMS.filter(item => item.roles.includes(userRole));
 
   const allowedPhases = ENCOUNTER_PHASE_VISIBILITY[encounterType];
   const visiblePhases = CLINICAL_PHASES
@@ -238,6 +255,33 @@ export default function NavSidebar({
   return (
     <nav className={`nav-sidebar${collapsed ? ' nav-sidebar--collapsed' : ''}`} aria-label="Navigation">
       <div className="nav-sidebar__body">
+
+        {/* Admin view-mode toggle */}
+        {isAdmin && !collapsed && (
+          <div style={{
+            display: 'flex', gap: 4, padding: '10px 12px 4px',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            marginBottom: 4,
+          }}>
+            {(['clinical', 'admin'] as const).map(mode => (
+              <button
+                key={mode}
+                onClick={() => setAdminView(mode)}
+                style={{
+                  flex: 1, padding: '5px 0', borderRadius: 6, border: 'none',
+                  fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+                  textTransform: 'uppercase', cursor: 'pointer',
+                  background: adminView === mode ? '#0d9488' : 'rgba(255,255,255,0.07)',
+                  color: adminView === mode ? '#fff' : 'rgba(255,255,255,0.45)',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {mode === 'clinical' ? '🩺 Dr View' : '🖥️ Admin'}
+              </button>
+            ))}
+          </div>
+        )}
+
         {visibleItems.map(item => {
           const isActive = topSection === item.id;
           const Icon = item.icon;
@@ -250,7 +294,7 @@ export default function NavSidebar({
           if (item.group !== lastGroup) lastGroup = item.group;
 
           return (
-            <div key={item.id}>
+            <div key={`${item.id}-${item.group}`}>
               {showGroupHeader && (
                 <div className="nsb-group-header">{item.group}</div>
               )}
@@ -290,7 +334,7 @@ export default function NavSidebar({
                 )}
               </button>
 
-              {/* ── Phased consultation sub-nav ── */}
+              {/* Phased consultation sub-nav */}
               {showConsultSub && (
                 <div className="nsb-sub nsb-phased">
                   {visiblePhases.map((phase, pi) => {
