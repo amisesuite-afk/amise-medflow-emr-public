@@ -81,6 +81,25 @@ export const DOT_PHRASES: DotPhrase[] = [
   { trigger: 'opnote', label: 'Operative note template',
     text: 'Procedure: |procedure name|\nSurgeon: Dr Dawit Daniel Kabiye\nAssistant: |/|\nAnaesthesia: General / Regional / Local\nPosition: Supine / Lloyd-Davies / Lateral\nFindings: |/|\nProcedure: |step-by-step|\nSpecimen: |sent for histopathology|\nEstimated blood loss: |mL|\nComplications: None / |/|\nClosure: |/|\nDrains: None / |/|\nPost-op plan: |/|' },
 
+  // ── Procedure-specific operative notes ───────────────────────────────────────
+  { trigger: 'lapchole', label: 'Operative note: laparoscopic cholecystectomy',
+    text: 'Procedure: Laparoscopic cholecystectomy\nSurgeon: Dr Dawit Daniel Kabiye\nAssistant: |/|\nAnaesthesia: General endotracheal\nPosition: Supine, reverse Trendelenburg, left lateral tilt\nAccess: Hassan technique / Veress needle at umbilicus. 4-port technique — 10 mm umbilical, 5 mm epigastric, 5 mm RUQ working, 5 mm lateral.\nFindings: |Gallbladder distended/contracted/inflamed/gangrenous|. |Adhesions: none/omental/duodenal|. Common bile duct: |not dilated / dilated to X mm|.\nProcedure: Critical view of safety (CVS) confirmed. Cystic duct and cystic artery individually clipped × 2 proximally and × 1 distally and divided. Gallbladder dissected off liver bed with diathermy. Haemostasis confirmed. On-table cholangiogram: |not performed / performed — see report|. Gallbladder delivered in retrieval bag via umbilical port. Liver bed dry. Port sites closed: fascia at 10 mm port closed with 0-Vicryl. Skin closed with subcuticular sutures.\nSpecimen: Gallbladder sent for histopathology\nEstimated blood loss: <50 mL\nSwab count: Correct ×2\nComplications: None\nPost-op plan: Regular diet when tolerating. Discharge day 0–1. Follow-up 2 weeks.' },
+
+  { trigger: 'appen', label: 'Operative note: laparoscopic appendicectomy',
+    text: 'Procedure: Laparoscopic appendicectomy\nSurgeon: Dr Dawit Daniel Kabiye\nAssistant: |/|\nAnaesthesia: General endotracheal\nPosition: Supine, left lateral tilt, Trendelenburg\nAccess: Hassan technique at umbilicus. 3-port technique — 10 mm umbilical, 5 mm suprapubic, 5 mm left iliac fossa.\nFindings: Appendix: |acutely inflamed / perforated / gangrenous / normal|. |Faecolith: present/absent|. Free fluid: |none / <50 mL serous / purulent — washed out|. Peritonitis: |localised / generalised|. Other: |/|.\nProcedure: Appendix identified and elevated. Mesoappendix divided with LigaSure / diathermy. Base of appendix secured with Endoloops × 2. Appendix divided and delivered in retrieval bag via umbilical port. Appendix stump: |inverted / not inverted|. Peritoneal lavage with |X| L warm saline. Haemostasis confirmed. Ports closed: fascia at 10 mm site closed with 0-Vicryl. Skin subcuticular.\nSpecimen: Appendix sent for histopathology\nEstimated blood loss: <50 mL\nSwab count: Correct ×2\nComplications: None\nPost-op plan: IV antibiotics × |24 h / 5 days|. Diet as tolerated. Discharge day |1–2|. Follow-up 2 weeks.' },
+
+  { trigger: 'hernia', label: 'Operative note: laparoscopic TAPP hernia repair',
+    text: 'Procedure: Laparoscopic totally extra-peritoneal (TEP) / transabdominal preperitoneal (TAPP) inguinal hernia repair — |right / left / bilateral|\nSurgeon: Dr Dawit Daniel Kabiye\nAssistant: |/|\nAnaesthesia: General endotracheal\nPosition: Supine, slight Trendelenburg\nAccess: |TEP: balloon dissector via infraumbilical incision. 3-port technique — 10 mm infraumbilical, 5 mm × 2 midline. / TAPP: standard 3-port — 10 mm umbilical, 5 mm bilateral.\nFindings: |Direct / indirect| hernia, |right / left|. Sac: |reducible / irreducible|. Contents: |omentum / bowel / empty|. Femoral ring: |normal / patent|.\nProcedure: Preperitoneal space developed. Hernia sac reduced. Cooper\'s ligament, iliopubic tract, and cord structures clearly identified. Nerve identification: genitofemoral and lateral femoral cutaneous nerves identified and preserved. Flat mesh (|15 × 10 cm|) positioned to cover direct, indirect, and femoral spaces. Mesh fixed with tacks / non-fixation. Peritoneum closed with running 2/0 PDS. Haemostasis confirmed.\nEstimated blood loss: <20 mL\nSwab count: Correct ×2\nComplications: None\nPost-op plan: Mobilise day 0. Light activity 2 weeks. Heavy lifting restricted 6 weeks. Follow-up 2–4 weeks.' },
+
+  { trigger: 'thyroid', label: 'Operative note: thyroidectomy',
+    text: 'Procedure: |Hemithyroidectomy / Total thyroidectomy| — |right / left|\nSurgeon: Dr Dawit Daniel Kabiye\nAssistant: |/|\nAnaesthesia: General endotracheal\nPosition: Supine, neck extended, shoulder roll\nAccess: Kocher collar incision 2 cm above sternal notch.\nFindings: |Thyroid: left/right lobe — nodule X cm, consistency, adherence|. RLN identified bilaterally using nerve monitoring. Parathyroid glands: |identified and preserved / autotransplanted|.\nProcedure: Subplatysmal flaps raised. Strap muscles divided in midline. Thyroid lobe mobilised. Superior thyroid artery and vein ligated and divided near capsule. RLN identified in the tracheo-oesophageal groove and traced to laryngeal entry. Inferior thyroid artery ligated medially. Berry\'s ligament divided. Specimen delivered. Haemostasis. Strap muscles approximated. Drain placed. Wound closed in layers.\nSpecimen: Thyroid specimen sent for histopathology / frozen section.\nEstimated blood loss: |<50 / X| mL\nComplications: None\nPost-op plan: Check Ca²⁺ at 6 h and 24 h. Thyroxine supplementation: |/|. Discharge day 1–2. Follow-up 2 weeks + histology review.' },
+
+  { trigger: 'endoscopy', label: 'OGD report template',
+    text: 'Procedure: Oesophagogastroduodenoscopy (OGD)\nEndoscopist: Dr Dawit Daniel Kabiye\nScope: |Olympus GIF-H190 / /|\nSedation: |IV midazolam X mg + fentanyl X mcg / unsedated|\nIndication: |/|\nOesophagus: |Normal mucosa. No varices, stricture, or Barrett\'s change. / |/||\nGastro-oesophageal junction: Z-line at |X| cm. |Normal / hiatus hernia X cm|.\nStomach: |Normal rugal folds. No ulceration or mass. Antrum: normal. Pylorus: normal. / |/||\nDuodenum: |D1 and D2 normal. No ulceration. / |/||\nBiopsies: |Antrum ×2 for H. pylori / corpus ×2 / |site| ×2 — sent for histopathology / none taken|.\nTherapy: |None / Haemostasis: / Dilation: / Polypectomy: /|\nConclusion: |/|\nPlan: |/|' },
+
+  { trigger: 'colon', label: 'Colonoscopy report template',
+    text: 'Procedure: Colonoscopy\nEndoscopist: Dr Dawit Daniel Kabiye\nScope: |Olympus CF-H190L / /|\nSedation: |IV midazolam X mg + fentanyl X mcg|\nBowel prep: |Adequate / Inadequate — Boston Bowel Prep Score: R X / T X / L X (total /9)|\nIndication: |/|\nCaecum reached: |Yes — confirmed by ileocaecal valve and appendix orifice / No — reached |X||\nWithdrawal time: |X| min\nFindings:\n  Caecum/ascending colon: |Normal / |/||\n  Transverse colon: |Normal / |/||\n  Descending colon: |Normal / |/||\n  Sigmoid: |Normal / diverticulosis — uncomplicated / |/||\n  Rectum: |Normal / haemorrhoids — |grade| / |/||\nPolyps: |None / X polyp(s) found — location, size, morphology (Paris |/|), removed by |cold snare / hot snare / biopsy forceps / EMR|, retrieved.\nBiopsies: |None / Site ×2|\nConclusion: |/|\nSurveillance plan: |Per BSG 2019 guidelines — low risk: 5 yr / intermediate risk: 3 yr / high risk: 1 yr / no surveillance / cancer pathway|' },
+
   // ── Common phrases ────────────────────────────────────────────────────────────
   { trigger: 'rwp',   label: 'Results will be reviewed',
     text: 'Results will be reviewed and the patient will be contacted accordingly.' },
@@ -100,14 +119,14 @@ export function matchDotPhrases(trigger: string): DotPhrase[] {
 
 // Differential ID → relevant dot-phrase triggers in order of clinical usefulness
 const DX_PHRASE_MAP: Record<string, string[]> = {
-  acute_cholecystitis:    ['hpiercp', 'acholecystitis', 'abdsurg', 'planop', 'opnote'],
-  acute_cholangitis:      ['hpiercp', 'abdsurg', 'planop', 'opnote'],
+  acute_cholecystitis:    ['hpiercp', 'acholecystitis', 'abdsurg', 'planop', 'lapchole'],
+  acute_cholangitis:      ['hpiercp', 'abdsurg', 'planop', 'lapchole'],
   cbd_obstruction:        ['hpiercp', 'abdsurg', 'planop'],
   gallstone_pancreatitis: ['hpiercp', 'abdsurg', 'planop'],
-  acute_appendicitis:     ['hpiabd', 'aappendix', 'abdsurg', 'planop', 'opnote'],
+  acute_appendicitis:     ['hpiabd', 'aappendix', 'abdsurg', 'planop', 'appen'],
   diverticulitis:         ['hpiabd', 'abdsurg', 'plan', 'planop'],
-  hernia_reducible:       ['hpihernia', 'plan', 'planop', 'opnote'],
-  hernia_strangulated:    ['hpihernia', 'planop', 'opnote'],
+  hernia_reducible:       ['hpihernia', 'plan', 'planop', 'hernia'],
+  hernia_strangulated:    ['hpihernia', 'planop', 'hernia'],
   breast_cancer:          ['hpibr', 'plan', 'planop'],
   fibroadenoma:           ['hpibr', 'plan'],
   upper_gi_bleed:         ['hpiabd', 'abdnml', 'plan'],
