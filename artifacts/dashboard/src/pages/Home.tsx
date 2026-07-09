@@ -66,7 +66,7 @@ import ResultsInboxTab from './tabs/ResultsInboxTab';
 import LetterGeneratorTab from './tabs/LetterGeneratorTab';
 import PatientEducationTab from './tabs/PatientEducationTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
-import CheckInTab from './tabs/CheckInTab';
+import CheckInTab, { VISIT_TYPES } from './tabs/CheckInTab';
 import EncounterStartWizard from '@/components/EncounterStartWizard';
 import VisitTypeOpeningPanel from '@/components/VisitTypeOpeningPanel';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
@@ -83,6 +83,125 @@ import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import { getMatrix } from '@/lib/cc-matrices';
 
 const API_ORIGIN = getApiOrigin();
+
+// Tabs shown and their display labels, ordered by clinical priority, per visit type.
+// Narrower lists = less noise; renamed labels = more signal.
+const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
+  follow_up: [
+    { id: 'hpi',               label: 'Interval Hx'  },
+    { id: 'examination',       label: 'Exam'          },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'prescriptions',     label: 'RX'            },
+    { id: 'progress',          label: 'Notes'         },
+    { id: 'monitoring',        label: 'Monitor'       },
+    { id: 'tasks',             label: 'Tasks'         },
+    { id: 'referring_providers', label: 'Referrals'  },
+  ],
+  post_op: [
+    { id: 'wounds',            label: 'Wound'         },
+    { id: 'hpi',               label: 'POD Hx'        },
+    { id: 'examination',       label: 'Exam'          },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'prescriptions',     label: 'RX'            },
+    { id: 'progress',          label: 'Notes'         },
+    { id: 'monitoring',        label: 'Vitals'        },
+    { id: 'tasks',             label: 'Tasks'         },
+  ],
+  ercp: [
+    { id: 'hpi',               label: 'Indication'    },
+    { id: 'pmh',               label: 'PMH'           },
+    { id: 'medications',       label: 'Meds'          },
+    { id: 'allergies',         label: 'Allergies'     },
+    { id: 'investigations',    label: 'Labs'          },
+    { id: 'radiology',         label: 'Imaging'       },
+    { id: 'attachments',       label: 'Reports'       },
+    { id: 'procedures',        label: 'ERCP'          },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'progress',          label: 'Notes'         },
+  ],
+  endoscopy_ogd: [
+    { id: 'hpi',               label: 'Indication'    },
+    { id: 'pmh',               label: 'PMH'           },
+    { id: 'medications',       label: 'Meds'          },
+    { id: 'allergies',         label: 'Allergies'     },
+    { id: 'investigations',    label: 'Labs'          },
+    { id: 'attachments',       label: 'Reports'       },
+    { id: 'procedures',        label: 'OGD'           },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'progress',          label: 'Notes'         },
+  ],
+  endoscopy_col: [
+    { id: 'hpi',               label: 'Indication'    },
+    { id: 'pmh',               label: 'PMH'           },
+    { id: 'medications',       label: 'Meds'          },
+    { id: 'allergies',         label: 'Allergies'     },
+    { id: 'investigations',    label: 'Labs'          },
+    { id: 'attachments',       label: 'Reports'       },
+    { id: 'procedures',        label: 'Colonoscopy'   },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'progress',          label: 'Notes'         },
+  ],
+  breast: [
+    { id: 'hpi',               label: 'Breast Hx'    },
+    { id: 'pmh',               label: 'PMH'           },
+    { id: 'examination',       label: 'CBE'           },
+    { id: 'investigations',    label: 'Imaging'       },
+    { id: 'attachments',       label: 'Reports'       },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'referring_providers', label: 'Referrals'  },
+    { id: 'tasks',             label: 'Tasks'         },
+  ],
+  telephone: [
+    { id: 'progress',          label: 'Call Record'   },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'prescriptions',     label: 'RX'            },
+    { id: 'tasks',             label: 'Follow-up'     },
+  ],
+  diabetic_foot: [
+    { id: 'wounds',            label: 'Wound'         },
+    { id: 'hpi',               label: 'Foot Hx'       },
+    { id: 'examination',       label: 'Exam'          },
+    { id: 'investigations',    label: 'Labs'          },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'prescriptions',     label: 'RX'            },
+    { id: 'referring_providers', label: 'Referrals'  },
+    { id: 'progress',          label: 'Notes'         },
+    { id: 'tasks',             label: 'Tasks'         },
+  ],
+  urgent: [
+    { id: 'triage',            label: 'Triage'        },
+    { id: 'hpi',               label: 'Presenting Hx' },
+    { id: 'pmh',               label: 'PMH'           },
+    { id: 'medications',       label: 'Meds'          },
+    { id: 'allergies',         label: 'Allergies'     },
+    { id: 'examination',       label: 'Exam'          },
+    { id: 'investigations',    label: 'Labs'          },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'progress',          label: 'Notes'         },
+  ],
+};
+
+// Where to land the cursor the instant the visit type panel completes
+const VISIT_TYPE_START: Partial<Record<string, Section>> = {
+  follow_up:      'hpi',
+  post_op:        'wounds',
+  ercp:           'hpi',
+  endoscopy_ogd:  'hpi',
+  endoscopy_col:  'hpi',
+  breast:         'examination',
+  telephone:      'progress',
+  diabetic_foot:  'wounds',
+  urgent:         'triage',
+};
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
@@ -267,8 +386,29 @@ export default function HomePage() {
     progress: '📝', monitoring: '📊', tasks: '✓',
   };
 
-  /* ── Consultation tab list (role-aware + CC matrix or encounter-type filtered) ── */
+  /* ── Consultation tab list (role-aware + CC matrix or visit-type / encounter-type filtered) ── */
   const consultTabs = useMemo<{ id: Section; label: string }[]>(() => {
+    // Visit-type-specific tabs: narrowed list, visit-aware labels, clinically ordered.
+    // Only bypassed when a CC matrix is active (matrix takes precedence).
+    if (ctxVisitType && ctxVisitType !== 'new_consult' && !activeCcKey) {
+      const vtTabs = VISIT_TYPE_TABS[ctxVisitType];
+      if (vtTabs) {
+        const doctorOnly = new Set<Section>(['assessment','plan','procedures','prescriptions','dosing','fluid_nutrition','referring_providers','encounter_history']);
+        // examination + wounds are allowed for doctors on visit types that require clinical assessment
+        const doctorExamTypes = new Set(['breast','diabetic_foot','follow_up','post_op','urgent']);
+        const nurseOnly = new Set<Section>(['investigations','blood_gas','radiology','attachments']);
+        return vtTabs.filter(t => {
+          if (doctorOnly.has(t.id)) return hasRole(userRole, 'doctor');
+          if (t.id === 'examination' || t.id === 'wounds') {
+            return hasRole(userRole, 'nurse') || (hasRole(userRole, 'doctor') && doctorExamTypes.has(ctxVisitType));
+          }
+          if (nurseOnly.has(t.id)) return hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor');
+          return true;
+        });
+      }
+    }
+
+    // Default: CC matrix or encounter-type bucket
     const matrix  = activeCcKey ? getMatrix(activeCcKey) : null;
     const allowed = matrix
       ? new Set<Section>(matrix.sections)
@@ -306,7 +446,7 @@ export default function HomePage() {
       { id: 'tasks', label: 'Tasks' },
     ];
     return all.filter(t => allowed.has(t.id));
-  }, [userRole, encounterType, activeCcKey, ENCOUNTER_TAB_SETS]);
+  }, [userRole, encounterType, ctxVisitType, activeCcKey, ENCOUNTER_TAB_SETS]);
 
   /* ── Swipe navigation for consultation tabs (iPad / mobile) ── */
   const swipeRef = useSwipeNavigation<HTMLElement>({
@@ -746,6 +886,21 @@ export default function HomePage() {
               {allergyList.length === 0 && (
                 <span style={{ fontSize: 11, color: '#334155', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
               )}
+              {/* Visit type badge — persistent context during encounter */}
+              {ctxVisitType && ctxVisitType !== 'new_consult' && (() => {
+                const vt = VISIT_TYPES.find(v => v.id === ctxVisitType);
+                return vt ? (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
+                    color: vt.color, background: `${vt.color}22`,
+                    border: `1px solid ${vt.color}55`,
+                    borderRadius: 4, padding: '1px 7px', whiteSpace: 'nowrap', flexShrink: 0,
+                  }}>
+                    {vt.icon} {vt.label}
+                  </span>
+                ) : null;
+              })()}
+
               {/* New / Follow-up toggle */}
               <div style={{ display: 'flex', gap: 3, marginLeft: 'auto', flexShrink: 0 }}>
                 {(['new', 'followup'] as const).map(vt => (
@@ -794,7 +949,11 @@ export default function HomePage() {
         {topSection === 'consultation' && !!patientId && !wizardSkipped &&
          ctxVisitType && ctxVisitType !== 'new_consult' && (
           <VisitTypeOpeningPanel
-            onComplete={() => setWizardSkipped(true)}
+            onComplete={() => {
+              const startTab = VISIT_TYPE_START[ctxVisitType];
+              if (startTab) setActiveSection(startTab);
+              setWizardSkipped(true);
+            }}
             onGoToTriage={() => { setActiveSection('triage'); setWizardSkipped(true); }}
           />
         )}
@@ -884,7 +1043,9 @@ export default function HomePage() {
         {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
         {topSection === 'consultation'  && activeSection === 'scales'      && <ScalesTab />}
         {topSection === 'consultation'  && activeSection === 'ros'         && <RosTab />}
-        {topSection === 'consultation'  && activeSection === 'examination'        && hasRole(userRole, 'nurse')  && <ExaminationTab />}
+        {topSection === 'consultation'  && activeSection === 'examination'        &&
+          (hasRole(userRole, 'nurse') || (hasRole(userRole, 'doctor') && ['breast','diabetic_foot','follow_up','post_op','urgent'].includes(ctxVisitType))) &&
+          <ExaminationTab />}
         {topSection === 'consultation'  && activeSection === 'classifications'    && hasRole(userRole, 'nurse')  && <SurgicalClassificationsTab />}
         {topSection === 'consultation'  && activeSection === 'investigations' && hasRole(userRole, 'nurse')  && <InvestigationsTab />}
         {topSection === 'consultation'  && activeSection === 'radiology'     && hasRole(userRole, 'nurse')  && <RadiologyTab />}
