@@ -321,13 +321,14 @@ export default function HomePage() {
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
   const [headerVisitMode, setHeaderVisitMode] = useState<'new' | 'followup'>('new');
   const [wizardSkipped, setWizardSkipped] = useState(false);
+  const [guidedMode, setGuidedMode] = useState(false);
   const prevPatientIdRef = useRef<string | null>(null);
 
-  // Reset wizard whenever a different patient is loaded
+  // Reset wizard + guided mode whenever a different patient is loaded
   useEffect(() => {
     if (patientId !== prevPatientIdRef.current) {
       prevPatientIdRef.current = patientId;
-      if (patientId) setWizardSkipped(false);
+      if (patientId) { setWizardSkipped(false); setGuidedMode(false); }
     }
   }, [patientId]);
 
@@ -901,23 +902,22 @@ export default function HomePage() {
                 ) : null;
               })()}
 
-              {/* New / Follow-up toggle */}
-              <div style={{ display: 'flex', gap: 3, marginLeft: 'auto', flexShrink: 0 }}>
-                {(['new', 'followup'] as const).map(vt => (
-                  <button key={vt} type="button" onClick={() => {
-                    setHeaderVisitMode(vt);
-                    if (vt === 'followup') setActiveSection('progress');
-                  }} style={{
-                    padding: '2px 9px', borderRadius: 5, border: 'none', cursor: 'pointer',
-                    fontSize: 10, fontWeight: 700,
-                    background: headerVisitMode === vt ? '#0d9488' : '#1e293b',
-                    color: headerVisitMode === vt ? '#fff' : '#64748b',
-                    transition: 'all 0.1s',
-                  }}>
-                    {vt === 'new' ? 'New' : 'Follow-up'}
-                  </button>
-                ))}
-              </div>
+              {/* Guided mode toggle */}
+              <button
+                type="button"
+                onClick={() => setGuidedMode(g => !g)}
+                title={guidedMode ? 'Exit guided mode — show all sections' : 'Enter guided mode — one step at a time'}
+                style={{
+                  marginLeft: 'auto', padding: '2px 10px', borderRadius: 5, border: 'none',
+                  cursor: 'pointer', fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
+                  flexShrink: 0, whiteSpace: 'nowrap',
+                  background: guidedMode ? '#0d9488' : '#1e293b',
+                  color: guidedMode ? '#fff' : '#475569',
+                  transition: 'all 0.15s',
+                }}
+              >
+                {guidedMode ? '✦ GUIDED' : '✦ GUIDE'}
+              </button>
               <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: ac.text, background: ac.bg, borderRadius: 4, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 {triageResult.acuity}
               </span>
@@ -940,8 +940,8 @@ export default function HomePage() {
         {topSection === 'consultation' && !!patientId && !activeCcKey && !wizardSkipped &&
          (!ctxVisitType || ctxVisitType === 'new_consult') && (
           <EncounterStartWizard
-            onComplete={() => setWizardSkipped(true)}
-            onSkip={() => setWizardSkipped(true)}
+            onComplete={() => { setWizardSkipped(true); setGuidedMode(true); }}
+            onSkip={() => { setWizardSkipped(true); setGuidedMode(true); }}
           />
         )}
 
@@ -953,36 +953,86 @@ export default function HomePage() {
               const startTab = VISIT_TYPE_START[ctxVisitType];
               if (startTab) setActiveSection(startTab);
               setWizardSkipped(true);
+              setGuidedMode(true);
             }}
-            onGoToTriage={() => { setActiveSection('triage'); setWizardSkipped(true); }}
+            onGoToTriage={() => { setActiveSection('triage'); setWizardSkipped(true); setGuidedMode(true); }}
           />
         )}
 
-        {/* Encounter context picker — set venue + type before CC entry */}
-        {topSection === 'consultation' && <EncounterContextPicker />}
-
-        {/* Previous visit reference strip — collapsed summary of past encounters */}
-        {topSection === 'consultation' && !!patientId && <PreviousVisitStrip />}
-
-        {/* Chief complaint strip — 1–3 structured complaints with targeted SOCRATES fields */}
-        {topSection === 'consultation' && <ChiefComplaintStrip />}
-
-        {/* Problem list strip — collapsed by default; badge shows count */}
-        {topSection === 'consultation' && <ProblemListStrip />}
-
-        {/* Clinical prompts — inferred from demographics, CC, PMH, Fhx, social Hx, exam, labs, imaging */}
-        {topSection === 'consultation' && <ClinicalPromptsStrip />}
-
-        {/* Follow-up queue — localStorage-persisted recurring reminders */}
-        {topSection === 'consultation' && <FollowUpQueueStrip />}
+        {/* Context strips — hidden in guided mode to eliminate noise */}
+        {topSection === 'consultation' && !guidedMode && <EncounterContextPicker />}
+        {topSection === 'consultation' && !!patientId && !guidedMode && <PreviousVisitStrip />}
+        {topSection === 'consultation' && !guidedMode && <ChiefComplaintStrip />}
+        {topSection === 'consultation' && !guidedMode && <ProblemListStrip />}
+        {topSection === 'consultation' && !guidedMode && <ClinicalPromptsStrip />}
+        {topSection === 'consultation' && !guidedMode && <FollowUpQueueStrip />}
 
 
-        {/* Consultation horizontal tab strip — reduces sidebar dependency */}
+        {/* Consultation navigation — guided (one step at a time) or full tab strip */}
         {topSection === 'consultation' && (() => {
-          const curIdx = consultTabs.findIndex(t => t.id === activeSection);
+          const curIdx = Math.max(0, consultTabs.findIndex(t => t.id === activeSection));
+          const total = consultTabs.length;
           const prevTab = curIdx > 0 ? consultTabs[curIdx - 1] : null;
-          const nextTab = curIdx >= 0 && curIdx < consultTabs.length - 1 ? consultTabs[curIdx + 1] : null;
+          const nextTab = curIdx < total - 1 ? consultTabs[curIdx + 1] : null;
 
+          if (guidedMode) {
+            return (
+              <div style={{ marginBottom: 8 }}>
+                {/* Step header — section name + exit */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0 8px', borderBottom: '2px solid #f0fdf4' }}>
+                  <span style={{ fontSize: 10, fontWeight: 800, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', background: '#f0fdf4', padding: '2px 8px', borderRadius: 4, flexShrink: 0 }}>
+                    {curIdx + 1} / {total}
+                  </span>
+                  <span style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', flex: 1 }}>
+                    {SECTION_ICONS[consultTabs[curIdx]?.id as Section] ?? ''} {consultTabs[curIdx]?.label ?? ''}
+                  </span>
+                  <button type="button" onClick={() => setGuidedMode(false)}
+                    style={{ fontSize: 11, color: '#6b7280', background: 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    ☰ All sections
+                  </button>
+                </div>
+                {/* Progress dots — tap any to jump */}
+                <div style={{ display: 'flex', gap: 5, padding: '8px 0 10px', alignItems: 'center' }}>
+                  {consultTabs.map((t, i) => (
+                    <div
+                      key={t.id}
+                      title={t.label}
+                      onClick={() => setActiveSection(t.id)}
+                      style={{
+                        width: i === curIdx ? 28 : 8, height: 8, borderRadius: 4, cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        background: i === curIdx ? '#0d9488'
+                          : sectionCompletion[t.id as Section] ? '#6ee7b7'
+                          : '#e2e8f0',
+                      }}
+                    />
+                  ))}
+                </div>
+                {/* Prev / Next */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, paddingBottom: 4 }}>
+                  {prevTab ? (
+                    <button type="button" onClick={() => setActiveSection(prevTab.id)}
+                      style={{ padding: '9px 20px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: '1px solid #d1d5db', background: '#f9fafb', color: '#374151' }}>
+                      ← {prevTab.label}
+                    </button>
+                  ) : <span />}
+                  {nextTab ? (
+                    <button type="button" onClick={() => setActiveSection(nextTab.id)}
+                      style={{ padding: '11px 28px', borderRadius: 8, fontSize: 14, fontWeight: 800, cursor: 'pointer', border: 'none', background: '#0d9488', color: '#fff', boxShadow: '0 2px 10px rgba(13,148,136,0.25)' }}>
+                      {nextTab.label} →
+                    </button>
+                  ) : (
+                    <button type="button" onClick={() => setTopSection('finaldoc')}
+                      style={{ padding: '11px 22px', borderRadius: 8, fontSize: 13, fontWeight: 800, cursor: 'pointer', border: '2px solid #0d9488', background: '#f0fdfa', color: '#0d9488' }}>
+                      ✓ Finish &amp; Summary
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          }
+
+          // Full tab strip
           return (
             <>
               <div className="consult-tabstrip">
@@ -1014,15 +1064,9 @@ export default function HomePage() {
                       {nextTab.label} →
                     </button>
                   )}
-                  <button
-                    type="button"
-                    onClick={() => setTopSection('finaldoc')}
+                  <button type="button" onClick={() => setTopSection('finaldoc')}
                     title="Open encounter summary, export, and sign-off"
-                    style={{
-                      padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                      border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488',
-                    }}
-                  >
+                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
                     📋 Summary
                   </button>
                 </div>
