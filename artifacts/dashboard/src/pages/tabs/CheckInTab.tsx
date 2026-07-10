@@ -14,6 +14,7 @@ import {
 } from '@/lib/db';
 import type { Sex } from '@workspace/triage-engine';
 import { SL_COMMUNITIES } from '@/data/st-lucia';
+import PreVisitSummary from '@/components/PreVisitSummary';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -579,6 +580,9 @@ export default function CheckInTab() {
             <span style={{ fontSize: 10, fontWeight: 800, color: '#0d9488', letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>Clinical session active</span>
             <div style={{ flex: 1, height: 2, background: 'linear-gradient(270deg, #0d9488, transparent)' }} />
           </div>
+
+          {/* Pre-visit clinical data */}
+          {patientId && <PreVisitSummary patientId={patientId} />}
 
           {/* Visit Type selector */}
           <div>
