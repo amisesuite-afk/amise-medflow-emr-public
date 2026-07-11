@@ -3,9 +3,10 @@ import React from 'react';
 interface HeaderProps {
   patientName: string | null;
   loading: boolean;
+  onLogout?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ patientName, loading }) => {
+const Header: React.FC<HeaderProps> = ({ patientName, loading, onLogout }) => {
   return (
     <header
       style={{
@@ -22,41 +23,31 @@ const Header: React.FC<HeaderProps> = ({ patientName, loading }) => {
       }}
     >
       <div>
-        <span
-          style={{
-            color: '#0d9488',
-            fontWeight: 700,
-            fontSize: '18px',
-            letterSpacing: '0.05em',
-          }}
-        >
+        <span style={{ color: '#0d9488', fontWeight: 700, fontSize: '18px', letterSpacing: '0.05em' }}>
           AMISE
         </span>
-        <span
-          style={{
-            color: '#94a3b8',
-            fontSize: '12px',
-            marginLeft: '6px',
-          }}
-        >
+        <span style={{ color: '#94a3b8', fontSize: '12px', marginLeft: '6px' }}>
           Patient App
         </span>
       </div>
-      <div
-        style={{
-          fontSize: '13px',
-          color: '#94a3b8',
-          maxWidth: '160px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {loading ? (
-          <span style={{ opacity: 0.5 }}>Loading...</span>
-        ) : patientName ? (
-          patientName
-        ) : null}
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ fontSize: '13px', color: '#94a3b8', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {loading ? <span style={{ opacity: 0.5 }}>Loading…</span> : patientName ?? null}
+        </div>
+        {onLogout && (
+          <button
+            type="button"
+            onClick={onLogout}
+            title="Sign out"
+            style={{
+              background: 'none', border: 'none', color: '#475569',
+              fontSize: 18, cursor: 'pointer', lineHeight: 1, padding: '2px 4px',
+            }}
+          >
+            ⏏
+          </button>
+        )}
       </div>
     </header>
   );

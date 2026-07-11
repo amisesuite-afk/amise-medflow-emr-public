@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { requirePatientAuth, type PatientAuthRequest } from './patient-auth.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -23,62 +24,61 @@ Do NOT diagnose or suggest a diagnosis. Do NOT use first person. Write as a sing
 Example: "A 4 × 3 cm erythematous, indurated swelling over the right groin. The overlying skin is intact with no ulceration. There is surrounding oedema extending to the right hemiscrotum. A 1 cm central area of fluctuance is present. No visible discharge or sinus formation."`;
 
 // ── GET /api/patient/profile ────────────────────────────────────────────────
-// Token-based: patient retrieves their own profile + upcoming appointment info.
-router.get('/api/patient/profile', async (req, res) => {
-  const token = req.query.token as string | undefined;
-  if (!token) {
-    res.status(400).json({ error: 'token is required' });
+
+router.get('/api/patient/profile', requirePatientAuth, async (req: PatientAuthRequest, res) => {
+  const patientId = req.patientAuth!.patientId;
+
+  if (!patientId) {
+    res.status(400).json({ error: 'No patient linked to this account' });
     return;
   }
 
   try {
-    const { data, error } = await sb()
-      .from('previsit_submissions')
-      .select('patient_id, status, submitted_at, passport, monitoring_updates')
-      .eq('patient_token', token)
+    const { data: pt } = await sb()
+      .from('patients')
+      .select('full_name')
+      .eq('id', patientId)
       .maybeSingle();
 
-    if (error) {
-      log.error({ err: error }, 'patient profile fetch error');
-      res.status(500).json({ error: error.message });
-      return;
-    }
-    if (!data) {
-      res.status(404).json({ error: 'Invalid or expired token' });
-      return;
-    }
+    const patientName = pt ? (pt.full_name as string | null) : null;
 
-    // Pull patient name from patients table if linked
-    let patientName: string | null = null;
-    let appointmentDate: string | null = null;
+    // Most recent upcoming appointment
+    const { data: appt } = await sb()
+      .from('appointment_requests')
+      .select('preferred_date')
+      .eq('patient_id', patientId)
+      .in('status', ['confirmed', 'waitlisted', 'pending'])
+      .order('preferred_date', { ascending: true })
+      .limit(1)
+      .maybeSingle();
 
-    if (data.patient_id) {
-      const { data: pt } = await sb()
-        .from('patients')
-        .select('first_name, last_name')
-        .eq('id', data.patient_id)
-        .maybeSingle();
-      if (pt) patientName = [pt.first_name, pt.last_name].filter(Boolean).join(' ') || null;
+    // Most recent previsit submission (for passport + monitoring + return detection)
+    const { data: pv } = await sb()
+      .from('previsit_submissions')
+      .select('id, status, submitted_at, passport, monitoring_updates')
+      .eq('patient_id', patientId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-      // Most recent upcoming appointment
-      const { data: appt } = await sb()
-        .from('appointment_requests')
-        .select('preferred_date, slot_time')
-        .eq('patient_id', data.patient_id)
-        .in('status', ['confirmed', 'waitlisted', 'pending'])
-        .order('preferred_date', { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      if (appt?.preferred_date) appointmentDate = appt.preferred_date;
-    }
+    // Pending pre-visit for current appointment
+    const { data: pendingPv } = await sb()
+      .from('previsit_submissions')
+      .select('id, status')
+      .eq('patient_id', patientId)
+      .in('status', ['pending'])
+      .limit(1)
+      .maybeSingle();
 
     res.json({
       patientName,
-      appointmentDate,
-      status: data.status,
-      hasSubmission: data.status !== null,
-      passport: data.passport ?? null,
-      monitoringCount: Array.isArray(data.monitoring_updates) ? data.monitoring_updates.length : 0,
+      appointmentDate: appt?.preferred_date ?? null,
+      status: pv?.status ?? null,
+      hasSubmission: !!pv,
+      hasPendingPrevisit: !!pendingPv,
+      isReturnPatient: !!(pv?.passport),
+      passport: pv?.passport ?? null,
+      monitoringCount: Array.isArray(pv?.monitoring_updates) ? (pv.monitoring_updates as unknown[]).length : 0,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to fetch profile';
@@ -88,45 +88,39 @@ router.get('/api/patient/profile', async (req, res) => {
 });
 
 // ── POST /api/patient/passport ──────────────────────────────────────────────
-// Patient updates their medical passport (persisted in previsit_submissions.passport).
-router.post('/api/patient/passport', async (req, res) => {
-  const { patient_token, passport } = req.body as {
-    patient_token: string;
-    passport: Record<string, unknown>;
-  };
 
-  if (!patient_token) {
-    res.status(400).json({ error: 'patient_token is required' });
+router.post('/api/patient/passport', requirePatientAuth, async (req: PatientAuthRequest, res) => {
+  const patientId = req.patientAuth!.patientId;
+  const { passport } = req.body as { passport: Record<string, unknown> };
+
+  if (!patientId) {
+    res.status(400).json({ error: 'No patient linked to this account' });
     return;
   }
 
   try {
-    const { data: existing, error: findErr } = await sb()
+    // Upsert passport into the most recent previsit_submissions row.
+    // If none exists, create a minimal pending row to hold the passport.
+    const { data: existing } = await sb()
       .from('previsit_submissions')
       .select('id')
-      .eq('patient_token', patient_token)
+      .eq('patient_id', patientId)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
 
-    if (findErr) {
-      res.status(500).json({ error: findErr.message });
-      return;
-    }
-    if (!existing) {
-      res.status(404).json({ error: 'Invalid or expired token' });
-      return;
-    }
-
-    const { error: updateErr } = await sb()
-      .from('previsit_submissions')
-      .update({ passport, updated_at: new Date().toISOString() })
-      .eq('id', existing.id);
-
-    if (updateErr) {
-      res.status(500).json({ error: updateErr.message });
-      return;
+    if (existing) {
+      await sb()
+        .from('previsit_submissions')
+        .update({ passport, updated_at: new Date().toISOString() })
+        .eq('id', existing.id);
+    } else {
+      await sb()
+        .from('previsit_submissions')
+        .insert({ patient_id: patientId, status: 'pending', passport });
     }
 
-    log.info({ id: existing.id }, 'patient passport updated');
+    log.info({ patientId }, 'patient passport updated');
     res.json({ success: true });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to save passport';
@@ -136,33 +130,26 @@ router.post('/api/patient/passport', async (req, res) => {
 });
 
 // ── POST /api/patient/monitoring ────────────────────────────────────────────
-// Patient adds a monitoring update (wound photo, vitals diary entry, symptom note).
-router.post('/api/patient/monitoring', async (req, res) => {
-  const { patient_token, photo } = req.body as {
-    patient_token: string;
+
+router.post('/api/patient/monitoring', requirePatientAuth, async (req: PatientAuthRequest, res) => {
+  const patientId = req.patientAuth!.patientId;
+  const { photo } = req.body as {
     photo: { dataUrl: string; context: string; painScore?: number; note?: string; date?: string };
   };
 
-  if (!patient_token) {
-    res.status(400).json({ error: 'patient_token is required' });
+  if (!patientId) {
+    res.status(400).json({ error: 'No patient linked to this account' });
     return;
   }
 
   try {
-    const { data: existing, error: findErr } = await sb()
+    const { data: existing } = await sb()
       .from('previsit_submissions')
       .select('id, monitoring_updates')
-      .eq('patient_token', patient_token)
+      .eq('patient_id', patientId)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
-
-    if (findErr) {
-      res.status(500).json({ error: findErr.message });
-      return;
-    }
-    if (!existing) {
-      res.status(404).json({ error: 'Invalid or expired token' });
-      return;
-    }
 
     const entry = {
       dataUrl: photo.dataUrl,
@@ -173,21 +160,22 @@ router.post('/api/patient/monitoring', async (req, res) => {
       uploaded_at: new Date().toISOString(),
     };
 
-    const current = Array.isArray(existing.monitoring_updates) ? existing.monitoring_updates : [];
-    const updates = [entry, ...current].slice(0, 50); // cap at 50 entries
-
-    const { error: updateErr } = await sb()
-      .from('previsit_submissions')
-      .update({ monitoring_updates: updates, updated_at: new Date().toISOString() })
-      .eq('id', existing.id);
-
-    if (updateErr) {
-      res.status(500).json({ error: updateErr.message });
-      return;
+    if (existing) {
+      const current = Array.isArray(existing.monitoring_updates) ? existing.monitoring_updates as unknown[] : [];
+      const updates = [entry, ...current].slice(0, 50);
+      await sb()
+        .from('previsit_submissions')
+        .update({ monitoring_updates: updates, updated_at: new Date().toISOString() })
+        .eq('id', existing.id);
+      res.json({ success: true, count: updates.length });
+    } else {
+      await sb()
+        .from('previsit_submissions')
+        .insert({ patient_id: patientId, status: 'pending', monitoring_updates: [entry] });
+      res.json({ success: true, count: 1 });
     }
 
-    log.info({ id: existing.id }, 'patient monitoring update added');
-    res.json({ success: true, count: updates.length });
+    log.info({ patientId }, 'patient monitoring update added');
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to save monitoring update';
     log.error({ err }, 'patient monitoring error');
@@ -196,8 +184,8 @@ router.post('/api/patient/monitoring', async (req, res) => {
 });
 
 // ── POST /api/exam/photo-describe ───────────────────────────────────────────
-// Staff auth. Sends a clinical photograph to Claude vision and returns a
-// medical-terminology description suitable for documentation.
+// Staff-auth only — not exposed to patient app.
+
 router.post('/api/exam/photo-describe', async (req, res) => {
   const ok = await requireStaffAuth(req, res);
   if (!ok) return;
@@ -212,7 +200,6 @@ router.post('/api/exam/photo-describe', async (req, res) => {
     return;
   }
 
-  // Strip data: URI prefix to get raw base64
   const match = imageDataUrl.match(/^data:(image\/[a-z+]+);base64,(.+)$/);
   if (!match) {
     res.status(400).json({ error: 'imageDataUrl must be a base64 data URI' });

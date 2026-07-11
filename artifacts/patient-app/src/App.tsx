@@ -5,103 +5,114 @@ import PassportScreen from './screens/PassportScreen';
 import PreVisitScreen from './screens/PreVisitScreen';
 import MonitoringScreen from './screens/MonitoringScreen';
 import UploadScreen from './screens/UploadScreen';
-import { getPatientProfile, type PatientProfile } from './api';
+import LoginScreen from './screens/LoginScreen';
+import ChangePasswordScreen from './screens/ChangePasswordScreen';
+import { getStoredSession, saveSession, clearSession, getPatientProfile } from './api';
+import type { PatientSession, PatientProfile } from './api';
 
-const TOKEN_KEY = 'amise_patient_token';
+// ── URL param helpers ─────────────────────────────────────────────────────────
 
-function readTokenFromUrl(): string | null {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('token');
+function getUrlParams() {
+  const p = new URLSearchParams(window.location.search);
+  return {
+    email: p.get('email') ?? '',
+    pw: p.get('pw') ?? '',
+  };
 }
 
+function stripUrlCredentials() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('email');
+  url.searchParams.delete('pw');
+  window.history.replaceState({}, '', url.toString());
+}
+
+// ── App ───────────────────────────────────────────────────────────────────────
+
 const App: React.FC = () => {
-  const [token, setToken] = useState<string | null>(null);
+  const urlParams = getUrlParams();
+
+  const [session, setSession] = useState<PatientSession | null>(() => getStoredSession());
   const [profile, setProfile] = useState<PatientProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('passport');
 
-  // Resolve token on mount
+  // Refresh profile whenever we have a session
   useEffect(() => {
-    const urlToken = readTokenFromUrl();
-    if (urlToken) {
-      localStorage.setItem(TOKEN_KEY, urlToken);
-      setToken(urlToken);
-    } else {
-      const stored = localStorage.getItem(TOKEN_KEY);
-      if (stored) setToken(stored);
-    }
-  }, []);
-
-  // Load profile once token is available
-  useEffect(() => {
-    if (!token) return;
+    if (!session) { setProfile(null); return; }
     setProfileLoading(true);
-    getPatientProfile(token)
-      .then((p) => {
+    getPatientProfile(session.sessionToken)
+      .then(p => {
         setProfile(p);
+        // Return patients land on passport; new patients with a pending
+        // pre-visit land on pre-visit tab; otherwise default to passport.
+        if (!p.isReturnPatient && p.hasPendingPrevisit) {
+          setActiveTab('previsit');
+        }
       })
       .catch(() => {
-        // Profile endpoint may not be live yet; degrade gracefully
-        setProfile(null);
+        // Session expired or network error
+        clearSession();
+        setSession(null);
       })
-      .finally(() => {
-        setProfileLoading(false);
-      });
-  }, [token]);
+      .finally(() => setProfileLoading(false));
+  }, [session]);
 
-  // No token — show error screen
-  if (!token) {
+  function handleLogin(s: PatientSession) {
+    saveSession(s);
+    setSession(s);
+    stripUrlCredentials();
+    // Return patient → passport; new patient with pending previsit → previsit
+    if (!s.isReturnPatient) setActiveTab('previsit');
+  }
+
+  function handleLogout() {
+    clearSession();
+    setSession(null);
+    setProfile(null);
+  }
+
+  // ── No session → Login ───────────────────────────────────────────────────
+
+  if (!session) {
     return (
-      <div
-        style={{
-          minHeight: '100dvh',
-          backgroundColor: '#060e1a',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '32px 24px',
-          textAlign: 'center',
-        }}
-      >
-        <div
-          style={{
-            color: '#0d9488',
-            fontWeight: 700,
-            fontSize: '22px',
-            marginBottom: '8px',
-          }}
-        >
-          AMISE
-        </div>
-        <div
-          style={{
-            color: '#f1f5f9',
-            fontSize: '18px',
-            fontWeight: 600,
-            marginBottom: '12px',
-          }}
-        >
-          Access link required
-        </div>
-        <div style={{ color: '#94a3b8', fontSize: '14px', maxWidth: '300px' }}>
-          Please open the link sent to you by Amise Medical Services. If you
-          believe this is an error, contact the clinic directly.
-        </div>
-      </div>
+      <LoginScreen
+        prefillEmail={urlParams.email}
+        prefillPassword={urlParams.pw}
+        onLogin={handleLogin}
+      />
     );
   }
+
+  // ── Must change password (first login with temp password) ────────────────
+
+  if (session.mustChangePassword) {
+    return (
+      <ChangePasswordScreen
+        sessionToken={session.sessionToken}
+        onDone={() => {
+          const updated: PatientSession = { ...session, mustChangePassword: false };
+          saveSession(updated);
+          setSession(updated);
+        }}
+      />
+    );
+  }
+
+  // ── Main app ─────────────────────────────────────────────────────────────
+
+  const patientName = profile?.patientName ?? session.patientName;
 
   const renderScreen = () => {
     switch (activeTab) {
       case 'passport':
-        return <PassportScreen token={token} />;
+        return <PassportScreen token={session.sessionToken} />;
       case 'previsit':
-        return <PreVisitScreen token={token} />;
+        return <PreVisitScreen token={session.sessionToken} />;
       case 'monitoring':
-        return <MonitoringScreen token={token} />;
+        return <MonitoringScreen token={session.sessionToken} />;
       case 'upload':
-        return <UploadScreen token={token} />;
+        return <UploadScreen token={session.sessionToken} />;
     }
   };
 
@@ -117,16 +128,11 @@ const App: React.FC = () => {
       }}
     >
       <Header
-        patientName={profile?.patientName ?? null}
+        patientName={patientName ?? null}
         loading={profileLoading}
+        onLogout={handleLogout}
       />
-      <main
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          overflowX: 'hidden',
-        }}
-      >
+      <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
         {renderScreen()}
       </main>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
