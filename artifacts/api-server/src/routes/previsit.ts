@@ -57,6 +57,90 @@ router.get('/api/previsit/:patientId', async (req, res) => {
   }
 });
 
+// POST /api/previsit/create — staff creates a pre-visit submission row and returns the patient token.
+// Optionally sends an SMS to the patient with the link to the patient app.
+router.post('/api/previsit/create', async (req, res) => {
+  const ok = await requireStaffAuth(req, res);
+  if (!ok) return;
+
+  const { patientId, appointmentId, sendSms, patientPhone } = req.body as {
+    patientId: string;
+    appointmentId?: string;
+    sendSms?: boolean;
+    patientPhone?: string;
+  };
+
+  if (!patientId) {
+    res.status(400).json({ error: 'patientId is required' });
+    return;
+  }
+
+  try {
+    // Check for existing active submission
+    const { data: existing } = await sb()
+      .from('previsit_submissions')
+      .select('id, patient_token, status')
+      .eq('patient_id', patientId)
+      .in('status', ['pending', 'submitted'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    let token: string;
+    let submissionId: string;
+
+    if (existing) {
+      token = existing.patient_token as string;
+      submissionId = existing.id as string;
+    } else {
+      const { data: created, error: createErr } = await sb()
+        .from('previsit_submissions')
+        .insert({
+          patient_id: patientId,
+          ...(appointmentId ? { appointment_id: appointmentId } : {}),
+          status: 'pending',
+        })
+        .select('id, patient_token')
+        .single();
+
+      if (createErr || !created) {
+        log.error({ err: createErr }, 'previsit create error');
+        res.status(500).json({ error: createErr?.message ?? 'Failed to create submission' });
+        return;
+      }
+      token = created.patient_token as string;
+      submissionId = created.id as string;
+    }
+
+    const patientAppUrl = process.env.PATIENT_APP_URL ?? process.env.PORTAL_URL ?? 'https://patient.amise.lc';
+    const link = `${patientAppUrl}?token=${token}`;
+
+    // Send SMS if requested
+    let smsSent = false;
+    if (sendSms && patientPhone && process.env.SMS_PROVIDER === 'twilio') {
+      try {
+        const twilio = await import('twilio').then(m => m.default);
+        const tw = twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
+        await tw.messages.create({
+          from: process.env.TWILIO_FROM_NUMBER!,
+          to: patientPhone,
+          body: `AMISE Medical Services: Please complete your pre-visit questionnaire before your appointment. Your secure link: ${link}`,
+        });
+        smsSent = true;
+      } catch (smsErr) {
+        log.warn({ err: smsErr }, 'previsit SMS send failed (non-fatal)');
+      }
+    }
+
+    log.info({ submissionId, smsSent }, 'previsit submission created');
+    res.json({ success: true, token, link, submissionId, smsSent });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to create pre-visit';
+    log.error({ err }, 'previsit create error');
+    res.status(500).json({ error: message });
+  }
+});
+
 router.post('/api/previsit/submit', async (req, res) => {
   const {
     patient_token,

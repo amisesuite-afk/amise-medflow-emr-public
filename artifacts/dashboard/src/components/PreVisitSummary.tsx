@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { getApiOrigin } from '@/lib/api-origin';
+import PatientLinkPanel from './PatientLinkPanel';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -80,6 +81,7 @@ export default function PreVisitSummary({ patientId }: { patientId: string }) {
     setAssessment,
     setFreeText,
     setAllergies,
+    phone,
   } = useAppContext();
 
   const [loading, setLoading] = useState(true);
@@ -92,13 +94,13 @@ export default function PreVisitSummary({ patientId }: { patientId: string }) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const [sendingLink, setSendingLink] = useState(false);
-  const [linkShown, setLinkShown] = useState(false);
+  const [submissionRefreshKey, setSubmissionRefreshKey] = useState(0);
 
   useEffect(() => {
     if (!patientId) return;
     setLoading(true);
     setFetchError(null);
+    setSubmission(null);
     (async () => {
       try {
         const r = await fetch(apiUrl(`/api/previsit/${patientId}`), {
@@ -120,7 +122,7 @@ export default function PreVisitSummary({ patientId }: { patientId: string }) {
         setLoading(false);
       }
     })();
-  }, [patientId]);
+  }, [patientId, submissionRefreshKey]);
 
   async function handleAiFormat() {
     if (!submission) return;
@@ -159,16 +161,6 @@ export default function PreVisitSummary({ patientId }: { patientId: string }) {
     setLoaded(true);
   }
 
-  function handleSendLink() {
-    setSendingLink(true);
-    setTimeout(() => {
-      setSendingLink(false);
-      setLinkShown(true);
-    }, 400);
-  }
-
-  const portalBase = (import.meta.env.VITE_PORTAL_URL as string | undefined) ?? window.location.origin;
-
   if (loading) {
     return (
       <div style={{ padding: '12px 0', color: '#6b7280', fontSize: 13 }}>
@@ -187,29 +179,11 @@ export default function PreVisitSummary({ patientId }: { patientId: string }) {
 
   if (!submission) {
     return (
-      <div style={{ background: '#f8fafc', borderRadius: 10, border: '1px dashed #cbd5e1', padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ fontSize: 13, color: '#374151', fontWeight: 600 }}>No pre-visit data on file</div>
-        <div style={{ fontSize: 12, color: '#6b7280' }}>
-          Send the patient a secure link to complete their history before arrival.
-        </div>
-        <button
-          type="button"
-          onClick={handleSendLink}
-          disabled={sendingLink}
-          style={{
-            alignSelf: 'flex-start', padding: '8px 16px', borderRadius: 7,
-            border: '1.5px solid #0d9488', background: '#f0fdfa',
-            color: '#0d9488', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-          }}
-        >
-          {sendingLink ? 'Preparing…' : '📨 Send pre-visit link'}
-        </button>
-        {linkShown && (
-          <div style={{ fontSize: 11, color: '#6b7280', fontFamily: 'monospace', background: '#f1f5f9', padding: '6px 10px', borderRadius: 6, wordBreak: 'break-all' }}>
-            {portalBase}/previsit?token=(generated on submission creation)
-          </div>
-        )}
-      </div>
+      <PatientLinkPanel
+        patientId={patientId}
+        patientPhone={phone || undefined}
+        onLinkGenerated={() => setSubmissionRefreshKey(k => k + 1)}
+      />
     );
   }
 
@@ -456,25 +430,12 @@ export default function PreVisitSummary({ patientId }: { patientId: string }) {
         </button>
       )}
 
-      {/* Send pre-visit link placeholder */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, borderTop: '1px solid #f1f5f9', paddingTop: 10 }}>
-        <button
-          type="button"
-          onClick={handleSendLink}
-          disabled={sendingLink}
-          style={{
-            padding: '6px 12px', borderRadius: 6,
-            border: '1px solid #d1d5db', background: '#f9fafb',
-            color: '#374151', fontWeight: 600, fontSize: 11, cursor: 'pointer',
-          }}
-        >
-          {sendingLink ? 'Preparing…' : '📨 Send pre-visit link'}
-        </button>
-        {linkShown && (
-          <span style={{ fontSize: 10, color: '#6b7280', fontFamily: 'monospace', wordBreak: 'break-all' }}>
-            {portalBase}/previsit?token={submission.patient_token.slice(0, 8)}…
-          </span>
-        )}
+      {/* Resend / generate a new pre-visit link */}
+      <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 10 }}>
+        <PatientLinkPanel
+          patientId={patientId}
+          patientPhone={phone || undefined}
+        />
       </div>
 
       {/* Monitoring updates timeline */}

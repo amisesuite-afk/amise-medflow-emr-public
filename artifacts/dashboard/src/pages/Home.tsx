@@ -80,6 +80,7 @@ import PreviousVisitStrip from '@/components/PreviousVisitStrip';
 import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
+import VoiceDictation from '@/components/VoiceDictation';
 import { getMatrix } from '@/lib/cc-matrices';
 
 const API_ORIGIN = getApiOrigin();
@@ -322,6 +323,7 @@ export default function HomePage() {
   const [headerVisitMode, setHeaderVisitMode] = useState<'new' | 'followup'>('new');
   const [wizardSkipped, setWizardSkipped] = useState(false);
   const [guidedMode, setGuidedMode] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
   const prevPatientIdRef = useRef<string | null>(null);
 
   // Reset wizard + guided mode whenever a different patient is loaded
@@ -986,11 +988,34 @@ export default function HomePage() {
                   <span style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', flex: 1 }}>
                     {SECTION_ICONS[consultTabs[curIdx]?.id as Section] ?? ''} {consultTabs[curIdx]?.label ?? ''}
                   </span>
+                  {/* Voice dictation toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setVoiceOpen(v => !v)}
+                    title="Voice dictation — dictate into SOAP sections"
+                    style={{
+                      padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
+                      fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0,
+                      background: voiceOpen ? '#0d9488' : '#f0fdf4',
+                      color: voiceOpen ? '#fff' : '#0d9488',
+                    }}
+                  >
+                    🎙 Dictate
+                  </button>
                   <button type="button" onClick={() => setGuidedMode(false)}
                     style={{ fontSize: 11, color: '#6b7280', background: 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
                     ☰ All sections
                   </button>
                 </div>
+                {/* Voice dictation panel */}
+                {voiceOpen && (
+                  <div style={{ marginBottom: 10 }}>
+                    <VoiceDictation
+                      visitType={ctxVisitType ?? headerVisitMode}
+                      onClose={() => setVoiceOpen(false)}
+                    />
+                  </div>
+                )}
                 {/* Progress dots — tap any to jump */}
                 <div style={{ display: 'flex', gap: 5, padding: '8px 0 10px', alignItems: 'center' }}>
                   {consultTabs.map((t, i) => (
