@@ -81,6 +81,7 @@ import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import VoiceDictation from '@/components/VoiceDictation';
+import AmbientConsultation from '@/components/AmbientConsultation';
 import { getMatrix } from '@/lib/cc-matrices';
 
 const API_ORIGIN = getApiOrigin();
@@ -323,6 +324,7 @@ export default function HomePage() {
   const [headerVisitMode, setHeaderVisitMode] = useState<'new' | 'followup'>('new');
   const [wizardSkipped, setWizardSkipped] = useState(false);
   const [guidedMode, setGuidedMode] = useState(false);
+  const [ambientMode, setAmbientMode] = useState(true);
   const [voiceOpen, setVoiceOpen] = useState(false);
   const prevPatientIdRef = useRef<string | null>(null);
 
@@ -330,7 +332,7 @@ export default function HomePage() {
   useEffect(() => {
     if (patientId !== prevPatientIdRef.current) {
       prevPatientIdRef.current = patientId;
-      if (patientId) { setWizardSkipped(false); setGuidedMode(false); }
+      if (patientId) { setWizardSkipped(false); setGuidedMode(false); setAmbientMode(true); }
     }
   }, [patientId]);
 
@@ -942,8 +944,8 @@ export default function HomePage() {
         {topSection === 'consultation' && !!patientId && !activeCcKey && !wizardSkipped &&
          (!ctxVisitType || ctxVisitType === 'new_consult') && (
           <EncounterStartWizard
-            onComplete={() => { setWizardSkipped(true); setGuidedMode(true); }}
-            onSkip={() => { setWizardSkipped(true); setGuidedMode(true); }}
+            onComplete={() => setWizardSkipped(true)}
+            onSkip={() => setWizardSkipped(true)}
           />
         )}
 
@@ -955,23 +957,31 @@ export default function HomePage() {
               const startTab = VISIT_TYPE_START[ctxVisitType];
               if (startTab) setActiveSection(startTab);
               setWizardSkipped(true);
-              setGuidedMode(true);
             }}
-            onGoToTriage={() => { setActiveSection('triage'); setWizardSkipped(true); setGuidedMode(true); }}
+            onGoToTriage={() => { setActiveSection('triage'); setWizardSkipped(true); }}
           />
         )}
 
-        {/* Context strips — hidden in guided mode to eliminate noise */}
-        {topSection === 'consultation' && !guidedMode && <EncounterContextPicker />}
-        {topSection === 'consultation' && !!patientId && !guidedMode && <PreviousVisitStrip />}
-        {topSection === 'consultation' && !guidedMode && <ChiefComplaintStrip />}
-        {topSection === 'consultation' && !guidedMode && <ProblemListStrip />}
-        {topSection === 'consultation' && !guidedMode && <ClinicalPromptsStrip />}
-        {topSection === 'consultation' && !guidedMode && <FollowUpQueueStrip />}
+        {/* Ambient consultation — voice-first default after wizard */}
+        {topSection === 'consultation' && !!patientId && wizardSkipped && ambientMode && (
+          <AmbientConsultation
+            visitType={ctxVisitType ?? headerVisitMode}
+            onDetailedMode={() => { setAmbientMode(false); setGuidedMode(true); }}
+            onFinalise={() => setTopSection('finaldoc')}
+          />
+        )}
+
+        {/* Context strips — hidden in guided/ambient mode to eliminate noise */}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && <EncounterContextPicker />}
+        {topSection === 'consultation' && !!patientId && !ambientMode && !guidedMode && <PreviousVisitStrip />}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && <ChiefComplaintStrip />}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && <ProblemListStrip />}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && <ClinicalPromptsStrip />}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && <FollowUpQueueStrip />}
 
 
         {/* Consultation navigation — guided (one step at a time) or full tab strip */}
-        {topSection === 'consultation' && (() => {
+        {topSection === 'consultation' && !ambientMode && (() => {
           const curIdx = Math.max(0, consultTabs.findIndex(t => t.id === activeSection));
           const total = consultTabs.length;
           const prevTab = curIdx > 0 ? consultTabs[curIdx - 1] : null;
@@ -1001,6 +1011,10 @@ export default function HomePage() {
                     }}
                   >
                     🎙 Dictate
+                  </button>
+                  <button type="button" onClick={() => setAmbientMode(true)}
+                    style={{ fontSize: 11, color: '#0d9488', background: '#f0fdf4', border: '1px solid #6ee7b7', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    🎙 Ambient
                   </button>
                   <button type="button" onClick={() => setGuidedMode(false)}
                     style={{ fontSize: 11, color: '#6b7280', background: 'none', border: '1px solid #e2e8f0', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}>
@@ -1083,6 +1097,10 @@ export default function HomePage() {
                   {curIdx >= 0 ? `${curIdx + 1} / ${consultTabs.length}` : ''}
                 </span>
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <button type="button" onClick={() => setAmbientMode(true)}
+                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
+                    🎙 Ambient
+                  </button>
                   {nextTab && (
                     <button type="button" onClick={() => setActiveSection(nextTab.id)}
                       style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#1F7A8C', color: '#fff' }}>
@@ -1102,44 +1120,44 @@ export default function HomePage() {
 
         {/* Clinical sections */}
         {topSection === 'intake'        && <IntakeTab />}
-        {topSection === 'consultation'  && activeSection === 'hpi'         && <HpiTab />}
-        {topSection === 'consultation'  && activeSection === 'triage'      && <TriageTab />}
-        {topSection === 'consultation'  && activeSection === 'pmh'         && <PmhTab />}
-        {topSection === 'consultation'  && activeSection === 'surgical'    && <SurgicalHistoryTab />}
-        {topSection === 'consultation'  && activeSection === 'medications' && <MedicationsTab />}
-        {topSection === 'consultation'  && activeSection === 'allergies'   && <AllergiesTab />}
-        {topSection === 'consultation'  && activeSection === 'family_hx'   && <FamilyHistoryTab />}
-        {topSection === 'consultation'  && activeSection === 'toxic'       && <ToxicHabitsTab />}
-        {topSection === 'consultation'  && activeSection === 'scales'      && <ScalesTab />}
-        {topSection === 'consultation'  && activeSection === 'ros'         && <RosTab />}
-        {topSection === 'consultation'  && activeSection === 'examination'        &&
+        {topSection === 'consultation' && !ambientMode && activeSection === 'hpi'         && <HpiTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'triage'      && <TriageTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'pmh'         && <PmhTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'surgical'    && <SurgicalHistoryTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'medications' && <MedicationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'allergies'   && <AllergiesTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'family_hx'   && <FamilyHistoryTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'toxic'       && <ToxicHabitsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'scales'      && <ScalesTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'ros'         && <RosTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'examination'        &&
           (hasRole(userRole, 'nurse') || (hasRole(userRole, 'doctor') && ['breast','diabetic_foot','follow_up','post_op','urgent'].includes(ctxVisitType))) &&
           <ExaminationTab />}
-        {topSection === 'consultation'  && activeSection === 'classifications'    && hasRole(userRole, 'nurse')  && <SurgicalClassificationsTab />}
-        {topSection === 'consultation'  && activeSection === 'investigations' && hasRole(userRole, 'nurse')  && <InvestigationsTab />}
-        {topSection === 'consultation'  && activeSection === 'radiology'     && hasRole(userRole, 'nurse')  && <RadiologyTab />}
-        {topSection === 'consultation'  && activeSection === 'attachments'   && hasRole(userRole, 'nurse')  && <AttachmentsTab />}
-        {topSection === 'consultation'  && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
-        {topSection === 'consultation'  && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
-        {topSection === 'consultation'  && activeSection === 'procedures' && hasRole(userRole, 'doctor') && <ProceduresTab />}
-        {topSection === 'consultation'  && activeSection === 'progress'    && <ProgressNotesTab />}
-        {topSection === 'consultation'  && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
-        {topSection === 'consultation'  && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
-        {topSection === 'consultation'  && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
-        {topSection === 'consultation'  && activeSection === 'encounter_history'   && hasRole(userRole, 'doctor') && <EncounterTimelineTab />}
-        {topSection === 'consultation'  && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
-        {topSection === 'consultation'  && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
-        {topSection === 'consultation'  && activeSection === 'apcq'            && <APCQTab compact />}
-        {topSection === 'consultation'  && activeSection === 'tasks'          && <PatientTasksTab />}
-        {topSection === 'consultation'  && activeSection === 'periop'         && <PerioperativeTab />}
-        {topSection === 'consultation'  && activeSection === 'dosing'         && <DosingTab />}
-        {topSection === 'consultation'  && activeSection === 'fluid_nutrition' && <FluidNutritionTab />}
-        {topSection === 'consultation'  && activeSection === 'blood_gas'       && <BloodGasTab />}
-        {topSection === 'consultation'  && activeSection === 'wounds'          && <WoundTab />}
-        {topSection === 'consultation'  && activeSection === 'who_checklist'  && <WhoChecklistTab />}
-        {topSection === 'consultation'  && activeSection === 'consent'        && <SurgicalConsentTab />}
-        {topSection === 'consultation'  && activeSection === 'letters'        && <LetterGeneratorTab />}
-        {topSection === 'consultation'  && activeSection === 'patient_education' && <PatientEducationTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications'    && hasRole(userRole, 'nurse')  && <SurgicalClassificationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'investigations' && hasRole(userRole, 'nurse')  && <InvestigationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'radiology'     && hasRole(userRole, 'nurse')  && <RadiologyTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'attachments'   && hasRole(userRole, 'nurse')  && <AttachmentsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && hasRole(userRole, 'doctor') && <ProceduresTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'progress'    && <ProgressNotesTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'encounter_history'   && hasRole(userRole, 'doctor') && <EncounterTimelineTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'apcq'            && <APCQTab compact />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'tasks'          && <PatientTasksTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'periop'         && <PerioperativeTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'dosing'         && <DosingTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'fluid_nutrition' && <FluidNutritionTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'blood_gas'       && <BloodGasTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'wounds'          && <WoundTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'who_checklist'  && <WhoChecklistTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'consent'        && <SurgicalConsentTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'letters'        && <LetterGeneratorTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'patient_education' && <PatientEducationTab />}
         {topSection === 'procedures'    && hasRole(userRole, 'doctor')        && <ProceduresTab />}
         {topSection === 'summary'        && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'outpatient' && <SummaryTab />}
