@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useAppContext, type ExamPhoto } from '@/context/AppContext';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 
 const MAX_PHOTOS = 5;
 const MAX_PX = 2000;
@@ -74,6 +75,7 @@ export default function ExamPhotoPanel() {
   const [desc, setDesc] = useState('');
   const [showGuide, setShowGuide] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [describing, setDescribing] = useState<string | null>(null); // photo id being described
 
   const views = VIEW_OPTIONS[viewGroup(region)] ?? VIEW_OPTIONS.other;
 
@@ -111,6 +113,28 @@ export default function ExamPhotoPanel() {
   function removePhoto(id: string) {
     setExamPhotos(prev => prev.filter(p => p.id !== id));
     if (preview === id) setPreview(null);
+  }
+
+  async function describeWithAI(photo: ExamPhoto) {
+    setDescribing(photo.id);
+    try {
+      const authHeaders = await staffAuthHeaders();
+      const r = await fetch('/api/exam/photo-describe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify({ imageDataUrl: photo.dataUrl, context: photo.bodyRegion }),
+      });
+      const data = await r.json() as { description?: string; error?: string };
+      if (data.description) {
+        setExamPhotos(prev => prev.map(p =>
+          p.id === photo.id ? { ...p, description: data.description! } : p
+        ));
+      }
+    } catch {
+      // non-fatal: user still has manual description field
+    } finally {
+      setDescribing(null);
+    }
   }
 
   const atLimit = examPhotos.length >= MAX_PHOTOS;
@@ -292,10 +316,24 @@ export default function ExamPhotoPanel() {
                 <div style={{ fontSize: 10, color: '#64748b' }}>
                   {photo.distanceCm} cm · {new Date(photo.dateAdded).toLocaleDateString('en-LC', { day: 'numeric', month: 'short' })}
                 </div>
-                {photo.description && (
-                  <div style={{ fontSize: 10, color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {photo.description ? (
+                  <div style={{ fontSize: 10, color: '#64748b', lineHeight: 1.4, marginTop: 3 }}>
                     {photo.description}
                   </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => void describeWithAI(photo)}
+                    disabled={describing === photo.id}
+                    style={{
+                      marginTop: 4, padding: '2px 7px', borderRadius: 4, border: '1px solid #c7d2fe',
+                      background: '#eef2ff', color: '#4f46e5', fontSize: 10, fontWeight: 600,
+                      cursor: describing === photo.id ? 'wait' : 'pointer',
+                    }}
+                    title="Use AI to describe this photograph in medical terminology"
+                  >
+                    {describing === photo.id ? '…' : '🔬 AI Describe'}
+                  </button>
                 )}
               </div>
               <button

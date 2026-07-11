@@ -29,8 +29,11 @@ create table if not exists previsit_submissions (
   ai_formatted      jsonb,   -- {cc, hpi, pmh[], medications[], surgical_history[], allergies, ros_positive[], ros_negative[], red_flags[], suggestions[], urgency}
   ai_processed_at   timestamptz,
 
+  -- Patient medical passport (persistent health record owned by patient)
+  passport          jsonb,   -- {bloodGroup, allergies, conditions[], medications[], surgicalHistory[], emergencyContact:{name,phone}}
+
   -- Monitoring updates from AMISE patient app (append-only array)
-  monitoring_updates jsonb[] default array[]::jsonb[],  -- [{type:'wound_photo'|'pain_score'|'symptom_report', data:{}, submitted_at}]
+  monitoring_updates jsonb[] default array[]::jsonb[],  -- [{dataUrl, context, painScore, note, date, uploaded_at}]
 
   -- Lifecycle
   status            text not null default 'pending'
