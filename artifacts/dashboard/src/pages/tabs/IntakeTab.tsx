@@ -109,6 +109,7 @@ export default function IntakeTab() {
   }
 
   const [checkedIn, setCheckedIn] = useState(false);
+  const [adminOpen, setAdminOpen] = useState(false);
 
   function calcBmi(): { bmi: number; class: string; color: string; rec: string } | null {
     const w = parseFloat(weightKg);
@@ -287,12 +288,16 @@ export default function IntakeTab() {
           </div>
         </div>
 
-        {/* Contact & administrative — inline with demographics */}
+        {/* Contact & administrative — collapsible */}
         <div style={{ borderTop: '1px solid #f1f5f9', marginTop: 12, paddingTop: 12 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>
-            Contact &amp; administrative
-          </div>
-          <div className="form-grid">
+          <button
+            type="button"
+            onClick={() => setAdminOpen(o => !o)}
+            style={{ background: 'none', border: '1px solid #e5e7eb', borderRadius: 6, padding: '3px 11px', fontSize: 11, color: '#6b7280', cursor: 'pointer', marginBottom: adminOpen ? 10 : 0 }}
+          >
+            {adminOpen ? '▲ Less' : '▼ Contact & admin details'}
+          </button>
+          {adminOpen && <div className="form-grid">
             {/* Address / community picker */}
             <div className="fld" ref={addressRef} style={{ position: 'relative' }}>
               <label>Community / Address</label>
@@ -376,7 +381,7 @@ export default function IntakeTab() {
               <label>Policy / NHI Number</label>
               <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
             </div>
-          </div>
+          </div>}
         </div>
 
         {/* ── Referral clinical details ── */}
@@ -492,40 +497,19 @@ export default function IntakeTab() {
       <CollapsibleCard title="Visit" defaultOpen>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-          {/* Site */}
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Clinic site</div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              {(['rodney_bay', 'tapion'] as const).map(s => (
-                <button key={s} type="button" onClick={() => setCurrentSite(s)} style={{
-                  padding: '7px 22px', borderRadius: 8, fontSize: 13, fontWeight: 700,
-                  border: currentSite === s ? '2px solid #0d9488' : '1.5px solid #e2e8f0',
-                  background: currentSite === s ? '#0d9488' : '#f8fafc',
-                  color: currentSite === s ? '#fff' : '#64748b', cursor: 'pointer',
-                }}>
-                  {s === 'rodney_bay' ? 'Rodney Bay' : 'Tapion'}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Visit type */}
-          <div>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Visit type</div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <label style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Visit type</label>
+            <select
+              value={visitType}
+              onChange={e => setProcedureData({ ...procedureData, visitType: e.target.value })}
+              style={{ flex: 1, padding: '7px 10px', borderRadius: 8, border: '1.5px solid #0d9488', fontSize: 13, fontWeight: 600, background: '#f0fdfa', color: '#0f766e', cursor: 'pointer' }}
+            >
+              <option value="">— Select visit type —</option>
               {VISIT_TYPES.map(vt => (
-                <button key={vt.id} type="button"
-                  onClick={() => setProcedureData({ ...procedureData, visitType: vt.id })}
-                  style={{
-                    padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-                    border: visitType === vt.id ? '2px solid #1d4ed8' : '1.5px solid #e2e8f0',
-                    background: visitType === vt.id ? '#1d4ed8' : '#f8fafc',
-                    color: visitType === vt.id ? '#fff' : '#374151', cursor: 'pointer',
-                  }}>
-                  {vt.label}
-                </button>
+                <option key={vt.id} value={vt.id}>{vt.label}</option>
               ))}
-            </div>
+            </select>
           </div>
 
           {/* Scan document shortcut */}
