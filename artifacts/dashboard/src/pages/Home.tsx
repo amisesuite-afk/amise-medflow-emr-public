@@ -632,21 +632,6 @@ export default function HomePage() {
           </div>
           )}
 
-          {/* Site selector pill — outpatient only (inpatient = Tapion always) */}
-          {topSection !== 'consultation' && encounterMode === 'outpatient' && (
-            <div className="site-pill" aria-label="Active clinic site">
-              {SITE_CODES.map(site => (
-                <button
-                  key={site}
-                  className={`site-pill__btn${currentSite === site ? ' site-pill__btn--active' : ''}`}
-                  onClick={() => setCurrentSite(site)}
-                  title={`Switch to ${SITE_LABELS[site]}`}
-                >
-                  {SITE_LABELS[site]}
-                </button>
-              ))}
-            </div>
-          )}
 
           <ResultsAlertBadge patientId={patientId ?? undefined} />
 
@@ -705,6 +690,24 @@ export default function HomePage() {
               <span className="ab-level">{triageResult.surgicalMatches[0].label}</span>
               <span className="ab-score">{triageResult.surgicalMatches[0].category}</span>
             </div>
+          )}
+
+          {/* AI Registrar button — header, doctor-only */}
+          {hasRole(userRole, 'doctor') && (
+            <button
+              type="button"
+              onClick={() => setShowAiPanel(p => !p)}
+              aria-label="AI Consultant"
+              title="AI Consultant co-pilot"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '4px 10px', borderRadius: 8, border: 'none', cursor: 'pointer',
+                background: showAiPanel ? '#312e81' : '#1F7A8C', color: '#fff',
+                fontSize: 13, fontWeight: 700, transition: 'background .2s',
+              }}
+            >
+              🧠 <span style={{ fontSize: 11 }}>AI</span>
+            </button>
           )}
 
           {/* User chip */}
@@ -1191,42 +1194,21 @@ export default function HomePage() {
 
       <FloatingActions />
 
-      {/* Fix 6: Floating AI co-pilot button + slide-in panel */}
-      {hasRole(userRole, 'doctor') && (
-        <>
-          <button
-            type="button"
-            onClick={() => setShowAiPanel(p => !p)}
-            aria-label="AI Consultant"
-            style={{
-              position: 'fixed', bottom: 24, right: 24, zIndex: 900,
-              width: 48, height: 48, borderRadius: '50%', border: 'none',
-              background: showAiPanel ? '#312e81' : '#1F7A8C', color: '#fff',
-              fontSize: 20, fontWeight: 700, cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(0,0,0,.2)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'background .2s',
-            }}
-            title="AI Consultant co-pilot"
-          >
-            {showAiPanel ? '✕' : '🧠'}
-          </button>
-          {showAiPanel && (
-            <div style={{
-              position: 'fixed', top: 52, right: 0, bottom: 0, width: 420, maxWidth: '100vw',
-              zIndex: 850, background: 'var(--bg, #fff)', borderLeft: '1px solid #e2e8f0',
-              boxShadow: '-4px 0 24px rgba(0,0,0,.08)', overflowY: 'auto', padding: '16px 12px',
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink, #1e293b)' }}>AI Consultant</span>
-                <button type="button" onClick={() => setShowAiPanel(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 16, color: '#6b7280' }}>✕</button>
-              </div>
-              <ErrorBoundary>
-                <AiConsultantTab />
-              </ErrorBoundary>
-            </div>
-          )}
-        </>
+      {/* AI slide-in panel — triggered from header button */}
+      {hasRole(userRole, 'doctor') && showAiPanel && (
+        <div style={{
+          position: 'fixed', top: 52, right: 0, bottom: 0, width: 420, maxWidth: '100vw',
+          zIndex: 850, background: 'var(--bg, #fff)', borderLeft: '1px solid #e2e8f0',
+          boxShadow: '-4px 0 24px rgba(0,0,0,.08)', overflowY: 'auto', padding: '16px 12px',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink, #1e293b)' }}>AI Consultant</span>
+            <button type="button" onClick={() => setShowAiPanel(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 16, color: '#6b7280' }}>✕</button>
+          </div>
+          <ErrorBoundary>
+            <AiConsultantTab />
+          </ErrorBoundary>
+        </div>
       )}
 
       <CommandPalette

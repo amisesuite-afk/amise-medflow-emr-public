@@ -155,6 +155,7 @@ export default function CheckInTab() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [encounterStartedAt, setEncounterStartedAt] = useState<string | null>(null);
   const [encounterError, setEncounterError] = useState<string | null>(null);
   const [referringProviders, setReferringProviders] = useState<string[]>([]);
@@ -402,8 +403,17 @@ export default function CheckInTab() {
               <div className="fld"><label style={{ fontSize: 10 }}>Occupation</label><input type="text" value={occupation} onChange={e => setOccupation(e.target.value)} placeholder="e.g. Teacher, Nurse…" style={{ padding: '8px', fontSize: 13 }} /></div>
             </div>
 
+            {/* Expand / collapse secondary fields */}
+            <button
+              type="button"
+              onClick={() => setDetailsOpen(o => !o)}
+              style={{ alignSelf: 'flex-start', background: 'none', border: '1px solid #d1d5db', borderRadius: 6, padding: '4px 12px', fontSize: 12, color: '#6b7280', cursor: 'pointer' }}
+            >
+              {detailsOpen ? '▲ Less details' : '▼ Add address, NOK & insurance'}
+            </button>
+
             {/* Address */}
-            <div style={{ padding: '10px 12px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {detailsOpen && <div style={{ padding: '10px 12px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', letterSpacing: '0.06em' }}>ADDRESS</div>
               <div className="fld" style={{ marginBottom: 0 }}>
                 <label style={{ fontSize: 10 }}>Street / house number</label>
@@ -423,10 +433,10 @@ export default function CheckInTab() {
                   </select>
                 </div>
               </div>
-            </div>
+            </div>}
 
             {/* Next of kin */}
-            <div style={{ padding: '10px 12px', background: '#fff7ed', borderRadius: 8, border: '1px solid #fed7aa', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {detailsOpen && <div style={{ padding: '10px 12px', background: '#fff7ed', borderRadius: 8, border: '1px solid #fed7aa', display: 'flex', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontSize: 10, fontWeight: 700, color: '#92400e', letterSpacing: '0.06em' }}>NEXT OF KIN</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.7fr 1fr', gap: 8 }}>
                 <div className="fld" style={{ marginBottom: 0 }}>
@@ -445,20 +455,20 @@ export default function CheckInTab() {
                   <input inputMode="tel" type="tel" value={nokTel} onChange={e => setNokTel(e.target.value)} placeholder="+1 (758) XXX-XXXX" style={{ padding: '8px', fontSize: 13 }} />
                 </div>
               </div>
-            </div>
+            </div>}
 
             {/* Referred by · Insurance */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {detailsOpen && <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
               <div className="fld">
                 <label style={{ fontSize: 10 }}>Referred by</label>
                 <input type="text" list="ref-docs-ci" value={referredBy} onChange={e => setReferredBy(e.target.value)} placeholder="Doctor or facility…" style={{ padding: '8px', fontSize: 13 }} />
                 <datalist id="ref-docs-ci">{referringProviders.map(n => <option key={n} value={n} />)}</datalist>
               </div>
               <div className="fld"><label style={{ fontSize: 10 }}>Insurance provider</label><input type="text" value={insuranceProvider} onChange={e => setInsuranceProvider(e.target.value)} placeholder="SAGICOR, CLICO…" style={{ padding: '8px', fontSize: 13 }} /></div>
-            </div>
+            </div>}
 
             {/* Policy · NHI · Pre-auth */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+            {detailsOpen && <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
               <div className="fld"><label style={{ fontSize: 10 }}>Policy / Member #</label><input type="text" value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Member ID" style={{ padding: '8px', fontSize: 13 }} /></div>
               <div className="fld"><label style={{ fontSize: 10 }}>NHI #</label><input type="text" value={nhiNumber} onChange={e => setNhiNumber(e.target.value)} placeholder="NHI number" style={{ padding: '8px', fontSize: 13 }} /></div>
               <div className="fld"><label style={{ fontSize: 10 }}>Pre-auth</label>
@@ -466,7 +476,7 @@ export default function CheckInTab() {
                   <option value="">N/A</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="declined">Declined</option>
                 </select>
               </div>
-            </div>
+            </div>}
           </div>
 
           {saveError && (
@@ -586,42 +596,33 @@ export default function CheckInTab() {
 
           {/* Visit Type selector */}
           <div>
-            <div style={{ fontSize: 10, fontWeight: 800, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
-              Visit type
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {VISIT_TYPES.map(vt => {
-                const isSelected = visitType === vt.id;
-                return (
-                  <button key={vt.id} type="button"
-                    onClick={() => {
-                      setVisitType(vt.id);
-                      if (vt.id === 'post_op') { setIsPostOp(true); }
-                      else { setIsPostOp(false); }
-                      if (vt.id === 'ercp' || vt.id === 'endoscopy_ogd' || vt.id === 'endoscopy_col') {
-                        setEncounterType('endoscopy');
-                      } else if (vt.id === 'urgent') {
-                        setEncounterType('major_emergency');
-                      } else if (vt.id === 'post_op' || vt.id === 'follow_up') {
-                        setEncounterType('quick_consult');
-                      } else {
-                        setEncounterType('surgical_consult');
-                      }
-                    }}
-                    style={{
-                      padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
-                      border: `2px solid ${isSelected ? vt.color : '#e2e8f0'}`,
-                      background: isSelected ? vt.color : '#fff',
-                      color: isSelected ? '#fff' : '#374151',
-                      fontWeight: isSelected ? 700 : 500, fontSize: 12,
-                      display: 'flex', alignItems: 'center', gap: 5,
-                      transition: 'all 0.15s',
-                    }}>
-                    <span>{vt.icon}</span>
-                    <span>{vt.label}</span>
-                  </button>
-                );
-              })}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <label style={{ fontSize: 10, fontWeight: 800, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>
+                Visit type
+              </label>
+              <select
+                value={visitType ?? ''}
+                onChange={e => {
+                  const id = e.target.value;
+                  setVisitType(id);
+                  setIsPostOp(id === 'post_op');
+                  if (id === 'ercp' || id === 'endoscopy_ogd' || id === 'endoscopy_col') {
+                    setEncounterType('endoscopy');
+                  } else if (id === 'urgent') {
+                    setEncounterType('major_emergency');
+                  } else if (id === 'post_op' || id === 'follow_up') {
+                    setEncounterType('quick_consult');
+                  } else {
+                    setEncounterType('surgical_consult');
+                  }
+                }}
+                style={{ flex: 1, padding: '7px 10px', borderRadius: 8, border: '1.5px solid #0d9488', fontSize: 13, fontWeight: 600, background: '#f0fdfa', color: '#0f766e', cursor: 'pointer' }}
+              >
+                <option value="">— Select visit type —</option>
+                {VISIT_TYPES.map(vt => (
+                  <option key={vt.id} value={vt.id}>{vt.icon} {vt.label}</option>
+                ))}
+              </select>
             </div>
 
             {/* Post-op date + review number */}

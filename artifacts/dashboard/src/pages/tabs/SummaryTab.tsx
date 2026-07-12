@@ -863,10 +863,8 @@ export default function SummaryTab() {
   return (
     <div className="summary-tab">
 
-      {/* ── Print / Export — primary, always open ── */}
-      <CollapsibleCard title="Print / Export — Clinical Documents" defaultOpen={true}>
-        <DirectExportPanel />
-      </CollapsibleCard>
+      {/* ── Print / Export — always visible compact bar ── */}
+      <DirectExportPanel />
 
       {/* ── AI Summary — secondary, collapsed by default ── */}
       <CollapsibleCard title="AI Clinical Summary (optional)" defaultOpen={false}>
