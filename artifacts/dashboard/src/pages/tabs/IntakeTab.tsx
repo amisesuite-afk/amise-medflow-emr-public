@@ -604,15 +604,15 @@ export default function IntakeTab() {
         <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
           <div style={{ display: 'flex', gap: 0, alignItems: 'stretch', minWidth: 'max-content' }}>
             {/* Vital signs */}
-            <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
               {VITAL_FIELDS.map(({ key, label, unit, placeholder, min, max, step, decimals, defaultVal, normalRange }) => {
                 const val = vitals[key];
                 const isAbnormal = val.trim() !== '' && Number.isFinite(parseFloat(val)) &&
                   (parseFloat(val) < normalRange[0] || parseFloat(val) > normalRange[1]);
                 return (
-                  <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 78 }}>
+                  <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 52 }}>
                     <span style={{
-                      fontSize: 10, fontWeight: 700, letterSpacing: '0.06em',
+                      fontSize: 9, fontWeight: 700, letterSpacing: '0.05em',
                       textTransform: 'uppercase',
                       color: isAbnormal ? '#dc2626' : 'var(--muted)',
                     }}>
@@ -632,7 +632,7 @@ export default function IntakeTab() {
                       onChange={e => updateVital(key, e.target.value)}
                       placeholder={placeholder}
                       style={{
-                        width: 70, fontSize: 12, padding: '4px 5px', textAlign: 'center',
+                        width: 46, fontSize: 11, padding: '3px 4px', textAlign: 'center',
                         borderRadius: 6, border: `1.5px solid ${isAbnormal ? '#fca5a5' : '#d1d5db'}`,
                         background: isAbnormal ? '#fff5f5' : 'var(--bg)',
                         color: isAbnormal ? '#dc2626' : 'var(--ink)', outline: 'none',
@@ -647,10 +647,10 @@ export default function IntakeTab() {
             </div>
 
             {/* Separator */}
-            <div style={{ width: 1, background: '#e2e8f0', margin: '0 16px', flexShrink: 0 }} />
+            <div style={{ width: 1, background: '#e2e8f0', margin: '0 10px', flexShrink: 0 }} />
 
             {/* Anthropometrics */}
-            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
               {[
                 { label: 'Wt',    unit: 'kg', value: weightKg, onChange: setWeightKg, min: 20,  max: 300, step: 0.5, decimals: 1, defaultVal: 70  },
                 { label: 'Ht',    unit: 'cm', value: heightCm, onChange: setHeightCm, min: 50,  max: 220, step: 1,   decimals: 0, defaultVal: 165 },
@@ -658,8 +658,8 @@ export default function IntakeTab() {
                 { label: 'Hip',   unit: 'cm', value: hipCm,    onChange: setHipCm,    min: 40,  max: 200, step: 0.5, decimals: 1, defaultVal: 100 },
                 { label: 'MUAC',  unit: 'cm', value: muacCm,   onChange: setMuacCm,   min: 10,  max: 60,  step: 0.5, decimals: 1, defaultVal: 28  },
               ].map(f => (
-                <div key={f.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 78 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--muted)' }}>
+                <div key={f.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 52 }}>
+                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--muted)' }}>
                     {f.label}
                   </span>
                   <WheelPicker
@@ -675,7 +675,7 @@ export default function IntakeTab() {
                     onChange={e => f.onChange(e.target.value)}
                     placeholder={f.unit}
                     style={{
-                      width: 70, fontSize: 12, padding: '4px 5px', textAlign: 'center',
+                      width: 46, fontSize: 11, padding: '3px 4px', textAlign: 'center',
                       borderRadius: 6, border: '1.5px solid #d1d5db',
                       background: 'var(--bg)', color: 'var(--ink)', outline: 'none',
                     }}
