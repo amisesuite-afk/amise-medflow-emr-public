@@ -2,6 +2,89 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 
+// ── Print radiology request popup ─────────────────────────────────────────────
+
+interface PatientInfo { name: string; age: string; dob: string; sex: string; mrNumber: string; }
+
+function printRadiologyRequest(req: RadiologyRequest, pat: PatientInfo) {
+  const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const timeNow = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+  const modLabel = { MRI: 'MRI', CT: 'CT', Ultrasound: 'Ultrasound', XRay: 'X-Ray', Scope: 'Scope', Functional: 'Functional', Other: 'Other' }[req.modality];
+  const regionLabel = [
+    req.modality === 'Other' ? req.otherDescription : req.anatomicalRegion,
+    req.laterality ? req.laterality.charAt(0).toUpperCase() + req.laterality.slice(1) : '',
+  ].filter(Boolean).join(' · ');
+  const urgencyBg: Record<string, string> = { routine: '#f3f4f6', urgent: '#fef3c7', emergency: '#fee2e2' };
+  const urgencyColor: Record<string, string> = { routine: '#374151', urgent: '#92400e', emergency: '#991b1b' };
+
+  const detailRows: string[] = [];
+  if (req.modality === 'MRI' && req.mriProtocol) detailRows.push(`Protocol: ${req.mriProtocol}${req.mriSequences ? ` · ${req.mriSequences}` : ''}`);
+  if (req.modality === 'CT' && req.ctContrast && req.ctContrast !== 'none') {
+    detailRows.push(`Contrast: ${req.ctContrast.toUpperCase()}${req.ctContrastType ? ` (${req.ctContrastType})` : ''}${req.ctEgfr ? ` · eGFR: ${req.ctEgfr}` : ''}`);
+  }
+  if (req.modality === 'Scope' && req.scopeType) detailRows.push(`Scope type: ${req.scopeType}`);
+  if (req.modality === 'Functional' && req.functionalType) detailRows.push(`Test: ${req.functionalType}`);
+
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Imaging Request — ${pat.name || 'Patient'}</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;background:#fff}
+.page{max-width:210mm;margin:0 auto;padding:15mm 14mm}
+.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:9px;border-bottom:2.5px solid #1a3a5c;margin-bottom:12px}
+.pname{font-size:16px;font-weight:800;color:#1a3a5c}.psub{font-size:10px;color:#555;margin-top:2px}
+.form-title{font-size:14px;font-weight:800;text-align:center;text-transform:uppercase;letter-spacing:.12em;color:#1a3a5c;margin-bottom:11px}
+.patient-box{border:1.5px solid #1a3a5c;border-radius:5px;padding:9px 12px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.pf label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;display:block;margin-bottom:2px}.pf span{font-size:12px;font-weight:600}
+.request-box{border:1.5px solid #e5e7eb;border-radius:6px;padding:12px 14px;margin-bottom:10px}
+.req-row{display:flex;gap:14px;align-items:center;margin-bottom:8px}
+.req-row label{font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;margin-right:4px}
+.mod-badge{display:inline-block;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:700}
+.urg-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;background:${urgencyBg[req.urgency]};color:${urgencyColor[req.urgency]}}
+.field-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin-bottom:3px}
+.field-value{font-size:12px;margin-bottom:8px}
+.sign-row{display:flex;justify-content:space-between;margin-top:20px;padding-top:11px;border-top:1px solid #e5e7eb}
+.sign-block{min-width:190px}.sign-line{border-bottom:1.5px solid #111;height:18px;margin-bottom:3px}
+.sign-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em}.sign-name{font-size:11px;font-weight:700;margin-top:2px}
+.footer{margin-top:14px;text-align:center;font-size:9px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:7px}
+@media print{@page{margin:10mm}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head><body><div class="page">
+<div class="header">
+  <div><div class="pname">Amise Medical Services</div>
+  <div class="psub">Dr Dawit Daniel Kabiye MD, DM · General &amp; Endoscopic Surgery</div>
+  <div class="psub">Rodney Bay Medical Centre, Saint Lucia · Tel: +1 (758) 284-0557</div></div>
+  <div style="text-align:right"><div class="psub" style="font-weight:700">Date: ${today} · ${timeNow}</div></div>
+</div>
+<div class="form-title">Radiology / Imaging Request</div>
+<div class="patient-box">
+  <div class="pf"><label>Patient name</label><span>${pat.name || '—'}</span></div>
+  <div class="pf"><label>Date of birth</label><span>${pat.dob || '—'}</span></div>
+  <div class="pf"><label>Age / Sex</label><span>${pat.age ? `${pat.age}y` : '—'} · ${pat.sex !== 'unknown' ? pat.sex.charAt(0).toUpperCase() + pat.sex.slice(1) : '—'}</span></div>
+  <div class="pf"><label>MRN</label><span>${pat.mrNumber || '—'}</span></div>
+</div>
+<div class="request-box">
+  <div class="req-row">
+    <div><label>Modality</label><span class="mod-badge" style="background:#e0e7ff;color:#3730a3">${modLabel}</span></div>
+    <div><label>Urgency</label><span class="urg-badge">${req.urgency.charAt(0).toUpperCase() + req.urgency.slice(1)}</span></div>
+    ${regionLabel ? `<div style="flex:1"><label>Region / Study</label><span style="font-size:13px;font-weight:700">${regionLabel}</span></div>` : ''}
+  </div>
+  ${detailRows.map(d => `<div class="field-value" style="color:#555;font-style:italic">${d}</div>`).join('')}
+  ${req.indication ? `<div class="field-label">Clinical indication</div><div class="field-value">${req.indication}</div>` : ''}
+  ${req.clinicalQuestion ? `<div class="field-label">Clinical question</div><div class="field-value">${req.clinicalQuestion}</div>` : ''}
+</div>
+<div class="sign-row">
+  <div class="sign-block"><div class="sign-line"></div><div class="sign-label">Requesting Clinician Signature</div><div class="sign-name">Dr Dawit Daniel Kabiye MD, DM</div></div>
+  <div class="sign-block" style="text-align:right"><div class="sign-line"></div><div class="sign-label">Date &amp; Time</div><div class="sign-name">${today}</div></div>
+</div>
+<div class="footer">Amise Medical Services · Confidential Patient Information · Retain for radiology records${pat.mrNumber ? ` · MRN: ${pat.mrNumber}` : ''}</div>
+</div></body></html>`;
+
+  const popup = window.open('', '_blank', 'width=860,height=1100,menubar=yes');
+  if (!popup) { alert('Pop-up blocked — please allow pop-ups to print.'); return; }
+  popup.document.write(html);
+  popup.document.close();
+  popup.addEventListener('load', () => { popup.focus(); popup.print(); });
+}
+
 // ── RadiologyRequest interface ────────────────────────────────────────────────
 
 export interface RadiologyRequest {
@@ -489,13 +572,12 @@ function AddRadiologyForm({ onAdd }: { onAdd: (r: RadiologyRequest) => void }) {
 // ── Request item card ─────────────────────────────────────────────────────────
 
 function RequestCard({
-  req,
-  onChange,
-  onRemove,
+  req, onChange, onRemove, patient,
 }: {
   req: RadiologyRequest;
   onChange: (r: RadiologyRequest) => void;
   onRemove: () => void;
+  patient: PatientInfo;
 }) {
   const modCol = MODALITY_COLOURS[req.modality];
   const urgCol = URGENCY_COLOURS[req.urgency];
@@ -562,6 +644,19 @@ function RequestCard({
         }}>
           {req.urgency}
         </span>
+
+        {/* Print */}
+        <button
+          type="button"
+          onClick={() => printRadiologyRequest(req, patient)}
+          title="Print / PDF"
+          style={{
+            background: 'none', border: '1px solid #d1d5db', borderRadius: 6, color: '#374151',
+            cursor: 'pointer', fontSize: 12, padding: '2px 8px', fontWeight: 500,
+          }}
+        >
+          🖨 Print
+        </button>
 
         {/* Remove */}
         <button
@@ -647,10 +742,15 @@ function RequestCard({
 // ── Main export ───────────────────────────────────────────────────────────────
 
 export default function RadiologyTab() {
-  const { radiologyRequests, setRadiologyRequests } = useAppContext() as ReturnType<typeof useAppContext> & {
+  const appCtx = useAppContext();
+  const { radiologyRequests, setRadiologyRequests } = appCtx as ReturnType<typeof useAppContext> & {
     radiologyRequests: RadiologyRequest[];
     setRadiologyRequests: (v: RadiologyRequest[]) => void;
   };
+  const { patientName, age, dob, sex, mrNumber } = appCtx as ReturnType<typeof useAppContext> & {
+    patientName: string; age: string; dob: string; sex: string; mrNumber: string;
+  };
+  const patient: PatientInfo = { name: patientName ?? '', age: age ?? '', dob: dob ?? '', sex: sex ?? 'unknown', mrNumber: mrNumber ?? '' };
 
   const requests: RadiologyRequest[] = radiologyRequests ?? [];
 
@@ -694,6 +794,7 @@ export default function RadiologyTab() {
                 req={req}
                 onChange={updateRequest}
                 onRemove={() => removeRequest(req.id)}
+                patient={patient}
               />
             ))}
           </div>

@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { getSupabaseAdmin, requireStaffAuth, audit } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
+import { sendOrDraft } from '../lib/gmail.js';
 
 const router = Router();
 
@@ -484,6 +485,66 @@ router.get('/api/investigations/patient/:patientId', async (req, res) => {
     });
   } catch (err) {
     logger.error({ err }, '[investigations/patient] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/send-lab-request
+// Email a lab test request to the specified lab address.
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/send-lab-request', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { to, patientName, age, dob, sex, mrNumber, tests, indication, urgency, doctorName } = (req.body ?? {}) as {
+    to?: string; patientName?: string; age?: string; dob?: string; sex?: string; mrNumber?: string;
+    tests?: string[]; indication?: string; urgency?: string; doctorName?: string;
+  };
+
+  if (!to || !Array.isArray(tests) || tests.length === 0) {
+    res.status(400).json({ error: 'to and tests[] are required' });
+    return;
+  }
+
+  const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const patientLine = [patientName, dob ? `DOB: ${dob}` : null, age ? `Age: ${age}` : null, sex && sex !== 'unknown' ? sex : null, mrNumber ? `MRN: ${mrNumber}` : null].filter(Boolean).join(' · ');
+
+  const body = [
+    'LABORATORY REQUEST',
+    '==================',
+    `Date: ${today}`,
+    `Requesting clinician: ${doctorName ?? 'Dr Dawit Daniel Kabiye MD, DM'}`,
+    `Practice: Amise Medical Services, Rodney Bay, Saint Lucia`,
+    '',
+    'PATIENT',
+    patientLine || '(details not provided)',
+    '',
+    `URGENCY: ${urgency ?? 'Routine'}`,
+    indication ? `INDICATION: ${indication}` : '',
+    '',
+    'TESTS REQUESTED',
+    ...tests.map(t => `  • ${t}`),
+    '',
+    '---',
+    'Please contact the practice at +1 (758) 284-0557 with any queries.',
+    'Amise Medical Services · Confidential Patient Information',
+  ].filter(line => line !== undefined).join('\n');
+
+  try {
+    const result = await sendOrDraft({
+      to,
+      subject: `Lab Request — ${patientName ?? 'Patient'} — ${urgency ?? 'Routine'} — ${today}`,
+      body,
+    });
+
+    void logAudit(req, 'create', 'document', undefined, undefined, {
+      action: 'send-lab-request', to, patientName: patientName ?? null,
+      testCount: tests.length, urgency: urgency ?? 'Routine',
+    });
+
+    res.json({ action: result.action });
+  } catch (err) {
+    logger.error({ err }, '[investigations/send-lab-request] error');
     res.status(502).json({ error: errStr(err) });
   }
 });

@@ -6,6 +6,7 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import ResultsTrackerCard from '@/components/ResultsTrackerCard';
 import LabInterpretationPanel from '@/components/LabInterpretationPanel';
+import { useToast } from '@/components/ToastProvider';
 
 function filterBySex(lab: string, sex: string): boolean {
   if (lab.includes('(M)') && sex === 'female') return false;
@@ -51,6 +52,90 @@ function formatExtractedValue(r: ExtractedResult): string {
   if (r.flag) value += ` [${r.flag}]`;
   if (r.refRange) value += ` (ref: ${r.refRange})`;
   return value;
+}
+
+// ── Lab request print popup ───────────────────────────────────────────────────
+
+function printLabRequest(p: {
+  patientName: string; age: string; dob: string; sex: string; mrNumber: string;
+  orderedInvestigations: string[]; indication: string; urgency: string; doctorName: string;
+}) {
+  const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  const timeNow = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+
+  const categorised: Record<string, string[]> = {};
+  for (const test of p.orderedInvestigations) {
+    let found = false;
+    for (const group of LSL_CATALOGUE) {
+      if (group.tests.some(t => cleanLabel(t).toLowerCase() === test.toLowerCase())) {
+        (categorised[group.category] ??= []).push(test);
+        found = true;
+        break;
+      }
+    }
+    if (!found) (categorised['Other / Custom'] ??= []).push(test);
+  }
+
+  const urgencyBg: Record<string, string> = { Routine: '#f3f4f6', Urgent: '#fef3c7', STAT: '#fee2e2' };
+  const urgencyColor: Record<string, string> = { Routine: '#374151', Urgent: '#92400e', STAT: '#991b1b' };
+
+  const testSections = Object.entries(categorised).map(([cat, tests]) =>
+    `<div class="section-title">${cat}</div><div class="test-grid">${tests.map(t => `<div class="test-item">${t}</div>`).join('')}</div>`
+  ).join('');
+
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Lab Request — ${p.patientName || 'Patient'}</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;background:#fff}
+.page{max-width:210mm;margin:0 auto;padding:15mm 14mm}
+.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:9px;border-bottom:2.5px solid #1a3a5c;margin-bottom:12px}
+.pname{font-size:16px;font-weight:800;color:#1a3a5c}.psub{font-size:10px;color:#555;margin-top:2px}
+.form-title{font-size:14px;font-weight:800;text-align:center;text-transform:uppercase;letter-spacing:.12em;color:#1a3a5c;margin-bottom:11px}
+.patient-box{border:1.5px solid #1a3a5c;border-radius:5px;padding:9px 12px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.pf label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;display:block;margin-bottom:2px}.pf span{font-size:12px;font-weight:600}
+.info-row{display:flex;gap:18px;align-items:center;margin-bottom:10px;padding:7px 11px;border:1px solid #e5e7eb;border-radius:5px;background:#f9fafb}
+.info-row label{font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;margin-right:5px}
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;background:${urgencyBg[p.urgency] ?? '#f3f4f6'};color:${urgencyColor[p.urgency] ?? '#374151'}}
+.section-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#1a3a5c;margin:9px 0 4px;padding-bottom:2px;border-bottom:1px solid #e5e7eb}
+.test-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px 10px}
+.test-item{font-size:11px;padding:3px 0;display:flex;align-items:center;gap:4px}.test-item::before{content:'☐';font-size:13px;color:#374151;flex-shrink:0}
+.sign-row{display:flex;justify-content:space-between;margin-top:20px;padding-top:11px;border-top:1px solid #e5e7eb}
+.sign-block{min-width:190px}.sign-line{border-bottom:1.5px solid #111;height:18px;margin-bottom:3px}
+.sign-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em}.sign-name{font-size:11px;font-weight:700;margin-top:2px}
+.footer{margin-top:14px;text-align:center;font-size:9px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:7px}
+@media print{@page{margin:10mm}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head><body><div class="page">
+<div class="header">
+  <div><div class="pname">Amise Medical Services</div>
+  <div class="psub">Dr Dawit Daniel Kabiye MD, DM · General &amp; Endoscopic Surgery</div>
+  <div class="psub">Rodney Bay Medical Centre, Saint Lucia · Tel: +1 (758) 284-0557</div></div>
+  <div style="text-align:right"><div class="psub">Laboratory Services Ltd · Tapion, Saint Lucia</div>
+  <div class="psub">Tel: (758) 459-2000</div>
+  <div class="psub" style="margin-top:4px;font-weight:700">Date: ${today} · ${timeNow}</div></div>
+</div>
+<div class="form-title">Laboratory Request Form</div>
+<div class="patient-box">
+  <div class="pf"><label>Patient name</label><span>${p.patientName || '—'}</span></div>
+  <div class="pf"><label>Date of birth</label><span>${p.dob || '—'}</span></div>
+  <div class="pf"><label>Age / Sex</label><span>${p.age ? `${p.age}y` : '—'} · ${p.sex !== 'unknown' ? p.sex.charAt(0).toUpperCase() + p.sex.slice(1) : '—'}</span></div>
+  <div class="pf"><label>MRN</label><span>${p.mrNumber || '—'}</span></div>
+</div>
+<div class="info-row">
+  <div><label>Urgency</label><span class="badge">${p.urgency}</span></div>
+  <div style="flex:1"><label>Clinical indication</label><span>${p.indication || 'See clinical notes'}</span></div>
+</div>
+${testSections}
+<div class="sign-row">
+  <div class="sign-block"><div class="sign-line"></div><div class="sign-label">Requesting Clinician Signature</div><div class="sign-name">${p.doctorName}</div></div>
+  <div class="sign-block" style="text-align:right"><div class="sign-line"></div><div class="sign-label">Date &amp; Time</div><div class="sign-name">${today}</div></div>
+</div>
+<div class="footer">Amise Medical Services · Confidential Patient Information · Retain for laboratory records${p.mrNumber ? ` · MRN: ${p.mrNumber}` : ''}</div>
+</div></body></html>`;
+
+  const popup = window.open('', '_blank', 'width=860,height=1100,menubar=yes');
+  if (!popup) { alert('Pop-up blocked — please allow pop-ups to print.'); return; }
+  popup.document.write(html);
+  popup.document.close();
+  popup.addEventListener('load', () => { popup.focus(); popup.print(); });
 }
 
 // ── Laboratory Services Ltd — Saint Lucia ─────────────────────────────────────
@@ -181,9 +266,18 @@ export default function InvestigationsTab() {
     orderedInvestigations, setOrderedInvestigations,
     investigationResults, setInvestigationResults,
     symptoms, symptomDetails, sex,
+    patientName, age, dob, hpiNotes, mrNumber,
   } = useAppContext();
+  const { showToast } = useToast();
 
   const [manualInput, setManualInput] = useState('');
+
+  // Request form state
+  const [reqIndication, setReqIndication] = useState('');
+  const [reqUrgency, setReqUrgency] = useState<'Routine' | 'Urgent' | 'STAT'>('Routine');
+  const [reqDoctor, setReqDoctor] = useState('Dr Dawit Daniel Kabiye MD, DM');
+  const [reqLabEmail, setReqLabEmail] = useState('');
+  const [emailing, setEmailing] = useState(false);
 
   // AI result scan — staff uploads a lab report; Claude drafts the
   // extracted results, staff review/edit, then confirm to apply.
@@ -292,6 +386,34 @@ export default function InvestigationsTab() {
   }
 
   const resultReceivedCount = Object.keys(investigationResults).length;
+
+  async function emailLabRequest() {
+    if (!reqLabEmail.trim()) return;
+    setEmailing(true);
+    try {
+      const apiOrigin = getApiOrigin();
+      const url = apiOrigin ? `${apiOrigin}/api/investigations/send-lab-request` : '/api/investigations/send-lab-request';
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({
+          to: reqLabEmail,
+          patientName, age, dob, sex, mrNumber,
+          tests: orderedInvestigations,
+          indication: reqIndication || hpiNotes.slice(0, 200),
+          urgency: reqUrgency,
+          doctorName: reqDoctor,
+        }),
+      });
+      const d = await r.json() as { action?: string; error?: string };
+      if (!r.ok) throw new Error(d.error ?? `HTTP ${r.status}`);
+      showToast(d.action === 'drafted' ? 'Draft email created in Gmail' : d.action === 'sent' ? 'Lab request sent' : 'Saved (dry-run mode)', 'success');
+    } catch (err) {
+      showToast(String(err), 'error');
+    } finally {
+      setEmailing(false);
+    }
+  }
 
   return (
     <div className="gap-y">
@@ -418,6 +540,76 @@ export default function InvestigationsTab() {
           </button>
         </div>
       </CollapsibleCard>
+
+      {/* ── Lab request form — print / email ─────────────────────────────── */}
+      {orderedInvestigations.length > 0 && (
+        <CollapsibleCard title="Lab request form" badge={`${orderedInvestigations.length} test${orderedInvestigations.length !== 1 ? 's' : ''}`}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="form-grid cols-2">
+              <div className="fld">
+                <label>Clinical indication</label>
+                <input
+                  value={reqIndication}
+                  onChange={e => setReqIndication(e.target.value)}
+                  placeholder={hpiNotes ? hpiNotes.slice(0, 60) + '…' : 'e.g. Acute abdominal pain, pre-op workup…'}
+                />
+              </div>
+              <div className="fld">
+                <label>Urgency</label>
+                <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                  {(['Routine', 'Urgent', 'STAT'] as const).map(u => (
+                    <button key={u} type="button" onClick={() => setReqUrgency(u)} style={{
+                      padding: '5px 12px', borderRadius: 999, fontSize: 12, cursor: 'pointer',
+                      fontWeight: reqUrgency === u ? 700 : 500,
+                      border: reqUrgency === u ? '1.5px solid currentColor' : '1px solid #d1d5db',
+                      background: reqUrgency === u
+                        ? (u === 'STAT' ? '#fee2e2' : u === 'Urgent' ? '#fef3c7' : '#e0e7ff')
+                        : '#fff',
+                      color: reqUrgency === u
+                        ? (u === 'STAT' ? '#991b1b' : u === 'Urgent' ? '#92400e' : '#3730a3')
+                        : '#6b7280',
+                    }}>{u}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="form-grid cols-2">
+              <div className="fld">
+                <label>Requesting clinician</label>
+                <input value={reqDoctor} onChange={e => setReqDoctor(e.target.value)} />
+              </div>
+              <div className="fld">
+                <label>Lab email (optional — enables email button)</label>
+                <input type="email" value={reqLabEmail} onChange={e => setReqLabEmail(e.target.value)} placeholder="lab@example.com" />
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingTop: 2 }}>
+              <button
+                type="button"
+                onClick={() => printLabRequest({
+                  patientName, age, dob, sex, mrNumber, orderedInvestigations,
+                  indication: reqIndication || hpiNotes.slice(0, 160),
+                  urgency: reqUrgency, doctorName: reqDoctor,
+                })}
+                style={{ padding: '7px 16px', borderRadius: 8, border: 'none', background: '#1a3a5c', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+              >
+                🖨 Print / PDF
+              </button>
+              {reqLabEmail.trim() && (
+                <button
+                  type="button"
+                  disabled={emailing}
+                  onClick={() => void emailLabRequest()}
+                  style={{ padding: '7px 16px', borderRadius: 8, border: 'none', fontSize: 13, fontWeight: 700, cursor: emailing ? 'default' : 'pointer',
+                    background: emailing ? '#e5e7eb' : '#0d9488', color: emailing ? '#9ca3af' : '#fff' }}
+                >
+                  {emailing ? 'Sending…' : '✉ Email to Lab'}
+                </button>
+              )}
+            </div>
+          </div>
+        </CollapsibleCard>
+      )}
 
       {/* AI result scan — staff upload, AI extraction, human confirm */}
       <CollapsibleCard
