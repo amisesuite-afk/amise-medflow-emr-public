@@ -14,7 +14,7 @@
     "pnpm": ">=10"
   },
   "devDependencies": {
-    "prettier": "^3.8.3",
+    "prettier": "^3.9.5",
     "typescript": "~5.9.3"
   }
 }
