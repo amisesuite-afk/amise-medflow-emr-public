@@ -130,7 +130,13 @@ pnpm run build                                 # Typecheck + build all packages
 | `DOCTOR_NOTIFY_EMAIL` | Email for escalations and daily summary |
 | `STAFF_NOTIFY_EMAIL` | Email for staff booking alerts (falls back to `DOCTOR_NOTIFY_EMAIL`) |
 | `STAFF_NOTIFY_PHONE` | Phone for staff SMS alerts on new bookings |
-| `PRACTICE_PHONE` | Practice phone shown in patient SMS (default `+17582840557`) |
+| `PRACTICE_PHONE` | Primary practice phone shown in patient SMS (default `+17582840557` — Tapion) |
+| `PRACTICE_LINE_TAPION` | E.164 number for Tapion Hospital line (default `+17582840557`, WhatsApp enabled) |
+| `PRACTICE_LINE_RODNEY_BAY` | E.164 number for Rodney Bay / outpatient line (default `+17587207111`, WhatsApp enabled) |
+| `PRACTICE_LINE_LANDLINE` | E.164 number for landline (default `+17584592227`, no WhatsApp) |
+| `PRACTICE_LINE_TAPION_LABEL` | Display label for Tapion line (default `Tapion`) |
+| `PRACTICE_LINE_RODNEY_BAY_LABEL` | Display label for Rodney Bay line (default `Rodney Bay`) |
+| `WHATSAPP_NUMBERS` | Comma-separated E.164 list of WhatsApp-capable lines (default: Tapion + Rodney Bay) |
 | `SMS_PROVIDER` | `dry_run` (default) / `twilio` / `digicel` |
 | `SENTRY_DSN` | Sentry DSN for API error monitoring (optional) |
 | `PORTAL_URL` | Front-desk portal URL for CORS and WhatsApp links |

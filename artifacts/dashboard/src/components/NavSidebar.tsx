@@ -7,7 +7,7 @@ import {
   ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, Inbox,
   Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig, Check,
   MessageSquare, Tags, ClipboardMinus, ScrollText, MailOpen, GraduationCap, ShieldCheck,
-  Calculator, Droplets, Bandage, UserCheck, ArrowLeftRight,
+  Calculator, Droplets, Bandage, UserCheck, ArrowLeftRight, PhoneIncoming,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection, EncounterType } from '@/context/AppContext';
@@ -176,6 +176,7 @@ const FD_NAV_ITEMS: TopItem[] = [
   { id: 'checkin',         icon: UserCheck,       label: 'Check-In',         roles: ['front_desk', 'admin'], group: 'Check-In' },
   { id: 'doc_scan',        icon: ScanLine,        label: 'Scan Document',    roles: ['front_desk', 'admin'], group: 'Check-In' },
   { id: 'booking_inbox',   icon: Inbox,           label: 'Booking Inbox',    roles: ['front_desk', 'admin'], group: 'Check-In' },
+  { id: 'calls_queue',     icon: PhoneIncoming,   label: 'Call Queue',       roles: ['front_desk', 'admin'], group: 'Check-In' },
   { id: 'intake',          icon: ClipboardList,   label: 'Intake',           roles: ['front_desk', 'admin'], group: 'Check-In' },
   // Administrative
   { id: 'scheduling',      icon: CalendarDays,    label: 'Scheduling',       roles: ['front_desk', 'admin'], group: 'Admin' },

@@ -45,6 +45,7 @@ import APCQTab from './tabs/APCQTab';
 import NurseAPCQTab from './tabs/NurseAPCQTab';
 import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
 import BookingInboxTab from './tabs/BookingInboxTab';
+import CallsQueueTab from './tabs/CallsQueueTab';
 import AnalyticsTab from './tabs/AnalyticsTab';
 import SettingsTab from './tabs/SettingsTab';
 import PortalIntakeTab from './tabs/PortalIntakeTab';
@@ -1282,6 +1283,7 @@ export default function HomePage() {
         {topSection === 'checkin'                                              && <CheckInTab />}
         {topSection === 'doc_scan'   && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
         {topSection === 'booking_inbox'  && roleIn(userRole, 'front_desk', 'admin') && <BookingInboxTab />}
+        {topSection === 'calls_queue'    && roleIn(userRole, 'front_desk', 'admin') && <CallsQueueTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
         {topSection === 'visit_lifecycle'                                        && <VisitManagerTab />}

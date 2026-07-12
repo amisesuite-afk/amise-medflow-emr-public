@@ -34,6 +34,19 @@ function isGeneralEnquiry(text: string): boolean {
   return ENQUIRY_HINTS.test(trimmed);
 }
 
+// Format a phone number for display: +17582840557 → 758-284-0557
+function fmtPhone(e164: string): string {
+  const d = e164.replace(/\D/g, '');
+  if (d.length === 11 && d[0] === '1') return `${d.slice(1, 4)}-${d.slice(4, 7)}-${d.slice(7)}`;
+  if (d.length === 7) return `${d.slice(0, 3)}-${d.slice(3)}`;
+  return e164;
+}
+
+const tapionLabel    = process.env.PRACTICE_LINE_TAPION_LABEL    ?? 'Tapion';
+const rodneyBayLabel = process.env.PRACTICE_LINE_RODNEY_BAY_LABEL ?? 'Rodney Bay';
+const tapionNum      = fmtPhone(process.env.PRACTICE_LINE_TAPION     ?? '+17582840557');
+const rodneyBayNum   = fmtPhone(process.env.PRACTICE_LINE_RODNEY_BAY ?? '+17587207111');
+
 function enquiryReplyTwiml(triageFormUrl: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <Response>
@@ -41,7 +54,7 @@ function enquiryReplyTwiml(triageFormUrl: string): string {
 
 To help us prepare for your visit, please complete our short triage form: ${triageFormUrl}
 
-You're also welcome to reply here or email amisesuite@gmail.com with your details and we'll guide you through it — or call our front desk: Tapion 284-0557, Rodney Bay 720-7111. – Amise Medical</Message>
+You're also welcome to reply here or email amisesuite@gmail.com with your details and we'll guide you through it — or call our front desk: ${tapionLabel} ${tapionNum}, ${rodneyBayLabel} ${rodneyBayNum}. – Amise Medical</Message>
 </Response>`;
 }
 
