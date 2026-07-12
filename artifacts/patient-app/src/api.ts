@@ -112,6 +112,46 @@ export async function savePassport(
   return r.json();
 }
 
+// ── Voice notes ───────────────────────────────────────────────────────────────
+
+export interface VoiceNote {
+  id: string;
+  created_at: string;
+  duration_s: number | null;
+  transcript: string | null;
+  staff_notes: string | null;
+  status: string;
+}
+
+export async function uploadVoiceNote(
+  sessionToken: string,
+  audio: Blob,
+  note?: string,
+): Promise<{ call_log_id: string }> {
+  const formData = new FormData();
+  const ext = audio.type.includes('mp4') ? 'm4a' : audio.type.includes('ogg') ? 'ogg' : 'webm';
+  formData.append('file', audio, `voice-note.${ext}`);
+  if (note) formData.append('note', note);
+
+  const r = await fetch(`${API}/patient/voice-note`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${sessionToken}` },
+    body: formData,
+  });
+  const d = await r.json() as { call_log_id?: string; error?: string };
+  if (!r.ok) throw new Error(d.error ?? 'Failed to send voice note');
+  return d as { call_log_id: string };
+}
+
+export async function getVoiceNotes(sessionToken: string): Promise<VoiceNote[]> {
+  const r = await fetch(`${API}/patient/voice-notes`, {
+    headers: { Authorization: `Bearer ${sessionToken}` },
+  });
+  if (!r.ok) return [];
+  const d = await r.json() as VoiceNote[] | { data?: VoiceNote[] };
+  return Array.isArray(d) ? d : (d.data ?? []);
+}
+
 // ── Monitoring ────────────────────────────────────────────────────────────────
 
 export async function addMonitoringPhoto(

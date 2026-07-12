@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type TabId = 'passport' | 'previsit' | 'upload' | 'monitoring';
+export type TabId = 'passport' | 'previsit' | 'monitoring' | 'upload' | 'voice';
 
 interface NavItem {
   id: TabId;
@@ -13,6 +13,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'previsit', label: 'Pre-Visit', emoji: '📋' },
   { id: 'monitoring', label: 'Monitoring', emoji: '📸' },
   { id: 'upload', label: 'Upload', emoji: '📂' },
+  { id: 'voice', label: 'Messages', emoji: '🎙' },
 ];
 
 interface BottomNavProps {

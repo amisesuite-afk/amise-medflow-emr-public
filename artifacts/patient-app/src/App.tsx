@@ -5,6 +5,7 @@ import PassportScreen from './screens/PassportScreen';
 import PreVisitScreen from './screens/PreVisitScreen';
 import MonitoringScreen from './screens/MonitoringScreen';
 import UploadScreen from './screens/UploadScreen';
+import VoiceScreen from './screens/VoiceScreen';
 import LoginScreen from './screens/LoginScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
 import { getStoredSession, saveSession, clearSession, getPatientProfile } from './api';
@@ -113,6 +114,8 @@ const App: React.FC = () => {
         return <MonitoringScreen token={session.sessionToken} />;
       case 'upload':
         return <UploadScreen token={session.sessionToken} />;
+      case 'voice':
+        return <VoiceScreen token={session.sessionToken} />;
     }
   };
 

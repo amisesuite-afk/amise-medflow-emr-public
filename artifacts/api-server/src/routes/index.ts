@@ -19,6 +19,7 @@ import narrativeRouter from "./narrative";
 import voiceRouter from "./voice";
 import callsRouter from "./calls";
 import callRecordingRouter from "./call-recording";
+import patientMessagesRouter from "./patient-messages";
 
 const router: IRouter = Router();
 
@@ -42,5 +43,6 @@ router.use(narrativeRouter);
 router.use(voiceRouter);
 router.use(callsRouter);
 router.use(callRecordingRouter);
+router.use(patientMessagesRouter);
 
 export default router;
