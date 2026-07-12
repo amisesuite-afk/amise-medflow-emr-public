@@ -16,6 +16,8 @@ import billingRouter from "./billing";
 import preProcedureRouter from "./pre-procedure";
 import aiConsultRouter from "./ai-consult";
 import narrativeRouter from "./narrative";
+import voiceRouter from "./voice";
+import callsRouter from "./calls";
 
 const router: IRouter = Router();
 
@@ -36,5 +38,7 @@ router.use(billingRouter);
 router.use(preProcedureRouter);
 router.use(aiConsultRouter);
 router.use(narrativeRouter);
+router.use(voiceRouter);
+router.use(callsRouter);
 
 export default router;

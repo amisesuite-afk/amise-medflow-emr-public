@@ -26,6 +26,32 @@ const SPEECH_SUPPORTED = !!SR_CLASS;
 
 type SegmentSource = 'local' | 'ollama' | 'cloud';
 
+// Fire-and-forget: log completed segmentation to call_logs for audit trail
+async function persistCallLog(
+  patientId: string | null | undefined,
+  transcript: string,
+  soap: unknown,
+  source: SegmentSource,
+): Promise<void> {
+  if (!patientId || source === 'cloud') return; // cloud path saves server-side
+  try {
+    const headers = await staffAuthHeaders();
+    const apiOrigin = getApiOrigin();
+    const url = apiOrigin ? `${apiOrigin}/api/calls/ingest` : '/api/calls/ingest';
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify({
+        patient_id: patientId,
+        source: 'ambient',
+        direction: 'ambient',
+        transcript,
+        soap_segmented: soap,
+      }),
+    });
+  } catch { /* non-fatal */ }
+}
+
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface Props {
@@ -111,6 +137,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       if (local.confidence >= 0.7) {
         setPendingSoap(local.segmented);
         setSegmentSource('local');
+        void persistCallLog(ctx.patientId, text, local.segmented, 'local');
         return;
       }
 
@@ -121,18 +148,19 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           const ollamaResult = await segmentSoapWithOllama(text, visitType, aiConfig);
           setPendingSoap(ollamaResult);
           setSegmentSource('ollama');
+          void persistCallLog(ctx.patientId, text, ollamaResult, 'ollama');
           return;
         } catch { /* fall through to cloud */ }
       }
 
-      // Tier 3: cloud Claude
+      // Tier 3: cloud Claude — passes patientId so voice.ts writes the call_log
       const apiOrigin = getApiOrigin();
       const url = apiOrigin ? `${apiOrigin}/api/voice/segment` : '/api/voice/segment';
       const headers = await staffAuthHeaders();
       const r = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify({ transcript: text, visitType }),
+        body: JSON.stringify({ transcript: text, visitType, patientId: ctx.patientId ?? undefined }),
       });
       const data = await r.json() as { segmented?: SegmentedSoap; error?: string };
       if (!r.ok || !data.segmented) throw new Error(data.error ?? 'Segmentation failed');

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
-import { requireStaffAuth } from '../lib/supabase.js';
+import { requireStaffAuth, sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
@@ -32,15 +32,15 @@ Return ONLY a JSON object (no markdown fences):
 If a section has no dictated content, return an empty string (not null). Only populate sections where the surgeon clearly spoke to that topic.`;
 
 // POST /api/voice/segment
-// Receives a raw voice transcript, returns SOAP-segmented JSON ready to load into AppContext.
 router.post('/api/voice/segment', async (req, res) => {
   const ok = await requireStaffAuth(req, res);
   if (!ok) return;
 
-  const { transcript, visitType, context } = req.body as {
+  const { transcript, visitType, context, patientId } = req.body as {
     transcript: string;
     visitType?: string;
-    context?: string; // e.g. "follow-up", "post-op day 3", "breast clinic"
+    context?: string;
+    patientId?: string;     // present when called from an active in-session recording
   };
 
   if (!transcript?.trim()) {
@@ -50,7 +50,7 @@ router.post('/api/voice/segment', async (req, res) => {
 
   const contextNote = [
     visitType ? `Visit type: ${visitType}` : '',
-    context ? `Clinical context: ${context}` : '',
+    context   ? `Clinical context: ${context}` : '',
   ].filter(Boolean).join('. ');
 
   const userPrompt = `${contextNote ? contextNote + '\n\n' : ''}Raw voice transcript:\n\n${transcript.trim()}\n\nSegment this into SOAP components now.`;
@@ -80,7 +80,22 @@ router.post('/api/voice/segment', async (req, res) => {
       return;
     }
 
-    log.info({ chars: transcript.length }, 'voice transcript segmented');
+    // Persist audit trail — fire-and-forget, never blocks the response
+    void (async () => {
+      try {
+        await sb().from('call_logs').insert({
+          patient_id:     patientId ?? null,
+          source:         'ambient',
+          direction:      'ambient',
+          transcript:     transcript.trim(),
+          soap_segmented: segmented,
+        });
+      } catch (saveErr) {
+        log.warn({ saveErr }, 'voice segment: call_log save failed (non-fatal)');
+      }
+    })();
+
+    log.info({ chars: transcript.length, patientId: patientId ?? 'anon' }, 'voice transcript segmented');
     res.json({ success: true, segmented });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Voice segmentation failed';

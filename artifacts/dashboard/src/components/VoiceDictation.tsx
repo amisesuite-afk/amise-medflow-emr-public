@@ -113,14 +113,14 @@ export default function VoiceDictation({ visitType, onClose }: Props) {
         } catch { /* fall through */ }
       }
 
-      // Tier 3: cloud
+      // Tier 3: cloud — passes patientId so voice.ts writes the call_log
       const apiOrigin = getApiOrigin();
       const url = apiOrigin ? `${apiOrigin}/api/voice/segment` : '/api/voice/segment';
       const headers = await staffAuthHeaders();
       const r = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify({ transcript: text, visitType }),
+        body: JSON.stringify({ transcript: text, visitType, patientId: ctx.patientId ?? undefined }),
       });
       const data = await r.json() as { success?: boolean; segmented?: SegmentedSoap; error?: string };
       if (!r.ok || !data.segmented) throw new Error(data.error ?? 'Segmentation failed');
