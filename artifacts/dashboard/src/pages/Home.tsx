@@ -78,6 +78,7 @@ import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
 import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
+import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import VoiceDictation from '@/components/VoiceDictation';
@@ -1075,6 +1076,7 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && !guidedMode && <EncounterContextPicker />}
         {topSection === 'consultation' && !!patientId && !ambientMode && !guidedMode && <PreviousVisitStrip />}
         {topSection === 'consultation' && !ambientMode && !guidedMode && <ChiefComplaintStrip />}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && !!activeCcKey && <ClinicalWorkflowBar />}
         {topSection === 'consultation' && !ambientMode && !guidedMode && <ProblemListStrip />}
         {topSection === 'consultation' && !ambientMode && !guidedMode && <ClinicalPromptsStrip />}
         {topSection === 'consultation' && !ambientMode && !guidedMode && <FollowUpQueueStrip />}
