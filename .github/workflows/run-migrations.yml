@@ -297,5 +297,13 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"query\": $QUERY}" | jq .
 
+      - name: "Migration 35: Storage buckets"
+        run: |
+          QUERY=$(jq -Rs . < supabase-storage-buckets-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
       - name: Done
-        run: echo "All 34 migrations completed successfully."
+        run: echo "All 35 migrations completed successfully."
