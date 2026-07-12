@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { getApiOrigin } from '@/lib/api-origin';
+import AIProviderSettings from '@/components/AIProviderSettings';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -355,6 +356,7 @@ export default function SettingsTab() {
         </div>
       </div>
 
+      <AIProviderSettings />
       <ApiStatus />
       <ProfileSection />
       <UserManagement />

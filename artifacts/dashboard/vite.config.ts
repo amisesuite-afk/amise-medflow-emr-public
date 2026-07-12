@@ -88,6 +88,13 @@ export default defineConfig({
     },
     dedupe: ["react", "react-dom"],
   },
+  // @xenova/transformers uses WASM + dynamic imports that break Vite pre-bundling
+  optimizeDeps: {
+    exclude: ['@xenova/transformers'],
+  },
+  worker: {
+    format: 'es',
+  },
   root: path.resolve(import.meta.dirname),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
