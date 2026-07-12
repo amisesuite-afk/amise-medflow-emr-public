@@ -139,7 +139,10 @@ pnpm run build                                 # Typecheck + build all packages
 | `WHATSAPP_NUMBERS` | Comma-separated E.164 list of WhatsApp-capable lines (default: Tapion + Rodney Bay) |
 | `API_BASE_URL` | Public URL of the API server (used in Twilio TwiML callbacks, e.g. `https://api.example.com`) |
 | `FORWARD_TO_NUMBERS` | Comma-separated E.164 list of staff cell phones to ring before voicemail (e.g. `+17582840557,+17587207111`) |
-| `FORWARD_RING_TIMEOUT` | Seconds to ring forwarding numbers before falling back to voicemail (default `20`) |
+| `FORWARD_RING_TIMEOUT` | Seconds to ring forwarding numbers before falling back to voicemail (default `25` ≈ 4 rings) |
+| `RECORDING_UPLOAD_KEY` | Shared secret for Android call recorder webhook (`X-Upload-Key` header in Tasker HTTP task) |
+| `OPENAI_API_KEY` | OpenAI API key — enables Whisper transcription of uploaded cell phone recordings (optional) |
+| `TWILIO_TRANSCRIPTION` | `true` to enable Twilio's own transcription on voicemail recordings (English only, less accurate than Whisper) |
 | `SMS_PROVIDER` | `dry_run` (default) / `twilio` / `digicel` |
 | `SENTRY_DSN` | Sentry DSN for API error monitoring (optional) |
 | `PORTAL_URL` | Front-desk portal URL for CORS and WhatsApp links |

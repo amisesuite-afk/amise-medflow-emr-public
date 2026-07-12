@@ -524,7 +524,8 @@ function getForwardNumbers(): string[] {
     .filter(Boolean);
 }
 
-const RING_TIMEOUT = parseInt(process.env.FORWARD_RING_TIMEOUT ?? '20', 10);
+// 4 rings ≈ 25 seconds (each ring cycle ~6 s: 2 s ring + 4 s silence)
+const RING_TIMEOUT = parseInt(process.env.FORWARD_RING_TIMEOUT ?? '25', 10);
 
 // ── POST /api/calls/twiml ─────────────────────────────────────────────────────
 // Voice URL for each Twilio number (set this in the Twilio console / on port / on forward target).
@@ -549,11 +550,17 @@ router.post('/api/calls/twiml', (req, res) => {
   const apiBase  = process.env.API_BASE_URL ?? `https://${req.headers.host ?? 'localhost'}`;
   const forwards = getForwardNumbers();
 
+  // Enable Twilio transcription if TWILIO_TRANSCRIPTION=true
+  const twilioTranscribe = process.env.TWILIO_TRANSCRIPTION === 'true';
+  const transcriptionAttrs = twilioTranscribe
+    ? `transcribe="true" transcriptionCallback="${apiBase}/api/calls/transcription-callback" transcriptionCallbackMethod="POST"`
+    : `transcribe="false"`;
+
   const voicemailTwiml = `
   <Say voice="Polly.Joanna" language="en-US">We are sorry we missed your call. Please leave your name, phone number, and the reason for calling after the tone and we will call you back as soon as possible.</Say>
   <Record
     maxLength="120"
-    transcribe="false"
+    ${transcriptionAttrs}
     recordingStatusCallback="${apiBase}/api/calls/voicemail"
     recordingStatusCallbackMethod="POST"
     action="${apiBase}/api/calls/voicemail-ack"
@@ -617,12 +624,17 @@ router.post('/api/calls/no-answer', async (req, res) => {
     })();
   }
 
+  const twilioTranscribeNoAns = process.env.TWILIO_TRANSCRIPTION === 'true';
+  const transcAttrsNoAns = twilioTranscribeNoAns
+    ? `transcribe="true" transcriptionCallback="${apiBase}/api/calls/transcription-callback" transcriptionCallbackMethod="POST"`
+    : `transcribe="false"`;
+
   res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
 <Response>
   <Say voice="Polly.Joanna" language="en-US">We are sorry we missed your call. Please leave your name, phone number, and the reason for calling after the tone and we will call you back as soon as possible.</Say>
   <Record
     maxLength="120"
-    transcribe="false"
+    ${transcAttrsNoAns}
     recordingStatusCallback="${apiBase}/api/calls/voicemail"
     recordingStatusCallbackMethod="POST"
     action="${apiBase}/api/calls/voicemail-ack"

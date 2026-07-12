@@ -18,6 +18,7 @@ import aiConsultRouter from "./ai-consult";
 import narrativeRouter from "./narrative";
 import voiceRouter from "./voice";
 import callsRouter from "./calls";
+import callRecordingRouter from "./call-recording";
 
 const router: IRouter = Router();
 
@@ -40,5 +41,6 @@ router.use(aiConsultRouter);
 router.use(narrativeRouter);
 router.use(voiceRouter);
 router.use(callsRouter);
+router.use(callRecordingRouter);
 
 export default router;
