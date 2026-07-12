@@ -138,6 +138,8 @@ pnpm run build                                 # Typecheck + build all packages
 | `PRACTICE_LINE_RODNEY_BAY_LABEL` | Display label for Rodney Bay line (default `Rodney Bay`) |
 | `WHATSAPP_NUMBERS` | Comma-separated E.164 list of WhatsApp-capable lines (default: Tapion + Rodney Bay) |
 | `API_BASE_URL` | Public URL of the API server (used in Twilio TwiML callbacks, e.g. `https://api.example.com`) |
+| `FORWARD_TO_NUMBERS` | Comma-separated E.164 list of staff cell phones to ring before voicemail (e.g. `+17582840557,+17587207111`) |
+| `FORWARD_RING_TIMEOUT` | Seconds to ring forwarding numbers before falling back to voicemail (default `20`) |
 | `SMS_PROVIDER` | `dry_run` (default) / `twilio` / `digicel` |
 | `SENTRY_DSN` | Sentry DSN for API error monitoring (optional) |
 | `PORTAL_URL` | Front-desk portal URL for CORS and WhatsApp links |
