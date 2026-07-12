@@ -1,0 +1,249 @@
+import { Router } from 'express';
+import Anthropic from '@anthropic-ai/sdk';
+import { sb, requireStaffAuth } from '../lib/supabase.js';
+import { logger as log } from '../lib/logger.js';
+import { requirePatientAuth, type PatientAuthRequest } from './patient-auth.js';
+
+const router = Router();
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
+
+const PHOTO_DESCRIBE_PROMPT = `You are a surgical clinical photographer's assistant documenting a clinical photograph for inclusion in a surgical case record.
+
+Describe the clinical photograph using standard medical terminology. Be concise and factual. Cover:
+- Anatomical site and laterality
+- Size/dimensions (estimate if possible — e.g. "approximately 3 × 2 cm")
+- Morphology (shape, borders, surface characteristics)
+- Colour (erythema, ecchymosis, jaundice, cyanosis, necrosis, pigmentation)
+- Surrounding tissue condition (oedema, induration, warmth, cellulitis, skin changes)
+- Any wound characteristics if applicable (granulation tissue, slough, exudate, depth, margins)
+- Relevant clinical features (visible structures, sinuses, fistulae, foreign material)
+
+Do NOT diagnose or suggest a diagnosis. Do NOT use first person. Write as a single clinical paragraph. Use British medical English.
+
+Example: "A 4 × 3 cm erythematous, indurated swelling over the right groin. The overlying skin is intact with no ulceration. There is surrounding oedema extending to the right hemiscrotum. A 1 cm central area of fluctuance is present. No visible discharge or sinus formation."`;
+
+// ── GET /api/patient/profile ────────────────────────────────────────────────
+
+router.get('/api/patient/profile', requirePatientAuth, async (req: PatientAuthRequest, res) => {
+  const patientId = req.patientAuth!.patientId;
+
+  if (!patientId) {
+    res.status(400).json({ error: 'No patient linked to this account' });
+    return;
+  }
+
+  try {
+    const { data: pt } = await sb()
+      .from('patients')
+      .select('full_name')
+      .eq('id', patientId)
+      .maybeSingle();
+
+    const patientName = pt ? (pt.full_name as string | null) : null;
+
+    // Most recent upcoming appointment
+    const { data: appt } = await sb()
+      .from('appointment_requests')
+      .select('preferred_date')
+      .eq('patient_id', patientId)
+      .in('status', ['confirmed', 'waitlisted', 'pending'])
+      .order('preferred_date', { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    // Most recent previsit submission (for passport + monitoring + return detection)
+    const { data: pv } = await sb()
+      .from('previsit_submissions')
+      .select('id, status, submitted_at, passport, monitoring_updates')
+      .eq('patient_id', patientId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    // Pending pre-visit for current appointment
+    const { data: pendingPv } = await sb()
+      .from('previsit_submissions')
+      .select('id, status')
+      .eq('patient_id', patientId)
+      .in('status', ['pending'])
+      .limit(1)
+      .maybeSingle();
+
+    res.json({
+      patientName,
+      appointmentDate: appt?.preferred_date ?? null,
+      status: pv?.status ?? null,
+      hasSubmission: !!pv,
+      hasPendingPrevisit: !!pendingPv,
+      isReturnPatient: !!(pv?.passport),
+      passport: pv?.passport ?? null,
+      monitoringCount: Array.isArray(pv?.monitoring_updates) ? (pv.monitoring_updates as unknown[]).length : 0,
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to fetch profile';
+    log.error({ err }, 'patient profile error');
+    res.status(500).json({ error: message });
+  }
+});
+
+// ── POST /api/patient/passport ──────────────────────────────────────────────
+
+router.post('/api/patient/passport', requirePatientAuth, async (req: PatientAuthRequest, res) => {
+  const patientId = req.patientAuth!.patientId;
+  const { passport } = req.body as { passport: Record<string, unknown> };
+
+  if (!patientId) {
+    res.status(400).json({ error: 'No patient linked to this account' });
+    return;
+  }
+
+  try {
+    // Upsert passport into the most recent previsit_submissions row.
+    // If none exists, create a minimal pending row to hold the passport.
+    const { data: existing } = await sb()
+      .from('previsit_submissions')
+      .select('id')
+      .eq('patient_id', patientId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (existing) {
+      await sb()
+        .from('previsit_submissions')
+        .update({ passport, updated_at: new Date().toISOString() })
+        .eq('id', existing.id);
+    } else {
+      await sb()
+        .from('previsit_submissions')
+        .insert({ patient_id: patientId, status: 'pending', passport });
+    }
+
+    log.info({ patientId }, 'patient passport updated');
+    res.json({ success: true });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to save passport';
+    log.error({ err }, 'patient passport error');
+    res.status(500).json({ error: message });
+  }
+});
+
+// ── POST /api/patient/monitoring ────────────────────────────────────────────
+
+router.post('/api/patient/monitoring', requirePatientAuth, async (req: PatientAuthRequest, res) => {
+  const patientId = req.patientAuth!.patientId;
+  const { photo } = req.body as {
+    photo: { dataUrl: string; context: string; painScore?: number; note?: string; date?: string };
+  };
+
+  if (!patientId) {
+    res.status(400).json({ error: 'No patient linked to this account' });
+    return;
+  }
+
+  try {
+    const { data: existing } = await sb()
+      .from('previsit_submissions')
+      .select('id, monitoring_updates')
+      .eq('patient_id', patientId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    const entry = {
+      dataUrl: photo.dataUrl,
+      context: photo.context,
+      painScore: photo.painScore,
+      note: photo.note,
+      date: photo.date || new Date().toISOString(),
+      uploaded_at: new Date().toISOString(),
+    };
+
+    if (existing) {
+      const current = Array.isArray(existing.monitoring_updates) ? existing.monitoring_updates as unknown[] : [];
+      const updates = [entry, ...current].slice(0, 50);
+      await sb()
+        .from('previsit_submissions')
+        .update({ monitoring_updates: updates, updated_at: new Date().toISOString() })
+        .eq('id', existing.id);
+      res.json({ success: true, count: updates.length });
+    } else {
+      await sb()
+        .from('previsit_submissions')
+        .insert({ patient_id: patientId, status: 'pending', monitoring_updates: [entry] });
+      res.json({ success: true, count: 1 });
+    }
+
+    log.info({ patientId }, 'patient monitoring update added');
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to save monitoring update';
+    log.error({ err }, 'patient monitoring error');
+    res.status(500).json({ error: message });
+  }
+});
+
+// ── POST /api/exam/photo-describe ───────────────────────────────────────────
+// Staff-auth only — not exposed to patient app.
+
+router.post('/api/exam/photo-describe', async (req, res) => {
+  const ok = await requireStaffAuth(req, res);
+  if (!ok) return;
+
+  const { imageDataUrl, context } = req.body as {
+    imageDataUrl: string;
+    context?: string;
+  };
+
+  if (!imageDataUrl) {
+    res.status(400).json({ error: 'imageDataUrl is required' });
+    return;
+  }
+
+  const match = imageDataUrl.match(/^data:(image\/[a-z+]+);base64,(.+)$/);
+  if (!match) {
+    res.status(400).json({ error: 'imageDataUrl must be a base64 data URI' });
+    return;
+  }
+  const mediaType = match[1] as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
+  const base64 = match[2];
+
+  const contextNote = context ? `\n\nClinical context provided by the clinician: ${context}` : '';
+
+  try {
+    const resp = await client.messages.create({
+      model: MODEL,
+      max_tokens: 400,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: { type: 'base64', media_type: mediaType, data: base64 },
+            },
+            {
+              type: 'text',
+              text: `${PHOTO_DESCRIBE_PROMPT}${contextNote}\n\nWrite the description now:`,
+            },
+          ],
+        },
+      ],
+    });
+
+    const description = resp.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('')
+      .trim();
+
+    log.info('exam photo described by AI');
+    res.json({ description });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'AI photo description failed';
+    log.error({ err }, 'exam photo describe error');
+    res.status(500).json({ error: message });
+  }
+});
+
+export default router;

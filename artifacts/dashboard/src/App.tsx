@@ -5,6 +5,7 @@ import { AppProvider } from '@/context/AppContext';
 import { ToastProvider } from '@/components/ToastProvider';
 import HomePage from '@/pages/Home';
 import LoginPage from '@/components/LoginPage';
+import PwaUpdatePrompt from '@/components/PwaUpdatePrompt';
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -93,6 +94,7 @@ export default function App() {
       <AuthProvider>
         <AuthGuard />
       </AuthProvider>
+      <PwaUpdatePrompt />
     </ErrorBoundary>
   );
 }

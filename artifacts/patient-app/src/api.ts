@@ -1,0 +1,127 @@
+const API = '/api';
+
+const SESSION_KEY = 'amise_patient_session';
+
+export interface PatientSession {
+  sessionToken: string;
+  email: string;
+  patientName: string | null;
+  patientId: string | null;
+  isReturnPatient: boolean;
+  mustChangePassword: boolean;
+}
+
+export function getStoredSession(): PatientSession | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? (JSON.parse(raw) as PatientSession) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function saveSession(s: PatientSession): void {
+  localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+}
+
+export function clearSession(): void {
+  localStorage.removeItem(SESSION_KEY);
+}
+
+function authHeaders(token: string): Record<string, string> {
+  return { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+}
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+
+export async function requestAccess(email: string): Promise<void> {
+  const r = await fetch(`${API}/patient/auth/request`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  const d = await r.json() as { error?: string };
+  if (!r.ok) throw new Error(d.error ?? 'Failed to send access email');
+}
+
+export async function login(email: string, password: string): Promise<PatientSession> {
+  const r = await fetch(`${API}/patient/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  const d = await r.json() as PatientSession & { error?: string };
+  if (!r.ok) throw new Error(d.error ?? 'Login failed');
+  return d;
+}
+
+export async function changePassword(sessionToken: string, newPassword: string): Promise<void> {
+  const r = await fetch(`${API}/patient/auth/change-password`, {
+    method: 'POST',
+    headers: authHeaders(sessionToken),
+    body: JSON.stringify({ newPassword }),
+  });
+  const d = await r.json() as { error?: string };
+  if (!r.ok) throw new Error(d.error ?? 'Password change failed');
+}
+
+// ── Profile ───────────────────────────────────────────────────────────────────
+
+export interface PatientProfile {
+  patientName: string | null;
+  appointmentDate?: string | null;
+  isReturnPatient?: boolean;
+  hasPendingPrevisit?: boolean;
+  passport?: Record<string, unknown> | null;
+  monitoringCount?: number;
+}
+
+export async function getPatientProfile(sessionToken: string): Promise<PatientProfile> {
+  const r = await fetch(`${API}/patient/profile`, {
+    headers: { Authorization: `Bearer ${sessionToken}` },
+  });
+  if (!r.ok) throw new Error('Session expired');
+  return r.json() as Promise<PatientProfile>;
+}
+
+// ── Previsit ──────────────────────────────────────────────────────────────────
+
+export async function submitPrevisit(
+  sessionToken: string,
+  data: Record<string, unknown>,
+): Promise<unknown> {
+  const r = await fetch(`${API}/previsit/submit`, {
+    method: 'POST',
+    headers: authHeaders(sessionToken),
+    body: JSON.stringify(data),
+  });
+  return r.json();
+}
+
+// ── Passport ──────────────────────────────────────────────────────────────────
+
+export async function savePassport(
+  sessionToken: string,
+  passport: Record<string, unknown>,
+): Promise<unknown> {
+  const r = await fetch(`${API}/patient/passport`, {
+    method: 'POST',
+    headers: authHeaders(sessionToken),
+    body: JSON.stringify({ passport }),
+  });
+  return r.json();
+}
+
+// ── Monitoring ────────────────────────────────────────────────────────────────
+
+export async function addMonitoringPhoto(
+  sessionToken: string,
+  photo: { dataUrl: string; context: string; painScore?: number; note?: string },
+): Promise<unknown> {
+  const r = await fetch(`${API}/patient/monitoring`, {
+    method: 'POST',
+    headers: authHeaders(sessionToken),
+    body: JSON.stringify({ photo }),
+  });
+  return r.json();
+}

@@ -4,6 +4,7 @@ import { useToast } from '@/components/ToastProvider';
 import { savePMHItem, removePMHItem, savePmhNotes } from '@/lib/db';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
+import NutritionalAssessmentCard from '@/components/NutritionalAssessmentCard';
 
 const COMORBIDITY_OPTIONS = [
   'Type 1 diabetes', 'Type 2 diabetes', 'Hypertension', 'Ischaemic heart disease',
@@ -15,28 +16,18 @@ const COMORBIDITY_OPTIONS = [
   'Anxiety / depression', 'Sickle cell disease',
 ];
 
-const FAMILY_HISTORY_OPTIONS = [
-  'Colorectal cancer', 'Breast cancer', 'Ovarian cancer', 'Gastric cancer',
-  'Pancreatic cancer', 'Prostate cancer', 'Cardiovascular disease',
-  'Diabetes', 'BRCA mutation', 'Lynch syndrome',
-];
-
 export default function PmhTab() {
   const {
     patientId, encounterId,
     comorbidities, toggleComorbidity,
     pmhNotes, setPmhNotes,
-    familyHistory, toggleFamilyHistory,
-    familyHistoryNotes, setFamilyHistoryNotes,
   } = useAppContext();
   const { showToast } = useToast();
 
   // Debounce timers for notes save-on-blur
   const pmhNotesTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const fhNotesTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Track notes at last save to avoid redundant calls
   const savedPmhNotes  = useRef(pmhNotes);
-  const savedFhNotes   = useRef(familyHistoryNotes);
 
   // ── Chip toggle — optimistic UI + DB sync ──────────────────────────────────
 
@@ -65,25 +56,17 @@ export default function PmhTab() {
 
   function scheduleSave() {
     if (!patientId) return;
-    // Cancel any pending timer and start fresh from the later of the two changes
-    if (pmhNotesTimer.current)  clearTimeout(pmhNotesTimer.current);
-    if (fhNotesTimer.current)   clearTimeout(fhNotesTimer.current);
-
-    const timer = setTimeout(async () => {
+    if (pmhNotesTimer.current) clearTimeout(pmhNotesTimer.current);
+    pmhNotesTimer.current = setTimeout(async () => {
       if (!patientId) return;
-      if (pmhNotes === savedPmhNotes.current && familyHistoryNotes === savedFhNotes.current) return;
-
-      const { error } = await savePmhNotes(patientId, pmhNotes, familyHistoryNotes);
+      if (pmhNotes === savedPmhNotes.current) return;
+      const { error } = await savePmhNotes(patientId, pmhNotes, '');
       if (error) {
         showToast(`Failed to save PMH notes: ${error}`, 'error');
       } else {
         savedPmhNotes.current = pmhNotes;
-        savedFhNotes.current  = familyHistoryNotes;
       }
     }, 1000);
-
-    pmhNotesTimer.current = timer;
-    fhNotesTimer.current  = timer;
   }
 
   return (
@@ -106,24 +89,6 @@ export default function PmhTab() {
         )}
       </CollapsibleCard>
 
-      <CollapsibleCard
-        title="Family history"
-        badge={familyHistory.length || undefined}
-        defaultOpen={false}
-      >
-        <ChipGroup options={FAMILY_HISTORY_OPTIONS} selected={familyHistory} onToggle={toggleFamilyHistory} />
-        <div className="fld" style={{ marginTop: 10 }}>
-          <label>Family history notes</label>
-          <textarea
-            value={familyHistoryNotes}
-            onChange={e => setFamilyHistoryNotes(e.target.value)}
-            onBlur={scheduleSave}
-            placeholder="e.g. Mother — colorectal cancer age 58; Father — type 2 diabetes…"
-            style={{ minHeight: 70 }}
-          />
-        </div>
-      </CollapsibleCard>
-
       <CollapsibleCard title="PMH notes / additional history" defaultOpen={false}>
         <div className="fld">
           <label>Free-text PMH</label>
@@ -136,6 +101,7 @@ export default function PmhTab() {
           />
         </div>
       </CollapsibleCard>
+      <NutritionalAssessmentCard />
     </div>
   );
 }

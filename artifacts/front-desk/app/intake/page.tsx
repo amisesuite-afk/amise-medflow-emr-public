@@ -360,6 +360,13 @@ export default function IntakePage() {
     } catch { /* corrupt storage — start fresh */ }
   }, []);
 
+  // Clean up sessionStorage on unmount (e.g. navigating away mid-form)
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem(STORAGE_KEY);
+    };
+  }, []);
+
   // ── CC screen → Referral check ─────────────────────────────────────────
   function handleCcNext() {
     if (ccSelection.length === 0) return;
@@ -485,6 +492,8 @@ export default function IntakePage() {
         const err = await res.json().catch(() => ({}));
         setSubmitError((err as { error?: string }).error ?? 'Failed to save. Please contact the practice.');
       } else {
+        // Clean up sessionStorage on successful submission
+        sessionStorage.removeItem(STORAGE_KEY);
         setScreen('complete');
       }
     } catch {
@@ -589,7 +598,7 @@ export default function IntakePage() {
                   Call 911 or go to the nearest emergency department
                 </a>
                 <p style={{ margin: '8px 0 0', fontSize: '0.75rem', color: '#991b1b', textAlign: 'center' }}>
-                  Tapion Hospital: 758-459-2227 &middot; WhatsApp: 758-284-0557
+                  Tapion Hospital: 758-284-0557 &middot; WhatsApp: 758-284-0557
                 </p>
               </div>
 
@@ -956,7 +965,7 @@ export default function IntakePage() {
                 fontSize: '0.8125rem', color: '#fecaca', lineHeight: 1.5,
               }}>
                 <strong>Nearest hospitals:</strong><br />
-                Tapion Hospital — 758-459-2227<br />
+                Tapion Hospital — 758-284-0557<br />
                 WhatsApp — 758-284-0557
               </div>
 

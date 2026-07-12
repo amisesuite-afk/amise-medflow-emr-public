@@ -58,6 +58,10 @@ export interface FullPatientInput {
   policyNumber: string;
   nhiNumber: string;
   preAuthStatus: string;
+  occupation?: string;
+  nokName?: string;
+  nokRelation?: string;
+  nokTel?: string;
 }
 
 export interface VitalsInput {
@@ -125,7 +129,11 @@ export async function savePatientFull(
   if (input.insuranceProvider.trim())  row.insurance_provider   = input.insuranceProvider.trim();
   if (input.policyNumber.trim())       row.policy_number        = input.policyNumber.trim();
   if (input.nhiNumber.trim())          row.nhi_number           = input.nhiNumber.trim();
-  if (input.preAuthStatus)             row.pre_auth_status      = input.preAuthStatus;
+  if (input.preAuthStatus)                   row.pre_auth_status = input.preAuthStatus;
+  if (input.occupation?.trim())              row.occupation      = input.occupation.trim();
+  if (input.nokName?.trim())                 row.nok_name        = input.nokName.trim();
+  if (input.nokRelation && input.nokRelation !== 'Other') row.nok_relation = input.nokRelation;
+  if (input.nokTel?.trim())                  row.nok_phone       = input.nokTel.trim();
 
   const { data, error } = await supabase
     .from('patients')
@@ -138,6 +146,35 @@ export async function savePatientFull(
     return { patient: null, error: error.message };
   }
   return { patient: data as SavedPatient, error: null };
+}
+
+// ─── uploadPatientPhoto ───────────────────────────────────────────────────────
+
+/** Uploads a base64 data-URL photo to the patient-photos bucket and writes
+ *  the resulting public URL back to patients.photo_url. Returns the URL on
+ *  success, null if the bucket doesn't exist or upload fails (non-fatal). */
+export async function uploadPatientPhoto(
+  patientId: string,
+  dataUrl: string,
+): Promise<string | null> {
+  if (!supabase || !dataUrl.startsWith('data:')) return null;
+  try {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const path = `${patientId}/id-photo.jpg`;
+    const { error: upErr } = await supabase.storage
+      .from('patient-photos')
+      .upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+    if (upErr) {
+      console.warn('[db] uploadPatientPhoto:', upErr.message);
+      return null;
+    }
+    const { data: { publicUrl } } = supabase.storage.from('patient-photos').getPublicUrl(path);
+    await supabase.from('patients').update({ photo_url: publicUrl }).eq('id', patientId);
+    return publicUrl;
+  } catch {
+    return null;
+  }
 }
 
 // ─── saveVitals ───────────────────────────────────────────────────────────────
@@ -351,6 +388,26 @@ export async function listPatients(): Promise<
   return { patients: (data ?? []) as PatientListRow[], error: null };
 }
 
+// ─── searchPatients ───────────────────────────────────────────────────────────
+
+/** Full-text search on full_name (ilike) and phone (ilike).
+ *  Returns up to 20 matches ordered by most recently registered. */
+export async function searchPatients(query: string): Promise<PatientListRow[]> {
+  if (!supabase || !query.trim()) return [];
+  const q = `%${query.trim()}%`;
+  const { data, error } = await supabase
+    .from('patients')
+    .select('id, full_name, sex, phone, date_of_birth, created_at')
+    .or(`full_name.ilike.${q},phone.ilike.${q}`)
+    .order('created_at', { ascending: false })
+    .limit(20);
+  if (error) {
+    console.error('[db] searchPatients:', error);
+    return [];
+  }
+  return (data ?? []) as PatientListRow[];
+}
+
 // ─── updateDefaultSite ───────────────────────────────────────────────────────
 
 /**
@@ -540,6 +597,126 @@ export async function getLatestOpenEncounter(
   }
 
   return { encounterId: (data as { id: string } | null)?.id ?? null, error: null };
+}
+
+export async function getLatestAppointmentType(
+  patient_id: string,
+): Promise<string | null> {
+  if (!supabase) return null;
+  try {
+    const { data } = await supabase
+      .from('appointment_requests')
+      .select('appointment_type')
+      .eq('patient_id', patient_id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    return (data as { appointment_type: string } | null)?.appointment_type ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ─── Questionnaire data for EMR population ───────────────────────────────────
+
+export interface QuestionnaireIntakeData {
+  sessionId: string;
+  status: string;
+  chiefComplaint: string | null;
+  symptoms: string[];
+  medications: string[];
+  allergies: string[];
+  pmh: string[];
+  surgicalHistory: string[];
+  familyHistory: string[];
+  socialHabits: string[];
+  aiSummary: string | null;
+  staffReviewedAt: string | null;
+  nurseReviewedAt: string | null;
+  doctorApprovedAt: string | null;
+  responses: Array<{ questionKey: string; questionText: string; answerValue: string; answerDisplay: string }>;
+}
+
+export async function getQuestionnaireIntake(
+  patientId: string,
+): Promise<QuestionnaireIntakeData | null> {
+  if (!supabase) return null;
+  try {
+    const { data: session } = await supabase
+      .from('questionnaire_sessions')
+      .select('id, status, staff_reviewed_at, nurse_reviewed_at, doctor_approved_at')
+      .eq('patient_id', patientId)
+      .in('status', ['completed', 'nurse_reviewed', 'doctor_approved'])
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (!session) return null;
+    const sid = (session as { id: string }).id;
+
+    const { data: responses } = await supabase
+      .from('questionnaire_responses')
+      .select('question_key, question_text, answer_value, answer_display')
+      .eq('session_id', sid)
+      .order('sequence_number', { ascending: true });
+
+    const rows = (responses ?? []) as Array<{
+      question_key: string; question_text: string;
+      answer_value: string; answer_display: string;
+    }>;
+
+    const { data: summaryRow } = await supabase
+      .from('intake_summaries')
+      .select('ai_summary, chief_complaint, key_positives')
+      .eq('session_id', sid)
+      .maybeSingle();
+
+    const summary = summaryRow as { ai_summary: string; chief_complaint: string; key_positives: string[] } | null;
+
+    const symptoms: string[] = [];
+    const medications: string[] = [];
+    const allergies: string[] = [];
+    const pmh: string[] = [];
+    const surgicalHistory: string[] = [];
+    const familyHistory: string[] = [];
+    const socialHabits: string[] = [];
+
+    for (const r of rows) {
+      const val = r.answer_display || r.answer_value;
+      if (!val || val.toLowerCase() === 'no' || val.toLowerCase() === 'none') continue;
+      switch (r.question_key) {
+        case 'chief_complaint': break;
+        case 'current_medications': medications.push(val); break;
+        case 'allergies': allergies.push(val); break;
+        case 'smoking_status': case 'alcohol_use': socialHabits.push(`${r.question_text}: ${val}`); break;
+        case 'prior_surgery': case 'surgery_type': case 'surgery_date': surgicalHistory.push(`${r.question_text}: ${val}`); break;
+        case 'family_history_cancer': case 'family_history_breast': familyHistory.push(`${r.question_text}: ${val}`); break;
+        case 'colonoscopy_history': case 'mammogram_history': pmh.push(`${r.question_text}: ${val}`); break;
+        default: if (r.answer_value.toLowerCase() !== 'no') symptoms.push(r.question_text); break;
+      }
+    }
+
+    const s = session as { id: string; status: string; staff_reviewed_at: string | null; nurse_reviewed_at: string | null; doctor_approved_at: string | null };
+    return {
+      sessionId: sid,
+      status: s.status,
+      chiefComplaint: summary?.chief_complaint ?? null,
+      symptoms,
+      medications,
+      allergies,
+      pmh,
+      surgicalHistory,
+      familyHistory,
+      socialHabits,
+      aiSummary: summary?.ai_summary ?? null,
+      staffReviewedAt: s.staff_reviewed_at,
+      nurseReviewedAt: s.nurse_reviewed_at,
+      doctorApprovedAt: s.doctor_approved_at,
+      responses: rows.map(r => ({ questionKey: r.question_key, questionText: r.question_text, answerValue: r.answer_value, answerDisplay: r.answer_display })),
+    };
+  } catch {
+    return null;
+  }
 }
 
 // ─── saveVitalsRecord ─────────────────────────────────────────────────────────
@@ -863,6 +1040,27 @@ export interface EncounterData {
   plan: string;
   allergens: string[];
   medications: string[];
+  surgicalHistory: string[];
+  surgicalNotes: string;
+  toxicHabits: string[];
+  rosFindings: Record<string, { status: string; details: string[]; notes: string }>;
+  procedureData: Record<string, unknown>;
+  traumaData: {
+    mechanism: string[];
+    timeOfInjury: string;
+    preHospital: string[];
+    gcScene: string;
+    mistInjuries: string;
+    mistSigns: string;
+    admissionVitals: Record<string, string>;
+    abcde: Record<string, Record<string, string>>;
+    ais: Record<string, number>;
+    secondary: Record<string, string>;
+    secondaryDropdowns: Record<string, string[]>;
+    burnRegions: Record<string, { affected: boolean; degree: string }>;
+    burnTimeOfInjury: string;
+    burnInhalation: boolean;
+  } | null;
 }
 
 /** Fetches the clinical snapshot for an encounter: assessment, plan, allergies,
@@ -907,6 +1105,14 @@ export async function loadEncounterData(
   const allergyRows = (allergyRes.data ?? []) as { allergen: string }[];
   const medRows     = (medRes.data   ?? []) as { drug_name: string }[];
 
+  const [surgRes, toxicRes, rosRes, procRes, traumaRes] = await Promise.all([
+    loadSurgicalHistory(patientId),
+    loadToxicHabits(patientId),
+    loadRosFindings(encounterId),
+    loadProcedureData(encounterId),
+    loadTraumaRecord(encounterId),
+  ]);
+
   return {
     data: {
       assessment:    assessRow?.diagnosis    ?? '',
@@ -917,6 +1123,12 @@ export async function loadEncounterData(
       plan:          planRow?.description ?? '',
       allergens:     allergyRows.map(r => r.allergen),
       medications:   medRows.map(r => r.drug_name),
+      surgicalHistory: surgRes.procedures,
+      surgicalNotes:   surgRes.notes,
+      toxicHabits:     toxicRes,
+      rosFindings:     rosRes,
+      procedureData:   procRes,
+      traumaData:      traumaRes,
     },
     error: null,
   };
@@ -951,5 +1163,587 @@ export function logPaneSession(input: PaneSessionLog): void {
     mode: 'cds',
   }).then(({ error }) => {
     if (error) console.warn('[db] logPaneSession:', error.message);
+  });
+}
+
+// ─── syncSurgicalHistory ─────────────────────────────────────────────────────
+
+export async function syncSurgicalHistory(
+  patientId: string,
+  procedures: string[],
+  notes: string,
+): Promise<void> {
+  if (!supabase) return;
+  if (!procedures.length && !notes.trim()) return;
+
+  await supabase.from('surgical_history').delete().eq('patient_id', patientId);
+
+  const rows: Array<Record<string, unknown>> = procedures.map(p => ({
+    patient_id: patientId,
+    procedure_name: p,
+  }));
+
+  if (notes.trim()) {
+    rows.push({ patient_id: patientId, procedure_name: '[notes]', notes: notes.trim() });
+  }
+
+  if (rows.length) {
+    const { error } = await supabase.from('surgical_history').insert(rows);
+    if (error) console.error('[db] syncSurgicalHistory:', error);
+  }
+}
+
+export async function loadSurgicalHistory(
+  patientId: string,
+): Promise<{ procedures: string[]; notes: string }> {
+  if (!supabase) return { procedures: [], notes: '' };
+
+  const { data, error } = await supabase
+    .from('surgical_history')
+    .select('procedure_name, notes')
+    .eq('patient_id', patientId);
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return { procedures: [], notes: '' };
+    console.error('[db] loadSurgicalHistory:', error);
+    return { procedures: [], notes: '' };
+  }
+
+  const rows = (data ?? []) as Array<{ procedure_name: string; notes: string | null }>;
+  const noteRow = rows.find(r => r.procedure_name === '[notes]');
+  return {
+    procedures: rows.filter(r => r.procedure_name !== '[notes]').map(r => r.procedure_name),
+    notes: noteRow?.notes ?? '',
+  };
+}
+
+// ─── syncToxicHabits ─────────────────────────────────────────────────────────
+
+export async function syncToxicHabits(
+  patientId: string,
+  habits: string[],
+): Promise<void> {
+  if (!supabase) return;
+
+  await supabase.from('toxic_habits').delete().eq('patient_id', patientId);
+
+  if (!habits.length) return;
+
+  const rows = habits.map(h => ({
+    patient_id: patientId,
+    habit_type: 'other' as const,
+    status: 'current' as const,
+    details: h,
+  }));
+
+  const { error } = await supabase.from('toxic_habits').insert(rows);
+  if (error) console.error('[db] syncToxicHabits:', error);
+}
+
+export async function loadToxicHabits(
+  patientId: string,
+): Promise<string[]> {
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from('toxic_habits')
+    .select('details')
+    .eq('patient_id', patientId);
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return [];
+    console.error('[db] loadToxicHabits:', error);
+    return [];
+  }
+
+  return (data ?? []).map((r: { details: string | null }) => r.details).filter(Boolean) as string[];
+}
+
+// ─── syncRosFindings ─────────────────────────────────────────────────────────
+
+export async function syncRosFindings(
+  patientId: string,
+  encounterId: string,
+  rosFindings: Record<string, { status: string; details: string[]; notes: string }>,
+): Promise<void> {
+  if (!supabase) return;
+
+  const systems = Object.entries(rosFindings).filter(([, f]) =>
+    f.status !== 'not-asked' || f.details.length > 0 || f.notes.trim()
+  );
+
+  if (!systems.length) return;
+
+  const rows = systems.map(([system, f]) => ({
+    patient_id: patientId,
+    encounter_id: encounterId,
+    system_name: system,
+    findings: { status: f.status, details: f.details },
+    notes: f.notes || null,
+  }));
+
+  const { error } = await supabase
+    .from('ros_findings')
+    .upsert(rows, { onConflict: 'encounter_id,system_name' });
+
+  if (error) console.error('[db] syncRosFindings:', error);
+}
+
+export async function loadRosFindings(
+  encounterId: string,
+): Promise<Record<string, { status: string; details: string[]; notes: string }>> {
+  if (!supabase) return {};
+
+  const { data, error } = await supabase
+    .from('ros_findings')
+    .select('system_name, findings, notes')
+    .eq('encounter_id', encounterId);
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return {};
+    console.error('[db] loadRosFindings:', error);
+    return {};
+  }
+
+  const result: Record<string, { status: string; details: string[]; notes: string }> = {};
+  for (const row of (data ?? []) as Array<{ system_name: string; findings: { status?: string; details?: string[] } | null; notes: string | null }>) {
+    result[row.system_name] = {
+      status: row.findings?.status ?? 'not-asked',
+      details: row.findings?.details ?? [],
+      notes: row.notes ?? '',
+    };
+  }
+  return result;
+}
+
+// ─── syncProcedureData ───────────────────────────────────────────────────────
+
+const PROC_LABELS: Record<string, string> = {
+  ogd: 'OGD (Oesophagogastroduodenoscopy)',
+  colonoscopy: 'Colonoscopy',
+  ercp: 'ERCP',
+  preop: 'Pre-Operative Assessment',
+  postop: 'Post-Operative Note',
+};
+
+const PROC_KEYS: Record<string, string> = Object.fromEntries(
+  Object.entries(PROC_LABELS).map(([k, v]) => [v, k]),
+);
+
+export async function syncProcedureData(
+  patientId: string,
+  encounterId: string,
+  procedureData: Record<string, unknown>,
+): Promise<void> {
+  if (!supabase) return;
+
+  await supabase.from('operative_notes').delete().eq('encounter_id', encounterId);
+
+  const entries = Object.entries(procedureData).filter(([, v]) =>
+    v && typeof v === 'object' && Object.keys(v as object).length > 0
+  );
+
+  if (!entries.length) return;
+
+  const rows = entries.map(([key, value]) => ({
+    patient_id: patientId,
+    encounter_id: encounterId,
+    procedure_name: PROC_LABELS[key] ?? key,
+    findings: JSON.stringify(value),
+    status: 'draft',
+  }));
+
+  const { error } = await supabase.from('operative_notes').insert(rows);
+  if (error) console.error('[db] syncProcedureData:', error);
+}
+
+export async function loadProcedureData(
+  encounterId: string,
+): Promise<Record<string, unknown>> {
+  if (!supabase) return {};
+
+  const { data, error } = await supabase
+    .from('operative_notes')
+    .select('procedure_name, findings')
+    .eq('encounter_id', encounterId);
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return {};
+    console.error('[db] loadProcedureData:', error);
+    return {};
+  }
+
+  const result: Record<string, unknown> = {};
+  for (const row of (data ?? []) as Array<{ procedure_name: string; findings: string | null }>) {
+    const key = PROC_KEYS[row.procedure_name] ?? row.procedure_name;
+    try {
+      result[key] = row.findings ? JSON.parse(row.findings) : {};
+    } catch {
+      result[key] = {};
+    }
+  }
+  return result;
+}
+
+// ─── syncTraumaRecord ────────────────────────────────────────────────────────
+
+export async function syncTraumaRecord(
+  patientId: string,
+  encounterId: string,
+  traumaData: {
+    mechanism: string[];
+    timeOfInjury: string;
+    preHospital: string[];
+    gcScene: string;
+    mistInjuries: string;
+    mistSigns: string;
+    admissionVitals: Record<string, string>;
+    abcde: Record<string, Record<string, string>>;
+    ais: Record<string, number>;
+    secondary: Record<string, string>;
+    secondaryDropdowns: Record<string, string[]>;
+    burnRegions: Record<string, { affected: boolean; degree: string }>;
+    burnTimeOfInjury: string;
+    burnInhalation: boolean;
+  },
+): Promise<void> {
+  if (!supabase) return;
+
+  const hasData = traumaData.mechanism.length > 0 ||
+    traumaData.preHospital.length > 0 ||
+    Object.keys(traumaData.admissionVitals).length > 0 ||
+    Object.keys(traumaData.abcde).length > 0 ||
+    Object.values(traumaData.ais).some(v => v > 0);
+
+  if (!hasData) return;
+
+  const aisValues = Object.values(traumaData.ais).filter(v => v > 0).sort((a, b) => b - a);
+  const issScore = aisValues.slice(0, 3).reduce((sum, v) => sum + v * v, 0);
+
+  const row: Record<string, unknown> = {
+    patient_id: patientId,
+    encounter_id: encounterId,
+    mechanism: traumaData.mechanism,
+    pre_hospital: traumaData.preHospital,
+    gc_scene: traumaData.gcScene || null,
+    mist_injuries: traumaData.mistInjuries || null,
+    mist_signs: traumaData.mistSigns || null,
+    admission_vitals: { ...traumaData.admissionVitals, timeOfInjury: traumaData.timeOfInjury },
+    abcde: traumaData.abcde,
+    ais: traumaData.ais,
+    secondary: traumaData.secondary,
+    secondary_dropdowns: traumaData.secondaryDropdowns,
+    burn_regions: { ...traumaData.burnRegions, burnTimeOfInjury: traumaData.burnTimeOfInjury },
+    burn_inhalation: traumaData.burnInhalation,
+    iss_score: issScore > 0 ? issScore : null,
+  };
+
+  const { error } = await supabase
+    .from('trauma_records')
+    .upsert(row, { onConflict: 'encounter_id' });
+
+  if (error) console.error('[db] syncTraumaRecord:', error);
+}
+
+export async function loadTraumaRecord(
+  encounterId: string,
+): Promise<{
+  mechanism: string[];
+  timeOfInjury: string;
+  preHospital: string[];
+  gcScene: string;
+  mistInjuries: string;
+  mistSigns: string;
+  admissionVitals: Record<string, string>;
+  abcde: Record<string, Record<string, string>>;
+  ais: Record<string, number>;
+  secondary: Record<string, string>;
+  secondaryDropdowns: Record<string, string[]>;
+  burnRegions: Record<string, { affected: boolean; degree: string }>;
+  burnTimeOfInjury: string;
+  burnInhalation: boolean;
+} | null> {
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from('trauma_records')
+    .select('*')
+    .eq('encounter_id', encounterId)
+    .maybeSingle();
+
+  if (error) {
+    if ((error as { code?: string }).code === '42P01') return null;
+    console.error('[db] loadTraumaRecord:', error);
+    return null;
+  }
+
+  if (!data) return null;
+
+  const r = data as Record<string, unknown>;
+  const vitals = (r.admission_vitals ?? {}) as Record<string, string>;
+  const burns = (r.burn_regions ?? {}) as Record<string, unknown>;
+
+  return {
+    mechanism: (r.mechanism as string[]) ?? [],
+    timeOfInjury: (vitals.timeOfInjury as string) ?? '',
+    preHospital: (r.pre_hospital as string[]) ?? [],
+    gcScene: (r.gc_scene as string) ?? '',
+    mistInjuries: (r.mist_injuries as string) ?? '',
+    mistSigns: (r.mist_signs as string) ?? '',
+    admissionVitals: vitals,
+    abcde: (r.abcde as Record<string, Record<string, string>>) ?? {},
+    ais: (r.ais as Record<string, number>) ?? {},
+    secondary: (r.secondary as Record<string, string>) ?? {},
+    secondaryDropdowns: (r.secondary_dropdowns as Record<string, string[]>) ?? {},
+    burnRegions: burns as Record<string, { affected: boolean; degree: string }>,
+    burnTimeOfInjury: ((burns as Record<string, unknown>).burnTimeOfInjury as string) ?? '',
+    burnInhalation: (r.burn_inhalation as boolean) ?? false,
+  };
+}
+
+// ── Patient problem list ────────────────────────────────────────────────────
+
+export interface PatientProblem {
+  id: string;
+  title: string;
+  status: 'active' | 'chronic' | 'resolved';
+  icd10Code?: string;
+  onsetDate?: string;
+}
+
+export async function loadPatientProblems(patientId: string): Promise<PatientProblem[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('patient_problems')
+    .select('id, title, status, icd10_code, onset_date')
+    .eq('patient_id', patientId)
+    .order('created_at', { ascending: true });
+  if (error || !data) return [];
+  return (data as Array<Record<string, unknown>>).map(r => ({
+    id:        r.id as string,
+    title:     r.title as string,
+    status:    r.status as PatientProblem['status'],
+    icd10Code: (r.icd10_code as string | null) ?? undefined,
+    onsetDate: (r.onset_date as string | null) ?? undefined,
+  }));
+}
+
+export async function savePatientProblem(
+  patientId: string,
+  problem: Omit<PatientProblem, 'id'>,
+): Promise<{ id: string | null; error: string | null }> {
+  if (!supabase) return { id: null, error: notConfigured('savePatientProblem') };
+  const { data, error } = await supabase
+    .from('patient_problems')
+    .insert({
+      patient_id: patientId,
+      title:      problem.title,
+      status:     problem.status,
+      icd10_code: problem.icd10Code ?? null,
+      onset_date: problem.onsetDate ?? null,
+    })
+    .select('id')
+    .single();
+  if (error) return { id: null, error: error.message };
+  return { id: (data as Record<string, string>).id, error: null };
+}
+
+export async function updatePatientProblemStatus(
+  problemId: string,
+  status: PatientProblem['status'],
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('updatePatientProblemStatus') };
+  const { error } = await supabase
+    .from('patient_problems')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', problemId);
+  return { error: error?.message ?? null };
+}
+
+export async function removePatientProblem(problemId: string): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('removePatientProblem') };
+  const { error } = await supabase
+    .from('patient_problems')
+    .delete()
+    .eq('id', problemId);
+  return { error: error?.message ?? null };
+}
+
+// ── Wound assessments ───────────────────────────────────────────────────────
+
+export type WoundClass = 'clean' | 'clean_contaminated' | 'contaminated' | 'dirty';
+export type WoundClosure = 'primary' | 'secondary' | 'delayed_primary' | 'vac' | 'open';
+export type WoundStatus = 'healing' | 'superficial_ssi' | 'deep_ssi' | 'dehiscence' | 'seroma' | 'haematoma' | 'necrosis' | 'closed';
+export type DrainStatus = 'none' | 'in_situ' | 'removed';
+
+export interface AsepsisDetails {
+  serous: number;       // % wound with serous discharge (0,<20,20-39,40-59,60-79,>=80 → 0,1,2,3,4,5)
+  erythema: number;     // same bands → 0,1,2,3,4,5
+  purulent: number;     // bands → 0,2,4,6,8,10
+  separation: number;   // bands → 0,2,4,6,8,10
+  isolatedBacteria: boolean;
+  prolongedStay: boolean;
+  additionalTx: 0 | 5 | 10 | 15;  // 0=none, 5=antibiotics, 10=drainage LA, 15=debridement GA
+}
+
+export interface WoundAssessment {
+  id: string;
+  label: string;
+  location: string;
+  woundClass: WoundClass | '';
+  closure: WoundClosure | '';
+  status: WoundStatus;
+  dressing: string;
+  drain: DrainStatus;
+  drainOutputMl: string;
+  asepsisScore: number;
+  asepsisDetails: AsepsisDetails;
+  notes: string;
+  assessedDate: string;
+}
+
+export function calcAsepsisScore(d: AsepsisDetails): number {
+  return d.serous + d.erythema + d.purulent + d.separation +
+    (d.isolatedBacteria ? 10 : 0) +
+    (d.prolongedStay ? 5 : 0) +
+    d.additionalTx;
+}
+
+export function emptyWound(label = 'Wound'): WoundAssessment {
+  return {
+    id: `tmp-${Date.now()}`,
+    label,
+    location: '',
+    woundClass: '',
+    closure: '',
+    status: 'healing',
+    dressing: '',
+    drain: 'none',
+    drainOutputMl: '',
+    asepsisScore: 0,
+    asepsisDetails: { serous: 0, erythema: 0, purulent: 0, separation: 0, isolatedBacteria: false, prolongedStay: false, additionalTx: 0 },
+    notes: '',
+    assessedDate: new Date().toISOString().slice(0, 10),
+  };
+}
+
+export async function saveWoundAssessment(
+  patientId: string,
+  encounterId: string | null,
+  wound: WoundAssessment,
+): Promise<{ id: string | null; error: string | null }> {
+  if (!supabase) return { id: null, error: notConfigured('saveWoundAssessment') };
+  const row = {
+    patient_id:      patientId,
+    encounter_id:    encounterId ?? null,
+    label:           wound.label,
+    location:        wound.location || null,
+    wound_class:     wound.woundClass || null,
+    closure:         wound.closure || null,
+    status:          wound.status,
+    dressing:        wound.dressing || null,
+    drain:           wound.drain,
+    drain_output_ml: wound.drainOutputMl ? parseInt(wound.drainOutputMl) : null,
+    asepsis_score:   wound.asepsisScore,
+    asepsis_details: wound.asepsisDetails as unknown as Record<string, unknown>,
+    notes:           wound.notes || null,
+    assessed_date:   wound.assessedDate,
+    updated_at:      new Date().toISOString(),
+  };
+  if (wound.id.startsWith('tmp-')) {
+    const { data, error } = await supabase.from('wound_assessments').insert(row).select('id').single();
+    if (error) return { id: null, error: error.message };
+    return { id: (data as Record<string, string>).id, error: null };
+  }
+  const { error } = await supabase.from('wound_assessments').update(row).eq('id', wound.id);
+  return { id: wound.id, error: error?.message ?? null };
+}
+
+export async function loadWoundAssessments(patientId: string, encounterId?: string): Promise<WoundAssessment[]> {
+  if (!supabase) return [];
+  let q = supabase.from('wound_assessments').select('*').eq('patient_id', patientId);
+  if (encounterId) q = q.eq('encounter_id', encounterId);
+  const { data, error } = await q.order('assessed_date', { ascending: false });
+  if (error || !data) return [];
+  return (data as Array<Record<string, unknown>>).map(r => ({
+    id:            r.id as string,
+    label:         (r.label as string) ?? 'Wound',
+    location:      (r.location as string) ?? '',
+    woundClass:    (r.wound_class as WoundClass) ?? '',
+    closure:       (r.closure as WoundClosure) ?? '',
+    status:        (r.status as WoundStatus) ?? 'healing',
+    dressing:      (r.dressing as string) ?? '',
+    drain:         (r.drain as DrainStatus) ?? 'none',
+    drainOutputMl: r.drain_output_ml != null ? String(r.drain_output_ml) : '',
+    asepsisScore:  (r.asepsis_score as number) ?? 0,
+    asepsisDetails:(r.asepsis_details as AsepsisDetails) ?? { serous: 0, erythema: 0, purulent: 0, separation: 0, isolatedBacteria: false, prolongedStay: false, additionalTx: 0 },
+    notes:         (r.notes as string) ?? '',
+    assessedDate:  (r.assessed_date as string) ?? new Date().toISOString().slice(0, 10),
+  }));
+}
+
+export async function deleteWoundAssessment(woundId: string): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('deleteWoundAssessment') };
+  const { error } = await supabase.from('wound_assessments').delete().eq('id', woundId);
+  return { error: error?.message ?? null };
+}
+
+/* ── Encounter timeline ───────────────────────────────────────────────────── */
+
+export interface EncounterSummary {
+  id: string;
+  createdAt: string;
+  status: string;
+  encounterType: string;
+  chiefComplaint: string | null;
+  site: string | null;
+  diagnosis: string | null;
+  icd10Code: string | null;
+}
+
+export async function listPatientEncounters(patientId: string): Promise<EncounterSummary[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('encounters')
+    .select('id, created_at, status, encounter_type, chief_complaint, site')
+    .eq('patient_id', patientId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+  if (error || !data) return [];
+
+  const rows = data as Array<Record<string, unknown>>;
+
+  // Fetch assessments for these encounters in one query
+  const ids = rows.map(r => r.id as string);
+  const { data: aData } = ids.length
+    ? await supabase
+        .from('assessments')
+        .select('encounter_id, diagnosis, icd10_code')
+        .in('encounter_id', ids)
+    : { data: [] };
+
+  const aMap = new Map<string, { diagnosis: string; icd10_code: string }>();
+  for (const a of ((aData ?? []) as Array<Record<string, unknown>>)) {
+    const eid = a.encounter_id as string;
+    if (!aMap.has(eid)) {
+      aMap.set(eid, {
+        diagnosis: (a.diagnosis as string) ?? '',
+        icd10_code: (a.icd10_code as string) ?? '',
+      });
+    }
+  }
+
+  return rows.map(r => {
+    const a = aMap.get(r.id as string);
+    return {
+      id:            r.id as string,
+      createdAt:     r.created_at as string,
+      status:        (r.status as string) ?? '',
+      encounterType: (r.encounter_type as string) ?? 'outpatient',
+      chiefComplaint:(r.chief_complaint as string | null) ?? null,
+      site:          (r.site as string | null) ?? null,
+      diagnosis:     a?.diagnosis ?? null,
+      icd10Code:     a?.icd10_code ?? null,
+    };
   });
 }

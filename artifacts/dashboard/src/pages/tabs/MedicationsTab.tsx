@@ -1,6 +1,8 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
+import DrugInteractionAlert from '@/components/DrugInteractionAlert';
+import MedicationReconciliationCard from '@/components/MedicationReconciliationCard';
 
 const MEDICATION_OPTIONS = [
   'Aspirin', 'Clopidogrel', 'Ticagrelor', 'Prasugrel',
@@ -25,6 +27,7 @@ export default function MedicationsTab() {
 
   return (
     <div className="gap-y">
+      <DrugInteractionAlert medications={medications} medicationsText={medicationsText} />
       <CollapsibleCard title="Current medications" badge={medications.length || undefined}>
         <ChipGroup options={MEDICATION_OPTIONS} selected={medications} onToggle={toggleMedication} />
       </CollapsibleCard>
@@ -40,6 +43,7 @@ export default function MedicationsTab() {
           />
         </div>
       </CollapsibleCard>
+      <MedicationReconciliationCard />
     </div>
   );
 }

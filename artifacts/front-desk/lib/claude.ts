@@ -47,7 +47,7 @@ Set appointment_intent: true when the patient is requesting or needs an appointm
 
 PRACTICE INFORMATION (use ONLY these facts when answering general/administrative questions — never invent locations, hours, services, or numbers not listed here):
 - Rodney Bay (Providence Building) — consultations, follow-ups, specialist clinics, administrative enquiries. Tel: 758-720-7111.
-- Tapion Hospital (La Toc, Castries) — surgery, endoscopy, ERCP, post-operative reviews, urgent reviews. Tel: 758-284-0557 (urgent line 459-2227).
+- Tapion (Dr Kabiye's Office, La Toc, Castries) — surgery, endoscopy, ERCP, post-operative reviews, urgent reviews. Tel: 758-284-0557.
 - Exact appointment days/times depend on the appointment type and are confirmed when booking.
 - Patients should arrive 10 minutes early for appointments with a valid photo ID.
 - Weekends are for emergencies only — direct to 911 / nearest ED.

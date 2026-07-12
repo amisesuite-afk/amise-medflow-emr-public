@@ -71,6 +71,18 @@ export const SYMPTOM_GROUPS: { category: string; symptoms: string[] }[] = [
     category: 'Administrative / Other',
     symptoms: ['admin enquiry', 'follow-up', 'second opinion', 'pre-op assessment', 'results review', 'wound check', 'medication review', 'sick note', 'referral follow-up', 'post-op review', 'annual review', 'prescription renewal', 'insurance report'],
   },
+  {
+    category: 'Anorectal / Abdominal wall',
+    symptoms: ['perianal lump', 'rectal prolapse', 'pulsatile mass', 'lymphadenopathy', 'genital ulcer', 'penile swelling'],
+  },
+  {
+    category: 'Paediatric / Neonatal',
+    symptoms: [
+      'inconsolable crying', 'poor feeding', 'failure to thrive', 'bilious vomiting',
+      'neonatal jaundice', 'non-blanching rash', 'strawberry tongue',
+      'limp', 'bow legs', 'delayed development', 'parental concern',
+    ],
+  },
 ];
 
 export const ALL_SYMPTOMS_FLAT = SYMPTOM_GROUPS.flatMap(g => g.symptoms);

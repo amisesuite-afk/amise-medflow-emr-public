@@ -190,7 +190,7 @@ function PracticeInfo() {
     ['Specialty', 'General & Endoscopic Surgery'],
     ['Timezone',  'Eastern Caribbean Time (UTC−4, America/St_Lucia)'],
     ['Sites',     'Rodney Bay (Providence Building) · Tapion Hospital (ERCP / Surgery)'],
-    ['Emergency', '459-2227 / 284-0557'],
+    ['Emergency', '758-284-0557 / 758-720-7111'],
   ];
 
   return (

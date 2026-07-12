@@ -1,59 +1,164 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
 import { ManagementPanel } from '@/components/ManagementPanel';
+import SmartTextarea from '@/components/SmartTextarea';
 import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
 import { useSpeechInput } from '@/hooks/useSpeechInput';
+import ClinicalAlgorithmPanel from '@/components/ClinicalAlgorithmPanel';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
 type DiffOption = { name: string; signs: string[] };
 
 const DIFFERENTIAL_PROMPTS: Record<string, DiffOption[]> = {
+  // ── Cardiac ───────────────────────────────────────────────────────────────
   ercp_workup: [
-    { name: 'Choledocholithiasis',        signs: ['RUQ pain', 'jaundice', 'fever', "Murphy's sign"] },
-    { name: 'Cholangiocarcinoma',         signs: ['jaundice', 'weight loss', 'pruritis', 'dark urine'] },
-    { name: 'Pancreatic head carcinoma',  signs: ['painless jaundice', 'weight loss', "Courvoisier's sign"] },
+    { name: 'Choledocholithiasis',            signs: ['RUQ pain', 'jaundice', 'fever', "Murphy's sign"] },
+    { name: 'Cholangiocarcinoma',             signs: ['jaundice', 'weight loss', 'pruritis', 'dark urine'] },
+    { name: 'Pancreatic head carcinoma',      signs: ['painless jaundice', 'weight loss', "Courvoisier's sign"] },
     { name: 'Primary sclerosing cholangitis', signs: ['jaundice', 'pruritis', 'fatigue', 'IBD'] },
-    { name: 'Acute cholangitis',          signs: ["Charcot's triad", 'fever', 'RUQ pain', 'jaundice'] },
-    { name: 'Acute hepatitis',            signs: ['jaundice', 'RUQ pain', 'nausea', 'fatigue'] },
+    { name: 'Acute cholangitis',              signs: ["Charcot's triad", 'fever', 'RUQ pain', 'jaundice'] },
+    { name: 'Acute hepatitis',                signs: ['jaundice', 'RUQ pain', 'nausea', 'fatigue'] },
+    { name: 'Mirizzi syndrome',               signs: ['jaundice', 'RUQ pain', 'large gallstone', 'extrinsic CBD compression'] },
+    { name: 'Biliary stricture (benign)',      signs: ['post-op', 'jaundice', 'cholangitis', 'no mass'] },
   ],
   breast: [
-    { name: 'Fibroadenoma',              signs: ['smooth', 'mobile', 'rubbery', 'young female'] },
-    { name: 'Fibrocystic change',        signs: ['cyclical pain', 'bilateral', 'nodularity', 'premenstrual'] },
-    { name: 'Breast carcinoma',          signs: ['hard', 'irregular', 'fixed', 'skin change', 'lymph nodes'] },
-    { name: 'Phyllodes tumour',          signs: ['large', 'rapid growth', 'smooth', 'older female'] },
-    { name: 'Mastitis / abscess',        signs: ['erythema', 'hot', 'tender', 'fever', 'lactating'] },
-    { name: 'Fat necrosis',              signs: ['post-trauma', 'firm', 'skin dimpling', 'irregular'] },
-    { name: 'Ductal carcinoma in situ',  signs: ['nipple discharge', 'microcalcification', 'mammographic'] },
+    { name: 'Fibroadenoma',                  signs: ['smooth', 'mobile', 'rubbery', 'young female'] },
+    { name: 'Fibrocystic change',            signs: ['cyclical pain', 'bilateral', 'nodularity', 'premenstrual'] },
+    { name: 'Breast carcinoma',              signs: ['hard', 'irregular', 'fixed', 'skin change', 'lymph nodes'] },
+    { name: 'Phyllodes tumour',              signs: ['large', 'rapid growth', 'smooth', 'older female'] },
+    { name: 'Mastitis / abscess',            signs: ['erythema', 'hot', 'tender', 'fever', 'lactating'] },
+    { name: 'Fat necrosis',                  signs: ['post-trauma', 'firm', 'skin dimpling', 'irregular'] },
+    { name: 'Ductal carcinoma in situ',      signs: ['nipple discharge', 'microcalcification', 'mammographic'] },
+    { name: 'Duct ectasia',                  signs: ['green/brown nipple discharge', 'periareolar', 'older female'] },
+    { name: 'Gynaecomastia',                 signs: ['male', 'subareolar', 'bilateral', 'drug history'] },
   ],
   post_op: [
-    { name: 'Surgical site infection',   signs: ['erythema', 'warmth', 'discharge', 'fever', 'pain'] },
-    { name: 'Wound dehiscence',          signs: ['wound opening', 'serosanguinous', 'post-exertion'] },
-    { name: 'Intra-abdominal collection',signs: ['fever', 'ileus', 'abdominal pain', 'leucocytosis'] },
-    { name: 'Anastomotic leak',          signs: ['fever', 'peritonitis', 'tachycardia', 'feculent drain'] },
-    { name: 'Pulmonary embolism',        signs: ['dyspnoea', 'tachycardia', 'pleuritic pain', 'leg swelling'] },
-    { name: 'Deep vein thrombosis',      signs: ['leg swelling', 'calf tenderness', "Homans' sign"] },
-    { name: 'Ileus / obstruction',       signs: ['distension', 'no flatus', 'vomiting', 'absent bowel sounds'] },
+    { name: 'Surgical site infection',       signs: ['erythema', 'warmth', 'discharge', 'fever', 'pain'] },
+    { name: 'Wound dehiscence',              signs: ['wound opening', 'serosanguinous', 'post-exertion'] },
+    { name: 'Intra-abdominal collection',    signs: ['fever', 'ileus', 'abdominal pain', 'leucocytosis'] },
+    { name: 'Anastomotic leak',              signs: ['fever', 'peritonitis', 'tachycardia', 'feculent drain'] },
+    { name: 'Pulmonary embolism',            signs: ['dyspnoea', 'tachycardia', 'pleuritic pain', 'leg swelling'] },
+    { name: 'Deep vein thrombosis',          signs: ['leg swelling', 'calf tenderness', 'warmth', 'erythema'] },
+    { name: 'Ileus / obstruction',           signs: ['distension', 'no flatus', 'vomiting', 'absent bowel sounds'] },
+    { name: 'Urinary tract infection',       signs: ['dysuria', 'frequency', 'fever', 'post-catheter'] },
+    { name: 'Haematoma',                     signs: ['expanding swelling', 'bruising', 'post-op', 'tense'] },
+    { name: 'Retained foreign body',         signs: ['persistent pain', 'fever', 'wound sinus', 'imaging'] },
   ],
   diabetic_foot: [
-    { name: 'Diabetic foot ulcer',       signs: ['neuropathy', 'pressure area', 'painless', 'callous'] },
-    { name: 'Necrotising fasciitis',     signs: ['crepitus', 'rapid spread', 'systemic sepsis', 'disproportionate pain'] },
-    { name: 'Osteomyelitis',             signs: ['bone exposure', 'probes to bone', 'chronic', 'non-healing'] },
-    { name: 'Peripheral arterial disease', signs: ['absent pulses', 'claudication', 'rest pain', 'ABPI <0.9'] },
-    { name: 'Cellulitis',               signs: ['erythema', 'warmth', 'spreading border', 'no fluctuance'] },
-    { name: 'Abscess',                  signs: ['fluctuance', 'localised', 'pus', 'tender'] },
+    { name: 'Diabetic foot ulcer (neuropathic)', signs: ['neuropathy', 'pressure area', 'painless', 'callous'] },
+    { name: 'Necrotising fasciitis',         signs: ['crepitus', 'rapid spread', 'systemic sepsis', 'disproportionate pain'] },
+    { name: 'Osteomyelitis',                 signs: ['bone exposure', 'probes to bone', 'chronic', 'non-healing'] },
+    { name: 'Peripheral arterial disease',   signs: ['absent pulses', 'claudication', 'rest pain', 'ABPI <0.9'] },
+    { name: 'Cellulitis',                    signs: ['erythema', 'warmth', 'spreading border', 'no fluctuance'] },
+    { name: 'Abscess',                       signs: ['fluctuance', 'localised', 'pus', 'tender'] },
+    { name: 'Charcot neuroarthropathy',      signs: ['hot swollen foot', 'neuropathy', 'no infection markers', 'X-ray changes'] },
+    { name: 'Acute limb ischaemia',          signs: ['6 Ps', 'sudden onset', 'pulselessness', 'pallor', 'paralysis'] },
   ],
+
+  // ── General new consultation — all specialties ─────────────────────────────
   new_consult: [
-    { name: 'Acute appendicitis',        signs: ['RIF pain', "Rovsing's", 'rebound', 'fever', 'migration'] },
-    { name: 'Cholecystitis',             signs: ["Murphy's sign", 'RUQ pain', 'fever', 'post-fatty meal'] },
-    { name: 'Diverticulitis',            signs: ['LIF pain', 'fever', 'altered bowel habit', 'elderly'] },
-    { name: 'Bowel obstruction',         signs: ['colicky pain', 'distension', 'vomiting', 'no flatus'] },
-    { name: 'Hernia (complicated)',      signs: ['groin lump', 'irreducible', 'tender', 'vomiting'] },
-    { name: 'Peptic ulcer disease',      signs: ['epigastric pain', 'antacid relief', 'Helicobacter', 'nausea'] },
-    { name: 'Pancreatitis',             signs: ['epigastric pain', 'radiation to back', 'vomiting', 'elevated amylase'] },
+    // Cardiovascular
+    { name: 'Acute coronary syndrome (STEMI/NSTEMI)', signs: ['chest pain', 'radiation to arm/jaw', 'diaphoresis', 'ECG changes', 'troponin rise'] },
+    { name: 'Aortic dissection',             signs: ['tearing back pain', 'BP differential', 'pulse deficit', 'wide mediastinum'] },
+    { name: 'Pericarditis',                  signs: ['pleuritic chest pain', 'positional relief leaning forward', 'friction rub', 'saddle ST elevation'] },
+    { name: 'Heart failure / pulmonary oedema', signs: ['dyspnoea', 'orthopnoea', 'oedema', 'elevated JVP', 'crepitations'] },
+    { name: 'Arrhythmia (AF / SVT / VT)',    signs: ['palpitations', 'irregular pulse', 'syncope', 'ECG abnormality'] },
+    { name: 'Infective endocarditis',        signs: ['fever', 'new murmur', 'emboli', 'Osler nodes', 'Janeway lesions', 'positive cultures'] },
+    // Respiratory
+    { name: 'Pulmonary embolism',            signs: ['sudden dyspnoea', 'pleuritic pain', 'tachycardia', 'hypoxia', 'risk factors'] },
+    { name: 'Pneumothorax',                  signs: ['sudden pleuritic pain', 'reduced air entry', 'hyper-resonance', 'tracheal deviation'] },
+    { name: 'Community-acquired pneumonia',  signs: ['productive cough', 'fever', 'dyspnoea', 'dullness', 'consolidation'] },
+    { name: 'COPD exacerbation',             signs: ['known COPD', 'increased dyspnoea', 'purulent sputum', 'air trapping'] },
+    { name: 'Acute asthma',                  signs: ['wheeze', 'dyspnoea', 'history of asthma', 'reduced PEFR', 'accessory muscles'] },
+    { name: 'Pleural effusion',              signs: ['dullness to percussion', 'reduced breath sounds', 'stony dull', 'mediastinal shift'] },
+    { name: 'Pulmonary TB',                  signs: ['chronic cough', 'haemoptysis', 'weight loss', 'night sweats', 'upper lobe changes'] },
+    { name: 'Lung carcinoma',                signs: ['chronic cough', 'haemoptysis', 'weight loss', 'clubbing', 'hilar mass'] },
+    // GI / Surgical
+    { name: 'Acute appendicitis',            signs: ['RIF pain', "Rovsing's sign", 'rebound tenderness', 'fever', 'pain migration from umbilicus'] },
+    { name: 'Acute cholecystitis',           signs: ["Murphy's sign", 'RUQ pain', 'fever', 'post-fatty meal', 'raised WBC'] },
+    { name: 'Choledocholithiasis / cholangitis', signs: ["Charcot's triad", 'fever', 'RUQ pain', 'jaundice', 'dark urine'] },
+    { name: 'Acute pancreatitis',            signs: ['epigastric pain radiating to back', 'vomiting', 'elevated amylase/lipase', 'alcohol or gallstones'] },
+    { name: 'Bowel obstruction',             signs: ['colicky pain', 'distension', 'vomiting', 'no flatus', 'tinkling bowel sounds'] },
+    { name: 'Hollow viscus perforation',     signs: ['sudden severe abdominal pain', 'peritonism', 'free air on X-ray', 'shocked'] },
+    { name: 'GI haemorrhage (upper)',        signs: ['haematemesis', 'melaena', 'postural hypotension', 'coffee ground vomiting'] },
+    { name: 'GI haemorrhage (lower)',        signs: ['fresh rectal bleeding', 'altered bowel habit', 'anaemia', 'weight loss'] },
+    { name: 'Acute diverticulitis',          signs: ['LIF pain', 'fever', 'altered bowel habit', 'elderly', 'localised tenderness'] },
+    { name: 'Peptic ulcer disease',          signs: ['epigastric pain', 'antacid relief', 'H. pylori history', 'NSAID use'] },
+    { name: 'GORD / oesophagitis',           signs: ['heartburn', 'regurgitation', 'waterbrash', 'worse lying flat'] },
+    { name: 'IBD (Crohn\'s / UC)',           signs: ['diarrhoea', 'blood PR', 'cramping', 'weight loss', 'extra-intestinal manifestations'] },
+    { name: 'Colorectal carcinoma',          signs: ['change in bowel habit', 'rectal bleeding', 'weight loss', 'anaemia', 'mass PR'] },
+    { name: 'Ischaemic colitis',             signs: ['post-prandial pain', 'bloody diarrhoea', 'atherosclerosis', 'elderly'] },
+    { name: 'Mesenteric ischaemia',          signs: ['severe abdominal pain out of proportion', 'AF', 'raised lactate', 'peritonism late'] },
+    { name: 'Hernias (complicated)',         signs: ['groin / umbilical lump', 'irreducible', 'tender', 'vomiting', 'obstruction'] },
+    // Hepatobiliary
+    { name: 'Hepatitis (viral / toxic)',     signs: ['jaundice', 'RUQ pain', 'fatigue', 'nausea', 'raised transaminases'] },
+    { name: 'Liver cirrhosis / decompensation', signs: ['ascites', 'jaundice', 'encephalopathy', 'spider naevi', 'alcohol history'] },
+    { name: 'Hepatocellular carcinoma',      signs: ['weight loss', 'RUQ mass', 'cirrhosis background', 'elevated AFP'] },
+    // Genitourinary
+    { name: 'Renal colic (ureterolithiasis)', signs: ['loin-to-groin pain', 'haematuria', 'restlessness', 'nausea', 'colicky'] },
+    { name: 'UTI / cystitis',               signs: ['dysuria', 'frequency', 'urgency', 'suprapubic pain', 'cloudy urine'] },
+    { name: 'Pyelonephritis',               signs: ['loin pain', 'fever', 'dysuria', 'CVA tenderness', 'positive MSU'] },
+    { name: 'Acute kidney injury',          signs: ['oliguria', 'uraemia', 'fluid overload', 'electrolyte disturbance', 'raised creatinine'] },
+    { name: 'Ectopic pregnancy',            signs: ['lower abdominal pain', 'amenorrhoea', 'PV bleeding', 'shoulder tip pain', '+ve βhCG'] },
+    { name: 'Ovarian torsion',              signs: ['sudden severe pelvic pain', 'nausea', 'vomiting', 'adnexal mass', 'absent Doppler flow'] },
+    { name: 'PID',                          signs: ['lower abdominal pain', 'vaginal discharge', 'cervical excitation', 'fever', 'young female'] },
+    { name: 'Urinary retention',            signs: ['inability to void', 'suprapubic distension', 'enlarged prostate', 'pain'] },
+    { name: 'Testicular torsion',           signs: ['sudden scrotal pain', 'high-riding testis', 'absent cremasteric reflex', 'nausea'] },
+    { name: 'Epididymo-orchitis',           signs: ['scrotal pain', 'gradual onset', 'swelling', 'cremasteric reflex intact', 'STI risk'] },
+    // Neurological
+    { name: 'Stroke / TIA',                 signs: ['sudden focal neuro deficit', 'face / arm / leg weakness', 'speech disturbance', 'visual loss'] },
+    { name: 'Subarachnoid haemorrhage',     signs: ['thunderclap headache', 'worst ever headache', 'meningism', 'loss of consciousness'] },
+    { name: 'Bacterial meningitis',         signs: ['headache', 'fever', 'neck stiffness', 'photophobia', 'non-blanching rash'] },
+    { name: 'Encephalitis',                 signs: ['confusion', 'fever', 'focal deficit', 'seizure', 'CSF pleocytosis'] },
+    { name: 'Raised intracranial pressure', signs: ['headache', 'vomiting', 'papilloedema', "Cushing's triad", 'declining GCS'] },
+    { name: 'Seizure / epilepsy',           signs: ['loss of consciousness', 'tonic-clonic activity', 'post-ictal', 'incontinence'] },
+    { name: 'Syncope',                      signs: ['transient LOC', 'prodrome', 'postural trigger', 'rapid recovery', 'normal ECG'] },
+    { name: 'Vertigo (BPPV / Ménière\'s)', signs: ['episodic dizziness', 'positional', 'nystagmus', 'tinnitus', 'hearing loss'] },
+    { name: 'Guillain-Barré syndrome',      signs: ['ascending weakness', 'areflexia', 'post-infection', 'autonomic instability'] },
+    // Endocrine / Metabolic
+    { name: 'Diabetic ketoacidosis (DKA)',  signs: ['polyuria', 'polydipsia', 'vomiting', 'Kussmaul breathing', 'glucose >11', 'ketones'] },
+    { name: 'Hyperosmolar hyperglycaemic state', signs: ['severe hyperglycaemia', 'dehydration', 'altered GCS', 'no significant ketones'] },
+    { name: 'Hypoglycaemia',                signs: ['diaphoresis', 'tremor', 'confusion', 'glucose <4 mmol/L', 'rapid recovery with glucose'] },
+    { name: 'Thyroid storm',                signs: ['hyperthyroidism history', 'fever', 'tachycardia', 'AF', 'precipitant event'] },
+    { name: 'Adrenal crisis (Addisonian)',  signs: ['hypotension', 'hyponatraemia', 'hyperkalaemia', 'steroid withdrawal', 'hyperpigmentation'] },
+    { name: 'Hypercalcaemia',               signs: ['bones stones groans moans', 'malignancy', 'hyperparathyroidism', 'polyuria', 'confusion'] },
+    { name: 'Hypothyroidism (myxoedema)',   signs: ['bradycardia', 'cold intolerance', 'weight gain', 'constipation', 'dry skin', 'goitre'] },
+    // Haematological / Oncological
+    { name: 'Sepsis / septic shock',        signs: ['fever or hypothermia', 'tachycardia', 'tachypnoea', 'altered GCS', 'source of infection'] },
+    { name: 'Anaemia (various causes)',     signs: ['fatigue', 'pallor', 'dyspnoea on exertion', 'tachycardia', 'low Hb'] },
+    { name: 'Sickle cell crisis',           signs: ['known SCD', 'bone pain crisis', 'fever', 'precipitant', 'acute chest syndrome'] },
+    { name: 'Leukaemia / lymphoma',         signs: ['weight loss', 'night sweats', 'lymphadenopathy', 'splenomegaly', 'fatigue'] },
+    // Infectious / Tropical
+    { name: 'Malaria',                      signs: ['fever with rigors', 'tropical travel', 'splenomegaly', 'anaemia', 'thrombocytopenia'] },
+    { name: 'Dengue fever',                 signs: ['high fever', 'rash', 'arthralgia', 'retro-orbital pain', 'thrombocytopenia', 'Caribbean'] },
+    { name: 'Leptospirosis',                signs: ['fever', 'myalgia', 'conjunctival suffusion', 'jaundice', 'AKI', 'animal exposure'] },
+    { name: 'COVID-19 / viral pneumonitis', signs: ['dyspnoea', 'fever', 'cough', 'hypoxia', 'bilateral infiltrates'] },
+    // Musculoskeletal / Vascular
+    { name: 'Deep vein thrombosis',         signs: ['leg swelling', 'calf tenderness', 'warmth', 'erythema', 'risk factors'] },
+    { name: 'Cellulitis',                   signs: ['erythema', 'warmth', 'spreading border', 'fever', 'lymphangitis'] },
+    { name: 'Necrotising fasciitis',        signs: ['severe pain', 'crepitus', 'rapid progression', 'systemic sepsis', 'skin necrosis'] },
+    { name: 'Septic arthritis',             signs: ['hot swollen joint', 'fever', 'restricted ROM', 'elevated CRP/WBC'] },
+    { name: 'Gout',                         signs: ['acute monoarthritis', 'podagra', 'tophi', 'hyperuricaemia', 'alcohol history'] },
+    { name: 'Acute limb ischaemia',         signs: ['sudden pain', 'pallor', 'pulselessness', 'paraesthesia', 'paralysis', 'polar cold'] },
+    { name: 'Compartment syndrome',         signs: ['pain on passive stretch', 'tense compartment', 'paraesthesia', 'trauma history'] },
+    // Psychiatric / Functional
+    { name: 'Panic attack',                 signs: ['chest tightness', 'dyspnoea', 'palpitations', 'fear of dying', 'normal investigations'] },
+    { name: 'Anxiety / somatic disorder',   signs: ['multiple symptoms', 'normal exams', 'high health anxiety', 'life stressor'] },
+    { name: 'Depression / psychosomatic',   signs: ['low mood', 'fatigue', 'medically unexplained pain', 'sleep disturbance'] },
+    { name: 'Drug / alcohol intoxication',  signs: ['altered GCS', 'odour', 'miosis/mydriasis', 'tachycardia', 'history'] },
+  ],
+  follow_up: [
+    { name: 'Disease progression / relapse',     signs: ['return of prior symptoms', 'worsening baseline', 'new findings'] },
+    { name: 'Treatment side-effect',             signs: ['new symptoms post-therapy', 'medication history', 'temporal relationship'] },
+    { name: 'Post-operative complication',       signs: ['fever', 'wound change', 'function decline', 'new pain'] },
+    { name: 'Recurrent malignancy',              signs: ['weight loss', 'pain at prior site', 'new lymphadenopathy', 'rising tumour markers'] },
+    { name: 'Inadequate treatment response',     signs: ['persistent symptoms', 'unchanged imaging', 'compliance issues'] },
+    { name: 'New comorbidity',                   signs: ['new organ system involvement', 'unrelated presenting complaint'] },
+    { name: 'Surveillance finding — benign',     signs: ['stable lesion', 'no change on imaging', 'asymptomatic'] },
   ],
 };
 
@@ -64,6 +169,61 @@ const URGENCY_STYLE: Record<string, { bg: string; border: string; color: string;
   relevant: { bg: '#fffbeb', border: '#fcd34d', color: '#78350f', dot: '#f59e0b' },
   consider: { bg: '#f0fdf4', border: '#86efac', color: '#14532d', dot: '#22c55e' },
 };
+
+// ── ICD auto-suggest from assessment text ─────────────────────────────────────
+
+function IcdAutoSuggest() {
+  const { assessment, differentials, icdCodes, setIcdCodes } = useAppContext();
+  const [suggestions, setSuggestions] = useState<typeof ICD_CODES>([]);
+  const [shown, setShown] = useState(false);
+
+  function suggest() {
+    const text = [assessment, differentials].join(' ').toLowerCase();
+    if (!text.trim()) return;
+    const hits = ICD_CODES.filter(c => {
+      const desc = c.description.toLowerCase();
+      const words = desc.split(/\s+/).filter(w => w.length > 4);
+      return words.some(w => text.includes(w));
+    }).slice(0, 12);
+    setSuggestions(hits);
+    setShown(true);
+  }
+
+  function add(c: (typeof ICD_CODES)[0]) {
+    const label = `${c.code} — ${c.description}`;
+    if (!icdCodes.includes(label)) setIcdCodes([...icdCodes, label]);
+  }
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button type="button" onClick={() => { suggest(); }}
+        title="Auto-suggest ICD codes from assessment text"
+        style={{ fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 5, border: '1px solid #3b82f6', background: '#eff6ff', color: '#1d4ed8', cursor: 'pointer' }}>
+        AI code suggest
+      </button>
+      {shown && suggestions.length > 0 && (
+        <div style={{ position: 'absolute', top: '100%', right: 0, zIndex: 80, marginTop: 4, background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: 300, maxHeight: 280, overflowY: 'auto' }}>
+          <div style={{ padding: '6px 10px 4px', fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            Suggested ICD codes
+            <button type="button" onClick={() => setShown(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', fontSize: 14 }}>×</button>
+          </div>
+          {suggestions.map(c => {
+            const label = `${c.code} — ${c.description}`;
+            const added = icdCodes.includes(label);
+            return (
+              <button key={c.code} type="button" onClick={() => add(c)} disabled={added}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', textAlign: 'left', padding: '7px 10px', border: 'none', background: added ? '#f0fdf4' : 'transparent', cursor: added ? 'default' : 'pointer', borderBottom: '1px solid #f8fafc' }}>
+                <code style={{ fontSize: 11, fontWeight: 700, color: '#1d4ed8', flexShrink: 0 }}>{c.code}</code>
+                <span style={{ fontSize: 12, color: '#334155', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.description}</span>
+                {added && <span style={{ fontSize: 10, color: '#15803d', flexShrink: 0 }}>✓</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Diagnosis search + ICD picker ────────────────────────────────────────────
 
@@ -371,6 +531,13 @@ export default function AssessmentTab() {
   const apptType = triageResult.appointmentType;
   const ddxOptions: DiffOption[] = DIFFERENTIAL_PROMPTS[apptType] ?? DIFFERENTIAL_PROMPTS['new_consult'];
 
+  const [requestedTool, setRequestedTool] = useState<string | null>(null);
+
+  const requestTool = useCallback((scaleKey: string) => {
+    setRequestedTool(null);
+    requestAnimationFrame(() => setRequestedTool(scaleKey));
+  }, []);
+
   const assessmentMic = useSpeechInput();
   const differentialsMic = useSpeechInput();
 
@@ -392,16 +559,28 @@ export default function AssessmentTab() {
         <CollapsibleCard
           title={`Clinical Decision Support — ${cdsSuggestions.length} active suggestion${cdsSuggestions.length > 1 ? 's' : ''}`}
         >
+          <div style={{ fontSize: 11, color: '#6b7280', marginBottom: 8 }}>
+            Click a row to open the scoring tool inline below.
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {cdsSuggestions.map(s => {
               const style = URGENCY_STYLE[s.urgency];
               return (
-                <div key={s.scaleKey} style={{
-                  background: style.bg, border: `1px solid ${style.border}`,
-                  borderRadius: 8, padding: '8px 12px',
-                  display: 'flex', alignItems: 'flex-start', gap: 10,
-                }}>
-                  <span style={{ color: style.dot, fontSize: 10, marginTop: 3 }}>●</span>
+                <button
+                  key={s.scaleKey}
+                  type="button"
+                  onClick={() => requestTool(s.scaleKey)}
+                  style={{
+                    background: style.bg, border: `1px solid ${style.border}`,
+                    borderRadius: 8, padding: '8px 12px',
+                    display: 'flex', alignItems: 'flex-start', gap: 10,
+                    width: '100%', textAlign: 'left', cursor: 'pointer',
+                    transition: 'filter 0.1s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.filter = 'brightness(0.95)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.filter = ''; }}
+                >
+                  <span style={{ color: style.dot, fontSize: 10, marginTop: 3, flexShrink: 0 }}>●</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontWeight: 600, fontSize: 13, color: style.color }}>{s.title}</div>
                     <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{s.triggerReason}</div>
@@ -411,18 +590,18 @@ export default function AssessmentTab() {
                       </div>
                     )}
                   </div>
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
-                    color: style.color, background: style.border, borderRadius: 4, padding: '2px 6px', whiteSpace: 'nowrap',
-                  }}>
-                    {s.categoryTag}
-                  </span>
-                </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em',
+                      color: style.color, background: style.border, borderRadius: 4, padding: '2px 6px', whiteSpace: 'nowrap',
+                    }}>
+                      {s.categoryTag}
+                    </span>
+                    <span style={{ fontSize: 10, color: style.color, opacity: 0.7 }}>Open score ↓</span>
+                  </div>
+                </button>
               );
             })}
-          </div>
-          <div style={{ marginTop: 8, fontSize: 11, color: '#9ca3af' }}>
-            Navigate to the <strong>Scales</strong> tab to complete and score each tool.
           </div>
         </CollapsibleCard>
       )}
@@ -459,6 +638,7 @@ export default function AssessmentTab() {
                 Search by name or code — first selected = primary diagnosis
               </div>
             </div>
+            <IcdAutoSuggest />
           </div>
           <DiagnosisPicker />
         </div>
@@ -484,10 +664,10 @@ export default function AssessmentTab() {
               }}
             />
           </div>
-          <textarea
+          <SmartTextarea
             value={assessment}
-            onChange={e => setAssessment(e.target.value)}
-            placeholder="Clinical impression, supporting evidence, reasoning, degree of certainty…"
+            onChange={setAssessment}
+            placeholder="Clinical impression, supporting evidence, reasoning, degree of certainty… (type .asx or .acholecystitis to expand)"
             style={{ minHeight: 90, width: '100%' }}
           />
         </div>
@@ -566,6 +746,8 @@ export default function AssessmentTab() {
           ))}
         </div>
       </CollapsibleCard>
+
+      <ClinicalAlgorithmPanel requestedTool={requestedTool} />
 
     </div>
   );

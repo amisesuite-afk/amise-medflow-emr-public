@@ -602,7 +602,7 @@ export default function KioskPage() {
           straight away. Please go to the reception desk or press the nurse call button.
         </p>
         <div style={{ fontSize: 18, color: '#f59e0b', fontWeight: 600 }}>
-          Tapion Hospital: 459-2227 · 284-0557
+          Tapion Hospital: 758-284-0557 · 758-720-7111
         </div>
         <button
           type="button"
@@ -960,7 +960,7 @@ export default function KioskPage() {
           lineHeight: 1.7,
         }}>
           Amise Medical Services · Saint Lucia<br />
-          Tapion Hospital: 459-2227 · 284-0557 · Rodney Bay (Providence Building)
+          Tapion Hospital: 758-284-0557 · 758-720-7111 · Rodney Bay (Providence Building)
         </div>
       </div>
     </div>

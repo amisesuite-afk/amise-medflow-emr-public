@@ -97,7 +97,7 @@ function ChangeRequestControl({
   if (hoursUntil < MIN_NOTICE_HOURS) {
     return (
       <div style={{ marginTop: 10, fontSize: 12, color: '#94a3b8' }}>
-        Too soon to change online — please call 459-2227 · 284-0557.
+        Too soon to change online — please call 758-284-0557 · 758-720-7111.
       </div>
     );
   }
@@ -330,7 +330,7 @@ export default function AppointmentsPage() {
 
       <p style={{ marginTop: 24, fontSize: 12, color: '#94a3b8', textAlign: 'center', lineHeight: 1.7 }}>
         For anything urgent, or if online options don&apos;t work for you, call Tapion Hospital:<br />
-        459-2227 · 284-0557
+        758-284-0557 · 758-720-7111
       </p>
     </div>
   );

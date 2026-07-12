@@ -58,6 +58,8 @@ interface Props {
   sessionToken?: string;
   templateKey?: string;
   mode?: 'screening' | 'condition_specific';
+  /** When true, removes full-screen layout for use inside a dashboard tab panel */
+  compact?: boolean;
 }
 
 // ── Inline question bank (fallback / initial render) ─────────────────────────
@@ -254,7 +256,7 @@ function ScaleInput({
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 
-export default function APCQTab({ sessionToken: initialToken, templateKey, mode = 'screening' }: Props) {
+export default function APCQTab({ sessionToken: initialToken, templateKey, mode = 'screening', compact = false }: Props) {
   // Session state
   const [screen, setScreen] = useState<ScreenState>('consent');
   const [sessionToken, setSessionToken] = useState<string>(initialToken ?? '');
@@ -452,12 +454,12 @@ export default function APCQTab({ sessionToken: initialToken, templateKey, mode 
   if (screen === 'consent') {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4"
-        style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' }}
+        className={compact ? '' : 'min-h-screen flex items-center justify-center p-4'}
+        style={compact ? { padding: '8px 4px' } : { background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' }}
       >
         <div
           className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-8"
-          style={{ border: '1px solid #bfdbfe' }}
+          style={{ border: '1px solid #bfdbfe', ...(compact ? { boxShadow: 'none', border: '1px solid #dbeafe' } : {}) }}
         >
           {/* Practice header */}
           <div className="text-center mb-8">
@@ -561,8 +563,8 @@ export default function APCQTab({ sessionToken: initialToken, templateKey, mode 
   if (screen === 'complete') {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4"
-        style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' }}
+        className={compact ? '' : 'min-h-screen flex items-center justify-center p-4'}
+        style={compact ? { padding: '16px 4px' } : { background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' }}
       >
         <div
           className="bg-white rounded-2xl shadow-xl w-full max-w-xl p-10 text-center"
@@ -599,8 +601,8 @@ export default function APCQTab({ sessionToken: initialToken, templateKey, mode 
   // ── Questioning screen ──────────────────────────────────────────────────────
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4"
-      style={{ background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' }}
+      className={compact ? '' : 'min-h-screen flex items-center justify-center p-4'}
+      style={compact ? { padding: '8px 4px' } : { background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)' }}
     >
       <div className="w-full max-w-2xl">
         {/* Red flag banner */}

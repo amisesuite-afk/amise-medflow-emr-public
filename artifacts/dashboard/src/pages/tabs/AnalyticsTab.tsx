@@ -99,6 +99,118 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+// ─── Surgical Quality Panel ───────────────────────────────────────────────────
+
+interface QiKpi {
+  label: string;
+  value: string;
+  denominator: string;
+  benchmark: string;
+  note: string;
+}
+
+const DEFAULT_KPIS: QiKpi[] = [
+  { label: 'Surgical site infection (SSI) rate', value: '', denominator: 'per 100 procedures', benchmark: '< 3%', note: '' },
+  { label: 'Unplanned return to theatre', value: '', denominator: 'per 100 procedures', benchmark: '< 2%', note: '' },
+  { label: '30-day readmission rate', value: '', denominator: 'per 100 procedures', benchmark: '< 5%', note: '' },
+  { label: 'Major complication rate (Clavien ≥ IIIa)', value: '', denominator: 'per 100 procedures', benchmark: '< 4%', note: '' },
+  { label: '30-day mortality', value: '', denominator: 'per 100 procedures', benchmark: '< 1%', note: '' },
+  { label: 'Conversion rate (lap → open)', value: '', denominator: 'per 100 lap cases', benchmark: '< 5%', note: '' },
+  { label: 'WHO checklist compliance', value: '', denominator: '% cases', benchmark: '100%', note: '' },
+  { label: 'Consent documentation rate', value: '', denominator: '% elective cases', benchmark: '100%', note: '' },
+];
+
+function SurgicalQualityPanel() {
+  const [kpis, setKpis] = useState<QiKpi[]>(DEFAULT_KPIS);
+  const [period, setPeriod] = useState(() => {
+    const d = new Date();
+    return `Q${Math.ceil((d.getMonth() + 1) / 3)} ${d.getFullYear()}`;
+  });
+  const [open, setOpen] = useState(false);
+
+  function updateKpi(idx: number, field: keyof QiKpi, val: string) {
+    setKpis(prev => prev.map((k, i) => i === idx ? { ...k, [field]: val } : k));
+  }
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: '100%', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em',
+          color: 'var(--muted, #64748b)', background: 'none', border: 'none', cursor: 'pointer',
+          padding: '0 0 10px', borderBottom: open ? '1px solid #f1f5f9' : 'none',
+        }}
+      >
+        <span>Surgical quality indicators (manual audit)</span>
+        <span>{open ? '▲' : '▼'}</span>
+      </button>
+
+      {open && (
+        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8, marginTop: 10, padding: '14px 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>Audit period:</label>
+            <input
+              value={period}
+              onChange={e => setPeriod(e.target.value)}
+              style={{ fontSize: 12, padding: '4px 8px', border: '1px solid #d1d5db', borderRadius: 5, width: 120 }}
+            />
+            <span style={{ fontSize: 11, color: '#6b7280' }}>Enter values as percentages or counts. Benchmarks shown for reference.</span>
+          </div>
+
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #f1f5f9' }}>
+                {['Indicator', 'Value', 'Unit', 'Benchmark', 'Notes'].map(h => (
+                  <th key={h} style={{ textAlign: 'left', padding: '4px 6px', fontWeight: 700, color: '#374151', fontSize: 11 }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {kpis.map((kpi, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid #f8fafc' }}>
+                  <td style={{ padding: '6px 6px', color: '#1e293b', fontWeight: 500, width: '32%' }}>{kpi.label}</td>
+                  <td style={{ padding: '4px 6px', width: '10%' }}>
+                    <input
+                      value={kpi.value}
+                      onChange={e => updateKpi(i, 'value', e.target.value)}
+                      placeholder="—"
+                      style={{ width: '100%', fontSize: 12, padding: '3px 6px', border: '1px solid #e2e8f0', borderRadius: 4 }}
+                    />
+                  </td>
+                  <td style={{ padding: '4px 6px', color: '#6b7280', width: '18%' }}>{kpi.denominator}</td>
+                  <td style={{ padding: '4px 6px', width: '10%' }}>
+                    <span style={{
+                      fontSize: 11, padding: '2px 6px', borderRadius: 4, background: '#f0fdf4', color: '#15803d',
+                      fontWeight: 600, border: '1px solid #bbf7d0', whiteSpace: 'nowrap',
+                    }}>
+                      {kpi.benchmark}
+                    </span>
+                  </td>
+                  <td style={{ padding: '4px 6px', width: '30%' }}>
+                    <input
+                      value={kpi.note}
+                      onChange={e => updateKpi(i, 'note', e.target.value)}
+                      placeholder="Add note…"
+                      style={{ width: '100%', fontSize: 11, padding: '3px 6px', border: '1px solid #e2e8f0', borderRadius: 4 }}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div style={{ marginTop: 10, fontSize: 10, color: '#9ca3af' }}>
+            Benchmarks are indicative. Local and regional guidelines take precedence. Data not saved to server — for local reference only.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function AnalyticsTab() {
@@ -284,6 +396,8 @@ export default function AnalyticsTab() {
           No encounter data yet. Analytics will populate as patient encounters are recorded.
         </div>
       )}
+
+      <SurgicalQualityPanel />
 
       <div style={{ marginTop: 8, fontSize: 11, color: 'var(--muted, #64748b)' }}>
         Data sourced live from Supabase · ECT (UTC−4) · Refresh to update

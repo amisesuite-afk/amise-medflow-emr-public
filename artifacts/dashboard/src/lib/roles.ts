@@ -29,9 +29,18 @@ export function roleIn(userRole: UserRole | undefined | null, ...allowed: UserRo
   return allowed.includes(userRole ?? 'front_desk');
 }
 
-/** Minimum role required to access a consultation sub-section. */
+/** Minimum role required to access a consultation sub-section.
+ *  hasRole() uses hierarchy: front_desk < nurse < doctor < admin.
+ *  So minRole:'nurse' grants nurse, doctor, AND admin. */
 export const SECTION_MIN_ROLE: Partial<Record<Section, UserRole>> = {
-  examination: 'nurse',
-  assessment:  'doctor',
-  plan:        'doctor',
+  nurse_apcq:      'nurse',
+  examination:     'nurse',
+  investigations:  'nurse',
+  radiology:       'nurse',
+  attachments:     'nurse',
+  assessment:      'doctor',
+  plan:            'doctor',
+  procedures:      'doctor',
+  prescriptions:   'doctor',
+  ai_consultant:   'doctor',
 };

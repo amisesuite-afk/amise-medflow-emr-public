@@ -1,5 +1,7 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import type { ClinicalAttachment } from '@/context/AppContext';
 
@@ -15,12 +17,74 @@ function isPdf(mimeType: string): boolean {
   return mimeType === 'application/pdf';
 }
 
+type UploadStatus = 'uploading' | 'saved' | 'local';
+
 export default function AttachmentsTab() {
-  const { attachments, setAttachments } = useAppContext();
+  const { attachments, setAttachments, patientId } = useAppContext();
+  const { session } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Per-attachment upload status and storage paths (local state only, not AppContext)
+  const [uploadStatusMap, setUploadStatusMap] = useState<Record<string, UploadStatus>>({});
+  const [storagePathMap, setStoragePathMap] = useState<Record<string, string>>({});
+  const [uploadWarnings, setUploadWarnings] = useState<Record<string, string>>({});
 
   const totalSize = attachments.reduce((sum, a) => sum + a.dataUrl.length, 0);
   const showSizeWarning = totalSize > SIZE_WARNING_THRESHOLD;
+
+  async function uploadAttachment(
+    file: File,
+    attachmentId: string,
+  ): Promise<void> {
+    const userId = session?.user?.id;
+    if (!patientId || !userId || !supabase) {
+      // No patient context, not authenticated, or Supabase unavailable — keep as local only
+      setUploadStatusMap(prev => ({ ...prev, [attachmentId]: 'local' }));
+      return;
+    }
+
+    const path = `${patientId}/${crypto.randomUUID()}-${file.name}`;
+    setUploadStatusMap(prev => ({ ...prev, [attachmentId]: 'uploading' }));
+
+    const { error: storageError } = await supabase.storage
+      .from('clinical-attachments')
+      .upload(path, file);
+
+    if (storageError) {
+      setUploadStatusMap(prev => ({ ...prev, [attachmentId]: 'local' }));
+      setUploadWarnings(prev => ({
+        ...prev,
+        [attachmentId]: `Upload failed: ${storageError.message}`,
+      }));
+      return;
+    }
+
+    // Storage upload succeeded — record the path
+    setStoragePathMap(prev => ({ ...prev, [attachmentId]: path }));
+
+    // Insert into documents table
+    const { error: dbError } = await supabase.from('documents').insert({
+      patient_id: patientId,
+      document_type: 'clinical_photo',
+      original_filename: file.name,
+      storage_path: path,
+      mime_type: file.type || 'application/octet-stream',
+      uploaded_by: userId,
+    });
+
+    if (dbError) {
+      // Storage succeeded but DB insert failed — still show saved for storage,
+      // but warn about the metadata record
+      setUploadStatusMap(prev => ({ ...prev, [attachmentId]: 'saved' }));
+      setUploadWarnings(prev => ({
+        ...prev,
+        [attachmentId]: `File saved to storage but metadata record failed: ${dbError.message}`,
+      }));
+      return;
+    }
+
+    setUploadStatusMap(prev => ({ ...prev, [attachmentId]: 'saved' }));
+  }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
@@ -29,12 +93,15 @@ export default function AttachmentsTab() {
     const fileList = Array.from(files);
     let pending = fileList.length;
     const newEntries: ClinicalAttachment[] = [];
+    const fileMap: Record<string, File> = {};
+
     fileList.forEach(file => {
       const reader = new FileReader();
       reader.onload = ev => {
         const dataUrl = ev.target?.result as string;
+        const attachmentId = crypto.randomUUID();
         newEntries.push({
-          id: crypto.randomUUID(),
+          id: attachmentId,
           name: file.name,
           dataUrl,
           mimeType: file.type || 'application/octet-stream',
@@ -43,9 +110,14 @@ export default function AttachmentsTab() {
           description: '',
           dateAdded: ectNow(),
         });
+        fileMap[attachmentId] = file;
         pending -= 1;
         if (pending === 0) {
           setAttachments([...attachments, ...newEntries]);
+          // Kick off background uploads after AppContext is updated
+          newEntries.forEach(entry => {
+            void uploadAttachment(fileMap[entry.id], entry.id);
+          });
         }
       };
       reader.readAsDataURL(file);
@@ -60,6 +132,59 @@ export default function AttachmentsTab() {
 
   function removeAttachment(id: string) {
     setAttachments(attachments.filter(a => a.id !== id));
+    setUploadStatusMap(prev => { const n = { ...prev }; delete n[id]; return n; });
+    setStoragePathMap(prev => { const n = { ...prev }; delete n[id]; return n; });
+    setUploadWarnings(prev => { const n = { ...prev }; delete n[id]; return n; });
+  }
+
+  function renderUploadBadge(id: string) {
+    const status = uploadStatusMap[id];
+    if (!status || status === 'uploading') {
+      return (
+        <span style={{
+          fontSize: 10,
+          color: '#6b7280',
+          background: '#f3f4f6',
+          borderRadius: 4,
+          padding: '1px 6px',
+          fontWeight: 500,
+          letterSpacing: 0.2,
+        }}>
+          {status === 'uploading' ? '↑ uploading…' : 'local'}
+        </span>
+      );
+    }
+    if (status === 'saved') {
+      return (
+        <span style={{
+          fontSize: 10,
+          color: '#16a34a',
+          background: '#f0fdf4',
+          border: '1px solid #bbf7d0',
+          borderRadius: 4,
+          padding: '1px 6px',
+          fontWeight: 500,
+          letterSpacing: 0.2,
+        }}>
+          ☁ saved
+        </span>
+      );
+    }
+    // local
+    return (
+      <span style={{
+        fontSize: 10,
+        color: '#6b7280',
+        background: '#f3f4f6',
+        border: '1px solid #e5e7eb',
+        borderRadius: 4,
+        padding: '1px 6px',
+        fontWeight: 500,
+        letterSpacing: 0.2,
+      }}>
+        local
+      </span>
+    );
   }
 
   return (
@@ -79,7 +204,7 @@ export default function AttachmentsTab() {
           marginBottom: 14,
           lineHeight: 1.6,
         }}>
-          Clinical images are stored locally in this session. They are included in the Final Document and printed clinical notes.
+          Clinical images are stored locally in this session and uploaded to secure cloud storage when a patient is selected. They are included in the Final Document and printed clinical notes.
         </div>
 
         {/* Storage warning */}
@@ -201,16 +326,35 @@ export default function AttachmentsTab() {
                     />
                   </div>
 
-                  {/* Footer row: date + delete */}
+                  {/* Upload warning */}
+                  {uploadWarnings[att.id] && (
+                    <div style={{
+                      fontSize: 10,
+                      color: '#b45309',
+                      background: '#fffbeb',
+                      border: '1px solid #fcd34d',
+                      borderRadius: 4,
+                      padding: '4px 8px',
+                      lineHeight: 1.5,
+                    }}>
+                      ⚠ {uploadWarnings[att.id]}
+                    </div>
+                  )}
+
+                  {/* Footer row: date + upload badge + delete */}
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     marginTop: 2,
+                    gap: 6,
                   }}>
-                    <span style={{ fontSize: 10, color: '#9ca3af' }}>
-                      Added {att.dateAdded}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 10, color: '#9ca3af' }}>
+                        Added {att.dateAdded}
+                      </span>
+                      {renderUploadBadge(att.id)}
+                    </div>
                     <button
                       type="button"
                       onClick={() => removeAttachment(att.id)}
@@ -225,6 +369,7 @@ export default function AttachmentsTab() {
                         lineHeight: 1,
                         padding: '3px 8px',
                         fontWeight: 600,
+                        flexShrink: 0,
                       }}
                     >
                       × Remove

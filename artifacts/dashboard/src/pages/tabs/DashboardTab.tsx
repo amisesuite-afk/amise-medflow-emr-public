@@ -1,7 +1,7 @@
 import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { useAuth } from '@/context/AuthContext';
-import { SITE_LABELS } from '@/lib/supabase';
+import { supabase, SITE_LABELS } from '@/lib/supabase';
 import { PUBLIC_HOLIDAYS_SLU } from '@workspace/triage-engine';
 import { useState, useEffect } from 'react';
 import bundledCache from '@/data/calendar-cache.json';
@@ -107,6 +107,56 @@ function apiUrl(path: string) {
   return `${base}${path}`;
 }
 
+// ─── Patient Tasks ─────────────────────────────────────────────────────────────
+
+type TaskPriority = 'low' | 'normal' | 'high' | 'urgent';
+type TaskStatus   = 'open' | 'in_progress' | 'overdue' | 'completed' | 'cancelled';
+
+interface PatientTask {
+  id: string;
+  patient_id: string;
+  task_type: string;
+  description: string;
+  due_date: string;
+  priority: TaskPriority;
+  status: TaskStatus;
+}
+
+function priorityBadgeStyle(priority: TaskPriority): React.CSSProperties {
+  const base: React.CSSProperties = {
+    display: 'inline-block',
+    padding: '2px 7px',
+    borderRadius: 4,
+    fontSize: 10,
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+    flexShrink: 0,
+    color: '#fff',
+  };
+  if (priority === 'urgent') return { ...base, background: '#dc2626' };
+  if (priority === 'high')   return { ...base, background: '#f97316' };
+  if (priority === 'normal') return { ...base, background: '#94a3b8' };
+  return { ...base, background: '#64748b' };
+}
+
+function dueDateLabel(dueDate: string, today: string): { text: string; color: string } {
+  if (dueDate < today) return { text: 'OVERDUE', color: '#dc2626' };
+  // Parse as local date strings (YYYY-MM-DD) to avoid timezone shift
+  const [dy, dm, dd] = dueDate.split('-').map(Number);
+  const [ty, tm, td] = today.split('-').map(Number);
+  const dueDateObj  = new Date(dy, dm - 1, dd);
+  const todayDateObj = new Date(ty, tm - 1, td);
+  const diffMs = dueDateObj.getTime() - todayDateObj.getTime();
+  const diffDays = Math.round(diffMs / 86400000);
+  if (diffDays === 0) return { text: 'Due today', color: '#f59e0b' };
+  if (diffDays === 1) return { text: 'Due tomorrow', color: '#f59e0b' };
+  if (diffDays <= 3)  return { text: `Due in ${diffDays}d`, color: '#f59e0b' };
+  return { text: `Due in ${diffDays}d`, color: '#94a3b8' };
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+
 export default function DashboardTab() {
   const ctx = useAppContext();
   const { profile } = useAuth();
@@ -118,6 +168,13 @@ export default function DashboardTab() {
   const [calLoading, setCalLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(today);
   const [syncStatus, setSyncStatus] = useState<'live' | 'cached' | 'loading'>('loading');
+
+  // ── Patient Tasks state ──
+  const [tasks, setTasks] = useState<PatientTask[]>([]);
+  const [patientNames, setPatientNames] = useState<Record<string, string>>({});
+  const [tasksLoading, setTasksLoading] = useState(true);
+  const [tasksOpen, setTasksOpen] = useState(true);
+  const [completingId, setCompletingId] = useState<string | null>(null);
 
   useEffect(() => {
     setCalLoading(true);
@@ -155,6 +212,54 @@ export default function DashboardTab() {
       });
   }, []);
 
+  // ── Fetch patient tasks on mount ──
+  useEffect(() => {
+    async function fetchTasks() {
+      setTasksLoading(true);
+      if (!supabase) {
+        setTasksLoading(false);
+        return;
+      }
+      const { data: taskData } = await supabase
+        .from('patient_tasks')
+        .select('id, patient_id, task_type, description, due_date, priority, status')
+        .in('status', ['open', 'in_progress', 'overdue'])
+        .order('due_date', { ascending: true })
+        .limit(15);
+
+      if (taskData && taskData.length > 0) {
+        setTasks(taskData as PatientTask[]);
+        const uniqueIds = [...new Set((taskData as PatientTask[]).map(t => t.patient_id))];
+        const { data: patientData } = await supabase
+          .from('patients')
+          .select('id, full_name')
+          .in('id', uniqueIds);
+        if (patientData) {
+          const map: Record<string, string> = {};
+          for (const p of patientData as { id: string; full_name: string }[]) {
+            map[p.id] = p.full_name;
+          }
+          setPatientNames(map);
+        }
+      } else {
+        setTasks([]);
+      }
+      setTasksLoading(false);
+    }
+    fetchTasks();
+  }, []);
+
+  async function completeTask(id: string) {
+    if (!supabase) return;
+    setCompletingId(id);
+    await supabase
+      .from('patient_tasks')
+      .update({ status: 'completed', completed_at: new Date().toISOString() })
+      .eq('id', id);
+    setTasks(prev => prev.filter(t => t.id !== id));
+    setCompletingId(null);
+  }
+
   // Group by date
   const byDate: Record<string, CalEvent[]> = {};
   for (const ev of upcoming) {
@@ -166,8 +271,112 @@ export default function DashboardTab() {
   const selectedEvents = byDate[selectedDate] ?? [];
   const todayEvents = byDate[today] ?? [];
 
+  const overdueCount = tasks.filter(t => t.due_date < today || t.status === 'overdue').length;
+
   return (
     <div className="gap-y">
+
+      {/* Patient Tasks panel */}
+      <div style={{ ...cardStyle(), borderColor: overdueCount > 0 ? '#fca5a5' : '#e2e8f0', borderWidth: overdueCount > 0 ? 2 : 1 }}>
+        {/* Header row */}
+        <div
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', userSelect: 'none' }}
+          onClick={() => setTasksOpen(o => !o)}
+          role="button"
+          aria-expanded={tasksOpen}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={titleStyle}>Patient Tasks</span>
+            {!tasksLoading && tasks.length > 0 && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                minWidth: 20, height: 20, padding: '0 6px', borderRadius: 10,
+                background: overdueCount > 0 ? '#dc2626' : 'var(--accent)',
+                color: '#fff', fontSize: 10, fontWeight: 800,
+              }}>
+                {tasks.length}
+              </span>
+            )}
+          </div>
+          <span style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1 }}>
+            {tasksOpen ? '▲' : '▼'}
+          </span>
+        </div>
+
+        {tasksOpen && (
+          <>
+            {tasksLoading && (
+              <div style={emptyStyle}>Loading tasks…</div>
+            )}
+
+            {!tasksLoading && tasks.length === 0 && (
+              <div style={emptyStyle}>No open or overdue tasks</div>
+            )}
+
+            {!tasksLoading && tasks.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {tasks.map(task => {
+                  const due = dueDateLabel(task.due_date, today);
+                  const patientName = patientNames[task.patient_id] ?? 'Unknown patient';
+                  const isCompleting = completingId === task.id;
+                  const label = task.description
+                    ? `${task.task_type}: ${task.description}`.slice(0, 80) + ((`${task.task_type}: ${task.description}`).length > 80 ? '…' : '')
+                    : task.task_type;
+
+                  return (
+                    <div
+                      key={task.id}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        padding: '7px 8px', borderRadius: 6,
+                        background: task.due_date < today || task.status === 'overdue' ? '#fff5f5' : '#f8fafc',
+                        border: `1px solid ${task.due_date < today || task.status === 'overdue' ? '#fecaca' : '#e2e8f0'}`,
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      {/* Priority badge */}
+                      <span style={priorityBadgeStyle(task.priority)}>
+                        {task.priority}
+                      </span>
+
+                      {/* Patient name */}
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#1a2e2b', minWidth: 100, flexShrink: 0 }}>
+                        {patientName}
+                      </span>
+
+                      {/* Task type + description */}
+                      <span style={{ fontSize: 12, color: '#374151', flex: 1, minWidth: 120 }}>
+                        {label}
+                      </span>
+
+                      {/* Due date */}
+                      <span style={{ fontSize: 11, fontWeight: 700, color: due.color, flexShrink: 0 }}>
+                        {due.text}
+                      </span>
+
+                      {/* Complete button */}
+                      <button
+                        type="button"
+                        disabled={isCompleting}
+                        onClick={e => { e.stopPropagation(); completeTask(task.id); }}
+                        style={{
+                          padding: '3px 10px', borderRadius: 5, fontSize: 11, fontWeight: 600,
+                          border: '1px solid #a7f3d0', background: isCompleting ? '#f1f5f9' : '#ecfdf5',
+                          color: isCompleting ? 'var(--muted)' : '#065f46',
+                          cursor: isCompleting ? 'default' : 'pointer', flexShrink: 0,
+                        }}
+                      >
+                        {isCompleting ? 'Saving…' : 'Complete'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
       {/* Card 1 — Current patient */}
       <div style={cardStyle()}>
         <div style={titleStyle}>Current patient</div>

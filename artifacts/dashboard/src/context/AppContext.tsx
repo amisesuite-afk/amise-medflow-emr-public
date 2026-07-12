@@ -2,17 +2,37 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
-  | 'intake' | 'triage' | 'pmh' | 'surgical' | 'medications'
-  | 'allergies' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations'
-  | 'radiology' | 'attachments'
+  | 'intake' | 'triage' | 'hpi' | 'pmh' | 'surgical' | 'medications'
+  | 'allergies' | 'family_hx' | 'toxic' | 'scales' | 'ros' | 'examination' | 'investigations'
+  | 'radiology' | 'attachments' | 'classifications'
   | 'assessment' | 'plan' | 'progress'
   | 'procedures' | 'billing' | 'documents'
-  | 'monitoring' | 'apcq' | 'nurse_apcq';
+  | 'monitoring' | 'apcq' | 'nurse_apcq'
+  | 'prescriptions' | 'ai_consultant' | 'tasks'
+  | 'referring_providers' | 'encounter_history'
+  | 'who_checklist' | 'consent' | 'letters' | 'patient_education' | 'periop' | 'dosing' | 'fluid_nutrition' | 'blood_gas' | 'wounds';
+
+/**
+ * Encounter complexity tier. Controls which consultation sections are
+ * surfaced by default — the "accordion" effect. Persisted per-session.
+ *
+ * quick_consult    — Simple outpatient visit (hernia, haemorrhoids, thyroid nodule, breast lump)
+ * endoscopy        — OGD, colonoscopy, ERCP — scope-first workflow
+ * surgical_consult — Full preoperative surgical assessment (default)
+ * office_procedure — Minor in-clinic procedure (FNAC, excision, dressing)
+ * major_emergency  — Major elective admission or ER/trauma on-call
+ */
+export type EncounterType =
+  | 'quick_consult'
+  | 'endoscopy'
+  | 'surgical_consult'
+  | 'office_procedure'
+  | 'major_emergency';
 
 export interface ProgressNote {
   id: string;
@@ -57,10 +77,11 @@ export interface LabRecord {
 }
 
 export type TopSection =
-  | 'dashboard' | 'patients' | 'intake' | 'consultation'
+  | 'dashboard' | 'patients' | 'checkin' | 'doc_scan' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
   | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox' | 'portal_intake' | 'referring_providers'
-  | 'visit_lifecycle';
+  | 'visit_lifecycle' | 'prescriptions' | 'ai_consultant' | 'tasks'
+  | 'quality' | 'results_inbox';
 
 /** Grouped trauma / burns state — stored as a single serialisable object. */
 export interface TraumaData {
@@ -146,6 +167,7 @@ export interface ExamPhoto {
   dataUrl: string;
   mimeType: string;
   bodyRegion: string;
+  view?: string;
   description: string;
   distanceCm: string;
   dateAdded: string;
@@ -211,12 +233,14 @@ interface CtxValue {
   pmhNotes: string; setPmhNotes(v: string): void;
   familyHistory: string[]; toggleFamilyHistory(v: string): void;
   familyHistoryNotes: string; setFamilyHistoryNotes(v: string): void;
-  surgicalHistory: string[]; toggleSurgical(v: string): void;
+  surgicalHistory: string[]; setSurgicalHistory(v: string[]): void; toggleSurgical(v: string): void;
   surgicalNotes: string; setSurgicalNotes(v: string): void;
   medications: string[]; toggleMedication(v: string): void; setMedications(v: string[]): void;
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
-  toxicHabits: string[]; toggleToxicHabit(v: string): void;
+  toxicHabits: string[]; setToxicHabits(v: string[]): void; toggleToxicHabit(v: string): void;
+  occupation: string; setOccupation(v: string): void;
+  hpiNotes: string; setHpiNotes(v: string): void;
 
   clearPatient(): void;
 
@@ -238,6 +262,9 @@ interface CtxValue {
 
   weightKg: string; setWeightKg(v: string): void;
   heightCm: string; setHeightCm(v: string): void;
+  waistCm: string; setWaistCm(v: string): void;
+  hipCm: string; setHipCm(v: string): void;
+  muacCm: string; setMuacCm(v: string): void;
 
   anatomicalFindings: AnatomicalFinding[]; setAnatomicalFindings(v: AnatomicalFinding[]): void;
   rosFindings: Record<string, RosFinding>; setRosFindings(v: Record<string, RosFinding>): void;
@@ -246,12 +273,17 @@ interface CtxValue {
 
   preVisitStatus: PreVisitStatus; setPreVisitStatus(v: PreVisitStatus): void;
 
+  visitType: string; setVisitType(v: string): void;
+  postOpDate: string; setPostOpDate(v: string): void;
+  postOpReviewNum: number; setPostOpReviewNum(v: number): void;
+
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
   plan: string; setPlan(v: string): void;
   procedures: string; setProcedures(v: string): void;
   billing: string; setBilling(v: string): void;
   documents: string; setDocuments(v: string): void;
+  surgicalClassifications: Record<string, string>; setSurgicalClassifications(v: Record<string, string>): void;
 
   insuranceProvider: string; setInsuranceProvider(v: string): void;
   policyNumber: string; setPolicyNumber(v: string): void;
@@ -268,6 +300,7 @@ interface CtxValue {
   labRecords: LabRecord[]; setLabRecords(v: LabRecord[]): void;
 
   encounterMode: 'outpatient' | 'inpatient'; setEncounterMode(v: 'outpatient' | 'inpatient'): void;
+  encounterType: EncounterType; setEncounterType(v: EncounterType): void;
   mrNumber: string; setMrNumber(v: string): void;
   ward: string; setWard(v: string): void;
   dateAdmission: string; setDateAdmission(v: string): void;
@@ -290,6 +323,26 @@ interface CtxValue {
   /** Trauma / Burns assessment data. */
   traumaData: TraumaData;
   setTraumaData: React.Dispatch<React.SetStateAction<TraumaData>>;
+
+  /** Persistent problem list — survives encounters. */
+  problems: PatientProblem[];
+  addProblem(problem: Omit<PatientProblem, 'id'>): Promise<void>;
+  updateProblemStatus(id: string, status: PatientProblem['status']): Promise<void>;
+  deleteProblem(id: string): Promise<void>;
+
+  /** Wound assessments for current encounter. */
+  wounds: WoundAssessment[];
+  setWounds: React.Dispatch<React.SetStateAction<WoundAssessment[]>>;
+  saveWound(wound: WoundAssessment): Promise<void>;
+  removeWound(id: string): Promise<void>;
+
+  /** Global save status for autosave operations. */
+  saveStatus: 'idle' | 'saving' | 'saved' | 'error';
+  lastSaveError: string | null;
+
+  /** Active CC matrix ID — drives tab visibility and clinical pre-loading. */
+  activeCcKey: string | null;
+  setActiveCcKey(v: string | null): void;
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -311,12 +364,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (seededForUserRef.current === profile.id) return; // already seeded for this user
     seededForUserRef.current = profile.id;
     _setCurrentSite(profile.default_site);
-    try { localStorage.setItem(SITE_STORAGE_KEY, profile.default_site); } catch { /* ignore */ }
+    try { localStorage.setItem(SITE_STORAGE_KEY, profile.default_site); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
   }, [profile]);
 
   function setCurrentSite(site: SiteCode) {
     _setCurrentSite(site);
-    try { localStorage.setItem(SITE_STORAGE_KEY, site); } catch { /* ignore */ }
+    try { localStorage.setItem(SITE_STORAGE_KEY, site); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
     // Debounce write-back to user_profiles.default_site (explicit switch only).
     if (siteDebounceRef.current) clearTimeout(siteDebounceRef.current);
     siteDebounceRef.current = setTimeout(() => {
@@ -362,6 +415,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [medicationsText, setMedicationsText] = useState('');
   const [allergies, setAllergies] = useState('');
   const [toxicHabits, setToxicHabits] = useState<string[]>([]);
+  const [occupation, setOccupation] = useState('');
+  const [hpiNotes, setHpiNotes] = useState('');
 
   const [examGeneral, setExamGeneral] = useState('');
   const [examCardio, setExamCardio] = useState('');
@@ -381,10 +436,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [weightKg, setWeightKg] = useState('');
   const [heightCm, setHeightCm] = useState('');
+  const [waistCm, setWaistCm] = useState('');
+  const [hipCm, setHipCm] = useState('');
+  const [muacCm, setMuacCm] = useState('');
   const [anatomicalFindings, setAnatomicalFindings] = useState<AnatomicalFinding[]>([]);
   const [rosFindings, setRosFindings] = useState<Record<string, RosFinding>>({});
   const [procedureData, setProcedureData] = useState<Record<string, unknown>>({});
   const [preVisitStatus, setPreVisitStatus] = useState<PreVisitStatus>('new');
+  const [visitType, setVisitType] = useState('');
+  const [postOpDate, setPostOpDate] = useState('');
+  const [postOpReviewNum, setPostOpReviewNum] = useState(1);
 
   const [assessment, setAssessment] = useState('');
   const [differentials, setDifferentials] = useState('');
@@ -392,6 +453,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [procedures, setProcedures] = useState('');
   const [billing, setBilling] = useState('');
   const [documents, setDocuments] = useState('');
+  const [surgicalClassifications, setSurgicalClassifications] = useState<Record<string, string>>({});
   const [insuranceProvider, setInsuranceProvider] = useState('');
   const [policyNumber, setPolicyNumber] = useState('');
   const [nhiNumber, setNhiNumber] = useState('');
@@ -405,6 +467,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [labRecords, setLabRecords] = useState<LabRecord[]>([]);
 
   const [encounterMode, setEncounterMode] = useState<'outpatient' | 'inpatient'>('outpatient');
+  const [encounterType, setEncounterType] = useState<EncounterType>('surgical_consult');
   const [mrNumber, setMrNumber] = useState('');
   const [ward, setWard] = useState('');
   const [dateAdmission, setDateAdmission] = useState('');
@@ -420,6 +483,40 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [paneTop, setPaneTop] = useState<RankedDiagnosis[]>([]);
   const [paneConverged, setPaneConverged] = useState(false);
   const [traumaData, setTraumaData] = useState<TraumaData>(EMPTY_TRAUMA_DATA);
+  const [activeCcKey, setActiveCcKey] = useState<string | null>(null);
+
+  const [problems, setProblems] = useState<PatientProblem[]>([]);
+  const [wounds, setWounds] = useState<WoundAssessment[]>([]);
+
+  // ── Global save status tracking ───────────────────────────────────────────
+  const [saveStatus, _setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [lastSaveError, _setLastSaveError] = useState<string | null>(null);
+  const pendingSaves = useRef(0);
+  const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const saveEpoch = useRef(0);
+
+  const trackedSave = useCallback(async <T,>(fn: () => Promise<T>): Promise<T | undefined> => {
+    const epoch = saveEpoch.current;
+    pendingSaves.current++;
+    _setSaveStatus('saving');
+    try {
+      const result = await fn();
+      if (saveEpoch.current !== epoch) return undefined;
+      pendingSaves.current--;
+      if (pendingSaves.current === 0) {
+        _setSaveStatus('saved');
+        if (savedTimer.current) clearTimeout(savedTimer.current);
+        savedTimer.current = setTimeout(() => _setSaveStatus('idle'), 2000);
+      }
+      return result;
+    } catch (err) {
+      pendingSaves.current--;
+      _setSaveStatus('error');
+      _setLastSaveError(err instanceof Error ? err.message : 'Save failed');
+      console.error('[autosave] error:', err);
+      return undefined;
+    }
+  }, []);
 
   const ENC_KEY = 'amise-enc-v1';
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -466,6 +563,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.allergies === 'string') setAllergies(d.allergies);
       if (Array.isArray(d.familyHistory)) setFamilyHistory(d.familyHistory as string[]);
       if (Array.isArray(d.toxicHabits)) setToxicHabits(d.toxicHabits as string[]);
+      if (typeof d.occupation === 'string') setOccupation(d.occupation);
+      if (typeof d.hpiNotes === 'string') setHpiNotes(d.hpiNotes);
       if (typeof d.patientName === 'string') setPatientName(d.patientName);
       if (typeof d.age === 'string') setAge(d.age);
       if (typeof d.sex === 'string') setSex(d.sex as Sex);
@@ -484,6 +583,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.cptCodes)) setCptCodes(d.cptCodes as string[]);
       if (typeof d.weightKg === 'string') setWeightKg(d.weightKg);
       if (typeof d.heightCm === 'string') setHeightCm(d.heightCm);
+      if (typeof d.waistCm === 'string') setWaistCm(d.waistCm);
+      if (typeof d.hipCm === 'string') setHipCm(d.hipCm);
+      if (typeof d.muacCm === 'string') setMuacCm(d.muacCm);
       if (Array.isArray(d.anatomicalFindings)) setAnatomicalFindings(d.anatomicalFindings as AnatomicalFinding[]);
       if (d.rosFindings && typeof d.rosFindings === 'object') setRosFindings(d.rosFindings as Record<string, RosFinding>);
       if (d.procedureData && typeof d.procedureData === 'object') setProcedureData(d.procedureData as Record<string, unknown>);
@@ -494,6 +596,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.vitalRecords)) setVitalRecords(d.vitalRecords as VitalRecord[]);
       if (Array.isArray(d.labRecords)) setLabRecords(d.labRecords as LabRecord[]);
       if (d.encounterMode === 'inpatient') setEncounterMode('inpatient');
+      if (d.encounterType === 'quick_consult' || d.encounterType === 'endoscopy' || d.encounterType === 'office_procedure' || d.encounterType === 'major_emergency') setEncounterType(d.encounterType as EncounterType);
       if (typeof d.mrNumber === 'string') setMrNumber(d.mrNumber);
       if (typeof d.ward === 'string') setWard(d.ward);
       if (typeof d.dateAdmission === 'string') setDateAdmission(d.dateAdmission);
@@ -526,7 +629,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const scheduleSave = useCallback((data: Record<string, unknown>) => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      try { localStorage.setItem(ENC_KEY, JSON.stringify(data)); } catch { /* ignore */ }
+      try { localStorage.setItem(ENC_KEY, JSON.stringify(data)); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
     }, 500);
   }, []);
 
@@ -539,19 +642,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       assessment, differentials, plan, procedures, billing, documents,
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
-      medications, medicationsText, allergies, familyHistory, toxicHabits,
+      medications, medicationsText, allergies, familyHistory, toxicHabits, occupation, hpiNotes,
       patientName, age, sex, dob, phone, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
-      weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
+      weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
       radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords,
-      encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
+      encounterMode, encounterType, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
       paneState, traumaData,
     });
     // Large blobs saved separately — avoids 5 MB localStorage limit on the main key
-    try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { /* ignore */ }
-    try { localStorage.setItem('amise-patient-photo-v1', patientPhoto); } catch { /* ignore */ }
-    try { localStorage.setItem('amise-exam-photos-v1', JSON.stringify(examPhotos)); } catch { /* ignore */ }
+    try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
+    try { localStorage.setItem('amise-patient-photo-v1', patientPhoto); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
+    try { localStorage.setItem('amise-exam-photos-v1', JSON.stringify(examPhotos)); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [scheduleSave, vitals, symptoms, symptomDetails, freeText, durationDays, painScore,
     isPostOp, postOpDays, pregnancyPossible,
@@ -560,10 +663,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     assessment, differentials, plan, procedures, billing, documents,
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
-    medications, medicationsText, allergies, familyHistory, toxicHabits,
+    medications, medicationsText, allergies, familyHistory, toxicHabits, occupation, hpiNotes,
     patientName, age, sex, dob, phone, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
-    weightKg, heightCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
+    weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
     radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
     encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
     nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData,
@@ -583,7 +686,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   function toggleMedication(v: string) { setMedications(c => toggleList(c, v)); }
   function toggleToxicHabit(v: string) { setToxicHabits(c => toggleList(c, v)); }
 
+  // ── Timer refs for autosave debouncing (hoisted so clearPatient can cancel them) ─
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const allergyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const surgicalTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const toxicTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rosTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const procedureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const traumaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   function clearPatient() {
+    // Invalidate in-flight saves and cancel all debounce timers
+    saveEpoch.current++;
+    if (autoSaveTimerRef.current) { clearTimeout(autoSaveTimerRef.current); autoSaveTimerRef.current = null; }
+    if (allergyTimerRef.current) { clearTimeout(allergyTimerRef.current); allergyTimerRef.current = null; }
+    if (examTimerRef.current) { clearTimeout(examTimerRef.current); examTimerRef.current = null; }
+    if (surgicalTimerRef.current) { clearTimeout(surgicalTimerRef.current); surgicalTimerRef.current = null; }
+    if (toxicTimerRef.current) { clearTimeout(toxicTimerRef.current); toxicTimerRef.current = null; }
+    if (rosTimerRef.current) { clearTimeout(rosTimerRef.current); rosTimerRef.current = null; }
+    if (procedureTimerRef.current) { clearTimeout(procedureTimerRef.current); procedureTimerRef.current = null; }
+    if (traumaTimerRef.current) { clearTimeout(traumaTimerRef.current); traumaTimerRef.current = null; }
     setPatientId(null); setEncounterId(null);
     setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto(''); setExamPhotos([]);
     setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
@@ -591,25 +714,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setVitals({ systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '' });
     setComorbidities([]); setPmhNotes(''); setFamilyHistory([]); setFamilyHistoryNotes('');
     setSurgicalHistory([]); setSurgicalNotes(''); setMedications([]); setMedicationsText('');
-    setAllergies(''); setToxicHabits([]);
+    setAllergies(''); setToxicHabits([]); setOccupation(''); setHpiNotes('');
     setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
     setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
     setExamFindings({}); setExamNotes({});
     setOrderedInvestigations([]); setInvestigationResults({}); setIcdCodes([]); setCptCodes([]);
     setAddress(''); setQuarter(''); setReferredBy('');
-    setWeightKg(''); setHeightCm(''); setAnatomicalFindings([]);
+    setWeightKg(''); setHeightCm(''); setWaistCm(''); setHipCm(''); setMuacCm(''); setAnatomicalFindings([]);
     setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
+    setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1);
     setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
     setProgressNotes([]);
     setVitalRecords([]); setLabRecords([]);
     setEncounterMode('outpatient');
+    setEncounterType('surgical_consult');
     setMrNumber(''); setWard(''); setDateAdmission(''); setDateDischarge('');
     setBloodGroup(''); setNokName(''); setNokRelation(''); setNokTel('');
     setAdmittingSurgeon('Dr Dawit Daniel Kabiye, MD, DM'); setReferringPhysician('');
     setPaneState(null); setPaneTop([]); setPaneConverged(false);
     setTraumaData(EMPTY_TRAUMA_DATA);
+    setActiveCcKey(null);
+    setProblems([]);
+    setWounds([]);
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
@@ -647,13 +775,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const triageResult = useMemo(() => adaptiveTriage(triageInput), [triageInput]);
 
+  // ── Load problem list whenever patient changes ────────────────────────────
+  useEffect(() => {
+    if (!patientId) { setProblems([]); return; }
+    void loadPatientProblems(patientId).then(setProblems);
+  }, [patientId]);
+
+  // ── Load wound assessments whenever encounter changes ─────────────────────
+  useEffect(() => {
+    if (!patientId || !encounterId) { setWounds([]); return; }
+    void loadWoundAssessments(patientId, encounterId).then(setWounds);
+  }, [patientId, encounterId]);
+
   // ── Autosave doctor clinical data to Supabase (debounced 2 s) ────────────
-  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !encounterId) return;
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     autoSaveTimerRef.current = setTimeout(() => {
-      void saveAssessment({
+      void trackedSave(() => saveAssessment({
         encounter_id:  encounterId,
         patient_id:    patientId,
         diagnosis:     assessment,
@@ -662,38 +801,185 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         cptCodes,
         acuity:        triageResult.acuity,
         triageScore:   triageResult.score,
-      });
-      void savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan });
-      void syncMedicationList(patientId, encounterId, medications, medicationsText);
+      }));
+      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }));
+      void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText));
     }, 2000);
     return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan, triageResult.acuity, triageResult.score, medications, medicationsText]);
 
   // ── Autosave allergies (debounced 3 s — patient-level, no encounter needed) ─
-  const allergyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !allergies) return;
     if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current);
     allergyTimerRef.current = setTimeout(() => {
       const allergenList = allergies.split(',').map(s => s.trim()).filter(Boolean);
-      if (allergenList.length) void syncAllergyList(patientId, allergenList);
+      if (allergenList.length) void trackedSave(() => syncAllergyList(patientId, allergenList));
     }, 3000);
     return () => { if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, allergies]);
 
   // ── Autosave examination findings (debounced 3 s) ─────────────────────────
-  const examTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!patientId || !encounterId) return;
     if (examTimerRef.current) clearTimeout(examTimerRef.current);
     examTimerRef.current = setTimeout(() => {
-      void saveExamFindings(examFindings, examNotes, patientId, encounterId);
+      void trackedSave(() => saveExamFindings(examFindings, examNotes, patientId, encounterId));
     }, 3000);
     return () => { if (examTimerRef.current) clearTimeout(examTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, encounterId, examFindings, examNotes]);
+
+  // ── Autosave surgical history (patient-level, debounced 3 s) ───────────────
+  useEffect(() => {
+    if (!patientId) return;
+    if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current);
+    surgicalTimerRef.current = setTimeout(() => {
+      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes));
+    }, 3000);
+    return () => { if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, surgicalHistory, surgicalNotes]);
+
+  // ── Autosave toxic habits (patient-level, debounced 3 s) ───────────────────
+  useEffect(() => {
+    if (!patientId || !toxicHabits.length) return;
+    if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current);
+    toxicTimerRef.current = setTimeout(() => {
+      void trackedSave(() => syncToxicHabits(patientId, toxicHabits));
+    }, 3000);
+    return () => { if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, toxicHabits]);
+
+  // ── Autosave ROS findings (encounter-level, debounced 3 s) ────────────────
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    const hasFinding = Object.values(rosFindings).some(f => f.status !== 'not-asked' || f.details.length > 0 || f.notes);
+    if (!hasFinding) return;
+    if (rosTimerRef.current) clearTimeout(rosTimerRef.current);
+    rosTimerRef.current = setTimeout(() => {
+      void trackedSave(() => syncRosFindings(patientId, encounterId, rosFindings));
+    }, 3000);
+    return () => { if (rosTimerRef.current) clearTimeout(rosTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, rosFindings]);
+
+  // ── Autosave procedure data (encounter-level, debounced 3 s) ──────────────
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    const hasData = Object.values(procedureData).some(v => v && typeof v === 'object' && Object.keys(v as object).length > 0);
+    if (!hasData) return;
+    if (procedureTimerRef.current) clearTimeout(procedureTimerRef.current);
+    procedureTimerRef.current = setTimeout(() => {
+      void trackedSave(() => syncProcedureData(patientId, encounterId, procedureData));
+    }, 3000);
+    return () => { if (procedureTimerRef.current) clearTimeout(procedureTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, procedureData]);
+
+  // ── Autosave trauma data (encounter-level, debounced 3 s) ─────────────────
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    if (traumaTimerRef.current) clearTimeout(traumaTimerRef.current);
+    traumaTimerRef.current = setTimeout(() => {
+      void trackedSave(() => syncTraumaRecord(patientId, encounterId, traumaData));
+    }, 3000);
+    return () => { if (traumaTimerRef.current) clearTimeout(traumaTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, traumaData]);
+
+  // ── Flush pending debounced saves on page close / hide ──────────────────
+  const flushPendingSaves = useCallback(() => {
+    if (autoSaveTimerRef.current && patientId && encounterId) {
+      clearTimeout(autoSaveTimerRef.current);
+      autoSaveTimerRef.current = null;
+      void trackedSave(() => saveAssessment({
+        encounter_id: encounterId, patient_id: patientId,
+        diagnosis: assessment, differentials, icdCodes, cptCodes,
+        acuity: triageResult.acuity, triageScore: triageResult.score,
+      }));
+      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }));
+      void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText));
+    }
+    if (allergyTimerRef.current && patientId) {
+      clearTimeout(allergyTimerRef.current);
+      allergyTimerRef.current = null;
+      const allergenList = allergies.split(',').map(s => s.trim()).filter(Boolean);
+      if (allergenList.length) void trackedSave(() => syncAllergyList(patientId, allergenList));
+    }
+    if (examTimerRef.current && patientId && encounterId) {
+      clearTimeout(examTimerRef.current);
+      examTimerRef.current = null;
+      void trackedSave(() => saveExamFindings(examFindings, examNotes, patientId, encounterId));
+    }
+    if (surgicalTimerRef.current && patientId) {
+      clearTimeout(surgicalTimerRef.current);
+      surgicalTimerRef.current = null;
+      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes));
+    }
+    if (toxicTimerRef.current && patientId) {
+      clearTimeout(toxicTimerRef.current);
+      toxicTimerRef.current = null;
+      void trackedSave(() => syncToxicHabits(patientId, toxicHabits));
+    }
+    if (rosTimerRef.current && patientId && encounterId) {
+      clearTimeout(rosTimerRef.current);
+      rosTimerRef.current = null;
+      void trackedSave(() => syncRosFindings(patientId, encounterId, rosFindings));
+    }
+    if (procedureTimerRef.current && patientId && encounterId) {
+      clearTimeout(procedureTimerRef.current);
+      procedureTimerRef.current = null;
+      void trackedSave(() => syncProcedureData(patientId, encounterId, procedureData));
+    }
+    if (traumaTimerRef.current && patientId && encounterId) {
+      clearTimeout(traumaTimerRef.current);
+      traumaTimerRef.current = null;
+      void trackedSave(() => syncTraumaRecord(patientId, encounterId, traumaData));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan,
+    triageResult.acuity, triageResult.score, medications, medicationsText,
+    allergies, examFindings, examNotes, surgicalHistory, surgicalNotes,
+    toxicHabits, rosFindings, procedureData, traumaData, trackedSave]);
+
+  // Stable ref so event handlers always see the latest flush function
+  const flushRef = useRef(flushPendingSaves);
+  useEffect(() => { flushRef.current = flushPendingSaves; }, [flushPendingSaves]);
+
+  // Track whether any debounce timer is pending (for beforeunload confirmation)
+  const hasPendingTimers = useCallback(() =>
+    !!(autoSaveTimerRef.current || allergyTimerRef.current || examTimerRef.current ||
+       surgicalTimerRef.current || toxicTimerRef.current || rosTimerRef.current ||
+       procedureTimerRef.current || traumaTimerRef.current), []);
+
+  useEffect(() => {
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+      flushRef.current();
+      if (pendingSaves.current > 0 || hasPendingTimers()) {
+        e.preventDefault();
+      }
+    }
+    function handlePageHide() {
+      flushRef.current();
+    }
+    function handleVisibilityChange() {
+      if (document.visibilityState === 'hidden') {
+        flushRef.current();
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('pagehide', handlePageHide);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('pagehide', handlePageHide);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [hasPendingTimers]);
 
   const value: CtxValue = {
     activeSection, setActiveSection,
@@ -725,12 +1011,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     pmhNotes, setPmhNotes,
     familyHistory, toggleFamilyHistory,
     familyHistoryNotes, setFamilyHistoryNotes,
-    surgicalHistory, toggleSurgical,
+    surgicalHistory, setSurgicalHistory, toggleSurgical,
     surgicalNotes, setSurgicalNotes,
     medications, toggleMedication, setMedications,
     medicationsText, setMedicationsText,
     allergies, setAllergies,
-    toxicHabits, toggleToxicHabit,
+    toxicHabits, setToxicHabits, toggleToxicHabit,
+    occupation, setOccupation,
+    hpiNotes, setHpiNotes,
     clearPatient,
     examGeneral, setExamGeneral,
     examCardio, setExamCardio,
@@ -752,16 +1040,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     procedures, setProcedures,
     billing, setBilling,
     documents, setDocuments,
+    surgicalClassifications, setSurgicalClassifications,
     insuranceProvider, setInsuranceProvider,
     policyNumber, setPolicyNumber,
     nhiNumber, setNhiNumber,
     preAuthStatus, setPreAuthStatus,
     weightKg, setWeightKg,
     heightCm, setHeightCm,
+    waistCm, setWaistCm,
+    hipCm, setHipCm,
+    muacCm, setMuacCm,
     anatomicalFindings, setAnatomicalFindings,
     rosFindings, setRosFindings,
     procedureData, setProcedureData,
     preVisitStatus, setPreVisitStatus,
+    visitType, setVisitType,
+    postOpDate, setPostOpDate,
+    postOpReviewNum, setPostOpReviewNum,
     triageResult,
     attachments, setAttachments,
     radiologyRequests, setRadiologyRequests,
@@ -770,6 +1065,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     vitalRecords, setVitalRecords,
     labRecords, setLabRecords,
     encounterMode, setEncounterMode,
+    encounterType, setEncounterType,
     mrNumber, setMrNumber,
     ward, setWard,
     dateAdmission, setDateAdmission,
@@ -784,6 +1080,50 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     paneTop, setPaneTop,
     paneConverged, setPaneConverged,
     traumaData, setTraumaData,
+    problems,
+    addProblem: async (problem) => {
+      const tmp: PatientProblem = { ...problem, id: `tmp-${Date.now()}` };
+      setProblems(prev => [...prev, tmp]);
+      if (!patientId) return;
+      const { id, error } = await savePatientProblem(patientId, problem);
+      if (id) {
+        setProblems(prev => prev.map(p => p.id === tmp.id ? { ...p, id } : p));
+      } else if (error) {
+        setProblems(prev => prev.filter(p => p.id !== tmp.id));
+        console.error('[problems] save error:', error);
+      }
+    },
+    updateProblemStatus: async (id, status) => {
+      setProblems(prev => prev.map(p => p.id === id ? { ...p, status } : p));
+      const { error } = await updatePatientProblemStatus(id, status);
+      if (error) console.error('[problems] update error:', error);
+    },
+    deleteProblem: async (id) => {
+      setProblems(prev => prev.filter(p => p.id !== id));
+      const { error } = await removePatientProblem(id);
+      if (error) console.error('[problems] delete error:', error);
+    },
+    wounds,
+    setWounds,
+    saveWound: async (wound) => {
+      if (!patientId) return;
+      const { id, error } = await saveWoundAssessment(patientId, encounterId, wound);
+      if (error) { console.error('[wounds] save error:', error); return; }
+      if (id && wound.id.startsWith('tmp-')) {
+        setWounds(prev => prev.map(w => w.id === wound.id ? { ...w, id } : w));
+      }
+    },
+    removeWound: async (id) => {
+      setWounds(prev => prev.filter(w => w.id !== id));
+      if (!id.startsWith('tmp-')) {
+        const { error } = await deleteWoundAssessment(id);
+        if (error) console.error('[wounds] delete error:', error);
+      }
+    },
+    saveStatus,
+    lastSaveError,
+    activeCcKey,
+    setActiveCcKey,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -1,5 +1,18 @@
 import { google, gmail_v1 } from 'googleapis';
 
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (attempt === maxRetries - 1) throw err;
+      const delayMs = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    }
+  }
+  throw new Error('withRetry: unreachable');
+}
+
 function getAuth() {
   // OAuth2 path — personal account (amisesuite@gmail.com), no service account needed
   if (
@@ -40,11 +53,11 @@ function getGmail() {
 
 export async function listUnreadMessages(maxResults = 20): Promise<string[]> {
   const gmail = getGmail();
-  const { data } = await gmail.users.messages.list({
+  const { data } = await withRetry(() => gmail.users.messages.list({
     userId: 'me',
     q: 'is:unread -in:sent -from:me',
     maxResults,
-  });
+  }));
   return (data.messages || []).map(m => m.id!);
 }
 
@@ -68,7 +81,7 @@ export interface AttachmentMeta {
 
 export async function getMessage(id: string): Promise<ParsedMessage> {
   const gmail = getGmail();
-  const { data } = await gmail.users.messages.get({ userId: 'me', id, format: 'full' });
+  const { data } = await withRetry(() => gmail.users.messages.get({ userId: 'me', id, format: 'full' }));
 
   const headers = data.payload?.headers || [];
   const get = (n: string) => headers.find(h => h.name?.toLowerCase() === n.toLowerCase())?.value || '';
@@ -182,17 +195,17 @@ export async function sendOrDraft(args: SendArgs, force?: Mode): Promise<SendRes
   }
 
   if (mode === 'supervised') {
-    const { data } = await gmail.users.drafts.create({
+    const { data } = await withRetry(() => gmail.users.drafts.create({
       userId: 'me',
       requestBody: { message: { raw: encoded, threadId: args.threadId } },
-    });
+    }));
     return { action: 'drafted', gmailId: data.id! };
   }
 
-  const { data } = await gmail.users.messages.send({
+  const { data } = await withRetry(() => gmail.users.messages.send({
     userId: 'me',
     requestBody: { raw: encoded, threadId: args.threadId },
-  });
+  }));
   return { action: 'sent', gmailId: data.id! };
 }
 

@@ -53,6 +53,13 @@ export const APPOINTMENT_TYPES: Record<string, { label: string; location: string
   // Surgery & Post-Op
   pre_op:         { label: 'Pre-operative assessment',         location: 'rodney_bay', group: 'Surgery & Post-Op' },
   post_op:        { label: 'Post-operative review',            location: 'tapion',     group: 'Surgery & Post-Op' },
+  // Anaesthesia (staff-scheduled only)
+  anaesthesia_preassessment: { label: 'Anaesthesia pre-assessment', location: 'tapion', group: 'Anaesthesia' },
+  // Laboratory (staff-scheduled only)
+  lab_fasting:    { label: 'Lab collection — fasting blood',   location: 'rodney_bay', group: 'Laboratory' },
+  lab_collection: { label: 'Lab collection — non-fasting',     location: 'rodney_bay', group: 'Laboratory' },
+  lab_urine:      { label: 'Lab collection — urine / culture', location: 'rodney_bay', group: 'Laboratory' },
+  lab_histology:  { label: 'Histology / biopsy submission',    location: 'tapion',     group: 'Laboratory' },
 };
 
 export function getApptGroups(): Record<string, { key: string; label: string; location: string }[]> {

@@ -99,12 +99,14 @@ function fmtSlot(iso: string): string {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; bg: string; color: string; border: string }> = {
-  pending:           { label: 'Pending',          bg: '#fffbeb', color: '#b45309', border: '#fcd34d' },
-  waitlisted:        { label: 'Waitlisted',       bg: '#faf5ff', color: '#7c3aed', border: '#c4b5fd' },
-  staff_confirmed:   { label: 'Slot Confirmed',   bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
-  patient_confirmed: { label: 'Patient Confirmed',bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
-  lapsed:            { label: 'Lapsed',           bg: '#f9fafb', color: '#9ca3af', border: '#e5e7eb' },
-  cancelled:         { label: 'Cancelled',        bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
+  pending:             { label: 'Pending',             bg: '#fffbeb', color: '#b45309', border: '#fcd34d' },
+  waitlisted:          { label: 'Waitlisted',          bg: '#faf5ff', color: '#7c3aed', border: '#c4b5fd' },
+  staff_confirmed:     { label: 'Slot Confirmed',      bg: '#eff6ff', color: '#1d4ed8', border: '#93c5fd' },
+  staff_pending:       { label: 'Staff Booking',       bg: '#f0f9ff', color: '#0369a1', border: '#7dd3fc' },
+  doctor_confirmed:    { label: 'Doctor Confirmed',    bg: '#f0fdf4', color: '#15803d', border: '#86efac' },
+  patient_confirmed:   { label: 'Patient Confirmed',   bg: '#dcfce7', color: '#166534', border: '#4ade80' },
+  lapsed:              { label: 'Lapsed',              bg: '#f9fafb', color: '#9ca3af', border: '#e5e7eb' },
+  cancelled:           { label: 'Cancelled',           bg: '#fef2f2', color: '#b91c1c', border: '#fecaca' },
 };
 
 const PREP_INSTRUCTIONS: Record<string, string> = {
@@ -181,7 +183,19 @@ function SourceBadge({ source }: { source?: string }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-type InboxView = 'bookings' | 'consult_requests';
+type InboxView = 'bookings' | 'consult_requests' | 'today_queue';
+
+const DEMO_PATIENTS_KEY = 'amise-patients-v1';
+interface DemoPatient { id: string; full_name: string; age?: string; sex?: string; dob?: string; phone?: string; savedAt?: string }
+
+function loadTodayQueue(): DemoPatient[] {
+  try {
+    const raw = localStorage.getItem(DEMO_PATIENTS_KEY);
+    const all: DemoPatient[] = raw ? (JSON.parse(raw) as DemoPatient[]) : [];
+    const today = new Date().toISOString().slice(0, 10);
+    return all.filter(p => p.savedAt && p.savedAt.slice(0, 10) === today);
+  } catch { return []; }
+}
 
 export interface BookingInboxTabProps {
   /** If provided, only bookings with this status are shown. */
@@ -201,8 +215,15 @@ function useNarrow(bp = 768) {
 
 export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps = {}) {
   const { profile } = useAuth();
-  const { currentSite } = useAppContext();
+  const {
+    currentSite,
+    setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
+    setTopSection,
+  } = useAppContext();
   const narrow = useNarrow();
+
+  // Today's walk-in queue (front-desk check-ins from IntakeTab)
+  const [todayQueue, setTodayQueue] = useState<DemoPatient[]>(() => loadTodayQueue());
   const userRole = profile?.role ?? 'front_desk';
   const isAdmin = hasRole(userRole, 'admin');
 
@@ -550,7 +571,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   //   5. Oldest first, as a fair tiebreaker.
   const ACUITY_RANK: Record<string, number> = { urgent: 0, priority: 1, routine: 2 };
   const STATUS_RANK: Record<string, number> = {
-    pending: 0, waitlisted: 1, staff_confirmed: 2, patient_confirmed: 3, lapsed: 4, cancelled: 5,
+    pending: 0, waitlisted: 1, staff_confirmed: 2, doctor_confirmed: 3, patient_confirmed: 4, lapsed: 5, cancelled: 6,
   };
   const sorted = [...requests].sort((a, b) => {
     const aUrgent = resolveTriageAcuity(a) === 'urgent' ? 0 : 1;
@@ -649,7 +670,8 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               { value: '', label: 'All' },
               { value: 'pending', label: 'Pending' },
               { value: 'waitlisted', label: 'Waitlisted' },
-              { value: 'staff_confirmed', label: 'Confirmed' },
+              { value: 'staff_confirmed', label: 'Needs Dr ✓' },
+              { value: 'doctor_confirmed', label: 'Dr Confirmed' },
               { value: 'patient_confirmed', label: 'Patient OK' },
               { value: 'lapsed', label: 'Lapsed' },
               { value: 'cancelled', label: 'Cancelled' },
@@ -735,6 +757,13 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                   {resolvePreferredSlot(req) && (
                     <div style={{ fontSize: 11, color: '#6b7280', marginTop: 3 }}>
                       Preferred: {resolvePreferredSlot(req)}
+                    </div>
+                  )}
+
+                  {/* Dual-confirmation reminder */}
+                  {req.status === 'staff_confirmed' && (
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#7c3aed', marginTop: 3 }}>
+                      ⏳ Awaiting doctor sign-off before complete
                     </div>
                   )}
                 </button>
@@ -1132,6 +1161,41 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
             </div>
           )}
 
+          {/* Doctor sign-off — for staff_confirmed bookings awaiting doctor review */}
+          {selected.status === 'staff_confirmed' && (
+            <div style={{ marginBottom: 20, padding: '14px 16px', borderRadius: 10, background: '#faf5ff', border: '1.5px solid #c4b5fd' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#5b21b6', marginBottom: 6 }}>
+                Doctor Sign-off Required
+              </div>
+              <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 10, lineHeight: 1.5 }}>
+                Front desk has confirmed the slot. Please review and approve to complete the booking. The patient will remain on the scheduling reminder until you sign off.
+              </div>
+              <button
+                onClick={async () => {
+                  if (!selected) return;
+                  try {
+                    await fetch(apiUrl(`/api/booking/staff-confirm/${selected.id}`), {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+                      body: JSON.stringify({ confirmed_slot: selected.confirmed_slot, notes: (selected.notes ?? '') + ' [Doctor reviewed]', status_override: 'doctor_confirmed' }),
+                    });
+                  } catch { /* degraded mode */ }
+                  if (supabase) {
+                    try { await supabase.from('appointment_requests').update({ status: 'doctor_confirmed' }).eq('id', selected.id); } catch { /* ignore */ }
+                  }
+                  await load();
+                  setSelected(null);
+                }}
+                style={{
+                  width: '100%', padding: '10px', borderRadius: 8, border: 'none',
+                  background: '#7c3aed', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                }}
+              >
+                ✓ Doctor Sign-off — Approve Schedule
+              </button>
+            </div>
+          )}
+
           {/* ── Cancel request ────────────────────────────────────────────── */}
           {['pending', 'waitlisted', 'staff_confirmed'].includes(selected.status) && (
             <div style={{ marginBottom: 20 }}>
@@ -1238,6 +1302,12 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         <button onClick={() => setView('bookings')} style={TAB_STYLE(view === 'bookings')}>
           Booking Requests{pendingCount > 0 ? ` (${pendingCount})` : ''}
         </button>
+        <button
+          onClick={() => { setTodayQueue(loadTodayQueue()); setView('today_queue'); }}
+          style={TAB_STYLE(view === 'today_queue')}
+        >
+          Today's Queue{todayQueue.length > 0 ? ` (${todayQueue.length})` : ''}
+        </button>
         <button onClick={() => setView('consult_requests')} style={TAB_STYLE(view === 'consult_requests')}>
           Public Enquiries
         </button>
@@ -1246,6 +1316,94 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       {view === 'consult_requests' ? (
         <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
           <ConsultationRequestsView />
+        </div>
+      ) : view === 'today_queue' ? (
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <div>
+              <div style={{ fontWeight: 800, fontSize: 14, color: '#111827' }}>Walk-in Queue — Today</div>
+              <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                Patients checked in by front desk · {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </div>
+            </div>
+            <button
+              onClick={() => setTodayQueue(loadTodayQueue())}
+              style={{ fontSize: 11, padding: '5px 10px', borderRadius: 6, border: '1px solid #e5e7eb', background: '#f9fafb', color: '#6b7280', cursor: 'pointer' }}
+            >
+              ↻ Refresh
+            </button>
+          </div>
+          {todayQueue.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: '#9ca3af', fontSize: 13 }}>
+              No walk-in patients checked in yet today.<br />
+              <span style={{ fontSize: 12 }}>Use the Intake tab → Check in &amp; Queue to add patients.</span>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {todayQueue.map((p, i) => (
+                <div
+                  key={p.id}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 12,
+                    padding: '12px 14px', borderRadius: 10,
+                    background: '#fff', border: '1px solid #e5e7eb',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                  }}
+                >
+                  {/* Position badge */}
+                  <div style={{
+                    flexShrink: 0, width: 32, height: 32, borderRadius: '50%',
+                    background: '#0d948820', border: '2px solid #0d9488',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 13, fontWeight: 800, color: '#0d9488',
+                  }}>
+                    {i + 1}
+                  </div>
+                  {/* Patient info */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: '#111827' }}>{p.full_name}</div>
+                    <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                      {p.sex ? p.sex.charAt(0).toUpperCase() + p.sex.slice(1) : ''}
+                      {p.age ? ` · ${p.age}y` : ''}
+                      {p.dob ? ` · DOB ${new Date(p.dob).toLocaleDateString('en-GB')}` : ''}
+                      {p.phone ? ` · ${p.phone}` : ''}
+                      {p.savedAt ? ` · Checked in ${new Date(p.savedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                    </div>
+                  </div>
+                  {/* Open consultation button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPatientName(p.full_name);
+                      if (p.dob) {
+                        setDob(p.dob);
+                        const dob = new Date(p.dob);
+                        const today = new Date();
+                        let a = today.getFullYear() - dob.getFullYear();
+                        const m = today.getMonth() - dob.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) a--;
+                        setAge(String(a));
+                      } else if (p.age) {
+                        setAge(p.age);
+                      }
+                      if (p.sex) setSex(p.sex as Parameters<typeof setSex>[0]);
+                      if (p.phone) setPhone(p.phone);
+                      setPatientId(p.id);
+                      setTopSection('consultation');
+                    }}
+                    style={{
+                      flexShrink: 0, padding: '7px 14px', borderRadius: 7,
+                      border: 'none', cursor: 'pointer',
+                      background: '#0d9488', color: '#fff',
+                      fontSize: 12, fontWeight: 700,
+                    }}
+                  >
+                    Open → Consultation
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>

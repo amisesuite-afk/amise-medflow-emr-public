@@ -351,4 +351,191 @@ router.post('/api/ai/refine', requireAuth, async (req, res) => {
   }
 });
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * POST /api/soap/polish — AI-polish structured SOAP data into clinical prose
+ * ────────────────────────────────────────────────────────────────────────── */
+
+const SoapPolishSchema = z.object({
+  subjective: z.object({
+    chiefComplaint: z.string(),
+    symptoms: z.array(z.string()),
+    intervalHistory: z.string(),
+    painScore: z.string(),
+    durationDays: z.string(),
+    isPostOp: z.boolean(),
+    postOpDays: z.string(),
+  }),
+  objective: z.object({
+    vitals: z.record(z.string()),
+    examSystems: z.record(z.string()),
+    examOther: z.string(),
+  }),
+  assessment: z.string(),
+  plan: z.string(),
+  encounterMode: z.enum(['outpatient', 'inpatient']),
+  patientName: z.string().optional(),
+  interval: z.string().optional(),
+});
+
+type SoapPolishRequest = z.infer<typeof SoapPolishSchema>;
+
+const SOAP_POLISH_SYSTEM = `You are a clinical documentation assistant for Amise Medical Services, Saint Lucia — a general and endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM.
+
+Your task is to polish structured SOAP note data into coherent, professional clinical prose suitable for a follow-up consultation or ward round note. Write in British-Caribbean medical professional style.
+
+Rules:
+- Do NOT invent findings, results, or diagnoses — only polish and rephrase the data you are given into readable clinical prose.
+- Write in the context of a follow-up visit or ward round, not an initial consultation.
+- Use British spelling throughout.
+- Keep each section concise — aim for 2–5 sentences per section.
+- For the Subjective section, weave the chief complaint, symptoms, interval history, pain score, duration, and post-operative status into a coherent narrative.
+- For the Objective section, present vitals and examination findings in standard clinical format.
+- For the Assessment, produce a brief clinical impression paragraph.
+- For the Plan, produce a clear, structured management plan.
+- Do NOT include fees, diagnoses beyond what is provided, drug doses, or definitive clinical conclusions not already stated.
+
+You MUST return valid JSON with exactly these four keys: { "subjective": "...", "objective": "...", "assessment": "...", "plan": "..." }
+Each value must be a string of polished clinical prose. Do not include any text outside the JSON object.`;
+
+function buildSoapPolishPrompt(d: SoapPolishRequest): string {
+  const vitalsEntries = Object.entries(d.objective.vitals)
+    .filter(([, v]) => v.trim())
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(', ');
+
+  const examEntries = Object.entries(d.objective.examSystems)
+    .filter(([, v]) => v.trim())
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('; ');
+
+  const context = d.encounterMode === 'inpatient'
+    ? `Ward round / inpatient review${d.interval ? ` — ${d.interval}` : ''}`
+    : `Outpatient follow-up${d.interval ? ` — ${d.interval}` : ''}`;
+
+  return `Polish the following structured SOAP data into coherent clinical prose for a follow-up note.
+
+Context: ${context}${d.patientName ? ` | Patient: ${d.patientName}` : ''}
+
+SUBJECTIVE DATA:
+- Chief Complaint: ${d.subjective.chiefComplaint || 'Not specified'}
+- Symptoms: ${d.subjective.symptoms.length ? d.subjective.symptoms.join(', ') : 'None listed'}
+- Interval History: ${d.subjective.intervalHistory || 'Not provided'}
+- Pain Score: ${d.subjective.painScore || 'Not recorded'}
+- Duration: ${d.subjective.durationDays ? `${d.subjective.durationDays} day(s)` : 'Not specified'}
+- Post-operative: ${d.subjective.isPostOp ? `Yes${d.subjective.postOpDays ? ` (${d.subjective.postOpDays} days post-op)` : ''}` : 'No'}
+
+OBJECTIVE DATA:
+- Vitals: ${vitalsEntries || 'Not recorded'}
+- Examination: ${examEntries || 'Not documented'}${d.objective.examOther ? `\n- Other findings: ${d.objective.examOther}` : ''}
+
+ASSESSMENT:
+${d.assessment || 'Not documented'}
+
+PLAN:
+${d.plan || 'Not documented'}
+
+Return valid JSON: { "subjective": "...", "objective": "...", "assessment": "...", "plan": "..." }`;
+}
+
+function buildSoapPolishFallback(d: SoapPolishRequest): {
+  subjective: string;
+  objective: string;
+  assessment: string;
+  plan: string;
+} {
+  const symptoms = d.subjective.symptoms.length ? d.subjective.symptoms.join(', ') : '';
+  const subjParts = [
+    d.subjective.chiefComplaint,
+    symptoms ? `Symptoms: ${symptoms}.` : '',
+    d.subjective.intervalHistory,
+    d.subjective.painScore ? `Pain score: ${d.subjective.painScore}/10.` : '',
+    d.subjective.durationDays ? `Duration: ${d.subjective.durationDays} day(s).` : '',
+    d.subjective.isPostOp
+      ? `Post-operative${d.subjective.postOpDays ? ` (${d.subjective.postOpDays} days post-op)` : ''}.`
+      : '',
+  ].filter(Boolean);
+
+  const vitalsStr = Object.entries(d.objective.vitals)
+    .filter(([, v]) => v.trim())
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(', ');
+
+  const examStr = Object.entries(d.objective.examSystems)
+    .filter(([, v]) => v.trim())
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('; ');
+
+  const objParts = [
+    vitalsStr ? `Vitals: ${vitalsStr}.` : '',
+    examStr ? `Examination: ${examStr}.` : '',
+    d.objective.examOther || '',
+  ].filter(Boolean);
+
+  return {
+    subjective: subjParts.join(' ') || 'Not documented.',
+    objective: objParts.join(' ') || 'Not documented.',
+    assessment: d.assessment || 'Not documented.',
+    plan: d.plan || 'Not documented.',
+  };
+}
+
+router.post('/api/soap/polish', async (req, res) => {
+  const parsed = SoapPolishSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Invalid request', details: parsed.error.flatten() });
+    return;
+  }
+
+  // Graceful fallback when AI is not configured
+  if (!process.env.ANTHROPIC_API_KEY) {
+    res.json(buildSoapPolishFallback(parsed.data));
+    return;
+  }
+
+  const prompt = buildSoapPolishPrompt(parsed.data);
+
+  try {
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 2048,
+      system: SOAP_POLISH_SYSTEM,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const rawText = response.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('')
+      .trim();
+
+    // Parse the JSON response from Claude
+    let polished: { subjective: string; objective: string; assessment: string; plan: string };
+    try {
+      // Strip markdown code fences if present
+      const jsonStr = rawText.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
+      polished = JSON.parse(jsonStr);
+    } catch {
+      // If JSON parsing fails, return the raw text as the subjective with fallback for the rest
+      const fallback = buildSoapPolishFallback(parsed.data);
+      polished = { ...fallback, subjective: rawText };
+    }
+
+    // Safety scan each section
+    for (const key of ['subjective', 'objective', 'assessment', 'plan'] as const) {
+      if (polished[key] && !checkForbiddenContent(polished[key]).safe) {
+        polished[key] = polished[key].split('\n').map(line => {
+          if (FORBIDDEN_PATTERNS.some(p => p.test(line))) return '[REDACTED — requires clinical review]';
+          FORBIDDEN_PATTERNS.forEach(p => { p.lastIndex = 0; });
+          return line;
+        }).join('\n');
+      }
+    }
+
+    res.json(polished);
+  } catch {
+    // On AI failure, fall back to plain concatenation
+    res.json(buildSoapPolishFallback(parsed.data));
+  }
+});
+
 export default router;

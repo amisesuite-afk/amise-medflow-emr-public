@@ -1,23 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { BookingTrack } from '@/types';
 import { APPOINTMENT_TYPES, BOOKING_DISCLAIMER } from '@/lib/scheduling';
 import '../subpage-mobile.css';
 
-interface Slot {
-  start: string;
-  end: string;
-  location: string;
-  appointmentType: string;
-  display: string;
-}
-
-type Step = 'track' | 'details' | 'slots' | 'done';
+type Step = 'track' | 'procedure_info' | 'details' | 'done';
 
 const TRACK_INFO: Record<BookingTrack, { label: string; description: string; icon: string }> = {
   routine: {
     label:       'Routine appointment',
-    description: 'Book directly for a standard consultation. Slots are confirmed immediately.',
+    description: 'Request a standard consultation. Our front desk team will check availability and contact you to confirm.',
     icon:        '📅',
   },
   referral: {
@@ -72,6 +64,114 @@ const OPTGROUP_ORDER = [
 /** True when the appointment type requires endoscopy prep info */
 function needsPrepNotice(apptType: string): boolean {
   return ['colonoscopy', 'egd', 'ogd', 'ercp'].some(prefix => apptType.startsWith(prefix));
+}
+
+// ── Procedure-specific intake questions ──────────────────────────────────────
+
+interface ProcedureQuestion {
+  id: string;
+  label: string;
+  type: 'text' | 'select' | 'yesno' | 'textarea';
+  options?: string[];
+  placeholder?: string;
+  required?: boolean;
+}
+
+const PROCEDURE_QUESTIONS: Record<string, { heading: string; questions: ProcedureQuestion[] }> = {
+  ogd: {
+    heading: 'Gastroscopy (OGD) — clinical information',
+    questions: [
+      { id: 'primary_symptom', label: 'Primary symptom', type: 'select', options: ['Dyspepsia / heartburn', 'Dysphagia (difficulty swallowing)', 'Nausea / vomiting', 'Upper GI bleeding', 'Epigastric pain', 'Anaemia (iron-deficiency)', 'Weight loss', 'Other'], required: true },
+      { id: 'symptom_duration', label: 'How long have you had this symptom?', type: 'select', options: ['Less than 2 weeks', '2–4 weeks', '1–3 months', '3–6 months', 'More than 6 months'] },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners (e.g. warfarin, aspirin, clopidogrel)?', type: 'yesno' },
+      { id: 'previous_endoscopy', label: 'Have you had an endoscopy before?', type: 'yesno' },
+      { id: 'allergies', label: 'Any known drug allergies?', type: 'text', placeholder: 'e.g. penicillin, iodine, latex — or "none"' },
+      { id: 'other_info', label: 'Anything else we should know?', type: 'textarea', placeholder: 'e.g. relevant medical conditions, recent test results' },
+    ],
+  },
+  colonoscopy: {
+    heading: 'Colonoscopy — clinical information',
+    questions: [
+      { id: 'primary_symptom', label: 'Primary reason for colonoscopy', type: 'select', options: ['Change in bowel habit', 'Rectal bleeding', 'Screening / surveillance', 'Abdominal pain', 'Anaemia (iron-deficiency)', 'Family history of colorectal cancer', 'Polyp follow-up', 'Other'], required: true },
+      { id: 'symptom_duration', label: 'How long have you had this symptom?', type: 'select', options: ['Less than 2 weeks', '2–4 weeks', '1–3 months', '3–6 months', 'More than 6 months', 'N/A — screening'] },
+      { id: 'previous_colonoscopy', label: 'Have you had a colonoscopy before?', type: 'yesno' },
+      { id: 'family_history', label: 'Family history of bowel cancer?', type: 'yesno' },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners?', type: 'yesno' },
+      { id: 'allergies', label: 'Any known drug allergies?', type: 'text', placeholder: 'e.g. penicillin, iodine, latex — or "none"' },
+    ],
+  },
+  ercp_workup: {
+    heading: 'ERCP / Biliary investigation — clinical information',
+    questions: [
+      { id: 'primary_indication', label: 'Reason for ERCP referral', type: 'select', options: ['Bile duct stones (choledocholithiasis)', 'Jaundice — cause unknown', 'Biliary stricture', 'Stent replacement', 'Pancreatitis (biliary)', 'Other'], required: true },
+      { id: 'jaundice', label: 'Do you currently have jaundice (yellow skin/eyes)?', type: 'yesno' },
+      { id: 'prior_ercp', label: 'Have you had an ERCP before?', type: 'yesno' },
+      { id: 'stent_in_situ', label: 'Do you have a biliary stent in place?', type: 'yesno' },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners?', type: 'yesno' },
+      { id: 'recent_imaging', label: 'Recent imaging results available?', type: 'select', options: ['Ultrasound', 'CT scan', 'MRCP', 'Multiple', 'None yet'] },
+      { id: 'allergies', label: 'Any known drug allergies (especially contrast/iodine)?', type: 'text', placeholder: 'e.g. iodine, contrast dye, penicillin — or "none"' },
+    ],
+  },
+  flexi_sig: {
+    heading: 'Flexible sigmoidoscopy — clinical information',
+    questions: [
+      { id: 'primary_symptom', label: 'Primary reason', type: 'select', options: ['Rectal bleeding', 'Change in bowel habit', 'Screening', 'Polyp follow-up', 'Other'], required: true },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners?', type: 'yesno' },
+      { id: 'allergies', label: 'Any known drug allergies?', type: 'text', placeholder: 'e.g. penicillin — or "none"' },
+    ],
+  },
+  breast: {
+    heading: 'Breast clinic — clinical information',
+    questions: [
+      { id: 'primary_concern', label: 'Primary concern', type: 'select', options: ['New breast lump', 'Breast pain', 'Nipple discharge', 'Skin change', 'Screening / family history', 'Follow-up after treatment', 'Other'], required: true },
+      { id: 'duration', label: 'How long have you noticed this?', type: 'select', options: ['Less than 1 week', '1–4 weeks', '1–3 months', 'More than 3 months', 'N/A'] },
+      { id: 'family_history', label: 'Family history of breast or ovarian cancer?', type: 'yesno' },
+      { id: 'previous_imaging', label: 'Any previous breast imaging?', type: 'select', options: ['Mammogram', 'Ultrasound', 'Both', 'None'] },
+    ],
+  },
+  thyroid: {
+    heading: 'Thyroid clinic — clinical information',
+    questions: [
+      { id: 'primary_concern', label: 'Primary concern', type: 'select', options: ['Thyroid nodule / lump', 'Goitre (enlarged thyroid)', 'Abnormal thyroid function tests', 'Follow-up', 'Other'], required: true },
+      { id: 'thyroid_function', label: 'Most recent thyroid function test result', type: 'select', options: ['Normal', 'Overactive (hyperthyroid)', 'Underactive (hypothyroid)', 'Not tested / unknown'] },
+      { id: 'previous_imaging', label: 'Previous thyroid ultrasound?', type: 'yesno' },
+      { id: 'family_history', label: 'Family history of thyroid disease or thyroid cancer?', type: 'yesno' },
+    ],
+  },
+  pre_op: {
+    heading: 'Pre-operative assessment — clinical information',
+    questions: [
+      { id: 'planned_surgery', label: 'What surgery is planned?', type: 'text', placeholder: 'e.g. laparoscopic cholecystectomy', required: true },
+      { id: 'blood_thinners', label: 'Are you taking blood thinners?', type: 'yesno' },
+      { id: 'anaesthetic_history', label: 'Any problems with previous anaesthetics?', type: 'yesno' },
+      { id: 'medical_conditions', label: 'Significant medical conditions', type: 'textarea', placeholder: 'e.g. diabetes, heart disease, asthma — or "none"' },
+      { id: 'allergies', label: 'Any known drug allergies?', type: 'text', placeholder: 'e.g. penicillin, latex — or "none"' },
+    ],
+  },
+  diabetic_foot: {
+    heading: 'Diabetic foot clinic — clinical information',
+    questions: [
+      { id: 'primary_concern', label: 'Primary concern', type: 'select', options: ['Non-healing wound / ulcer', 'Foot numbness / tingling', 'Foot pain', 'Routine diabetic foot check', 'Infection', 'Other'], required: true },
+      { id: 'diabetes_type', label: 'Diabetes type', type: 'select', options: ['Type 1', 'Type 2', 'Not sure'] },
+      { id: 'wound_present', label: 'Do you currently have a wound or ulcer on your foot?', type: 'yesno' },
+      { id: 'last_hba1c', label: 'Most recent HbA1c (if known)', type: 'text', placeholder: 'e.g. 7.2% — or "unknown"' },
+    ],
+  },
+};
+
+function buildReasonWithProcedureInfo(reason: string, answers: Record<string, string>, apptType: string): string {
+  const parts: string[] = [];
+  if (reason.trim()) parts.push(reason.trim());
+  const config = PROCEDURE_QUESTIONS[apptType];
+  if (config) {
+    const answerLines = config.questions
+      .filter(q => answers[q.id]?.trim())
+      .map(q => `${q.label}: ${answers[q.id]}`);
+    if (answerLines.length > 0) {
+      parts.push(`[${config.heading}] ${answerLines.join(' | ')}`);
+    }
+  }
+  return parts.join(' — ');
 }
 
 // ── Shared style primitives ───────────────────────────────────────────────────
@@ -144,11 +244,11 @@ function WhatsAppIcon() {
 
 // ── Step indicator ────────────────────────────────────────────────────────────
 
-function StepIndicator({ current }: { current: Step }) {
+function StepIndicator({ current, hasProcedureStep }: { current: Step; hasProcedureStep: boolean }) {
   const steps: { id: Step; label: string }[] = [
     { id: 'track',   label: 'Appointment type' },
+    ...(hasProcedureStep ? [{ id: 'procedure_info' as Step, label: 'Clinical info' }] : []),
     { id: 'details', label: 'Your details' },
-    { id: 'slots',   label: 'Choose slot' },
   ];
   const currentIdx = steps.findIndex(s => s.id === current);
 
@@ -196,52 +296,49 @@ export default function BookingForm() {
   const [reason,           setReason]         = useState('');
   const [referralDoctor,   setRefDoctor]      = useState('');
   const [referralPractice, setRefPractice]    = useState('');
-  const [slots,            setSlots]          = useState<Slot[]>([]);
-  const [slotsLoading,     setSlotsLoading]   = useState(false);
-  const [selectedSlot,     setSelectedSlot]   = useState<Slot | null>(null);
   const [submitting,       setSubmitting]     = useState(false);
-  const [result,           setResult]         = useState<{ autoConfirmed: boolean; message: string } | null>(null);
+  const [result,           setResult]         = useState<{ message: string } | null>(null);
   const [error,            setError]          = useState('');
+  const [procedureAnswers, setProcedureAnswers] = useState<Record<string, string>>({});
+  const [preferredDays,    setPreferredDays]  = useState('');
+  const [preferredTime,    setPreferredTime]  = useState('');
+  const [preferredLocation, setPreferredLoc]  = useState('');
 
-  // Load slots when reaching slot step
-  useEffect(() => {
-    if (step !== 'slots') return;
-    setSlotsLoading(true);
-    setSlots([]);
-    setSelectedSlot(null);
-    void fetch(`/api/booking/slots?type=${appointmentType}&track=${track}`)
-      .then(r => r.json())
-      .then((d: { slots: Slot[] }) => { setSlots(d.slots ?? []); setSlotsLoading(false); })
-      .catch(() => { setSlotsLoading(false); setError('Unable to load available slots. Please try again.'); });
-  }, [step, appointmentType, track]);
+  const hasProcedureQuestions = appointmentType in PROCEDURE_QUESTIONS;
+  const procedureConfig = PROCEDURE_QUESTIONS[appointmentType];
 
   async function submit() {
     setSubmitting(true);
     setError('');
     try {
+      const prefParts: string[] = [];
+      if (preferredDays) prefParts.push(`Days: ${preferredDays}`);
+      if (preferredTime) prefParts.push(`Time: ${preferredTime}`);
+      if (preferredLocation) prefParts.push(`Location: ${preferredLocation}`);
+      const preferences = prefParts.length > 0 ? prefParts.join(' | ') : undefined;
+
       const r = await fetch('/api/booking/create', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
           track, appointmentType, patientName, patientPhone, patientEmail: patientEmail.trim() || undefined,
-          patientDob, reason, referralDoctor, referralPractice,
-          selectedSlot: selectedSlot ?? undefined,
+          patientDob,
+          reason: buildReasonWithProcedureInfo(reason, procedureAnswers, appointmentType),
+          referralDoctor, referralPractice,
+          preferences,
         }),
       });
-      const data = await r.json() as { autoConfirmed?: boolean; error?: string };
+      const data = await r.json() as { error?: string };
       if (!r.ok || data.error) {
         setError(data.error ?? 'Something went wrong. Please try again.');
       } else {
         setResult({
-          autoConfirmed: data.autoConfirmed ?? false,
-          message: data.autoConfirmed
-            ? `Your appointment has been confirmed: ${selectedSlot?.display ?? ''}. A confirmation has been sent to ${patientPhone}${patientEmail.trim() ? ` and ${patientEmail.trim()}` : ''}.`
-            : `Your request has been received. You will be contacted at ${patientPhone} within ${track === 'referral' ? '24 hours' : '2 hours'} to confirm your appointment.`,
+          message: `Your request has been received. Our front desk team will review your request and contact you at ${patientPhone} to confirm your appointment${track === 'referral' ? ' within 24 hours' : ''}.`,
         });
         setStep('done');
       }
     } catch {
-      setError('Network error. Please check your connection and try again, or call us at 459-2227 / 284-0557 to book by phone.');
+      setError('Network error. Please check your connection and try again, or call us at 758-284-0557 / 758-720-7111 to book by phone.');
     } finally {
       setSubmitting(false);
     }
@@ -345,7 +442,7 @@ export default function BookingForm() {
                 }}
               >
                 <WhatsAppIcon />
-                WhatsApp Tapion →
+                WhatsApp Tapion Office →
               </a>
               <a
                 href="https://wa.me/17587207111"
@@ -360,7 +457,7 @@ export default function BookingForm() {
                 }}
               >
                 <WhatsAppIcon />
-                WhatsApp Rodney Bay →
+                WhatsApp Rodney Bay Office →
               </a>
             </div>
           </div>
@@ -384,7 +481,7 @@ export default function BookingForm() {
           className="amise-booking-card"
           >
             {/* Step indicator (hidden on done screen) */}
-            {step !== 'done' && <StepIndicator current={step} />}
+            {step !== 'done' && <StepIndicator current={step} hasProcedureStep={hasProcedureQuestions} />}
 
             {/* ── STEP: TRACK ────────────────────────────────────── */}
             {step === 'track' && (
@@ -443,11 +540,103 @@ export default function BookingForm() {
                 )}
 
                 <button
-                  onClick={() => setStep('details')}
+                  onClick={() => {
+                    setProcedureAnswers({});
+                    setStep(hasProcedureQuestions ? 'procedure_info' : 'details');
+                  }}
                   style={{ ...primaryBtnStyle, marginTop: 24, width: '100%' }}
                 >
                   Continue →
                 </button>
+              </div>
+            )}
+
+            {/* ── STEP: PROCEDURE-SPECIFIC QUESTIONS ────────────── */}
+            {step === 'procedure_info' && procedureConfig && (
+              <div>
+                <div style={stepLabelStyle}>{procedureConfig.heading}</div>
+                <div style={{
+                  marginBottom: 16, padding: '10px 14px', borderRadius: 8,
+                  background: '#f0fdf9', border: '1px solid #a7f3d0',
+                  fontSize: 12, color: '#065f46', lineHeight: 1.6,
+                }}>
+                  These questions help us prepare for your appointment. Your answers are shared with Dr Kabiye&apos;s team only.
+                </div>
+
+                {procedureConfig.questions.map(q => (
+                  <div key={q.id} style={{ marginBottom: 16 }}>
+                    <label style={labelStyle}>
+                      {q.label}
+                      {q.required && ' *'}
+                    </label>
+                    {q.type === 'select' && q.options && (
+                      <select
+                        value={procedureAnswers[q.id] ?? ''}
+                        onChange={e => setProcedureAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                        style={{ ...inputStyle, appearance: 'auto' }}
+                      >
+                        <option value="">Select…</option>
+                        {q.options.map(o => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                    )}
+                    {q.type === 'text' && (
+                      <input
+                        type="text"
+                        value={procedureAnswers[q.id] ?? ''}
+                        onChange={e => setProcedureAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                        placeholder={q.placeholder}
+                        style={inputStyle}
+                      />
+                    )}
+                    {q.type === 'textarea' && (
+                      <textarea
+                        value={procedureAnswers[q.id] ?? ''}
+                        onChange={e => setProcedureAnswers(prev => ({ ...prev, [q.id]: e.target.value }))}
+                        placeholder={q.placeholder}
+                        rows={2}
+                        style={{ ...inputStyle, resize: 'vertical' }}
+                      />
+                    )}
+                    {q.type === 'yesno' && (
+                      <div style={{ display: 'flex', gap: 10 }}>
+                        {['Yes', 'No'].map(v => (
+                          <button
+                            key={v}
+                            type="button"
+                            onClick={() => setProcedureAnswers(prev => ({ ...prev, [q.id]: v }))}
+                            style={{
+                              padding: '10px 24px', borderRadius: 8, cursor: 'pointer',
+                              fontFamily: 'inherit', fontSize: 14, fontWeight: 600,
+                              background: procedureAnswers[q.id] === v ? '#f0fdf9' : '#f8fafc',
+                              border: `2px solid ${procedureAnswers[q.id] === v ? '#0d9488' : '#e2e8f0'}`,
+                              color: procedureAnswers[q.id] === v ? '#0d9488' : '#6b7280',
+                            }}
+                          >
+                            {v}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
+                  <button onClick={() => setStep('track')} style={ghostBtnStyle}>
+                    ← Back
+                  </button>
+                  <button
+                    onClick={() => setStep('details')}
+                    disabled={procedureConfig.questions.some(q => q.required && !procedureAnswers[q.id]?.trim())}
+                    style={{
+                      ...primaryBtnStyle,
+                      background: procedureConfig.questions.some(q => q.required && !procedureAnswers[q.id]?.trim()) ? '#e2e8f0' : '#0d9488',
+                      color: procedureConfig.questions.some(q => q.required && !procedureAnswers[q.id]?.trim()) ? '#94a3b8' : '#fff',
+                      cursor: procedureConfig.questions.some(q => q.required && !procedureAnswers[q.id]?.trim()) ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    Continue →
+                  </button>
+                </div>
               </div>
             )}
 
@@ -574,80 +763,61 @@ export default function BookingForm() {
                   </>
                 )}
 
-                <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
-                  <button
-                    onClick={() => setStep('track')}
-                    style={ghostBtnStyle}
-                  >
-                    ← Back
-                  </button>
-                  <button
-                    onClick={() => setStep('slots')}
-                    disabled={!canAdvanceDetails}
-                    style={{
-                      ...primaryBtnStyle,
-                      background: canAdvanceDetails ? '#0d9488' : '#e2e8f0',
-                      color: canAdvanceDetails ? '#fff' : '#94a3b8',
-                      cursor: canAdvanceDetails ? 'pointer' : 'not-allowed',
-                    }}
-                  >
-                    View available slots →
-                  </button>
+                {/* ── Scheduling preferences ──────────────────── */}
+                <div style={{
+                  marginTop: 20, marginBottom: 16, padding: '16px 18px',
+                  borderRadius: 10, background: '#f0fdf9', border: '1px solid #a7f3d0',
+                }}>
+                  <div style={{ ...labelStyle, color: '#065f46', marginBottom: 12, fontSize: 12, textTransform: 'none', letterSpacing: 0, fontWeight: 700 }}>
+                    Scheduling preferences <span style={{ color: '#6b7280', fontWeight: 400 }}>(optional — helps our team find the best time for you)</span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <div>
+                      <label style={{ ...labelStyle, fontSize: 10 }}>Preferred days</label>
+                      <select
+                        value={preferredDays}
+                        onChange={e => setPreferredDays(e.target.value)}
+                        style={{ ...inputStyle, appearance: 'auto' }}
+                      >
+                        <option value="">No preference</option>
+                        <option value="Monday–Wednesday">Early week (Mon–Wed)</option>
+                        <option value="Thursday–Friday">Late week (Thu–Fri)</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ ...labelStyle, fontSize: 10 }}>Preferred time</label>
+                      <select
+                        value={preferredTime}
+                        onChange={e => setPreferredTime(e.target.value)}
+                        style={{ ...inputStyle, appearance: 'auto' }}
+                      >
+                        <option value="">No preference</option>
+                        <option value="Morning (8 am – 12 pm)">Morning (8 am – 12 pm)</option>
+                        <option value="Afternoon (12 – 4 pm)">Afternoon (12 – 4 pm)</option>
+                        <option value="First available">First available</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 12 }}>
+                    <label style={{ ...labelStyle, fontSize: 10 }}>Preferred location</label>
+                    <select
+                      value={preferredLocation}
+                      onChange={e => setPreferredLoc(e.target.value)}
+                      style={{ ...inputStyle, appearance: 'auto' }}
+                    >
+                      <option value="">No preference</option>
+                      <option value="Rodney Bay (Providence Building)">Rodney Bay (Providence Building)</option>
+                      <option value="Tapion (Dr Kabiye's Office)">Tapion (Dr Kabiye&apos;s Office)</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {/* ── STEP: SLOTS ────────────────────────────────────── */}
-            {step === 'slots' && (
-              <div>
-                <div style={stepLabelStyle}>
-                  {track === 'referral' ? 'Preferred appointment slot' : 'Select your appointment'}
-                </div>
-
-                {slotsLoading && (
-                  <div style={{ textAlign: 'center', padding: 28, color: '#6b7280', fontSize: 13 }}>
-                    Checking availability…
-                  </div>
-                )}
-
-                {!slotsLoading && slots.length === 0 && (
-                  <div style={{
-                    padding: '14px 16px', borderRadius: 10, background: '#f8fafc',
-                    border: '1px solid #e2e8f0', color: '#64748b', fontSize: 13, marginBottom: 16,
-                    lineHeight: 1.6,
-                  }}>
-                    {track === 'referral'
-                      ? 'Our team will contact you to arrange a priority slot. Please submit your details and we will confirm within 24 hours.'
-                      : 'No slots are currently available online. Please contact us directly at Tapion Hospital (459-2227) and we will arrange an appointment for you.'}
-                  </div>
-                )}
-
-                {!slotsLoading && slots.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedSlot(s)}
-                    style={{
-                      display: 'block', width: '100%', marginBottom: 10,
-                      padding: '12px 16px', borderRadius: 10, cursor: 'pointer',
-                      background: selectedSlot?.start === s.start ? '#f0fdf9' : '#f8fafc',
-                      border: `2px solid ${selectedSlot?.start === s.start ? '#0d9488' : '#e2e8f0'}`,
-                      color: '#0f172a', textAlign: 'left', fontSize: 14,
-                      fontFamily: 'inherit',
-                    }}
-                  >
-                    {s.display}
-                  </button>
-                ))}
-
-                {track === 'referral' && (
-                  <div style={{
-                    padding: '10px 14px', borderRadius: 8, background: '#f8fafc',
-                    border: '1px solid #e2e8f0', fontSize: 12, color: '#6b7280',
-                    marginBottom: 14, lineHeight: 1.5,
-                  }}>
-                    Referral appointments are subject to staff confirmation and verification of the referral. You will receive a confirmation message within 24 hours.
-                  </div>
-                )}
 
                 {error && (
                   <div style={{ color: '#dc2626', fontSize: 13, marginBottom: 12 }}>{error}</div>
@@ -655,38 +825,24 @@ export default function BookingForm() {
 
                 <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
                   <button
-                    onClick={() => setStep('details')}
+                    onClick={() => setStep(hasProcedureQuestions ? 'procedure_info' : 'track')}
                     style={ghostBtnStyle}
                   >
                     ← Back
                   </button>
-                  {!slotsLoading && track === 'routine' && slots.length === 0 ? (
-                    // No online slots to confirm against — a disabled "Confirm
-                    // appointment" button here would look broken. Point the
-                    // patient straight at the phone number we just told them to call.
-                    <a
-                      href="tel:+17584592227"
-                      style={{ ...primaryBtnStyle, textAlign: 'center', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                    >
-                      Call Tapion Hospital →
-                    </a>
-                  ) : (
-                    <button
-                      onClick={() => void submit()}
-                      disabled={
-                        submitting ||
-                        (track === 'routine' && !selectedSlot) ||
-                        (slots.length > 0 && !selectedSlot && track !== 'referral')
-                      }
-                      style={{
-                        ...primaryBtnStyle,
-                        opacity: submitting ? 0.7 : 1,
-                        cursor: submitting ? 'wait' : 'pointer',
-                      }}
-                    >
-                      {submitting ? 'Submitting…' : track === 'routine' ? 'Confirm appointment' : 'Submit request'}
-                    </button>
-                  )}
+                  <button
+                    onClick={() => void submit()}
+                    disabled={!canAdvanceDetails || submitting}
+                    style={{
+                      ...primaryBtnStyle,
+                      background: canAdvanceDetails && !submitting ? '#0d9488' : '#e2e8f0',
+                      color: canAdvanceDetails && !submitting ? '#fff' : '#94a3b8',
+                      cursor: canAdvanceDetails && !submitting ? 'pointer' : 'not-allowed',
+                      opacity: submitting ? 0.7 : 1,
+                    }}
+                  >
+                    {submitting ? 'Submitting…' : 'Submit request →'}
+                  </button>
                 </div>
               </div>
             )}
@@ -694,20 +850,25 @@ export default function BookingForm() {
             {/* ── STEP: DONE ─────────────────────────────────────── */}
             {step === 'done' && result && (
               <div style={{ textAlign: 'center', padding: '16px 0 8px' }}>
-                <div style={{ fontSize: 44, marginBottom: 14 }}>
-                  {result.autoConfirmed ? '✅' : '📨'}
-                </div>
+                <div style={{ fontSize: 44, marginBottom: 14 }}>📨</div>
                 <h2 style={{ fontSize: 20, fontWeight: 800, color: '#0d9488', margin: '0 0 12px' }}>
-                  {result.autoConfirmed ? 'Appointment confirmed' : 'Request received'}
+                  Request received
                 </h2>
                 <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.7, margin: '0 0 24px' }}>
                   {result.message}
                 </p>
 
-                {/* Add-to-WhatsApp + prep link */}
+                <div style={{
+                  padding: '14px 16px', borderRadius: 10, background: '#f0fdf9',
+                  border: '1px solid #a7f3d0', fontSize: 13, color: '#065f46',
+                  lineHeight: 1.6, marginBottom: 24, textAlign: 'left',
+                }}>
+                  <strong>What happens next:</strong> Our front desk team will check availability and contact you to confirm a specific date and time. If you have any questions in the meantime, WhatsApp or call us.
+                </div>
+
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginBottom: 24 }}>
                   <a
-                    href={`https://wa.me/17582840557?text=${encodeURIComponent(`Hi, I have an appointment booked — name: ${patientName}`)}`}
+                    href={`https://wa.me/17582840557?text=${encodeURIComponent(`Hi, I submitted a booking request — name: ${patientName}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{
@@ -719,10 +880,10 @@ export default function BookingForm() {
                     }}
                   >
                     <WhatsAppIcon />
-                    Add to WhatsApp
+                    WhatsApp us
                   </a>
                   <a
-                    href="/guidance"
+                    href="tel:+17582840557"
                     style={{
                       display: 'inline-flex', alignItems: 'center',
                       padding: '10px 18px', borderRadius: 50,
@@ -731,7 +892,7 @@ export default function BookingForm() {
                       fontFamily: 'inherit',
                     }}
                   >
-                    Download prep instructions
+                    Call 758-284-0557
                   </a>
                 </div>
 
@@ -746,8 +907,9 @@ export default function BookingForm() {
                 <button
                   onClick={() => {
                     setStep('track'); setName(''); setPhone(''); setEmail(''); setDob('');
-                    setReason(''); setRefDoctor(''); setRefPractice('');
-                    setSelectedSlot(null); setResult(null); setError('');
+                    setReason(''); setRefDoctor(''); setRefPractice(''); setProcedureAnswers({});
+                    setPreferredDays(''); setPreferredTime(''); setPreferredLoc('');
+                    setResult(null); setError('');
                   }}
                   style={{ ...ghostBtnStyle, marginTop: 20, flex: 'none' }}
                 >
@@ -760,8 +922,8 @@ export default function BookingForm() {
           {/* Footer */}
           <div style={{ marginTop: 28, paddingTop: 16, borderTop: '1px solid #e2e8f0', fontSize: 11, color: '#94a3b8', textAlign: 'center', lineHeight: 1.8 }}>
             Amise Medical Services · Saint Lucia<br />
-            Tapion Hospital: 459-2227 / 284-0557<br />
-            Rodney Bay (Providence Building) · Tapion Hospital
+            Tapion: 758-284-0557 · Rodney Bay: 758-720-7111<br />
+            Rodney Bay (Providence Building) · Tapion (Dr Kabiye&apos;s Office)
           </div>
         </div>
       </div>

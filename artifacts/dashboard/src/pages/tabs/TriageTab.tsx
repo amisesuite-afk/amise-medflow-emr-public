@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { hasRole } from '@/lib/roles';
@@ -23,7 +23,15 @@ export default function TriageTab() {
   const { profile } = useAuth();
   const isDoctor = hasRole(profile?.role, 'doctor');
   const [expandedPathway, setExpandedPathway] = useState<string | null>(null);
+  const [scriptCopied, setScriptCopied] = useState(false);
   const r = triageResult;
+
+  const copyScript = useCallback(() => {
+    void navigator.clipboard.writeText(r.frontDeskScript).then(() => {
+      setScriptCopied(true);
+      setTimeout(() => setScriptCopied(false), 2000);
+    });
+  }, [r.frontDeskScript]);
 
   const bannerVariant = r.acuity === 'urgent' ? '' : r.acuity === 'priority' ? 'priority' : r.acuity === 'review' ? 'review' : null;
 
@@ -159,8 +167,27 @@ export default function TriageTab() {
       )}
 
       {/* Front-desk script */}
-      <CollapsibleCard title={isDoctor ? 'Clinical summary script' : 'Safe front-desk script'}>
+      <CollapsibleCard title={isDoctor ? 'Front-desk script (reference)' : 'Safe front-desk script'}>
+        {isDoctor && (
+          <p style={{ margin: '0 0 8px', fontSize: 11, color: 'var(--muted)' }}>
+            Script generated for front-desk staff to read to patient over the phone.
+          </p>
+        )}
         <div className="script-box">{r.frontDeskScript}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+          <button
+            type="button"
+            onClick={copyScript}
+            style={{
+              padding: '6px 16px', borderRadius: 6, border: '1px solid var(--border)',
+              background: scriptCopied ? 'var(--accent)' : 'var(--surface)',
+              color: scriptCopied ? '#fff' : 'var(--text)',
+              fontWeight: 600, fontSize: 12, cursor: 'pointer', transition: 'all 0.15s',
+            }}
+          >
+            {scriptCopied ? 'Copied' : 'Copy script'}
+          </button>
+        </div>
         <p className="safety-note">Do not add clinical advice, diagnoses, medication instructions, fees, or results interpretation to this script.</p>
       </CollapsibleCard>
 

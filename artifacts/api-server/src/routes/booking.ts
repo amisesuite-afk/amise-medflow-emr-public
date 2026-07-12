@@ -1,5 +1,7 @@
 import { Router } from 'express';
+import { randomBytes, timingSafeEqual } from 'node:crypto';
 import rateLimit from 'express-rate-limit';
+import { z } from 'zod';
 import { getSupabaseAdmin, audit, requireStaffAuth, requireCronSecret } from '../lib/supabase.js';
 import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions, toE164 } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
@@ -15,6 +17,26 @@ const bookingRateLimit = rateLimit({
   legacyHeaders: false,
   keyGenerator: (req) => req.body?.patient_phone || req.ip,
   message: { error: 'Too many booking requests. Please try again later or call us.' },
+});
+
+const BookingRequestSchema = z.object({
+  patient_name: z.string().min(1),
+  patient_phone: z.string().optional(),
+  patient_email: z.string().email().optional(),
+  appointment_type: z.string(),
+  preferred_slot: z.string().optional(),
+  notes: z.string().optional(),
+  // Pass-through fields the existing handler also reads
+  location: z.string().optional(),
+  reason: z.string().optional(),
+  triage_acuity: z.string().optional(),
+  triage_score: z.union([z.string(), z.number()]).optional(),
+  source: z.string().optional(),
+});
+
+const ConfirmBookingSchema = z.object({
+  confirmed_slot: z.string().datetime(),
+  notes: z.string().optional(),
 });
 
 function getCalendarClient() {
@@ -45,12 +67,13 @@ function getCalendarClient() {
 
 // POST /api/booking/request — patient or staff submits a booking request
 router.post('/api/booking/request', bookingRateLimit, async (req, res) => {
-  const { patient_name, patient_email, patient_phone, appointment_type, location, preferred_slot, reason, triage_acuity, triage_score, source } = req.body ?? {};
-
-  if (!patient_name || !appointment_type) {
-    res.status(400).json({ error: 'patient_name and appointment_type are required' });
+  const parsed = BookingRequestSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten().fieldErrors });
     return;
   }
+
+  const { patient_name, patient_email, patient_phone, appointment_type, location, preferred_slot, reason, triage_acuity, triage_score, source } = parsed.data;
 
   const VALID_SOURCES = ['web', 'whatsapp', 'manual', 'phone', 'email'];
   const resolvedSource: string = VALID_SOURCES.includes(source as string) ? (source as string) : 'web';
@@ -146,12 +169,14 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
   try {
     if (!(await requireStaffAuth(req, res))) return;
     const { id } = req.params;
-    const { confirmed_slot, notes } = req.body ?? {};
 
-    if (!confirmed_slot) {
-      res.status(400).json({ error: 'confirmed_slot (ISO string) required' });
+    const parsed = ConfirmBookingSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Validation failed', details: parsed.error.flatten().fieldErrors });
       return;
     }
+
+    const { confirmed_slot, notes } = parsed.data;
 
     const supa = getSupabaseAdmin();
 
@@ -170,6 +195,8 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
       return;
     }
 
+    const confirmationToken = randomBytes(16).toString('hex');
+
     const { error } = await supa
       .from('appointment_requests')
       .update({
@@ -177,6 +204,7 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
         confirmed_slot,
         staff_confirmed_at: new Date().toISOString(),
         notes: notes ?? null,
+        confirmation_token: confirmationToken,
       })
       .eq('id', id)
       .eq('status', 'pending');
@@ -185,7 +213,7 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
 
     await audit({ action: 'book', entityType: 'appointment_request', entityId: id, payload: { status: 'staff_confirmed', confirmed_slot } });
     logger.info({ id, confirmed_slot }, '[booking/staff-confirm] confirmed');
-    res.json({ id, status: 'staff_confirmed', confirmed_slot });
+    res.json({ id, status: 'staff_confirmed', confirmed_slot, confirmation_token: confirmationToken });
   } catch (err) {
     logger.error({ err }, '[booking/staff-confirm] error');
     res.status(502).json({ error: errStr(err) });
@@ -221,6 +249,12 @@ router.post('/api/booking/waitlist/:id', async (req, res) => {
 // POST /api/booking/patient-confirm/:id — patient confirms 48 hrs prior; creates Google Calendar event
 router.post('/api/booking/patient-confirm/:id', async (req, res) => {
   const { id } = req.params;
+  const { confirmation_token } = (req.body ?? {}) as { confirmation_token?: string };
+
+  if (!confirmation_token) {
+    res.status(400).json({ error: 'confirmation_token is required' });
+    return;
+  }
 
   try {
     const supa = getSupabaseAdmin();
@@ -233,6 +267,20 @@ router.post('/api/booking/patient-confirm/:id', async (req, res) => {
 
     if (fetchErr || !row) {
       res.status(404).json({ error: 'Request not found or not in staff_confirmed state' });
+      return;
+    }
+
+    // Validate confirmation token using constant-time comparison
+    const storedToken = (row as Record<string, unknown>).confirmation_token as string | null;
+    if (!storedToken) {
+      res.status(403).json({ error: 'No confirmation token set for this booking' });
+      return;
+    }
+
+    const providedBuf = Buffer.from(confirmation_token);
+    const storedBuf = Buffer.from(storedToken);
+    if (providedBuf.length !== storedBuf.length || !timingSafeEqual(providedBuf, storedBuf)) {
+      res.status(401).json({ error: 'Invalid confirmation token' });
       return;
     }
 

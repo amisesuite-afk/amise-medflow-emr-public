@@ -148,6 +148,25 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     .select('id')
     .eq('status', 'pending');
 
+  // todayEctDateString: ectMidnight has UTC hours zeroed to represent ECT midnight,
+  // so its ISO date part equals today's date in ECT (America/St_Lucia, UTC-4).
+  const todayEctDateString = ectMidnight.toISOString().slice(0, 10);
+
+  // Mark any open/in_progress tasks whose due_date has passed as overdue.
+  await sb()
+    .from('patient_tasks')
+    .update({ status: 'overdue' })
+    .in('status', ['open', 'in_progress'])
+    .lt('due_date', todayEctDateString);
+
+  const { data: overdueTasks } = await sb()
+    .from('patient_tasks')
+    .select('id, task_type, description, due_date, priority, status')
+    .in('status', ['open', 'in_progress', 'overdue'])
+    .lte('due_date', todayEctDateString)
+    .order('due_date', { ascending: true })
+    .limit(20);
+
   const summaryLines: string[] = [
     `Daily Summary — Amise Front Desk AI — ${dateLabel}`,
     '',
@@ -170,6 +189,15 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     for (const esc of escalations) {
       // Omit payload — record_id and action are sufficient for triage
       summaryLines.push(`  [${esc.action}] entity: ${esc.record_id} at ${esc.created_at}`);
+    }
+  }
+
+  if (overdueTasks?.length) {
+    summaryLines.push('', `Overdue / Due Tasks (${overdueTasks.length}):`);
+    for (const task of overdueTasks) {
+      const priority = (task.priority as string ?? '').toLowerCase();
+      const priorityPrefix = (priority === 'urgent' || priority === 'high') ? `[${(task.priority as string).toUpperCase()}] ` : '';
+      summaryLines.push(`  ${priorityPrefix}${task.task_type} - ${task.description} (due: ${task.due_date})`);
     }
   }
 

@@ -30,3 +30,7 @@ export function getProtocolByIcd(icdCode: string) {
   const code = icdCode.split(' ')[0].trim();
   return ALL_PROTOCOLS.find(p => p.icd10Prefixes.some(prefix => code.startsWith(prefix))) ?? null;
 }
+
+export function getAllProtocols() {
+  return ALL_PROTOCOLS;
+}

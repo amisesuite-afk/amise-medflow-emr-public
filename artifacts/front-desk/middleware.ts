@@ -1,44 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Protected patient-portal paths — require a valid session cookie.
-// Public paths (login, OTP callback, public intake) are excluded.
-const PATIENT_PUBLIC = [
-  '/patient/login',
-  '/patient/auth',
-];
+const PATIENT_PUBLIC = ['/patient/login', '/patient/auth'];
+const STAFF_PUBLIC   = ['/staff/login'];
+
+function hasSessionCookie(req: NextRequest, storageKey: string): boolean {
+  if (req.cookies.get(storageKey)) return true;
+  if (req.cookies.get('sb-access-token')) return true;
+  return !!([...req.cookies.getAll()].find(
+    c => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'),
+  ));
+}
 
 export function middleware(req: NextRequest): NextResponse {
   const { pathname } = req.nextUrl;
 
-  // Only gate /patient/* routes
-  if (!pathname.startsWith('/patient')) return NextResponse.next();
-
-  // Allow public paths and their sub-routes
-  if (PATIENT_PUBLIC.some(p => pathname === p || pathname.startsWith(p + '/'))) {
+  // ── Patient portal ───────────────────────────────────────────────────────────
+  if (pathname.startsWith('/patient')) {
+    if (PATIENT_PUBLIC.some(p => pathname === p || pathname.startsWith(p + '/'))) return NextResponse.next();
+    if (pathname === '/patient') return NextResponse.next();
+    if (!hasSessionCookie(req, 'amise-patient-session')) {
+      const url = req.nextUrl.clone();
+      url.pathname = '/patient/login';
+      url.searchParams.set('next', pathname);
+      return NextResponse.redirect(url);
+    }
     return NextResponse.next();
   }
 
-  // Allow the portal root (shows login CTA when not authed)
-  if (pathname === '/patient') return NextResponse.next();
-
-  // Check for Supabase session cookie — the cookie name mirrors the storageKey
-  // used in patient-supabase.ts (`amise-patient-session`).
-  const sessionCookie =
-    req.cookies.get('amise-patient-session') ??
-    req.cookies.get('sb-access-token') ??
-    // Supabase stores the session as `sb-<project-ref>-auth-token`
-    [...req.cookies.getAll()].find(c => c.name.startsWith('sb-') && c.name.endsWith('-auth-token'));
-
-  if (!sessionCookie) {
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = '/patient/login';
-    loginUrl.searchParams.set('next', pathname);
-    return NextResponse.redirect(loginUrl);
+  // ── Staff scheduling ─────────────────────────────────────────────────────────
+  if (pathname.startsWith('/staff')) {
+    if (STAFF_PUBLIC.some(p => pathname === p || pathname.startsWith(p + '/'))) return NextResponse.next();
+    if (!hasSessionCookie(req, 'amise-staff-session')) {
+      const url = req.nextUrl.clone();
+      url.pathname = '/staff/login';
+      url.searchParams.set('next', pathname);
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/patient/:path*'],
+  matcher: ['/patient/:path*', '/staff/:path*'],
 };

@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { errMsg } from '@/lib/err';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/components/ToastProvider';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -153,7 +156,12 @@ export default function PlanTab() {
     encounterMode,
     symptoms,
     patientName, phone, currentSite,
+    patientId, encounterId,
   } = useAppContext();
+
+  const { session, profile } = useAuth();
+  const { showToast } = useToast();
+  const userId = session?.user?.id ?? profile?.id ?? null;
 
   const acuity = triageResult.acuity;
   const bmiData = calcBmiClass(weightKg, heightCm);
@@ -199,6 +207,57 @@ export default function PlanTab() {
         throw new Error(d.error ?? `HTTP ${r.status}`);
       }
       setScheduleOk(targetDate);
+
+      // Auto-create a follow-up patient_task after successful booking request
+      if (patientId && supabase) {
+        try {
+          // 1. Check whether an open/in-progress follow-up task already exists for this patient
+          const { data: existing } = await supabase
+            .from('patient_tasks')
+            .select('id')
+            .eq('source_table', 'plans')
+            .eq('patient_id', patientId)
+            .eq('task_type', 'follow_up_appointment')
+            .in('status', ['open', 'in_progress']);
+
+          if (!existing || existing.length === 0) {
+            // 2. Resolve the plan row ID for this encounter (used as source_id)
+            let planId: string | null = null;
+            if (encounterId) {
+              const { data: planRow } = await supabase
+                .from('plans')
+                .select('id')
+                .eq('encounter_id', encounterId)
+                .maybeSingle();
+              planId = (planRow as { id: string } | null)?.id ?? null;
+            }
+
+            // 3. Insert the patient_task
+            const { error: taskErr } = await supabase
+              .from('patient_tasks')
+              .insert({
+                patient_id:   patientId,
+                encounter_id: encounterId ?? null,
+                task_type:    'follow_up_appointment',
+                description:  'Follow-up appointment - ' + (followUpNotes || 'as per plan'),
+                due_date:     targetDate,
+                priority:     'normal',
+                status:       'open',
+                source_table: 'plans',
+                source_id:    planId,
+                created_by:   userId,
+              });
+
+            if (!taskErr) {
+              showToast('Follow-up task created', 'success');
+            } else {
+              console.error('[PlanTab] patient_task insert:', taskErr.message);
+            }
+          }
+        } catch (taskEx) {
+          console.error('[PlanTab] auto-create follow-up task:', taskEx);
+        }
+      }
     } catch (e) {
       setScheduleErr(errMsg(e));
     } finally {

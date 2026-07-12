@@ -217,5 +217,85 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"query\": $QUERY}" | jq .
 
+      - name: "Migration 25: Preferred slot text"
+        run: |
+          QUERY=$(jq -Rs . < supabase-preferred-slot-text-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 26: Staff review timestamps"
+        run: |
+          QUERY=$(jq -Rs . < supabase-staff-review-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 27: Anonymous intake support"
+        run: |
+          QUERY=$(jq -Rs . < supabase-anon-intake-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 28: Appointment questionnaire link"
+        run: |
+          QUERY=$(jq -Rs . < supabase-appointment-questionnaire-link-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 29: Appointment requests align"
+        run: |
+          QUERY=$(jq -Rs . < supabase-appointment-requests-align-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 30: Web intake delivery method"
+        run: |
+          QUERY=$(jq -Rs . < supabase-web-intake-delivery-method-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 31: Clinical persistence (surgical history, ROS, prescriptions, trauma)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-clinical-persistence-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 32: EMR enhancements (formulary, procedure catalog, ICD-10)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-emr-enhancement-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 33: Performance indexes"
+        run: |
+          QUERY=$(jq -Rs . < supabase-performance-indexes-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 34: Patient auth accounts"
+        run: |
+          QUERY=$(jq -Rs . < patient-auth-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
       - name: Done
-        run: echo "All 24 migrations completed successfully."
+        run: echo "All 34 migrations completed successfully."

@@ -2,10 +2,13 @@ import { useMemo, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 import {
+  DIFFERENTIALS,
   computeRankedDifferentials,
+  computeDxMarkers,
   getSuggestedSymptoms,
   getLeadingDiagnosis,
   type RankedDifferential,
+  type DxMarkerSet,
 } from '@/lib/symptom-inference';
 import { ALL_SYMPTOMS_FLAT } from '@/data/symptoms-db';
 
@@ -28,36 +31,88 @@ function ConfBar({ pct, color }: { pct: number; color: string }) {
   );
 }
 
-function DxPanel({ ranked, symptoms }: { ranked: RankedDifferential[]; symptoms: string[] }) {
+const DX_MARKER_CONFIG: { key: keyof DxMarkerSet; label: string; bg: string; fg: string }[] = [
+  { key: 'mostCommonId',     label: '★ COMMON',      bg: '#dbeafe', fg: '#1d4ed8' },
+  { key: 'clinicalBestId',   label: '⚕ CLINICAL',    bg: '#d1fae5', fg: '#065f46' },
+  { key: 'demographicBestId',label: '♟ DEMOGRAPHIC',  bg: '#ede9fe', fg: '#5b21b6' },
+  { key: 'anatomicalBestId', label: '⊕ ANATOMICAL',  bg: '#fef3c7', fg: '#92400e' },
+  { key: 'temporalBestId',   label: '⏱ TEMPORAL',    bg: '#e0e7ff', fg: '#3730a3' },
+];
+
+// Lookup map built once — avoids repeated array scans during render
+const DX_ENTRY_MAP = new Map(DIFFERENTIALS.map(d => [d.id, d]));
+
+function DxPanel({ ranked, symptoms, markers }: { ranked: RankedDifferential[]; symptoms: string[]; markers: DxMarkerSet | null }) {
   if (!symptoms.length) return null;
-  const top3 = ranked.slice(0, 4).filter(d => d.confidence > 3);
-  if (!top3.length) return null;
+  const top4 = ranked.slice(0, 4).filter(d => d.confidence > 3);
+  if (!top4.length) return null;
 
   return (
     <div className="ssp-dx-panel">
       <div className="ssp-dx-label">Working differentials</div>
-      {top3.map((dx, i) => (
-        <div key={dx.id} className="ssp-dx-row">
-          <div className="ssp-dx-name">
-            <span className="ssp-dx-rank">{i + 1}</span>
-            <span>{dx.name}</span>
-            {dx.urgency !== 'routine' && (
-              <span
-                className="ssp-dx-urgency"
-                style={{ background: URGENCY_COLOR[dx.urgency] }}
-              >
-                {dx.urgency.toUpperCase()}
+      {top4.map((dx, i) => {
+        const entry = DX_ENTRY_MAP.get(dx.id);
+        const pills = markers ? DX_MARKER_CONFIG.filter(m => markers[m.key] === dx.id) : [];
+        const kw = entry?.keywords?.slice(0, 3) ?? [];
+        const ix = entry?.investigations?.slice(0, 3) ?? [];
+        const urgencyColor = URGENCY_COLOR[dx.urgency];
+
+        return (
+          <div key={dx.id} className="ssp-dx-row" style={{ paddingBottom: (kw.length || ix.length) ? 6 : undefined }}>
+            {/* Row 1: rank · name · urgency · marker badges */}
+            <div className="ssp-dx-name">
+              <span className="ssp-dx-rank">{i + 1}</span>
+              <span>{dx.name}</span>
+              {dx.urgency !== 'routine' && (
+                <span className="ssp-dx-urgency" style={{ background: urgencyColor }}>
+                  {dx.urgency.toUpperCase()}
+                </span>
+              )}
+              {pills.map(p => (
+                <span key={p.key} style={{
+                  fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
+                  padding: '1px 5px', borderRadius: 4,
+                  background: p.bg, color: p.fg, marginLeft: 3, whiteSpace: 'nowrap',
+                }}>
+                  {p.label}
+                </span>
+              ))}
+            </div>
+
+            {/* Row 2: confidence bar */}
+            <div className="ssp-dx-bar-row">
+              <ConfBar pct={dx.confidence} color={i === 0 ? urgencyColor : '#ccc'} />
+              <span className="ssp-dx-pct" style={{ color: i === 0 ? urgencyColor : undefined }}>
+                {dx.confidence}%
               </span>
+            </div>
+
+            {/* Row 3: keyword chips (classic presentation) */}
+            {kw.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 4, paddingLeft: 20 }}>
+                {kw.map(k => (
+                  <span key={k} style={{
+                    fontSize: 10, padding: '1px 6px', borderRadius: 3,
+                    background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0',
+                  }}>
+                    {k}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Row 4: investigations */}
+            {ix.length > 0 && (
+              <div style={{ paddingLeft: 20, marginTop: 3 }}>
+                <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600 }}>Ix: </span>
+                <span style={{ fontSize: 10, color: '#64748b' }}>
+                  {ix.join(' · ')}
+                </span>
+              </div>
             )}
           </div>
-          <div className="ssp-dx-bar-row">
-            <ConfBar pct={dx.confidence} color={i === 0 ? URGENCY_COLOR[dx.urgency] : '#ccc'} />
-            <span className="ssp-dx-pct" style={{ color: i === 0 ? URGENCY_COLOR[dx.urgency] : undefined }}>
-              {dx.confidence}%
-            </span>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -95,6 +150,13 @@ export default function SmartSymptomPicker() {
   const leadingDx = useMemo(
     () => getLeadingDiagnosis(ranked, symptoms),
     [ranked, symptoms],
+  );
+
+  const dxMarkers = useMemo(
+    () => symptoms.length > 0
+      ? computeDxMarkers(ranked, { symptoms, symptomDetails, age: ageNum, sex })
+      : null,
+    [ranked, symptoms, symptomDetails, ageNum, sex],
   );
 
   const tier1 = suggested.filter(s => s.tier === 1);
@@ -153,7 +215,7 @@ export default function SmartSymptomPicker() {
       )}
 
       {/* ── Differential confidence panel ── */}
-      <DxPanel ranked={ranked} symptoms={symptoms} />
+      <DxPanel ranked={ranked} symptoms={symptoms} markers={dxMarkers} />
 
       {/* ── Priority suggestions ── */}
       {(tier1.length > 0 || tier2.length > 0) && (

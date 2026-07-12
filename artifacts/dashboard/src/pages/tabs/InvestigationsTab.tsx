@@ -4,6 +4,8 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import { getActivePathways } from '@/lib/clinical-pathways';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import ResultsTrackerCard from '@/components/ResultsTrackerCard';
+import LabInterpretationPanel from '@/components/LabInterpretationPanel';
 
 function filterBySex(lab: string, sex: string): boolean {
   if (lab.includes('(M)') && sex === 'female') return false;
@@ -557,7 +559,9 @@ export default function InvestigationsTab() {
 
       {/* Clinical pathway suggestions — sex-filtered */}
       {(() => {
-        const pathways = getActivePathways(symptoms, symptomDetails);
+        const lcSymptoms = symptoms.map(s => s.toLowerCase());
+        const lcDetails = Object.fromEntries(Object.entries(symptomDetails).map(([k, v]) => [k.toLowerCase(), v]));
+        const pathways = getActivePathways(lcSymptoms, lcDetails);
         if (pathways.length === 0) return null;
 
         const allLabs = [...new Set(pathways.flatMap(p => p.labsImaging))];
@@ -606,7 +610,7 @@ export default function InvestigationsTab() {
       })()}
 
       {/* Laboratory Services Ltd catalogue */}
-      <CollapsibleCard title="Laboratory Services Ltd — Order Tests" defaultOpen={false}>
+      <CollapsibleCard title="Laboratory Services Ltd — Order Tests" defaultOpen={true}>
         <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>
           Tap any test to add it to the ordered list. Filtered by patient sex.
         </p>
@@ -616,6 +620,8 @@ export default function InvestigationsTab() {
           setOrderedInvestigations={setOrderedInvestigations}
         />
       </CollapsibleCard>
+      <ResultsTrackerCard />
+      <LabInterpretationPanel />
     </div>
   );
 }

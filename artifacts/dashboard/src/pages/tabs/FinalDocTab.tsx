@@ -17,6 +17,11 @@ interface RRLocal {
   resultReceived: boolean; resultNotes: string;
 }
 interface CALocal { name: string; anatomicalArea: string; dimensions: string; description: string; }
+interface DischargeMed { drug: string; dose: string; route: string; frequency: string; duration: string; }
+interface DischargePrintState {
+  condition: string; meds: DischargeMed[]; diet: string; activity: string;
+  wound: string; followup: string; redFlags: string[]; warnings: string; draft: string;
+}
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -412,11 +417,26 @@ function buildReferralHtml(ctx: Ctx, referTo: string, referNotes: string): strin
 
 // ── Discharge summary HTML ────────────────────────────────────────────────────
 
-function buildDischargeHtml(ctx: Ctx, dischargeNotes: string, followUp: string, warnings: string): string {
+function medTableHtml(meds: DischargeMed[]): string {
+  const hdr = ['Drug', 'Dose', 'Route', 'Frequency', 'Duration']
+    .map(h => `<th style="text-align:left;padding:3px 8px;font-weight:700;color:#0B2545;font-size:10px">${h}</th>`)
+    .join('');
+  const rows = meds.map(m =>
+    `<tr style="border-top:0.5pt solid #E5E7EB">` +
+    [m.drug, m.dose, m.route, m.frequency, m.duration]
+      .map(v => `<td style="padding:3px 8px;font-size:10.5px">${escH(v)}</td>`)
+      .join('') +
+    `</tr>`
+  ).join('');
+  return `<table style="width:100%;border-collapse:collapse;margin:4px 0"><thead><tr style="background:#f0f4f8">${hdr}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function buildDischargeHtml(ctx: Ctx, state: DischargePrintState): string {
   const site = SITE_INFO[ctx.currentSite] ?? SITE_INFO.rodney_bay;
   const now = ectNow();
   const ageLine = [ctx.age ? `${ctx.age} yrs` : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(', ');
-  const meds = [...ctx.medications, ...(ctx.medicationsText ? [ctx.medicationsText] : [])];
+  const preMeds = [...ctx.medications, ...(ctx.medicationsText ? [ctx.medicationsText] : [])];
+  const allFlags = [...state.redFlags, ...(state.warnings ? [state.warnings] : [])];
 
   const meta = metaGrid([
     { label: 'Patient',   value: ctx.patientName || '—', sub: ageLine || undefined },
@@ -425,6 +445,27 @@ function buildDischargeHtml(ctx: Ctx, dischargeNotes: string, followUp: string, 
     { label: 'Date',      value: now },
   ]);
 
+  const medsSection = state.meds.length > 0
+    ? docSec('Medications on discharge', medTableHtml(state.meds))
+    : preMeds.length > 0 ? docSec('Medications on discharge', bulList(preMeds)) : '';
+
+  const flagsSection = allFlags.length > 0
+    ? callout('Return immediately if any of the following occur', bulList(allFlags))
+    : '';
+
+  // When AI draft exists it is the primary narrative body
+  if (state.draft) {
+    const body =
+      masthead('Discharge Summary', site.name, site.address, site.phone, now, AMISE_LOGO_SVG) +
+      meta +
+      `<div style="white-space:pre-wrap;font-size:10.5px;line-height:1.65;color:#1A1A1A;margin-bottom:12px">${escH(state.draft)}</div>` +
+      medsSection + flagsSection +
+      signoff('Dr Dawit Daniel Kabiye, MD, DM', 'General & Endoscopic Surgery · Amise Medical Services', 'Licence #: ............   Date: ..................') +
+      footer('AI-assisted draft reviewed and approved by the discharging clinician. Please keep this summary for your records.');
+    return wrapDoc(`Discharge — ${ctx.patientName || 'Patient'}`, body);
+  }
+
+  // Structured rendering when no AI draft
   let sectHtml = '';
   if (ctx.assessment || ctx.icdCodes.length) {
     const parts: string[] = [];
@@ -432,16 +473,16 @@ function buildDischargeHtml(ctx: Ctx, dischargeNotes: string, followUp: string, 
     if (ctx.icdCodes.length) parts.push(`<p style="margin-top:3px;color:#6B7280;font-size:10px">ICD-10: ${escH(ctx.icdCodes.join(', '))}</p>`);
     sectHtml += docSec('Diagnosis', parts.join(''));
   }
-  if (ctx.plan || ctx.procedures) {
-    const parts: string[] = [];
-    if (ctx.procedures) parts.push(`<p>${escH(ctx.procedures)}</p>`);
-    if (ctx.plan) parts.push(`<div style="margin-top:3px">${inlineText(ctx.plan)}</div>`);
-    sectHtml += docSec('Treatment and procedures', parts.join(''));
-  }
-  if (meds.length) sectHtml += docSec('Medications on discharge', bulList(meds));
-  if (dischargeNotes) sectHtml += docSec('Discharge instructions', inlineText(dischargeNotes));
-  if (warnings) sectHtml += callout('Return immediately if any of the following occur', inlineText(warnings));
-  if (followUp) sectHtml += docSec('Follow-up plan', inlineText(followUp));
+  if (ctx.procedures) sectHtml += docSec('Procedure performed', `<p>${escH(ctx.procedures)}</p>`);
+  if (state.condition) sectHtml += docSec('Condition on discharge', `<p>${escH(state.condition)}</p>`);
+  sectHtml += medsSection;
+  const instrParts: string[] = [];
+  if (state.wound) instrParts.push(`<p style="margin:3px 0"><strong>Wound care:</strong> ${escH(state.wound)}</p>`);
+  if (state.diet) instrParts.push(`<p style="margin:3px 0"><strong>Diet:</strong> ${escH(state.diet)}</p>`);
+  if (state.activity) instrParts.push(`<p style="margin:3px 0"><strong>Activity:</strong> ${escH(state.activity)}</p>`);
+  if (instrParts.length) sectHtml += docSec('Discharge instructions', instrParts.join(''));
+  if (state.followup) sectHtml += docSec('Follow-up plan', inlineText(state.followup));
+  sectHtml += flagsSection;
 
   const body =
     masthead('Discharge / Clinic Summary', site.name, site.address, site.phone, now, AMISE_LOGO_SVG) +
@@ -663,15 +704,29 @@ export default function FinalDocTab() {
   const [referNotes, setReferNotes] = useState('');
 
   const [showDischarge, setShowDischarge] = useState(false);
-  const [dischargeNotes, setDischargeNotes] = useState('');
-  const [followUp, setFollowUp] = useState('');
-  const [warnings, setWarnings] = useState('');
+  const [dischargeCondition, setDischargeCondition] = useState('Good');
+  const [dischargeMeds, setDischargeMeds] = useState<DischargeMed[]>([]);
+  const [dischargeWound, setDischargeWound] = useState('');
+  const [dischargeDiet, setDischargeDiet] = useState<string[]>([]);
+  const [dischargeDietNotes, setDischargeDietNotes] = useState('');
+  const [dischargeActivity, setDischargeActivity] = useState<string[]>([]);
+  const [dischargeActivityNotes, setDischargeActivityNotes] = useState('');
+  const [dischargeFollowup, setDischargeFollowup] = useState('');
+  const [dischargeRedFlags, setDischargeRedFlags] = useState<string[]>([]);
+  const [dischargeWarnings, setDischargeWarnings] = useState('');
+  const [dischargeDraft, setDischargeDraft] = useState('');
+  const [dischargeDraftLoading, setDischargeDraftLoading] = useState(false);
+  const [dischargeDraftError, setDischargeDraftError] = useState('');
+  const [dischargeDraftEditing, setDischargeDraftEditing] = useState(false);
+  const [dischargeDraftEditText, setDischargeDraftEditText] = useState('');
 
   const [showImport, setShowImport] = useState(false);
   const [importText, setImportText] = useState('');
 
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState('');
+
+  const [docFormat, setDocFormat] = useState<'note' | 'referral' | 'discharge'>('note');
 
   const [closing, setClosing] = useState(false);
   const [closeMsg, setCloseMsg] = useState('');
@@ -698,6 +753,18 @@ export default function FinalDocTab() {
   const site = SITE_INFO[ctx.currentSite] ?? SITE_INFO.rodney_bay;
   const patSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   const dateStr = new Date().toISOString().slice(0, 10);
+  const dischargePrintState: DischargePrintState = {
+    condition: dischargeCondition,
+    meds: dischargeMeds,
+    diet: [...dischargeDiet, ...(dischargeDietNotes ? [dischargeDietNotes] : [])].join('; '),
+    activity: [...dischargeActivity, ...(dischargeActivityNotes ? [dischargeActivityNotes] : [])].join('; '),
+    wound: dischargeWound,
+    followup: dischargeFollowup,
+    redFlags: dischargeRedFlags,
+    warnings: dischargeWarnings,
+    draft: dischargeDraft,
+  };
+
   const hasFinal = !!finalDocument;
 
   async function handleAiRefine() {
@@ -726,6 +793,53 @@ export default function FinalDocTab() {
     }
   }
 
+  async function generateDischargeDraft() {
+    setDischargeDraftLoading(true);
+    setDischargeDraftError('');
+    try {
+      const apiOrigin = getApiOrigin();
+      const base = apiOrigin || (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
+      const res = await fetch(`${base}/api/ai/discharge-summary`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({
+          type: ctx.encounterMode === 'inpatient' ? 'inpatient' : 'outpatient',
+          patientName: ctx.patientName || undefined,
+          patientAge: ctx.age || undefined,
+          patientSex: ctx.sex !== 'unknown' ? ctx.sex : undefined,
+          mrNumber: ctx.mrNumber || undefined,
+          dateAdmission: ctx.dateAdmission || undefined,
+          dateDischarge: ctx.dateDischarge || undefined,
+          ward: ctx.ward || undefined,
+          admittingSurgeon: ctx.admittingSurgeon || undefined,
+          diagnosis: ctx.assessment,
+          icdCodes: ctx.icdCodes.length ? ctx.icdCodes : undefined,
+          procedurePerformed: ctx.procedures || undefined,
+          conditionOnDischarge: dischargeCondition || undefined,
+          dischargeMedications: dischargeMeds.filter(m => m.drug),
+          preAdmissionMedications: [...ctx.medications, ...(ctx.medicationsText ? [ctx.medicationsText] : [])].join('; ') || undefined,
+          allergies: ctx.allergies || undefined,
+          woundCare: dischargeWound || undefined,
+          dietInstructions: [...dischargeDiet, ...(dischargeDietNotes ? [dischargeDietNotes] : [])].filter(Boolean).join('; ') || undefined,
+          activityRestrictions: [...dischargeActivity, ...(dischargeActivityNotes ? [dischargeActivityNotes] : [])].filter(Boolean).join('; ') || undefined,
+          followUpPlan: dischargeFollowup || undefined,
+          redFlags: dischargeRedFlags.length ? dischargeRedFlags : undefined,
+          additionalWarnings: dischargeWarnings || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(err.error ?? `HTTP ${res.status}`);
+      }
+      const data = await res.json() as { success: boolean; summary: string };
+      setDischargeDraft(data.summary);
+    } catch (e) {
+      setDischargeDraftError(e instanceof Error ? e.message : 'Generation failed');
+    } finally {
+      setDischargeDraftLoading(false);
+    }
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0, height: '100%' }}>
 
@@ -734,20 +848,43 @@ export default function FinalDocTab() {
         display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
         padding: '10px 0 10px', borderBottom: '1px solid #e5e7eb', marginBottom: 10,
       }}>
-        <button type="button" style={BTN_PRIMARY} onClick={() => setFinalDocument(buildDocument(ctx))}>
-          ↺ Populate
+        {/* Format selector + populate */}
+        <select
+          value={docFormat}
+          onChange={e => setDocFormat(e.target.value as 'note' | 'referral' | 'discharge')}
+          style={{
+            padding: '5px 8px', borderRadius: 7, fontSize: 12, fontWeight: 600,
+            border: '1px solid #d1d5db', background: '#f9fafb', cursor: 'pointer',
+            color: '#1a3a5c',
+          }}
+        >
+          <option value="note">Clinical Note</option>
+          <option value="referral">Referral Letter</option>
+          <option value="discharge">Discharge Summary</option>
+        </select>
+
+        <button type="button" style={BTN_PRIMARY} onClick={() => {
+          if (docFormat === 'note') {
+            setFinalDocument(buildDocument(ctx));
+          } else if (docFormat === 'referral') {
+            setShowReferral(true);
+          } else {
+            setShowDischarge(true);
+          }
+        }}>
+          ↺ Generate
+        </button>
+
+        <button type="button" style={hasFinal ? { ...BTN_PRIMARY, background: '#0b8278' } : btnDisabled({ ...BTN_PRIMARY, background: '#0b8278' })}
+          disabled={!hasFinal}
+          onClick={() => void saveBlobAsPDF(buildPrintHtml(finalDocument, ctx), `note-${patSlug}-${dateStr}.pdf`)}>
+          ↓ PDF
         </button>
 
         <button type="button" style={hasFinal ? BTN_GHOST : btnDisabled(BTN_GHOST)}
           disabled={!hasFinal}
           onClick={() => printDoc(buildPrintHtml(finalDocument, ctx))}>
           🖨 Print
-        </button>
-
-        <button type="button" style={hasFinal ? BTN_GHOST : btnDisabled(BTN_GHOST)}
-          disabled={!hasFinal}
-          onClick={() => void saveBlobAsPDF(buildPrintHtml(finalDocument, ctx), `note-${patSlug}-${dateStr}.pdf`)}>
-          ↓ PDF
         </button>
 
         <div style={{ width: 1, height: 20, background: '#e5e7eb', margin: '0 2px' }} />
@@ -824,12 +961,12 @@ export default function FinalDocTab() {
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button type="button" style={BTN_ACCENT}
-              onClick={() => printDoc(buildReferralHtml(ctx, referTo, referNotes))}>
-              🖨 Print
-            </button>
-            <button type="button" style={BTN_GHOST}
               onClick={() => void saveBlobAsPDF(buildReferralHtml(ctx, referTo, referNotes), `referral-${patSlug}-${dateStr}.pdf`)}>
               ↓ PDF
+            </button>
+            <button type="button" style={BTN_GHOST}
+              onClick={() => printDoc(buildReferralHtml(ctx, referTo, referNotes))}>
+              🖨 Print
             </button>
             <button type="button" style={{ ...BTN_GHOST, marginLeft: 'auto' }} onClick={() => setShowReferral(false)}>× Close</button>
           </div>
@@ -838,35 +975,199 @@ export default function FinalDocTab() {
 
       {/* ── Discharge panel ── */}
       {showDischarge && (
-        <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 10, padding: '12px 14px', marginBottom: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#075985', marginBottom: 2 }}>📄 Discharge / Clinic Summary</div>
-          <div className="fld">
-            <label style={{ fontSize: 12 }}>Discharge instructions</label>
-            <textarea value={dischargeNotes} onChange={e => setDischargeNotes(e.target.value)}
-              placeholder="Diet, activity restrictions, wound care, medications…" style={{ fontSize: 12, minHeight: 56 }} />
+        <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 10, padding: '14px 16px', marginBottom: 10, display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+          {/* Header */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#075985' }}>📄 Discharge / Clinic Summary</div>
+            <button type="button" style={{ ...BTN_GHOST, fontSize: 11 }} onClick={() => setShowDischarge(false)}>× Close</button>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <div className="fld">
-              <label style={{ fontSize: 12 }}>Warning signs — return if…</label>
-              <textarea value={warnings} onChange={e => setWarnings(e.target.value)}
-                placeholder="Fever >38.5°C, increasing pain, wound breakdown…" style={{ fontSize: 12, minHeight: 50 }} />
-            </div>
-            <div className="fld">
-              <label style={{ fontSize: 12 }}>Follow-up plan</label>
-              <textarea value={followUp} onChange={e => setFollowUp(e.target.value)}
-                placeholder="Review in OPD in 2 weeks…" style={{ fontSize: 12, minHeight: 50 }} />
+
+          {/* Condition on discharge */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0369a1', marginBottom: 5 }}>CONDITION ON DISCHARGE</div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {['Good', 'Satisfactory', 'Fair', 'Guarded', 'Poor'].map(c => (
+                <button key={c} type="button" onClick={() => setDischargeCondition(c)}
+                  style={{ padding: '4px 12px', borderRadius: 20, fontSize: 11.5, fontWeight: 600, cursor: 'pointer',
+                    background: dischargeCondition === c ? '#0369a1' : '#e0f2fe',
+                    color: dischargeCondition === c ? '#fff' : '#0369a1',
+                    border: `1.5px solid ${dischargeCondition === c ? '#0369a1' : '#bae6fd'}` }}>
+                  {c}
+                </button>
+              ))}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button type="button" style={BTN_ACCENT}
-              onClick={() => printDoc(buildDischargeHtml(ctx, dischargeNotes, followUp, warnings))}>
-              🖨 Print
+
+          {/* Discharge medications table */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0369a1', marginBottom: 5 }}>DISCHARGE MEDICATIONS</div>
+            {dischargeMeds.length > 0 && (
+              <div style={{ overflowX: 'auto', marginBottom: 6 }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11.5 }}>
+                  <thead>
+                    <tr style={{ background: '#e0f2fe' }}>
+                      {['Drug', 'Dose', 'Route', 'Frequency', 'Duration', ''].map(h => (
+                        <th key={h} style={{ textAlign: 'left', padding: '4px 6px', fontSize: 11, fontWeight: 700, color: '#0B2545', whiteSpace: 'nowrap' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dischargeMeds.map((m, i) => (
+                      <tr key={i} style={{ borderTop: '1px solid #e5e7eb' }}>
+                        {(['drug', 'dose', 'route', 'frequency', 'duration'] as const).map(field => (
+                          <td key={field} style={{ padding: '2px 4px' }}>
+                            <input type="text" value={m[field]}
+                              onChange={e => { const next = [...dischargeMeds]; next[i] = { ...next[i], [field]: e.target.value }; setDischargeMeds(next); }}
+                              style={{ width: '100%', fontSize: 11.5, border: 'none', borderBottom: '1px solid #d1d5db', background: 'transparent', outline: 'none', padding: '2px 0' }}
+                              placeholder={field.charAt(0).toUpperCase() + field.slice(1)} />
+                          </td>
+                        ))}
+                        <td style={{ padding: '2px 4px' }}>
+                          <button type="button" onClick={() => setDischargeMeds(dischargeMeds.filter((_, j) => j !== i))}
+                            style={{ color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer', fontSize: 15, lineHeight: 1, padding: '0 2px' }}>×</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <button type="button" style={{ ...BTN_GHOST, fontSize: 11 }}
+              onClick={() => setDischargeMeds([...dischargeMeds, { drug: '', dose: '', route: '', frequency: '', duration: '' }])}>
+              + Add medication
             </button>
-            <button type="button" style={BTN_GHOST}
-              onClick={() => void saveBlobAsPDF(buildDischargeHtml(ctx, dischargeNotes, followUp, warnings), `discharge-${patSlug}-${dateStr}.pdf`)}>
+          </div>
+
+          {/* Wound care + Diet */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#0369a1', marginBottom: 5 }}>WOUND CARE</div>
+              <textarea value={dischargeWound} onChange={e => setDischargeWound(e.target.value)}
+                placeholder="Keep wound dry for 48 hrs; change dressing every 2 days…"
+                style={{ width: '100%', fontSize: 12, minHeight: 64, borderRadius: 6, border: '1px solid #bae6fd', padding: '6px 8px', resize: 'vertical', fontFamily: 'inherit' }} />
+            </div>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#0369a1', marginBottom: 5 }}>DIET</div>
+              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 6 }}>
+                {['Regular diet', 'Soft diet', 'Low-fat', 'Low-fibre', 'High-protein', 'Liquid only', 'Diabetic diet'].map(d => (
+                  <button key={d} type="button"
+                    onClick={() => setDischargeDiet(dischargeDiet.includes(d) ? dischargeDiet.filter(x => x !== d) : [...dischargeDiet, d])}
+                    style={{ padding: '3px 9px', borderRadius: 20, fontSize: 11, cursor: 'pointer', fontWeight: 500,
+                      background: dischargeDiet.includes(d) ? '#0369a1' : '#e0f2fe',
+                      color: dischargeDiet.includes(d) ? '#fff' : '#0369a1',
+                      border: `1px solid ${dischargeDiet.includes(d) ? '#0369a1' : '#bae6fd'}` }}>{d}</button>
+                ))}
+              </div>
+              <input type="text" value={dischargeDietNotes} onChange={e => setDischargeDietNotes(e.target.value)}
+                placeholder="Additional diet notes…"
+                style={{ width: '100%', fontSize: 12, borderRadius: 6, border: '1px solid #bae6fd', padding: '6px 8px' }} />
+            </div>
+          </div>
+
+          {/* Activity restrictions */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0369a1', marginBottom: 5 }}>ACTIVITY RESTRICTIONS</div>
+            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 6 }}>
+              {['No restrictions', 'Light duties only', 'No lifting >5 kg', 'No lifting >10 kg', 'No driving (2 weeks)', 'No driving (6 weeks)', 'Gradual mobilisation', 'Bedrest'].map(a => (
+                <button key={a} type="button"
+                  onClick={() => setDischargeActivity(dischargeActivity.includes(a) ? dischargeActivity.filter(x => x !== a) : [...dischargeActivity, a])}
+                  style={{ padding: '3px 9px', borderRadius: 20, fontSize: 11, cursor: 'pointer', fontWeight: 500,
+                    background: dischargeActivity.includes(a) ? '#0369a1' : '#e0f2fe',
+                    color: dischargeActivity.includes(a) ? '#fff' : '#0369a1',
+                    border: `1px solid ${dischargeActivity.includes(a) ? '#0369a1' : '#bae6fd'}` }}>{a}</button>
+              ))}
+            </div>
+            <input type="text" value={dischargeActivityNotes} onChange={e => setDischargeActivityNotes(e.target.value)}
+              placeholder="Additional activity notes…"
+              style={{ width: '100%', fontSize: 12, borderRadius: 6, border: '1px solid #bae6fd', padding: '6px 8px' }} />
+          </div>
+
+          {/* Follow-up plan */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#0369a1', marginBottom: 5 }}>FOLLOW-UP PLAN</div>
+            <textarea value={dischargeFollowup} onChange={e => setDischargeFollowup(e.target.value)}
+              placeholder="Review in OPD in 2 weeks for wound check and histology results…"
+              style={{ width: '100%', fontSize: 12, minHeight: 52, borderRadius: 6, border: '1px solid #bae6fd', padding: '6px 8px', resize: 'vertical', fontFamily: 'inherit' }} />
+          </div>
+
+          {/* Red flags */}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#b91c1c', marginBottom: 5 }}>⚠ RED FLAGS — RETURN IMMEDIATELY IF</div>
+            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 6 }}>
+              {[
+                'Fever >38.5°C', 'Increasing or severe pain', 'Wound breakdown or discharge',
+                'Wound swelling or redness', 'Persistent nausea or vomiting', 'Inability to eat or drink',
+                'Rectal or wound bleeding', 'Chest pain', 'Shortness of breath',
+                'Inability to pass urine', 'Jaundice (yellowing of skin/eyes)', 'Dizziness or collapse',
+              ].map(f => (
+                <button key={f} type="button"
+                  onClick={() => setDischargeRedFlags(dischargeRedFlags.includes(f) ? dischargeRedFlags.filter(x => x !== f) : [...dischargeRedFlags, f])}
+                  style={{ padding: '3px 9px', borderRadius: 20, fontSize: 11, cursor: 'pointer', fontWeight: 500,
+                    background: dischargeRedFlags.includes(f) ? '#dc2626' : '#fef2f2',
+                    color: dischargeRedFlags.includes(f) ? '#fff' : '#991b1b',
+                    border: `1px solid ${dischargeRedFlags.includes(f) ? '#dc2626' : '#fca5a5'}` }}>{f}</button>
+              ))}
+            </div>
+            <input type="text" value={dischargeWarnings} onChange={e => setDischargeWarnings(e.target.value)}
+              placeholder="Additional warning signs…"
+              style={{ width: '100%', fontSize: 12, borderRadius: 6, border: '1px solid #fca5a5', padding: '6px 8px' }} />
+          </div>
+
+          {/* AI draft */}
+          <div style={{ borderTop: '1px solid #bae6fd', paddingTop: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
+              <button type="button"
+                style={dischargeDraftLoading || !ctx.assessment ? btnDisabled(BTN_WARN) : BTN_WARN}
+                disabled={dischargeDraftLoading || !ctx.assessment}
+                onClick={() => void generateDischargeDraft()}>
+                {dischargeDraftLoading ? '⏳ Drafting…' : dischargeDraft ? '✦ Re-draft' : '✦ AI Draft Summary'}
+              </button>
+              {dischargeDraft && !dischargeDraftEditing && (
+                <button type="button" style={BTN_GHOST}
+                  onClick={() => { setDischargeDraftEditText(dischargeDraft); setDischargeDraftEditing(true); }}>
+                  ✏ Edit draft
+                </button>
+              )}
+              {!ctx.assessment && (
+                <span style={{ fontSize: 11, color: '#b45309', fontStyle: 'italic' }}>Enter a diagnosis in the Assessment tab first</span>
+              )}
+            </div>
+            {dischargeDraftError && (
+              <div style={{ padding: '6px 10px', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6, fontSize: 12, color: '#b91c1c', marginBottom: 6 }}>
+                ⚠ {dischargeDraftError}
+              </div>
+            )}
+            {dischargeDraft && !dischargeDraftEditing && (
+              <div style={{ padding: '10px 14px', background: '#fff', border: '1px solid #93c5fd', borderRadius: 8, fontSize: 12, lineHeight: 1.7, whiteSpace: 'pre-wrap', color: '#1a1a1a', maxHeight: 360, overflowY: 'auto' }}>
+                {dischargeDraft}
+              </div>
+            )}
+            {dischargeDraftEditing && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <textarea value={dischargeDraftEditText} onChange={e => setDischargeDraftEditText(e.target.value)}
+                  style={{ width: '100%', minHeight: 200, fontSize: 12, lineHeight: 1.7, borderRadius: 6, border: '1px solid #93c5fd', padding: '8px 10px', resize: 'vertical', fontFamily: 'inherit' }} />
+                <div style={{ display: 'flex', gap: 6 }}>
+                  <button type="button" style={BTN_ACCENT}
+                    onClick={() => { setDischargeDraft(dischargeDraftEditText); setDischargeDraftEditing(false); }}>
+                    ✓ Save changes
+                  </button>
+                  <button type="button" style={BTN_GHOST} onClick={() => setDischargeDraftEditing(false)}>Cancel</button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: 'flex', gap: 8, paddingTop: 4, borderTop: '1px solid #bae6fd' }}>
+            <button type="button" style={BTN_ACCENT}
+              onClick={() => void saveBlobAsPDF(buildDischargeHtml(ctx, dischargePrintState), `discharge-${patSlug}-${dateStr}.pdf`)}>
               ↓ PDF
             </button>
-            <button type="button" style={{ ...BTN_GHOST, marginLeft: 'auto' }} onClick={() => setShowDischarge(false)}>× Close</button>
+            <button type="button" style={BTN_GHOST}
+              onClick={() => printDoc(buildDischargeHtml(ctx, dischargePrintState))}>
+              🖨 Print
+            </button>
           </div>
         </div>
       )}

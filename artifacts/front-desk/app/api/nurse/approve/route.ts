@@ -23,7 +23,7 @@ function buildAppointmentConfirmation(
     `Date & time: ${slot.display}`,
     `Location: ${locLabel}`,
     '',
-    'Please arrive 10 minutes early with a valid photo ID. For urgent enquiries, please call Tapion Hospital on 459-2227 / 284-0557.',
+    'Please arrive 10 minutes early with a valid photo ID. For urgent enquiries, please call Tapion Hospital on 758-284-0557 / 758-720-7111.',
     '',
     'Front Desk, Amise Medical Services',
   ].join('\n');
