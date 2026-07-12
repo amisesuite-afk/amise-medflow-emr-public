@@ -1,6 +1,7 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
+import NarrativeInput from '@/components/NarrativeInput';
 
 const ALLERGY_CHIPS = [
   'Penicillin / amoxicillin', 'Cephalosporins', 'Sulfonamides / Bactrim',
@@ -20,13 +21,26 @@ export default function AllergiesTab() {
     setAllergies(next.join(', '));
   }
 
+  function handleAllergiesParsed(data: Record<string, unknown>) {
+    const allergiesStr = data.allergies as string | undefined;
+    if (allergiesStr) setAllergies(allergiesStr);
+  }
+
   return (
     <div className="gap-y">
+      <NarrativeInput
+        section="allergies"
+        placeholder="Dictate or paste allergy history — e.g. 'Allergic to penicillin, developed anaphylaxis in 2015. Also intolerant to NSAIDs — causes GI bleeding. Contrast dye — urticaria. No other known allergies.'"
+        onParsed={handleAllergiesParsed}
+        label="Dictate allergies — AI will extract and format the allergy record"
+        minHeight={80}
+      />
+
       <CollapsibleCard title="Allergies" badge={selected.length || undefined} badgeVariant={selected.length ? 'warn' : 'default'}>
         <ChipGroup options={ALLERGY_CHIPS} selected={selected} onToggle={toggleChip} />
       </CollapsibleCard>
 
-      <CollapsibleCard title="Additional allergies / reactions" defaultOpen={false}>
+      <CollapsibleCard title="Additional allergies / reactions" defaultOpen>
         <div className="fld">
           <label>Comma-separated list of allergens and reactions</label>
           <textarea

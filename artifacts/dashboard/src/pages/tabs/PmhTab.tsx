@@ -4,6 +4,7 @@ import { useToast } from '@/components/ToastProvider';
 import { savePMHItem, removePMHItem, savePmhNotes } from '@/lib/db';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
+import NarrativeInput from '@/components/NarrativeInput';
 import NutritionalAssessmentCard from '@/components/NutritionalAssessmentCard';
 
 const COMORBIDITY_OPTIONS = [
@@ -69,8 +70,34 @@ export default function PmhTab() {
     }, 1000);
   }
 
+  function handlePmhParsed(data: Record<string, unknown>) {
+    const matched = (data.matched as string[] | undefined) ?? [];
+    const additional = (data.additional as string[] | undefined) ?? [];
+    const notes = data.notes as string | undefined;
+
+    matched.forEach(cond => {
+      if (!comorbidities.includes(cond)) void handleToggleComorbidity(cond);
+    });
+
+    const extraText = additional.length > 0 ? `\nAdditional: ${additional.join(', ')}` : '';
+    if (notes) {
+      setPmhNotes(notes + extraText);
+    } else if (additional.length > 0) {
+      setPmhNotes(pmhNotes ? `${pmhNotes}\n${extraText.trim()}` : extraText.trim());
+    }
+  }
+
   return (
     <div className="gap-y">
+      <NarrativeInput
+        section="pmh"
+        chipOptions={COMORBIDITY_OPTIONS}
+        placeholder="Dictate or paste past medical history as spoken or written — e.g. 'Hypertension for 10 years on Ramipril, Type 2 diabetes diagnosed 2010 with HbA1c 8.1%, previous inguinal hernia repair 2018, no known cardiac history…'"
+        onParsed={handlePmhParsed}
+        label="Dictate PMH — AI will select conditions and populate notes"
+        minHeight={110}
+      />
+
       <CollapsibleCard title="Past medical history" badge={comorbidities.length || undefined}>
         <ChipGroup
           options={COMORBIDITY_OPTIONS}
@@ -89,7 +116,7 @@ export default function PmhTab() {
         )}
       </CollapsibleCard>
 
-      <CollapsibleCard title="PMH notes / additional history" defaultOpen={false}>
+      <CollapsibleCard title="PMH notes / additional history" defaultOpen>
         <div className="fld">
           <label>Free-text PMH</label>
           <textarea

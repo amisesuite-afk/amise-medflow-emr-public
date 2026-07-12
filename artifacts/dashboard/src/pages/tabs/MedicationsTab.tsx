@@ -1,6 +1,7 @@
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
+import NarrativeInput from '@/components/NarrativeInput';
 import DrugInteractionAlert from '@/components/DrugInteractionAlert';
 import MedicationReconciliationCard from '@/components/MedicationReconciliationCard';
 
@@ -25,14 +26,32 @@ const MEDICATION_OPTIONS = [
 export default function MedicationsTab() {
   const { medications, toggleMedication, medicationsText, setMedicationsText } = useAppContext();
 
+  function handleMedsParsed(data: Record<string, unknown>) {
+    const matched = (data.matched as string[] | undefined) ?? [];
+    const medText = data.medicationsText as string | undefined;
+    matched.forEach(med => {
+      if (!medications.includes(med)) toggleMedication(med);
+    });
+    if (medText) setMedicationsText(medText);
+  }
+
   return (
     <div className="gap-y">
+      <NarrativeInput
+        section="medications"
+        chipOptions={MEDICATION_OPTIONS}
+        placeholder="Dictate or paste the full medication list as given or previously documented — e.g. 'Ramipril 10mg once daily, Metformin 850mg twice daily, Aspirin 75mg once daily, Atorvastatin 40mg at night, Levothyroxine 50 micrograms once daily…'"
+        onParsed={handleMedsParsed}
+        label="Dictate medications — AI will select categories and populate the list"
+        minHeight={100}
+      />
+
       <DrugInteractionAlert medications={medications} medicationsText={medicationsText} />
       <CollapsibleCard title="Current medications" badge={medications.length || undefined}>
         <ChipGroup options={MEDICATION_OPTIONS} selected={medications} onToggle={toggleMedication} />
       </CollapsibleCard>
 
-      <CollapsibleCard title="Full medication list (free text)" defaultOpen={false}>
+      <CollapsibleCard title="Full medication list (free text)" defaultOpen>
         <div className="fld">
           <label>Enter additional medications, doses, or frequencies</label>
           <textarea

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import NarrativeInput from '@/components/NarrativeInput';
 import SmartTextarea from '@/components/SmartTextarea';
 import AnatomicalSketch from '@/components/AnatomicalSketch';
 import ExamPhotoPanel from '@/components/ExamPhotoPanel';
@@ -296,8 +297,39 @@ export default function ExaminationTab() {
     }
   }
 
+  function handleExamParsed(data: Record<string, unknown>) {
+    const keyMap: Array<{ aiKey: string; systemKey: string }> = [
+      { aiKey: 'general',     systemKey: 'general'        },
+      { aiKey: 'cardio',      systemKey: 'cardiovascular' },
+      { aiKey: 'resp',        systemKey: 'respiratory'    },
+      { aiKey: 'abdomen',     systemKey: 'abdomen'        },
+      { aiKey: 'neuro',       systemKey: 'neurological'   },
+      { aiKey: 'extremities', systemKey: 'extremities'    },
+      { aiKey: 'breast',      systemKey: 'breast'         },
+      { aiKey: 'wound',       systemKey: 'wound'          },
+    ];
+    const updatedNotes = { ...examNotes };
+    keyMap.forEach(({ aiKey, systemKey }) => {
+      const value = data[aiKey] as string | null | undefined;
+      if (value?.trim()) {
+        updatedNotes[systemKey] = value.trim();
+        const setter = legacySetterMap[systemKey];
+        if (setter) setter(value.trim());
+      }
+    });
+    setExamNotes(updatedNotes);
+  }
+
   return (
     <div className="gap-y">
+      <NarrativeInput
+        section="examination"
+        placeholder="Dictate or paste the full clinical examination as you would document it — e.g. 'On general inspection patient appears comfortable at rest, no pallor or jaundice. Cardiovascular — heart sounds one and two present, no murmurs, JVP not elevated. Respiratory — clear to auscultation bilaterally. Abdomen — soft, mild tenderness in right iliac fossa, Rovsing's sign positive, guarding present, bowel sounds audible. Neurological — GCS 15, moving all limbs…'"
+        onParsed={handleExamParsed}
+        label="Dictate full examination — AI will populate per-system fields below"
+        minHeight={130}
+      />
+
       <ExamGuidePanel />
 
       {/* ── Examination report panel ── */}
