@@ -1037,19 +1037,6 @@ export default function IntakeTab() {
         </CollapsibleCard>
       )}
 
-      {/* Save patient to local registry */}
-      {patientName.trim() && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: 8 }}>
-          <button
-            className="summary-btn summary-btn--primary"
-            onClick={savePatient}
-            disabled={saving}
-            style={{ height: 36, minWidth: 160 }}
-          >
-            {saving ? 'Saving…' : '💾 Save patient'}
-          </button>
-        </div>
-      )}
     </div>
   );
 }
