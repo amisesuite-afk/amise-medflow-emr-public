@@ -603,6 +603,69 @@ export default function IntakeTab() {
             </>
           )}
         </div>
+
+        {/* ── INPATIENT ADMISSION — inline, only when admission mode is on ── */}
+        {encounterMode === 'inpatient' && (
+          <div style={{
+            marginTop: 14, padding: '12px 14px', borderRadius: 9,
+            background: 'rgba(245,158,11,0.05)',
+            border: '1.5px solid rgba(245,158,11,0.35)',
+          }}>
+            <div style={{
+              fontSize: 10, fontWeight: 800, color: '#b45309',
+              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10,
+            }}>
+              🏥 Inpatient admission details
+            </div>
+            <div className="form-grid">
+              <div className="fld">
+                <label>MR Number</label>
+                <input value={mrNumber} onChange={e => setMrNumber(e.target.value)} placeholder="MR-2024-001" />
+              </div>
+              <div className="fld">
+                <label>Blood Group</label>
+                <select value={bloodGroup} onChange={e => setBloodGroup(e.target.value)}>
+                  <option value="">— select —</option>
+                  {['A+','A−','B+','B−','AB+','AB−','O+','O−'].map(g => <option key={g}>{g}</option>)}
+                </select>
+              </div>
+              <div className="fld">
+                <label>Ward / Unit</label>
+                <input value={ward} onChange={e => setWard(e.target.value)} placeholder="Surgical Ward B" />
+              </div>
+              <div className="fld">
+                <label>Date of Admission</label>
+                <input type="date" value={dateAdmission} onChange={e => setDateAdmission(e.target.value)} />
+              </div>
+              <div className="fld">
+                <label>Date of Discharge</label>
+                <input type="date" value={dateDischarge} onChange={e => setDateDischarge(e.target.value)} />
+              </div>
+              <div className="fld">
+                <label>Admitting Surgeon</label>
+                <input value={admittingSurgeon} onChange={e => setAdmittingSurgeon(e.target.value)} placeholder="Dr Dawit Daniel Kabiye, MD, DM" />
+              </div>
+              <div className="fld">
+                <label>Referring Physician</label>
+                <input value={referringPhysician} onChange={e => setReferringPhysician(e.target.value)} placeholder="Name / facility" />
+              </div>
+            </div>
+            <div className="form-grid" style={{ marginTop: 8 }}>
+              <div className="fld">
+                <label>Next of Kin</label>
+                <input value={nokName} onChange={e => setNokName(e.target.value)} placeholder="Full name" />
+              </div>
+              <div className="fld">
+                <label>Relationship</label>
+                <input value={nokRelation} onChange={e => setNokRelation(e.target.value)} placeholder="Spouse / Child / Sibling" />
+              </div>
+              <div className="fld">
+                <label>NOK Contact</label>
+                <input value={nokTel} onChange={e => setNokTel(e.target.value)} placeholder="+1 758 …" />
+              </div>
+            </div>
+          </div>
+        )}
       </CollapsibleCard>
 
       {/* ── 1b. REFERRAL / REPORT AI SCAN ──────────────────────────────────── */}
@@ -983,59 +1046,6 @@ export default function IntakeTab() {
           );
         })()}
       </CollapsibleCard>
-
-      {/* ── 5. INPATIENT ADMISSION DETAILS ──────────────────────────────────── */}
-      {encounterMode === 'inpatient' && (
-        <CollapsibleCard title="Inpatient Admission Details" badge="Inpatient" badgeVariant="warn">
-          <div className="form-grid">
-            <div className="fld">
-              <label>MR Number</label>
-              <input value={mrNumber} onChange={e => setMrNumber(e.target.value)} placeholder="MR-2024-001" />
-            </div>
-            <div className="fld">
-              <label>Blood Group</label>
-              <select value={bloodGroup} onChange={e => setBloodGroup(e.target.value)}>
-                <option value="">— select —</option>
-                {['A+','A−','B+','B−','AB+','AB−','O+','O−'].map(g => <option key={g}>{g}</option>)}
-              </select>
-            </div>
-            <div className="fld">
-              <label>Ward / Unit</label>
-              <input value={ward} onChange={e => setWard(e.target.value)} placeholder="Surgical Ward B" />
-            </div>
-            <div className="fld">
-              <label>Date of Admission</label>
-              <input type="date" value={dateAdmission} onChange={e => setDateAdmission(e.target.value)} />
-            </div>
-            <div className="fld">
-              <label>Date of Discharge</label>
-              <input type="date" value={dateDischarge} onChange={e => setDateDischarge(e.target.value)} />
-            </div>
-            <div className="fld">
-              <label>Admitting Surgeon</label>
-              <input value={admittingSurgeon} onChange={e => setAdmittingSurgeon(e.target.value)} placeholder="Dr Dawit Daniel Kabiye" />
-            </div>
-            <div className="fld">
-              <label>Referring Physician</label>
-              <input value={referringPhysician} onChange={e => setReferringPhysician(e.target.value)} placeholder="Name / facility" />
-            </div>
-          </div>
-          <div className="form-grid" style={{ marginTop: 8 }}>
-            <div className="fld">
-              <label>Next of Kin</label>
-              <input value={nokName} onChange={e => setNokName(e.target.value)} placeholder="Full name" />
-            </div>
-            <div className="fld">
-              <label>Relationship</label>
-              <input value={nokRelation} onChange={e => setNokRelation(e.target.value)} placeholder="Spouse / Child / Sibling" />
-            </div>
-            <div className="fld">
-              <label>NOK Contact</label>
-              <input value={nokTel} onChange={e => setNokTel(e.target.value)} placeholder="+1 758 …" />
-            </div>
-          </div>
-        </CollapsibleCard>
-      )}
 
     </div>
   );
