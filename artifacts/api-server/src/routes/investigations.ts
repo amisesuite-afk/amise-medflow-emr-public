@@ -549,4 +549,124 @@ router.post('/api/investigations/send-lab-request', async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// POST /api/investigations/scan-referral
+// Accept a base64 image/PDF or plain text referral letter and extract
+// structured clinical data using Claude vision.
+// ---------------------------------------------------------------------------
+const REFERRAL_SCAN_SYSTEM = `You are a surgical registrar extracting information from a referral letter or clinical document for AMISE MedFlow EMR (Amise Medical Services, Saint Lucia). Extract ALL clinical information for EMR auto-population.
+
+Return ONLY valid JSON (no markdown fences, no explanation):
+
+{
+  "visitType": string | null,
+  "chiefComplaint": string | null,
+  "hpi": string | null,
+  "medications": string | null,
+  "surgicalHistory": string | null,
+  "pmh": string | null,
+  "referredBy": string | null,
+  "referralDate": string | null,
+  "referralDx": string | null,
+  "referralSummary": string | null,
+  "labs": string[],
+  "imaging": string[],
+  "patientName": string | null,
+  "age": string | null,
+  "sex": string | null
+}
+
+visitType must be one of: "new_consult", "follow_up", "post_op", "ercp", "endoscopy_ogd", "endoscopy_col", "breast", "urgent", "telephone", "diabetic_foot", or null.
+- OGD / gastroscopy / upper GI endoscopy → "endoscopy_ogd"
+- Colonoscopy / lower GI endoscopy → "endoscopy_col"
+- ERCP → "ercp"
+- Breast lump / breast clinic → "breast"
+- Post-operative review → "post_op"
+- Follow-up visit → "follow_up"
+- Urgent referral → "urgent"
+- First specialist consultation → "new_consult"
+
+chiefComplaint: 1-2 sentence summary of the main presenting problem.
+hpi: Full history of presenting illness (preserve all clinical detail).
+medications: All medications with doses and frequencies, one per line.
+surgicalHistory: Previous surgeries, one per line.
+pmh: Past medical conditions and comorbidities, one per line.
+referredBy: Full name of the referring clinician only (not their specialty or institution).
+referralDate: Date of referral letter in YYYY-MM-DD format.
+referralDx: Stated or suspected diagnosis in the referral.
+referralSummary: Complete clinical narrative from the referring doctor verbatim.
+labs: Investigation tests requested or mentioned (e.g. ["FBC", "U&E", "LFTs", "HbA1c"]).
+imaging: Imaging studies mentioned or requested (e.g. ["Ultrasound abdomen", "CT abdomen/pelvis"]).
+patientName: Full patient name if stated.
+age: Patient age as a number string only (e.g. "45").
+sex: Patient sex if stated — one of "male", "female", "other", "unknown".`;
+
+router.post('/api/investigations/scan-referral', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { content, contentType, mimeType } = (req.body ?? {}) as {
+    content?: string;
+    contentType?: 'text' | 'image_base64';
+    mimeType?: string;
+  };
+
+  if (!content || !contentType) {
+    res.status(400).json({ error: 'content and contentType are required' });
+    return;
+  }
+
+  if (contentType === 'image_base64') {
+    const mime = mimeType ?? 'image/jpeg';
+    if (!SUPPORTED_MIME_TYPES.has(mime)) {
+      res.status(400).json({ error: `Unsupported MIME type: ${mime}` });
+      return;
+    }
+  }
+
+  try {
+    type MsgParam = Anthropic.MessageParam;
+    const messages: MsgParam[] = contentType === 'image_base64'
+      ? [{
+          role: 'user',
+          content: [
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: (mimeType ?? 'image/jpeg') as Anthropic.Base64ImageSource['media_type'],
+                data: content,
+              },
+            },
+            { type: 'text', text: 'Extract all clinical information from this referral letter or clinical document.' },
+          ],
+        }]
+      : [{
+          role: 'user',
+          content: `Extract all clinical information from this referral letter:\n\n${content}`,
+        }];
+
+    const response = await client.messages.create({
+      model: MODEL,
+      max_tokens: 2048,
+      system: REFERRAL_SCAN_SYSTEM,
+      messages,
+    });
+
+    const rawText = response.content[0].type === 'text' ? response.content[0].text.trim() : '';
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      logger.warn({ rawText }, '[scan-referral] no JSON in response');
+      res.status(502).json({ error: 'No structured data in AI response' });
+      return;
+    }
+
+    const extracted = JSON.parse(jsonMatch[0]) as Record<string, unknown>;
+    logger.info({ extracted }, '[scan-referral] extracted');
+    res.json({ extracted });
+  } catch (err) {
+    logger.error({ err }, '[scan-referral] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 export default router;

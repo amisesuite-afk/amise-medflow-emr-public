@@ -26,6 +26,24 @@ const VISIT_TYPES = [
   { id: 'urgent',           label: 'Urgent Referral' },
 ] as const;
 
+interface ReferralScanResult {
+  visitType?: string | null;
+  chiefComplaint?: string | null;
+  hpi?: string | null;
+  medications?: string | null;
+  surgicalHistory?: string | null;
+  pmh?: string | null;
+  referredBy?: string | null;
+  referralDate?: string | null;
+  referralDx?: string | null;
+  referralSummary?: string | null;
+  labs?: string[];
+  imaging?: string[];
+  patientName?: string | null;
+  age?: string | null;
+  sex?: string | null;
+}
+
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
@@ -98,6 +116,11 @@ export default function IntakeTab() {
     policyNumber, setPolicyNumber,
     procedureData, setProcedureData,
     hpiNotes, setHpiNotes,
+    setVisitType,
+    setMedicationsText,
+    setSurgicalNotes,
+    setPmhNotes,
+    orderedInvestigations, setOrderedInvestigations,
     setTopSection,
   } = useAppContext();
 
@@ -204,7 +227,80 @@ export default function IntakeTab() {
     if (referredBy && !referralQuery.trim()) setReferralQuery(referredBy);
   }, [referredBy]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const visitType = (procedureData['visitType'] as string | undefined) ?? '';
+  // ── Referral document AI scan ─────────────────────────────────────────────
+  const [scanMode, setScanMode] = useState<'paste' | 'file'>('paste');
+  const [scanText, setScanText] = useState('');
+  const [scanFile, setScanFile] = useState<File | null>(null);
+  const [scanFileB64, setScanFileB64] = useState('');
+  const [scanning, setScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<ReferralScanResult | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleScanFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setScanFile(file);
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const result = ev.target?.result as string;
+      setScanFileB64(result.split(',')[1] ?? '');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function runReferralScan() {
+    if (scanning) return;
+    const hasContent = scanMode === 'paste' ? scanText.trim().length > 0 : !!scanFile;
+    if (!hasContent) { showToast('Attach a file or paste text first', 'error'); return; }
+    setScanning(true);
+    setScanResult(null);
+    try {
+      const body = scanMode === 'paste'
+        ? { content: scanText.trim(), contentType: 'text' }
+        : { content: scanFileB64, contentType: 'image_base64', mimeType: scanFile!.type };
+      const r = await fetch(apiUrl('/api/investigations/scan-referral'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify(body),
+      });
+      if (!r.ok) throw new Error(await r.text());
+      const { extracted } = await r.json() as { extracted: ReferralScanResult };
+      setScanResult(extracted);
+    } catch {
+      showToast('Scan failed — check the document and try again', 'error');
+    } finally {
+      setScanning(false);
+    }
+  }
+
+  function applyExtracted() {
+    if (!scanResult) return;
+    if (scanResult.visitType) setVisitType(scanResult.visitType);
+    if (scanResult.chiefComplaint) setFreeText(scanResult.chiefComplaint);
+    if (scanResult.hpi) setHpiNotes(scanResult.hpi);
+    if (scanResult.medications) setMedicationsText(scanResult.medications);
+    if (scanResult.surgicalHistory) setSurgicalNotes(scanResult.surgicalHistory);
+    if (scanResult.pmh) setPmhNotes(scanResult.pmh);
+    if (scanResult.referredBy) { setReferredBy(scanResult.referredBy); setReferralQuery(scanResult.referredBy); }
+    if (scanResult.labs?.length) setOrderedInvestigations([...new Set([...orderedInvestigations, ...scanResult.labs])]);
+    setProcedureData({
+      ...procedureData,
+      referral: {
+        date: scanResult.referralDate ?? referralData.date,
+        dx: scanResult.referralDx ?? referralData.dx,
+        summary: scanResult.referralSummary ?? referralData.summary,
+      },
+    });
+    if (scanResult.patientName && !patientName.trim()) setPatientName(scanResult.patientName);
+    if (scanResult.age && !age.trim()) setAge(scanResult.age);
+    if (scanResult.sex && sex === 'unknown') setSex(scanResult.sex as Sex);
+    showToast('Referral data applied to EMR', 'success');
+    setScanResult(null);
+    setScanText('');
+    setScanFile(null);
+    setScanFileB64('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
 
   function savePatient() {
     if (!patientName.trim()) return;
@@ -509,38 +605,181 @@ export default function IntakeTab() {
         </div>
       </CollapsibleCard>
 
-      {/* ── 1b. VISIT CLASSIFICATION — staff fills before consultation ────── */}
-      <CollapsibleCard title="Visit" defaultOpen>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      {/* ── 1b. REFERRAL / REPORT AI SCAN ──────────────────────────────────── */}
+      <CollapsibleCard title="Referral letter / reports" defaultOpen>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*,application/pdf"
+          onChange={handleScanFileChange}
+          style={{ display: 'none' }}
+        />
 
-          {/* Visit type */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <label style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>Visit type</label>
-            <select
-              value={visitType}
-              onChange={e => setProcedureData({ ...procedureData, visitType: e.target.value })}
-              style={{ flex: 1, padding: '7px 10px', borderRadius: 8, border: '1.5px solid #0d9488', fontSize: 13, fontWeight: 600, background: '#f0fdfa', color: '#0f766e', cursor: 'pointer' }}
+        {/* Mode toggle */}
+        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          {(['paste', 'file'] as const).map(m => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setScanMode(m)}
+              style={{
+                padding: '5px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600,
+                cursor: 'pointer',
+                background: scanMode === m ? '#0d9488' : '#f3f4f6',
+                color: scanMode === m ? '#fff' : '#374151',
+                border: scanMode === m ? '1.5px solid #0d9488' : '1.5px solid #e5e7eb',
+              }}
             >
-              <option value="">— Select visit type —</option>
-              {VISIT_TYPES.map(vt => (
-                <option key={vt.id} value={vt.id}>{vt.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Scan document shortcut */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 8, borderTop: '1px solid #f1f5f9' }}>
-            <span style={{ fontSize: 12, color: '#6b7280' }}>
-              {hpiNotes.includes('[Referral')
-                ? '📄 Referral letter imported to HPI'
-                : 'Referral letter or previous reports available?'}
-            </span>
-            <button type="button" onClick={() => setTopSection('doc_scan')}
-              style={{ padding: '5px 14px', borderRadius: 7, border: '1.5px solid #0d9488', background: '#f0fdfa', color: '#0d9488', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
-              📄 Scan Document
+              {m === 'paste' ? '📋 Paste text' : '📎 Attach image / PDF'}
             </button>
-          </div>
+          ))}
         </div>
+
+        {/* Input area */}
+        {scanMode === 'paste' ? (
+          <textarea
+            value={scanText}
+            onChange={e => setScanText(e.target.value)}
+            placeholder="Paste the referral letter or clinical summary here — AI will extract CC, visit type, HPI, medications, surgical history, PMH, and investigation requests automatically…"
+            style={{
+              width: '100%', minHeight: 100, boxSizing: 'border-box',
+              padding: '8px 10px', fontSize: 12, borderRadius: 7,
+              border: '1.5px solid #e5e7eb', resize: 'vertical', fontFamily: 'inherit',
+            }}
+          />
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                padding: '6px 16px', borderRadius: 7, border: '1.5px solid #d1d5db',
+                background: '#f9fafb', color: '#374151', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              }}
+            >
+              Browse…
+            </button>
+            <span style={{ fontSize: 12, color: scanFile ? '#0f766e' : '#9ca3af' }}>
+              {scanFile ? `✓ ${scanFile.name}` : 'No file chosen — image or PDF of referral letter'}
+            </span>
+          </div>
+        )}
+
+        {/* Parse button */}
+        {((scanMode === 'paste' && scanText.trim()) || (scanMode === 'file' && scanFile)) && (
+          <button
+            type="button"
+            onClick={() => void runReferralScan()}
+            disabled={scanning}
+            style={{
+              marginTop: 10, padding: '7px 18px', borderRadius: 8, border: 'none',
+              background: scanning ? '#9ca3af' : '#0d9488',
+              color: '#fff', fontSize: 13, fontWeight: 700,
+              cursor: scanning ? 'wait' : 'pointer',
+            }}
+          >
+            {scanning ? '⏳ Reading document…' : '🤖 AI Parse & Auto-fill →'}
+          </button>
+        )}
+
+        {/* Extracted data preview */}
+        {scanResult && (
+          <div style={{
+            marginTop: 14, padding: '12px 14px', borderRadius: 8,
+            background: '#f0fdfa', border: '1.5px solid #0d9488',
+          }}>
+            <div style={{
+              fontSize: 11, fontWeight: 700, color: '#0f766e',
+              textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10,
+            }}>
+              ✓ Extracted — review before applying
+            </div>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px 14px', marginBottom: 10 }}>
+              {scanResult.visitType && (
+                <span style={{ fontSize: 11 }}>
+                  <strong>Visit type: </strong>
+                  <span style={{ background: '#0d9488', color: '#fff', padding: '1px 8px', borderRadius: 10, fontSize: 11 }}>
+                    {VISIT_TYPES.find(vt => vt.id === scanResult.visitType)?.label ?? scanResult.visitType}
+                  </span>
+                </span>
+              )}
+              {scanResult.referredBy && <span style={{ fontSize: 11 }}><strong>From:</strong> {scanResult.referredBy}</span>}
+              {scanResult.referralDate && <span style={{ fontSize: 11 }}><strong>Date:</strong> {scanResult.referralDate}</span>}
+              {scanResult.referralDx && <span style={{ fontSize: 11 }}><strong>Dx:</strong> {scanResult.referralDx}</span>}
+              {scanResult.patientName && <span style={{ fontSize: 11 }}><strong>Patient:</strong> {scanResult.patientName}{scanResult.age ? `, ${scanResult.age}y` : ''}{scanResult.sex && scanResult.sex !== 'unknown' ? ` ${scanResult.sex}` : ''}</span>}
+            </div>
+
+            {scanResult.chiefComplaint && (
+              <div style={{ marginBottom: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 600 }}>CC: </span>
+                <span style={{ fontSize: 12 }}>{scanResult.chiefComplaint}</span>
+              </div>
+            )}
+            {scanResult.hpi && (
+              <div style={{ marginBottom: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 600 }}>HPI: </span>
+                <span style={{ fontSize: 12, color: '#4b5563' }}>
+                  {scanResult.hpi.length > 240 ? `${scanResult.hpi.slice(0, 240)}…` : scanResult.hpi}
+                </span>
+              </div>
+            )}
+            {scanResult.medications && (
+              <div style={{ marginBottom: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 600 }}>Meds: </span>
+                <span style={{ fontSize: 12, color: '#4b5563' }}>{scanResult.medications}</span>
+              </div>
+            )}
+            {scanResult.pmh && (
+              <div style={{ marginBottom: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 600 }}>PMH: </span>
+                <span style={{ fontSize: 12, color: '#4b5563' }}>{scanResult.pmh}</span>
+              </div>
+            )}
+            {scanResult.surgicalHistory && (
+              <div style={{ marginBottom: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 600 }}>Surgical Hx: </span>
+                <span style={{ fontSize: 12, color: '#4b5563' }}>{scanResult.surgicalHistory}</span>
+              </div>
+            )}
+            {!!scanResult.labs?.length && (
+              <div style={{ marginBottom: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 600 }}>Labs: </span>
+                <span style={{ fontSize: 12, color: '#4b5563' }}>{scanResult.labs.join(', ')}</span>
+              </div>
+            )}
+            {!!scanResult.imaging?.length && (
+              <div style={{ marginBottom: 10 }}>
+                <span style={{ fontSize: 11, fontWeight: 600 }}>Imaging: </span>
+                <span style={{ fontSize: 12, color: '#4b5563' }}>{scanResult.imaging.join(', ')}</span>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+              <button
+                type="button"
+                onClick={applyExtracted}
+                style={{
+                  padding: '6px 18px', borderRadius: 7, border: 'none',
+                  background: '#0d9488', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer',
+                }}
+              >
+                ✓ Apply to EMR
+              </button>
+              <button
+                type="button"
+                onClick={() => setScanResult(null)}
+                style={{
+                  padding: '6px 14px', borderRadius: 7,
+                  border: '1px solid #d1d5db', background: 'transparent',
+                  color: '#6b7280', fontSize: 12, cursor: 'pointer',
+                }}
+              >
+                ✕ Dismiss
+              </button>
+            </div>
+          </div>
+        )}
       </CollapsibleCard>
 
       {/* ── 2. CHIEF COMPLAINT / REASON FOR VISIT ───────────────────────────── */}
