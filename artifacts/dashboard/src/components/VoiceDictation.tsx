@@ -13,16 +13,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import { getAIProviderConfig, segmentSoapWithOllama, type SegmentedSoap } from '@/lib/ai-provider';
+import { localSegmentSoap } from '@/lib/local-soap-segmenter';
+import { getApiOrigin } from '@/lib/api-origin';
 
-interface SegmentedSoap {
-  hpi?: string;
-  examination?: Record<string, string>;
-  assessment?: string;
-  plan?: string;
-  pmh?: string[];
-  allergies?: string;
-  unsegmented?: string;
-}
+type SegmentSource = 'local' | 'ollama' | 'cloud';
 
 const SUPPORTED = typeof window !== 'undefined' &&
   !!(window.SpeechRecognition ?? window.webkitSpeechRecognition);
@@ -41,6 +36,7 @@ export default function VoiceDictation({ visitType, onClose }: Props) {
   const [soap, setSoap] = useState<SegmentedSoap | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [segmentSource, setSegmentSource] = useState<SegmentSource | null>(null);
   const recogRef = useRef<SpeechRecognition | null>(null);
 
   const stopRecording = useCallback(() => {
@@ -95,9 +91,33 @@ export default function VoiceDictation({ visitType, onClose }: Props) {
     if (!text) return;
     setSegmenting(true);
     setError(null);
+    setSegmentSource(null);
+
     try {
+      // Tier 1: local rules — zero tokens, instant
+      const local = localSegmentSoap(text);
+      if (local.confidence >= 0.7) {
+        setSoap(local.segmented);
+        setSegmentSource('local');
+        return;
+      }
+
+      // Tier 2: Ollama — LAN, zero tokens
+      const aiConfig = getAIProviderConfig();
+      if (aiConfig.type === 'ollama') {
+        try {
+          const result = await segmentSoapWithOllama(text, visitType, aiConfig);
+          setSoap(result);
+          setSegmentSource('ollama');
+          return;
+        } catch { /* fall through */ }
+      }
+
+      // Tier 3: cloud
+      const apiOrigin = getApiOrigin();
+      const url = apiOrigin ? `${apiOrigin}/api/voice/segment` : '/api/voice/segment';
       const headers = await staffAuthHeaders();
-      const r = await fetch('/api/voice/segment', {
+      const r = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify({ transcript: text, visitType }),
@@ -105,6 +125,7 @@ export default function VoiceDictation({ visitType, onClose }: Props) {
       const data = await r.json() as { success?: boolean; segmented?: SegmentedSoap; error?: string };
       if (!r.ok || !data.segmented) throw new Error(data.error ?? 'Segmentation failed');
       setSoap(data.segmented);
+      setSegmentSource('cloud');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to segment transcript');
     } finally {
@@ -221,6 +242,18 @@ export default function VoiceDictation({ visitType, onClose }: Props) {
       {/* Segmented SOAP preview */}
       {soap && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {segmentSource && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <span style={{
+                fontSize: 9, fontWeight: 800, padding: '2px 7px', borderRadius: 9,
+                background: segmentSource === 'local' ? 'rgba(245,158,11,.2)' : segmentSource === 'ollama' ? 'rgba(16,185,129,.2)' : 'rgba(59,130,246,.15)',
+                color: segmentSource === 'local' ? '#d97706' : segmentSource === 'ollama' ? '#059669' : '#60a5fa',
+                letterSpacing: '0.07em', textTransform: 'uppercase',
+              }}>
+                {segmentSource === 'local' ? '⚡ Local' : segmentSource === 'ollama' ? '🟢 Ollama' : '🤖 Cloud'}
+              </span>
+            </div>
+          )}
           {([
             ['HPI', soap.hpi],
             ['Assessment', soap.assessment],
@@ -312,7 +345,7 @@ export default function VoiceDictation({ visitType, onClose }: Props) {
         {transcript && (
           <button
             type="button"
-            onClick={() => { setTranscript(''); setSoap(null); setLoaded(false); setError(null); }}
+            onClick={() => { setTranscript(''); setSoap(null); setLoaded(false); setError(null); setSegmentSource(null); }}
             style={{
               padding: '8px 12px', borderRadius: 8, border: '1px solid #1e3a5f',
               background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer',

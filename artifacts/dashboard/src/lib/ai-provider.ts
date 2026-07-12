@@ -87,6 +87,85 @@ export async function parseWithOllama(
   return JSON.parse(data.response) as Record<string, unknown>;
 }
 
+// ── SOAP segmentation via Ollama ──────────────────────────────────────────────
+
+export interface SegmentedSoap {
+  hpi?: string;
+  examination?: Record<string, string>;
+  assessment?: string;
+  plan?: string;
+  pmh?: string[];
+  allergies?: string;
+  unsegmented?: string;
+}
+
+const SOAP_SEGMENT_SYSTEM = `You are a surgical clinical documentation assistant for Dr Dawit Daniel Kabiye (specialist general and endoscopic surgeon, Saint Lucia). Segment the voice dictation into structured SOAP components. Use British medical English. Be concise. Do not invent content.`;
+
+export async function segmentSoapWithOllama(
+  transcript: string,
+  visitType: string | undefined,
+  config: AIProviderConfig,
+): Promise<SegmentedSoap> {
+  const ctx = visitType ? `Visit type: ${visitType}.\n\n` : '';
+  const prompt = `${ctx}Raw voice transcript:\n\n${transcript.trim()}\n\nSegment into SOAP. Return ONLY valid JSON with keys: hpi, examination (object with keys: general, cardiovascular, respiratory, abdomen, wound, breast, neurological, extremities), assessment, plan, pmh (array of strings), allergies, unsegmented. Use empty string or empty array for sections not mentioned.`;
+
+  const r = await fetch(`${config.ollamaUrl}/api/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: config.ollamaModel,
+      system: SOAP_SEGMENT_SYSTEM,
+      prompt,
+      format: 'json',
+      stream: false,
+      options: { temperature: 0.1, num_predict: 1200 },
+    }),
+    signal: AbortSignal.timeout(35_000),
+  });
+
+  if (!r.ok) throw new Error(`Ollama ${r.status}`);
+  const d = await r.json() as { response: string };
+  const match = d.response.trim().match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('No JSON in Ollama SOAP response');
+  return JSON.parse(match[0]) as SegmentedSoap;
+}
+
+// ── SOAP polish via Ollama ────────────────────────────────────────────────────
+
+export interface SoapPolishInput {
+  subjective: string;
+  objective: string;
+  assessment: string;
+  plan: string;
+}
+
+export async function polishSoapWithOllama(
+  data: SoapPolishInput,
+  config: AIProviderConfig,
+): Promise<SoapPolishInput> {
+  const prompt = `Polish the following SOAP note data into concise, professional British medical English prose. Do not invent findings. Return ONLY valid JSON with keys: subjective, objective, assessment, plan.\n\nS: ${data.subjective}\nO: ${data.objective}\nA: ${data.assessment}\nP: ${data.plan}`;
+
+  const r = await fetch(`${config.ollamaUrl}/api/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: config.ollamaModel,
+      system: 'You are a surgical clinical documentation assistant. Polish SOAP notes into professional British medical prose.',
+      prompt,
+      format: 'json',
+      stream: false,
+      options: { temperature: 0.2, num_predict: 1024 },
+    }),
+    signal: AbortSignal.timeout(30_000),
+  });
+
+  if (!r.ok) throw new Error(`Ollama ${r.status}`);
+  const d = await r.json() as { response: string };
+  const match = d.response.trim().match(/\{[\s\S]*\}/);
+  if (!match) throw new Error('No JSON in Ollama polish response');
+  return JSON.parse(match[0]) as SoapPolishInput;
+}
+
 // ── Connectivity check ────────────────────────────────────────────────────────
 
 export async function testOllamaConnection(url: string): Promise<{ ok: boolean; models?: string[]; error?: string }> {

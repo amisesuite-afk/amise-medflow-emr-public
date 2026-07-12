@@ -5,7 +5,7 @@ import { logger as log } from '../lib/logger.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
-const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
+const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
 
 const SOAP_SYSTEM_PROMPT = `You are a surgical clinical documentation assistant for Dr Dawit Daniel Kabiye (specialist general and endoscopic surgeon, Saint Lucia). You receive a raw voice dictation transcript from a clinical consultation and segment it into structured SOAP components. Use British medical English. Be concise. Do not invent content not present in the transcript.
 

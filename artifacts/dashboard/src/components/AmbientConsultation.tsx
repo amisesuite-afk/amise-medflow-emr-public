@@ -11,6 +11,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import { getAIProviderConfig, segmentSoapWithOllama, type SegmentedSoap } from '@/lib/ai-provider';
+import { localSegmentSoap } from '@/lib/local-soap-segmenter';
+import { getApiOrigin } from '@/lib/api-origin';
 import VitalsStrip from './VitalsStrip';
 import LiveConsultNote from './LiveConsultNote';
 
@@ -21,29 +24,7 @@ const SR_CLASS = (typeof window !== 'undefined')
   : null;
 const SPEECH_SUPPORTED = !!SR_CLASS;
 
-// ── SOAP segmentation ─────────────────────────────────────────────────────────
-
-interface SegmentedSoap {
-  hpi?: string;
-  examination?: Record<string, string>;
-  assessment?: string;
-  plan?: string;
-  pmh?: string[];
-  allergies?: string;
-  unsegmented?: string;
-}
-
-async function segmentTranscript(transcript: string, visitType?: string): Promise<SegmentedSoap> {
-  const headers = await staffAuthHeaders();
-  const r = await fetch('/api/voice/segment', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...headers },
-    body: JSON.stringify({ transcript, visitType }),
-  });
-  const data = await r.json() as { segmented?: SegmentedSoap; error?: string };
-  if (!r.ok || !data.segmented) throw new Error(data.error ?? 'Segmentation failed');
-  return data.segmented;
-}
+type SegmentSource = 'local' | 'ollama' | 'cloud';
 
 // ── Props ─────────────────────────────────────────────────────────────────────
 
@@ -66,6 +47,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const [pendingSoap, setPendingSoap] = useState<SegmentedSoap | null>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
+  const [segmentSource, setSegmentSource] = useState<SegmentSource | null>(null);
   const recogRef = useRef<SpeechRecognition | null>(null);
 
   // UI panels
@@ -121,9 +103,41 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     stopRecording();
     setSegmenting(true);
     setVoiceError(null);
+    setSegmentSource(null);
+
     try {
-      const soap = await segmentTranscript(text, visitType);
-      setPendingSoap(soap);
+      // Tier 1: local rule-based — zero tokens, instant
+      const local = localSegmentSoap(text);
+      if (local.confidence >= 0.7) {
+        setPendingSoap(local.segmented);
+        setSegmentSource('local');
+        return;
+      }
+
+      // Tier 2: Ollama — LAN, zero tokens
+      const aiConfig = getAIProviderConfig();
+      if (aiConfig.type === 'ollama') {
+        try {
+          const ollamaResult = await segmentSoapWithOllama(text, visitType, aiConfig);
+          setPendingSoap(ollamaResult);
+          setSegmentSource('ollama');
+          return;
+        } catch { /* fall through to cloud */ }
+      }
+
+      // Tier 3: cloud Claude
+      const apiOrigin = getApiOrigin();
+      const url = apiOrigin ? `${apiOrigin}/api/voice/segment` : '/api/voice/segment';
+      const headers = await staffAuthHeaders();
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify({ transcript: text, visitType }),
+      });
+      const data = await r.json() as { segmented?: SegmentedSoap; error?: string };
+      if (!r.ok || !data.segmented) throw new Error(data.error ?? 'Segmentation failed');
+      setPendingSoap(data.segmented);
+      setSegmentSource('cloud');
     } catch (err) {
       setVoiceError(err instanceof Error ? err.message : 'Segmentation failed');
     } finally {
@@ -203,7 +217,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             </span>
           </div>
           {fullTranscript && !recording && !segmenting && !pendingSoap && (
-            <button type="button" onClick={() => { setTranscript(''); setVoiceError(null); setLoaded(false); }}
+            <button type="button" onClick={() => { setTranscript(''); setVoiceError(null); setLoaded(false); setSegmentSource(null); }}
               style={{ background: 'none', border: 'none', color: '#475569', fontSize: 11, cursor: 'pointer' }}>
               Clear
             </button>
@@ -293,8 +307,20 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         {/* SOAP preview → accept */}
         {pendingSoap && (
           <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', letterSpacing: '0.06em' }}>
-              SOAP PREVIEW — review then accept
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#f59e0b', letterSpacing: '0.06em' }}>
+                SOAP PREVIEW — review then accept
+              </div>
+              {segmentSource && (
+                <span style={{
+                  fontSize: 9, fontWeight: 800, padding: '2px 7px', borderRadius: 9,
+                  background: segmentSource === 'local' ? 'rgba(245,158,11,.2)' : segmentSource === 'ollama' ? 'rgba(16,185,129,.2)' : 'rgba(59,130,246,.15)',
+                  color: segmentSource === 'local' ? '#d97706' : segmentSource === 'ollama' ? '#059669' : '#60a5fa',
+                  letterSpacing: '0.07em', textTransform: 'uppercase',
+                }}>
+                  {segmentSource === 'local' ? '⚡ Local' : segmentSource === 'ollama' ? '🟢 Ollama' : '🤖 Cloud'}
+                </span>
+              )}
             </div>
             {([
               ['HPI', pendingSoap.hpi],

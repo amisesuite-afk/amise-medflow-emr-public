@@ -4,6 +4,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ToastProvider';
 import { saveClinicalNote } from '@/lib/db';
 import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
+import { getAIProviderConfig, polishSoapWithOllama } from '@/lib/ai-provider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
 import { escH as escHDoc, T, AMISE_LOGO_SVG } from './lib/docTemplate';
@@ -423,8 +425,38 @@ export default function ProgressNotesTab() {
   async function handleAiPolish() {
     if (polishing) return;
     setPolishing(true);
+
+    const subjectiveParts = [
+      chiefComplaint, selectedSymptoms.join(', '), intervalHistory,
+    ].filter(Boolean).join('. ');
+    const objectiveParts = (
+      ['general', 'cvs', 'rs', 'abdomen', 'wound', 'limbs'] as const
+    ).map(s => buildExamText(s)).filter(Boolean).join('. ');
+
+    const ollamaInput = {
+      subjective: subjectiveParts || 'Not documented.',
+      objective:  objectiveParts  || 'Not documented.',
+      assessment: assessment       || 'Not documented.',
+      plan:       plan             || 'Not documented.',
+    };
+
     try {
-      const payload = {
+      // Tier 1: Ollama — works without API server
+      const aiConfig = getAIProviderConfig();
+      if (aiConfig.type === 'ollama') {
+        try {
+          const result = await polishSoapWithOllama(ollamaInput, aiConfig);
+          if (result.subjective) setIntervalHistory(result.subjective);
+          if (result.objective)  setExamNotes(prev => ({ ...prev, other: [prev.other, result.objective].filter(Boolean).join('\n') }));
+          if (result.assessment) setAssessment(result.assessment);
+          if (result.plan)       setPlan(result.plan);
+          showToast('🟢 SOAP polished by Ollama', 'success');
+          return;
+        } catch { /* fall through to cloud */ }
+      }
+
+      // Tier 2: cloud API server
+      const cloudPayload = {
         subjective: {
           chiefComplaint, symptoms: selectedSymptoms, intervalHistory,
           painScore: ctx.painScore || '', durationDays: ctx.durationDays || '',
@@ -433,9 +465,8 @@ export default function ProgressNotesTab() {
         objective: {
           vitals,
           examSystems: Object.fromEntries(
-            (['general', 'cvs', 'rs', 'abdomen', 'wound', 'limbs'] as const).map(
-              sys => [sys, buildExamText(sys)]
-            ).filter(([, v]) => v)
+            (['general', 'cvs', 'rs', 'abdomen', 'wound', 'limbs'] as const)
+              .map(sys => [sys, buildExamText(sys)]).filter(([, v]) => v)
           ),
           examOther: examNotes.other ?? '',
         },
@@ -447,29 +478,26 @@ export default function ProgressNotesTab() {
       };
 
       const url = API_ORIGIN ? `${API_ORIGIN}/api/soap/polish` : '/api/soap/polish';
+      const authHeaders = await staffAuthHeaders();
       const res = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
+        body: JSON.stringify(cloudPayload),
       });
 
       if (!res.ok) {
-        showToast('AI polish failed — check API server', 'error');
+        showToast('AI polish failed — check API server or enable Ollama in Settings', 'error');
         return;
       }
 
       const data = await res.json() as { subjective?: string; objective?: string; assessment?: string; plan?: string };
-
       if (data.subjective) setIntervalHistory(data.subjective);
-      if (data.objective) {
-        setExamNotes(prev => ({ ...prev, other: [prev.other, data.objective].filter(Boolean).join('\n') }));
-      }
+      if (data.objective)  setExamNotes(prev => ({ ...prev, other: [prev.other, data.objective].filter(Boolean).join('\n') }));
       if (data.assessment) setAssessment(data.assessment);
-      if (data.plan) setPlan(data.plan);
-
-      showToast('SOAP polished by AI', 'success');
+      if (data.plan)       setPlan(data.plan);
+      showToast('🤖 SOAP polished by Cloud AI', 'success');
     } catch {
-      showToast('AI polish unavailable — is the API server running?', 'error');
+      showToast('AI polish unavailable — enable Ollama in Settings or check API server', 'error');
     } finally {
       setPolishing(false);
     }
