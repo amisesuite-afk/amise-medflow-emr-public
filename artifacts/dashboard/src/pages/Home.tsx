@@ -289,7 +289,8 @@ export default function HomePage() {
     encounterMode, setEncounterMode,
     encounterType, setEncounterType,
     activeCcKey,
-    visitType: ctxVisitType,
+    visitType: ctxVisitType, setVisitType: ctxSetVisitType,
+    setIsPostOp, setPostOpDays,
     patientPhoto,
     patientId,
     encounterId,
@@ -320,6 +321,7 @@ export default function HomePage() {
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
   const [criticalResultCount, setCriticalResultCount] = useState(0);
   const [showAiPanel, setShowAiPanel] = useState(false);
+  const [showAcuityBreakdown, setShowAcuityBreakdown] = useState(false);
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
   const [headerVisitMode, setHeaderVisitMode] = useState<'new' | 'followup'>('new');
   const [wizardSkipped, setWizardSkipped] = useState(false);
@@ -327,6 +329,19 @@ export default function HomePage() {
   const [ambientMode, setAmbientMode] = useState(true);
   const [voiceOpen, setVoiceOpen] = useState(false);
   const prevPatientIdRef = useRef<string | null>(null);
+  const acuityRef = useRef<HTMLDivElement>(null);
+
+  // Close acuity breakdown on outside click
+  useEffect(() => {
+    if (!showAcuityBreakdown) return;
+    function handle(e: MouseEvent) {
+      if (acuityRef.current && !acuityRef.current.contains(e.target as Node)) {
+        setShowAcuityBreakdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [showAcuityBreakdown]);
 
   // Reset wizard + guided mode whenever a different patient is loaded
   useEffect(() => {
@@ -675,10 +690,92 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className={`acuity-badge ${acuityClass(triageResult.acuity)}`}>
-            <span className="ab-label">Acuity</span>
-            <span className="ab-level">{triageResult.acuity.toUpperCase()}</span>
-            <span className="ab-score">Score {triageResult.score}</span>
+          {/* Visit type dropdown — header */}
+          <div style={{ position: 'relative' }}>
+            <select
+              value={ctxVisitType ?? ''}
+              onChange={e => {
+                const id = e.target.value;
+                if (!id) return;
+                ctxSetVisitType(id);
+                setIsPostOp(id === 'post_op');
+                setPostOpDays('');
+                if (id === 'ercp' || id === 'endoscopy_ogd' || id === 'endoscopy_col') {
+                  setEncounterType('endoscopy');
+                } else if (id === 'urgent') {
+                  setEncounterType('major_emergency');
+                } else if (id === 'post_op' || id === 'follow_up') {
+                  setEncounterType('quick_consult');
+                } else {
+                  setEncounterType('surgical_consult');
+                }
+              }}
+              aria-label="Visit type"
+              style={{
+                padding: '4px 26px 4px 10px', borderRadius: 8, fontSize: 11, fontWeight: 700,
+                border: '1.5px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.12)',
+                color: '#fff', cursor: 'pointer', appearance: 'none',
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23fff'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center',
+              }}
+            >
+              <option value="" style={{ color: '#374151', background: '#fff' }}>— Visit type —</option>
+              {VISIT_TYPES.map(vt => (
+                <option key={vt.id} value={vt.id} style={{ color: '#374151', background: '#fff' }}>
+                  {vt.icon} {vt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Acuity badge — clickable, shows score breakdown */}
+          <div ref={acuityRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              className={`acuity-badge ${acuityClass(triageResult.acuity)}`}
+              onClick={() => setShowAcuityBreakdown(p => !p)}
+              title="Click to see score breakdown"
+              style={{ cursor: 'pointer', border: 'none', padding: 0, background: 'transparent' }}
+            >
+              <span className="ab-label">Acuity</span>
+              <span className="ab-level">{triageResult.acuity.toUpperCase()}</span>
+              <span className="ab-score">Score {triageResult.score}</span>
+            </button>
+            {showAcuityBreakdown && (
+              <div
+                style={{
+                  position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 999,
+                  background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.14)', minWidth: 280, maxWidth: 360,
+                  padding: '12px 0',
+                }}
+              >
+                <div style={{ padding: '0 14px 8px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 12, fontWeight: 800, color: '#1e293b' }}>Score breakdown</span>
+                  <button type="button" onClick={() => setShowAcuityBreakdown(false)}
+                    style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#9ca3af', fontSize: 14, lineHeight: 1 }}>✕</button>
+                </div>
+                <div style={{ maxHeight: 320, overflowY: 'auto' }}>
+                  {triageResult.reasons.length === 0 ? (
+                    <div style={{ padding: '10px 14px', fontSize: 12, color: '#9ca3af' }}>No active score factors.</div>
+                  ) : (
+                    triageResult.reasons.map((r, i) => (
+                      <div key={i} style={{
+                        display: 'flex', alignItems: 'flex-start', gap: 8,
+                        padding: '7px 14px', borderBottom: '1px solid #f8fafc', fontSize: 12, color: '#374151',
+                      }}>
+                        <span style={{ color: '#0d9488', fontWeight: 700, flexShrink: 0 }}>▸</span>
+                        <span>{r}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div style={{ padding: '8px 14px 0', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#6b7280' }}>
+                  <span>Total score</span>
+                  <span style={{ fontWeight: 800, color: '#1e293b' }}>{triageResult.score}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {triageResult.isPrimarilySurgical && (
