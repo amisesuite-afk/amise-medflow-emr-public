@@ -279,4 +279,58 @@ Respond with ONLY a JSON object (no markdown fences, no preamble). Follow the re
   }
 });
 
+
+// ── AI Note Editing ───────────────────────────────────────────────────────────
+
+router.post('/api/ai/edit-note', async (req, res) => {
+  const { section, currentText, instruction } = req.body as {
+    section?: string; currentText?: string; instruction?: string;
+  };
+  if (!section || !currentText === undefined || !instruction) {
+    res.status(400).json({ error: 'section, currentText, and instruction are required' });
+    return;
+  }
+  try {
+    const response = await client.messages.create({
+      model: MODEL, max_tokens: 2048,
+      messages: [{ role: 'user', content:
+        `You are editing a clinical note section.\nSection: ${section}\nCurrent text: ${currentText}\nInstruction: ${instruction}\nReturn ONLY the rewritten text, no preamble.`
+      }],
+    });
+    const rewritten = response.content.filter((b): b is Anthropic.TextBlock => b.type === 'text').map(b => b.text).join('').trim();
+    res.json({ rewritten });
+  } catch { res.status(502).json({ error: 'AI edit-note request failed' }); }
+});
+
+// ── Drug Interaction Checker ──────────────────────────────────────────────────
+
+interface DrugInputDI { drugName: string; dose?: string; frequency?: string; }
+interface DrugInteraction { drug1: string; drug2: string; severity: 'major' | 'moderate' | 'minor'; description: string; mechanism: string; }
+
+router.post('/api/ai/drug-interactions', async (req, res) => {
+  if (AI_DISABLED) { res.status(503).json({ error: 'AI features are disabled' }); return; }
+  const drugs: DrugInputDI[] = Array.isArray(req.body?.drugs) ? req.body.drugs : [];
+  if (drugs.length < 2) { res.json({ interactions: [] }); return; }
+  const drugList = drugs.map(d => [d.drugName, d.dose, d.frequency].filter(Boolean).join(' ')).join(', ');
+  try {
+    const msg = await client.messages.create({
+      model: MODEL, max_tokens: 1024,
+      messages: [{ role: 'user', content:
+        `Check for clinically significant drug interactions between: ${drugList}.\nReturn JSON only: { "interactions": [{ "drug1": "...", "drug2": "...", "severity": "major"|"moderate"|"minor", "description": "...", "mechanism": "..." }] }\nOnly real, established interactions. Empty array if none.`
+      }],
+    });
+    const raw = (msg.content[0] as { type: string; text: string }).text?.trim() ?? '';
+    let interactions: DrugInteraction[] = [];
+    try {
+      const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+      const parsed = JSON.parse(cleaned);
+      if (Array.isArray(parsed?.interactions)) interactions = parsed.interactions;
+    } catch { log.warn({ raw: raw.slice(0, 200) }, 'Drug interaction response invalid JSON'); }
+    res.json({ interactions });
+  } catch (err: unknown) {
+    log.error({ err }, 'Drug interaction error');
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed' });
+  }
+});
+
 export default router;

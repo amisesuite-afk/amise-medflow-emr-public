@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { sb, getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
 import { sendSms, smsBodyStaffChangeRequest } from '../lib/sms.js';
+import { logAudit } from '../lib/audit.js';
 import { sendOrDraft } from '../lib/gmail.js';
 
 const router = Router();
@@ -702,6 +703,10 @@ router.patch('/api/patient/documents-review/:id', async (req, res) => {
       .eq('id', id);
 
     if (error) throw error;
+    void logAudit(req, 'approve', 'document', id, undefined, {
+      action: 'staff_review',
+      staff_user_id: staff_user_id ?? null,
+    });
     res.json({ success: true });
   } catch (err) {
     req.log.error({ err }, '[portal/documents-review/:id] error');
@@ -906,7 +911,7 @@ router.post('/api/patient/appointments/:id/request-change', async (req, res) => 
   const hoursUntil = (apptDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
   if (hoursUntil < CHANGE_REQUEST_MIN_NOTICE_HOURS) {
     res.status(400).json({
-      error: 'This appointment is too soon to change online. Please call us directly: Tapion Hospital 758-284-0557 / 758-720-7111.',
+      error: 'This appointment is too soon to change online. Please call us directly: Tapion Hospital 459-2227 / 284-0557.',
     });
     return;
   }

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { google } from 'googleapis';
 import { findSlots, formatSlotForDisplay, fetchUpcomingEvents, AvailableSlot } from '../lib/calendar';
 import { SLOT_RULES, AppointmentType, SlotRule, Location } from '@workspace/triage-engine';
 import { requireAuth } from '../middlewares/auth';
@@ -155,6 +156,111 @@ router.get('/api/scheduling/upcoming', requireAuth, (req, res) => {
   }
 
   res.json({ events, fetchedAt: cache.fetchedAt, calendarId: cache.calendarId });
+});
+
+// ── /api/scheduling/book-followup ────────────────────────────────────────────
+// Creates a Google Calendar follow-up event directly from the EMR Plan tab.
+// The event is placed at 09:00–09:30 ECT on the requested date.
+
+router.post('/api/scheduling/book-followup', requireAuth, async (req, res) => {
+  const {
+    patientId,
+    patientName,
+    followUpDate, // YYYY-MM-DD
+    followUpNotes,
+    visitType,
+  } = req.body as {
+    patientId?: string;
+    patientName: string;
+    followUpDate: string;
+    followUpNotes?: string;
+    visitType?: string;
+  };
+
+  if (!patientName || !followUpDate) {
+    res.status(400).json({ error: 'patientName and followUpDate are required' });
+    return;
+  }
+
+  // Validate ISO date format
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(followUpDate)) {
+    res.status(400).json({ error: 'followUpDate must be YYYY-MM-DD' });
+    return;
+  }
+
+  // Require at least one Google credential set
+  const hasOAuth =
+    process.env.GOOGLE_OAUTH_CLIENT_ID &&
+    process.env.GOOGLE_OAUTH_CLIENT_SECRET &&
+    process.env.GOOGLE_OAUTH_REFRESH_TOKEN;
+  const hasServiceAccount = !!process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+
+  if (!hasOAuth && !hasServiceAccount) {
+    res.status(503).json({
+      error:
+        'Google Calendar is not configured. Set GOOGLE_OAUTH_CLIENT_ID/SECRET/REFRESH_TOKEN or GOOGLE_SERVICE_ACCOUNT_JSON.',
+    });
+    return;
+  }
+
+  try {
+    // Build auth — OAuth2 preferred (personal account), JWT service account fallback
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let auth: any;
+    if (hasOAuth) {
+      const client = new google.auth.OAuth2(
+        process.env.GOOGLE_OAUTH_CLIENT_ID,
+        process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+        'urn:ietf:wg:oauth:2.0:oob',
+      );
+      client.setCredentials({ refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN });
+      auth = client;
+    } else {
+      const creds = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON!) as {
+        client_email: string;
+        private_key: string;
+      };
+      auth = new google.auth.JWT({
+        email: creds.client_email,
+        key: creds.private_key,
+        scopes: ['https://www.googleapis.com/auth/calendar'],
+        subject: process.env.GMAIL_USER,
+      });
+    }
+
+    const calendarId = process.env.CALENDAR_ID_RODNEY_BAY ?? 'primary';
+    const cal = google.calendar({ version: 'v3', auth });
+
+    // 09:00–09:30 ECT (UTC-4) on the requested date
+    const [year, month, day] = followUpDate.split('-').map(Number);
+    const startUTC = new Date(Date.UTC(year, month - 1, day, 13, 0, 0)); // 09:00 ECT = 13:00 UTC
+    const endUTC   = new Date(Date.UTC(year, month - 1, day, 13, 30, 0)); // 09:30 ECT = 13:30 UTC
+
+    const descParts: string[] = [];
+    if (followUpNotes?.trim()) descParts.push(followUpNotes.trim());
+    if (patientId)  descParts.push(`Patient ID: ${patientId}`);
+    if (visitType)  descParts.push(`Visit type: ${visitType}`);
+    descParts.push('\nBooked from Amise MedFlow EMR — Plan tab.');
+
+    const { data } = await cal.events.insert({
+      calendarId,
+      requestBody: {
+        summary: `Follow-up: ${patientName}`,
+        description: descParts.join('\n'),
+        start: { dateTime: startUTC.toISOString(), timeZone: 'America/St_Lucia' },
+        end:   { dateTime: endUTC.toISOString(),   timeZone: 'America/St_Lucia' },
+      },
+    });
+
+    res.json({
+      eventId:    data.id,
+      eventLink:  data.htmlLink ?? null,
+      calendarId,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: msg });
+  }
 });
 
 export default router;

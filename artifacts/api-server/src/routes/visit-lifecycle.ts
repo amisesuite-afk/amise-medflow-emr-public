@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 
@@ -129,7 +130,7 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
 
     // Create referral if specified
     if (referralTo) {
-      const { error: refErr } = await supa.from('referrals').insert({
+      await supa.from('referrals').insert({
         patient_id: encounter.patient_id,
         encounter_id: encounterId,
         referral_to: referralTo,
@@ -138,7 +139,6 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
         urgency: referralUrgency ?? 'routine',
         status: 'pending',
       });
-      if (refErr) throw refErr;
     }
 
     // Close encounter
@@ -154,6 +154,12 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
       entityType: 'encounter',
       entityId: encounterId,
       payload: { status: 'closed', plan_type: resolvedPlanType, has_follow_up: !!followUpDate, has_referral: !!referralTo },
+    });
+    void logAudit(req, 'update', 'appointment', encounterId, encounter.patient_id ?? undefined, {
+      action: 'complete',
+      plan_type: resolvedPlanType,
+      has_follow_up: !!followUpDate,
+      has_referral: !!referralTo,
     });
 
     logger.info({ encounterId, planType: resolvedPlanType, followUpDate }, '[visit/complete] encounter closed');
@@ -237,23 +243,19 @@ router.post('/api/visit/medication-reconciliation/:encounterId', async (req, res
       return;
     }
 
-    // Batch upsert all medications atomically
-    const medicationsArray = medications.map((med: any) => ({
-      patient_id: encounter.patient_id,
-      encounter_id: encounterId,
-      drug_name: med.drugName,
-      dose: med.dose ?? null,
-      frequency: med.frequency ?? null,
-      route: med.route ?? 'oral',
-      indication: 'consultation-list',
-      status: med.status ?? 'active',
-    }));
-
-    const { error: medErr } = await supa
-      .from('medications')
-      .upsert(medicationsArray, { onConflict: 'patient_id,encounter_id,drug_name,indication' });
-
-    if (medErr) throw medErr;
+    // Upsert each medication for this encounter
+    for (const med of medications) {
+      await supa.from('medications').upsert({
+        patient_id: encounter.patient_id,
+        encounter_id: encounterId,
+        drug_name: med.drugName,
+        dose: med.dose ?? null,
+        frequency: med.frequency ?? null,
+        route: med.route ?? 'oral',
+        indication: 'consultation-list',
+        status: med.status ?? 'active',
+      }, { onConflict: 'patient_id,encounter_id,drug_name,indication' });
+    }
 
     await audit({
       action: 'extract',

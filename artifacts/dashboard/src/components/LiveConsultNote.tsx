@@ -1,304 +1,200 @@
-/**
- * LiveConsultNote — reads AppContext and renders a live clinical document.
- * Updates in real time as voice, vitals, and exam data are entered.
- * Compact copy button exports the full plain-text note to clipboard.
- */
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import { PencilIcon } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
+import { Spinner } from '@/components/ui/spinner';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 
-const DOCTOR = 'Dr Dawit Daniel Kabiye';
-const SPECIALTY = 'Specialist General & Endoscopic Surgery';
+// ── Types ─────────────────────────────────────────────────────────────────────
 
-function fmtDate() {
-  return new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+type SoapSectionKey = 'Subjective' | 'Objective' | 'Assessment' | 'Plan';
+
+interface SoapSection {
+  key: SoapSectionKey;
+  label: string;
+  getValue(ctx: ReturnType<typeof useAppContext>): string;
+  setValue(ctx: ReturnType<typeof useAppContext>, value: string): void;
 }
 
-function calcBmi(wt: string, ht: string): string | null {
-  const w = parseFloat(wt);
-  const h = parseFloat(ht) / 100;
-  if (!w || !h) return null;
-  return (w / (h * h)).toFixed(1);
+// ── Section definitions ───────────────────────────────────────────────────────
+
+const SOAP_SECTIONS: SoapSection[] = [
+  {
+    key: 'Subjective',
+    label: 'Subjective',
+    getValue: ctx => ctx.freeText,
+    setValue: (ctx, v) => ctx.setFreeText(v),
+  },
+  {
+    key: 'Objective',
+    label: 'Objective',
+    getValue: ctx => ctx.examGeneral,
+    setValue: (ctx, v) => ctx.setExamGeneral(v),
+  },
+  {
+    key: 'Assessment',
+    label: 'Assessment',
+    getValue: ctx => ctx.assessment,
+    setValue: (ctx, v) => ctx.setAssessment(v),
+  },
+  {
+    key: 'Plan',
+    label: 'Plan',
+    getValue: ctx => ctx.plan,
+    setValue: (ctx, v) => ctx.setPlan(v),
+  },
+];
+
+// ── Inline editor ─────────────────────────────────────────────────────────────
+
+interface InlineEditorProps {
+  section: SoapSectionKey;
+  initialText: string;
+  onRewrite(rewritten: string): void;
+  onCancel(): void;
 }
 
-function vitalsLine(vitals: Record<string, string>, wt: string, ht: string): string {
-  const parts: string[] = [];
-  const sbp = vitals.systolicBp, dbp = vitals.diastolicBp;
-  if (sbp || dbp) parts.push(`BP ${sbp || '—'}/${dbp || '—'} mmHg`);
-  if (vitals.heartRate) parts.push(`HR ${vitals.heartRate} bpm`);
-  if (vitals.respiratoryRate) parts.push(`RR ${vitals.respiratoryRate}/min`);
-  if (vitals.spo2) parts.push(`SpO₂ ${vitals.spo2}%`);
-  if (vitals.temperatureC) parts.push(`Temp ${vitals.temperatureC}°C`);
-  if (vitals.glucoseMmol) parts.push(`Glucose ${vitals.glucoseMmol} mmol/L`);
-  if (wt) parts.push(`Wt ${wt} kg`);
-  if (ht) parts.push(`Ht ${ht} cm`);
-  const bmi = calcBmi(wt, ht);
-  if (bmi) parts.push(`BMI ${bmi}`);
-  return parts.join('  ·  ');
-}
+function InlineEditor({ section, initialText, onRewrite, onCancel }: InlineEditorProps) {
+  const [editText, setEditText] = useState(initialText);
+  const [instruction, setInstruction] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-function hasVitals(vitals: Record<string, string>, wt: string, ht: string) {
-  return Object.values(vitals).some(v => v.trim()) || wt.trim() || ht.trim();
-}
+  async function handleRewrite() {
+    if (!instruction.trim()) {
+      setError('Please enter a rewrite instruction.');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    try {
+      const headers = await staffAuthHeaders();
+      const res = await fetch(`${getApiOrigin()}/api/ai/edit-note`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify({ section, currentText: editText, instruction }),
+      });
+      const data = await res.json() as { rewritten?: string; error?: string };
+      if (!res.ok || !data.rewritten) {
+        setError(data.error ?? 'Rewrite failed — please try again.');
+        return;
+      }
+      onRewrite(data.rewritten);
+    } catch {
+      setError('Network error — please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
-interface SectionProps { label: string; text?: string; list?: string[]; color?: string }
-
-function NoteSection({ label, text, list, color = '#0d9488' }: SectionProps) {
-  const lines = list && list.length > 0 ? list : [];
-  const body = text?.trim() || lines.map(l => `• ${l}`).join('\n');
-  if (!body) return null;
   return (
-    <div style={{ marginBottom: 14 }}>
-      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color, marginBottom: 3 }}>
-        {label}
-      </div>
-      <div style={{ fontSize: 13, lineHeight: 1.7, color: '#1e293b', whiteSpace: 'pre-wrap', fontFamily: 'Georgia, "Times New Roman", serif' }}>
-        {body}
+    <div className="mt-2 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950/40">
+      <textarea
+        className="w-full rounded border border-gray-300 bg-white p-2 text-sm font-mono leading-relaxed text-gray-800 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+        rows={6}
+        value={editText}
+        onChange={e => setEditText(e.target.value)}
+        aria-label={`Edit ${section} section text`}
+      />
+      <input
+        type="text"
+        className="mt-2 w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-800 placeholder-gray-400 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-500"
+        placeholder="Rewrite instruction…"
+        value={instruction}
+        onChange={e => setInstruction(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter' && !loading) void handleRewrite(); }}
+        aria-label="Rewrite instruction"
+      />
+      {error && (
+        <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>
+      )}
+      <div className="mt-2 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => void handleRewrite()}
+          disabled={loading}
+          className="flex items-center gap-1.5 rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-60 dark:bg-blue-500 dark:hover:bg-blue-600"
+        >
+          {loading ? <Spinner className="size-3" /> : null}
+          {loading ? 'Rewriting…' : 'Rewrite'}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={loading}
+          className="rounded px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 disabled:opacity-60 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );
 }
 
-interface ExamSectionProps { notes: Record<string, string>; general?: string; cardio?: string; resp?: string; abdomen?: string }
+// ── Note section ──────────────────────────────────────────────────────────────
 
-function ExamSection({ notes, general, cardio, resp, abdomen }: ExamSectionProps) {
-  const systems: [string, string][] = [
-    ['General', general || notes.general || ''],
-    ['Cardiovascular', cardio || notes.cardiovascular || ''],
-    ['Respiratory', resp || notes.respiratory || ''],
-    ['Abdomen', abdomen || notes.abdomen || ''],
-    ['Wound', notes.wound || ''],
-    ['Breast', notes.breast || ''],
-    ['Neurological', notes.neurological || ''],
-    ['Extremities', notes.extremities || ''],
-  ].filter(([, v]) => v.trim()) as [string, string][];
+interface NoteSectionProps {
+  section: SoapSection;
+  ctx: ReturnType<typeof useAppContext>;
+}
 
-  if (systems.length === 0) return null;
+function NoteSection({ section, ctx }: NoteSectionProps) {
+  const [editing, setEditing] = useState(false);
+  const text = section.getValue(ctx);
+
+  function handleRewrite(rewritten: string) {
+    section.setValue(ctx, rewritten);
+    setEditing(false);
+  }
 
   return (
-    <div style={{ marginBottom: 14 }}>
-      <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0d9488', marginBottom: 3 }}>
-        Examination
+    <div className="group relative rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+      {/* Header row */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+          {section.label}
+        </h3>
+        {!editing && (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            title={`Edit ${section.label} with AI`}
+            className="flex items-center gap-1 rounded px-2 py-0.5 text-xs text-gray-400 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-500 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+          >
+            <PencilIcon className="size-3" />
+            Edit with AI
+          </button>
+        )}
       </div>
-      {systems.map(([sys, text]) => (
-        <div key={sys} style={{ marginBottom: 6 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#374151' }}>{sys}:&nbsp;</span>
-          <span style={{ fontSize: 13, lineHeight: 1.7, color: '#1e293b', fontFamily: 'Georgia, "Times New Roman", serif' }}>{text}</span>
-        </div>
-      ))}
+
+      {/* Content */}
+      <div className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-gray-800 dark:text-gray-200">
+        {text || <span className="italic text-gray-400 dark:text-gray-600">No content yet.</span>}
+      </div>
+
+      {/* Inline editor */}
+      {editing && (
+        <InlineEditor
+          section={section.key}
+          initialText={text}
+          onRewrite={handleRewrite}
+          onCancel={() => setEditing(false)}
+        />
+      )}
     </div>
   );
 }
+
+// ── Main export ───────────────────────────────────────────────────────────────
 
 export default function LiveConsultNote({ onFinalise }: { onFinalise?: () => void }) {
   const ctx = useAppContext();
-  const noteRef = useRef<HTMLDivElement>(null);
-  const [copied, setCopied] = useState(false);
-
-  const {
-    patientName, age, sex, dob,
-    vitals, weightKg, heightCm,
-    hpiNotes, comorbidities, pmhNotes,
-    medications, medicationsText, surgicalHistory,
-    allergies,
-    examNotes, examGeneral, examCardio, examResp, examAbdomen,
-    assessment, plan,
-    visitType,
-  } = ctx;
-
-  const hasAnyContent = !!(
-    hpiNotes?.trim() || assessment?.trim() || plan?.trim() ||
-    comorbidities?.length || medications?.length ||
-    allergies?.trim() || examGeneral?.trim() || examCardio?.trim() ||
-    examResp?.trim() || examAbdomen?.trim() ||
-    Object.values(examNotes ?? {}).some(v => v?.trim()) ||
-    hasVitals(vitals ?? {}, weightKg ?? '', heightCm ?? '')
-  );
-
-  function buildPlainText(): string {
-    const lines: string[] = [];
-    lines.push(DOCTOR);
-    lines.push(SPECIALTY);
-    lines.push(fmtDate());
-    lines.push('');
-    if (patientName) {
-      const info = [patientName, sex !== 'unknown' ? sex.toUpperCase() : '', age ? `${age} years` : '', dob].filter(Boolean).join(', ');
-      lines.push(`PATIENT: ${info}`);
-    }
-    const vtLabel = visitType ? visitType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Consultation';
-    lines.push(`VISIT TYPE: ${vtLabel}`);
-    lines.push('');
-    const vl = vitalsLine(vitals ?? {}, weightKg ?? '', heightCm ?? '');
-    if (vl) { lines.push('VITALS'); lines.push(vl); lines.push(''); }
-    if (hpiNotes?.trim()) { lines.push('HISTORY OF PRESENTING ILLNESS'); lines.push(hpiNotes.trim()); lines.push(''); }
-    if (comorbidities?.length || pmhNotes?.trim()) {
-      lines.push('PAST MEDICAL HISTORY');
-      comorbidities?.forEach(c => lines.push(`• ${c}`));
-      if (pmhNotes?.trim()) lines.push(pmhNotes.trim());
-      lines.push('');
-    }
-    if (surgicalHistory?.length) {
-      lines.push('SURGICAL HISTORY');
-      surgicalHistory.forEach(s => lines.push(`• ${s}`));
-      lines.push('');
-    }
-    const allMeds = [medicationsText?.trim(), ...(medications ?? [])].filter(Boolean).join('\n');
-    if (allMeds) { lines.push('CURRENT MEDICATIONS'); lines.push(allMeds); lines.push(''); }
-    if (allergies?.trim()) { lines.push('ALLERGIES'); lines.push(allergies.trim()); lines.push(''); }
-    const examSystems: [string, string][] = [
-      ['General', examGeneral || examNotes?.general || ''],
-      ['Cardiovascular', examCardio || examNotes?.cardiovascular || ''],
-      ['Respiratory', examResp || examNotes?.respiratory || ''],
-      ['Abdomen', examAbdomen || examNotes?.abdomen || ''],
-      ['Wound', examNotes?.wound || ''],
-      ['Breast', examNotes?.breast || ''],
-      ['Neurological', examNotes?.neurological || ''],
-      ['Extremities', examNotes?.extremities || ''],
-    ].filter(([, v]) => v?.trim()) as [string, string][];
-    if (examSystems.length) {
-      lines.push('EXAMINATION');
-      examSystems.forEach(([sys, txt]) => lines.push(`${sys}: ${txt}`));
-      lines.push('');
-    }
-    if (assessment?.trim()) { lines.push('ASSESSMENT'); lines.push(assessment.trim()); lines.push(''); }
-    if (plan?.trim()) { lines.push('PLAN'); lines.push(plan.trim()); lines.push(''); }
-    lines.push(`Signed: ${DOCTOR}`);
-    return lines.join('\n');
-  }
-
-  async function copyNote() {
-    try {
-      await navigator.clipboard.writeText(buildPlainText());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch { /* ignore */ }
-  }
-
-  if (!hasAnyContent) {
-    return (
-      <div style={{ padding: '24px 20px', textAlign: 'center', color: '#94a3b8', fontSize: 13 }}>
-        <div style={{ fontSize: 28, marginBottom: 8 }}>🎙</div>
-        <div style={{ fontWeight: 600, marginBottom: 4 }}>Note builds here as you dictate</div>
-        <div style={{ fontSize: 12 }}>Speak into the microphone above — SOAP sections populate automatically</div>
-      </div>
-    );
-  }
-
-  const vtLabel = visitType
-    ? visitType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-    : 'Consultation';
-
-  const allMeds = [medicationsText?.trim(), ...(medications ?? [])].filter(Boolean);
-  const vl = vitalsLine(vitals ?? {}, weightKg ?? '', heightCm ?? '');
 
   return (
-    <div style={{ position: 'relative' }}>
-      {/* Toolbar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <div style={{ fontSize: 10, fontWeight: 800, color: '#94a3b8', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-          Live Note
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button
-            type="button"
-            onClick={() => void copyNote()}
-            style={{
-              padding: '4px 12px', borderRadius: 6, border: '1px solid #e2e8f0',
-              background: copied ? '#0d9488' : '#fff', color: copied ? '#fff' : '#374151',
-              fontSize: 11, fontWeight: 700, cursor: 'pointer',
-            }}
-          >
-            {copied ? '✓ Copied' : '📋 Copy note'}
-          </button>
-          {onFinalise && (
-            <button
-              type="button"
-              onClick={onFinalise}
-              style={{
-                padding: '4px 12px', borderRadius: 6, border: 'none',
-                background: '#0d9488', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer',
-              }}
-            >
-              📄 Finalise
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Document */}
-      <div
-        ref={noteRef}
-        style={{
-          background: '#fff',
-          border: '1px solid #e2e8f0',
-          borderRadius: 10,
-          padding: '20px 24px',
-          fontFamily: 'Georgia, "Times New Roman", serif',
-        }}
-      >
-        {/* Header */}
-        <div style={{ borderBottom: '2px solid #0d9488', paddingBottom: 10, marginBottom: 16 }}>
-          <div style={{ fontSize: 15, fontWeight: 800, color: '#0f172a', fontFamily: 'system-ui, sans-serif' }}>{DOCTOR}</div>
-          <div style={{ fontSize: 11, color: '#64748b', fontFamily: 'system-ui, sans-serif', marginTop: 1 }}>{SPECIALTY}</div>
-          <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: 'system-ui, sans-serif', marginTop: 1 }}>{fmtDate()}</div>
-        </div>
-
-        {/* Patient / Visit identity */}
-        <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #f1f5f9' }}>
-          {patientName && (
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', fontFamily: 'system-ui, sans-serif', marginBottom: 2 }}>
-              {patientName}
-              {(age || (sex && sex !== 'unknown')) && (
-                <span style={{ fontWeight: 400, fontSize: 13, color: '#64748b' }}>
-                  {' '}— {[sex !== 'unknown' ? (sex === 'male' ? 'Male' : sex === 'female' ? 'Female' : sex) : null, age ? `${age} y` : null].filter(Boolean).join(', ')}
-                </span>
-              )}
-            </div>
-          )}
-          <div style={{ fontSize: 11, color: '#64748b', fontFamily: 'system-ui, sans-serif' }}>
-            {vtLabel}
-          </div>
-        </div>
-
-        {/* Vitals */}
-        {vl && (
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0d9488', marginBottom: 3, fontFamily: 'system-ui, sans-serif' }}>
-              Vital Signs
-            </div>
-            <div style={{ fontSize: 13, color: '#1e293b', lineHeight: 1.8 }}>{vl}</div>
-          </div>
-        )}
-
-        <NoteSection label="History of Presenting Illness" text={hpiNotes} />
-        <NoteSection label="Past Medical History"
-          text={pmhNotes}
-          list={pmhNotes ? undefined : comorbidities}
-        />
-        {comorbidities?.length > 0 && pmhNotes?.trim() && (
-          <NoteSection label="" list={comorbidities} />
-        )}
-        <NoteSection label="Surgical History" list={surgicalHistory} />
-        <NoteSection label="Current Medications"
-          text={allMeds.length > 0 ? allMeds.join('\n') : undefined}
-        />
-        <NoteSection label="Allergies" text={allergies} />
-
-        <ExamSection
-          notes={examNotes ?? {}}
-          general={examGeneral}
-          cardio={examCardio}
-          resp={examResp}
-          abdomen={examAbdomen}
-        />
-
-        <NoteSection label="Assessment / Impression" text={assessment} color="#dc2626" />
-        <NoteSection label="Plan" text={plan} color="#2563eb" />
-
-        {/* Signature */}
-        <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: 12, marginTop: 4, fontSize: 11, color: '#94a3b8', fontFamily: 'system-ui, sans-serif' }}>
-          {DOCTOR} · {SPECIALTY}
-        </div>
-      </div>
+    <div className="flex flex-col gap-3">
+      {SOAP_SECTIONS.map(section => (
+        <NoteSection key={section.key} section={section} ctx={ctx} />
+      ))}
     </div>
   );
 }

@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { useAuth } from '@/context/AuthContext';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { errMsg } from '@/lib/err';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
-import { supabase } from '@/lib/supabase';
-import { useToast } from '@/components/ToastProvider';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -155,13 +152,8 @@ export default function PlanTab() {
     icdCodes,
     encounterMode,
     symptoms,
-    patientName, phone, currentSite,
-    patientId, encounterId,
+    patientId, patientName, phone, currentSite,
   } = useAppContext();
-
-  const { session, profile } = useAuth();
-  const { showToast } = useToast();
-  const userId = session?.user?.id ?? profile?.id ?? null;
 
   const acuity = triageResult.acuity;
   const bmiData = calcBmiClass(weightKg, heightCm);
@@ -174,13 +166,19 @@ export default function PlanTab() {
   const [scheduleErr, setScheduleErr] = useState<string | null>(null);
   const [scheduleOk, setScheduleOk] = useState<string | null>(null);
 
+  // "Book to calendar" state
+  const [bookingCal, setBookingCal] = useState(false);
+  const [bookCalErr, setBookCalErr] = useState<string | null>(null);
+  const [bookCalOk, setBookCalOk] = useState<{ eventId: string; eventLink: string | null } | null>(null);
+
+  // Derived follow-up target date (shared by both booking actions)
+  const reviewOpt = REVIEW_OPTIONS.find(o => o.value === reviewIn);
+  const followUpTargetDate = reviewIn
+    ? (reviewOpt?.days != null ? addDaysISO(stLuciaTodayISO(), reviewOpt.days) : reviewCustomDate)
+    : '';
+
   async function handleScheduleReview() {
-    if (!reviewIn) return;
-    const opt = REVIEW_OPTIONS.find(o => o.value === reviewIn);
-    const targetDate = opt?.days != null
-      ? addDaysISO(stLuciaTodayISO(), opt.days)
-      : reviewCustomDate;
-    if (!targetDate) return;
+    if (!followUpTargetDate) return;
 
     setScheduling(true);
     setScheduleErr(null);
@@ -197,7 +195,7 @@ export default function PlanTab() {
           patient_phone:    phone.trim() || null,
           appointment_type: 'follow_up',
           location:         currentSite,
-          preferred_slot:   targetDate,
+          preferred_slot:   followUpTargetDate,
           reason:           followUpNotes.trim() || 'Doctor-requested review following consultation',
           source:           'manual',
         }),
@@ -206,62 +204,45 @@ export default function PlanTab() {
         const d = await r.json() as { error?: string };
         throw new Error(d.error ?? `HTTP ${r.status}`);
       }
-      setScheduleOk(targetDate);
-
-      // Auto-create a follow-up patient_task after successful booking request
-      if (patientId && supabase) {
-        try {
-          // 1. Check whether an open/in-progress follow-up task already exists for this patient
-          const { data: existing } = await supabase
-            .from('patient_tasks')
-            .select('id')
-            .eq('source_table', 'plans')
-            .eq('patient_id', patientId)
-            .eq('task_type', 'follow_up_appointment')
-            .in('status', ['open', 'in_progress']);
-
-          if (!existing || existing.length === 0) {
-            // 2. Resolve the plan row ID for this encounter (used as source_id)
-            let planId: string | null = null;
-            if (encounterId) {
-              const { data: planRow } = await supabase
-                .from('plans')
-                .select('id')
-                .eq('encounter_id', encounterId)
-                .maybeSingle();
-              planId = (planRow as { id: string } | null)?.id ?? null;
-            }
-
-            // 3. Insert the patient_task
-            const { error: taskErr } = await supabase
-              .from('patient_tasks')
-              .insert({
-                patient_id:   patientId,
-                encounter_id: encounterId ?? null,
-                task_type:    'follow_up_appointment',
-                description:  'Follow-up appointment - ' + (followUpNotes || 'as per plan'),
-                due_date:     targetDate,
-                priority:     'normal',
-                status:       'open',
-                source_table: 'plans',
-                source_id:    planId,
-                created_by:   userId,
-              });
-
-            if (!taskErr) {
-              showToast('Follow-up task created', 'success');
-            } else {
-              console.error('[PlanTab] patient_task insert:', taskErr.message);
-            }
-          }
-        } catch (taskEx) {
-          console.error('[PlanTab] auto-create follow-up task:', taskEx);
-        }
-      }
+      setScheduleOk(followUpTargetDate);
     } catch (e) {
       setScheduleErr(errMsg(e));
     } finally {
       setScheduling(false);
+    }
+  }
+
+  async function handleBookToCalendar() {
+    if (!followUpTargetDate || !patientId) return;
+    setBookingCal(true);
+    setBookCalErr(null);
+    setBookCalOk(null);
+    try {
+      const apiOrigin = getApiOrigin();
+      const url = apiOrigin
+        ? `${apiOrigin}/api/scheduling/book-followup`
+        : '/api/scheduling/book-followup';
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientId,
+          patientName: patientName.trim() || 'Unknown patient',
+          followUpDate: followUpTargetDate,
+          followUpNotes: followUpNotes.trim() || undefined,
+          visitType: 'follow_up',
+        }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      const d = await r.json() as { eventId: string; eventLink: string | null; calendarId: string };
+      setBookCalOk({ eventId: d.eventId, eventLink: d.eventLink });
+    } catch (e) {
+      setBookCalErr(errMsg(e));
+    } finally {
+      setBookingCal(false);
     }
   }
 
@@ -453,7 +434,11 @@ export default function PlanTab() {
                 key={o.value}
                 type="button"
                 className="chip"
-                onClick={() => { setReviewIn(o.value); setScheduleOk(null); setScheduleErr(null); }}
+                onClick={() => {
+                  setReviewIn(o.value);
+                  setScheduleOk(null); setScheduleErr(null);
+                  setBookCalOk(null); setBookCalErr(null);
+                }}
                 style={reviewIn === o.value ? { background: '#0d9488', color: '#fff', borderColor: '#0d9488' } : undefined}
               >
                 {o.label}
@@ -467,7 +452,11 @@ export default function PlanTab() {
               <input
                 type="date"
                 value={reviewCustomDate}
-                onChange={e => { setReviewCustomDate(e.target.value); setScheduleOk(null); setScheduleErr(null); }}
+                onChange={e => {
+                  setReviewCustomDate(e.target.value);
+                  setScheduleOk(null); setScheduleErr(null);
+                  setBookCalOk(null); setBookCalErr(null);
+                }}
                 min={stLuciaTodayISO()}
               />
             </div>
@@ -484,19 +473,60 @@ export default function PlanTab() {
             </div>
           )}
 
-          <button
-            type="button"
-            className="chip"
-            disabled={!reviewIn || (reviewIn === 'custom' && !reviewCustomDate) || scheduling || !!scheduleOk}
-            onClick={() => void handleScheduleReview()}
-            style={{
-              background: scheduleOk ? '#9ca3af' : '#0d9488',
-              color: '#fff', borderColor: scheduleOk ? '#9ca3af' : '#0d9488',
-              opacity: (!reviewIn || (reviewIn === 'custom' && !reviewCustomDate) || scheduling) && !scheduleOk ? 0.6 : 1,
-            }}
-          >
-            {scheduling ? 'Adding to Booking Inbox…' : scheduleOk ? '✓ Added to Booking Inbox' : 'Schedule review → Booking Inbox'}
-          </button>
+          {bookCalErr && (
+            <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+              Calendar booking failed: {bookCalErr}
+            </div>
+          )}
+          {bookCalOk && (
+            <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontSize: 12, fontWeight: 600 }}>
+              Booked ✓ — added to Google Calendar.
+              {bookCalOk.eventLink && (
+                <>
+                  {' '}
+                  <a
+                    href={bookCalOk.eventLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#15803d', textDecoration: 'underline' }}
+                  >
+                    View event
+                  </a>
+                </>
+              )}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            <button
+              type="button"
+              className="chip"
+              disabled={!reviewIn || (reviewIn === 'custom' && !reviewCustomDate) || scheduling || !!scheduleOk}
+              onClick={() => void handleScheduleReview()}
+              style={{
+                background: scheduleOk ? '#9ca3af' : '#0d9488',
+                color: '#fff', borderColor: scheduleOk ? '#9ca3af' : '#0d9488',
+                opacity: (!reviewIn || (reviewIn === 'custom' && !reviewCustomDate) || scheduling) && !scheduleOk ? 0.6 : 1,
+              }}
+            >
+              {scheduling ? 'Adding to Booking Inbox…' : scheduleOk ? '✓ Added to Booking Inbox' : 'Schedule review → Booking Inbox'}
+            </button>
+
+            <button
+              type="button"
+              className="chip"
+              disabled={!followUpTargetDate || !patientId || bookingCal || !!bookCalOk}
+              title={!patientId ? 'Select a patient first' : !followUpTargetDate ? 'Choose a follow-up date first' : 'Book this follow-up directly to Google Calendar'}
+              onClick={() => void handleBookToCalendar()}
+              style={{
+                background: bookCalOk ? '#9ca3af' : '#2563eb',
+                color: '#fff', borderColor: bookCalOk ? '#9ca3af' : '#2563eb',
+                opacity: (!followUpTargetDate || !patientId || bookingCal) && !bookCalOk ? 0.6 : 1,
+              }}
+            >
+              {bookingCal ? 'Booking…' : bookCalOk ? 'Booked ✓' : 'Book to calendar'}
+            </button>
+          </div>
         </div>
       </CollapsibleCard>
 

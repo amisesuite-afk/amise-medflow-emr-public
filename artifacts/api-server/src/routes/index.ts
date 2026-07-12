@@ -1,5 +1,4 @@
 import { Router, type IRouter } from "express";
-import { aiDisabledMiddleware } from "../lib/ai-guard.js";
 import healthRouter from "./health";
 import intakeRouter from "./intake";
 import triagePreviewRouter from "./triage-preview";
@@ -16,17 +15,6 @@ import visitLifecycleRouter from "./visit-lifecycle";
 import billingRouter from "./billing";
 import preProcedureRouter from "./pre-procedure";
 import aiConsultRouter from "./ai-consult";
-import previsitRouter from "./previsit";
-import patientRouter from "./patient";
-import patientAuthRouter from "./patient-auth";
-import voiceRouter from "./voice";
-import procedureReportRouter from "./procedure-report";
-import dischargeSummaryRouter from "./discharge-summary";
-import generateLetterRouter from "./generate-letter";
-import generateOperativeNoteRouter from "./generate-operative-note";
-import generateEndoscopyReportRouter from "./generate-endoscopy-report";
-import suggestCodesRouter from "./suggest-codes";
-import documentScanRouter from "./document-scan";
 
 const router: IRouter = Router();
 
@@ -46,16 +34,5 @@ router.use(visitLifecycleRouter);
 router.use(billingRouter);
 router.use(preProcedureRouter);
 router.use(aiConsultRouter);
-router.use(previsitRouter);
-router.use(patientRouter);
-router.use(patientAuthRouter);
-router.use(voiceRouter);
-router.use(procedureReportRouter);
-router.use(dischargeSummaryRouter);
-router.use('/generate-letter', aiDisabledMiddleware, generateLetterRouter);
-router.use('/generate-operative-note', aiDisabledMiddleware, generateOperativeNoteRouter);
-router.use('/generate-endoscopy-report', aiDisabledMiddleware, generateEndoscopyReportRouter);
-router.use('/suggest-codes', aiDisabledMiddleware, suggestCodesRouter);
-router.use('/document-scan', aiDisabledMiddleware, documentScanRouter);
 
 export default router;

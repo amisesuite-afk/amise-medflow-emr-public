@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import { getSupabaseAdmin, requireStaffAuth, audit } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 
@@ -89,6 +90,11 @@ router.post('/api/investigations/extract-results', async (req, res) => {
     const parsed = ExtractResponseSchema.parse(JSON.parse(text));
 
     await audit({ action: 'extract', entityType: 'investigation_result', payload: { fileName: fileName ?? null, resultCount: parsed.results.length } });
+    void logAudit(req, 'create', 'document', undefined, undefined, {
+      action: 'scan',
+      file_name: fileName ?? null,
+      result_count: parsed.results.length,
+    });
     res.json(parsed);
   } catch (err) {
     logger.error({ err }, '[investigations/extract-results] error');
