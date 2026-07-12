@@ -154,9 +154,65 @@ export default function LetterGeneratorTab() {
               Print
             </button>
           </div>
-          <pre style={{ whiteSpace: 'pre-wrap', fontSize: 13, fontFamily: 'inherit', lineHeight: 1.6, color: '#1e293b', margin: 0 }}>
-            {output}
-          </pre>
+
+          {/* Letterhead */}
+          <div id="letter-print-area" style={{
+            background: '#fff', border: '1px solid #e2e8f0', borderRadius: 8,
+            padding: '28px 32px', fontFamily: 'Georgia, "Times New Roman", serif',
+          }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #0d2520', paddingBottom: 16, marginBottom: 20 }}>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#0d2520', letterSpacing: '-0.01em' }}>
+                  Amise Medical Services
+                </div>
+                <div style={{ fontSize: 13, color: '#1e293b', marginTop: 3, fontStyle: 'italic' }}>
+                  Dr Dawit Daniel Kabiye, MD, DM
+                </div>
+                <div style={{ fontSize: 12, color: '#475569', marginTop: 2 }}>
+                  General &amp; Endoscopic Surgery
+                </div>
+              </div>
+              <div style={{ textAlign: 'right', fontSize: 11, color: '#475569', lineHeight: 1.7 }}>
+                <div>Rodney Bay, Providence Building</div>
+                <div>Tapion Hospital (ERCP / Surgery)</div>
+                <div>Saint Lucia, W.I.</div>
+                <div style={{ marginTop: 4 }}>Tel: +1 (758) 284-0557</div>
+                <div>+1 (758) 720-7111</div>
+              </div>
+            </div>
+
+            {/* Date */}
+            <div style={{ fontSize: 12, color: '#475569', marginBottom: 20 }}>
+              {new Date().toLocaleDateString('en-GB', {
+                day: 'numeric', month: 'long', year: 'numeric',
+                timeZone: 'America/St_Lucia',
+              })}
+            </div>
+
+            {/* Body */}
+            <div style={{ fontSize: 13.5, lineHeight: 1.75, color: '#1e293b', whiteSpace: 'pre-wrap' }}>
+              {output}
+            </div>
+
+            {/* Signature block */}
+            <div style={{ marginTop: 40, paddingTop: 16, borderTop: '1px solid #e2e8f0' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#0d2520' }}>Dr Dawit Daniel Kabiye, MD, DM</div>
+              <div style={{ fontSize: 12, color: '#475569' }}>Consultant General &amp; Endoscopic Surgeon</div>
+              <div style={{ fontSize: 12, color: '#475569' }}>Amise Medical Services, Saint Lucia</div>
+            </div>
+          </div>
+
+          {/* Print styles */}
+          <style>{`
+            @media print {
+              body > *:not(#letter-print-area) { display: none !important; }
+              #letter-print-area {
+                position: fixed; top: 0; left: 0; width: 100%;
+                border: none !important; padding: 32px 48px !important;
+              }
+            }
+          `}</style>
         </CollapsibleCard>
       )}
     </div>

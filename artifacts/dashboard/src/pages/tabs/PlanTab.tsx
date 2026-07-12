@@ -5,6 +5,7 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import { errMsg } from '@/lib/err';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
+import NarrativeInput from '@/components/NarrativeInput';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -281,6 +282,19 @@ export default function PlanTab() {
   return (
     <div className="gap-y">
       <CollapsibleCard title="Management plan">
+        {/* Narrative dictation → plan fields */}
+        <div style={{ marginBottom: 14 }}>
+          <NarrativeInput
+            section="plan"
+            placeholder="Dictate or paste the management plan — AI will extract structured steps, investigations, prescriptions, and follow-up…"
+            label="Dictate management plan"
+            onParsed={data => {
+              const p = data.plan as string | undefined;
+              if (p?.trim()) setPlan(p.trim());
+            }}
+          />
+        </div>
+
         {/* Dynamic plan generation from active diagnosis */}
         {protocol && (
           <div style={{

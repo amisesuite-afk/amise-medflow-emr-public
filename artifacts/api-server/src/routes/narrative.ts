@@ -6,7 +6,7 @@
  * section. Both the raw narrative and the structured output are returned so
  * the frontend can store both in the database.
  *
- * Supported sections: pmh | medications | allergies | examination
+ * Supported sections: pmh | medications | allergies | examination | assessment | plan
  */
 
 import { Router } from 'express';
@@ -86,11 +86,48 @@ Do NOT invent findings not present in the narrative.
 Do NOT collapse or summarise — preserve full clinical detail.`;
 }
 
+function assessmentPrompt(): string {
+  return `You are a consultant general surgeon parsing a dictated clinical assessment / impression for AMISE MedFlow EMR.
+
+Return ONLY valid JSON (no markdown, no explanation):
+{
+  "assessment": string,
+  "differentials": string,
+  "icdHint": string | null
+}
+
+assessment: the primary clinical impression as a concise, consultant-quality paragraph.
+differentials: newline-separated list of differential diagnoses ranked by likelihood, e.g. "1. Acute cholecystitis\\n2. Biliary colic\\n3. Peptic ulcer disease"
+icdHint: the most likely ICD-10 code and short description for the leading diagnosis, e.g. "K80.00 — Gallstones with acute cholecystitis". Null if unclear.
+Do NOT invent diagnoses. Preserve all clinical reasoning from the narrative.`;
+}
+
+function planPrompt(): string {
+  return `You are a consultant general surgeon parsing a dictated management plan for AMISE MedFlow EMR.
+
+Return ONLY valid JSON (no markdown, no explanation):
+{
+  "plan": string,
+  "investigations": string[],
+  "prescriptions": string[],
+  "referrals": string[],
+  "followUp": string | null
+}
+
+plan: the full management plan as structured prose, exactly as dictated. Preserve clinical detail.
+investigations: list of investigations ordered (bloods, imaging, endoscopy), each as a short string.
+prescriptions: list of medications/prescriptions, each as "Drug dose frequency route".
+referrals: list of referrals or consultations requested.
+followUp: follow-up timeframe if mentioned (e.g. "2 weeks post-op"), or null.`;
+}
+
 const PROMPT_MAP: Record<string, (chips: string[]) => string> = {
   pmh:         pmhPrompt,
   medications: medicationsPrompt,
   allergies:   () => allergiesPrompt(),
   examination: () => examinationPrompt(),
+  assessment:  () => assessmentPrompt(),
+  plan:        () => planPrompt(),
 };
 
 router.post('/api/narrative/parse', async (req, res) => {

@@ -8,6 +8,7 @@ import { ICD_CODES, type IcdCode } from '@/data/icd-db';
 import { getCdsSuggestions } from '@/lib/clinical-cds';
 import { useSpeechInput } from '@/hooks/useSpeechInput';
 import ClinicalAlgorithmPanel from '@/components/ClinicalAlgorithmPanel';
+import NarrativeInput from '@/components/NarrativeInput';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -641,6 +642,21 @@ export default function AssessmentTab() {
             <IcdAutoSuggest />
           </div>
           <DiagnosisPicker />
+        </div>
+
+        {/* Narrative dictation → assessment + differentials */}
+        <div style={{ borderTop: '1px solid #f3f4f6', paddingTop: 12, marginBottom: 4 }}>
+          <NarrativeInput
+            section="assessment"
+            placeholder="Dictate or paste your clinical impression and differentials — AI will extract assessment, ranked differentials, and ICD hint…"
+            label="Dictate clinical assessment"
+            onParsed={data => {
+              const a = data.assessment as string | undefined;
+              const d = data.differentials as string | undefined;
+              if (a?.trim()) setAssessment(a.trim());
+              if (d?.trim()) setDifferentials(d.trim());
+            }}
+          />
         </div>
 
         {/* Clinical impression / reasoning */}
