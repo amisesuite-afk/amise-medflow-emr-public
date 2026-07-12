@@ -32,6 +32,8 @@ interface LabResult {
   status: string;
   reported_at: string | null;
   created_at: string;
+  acknowledged_at?: string | null;
+  action_taken?: string | null;
 }
 
 interface ImagingOrder {
@@ -47,6 +49,8 @@ interface ImagingOrder {
   report_text: string | null;
   radiologist: string | null;
   created_at: string;
+  acknowledged_at?: string | null;
+  action_taken?: string | null;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -93,16 +97,124 @@ async function fetchPatientNames(ids: string[]): Promise<Map<string, string>> {
   return m;
 }
 
+// ─── Acknowledge inline form ──────────────────────────────────────────────────
+
+function AcknowledgeForm({
+  saving,
+  onConfirm,
+  onSkip,
+  onCancel,
+}: {
+  saving: boolean;
+  onConfirm: (text: string | null) => void;
+  onSkip: () => void;
+  onCancel: () => void;
+}) {
+  const [actionText, setActionText] = useState('');
+
+  return (
+    <div style={{
+      marginTop: 8,
+      padding: '10px 11px',
+      background: 'var(--surface)',
+      border: '1px solid var(--border)',
+      borderRadius: 7,
+    }}>
+      <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: 'var(--muted)', marginBottom: 5 }}>
+        Action taken (optional)
+      </label>
+      <textarea
+        value={actionText}
+        onChange={e => setActionText(e.target.value)}
+        placeholder="e.g. Contacted patient, GP notified, repeat test ordered…"
+        rows={2}
+        disabled={saving}
+        style={{
+          width: '100%',
+          boxSizing: 'border-box',
+          fontSize: 12,
+          padding: '6px 8px',
+          borderRadius: 5,
+          border: '1px solid var(--border)',
+          background: saving ? '#f8fafc' : 'var(--bg, #fff)',
+          color: 'var(--fg)',
+          resize: 'vertical',
+          fontFamily: 'inherit',
+          lineHeight: 1.5,
+        }}
+      />
+      <div style={{ display: 'flex', gap: 6, marginTop: 7, alignItems: 'center' }}>
+        <button
+          onClick={() => onConfirm(actionText.trim() || null)}
+          disabled={saving}
+          style={{
+            fontSize: 11, fontWeight: 700, padding: '4px 12px', borderRadius: 5, cursor: saving ? 'default' : 'pointer',
+            border: '1px solid #16a34a', background: saving ? '#dcfce7' : '#16a34a', color: '#fff',
+          }}
+        >
+          {saving ? 'Saving…' : 'Confirm'}
+        </button>
+        <button
+          onClick={onSkip}
+          disabled={saving}
+          style={{
+            fontSize: 11, fontWeight: 600, padding: '4px 11px', borderRadius: 5, cursor: saving ? 'default' : 'pointer',
+            border: '1px solid #d1d5db', background: 'var(--surface)', color: '#374151',
+          }}
+        >
+          Skip
+        </button>
+        <button
+          onClick={onCancel}
+          disabled={saving}
+          style={{
+            fontSize: 11, padding: '4px 8px', borderRadius: 5, cursor: saving ? 'default' : 'pointer',
+            border: 'none', background: 'none', color: 'var(--muted)',
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Reviewed badge ───────────────────────────────────────────────────────────
+
+function ReviewedBadge({ acknowledgedAt, actionTaken }: { acknowledgedAt?: string | null; actionTaken?: string | null }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <span style={{
+        display: 'inline-flex', alignItems: 'center', gap: 4,
+        fontSize: 11, fontWeight: 700, color: '#16a34a',
+        padding: '3px 8px', borderRadius: 4,
+        background: '#dcfce7', border: '1px solid #86efac',
+        alignSelf: 'flex-start',
+      }}>
+        ✓ Reviewed{acknowledgedAt ? ` · ${relTime(acknowledgedAt)}` : ''}
+      </span>
+      {actionTaken && (
+        <div style={{ fontSize: 11, color: 'var(--muted)', paddingLeft: 2 }}>
+          Action: <span style={{ color: 'var(--fg)' }}>{actionTaken}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Lab result card ─────────────────────────────────────────────────────────
 
 function LabCard({
-  result, name, reviewing, onReview,
+  result, name, reviewing, onAcknowledge,
 }: {
   result: LabResult;
   name: string;
   reviewing: boolean;
-  onReview: (id: string) => void;
+  onAcknowledge: (id: string, actionText: string | null) => void;
 }) {
+  const [showForm, setShowForm] = useState(false);
+
+  const isReviewed = result.status === 'reviewed' || !!result.acknowledged_at;
   const critBorder = result.is_critical ? '#dc2626' : result.is_abnormal ? '#d97706' : 'var(--border)';
   const critBg     = result.is_critical ? '#fef2f2' : result.is_abnormal ? '#fffbeb' : 'var(--surface)';
 
@@ -165,17 +277,27 @@ function LabCard({
         </div>
       )}
 
-      {/* Review button */}
-      <button
-        onClick={() => onReview(result.id)}
-        disabled={reviewing}
-        style={{
-          fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: reviewing ? 'default' : 'pointer',
-          border: '1px solid #d1d5db', background: reviewing ? '#f1f5f9' : '#fff', color: '#374151', fontWeight: 600,
-        }}
-      >
-        {reviewing ? 'Marking…' : '✓ Mark reviewed'}
-      </button>
+      {/* Review / acknowledge area */}
+      {isReviewed ? (
+        <ReviewedBadge acknowledgedAt={result.acknowledged_at} actionTaken={result.action_taken} />
+      ) : showForm ? (
+        <AcknowledgeForm
+          saving={reviewing}
+          onConfirm={text => onAcknowledge(result.id, text)}
+          onSkip={() => onAcknowledge(result.id, null)}
+          onCancel={() => setShowForm(false)}
+        />
+      ) : (
+        <button
+          onClick={() => setShowForm(true)}
+          style={{
+            fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: 'pointer',
+            border: '1px solid #d1d5db', background: '#fff', color: '#374151', fontWeight: 600,
+          }}
+        >
+          ✓ Mark reviewed
+        </button>
+      )}
     </div>
   );
 }
@@ -183,15 +305,18 @@ function LabCard({
 // ─── Imaging order card ───────────────────────────────────────────────────────
 
 function ImagingCard({
-  order, name, reviewing, onReview,
+  order, name, reviewing, onAcknowledge,
 }: {
   order: ImagingOrder;
   name: string;
   reviewing: boolean;
-  onReview: (id: string) => void;
+  onAcknowledge: (id: string, actionText: string | null) => void;
 }) {
   const urgStyle = URGENCY_STYLE[order.urgency] ?? URGENCY_STYLE.routine;
   const [expanded, setExpanded] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  const isReviewed = order.status === 'reviewed' || !!order.acknowledged_at;
 
   return (
     <div style={{
@@ -249,17 +374,27 @@ function ImagingCard({
         </div>
       )}
 
-      {/* Review button */}
-      <button
-        onClick={() => onReview(order.id)}
-        disabled={reviewing}
-        style={{
-          fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: reviewing ? 'default' : 'pointer',
-          border: '1px solid #d1d5db', background: reviewing ? '#f1f5f9' : '#fff', color: '#374151', fontWeight: 600,
-        }}
-      >
-        {reviewing ? 'Marking…' : '✓ Mark reviewed'}
-      </button>
+      {/* Review / acknowledge area */}
+      {isReviewed ? (
+        <ReviewedBadge acknowledgedAt={order.acknowledged_at} actionTaken={order.action_taken} />
+      ) : showForm ? (
+        <AcknowledgeForm
+          saving={reviewing}
+          onConfirm={text => onAcknowledge(order.id, text)}
+          onSkip={() => onAcknowledge(order.id, null)}
+          onCancel={() => setShowForm(false)}
+        />
+      ) : (
+        <button
+          onClick={() => setShowForm(true)}
+          style={{
+            fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: 'pointer',
+            border: '1px solid #d1d5db', background: '#fff', color: '#374151', fontWeight: 600,
+          }}
+        >
+          ✓ Mark reviewed
+        </button>
+      )}
     </div>
   );
 }
@@ -270,14 +405,14 @@ type TabId = 'labs' | 'imaging';
 type Filter = 'all' | 'critical';
 
 export default function ResultsInboxTab() {
-  const [labResults, setLabResults]     = useState<LabResult[]>([]);
+  const [labResults, setLabResults]       = useState<LabResult[]>([]);
   const [imagingOrders, setImagingOrders] = useState<ImagingOrder[]>([]);
-  const [names, setNames]               = useState<Map<string, string>>(new Map());
-  const [loading, setLoading]           = useState(false);
-  const [error, setError]               = useState<string | null>(null);
-  const [activeTab, setActiveTab]       = useState<TabId>('labs');
-  const [filter, setFilter]             = useState<Filter>('all');
-  const [reviewing, setReviewing]       = useState<Set<string>>(new Set());
+  const [names, setNames]                 = useState<Map<string, string>>(new Map());
+  const [loading, setLoading]             = useState(false);
+  const [error, setError]                 = useState<string | null>(null);
+  const [activeTab, setActiveTab]         = useState<TabId>('labs');
+  const [filter, setFilter]               = useState<Filter>('all');
+  const [reviewing, setReviewing]         = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const load = useCallback(async () => {
@@ -316,38 +451,68 @@ export default function ResultsInboxTab() {
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [load]);
 
-  async function markReviewed(id: string, table: 'investigation_results' | 'imaging_orders') {
+  async function acknowledge(
+    id: string,
+    actionText: string | null,
+    table: 'investigation_results' | 'imaging_orders',
+  ) {
+    if (!supabase) {
+      setError('Supabase client not available');
+      return;
+    }
     setReviewing(s => new Set(s).add(id));
     try {
-      const headers = await staffAuthHeaders();
-      const res = await fetch(apiUrl(`/api/investigations/review/${id}`), {
-        method: 'POST',
-        headers: { ...headers, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ table }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      // Optimistic remove
+      const now = new Date().toISOString();
+      const payload: Record<string, unknown> = {
+        status: 'reviewed',
+        acknowledged_at: now,
+      };
+      if (actionText !== null) payload.action_taken = actionText;
+
+      const { error: sbErr } = await supabase
+        .from(table)
+        .update(payload)
+        .eq('id', id);
+
+      if (sbErr) throw sbErr;
+
+      // Update local state: mark item as reviewed so the reviewed badge is shown.
+      // The item will disappear from the list on the next refresh (90 s) since
+      // the pending endpoint no longer returns reviewed results.
       if (table === 'investigation_results') {
-        setLabResults(prev => prev.filter(r => r.id !== id));
+        setLabResults(prev =>
+          prev.map(r =>
+            r.id === id
+              ? { ...r, status: 'reviewed', acknowledged_at: now, action_taken: actionText }
+              : r,
+          ),
+        );
       } else {
-        setImagingOrders(prev => prev.filter(r => r.id !== id));
+        setImagingOrders(prev =>
+          prev.map(r =>
+            r.id === id
+              ? { ...r, status: 'reviewed', acknowledged_at: now, action_taken: actionText }
+              : r,
+          ),
+        );
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Review failed');
+      setError(err instanceof Error ? err.message : 'Acknowledge failed');
     } finally {
       setReviewing(s => { const n = new Set(s); n.delete(id); return n; });
     }
   }
 
+  // Counts exclude already-reviewed items (reviewed in this session)
+  const unreviewedLabCount  = labResults.filter(r => r.status !== 'reviewed' && !r.acknowledged_at).length;
+  const unreviewedImgCount  = imagingOrders.filter(r => r.status !== 'reviewed' && !r.acknowledged_at).length;
+  const criticalLabCount    = labResults.filter(r => r.is_critical && r.status !== 'reviewed' && !r.acknowledged_at).length;
+
   const filteredLabs = filter === 'critical'
     ? labResults.filter(r => r.is_critical)
     : labResults;
 
-  const filteredImaging = imagingOrders; // imaging has no is_critical flag
-
-  const criticalLabCount    = labResults.filter(r => r.is_critical).length;
-  const unreviewedLabCount  = labResults.length;
-  const unreviewedImgCount  = imagingOrders.length;
+  const filteredImaging = imagingOrders;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -449,7 +614,7 @@ export default function ResultsInboxTab() {
                 result={r}
                 name={names.get(r.patient_id) ?? r.patient_id}
                 reviewing={reviewing.has(r.id)}
-                onReview={id => void markReviewed(id, 'investigation_results')}
+                onAcknowledge={(id, text) => void acknowledge(id, text, 'investigation_results')}
               />
             ))}
           </div>
@@ -467,7 +632,7 @@ export default function ResultsInboxTab() {
                 order={r}
                 name={names.get(r.patient_id) ?? r.patient_id}
                 reviewing={reviewing.has(r.id)}
-                onReview={id => void markReviewed(id, 'imaging_orders')}
+                onAcknowledge={(id, text) => void acknowledge(id, text, 'imaging_orders')}
               />
             ))}
           </div>

@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
-import { InteractiveProtocolPanel } from '@/components/InteractiveProtocolPanel';
 import { errMsg } from '@/lib/err';
-import SmartTextarea from '@/components/SmartTextarea';
-import FollowUpSchedulerCard, { type FollowUpEntry } from '@/components/FollowUpSchedulerCard';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
-import PreopRiskScoringCard from '@/components/PreopRiskScoringCard';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/components/ToastProvider';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -157,12 +156,15 @@ export default function PlanTab() {
     encounterMode,
     symptoms,
     patientName, phone, currentSite,
+    patientId, encounterId,
   } = useAppContext();
+
+  const { session, profile } = useAuth();
+  const { showToast } = useToast();
+  const userId = session?.user?.id ?? profile?.id ?? null;
 
   const acuity = triageResult.acuity;
   const bmiData = calcBmiClass(weightKg, heightCm);
-
-  const [followUpEntries, setFollowUpEntries] = useState<FollowUpEntry[]>([]);
 
   // Review / follow-up scheduling
   const [followUpNotes, setFollowUpNotes] = useState('');
@@ -205,6 +207,57 @@ export default function PlanTab() {
         throw new Error(d.error ?? `HTTP ${r.status}`);
       }
       setScheduleOk(targetDate);
+
+      // Auto-create a follow-up patient_task after successful booking request
+      if (patientId && supabase) {
+        try {
+          // 1. Check whether an open/in-progress follow-up task already exists for this patient
+          const { data: existing } = await supabase
+            .from('patient_tasks')
+            .select('id')
+            .eq('source_table', 'plans')
+            .eq('patient_id', patientId)
+            .eq('task_type', 'follow_up_appointment')
+            .in('status', ['open', 'in_progress']);
+
+          if (!existing || existing.length === 0) {
+            // 2. Resolve the plan row ID for this encounter (used as source_id)
+            let planId: string | null = null;
+            if (encounterId) {
+              const { data: planRow } = await supabase
+                .from('plans')
+                .select('id')
+                .eq('encounter_id', encounterId)
+                .maybeSingle();
+              planId = (planRow as { id: string } | null)?.id ?? null;
+            }
+
+            // 3. Insert the patient_task
+            const { error: taskErr } = await supabase
+              .from('patient_tasks')
+              .insert({
+                patient_id:   patientId,
+                encounter_id: encounterId ?? null,
+                task_type:    'follow_up_appointment',
+                description:  'Follow-up appointment - ' + (followUpNotes || 'as per plan'),
+                due_date:     targetDate,
+                priority:     'normal',
+                status:       'open',
+                source_table: 'plans',
+                source_id:    planId,
+                created_by:   userId,
+              });
+
+            if (!taskErr) {
+              showToast('Follow-up task created', 'success');
+            } else {
+              console.error('[PlanTab] patient_task insert:', taskErr.message);
+            }
+          }
+        } catch (taskEx) {
+          console.error('[PlanTab] auto-create follow-up task:', taskEx);
+        }
+      }
     } catch (e) {
       setScheduleErr(errMsg(e));
     } finally {
@@ -246,37 +299,67 @@ export default function PlanTab() {
 
   return (
     <div className="gap-y">
-      <CollapsibleCard title="Interactive Protocol">
-        <InteractiveProtocolPanel
-          paneTop={paneTop}
-          paneConverged={paneConverged}
-          icdCode={activeIcdCode}
-          weightKg={weightKg}
-          onApplyPlan={(planText, _disposition) => {
-            setPlan(plan ? `${plan}\n\n${planText}` : planText);
-          }}
-        />
-      </CollapsibleCard>
+      <CollapsibleCard title="Management plan">
+        {/* Dynamic plan generation from active diagnosis */}
+        {protocol && (
+          <div style={{
+            marginBottom: 12,
+            padding: '10px 14px',
+            background: '#0c2233',
+            border: '1px solid #0d9488',
+            borderRadius: 8,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 12, color: '#5eead4', fontWeight: 600 }}>
+                Protocol matched: {protocol.label}
+              </span>
+              <button
+                type="button"
+                className="chip"
+                onClick={handleGeneratePlan}
+                style={{ background: '#0d9488', color: '#fff', borderColor: '#0d9488' }}
+              >
+                Generate plan from {protocol.label}
+              </button>
+              {isInpatient && (
+                <button
+                  type="button"
+                  className="chip"
+                  onClick={handleGenerateNursing}
+                  title="Append nursing directives to plan"
+                >
+                  + Nursing directives
+                </button>
+              )}
+            </div>
+            {protocol.redFlags.length > 0 && (
+              <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {protocol.redFlags.slice(0, 3).map((rf, i) => (
+                  <span key={i} style={{
+                    fontSize: 10, padding: '2px 8px', borderRadius: 12,
+                    background: '#7f1d1d22', border: '1px solid #ef444455', color: '#fca5a5',
+                  }}>
+                    ⚑ {rf.length > 60 ? rf.slice(0, 57) + '…' : rf}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-      <CollapsibleCard title="Plan (free text)">
         {!protocol && acuity === 'urgent' && (
           <div style={{ marginBottom: 10, padding: '8px 12px', background: '#7f1d1d22', border: '1px solid #ef444455', borderRadius: 6, fontSize: 12, color: '#fca5a5' }}>
             Urgent acuity — no matched protocol. Use emergency template below or enter plan manually.
           </div>
         )}
-        {isInpatient && (
-          <div style={{ marginBottom: 8 }}>
-            <button type="button" className="chip" onClick={handleGenerateNursing}>+ Nursing directives</button>
-          </div>
-        )}
 
         <div className="fld">
           <label>Plan</label>
-          <SmartTextarea
+          <textarea
             value={plan}
-            onChange={setPlan}
-            placeholder="Management steps in order… (type .plan, .planop, .plandc to expand)"
-            style={{ minHeight: 200, width: '100%' }}
+            onChange={e => setPlan(e.target.value)}
+            placeholder="Management steps in order…"
+            style={{ minHeight: 200 }}
           />
         </div>
 
@@ -424,8 +507,6 @@ export default function PlanTab() {
         <CptPicker />
       </CollapsibleCard>
 
-      <FollowUpSchedulerCard entries={followUpEntries} onChange={setFollowUpEntries} />
-
       <CollapsibleCard title="Referrals" defaultOpen={false}>
         <div className="fld">
           <label>Referrals made / requested</label>
@@ -435,8 +516,6 @@ export default function PlanTab() {
           />
         </div>
       </CollapsibleCard>
-
-      <PreopRiskScoringCard />
     </div>
   );
 }

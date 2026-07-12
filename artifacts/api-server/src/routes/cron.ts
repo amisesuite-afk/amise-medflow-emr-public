@@ -148,6 +148,25 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     .select('id')
     .eq('status', 'pending');
 
+  // todayEctDateString: ectMidnight has UTC hours zeroed to represent ECT midnight,
+  // so its ISO date part equals today's date in ECT (America/St_Lucia, UTC-4).
+  const todayEctDateString = ectMidnight.toISOString().slice(0, 10);
+
+  // Mark any open/in_progress tasks whose due_date has passed as overdue.
+  await sb()
+    .from('patient_tasks')
+    .update({ status: 'overdue' })
+    .in('status', ['open', 'in_progress'])
+    .lt('due_date', todayEctDateString);
+
+  const { data: overdueTasks } = await sb()
+    .from('patient_tasks')
+    .select('id, task_type, description, due_date, priority, status')
+    .in('status', ['open', 'in_progress', 'overdue'])
+    .lte('due_date', todayEctDateString)
+    .order('due_date', { ascending: true })
+    .limit(20);
+
   const summaryLines: string[] = [
     `Daily Summary — Amise Front Desk AI — ${dateLabel}`,
     '',
@@ -170,6 +189,15 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     for (const esc of escalations) {
       // Omit payload — record_id and action are sufficient for triage
       summaryLines.push(`  [${esc.action}] entity: ${esc.record_id} at ${esc.created_at}`);
+    }
+  }
+
+  if (overdueTasks?.length) {
+    summaryLines.push('', `Overdue / Due Tasks (${overdueTasks.length}):`);
+    for (const task of overdueTasks) {
+      const priority = (task.priority as string ?? '').toLowerCase();
+      const priorityPrefix = (priority === 'urgent' || priority === 'high') ? `[${(task.priority as string).toUpperCase()}] ` : '';
+      summaryLines.push(`  ${priorityPrefix}${task.task_type} - ${task.description} (due: ${task.due_date})`);
     }
   }
 
@@ -274,7 +302,6 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
   }
 
   const results: { id: string; action: string }[] = [];
-  const escalatedIds: string[] = [];
 
   for (const booking of pending ?? []) {
     try {
@@ -311,18 +338,13 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
         await sendSms({ to: staffPhone, body: smsBody });
       }
 
-      escalatedIds.push(booking.id);
+      await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).eq('id', booking.id);
       await audit({ action: 'escalate', entityType: 'appointment_request', entityId: booking.id, payload: { hours_waiting: hoursWaiting, doc_escalation: isDocEscalation } });
       results.push({ id: booking.id, action: isDocEscalation ? 'doctor_escalated' : 'staff_re_notified' });
     } catch (err) {
       logger.error({ error: err, bookingId: booking.id }, '[cron/staff-escalation] failed to process booking, continuing with remaining');
       results.push({ id: booking.id, action: 'error' });
     }
-  }
-
-  // Batch update all escalated bookings at once
-  if (escalatedIds.length) {
-    await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).in('id', escalatedIds);
   }
 
   // Auto-cancel bookings unactioned for > 8 hours — sends apology SMS to patient
@@ -336,10 +358,10 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
   if (staleErr) {
     logger.error({ error: staleErr }, '[cron/staff-escalation] stale query error');
   } else {
-    const cancelledIds: string[] = [];
-
     for (const booking of stale ?? []) {
       try {
+        await supa.from('appointment_requests').update({ status: 'cancelled', notes: 'Auto-cancelled after 8h with no staff action' }).eq('id', booking.id);
+
         if (booking.patient_phone) {
           const firstName = (booking.patient_name as string || 'there').split(' ')[0];
           await sendSms({
@@ -356,7 +378,6 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
           }, 'auto');
         }
 
-        cancelledIds.push(booking.id);
         await audit({ action: 'auto_cancel', entityType: 'appointment_request', entityId: booking.id, payload: { reason: 'unactioned_8h' } });
         results.push({ id: booking.id, action: 'auto_cancelled_8h' });
       } catch (err) {
@@ -364,80 +385,9 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
         results.push({ id: booking.id, action: 'error' });
       }
     }
-
-    // Batch update all cancelled bookings at once
-    if (cancelledIds.length) {
-      await supa.from('appointment_requests').update({ status: 'cancelled', notes: 'Auto-cancelled after 8h with no staff action' }).in('id', cancelledIds);
-    }
   }
 
   logger.info({ count: results.length }, '[cron/staff-escalation] done');
-  res.json({ processed: results.length, results });
-});
-
-// ── Lab result alerts ──────────────────────────────────────────────────────
-// Called by cron (or triggered manually). Finds lab appointment_requests where
-// result_alert_pending = true, result_alert_sent_at IS NULL, and result_alert_email
-// is set. Sends a plain email to the alert address and marks result_alert_sent_at.
-router.post('/api/cron/lab-alerts', async (req, res) => {
-  if (!requireCronSecret(req, res)) return;
-
-  const now = new Date();
-  const supa = getSupabaseAdmin();
-
-  const { data: pending, error } = await supa
-    .from('appointment_requests')
-    .select('id, patient_name, appointment_type, preferred_slot, result_alert_email')
-    .eq('result_alert_pending', true)
-    .is('result_alert_sent_at', null)
-    .not('result_alert_email', 'is', null);
-
-  if (error) {
-    logger.error({ error }, '[cron/lab-alerts] db error');
-    res.status(502).json({ error: 'DB error' });
-    return;
-  }
-
-  const results: { id: string; action: string }[] = [];
-
-  for (const row of pending ?? []) {
-    try {
-      const dateLabel = row.preferred_slot
-        ? new Date(row.preferred_slot).toLocaleDateString('en-LC', { timeZone: 'America/St_Lucia', weekday: 'short', day: 'numeric', month: 'short' })
-        : 'recently';
-
-      const subject = `Lab results available — ${row.patient_name}`;
-      const body = [
-        `This is an automated notification from Amise Medical Services.`,
-        ``,
-        `Lab results are now available for:`,
-        `  Patient:    ${row.patient_name}`,
-        `  Test type:  ${(row.appointment_type as string).replace(/_/g, ' ')}`,
-        `  Collected:  ${dateLabel}`,
-        ``,
-        `Please review the results and follow up with the patient as clinically appropriate.`,
-        ``,
-        `-- Amise Medical Services`,
-        `   Saint Lucia`,
-      ].join('\n');
-
-      await sendOrDraft({ to: row.result_alert_email as string, subject, body }, 'auto');
-
-      await supa
-        .from('appointment_requests')
-        .update({ result_alert_pending: false, result_alert_sent_at: now.toISOString() })
-        .eq('id', row.id);
-
-      await audit({ action: 'lab_alert_sent', entityType: 'appointment_request', entityId: row.id, payload: { to: row.result_alert_email } });
-
-      results.push({ id: row.id, action: 'lab_alert_sent' });
-    } catch (err) {
-      logger.error({ error: err, id: row.id }, '[cron/lab-alerts] send error');
-      results.push({ id: row.id, action: 'error' });
-    }
-  }
-
-  logger.info({ count: results.length }, '[cron/lab-alerts] done');
   res.json({ processed: results.length, results });
 });
 
