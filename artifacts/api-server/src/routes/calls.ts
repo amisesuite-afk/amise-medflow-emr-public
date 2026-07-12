@@ -578,9 +578,12 @@ router.post('/api/calls/twiml', (req, res) => {
     return;
   }
 
-  // Build <Number> tags for each forwarding target
+  // Build <Number> tags — each with a whisper URL so staff hear
+  // "Amise Medical Services — Tapion call. Press 1 to accept."
+  // before the caller is connected. Caller hears silence during whisper.
+  const whisperUrl = `${apiBase}/api/calls/whisper?line=${encodeURIComponent(line)}`;
   const numberTags = forwards
-    .map(n => `<Number statusCallback="${apiBase}/api/calls/dial-status?sid=${encodeURIComponent(callSid)}">${n}</Number>`)
+    .map(n => `<Number url="${whisperUrl}" statusCallback="${apiBase}/api/calls/dial-status?sid=${encodeURIComponent(callSid)}">${n}</Number>`)
     .join('\n    ');
 
   // Dial action: if nobody picks up → action URL returns voicemail TwiML
@@ -590,6 +593,43 @@ router.post('/api/calls/twiml', (req, res) => {
     ${numberTags}
   </Dial>
 </Response>`);
+});
+
+// ── POST /api/calls/whisper ───────────────────────────────────────────────────
+// Twilio fetches this URL the instant a forwarded cell phone answers,
+// BEFORE connecting the caller. Only the staff member hears this —
+// the caller hears silence/hold music while the whisper plays.
+//
+// Staff hears: "Amise Medical Services — Tapion call. Press 1 to accept."
+// If they press 1 → caller connects.
+// If no keypress or press anything else → call drops to next forward or voicemail.
+
+router.post('/api/calls/whisper', (_req, res) => {
+  const line = (_req.query.line as string) ?? '';
+  const lineLabel = line && line !== 'Unknown' ? line : 'practice';
+
+  res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Gather numDigits="1" action="${process.env.API_BASE_URL ?? ''}/api/calls/whisper-accept" method="POST">
+    <Say voice="Polly.Joanna" language="en-US">Amise Medical Services — ${lineLabel} call. Press 1 to accept.</Say>
+  </Gather>
+  <Hangup />
+</Response>`);
+});
+
+// ── POST /api/calls/whisper-accept ───────────────────────────────────────────
+// Staff pressed a digit — if 1, connect; otherwise hang up (drops to next forward).
+
+router.post('/api/calls/whisper-accept', (req, res) => {
+  const digit = (req.body as Record<string, string>).Digits ?? '';
+  if (digit === '1') {
+    // Empty response = connect the caller
+    res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<Response></Response>`);
+  } else {
+    res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<Response><Hangup /></Response>`);
+  }
 });
 
 // ── POST /api/calls/no-answer ─────────────────────────────────────────────────
