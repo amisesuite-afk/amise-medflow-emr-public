@@ -286,6 +286,22 @@ export default function IntakeTab() {
               </span>
             )}
           </div>
+          {/* Next of kin — same row as phone in the 4-col grid */}
+          <div className="fld">
+            <label>NOK name</label>
+            <input type="text" value={nokName} onChange={e => setNokName(e.target.value)} placeholder="e.g. Jean Joseph" />
+          </div>
+          <div className="fld">
+            <label>NOK relationship</label>
+            <select value={nokRelation} onChange={e => setNokRelation(e.target.value)}>
+              <option value="">— Select —</option>
+              {['Spouse','Partner','Parent','Child','Sibling','Grandparent','Aunt/Uncle','Friend','Guardian','Carer','Other'].map(r => <option key={r} value={r}>{r}</option>)}
+            </select>
+          </div>
+          <div className="fld">
+            <label>NOK phone</label>
+            <input inputMode="tel" type="tel" value={nokTel} onChange={e => setNokTel(e.target.value)} placeholder="+1 (758) XXX-XXXX" />
+          </div>
         </div>
 
         {/* Contact & administrative — collapsible */}
@@ -382,27 +398,6 @@ export default function IntakeTab() {
               <input value={policyNumber} onChange={e => setPolicyNumber(e.target.value)} placeholder="Policy number" />
             </div>
           </div>}
-          {/* NOK — always visible */}
-          <div style={{ borderTop: '1px solid #f1f5f9', marginTop: 12, paddingTop: 12 }}>
-            <div style={{ fontSize: 10, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Next of kin</div>
-            <div className="form-grid">
-              <div className="fld">
-                <label>Full name</label>
-                <input type="text" value={nokName} onChange={e => setNokName(e.target.value)} placeholder="e.g. Jean Joseph" />
-              </div>
-              <div className="fld">
-                <label>Relationship</label>
-                <select value={nokRelation} onChange={e => setNokRelation(e.target.value)}>
-                  <option value="">— Select —</option>
-                  {['Spouse','Partner','Parent','Child','Sibling','Grandparent','Aunt/Uncle','Friend','Guardian','Carer','Other'].map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
-              </div>
-              <div className="fld">
-                <label>Contact phone</label>
-                <input inputMode="tel" type="tel" value={nokTel} onChange={e => setNokTel(e.target.value)} placeholder="+1 (758) XXX-XXXX" />
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* ── Referral clinical details ── */}

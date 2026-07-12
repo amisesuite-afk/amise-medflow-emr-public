@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react';
 
-const ITEM_H = 44;
+const ITEM_H = 22;
 const VISIBLE = 5; // must be odd
 
 interface WheelPickerProps {
@@ -140,7 +140,7 @@ export default function WheelPicker({
       style={{
         position: 'relative',
         height: VISIBLE * ITEM_H,
-        width: 82,
+        width: 46,
         overflow: 'hidden',
         cursor: 'ns-resize',
         userSelect: 'none',
@@ -194,7 +194,7 @@ export default function WheelPicker({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: isCenter ? 22 : dist === 1 ? 15 : 12,
+              fontSize: isCenter ? 13 : dist === 1 ? 10 : 9,
               fontWeight: isCenter ? 800 : 400,
               fontVariantNumeric: 'tabular-nums',
               color: isCenter ? (hasValue ? accentColor : '#9ca3af') : '#9ca3af',
