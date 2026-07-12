@@ -137,6 +137,7 @@ pnpm run build                                 # Typecheck + build all packages
 | `PRACTICE_LINE_TAPION_LABEL` | Display label for Tapion line (default `Tapion`) |
 | `PRACTICE_LINE_RODNEY_BAY_LABEL` | Display label for Rodney Bay line (default `Rodney Bay`) |
 | `WHATSAPP_NUMBERS` | Comma-separated E.164 list of WhatsApp-capable lines (default: Tapion + Rodney Bay) |
+| `API_BASE_URL` | Public URL of the API server (used in Twilio TwiML callbacks, e.g. `https://api.example.com`) |
 | `SMS_PROVIDER` | `dry_run` (default) / `twilio` / `digicel` |
 | `SENTRY_DSN` | Sentry DSN for API error monitoring (optional) |
 | `PORTAL_URL` | Front-desk portal URL for CORS and WhatsApp links |

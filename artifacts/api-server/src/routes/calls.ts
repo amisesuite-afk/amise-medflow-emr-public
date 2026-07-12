@@ -1,22 +1,30 @@
 /**
- * /api/calls — voice signal ingestion and patient ID resolution.
+ * /api/calls — voice signal ingestion, voicemail, callback queue, and audit.
  *
- * Every incoming voice signal (phone call via Asterisk/WATI, patient PWA
- * voice note, or ambient in-session recording) lands here and is matched
- * to an existing patient by phone number, email, or name.
+ * Every incoming voice signal lands here and is matched to a patient by
+ * phone, email, or name. Unanswered calls are routed through Twilio TwiML
+ * to leave a voicemail which auto-transcribes and appears in the Call Queue.
  *
- * Match found  → call_log written with patient_id; returns patient context
- * No match     → call_log written with patient_id=NULL; routed to front-desk
+ * Identity anchors: phone + email + name → MRN (AM-YYYYnnnn) auto-assigned.
  *
- * Patient identity anchor: phone + email + name generate a unique health
- * record. On first contact a MRN (AM-YYYYnnnn) is auto-assigned by the DB
- * trigger, serving as the future health card identifier.
+ * Twilio hooks (no auth — verified by signature or shared secret):
+ *   POST /api/calls/twiml          — Voice URL for each practice number
+ *   POST /api/calls/voicemail      — Recording complete callback
+ *   POST /api/calls/status         — Call status events (answered/missed/etc.)
  *
- * Front desk resolves unmatched logs via PATCH /api/calls/:id/resolve,
- * either linking an existing patient or creating a new one on the spot.
+ * Staff endpoints (requireStaffAuth):
+ *   POST   /api/calls/ingest       — manual / ambient ingestion
+ *   GET    /api/calls/unresolved   — front-desk queue
+ *   GET    /api/calls/patient/:id  — patient call history
+ *   GET    /api/calls/practice-lines
+ *   GET    /api/calls/audit        — answered/voicemail/missed counts
+ *   PATCH  /api/calls/:id/resolve  — link to patient
+ *   PATCH  /api/calls/:id/status   — update callback status
+ *   GET    /api/patients/search    — quick lookup for resolve panel
  */
 
 import { Router } from 'express';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
@@ -36,9 +44,9 @@ interface PracticeLine {
 
 function buildPracticeLines(): PracticeLine[] {
   const lines: PracticeLine[] = [
-    { label: 'Tapion',      e164: process.env.PRACTICE_LINE_TAPION      ?? '+17582840557', whatsapp: true  },
-    { label: 'Rodney Bay',  e164: process.env.PRACTICE_LINE_RODNEY_BAY  ?? '+17587207111', whatsapp: true  },
-    { label: 'Landline',    e164: process.env.PRACTICE_LINE_LANDLINE     ?? '+17584592227', whatsapp: false },
+    { label: 'Tapion',          e164: process.env.PRACTICE_LINE_TAPION      ?? '+17582840557', whatsapp: true  },
+    { label: 'Rodney Bay',      e164: process.env.PRACTICE_LINE_RODNEY_BAY  ?? '+17587207111', whatsapp: true  },
+    { label: 'Tapion Landline', e164: process.env.PRACTICE_LINE_LANDLINE     ?? '+17584592227', whatsapp: false },
   ];
 
   // Allow WHATSAPP_NUMBERS to override which lines have WhatsApp
@@ -389,6 +397,266 @@ router.patch('/api/calls/:id/resolve', async (req, res) => {
 
   logger.info({ call_log_id: req.params.id, patient_id: resolvedPatientId }, '[calls/resolve] ok');
   res.json({ patient_id: resolvedPatientId, resolved: true });
+});
+
+// ── PATCH /api/calls/:id/status ───────────────────────────────────────────────
+// Staff updates callback status on any call_log.
+
+const CallStatusSchema = z.object({
+  status:      z.enum(['callback_scheduled', 'called_back', 'dismissed', 'pending']),
+  callback_at: z.string().optional(), // ISO datetime for scheduled callbacks
+  staff_notes: z.string().optional(),
+});
+
+router.patch('/api/calls/:id/status', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const parsed = CallStatusSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Invalid payload', details: parsed.error.flatten() });
+    return;
+  }
+
+  const update: Record<string, unknown> = { status: parsed.data.status };
+  if (parsed.data.callback_at) update.callback_at = parsed.data.callback_at;
+  if (parsed.data.staff_notes !== undefined) update.staff_notes = parsed.data.staff_notes;
+  if (parsed.data.status === 'called_back') update.called_back_at = new Date().toISOString();
+
+  const { error } = await sb()
+    .from('call_logs')
+    .update(update)
+    .eq('id', req.params.id);
+
+  if (error) { res.status(502).json({ error: error.message }); return; }
+  res.json({ ok: true, status: parsed.data.status });
+});
+
+// ── GET /api/calls/audit ──────────────────────────────────────────────────────
+// Returns call volume and outcome counts for the given date range.
+// ?from=ISO&to=ISO&practice_line=label
+
+router.get('/api/calls/audit', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const from  = (req.query.from  as string | undefined) ?? new Date(Date.now() - 86_400_000 * 30).toISOString();
+  const to    = (req.query.to    as string | undefined) ?? new Date().toISOString();
+  const line  = req.query.practice_line as string | undefined;
+
+  let query = sb()
+    .from('call_logs')
+    .select('status, practice_line, direction, source, created_at')
+    .gte('created_at', from)
+    .lte('created_at', to);
+
+  if (line) query = query.eq('practice_line', line);
+
+  const { data, error } = await query;
+  if (error) { res.status(502).json({ error: error.message }); return; }
+
+  const rows = (data ?? []) as Array<{ status: string; practice_line: string | null; direction: string; source: string }>;
+
+  const counts = (s: typeof rows) => ({
+    total:               s.length,
+    answered:            s.filter(r => r.status === 'answered').length,
+    voicemail:           s.filter(r => r.status === 'voicemail').length,
+    missed:              s.filter(r => r.status === 'missed').length,
+    callback_scheduled:  s.filter(r => r.status === 'callback_scheduled').length,
+    called_back:         s.filter(r => r.status === 'called_back').length,
+    dismissed:           s.filter(r => r.status === 'dismissed').length,
+    pending:             s.filter(r => r.status === 'pending').length,
+  });
+
+  const byLine = PRACTICE_LINES.map(l => ({
+    label: l.label,
+    ...counts(rows.filter(r => r.practice_line === l.label)),
+  }));
+
+  res.json({
+    from, to,
+    ...counts(rows),
+    by_line: byLine,
+  });
+});
+
+// ── Twilio webhook helpers ────────────────────────────────────────────────────
+
+function twilioLineFromTo(to: string): string {
+  const matched = PRACTICE_LINES.find(l => normPhone(l.e164) === normPhone(to ?? ''));
+  return matched?.label ?? 'Unknown';
+}
+
+// Validate Twilio signature — returns true if TWILIO_AUTH_TOKEN is unset (dev mode)
+function validateTwilioSignature(req: import('express').Request): boolean {
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  if (!token) return true; // dev: skip validation
+
+  const sig = req.headers['x-twilio-signature'] as string | undefined;
+  if (!sig) return false;
+
+  const proto = req.headers['x-forwarded-proto'] ?? 'https';
+  const host  = req.headers['host'] ?? '';
+  const url   = `${proto}://${host}${req.originalUrl}`;
+
+  const params = req.body as Record<string, string>;
+  const keys   = Object.keys(params).sort();
+  const toSign = url + keys.map(k => k + params[k]).join('');
+
+  const expected = createHmac('sha256', token).update(toSign).digest('base64');
+  try {
+    return timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
+  } catch {
+    return false;
+  }
+}
+
+// ── POST /api/calls/twiml ─────────────────────────────────────────────────────
+// Set this as the Voice URL for each Twilio number (or call-forwarding target).
+// Returns TwiML that greets the caller and records a voicemail.
+
+router.post('/api/calls/twiml', (req, res) => {
+  // Twilio signature validation (optional — set TWILIO_AUTH_TOKEN to enforce)
+  if (process.env.TWILIO_AUTH_TOKEN && !validateTwilioSignature(req)) {
+    logger.warn('[calls/twiml] invalid Twilio signature');
+    res.status(403).send('Forbidden');
+    return;
+  }
+
+  const to  = (req.body as Record<string, string>).To  ?? '';
+  const line = twilioLineFromTo(to);
+  const greeting = `Thank you for calling Amise Medical Services${line && line !== 'Unknown' ? ', ' + line : ''}. We are unable to take your call right now. Please leave your name, phone number, and reason for calling after the tone, and we will call you back as soon as possible.`;
+
+  const apiBase = process.env.API_BASE_URL ?? `https://${req.headers.host ?? 'localhost'}`;
+
+  res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="Polly.Joanna" language="en-US">${greeting}</Say>
+  <Record
+    maxLength="120"
+    transcribe="false"
+    recordingStatusCallback="${apiBase}/api/calls/voicemail"
+    recordingStatusCallbackMethod="POST"
+    action="${apiBase}/api/calls/voicemail-ack"
+    method="POST"
+  />
+</Response>`);
+});
+
+// ── POST /api/calls/voicemail-ack ─────────────────────────────────────────────
+// Fallback TwiML after recording ends (Twilio requires an action response).
+
+router.post('/api/calls/voicemail-ack', (_req, res) => {
+  res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="Polly.Joanna" language="en-US">Thank you. Goodbye.</Say>
+  <Hangup />
+</Response>`);
+});
+
+// ── POST /api/calls/voicemail ─────────────────────────────────────────────────
+// Twilio Recording Status Callback — fires when a recording is ready.
+// Creates or updates a call_log with status=voicemail.
+
+router.post('/api/calls/voicemail', async (req, res) => {
+  // Always acknowledge immediately so Twilio doesn't retry
+  res.sendStatus(204);
+
+  const body = req.body as Record<string, string>;
+  const {
+    CallSid, RecordingUrl, RecordingDuration, RecordingStatus,
+    From, To,
+  } = body;
+
+  if (RecordingStatus !== 'completed' || !RecordingUrl) return;
+
+  const callerNumber  = From ?? null;
+  const practiceLine  = twilioLineFromTo(To ?? '');
+  const durationS     = RecordingDuration ? parseInt(RecordingDuration, 10) : null;
+  const audioPath     = RecordingUrl + '.mp3'; // Twilio serves MP3 with this extension
+
+  // Resolve patient by caller number
+  let patientId: string | null = null;
+  if (callerNumber) {
+    const p = await lookupPatientByPhone(callerNumber);
+    if (p) patientId = p.id;
+  }
+
+  try {
+    // Upsert by twilio_call_sid to avoid duplicates on retries
+    const { error } = await sb()
+      .from('call_logs')
+      .upsert({
+        twilio_call_sid: CallSid,
+        caller_number:   callerNumber,
+        patient_id:      patientId,
+        source:          'phone',
+        direction:       'inbound',
+        status:          'voicemail',
+        audio_path:      audioPath,
+        duration_s:      durationS,
+        practice_line:   practiceLine,
+      }, { onConflict: 'twilio_call_sid', ignoreDuplicates: false });
+
+    if (error) logger.error({ error, CallSid }, '[calls/voicemail] upsert failed');
+    else logger.info({ CallSid, from: callerNumber, practiceLine, durationS }, '[calls/voicemail] recorded');
+  } catch (err) {
+    logger.error({ err }, '[calls/voicemail] unexpected error');
+  }
+});
+
+// ── POST /api/calls/status ────────────────────────────────────────────────────
+// Twilio Call Status Callback — fires for every call status change.
+// We use it to log answered calls and classify missed/no-answer calls.
+
+router.post('/api/calls/status', async (req, res) => {
+  res.sendStatus(204);
+
+  const body = req.body as Record<string, string>;
+  const {
+    CallSid, CallStatus, From, To, CallDuration,
+  } = body;
+
+  if (!CallSid || !CallStatus) return;
+
+  const callStatus  = CallStatus.toLowerCase();
+  const callerNumber = From ?? null;
+  const practiceLine = twilioLineFromTo(To ?? '');
+  const durationS    = CallDuration ? parseInt(CallDuration, 10) : null;
+
+  // Map Twilio status → our status
+  const statusMap: Record<string, string> = {
+    'completed':  'answered',
+    'no-answer':  'missed',
+    'busy':       'missed',
+    'failed':     'missed',
+    'canceled':   'missed',
+  };
+  const mappedStatus = statusMap[callStatus];
+  if (!mappedStatus) return; // ignore ringing / in-progress events
+
+  let patientId: string | null = null;
+  if (callerNumber) {
+    const p = await lookupPatientByPhone(callerNumber);
+    if (p) patientId = p.id;
+  }
+
+  try {
+    await sb()
+      .from('call_logs')
+      .upsert({
+        twilio_call_sid: CallSid,
+        caller_number:   callerNumber,
+        patient_id:      patientId,
+        source:          'phone',
+        direction:       'inbound',
+        status:          mappedStatus,
+        duration_s:      durationS,
+        practice_line:   practiceLine,
+      }, { onConflict: 'twilio_call_sid', ignoreDuplicates: false });
+
+    logger.info({ CallSid, callStatus, mappedStatus, practiceLine }, '[calls/status] logged');
+  } catch (err) {
+    logger.error({ err }, '[calls/status] unexpected error');
+  }
 });
 
 export default router;
