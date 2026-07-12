@@ -302,6 +302,60 @@ router.post('/api/ai/edit-note', async (req, res) => {
   } catch { res.status(502).json({ error: 'AI edit-note request failed' }); }
 });
 
+// ── AI Document Pre-fill (discharge / referral) ──────────────────────────────
+
+router.post('/api/ai/fill-document', async (req, res) => {
+  if (AI_DISABLED) { res.status(503).json({ error: 'AI features are disabled' }); return; }
+  const {
+    docType, patientName, age, sex, symptoms, assessment, plan,
+    procedures, medications, comorbidities, disposition,
+    investigationResults, referredBy,
+  } = req.body as {
+    docType: 'discharge' | 'referral';
+    patientName?: string; age?: string; sex?: string;
+    symptoms?: string[]; assessment?: string; plan?: string;
+    procedures?: string; medications?: string[];
+    comorbidities?: string[]; disposition?: string;
+    investigationResults?: Record<string, string>;
+    referredBy?: string;
+  };
+
+  const ctx: string[] = [];
+  if (patientName) ctx.push(`Patient: ${patientName}${age ? `, ${age}y` : ''}${sex && sex !== 'unknown' ? `, ${sex}` : ''}`);
+  if (symptoms?.length) ctx.push(`Presenting: ${symptoms.join(', ')}`);
+  if (comorbidities?.length) ctx.push(`PMH: ${comorbidities.join(', ')}`);
+  if (medications?.length) ctx.push(`Medications: ${medications.join(', ')}`);
+  if (assessment) ctx.push(`Assessment: ${assessment}`);
+  if (procedures) ctx.push(`Procedures: ${procedures}`);
+  if (plan) ctx.push(`Plan: ${plan}`);
+  if (investigationResults && Object.keys(investigationResults).length) {
+    const results = Object.entries(investigationResults).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join('; ');
+    if (results) ctx.push(`Results: ${results}`);
+  }
+
+  try {
+    if (docType === 'discharge') {
+      const dispLine = disposition ? `Disposition: ${disposition}. ` : '';
+      const prompt = `You are a surgical registrar writing a discharge summary for Dr Dawit Kabiye's patient.\n${dispLine}Clinical context:\n${ctx.join('\n')}\n\nGenerate three sections as JSON only:\n{\n  "instructions": "...",\n  "warningSigns": "...",\n  "followUp": "..."\n}\nInstructions: specific post-op or post-procedure care, activity, diet, wound care, medications.\nWarning signs: specific red flags for this diagnosis — when to return to ED.\nFollow-up: concrete plan with timeframe and location.\nNo preamble, no markdown fences.`;
+      const msg = await client.messages.create({ model: MODEL, max_tokens: 1024, messages: [{ role: 'user', content: prompt }] });
+      const raw = (msg.content[0] as { type: string; text: string }).text?.trim() ?? '';
+      try {
+        const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+        res.json(JSON.parse(cleaned));
+      } catch { res.status(502).json({ error: 'AI response could not be parsed' }); }
+    } else {
+      const from = referredBy ? ` from ${referredBy}` : '';
+      const prompt = `You are writing a referral letter reason for Dr Dawit Kabiye${from}.\nClinical context:\n${ctx.join('\n')}\n\nWrite a concise, professional referral reason (2-4 sentences) starting with the presenting complaint, key findings, and specific clinical question. Return plain text only, no preamble.`;
+      const msg = await client.messages.create({ model: MODEL, max_tokens: 512, messages: [{ role: 'user', content: prompt }] });
+      const referNotes = (msg.content[0] as { type: string; text: string }).text?.trim() ?? '';
+      res.json({ referNotes });
+    }
+  } catch (err) {
+    log.error({ err }, 'AI fill-document error');
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed' });
+  }
+});
+
 // ── Drug Interaction Checker ──────────────────────────────────────────────────
 
 interface DrugInputDI { drugName: string; dose?: string; frequency?: string; }

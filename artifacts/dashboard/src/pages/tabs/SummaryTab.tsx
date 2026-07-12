@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { AMISE_LOGO_SVG } from './lib/docTemplate';
 import { saveBlobAsPDF } from './lib/pdfExport';
@@ -537,6 +538,14 @@ function downloadHtml(html: string, filename: string) {
 
 // ── Direct export panel ───────────────────────────────────────────────────────
 
+const DISPOSITION_OPTIONS = [
+  { id: 'home',       label: 'Home' },
+  { id: 'ward',       label: 'Ward' },
+  { id: 'icu',        label: 'ICU / HDU' },
+  { id: 'theatre',    label: 'Theatre' },
+  { id: 'referring',  label: 'Referring hospital' },
+] as const;
+
 function DirectExportPanel() {
   const ctx = useAppContext();
   const [docType, setDocType] = useState<'clinical' | 'referral' | 'discharge'>('clinical');
@@ -545,7 +554,54 @@ function DirectExportPanel() {
   const [dischargeNotes, setDischargeNotes] = useState('');
   const [followUp, setFollowUp] = useState('');
   const [warningSign, setWarningSign] = useState('');
+  const [disposition, setDisposition] = useState('');
+  const [aiFilling, setAiFilling] = useState(false);
+  const [aiError, setAiError] = useState('');
   const [showPreview, setShowPreview] = useState(true);
+
+  async function handleAiFill() {
+    setAiFilling(true);
+    setAiError('');
+    try {
+      const apiOrigin = getApiOrigin();
+      const url = apiOrigin ? `${apiOrigin}/api/ai/fill-document` : '/api/ai/fill-document';
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({
+          docType,
+          patientName: ctx.patientName,
+          age: ctx.age,
+          sex: ctx.sex,
+          symptoms: ctx.symptoms,
+          assessment: ctx.assessment,
+          plan: ctx.plan,
+          procedures: ctx.procedures,
+          medications: ctx.medications,
+          comorbidities: ctx.comorbidities,
+          investigationResults: ctx.investigationResults,
+          referredBy: ctx.referredBy,
+          disposition,
+        }),
+      });
+      const data = await r.json() as {
+        instructions?: string; warningSigns?: string; followUp?: string;
+        referNotes?: string; error?: string;
+      };
+      if (!r.ok) { setAiError(data.error ?? 'AI fill failed'); return; }
+      if (docType === 'discharge') {
+        if (data.instructions) setDischargeNotes(data.instructions);
+        if (data.warningSigns) setWarningSign(data.warningSigns);
+        if (data.followUp) setFollowUp(data.followUp);
+      } else if (docType === 'referral') {
+        if (data.referNotes) setReferNotes(data.referNotes);
+      }
+    } catch {
+      setAiError('Network error — please try again.');
+    } finally {
+      setAiFilling(false);
+    }
+  }
 
   function makeMeta(): PrintMeta {
     return {
@@ -596,6 +652,13 @@ function DirectExportPanel() {
       {/* Referral extras */}
       {docType === 'referral' && (
         <div style={{ display: 'grid', gap: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <button type="button" onClick={() => void handleAiFill()} disabled={aiFilling}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px', borderRadius: 7, border: 'none', background: '#7c3aed', color: '#fff', fontSize: 12, fontWeight: 700, cursor: aiFilling ? 'wait' : 'pointer', opacity: aiFilling ? 0.7 : 1 }}>
+              {aiFilling ? '⏳ Filling…' : '✨ AI Fill reason'}
+            </button>
+          </div>
+          {aiError && <div style={{ fontSize: 11, color: '#dc2626' }}>{aiError}</div>}
           <div className="fld">
             <label style={{ fontSize: 12 }}>Refer to (name / department)</label>
             <input type="text" value={referTo} onChange={e => setReferTo(e.target.value)}
@@ -612,6 +675,25 @@ function DirectExportPanel() {
       {/* Discharge extras */}
       {docType === 'discharge' && (
         <div style={{ display: 'grid', gap: 8 }}>
+          {/* Disposition + AI fill row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Disposition</span>
+            <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+              {DISPOSITION_OPTIONS.map(d => (
+                <button key={d.id} type="button" onClick={() => setDisposition(d.id === disposition ? '' : d.id)} style={{
+                  padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                  border: disposition === d.id ? '1.5px solid #0d9488' : '1px solid #d1d5db',
+                  background: disposition === d.id ? '#0d9488' : '#f9fafb',
+                  color: disposition === d.id ? '#fff' : '#374151',
+                }}>{d.label}</button>
+              ))}
+            </div>
+            <button type="button" onClick={() => void handleAiFill()} disabled={aiFilling}
+              style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px', borderRadius: 7, border: 'none', background: '#7c3aed', color: '#fff', fontSize: 12, fontWeight: 700, cursor: aiFilling ? 'wait' : 'pointer', opacity: aiFilling ? 0.7 : 1 }}>
+              {aiFilling ? '⏳ Filling…' : '✨ AI Fill'}
+            </button>
+          </div>
+          {aiError && <div style={{ fontSize: 11, color: '#dc2626' }}>{aiError}</div>}
           <div className="fld">
             <label style={{ fontSize: 12 }}>Discharge instructions</label>
             <textarea value={dischargeNotes} onChange={e => setDischargeNotes(e.target.value)}
