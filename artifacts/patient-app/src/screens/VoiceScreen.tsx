@@ -61,10 +61,74 @@ const VoiceScreen: React.FC<Props> = ({ token }) => {
       <h1 style={{ fontSize: '20px', fontWeight: 700, color: '#f1f5f9', marginBottom: '4px' }}>
         Messages
       </h1>
-      <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}>
+      <p style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '16px' }}>
         Type your message or tap the microphone on your keyboard to dictate. Our team will review
         and respond.
       </p>
+
+      {/* Quick contact */}
+      <div style={{
+        backgroundColor: '#0d1b2e',
+        borderRadius: '12px',
+        padding: '14px',
+        marginBottom: '16px',
+        border: '1px solid #1e3a5f',
+      }}>
+        <p style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px' }}>
+          Call or WhatsApp us directly
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <a
+            href="https://wa.me/17582840557"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '11px 14px', borderRadius: '10px',
+              backgroundColor: '#14532d22', border: '1px solid #16a34a55',
+              textDecoration: 'none', color: '#4ade80',
+            }}
+          >
+            <span style={{ fontSize: '18px' }}>💬</span>
+            <div>
+              <p style={{ fontSize: '13px', fontWeight: 600, margin: 0 }}>WhatsApp — Tapion</p>
+              <p style={{ fontSize: '11px', color: '#86efac', margin: 0 }}>758-284-0557</p>
+            </div>
+          </a>
+          <a
+            href="https://wa.me/17587207111"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '11px 14px', borderRadius: '10px',
+              backgroundColor: '#14532d22', border: '1px solid #16a34a55',
+              textDecoration: 'none', color: '#4ade80',
+            }}
+          >
+            <span style={{ fontSize: '18px' }}>💬</span>
+            <div>
+              <p style={{ fontSize: '13px', fontWeight: 600, margin: 0 }}>WhatsApp — Rodney Bay</p>
+              <p style={{ fontSize: '11px', color: '#86efac', margin: 0 }}>758-720-7111</p>
+            </div>
+          </a>
+          <a
+            href="tel:+17584592227"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '11px 14px', borderRadius: '10px',
+              backgroundColor: '#0c2a4a', border: '1px solid #1e3a5f',
+              textDecoration: 'none', color: '#93c5fd',
+            }}
+          >
+            <span style={{ fontSize: '18px' }}>📞</span>
+            <div>
+              <p style={{ fontSize: '13px', fontWeight: 600, margin: 0 }}>Call — Tapion landline</p>
+              <p style={{ fontSize: '11px', color: '#7dd3fc', margin: 0 }}>758-459-2227</p>
+            </div>
+          </a>
+        </div>
+      </div>
 
       {/* Message input */}
       <div style={card}>

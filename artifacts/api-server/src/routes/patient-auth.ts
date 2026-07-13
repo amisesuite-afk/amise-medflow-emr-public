@@ -11,6 +11,7 @@
  * app as Authorization: Bearer <token> on all subsequent patient API calls.
  */
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import {
@@ -23,6 +24,22 @@ import {
 import { sendOrDraft } from '../lib/gmail.js';
 
 const router = Router();
+
+const requestLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many access requests from this IP, please try again in an hour.' },
+});
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts, please try again in 15 minutes.' },
+});
 
 const PATIENT_APP_URL = process.env.PATIENT_APP_URL ?? process.env.PORTAL_URL ?? 'https://patient.amise.lc';
 const TEMP_PW_TTL_HOURS = 72;
@@ -50,7 +67,7 @@ async function upsertAccount(email: string, patientId?: string) {
 
 // ── POST /api/patient/auth/request ───────────────────────────────────────────
 
-router.post('/api/patient/auth/request', async (req, res) => {
+router.post('/api/patient/auth/request', requestLimiter, async (req, res) => {
   const { email, patientId } = req.body as { email?: string; patientId?: string };
 
   if (!email?.trim()) {
@@ -125,7 +142,7 @@ Amise Medical Services
 
 // ── POST /api/patient/auth/login ─────────────────────────────────────────────
 
-router.post('/api/patient/auth/login', async (req, res) => {
+router.post('/api/patient/auth/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body as { email?: string; password?: string };
 
   if (!email?.trim() || !password) {
