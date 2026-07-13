@@ -110,9 +110,8 @@ const UploadScreen: React.FC<Props> = ({ token }) => {
   async function processFile(file: File) {
     try {
       const dataUrl = await fileToDataUrl(file);
-      const isImage = file.type.startsWith('image/');
       setPendingFile({
-        preview: isImage ? dataUrl : 'pdf',
+        preview: dataUrl, // always a real data URL — fileToDataUrl handles all types
         fileName: file.name,
         fileType: file.type,
       });
@@ -166,7 +165,7 @@ const UploadScreen: React.FC<Props> = ({ token }) => {
 
     try {
       await addMonitoringPhoto(token, {
-        dataUrl: pendingFile.preview === 'pdf' ? `data:${pendingFile.fileType};base64,` : pendingFile.preview,
+        dataUrl: pendingFile.preview,
         context: `${pendingLabel} — ${pendingDate}${pendingProvider ? ' — ' + pendingProvider : ''}`,
       });
       setEntries((prev) =>
