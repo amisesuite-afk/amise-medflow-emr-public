@@ -112,44 +112,37 @@ export async function savePassport(
   return r.json();
 }
 
-// ── Voice notes ───────────────────────────────────────────────────────────────
+// ── Patient messages ──────────────────────────────────────────────────────────
 
-export interface VoiceNote {
+export interface PatientMessage {
   id: string;
   created_at: string;
-  duration_s: number | null;
   transcript: string | null;
   staff_notes: string | null;
   status: string;
 }
 
-export async function uploadVoiceNote(
+export async function sendMessage(
   sessionToken: string,
-  audio: Blob,
-  note?: string,
+  text: string,
 ): Promise<{ call_log_id: string }> {
-  const formData = new FormData();
-  const ext = audio.type.includes('mp4') ? 'm4a' : audio.type.includes('ogg') ? 'ogg' : 'webm';
-  formData.append('file', audio, `voice-note.${ext}`);
-  if (note) formData.append('note', note);
-
-  const r = await fetch(`${API}/patient/voice-note`, {
+  const r = await fetch(`${API}/patient/message`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${sessionToken}` },
-    body: formData,
+    headers: { Authorization: `Bearer ${sessionToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
   });
   const d = await r.json() as { call_log_id?: string; error?: string };
-  if (!r.ok) throw new Error(d.error ?? 'Failed to send voice note');
+  if (!r.ok) throw new Error(d.error ?? 'Failed to send message');
   return d as { call_log_id: string };
 }
 
-export async function getVoiceNotes(sessionToken: string): Promise<VoiceNote[]> {
-  const r = await fetch(`${API}/patient/voice-notes`, {
+export async function getMessages(sessionToken: string): Promise<PatientMessage[]> {
+  const r = await fetch(`${API}/patient/messages`, {
     headers: { Authorization: `Bearer ${sessionToken}` },
   });
   if (!r.ok) return [];
-  const d = await r.json() as VoiceNote[] | { data?: VoiceNote[] };
-  return Array.isArray(d) ? d : (d.data ?? []);
+  const d = await r.json() as PatientMessage[];
+  return Array.isArray(d) ? d : [];
 }
 
 // ── Monitoring ────────────────────────────────────────────────────────────────
