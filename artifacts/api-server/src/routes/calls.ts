@@ -1,30 +1,28 @@
 /**
  * /api/calls — voice signal ingestion, voicemail, callback queue, and audit.
  *
- * Every incoming voice signal lands here and is matched to a patient by
- * phone, email, or name. Unanswered calls are routed through Twilio TwiML
- * to leave a voicemail which auto-transcribes and appears in the Call Queue.
+ * Twilio flow (simple):
+ *   Incoming call → greeting tells caller to WhatsApp → optional voicemail recording.
+ *   No call forwarding. Voicemails appear in the Call Queue with auto-transcription.
  *
- * Identity anchors: phone + email + name → MRN (AM-YYYYnnnn) auto-assigned.
- *
- * Twilio hooks (no auth — verified by signature or shared secret):
- *   POST /api/calls/twiml          — Voice URL for each practice number
+ * Twilio hooks (no auth required):
+ *   POST /api/calls/twiml          — Voice URL on each Twilio number
  *   POST /api/calls/voicemail      — Recording complete callback
- *   POST /api/calls/status         — Call status events (answered/missed/etc.)
+ *   POST /api/calls/voicemail-ack  — TwiML action after recording
+ *   POST /api/calls/status         — Call status events
  *
  * Staff endpoints (requireStaffAuth):
- *   POST   /api/calls/ingest       — manual / ambient ingestion
- *   GET    /api/calls/unresolved   — front-desk queue
- *   GET    /api/calls/patient/:id  — patient call history
+ *   POST   /api/calls/ingest
+ *   GET    /api/calls/unresolved
+ *   GET    /api/calls/patient/:id
  *   GET    /api/calls/practice-lines
- *   GET    /api/calls/audit        — answered/voicemail/missed counts
- *   PATCH  /api/calls/:id/resolve  — link to patient
- *   PATCH  /api/calls/:id/status   — update callback status
- *   GET    /api/patients/search    — quick lookup for resolve panel
+ *   GET    /api/calls/audit
+ *   PATCH  /api/calls/:id/resolve
+ *   PATCH  /api/calls/:id/status
+ *   GET    /api/patients/search
  */
 
 import { Router } from 'express';
-import { createHmac, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
@@ -485,79 +483,37 @@ function twilioLineFromTo(to: string): string {
   return matched?.label ?? 'Unknown';
 }
 
-// Validate Twilio signature — returns true if TWILIO_AUTH_TOKEN is unset (dev mode)
-function validateTwilioSignature(req: import('express').Request): boolean {
-  const token = process.env.TWILIO_AUTH_TOKEN;
-  if (!token) return true; // dev: skip validation
-
-  const sig = req.headers['x-twilio-signature'] as string | undefined;
-  if (!sig) return false;
-
-  const proto = req.headers['x-forwarded-proto'] ?? 'https';
-  const host  = req.headers['host'] ?? '';
-  const url   = `${proto}://${host}${req.originalUrl}`;
-
-  const params = req.body as Record<string, string>;
-  const keys   = Object.keys(params).sort();
-  const toSign = url + keys.map(k => k + params[k]).join('');
-
-  const expected = createHmac('sha256', token).update(toSign).digest('base64');
-  try {
-    return timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
-  } catch {
-    return false;
-  }
+// WhatsApp-capable numbers formatted for TTS (e.g. "758-284-0557")
+function whatsappNumbersForSpeech(): string {
+  const wa = PRACTICE_LINES.filter(l => l.whatsapp);
+  return wa
+    .map(l => l.e164.replace(/^\+1/, '').replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3'))
+    .join(' or ');
 }
-
-// ── Forwarding numbers ────────────────────────────────────────────────────────
-// FORWARD_TO_NUMBERS: comma-separated E.164 list of staff cell phones.
-// Twilio rings all of them simultaneously (Find Me / Follow Me).
-// If none answer within FORWARD_RING_TIMEOUT seconds → voicemail.
-//
-// Example:  FORWARD_TO_NUMBERS=+17582840557,+17587207111
-//           FORWARD_RING_TIMEOUT=20
-
-function getForwardNumbers(): string[] {
-  return (process.env.FORWARD_TO_NUMBERS ?? '')
-    .split(',')
-    .map(n => n.trim())
-    .filter(Boolean);
-}
-
-// 4 rings ≈ 25 seconds (each ring cycle ~6 s: 2 s ring + 4 s silence)
-const RING_TIMEOUT = parseInt(process.env.FORWARD_RING_TIMEOUT ?? '25', 10);
 
 // ── POST /api/calls/twiml ─────────────────────────────────────────────────────
-// Voice URL for each Twilio number (set this in the Twilio console / on port / on forward target).
+// Voice URL set on every Twilio number via scripts/setup-twilio.mjs.
 //
-// Flow:
-//   1. If FORWARD_TO_NUMBERS set → ring cell phones simultaneously for RING_TIMEOUT s
-//      a. One answers  → live call, status logged as 'answered' via /api/calls/dial-status
-//      b. None answer  → falls through to step 2
-//   2. Greet caller → record voicemail → webhook to /api/calls/voicemail
+// Flow: greet caller → direct them to call or WhatsApp the cell numbers →
+//       offer to leave a voicemail → record → webhook to /api/calls/voicemail.
 
 router.post('/api/calls/twiml', (req, res) => {
-  if (process.env.TWILIO_AUTH_TOKEN && !validateTwilioSignature(req)) {
-    logger.warn('[calls/twiml] invalid Twilio signature');
-    res.status(403).send('Forbidden');
-    return;
-  }
+  const body    = req.body as Record<string, string>;
+  const to      = body.To ?? '';
+  const line    = twilioLineFromTo(to);
+  const apiBase = process.env.API_BASE_URL ?? `https://${req.headers.host ?? 'localhost'}`;
+  const waNumbers = whatsappNumbersForSpeech();
 
-  const body     = req.body as Record<string, string>;
-  const to       = body.To  ?? '';
-  const callSid  = body.CallSid ?? '';
-  const line     = twilioLineFromTo(to);
-  const apiBase  = process.env.API_BASE_URL ?? `https://${req.headers.host ?? 'localhost'}`;
-  const forwards = getForwardNumbers();
-
-  // Enable Twilio transcription if TWILIO_TRANSCRIPTION=true
   const twilioTranscribe = process.env.TWILIO_TRANSCRIPTION === 'true';
   const transcriptionAttrs = twilioTranscribe
     ? `transcribe="true" transcriptionCallback="${apiBase}/api/calls/transcription-callback" transcriptionCallbackMethod="POST"`
     : `transcribe="false"`;
 
-  const voicemailTwiml = `
-  <Say voice="Polly.Joanna" language="en-US">We are sorry we missed your call. Please leave your name, phone number, and the reason for calling after the tone and we will call you back as soon as possible.</Say>
+  const lineGreeting = line && line !== 'Unknown' ? `, ${line}` : '';
+
+  res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="Polly.Joanna" language="en-US">Thank you for calling Amise Medical Services${lineGreeting}. For a faster response, please call or WhatsApp us directly on ${waNumbers}. To leave a voice message, please stay on the line and speak after the tone.</Say>
   <Record
     maxLength="120"
     ${transcriptionAttrs}
@@ -565,151 +521,8 @@ router.post('/api/calls/twiml', (req, res) => {
     recordingStatusCallbackMethod="POST"
     action="${apiBase}/api/calls/voicemail-ack"
     method="POST"
-  />`.trim();
-
-  if (forwards.length === 0) {
-    // No forwarding configured — go straight to voicemail
-    const greeting = `Thank you for calling Amise Medical Services${line && line !== 'Unknown' ? ', ' + line : ''}.`;
-    res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Say voice="Polly.Joanna" language="en-US">${greeting}</Say>
-  ${voicemailTwiml}
-</Response>`);
-    return;
-  }
-
-  // Build <Number> tags — each with a whisper URL so staff hear
-  // "Amise Medical Services — Tapion call. Press 1 to accept."
-  // before the caller is connected. Caller hears silence during whisper.
-  const whisperUrl = `${apiBase}/api/calls/whisper?line=${encodeURIComponent(line)}`;
-  const numberTags = forwards
-    .map(n => `<Number url="${whisperUrl}" statusCallback="${apiBase}/api/calls/dial-status?sid=${encodeURIComponent(callSid)}">${n}</Number>`)
-    .join('\n    ');
-
-  // Dial action: if nobody picks up → action URL returns voicemail TwiML
-  res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Dial timeout="${RING_TIMEOUT}" action="${apiBase}/api/calls/no-answer?sid=${encodeURIComponent(callSid)}&amp;line=${encodeURIComponent(line)}" method="POST">
-    ${numberTags}
-  </Dial>
-</Response>`);
-});
-
-// ── POST /api/calls/whisper ───────────────────────────────────────────────────
-// Twilio fetches this URL the instant a forwarded cell phone answers,
-// BEFORE connecting the caller. Only the staff member hears this —
-// the caller hears silence/hold music while the whisper plays.
-//
-// Staff hears: "Amise Medical Services — Tapion call. Press 1 to accept."
-// If they press 1 → caller connects.
-// If no keypress or press anything else → call drops to next forward or voicemail.
-
-router.post('/api/calls/whisper', (_req, res) => {
-  const line = (_req.query.line as string) ?? '';
-  const lineLabel = line && line !== 'Unknown' ? line : 'practice';
-
-  res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Gather numDigits="1" action="${process.env.API_BASE_URL ?? ''}/api/calls/whisper-accept" method="POST">
-    <Say voice="Polly.Joanna" language="en-US">Amise Medical Services — ${lineLabel} call. Press 1 to accept.</Say>
-  </Gather>
-  <Hangup />
-</Response>`);
-});
-
-// ── POST /api/calls/whisper-accept ───────────────────────────────────────────
-// Staff pressed a digit — if 1, connect; otherwise hang up (drops to next forward).
-
-router.post('/api/calls/whisper-accept', (req, res) => {
-  const digit = (req.body as Record<string, string>).Digits ?? '';
-  if (digit === '1') {
-    // Empty response = connect the caller
-    res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
-<Response></Response>`);
-  } else {
-    res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
-<Response><Hangup /></Response>`);
-  }
-});
-
-// ── POST /api/calls/no-answer ─────────────────────────────────────────────────
-// Twilio Dial action URL — fires when nobody answered the forwarded call.
-// Returns voicemail TwiML and logs the missed attempt.
-
-router.post('/api/calls/no-answer', async (req, res) => {
-  const body       = req.body as Record<string, string>;
-  const callSid    = (req.query.sid as string) ?? body.CallSid ?? '';
-  const line       = (req.query.line as string) ?? '';
-  const dialStatus = (body.DialCallStatus ?? '').toLowerCase();
-  const from       = body.From ?? '';
-  const apiBase    = process.env.API_BASE_URL ?? `https://${req.headers.host ?? 'localhost'}`;
-
-  // Log missed call if nobody answered (no-answer / busy / failed / canceled)
-  if (dialStatus !== 'completed' && callSid) {
-    void (async () => {
-      let patientId: string | null = null;
-      if (from) {
-        const p = await lookupPatientByPhone(from);
-        if (p) patientId = p.id;
-      }
-      await sb().from('call_logs').upsert({
-        twilio_call_sid: callSid,
-        caller_number:   from || null,
-        patient_id:      patientId,
-        source:          'phone',
-        direction:       'inbound',
-        status:          'missed',
-        practice_line:   line || null,
-      }, { onConflict: 'twilio_call_sid', ignoreDuplicates: false });
-    })();
-  }
-
-  const twilioTranscribeNoAns = process.env.TWILIO_TRANSCRIPTION === 'true';
-  const transcAttrsNoAns = twilioTranscribeNoAns
-    ? `transcribe="true" transcriptionCallback="${apiBase}/api/calls/transcription-callback" transcriptionCallbackMethod="POST"`
-    : `transcribe="false"`;
-
-  res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
-<Response>
-  <Say voice="Polly.Joanna" language="en-US">We are sorry we missed your call. Please leave your name, phone number, and the reason for calling after the tone and we will call you back as soon as possible.</Say>
-  <Record
-    maxLength="120"
-    ${transcAttrsNoAns}
-    recordingStatusCallback="${apiBase}/api/calls/voicemail"
-    recordingStatusCallbackMethod="POST"
-    action="${apiBase}/api/calls/voicemail-ack"
-    method="POST"
   />
 </Response>`);
-});
-
-// ── POST /api/calls/dial-status ───────────────────────────────────────────────
-// Fires when a forwarded leg connects or ends. Used to mark a call 'answered'.
-
-router.post('/api/calls/dial-status', async (req, res) => {
-  res.sendStatus(204);
-  const body       = req.body as Record<string, string>;
-  const callSid    = (req.query.sid as string) ?? body.CallSid ?? '';
-  const callStatus = (body.CallStatus ?? body.DialCallStatus ?? '').toLowerCase();
-  const from       = body.From ?? '';
-
-  if (callStatus === 'in-progress' || callStatus === 'completed') {
-    void (async () => {
-      let patientId: string | null = null;
-      if (from) {
-        const p = await lookupPatientByPhone(from);
-        if (p) patientId = p.id;
-      }
-      await sb().from('call_logs').upsert({
-        twilio_call_sid: callSid,
-        caller_number:   from || null,
-        patient_id:      patientId,
-        source:          'phone',
-        direction:       'inbound',
-        status:          'answered',
-      }, { onConflict: 'twilio_call_sid', ignoreDuplicates: false });
-    })();
-  }
 });
 
 // ── POST /api/calls/voicemail-ack ─────────────────────────────────────────────
