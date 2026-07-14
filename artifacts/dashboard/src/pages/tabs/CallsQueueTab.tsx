@@ -122,9 +122,9 @@ export default function CallsQueueTab() {
       if (queueRes.ok) {
         const d = await queueRes.json() as { calls: CallLog[]; practice_lines: PracticeLine[] };
         const incoming = d.calls ?? [];
-        // Browser notification on new voicemails
+        // Browser notification on new voicemails (guarded for iOS Safari < 16.4)
         const newVoicemails = incoming.filter(c => c.status === 'voicemail').length;
-        if (newVoicemails > prevCountRef.current && Notification.permission === 'granted') {
+        if (newVoicemails > prevCountRef.current && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
           new Notification('Amise MedFlow — New voicemail', {
             body: `${newVoicemails} voicemail${newVoicemails > 1 ? 's' : ''} waiting in call queue`,
             icon: '/favicon.svg',
@@ -153,9 +153,9 @@ export default function CallsQueueTab() {
     return () => clearInterval(t);
   }, [fetchQueue]);
 
-  // Request notification permission on first load
+  // Request notification permission on first load (guarded for iOS Safari < 16.4)
   useEffect(() => {
-    if (Notification.permission === 'default') {
+    if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
       void Notification.requestPermission();
     }
   }, []);
