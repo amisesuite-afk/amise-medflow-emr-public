@@ -14,6 +14,7 @@ import emailIntakeRouter from "./email-intake";
 import visitLifecycleRouter from "./visit-lifecycle";
 import billingRouter from "./billing";
 import preProcedureRouter from "./pre-procedure";
+import callRecordingRouter from "./call-recording";
 
 const router: IRouter = Router();
 
@@ -32,5 +33,6 @@ router.use(emailIntakeRouter);
 router.use(visitLifecycleRouter);
 router.use(billingRouter);
 router.use(preProcedureRouter);
+router.use(callRecordingRouter);
 
 export default router;
