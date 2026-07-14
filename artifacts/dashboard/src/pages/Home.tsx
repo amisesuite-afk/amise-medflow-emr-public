@@ -133,6 +133,7 @@ export default function HomePage() {
 
   const [collapsed, setCollapsed] = useState(false);
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
+  const [unreviewedCallCount, setUnreviewedCallCount] = useState(0);
 
   const userRole = profile?.role ?? 'front_desk';
 
@@ -152,6 +153,22 @@ export default function HomePage() {
     const t = setInterval(() => void fetchPendingBookings(), 60_000);
     return () => clearInterval(t);
   }, [fetchPendingBookings]);
+
+  const fetchUnreviewedCalls = useCallback(async () => {
+    try {
+      const r = await fetch(apiUrl('/api/calls/unresolved?limit=50'), { headers: await staffAuthHeaders() });
+      if (r.ok) {
+        const d = await r.json() as { calls: unknown[] };
+        setUnreviewedCallCount((d.calls ?? []).length);
+      }
+    } catch { /* ignore — migration may not have run yet */ }
+  }, []);
+
+  useEffect(() => {
+    void fetchUnreviewedCalls();
+    const t = setInterval(() => void fetchUnreviewedCalls(), 60_000);
+    return () => clearInterval(t);
+  }, [fetchUnreviewedCalls]);
 
   const urgentCount = triageResult.vitalRedFlags.filter(f => f.severity === 'urgent').length
     + triageResult.reasons.length;
@@ -275,6 +292,7 @@ export default function HomePage() {
         pmhCount={comorbidities.length}
         encounterMode={encounterMode}
         pendingBookingCount={pendingBookingCount}
+        unreviewedCallCount={unreviewedCallCount}
       />
 
       {/* ── Main content ── */}

@@ -27,6 +27,7 @@ interface NavSidebarProps {
   pmhCount?: number;
   encounterMode?: 'outpatient' | 'inpatient';
   pendingBookingCount?: number;
+  unreviewedCallCount?: number;
 }
 
 const CLINICAL_SUB: {
@@ -95,6 +96,7 @@ export default function NavSidebar({
   pmhCount = 0,
   encounterMode = 'outpatient',
   pendingBookingCount = 0,
+  unreviewedCallCount = 0,
 }: NavSidebarProps) {
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
@@ -139,6 +141,7 @@ export default function NavSidebar({
                   <Icon size={16} strokeWidth={2} />
                   {isTriage && <span className="nsb-dot" />}
                   {item.id === 'booking_inbox' && pendingBookingCount > 0 && <span className="nsb-dot" />}
+                  {item.id === 'calls' && unreviewedCallCount > 0 && <span className="nsb-dot" />}
                 </span>
                 {!collapsed && (
                   <span className="nsb-label">
@@ -159,6 +162,9 @@ export default function NavSidebar({
                 )}
                 {!collapsed && item.id === 'booking_inbox' && pendingBookingCount > 0 && (
                   <span className="nsb-badge nsb-badge--warn">{pendingBookingCount}</span>
+                )}
+                {!collapsed && item.id === 'calls' && unreviewedCallCount > 0 && (
+                  <span className="nsb-badge nsb-badge--warn">{unreviewedCallCount}</span>
                 )}
               </button>
 

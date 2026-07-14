@@ -9,9 +9,10 @@ import { savePatientFull } from '@/lib/db';
 import type { Sex } from '@workspace/triage-engine';
 import BookingInboxTab from './tabs/BookingInboxTab';
 import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
+import CallsTab from './tabs/CallsTab';
 import { SL_COMMUNITIES } from '@/data/st-lucia';
 
-type ReceptionistTab = 'checkin' | 'inbox' | 'questionnaire';
+type ReceptionistTab = 'checkin' | 'inbox' | 'questionnaire' | 'calls';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -49,6 +50,7 @@ export default function ReceptionistView() {
   const [inviteResult, setInviteResult] = useState<'sent' | 'error' | null>(null);
   const [activeTab, setActiveTab] = useState<ReceptionistTab>('checkin');
   const [pendingCount, setPendingCount] = useState(0);
+  const [unreviewedCallCount, setUnreviewedCallCount] = useState(0);
   const [referringProviders, setReferringProviders] = useState<string[]>([]);
 
   useEffect(() => {
@@ -82,6 +84,22 @@ export default function ReceptionistView() {
     const t = setInterval(() => void fetchPendingCount(), 60_000);
     return () => clearInterval(t);
   }, [fetchPendingCount]);
+
+  const fetchUnreviewedCallCount = useCallback(async () => {
+    try {
+      const r = await fetch(apiUrl('/api/calls/unresolved?limit=50'), { headers: await staffAuthHeaders() });
+      if (r.ok) {
+        const d = await r.json() as { calls: unknown[] };
+        setUnreviewedCallCount((d.calls ?? []).length);
+      }
+    } catch { /* ignore — migration may not have run yet */ }
+  }, []);
+
+  useEffect(() => {
+    void fetchUnreviewedCallCount();
+    const t = setInterval(() => void fetchUnreviewedCallCount(), 60_000);
+    return () => clearInterval(t);
+  }, [fetchUnreviewedCallCount]);
 
   async function handleCheckIn() {
     setSaving(true);
@@ -179,6 +197,7 @@ export default function ReceptionistView() {
           {([
             { id: 'checkin',       label: 'Check-In' },
             { id: 'inbox',        label: 'Booking Inbox', badge: pendingCount },
+            { id: 'calls',        label: 'Call Queue', badge: unreviewedCallCount },
             { id: 'questionnaire', label: 'Questionnaire' },
           ] as const).map(tab => (
             <button
@@ -212,6 +231,13 @@ export default function ReceptionistView() {
       {activeTab === 'inbox' && (
         <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           <BookingInboxTab />
+        </main>
+      )}
+
+      {/* Tab: Call Queue */}
+      {activeTab === 'calls' && (
+        <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <CallsTab />
         </main>
       )}
 
