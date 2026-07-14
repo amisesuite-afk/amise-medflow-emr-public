@@ -239,13 +239,19 @@ router.post('/api/calls/ingest', async (req, res) => {
 router.get('/api/calls/unresolved', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
 
-  const limit         = Math.min(Number(req.query.limit ?? 50), 200);
+  const limit          = Math.min(Number(req.query.limit ?? 50), 200);
   const practiceFilter = req.query.practice_line as string | undefined;
 
+  // Show calls that need staff attention:
+  //   • Any call not yet linked to a patient (patient_id IS NULL)
+  //   • Any voicemail or scheduled callback — even for known patients, since
+  //     staff still need to listen / call back regardless of patient identity
+  // Exclude dismissed and already-called-back entries to keep the queue clean.
   let query = sb()
     .from('call_logs')
-    .select('id, caller_number, caller_email, source, direction, transcript, duration_s, practice_line, created_at')
-    .is('patient_id', null)
+    .select('id, caller_number, caller_email, source, direction, transcript, duration_s, practice_line, status, audio_path, callback_at, staff_notes, created_at')
+    .or('patient_id.is.null,status.in.(voicemail,callback_scheduled)')
+    .not('status', 'in', '("dismissed","called_back")')
     .order('created_at', { ascending: false })
     .limit(limit);
 
