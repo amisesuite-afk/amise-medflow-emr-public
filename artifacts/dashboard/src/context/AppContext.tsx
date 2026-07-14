@@ -115,6 +115,21 @@ function readSiteFromStorage(): SiteCode {
   return 'rodney_bay';
 }
 
+const NAV_STORAGE_KEY = 'amise-top-section';
+const TOP_SECTIONS: readonly string[] = [
+  'dashboard', 'patients', 'intake', 'consultation', 'procedures', 'scheduling',
+  'billing', 'analytics', 'settings', 'summary', 'finaldoc', 'inpatient',
+  'trauma', 'vademecum', 'questionnaire', 'booking_inbox', 'portal_intake',
+  'referring_providers', 'visit_lifecycle', 'calls',
+];
+function readNavFromStorage(): TopSection {
+  try {
+    const v = localStorage.getItem(NAV_STORAGE_KEY);
+    if (v && TOP_SECTIONS.includes(v)) return v as TopSection;
+  } catch { /* ignore */ }
+  return 'intake';
+}
+
 export type PreVisitStatus = 'new' | 'registered' | 'vitals_done';
 
 export interface AnatomicalFinding {
@@ -298,7 +313,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const { profile } = useAuth();
 
   const [activeSection, setActiveSection] = useState<Section>('intake');
-  const [topSection, setTopSection] = useState<TopSection>('intake');
+  const [topSection, setTopSection] = useState<TopSection>(readNavFromStorage);
+
+  useEffect(() => {
+    try { localStorage.setItem(NAV_STORAGE_KEY, topSection); } catch { /* ignore */ }
+  }, [topSection]);
 
   // localStorage provides the fast initial value while the profile loads from DB.
   const [currentSite, _setCurrentSite] = useState<SiteCode>(readSiteFromStorage);
