@@ -277,7 +277,7 @@ router.get('/api/calls/unresolved', async (req, res) => {
     const limit = Math.min(parseInt((req.query.limit as string) ?? '50', 10) || 50, 200);
     const { data, error } = await sb()
       .from('call_logs')
-      .select('id, caller_number, patient_id, direction, source, status, audio_path, duration_s, practice_line, staff_notes, transcript, created_at, reviewed_by, reviewed_at, patients(first_name, last_name)')
+      .select('id, caller_number, patient_id, direction, source, status, audio_path, duration_s, practice_line, staff_notes, transcript, created_at, reviewed_by, reviewed_at, patients(full_name)')
       .is('reviewed_at', null)
       .order('created_at', { ascending: false })
       .limit(limit);
@@ -303,7 +303,7 @@ router.get('/api/calls/audit', async (req, res) => {
 
     let q = sb()
       .from('call_logs')
-      .select('id, caller_number, patient_id, direction, source, status, audio_path, duration_s, practice_line, staff_notes, transcript, created_at, reviewed_by, reviewed_at, patients(first_name, last_name)')
+      .select('id, caller_number, patient_id, direction, source, status, audio_path, duration_s, practice_line, staff_notes, transcript, created_at, reviewed_by, reviewed_at, patients(full_name)')
       .order('created_at', { ascending: false })
       .limit(limit);
 

@@ -8,8 +8,7 @@ import { fmtPhone } from '@/lib/fmt';
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface PatientRef {
-  first_name: string | null;
-  last_name: string | null;
+  full_name: string | null;
 }
 
 interface CallLog {
@@ -66,10 +65,7 @@ function fmtDateTime(iso: string): string {
 }
 
 function patientName(c: CallLog): string | null {
-  if (!c.patients) return null;
-  const { first_name, last_name } = c.patients;
-  const parts = [first_name, last_name].filter(Boolean);
-  return parts.length ? parts.join(' ') : null;
+  return c.patients?.full_name ?? null;
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
