@@ -8,9 +8,9 @@ import LoginPage from '@/components/LoginPage';
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
-  { error: Error | null }
+  { error: Error | null; componentStack: string | null }
 > {
-  state: { error: Error | null } = { error: null };
+  state: { error: Error | null; componentStack: string | null } = { error: null, componentStack: null };
 
   static getDerivedStateFromError(error: Error) {
     return { error };
@@ -19,6 +19,7 @@ class ErrorBoundary extends React.Component<
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     console.error('[ErrorBoundary]', error, info.componentStack);
     Sentry.captureException(error, { extra: { componentStack: info.componentStack } });
+    this.setState({ componentStack: info.componentStack ?? null });
   }
 
   render() {
@@ -26,17 +27,25 @@ class ErrorBoundary extends React.Component<
       return (
         <div style={{
           height: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: '#0d2520', fontFamily: '-apple-system, sans-serif',
+          background: '#0d2520', fontFamily: '-apple-system, sans-serif', padding: 16, boxSizing: 'border-box',
         }}>
-          <div style={{ textAlign: 'center', maxWidth: 420, padding: 24 }}>
+          <div style={{ textAlign: 'center', maxWidth: 560, width: '100%' }}>
             <div style={{ fontSize: 18, fontWeight: 800, color: '#f87171', marginBottom: 8 }}>
               Something went wrong
             </div>
-            <div style={{ fontSize: 13, color: '#94a3b8', marginBottom: 16 }}>
+            <div style={{ fontSize: 13, color: '#f87171', marginBottom: 12, fontFamily: 'monospace', background: '#1e3a3a', padding: '8px 12px', borderRadius: 6, textAlign: 'left', overflowX: 'auto' }}>
               {this.state.error.message}
             </div>
+            {this.state.componentStack && (
+              <details style={{ marginBottom: 16, textAlign: 'left' }}>
+                <summary style={{ fontSize: 11, color: '#94a3b8', cursor: 'pointer', marginBottom: 6 }}>Component stack (tap to expand)</summary>
+                <pre style={{ fontSize: 10, color: '#64748b', background: '#1e3a3a', padding: '8px 12px', borderRadius: 6, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all', margin: 0 }}>
+                  {this.state.componentStack}
+                </pre>
+              </details>
+            )}
             <button
-              onClick={() => { this.setState({ error: null }); window.location.reload(); }}
+              onClick={() => { this.setState({ error: null, componentStack: null }); window.location.reload(); }}
               style={{
                 padding: '10px 24px', borderRadius: 8, border: 'none',
                 background: '#0d9488', color: '#fff', fontWeight: 700,

@@ -48,7 +48,10 @@ export default function ReceptionistView() {
   const [savedName, setSavedName] = useState('');
   const [inviting, setInviting] = useState(false);
   const [inviteResult, setInviteResult] = useState<'sent' | 'error' | null>(null);
-  const [activeTab, setActiveTab] = useState<ReceptionistTab>('checkin');
+  const [activeTab, setActiveTab] = useState<ReceptionistTab>(() => {
+    const stored = localStorage.getItem('amise-receptionist-tab') as ReceptionistTab | null;
+    return stored ?? 'checkin';
+  });
   const [pendingCount, setPendingCount] = useState(0);
   const [unreviewedCallCount, setUnreviewedCallCount] = useState(0);
   const [referringProviders, setReferringProviders] = useState<string[]>([]);
@@ -202,7 +205,7 @@ export default function ReceptionistView() {
           ] as const).map(tab => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => { setActiveTab(tab.id); localStorage.setItem('amise-receptionist-tab', tab.id); }}
               style={{
                 padding: '12px 18px', border: 'none', background: 'transparent',
                 borderBottom: activeTab === tab.id ? '2px solid #0d9488' : '2px solid transparent',
