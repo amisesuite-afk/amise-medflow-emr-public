@@ -24,7 +24,7 @@
  * so that Twilio posts the transcript to /api/calls/transcription-callback.
  */
 
-import express, { Router, type Request, type Response, type NextFunction } from 'express';
+import { Router, type Request, type Response, type NextFunction } from 'express';
 import multer, { type StorageEngine } from 'multer';
 import { sb } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
@@ -136,7 +136,7 @@ router.post(
     if (ct.includes('multipart/form-data')) {
       upload.single('file')(req, res, next);
     } else {
-      express.raw({ type: '*/*', limit: '50mb' })(req, res, next);
+      next();
     }
   },
   async (req: Request, res: Response) => {
