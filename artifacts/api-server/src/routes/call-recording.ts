@@ -42,7 +42,8 @@ function requireUploadKey(req: Request, res: Response, next: NextFunction): void
     return;
   }
   const provided = req.headers['x-upload-key'] as string | undefined;
-  if (!provided || provided !== key) {
+  logger.info({ providedLen: provided?.length, providedPrefix: provided?.slice(0, 8), keyPrefix: key.slice(0, 8) }, '[call-recording] key check');
+  if (!provided || provided.trim() !== key.trim()) {
     res.status(401).json({ error: 'Invalid upload key' });
     return;
   }
