@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import ws from 'ws';
 import { logger } from './logger.js';
 
 let _client: SupabaseClient | null = null;
@@ -11,7 +12,7 @@ export function sb(): SupabaseClient {
   _client = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
-    { auth: { persistSession: false } }
+    { auth: { persistSession: false }, realtime: { transport: ws } }
   );
   return _client;
 }
