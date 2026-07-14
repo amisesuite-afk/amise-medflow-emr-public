@@ -24,7 +24,7 @@
  * so that Twilio posts the transcript to /api/calls/transcription-callback.
  */
 
-import { Router, type Request, type Response, type NextFunction } from 'express';
+import express, { Router, type Request, type Response, type NextFunction } from 'express';
 import multer, { type StorageEngine } from 'multer';
 import { sb } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
@@ -123,38 +123,73 @@ async function transcribeWithWhisper(
 }
 
 // ── POST /api/calls/recording-upload ─────────────────────────────────────────
+// Accepts two upload formats:
+//   1. multipart/form-data  — fields: file, caller_number, direction, duration_s, device_label, practice_line
+//   2. Raw binary body      — Tasker "File To Send"; metadata supplied via X-* headers:
+//        X-Caller-Number, X-Direction, X-Duration-S, X-Device-Label, X-Practice-Line, X-Filename
 
 router.post(
   '/api/calls/recording-upload',
   requireUploadKey,
-  upload.single('file'),
+  (req: Request, res: Response, next: NextFunction) => {
+    const ct = req.headers['content-type'] ?? '';
+    if (ct.includes('multipart/form-data')) {
+      upload.single('file')(req, res, next);
+    } else {
+      express.raw({ type: '*/*', limit: '50mb' })(req, res, next);
+    }
+  },
   async (req: Request, res: Response) => {
-    if (!req.file) {
-      res.status(400).json({ error: 'No audio file in field "file"' });
+    let fileBuffer: Buffer;
+    let mimeType: string;
+    let originalName: string;
+    let callerNumber: string;
+    let direction: string;
+    let durationS: string;
+    let callAt: string;
+    let deviceLabel: string;
+    let practiceLine: string;
+
+    if (req.file) {
+      // Multipart upload
+      fileBuffer   = req.file.buffer;
+      mimeType     = req.file.mimetype;
+      originalName = req.file.originalname;
+      const b      = req.body as Record<string, string>;
+      callerNumber = b.caller_number  ?? '';
+      direction    = b.direction      ?? 'inbound';
+      durationS    = b.duration_s     ?? '';
+      callAt       = b.call_at        ?? new Date().toISOString();
+      deviceLabel  = b.device_label   ?? '';
+      practiceLine = b.practice_line  ?? '';
+    } else if (Buffer.isBuffer(req.body) && req.body.length > 0) {
+      // Raw binary upload — Tasker HTTP Request "File To Send"
+      fileBuffer   = req.body;
+      mimeType     = (req.headers['content-type'] ?? 'application/octet-stream').split(';')[0].trim();
+      originalName = (req.headers['x-filename']      as string | undefined) ?? `recording_${Date.now()}.amr`;
+      callerNumber = (req.headers['x-caller-number'] as string | undefined) ?? '';
+      direction    = (req.headers['x-direction']     as string | undefined) ?? 'inbound';
+      durationS    = (req.headers['x-duration-s']    as string | undefined) ?? '';
+      callAt       = (req.headers['x-call-at']       as string | undefined) ?? new Date().toISOString();
+      deviceLabel  = (req.headers['x-device-label']  as string | undefined) ?? '';
+      practiceLine = (req.headers['x-practice-line'] as string | undefined) ?? '';
+    } else {
+      res.status(400).json({ error: 'No audio file provided.' });
       return;
     }
 
-    const {
-      caller_number = '',
-      direction     = 'inbound',
-      duration_s    = '',
-      call_at       = new Date().toISOString(),
-      device_label  = '',
-      practice_line = '',
-    } = req.body as Record<string, string>;
-
-    const durationSecs = duration_s ? parseInt(duration_s, 10) : null;
+    const durationSecs = durationS ? parseInt(durationS, 10) : null;
 
     // 1. Upload to Supabase Storage
-    const timestamp = new Date(call_at).getTime();
-    const ext       = req.file.originalname.split('.').pop() ?? 'mp3';
-    const storageKey = `${timestamp}_${normPhone(caller_number || 'unknown')}.${ext}`;
+    const timestamp  = new Date(callAt).getTime();
+    const ext        = originalName.split('.').pop() ?? 'amr';
+    const storageKey = `${timestamp}_${normPhone(callerNumber || 'unknown')}.${ext}`;
 
     const { data: stored, error: storageErr } = await sb()
       .storage
       .from('call-recordings')
-      .upload(storageKey, req.file.buffer, {
-        contentType: req.file.mimetype,
+      .upload(storageKey, fileBuffer, {
+        contentType: mimeType,
         upsert: true,
       });
 
@@ -164,26 +199,25 @@ router.post(
       return;
     }
 
-    // Public URL (signed, not world-public — bucket is private)
     const { data: { publicUrl } } = sb().storage.from('call-recordings').getPublicUrl(storageKey);
 
     // 2. Lookup patient by phone number
-    const patientId = caller_number ? await findPatient(caller_number) : null;
+    const patientId = callerNumber ? await findPatient(callerNumber) : null;
 
     // 3. Write call_log immediately (transcription happens async below)
     const { data: log, error: logErr } = await sb()
       .from('call_logs')
       .insert({
-        caller_number:  caller_number || null,
-        patient_id:     patientId,
-        source:         'phone',
-        direction:      direction === 'outbound' ? 'outbound' : 'inbound',
-        status:         direction === 'outbound' ? 'answered' : 'answered',
-        audio_path:     publicUrl,
-        duration_s:     durationSecs,
-        practice_line:  practice_line || null,
-        staff_notes:    device_label ? `Recorded on: ${device_label}` : null,
-        created_at:     new Date(call_at).toISOString(),
+        caller_number: callerNumber || null,
+        patient_id:    patientId,
+        source:        'phone',
+        direction:     direction === 'outbound' ? 'outbound' : 'inbound',
+        status:        'answered',
+        audio_path:    publicUrl,
+        duration_s:    durationSecs,
+        practice_line: practiceLine || null,
+        staff_notes:   deviceLabel ? `Recorded on: ${deviceLabel}` : null,
+        created_at:    new Date(callAt).toISOString(),
       })
       .select('id')
       .single();
@@ -195,18 +229,13 @@ router.post(
     }
 
     const callLogId = (log as { id: string }).id;
-    logger.info({ callLogId, caller_number, direction, patientId, duration_s: durationSecs }, '[call-recording] uploaded');
+    logger.info({ callLogId, callerNumber, direction, patientId, durationSecs }, '[call-recording] uploaded');
 
-    // Respond immediately — transcription is fire-and-forget
     res.json({ call_log_id: callLogId, audio_url: publicUrl, patient_id: patientId });
 
     // 4. Transcribe async — update call_log with transcript when done
     void (async () => {
-      const transcript = await transcribeWithWhisper(
-        req.file!.buffer,
-        req.file!.mimetype,
-        req.file!.originalname,
-      );
+      const transcript = await transcribeWithWhisper(fileBuffer, mimeType, originalName);
       if (transcript) {
         await sb()
           .from('call_logs')
