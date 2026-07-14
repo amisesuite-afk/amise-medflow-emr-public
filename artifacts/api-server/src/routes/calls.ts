@@ -250,7 +250,7 @@ router.get('/api/calls/unresolved', async (req, res) => {
   let query = sb()
     .from('call_logs')
     .select('id, caller_number, caller_email, source, direction, transcript, duration_s, practice_line, status, audio_path, callback_at, staff_notes, created_at')
-    .or('patient_id.is.null,status.in.(voicemail,callback_scheduled)')
+    .or('patient_id.is.null,status.in.(voicemail,callback_scheduled),audio_path.not.is.null')
     .not('status', 'in', '("dismissed","called_back")')
     .order('created_at', { ascending: false })
     .limit(limit);
