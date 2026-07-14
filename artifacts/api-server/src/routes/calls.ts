@@ -675,6 +675,22 @@ router.post('/api/calls/status', async (req, res) => {
   }
 
   try {
+    // If this call was already logged as a voicemail, don't overwrite its status —
+    // the voicemail webhook fires first, then Twilio sends a 'completed' status event.
+    // Keeping 'voicemail' ensures the recording shows up in the Voicemail tab.
+    if (mappedStatus === 'answered') {
+      const { data: existing } = await sb()
+        .from('call_logs')
+        .select('id, status')
+        .eq('twilio_call_sid', CallSid)
+        .maybeSingle();
+
+      if ((existing as { status: string } | null)?.status === 'voicemail') {
+        logger.info({ CallSid }, '[calls/status] skipping answered update — record is voicemail');
+        return;
+      }
+    }
+
     await sb()
       .from('call_logs')
       .upsert({
