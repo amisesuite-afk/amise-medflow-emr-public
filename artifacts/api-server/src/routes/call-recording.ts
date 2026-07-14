@@ -339,7 +339,7 @@ router.get('/api/calls/:id/signed-audio-url', async (req, res) => {
     }
     const storageKey = (call.audio_path as string).split('/call-recordings/')[1];
     if (!storageKey) {
-      res.status(400).json({ error: 'Invalid audio path format' });
+      res.status(502).json({ error: 'Invalid audio path format' });
       return;
     }
     const { data, error: signErr } = await sb()
@@ -364,20 +364,24 @@ router.post('/api/calls/:id/review', async (req, res) => {
   const { id } = req.params;
   const { notes } = req.body as { notes?: string };
 
-  let reviewerId: string | null = null;
-  const authHeader = req.headers.authorization;
-  if (authHeader?.startsWith('Bearer ')) {
-    const { data } = await sb().auth.getUser(authHeader.slice(7));
-    reviewerId = data?.user?.id ?? null;
-  }
-
   try {
+    let reviewerId: string | null = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith('Bearer ')) {
+      const { data } = await sb().auth.getUser(authHeader.slice(7));
+      reviewerId = data?.user?.id ?? null;
+    }
+
     const update: Record<string, unknown> = { reviewed_at: new Date().toISOString() };
     if (reviewerId) update.reviewed_by = reviewerId;
     if (notes !== undefined) update.staff_notes = notes;
 
-    const { error } = await sb().from('call_logs').update(update).eq('id', id);
+    const { error, count } = await sb().from('call_logs').update(update, { count: 'exact' }).eq('id', id);
     if (error) throw error;
+    if (!count) {
+      res.status(404).json({ error: 'Call not found' });
+      return;
+    }
     logger.info({ id, reviewerId }, '[calls/review] marked reviewed');
     res.json({ id, reviewed: true });
   } catch (err) {

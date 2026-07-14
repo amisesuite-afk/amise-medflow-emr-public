@@ -108,12 +108,8 @@ export default function CallsTab() {
         const params = new URLSearchParams({ limit: '200' });
         if (filterDir)      params.set('direction', filterDir);
         if (filterPractice) params.set('practice_line', filterPractice);
-        if (filterFrom)     params.set('from', new Date(filterFrom).toISOString());
-        if (filterTo) {
-          const d = new Date(filterTo);
-          d.setDate(d.getDate() + 1);
-          params.set('to', d.toISOString());
-        }
+        if (filterFrom)     params.set('from', new Date(filterFrom + 'T00:00:00-04:00').toISOString());
+        if (filterTo)       params.set('to',   new Date(filterTo   + 'T23:59:59-04:00').toISOString());
         url = apiUrl(`/api/calls/audit?${params}`);
       }
       const r = await fetch(url, { headers: await staffAuthHeaders() });
@@ -145,14 +141,16 @@ export default function CallsTab() {
     setNotes(selected.staff_notes ?? '');
     if (!selected.audio_path) return;
     setAudioLoading(true);
+    let ignore = false;
     staffAuthHeaders().then(headers =>
       fetch(apiUrl(`/api/calls/${selected.id}/signed-audio-url`), { headers })
     ).then(async r => {
       if (!r.ok) return;
       const d = await r.json() as { signedUrl?: string };
-      if (d.signedUrl) setSignedUrl(d.signedUrl);
+      if (!ignore && d.signedUrl) setSignedUrl(d.signedUrl);
     }).catch(() => {/* audio unavailable — non-fatal */})
-    .finally(() => setAudioLoading(false));
+    .finally(() => { if (!ignore) setAudioLoading(false); });
+    return () => { ignore = true; };
   }, [selected?.id]);
 
   async function handleReview() {
