@@ -80,6 +80,15 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Raw binary body for Tasker "File To Send" uploads (must run before router, only for this path)
+app.use('/api/calls/recording-upload', (req, res, next) => {
+  const ct = req.headers['content-type'] ?? '';
+  if (!ct.includes('multipart/form-data') && !ct.includes('application/json') && !ct.includes('urlencoded')) {
+    express.raw({ type: '*/*', limit: '50mb' })(req, res, next);
+  } else {
+    next();
+  }
+});
 
 const publicLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
