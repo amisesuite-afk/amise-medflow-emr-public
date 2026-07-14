@@ -26,8 +26,8 @@
 
 import { Router, type Request, type Response, type NextFunction } from 'express';
 import multer, { type StorageEngine } from 'multer';
-import { sb } from '../lib/supabase.js';
-import { logger } from '../lib/logger.js';
+import { sb, requireStaffAuth } from '../lib/supabase.js';
+import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
 
@@ -267,6 +267,123 @@ router.post('/api/calls/transcription-callback', async (req, res) => {
 
   if (error) logger.warn({ error, CallSid }, '[transcription-callback] update failed');
   else logger.info({ CallSid, chars: TranscriptionText.length }, '[transcription-callback] transcript saved');
+});
+
+// ── GET /api/calls/unresolved — staff queue (reviewed_at IS NULL) ─────────────
+
+router.get('/api/calls/unresolved', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  try {
+    const limit = Math.min(parseInt((req.query.limit as string) ?? '50', 10) || 50, 200);
+    const { data, error } = await sb()
+      .from('call_logs')
+      .select('id, caller_number, patient_id, direction, source, status, audio_path, duration_s, practice_line, staff_notes, transcript, created_at, reviewed_by, reviewed_at, patients(first_name, last_name)')
+      .is('reviewed_at', null)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    if (error) throw error;
+    res.json({ calls: data ?? [] });
+  } catch (err) {
+    logger.error({ err }, '[calls/unresolved] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ── GET /api/calls/audit — full log with optional filters ─────────────────────
+
+router.get('/api/calls/audit', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  try {
+    const limit       = Math.min(parseInt((req.query.limit as string) ?? '100', 10) || 100, 500);
+    const practice    = req.query.practice_line as string | undefined;
+    const direction   = req.query.direction     as string | undefined;
+    const status      = req.query.status        as string | undefined;
+    const from        = req.query.from          as string | undefined;
+    const to          = req.query.to            as string | undefined;
+
+    let q = sb()
+      .from('call_logs')
+      .select('id, caller_number, patient_id, direction, source, status, audio_path, duration_s, practice_line, staff_notes, transcript, created_at, reviewed_by, reviewed_at, patients(first_name, last_name)')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (practice)  q = q.eq('practice_line', practice);
+    if (direction) q = q.eq('direction', direction);
+    if (status)    q = q.eq('status', status);
+    if (from)      q = q.gte('created_at', from);
+    if (to)        q = q.lte('created_at', to);
+
+    const { data, error } = await q;
+    if (error) throw error;
+    res.json({ calls: data ?? [] });
+  } catch (err) {
+    logger.error({ err }, '[calls/audit] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ── GET /api/calls/:id/signed-audio-url — signed playback URL ─────────────────
+
+router.get('/api/calls/:id/signed-audio-url', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+  try {
+    const { data: call, error: fetchErr } = await sb()
+      .from('call_logs')
+      .select('audio_path')
+      .eq('id', id)
+      .single();
+    if (fetchErr || !call?.audio_path) {
+      res.status(404).json({ error: 'No audio for this call' });
+      return;
+    }
+    const storageKey = (call.audio_path as string).split('/call-recordings/')[1];
+    if (!storageKey) {
+      res.status(400).json({ error: 'Invalid audio path format' });
+      return;
+    }
+    const { data, error: signErr } = await sb()
+      .storage
+      .from('call-recordings')
+      .createSignedUrl(storageKey, 3600);
+    if (signErr || !data?.signedUrl) {
+      res.status(502).json({ error: signErr?.message ?? 'Could not create signed URL' });
+      return;
+    }
+    res.json({ signedUrl: data.signedUrl });
+  } catch (err) {
+    logger.error({ err }, '[calls/signed-audio-url] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ── POST /api/calls/:id/review — mark a call as reviewed ─────────────────────
+
+router.post('/api/calls/:id/review', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+  const { notes } = req.body as { notes?: string };
+
+  let reviewerId: string | null = null;
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    const { data } = await sb().auth.getUser(authHeader.slice(7));
+    reviewerId = data?.user?.id ?? null;
+  }
+
+  try {
+    const update: Record<string, unknown> = { reviewed_at: new Date().toISOString() };
+    if (reviewerId) update.reviewed_by = reviewerId;
+    if (notes !== undefined) update.staff_notes = notes;
+
+    const { error } = await sb().from('call_logs').update(update).eq('id', id);
+    if (error) throw error;
+    logger.info({ id, reviewerId }, '[calls/review] marked reviewed');
+    res.json({ id, reviewed: true });
+  } catch (err) {
+    logger.error({ err }, '[calls/review] error');
+    res.status(502).json({ error: errStr(err) });
+  }
 });
 
 export default router;

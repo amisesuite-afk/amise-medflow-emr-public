@@ -46,6 +46,7 @@ import SettingsTab from './tabs/SettingsTab';
 import PortalIntakeTab from './tabs/PortalIntakeTab';
 import ReferringProvidersTab from './tabs/ReferringProvidersTab';
 import VisitManagerTab from './VisitManager';
+import CallsTab from './tabs/CallsTab';
 import FloatingActions from '@/components/FloatingActions';
 
 const API_ORIGIN = getApiOrigin();
@@ -392,6 +393,7 @@ export default function HomePage() {
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
         {topSection === 'visit_lifecycle'                                        && <VisitManagerTab />}
+        {topSection === 'calls'                                                  && <CallsTab />}
       </main>
 
       <FloatingActions />

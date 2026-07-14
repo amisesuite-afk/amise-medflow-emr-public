@@ -12,7 +12,8 @@ export function sb(): SupabaseClient {
   _client = createClient(
     process.env.SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
-    { auth: { persistSession: false }, realtime: { transport: ws } }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    { auth: { persistSession: false }, realtime: { transport: ws as any } }
   );
   return _client;
 }
