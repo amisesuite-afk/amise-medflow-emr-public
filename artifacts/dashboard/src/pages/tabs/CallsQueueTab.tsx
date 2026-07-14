@@ -386,6 +386,41 @@ function Stat({ label, value, color }: { label: string; value: number; color: st
   );
 }
 
+// ── AudioPlayer ───────────────────────────────────────────────────────────────
+// Fetches audio via the authenticated proxy endpoint so Twilio recording URLs
+// (which require Basic Auth) can be played in the browser without exposing credentials.
+
+function AudioPlayer({ callId, apiUrl }: { callId: string; apiUrl: (path: string) => string }) {
+  const [src, setSrc]   = useState<string | null>(null);
+  const [err, setErr]   = useState(false);
+
+  useEffect(() => {
+    let objectUrl: string | null = null;
+    async function load() {
+      try {
+        const headers = await staffAuthHeaders();
+        const res = await fetch(apiUrl(`/api/calls/${callId}/audio`), { headers });
+        if (!res.ok) { setErr(true); return; }
+        const blob = await res.blob();
+        objectUrl = URL.createObjectURL(blob);
+        setSrc(objectUrl);
+      } catch {
+        setErr(true);
+      }
+    }
+    void load();
+    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [callId, apiUrl]);
+
+  if (err) return (
+    <div style={{ fontSize: 12, color: '#ef4444' }}>Unable to load recording</div>
+  );
+  if (!src) return (
+    <div style={{ fontSize: 12, color: '#64748b' }}>Loading…</div>
+  );
+  return <audio controls style={{ width: '100%', height: 36 }} src={src} />;
+}
+
 // ── CallCard ──────────────────────────────────────────────────────────────────
 
 interface CardProps {
@@ -493,7 +528,7 @@ function CallCard({ call, expanded, onToggle, isResolving, apiUrl, onResolved, o
             letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 6 }}>
             Voicemail recording
           </div>
-          <audio controls style={{ width: '100%', height: 36 }} src={call.audio_path} />
+          <AudioPlayer callId={call.id} apiUrl={apiUrl} />
         </div>
       )}
 

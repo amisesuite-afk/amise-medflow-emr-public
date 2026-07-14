@@ -476,6 +476,57 @@ router.get('/api/calls/audit', async (req, res) => {
   });
 });
 
+// ── GET /api/calls/:id/audio ──────────────────────────────────────────────────
+// Proxy endpoint so the browser can play audio without embedding Twilio credentials.
+// Twilio recording URLs require HTTP Basic Auth — the browser's <audio> element
+// cannot attach those, so this endpoint fetches from Twilio server-side and
+// streams the response back. Supabase public URLs are redirected directly.
+
+router.get('/api/calls/:id/audio', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { data, error } = await sb()
+    .from('call_logs')
+    .select('audio_path')
+    .eq('id', req.params.id)
+    .single();
+
+  if (error || !data) { res.status(404).json({ error: 'Call not found' }); return; }
+
+  const audioPath = (data as { audio_path: string | null }).audio_path;
+  if (!audioPath) { res.status(404).json({ error: 'No audio for this call' }); return; }
+
+  if (audioPath.includes('api.twilio.com')) {
+    const sid   = process.env.TWILIO_ACCOUNT_SID;
+    const token = process.env.TWILIO_AUTH_TOKEN;
+    if (!sid || !token) {
+      res.status(502).json({ error: 'Twilio credentials not configured' });
+      return;
+    }
+    try {
+      const creds    = Buffer.from(`${sid}:${token}`).toString('base64');
+      const upstream = await fetch(audioPath, {
+        headers: { Authorization: `Basic ${creds}` },
+      });
+      if (!upstream.ok) {
+        res.status(upstream.status).json({ error: `Twilio returned ${upstream.status}` });
+        return;
+      }
+      res.setHeader('Content-Type', upstream.headers.get('content-type') ?? 'audio/mpeg');
+      res.setHeader('Cache-Control', 'private, max-age=3600');
+      const ab = await upstream.arrayBuffer();
+      res.send(Buffer.from(ab));
+    } catch (err) {
+      logger.warn({ err }, '[calls/audio] Twilio fetch failed');
+      res.status(502).json({ error: 'Failed to fetch audio from Twilio' });
+    }
+    return;
+  }
+
+  // Supabase and other public URLs — redirect the browser directly
+  res.redirect(302, audioPath);
+});
+
 // ── Twilio webhook helpers ────────────────────────────────────────────────────
 
 function twilioLineFromTo(to: string): string {
