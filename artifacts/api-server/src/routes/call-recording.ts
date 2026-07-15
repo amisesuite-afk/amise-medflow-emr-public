@@ -35,15 +35,15 @@ const router = Router();
 // ── Auth middleware ───────────────────────────────────────────────────────────
 
 function requireUploadKey(req: Request, res: Response, next: NextFunction): void {
-  const key = process.env.RECORDING_UPLOAD_KEY;
+  const key = process.env.RECORDING_UPLOAD_KEY?.trim();
   if (!key) {
     logger.warn('[call-recording] RECORDING_UPLOAD_KEY not set — upload endpoint is open');
     next();
     return;
   }
   // Accept key via header OR query param (query param avoids Samsung keyboard tab-injection bug)
-  const provided = (req.headers['x-upload-key'] as string | undefined)
-    ?? (req.query['key'] as string | undefined);
+  const provided = ((req.headers['x-upload-key'] as string | undefined)
+    ?? (req.query['key'] as string | undefined))?.trim();
   if (!provided || provided !== key) {
     res.status(401).json({ error: 'Invalid upload key' });
     return;
