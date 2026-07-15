@@ -110,19 +110,33 @@ export default function CallsQueueTab() {
   const apiOrigin = getApiOrigin();
   const url = (path: string) => apiOrigin ? `${apiOrigin}${path}` : path;
 
+  const supabaseFallback = useCallback(async () => {
+    if (!supabase) return;
+    const { data: sbData } = await supabase
+      .from('call_logs')
+      .select('id, caller_number, caller_email, source, direction, transcript, duration_s, practice_line, status, audio_path, callback_at, staff_notes, created_at')
+      .or('patient_id.is.null,status.in.(voicemail,callback_scheduled),audio_path.not.is.null')
+      .not('status', 'in', '("dismissed","called_back")')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (sbData) { setCalls(sbData as CallLog[]); setDegraded(true); }
+  }, []);
+
   const fetchQueue = useCallback(async () => {
     try {
       const headers = await staffAuthHeaders();
       const qs = filterLine ? `?practice_line=${encodeURIComponent(filterLine)}` : '';
 
-      // Fetch unresolved queue and audit in parallel
-      const [queueRes, auditRes] = await Promise.all([
-        fetch(url(`/api/calls/unresolved${qs}`), { headers }),
-        fetch(url('/api/calls/audit'), { headers }),
+      // Fetch unresolved queue and audit in parallel; fall back to Supabase if API is down
+      const [queueRes, auditRes] = await Promise.allSettled([
+        fetch(url(`/api/calls/unresolved${qs}`), { headers, signal: AbortSignal.timeout(10_000) }),
+        fetch(url('/api/calls/audit'), { headers, signal: AbortSignal.timeout(10_000) }),
       ]);
 
-      if (queueRes.ok) {
-        const d = await queueRes.json() as { calls: CallLog[]; practice_lines: PracticeLine[] };
+      const queueSettled = queueRes.status === 'fulfilled' ? queueRes.value : null;
+
+      if (queueSettled?.ok) {
+        const d = await queueSettled.json() as { calls: CallLog[]; practice_lines: PracticeLine[] };
         const incoming = d.calls ?? [];
         // Browser notification on new voicemails (guarded for iOS Safari < 16.4)
         const newVoicemails = incoming.filter(c => c.status === 'voicemail').length;
@@ -137,28 +151,21 @@ export default function CallsQueueTab() {
         setLines(d.practice_lines ?? []);
         setDegraded(false);
       } else {
-        // API server unavailable — fall back to direct Supabase query (read-only)
-        if (supabase) {
-          const { data: sbData } = await supabase
-            .from('call_logs')
-            .select('id, caller_number, caller_email, source, direction, transcript, duration_s, practice_line, status, audio_path, callback_at, staff_notes, created_at')
-            .or('patient_id.is.null,status.in.(voicemail,callback_scheduled),audio_path.not.is.null')
-            .not('status', 'in', '("dismissed","called_back")')
-            .order('created_at', { ascending: false })
-            .limit(50);
-          if (sbData) { setCalls(sbData as CallLog[]); setDegraded(true); }
-        }
+        // API server down or returned an error — fall back to direct Supabase query (read-only)
+        await supabaseFallback();
       }
 
-      if (auditRes.ok) {
-        setAudit(await auditRes.json() as AuditData);
+      const auditSettled = auditRes.status === 'fulfilled' ? auditRes.value : null;
+      if (auditSettled?.ok) {
+        setAudit(await auditSettled.json() as AuditData);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load call queue');
+    } catch {
+      // Network error — still try Supabase fallback before giving up
+      await supabaseFallback();
     } finally {
       setLoading(false);
     }
-  }, [filterLine]);
+  }, [filterLine, supabaseFallback]);
 
   useEffect(() => { void fetchQueue(); }, [fetchQueue]);
 
