@@ -164,15 +164,18 @@ router.post(
       practiceLine = b.practice_line  ?? '';
     } else if (Buffer.isBuffer(req.body) && req.body.length > 0) {
       // Raw binary upload — Tasker HTTP Request "File To Send"
+      // Metadata accepted via X-* headers OR query parameters (fallback for Samsung keyboards
+      // that silently prepend a tab character to typed header names).
+      const q = req.query as Record<string, string>;
       fileBuffer   = req.body;
       mimeType     = (req.headers['content-type'] ?? 'application/octet-stream').split(';')[0].trim();
-      originalName = (req.headers['x-filename']      as string | undefined) ?? `recording_${Date.now()}.amr`;
-      callerNumber = (req.headers['x-caller-number'] as string | undefined) ?? '';
-      direction    = (req.headers['x-direction']     as string | undefined) ?? 'inbound';
-      durationS    = (req.headers['x-duration-s']    as string | undefined) ?? '';
-      callAt       = (req.headers['x-call-at']       as string | undefined) ?? new Date().toISOString();
-      deviceLabel  = (req.headers['x-device-label']  as string | undefined) ?? '';
-      practiceLine = (req.headers['x-practice-line'] as string | undefined) ?? '';
+      originalName = (req.headers['x-filename']      as string | undefined) ?? q['filename']      ?? `recording_${Date.now()}.amr`;
+      callerNumber = (req.headers['x-caller-number'] as string | undefined) ?? q['caller_number'] ?? '';
+      direction    = (req.headers['x-direction']     as string | undefined) ?? q['direction']     ?? 'inbound';
+      durationS    = (req.headers['x-duration-s']    as string | undefined) ?? q['duration_s']    ?? '';
+      callAt       = (req.headers['x-call-at']       as string | undefined) ?? q['call_at']       ?? new Date().toISOString();
+      deviceLabel  = (req.headers['x-device-label']  as string | undefined) ?? q['device_label']  ?? '';
+      practiceLine = (req.headers['x-practice-line'] as string | undefined) ?? q['practice_line'] ?? '';
     } else {
       res.status(400).json({ error: 'No audio file provided.' });
       return;
