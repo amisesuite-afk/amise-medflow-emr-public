@@ -8,6 +8,7 @@ import {
   Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig, Check,
   MessageSquare, Tags, ClipboardMinus, ScrollText, MailOpen, GraduationCap, ShieldCheck,
   Calculator, Droplets, Bandage, UserCheck, ArrowLeftRight, PhoneIncoming,
+  CalendarClock,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection, EncounterType } from '@/context/AppContext';
@@ -159,9 +160,10 @@ const DR_NAV_ITEMS: TopItem[] = [
   { id: 'procedures',      icon: Scissors,        label: 'Procedures',      roles: ['doctor', 'admin'],          group: 'Clinical' },
   { id: 'trauma',          icon: Zap,             label: 'Trauma',          roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
   // Results & Summary
-  { id: 'results_inbox',   icon: ClipboardMinus,  label: 'Results Inbox',   roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
-  { id: 'finaldoc',        icon: FileCheck2,      label: 'Summary',         roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
-  { id: 'visit_lifecycle', icon: HeartPulse,      label: 'Visits',          roles: ['doctor', 'admin'],          group: 'Results' },
+  { id: 'results_inbox',    icon: ClipboardMinus,  label: 'Results Inbox',    roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
+  { id: 'finaldoc',         icon: FileCheck2,      label: 'Summary',          roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
+  { id: 'visit_lifecycle',  icon: HeartPulse,      label: 'Visits',           roles: ['doctor', 'admin'],          group: 'Results' },
+  { id: 'followup_tracker', icon: CalendarClock,   label: 'Follow-up Tracker',roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
   // Reference
   { id: 'analytics',       icon: BarChart2,       label: 'Analytics',       roles: ['doctor', 'admin'],          group: 'Reference' },
   { id: 'quality',         icon: Activity,        label: 'QI / M&M',        roles: ['doctor', 'admin'],          group: 'Reference' },
@@ -175,9 +177,10 @@ const FD_NAV_ITEMS: TopItem[] = [
   // Check-In
   { id: 'checkin',         icon: UserCheck,       label: 'Check-In',         roles: ['front_desk', 'admin'], group: 'Check-In' },
   { id: 'doc_scan',        icon: ScanLine,        label: 'Scan Document',    roles: ['front_desk', 'admin'], group: 'Check-In' },
-  { id: 'booking_inbox',   icon: Inbox,           label: 'Booking Inbox',    roles: ['front_desk', 'admin'], group: 'Check-In' },
-  { id: 'calls_queue',     icon: PhoneIncoming,   label: 'Call Queue',       roles: ['front_desk', 'admin'], group: 'Check-In' },
-  { id: 'intake',          icon: ClipboardList,   label: 'Intake',           roles: ['front_desk', 'admin'], group: 'Check-In' },
+  { id: 'booking_inbox',    icon: Inbox,           label: 'Booking Inbox',    roles: ['front_desk', 'admin'], group: 'Check-In' },
+  { id: 'calls_queue',      icon: PhoneIncoming,   label: 'Call Queue',       roles: ['front_desk', 'admin'], group: 'Check-In' },
+  { id: 'followup_tracker', icon: CalendarClock,   label: 'Follow-up Tracker',roles: ['front_desk', 'admin'], group: 'Check-In' },
+  { id: 'intake',           icon: ClipboardList,   label: 'Intake',           roles: ['front_desk', 'admin'], group: 'Check-In' },
   // Administrative
   { id: 'scheduling',      icon: CalendarDays,    label: 'Scheduling',       roles: ['front_desk', 'admin'], group: 'Admin' },
   { id: 'patients',        icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'admin'], group: 'Admin' },

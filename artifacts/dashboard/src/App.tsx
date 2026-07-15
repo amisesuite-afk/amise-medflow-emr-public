@@ -5,7 +5,10 @@ import { AppProvider } from '@/context/AppContext';
 import { ToastProvider } from '@/components/ToastProvider';
 import HomePage from '@/pages/Home';
 import LoginPage from '@/components/LoginPage';
+import MobileEncounterPage from '@/pages/MobileEncounterPage';
 import PwaUpdatePrompt from '@/components/PwaUpdatePrompt';
+
+const IS_MOBILE_PATH = typeof window !== 'undefined' && window.location.pathname.startsWith('/mobile');
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
@@ -78,6 +81,8 @@ function AuthGuard() {
   }
 
   if (!profile) return <LoginPage sessionExpired={sessionExpired} />;
+
+  if (IS_MOBILE_PATH) return <MobileEncounterPage />;
 
   return (
     <AppProvider>

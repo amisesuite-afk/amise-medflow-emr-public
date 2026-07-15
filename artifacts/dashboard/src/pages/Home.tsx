@@ -67,6 +67,7 @@ import ResultsInboxTab from './tabs/ResultsInboxTab';
 import LetterGeneratorTab from './tabs/LetterGeneratorTab';
 import PatientEducationTab from './tabs/PatientEducationTab';
 import PatientTasksTab from './tabs/PatientTasksTab';
+import FollowUpTrackerTab from './tabs/FollowUpTrackerTab';
 import CheckInTab, { VISIT_TYPES } from './tabs/CheckInTab';
 import EncounterStartWizard from '@/components/EncounterStartWizard';
 import VisitTypeOpeningPanel from '@/components/VisitTypeOpeningPanel';
@@ -1306,6 +1307,7 @@ export default function HomePage() {
         {topSection === 'prescriptions'     && hasRole(userRole, 'doctor')     && <PrescriptionsTab />}
         {topSection === 'ai_consultant'     && hasRole(userRole, 'doctor')     && <AiConsultantTab />}
         {topSection === 'tasks'                                                && <PatientTasksTab />}
+        {topSection === 'followup_tracker'                                     && <FollowUpTrackerTab />}
         </ErrorBoundary>
       </main>
 
