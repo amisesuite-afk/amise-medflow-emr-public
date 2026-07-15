@@ -22,6 +22,7 @@ interface CallItem {
   staff_notes: string | null;
   practice_line: string | null;
   created_at: string;
+  transcription_status: string | null;
   transcript: string | null;
 }
 
@@ -64,7 +65,7 @@ export default function FollowUpTrackerTab() {
 
         supabase
           .from('call_logs')
-          .select('id, caller_number, status, direction, staff_notes, practice_line, created_at, transcript')
+          .select('id, caller_number, status, direction, staff_notes, practice_line, created_at, transcription_status, transcript')
           .in('status', ['voicemail', 'missed', 'callback_scheduled'])
           .order('created_at', { ascending: false })
           .limit(50),
@@ -354,6 +355,14 @@ function BookingCard({ item: b, onOpen }: { item: PendingBooking; onOpen: () => 
 
 function CallCard({ item: c, onOpen }: { item: CallItem; onOpen: () => void }) {
   const colour = statusColour(c.status);
+  const txColour = c.transcription_status === 'failed' ? '#ef4444'
+    : c.transcription_status === 'pending' ? '#f97316'
+    : c.transcription_status === 'completed' ? '#0d9488'
+    : '#94a3b8';
+  const txLabel = c.transcription_status === 'failed' ? '⚠ Transcript failed — review manually'
+    : c.transcription_status === 'pending' ? '⏳ Transcribing…'
+    : null;
+
   return (
     <Card>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
@@ -366,11 +375,16 @@ function CallCard({ item: c, onOpen }: { item: CallItem; onOpen: () => void }) {
             {c.practice_line ? ` · ${c.practice_line}` : ''}
             {c.staff_notes ? ` · ${c.staff_notes}` : ''}
           </div>
+          {txLabel && (
+            <div style={{ fontSize: 11, color: txColour, fontWeight: 600, marginTop: 4 }}>
+              {txLabel}
+            </div>
+          )}
           {c.transcript && (
             <div style={{
               fontSize: 12, color: '#64748b', marginTop: 6,
               padding: '4px 8px', borderRadius: 6,
-              background: 'var(--muted, #f8fafc)', borderLeft: '3px solid #8b5cf6',
+              background: 'var(--muted, #f8fafc)', borderLeft: `3px solid ${txColour}`,
               display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
             }}>
