@@ -649,6 +649,22 @@ export default function HomePage() {
           </div>
           )}
 
+          {/* Site picker — outpatient only; inpatient is always Tapion */}
+          {topSection !== 'consultation' && encounterMode === 'outpatient' && (
+          <div className="site-pill" aria-label="Clinic site">
+            {SITE_CODES.map(code => (
+              <button
+                key={code}
+                className={`site-pill__btn${currentSite === code ? ' site-pill__btn--active' : ''}`}
+                onClick={() => setCurrentSite(code)}
+                title={SITE_LABELS[code]}
+              >
+                {SITE_LABELS[code]}
+              </button>
+            ))}
+          </div>
+          )}
+
 
           <ResultsAlertBadge patientId={patientId ?? undefined} />
 
