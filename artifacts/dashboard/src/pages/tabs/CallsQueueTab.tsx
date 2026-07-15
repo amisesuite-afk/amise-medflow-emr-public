@@ -15,6 +15,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { getApiOrigin } from '@/lib/api-origin';
+import { supabase } from '@/lib/supabase';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -103,6 +104,7 @@ export default function CallsQueueTab() {
   const [error, setError]           = useState<string | null>(null);
   const [resolving, setResolving]   = useState<string | null>(null);
   const [expanded, setExpanded]     = useState<string | null>(null);
+  const [degraded, setDegraded]     = useState(false);
   const prevCountRef                = useRef(0);
 
   const apiOrigin = getApiOrigin();
@@ -133,6 +135,19 @@ export default function CallsQueueTab() {
         prevCountRef.current = newVoicemails;
         setCalls(incoming);
         setLines(d.practice_lines ?? []);
+        setDegraded(false);
+      } else {
+        // API server unavailable — fall back to direct Supabase query (read-only)
+        if (supabase) {
+          const { data: sbData } = await supabase
+            .from('call_logs')
+            .select('id, caller_number, caller_email, source, direction, transcript, duration_s, practice_line, status, audio_path, callback_at, staff_notes, created_at')
+            .or('patient_id.is.null,status.in.(voicemail,callback_scheduled),audio_path.not.is.null')
+            .not('status', 'in', '("dismissed","called_back")')
+            .order('created_at', { ascending: false })
+            .limit(50);
+          if (sbData) { setCalls(sbData as CallLog[]); setDegraded(true); }
+        }
       }
 
       if (auditRes.ok) {
@@ -188,6 +203,14 @@ export default function CallsQueueTab() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+
+      {/* ── Degraded mode banner ── */}
+      {degraded && (
+        <div style={{ padding: '8px 14px', background: '#1c1400', border: '1px solid #b45309',
+          borderRadius: 8, color: '#fbbf24', fontSize: 12 }}>
+          API server unavailable — showing read-only view. Audio playback and status updates require the API server.
+        </div>
+      )}
 
       {/* ── Audit summary bar ── */}
       {audit && (
