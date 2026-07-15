@@ -773,7 +773,7 @@ router.post('/api/questionnaire/provision-link', async (req, res) => {
     });
 
     const baseUrl = process.env.FRONTEND_URL || 'https://front-desk-amisesuite-afks-projects.vercel.app';
-    res.status(201).json({ url: `${baseUrl}/questionnaire/${sessionToken}` });
+    res.status(201).json({ url: `${baseUrl}/questionnaire/${sessionToken}`, session_id: sessionRow.id });
   } catch (err) {
     req.log.info({ err }, '[questionnaire/provision-link] error');
     res.status(502).json({ error: errStr(err) });

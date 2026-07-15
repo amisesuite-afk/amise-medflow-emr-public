@@ -160,6 +160,28 @@ pnpm run build                                 # Typecheck + build all packages
 - Patient records and audit logs live in Supabase — the Replit DB is not used.
 - **Every new table needs an explicit `grant ... to service_role` (in addition to `authenticated`).** `artifacts/api-server`'s `sb()` client connects as `service_role` — RLS is bypassed for that role, but the underlying table-level GRANT is still checked first, so a missing grant causes `permission denied for table X` (42501) → HTTP 502 on any endpoint touching that table. This bit `patients`, `documents`, `clinical_notes`, etc. (fixed in `supabase-service-role-grants-fix-migration.sql`) — when adding a new migration, grant `service_role` alongside `authenticated` from the start instead of patching it later.
 
+### New Table Checklist
+
+Every `CREATE TABLE` migration MUST include all of the following before being applied:
+
+```sql
+-- 1. Enable RLS
+ALTER TABLE public.<table> ENABLE ROW LEVEL SECURITY;
+
+-- 2. RLS policy for authenticated users
+CREATE POLICY "staff access" ON public.<table>
+  FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- 3. Table-level grants (BOTH roles required)
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.<table> TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.<table> TO service_role;
+
+-- 4. FK columns must be NOT NULL if the relationship is required
+-- 5. CHECK constraints defined at creation, not patched later
+```
+
+Missing any of these produces: 42501 (missing grant) → HTTP 502, silent CHECK rejections, or broken RLS. Use `supabase-seam-fixes-migration.sql` as a reference for the canonical pattern.
+
 ## Tone
 
 British-Caribbean professional tone in all patient-facing copy. Never include clinical advice, fees, diagnoses, medication dosages, or results in any automated message.
