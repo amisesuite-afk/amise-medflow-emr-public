@@ -6,6 +6,7 @@ import rateLimit from "express-rate-limit";
 import * as Sentry from "@sentry/node";
 import pinoHttp from "pino-http";
 import path from "path";
+import fs from "node:fs";
 import { fileURLToPath } from "url";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -126,13 +127,15 @@ app.all("/api/{*splat}", (_req, res) => {
 
 Sentry.setupExpressErrorHandler(app);
 
-// Production: serve the built dashboard and fall back to index.html for SPA routing
+// Serve built dashboard if present (dev/monolith mode).
+// In production the dashboard is deployed separately to Vercel, so this is skipped.
 if (process.env.NODE_ENV === "production") {
   const staticPath = path.resolve(__dirname, "../../dashboard/dist/public");
-  app.use(express.static(staticPath));
-  app.use((_req, res) => {
-    res.sendFile(path.join(staticPath, "index.html"));
-  });
+  const indexHtml = path.join(staticPath, "index.html");
+  if (fs.existsSync(indexHtml)) {
+    app.use(express.static(staticPath));
+    app.use((_req, res) => res.sendFile(indexHtml));
+  }
 }
 
 export default app;
