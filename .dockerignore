@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+.git
+.claude
+artifacts/dashboard
+artifacts/front-desk
+artifacts/patient-app
+artifacts/finance-auditor
+artifacts/tax-planner
+artifacts/tax-planner-static
+artifacts/mockup-sandbox
