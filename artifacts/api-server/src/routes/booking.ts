@@ -15,7 +15,8 @@ const bookingRateLimit = rateLimit({
   limit: 5,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
-  keyGenerator: (req) => req.body?.patient_phone || req.ip,
+  keyGenerator: (req) => req.body?.patient_phone || req.ip || '',
+  validate: { ip: false },
   message: { error: 'Too many booking requests. Please try again later or call us.' },
 });
 
