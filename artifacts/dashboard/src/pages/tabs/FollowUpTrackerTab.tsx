@@ -22,7 +22,6 @@ interface CallItem {
   staff_notes: string | null;
   practice_line: string | null;
   created_at: string;
-  transcription_status: string | null;
   transcript: string | null;
 }
 
@@ -65,7 +64,7 @@ export default function FollowUpTrackerTab() {
 
         supabase
           .from('call_logs')
-          .select('id, caller_number, status, direction, staff_notes, practice_line, created_at, transcription_status, transcript')
+          .select('id, caller_number, status, direction, staff_notes, practice_line, created_at, transcript')
           .in('status', ['voicemail', 'missed', 'callback_scheduled'])
           .order('created_at', { ascending: false })
           .limit(50),
@@ -89,7 +88,10 @@ export default function FollowUpTrackerTab() {
       setCalls((cRes.data ?? []) as CallItem[]);
       setEncounters((eRes.data ?? []) as OpenEncounter[]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load follow-up items');
+      const msg = err instanceof Error
+        ? err.message
+        : (err as { message?: string })?.message ?? 'Failed to load follow-up items';
+      setError(msg);
     } finally {
       setLoading(false);
     }
