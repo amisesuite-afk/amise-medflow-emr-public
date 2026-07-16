@@ -16,6 +16,8 @@ import { localSegmentSoap } from '@/lib/local-soap-segmenter';
 import { getApiOrigin } from '@/lib/api-origin';
 import VitalsStrip from './VitalsStrip';
 import LiveConsultNote from './LiveConsultNote';
+import { DISEASES, initPaneState, updatePosterior, topDiagnoses, applyModifiers, getProtocol } from '@workspace/pane-engine';
+import { extractFeaturesFromTranscript, detectPathognomonic, type PathognomicMatch } from '@/lib/transcript-dx-mapper';
 
 // ── Web Speech API types ──────────────────────────────────────────────────────
 
@@ -75,6 +77,10 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const [loaded, setLoaded] = useState(false);
   const [segmentSource, setSegmentSource] = useState<SegmentSource | null>(null);
   const recogRef = useRef<SpeechRecognition | null>(null);
+
+  // DX engine state
+  const [pathognomicAlerts, setPathognomicAlerts] = useState<PathognomicMatch[]>([]);
+  const [dxUpdatedAt, setDxUpdatedAt] = useState<number | null>(null);
 
   // UI panels
   const [photosOpen, setPhotosOpen] = useState(false);
@@ -209,6 +215,31 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     if (s.unsegmented?.trim()) {
       ctx.setFreeText(ctx.freeText ? ctx.freeText + '\n\n' + s.unsegmented : s.unsegmented);
     }
+
+    // ── Auto-drive Bayesian dx engine from transcript ──────────────────────────
+    void (async () => {
+      const fullText = transcript;
+      if (!fullText.trim()) return;
+
+      // Pathognomonic detection
+      const patho = detectPathognomonic(fullText);
+      if (patho.length) setPathognomicAlerts(patho);
+
+      // Feature extraction → Bayesian update
+      const observed = extractFeaturesFromTranscript(fullText);
+      if (!observed.length) return;
+
+      const age = ctx.age ? parseInt(ctx.age, 10) : null;
+      const modifiedDiseases = applyModifiers(DISEASES, age, ctx.sex);
+      let state = ctx.paneState ?? initPaneState(modifiedDiseases);
+      for (const { featureId, observed: obs } of observed) {
+        state = updatePosterior(state, modifiedDiseases, featureId, obs);
+      }
+      const top = topDiagnoses(state, modifiedDiseases, 8);
+      ctx.setPaneState(state);
+      ctx.setPaneTop(top);
+      setDxUpdatedAt(Date.now());
+    })();
 
     setPendingSoap(null);
     setTranscript('');
@@ -488,6 +519,84 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           ≡ Detailed entry — PMH · Meds · ROS · Scales · Procedures
         </button>
       </div>
+
+      {/* ── Live DX strip — auto-updated from transcript ─────────────────────── */}
+      {(pathognomicAlerts.length > 0 || (dxUpdatedAt && ctx.paneTop.length > 0)) && (
+        <div style={{ marginTop: 12, borderTop: '1px solid var(--border, #e2e8f0)', paddingTop: 10 }}>
+          {pathognomicAlerts.length > 0 && (
+            <div style={{ marginBottom: 8 }}>
+              {pathognomicAlerts.map(a => (
+                <div key={a.diseaseId} style={{
+                  background: a.specificity === 'definitive' ? '#fef2f2' : '#fffbeb',
+                  border: `1px solid ${a.specificity === 'definitive' ? '#fca5a5' : '#fde68a'}`,
+                  borderRadius: 8, padding: '6px 10px', marginBottom: 4,
+                  fontSize: 12, color: a.specificity === 'definitive' ? '#991b1b' : '#92400e',
+                  display: 'flex', gap: 6, alignItems: 'center',
+                }}>
+                  <span style={{ fontWeight: 800 }}>
+                    {a.specificity === 'definitive' ? '⚠ Pathognomonic:' : '◈ Strong indicator:'}
+                  </span>
+                  {a.diseaseLabel}
+                  <span style={{ opacity: 0.6, fontStyle: 'italic' }}>— {a.finding}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {ctx.paneTop.length > 0 && (
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.08em', color: '#64748b', marginBottom: 6, textTransform: 'uppercase' }}>
+                Differential (from transcript)
+              </div>
+              {ctx.paneTop.slice(0, 4).map(r => (
+                <div key={r.disease.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <div style={{
+                    flex: 1, height: 20, background: '#f1f5f9', borderRadius: 4,
+                    overflow: 'hidden', position: 'relative',
+                  }}>
+                    <div style={{
+                      position: 'absolute', left: 0, top: 0, bottom: 0,
+                      width: `${Math.round(r.probability * 100)}%`,
+                      background: r.probability > 0.5 ? '#0d9488' : r.probability > 0.25 ? '#f59e0b' : '#94a3b8',
+                      borderRadius: 4,
+                    }} />
+                    <span style={{ position: 'absolute', left: 6, top: 0, bottom: 0, display: 'flex', alignItems: 'center', fontSize: 11, fontWeight: 600, color: r.probability > 0.5 ? '#fff' : '#0f172a' }}>
+                      {r.disease.label}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 700, minWidth: 36, color: '#64748b', textAlign: 'right' }}>
+                    {Math.round(r.probability * 100)}%
+                  </span>
+                </div>
+              ))}
+              {(() => {
+                const top1 = ctx.paneTop[0];
+                if (!top1 || top1.probability < 0.3) return null;
+                const proto = getProtocol(top1.disease.id);
+                if (!proto) return null;
+                const statInvx = proto.investigations.filter(i => i.urgency === 'stat' || i.urgency === 'urgent').slice(0, 3);
+                return (
+                  <div style={{ marginTop: 10, fontSize: 11, color: '#334155' }}>
+                    <div style={{ fontWeight: 700, fontSize: 10, letterSpacing: '.08em', color: '#0d9488', textTransform: 'uppercase', marginBottom: 4 }}>
+                      Next — if {top1.disease.label}
+                    </div>
+                    {statInvx.map(i => (
+                      <div key={i.label} style={{ display: 'flex', gap: 5, marginBottom: 2 }}>
+                        <span style={{ color: i.urgency === 'stat' ? '#dc2626' : '#d97706', fontWeight: 700 }}>{i.urgency.toUpperCase()}</span>
+                        <span>{i.label}</span>
+                      </div>
+                    ))}
+                    {proto.redFlags.length > 0 && (
+                      <div style={{ marginTop: 4, color: '#dc2626', fontSize: 10 }}>
+                        ⚠ {proto.redFlags[0]}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+        </div>
+      )}
 
       <style>{`
         @keyframes ambientPulse {
