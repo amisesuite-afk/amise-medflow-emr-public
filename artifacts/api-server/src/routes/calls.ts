@@ -599,6 +599,7 @@ router.post('/api/calls/twiml', (req, res) => {
 
   res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
 <Response>
+  <Say voice="Polly.Joanna" language="en-US">This call may be recorded.</Say>
   <Dial
     timeout="${ringTimeout}"
     record="record-from-answer"
