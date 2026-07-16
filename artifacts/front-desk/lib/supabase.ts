@@ -110,12 +110,13 @@ export interface BookingRow {
   result_alert_email: string | null;
   result_alert_pending: boolean;
   result_alert_sent_at: string | null;
+  questionnaire_session_id: string | null;
   created_at: string;
 }
 
 export async function createBookingRequest(
-  row: Omit<BookingRow, 'id' | 'created_at' | 'patient_dob' | 'source' | 'result_alert_email' | 'result_alert_pending' | 'result_alert_sent_at'>
-    & Partial<Pick<BookingRow, 'patient_dob' | 'source' | 'result_alert_email' | 'result_alert_pending' | 'result_alert_sent_at'>>,
+  row: Omit<BookingRow, 'id' | 'created_at' | 'patient_dob' | 'source' | 'result_alert_email' | 'result_alert_pending' | 'result_alert_sent_at' | 'questionnaire_session_id'>
+    & Partial<Pick<BookingRow, 'patient_dob' | 'source' | 'result_alert_email' | 'result_alert_pending' | 'result_alert_sent_at' | 'questionnaire_session_id'>>,
 ): Promise<BookingRow> {
   const sb = getServiceClient();
   const { data, error } = await sb

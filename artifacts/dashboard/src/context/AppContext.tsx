@@ -81,7 +81,7 @@ export type TopSection =
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
   | 'trauma' | 'vademecum' | 'questionnaire' | 'booking_inbox' | 'calls_queue' | 'portal_intake' | 'referring_providers'
   | 'visit_lifecycle' | 'prescriptions' | 'ai_consultant' | 'tasks'
-  | 'quality' | 'results_inbox';
+  | 'quality' | 'results_inbox' | 'followup_tracker';
 
 /** Grouped trauma / burns state — stored as a single serialisable object. */
 export interface TraumaData {
@@ -143,6 +143,7 @@ const VALID_TOP_SECTIONS: readonly string[] = [
   'finaldoc', 'inpatient', 'trauma', 'vademecum', 'questionnaire', 'booking_inbox',
   'calls_queue', 'portal_intake', 'referring_providers', 'visit_lifecycle',
   'prescriptions', 'ai_consultant', 'tasks', 'quality', 'results_inbox',
+  'followup_tracker',
 ];
 function readNavFromStorage(): TopSection {
   try {

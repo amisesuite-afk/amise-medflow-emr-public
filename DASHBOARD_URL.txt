@@ -1,2 +1,2 @@
-https://dashboard-lemon-gamma-44.vercel.app
+Error:requesttohttps://api.vercel.com/v13/deployments?teamId=team_QfqYHwBxPTBDK9NmvG9DUEab&skipAutoDetectionConfirmation=1failed,reason:readETIMEDOUT
 Login: /login  Dashboard: /  Booking Inbox: /?top=booking_inbox

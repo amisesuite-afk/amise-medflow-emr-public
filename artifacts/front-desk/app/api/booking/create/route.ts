@@ -18,9 +18,9 @@ const FALLBACK_ERROR = 'We could not process your request online. Please call us
 // without a separate staff follow-up. api-server stays the sole owner of
 // session_token generation — front-desk only asks for a finished link.
 // Best-effort: a failure here must never block booking confirmation.
-async function provisionQuestionnaireLink(): Promise<string | null> {
+async function provisionQuestionnaire(): Promise<{ url: string | null; session_id: string | null }> {
   const staffToken = process.env.CRON_SECRET;
-  if (!staffToken) return null;
+  if (!staffToken) return { url: null, session_id: null };
 
   try {
     const r = await fetch(`${API}/api/questionnaire/provision-link`, {
@@ -30,13 +30,13 @@ async function provisionQuestionnaireLink(): Promise<string | null> {
     });
     if (!r.ok) {
       console.error(`[booking/create] questionnaire link provisioning failed: HTTP ${r.status}`);
-      return null;
+      return { url: null, session_id: null };
     }
-    const d = await r.json() as { url?: string };
-    return d.url ?? null;
+    const d = await r.json() as { url?: string; session_id?: string };
+    return { url: d.url ?? null, session_id: d.session_id ?? null };
   } catch (err) {
     console.error('[booking/create] questionnaire link provisioning failed:', err);
-    return null;
+    return { url: null, session_id: null };
   }
 }
 
@@ -116,6 +116,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   );
 
   try {
+    // Provision questionnaire link first so session_id can be stored on the booking row
+    const { url: questionnaireUrl, session_id: questionnaireSessionId } = await provisionQuestionnaire();
+
     // All web bookings go to pending — front desk reviews calendar and assigns slot
     const notesLines: string[] = [];
     if (referralDoctor) {
@@ -126,30 +129,31 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     const row = await createBookingRequest({
-      patient_name:     patientName,
-      patient_email:    patientEmail?.trim() || null,
-      patient_phone:    patientPhone,
-      appointment_type: appointmentType,
-      location:         '',
-      preferred_slot:   null,
-      reason:           encodedReason,
-      triage_acuity:    cfg.acuity,
-      status:           'pending',
-      notes:            notesLines.length > 0 ? notesLines.join(' | ') : null,
-      confirmed_slot:   null,
-      google_event_id:  null,
+      patient_name:              patientName,
+      patient_email:             patientEmail?.trim() || null,
+      patient_phone:             patientPhone,
+      appointment_type:          appointmentType,
+      location:                  '',
+      preferred_slot:            null,
+      reason:                    encodedReason,
+      triage_acuity:             cfg.acuity,
+      status:                    'pending',
+      notes:                     notesLines.length > 0 ? notesLines.join(' | ') : null,
+      confirmed_slot:            null,
+      google_event_id:           null,
+      source:                    'web',
+      questionnaire_session_id:  questionnaireSessionId,
     });
 
     await logAudit(row.id, 'online_booking_created', 'patient', {
       track,
       appointment_type: appointmentType,
       preferences,
+      questionnaire_session_id: questionnaireSessionId,
     }).catch(err => console.error('[booking/create] audit log failed:', err));
 
     const isWhatsApp = patientPhone.toLowerCase().startsWith('whatsapp:');
     const send = isWhatsApp ? sendWhatsApp : sendSms;
-
-    const questionnaireUrl = await provisionQuestionnaireLink();
 
     try {
       await send(patientPhone, bookingAcknowledgement(patientName, questionnaireUrl));

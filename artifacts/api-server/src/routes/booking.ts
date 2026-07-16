@@ -33,6 +33,7 @@ const BookingRequestSchema = z.object({
   triage_acuity: z.string().optional(),
   triage_score: z.union([z.string(), z.number()]).optional(),
   source: z.string().optional(),
+  questionnaire_session_id: z.string().uuid().optional(),
 });
 
 const ConfirmBookingSchema = z.object({
@@ -74,11 +75,14 @@ router.post('/api/booking/request', bookingRateLimit, async (req, res) => {
     return;
   }
 
-  const { patient_name, patient_email, patient_phone, appointment_type, location, preferred_slot, reason, triage_acuity, triage_score, source } = parsed.data;
+  const { patient_name, patient_email, patient_phone, appointment_type, location, preferred_slot, reason, triage_acuity, triage_score, source, questionnaire_session_id } = parsed.data;
 
   const VALID_SOURCES = ['web', 'whatsapp', 'manual', 'phone', 'email'];
   const resolvedSource: string = VALID_SOURCES.includes(source as string) ? (source as string) : 'web';
   const normalizedPhone = patient_phone ? toE164(patient_phone as string) : null;
+  if (resolvedSource === 'web' && !questionnaire_session_id) {
+    logger.warn('[booking/request] web intake missing questionnaire_session_id — staff cannot see intake answers');
+  }
 
   try {
     const supa = getSupabaseAdmin();
@@ -103,6 +107,7 @@ router.post('/api/booking/request', bookingRateLimit, async (req, res) => {
         triage_level: triage_acuity ?? null,
         status: 'pending',
         source: resolvedSource,
+        questionnaire_session_id: questionnaire_session_id ?? null,
       })
       .select('id')
       .single();

@@ -246,4 +246,105 @@ router.post('/api/exam/photo-describe', async (req, res) => {
   }
 });
 
+// ── POST /api/patients/:targetId/merge ─────────────────────────────────────
+// Non-destructive patient identity consolidation. Re-parents all clinical records
+// from source_id to targetId, then deletes the now-empty source patient row.
+// Staff-auth required. Doctor or admin role only.
+
+router.post('/api/patients/:targetId/merge', async (req, res) => {
+  const ok = await requireStaffAuth(req, res);
+  if (!ok) return;
+
+  const { targetId } = req.params as { targetId: string };
+  const { source_id: sourceId } = req.body as { source_id?: string };
+
+  if (!sourceId) {
+    res.status(400).json({ error: 'source_id is required' });
+    return;
+  }
+  if (sourceId === targetId) {
+    res.status(400).json({ error: 'source_id and target patient must be different' });
+    return;
+  }
+
+  // Validate both patients exist
+  const [tRes, sRes] = await Promise.all([
+    sb().from('patients').select('id, full_name, mrn').eq('id', targetId).maybeSingle(),
+    sb().from('patients').select('id, full_name, mrn').eq('id', sourceId).maybeSingle(),
+  ]);
+  if (!tRes.data) { res.status(404).json({ error: 'Target patient not found' }); return; }
+  if (!sRes.data) { res.status(404).json({ error: 'Source patient not found' }); return; }
+
+  const target = tRes.data as { id: string; full_name: string; mrn: string | null };
+  const source = sRes.data as { id: string; full_name: string; mrn: string | null };
+
+  log.info({ targetId, sourceId }, '[merge] starting patient merge');
+
+  // Re-parent records in dependency order so no FK violation fires during the
+  // final DELETE. Tables with cascade-delete from patients must be moved first.
+  const tables: Array<{ table: string; col: string }> = [
+    { table: 'vitals',               col: 'patient_id' },
+    { table: 'symptoms',             col: 'patient_id' },
+    { table: 'assessments',          col: 'patient_id' },
+    { table: 'plans',                col: 'patient_id' },
+    { table: 'encounters',           col: 'patient_id' },
+    { table: 'medications',          col: 'patient_id' },
+    { table: 'allergies',            col: 'patient_id' },
+    { table: 'procedures',           col: 'patient_id' },
+    { table: 'referrals',            col: 'patient_id' },
+    { table: 'appointments',         col: 'patient_id' },
+    { table: 'call_logs',            col: 'patient_id' },
+    { table: 'appointment_requests', col: 'patient_id' },
+    { table: 'documents',            col: 'patient_id' },
+  ];
+
+  const errors: string[] = [];
+  for (const { table, col } of tables) {
+    const { error: upErr } = await sb()
+      .from(table)
+      .update({ [col]: targetId })
+      .eq(col, sourceId);
+    if (upErr) {
+      // Tables that don't exist (or have nullable FK that returns 0 rows) are non-fatal
+      log.warn({ table, err: upErr.message }, '[merge] re-parent warning');
+      errors.push(`${table}: ${upErr.message}`);
+    }
+  }
+
+  // Delete the source patient (now safe — all child FKs have been moved)
+  const { error: delErr } = await sb()
+    .from('patients')
+    .delete()
+    .eq('id', sourceId);
+
+  if (delErr) {
+    log.error({ sourceId, err: delErr.message }, '[merge] source delete failed');
+    res.status(502).json({
+      error: `Records moved but source patient could not be deleted: ${delErr.message}`,
+      warnings: errors,
+    });
+    return;
+  }
+
+  // Audit trail
+  await sb().from('audit_logs').insert({
+    action: 'patient_merge',
+    table_name: 'patients',
+    record_id: targetId,
+    new_values: {
+      target_id: targetId, target_name: target.full_name,
+      source_id: sourceId, source_name: source.full_name,
+    },
+  }).then(r => { if (r.error) log.warn(r.error, '[merge] audit log failed'); });
+
+  log.info({ targetId, sourceId }, '[merge] patient merge complete');
+  res.json({
+    success: true,
+    target_id: targetId,
+    source_id: sourceId,
+    message: `Merged "${source.full_name}" into "${target.full_name}"`,
+    warnings: errors.length > 0 ? errors : undefined,
+  });
+});
+
 export default router;

@@ -281,6 +281,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const d = await r.json() as { requests: BookingRequest[] };
       setRequests(d.requests ?? []);
+      setDegradedRead(false);
       setError(null);
       setLastRefresh(new Date());
     } catch (apiErr) {
@@ -296,6 +297,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
           const { data, error: sbErr } = await query;
           if (sbErr) throw sbErr;
           setRequests((data ?? []) as BookingRequest[]);
+          setDegradedRead(true);
           setError(null);
           setLastRefresh(new Date());
           return;
@@ -315,6 +317,19 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     return () => clearInterval(t);
   }, [load]);
 
+  // Supabase Realtime — live updates without waiting for the 30 s poll
+  useEffect(() => {
+    const sb = supabase;
+    if (!sb) return;
+    const channel = sb
+      .channel('booking-inbox-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'appointment_requests' }, () => {
+        void load();
+      })
+      .subscribe();
+    return () => { void sb.removeChannel(channel); };
+  }, [load]);
+
   // When a booking is selected, pre-fill location from its data and reset
   // any per-selection action state from the previously-viewed request
   useEffect(() => {
@@ -324,6 +339,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   }, [selected?.id]);
 
   const [degradedWrite, setDegradedWrite] = useState(false);
+  const [degradedRead,  setDegradedRead]  = useState(false);
 
   async function handleConfirm() {
     if (!selected || !confirmDate) return;
@@ -604,9 +620,11 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     cursor: 'pointer', transition: 'color .15s',
   });
 
-  const degradedBanner = degradedWrite ? (
+  const degradedBanner = (degradedRead || degradedWrite) ? (
     <div role="alert" style={{ padding: '10px 16px', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: 8, margin: '12px 20px 0', fontSize: 12, color: '#9a3412', fontWeight: 600 }}>
-      Saved directly to database (API server unavailable). Patient SMS/email notifications were not sent — follow up manually.
+      {degradedWrite
+        ? 'API server offline — changes saved directly to database. Patient SMS, email, and calendar updates were not sent — follow up manually.'
+        : 'API server offline — showing data read directly from database. Confirm, waitlist, and cancel actions will not trigger SMS or calendar updates until the server recovers.'}
     </div>
   ) : null;
 

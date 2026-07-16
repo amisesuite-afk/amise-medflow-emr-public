@@ -551,26 +551,87 @@ function whatsappNumbersForSpeech(): string {
 // ── POST /api/calls/twiml ─────────────────────────────────────────────────────
 // Voice URL set on every Twilio number via scripts/setup-twilio.mjs.
 //
-// Flow: greet caller → direct them to call or WhatsApp the cell numbers →
-//       offer to leave a voicemail → record → webhook to /api/calls/voicemail.
+// Flow (when FORWARD_TO_NUMBERS is set):
+//   1. Silently dial all staff cells simultaneously (no greeting to caller yet)
+//   2. If answered → Twilio records the full call server-side
+//      → recording fires /api/calls/recording when call ends
+//   3. If nobody answers within FORWARD_RING_TIMEOUT → /api/calls/no-answer
+//      → greet caller + offer voicemail
+//
+// Flow (no FORWARD_TO_NUMBERS):
+//   Greet → voicemail only (legacy behaviour).
+//
+// This eliminates Android call-recorder apps entirely — recording happens at
+// the Twilio layer before audio reaches any device.
 
 router.post('/api/calls/twiml', (req, res) => {
   const body    = req.body as Record<string, string>;
   const to      = body.To ?? '';
   const line    = twilioLineFromTo(to);
   const apiBase = process.env.API_BASE_URL ?? `https://${req.headers.host ?? 'localhost'}`;
-  const waNumbers = whatsappNumbersForSpeech();
+
+  const forwardNumbers = (process.env.FORWARD_TO_NUMBERS ?? '')
+    .split(',').map(n => n.trim()).filter(Boolean);
+  const ringTimeout = parseInt(process.env.FORWARD_RING_TIMEOUT ?? '25', 10);
+  const lineGreeting = line && line !== 'Unknown' ? `, ${line}` : '';
+
+  if (forwardNumbers.length === 0) {
+    // Legacy voicemail-only flow
+    const waNumbers = whatsappNumbersForSpeech();
+    const twilioTranscribe = process.env.TWILIO_TRANSCRIPTION === 'true';
+    const transcriptionAttrs = twilioTranscribe
+      ? `transcribe="true" transcriptionCallback="${apiBase}/api/calls/transcription-callback" transcriptionCallbackMethod="POST"`
+      : `transcribe="false"`;
+    res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="Polly.Joanna" language="en-US">Thank you for calling Amise Medical Services${lineGreeting}. For a faster response, please call or WhatsApp us directly on ${waNumbers}. To leave a voice message, please stay on the line and speak after the tone.</Say>
+  <Record maxLength="120" ${transcriptionAttrs} recordingStatusCallback="${apiBase}/api/calls/voicemail" recordingStatusCallbackMethod="POST" action="${apiBase}/api/calls/voicemail-ack" method="POST" />
+</Response>`);
+    return;
+  }
+
+  // Forward + record flow: Twilio records at the network level.
+  // record="record-from-answer" starts recording the moment a staff member picks up.
+  // action fires when the Dial ends (no-answer, busy, caller hung up).
+  const numberElements = forwardNumbers
+    .map(n => `    <Number>${n}</Number>`)
+    .join('\n');
+
+  res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Say voice="Polly.Joanna" language="en-US">This call may be recorded.</Say>
+  <Dial
+    timeout="${ringTimeout}"
+    record="record-from-answer"
+    recordingStatusCallback="${apiBase}/api/calls/recording"
+    recordingStatusCallbackMethod="POST"
+    action="${apiBase}/api/calls/no-answer"
+    method="POST"
+  >
+${numberElements}
+  </Dial>
+</Response>`);
+});
+
+// ── POST /api/calls/no-answer ─────────────────────────────────────────────────
+// Twilio <Dial> action fallback — fires when all staff lines ring out or are busy.
+// Returns voicemail TwiML so the caller can leave a message.
+
+router.post('/api/calls/no-answer', (req, res) => {
+  const body    = req.body as Record<string, string>;
+  const to      = body.To ?? '';
+  const line    = twilioLineFromTo(to);
+  const apiBase = process.env.API_BASE_URL ?? `https://${req.headers.host ?? 'localhost'}`;
+  const lineGreeting = line && line !== 'Unknown' ? `, ${line}` : '';
 
   const twilioTranscribe = process.env.TWILIO_TRANSCRIPTION === 'true';
   const transcriptionAttrs = twilioTranscribe
     ? `transcribe="true" transcriptionCallback="${apiBase}/api/calls/transcription-callback" transcriptionCallbackMethod="POST"`
     : `transcribe="false"`;
 
-  const lineGreeting = line && line !== 'Unknown' ? `, ${line}` : '';
-
   res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-  <Say voice="Polly.Joanna" language="en-US">Thank you for calling Amise Medical Services${lineGreeting}. For a faster response, please call or WhatsApp us directly on ${waNumbers}. To leave a voice message, please stay on the line and speak after the tone.</Say>
+  <Say voice="Polly.Joanna" language="en-US">Thank you for calling Amise Medical Services${lineGreeting}. We are unable to take your call right now. Please leave a message after the tone and we will call you back shortly.</Say>
   <Record
     maxLength="120"
     ${transcriptionAttrs}
@@ -580,6 +641,56 @@ router.post('/api/calls/twiml', (req, res) => {
     method="POST"
   />
 </Response>`);
+});
+
+// ── POST /api/calls/recording ─────────────────────────────────────────────────
+// Twilio Recording Status Callback for ANSWERED calls (Dial record="record-from-answer").
+// Fires when the call recording is ready — separate from /api/calls/voicemail which
+// only handles missed-call voicemail recordings.
+
+router.post('/api/calls/recording', async (req, res) => {
+  res.sendStatus(204);
+
+  const body = req.body as Record<string, string>;
+  const {
+    CallSid, RecordingUrl, RecordingDuration, RecordingStatus,
+    From, To,
+  } = body;
+
+  if (RecordingStatus !== 'completed' || !RecordingUrl) return;
+
+  const callerNumber  = From ?? null;
+  const practiceLine  = twilioLineFromTo(To ?? '');
+  const durationS     = RecordingDuration ? parseInt(RecordingDuration, 10) : null;
+  const audioPath     = RecordingUrl + '.mp3';
+
+  let patientId: string | null = null;
+  if (callerNumber) {
+    const p = await lookupPatientByPhone(callerNumber);
+    if (p) patientId = p.id;
+  }
+
+  try {
+    // Upsert by CallSid — /api/calls/status may have already created the row
+    const { error } = await sb()
+      .from('call_logs')
+      .upsert({
+        twilio_call_sid: CallSid,
+        caller_number:   callerNumber,
+        patient_id:      patientId,
+        source:          'phone',
+        direction:       'inbound',
+        status:          'answered',
+        audio_path:      audioPath,
+        duration_s:      durationS,
+        practice_line:   practiceLine,
+      }, { onConflict: 'twilio_call_sid', ignoreDuplicates: false });
+
+    if (error) logger.error({ error, CallSid }, '[calls/recording] upsert failed');
+    else logger.info({ CallSid, from: callerNumber, practiceLine, durationS }, '[calls/recording] answered call recorded');
+  } catch (err) {
+    logger.error({ err }, '[calls/recording] unexpected error');
+  }
 });
 
 // ── POST /api/calls/voicemail-ack ─────────────────────────────────────────────

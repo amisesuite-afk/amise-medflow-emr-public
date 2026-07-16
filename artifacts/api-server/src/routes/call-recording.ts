@@ -28,6 +28,7 @@ import { Router, type Request, type Response, type NextFunction } from 'express'
 import multer, { type StorageEngine } from 'multer';
 import { sb } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
+import { toE164 } from '../lib/sms.js';
 
 const router = Router();
 
@@ -61,8 +62,7 @@ const upload = multer({
   },
 });
 
-// ── Phone normalisation (duplicated here to keep route self-contained) ────────
-
+// Last-7-digit suffix used only for patient table fuzzy-lookup
 function normPhone(raw: string): string {
   return raw.replace(/\D/g, '').slice(-7);
 }
@@ -120,6 +120,34 @@ async function transcribeWithWhisper(
   } catch (err) {
     logger.warn({ err }, '[call-recording] Whisper transcription failed (non-fatal)');
     return null;
+  }
+}
+
+// ── Transcription with retry ──────────────────────────────────────────────────
+
+async function transcribeAndSave(
+  callLogId: string,
+  audioBuffer: Buffer,
+  mimeType: string,
+  originalName: string,
+  isRetry: boolean,
+): Promise<void> {
+  const transcript = await transcribeWithWhisper(audioBuffer, mimeType, originalName);
+  if (transcript) {
+    await sb().from('call_logs')
+      .update({ transcript, transcription_status: 'completed' })
+      .eq('id', callLogId);
+    logger.info({ callLogId, chars: transcript.length, isRetry }, '[call-recording] transcript saved');
+    return;
+  }
+  if (!isRetry) {
+    logger.warn({ callLogId }, '[call-recording] transcription failed — retrying in 60 s');
+    setTimeout(() => void transcribeAndSave(callLogId, audioBuffer, mimeType, originalName, true), 60_000);
+  } else {
+    await sb().from('call_logs')
+      .update({ transcription_status: 'failed' })
+      .eq('id', callLogId);
+    logger.warn({ callLogId }, '[call-recording] transcription failed after retry — needs manual review');
   }
 }
 
@@ -182,6 +210,9 @@ router.post(
       return;
     }
 
+    // Normalise caller number to E.164 so it matches booking + WhatsApp records
+    if (callerNumber) callerNumber = toE164(callerNumber);
+
     const durationSecs = durationS ? parseInt(durationS, 10) : null;
 
     // 1. Upload to Supabase Storage
@@ -211,19 +242,21 @@ router.post(
     const patientId = callerNumber ? await findPatient(callerNumber) : null;
 
     // 3. Write call_log immediately (transcription happens async below)
+    const hasTranscription = !!process.env.OPENAI_API_KEY;
     const { data: log, error: logErr } = await sb()
       .from('call_logs')
       .insert({
-        caller_number: callerNumber || null,
-        patient_id:    patientId,
-        source:        'phone',
-        direction:     direction === 'outbound' ? 'outbound' : 'inbound',
-        status:        'voicemail',
-        audio_path:    publicUrl,
-        duration_s:    durationSecs,
-        practice_line: practiceLine || null,
-        staff_notes:   deviceLabel ? `Recorded on: ${deviceLabel}` : null,
-        created_at:    safeCallAt,
+        caller_number:        callerNumber || null,
+        patient_id:           patientId,
+        source:               'phone',
+        direction:            direction === 'outbound' ? 'outbound' : 'inbound',
+        status:               'answered',
+        audio_path:           publicUrl,
+        duration_s:           durationSecs,
+        practice_line:        practiceLine || null,
+        staff_notes:          deviceLabel ? `Recorded on: ${deviceLabel}` : null,
+        created_at:           safeCallAt,
+        transcription_status: hasTranscription ? 'pending' : 'skipped',
       })
       .select('id')
       .single();
@@ -241,17 +274,10 @@ router.post(
 
     res.json({ call_log_id: callLogId, audio_url: publicUrl, patient_id: patientId });
 
-    // 4. Transcribe async — update call_log with transcript when done
-    void (async () => {
-      const transcript = await transcribeWithWhisper(fileBuffer, mimeType, originalName);
-      if (transcript) {
-        await sb()
-          .from('call_logs')
-          .update({ transcript })
-          .eq('id', callLogId);
-        logger.info({ callLogId, chars: transcript.length }, '[call-recording] transcript saved');
-      }
-    })();
+    // 4. Transcribe async with one retry — update call_log with result when done
+    if (hasTranscription) {
+      void transcribeAndSave(callLogId, fileBuffer, mimeType, originalName, false);
+    }
   },
 );
 
