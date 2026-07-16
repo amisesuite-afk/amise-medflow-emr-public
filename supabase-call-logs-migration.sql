@@ -43,7 +43,7 @@ create index if not exists idx_call_logs_number    on call_logs(caller_number);
 -- Updated-at trigger (reuse the function already defined for other tables)
 create trigger call_logs_updated_at
   before update on call_logs
-  for each row execute function update_updated_at_column();
+  for each row execute function set_updated_at();
 
 -- RLS
 alter table call_logs enable row level security;

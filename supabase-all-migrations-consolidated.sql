@@ -2449,5 +2449,64 @@ grant select, insert, update on public.appointment_change_requests to service_ro
 --   branching_rules, questionnaire_sessions, questionnaire_responses,
 --   intake_summaries, consent_records, patient_intake,
 --   consultation_requests, referring_providers,
---   procedure_prep_drafts, appointment_change_requests
+--   procedure_prep_drafts, appointment_change_requests,
+--   call_logs (phone/WhatsApp/ambient voice queue)
 -- ============================================================
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- call_logs — phone calls, WhatsApp, Twilio voicemail, ambient recordings
+-- ─────────────────────────────────────────────────────────────────────────────
+
+create table if not exists call_logs (
+  id              uuid primary key default uuid_generate_v4(),
+  caller_number   text,
+  patient_id      uuid references patients(id),
+  direction       text not null default 'inbound'
+                    check (direction in ('inbound', 'outbound', 'ambient', 'app_message')),
+  source          text not null default 'phone'
+                    check (source in ('phone', 'whatsapp', 'patient_app', 'ambient')),
+  status          text not null default 'pending'
+                    check (status in ('pending','answered','voicemail','missed',
+                                      'callback_scheduled','called_back','dismissed')),
+  transcript      text,
+  soap_segmented  jsonb,
+  audio_path      text,
+  duration_s      integer,
+  staff_notes     text,
+  twilio_call_sid text,
+  caller_email    text,
+  practice_line   text,
+  callback_at     timestamptz,
+  called_back_at  timestamptz,
+  resolved_at     timestamptz,
+  resolved_by     uuid references auth.users(id),
+  created_by      uuid references auth.users(id),
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now()
+);
+
+create index if not exists idx_call_logs_patient       on call_logs(patient_id);
+create index if not exists idx_call_logs_unresolved    on call_logs(created_at desc) where patient_id is null;
+create index if not exists idx_call_logs_number        on call_logs(caller_number);
+create index if not exists idx_call_logs_practice_line on call_logs(practice_line);
+create index if not exists idx_call_logs_status        on call_logs(status) where status not in ('dismissed','called_back');
+create unique index if not exists idx_call_logs_twilio_sid on call_logs(twilio_call_sid) where twilio_call_sid is not null;
+
+create trigger call_logs_updated_at
+  before update on call_logs
+  for each row execute function set_updated_at();
+
+alter table call_logs enable row level security;
+
+create policy "Staff can manage call_logs"
+  on call_logs for all
+  using (
+    exists (
+      select 1 from user_profiles
+      where id = auth.uid()
+        and role in ('admin', 'doctor', 'nurse', 'front_desk')
+    )
+  );
+
+grant select, insert, update, delete on public.call_logs to service_role;
+grant select, insert, update, delete on public.call_logs to authenticated;
