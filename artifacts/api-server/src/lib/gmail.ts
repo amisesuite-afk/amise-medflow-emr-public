@@ -209,11 +209,19 @@ export async function sendOrDraft(args: SendArgs, force?: Mode): Promise<SendRes
   return { action: 'sent', gmailId: data.id! };
 }
 
+// RFC 2047 MIME encoded-word — required when subject contains non-ASCII chars
+// (e.g. em dashes, accented letters). Without this, raw UTF-8 bytes land in
+// the header and mail clients misinterpret them as Latin-1 → "Ã¢ÂÂ" mojibake.
+function encodeMimeHeader(value: string): string {
+  if (!/[^\x00-\x7F]/.test(value)) return value;
+  return `=?UTF-8?B?${Buffer.from(value, 'utf-8').toString('base64')}?=`;
+}
+
 function buildRfc822(args: SendArgs): string {
   const lines = [
     `To: ${args.to}`,
     `From: ${process.env.GMAIL_USER}`,
-    `Subject: ${args.subject}`,
+    `Subject: ${encodeMimeHeader(args.subject)}`,
     'Content-Type: text/plain; charset=UTF-8',
   ];
   if (args.inReplyTo) {
