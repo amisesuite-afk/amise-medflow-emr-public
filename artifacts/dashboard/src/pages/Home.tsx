@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
 import { useAppContext, Section, TopSection, type EncounterType, type VitalsState } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
@@ -9,66 +9,69 @@ import { hasRole, roleIn } from '@/lib/roles';
 import { usePathway } from '@/lib/usePathway';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import NavSidebar, { type SectionCompletion } from '@/components/NavSidebar';
-import ReceptionistView from './ReceptionistView';
-import NursePreVisitView from './NursePreVisitView';
-import IntakeTab from './tabs/IntakeTab';
-import TriageTab from './tabs/TriageTab';
-import HpiTab from './tabs/HpiTab';
-import PmhTab from './tabs/PmhTab';
-import FamilyHistoryTab from './tabs/FamilyHistoryTab';
-import SurgicalHistoryTab from './tabs/SurgicalHistoryTab';
-import MedicationsTab from './tabs/MedicationsTab';
-import AllergiesTab from './tabs/AllergiesTab';
-import ToxicHabitsTab from './tabs/ToxicHabitsTab';
-import ExaminationTab from './tabs/ExaminationTab';
-import InvestigationsTab from './tabs/InvestigationsTab';
-import RadiologyTab from './tabs/RadiologyTab';
-import AttachmentsTab from './tabs/AttachmentsTab';
-import AssessmentTab from './tabs/AssessmentTab';
-import PlanTab from './tabs/PlanTab';
-import ProceduresTab from './tabs/ProceduresTab';
-import BillingTab from './tabs/BillingTab';
-import DocumentsTab from './tabs/DocumentsTab';
-import PatientSearchTab from './tabs/PatientSearchTab';
-import ScalesTab from './tabs/ScalesTab';
-import RosTab from './tabs/RosTab';
-import SummaryTab from './tabs/SummaryTab';
-import FinalDocTab from './tabs/FinalDocTab';
-import InpatientTab from './tabs/InpatientTab';
-import DashboardTab from './tabs/DashboardTab';
-import SchedulingTab from './tabs/SchedulingTab';
-import ProgressNotesTab from './tabs/ProgressNotesTab';
-import VitalsMonitoringTab from './tabs/VitalsMonitoringTab';
-import TraumaTab from './tabs/TraumaTab';
-import DictionaryTab from './tabs/DictionaryTab';
-import APCQTab from './tabs/APCQTab';
-import NurseAPCQTab from './tabs/NurseAPCQTab';
-import QuestionnaireManagerTab from './tabs/QuestionnaireManagerTab';
-import BookingInboxTab from './tabs/BookingInboxTab';
-import CallsQueueTab from './tabs/CallsQueueTab';
-import AnalyticsTab from './tabs/AnalyticsTab';
-import SettingsTab from './tabs/SettingsTab';
-import PortalIntakeTab from './tabs/PortalIntakeTab';
-import ReferringProvidersTab from './tabs/ReferringProvidersTab';
-import SurgicalClassificationsTab from './tabs/SurgicalClassificationsTab';
-import VisitManagerTab from './VisitManager';
-import PrescriptionsTab from './tabs/PrescriptionsTab';
-import AiConsultantTab from './tabs/AiConsultantTab';
-import WhoChecklistTab from './tabs/WhoChecklistTab';
-import PerioperativeTab from './tabs/PerioperativeTab';
-import DosingTab from './tabs/DosingTab';
-import FluidNutritionTab from './tabs/FluidNutritionTab';
-import BloodGasTab from './tabs/BloodGasTab';
-import WoundTab from './tabs/WoundTab';
-import SurgicalConsentTab from './tabs/SurgicalConsentTab';
-import EncounterTimelineTab from './tabs/EncounterTimelineTab';
-import QualityImprovementTab from './tabs/QualityImprovementTab';
-import ResultsInboxTab from './tabs/ResultsInboxTab';
-import LetterGeneratorTab from './tabs/LetterGeneratorTab';
-import PatientEducationTab from './tabs/PatientEducationTab';
-import PatientTasksTab from './tabs/PatientTasksTab';
-import FollowUpTrackerTab from './tabs/FollowUpTrackerTab';
-import CheckInTab, { VISIT_TYPES } from './tabs/CheckInTab';
+import { VISIT_TYPES } from '@/lib/visit-types';
+
+// ── Lazy-loaded pages and tabs ──────────────────────────────────────────────
+// Code-split so only the active panel is downloaded on first render.
+const ReceptionistView           = lazy(() => import('./ReceptionistView'));
+const NursePreVisitView          = lazy(() => import('./NursePreVisitView'));
+const IntakeTab                  = lazy(() => import('./tabs/IntakeTab'));
+const TriageTab                  = lazy(() => import('./tabs/TriageTab'));
+const HpiTab                     = lazy(() => import('./tabs/HpiTab'));
+const PmhTab                     = lazy(() => import('./tabs/PmhTab'));
+const FamilyHistoryTab           = lazy(() => import('./tabs/FamilyHistoryTab'));
+const SurgicalHistoryTab         = lazy(() => import('./tabs/SurgicalHistoryTab'));
+const MedicationsTab             = lazy(() => import('./tabs/MedicationsTab'));
+const AllergiesTab               = lazy(() => import('./tabs/AllergiesTab'));
+const ToxicHabitsTab             = lazy(() => import('./tabs/ToxicHabitsTab'));
+const ExaminationTab             = lazy(() => import('./tabs/ExaminationTab'));
+const InvestigationsTab          = lazy(() => import('./tabs/InvestigationsTab'));
+const RadiologyTab               = lazy(() => import('./tabs/RadiologyTab'));
+const AttachmentsTab             = lazy(() => import('./tabs/AttachmentsTab'));
+const AssessmentTab              = lazy(() => import('./tabs/AssessmentTab'));
+const PlanTab                    = lazy(() => import('./tabs/PlanTab'));
+const ProceduresTab              = lazy(() => import('./tabs/ProceduresTab'));
+const BillingTab                 = lazy(() => import('./tabs/BillingTab'));
+const DocumentsTab               = lazy(() => import('./tabs/DocumentsTab'));
+const PatientSearchTab           = lazy(() => import('./tabs/PatientSearchTab'));
+const ScalesTab                  = lazy(() => import('./tabs/ScalesTab'));
+const RosTab                     = lazy(() => import('./tabs/RosTab'));
+const SummaryTab                 = lazy(() => import('./tabs/SummaryTab'));
+const InpatientTab               = lazy(() => import('./tabs/InpatientTab'));
+const DashboardTab               = lazy(() => import('./tabs/DashboardTab'));
+const SchedulingTab              = lazy(() => import('./tabs/SchedulingTab'));
+const ProgressNotesTab           = lazy(() => import('./tabs/ProgressNotesTab'));
+const VitalsMonitoringTab        = lazy(() => import('./tabs/VitalsMonitoringTab'));
+const TraumaTab                  = lazy(() => import('./tabs/TraumaTab'));
+const DictionaryTab              = lazy(() => import('./tabs/DictionaryTab'));
+const APCQTab                    = lazy(() => import('./tabs/APCQTab'));
+const NurseAPCQTab               = lazy(() => import('./tabs/NurseAPCQTab'));
+const QuestionnaireManagerTab    = lazy(() => import('./tabs/QuestionnaireManagerTab'));
+const BookingInboxTab            = lazy(() => import('./tabs/BookingInboxTab'));
+const CallsQueueTab              = lazy(() => import('./tabs/CallsQueueTab'));
+const AnalyticsTab               = lazy(() => import('./tabs/AnalyticsTab'));
+const SettingsTab                = lazy(() => import('./tabs/SettingsTab'));
+const PortalIntakeTab            = lazy(() => import('./tabs/PortalIntakeTab'));
+const ReferringProvidersTab      = lazy(() => import('./tabs/ReferringProvidersTab'));
+const SurgicalClassificationsTab = lazy(() => import('./tabs/SurgicalClassificationsTab'));
+const VisitManagerTab            = lazy(() => import('./VisitManager'));
+const PrescriptionsTab           = lazy(() => import('./tabs/PrescriptionsTab'));
+const AiConsultantTab            = lazy(() => import('./tabs/AiConsultantTab'));
+const WhoChecklistTab            = lazy(() => import('./tabs/WhoChecklistTab'));
+const PerioperativeTab           = lazy(() => import('./tabs/PerioperativeTab'));
+const DosingTab                  = lazy(() => import('./tabs/DosingTab'));
+const FluidNutritionTab          = lazy(() => import('./tabs/FluidNutritionTab'));
+const BloodGasTab                = lazy(() => import('./tabs/BloodGasTab'));
+const WoundTab                   = lazy(() => import('./tabs/WoundTab'));
+const SurgicalConsentTab         = lazy(() => import('./tabs/SurgicalConsentTab'));
+const EncounterTimelineTab       = lazy(() => import('./tabs/EncounterTimelineTab'));
+const QualityImprovementTab      = lazy(() => import('./tabs/QualityImprovementTab'));
+const ResultsInboxTab            = lazy(() => import('./tabs/ResultsInboxTab'));
+const LetterGeneratorTab         = lazy(() => import('./tabs/LetterGeneratorTab'));
+const PatientEducationTab        = lazy(() => import('./tabs/PatientEducationTab'));
+const PatientTasksTab            = lazy(() => import('./tabs/PatientTasksTab'));
+const FollowUpTrackerTab         = lazy(() => import('./tabs/FollowUpTrackerTab'));
+const CheckInTab                 = lazy(() => import('./tabs/CheckInTab'));
 import EncounterStartWizard from '@/components/EncounterStartWizard';
 import VisitTypeOpeningPanel from '@/components/VisitTypeOpeningPanel';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
@@ -597,7 +600,7 @@ export default function HomePage() {
 
   const sidebarWidth = zenMode ? 0 : (collapsed || topSection === 'consultation') ? 52 : 182;
 
-  if (userRole === 'nurse') return <ErrorBoundary><NursePreVisitView /></ErrorBoundary>;
+  if (userRole === 'nurse') return <Suspense fallback={null}><ErrorBoundary><NursePreVisitView /></ErrorBoundary></Suspense>;
 
   return (
     <div
@@ -880,6 +883,7 @@ export default function HomePage() {
             ☰ Nav
           </button>
         )}
+        <Suspense fallback={<div style={{ padding: 24, color: 'var(--muted)', fontSize: 13 }}>Loading…</div>}>
         <ErrorBoundary resetKeys={[topSection, activeSection]}>
         {/* Pre-visit status banner for doctor/admin */}
         {preVisitStatus === 'registered' && (
@@ -1309,6 +1313,7 @@ export default function HomePage() {
         {topSection === 'tasks'                                                && <PatientTasksTab />}
         {topSection === 'followup_tracker'                                     && <FollowUpTrackerTab />}
         </ErrorBoundary>
+        </Suspense>
       </main>
 
       <FloatingActions />
@@ -1324,9 +1329,11 @@ export default function HomePage() {
             <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink, #1e293b)' }}>AI Consultant</span>
             <button type="button" onClick={() => setShowAiPanel(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 16, color: '#6b7280' }}>✕</button>
           </div>
-          <ErrorBoundary>
-            <AiConsultantTab />
-          </ErrorBoundary>
+          <Suspense fallback={<div style={{ padding: 16, color: 'var(--muted)', fontSize: 13 }}>Loading…</div>}>
+            <ErrorBoundary>
+              <AiConsultantTab />
+            </ErrorBoundary>
+          </Suspense>
         </div>
       )}
 

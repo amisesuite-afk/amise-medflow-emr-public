@@ -39,14 +39,14 @@ interface NavSidebarProps {
   suggestedBlocks?: string[];
 }
 
-interface ClinicalSubItem {
+export interface ClinicalSubItem {
   id: Section;
   icon: React.FC<{ size?: number; strokeWidth?: number }>;
   label: string;
   minRole?: UserRole;
 }
 
-interface ClinicalPhase {
+export interface ClinicalPhase {
   key: string;
   label: string;
   minRole?: UserRole;
@@ -54,7 +54,7 @@ interface ClinicalPhase {
 }
 
 // Consultation sub-nav — Dr Kabiye's standard surgical consultation sequence
-const CLINICAL_PHASES: ClinicalPhase[] = [
+export const CLINICAL_PHASES: ClinicalPhase[] = [
   {
     key: 'history',
     label: 'History',

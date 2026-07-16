@@ -15,23 +15,102 @@ textarea { resize: vertical; }
 
 /* ── CSS vars ───────────────────────────────────── */
 :root {
+  /* Brand palette */
   --accent:    #0b8278;
   --accent2:   #0f5f76;
   --accent-lt: #e4f5f2;
+
+  /* Semantic colours — light mode defaults */
   --ink:       #1a2e2b;
   --muted:     #5a706c;
   --line:      #d8e8e4;
   --bg:        #f0f6f4;
   --card:      #ffffff;
+
+  /* Shell */
   --sidebar-bg: #0d2520;
   --sidebar-text: #8fc4b9;
   --sidebar-active-bg: rgba(11,130,120,.18);
   --sidebar-active-text: #5df0e0;
   --header-bg: #0f2e29;
+
+  /* Acuity */
   --urgent:    #b91c1c;
   --priority:  #a16207;
   --review:    #4d7c0f;
   --routine:   var(--accent);
+
+  /* Spacing scale */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-7:  32px;
+  --sp-8:  40px;
+  --sp-9:  48px;
+  --sp-10: 64px;
+
+  /* Typography scale */
+  --fs-xs:   10px;
+  --fs-sm:   11px;
+  --fs-base: 13px;
+  --fs-md:   14px;
+  --fs-lg:   15px;
+  --fs-xl:   17px;
+  --fs-2xl:  22px;
+
+  /* Radius */
+  --r-sm:  6px;
+  --r-md:  10px;
+  --r-lg:  14px;
+  --r-xl:  20px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 3px rgba(20,48,44,.06);
+  --shadow-sm: 0 2px 8px rgba(20,48,44,.08);
+  --shadow-md: 0 4px 16px rgba(20,48,44,.12);
+  --shadow-lg: 0 8px 32px rgba(20,48,44,.18);
+
+  /* Layout */
+  --sidebar-w:      182px;
+  --header-h:        58px;
+  --content-max-w: 1280px;
+}
+
+/* ── Dark mode ──────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:        #0f1c19;
+    --card:      #162421;
+    --ink:       #d0e8e4;
+    --muted:     #5a8a82;
+    --line:      #1e3832;
+    --accent-lt: rgba(11,130,120,.18);
+    --sidebar-bg: #070e0d;
+    --header-bg:  #0a1612;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:        #0f1c19;
+  --card:      #162421;
+  --ink:       #d0e8e4;
+  --muted:     #5a8a82;
+  --line:      #1e3832;
+  --accent-lt: rgba(11,130,120,.18);
+  --sidebar-bg: #070e0d;
+  --header-bg:  #0a1612;
+}
+:root[data-theme="light"] {
+  --bg:        #f0f6f4;
+  --card:      #ffffff;
+  --ink:       #1a2e2b;
+  --muted:     #5a706c;
+  --line:      #d8e8e4;
+  --accent-lt: #e4f5f2;
+  --sidebar-bg: #0d2520;
+  --header-bg:  #0f2e29;
 }
 
 /* ── App shell ──────────────────────────────────── */
@@ -277,10 +356,10 @@ textarea { resize: vertical; }
 
 /* Group headers */
 .nsb-group-header {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   color: #4d7a70;
   padding: 14px 14px 4px;
   white-space: nowrap;
@@ -468,6 +547,12 @@ textarea { resize: vertical; }
   flex-direction: column;
   gap: 10px;
 }
+/* Constrain very wide screens while keeping the shell edge-to-edge */
+.main-content > * {
+  max-width: var(--content-max-w);
+  width: 100%;
+  align-self: flex-start;
+}
 
 /* ── Red flag banner ────────────────────────────── */
 .flag-banner {
@@ -505,9 +590,9 @@ textarea { resize: vertical; }
 .ccard {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--r-lg);
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(20,48,44,.04);
+  box-shadow: var(--shadow-xs);
 }
 .ccard-header {
   display: flex;
@@ -1775,6 +1860,47 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   .form-grid, .form-grid.cols-7 { grid-template-columns: 1fr 1fr; }
   .two-col, .three-col { grid-template-columns: 1fr; }
   .scale-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Dark mode form / card overrides ─────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .fld input, .fld select, .fld textarea,
+  .scale-field__input,
+  .exam-field textarea,
+  .inline-field input,
+  .summary-doc {
+    background: #1a2e2b;
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .fld input:focus, .fld select:focus, .fld textarea:focus,
+  .scale-field__input:focus,
+  .exam-field textarea:focus { border-color: var(--accent); }
+  .ccard-header:hover { background: rgba(255,255,255,.04); }
+  .script-box { background: #1a2e2b; }
+  .flag-banner { background: rgba(185,28,28,.15); }
+  .flag-banner.priority { background: rgba(161,98,7,.15); }
+  .flag-banner.review   { background: rgba(77,124,15,.15); }
+  .psearch-bar, .psearch-row { background: var(--card); }
+  .psearch-bar:focus-within, .psearch-row:hover { border-color: var(--accent); }
+  .ssp-dx-panel { background: var(--card); }
+}
+:root[data-theme="dark"] {
+  .fld input, .fld select, .fld textarea,
+  .scale-field__input,
+  .exam-field textarea,
+  .inline-field input,
+  .summary-doc {
+    background: #1a2e2b;
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .fld input:focus, .fld select:focus, .fld textarea:focus,
+  .scale-field__input:focus,
+  .exam-field textarea:focus { border-color: var(--accent); }
+  .ccard-header:hover { background: rgba(255,255,255,.04); }
+  .script-box { background: #1a2e2b; }
+  .psearch-bar, .psearch-row { background: var(--card); }
 }
 
 /* ── Print styles ─────────────────────────────────────────────────────────── */
