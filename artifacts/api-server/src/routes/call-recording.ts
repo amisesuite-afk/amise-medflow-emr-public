@@ -185,7 +185,9 @@ router.post(
     const durationSecs = durationS ? parseInt(durationS, 10) : null;
 
     // 1. Upload to Supabase Storage
-    const timestamp  = new Date(callAt).getTime();
+    const callDate   = new Date(callAt);
+    const timestamp  = isNaN(callDate.getTime()) ? Date.now() : callDate.getTime();
+    const safeCallAt = new Date(timestamp).toISOString();
     const ext        = originalName.split('.').pop() ?? 'amr';
     const storageKey = `${timestamp}_${normPhone(callerNumber || 'unknown')}.${ext}`;
 
@@ -216,18 +218,20 @@ router.post(
         patient_id:    patientId,
         source:        'phone',
         direction:     direction === 'outbound' ? 'outbound' : 'inbound',
-        status:        'answered',
+        status:        'voicemail',
         audio_path:    publicUrl,
         duration_s:    durationSecs,
         practice_line: practiceLine || null,
         staff_notes:   deviceLabel ? `Recorded on: ${deviceLabel}` : null,
-        created_at:    new Date(callAt).toISOString(),
+        created_at:    safeCallAt,
       })
       .select('id')
       .single();
 
     if (logErr || !log) {
       logger.error({ logErr }, '[call-recording] call_log insert failed');
+      // Best-effort cleanup of the orphaned storage object
+      void sb().storage.from('call-recordings').remove([storageKey]);
       res.status(502).json({ error: logErr?.message ?? 'Log insert failed' });
       return;
     }
