@@ -652,6 +652,121 @@ function HowItWorks() {
   );
 }
 
+// ── About ─────────────────────────────────────────────────────────────────────
+
+const CREDENTIALS = [
+  'Specialist General & Endoscopic Surgeon',
+  'Fellowship-trained endoscopist',
+  'ERCP & biliary specialist',
+  'Laparoscopic & minimally invasive surgery',
+];
+
+const ABOUT_STATS = [
+  { icon: '🏥', label: 'Two clinic locations',  sub: 'Tapion · Rodney Bay' },
+  { icon: '🔬', label: 'Advanced endoscopy',    sub: 'OGD · Colonoscopy · ERCP' },
+  { icon: '🤝', label: 'Full referral network', sub: 'All major Saint Lucia hospitals' },
+  { icon: '⏱️',  label: 'Priority availability', sub: 'Urgent outpatient cases — same week' },
+];
+
+function About() {
+  return (
+    <section id="about" className="amise-section-padded" style={{ padding: '72px 40px', background: '#f5fafa', borderBottom: '1px solid #e2eeed' }}>
+      <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>
+            About Us
+          </div>
+          <h2 style={{ margin: '0 0 8px', fontSize: 26, fontWeight: 800, color: '#0f172a' }}>Specialist Care You Can Trust</h2>
+          <div style={{ width: 48, height: 3, background: '#0d9488', borderRadius: 2, margin: '0 auto' }} />
+        </div>
+
+        <div className="amise-about-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 48, alignItems: 'start' }}>
+
+          {/* Credential card */}
+          <div style={{
+            background: '#f0fdf9', borderRadius: 16,
+            padding: '32px 24px', textAlign: 'center',
+            border: '1px solid #a7f3d0',
+          }}>
+            <div style={{
+              width: 88, height: 88, borderRadius: '50%',
+              background: '#0d9488', margin: '0 auto 18px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 24, fontWeight: 800, color: '#fff',
+              letterSpacing: '-0.02em',
+            }}>
+              DDK
+            </div>
+            <div style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', marginBottom: 4 }}>
+              Dr Dawit Daniel Kabiye
+            </div>
+            <div style={{ fontSize: 13, color: '#0d9488', fontWeight: 700, marginBottom: 8 }}>MD, DM</div>
+            <div style={{ fontSize: 12, color: '#374151', lineHeight: 1.7, marginBottom: 20 }}>
+              General &amp; Endoscopic Surgeon<br />Saint Lucia, Caribbean
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {CREDENTIALS.map(badge => (
+                <div key={badge} style={{
+                  padding: '7px 12px', background: '#fff',
+                  border: '1px solid #d1e8e5', borderRadius: 8,
+                  fontSize: 12, color: '#065f46', fontWeight: 600,
+                  textAlign: 'left',
+                }}>
+                  ✓ {badge}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Bio */}
+          <div>
+            <p style={{ fontSize: 15, color: '#374151', lineHeight: 1.8, marginTop: 0, marginBottom: 20 }}>
+              Amise Medical Services is a specialist general and endoscopic surgical practice based in Saint Lucia, serving patients across the Eastern Caribbean. Led by Dr Dawit Daniel Kabiye, MD, DM, the practice delivers evidence-based surgical and endoscopic care across a broad range of conditions.
+            </p>
+            <p style={{ fontSize: 15, color: '#374151', lineHeight: 1.8, marginBottom: 28 }}>
+              Dr Kabiye holds advanced fellowship training in endoscopic and minimally invasive surgery, with particular expertise in complex biliary procedures including ERCP, laparoscopic cholecystectomy, hernia repair, colorectal surgery, breast &amp; thyroid surgery, and diabetic foot care. He practises at both Tapion Hospital and the Providence Building, Rodney Bay.
+            </p>
+
+            <div className="amise-about-stats" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 28 }}>
+              {ABOUT_STATS.map(({ icon, label, sub }) => (
+                <div key={label} style={{
+                  display: 'flex', gap: 12, alignItems: 'flex-start',
+                  padding: '14px 16px', background: '#fff',
+                  border: '1px solid #e2e8f0', borderRadius: 10,
+                }}>
+                  <div style={{ fontSize: 20, lineHeight: 1.2, flexShrink: 0 }}>{icon}</div>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: '#0f172a', marginBottom: 2 }}>{label}</div>
+                    <div style={{ fontSize: 11, color: '#6b7280' }}>{sub}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <Link href="/book" style={{
+                padding: '12px 24px', background: '#0d9488', color: '#fff',
+                borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: 'none',
+              }}>
+                Book a Consultation →
+              </Link>
+              <a href={WA_TAPION} target="_blank" rel="noopener noreferrer" style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '12px 20px', background: '#fff',
+                border: '1.5px solid #0d9488', color: '#0d9488',
+                borderRadius: 8, fontSize: 14, fontWeight: 700, textDecoration: 'none',
+              }}>
+                <WaSvg size={16} color="#0d9488" />
+                WhatsApp Us
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ── Contact ───────────────────────────────────────────────────────────────────
 
 function Contact() {
@@ -860,6 +975,7 @@ export default function HomePage() {
         <FeatureTiles />
         <Offices />
         <HowItWorks />
+        <About />
         <Contact />
 
         {/* For Providers strip */}

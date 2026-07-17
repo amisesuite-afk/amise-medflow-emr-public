@@ -772,7 +772,7 @@ export default function BookingForm() {
                     Scheduling preferences <span style={{ color: '#6b7280', fontWeight: 400 }}>(optional — helps our team find the best time for you)</span>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div className="amise-sched-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <div>
                       <label style={{ ...labelStyle, fontSize: 10 }}>Preferred days</label>
                       <select

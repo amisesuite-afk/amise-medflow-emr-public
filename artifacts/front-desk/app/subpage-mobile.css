@@ -97,6 +97,10 @@
   .amise-booking-card    { padding: 20px 16px !important; }
 }
 
+@media (max-width: 768px) {
+  .amise-sched-grid      { grid-template-columns: 1fr !important; }
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    ERROR / NOT-FOUND PAGES — already responsive, just ensure padding
    ═══════════════════════════════════════════════════════════════════════════ */

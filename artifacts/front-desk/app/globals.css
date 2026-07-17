@@ -118,6 +118,10 @@ textarea:focus-visible {
 
   /* Touch target minimum heights */
   .amise-touch-target  { min-height: 44px; display: flex; align-items: center; }
+
+  /* About section grid — stack and tighten gap */
+  .amise-about-grid  { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .amise-about-stats { grid-template-columns: 1fr !important; }
 }
 
 /* ── Tablet breakpoint (481–768px) — 2-col services ── */
