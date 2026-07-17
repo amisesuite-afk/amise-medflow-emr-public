@@ -95,10 +95,9 @@
 
 @media (max-width: 480px) {
   .amise-booking-card    { padding: 20px 16px !important; }
-  .amise-sched-grid      { grid-template-columns: 1fr !important; }
 }
 
-@media (min-width: 481px) and (max-width: 640px) {
+@media (max-width: 768px) {
   .amise-sched-grid      { grid-template-columns: 1fr !important; }
 }
 

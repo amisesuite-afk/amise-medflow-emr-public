@@ -655,7 +655,7 @@ function HowItWorks() {
 // ── About ─────────────────────────────────────────────────────────────────────
 
 const CREDENTIALS = [
-  'Board-certified general surgeon',
+  'Specialist General & Endoscopic Surgeon',
   'Fellowship-trained endoscopist',
   'ERCP & biliary specialist',
   'Laparoscopic & minimally invasive surgery',
@@ -665,7 +665,7 @@ const ABOUT_STATS = [
   { icon: '🏥', label: 'Two clinic locations',  sub: 'Tapion · Rodney Bay' },
   { icon: '🔬', label: 'Advanced endoscopy',    sub: 'OGD · Colonoscopy · ERCP' },
   { icon: '🤝', label: 'Full referral network', sub: 'All major Saint Lucia hospitals' },
-  { icon: '⏱',  label: 'Priority availability', sub: 'Urgent cases seen same week' },
+  { icon: '⏱️',  label: 'Priority availability', sub: 'Urgent outpatient cases — same week' },
 ];
 
 function About() {

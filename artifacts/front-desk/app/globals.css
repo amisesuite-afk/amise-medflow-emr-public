@@ -118,17 +118,15 @@ textarea:focus-visible {
 
   /* Touch target minimum heights */
   .amise-touch-target  { min-height: 44px; display: flex; align-items: center; }
+
+  /* About section grid — stack and tighten gap */
+  .amise-about-grid  { grid-template-columns: 1fr !important; gap: 24px !important; }
+  .amise-about-stats { grid-template-columns: 1fr !important; }
 }
 
 /* ── Tablet breakpoint (481–768px) — 2-col services ── */
 @media (min-width: 481px) and (max-width: 768px) {
   .amise-services-grid { grid-template-columns: repeat(2, 1fr) !important; }
-}
-
-/* ── About section grid ──────────────────────────────── */
-@media (max-width: 768px) {
-  .amise-about-grid  { grid-template-columns: 1fr !important; }
-  .amise-about-stats { grid-template-columns: 1fr !important; }
 }
 
 /* ── Shared sub-page header ──────────────────────────── */
