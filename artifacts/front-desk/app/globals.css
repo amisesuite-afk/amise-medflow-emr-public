@@ -125,6 +125,12 @@ textarea:focus-visible {
   .amise-services-grid { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
+/* ── About section grid ──────────────────────────────── */
+@media (max-width: 768px) {
+  .amise-about-grid  { grid-template-columns: 1fr !important; }
+  .amise-about-stats { grid-template-columns: 1fr !important; }
+}
+
 /* ── Shared sub-page header ──────────────────────────── */
 .amise-sub-nav {
   position: sticky; top: 0; z-index: 100;
