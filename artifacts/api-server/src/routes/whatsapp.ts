@@ -1,7 +1,8 @@
 /**
  * /api/whatsapp/inbound — WhatsApp inbound message handler.
  *
- * Supports two providers (auto-detected from request shape):
+ * Supports three providers (auto-detected from request shape):
+ *   • Meta    — object/entry/changes structure; GET verification challenge; replies via Graph API
  *   • Twilio  — body fields From/Body/MessageSid; responds with TwiML <Message>
  *   • Telnyx  — JSON body data.payload; responds 200 OK; sends reply via REST
  *
@@ -30,11 +31,13 @@ const router = Router();
 
 // ── Provider detection ────────────────────────────────────────────────────────
 
-type Provider = 'twilio' | 'telnyx';
+type Provider = 'meta' | 'twilio' | 'telnyx';
 
 function detectProvider(req: Request): Provider | null {
-  if (typeof (req.body as Record<string, unknown>)?.MessageSid === 'string') return 'twilio';
-  if ((req.body as Record<string, unknown>)?.data) return 'telnyx';
+  const b = req.body as Record<string, unknown>;
+  if (b?.object === 'whatsapp_business_account') return 'meta';
+  if (typeof b?.MessageSid === 'string') return 'twilio';
+  if (b?.data) return 'telnyx';
   return null;
 }
 
@@ -43,10 +46,31 @@ interface InboundWA {
   body:        string;
   profileName: string;
   messageId:   string;
+  metaPhoneNumberId?: string; // needed to send reply via Graph API
 }
 
 function extractMessage(req: Request, provider: Provider): InboundWA | null {
   const b = req.body as Record<string, unknown>;
+
+  if (provider === 'meta') {
+    try {
+      const entry   = (b.entry as unknown[])?.[0] as Record<string, unknown>;
+      const change  = (entry?.changes as unknown[])?.[0] as Record<string, unknown>;
+      const value   = change?.value as Record<string, unknown>;
+      const msgs    = value?.messages as Record<string, unknown>[] | undefined;
+      const contacts = value?.contacts as Record<string, unknown>[] | undefined;
+      if (!msgs?.length) return null; // status update, not a message — ignore
+      const m = msgs[0];
+      if (m.type !== 'text') return null; // only handle text for now
+      const from        = String(m.from ?? '');
+      const body        = String((m.text as Record<string, unknown>)?.body ?? '');
+      const profileName = String((contacts?.[0]?.profile as Record<string, unknown>)?.name ?? '');
+      const phoneNumberId = String((value?.metadata as Record<string, unknown>)?.phone_number_id ?? '');
+      if (!from || !body) return null;
+      return { from: `+${from.replace(/^\+/, '')}`, body, profileName, messageId: String(m.id ?? ''), metaPhoneNumberId: phoneNumberId };
+    } catch { return null; }
+  }
+
   if (provider === 'twilio') {
     const from = ((b.From as string) ?? '').replace(/^whatsapp:/i, '').trim();
     const body = (b.Body as string) ?? '';
@@ -63,6 +87,23 @@ function extractMessage(req: Request, provider: Provider): InboundWA | null {
 }
 
 // ── Signature verification ────────────────────────────────────────────────────
+
+function verifyMeta(req: Request): boolean {
+  const secret = process.env.WHATSAPP_APP_SECRET;
+  if (!secret) {
+    logger.warn('[whatsapp/inbound] WHATSAPP_APP_SECRET not set — skipping Meta signature check');
+    return true;
+  }
+  const sig = req.headers['x-hub-signature-256'] as string | undefined;
+  if (!sig) return false;
+  try {
+    const raw      = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+    const expected = 'sha256=' + createHmac('sha256', secret).update(raw).digest('hex');
+    const a = Buffer.from(sig);
+    const b = Buffer.from(expected);
+    return a.length === b.length && timingSafeEqual(a, b);
+  } catch { return false; }
+}
 
 async function verifyTwilio(req: Request): Promise<boolean> {
   const sig   = req.headers['x-twilio-signature'] as string | undefined;
@@ -189,6 +230,31 @@ Draft a reply: acknowledge receipt, guide them to the intake form if it's a book
   }
 }
 
+// ── Meta Graph API outbound reply ────────────────────────────────────────────
+
+async function sendMetaWhatsApp(to: string, text: string, phoneNumberId?: string): Promise<void> {
+  const token  = process.env.WHATSAPP_ACCESS_TOKEN;
+  const numId  = phoneNumberId ?? process.env.WHATSAPP_PHONE_NUMBER_ID;
+  if (!token || !numId) {
+    logger.warn('[whatsapp/reply] WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID not set');
+    return;
+  }
+  const r = await fetch(`https://graph.facebook.com/v19.0/${numId}/messages`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messaging_product: 'whatsapp',
+      to: to.replace(/^\+/, ''),
+      type: 'text',
+      text: { body: text },
+    }),
+  });
+  if (!r.ok) {
+    const err = await r.text().catch(() => '');
+    logger.warn({ status: r.status, err }, '[whatsapp/reply] Meta send failed');
+  }
+}
+
 // ── Telnyx outbound reply ─────────────────────────────────────────────────────
 
 async function sendTelnyxWhatsApp(to: string, text: string): Promise<void> {
@@ -213,6 +279,25 @@ function twimlMsg(text: string): string {
 const STATIC_ACK = 'Thank you for contacting Amise Medical Services. We have received your message and a member of our team will be in touch shortly. For urgent matters, please call the clinic directly. — Amise Medical';
 const STATIC_ERR = 'Thank you for reaching Amise Medical Services. We were unable to register your request automatically — please call the clinic directly so we can assist you. — Amise Medical';
 
+// ── GET /api/whatsapp/inbound — Meta webhook verification challenge ───────────
+// Meta sends a GET with hub.mode, hub.verify_token, hub.challenge.
+// We must echo hub.challenge back when hub.verify_token matches WHATSAPP_VERIFY_TOKEN.
+
+router.get('/api/whatsapp/inbound', (req: Request, res: Response) => {
+  const mode      = req.query['hub.mode']         as string | undefined;
+  const token     = req.query['hub.verify_token'] as string | undefined;
+  const challenge = req.query['hub.challenge']    as string | undefined;
+
+  const expected = process.env.WHATSAPP_VERIFY_TOKEN;
+  if (mode === 'subscribe' && token && expected && token === expected && challenge) {
+    logger.info('[whatsapp] Meta webhook verified');
+    res.status(200).send(challenge);
+  } else {
+    logger.warn({ mode, token }, '[whatsapp] Meta webhook verification failed');
+    res.sendStatus(403);
+  }
+});
+
 // ── POST /api/whatsapp/inbound ────────────────────────────────────────────────
 
 router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
@@ -224,6 +309,10 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
   }
 
   // Signature verification
+  if (provider === 'meta' && !verifyMeta(req)) {
+    res.status(401).json({ error: 'Invalid Meta signature' });
+    return;
+  }
   if (provider === 'twilio' && !await verifyTwilio(req)) {
     res.status(403).send('Forbidden');
     return;
@@ -232,6 +321,9 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
     res.status(401).json({ error: 'Invalid signature' });
     return;
   }
+
+  // Meta: always respond 200 immediately (Meta retries if it doesn't get 200 fast)
+  if (provider === 'meta') res.sendStatus(200);
 
   const msg = extractMessage(req, provider);
   if (!msg) {
@@ -251,6 +343,7 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
     const reply = `Thanks for reaching out to Amise Medical Services — a specialist general and endoscopic surgery practice led by Dr Dawit Daniel Kabiye MD DM in Saint Lucia.\n\nTo request an appointment or get started, please complete our short intake form: ${portalUrl}/patient/request\n\nYou're also welcome to call: ${tapionLabel} ${tapionNum} · ${rodneyBayLabel} ${rodneyBayNum} — Amise Medical`;
     await audit({ action: 'send', entityType: 'whatsapp_message', entityId: fromE164, payload: { reason: 'general_enquiry', body: body.slice(0, 500) } });
     logger.info({ from: fromE164 }, '[whatsapp/inbound] general enquiry');
+    if (provider === 'meta')    { void sendMetaWhatsApp(fromE164, reply, msg.metaPhoneNumberId); return; }
     if (provider === 'twilio')  { res.set('Content-Type', 'text/xml').send(twimlMsg(reply)); return; }
     if (provider === 'telnyx')  { void sendTelnyxWhatsApp(fromE164, reply); res.sendStatus(200); return; }
     return;
@@ -324,7 +417,9 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
   }
 
   // Acknowledge immediately — Claude draft runs async after response is sent
-  if (provider === 'twilio') res.set('Content-Type', 'text/xml').send(twimlMsg(bookingId ? STATIC_ACK : STATIC_ERR));
+  // Meta already got its 200 above; Twilio needs TwiML; Telnyx needs plain 200
+  if (provider === 'meta')   { void sendMetaWhatsApp(fromE164, bookingId ? STATIC_ACK : STATIC_ERR, msg.metaPhoneNumberId); }
+  else if (provider === 'twilio') res.set('Content-Type', 'text/xml').send(twimlMsg(bookingId ? STATIC_ACK : STATIC_ERR));
   else res.sendStatus(200);
 
   // 4. Generate Claude draft reply + update call_log (after response)
@@ -377,8 +472,10 @@ router.patch('/api/whatsapp/:id/reply', async (req: Request, res: Response) => {
 
   const to = (log as { caller_number: string }).caller_number;
 
-  // Send via Telnyx (WhatsApp) if configured, else fall back to Twilio SMS
-  if (process.env.TELNYX_API_KEY) {
+  // Send via Meta Graph API → Telnyx → Twilio SMS (in priority order)
+  if (process.env.WHATSAPP_ACCESS_TOKEN) {
+    await sendMetaWhatsApp(to, reply_text.trim());
+  } else if (process.env.TELNYX_API_KEY) {
     await sendTelnyxWhatsApp(to, reply_text.trim());
   } else {
     try {
