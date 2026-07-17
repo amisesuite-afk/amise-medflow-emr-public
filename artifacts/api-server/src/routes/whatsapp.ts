@@ -220,4 +220,183 @@ router.post('/api/whatsapp/inbound', async (req, res) => {
   res.send(bookingCreated ? TWIML_SUCCESS : TWIML_ERROR);
 });
 
+// ─── Meta WhatsApp Cloud API ──────────────────────────────────────────────────
+
+interface MetaWebhookPayload {
+  object: string;
+  entry: Array<{
+    id: string;
+    changes: Array<{
+      field: string;
+      value: {
+        messaging_product: string;
+        metadata: { display_phone_number: string; phone_number_id: string };
+        messages?: Array<{
+          from: string; id: string; timestamp: string; type: string;
+          text?: { body: string };
+        }>;
+        contacts?: Array<{ profile: { name: string }; wa_id: string }>;
+      };
+    }>;
+  }>;
+}
+
+const META_SUCCESS_MSG =
+  'Thank you for contacting Amise Medical Services. We have received your message and a member of our team will be in touch shortly to confirm your appointment. For urgent matters, please call the clinic directly. – Amise Medical';
+
+const META_ERROR_MSG =
+  'Thank you for reaching Amise Medical Services. We have noted your message; however, we were unable to register your request automatically. Please call the clinic directly so we can assist you. – Amise Medical';
+
+async function sendMetaReply(phoneNumberId: string, to: string, text: string): Promise<void> {
+  const token = process.env.WHATSAPP_ACCESS_TOKEN;
+  if (!token) {
+    logger.warn('[whatsapp/meta] WHATSAPP_ACCESS_TOKEN not set — cannot send reply');
+    return;
+  }
+  try {
+    const resp = await fetch(`https://graph.facebook.com/v20.0/${phoneNumberId}/messages`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: to.replace(/^\+/, ''),
+        type: 'text',
+        text: { body: text },
+      }),
+    });
+    if (!resp.ok) {
+      const detail = await resp.text();
+      logger.warn({ status: resp.status, detail }, '[whatsapp/meta] send reply failed');
+    }
+  } catch (err) {
+    logger.error({ err }, '[whatsapp/meta] sendMetaReply error');
+  }
+}
+
+// GET /api/whatsapp/meta — Meta webhook verification challenge
+router.get('/api/whatsapp/meta', (req, res) => {
+  const mode      = req.query['hub.mode']         as string | undefined;
+  const token     = req.query['hub.verify_token'] as string | undefined;
+  const challenge = req.query['hub.challenge']    as string | undefined;
+
+  const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN;
+  if (!verifyToken) {
+    logger.error('[whatsapp/meta] WHATSAPP_VERIFY_TOKEN not set');
+    res.sendStatus(500);
+    return;
+  }
+  if (mode === 'subscribe' && token === verifyToken) {
+    logger.info('[whatsapp/meta] webhook verified by Meta');
+    res.status(200).send(challenge);
+  } else {
+    logger.warn('[whatsapp/meta] webhook verification failed');
+    res.sendStatus(403);
+  }
+});
+
+// POST /api/whatsapp/meta — incoming messages from Meta Cloud API
+router.post('/api/whatsapp/meta', async (req, res) => {
+  // Respond 200 immediately — Meta retries if we delay
+  res.sendStatus(200);
+
+  const appSecret = process.env.WHATSAPP_APP_SECRET;
+  if (appSecret) {
+    const hubSignature = req.headers['x-hub-signature-256'] as string | undefined;
+    if (!hubSignature) {
+      logger.warn('[whatsapp/meta] missing x-hub-signature-256 — dropping');
+      return;
+    }
+    try {
+      const rawBody     = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+      const expectedSig = 'sha256=' + createHmac('sha256', appSecret).update(rawBody).digest('hex');
+      if (hubSignature !== expectedSig) {
+        logger.warn('[whatsapp/meta] invalid signature — dropping');
+        return;
+      }
+    } catch (err) {
+      logger.error({ err }, '[whatsapp/meta] signature validation error — dropping');
+      return;
+    }
+  } else {
+    logger.warn('[whatsapp/meta] WHATSAPP_APP_SECRET not set — skipping signature validation');
+  }
+
+  const payload = req.body as MetaWebhookPayload;
+  if (payload.object !== 'whatsapp_business_account') return;
+
+  for (const entry of payload.entry ?? []) {
+    for (const change of entry.changes ?? []) {
+      if (change.field !== 'messages') continue;
+      const { messages, contacts, metadata } = change.value;
+      if (!messages?.length) continue;
+
+      for (const msg of messages) {
+        if (msg.type !== 'text') continue;
+
+        const fromNumber  = `+${msg.from}`;
+        const body        = msg.text?.body ?? '';
+        const phoneNumId  = metadata.phone_number_id;
+        const profileName = contacts?.find(c => c.wa_id === msg.from)?.profile?.name ?? '';
+
+        if (isGeneralEnquiry(body)) {
+          const baseUrl = process.env.PORTAL_URL || 'https://amise-medflow-front-desk.vercel.app';
+          const replyText =
+            `Thanks for reaching out to Amise Medical Services — a general & endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM, in Saint Lucia.\n\n` +
+            `To help us prepare for your visit, please complete our short triage form: ${baseUrl}/patient/request\n\n` +
+            `You’re also welcome to call our front desk: ${tapionLabel} ${tapionNum}, ${rodneyBayLabel} ${rodneyBayNum}. – Amise Medical`;
+          await sendMetaReply(phoneNumId, fromNumber, replyText);
+          await audit({ action: 'send', entityType: 'whatsapp_message', entityId: fromNumber, payload: { reason: 'general_enquiry', body: body.slice(0, 500) } });
+          logger.info({ from: fromNumber }, '[whatsapp/meta] general enquiry — sent auto-reply');
+          continue;
+        }
+
+        const appointmentType  = detectAppointmentType(body);
+        const patientName      = extractName(profileName, body) || `WA ${fromNumber}`;
+        const placeholderEmail = `wa.${fromNumber.replace(/\D/g, '') || 'unknown'}@noreply.amise.internal`;
+
+        try {
+          const supa = getSupabaseAdmin();
+          const { data, error } = await supa
+            .from('appointment_requests')
+            .insert({
+              patient_name:     patientName,
+              patient_email:    placeholderEmail,
+              patient_phone:    fromNumber,
+              appointment_type: appointmentType,
+              location:         'rodney_bay',
+              preferred_slot:   null,
+              chief_complaint:  appointmentType,
+              preferred_site:   'rodney_bay',
+              preferred_date:   null,
+              reason:           body.slice(0, 500) || null,
+              status:           'pending',
+              source:           'whatsapp',
+              whatsapp_from:    fromNumber,
+            })
+            .select('id')
+            .single();
+
+          if (error) throw error;
+          const bookingId = data.id;
+
+          const staffPhone = process.env.STAFF_NOTIFY_PHONE ?? null;
+          if (staffPhone) {
+            await sendSms({
+              to:   staffPhone,
+              body: smsBodyStaffNewBooking({ patientName, appointmentType, preferredSlot: null, patientPhone: fromNumber, bookingId }),
+            });
+          }
+
+          await audit({ action: 'book', entityType: 'appointment_request', entityId: bookingId, payload: { source: 'whatsapp_meta', whatsapp_from: fromNumber, appointment_type: appointmentType } });
+          await sendMetaReply(phoneNumId, fromNumber, META_SUCCESS_MSG);
+          logger.info({ bookingId, from: fromNumber, appointmentType }, '[whatsapp/meta] booking created');
+        } catch (err) {
+          logger.error({ err }, '[whatsapp/meta] booking creation failed');
+          await sendMetaReply(phoneNumId, fromNumber, META_ERROR_MSG);
+        }
+      }
+    }
+  }
+});
+
 export default router;
