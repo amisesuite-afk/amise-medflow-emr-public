@@ -7,6 +7,8 @@ import TheatreListBuilderCard from '@/components/TheatreListBuilderCard';
 import PreopDayChecklist from '@/components/PreopDayChecklist';
 import PostOpMilestonesCard from '@/components/PostOpMilestonesCard';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import { supabase } from '@/lib/supabase';
+import { errMsg } from '@/lib/err';
 
 // Use VITE_API_URL when deployed (e.g. Render); fall back to same-origin proxy in dev
 const API_ORIGIN = getApiOrigin();
@@ -141,6 +143,9 @@ export default function SchedulingTab() {
   const [mock, setMock] = useState(false);
   const [booked, setBooked] = useState<SlotResult | null>(null);
   const [confirmed, setConfirmed] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingError, setBookingError] = useState<string | null>(null);
+  const [calendarLink, setCalendarLink] = useState<string | null>(null);
 
   // Pending bookings reminder panel
   const [pendingBookings, setPendingBookings] = useState<PendingBooking[]>([]);
@@ -207,6 +212,58 @@ export default function SchedulingTab() {
     return new Date(iso).toLocaleTimeString('en-GB', {
       timeZone: 'America/St_Lucia', hour: '2-digit', minute: '2-digit',
     });
+  }
+
+  async function handleConfirmBooking() {
+    if (!booked) return;
+    setBookingLoading(true);
+    setBookingError(null);
+    setCalendarLink(null);
+    try {
+      const followUpDate = booked.start.slice(0, 10);
+      let calLink: string | null = null;
+
+      // Attempt Google Calendar write — non-fatal if it fails
+      try {
+        const r = await fetch(apiUrl('/api/scheduling/book-followup'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+          body: JSON.stringify({
+            patientId: ctx.patientId || undefined,
+            patientName: ctx.patientName || 'Patient',
+            followUpDate,
+            visitType: APPT_LABELS[apptType] ?? apptType,
+          }),
+        });
+        if (r.ok) {
+          const data = await r.json() as { eventLink?: string };
+          calLink = data.eventLink ?? null;
+        }
+      } catch { /* calendar unavailable — continue */ }
+
+      // Persist to appointment_requests so it appears in FollowUpTracker
+      if (supabase) {
+        const { error: sbErr } = await supabase.from('appointment_requests').insert({
+          ...(ctx.patientId ? { patient_id: ctx.patientId } : {}),
+          patient_name: ctx.patientName || 'Patient',
+          appointment_type: apptType,
+          preferred_slot: booked.start,
+          confirmed_slot: booked.start,
+          location: booked.location,
+          status: 'doctor_confirmed',
+          source: 'manual',
+          staff_confirmed_at: new Date().toISOString(),
+        });
+        if (sbErr) throw new Error(sbErr.message);
+      }
+
+      setCalendarLink(calLink);
+      setConfirmed(true);
+    } catch (e) {
+      setBookingError(errMsg(e));
+    } finally {
+      setBookingLoading(false);
+    }
   }
 
   const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -279,17 +336,24 @@ export default function SchedulingTab() {
           <div style={{ fontSize: 12, marginBottom: 4 }}><strong>Date:</strong> {booked.display.day} {booked.display.date}</div>
           <div style={{ fontSize: 12, marginBottom: 4 }}><strong>Time:</strong> {formatTime(booked.start)}</div>
           <div style={{ fontSize: 12, marginBottom: 12 }}><strong>Location:</strong> {booked.display.location}</div>
+          {bookingError && (
+            <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+              {bookingError}
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 10 }}>
             <button
               className="summary-btn summary-btn--primary"
-              onClick={() => setConfirmed(true)}
-              style={{ height: 34 }}
+              onClick={() => void handleConfirmBooking()}
+              disabled={bookingLoading}
+              style={{ height: 34, opacity: bookingLoading ? 0.6 : 1 }}
             >
-              ✓ Confirm Booking
+              {bookingLoading ? 'Saving…' : '✓ Confirm Booking'}
             </button>
             <button
               className="summary-btn summary-btn--ghost"
-              onClick={() => setBooked(null)}
+              onClick={() => { setBooked(null); setBookingError(null); }}
+              disabled={bookingLoading}
               style={{ height: 34 }}
             >
               Cancel
@@ -300,9 +364,29 @@ export default function SchedulingTab() {
 
       {confirmed && booked && (
         <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 10, padding: '14px 18px', fontSize: 12 }}>
-          <div style={{ fontWeight: 700, color: '#16a34a', marginBottom: 6 }}>✓ Booking confirmed</div>
-          <div>Calendar event for <strong>{ctx.patientName || 'the patient'}</strong> on <strong>{booked.display.day} {booked.display.date}</strong> at <strong>{formatTime(booked.start)}</strong>.</div>
-          <button className="summary-btn summary-btn--ghost" style={{ marginTop: 10, height: 32 }} onClick={() => { setBooked(null); setConfirmed(false); }}>Done</button>
+          <div style={{ fontWeight: 700, color: '#16a34a', marginBottom: 6 }}>✓ Booking saved</div>
+          <div>
+            Follow-up for <strong>{ctx.patientName || 'the patient'}</strong> on{' '}
+            <strong>{booked.display.day} {booked.display.date}</strong> at{' '}
+            <strong>{formatTime(booked.start)}</strong> saved to the schedule.
+          </div>
+          {calendarLink && (
+            <div style={{ marginTop: 6 }}>
+              <a href={calendarLink} target="_blank" rel="noopener noreferrer"
+                style={{ color: '#0d9488', fontSize: 11, fontWeight: 600, textDecoration: 'underline' }}>
+                Open Google Calendar event →
+              </a>
+            </div>
+          )}
+          {!calendarLink && (
+            <div style={{ marginTop: 4, fontSize: 11, color: '#6b7280' }}>
+              Calendar not connected — saved to booking schedule only.
+            </div>
+          )}
+          <button className="summary-btn summary-btn--ghost" style={{ marginTop: 10, height: 32 }}
+            onClick={() => { setBooked(null); setConfirmed(false); setCalendarLink(null); }}>
+            Done
+          </button>
         </div>
       )}
 
