@@ -334,6 +334,7 @@ export default function HomePage() {
   const [guidedMode, setGuidedMode] = useState(false);
   const [ambientMode, setAmbientMode] = useState(true);
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const [contextOpen, setContextOpen] = useState(false);
   const prevPatientIdRef = useRef<string | null>(null);
   const acuityRef = useRef<HTMLDivElement>(null);
 
@@ -1094,14 +1095,42 @@ export default function HomePage() {
           />
         )}
 
-        {/* Context strips — hidden in guided/ambient mode to eliminate noise */}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <EncounterContextPicker />}
-        {topSection === 'consultation' && !!patientId && !ambientMode && !guidedMode && <PreviousVisitStrip />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <ChiefComplaintStrip />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && !!activeCcKey && <ClinicalWorkflowBar />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <ProblemListStrip />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <ClinicalPromptsStrip />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <FollowUpQueueStrip />}
+        {/* Context strips — collapsed by default to reduce clutter; expand on demand */}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && (
+          <div style={{ borderRadius: 10, border: '1px solid var(--line)', overflow: 'hidden', background: 'var(--card)' }}>
+            <button
+              type="button"
+              onClick={() => setContextOpen(o => !o)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                padding: '9px 14px', background: 'none', border: 'none', cursor: 'pointer',
+                color: 'var(--muted)', fontSize: 12, fontWeight: 700, textAlign: 'left',
+              }}
+            >
+              <span style={{
+                display: 'inline-block',
+                transform: contextOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.15s',
+                fontSize: 10,
+              }}>▶</span>
+              Clinical Context
+              <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: 'var(--muted)', opacity: 0.7 }}>
+                {contextOpen ? 'hide' : 'show'}
+              </span>
+            </button>
+            {contextOpen && (
+              <div style={{ borderTop: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: 0 }}>
+                <EncounterContextPicker />
+                {!!patientId && <PreviousVisitStrip />}
+                <ChiefComplaintStrip />
+                {!!activeCcKey && <ClinicalWorkflowBar />}
+                <ProblemListStrip />
+                <ClinicalPromptsStrip />
+                <FollowUpQueueStrip />
+              </div>
+            )}
+          </div>
+        )}
 
 
         {/* Consultation navigation — guided (one step at a time) or full tab strip */}
@@ -1210,33 +1239,16 @@ export default function HomePage() {
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0 8px', gap: 8, alignItems: 'center' }}>
-                {prevTab ? (
-                  <button type="button" onClick={() => setActiveSection(prevTab.id)}
-                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1px solid #d1d5db', background: '#f9fafb', color: '#374151' }}>
-                    ← {prevTab.label}
-                  </button>
-                ) : <span />}
-                <span style={{ fontSize: 11, color: '#9ca3af' }}>
-                  {curIdx >= 0 ? `${curIdx + 1} / ${consultTabs.length}` : ''}
-                </span>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                  <button type="button" onClick={() => setAmbientMode(true)}
-                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
-                    🎙 Ambient
-                  </button>
-                  {nextTab && (
-                    <button type="button" onClick={() => setActiveSection(nextTab.id)}
-                      style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#1F7A8C', color: '#fff' }}>
-                      {nextTab.label} →
-                    </button>
-                  )}
-                  <button type="button" onClick={() => setTopSection('finaldoc')}
-                    title="Open encounter summary, export, and sign-off"
-                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
-                    📋 Summary
-                  </button>
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '2px 0 8px', gap: 6, alignItems: 'center' }}>
+                <button type="button" onClick={() => setAmbientMode(true)}
+                  style={{ padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
+                  🎙 Ambient
+                </button>
+                <button type="button" onClick={() => setTopSection('finaldoc')}
+                  title="Open encounter summary, export, and sign-off"
+                  style={{ padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
+                  📋 Summary
+                </button>
               </div>
             </>
           );
