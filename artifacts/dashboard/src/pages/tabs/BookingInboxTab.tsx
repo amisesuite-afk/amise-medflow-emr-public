@@ -251,6 +251,12 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [cancelling, setCancelling]       = useState(false);
   const [cancelErr, setCancelErr]         = useState<string | null>(null);
 
+  // Check-in action state
+  const [checkingIn, setCheckingIn]               = useState(false);
+  const [checkInErr, setCheckInErr]               = useState<string | null>(null);
+  const [checkInOk, setCheckInOk]                 = useState(false);
+  const [checkedInEncounterId, setCheckedInEncounterId] = useState<string | null>(null);
+
   // Portal-access action state
   const [portalRegistering, setPortalRegistering] = useState(false);
   const [portalErr, setPortalErr]                 = useState<string | null>(null);
@@ -336,7 +342,39 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     if (selected) setConfirmLoc(resolveLocation(selected));
     setPortalOk(false);
     setPortalErr(null);
+    setCheckInOk(false);
+    setCheckInErr(null);
+    setCheckedInEncounterId(null);
   }, [selected?.id]);
+
+  async function handleCheckIn() {
+    if (!selected) return;
+    setCheckingIn(true);
+    setCheckInErr(null);
+    try {
+      const r = await fetch(apiUrl(`/api/visit/check-in/${selected.id}`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({ site: resolveLocation(selected) }),
+      });
+      if (!r.ok) {
+        const d = await r.json() as { error?: string };
+        throw new Error(d.error ?? `HTTP ${r.status}`);
+      }
+      const d = await r.json() as { encounterId: string };
+      setCheckedInEncounterId(d.encounterId);
+      setCheckInOk(true);
+      await load();
+      // Load the patient into the consultation context so staff can jump straight to their chart
+      setPatientName(selected.patient_name);
+      if (selected.patient_phone) setPhone(selected.patient_phone);
+      setTopSection('consultation');
+    } catch (e) {
+      setCheckInErr(errMsg(e));
+    } finally {
+      setCheckingIn(false);
+    }
+  }
 
   const [degradedWrite, setDegradedWrite] = useState(false);
   const [degradedRead,  setDegradedRead]  = useState(false);
@@ -1176,6 +1214,46 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               <div style={{ fontSize: 14, fontWeight: 700, color: '#1e3a8a' }}>{fmtSlot(selected.confirmed_slot)}</div>
               <div style={{ fontSize: 12, color: '#1d4ed8', marginTop: 4 }}>{LOCATION_LABELS[resolveLocation(selected)] ?? resolveLocation(selected)}</div>
               {selected.notes && <div style={{ fontSize: 12, color: '#374151', marginTop: 6, fontStyle: 'italic' }}>{selected.notes}</div>}
+            </div>
+          )}
+
+          {/* ── Check In Patient ─────────────────────────────────────────── */}
+          {['doctor_confirmed', 'patient_confirmed', 'staff_confirmed'].includes(selected.status) && !checkInOk && (
+            <div style={{ marginBottom: 20, padding: '16px', borderRadius: 10, background: '#fff', border: '2px solid #0d9488' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#0f766e', marginBottom: 6 }}>
+                Patient Arrived — Check In
+              </div>
+              <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 12, lineHeight: 1.5 }}>
+                Creates an encounter and opens the patient chart. If this is a new patient, a chart record will be created automatically.
+              </div>
+              {checkInErr && (
+                <div style={{ marginBottom: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>
+                  {checkInErr}
+                </div>
+              )}
+              <button
+                onClick={() => void handleCheckIn()}
+                disabled={checkingIn}
+                style={{
+                  width: '100%', padding: '12px', borderRadius: 8, border: 'none',
+                  background: checkingIn ? '#9ca3af' : '#0d9488',
+                  color: '#fff', fontWeight: 700, fontSize: 14,
+                  cursor: checkingIn ? 'not-allowed' : 'pointer',
+                  transition: 'background .15s',
+                }}
+              >
+                {checkingIn ? 'Checking in…' : `Check In ${selected.patient_name.split(' ')[0]} →`}
+              </button>
+            </div>
+          )}
+          {checkInOk && (
+            <div style={{ marginBottom: 20, padding: '14px 16px', borderRadius: 10, background: '#f0fdf4', border: '2px solid #16a34a' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#15803d', marginBottom: 4 }}>
+                ✓ Patient checked in — chart is open in Consultation
+              </div>
+              {checkedInEncounterId && (
+                <div style={{ fontSize: 11, color: '#6b7280', marginTop: 4 }}>Encounter ID: {checkedInEncounterId}</div>
+              )}
             </div>
           )}
 

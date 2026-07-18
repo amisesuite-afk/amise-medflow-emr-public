@@ -37,18 +37,59 @@ router.post('/api/visit/check-in/:appointmentId', async (req, res) => {
         .from('appointment_requests')
         .select('*')
         .eq('id', appointmentId)
-        .in('status', ['patient_confirmed', 'staff_confirmed'])
+        .in('status', ['patient_confirmed', 'staff_confirmed', 'doctor_confirmed'])
         .maybeSingle();
 
       if (request) {
         appointment = request;
         chiefComplaint = request.reason;
         appointmentType = request.appointment_type;
+
+        // Resolve or create patient record for web/phone bookings that have no patient_id yet
+        if (request.patient_id) {
+          patientId = request.patient_id as string;
+        } else {
+          const phone = (request.patient_phone ?? request.phone ?? null) as string | null;
+          const name = (request.patient_name ?? 'Unknown') as string;
+          const email = (request.patient_email ?? request.email ?? null) as string | null;
+
+          // Try to find existing patient by phone
+          if (phone) {
+            const { data: existingPt } = await supa
+              .from('patients')
+              .select('id')
+              .eq('phone', phone)
+              .maybeSingle();
+            if (existingPt) patientId = (existingPt as { id: string }).id;
+          }
+
+          // Create patient if still not found
+          if (!patientId) {
+            const { data: newPt, error: ptErr } = await supa
+              .from('patients')
+              .insert({ full_name: name, phone: phone ?? null, email: email ?? null })
+              .select('id')
+              .single();
+            if (ptErr) throw ptErr;
+            patientId = (newPt as { id: string }).id;
+          }
+
+          // Back-link the booking to the resolved patient
+          await supa
+            .from('appointment_requests')
+            .update({ patient_id: patientId })
+            .eq('id', appointmentId);
+        }
       }
     }
 
     if (!appointment) {
       res.status(404).json({ error: 'Appointment not found or not in a confirmable state' });
+      return;
+    }
+
+    if (!patientId) {
+      res.status(422).json({ error: 'Cannot create encounter: no patient record could be resolved' });
       return;
     }
 

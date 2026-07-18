@@ -20,6 +20,11 @@ import voiceRouter from "./voice";
 import callsRouter from "./calls";
 import callRecordingRouter from "./call-recording";
 import patientMessagesRouter from "./patient-messages";
+import generateLetterRouter from "./generate-letter";
+import procedureReportRouter from "./procedure-report";
+import dischargeSummaryRouter from "./discharge-summary";
+import patientAuthRouter from "./patient-auth";
+import patientRouter from "./patient";
 
 const router: IRouter = Router();
 
@@ -44,5 +49,10 @@ router.use(voiceRouter);
 router.use(callsRouter);
 router.use(callRecordingRouter);
 router.use(patientMessagesRouter);
+router.use('/api/generate-letter', generateLetterRouter);
+router.use(procedureReportRouter);
+router.use(dischargeSummaryRouter);
+router.use(patientAuthRouter);
+router.use(patientRouter);
 
 export default router;
