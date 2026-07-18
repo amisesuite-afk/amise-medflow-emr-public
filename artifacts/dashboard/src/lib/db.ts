@@ -575,6 +575,98 @@ export async function savePmhNotes(
   return { error: null };
 }
 
+// ─── saveHpiNote ──────────────────────────────────────────────────────────────
+
+/** Saves the HPI narrative for an encounter. Delete-then-insert pattern. */
+export async function saveHpiNote(
+  encounterId: string,
+  patientId: string,
+  hpiNotes: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveHpiNote') };
+  if (!hpiNotes.trim()) return { error: null };
+
+  await supabase.from('clinical_notes')
+    .delete()
+    .eq('encounter_id', encounterId)
+    .like('content', '[HPI]%');
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    note_type:    'consultation',
+    status:       'draft',
+    content:      '[HPI]\n' + hpiNotes,
+    ai_assisted:  false,
+  });
+
+  if (error) { console.error('[db] saveHpiNote:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── syncInvestigationOrders ──────────────────────────────────────────────────
+
+/** Inserts newly ordered investigations for an encounter (skips already-recorded tests). */
+export async function syncInvestigationOrders(
+  encounterId: string,
+  patientId: string,
+  orderedInvestigations: string[],
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('syncInvestigationOrders') };
+  if (!orderedInvestigations.length) return { error: null };
+
+  const { data: existing, error: fetchErr } = await supabase
+    .from('investigation_results')
+    .select('test_name')
+    .eq('encounter_id', encounterId);
+
+  if (fetchErr) { console.error('[db] syncInvestigationOrders fetch:', fetchErr); return { error: fetchErr.message }; }
+
+  const existingNames = new Set((existing ?? []).map((r: { test_name: string }) => r.test_name));
+  const toInsert = orderedInvestigations
+    .filter(name => !existingNames.has(name))
+    .map(name => ({
+      encounter_id:  encounterId,
+      patient_id:    patientId,
+      test_name:     name,
+      test_category: 'other' as const,
+      status:        'ordered' as const,
+    }));
+
+  if (!toInsert.length) return { error: null };
+
+  const { error } = await supabase.from('investigation_results').insert(toInsert);
+  if (error) { console.error('[db] syncInvestigationOrders:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+// ─── updateEncounterType ──────────────────────────────────────────────────────
+
+type DbEncounterType = 'outpatient' | 'inpatient' | 'emergency' | 'procedure' | 'telehealth';
+
+/** Maps the AppContext encounter type + mode to the DB CHECK-constraint values. */
+export function toDbEncounterType(encounterType: string, encounterMode: string): DbEncounterType {
+  if (encounterMode === 'inpatient') return 'inpatient';
+  if (encounterType === 'endoscopy' || encounterType === 'office_procedure') return 'procedure';
+  if (encounterType === 'major_emergency') return 'emergency';
+  return 'outpatient';
+}
+
+export async function updateEncounterType(
+  encounterId: string,
+  dbType: DbEncounterType,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('updateEncounterType') };
+
+  const { error } = await supabase
+    .from('encounters')
+    .update({ encounter_type: dbType })
+    .eq('id', encounterId);
+
+  if (error) { console.error('[db] updateEncounterType:', error); return { error: error.message }; }
+  return { error: null };
+}
+
 // ─── getLatestOpenEncounter ───────────────────────────────────────────────────
 
 export async function getLatestOpenEncounter(
