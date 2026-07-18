@@ -337,6 +337,7 @@ export default function HomePage() {
   const [contextOpen, setContextOpen] = useState(false);
   const prevPatientIdRef = useRef<string | null>(null);
   const acuityRef = useRef<HTMLDivElement>(null);
+  const contextPanelRef = useRef<HTMLDivElement>(null);
 
   // Close acuity breakdown on outside click
   useEffect(() => {
@@ -349,6 +350,18 @@ export default function HomePage() {
     document.addEventListener('mousedown', handle);
     return () => document.removeEventListener('mousedown', handle);
   }, [showAcuityBreakdown]);
+
+  // Close context popover on outside click
+  useEffect(() => {
+    if (!contextOpen) return;
+    function handle(e: MouseEvent) {
+      if (contextPanelRef.current && !contextPanelRef.current.contains(e.target as Node)) {
+        setContextOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [contextOpen]);
 
   // Reset wizard + guided mode whenever a different patient is loaded
   useEffect(() => {
@@ -1095,42 +1108,116 @@ export default function HomePage() {
           />
         )}
 
-        {/* Context strips — collapsed by default to reduce clutter; expand on demand */}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && (
-          <div style={{ borderRadius: 10, border: '1px solid var(--line)', overflow: 'hidden', background: 'var(--card)' }}>
-            <button
-              type="button"
-              onClick={() => setContextOpen(o => !o)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-                padding: '9px 14px', background: 'none', border: 'none', cursor: 'pointer',
-                color: 'var(--muted)', fontSize: 12, fontWeight: 700, textAlign: 'left',
-              }}
-            >
-              <span style={{
-                display: 'inline-block',
-                transform: contextOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 0.15s',
-                fontSize: 10,
-              }}>▶</span>
-              Clinical Context
-              <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: 'var(--muted)', opacity: 0.7 }}>
-                {contextOpen ? 'hide' : 'show'}
-              </span>
-            </button>
-            {contextOpen && (
-              <div style={{ borderTop: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: 0 }}>
-                <EncounterContextPicker />
-                {!!patientId && <PreviousVisitStrip />}
-                <ChiefComplaintStrip />
-                {!!activeCcKey && <ClinicalWorkflowBar />}
-                <ProblemListStrip />
-                <ClinicalPromptsStrip />
-                <FollowUpQueueStrip />
+        {/* Compact context bar — single 40 px strip showing key at-a-glance info;
+             full detail panels drop down on demand via "Context ▼" button */}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && (() => {
+          const allergyList = allergies.split(',').map(a => a.trim()).filter(Boolean);
+          const vtMatch = ctxVisitType && ctxVisitType !== 'new_consult'
+            ? VISIT_TYPES.find(v => v.id === ctxVisitType) : null;
+          const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
+          const ccLabel = ccMatrix?.name ?? (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
+
+          return (
+            <div ref={contextPanelRef} style={{ position: 'relative' }}>
+              {/* ── Compact info bar ── */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'nowrap',
+                padding: '0 14px', height: 42,
+                background: 'var(--card)', border: '1px solid var(--line)',
+                borderRadius: 10, overflow: 'hidden',
+              }}>
+                {/* Visit type badge */}
+                {vtMatch && (
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, letterSpacing: '.03em',
+                    color: vtMatch.color, background: `${vtMatch.color}18`,
+                    border: `1px solid ${vtMatch.color}44`,
+                    borderRadius: 5, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0,
+                  }}>
+                    {vtMatch.icon} {vtMatch.label}
+                  </span>
+                )}
+
+                {/* Chief complaint / symptoms */}
+                {ccLabel && (
+                  <>
+                    {vtMatch && <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>}
+                    <span style={{
+                      fontSize: 12, fontWeight: 600, color: 'var(--ink)',
+                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220,
+                    }}>
+                      {ccLabel}
+                    </span>
+                  </>
+                )}
+
+                <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>
+
+                {/* Allergies */}
+                {allergyList.length > 0 ? (
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, color: '#b45309',
+                    background: '#fffbeb', border: '1px solid #fcd34d',
+                    borderRadius: 4, padding: '2px 7px', whiteSpace: 'nowrap', flexShrink: 0,
+                  }}>
+                    ⚠ {allergyList.slice(0, 2).join(', ')}{allergyList.length > 2 ? ` +${allergyList.length - 2}` : ''}
+                  </span>
+                ) : (
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
+                )}
+
+                {/* PMH count */}
+                {comorbidities.length > 0 && (
+                  <>
+                    <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                      {comorbidities.length} PMH
+                    </span>
+                  </>
+                )}
+
+                <span style={{ flex: 1, minWidth: 0 }} />
+
+                {/* Context toggle */}
+                <button
+                  type="button"
+                  onClick={() => setContextOpen(o => !o)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: '4px 11px', borderRadius: 6, cursor: 'pointer',
+                    border: `1px solid ${contextOpen ? 'var(--accent)' : 'var(--line)'}`,
+                    background: contextOpen ? 'var(--accent)' : 'transparent',
+                    color: contextOpen ? '#fff' : 'var(--muted)',
+                    fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0,
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  Context <span style={{ fontSize: 8, marginLeft: 2 }}>{contextOpen ? '▲' : '▼'}</span>
+                </button>
               </div>
-            )}
-          </div>
-        )}
+
+              {/* ── Full context popover ── */}
+              {contextOpen && (
+                <div style={{
+                  position: 'absolute', top: 'calc(100% + 5px)', left: 0, right: 0,
+                  zIndex: 200, background: 'var(--card)',
+                  border: '1px solid var(--line)', borderRadius: 12,
+                  boxShadow: '0 8px 32px rgba(0,0,0,.14)',
+                  display: 'flex', flexDirection: 'column',
+                  maxHeight: '70vh', overflowY: 'auto',
+                }}>
+                  <EncounterContextPicker />
+                  {!!patientId && <PreviousVisitStrip />}
+                  <ChiefComplaintStrip />
+                  {!!activeCcKey && <ClinicalWorkflowBar />}
+                  <ProblemListStrip />
+                  <ClinicalPromptsStrip />
+                  <FollowUpQueueStrip />
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
 
         {/* Consultation navigation — guided (one step at a time) or full tab strip */}
@@ -1239,16 +1326,30 @@ export default function HomePage() {
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '2px 0 8px', gap: 6, alignItems: 'center' }}>
-                <button type="button" onClick={() => setAmbientMode(true)}
-                  style={{ padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
-                  🎙 Ambient
-                </button>
-                <button type="button" onClick={() => setTopSection('finaldoc')}
-                  title="Open encounter summary, export, and sign-off"
-                  style={{ padding: '4px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
-                  📋 Summary
-                </button>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0 8px', gap: 8, alignItems: 'center' }}>
+                {prevTab ? (
+                  <button type="button" onClick={() => setActiveSection(prevTab.id)}
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)' }}>
+                    ← {prevTab.label}
+                  </button>
+                ) : <span />}
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <button type="button" onClick={() => setAmbientMode(true)}
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
+                    🎙 Ambient
+                  </button>
+                  {nextTab && (
+                    <button type="button" onClick={() => setActiveSection(nextTab.id)}
+                      style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#1F7A8C', color: '#fff' }}>
+                      {nextTab.label} →
+                    </button>
+                  )}
+                  <button type="button" onClick={() => setTopSection('finaldoc')}
+                    title="Open encounter summary, export, and sign-off"
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
+                    📋 Summary
+                  </button>
+                </div>
               </div>
             </>
           );
