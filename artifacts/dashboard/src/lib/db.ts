@@ -1116,13 +1116,13 @@ export async function saveExamFindings(
     if (note) findings.push(note);
     parts.push(`${EXAM_SYSTEM_LABELS[sys]}: ${findings.join('. ')}`);
   }
-  const content = '[EXAMINATION]\n' + (parts.join('\n') || '(No findings entered)');
+  const content = '[EXAMINATION_JSON]\n' + JSON.stringify({ examFindings, examNotes });
 
-  // Delete the previous examination snapshot for this encounter, then re-insert
+  // Delete the previous examination snapshot for this encounter (both old text format and JSON format)
   await supabase.from('clinical_notes')
     .delete()
     .eq('encounter_id', encounterId)
-    .like('content', '[EXAMINATION]%');
+    .like('content', '[EXAMINATION%');
 
   const { error } = await supabase.from('clinical_notes').insert({
     encounter_id: encounterId,
@@ -1222,6 +1222,8 @@ export interface EncounterData {
   rosFindings: Record<string, { status: string; details: string[]; notes: string }>;
   procedureData: Record<string, unknown>;
   hpiNotes: string;
+  examFindings: Record<string, string[]>;
+  examNotes: Record<string, string>;
   pmhNotes: string;
   familyHistoryNotes: string;
   orderedInvestigations: string[];
@@ -1252,7 +1254,7 @@ export async function loadEncounterData(
 ): Promise<{ data: EncounterData; error: null } | { data: null; error: string }> {
   if (!supabase) return { data: null, error: notConfigured('loadEncounterData') };
 
-  const [assessRes, planRes, allergyRes, medRes, hpiRes, patRes, investRes] = await Promise.all([
+  const [assessRes, planRes, allergyRes, medRes, hpiRes, patRes, investRes, examRes] = await Promise.all([
     supabase.from('assessments')
       .select('diagnosis, differentials, icd10_code')
       .eq('encounter_id', encounterId)
@@ -1285,10 +1287,15 @@ export async function loadEncounterData(
       .select('test_name')
       .eq('encounter_id', encounterId)
       .eq('status', 'ordered'),
+    supabase.from('clinical_notes')
+      .select('content')
+      .eq('encounter_id', encounterId)
+      .like('content', '[EXAMINATION_JSON]%')
+      .maybeSingle(),
   ]);
 
   const firstError = assessRes.error ?? planRes.error ?? allergyRes.error ?? medRes.error
-    ?? hpiRes.error ?? patRes.error ?? investRes.error;
+    ?? hpiRes.error ?? patRes.error ?? investRes.error ?? examRes.error;
   if (firstError) {
     console.error('[db] loadEncounterData:', firstError);
     return { data: null, error: firstError.message };
@@ -1301,6 +1308,20 @@ export async function loadEncounterData(
   const hpiContent  = (hpiRes.data   as { content: string } | null)?.content ?? '';
   const patRow      = patRes.data    as { pmh_notes: string | null; family_history_notes: string | null } | null;
   const investRows  = (investRes.data ?? []) as { test_name: string }[];
+
+  const examContent = (examRes.data as { content: string } | null)?.content ?? '';
+  let restoredExamFindings: Record<string, string[]> = {};
+  let restoredExamNotes: Record<string, string> = {};
+  if (examContent.startsWith('[EXAMINATION_JSON]\n')) {
+    try {
+      const parsed = JSON.parse(examContent.slice('[EXAMINATION_JSON]\n'.length)) as {
+        examFindings?: Record<string, string[]>;
+        examNotes?: Record<string, string>;
+      };
+      restoredExamFindings = parsed.examFindings ?? {};
+      restoredExamNotes = parsed.examNotes ?? {};
+    } catch { /* malformed — return empty */ }
+  }
 
   const [surgRes, toxicRes, rosRes, procRes, traumaRes] = await Promise.all([
     loadSurgicalHistory(patientId),
@@ -1326,6 +1347,8 @@ export async function loadEncounterData(
       rosFindings:     rosRes,
       procedureData:   procRes,
       hpiNotes:        hpiContent.startsWith('[HPI]\n') ? hpiContent.slice(6) : hpiContent,
+      examFindings:    restoredExamFindings,
+      examNotes:       restoredExamNotes,
       pmhNotes:        patRow?.pmh_notes ?? '',
       familyHistoryNotes: patRow?.family_history_notes ?? '',
       orderedInvestigations: investRows.map(r => r.test_name),

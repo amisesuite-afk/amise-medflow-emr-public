@@ -109,6 +109,7 @@ export default function PatientSearchTab() {
     setSurgicalHistory, setSurgicalNotes, setToxicHabits,
     setRosFindings, setProcedureData, setTraumaData,
     setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
+    setExamFindings, setExamNotes,
     setTopSection, setActiveSection,
     toggleSymptom, setFreeText, symptoms, freeText,
     setMedicationsText,
@@ -292,6 +293,8 @@ export default function PatientSearchTab() {
           if (Object.keys(d.procedureData).length) setProcedureData(d.procedureData);
           if (d.traumaData) setTraumaData(d.traumaData);
           if (d.hpiNotes) setHpiNotes(d.hpiNotes);
+          if (Object.keys(d.examFindings).length) setExamFindings(d.examFindings);
+          if (Object.keys(d.examNotes).length) setExamNotes(d.examNotes);
           if (d.pmhNotes) setPmhNotes(d.pmhNotes);
           if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
           if (d.orderedInvestigations.length) setOrderedInvestigations(d.orderedInvestigations);

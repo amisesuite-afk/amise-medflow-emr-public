@@ -38,6 +38,7 @@ export default function EncounterTimelineTab() {
     setMedications, setMedicationsText, setAllergies,
     setSurgicalHistory, setSurgicalNotes,
     setToxicHabits, setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
+    setExamFindings, setExamNotes,
     setActiveSection,
     referredBy, procedureData,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
@@ -149,6 +150,8 @@ export default function EncounterTimelineTab() {
     setSurgicalNotes(d.surgicalNotes ?? '');
     setToxicHabits(d.toxicHabits ?? []);
     if (d.hpiNotes) setHpiNotes(d.hpiNotes);
+    if (Object.keys(d.examFindings).length) setExamFindings(d.examFindings);
+    if (Object.keys(d.examNotes).length) setExamNotes(d.examNotes);
     if (d.pmhNotes) setPmhNotes(d.pmhNotes);
     if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
     if (d.orderedInvestigations?.length) setOrderedInvestigations(d.orderedInvestigations);
