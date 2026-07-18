@@ -88,7 +88,7 @@ function dbRowToCase(r: Record<string, unknown>): MMCase {
 }
 
 const EMPTY_CASE: Omit<MMCase, 'id'> = {
-  date: new Date().toISOString().slice(0, 10),
+  date: new Date().toLocaleDateString('en-CA', { timeZone: 'America/St_Lucia' }),
   patientRef: '', procedure: '', complication: '',
   category: 'early_postop', grade: '', gradeSuffix: false,
   contributing: [], reOperation: false, icuAdmission: false, death: false,
@@ -335,16 +335,23 @@ export default function QualityImprovementTab() {
       review_date:    c.reviewDate || null,
       reviewed_by:    c.reviewedBy,
     };
-    const isNew = !cases.some(x => x.id === c.id);
+    const isNew = !c.id;
     if (sb) {
       if (isNew) {
         const { data } = await sb.from('mm_cases').insert({ ...row, created_by: session?.user.id ?? null }).select('id').single();
         if (data) c = { ...c, id: (data as { id: string }).id };
+        else c = { ...c, id: `local-${Date.now()}` };
       } else {
         await sb.from('mm_cases').update(row).eq('id', c.id);
       }
+    } else {
+      if (isNew) c = { ...c, id: `local-${Date.now()}` };
     }
-    setCases(prev => isNew ? [c, ...prev] : prev.map(x => x.id === c.id ? c : x));
+    const updatedCases = isNew ? [c, ...cases] : cases.map(x => x.id === c.id ? c : x);
+    setCases(updatedCases);
+    if (!sb) {
+      try { localStorage.setItem('mm_case_register_v1', JSON.stringify(updatedCases)); } catch { /* */ }
+    }
     setAdding(false);
     setEditId(null);
   }
@@ -352,7 +359,11 @@ export default function QualityImprovementTab() {
   async function deleteCase(id: string) {
     const sb = getSupabase();
     if (sb) await sb.from('mm_cases').delete().eq('id', id);
-    setCases(prev => prev.filter(x => x.id !== id));
+    const updatedCases = cases.filter(x => x.id !== id);
+    setCases(updatedCases);
+    if (!sb) {
+      try { localStorage.setItem('mm_case_register_v1', JSON.stringify(updatedCases)); } catch { /* */ }
+    }
   }
 
   async function cycleStatus(id: string) {
@@ -362,7 +373,11 @@ export default function QualityImprovementTab() {
     const next = ORDER[(ORDER.indexOf(c.reviewStatus) + 1) % ORDER.length];
     const sb = getSupabase();
     if (sb) await sb.from('mm_cases').update({ review_status: next }).eq('id', id);
-    setCases(prev => prev.map(x => x.id === id ? { ...x, reviewStatus: next } : x));
+    const updatedCases = cases.map(x => x.id === id ? { ...x, reviewStatus: next } : x);
+    setCases(updatedCases);
+    if (!sb) {
+      try { localStorage.setItem('mm_case_register_v1', JSON.stringify(updatedCases)); } catch { /* */ }
+    }
   }
 
   /* ── Filtered list ── */

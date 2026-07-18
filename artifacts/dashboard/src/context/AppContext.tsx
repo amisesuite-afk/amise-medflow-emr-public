@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -921,12 +921,27 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [patientId, encounterId, traumaData]);
 
   // ── Autosave HPI notes (encounter-level, debounced 3 s) ──────────────────
+  // hpiSavedRef tracks whether a non-empty HPI was saved this session, so clearing
+  // the field triggers a DB delete rather than a no-op.
+  const hpiSavedRef = useRef(false);
+  useEffect(() => { hpiSavedRef.current = false; }, [encounterId]);
   useEffect(() => {
-    if (!patientId || !encounterId || !hpiNotes.trim()) return;
+    if (!patientId || !encounterId) return;
     if (hpiTimerRef.current) clearTimeout(hpiTimerRef.current);
-    hpiTimerRef.current = setTimeout(() => {
-      void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes));
-    }, 3000);
+    if (!hpiNotes.trim()) {
+      if (!hpiSavedRef.current) return;
+      hpiTimerRef.current = setTimeout(() => {
+        hpiTimerRef.current = null;
+        hpiSavedRef.current = false;
+        void trackedSave(() => clearHpiNote(encounterId));
+      }, 3000);
+    } else {
+      hpiTimerRef.current = setTimeout(() => {
+        hpiTimerRef.current = null;
+        hpiSavedRef.current = true;
+        void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes));
+      }, 3000);
+    }
     return () => { if (hpiTimerRef.current) clearTimeout(hpiTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, encounterId, hpiNotes]);
@@ -936,6 +951,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId || (!pmhNotes && !familyHistoryNotes)) return;
     if (pmhTimerRef.current) clearTimeout(pmhTimerRef.current);
     pmhTimerRef.current = setTimeout(() => {
+      pmhTimerRef.current = null;
       void trackedSave(() => savePmhNotes(patientId, pmhNotes, familyHistoryNotes));
     }, 3000);
     return () => { if (pmhTimerRef.current) clearTimeout(pmhTimerRef.current); };
@@ -944,9 +960,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // ── Autosave investigation orders (encounter-level, debounced 3 s) ───────
   useEffect(() => {
-    if (!patientId || !encounterId || !orderedInvestigations.length) return;
+    if (!patientId || !encounterId) return;
     if (investigationTimerRef.current) clearTimeout(investigationTimerRef.current);
     investigationTimerRef.current = setTimeout(() => {
+      investigationTimerRef.current = null;
       void trackedSave(() => syncInvestigationOrders(encounterId, patientId, orderedInvestigations));
     }, 3000);
     return () => { if (investigationTimerRef.current) clearTimeout(investigationTimerRef.current); };
@@ -958,6 +975,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!encounterId) return;
     if (encounterTypeTimerRef.current) clearTimeout(encounterTypeTimerRef.current);
     encounterTypeTimerRef.current = setTimeout(() => {
+      encounterTypeTimerRef.current = null;
       void trackedSave(() => updateEncounterType(encounterId, toDbEncounterType(encounterType, encounterMode)));
     }, 2000);
     return () => { if (encounterTypeTimerRef.current) clearTimeout(encounterTypeTimerRef.current); };

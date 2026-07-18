@@ -725,6 +725,21 @@ export default function InpatientTab() {
   useEffect(() => {
     if (!ctx.encounterId) return;
     void loadDischargeNotes(ctx.encounterId).then(({ data }) => {
+      // Always reset to defaults first so stale data from a previous encounter never persists
+      setHistoryProse('');
+      setProcedureDate(''); setOperator('Dr. Dawit D Kabiye'); setInstrument('');
+      setAnaesthesia(''); setIndication(''); setProcedureNarrative('');
+      setDischargeDx(''); setComplications(''); setPostProcCourse('');
+      setFollowupHeading('Follow-up Appointment'); setFollowupBody('');
+      setHaem(DEFAULT_HAEM); setLft(DEFAULT_LFT);
+      setLftLabel1('Admission'); setLftLabel2('Day 3');
+      setTumour(DEFAULT_TUMOUR); setAmylase(DEFAULT_AMYLASE);
+      setImaging([{ modality: '', region: '', date: '', findings: '' }]);
+      setMedications([{ name: '', dose: '', route: '', frequency: '' }]);
+      setLifestyle([{ text: '' }]); setFollowupPlan([{ text: '' }]);
+      setRedFlags([{ text: 'Fever > 38.5 °C' }, { text: 'Increasing pain or distension' }, { text: 'Wound breakdown or discharge' }]);
+      setSignoffName('Dr. Dawit D Kabiye'); setSignoffRole('MD, DM · General & Endoscopic Surgery');
+      setSignoffContact(''); setSignoffDate('');
       if (!data) return;
       if (data.historyProse)      setHistoryProse(data.historyProse as string);
       if (data.procedureDate)     setProcedureDate(data.procedureDate as string);

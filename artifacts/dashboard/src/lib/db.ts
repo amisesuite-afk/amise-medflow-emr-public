@@ -577,6 +577,17 @@ export async function savePmhNotes(
 
 // ─── saveHpiNote ──────────────────────────────────────────────────────────────
 
+/** Removes the HPI row for an encounter (called when the clinician clears all HPI text). */
+export async function clearHpiNote(encounterId: string): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('clearHpiNote') };
+  const { error } = await supabase.from('clinical_notes')
+    .delete()
+    .eq('encounter_id', encounterId)
+    .like('content', '[HPI]%');
+  if (error) { console.error('[db] clearHpiNote:', error); return { error: error.message }; }
+  return { error: null };
+}
+
 /** Saves the HPI narrative for an encounter. Delete-then-insert pattern. */
 export async function saveHpiNote(
   encounterId: string,
@@ -586,10 +597,11 @@ export async function saveHpiNote(
   if (!supabase) return { error: notConfigured('saveHpiNote') };
   if (!hpiNotes.trim()) return { error: null };
 
-  await supabase.from('clinical_notes')
+  const { error: delErr } = await supabase.from('clinical_notes')
     .delete()
     .eq('encounter_id', encounterId)
     .like('content', '[HPI]%');
+  if (delErr) { console.error('[db] saveHpiNote delete:', delErr); return { error: delErr.message }; }
 
   const { error } = await supabase.from('clinical_notes').insert({
     encounter_id: encounterId,
@@ -606,23 +618,26 @@ export async function saveHpiNote(
 
 // ─── syncInvestigationOrders ──────────────────────────────────────────────────
 
-/** Inserts newly ordered investigations for an encounter (skips already-recorded tests). */
+/** Syncs the ordered-investigations list for an encounter: inserts new tests, deletes removed ones. */
 export async function syncInvestigationOrders(
   encounterId: string,
   patientId: string,
   orderedInvestigations: string[],
 ): Promise<{ error: string | null }> {
   if (!supabase) return { error: notConfigured('syncInvestigationOrders') };
-  if (!orderedInvestigations.length) return { error: null };
 
   const { data: existing, error: fetchErr } = await supabase
     .from('investigation_results')
-    .select('test_name')
+    .select('test_name, status')
     .eq('encounter_id', encounterId);
 
   if (fetchErr) { console.error('[db] syncInvestigationOrders fetch:', fetchErr); return { error: fetchErr.message }; }
 
-  const existingNames = new Set((existing ?? []).map((r: { test_name: string }) => r.test_name));
+  const rows = (existing ?? []) as { test_name: string; status: string }[];
+  const orderedSet = new Set(orderedInvestigations);
+  const existingNames = new Set(rows.map(r => r.test_name));
+
+  // Insert new tests
   const toInsert = orderedInvestigations
     .filter(name => !existingNames.has(name))
     .map(name => ({
@@ -633,10 +648,25 @@ export async function syncInvestigationOrders(
       status:        'ordered' as const,
     }));
 
-  if (!toInsert.length) return { error: null };
+  if (toInsert.length) {
+    const { error } = await supabase.from('investigation_results').insert(toInsert);
+    if (error) { console.error('[db] syncInvestigationOrders insert:', error); return { error: error.message }; }
+  }
 
-  const { error } = await supabase.from('investigation_results').insert(toInsert);
-  if (error) { console.error('[db] syncInvestigationOrders:', error); return { error: error.message }; }
+  // Delete tests that were removed from the UI (only 'ordered' rows — don't touch collected/resulted)
+  const toDelete = rows
+    .filter(r => r.status === 'ordered' && !orderedSet.has(r.test_name))
+    .map(r => r.test_name);
+
+  if (toDelete.length) {
+    const { error } = await supabase.from('investigation_results')
+      .delete()
+      .eq('encounter_id', encounterId)
+      .in('test_name', toDelete)
+      .eq('status', 'ordered');
+    if (error) { console.error('[db] syncInvestigationOrders delete:', error); return { error: error.message }; }
+  }
+
   return { error: null };
 }
 
@@ -1119,10 +1149,11 @@ export async function saveDischargeNotes(
 ): Promise<{ error: string | null }> {
   if (!supabase) return { error: notConfigured('saveDischargeNotes') };
 
-  await supabase.from('clinical_notes')
+  const { error: delErr } = await supabase.from('clinical_notes')
     .delete()
     .eq('encounter_id', encounterId)
     .like('content', `${DISCHARGE_PREFIX}%`);
+  if (delErr) { console.error('[db] saveDischargeNotes delete:', delErr); return { error: delErr.message }; }
 
   const { error } = await supabase.from('clinical_notes').insert({
     encounter_id: encounterId,
@@ -1256,7 +1287,8 @@ export async function loadEncounterData(
       .eq('status', 'ordered'),
   ]);
 
-  const firstError = assessRes.error ?? planRes.error ?? allergyRes.error ?? medRes.error;
+  const firstError = assessRes.error ?? planRes.error ?? allergyRes.error ?? medRes.error
+    ?? hpiRes.error ?? patRes.error ?? investRes.error;
   if (firstError) {
     console.error('[db] loadEncounterData:', firstError);
     return { data: null, error: firstError.message };
