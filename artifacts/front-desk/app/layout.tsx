@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
     'apple-mobile-web-app-title': 'Amise Medical',
+    'facebook-domain-verification': 'qcp4vbmawm72o98totmkws67zp4kmn',
   },
 };
 
