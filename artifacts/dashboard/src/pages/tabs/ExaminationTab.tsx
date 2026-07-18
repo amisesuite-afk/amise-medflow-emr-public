@@ -9,6 +9,64 @@ import WoundAssessmentCard from '@/components/WoundAssessmentCard';
 import ExamGuidePanel from '@/components/ExamGuidePanel';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 
+// Systems always shown regardless of clinical context
+const CORE_SYSTEM_KEYS = new Set(['general', 'abdomen']);
+
+function matchesAny(haystack: string, needles: string[]): boolean {
+  const h = haystack.toLowerCase();
+  return needles.some(n => h.includes(n));
+}
+
+function computeVisibleSystems(
+  comorbidities: string[],
+  pmhNotes: string,
+  surgicalHistory: string[],
+  symptoms: string[],
+  leadingDxId: string | null,
+): Set<string> {
+  const visible = new Set<string>(CORE_SYSTEM_KEYS);
+  const pmh = [...comorbidities, pmhNotes].join(' ').toLowerCase();
+  const sx = symptoms.join(' ').toLowerCase();
+  const hasSurgHx = surgicalHistory.length > 0;
+
+  if (
+    matchesAny(pmh, ['hypertension', 'cardiac', 'heart', 'atrial', 'angina', 'coronary', 'ihd', 'pacemaker', 'valve', 'cardiomyopathy']) ||
+    matchesAny(sx, ['chest pain', 'chest tightness', 'palpitation', 'syncope'])
+  ) visible.add('cardiovascular');
+
+  if (
+    matchesAny(pmh, ['asthma', 'copd', 'lung', 'respiratory', 'emphysema', 'smoking', 'tuberculosis']) ||
+    matchesAny(sx, ['shortness of breath', 'dyspnoea', 'cough', 'haemoptysis', 'breathless'])
+  ) visible.add('respiratory');
+
+  if (
+    matchesAny(pmh, ['breast', 'mastectomy', 'lumpectomy']) ||
+    matchesAny(sx, ['breast', 'nipple', 'lump'])
+  ) visible.add('breast');
+
+  if (
+    hasSurgHx ||
+    matchesAny(pmh, ['diabetes', 'diabetic', 'ulcer', 'wound', 'gangrene', 'pressure sore']) ||
+    matchesAny(sx, ['wound', 'ulcer', 'sore'])
+  ) visible.add('wound');
+
+  if (
+    matchesAny(pmh, ['stroke', 'tia', 'epilepsy', 'seizure', 'neuropathy', 'parkinson', 'dementia', 'multiple sclerosis', 'migraine']) ||
+    matchesAny(sx, ['headache', 'dizziness', 'confusion', 'weakness', 'numbness', 'seizure', 'vertigo'])
+  ) visible.add('neurological');
+
+  if (
+    matchesAny(pmh, ['peripheral arterial', 'peripheral vascular', 'dvt', 'varicose', 'diabetes', 'diabetic', 'vascular disease']) ||
+    matchesAny(sx, ['leg pain', 'leg swelling', 'calf', 'claudication', 'ankle swelling', 'limb ischaemia'])
+  ) visible.add('extremities');
+
+  if (leadingDxId) {
+    for (const f of DX_EXAM_FOCUS[leadingDxId] ?? []) visible.add(f.system);
+  }
+
+  return visible;
+}
+
 interface ExamSystem {
   key: string;
   label: string;
@@ -187,12 +245,13 @@ function buildExamProse(
 export default function ExaminationTab() {
   const ctx = useAppContext();
   const { examFindings, setExamFindings, examNotes, setExamNotes, anatomicalFindings, examPhotos,
-          symptoms, symptomDetails, age, sex } = ctx;
+          symptoms, symptomDetails, age, sex, comorbidities, pmhNotes, surgicalHistory } = ctx;
 
   // Local UI state — which systems are explicitly omitted (not examined)
   const [examOmit, setExamOmit] = useState<Record<string, boolean>>({});
   const [reportVisible, setReportVisible] = useState(false);
   const [reportCopied, setReportCopied] = useState(false);
+  const [showAllSystems, setShowAllSystems] = useState(false);
 
   const ageNum = age ? Number(age) : null;
 
@@ -217,6 +276,11 @@ export default function ExaminationTab() {
     for (const f of focuses) map[f.system] = f.chips;
     return map;
   }, [leadingDxId]);
+
+  const visibleSystemKeys = useMemo(
+    () => computeVisibleSystems(comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId),
+    [comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId],
+  );
 
   const legacySetterMap: Record<string, (v: string) => void> = {
     general: ctx.setExamGeneral,
@@ -411,8 +475,60 @@ export default function ExaminationTab() {
         title="Examination findings"
         badge={`${systemsWithData} / ${EXAM_SYSTEMS.length} documented`}
       >
+        {/* Hidden-systems summary + toggle */}
+        {(() => {
+          const hiddenSystems = EXAM_SYSTEMS.filter(s =>
+            !visibleSystemKeys.has(s.key) &&
+            !(examFindings[s.key]?.length) &&
+            !examNotes[s.key]?.trim() &&
+            !examOmit[s.key]
+          );
+          if (hiddenSystems.length === 0 || showAllSystems) return null;
+          return (
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8,
+              padding: '8px 12px', marginBottom: 10, gap: 10,
+            }}>
+              <span style={{ fontSize: 12, color: '#64748b' }}>
+                <strong>{hiddenSystems.length}</strong> system{hiddenSystems.length !== 1 ? 's' : ''} hidden —{' '}
+                {hiddenSystems.map(s => s.label).join(', ')}
+                {' '}(no relevant history)
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowAllSystems(true)}
+                style={{
+                  padding: '4px 12px', borderRadius: 6, border: '1px solid #94a3b8',
+                  background: '#fff', color: '#475569', fontSize: 12, fontWeight: 600,
+                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                }}
+              >
+                Show all systems
+              </button>
+            </div>
+          );
+        })()}
+        {showAllSystems && (
+          <div style={{ marginBottom: 10, textAlign: 'right' }}>
+            <button
+              type="button"
+              onClick={() => setShowAllSystems(false)}
+              style={{
+                padding: '4px 12px', borderRadius: 6, border: '1px solid #94a3b8',
+                background: '#fff', color: '#475569', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+              }}
+            >
+              Show relevant only
+            </button>
+          </div>
+        )}
         <div className="exam-grid">
-          {EXAM_SYSTEMS.map(system => {
+          {EXAM_SYSTEMS.filter(system => {
+            if (showAllSystems) return true;
+            const hasData = (examFindings[system.key]?.length ?? 0) > 0 || !!examNotes[system.key]?.trim();
+            return visibleSystemKeys.has(system.key) || hasData || examOmit[system.key];
+          }).map(system => {
             const selected = examFindings[system.key] ?? [];
             const note = examNotes[system.key] ?? '';
             const focusChips = focusMap[system.key] ?? [];
