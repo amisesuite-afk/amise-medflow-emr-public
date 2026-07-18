@@ -37,7 +37,7 @@ export default function EncounterTimelineTab() {
     setAssessment, setDifferentials, setIcdCodes, setPlan,
     setMedications, setMedicationsText, setAllergies,
     setSurgicalHistory, setSurgicalNotes,
-    setToxicHabits,
+    setToxicHabits, setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
     setActiveSection,
     referredBy, procedureData,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
@@ -148,6 +148,10 @@ export default function EncounterTimelineTab() {
     setSurgicalHistory(d.surgicalHistory ?? []);
     setSurgicalNotes(d.surgicalNotes ?? '');
     setToxicHabits(d.toxicHabits ?? []);
+    if (d.hpiNotes) setHpiNotes(d.hpiNotes);
+    if (d.pmhNotes) setPmhNotes(d.pmhNotes);
+    if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
+    if (d.orderedInvestigations?.length) setOrderedInvestigations(d.orderedInvestigations);
     setActiveSection('assessment');
   }
 

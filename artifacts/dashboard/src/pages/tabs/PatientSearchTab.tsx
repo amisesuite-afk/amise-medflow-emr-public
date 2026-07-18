@@ -108,6 +108,7 @@ export default function PatientSearchTab() {
     setAllergies, setMedications, setPatientPhoto,
     setSurgicalHistory, setSurgicalNotes, setToxicHabits,
     setRosFindings, setProcedureData, setTraumaData,
+    setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
     setTopSection, setActiveSection,
     toggleSymptom, setFreeText, symptoms, freeText,
     setMedicationsText,
@@ -290,6 +291,10 @@ export default function PatientSearchTab() {
           if (Object.keys(d.rosFindings).length) setRosFindings(d.rosFindings as Record<string, import('@/context/AppContext').RosFinding>);
           if (Object.keys(d.procedureData).length) setProcedureData(d.procedureData);
           if (d.traumaData) setTraumaData(d.traumaData);
+          if (d.hpiNotes) setHpiNotes(d.hpiNotes);
+          if (d.pmhNotes) setPmhNotes(d.pmhNotes);
+          if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
+          if (d.orderedInvestigations.length) setOrderedInvestigations(d.orderedInvestigations);
         }
         showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
         const apptType = await getLatestAppointmentType(p.id);

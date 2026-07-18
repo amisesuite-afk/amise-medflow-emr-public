@@ -1,5 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { getSupabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
 
@@ -63,17 +65,27 @@ const REVIEW_STYLE: Record<ReviewStatus, { bg: string; fg: string; bd: string; l
   actioned: { bg: '#f0fdf4', fg: '#166534', bd: '#86efac', label: 'Actioned' },
 };
 
-const STORAGE_KEY = 'mm_case_register_v1';
-
-function loadCases(): MMCase[] {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as MMCase[]; }
-  catch { return []; }
+function dbRowToCase(r: Record<string, unknown>): MMCase {
+  return {
+    id:             r.id as string,
+    date:           r.date as string,
+    patientRef:     (r.patient_ref as string) ?? '',
+    procedure:      (r.procedure as string) ?? '',
+    complication:   (r.complication as string) ?? '',
+    category:       (r.category as CompCategory) ?? 'early_postop',
+    grade:          (r.grade as ClavienGrade | '') ?? '',
+    gradeSuffix:    (r.grade_suffix as boolean) ?? false,
+    contributing:   (r.contributing as ContribFactor[]) ?? [],
+    reOperation:    (r.re_operation as boolean) ?? false,
+    icuAdmission:   (r.icu_admission as boolean) ?? false,
+    death:          (r.death as boolean) ?? false,
+    lessonsLearned: (r.lessons_learned as string) ?? '',
+    actionItems:    (r.action_items as string) ?? '',
+    reviewStatus:   (r.review_status as ReviewStatus) ?? 'pending',
+    reviewDate:     (r.review_date as string) ?? '',
+    reviewedBy:     (r.reviewed_by as string) ?? '',
+  };
 }
-function saveCases(cases: MMCase[]) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cases)); } catch { /**/ }
-}
-
-function uid() { return `mm-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`; }
 
 const EMPTY_CASE: Omit<MMCase, 'id'> = {
   date: new Date().toISOString().slice(0, 10),
@@ -138,7 +150,7 @@ function CaseForm({ initial, onSave, onCancel }: {
 
   function save() {
     if (!form.procedure.trim() || !form.complication.trim()) return;
-    onSave({ id: initial?.id ?? uid(), ...form });
+    onSave({ id: initial?.id ?? '', ...form });
   }
 
   return (
@@ -274,39 +286,83 @@ type QIView = 'register' | 'metrics';
 
 export default function QualityImprovementTab() {
   const { patientName } = useAppContext();
+  const { session } = useAuth();
 
-  const [cases, setCases] = useState<MMCase[]>(loadCases);
+  const [cases, setCases] = useState<MMCase[]>([]);
+  const [loading, setLoading] = useState(true);
   const [view, setView] = useState<QIView>('register');
   const [adding, setAdding] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<ReviewStatus | 'all'>('all');
   const [filterGrade, setFilterGrade] = useState<ClavienGrade | 'all'>('all');
 
-  function saveCase(c: MMCase) {
-    const next = cases.some(x => x.id === c.id)
-      ? cases.map(x => x.id === c.id ? c : x)
-      : [c, ...cases];
-    setCases(next);
-    saveCases(next);
+  const loadFromDb = useCallback(async () => {
+    const sb = getSupabase();
+    if (!sb) {
+      // Fallback: load from localStorage if Supabase not configured
+      try { setCases(JSON.parse(localStorage.getItem('mm_case_register_v1') ?? '[]') as MMCase[]); }
+      catch { /* ignore */ }
+      setLoading(false);
+      return;
+    }
+    const { data, error } = await sb
+      .from('mm_cases')
+      .select('*')
+      .order('date', { ascending: false });
+    if (!error && data) setCases(data.map(r => dbRowToCase(r as Record<string, unknown>)));
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { void loadFromDb(); }, [loadFromDb]);
+
+  async function saveCase(c: MMCase) {
+    const sb = getSupabase();
+    const row = {
+      date:           c.date,
+      patient_ref:    c.patientRef,
+      procedure:      c.procedure,
+      complication:   c.complication,
+      category:       c.category,
+      grade:          c.grade,
+      grade_suffix:   c.gradeSuffix,
+      contributing:   c.contributing,
+      re_operation:   c.reOperation,
+      icu_admission:  c.icuAdmission,
+      death:          c.death,
+      lessons_learned: c.lessonsLearned,
+      action_items:   c.actionItems,
+      review_status:  c.reviewStatus,
+      review_date:    c.reviewDate || null,
+      reviewed_by:    c.reviewedBy,
+    };
+    const isNew = !cases.some(x => x.id === c.id);
+    if (sb) {
+      if (isNew) {
+        const { data } = await sb.from('mm_cases').insert({ ...row, created_by: session?.user.id ?? null }).select('id').single();
+        if (data) c = { ...c, id: (data as { id: string }).id };
+      } else {
+        await sb.from('mm_cases').update(row).eq('id', c.id);
+      }
+    }
+    setCases(prev => isNew ? [c, ...prev] : prev.map(x => x.id === c.id ? c : x));
     setAdding(false);
     setEditId(null);
   }
 
-  function deleteCase(id: string) {
-    const next = cases.filter(x => x.id !== id);
-    setCases(next);
-    saveCases(next);
+  async function deleteCase(id: string) {
+    const sb = getSupabase();
+    if (sb) await sb.from('mm_cases').delete().eq('id', id);
+    setCases(prev => prev.filter(x => x.id !== id));
   }
 
-  function cycleStatus(id: string) {
+  async function cycleStatus(id: string) {
     const ORDER: ReviewStatus[] = ['pending', 'reviewed', 'actioned'];
-    const next = cases.map(c => {
-      if (c.id !== id) return c;
-      const idx = ORDER.indexOf(c.reviewStatus);
-      return { ...c, reviewStatus: ORDER[(idx + 1) % ORDER.length] };
-    });
-    setCases(next);
-    saveCases(next);
+    const c = cases.find(x => x.id === id);
+    if (!c) return;
+    const next = ORDER[(ORDER.indexOf(c.reviewStatus) + 1) % ORDER.length];
+    const sb = getSupabase();
+    if (sb) await sb.from('mm_cases').update({ review_status: next }).eq('id', id);
+    setCases(prev => prev.map(x => x.id === id ? { ...x, reviewStatus: next } : x));
   }
 
   /* ── Filtered list ── */
@@ -415,7 +471,9 @@ export default function QualityImprovementTab() {
           )}
 
           {/* Case list */}
-          {filtered.length === 0 && !adding ? (
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: 48, color: 'var(--muted)', fontSize: 13 }}>Loading M&amp;M register…</div>
+          ) : filtered.length === 0 && !adding ? (
             <div style={{ textAlign: 'center', padding: 48, color: 'var(--muted)', fontSize: 13 }}>
               {cases.length === 0
                 ? 'No M&M cases logged. Click "Log case" to begin.'

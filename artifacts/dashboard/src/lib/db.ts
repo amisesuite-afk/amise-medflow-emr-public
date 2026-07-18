@@ -1107,6 +1107,59 @@ export async function saveExamFindings(
   return { error: null };
 }
 
+// ─── saveDischargeNotes / loadDischargeNotes ──────────────────────────────────
+
+const DISCHARGE_PREFIX = '[DISCHARGE_NOTES]';
+
+/** Persists the inpatient discharge note state as a JSON blob in clinical_notes. */
+export async function saveDischargeNotes(
+  encounterId: string,
+  patientId: string,
+  data: Record<string, unknown>,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveDischargeNotes') };
+
+  await supabase.from('clinical_notes')
+    .delete()
+    .eq('encounter_id', encounterId)
+    .like('content', `${DISCHARGE_PREFIX}%`);
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    note_type:    'discharge',
+    status:       'draft',
+    content:      `${DISCHARGE_PREFIX}\n${JSON.stringify(data)}`,
+    ai_assisted:  false,
+  });
+
+  if (error) { console.error('[db] saveDischargeNotes:', error); return { error: error.message }; }
+  return { error: null };
+}
+
+/** Loads the discharge note JSON blob for an encounter. */
+export async function loadDischargeNotes(
+  encounterId: string,
+): Promise<{ data: Record<string, unknown> | null; error: string | null }> {
+  if (!supabase) return { data: null, error: null };
+
+  const { data, error } = await supabase
+    .from('clinical_notes')
+    .select('content')
+    .eq('encounter_id', encounterId)
+    .like('content', `${DISCHARGE_PREFIX}%`)
+    .maybeSingle();
+
+  if (error) { console.error('[db] loadDischargeNotes:', error); return { data: null, error: error.message }; }
+  if (!data) return { data: null, error: null };
+
+  const content = (data as { content: string }).content;
+  const jsonStr = content.startsWith(`${DISCHARGE_PREFIX}\n`) ? content.slice(DISCHARGE_PREFIX.length + 1) : null;
+  if (!jsonStr) return { data: null, error: null };
+  try { return { data: JSON.parse(jsonStr) as Record<string, unknown>, error: null }; }
+  catch { return { data: null, error: null }; }
+}
+
 // ─── closeEncounter ───────────────────────────────────────────────────────────
 
 export async function closeEncounter(
@@ -1137,6 +1190,10 @@ export interface EncounterData {
   toxicHabits: string[];
   rosFindings: Record<string, { status: string; details: string[]; notes: string }>;
   procedureData: Record<string, unknown>;
+  hpiNotes: string;
+  pmhNotes: string;
+  familyHistoryNotes: string;
+  orderedInvestigations: string[];
   traumaData: {
     mechanism: string[];
     timeOfInjury: string;
@@ -1164,7 +1221,7 @@ export async function loadEncounterData(
 ): Promise<{ data: EncounterData; error: null } | { data: null; error: string }> {
   if (!supabase) return { data: null, error: notConfigured('loadEncounterData') };
 
-  const [assessRes, planRes, allergyRes, medRes] = await Promise.all([
+  const [assessRes, planRes, allergyRes, medRes, hpiRes, patRes, investRes] = await Promise.all([
     supabase.from('assessments')
       .select('diagnosis, differentials, icd10_code')
       .eq('encounter_id', encounterId)
@@ -1184,6 +1241,19 @@ export async function loadEncounterData(
       .eq('encounter_id', encounterId)
       .eq('indication', 'consultation-list')
       .eq('status', 'active'),
+    supabase.from('clinical_notes')
+      .select('content')
+      .eq('encounter_id', encounterId)
+      .like('content', '[HPI]%')
+      .maybeSingle(),
+    supabase.from('patients')
+      .select('pmh_notes, family_history_notes')
+      .eq('id', patientId)
+      .maybeSingle(),
+    supabase.from('investigation_results')
+      .select('test_name')
+      .eq('encounter_id', encounterId)
+      .eq('status', 'ordered'),
   ]);
 
   const firstError = assessRes.error ?? planRes.error ?? allergyRes.error ?? medRes.error;
@@ -1196,6 +1266,9 @@ export async function loadEncounterData(
   const planRow   = planRes.data   as { description: string | null } | null;
   const allergyRows = (allergyRes.data ?? []) as { allergen: string }[];
   const medRows     = (medRes.data   ?? []) as { drug_name: string }[];
+  const hpiContent  = (hpiRes.data   as { content: string } | null)?.content ?? '';
+  const patRow      = patRes.data    as { pmh_notes: string | null; family_history_notes: string | null } | null;
+  const investRows  = (investRes.data ?? []) as { test_name: string }[];
 
   const [surgRes, toxicRes, rosRes, procRes, traumaRes] = await Promise.all([
     loadSurgicalHistory(patientId),
@@ -1220,6 +1293,10 @@ export async function loadEncounterData(
       toxicHabits:     toxicRes,
       rosFindings:     rosRes,
       procedureData:   procRes,
+      hpiNotes:        hpiContent.startsWith('[HPI]\n') ? hpiContent.slice(6) : hpiContent,
+      pmhNotes:        patRow?.pmh_notes ?? '',
+      familyHistoryNotes: patRow?.family_history_notes ?? '',
+      orderedInvestigations: investRows.map(r => r.test_name),
       traumaData:      traumaRes,
     },
     error: null,
