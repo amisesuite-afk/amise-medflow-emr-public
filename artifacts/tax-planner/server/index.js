@@ -6,29 +6,48 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { nanoid } from 'nanoid';
 import Anthropic from '@anthropic-ai/sdk';
+import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8787;
 const ROOT = path.resolve(process.cwd());
-const DATA_PATH = path.join(ROOT, 'data', 'db.json');
+
+// ─── SUPABASE (production) ─────────────────────────────────────────────────────
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supa   = (SUPABASE_URL && SUPABASE_KEY) ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+const BUCKET   = 'tax-planner-uploads';
+const STATE_ID = 'main';
+
+// ─── LOCAL FALLBACK PATHS (used when Supabase not configured) ─────────────────
+const DATA_PATH  = path.join(ROOT, 'data', 'db.json');
 const UPLOAD_DIR = path.join(ROOT, 'uploads');
-fs.mkdirSync(path.dirname(DATA_PATH), { recursive: true });
-fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 app.use(cors());
 app.use(express.json({ limit: '25mb' }));
-app.use('/uploads', express.static(UPLOAD_DIR));
 
-const storage = multer.diskStorage({
-  destination: (_, __, cb) => cb(null, UPLOAD_DIR),
-  filename: (_, file, cb) => cb(null, `${Date.now()}-${nanoid(8)}-${file.originalname.replace(/[^a-zA-Z0-9_.-]/g, '_')}`)
-});
-const upload = multer({ storage, limits: { fileSize: 30 * 1024 * 1024, files: 30 } });
+if (!supa) {
+  fs.mkdirSync(path.dirname(DATA_PATH), { recursive: true });
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  app.use('/uploads', express.static(UPLOAD_DIR));
+  console.log('[db] No SUPABASE_URL/SERVICE_ROLE_KEY — using local db.json + disk uploads');
+} else {
+  // Ensure storage bucket exists
+  supa.storage.listBuckets()
+    .then(({ data: buckets }) => {
+      if (!buckets?.find(b => b.name === BUCKET)) {
+        return supa.storage.createBucket(BUCKET, { public: true });
+      }
+    })
+    .catch(err => console.error('[startup] bucket check failed:', err.message));
+  console.log('[db] Supabase configured — using cloud DB + storage');
+}
 
-// ─── PAYROLL DEFAULTS (Saint Lucia ITA Cap 15.02) ─────────────────────────────
+// Multer memory storage — files go to Supabase Storage (or disk fallback)
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 30 * 1024 * 1024, files: 30 } });
 
-// ─── IRD SAINT LUCIA 2025 TAX BANDS (ITA Cap 15.02) ──────────────────────────
+// ─── IRD SAINT LUCIA 2025 TAX BANDS ──────────────────────────────────────────
 const TAX_BANDS = [
   { from:0,     to:18000, rate:0.00, label:'Band 1  First XCD 18,000'      },
   { from:18000, to:30000, rate:0.10, label:'Band 2  XCD 18,001–30,000'     },
@@ -75,7 +94,7 @@ const ALLOWANCES = [
   {id:'alimony',     label:'Alimony / Maintenance Payments',                  max:null,   cat:'Employment & Travel',    note:'Court Order or Decree; recipient chargeable to tax in Saint Lucia',                      new2025:false},
 ];
 
-// ─── DEDUCTIBLE BUSINESS EXPENSE CATEGORIES (ITA s.18) ───────────────────────
+// ─── DEDUCTIBLE BUSINESS EXPENSE CATEGORIES ───────────────────────────────────
 const EXPENSE_CATS = [
   {id:'staff',    name:'1. Staff, Wages & Professional Fees',         items:[
     {id:'rn',          label:'Sessional RN / nursing staff fees',           conservative:28000,maximum:38000},
@@ -187,20 +206,18 @@ const KEY_ACTIONS = [
 ];
 
 const DEFAULT_PAYROLL_SETTINGS = {
-  personalAllowance: 40000,   // XCD/yr employee personal allowance
-  nicEmployeeRate:   0.05,    // 5 % of insurable earnings
-  nicEmployerRate:   0.05,    // 5 % employer contribution
-  nicMonthlyCeiling: 5417,    // ~XCD 65,000/yr ceiling — confirm with NIC Board
-  taxBands: [                 // IRD 2025 bands applied on annual chargeable income
+  personalAllowance: 40000,
+  nicEmployeeRate:   0.05,
+  nicEmployerRate:   0.05,
+  nicMonthlyCeiling: 5417,
+  taxBands: [
     { upto: 18000, rate: 0.00 },
     { upto: 30000, rate: 0.10 },
     { upto: 50000, rate: 0.15 },
     { upto: 80000, rate: 0.20 },
-    { upto: null,  rate: 0.30 }, // null = no upper limit
+    { upto: null,  rate: 0.30 },
   ],
 };
-
-// ─── ENTITY DEFAULTS ─────────────────────────────────────────────────────────
 
 const DEFAULT_ENTITIES = [
   { id:'ent1', name:'Amise Medical Services',  shortName:'Amise',    type:'Medical Practice', color:'#1a6ae6',
@@ -217,13 +234,6 @@ const DEFAULT_ENTITIES = [
     profile:{ practitionerName:'Dawit Kabiye', practiceName:'Lucienne Parfums', practitionerTin:'', practiceTin:'', phone:'', address:'Saint Lucia', taxYear:2026, engagementType:'business', notes:'' }},
 ];
 
-function ensureEntities(db){
-  if(!db.entities||db.entities.length===0){
-    db.entities=DEFAULT_ENTITIES.map(e=>({...e,profile:{...e.profile}}));
-    writeDb(db);
-  }
-}
-
 const DEFAULT_STAFF = [
   { id:'s1', name:'Receptionist / Admin – Clinic 1', position:'Receptionist / Admin',     entity:'Amise Medical Services', type:'permanent', grossMonthly:1833, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
   { id:'s2', name:'Receptionist / Admin – Clinic 2', position:'Receptionist / Admin',     entity:'Amise Medical Services', type:'permanent', grossMonthly:1500, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
@@ -232,244 +242,386 @@ const DEFAULT_STAFF = [
   { id:'s5', name:'Payroll / HR Administrator',       position:'Payroll / HR Administrator', entity:'Amise Medical Services', type:'contract', grossMonthly:3500, spouseAllowance:0, childAllowance:0, otherAllowance:0, status:'active' },
 ];
 
-// ─── DB ───────────────────────────────────────────────────────────────────────
-
 const defaultDb = {
   entities: DEFAULT_ENTITIES.map(e=>({...e,profile:{...e.profile}})),
   settings: {
-    taxYear: 2026,
-    baseCurrency: 'XCD',
-    conservativeLimit: 551000,
-    maximumLimit: 707700,
-    personalConservativeLimit: 232000,
-    personalMaximumLimit: 232000,
+    taxYear: 2026, baseCurrency: 'XCD',
+    conservativeLimit: 551000, maximumLimit: 707700,
+    personalConservativeLimit: 232000, personalMaximumLimit: 232000,
     defaultEntity: 'Amise Medical Services',
     categories: {
       business: ['medical/surgical consumables','clinical equipment & maintenance','professional fees','licences','indemnity insurance','association dues','CME / conferences / travel & accommodation','rent & utilities','software & subscriptions','marketing','bank & merchant fees','staff salaries & employer NIC','office supplies & printing','vehicle & fuel (business-use %)','repairs & maintenance','telephone & internet','legal & accounting','capital items'],
-      personal: ['personal allowance','mortgage interest','life insurance premiums','medical/health','employee NIC','dependents/child','approved charitable donations','pension/annuity contributions']
+      personal:  ['personal allowance','mortgage interest','life insurance premiums','medical/health','employee NIC','dependents/child','approved charitable donations','pension/annuity contributions'],
     },
-    entities: ['Amise Medical Services','Zemed Condos & Villas','MSSL','Lucienne Bee Farm','Lucienne Parfums']
+    entities: ['Amise Medical Services','Zemed Condos & Villas','MSSL','Lucienne Bee Farm','Lucienne Parfums'],
   },
-  documents: [],
-  expenses: [],
-  vendors: [],
+  documents: [], expenses: [], vendors: [],
   payroll: { settings: DEFAULT_PAYROLL_SETTINGS, staff: DEFAULT_STAFF, runs: [] },
-  allowances: {},  // { entityId: { allowanceId: amountString } }
-  actions:    {},  // { actionId: boolean }
+  allowances: {},
+  actions:    {},
 };
 
-function readDb(){ if(!fs.existsSync(DATA_PATH)) fs.writeFileSync(DATA_PATH, JSON.stringify(defaultDb,null,2)); return JSON.parse(fs.readFileSync(DATA_PATH,'utf8')); }
-function writeDb(db){ fs.writeFileSync(DATA_PATH, JSON.stringify(db,null,2)); }
+// ─── DB READ / WRITE ──────────────────────────────────────────────────────────
 
-// Migration: seed payroll block into db.json files created before this feature
-function ensurePayroll(db){
-  if(!db.payroll){ db.payroll={ settings:{...DEFAULT_PAYROLL_SETTINGS}, staff:[...DEFAULT_STAFF], runs:[] }; writeDb(db); }
+function readDbLocal() {
+  if (!fs.existsSync(DATA_PATH)) fs.writeFileSync(DATA_PATH, JSON.stringify(defaultDb, null, 2));
+  return JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
 }
-function ensureAllowances(db){
-  if(!db.allowances){ db.allowances={}; writeDb(db); }
-  if(!db.actions)   { db.actions={};    writeDb(db); }
-  // seed personal allowance default for each entity
-  for(const e of (db.entities||[])){ if(!db.allowances[e.id]) db.allowances[e.id]={personal:'40000'}; }
+function writeDbLocal(db) { fs.writeFileSync(DATA_PATH, JSON.stringify(db, null, 2)); }
+
+async function readDb() {
+  let db;
+  if (supa) {
+    const { data } = await supa.from('tax_planner_state').select('data').eq('id', STATE_ID).maybeSingle();
+    db = data?.data ?? JSON.parse(JSON.stringify(defaultDb));
+  } else {
+    db = readDbLocal();
+  }
+  // Forward migrations
+  let dirty = false;
+  if (!db.entities?.length) { db.entities = DEFAULT_ENTITIES.map(e=>({...e,profile:{...e.profile}})); dirty=true; }
+  if (!db.payroll) { db.payroll = { settings:{...DEFAULT_PAYROLL_SETTINGS}, staff:[...DEFAULT_STAFF], runs:[] }; dirty=true; }
+  if (!db.allowances) { db.allowances = {}; dirty=true; }
+  if (!db.actions)    { db.actions    = {}; dirty=true; }
+  for (const e of (db.entities||[])) { if (!db.allowances[e.id]) { db.allowances[e.id]={personal:'40000'}; dirty=true; } }
+  if (dirty) await writeDb(db);
+  return db;
 }
 
-// ─── PAYE / NIC ENGINE (mirrors frontend computePayFE) ───────────────────────
+async function writeDb(db) {
+  if (supa) {
+    const { error } = await supa.from('tax_planner_state')
+      .upsert({ id: STATE_ID, data: db, updated_at: new Date().toISOString() });
+    if (error) throw error;
+  } else {
+    writeDbLocal(db);
+  }
+}
 
-function computeMonthlyPay(s, ps){
+// ─── FILE STORAGE ─────────────────────────────────────────────────────────────
+
+async function storeFile(file) {
+  const safeName = `${Date.now()}-${nanoid(8)}-${file.originalname.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
+  if (supa) {
+    const { error } = await supa.storage.from(BUCKET).upload(safeName, file.buffer, { contentType: file.mimetype });
+    if (error) throw error;
+    return supa.storage.from(BUCKET).getPublicUrl(safeName).data.publicUrl;
+  }
+  fs.writeFileSync(path.join(UPLOAD_DIR, safeName), file.buffer);
+  return `/uploads/${safeName}`;
+}
+
+async function deleteFile(url) {
+  if (!url) return;
+  if (supa && url.includes('/storage/v1/')) {
+    const filename = url.split('/').pop();
+    if (filename) await supa.storage.from(BUCKET).remove([filename]).catch(()=>{});
+  } else if (!supa && url.startsWith('/uploads/')) {
+    const fp = path.join(ROOT, url.slice(1));
+    if (fs.existsSync(fp)) try { fs.unlinkSync(fp); } catch(_) {}
+  }
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+
+function computeMonthlyPay(s, ps) {
   const annual = s.grossMonthly * 12;
   const allow  = (ps.personalAllowance||40000) + (s.spouseAllowance||0) + (s.childAllowance||0) + (s.otherAllowance||0);
-  let chargeable = Math.max(0, annual - allow);
-  let annualPAYE = 0, prev = 0;
-  for(const band of (ps.taxBands||[])){
-    if(chargeable<=0) break;
-    const last  = band.upto==null;
-    const width = last ? chargeable : (band.upto - prev);
+  let chargeable = Math.max(0, annual - allow), annualPAYE = 0, prev = 0;
+  for (const band of (ps.taxBands||[])) {
+    if (chargeable <= 0) break;
+    const last = band.upto == null;
+    const width = last ? chargeable : band.upto - prev;
     const taxable = Math.min(chargeable, width);
     annualPAYE += taxable * band.rate;
     chargeable -= taxable;
-    if(!last) prev = band.upto;
+    if (!last) prev = band.upto;
   }
-  const ceil   = ps.nicMonthlyCeiling||5000;
-  const nicEmp  = Math.min(s.grossMonthly,ceil) * (ps.nicEmployeeRate||0.05);
-  const nicEmpr = Math.min(s.grossMonthly,ceil) * (ps.nicEmployerRate||0.05);
-  const monthlyPAYE = annualPAYE / 12;
-  return {
-    gross:       s.grossMonthly,
-    paye:        +monthlyPAYE.toFixed(2),
-    nicEmployee: +nicEmp.toFixed(2),
-    nicEmployer: +nicEmpr.toFixed(2),
-    net:         +(s.grossMonthly - monthlyPAYE - nicEmp).toFixed(2),
-    annualGross: annual,
-    annualPAYE:  +annualPAYE.toFixed(2),
-  };
+  const ceil   = ps.nicMonthlyCeiling || 5000;
+  const nicEmp  = Math.min(s.grossMonthly, ceil) * (ps.nicEmployeeRate || 0.05);
+  const nicEmpr = Math.min(s.grossMonthly, ceil) * (ps.nicEmployerRate || 0.05);
+  const paye   = annualPAYE / 12;
+  return { gross: s.grossMonthly, paye: +paye.toFixed(2), nicEmployee: +nicEmp.toFixed(2), nicEmployer: +nicEmpr.toFixed(2), net: +(s.grossMonthly - paye - nicEmp).toFixed(2), annualGross: annual, annualPAYE: +annualPAYE.toFixed(2) };
 }
 
-// ─── EXISTING HELPERS ─────────────────────────────────────────────────────────
-
-function statusFor(extracted, duplicate=false){ return duplicate || extracted.is_capital_item || extracted.confidence < .75 ? 'pending' : 'ready'; }
-function deductible(exp){ return exp.is_capital || exp.classification !== 'business' ? 0 : Number(exp.amount_xcd || 0); }
-function fxRate(currency){ const map={XCD:1,USD:2.7,EUR:2.95,GBP:3.45,CAD:1.98,CNY:.37}; return map[String(currency||'XCD').toUpperCase()] || 2.7; }
+function statusFor(x, dupe) { return dupe || x.is_capital_item || x.confidence < 0.75 ? 'pending' : 'ready'; }
+function deductible(exp)     { return exp.is_capital || exp.classification !== 'business' ? 0 : Number(exp.amount_xcd || 0); }
+function fxRate(currency)    { const m={XCD:1,USD:2.7,EUR:2.95,GBP:3.45,CAD:1.98,CNY:0.37}; return m[String(currency||'XCD').toUpperCase()] || 2.7; }
 function findVendor(db, name){ return db.vendors.find(v => v.name.toLowerCase() === String(name||'').toLowerCase()); }
-function upsertVendor(db, name, category, classification, entity){ if(!name) return; let v=findVendor(db,name); if(v){ v.default_category=category||v.default_category; v.default_classification=classification||v.default_classification; v.default_entity=entity||v.default_entity; } else db.vendors.push({id:nanoid(), name, default_category:category, default_classification:classification, default_entity:entity}); }
-function dupeInfo(db, x){ const exact=db.expenses.find(e=> e.vendor.toLowerCase()===String(x.vendor_name||'').toLowerCase() && e.date===x.date && Number(e.amount_original||e.amount_xcd)===Number(x.total)); const near=db.expenses.find(e=> e.vendor.toLowerCase()===String(x.vendor_name||'').toLowerCase() && e.date===x.date); return { exact: !!exact, near: !!near && !exact}; }
-
-function fallbackExtract(file, ext, note, confidence){
-  const base = path.basename(file.originalname).replace(/[_-]/g,' ');
-  const amount = Number((Math.random()*900+25).toFixed(2));
-  const cap = /scope|vehicle|equipment|unit|fit.?out|machine/i.test(base);
-  return { document_type: ext==='.pdf'?'invoice':'receipt', vendor_name: base.split('.')[0].slice(0,40)||'Unknown Vendor', vendor_tin:null, date:new Date().toISOString().slice(0,10), currency:/usd/i.test(base)?'USD':'XCD', subtotal:amount, tax_amount:0, total:amount, line_items:[{description:'Imported document', amount}], suggested_category: cap?'capital items':'medical/surgical consumables', suggested_classification:'business', suggested_entity:'Amise Medical Services', is_capital_item:cap, confidence, notes:note };
+function upsertVendor(db, name, category, classification, entity) {
+  if (!name) return;
+  let v = findVendor(db, name);
+  if (v) { v.default_category=category||v.default_category; v.default_classification=classification||v.default_classification; v.default_entity=entity||v.default_entity; }
+  else db.vendors.push({ id:nanoid(), name, default_category:category, default_classification:classification, default_entity:entity });
+}
+function dupeInfo(db, x) {
+  const exact = db.expenses.find(e => e.vendor.toLowerCase()===String(x.vendor_name||'').toLowerCase() && e.date===x.date && Number(e.amount_original||e.amount_xcd)===Number(x.total));
+  const near  = db.expenses.find(e => e.vendor.toLowerCase()===String(x.vendor_name||'').toLowerCase() && e.date===x.date);
+  return { exact: !!exact, near: !!near && !exact };
 }
 
-async function extractWithClaude(file){
+function fallbackExtract(file, ext, note, confidence) {
+  const base = path.basename(file.originalname).replace(/[_-]/g,' ');
+  const cap  = /scope|vehicle|equipment|unit|fit.?out|machine/i.test(base);
+  return { document_type: ext==='.pdf'?'invoice':'receipt', vendor_name: base.split('.')[0].slice(0,40)||'Unknown Vendor', vendor_tin:null, date:new Date().toISOString().slice(0,10), currency:'XCD', subtotal:0, tax_amount:0, total:0, line_items:[{description:'Imported document',amount:0}], suggested_category: cap?'capital items':'medical/surgical consumables', suggested_classification:'business', suggested_entity:'Amise Medical Services', is_capital_item:cap, confidence, notes:note };
+}
+
+async function extractWithClaude(file) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  const ext = path.extname(file.originalname).toLowerCase();
-  const mime = file.mimetype || (ext === '.pdf' ? 'application/pdf' : 'image/jpeg');
-  const isPdf = mime === 'application/pdf' || ext === '.pdf';
+  const ext    = path.extname(file.originalname).toLowerCase();
+  const mime   = file.mimetype || (ext === '.pdf' ? 'application/pdf' : 'image/jpeg');
+  const isPdf  = mime === 'application/pdf' || ext === '.pdf';
   const VISION_IMAGE = ['image/jpeg','image/png','image/gif','image/webp'];
-  const visionReady = isPdf || VISION_IMAGE.includes(mime);
-  if(apiKey && visionReady){
-    try{
+  const visionReady  = isPdf || VISION_IMAGE.includes(mime);
+  if (apiKey && visionReady) {
+    try {
       const anthropic = new Anthropic({ apiKey });
-      const data = fs.readFileSync(file.path).toString('base64');
+      const data = file.buffer.toString('base64');
       const prompt = `Extract this receipt/invoice/statement for Saint Lucia tax bookkeeping. Return ONLY JSON (no prose, no code fences) with keys: document_type, vendor_name, vendor_tin, date, currency, subtotal, tax_amount, total, line_items, suggested_category, suggested_classification, suggested_entity, is_capital_item, confidence, notes. Use YYYY-MM-DD. Flag fixed assets/equipment/vehicles/fit-out as capital. confidence <0.75 if vendor/date/total/category/classification uncertain.`;
       const block = isPdf
         ? { type:'document', source:{ type:'base64', media_type:'application/pdf', data } }
-        : { type:'image', source:{ type:'base64', media_type:mime, data } };
-      const msg = await anthropic.messages.create({ model:'claude-haiku-4-5-20251001', max_tokens:1200, messages:[{ role:'user', content:[ block, { type:'text', text:prompt } ] }] });
+        : { type:'image',    source:{ type:'base64', media_type:mime, data } };
+      const msg  = await anthropic.messages.create({ model:'claude-haiku-4-5-20251001', max_tokens:1200, messages:[{ role:'user', content:[ block, { type:'text', text:prompt } ] }] });
       const text = (msg.content||[]).map(c=>c.text||'').join('\n').trim();
       return JSON.parse(text.replace(/```json|```/g,'').trim());
-    }catch(err){
+    } catch(err) {
       return fallbackExtract(file, ext, `Auto-extract failed: ${err.message}. Held for manual review.`, 0.3);
     }
   }
-  if(apiKey && !visionReady){
-    return fallbackExtract(file, ext, `Unsupported format for auto-extract (e.g. HEIC). Convert to JPEG/PNG/PDF, or enable server-side HEIC conversion. Held for manual review.`, 0.3);
-  }
-  return fallbackExtract(file, ext, 'Mock extraction used. Add ANTHROPIC_API_KEY for Claude Vision.', 0.82);
+  if (apiKey && !visionReady) return fallbackExtract(file, ext, 'Unsupported format for auto-extract. Convert to JPEG/PNG/PDF. Held for manual review.', 0.3);
+  return fallbackExtract(file, ext, 'Mock extraction — add ANTHROPIC_API_KEY for Claude Vision.', 0.82);
 }
 
-// ─── EXPENSE ROUTES ───────────────────────────────────────────────────────────
+// ─── ROUTES ───────────────────────────────────────────────────────────────────
 
-app.get('/api/state', (_,res)=>{
-  const db=readDb();
-  ensurePayroll(db); ensureEntities(db); ensureAllowances(db);
-  res.json({ ...db, taxKnowledge:{ taxBands:TAX_BANDS, allowances:ALLOWANCES, expenseCats:EXPENSE_CATS, keyActions:KEY_ACTIONS } });
+app.get('/api/state', async (_,res) => {
+  try {
+    const db = await readDb();
+    res.json({ ...db, taxKnowledge:{ taxBands:TAX_BANDS, allowances:ALLOWANCES, expenseCats:EXPENSE_CATS, keyActions:KEY_ACTIONS } });
+  } catch(err) { res.status(500).json({ error: err.message }); }
 });
 
-// ─── ENTITY ROUTES ────────────────────────────────────────────────────────────
-app.get('/api/entities', (_,res)=>{ const db=readDb(); ensureEntities(db); res.json(db.entities); });
-app.post('/api/entities', (req,res)=>{ const db=readDb(); ensureEntities(db); const e={...req.body,id:nanoid()}; if(!e.profile) e.profile={practitionerName:'',practiceName:e.name||'',practitionerTin:'',practiceTin:'',phone:'',address:'',taxYear:2026,engagementType:'business',notes:''}; db.entities.push(e); writeDb(db); res.json(e); });
-app.put('/api/entities/:id', (req,res)=>{ const db=readDb(); ensureEntities(db); const i=db.entities.findIndex(e=>e.id===req.params.id); if(i<0) return res.status(404).json({error:'Not found'}); db.entities[i]={...db.entities[i],...req.body, profile:{...db.entities[i].profile,...(req.body.profile||{})}}; writeDb(db); res.json(db.entities[i]); });
-app.delete('/api/entities/:id', (req,res)=>{ const db=readDb(); ensureEntities(db); db.entities=db.entities.filter(e=>e.id!==req.params.id); writeDb(db); res.json({ok:true}); });
-app.put('/api/settings', (req,res)=>{ const db=readDb(); db.settings={...db.settings,...req.body}; writeDb(db); res.json(db.settings); });
-app.post('/api/upload', upload.array('files', 30), async (req,res)=>{
-  const db=readDb(); const created=[];
-  for(const file of req.files || []){
-    const extracted = await extractWithClaude(file);
-    const vendorDefault = findVendor(db, extracted.vendor_name);
-    if(vendorDefault){ extracted.suggested_category ||= vendorDefault.default_category; extracted.suggested_classification ||= vendorDefault.default_classification; extracted.suggested_entity ||= vendorDefault.default_entity; }
-    const rate=fxRate(extracted.currency); const amountXcd=Number((Number(extracted.total||0)*rate).toFixed(2)); const dupe=dupeInfo(db, extracted);
-    const doc={ id:nanoid(), source_type:file.mimetype==='application/pdf'?'pdf':'photo', file_url:`/uploads/${path.basename(file.path)}`, raw_text:'', received_at:new Date().toISOString(), status:dupe.exact?'duplicate':'received', extracted };
-    const exp={ id:nanoid(), entity_id:extracted.suggested_entity || db.settings.defaultEntity, date:extracted.date, vendor:extracted.vendor_name, category:extracted.suggested_category, classification:extracted.suggested_classification, amount_xcd:amountXcd, amount_original:Number(extracted.total||0), currency:extracted.currency||'XCD', fx_rate:rate, fx_date:new Date().toISOString().slice(0,10), is_capital:!!extracted.is_capital_item, deductible_amount:0, source_document_id:doc.id, confidence:Number(extracted.confidence||0), status: statusFor(extracted, dupe.exact), duplicate:dupe.exact, near_duplicate:dupe.near, notes:extracted.notes||'', created_at:new Date().toISOString() };
-    exp.deductible_amount = exp.status==='approved' ? deductible(exp) : 0;
-    db.documents.push(doc); db.expenses.push(exp); created.push(exp);
-  }
-  writeDb(db); res.json({created});
+// ── Entities ──────────────────────────────────────────────────────────────────
+
+app.get('/api/entities', async (_,res) => {
+  try { const db=await readDb(); res.json(db.entities); } catch(err) { res.status(500).json({error:err.message}); }
 });
-app.post('/api/email-ingest', async (req,res)=>{
-  const db=readDb();
-  const doc={id:nanoid(), source_type:'email', file_url:'', raw_text:req.body.body||'', received_at:new Date().toISOString(), status:'received'};
-  const extracted={document_type:'receipt', vendor_name:req.body.from||'Forwarded Email', vendor_tin:null, date:new Date().toISOString().slice(0,10), currency:'XCD', subtotal:0,tax_amount:0,total:Number(req.body.total||0), line_items:[], suggested_category:'office supplies & printing', suggested_classification:'business', suggested_entity:db.settings.defaultEntity, is_capital_item:false, confidence:.65, notes:'Email forwarding MVP stub. Connect inbound provider webhook here.'};
-  const exp={id:nanoid(), entity_id:db.settings.defaultEntity, date:extracted.date, vendor:extracted.vendor_name, category:extracted.suggested_category, classification:'business', amount_xcd:extracted.total, amount_original:extracted.total, currency:'XCD', fx_rate:1, fx_date:extracted.date, is_capital:false, deductible_amount:0, source_document_id:doc.id, confidence:.65, status:'pending', notes:extracted.notes, created_at:new Date().toISOString()};
-  doc.extracted=extracted; db.documents.push(doc); db.expenses.push(exp); writeDb(db); res.json({created:[exp]});
+app.post('/api/entities', async (req,res) => {
+  try {
+    const db=await readDb();
+    const e={...req.body,id:nanoid()};
+    if(!e.profile) e.profile={practitionerName:'',practiceName:e.name||'',practitionerTin:'',practiceTin:'',phone:'',address:'',taxYear:2026,engagementType:'business',notes:''};
+    db.entities.push(e); await writeDb(db); res.json(e);
+  } catch(err) { res.status(500).json({error:err.message}); }
 });
-app.post('/api/expenses', (req,res)=>{ const db=readDb(); const exp={id:nanoid(), created_at:new Date().toISOString(), entity_id:req.body.entity_id||db.settings.defaultEntity, ...req.body}; if(exp.status==='approved') exp.deductible_amount=deductible(exp); else exp.deductible_amount=0; if(!exp.fx_rate){ const rate=fxRate(exp.currency||'XCD'); exp.fx_rate=rate; exp.amount_xcd=+(Number(exp.amount_xcd||0)).toFixed(2); exp.fx_date=exp.date||new Date().toISOString().slice(0,10); } db.expenses.push(exp); writeDb(db); res.json(exp); });
-app.put('/api/expenses/:id', (req,res)=>{ const db=readDb(); const exp=db.expenses.find(e=>e.id===req.params.id); if(!exp) return res.status(404).json({error:'Not found'}); Object.assign(exp, req.body); if(exp.status==='approved') { exp.deductible_amount=deductible(exp); upsertVendor(db, exp.vendor, exp.category, exp.classification, exp.entity_id); } else exp.deductible_amount=0; writeDb(db); res.json(exp); });
-app.delete('/api/expenses/:id', (req,res)=>{ const db=readDb(); const before=db.expenses.length; db.expenses=db.expenses.filter(e=>e.id!==req.params.id); writeDb(db); res.json({deleted:before-db.expenses.length}); });
-app.post('/api/expenses/bulk-approve-ready', (_,res)=>{ const db=readDb(); let count=0; for(const e of db.expenses){ if(e.status==='ready' && !e.is_capital && !e.duplicate){ e.status='approved'; e.deductible_amount=deductible(e); upsertVendor(db,e.vendor,e.category,e.classification,e.entity_id); count++; }} writeDb(db); res.json({count}); });
-
-// ─── PAYROLL ROUTES ───────────────────────────────────────────────────────────
-
-// Staff CRUD
-app.get('/api/payroll/staff', (_,res)=>{ const db=readDb(); ensurePayroll(db); res.json(db.payroll.staff); });
-app.post('/api/payroll/staff', (req,res)=>{ const db=readDb(); ensurePayroll(db); const s={...req.body,id:nanoid(),status:'active'}; db.payroll.staff.push(s); writeDb(db); res.json(s); });
-app.put('/api/payroll/staff/:id', (req,res)=>{ const db=readDb(); ensurePayroll(db); const i=db.payroll.staff.findIndex(s=>s.id===req.params.id); if(i<0) return res.status(404).json({error:'Not found'}); db.payroll.staff[i]={...db.payroll.staff[i],...req.body}; writeDb(db); res.json(db.payroll.staff[i]); });
-app.delete('/api/payroll/staff/:id', (req,res)=>{ const db=readDb(); ensurePayroll(db); db.payroll.staff=db.payroll.staff.filter(s=>s.id!==req.params.id); writeDb(db); res.json({ok:true}); });
-
-// Payroll settings (tax bands, NIC rates, allowances)
-app.get('/api/payroll/settings', (_,res)=>{ const db=readDb(); ensurePayroll(db); res.json(db.payroll.settings); });
-app.put('/api/payroll/settings', (req,res)=>{ const db=readDb(); ensurePayroll(db); db.payroll.settings={...db.payroll.settings,...req.body}; writeDb(db); res.json(db.payroll.settings); });
-
-// Run payroll for a month — computes and stores PAYE/NIC for all active staff
-app.post('/api/payroll/run', (req,res)=>{
-  const {month}=req.body;
-  if(!month) return res.status(400).json({error:'month required (YYYY-MM)'});
-  const db=readDb(); ensurePayroll(db);
-  const ps=db.payroll.settings;
-  const lines=db.payroll.staff.filter(s=>s.status==='active').map(s=>({
-    staffId:s.id, name:s.name, position:s.position, entity:s.entity, type:s.type,
-    ...computeMonthlyPay(s,ps),
-  }));
-  const totals=lines.reduce((t,l)=>({
-    gross:+(t.gross+l.gross).toFixed(2),
-    paye:+(t.paye+l.paye).toFixed(2),
-    nicEmployee:+(t.nicEmployee+l.nicEmployee).toFixed(2),
-    nicEmployer:+(t.nicEmployer+l.nicEmployer).toFixed(2),
-    net:+(t.net+l.net).toFixed(2),
-  }),{gross:0,paye:0,nicEmployee:0,nicEmployer:0,net:0});
-  const run={id:nanoid(),month,lines,totals,createdAt:new Date().toISOString()};
-  db.payroll.runs=db.payroll.runs.filter(r=>r.month!==month);
-  db.payroll.runs.push(run);
-  writeDb(db); res.json(run);
+app.put('/api/entities/:id', async (req,res) => {
+  try {
+    const db=await readDb();
+    const i=db.entities.findIndex(e=>e.id===req.params.id);
+    if(i<0) return res.status(404).json({error:'Not found'});
+    db.entities[i]={...db.entities[i],...req.body,profile:{...db.entities[i].profile,...(req.body.profile||{})}};
+    await writeDb(db); res.json(db.entities[i]);
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.delete('/api/entities/:id', async (req,res) => {
+  try {
+    const db=await readDb();
+    db.entities=db.entities.filter(e=>e.id!==req.params.id);
+    await writeDb(db); res.json({ok:true});
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.put('/api/settings', async (req,res) => {
+  try {
+    const db=await readDb();
+    db.settings={...db.settings,...req.body};
+    await writeDb(db); res.json(db.settings);
+  } catch(err) { res.status(500).json({error:err.message}); }
 });
 
-// Export payroll run → approved expense rows (replaces any previous export for that month)
-app.post('/api/payroll/export', (req,res)=>{
-  const {month}=req.body;
-  const db=readDb(); ensurePayroll(db);
-  const run=db.payroll.runs.find(r=>r.month===month);
-  if(!run) return res.status(404).json({error:`No payroll run found for ${month}. Run payroll first.`});
-  db.expenses=db.expenses.filter(e=>e.payroll_month!==month);
-  const byEntity={};
-  for(const l of run.lines){
-    if(!byEntity[l.entity]) byEntity[l.entity]={salaries:0,nicEmpr:0};
-    byEntity[l.entity].salaries+=l.gross;
-    byEntity[l.entity].nicEmpr+=l.nicEmployer;
-  }
-  const created=[];
-  for(const [entity,t] of Object.entries(byEntity)){
-    const total=+(t.salaries+t.nicEmpr).toFixed(2);
-    const exp={id:nanoid(),entity_id:entity,date:`${month}-01`,vendor:'Staff Payroll',category:'staff salaries & employer NIC',classification:'business',amount_xcd:total,amount_original:total,currency:'XCD',fx_rate:1,fx_date:`${month}-01`,is_capital:false,deductible_amount:total,source_document_id:null,confidence:1,status:'approved',duplicate:false,near_duplicate:false,payroll_month:month,notes:`${run.lines.length} staff · salaries XCD ${t.salaries.toFixed(2)} · employer NIC XCD ${t.nicEmpr.toFixed(2)}`,created_at:new Date().toISOString()};
-    db.expenses.push(exp); created.push(exp);
-  }
-  writeDb(db); res.json({created});
+// ── Upload ────────────────────────────────────────────────────────────────────
+
+app.post('/api/upload', upload.array('files', 30), async (req,res) => {
+  try {
+    const db=await readDb(); const created=[];
+    for (const file of (req.files||[])) {
+      const extracted = await extractWithClaude(file);
+      const vendorDefault = findVendor(db, extracted.vendor_name);
+      if (vendorDefault) {
+        extracted.suggested_category    ||= vendorDefault.default_category;
+        extracted.suggested_classification ||= vendorDefault.default_classification;
+        extracted.suggested_entity      ||= vendorDefault.default_entity;
+      }
+      const rate=fxRate(extracted.currency), amountXcd=Number((Number(extracted.total||0)*rate).toFixed(2)), dupe=dupeInfo(db,extracted);
+      const fileUrl = await storeFile(file);
+      const doc={ id:nanoid(), source_type:file.mimetype==='application/pdf'?'pdf':'photo', file_url:fileUrl, raw_text:'', received_at:new Date().toISOString(), status:dupe.exact?'duplicate':'received', extracted };
+      const exp={ id:nanoid(), entity_id:extracted.suggested_entity||db.settings.defaultEntity, date:extracted.date, vendor:extracted.vendor_name, category:extracted.suggested_category, classification:extracted.suggested_classification, amount_xcd:amountXcd, amount_original:Number(extracted.total||0), currency:extracted.currency||'XCD', fx_rate:rate, fx_date:new Date().toISOString().slice(0,10), is_capital:!!extracted.is_capital_item, deductible_amount:0, source_document_id:doc.id, confidence:Number(extracted.confidence||0), status:statusFor(extracted,dupe.exact), duplicate:dupe.exact, near_duplicate:dupe.near, notes:extracted.notes||'', created_at:new Date().toISOString() };
+      exp.deductible_amount = exp.status==='approved' ? deductible(exp) : 0;
+      db.documents.push(doc); db.expenses.push(exp); created.push(exp);
+    }
+    await writeDb(db); res.json({created});
+  } catch(err) { res.status(500).json({error:err.message}); }
 });
 
-// ─── ALLOWANCES & ACTIONS ─────────────────────────────────────────────────────
-app.get('/api/allowances/:entityId', (req,res)=>{ const db=readDb(); ensureAllowances(db); res.json(db.allowances[req.params.entityId]||{personal:'40000'}); });
-app.put('/api/allowances/:entityId', (req,res)=>{ const db=readDb(); ensureAllowances(db); db.allowances[req.params.entityId]=req.body; writeDb(db); res.json(db.allowances[req.params.entityId]); });
-
-app.get('/api/actions', (_,res)=>{ const db=readDb(); res.json(db.actions||{}); });
-app.put('/api/actions', (req,res)=>{ const db=readDb(); db.actions={...db.actions,...req.body}; writeDb(db); res.json(db.actions); });
-
-// ─── DOCUMENT MANAGEMENT ──────────────────────────────────────────────────────
-app.delete('/api/documents/:id', (req,res)=>{
-  const db=readDb();
-  const doc=db.documents.find(d=>d.id===req.params.id);
-  if(!doc) return res.status(404).json({error:'Not found'});
-  if(doc.file_url){
-    const rel=doc.file_url.startsWith('/')?doc.file_url.slice(1):doc.file_url;
-    const fp=path.join(ROOT,rel);
-    if(fs.existsSync(fp)) try{fs.unlinkSync(fp)}catch(_){}
-  }
-  db.documents=db.documents.filter(d=>d.id!==req.params.id);
-  db.expenses=db.expenses.filter(e=>e.source_document_id!==req.params.id);
-  writeDb(db);
-  res.json({ok:true});
+app.post('/api/email-ingest', async (req,res) => {
+  try {
+    const db=await readDb();
+    const doc={id:nanoid(),source_type:'email',file_url:'',raw_text:req.body.body||'',received_at:new Date().toISOString(),status:'received'};
+    const extracted={document_type:'receipt',vendor_name:req.body.from||'Forwarded Email',vendor_tin:null,date:new Date().toISOString().slice(0,10),currency:'XCD',subtotal:0,tax_amount:0,total:Number(req.body.total||0),line_items:[],suggested_category:'office supplies & printing',suggested_classification:'business',suggested_entity:db.settings.defaultEntity,is_capital_item:false,confidence:.65,notes:'Email forwarding stub.'};
+    const exp={id:nanoid(),entity_id:db.settings.defaultEntity,date:extracted.date,vendor:extracted.vendor_name,category:extracted.suggested_category,classification:'business',amount_xcd:extracted.total,amount_original:extracted.total,currency:'XCD',fx_rate:1,fx_date:extracted.date,is_capital:false,deductible_amount:0,source_document_id:doc.id,confidence:.65,status:'pending',notes:extracted.notes,created_at:new Date().toISOString()};
+    doc.extracted=extracted; db.documents.push(doc); db.expenses.push(exp);
+    await writeDb(db); res.json({created:[exp]});
+  } catch(err) { res.status(500).json({error:err.message}); }
 });
 
-// ─── AI REPORT ────────────────────────────────────────────────────────────────
-app.post('/api/report', async (req,res)=>{
-  const {apiKey,practitionerName,practiceName,taxYear,grossIncome,totalAllowances,totalBusiness,chargeable,taxPayable,effectiveRate,pendingActions,scenarios}=req.body;
+// ── Expenses ──────────────────────────────────────────────────────────────────
+
+app.post('/api/expenses', async (req,res) => {
+  try {
+    const db=await readDb();
+    const exp={id:nanoid(),created_at:new Date().toISOString(),entity_id:req.body.entity_id||db.settings.defaultEntity,...req.body};
+    if(exp.status==='approved') exp.deductible_amount=deductible(exp); else exp.deductible_amount=0;
+    if(!exp.fx_rate){ exp.fx_rate=fxRate(exp.currency||'XCD'); exp.amount_xcd=+Number(exp.amount_xcd||0).toFixed(2); exp.fx_date=exp.date||new Date().toISOString().slice(0,10); }
+    db.expenses.push(exp); await writeDb(db); res.json(exp);
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.put('/api/expenses/:id', async (req,res) => {
+  try {
+    const db=await readDb();
+    const exp=db.expenses.find(e=>e.id===req.params.id);
+    if(!exp) return res.status(404).json({error:'Not found'});
+    Object.assign(exp,req.body);
+    if(exp.status==='approved') { exp.deductible_amount=deductible(exp); upsertVendor(db,exp.vendor,exp.category,exp.classification,exp.entity_id); } else exp.deductible_amount=0;
+    await writeDb(db); res.json(exp);
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.delete('/api/expenses/:id', async (req,res) => {
+  try {
+    const db=await readDb();
+    const before=db.expenses.length;
+    db.expenses=db.expenses.filter(e=>e.id!==req.params.id);
+    await writeDb(db); res.json({deleted:before-db.expenses.length});
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.post('/api/expenses/bulk-approve-ready', async (_,res) => {
+  try {
+    const db=await readDb(); let count=0;
+    for(const e of db.expenses){ if(e.status==='ready'&&!e.is_capital&&!e.duplicate){ e.status='approved'; e.deductible_amount=deductible(e); upsertVendor(db,e.vendor,e.category,e.classification,e.entity_id); count++; } }
+    await writeDb(db); res.json({count});
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+
+// ── Documents ─────────────────────────────────────────────────────────────────
+
+app.delete('/api/documents/:id', async (req,res) => {
+  try {
+    const db=await readDb();
+    const doc=db.documents.find(d=>d.id===req.params.id);
+    if(!doc) return res.status(404).json({error:'Not found'});
+    await deleteFile(doc.file_url);
+    db.documents=db.documents.filter(d=>d.id!==req.params.id);
+    db.expenses =db.expenses.filter(e=>e.source_document_id!==req.params.id);
+    await writeDb(db); res.json({ok:true});
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+
+// ── Payroll ───────────────────────────────────────────────────────────────────
+
+app.get('/api/payroll/staff', async (_,res) => {
+  try { const db=await readDb(); res.json(db.payroll.staff); } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.post('/api/payroll/staff', async (req,res) => {
+  try {
+    const db=await readDb();
+    const s={...req.body,id:nanoid(),status:'active'};
+    db.payroll.staff.push(s); await writeDb(db); res.json(s);
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.put('/api/payroll/staff/:id', async (req,res) => {
+  try {
+    const db=await readDb();
+    const i=db.payroll.staff.findIndex(s=>s.id===req.params.id);
+    if(i<0) return res.status(404).json({error:'Not found'});
+    db.payroll.staff[i]={...db.payroll.staff[i],...req.body};
+    await writeDb(db); res.json(db.payroll.staff[i]);
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.delete('/api/payroll/staff/:id', async (req,res) => {
+  try {
+    const db=await readDb();
+    db.payroll.staff=db.payroll.staff.filter(s=>s.id!==req.params.id);
+    await writeDb(db); res.json({ok:true});
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.get('/api/payroll/settings', async (_,res) => {
+  try { const db=await readDb(); res.json(db.payroll.settings); } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.put('/api/payroll/settings', async (req,res) => {
+  try {
+    const db=await readDb();
+    db.payroll.settings={...db.payroll.settings,...req.body};
+    await writeDb(db); res.json(db.payroll.settings);
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.post('/api/payroll/run', async (req,res) => {
+  try {
+    const { month } = req.body;
+    if(!month) return res.status(400).json({error:'month required (YYYY-MM)'});
+    const db=await readDb();
+    const ps=db.payroll.settings;
+    const lines=db.payroll.staff.filter(s=>s.status==='active').map(s=>({ staffId:s.id, name:s.name, position:s.position, entity:s.entity, type:s.type, ...computeMonthlyPay(s,ps) }));
+    const totals=lines.reduce((t,l)=>({ gross:+(t.gross+l.gross).toFixed(2), paye:+(t.paye+l.paye).toFixed(2), nicEmployee:+(t.nicEmployee+l.nicEmployee).toFixed(2), nicEmployer:+(t.nicEmployer+l.nicEmployer).toFixed(2), net:+(t.net+l.net).toFixed(2) }),{gross:0,paye:0,nicEmployee:0,nicEmployer:0,net:0});
+    const run={id:nanoid(),month,lines,totals,createdAt:new Date().toISOString()};
+    db.payroll.runs=db.payroll.runs.filter(r=>r.month!==month);
+    db.payroll.runs.push(run);
+    await writeDb(db); res.json(run);
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.post('/api/payroll/export', async (req,res) => {
+  try {
+    const { month } = req.body;
+    const db=await readDb();
+    const run=db.payroll.runs.find(r=>r.month===month);
+    if(!run) return res.status(404).json({error:`No payroll run for ${month}. Run payroll first.`});
+    db.expenses=db.expenses.filter(e=>e.payroll_month!==month);
+    const byEntity={};
+    for(const l of run.lines){ if(!byEntity[l.entity]) byEntity[l.entity]={salaries:0,nicEmpr:0}; byEntity[l.entity].salaries+=l.gross; byEntity[l.entity].nicEmpr+=l.nicEmployer; }
+    const created=[];
+    for(const [entity,t] of Object.entries(byEntity)){
+      const total=+(t.salaries+t.nicEmpr).toFixed(2);
+      const exp={id:nanoid(),entity_id:entity,date:`${month}-01`,vendor:'Staff Payroll',category:'staff salaries & employer NIC',classification:'business',amount_xcd:total,amount_original:total,currency:'XCD',fx_rate:1,fx_date:`${month}-01`,is_capital:false,deductible_amount:total,source_document_id:null,confidence:1,status:'approved',duplicate:false,near_duplicate:false,payroll_month:month,notes:`${run.lines.length} staff · salaries XCD ${t.salaries.toFixed(2)} · employer NIC XCD ${t.nicEmpr.toFixed(2)}`,created_at:new Date().toISOString()};
+      db.expenses.push(exp); created.push(exp);
+    }
+    await writeDb(db); res.json({created});
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+
+// ── Allowances & Actions ──────────────────────────────────────────────────────
+
+app.get('/api/allowances/:entityId', async (req,res) => {
+  try { const db=await readDb(); res.json(db.allowances[req.params.entityId]||{personal:'40000'}); } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.put('/api/allowances/:entityId', async (req,res) => {
+  try {
+    const db=await readDb();
+    db.allowances[req.params.entityId]=req.body;
+    await writeDb(db); res.json(db.allowances[req.params.entityId]);
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.get('/api/actions', async (_,res) => {
+  try { const db=await readDb(); res.json(db.actions||{}); } catch(err) { res.status(500).json({error:err.message}); }
+});
+app.put('/api/actions', async (req,res) => {
+  try {
+    const db=await readDb();
+    db.actions={...db.actions,...req.body};
+    await writeDb(db); res.json(db.actions);
+  } catch(err) { res.status(500).json({error:err.message}); }
+});
+
+// ── AI Report ─────────────────────────────────────────────────────────────────
+
+app.post('/api/report', async (req,res) => {
+  const { apiKey,practitionerName,practiceName,taxYear,grossIncome,totalAllowances,totalBusiness,chargeable,taxPayable,effectiveRate,pendingActions,scenarios } = req.body;
   if(!apiKey) return res.status(400).json({error:'Anthropic API key required'});
   const conserv_exp=EXPENSE_CATS.reduce((s,c)=>s+c.items.reduce((cs,i)=>cs+i.conservative,0),0);
   const max_exp    =EXPENSE_CATS.reduce((s,c)=>s+c.items.reduce((cs,i)=>cs+i.maximum,0),0);
@@ -488,7 +640,7 @@ EFFECTIVE TAX RATE: ${Number(effectiveRate||0).toFixed(2)}%
 
 IRD 2025 TAX BANDS: Band 1 First $18,000 @ 0% | Band 2 $18,001–30,000 @ 10% | Band 3 $30,001–50,000 @ 15% | Band 4 $50,001–80,000 @ 20% | Band 5 Above $80,000 @ 30%
 
-SCENARIOS: Conservative deductions ($134,000 allowances + $${conserv_exp.toLocaleString()} business = tax $${xcd(scenarios?.taxCons||0)}) | Maximum ($208,500 + $${max_exp.toLocaleString()} = tax $${xcd(scenarios?.taxMax||0)})
+SCENARIOS: Conservative deductions ($134,000 allowances + $${conserv_exp.toLocaleString()} business = tax ${xcd(scenarios?.taxCons||0)}) | Maximum ($208,500 + $${max_exp.toLocaleString()} = tax ${xcd(scenarios?.taxMax||0)})
 
 PENDING IRD ACTIONS (potential XCD ${xcd((pendingActions||[]).reduce((s,a)=>s+(a.saving||0),0))} additional deductions):
 ${(pendingActions||[]).map(a=>`- ${a.label}: saves XCD ${xcd(a.saving)} — ${a.note} (deadline ${a.deadline})`).join('\n')}
@@ -505,19 +657,23 @@ Provide a structured tax planning report covering:
 **7. MULTI-YEAR PLANNING** — 2026 and beyond — sustainable structure for a growing medical practice.
 
 Write in professional British-Caribbean tone. Be specific and actionable.`;
-  try{
+  try {
     const anthropic=new Anthropic({apiKey});
     const msg=await anthropic.messages.create({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]});
     res.json({report:msg.content.map(c=>c.text||'').join('')});
-  }catch(err){
-    res.status(500).json({error:err.message||String(err)});
-  }
+  } catch(err) { res.status(500).json({error:err.message||String(err)}); }
 });
 
-// ─── MISC ─────────────────────────────────────────────────────────────────────
+// ── Misc ──────────────────────────────────────────────────────────────────────
 
-app.delete('/api/reset', (_,res)=>{ writeDb(defaultDb); res.json({ok:true}); });
+app.delete('/api/reset', async (_,res) => {
+  try { await writeDb(JSON.parse(JSON.stringify(defaultDb))); res.json({ok:true}); } catch(err) { res.status(500).json({error:err.message}); }
+});
 
 app.use(express.static(path.join(ROOT,'dist')));
-app.get('/{*path}', (_,res)=>{ const html=path.join(ROOT,'dist','index.html'); fs.existsSync(html) ? res.sendFile(html) : res.send('Run npm run dev for the frontend.'); });
-app.listen(PORT, ()=>console.log(`Amise Tax Planner API running on http://localhost:${PORT}`));
+app.get('/{*path}', (_,res) => {
+  const html=path.join(ROOT,'dist','index.html');
+  fs.existsSync(html) ? res.sendFile(html) : res.send('Run pnpm dev for the frontend.');
+});
+
+app.listen(PORT, () => console.log(`Amise Tax Planner API running on http://localhost:${PORT}`));
