@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import NarrativeInput from '@/components/NarrativeInput';
@@ -292,6 +292,28 @@ export default function ExaminationTab() {
     neurological: ctx.setExamNeuro,
     extremities: ctx.setExamExtremities,
   };
+
+  // Auto-populate all systems with normalProse on first open (if no data saved yet).
+  // Doctor edits positives only; normal text persists with the patient record.
+  useEffect(() => {
+    const pendingNotes: Record<string, string> = {};
+    let hasChanges = false;
+    for (const system of EXAM_SYSTEMS) {
+      const hasNote = !!examNotes[system.key]?.trim();
+      const hasChips = (examFindings[system.key]?.length ?? 0) > 0;
+      if (!hasNote && !hasChips) {
+        pendingNotes[system.key] = system.normalProse;
+        const setter = legacySetterMap[system.key];
+        if (setter) setter(system.normalProse);
+        hasChanges = true;
+      }
+    }
+    if (hasChanges) {
+      setExamNotes({ ...examNotes, ...pendingNotes });
+    }
+  // Run once on mount only
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function syncLegacy(systemKey: string, chips: string[], note: string) {
     const setter = legacySetterMap[systemKey];
