@@ -86,8 +86,26 @@ Do NOT invent findings not present in the narrative.
 Do NOT collapse or summarise — preserve full clinical detail.`;
 }
 
-function assessmentPrompt(): string {
-  return `You are a consultant general surgeon parsing a dictated clinical assessment / impression for AMISE MedFlow EMR.
+interface CcContext {
+  ccKey: string;
+  ccLabel: string;
+  icd10Hint?: string;
+  ddx?: string[];
+  pearl?: string;
+}
+
+function assessmentPrompt(cc?: CcContext | null): string {
+  const ccSection = cc ? `
+
+Chief complaint context (from clinical CC matrix):
+- Condition: ${cc.ccLabel}
+- Primary ICD-10 prefix: ${cc.icd10Hint ?? 'see narrative'}
+- Expected differentials for this presentation: ${(cc.ddx ?? []).join(', ')}
+${cc.pearl ? `- Clinical pearl: ${cc.pearl}` : ''}
+
+IMPORTANT: Unless the narrative explicitly states a different primary condition, list "${cc.ccLabel}" as the leading diagnosis with ICD-10 starting with ${cc.icd10Hint ?? 'the appropriate code'}. Rank the differentials from the CC matrix above by how strongly the narrative supports each.` : '';
+
+  return `You are a consultant general surgeon parsing a dictated clinical assessment / impression for AMISE MedFlow EMR.${ccSection}
 
 Return ONLY valid JSON (no markdown, no explanation):
 {
@@ -102,8 +120,17 @@ icdHint: the most likely ICD-10 code and short description for the leading diagn
 Do NOT invent diagnoses. Preserve all clinical reasoning from the narrative.`;
 }
 
-function planPrompt(): string {
-  return `You are a consultant general surgeon parsing a dictated management plan for AMISE MedFlow EMR.
+function planPrompt(cc?: CcContext | null): string {
+  const ccSection = cc ? `
+
+Chief complaint context (from clinical CC matrix):
+- Condition: ${cc.ccLabel}
+- Primary ICD-10 prefix: ${cc.icd10Hint ?? 'see narrative'}
+${cc.pearl ? `- Clinical pearl: ${cc.pearl}` : ''}
+
+IMPORTANT: Structure the management plan so that "${cc.ccLabel}" is addressed first and most prominently. Secondary symptoms or comorbidities should follow in order of clinical priority.` : '';
+
+  return `You are a consultant general surgeon parsing a dictated management plan for AMISE MedFlow EMR.${ccSection}
 
 Return ONLY valid JSON (no markdown, no explanation):
 {
@@ -121,22 +148,23 @@ referrals: list of referrals or consultations requested.
 followUp: follow-up timeframe if mentioned (e.g. "2 weeks post-op"), or null.`;
 }
 
-const PROMPT_MAP: Record<string, (chips: string[]) => string> = {
+const PROMPT_MAP: Record<string, (chips: string[], cc?: CcContext | null) => string> = {
   pmh:         pmhPrompt,
   medications: medicationsPrompt,
   allergies:   () => allergiesPrompt(),
   examination: () => examinationPrompt(),
-  assessment:  () => assessmentPrompt(),
-  plan:        () => planPrompt(),
+  assessment:  (_chips, cc) => assessmentPrompt(cc),
+  plan:        (_chips, cc) => planPrompt(cc),
 };
 
 router.post('/api/narrative/parse', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
 
-  const { section, text, chipOptions = [] } = (req.body ?? {}) as {
+  const { section, text, chipOptions = [], ccContext = null } = (req.body ?? {}) as {
     section?: string;
     text?: string;
     chipOptions?: string[];
+    ccContext?: CcContext | null;
   };
 
   if (!section || !text?.trim()) {
@@ -154,7 +182,7 @@ router.post('/api/narrative/parse', async (req, res) => {
     const response = await client.messages.create({
       model: MODEL,
       max_tokens: 1024,
-      system: promptFn(chipOptions),
+      system: promptFn(chipOptions, ccContext),
       messages: [{ role: 'user', content: text.trim() }],
     });
 

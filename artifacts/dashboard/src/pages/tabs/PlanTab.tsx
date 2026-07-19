@@ -6,6 +6,7 @@ import { errMsg } from '@/lib/err';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
 import NarrativeInput from '@/components/NarrativeInput';
+import { getMatrix } from '@/lib/cc-matrices';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -154,7 +155,17 @@ export default function PlanTab() {
     encounterMode,
     symptoms,
     patientId, patientName, phone, currentSite,
+    activeCcKey,
   } = useAppContext();
+
+  const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
+  const ccContext = ccMatrix ? {
+    ccKey: ccMatrix.id,
+    ccLabel: ccMatrix.name,
+    icd10Hint: ccMatrix.icd10Hint,
+    ddx: ccMatrix.ddx,
+    pearl: ccMatrix.pearl,
+  } : null;
 
   const acuity = triageResult.acuity;
   const bmiData = calcBmiClass(weightKg, heightCm);
@@ -288,6 +299,7 @@ export default function PlanTab() {
             section="plan"
             placeholder="Dictate or paste the management plan — AI will extract structured steps, investigations, prescriptions, and follow-up…"
             label="Dictate management plan"
+            ccContext={ccContext}
             onParsed={data => {
               const p = data.plan as string | undefined;
               if (p?.trim()) setPlan(p.trim());

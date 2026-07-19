@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ProcedureImagePanel, { type ProcImage } from '@/components/ProcedureImagePanel';
@@ -1861,8 +1861,12 @@ const PROC_TABS: { id: ProcType; label: string }[] = [
 ];
 
 export default function ProceduresTab() {
-  const { procedureData, setProcedureData, procedures, setProcedures, patientName, age, sex } = useAppContext();
-  const [activeType, setActiveType] = useState<ProcType>('ogd');
+  const { procedureData, setProcedureData, procedures, setProcedures, patientName, age, sex, encounterType } = useAppContext();
+  const [activeType, setActiveType] = useState<ProcType>(encounterType === 'endoscopy' ? 'ogd' : 'preop');
+
+  useEffect(() => {
+    setActiveType(encounterType === 'endoscopy' ? 'ogd' : 'preop');
+  }, [encounterType]);
   const [draftLoading, setDraftLoading] = useState(false);
 
   function getTyped<T>(key: string, empty: T): T {
@@ -1925,11 +1929,15 @@ export default function ProceduresTab() {
     }
   }
 
+  const displayTabs = encounterType === 'endoscopy'
+    ? PROC_TABS
+    : [...PROC_TABS.filter(t => t.id === 'preop' || t.id === 'postop'), ...PROC_TABS.filter(t => t.id !== 'preop' && t.id !== 'postop')];
+
   return (
     <div className="gap-y">
       {/* Procedure type selector + print button */}
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-        {PROC_TABS.map(tab => (
+        {displayTabs.map(tab => (
           <button key={tab.id} type="button" onClick={() => setActiveType(tab.id)}
             style={{
               padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: activeType === tab.id ? 700 : 500,
