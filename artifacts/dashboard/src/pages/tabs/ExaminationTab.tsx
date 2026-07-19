@@ -293,12 +293,15 @@ export default function ExaminationTab() {
     extremities: ctx.setExamExtremities,
   };
 
-  // Auto-populate all systems with normalProse on first open (if no data saved yet).
-  // Doctor edits positives only; normal text persists with the patient record.
+  // Auto-populate ONLY the systems relevant to this patient's presentation with
+  // normalProse on first open. Systems outside visibleSystemKeys are "not examined"
+  // and intentionally left blank — they are excluded from the final report.
   useEffect(() => {
     const pendingNotes: Record<string, string> = {};
     let hasChanges = false;
     for (const system of EXAM_SYSTEMS) {
+      // Skip systems that aren't indicated for this patient — they're not examined
+      if (!visibleSystemKeys.has(system.key)) continue;
       const hasNote = !!examNotes[system.key]?.trim();
       const hasChips = (examFindings[system.key]?.length ?? 0) > 0;
       if (!hasNote && !hasChips) {
@@ -311,7 +314,7 @@ export default function ExaminationTab() {
     if (hasChanges) {
       setExamNotes({ ...examNotes, ...pendingNotes });
     }
-  // Run once on mount only
+  // Run once on mount — captures first-render visibleSystemKeys intentionally
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -596,10 +599,11 @@ export default function ExaminationTab() {
                         ◎ Normal
                       </button>
                     )}
-                    {/* — Omit toggle */}
+                    {/* Not examined toggle — excluded from final report when active */}
                     <button
                       type="button"
                       onClick={() => toggleOmit(system.key)}
+                      title={isOmitted ? 'Mark as examined' : 'Not examined — will be excluded from the clinical report'}
                       style={{
                         padding: '3px 9px', borderRadius: 6,
                         border: isOmitted ? '1.5px solid #9ca3af' : '1.5px solid #e5e7eb',
@@ -608,7 +612,7 @@ export default function ExaminationTab() {
                         fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
                       }}
                     >
-                      {isOmitted ? '↩ Restore' : '— Omit'}
+                      {isOmitted ? '↩ Restore' : 'Not examined'}
                     </button>
                   </div>
                 </div>
