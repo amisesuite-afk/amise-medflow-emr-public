@@ -83,6 +83,7 @@ import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
 import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
+import ConsultContextBanner from '@/components/ConsultContextBanner';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import VoiceDictation from '@/components/VoiceDictation';
@@ -1207,7 +1208,6 @@ export default function HomePage() {
                 }}>
                   <EncounterContextPicker />
                   {!!patientId && <PreviousVisitStrip />}
-                  {!!activeCcKey && <ClinicalWorkflowBar />}
                   <ProblemListStrip />
                   <ClinicalPromptsStrip />
                   <FollowUpQueueStrip />
@@ -1224,6 +1224,36 @@ export default function HomePage() {
           const total = consultTabs.length;
           const prevTab = curIdx > 0 ? consultTabs[curIdx - 1] : null;
           const nextTab = curIdx < total - 1 ? consultTabs[curIdx + 1] : null;
+
+          // ── Algorithm-guided mode: CC drives the workflow; no tab menu ──────────
+          if (activeCcKey) {
+            return (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0 6px', alignItems: 'center', gap: 8 }}>
+                {prevTab ? (
+                  <button type="button" onClick={() => setActiveSection(prevTab.id)}
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)' }}>
+                    ← {prevTab.label}
+                  </button>
+                ) : <span />}
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <button type="button" onClick={() => setAmbientMode(true)}
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
+                    🎙 Ambient
+                  </button>
+                  {nextTab && (
+                    <button type="button" onClick={() => setActiveSection(nextTab.id)}
+                      style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#0d9488', color: '#fff' }}>
+                      {nextTab.label} →
+                    </button>
+                  )}
+                  <button type="button" onClick={() => setTopSection('finaldoc')}
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
+                    📋 Summary
+                  </button>
+                </div>
+              </div>
+            );
+          }
 
           if (guidedMode) {
             return (
@@ -1353,6 +1383,10 @@ export default function HomePage() {
           );
         })()}
 
+        {/* Algorithm workflow guide — always visible when CC is active */}
+        {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ClinicalWorkflowBar />}
+        {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ConsultContextBanner />}
+
         {/* Clinical sections */}
         {topSection === 'intake'        && <IntakeTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'hpi'         && <HpiTab />}
@@ -1365,13 +1399,16 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'toxic'       && <ToxicHabitsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'scales'      && <ScalesTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'ros'         && <RosTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'examination'        &&
-          (hasRole(userRole, 'nurse') || (hasRole(userRole, 'doctor') && ['breast','diabetic_foot','follow_up','post_op','urgent'].includes(ctxVisitType))) &&
+        {topSection === 'consultation' && !ambientMode && activeSection === 'examination' &&
+          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) &&
           <ExaminationTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications'    && hasRole(userRole, 'nurse')  && <SurgicalClassificationsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'investigations' && hasRole(userRole, 'nurse')  && <InvestigationsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'radiology'     && hasRole(userRole, 'nurse')  && <RadiologyTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'attachments'   && hasRole(userRole, 'nurse')  && <AttachmentsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications' && hasRole(userRole, 'nurse') && <SurgicalClassificationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'investigations' &&
+          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <InvestigationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'radiology' &&
+          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <RadiologyTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'attachments' &&
+          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <AttachmentsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && hasRole(userRole, 'doctor') && <ProceduresTab />}
