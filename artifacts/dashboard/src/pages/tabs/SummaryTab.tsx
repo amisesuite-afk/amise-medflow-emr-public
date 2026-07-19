@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
@@ -774,6 +774,15 @@ export default function SummaryTab() {
   const [copied, setCopied] = useState(false);
   const textRef = useRef<HTMLTextAreaElement>(null);
 
+  // Auto-generate when navigating to this tab if the consultation has enough content
+  useEffect(() => {
+    const hasContent = ctx.symptoms.length > 0 || !!ctx.hpiNotes.trim() || !!ctx.assessment.trim();
+    if (hasContent && !document && !loading) {
+      void generate();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   async function generate() {
     setError('');
     setLoading(true);
@@ -789,6 +798,7 @@ export default function SummaryTab() {
         complaint: {
           symptoms: ctx.symptoms,
           symptomDetails: ctx.symptomDetails,
+          hpiNotes: ctx.hpiNotes,
           duration: ctx.durationDays,
           painScore: ctx.painScore,
           freeText: ctx.freeText,
@@ -806,8 +816,11 @@ export default function SummaryTab() {
           medicationsText: ctx.medicationsText,
           allergies: ctx.allergies,
           familyHistory: ctx.familyHistory,
+          familyHistoryNotes: ctx.familyHistoryNotes,
           toxicHabits: ctx.toxicHabits,
+          occupation: ctx.occupation,
         },
+        rosFindings: ctx.rosFindings,
         examination: {
           General: ctx.examGeneral,
           Cardiovascular: ctx.examCardio,
@@ -817,10 +830,20 @@ export default function SummaryTab() {
           Extremities: ctx.examExtremities,
           Breast: ctx.examBreast,
           Wound: ctx.examWound,
+          notes: ctx.examNotes,
+        },
+        investigations: {
+          ordered: ctx.orderedInvestigations,
+          results: ctx.investigationResults,
+          radiology: ctx.radiologyRequests,
         },
         assessment: ctx.assessment,
         differentials: ctx.differentials,
+        icdCodes: ctx.icdCodes,
+        cptCodes: ctx.cptCodes,
         plan: ctx.plan,
+        followUpNotes: ctx.followUpNotes,
+        referralNotes: ctx.referralNotes,
         triageAcuity: ctx.triageResult.acuity,
         triageScore: ctx.triageResult.score,
         date: new Date().toLocaleDateString('en-GB', {

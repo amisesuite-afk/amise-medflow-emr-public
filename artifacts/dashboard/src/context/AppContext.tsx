@@ -297,6 +297,8 @@ interface CtxValue {
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
   plan: string; setPlan(v: string): void;
+  followUpNotes: string; setFollowUpNotes(v: string): void;
+  referralNotes: string; setReferralNotes(v: string): void;
   procedures: string; setProcedures(v: string): void;
   billing: string; setBilling(v: string): void;
   documents: string; setDocuments(v: string): void;
@@ -471,6 +473,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [assessment, setAssessment] = useState('');
   const [differentials, setDifferentials] = useState('');
   const [plan, setPlan] = useState('');
+  const [followUpNotes, setFollowUpNotes] = useState('');
+  const [referralNotes, setReferralNotes] = useState('');
   const [procedures, setProcedures] = useState('');
   const [billing, setBilling] = useState('');
   const [documents, setDocuments] = useState('');
@@ -568,6 +572,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.assessment === 'string') setAssessment(d.assessment);
       if (typeof d.differentials === 'string') setDifferentials(d.differentials);
       if (typeof d.plan === 'string') setPlan(d.plan);
+      if (typeof d.followUpNotes === 'string') setFollowUpNotes(d.followUpNotes);
+      if (typeof d.referralNotes === 'string') setReferralNotes(d.referralNotes);
       if (typeof d.procedures === 'string') setProcedures(d.procedures);
       if (typeof d.billing === 'string') setBilling(d.billing);
       if (typeof d.documents === 'string') setDocuments(d.documents);
@@ -660,7 +666,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       isPostOp, postOpDays, pregnancyPossible,
       examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
       examFindings, examNotes,
-      assessment, differentials, plan, procedures, billing, documents,
+      assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents,
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
       medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
@@ -681,7 +687,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isPostOp, postOpDays, pregnancyPossible,
     examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
     examFindings, examNotes,
-    assessment, differentials, plan, procedures, billing, documents,
+    assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents,
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
     medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
@@ -752,7 +758,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setWeightKg(''); setHeightCm(''); setWaistCm(''); setHipCm(''); setMuacCm(''); setAnatomicalFindings([]);
     setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
     setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1);
-    setAssessment(''); setDifferentials(''); setPlan(''); setProcedures(''); setBilling(''); setDocuments('');
+    setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
+    setProcedures(''); setBilling(''); setDocuments('');
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
     setProgressNotes([]);
@@ -1152,6 +1159,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     assessment, setAssessment,
     differentials, setDifferentials,
     plan, setPlan,
+    followUpNotes, setFollowUpNotes,
+    referralNotes, setReferralNotes,
     procedures, setProcedures,
     billing, setBilling,
     documents, setDocuments,

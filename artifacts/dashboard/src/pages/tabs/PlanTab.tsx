@@ -69,13 +69,14 @@ function addDaysISO(isoDate: string, days: number): string {
 function buildPlanText(
   protocol: NonNullable<ReturnType<typeof getProtocol>>,
   isInpatient: boolean,
+  surgeon: string,
 ): string {
   const lines: string[] = [];
 
   if (isInpatient) {
     lines.push(
       '## Admission orders',
-      '- Admit under Dr Dawit Daniel Kabiye, MD, DM — General / Endoscopic Surgery',
+      `- Admit under ${surgeon} — General / Endoscopic Surgery`,
       '- Monitoring: VS q4h, I&O charting, daily weights',
       '- DVT prophylaxis: LMWH (if not contraindicated)',
       '- VTE risk assessment documented',
@@ -148,6 +149,8 @@ function buildNursingOrders(isPreOp: boolean, isPostOp: boolean): string {
 export default function PlanTab() {
   const {
     plan, setPlan,
+    followUpNotes, setFollowUpNotes,
+    referralNotes, setReferralNotes,
     triageResult,
     weightKg, heightCm,
     paneTop, paneConverged,
@@ -156,6 +159,7 @@ export default function PlanTab() {
     symptoms,
     patientId, patientName, phone, currentSite,
     activeCcKey,
+    admittingSurgeon,
   } = useAppContext();
 
   const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
@@ -171,7 +175,6 @@ export default function PlanTab() {
   const bmiData = calcBmiClass(weightKg, heightCm);
 
   // Review / follow-up scheduling
-  const [followUpNotes, setFollowUpNotes] = useState('');
   const [reviewIn, setReviewIn] = useState('');
   const [reviewCustomDate, setReviewCustomDate] = useState('');
   const [scheduling, setScheduling] = useState(false);
@@ -275,7 +278,7 @@ export default function PlanTab() {
 
   function handleGeneratePlan() {
     if (!protocol) return;
-    setPlan(buildPlanText(protocol, isInpatient));
+    setPlan(buildPlanText(protocol, isInpatient, admittingSurgeon));
   }
 
   function handleGenerateNursing() {
@@ -567,6 +570,8 @@ export default function PlanTab() {
         <div className="fld">
           <label>Referrals made / requested</label>
           <textarea
+            value={referralNotes}
+            onChange={e => setReferralNotes(e.target.value)}
             placeholder="Gastroenterology — urgent ERCP&#10;Dietitian&#10;Physiotherapy&#10;Diabetes team…"
             style={{ minHeight: 80 }}
           />
