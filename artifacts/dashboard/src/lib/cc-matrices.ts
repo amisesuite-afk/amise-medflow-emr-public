@@ -64,7 +64,7 @@ const S_EMERGENCY: Section[] = [
 ];
 
 const S_SURGICAL: Section[] = [
-  'pmh', 'surgical', 'medications', 'allergies',
+  'hpi', 'pmh', 'surgical', 'medications', 'allergies',
   'examination', 'investigations', 'radiology', 'attachments',
   'assessment', 'plan', 'procedures',
   'prescriptions', 'referring_providers',
@@ -72,13 +72,13 @@ const S_SURGICAL: Section[] = [
 ];
 
 const S_QUICK: Section[] = [
-  'pmh', 'medications', 'allergies',
+  'hpi', 'pmh', 'medications', 'allergies',
   'examination', 'assessment', 'plan',
   'prescriptions', 'progress', 'tasks',
 ];
 
 const S_ENDOSCOPY: Section[] = [
-  'pmh', 'surgical', 'medications', 'allergies',
+  'hpi', 'pmh', 'surgical', 'medications', 'allergies',
   'investigations', 'procedures', 'attachments',
   'assessment', 'plan', 'prescriptions',
   'referring_providers', 'progress', 'tasks',

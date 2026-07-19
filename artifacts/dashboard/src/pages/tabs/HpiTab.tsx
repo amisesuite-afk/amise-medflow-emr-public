@@ -5,6 +5,7 @@ import SmartTextarea from '@/components/SmartTextarea';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getSuggestedPhrases } from '@/data/dot-phrases';
 import { getMatrixByName } from '@/lib/cc-matrices';
+import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -207,6 +208,7 @@ export default function HpiTab() {
 
   return (
     <div className="gap-y">
+      <ChiefComplaintStrip />
       <CollapsibleCard title="History of present illness" badge={hpiNotes.trim() ? '✓' : undefined}>
         <div className="fld">
           {/* Header row */}

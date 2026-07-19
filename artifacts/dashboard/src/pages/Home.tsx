@@ -82,7 +82,6 @@ import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
-import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
@@ -1208,7 +1207,6 @@ export default function HomePage() {
                 }}>
                   <EncounterContextPicker />
                   {!!patientId && <PreviousVisitStrip />}
-                  <ChiefComplaintStrip />
                   {!!activeCcKey && <ClinicalWorkflowBar />}
                   <ProblemListStrip />
                   <ClinicalPromptsStrip />
