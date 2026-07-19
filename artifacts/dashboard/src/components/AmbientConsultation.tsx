@@ -10,7 +10,7 @@
  *  - Bayesian DX engine updates live from dictation.
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useAppContext, type Section } from '@/context/AppContext';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { getAIProviderConfig, segmentSoapWithOllama, type SegmentedSoap } from '@/lib/ai-provider';
@@ -19,6 +19,7 @@ import { getApiOrigin } from '@/lib/api-origin';
 import { getMatrix } from '@/lib/cc-matrices';
 import { DISEASES, initPaneState, updatePosterior, topDiagnoses, applyModifiers, getProtocol } from '@workspace/pane-engine';
 import { extractFeaturesFromTranscript, detectPathognomonic, type PathognomicMatch } from '@/lib/transcript-dx-mapper';
+import { computeReminders } from '@/lib/safety-engine';
 
 // ── Web Speech API ─────────────────────────────────────────────────────────────
 
@@ -112,6 +113,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     activeCcKey, symptoms, hpiNotes, setHpiNotes,
     vitals, setActiveSection, patientName, age, sex,
     allergies: allergyText,
+    examNotes, assessment, plan,
+    orderedInvestigations, radiologyRequests,
   } = ctx;
 
   // Voice state
@@ -145,6 +148,18 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const navSections: Section[] = ccMatrix
     ? (ccMatrix.sections.filter(s => s !== 'hpi' && s in SECTION_NAV) as Section[])
     : DEFAULT_NAV_ORDER;
+
+  // Passive safety reminders — recomputed whenever relevant state changes
+  const safetyReminders = useMemo(() => computeReminders({
+    activeCcKey,
+    symptoms,
+    hpiNotes,
+    examNotes,
+    assessment,
+    plan,
+    orderedInvestigations,
+    radiologyRequests: radiologyRequests as object[],
+  }), [activeCcKey, symptoms, hpiNotes, examNotes, assessment, plan, orderedInvestigations, radiologyRequests]);
 
   // ── Voice helpers ────────────────────────────────────────────────────────────
 
@@ -188,6 +203,15 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   }, []);
 
   useEffect(() => () => { recogRef.current?.stop(); }, []);
+
+  // Auto-start mic when consultation mounts with a fresh patient (no prior HPI)
+  useEffect(() => {
+    if (!SPEECH_SUPPORTED) return;
+    if (hpiNotes.trim()) return; // don't auto-start if patient already has documented history
+    setMicOpen(true);
+    startRecording();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSegment() {
     const text = (transcript + ' ' + interim).trim();
@@ -589,6 +613,45 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 </button>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Passive safety reminders ─── */}
+      {safetyReminders.length > 0 && (
+        <div>
+          <div style={{
+            fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
+            textTransform: 'uppercase', color: '#64748b', marginBottom: 5,
+          }}>
+            Reminders
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {safetyReminders.map(r => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => goToSection(r.section)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 7,
+                  padding: '5px 10px', borderRadius: 7, cursor: 'pointer', textAlign: 'left',
+                  border: r.urgency === 'flag'
+                    ? '1px solid rgba(245,158,11,0.4)'
+                    : '1px solid var(--line, #334155)',
+                  background: r.urgency === 'flag'
+                    ? 'rgba(245,158,11,0.06)'
+                    : 'var(--surface, #1e293b)',
+                  color: r.urgency === 'flag' ? '#d97706' : '#64748b',
+                  fontSize: 11, fontWeight: 600,
+                }}
+                title={`Go to ${r.section}`}
+              >
+                <span style={{ flexShrink: 0, opacity: 0.7 }}>
+                  {r.urgency === 'flag' ? '◈' : '○'}
+                </span>
+                <span>{r.text}</span>
+              </button>
+            ))}
           </div>
         </div>
       )}
