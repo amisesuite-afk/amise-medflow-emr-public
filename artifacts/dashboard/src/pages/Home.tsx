@@ -628,7 +628,7 @@ export default function HomePage() {
       className="app"
       style={{
         gridTemplateColumns: `${sidebarWidth}px 1fr`,
-        gridTemplateRows: consultAmbient ? '40px 1fr' : 'var(--header-h) 1fr',
+        gridTemplateRows: consultAmbient ? '48px 1fr' : 'var(--header-h) 1fr',
         transition: 'grid-template-columns 200ms ease, grid-template-rows 200ms ease',
       }}
     >
@@ -648,10 +648,12 @@ export default function HomePage() {
                 {mrNumber}
               </span>
             )}
-            {/* Today's date */}
-            <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>
-              {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
-            </span>
+            {/* Age / sex */}
+            {(age || (sex && sex !== 'unknown')) && (
+              <span style={{ fontSize: 10, color: '#94a3b8', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                {[age && `${age}y`, sex && sex !== 'unknown' && sex].filter(Boolean).join(' ')}
+              </span>
+            )}
             {/* Allergy alert */}
             {allergyList.length > 0 ? (
               <span style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', background: '#422006', border: '1px solid #78350f', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
@@ -660,6 +662,21 @@ export default function HomePage() {
             ) : patientName ? (
               <span style={{ fontSize: 10, color: '#475569', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
             ) : null}
+            {/* Visit type pill */}
+            {ctxVisitType && (() => {
+              const vt = VISIT_TYPES.find(v => v.id === ctxVisitType);
+              return vt ? (
+                <span style={{ fontSize: 10, fontWeight: 700, color: vt.color, background: `${vt.color}22`, border: `1px solid ${vt.color}44`, borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  {vt.icon} {vt.label}
+                </span>
+              ) : null;
+            })()}
+            {/* CC label */}
+            {ccLabel && (
+              <span style={{ fontSize: 10, color: '#cbd5e1', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 7px', whiteSpace: 'nowrap', flexShrink: 0, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {ccLabel}
+              </span>
+            )}
             <span style={{ flex: 1 }} />
             {/* Save indicator */}
             {saveStatus === 'saving' && <span style={{ fontSize: 10, color: '#94a3b8', flexShrink: 0 }}>⏳</span>}
@@ -1061,8 +1078,8 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Patient context banner — sticky at top of consultation */}
-        {topSection === 'consultation' && (() => {
+        {/* Patient context banner — sticky at top of consultation (hidden in ambient mode — slim header covers it) */}
+        {topSection === 'consultation' && !consultAmbient && (() => {
           const allergyList = allergies.split(',').map(a => a.trim()).filter(Boolean);
           const acuityColors: Record<string, { bg: string; text: string }> = {
             urgent:   { bg: '#7f1d1d', text: '#fca5a5' },
