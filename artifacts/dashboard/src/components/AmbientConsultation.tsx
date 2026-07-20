@@ -183,6 +183,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     surgicalNotes, setSurgicalNotes,
     medications, setMedications,
     medicationsText, setMedicationsText,
+    triageResult,
   } = ctx;
 
   // ── Phase & drawer state ───────────────────────────────────────────────────
@@ -273,6 +274,30 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   }, []);
 
   useEffect(() => () => { recogRef.current?.stop(); }, []);
+
+  // Auto-seed HPI from staff intake data when the field is blank
+  useEffect(() => {
+    if (hpiNotes.trim()) return; // don't overwrite anything already typed/loaded
+    const parts: string[] = [];
+    if (ccLabel) parts.push(ccLabel);
+    const symptomNames = symptoms.filter(Boolean);
+    if (symptomNames.length > 0) parts.push(symptomNames.join(', '));
+    if (visitType && visitType !== 'new_consult') {
+      const vtLabel = visitType.replace(/_/g, ' ');
+      parts.push(`(${vtLabel})`);
+    }
+    const redFlags = (triageResult.reasons ?? []).filter((r: string) =>
+      !r.toLowerCase().includes('admin') && !r.toLowerCase().includes('score')
+    );
+    const seed = parts.join(' — ');
+    if (!seed) return;
+    const draft = redFlags.length > 0
+      ? `${seed}.\n\nRed flags noted on intake: ${redFlags.join('; ')}.`
+      : `${seed}.`;
+    setHpiNotes(draft);
+  // run once on mount; intentional empty-dep omission
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCcKey]);
 
   // Auto-start mic on fresh consultation
   useEffect(() => {

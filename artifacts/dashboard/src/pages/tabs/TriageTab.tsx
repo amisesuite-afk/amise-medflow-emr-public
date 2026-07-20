@@ -138,25 +138,6 @@ export default function TriageTab() {
         )}
       </CollapsibleCard>
 
-      {/* Two col: questions + blocks */}
-      <div className="two-col">
-        <CollapsibleCard title="Questions to ask next" badge={r.questionsToAsk.length || undefined}>
-          {r.questionsToAsk.length ? (
-            <ul className="qlist">
-              {r.questionsToAsk.map(q => <li key={q}>{q}</li>)}
-            </ul>
-          ) : (
-            <p style={{ color: 'var(--muted)', fontSize: 12 }}>No specific questions needed.</p>
-          )}
-        </CollapsibleCard>
-
-        <CollapsibleCard title="Adaptive EMR blocks" badge={r.suggestedBlocks.length || undefined}>
-          <div className="chips">
-            {r.suggestedBlocks.map(b => <span key={b} className="chip static">{b}</span>)}
-          </div>
-        </CollapsibleCard>
-      </div>
-
       {/* Missing fields */}
       {r.missingCriticalFields.length > 0 && (
         <CollapsibleCard title="Missing critical fields" badge={r.missingCriticalFields.length} badgeVariant="warn">
