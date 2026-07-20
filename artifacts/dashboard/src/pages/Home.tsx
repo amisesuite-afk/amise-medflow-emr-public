@@ -331,6 +331,7 @@ export default function HomePage() {
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
   const [headerVisitMode, setHeaderVisitMode] = useState<'new' | 'followup'>('new');
   const [wizardSkipped, setWizardSkipped] = useState(false);
+  const [vtGateCleared, setVtGateCleared] = useState(false);
   const [guidedMode, setGuidedMode] = useState(false);
   const [ambientMode, setAmbientMode] = useState(true);
   const [voiceOpen, setVoiceOpen] = useState(false);
@@ -363,11 +364,11 @@ export default function HomePage() {
     return () => document.removeEventListener('mousedown', handle);
   }, [contextOpen]);
 
-  // Reset wizard + guided mode whenever a different patient is loaded
+  // Reset wizard + guided mode + visit type gate whenever a different patient is loaded
   useEffect(() => {
     if (patientId !== prevPatientIdRef.current) {
       prevPatientIdRef.current = patientId;
-      if (patientId) { setWizardSkipped(false); setGuidedMode(false); setAmbientMode(true); }
+      if (patientId) { setWizardSkipped(false); setGuidedMode(false); setAmbientMode(true); setVtGateCleared(false); }
     }
   }, [patientId]);
 
@@ -634,40 +635,55 @@ export default function HomePage() {
       {/* ── Sticky header ── */}
       <header className="app-header" style={consultAmbient ? { padding: '0 12px', gap: 10 } : {}}>
 
-        {/* ── Ambient consultation: ultra-slim context strip ── */}
+        {/* ── Ambient consultation: slim identity strip ── */}
         {consultAmbient && (
           <>
-            {ccLabel && (
-              <span style={{ fontSize: 13, fontWeight: 800, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '40%' }}>
-                {ccLabel}
+            {/* Patient name */}
+            <span style={{ fontSize: 13, fontWeight: 800, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>
+              {patientName.trim() || 'Patient'}
+            </span>
+            {/* MRN */}
+            {mrNumber && (
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', background: 'rgba(13,148,136,0.15)', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                {mrNumber}
               </span>
             )}
-            <span style={{ fontSize: 12, color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {patientName.trim() || 'Patient'}{metaParts.length > 0 ? ` · ${metaParts.join(' · ')}` : ''}
+            {/* Today's date */}
+            <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              {new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
             </span>
+            {/* Allergy alert */}
             {allergyList.length > 0 ? (
               <span style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', background: '#422006', border: '1px solid #78350f', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 ⚠ {allergyList[0]}{allergyList.length > 1 ? ` +${allergyList.length - 1}` : ''}
               </span>
             ) : patientName ? (
-              <span style={{ fontSize: 10, color: '#334155', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
+              <span style={{ fontSize: 10, color: '#475569', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
             ) : null}
             <span style={{ flex: 1 }} />
-            {encounterId && (
-              <span style={{ fontSize: 10, fontWeight: 700, color: '#dc2626', whiteSpace: 'nowrap', flexShrink: 0 }}>● Open</span>
-            )}
-            {saveStatus === 'saving' && (
-              <span style={{ fontSize: 10, color: '#94a3b8', whiteSpace: 'nowrap', flexShrink: 0 }}>⏳</span>
-            )}
+            {/* Save indicator */}
+            {saveStatus === 'saving' && <span style={{ fontSize: 10, color: '#94a3b8', flexShrink: 0 }}>⏳</span>}
+            {/* Encounter status + close */}
+            {encounterId ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Mark this encounter as complete and close it?')) {
+                    setTopSection('finaldoc');
+                  }
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, border: '1px solid rgba(220,38,38,0.4)', background: 'rgba(220,38,38,0.1)', color: '#fca5a5', fontSize: 10, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+                title="Close this encounter"
+              >● In progress — Close</button>
+            ) : null}
+            {/* AI Consultant */}
             {hasRole(userRole, 'doctor') && (
               <button
                 type="button"
                 onClick={() => setShowAiPanel(p => !p)}
-                style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', background: showAiPanel ? '#312e81' : 'rgba(13,148,136,0.2)', color: '#0d9488', fontSize: 12, fontWeight: 700 }}
+                style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', background: showAiPanel ? '#312e81' : 'rgba(13,148,136,0.2)', color: '#0d9488', fontSize: 12, fontWeight: 700, flexShrink: 0 }}
                 title="AI Consultant"
-              >
-                🧠
-              </button>
+              >🧠</button>
             )}
           </>
         )}
@@ -797,6 +813,7 @@ export default function HomePage() {
                 } else {
                   setEncounterType('surgical_consult');
                 }
+                setVtGateCleared(true);
               }}
               aria-label="Visit type"
               style={{
@@ -1131,8 +1148,64 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Visit type gate — required first step before CC or any intake flow */}
+        {topSection === 'consultation' && !!patientId && !vtGateCleared && !wizardSkipped && (
+          <div style={{ padding: '32px 16px', maxWidth: 680, margin: '0 auto' }}>
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--ink)', marginBottom: 6 }}>
+                What type of visit is this?
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+                Select the visit type to configure the data collection workflow
+              </div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 10 }}>
+              {VISIT_TYPES.map(vt => (
+                <button
+                  key={vt.id}
+                  type="button"
+                  onClick={() => {
+                    ctxSetVisitType(vt.id);
+                    setIsPostOp(vt.id === 'post_op');
+                    setPostOpDays('');
+                    if (vt.id === 'ercp' || vt.id === 'endoscopy_ogd' || vt.id === 'endoscopy_col') {
+                      setEncounterType('endoscopy');
+                    } else if (vt.id === 'urgent') {
+                      setEncounterType('major_emergency');
+                    } else if (vt.id === 'post_op' || vt.id === 'follow_up') {
+                      setEncounterType('quick_consult');
+                    } else {
+                      setEncounterType('surgical_consult');
+                    }
+                    setVtGateCleared(true);
+                  }}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                    padding: '14px 16px', borderRadius: 10, cursor: 'pointer',
+                    border: `1.5px solid ${vt.color}44`,
+                    background: `${vt.color}0d`,
+                    textAlign: 'left', transition: 'border-color 0.15s, background 0.15s',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = vt.color;
+                    (e.currentTarget as HTMLButtonElement).style.background = `${vt.color}1a`;
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = `${vt.color}44`;
+                    (e.currentTarget as HTMLButtonElement).style.background = `${vt.color}0d`;
+                  }}
+                >
+                  <span style={{ fontSize: 22, marginBottom: 8, lineHeight: 1 }}>{vt.icon}</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: vt.color, marginBottom: 3 }}>{vt.label}</span>
+                  <span style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.4 }}>{vt.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Encounter start wizard — new consult only; suppressed for typed visit flows */}
-        {topSection === 'consultation' && !!patientId && !activeCcKey && !wizardSkipped &&
+        {topSection === 'consultation' && !!patientId && vtGateCleared && !activeCcKey && !wizardSkipped &&
          (!ctxVisitType || ctxVisitType === 'new_consult') && (
           <EncounterStartWizard
             onComplete={() => setWizardSkipped(true)}
@@ -1141,7 +1214,7 @@ export default function HomePage() {
         )}
 
         {/* Visit type opening panel — focused intake for follow-up, post-op, endoscopy, etc. */}
-        {topSection === 'consultation' && !!patientId && !wizardSkipped &&
+        {topSection === 'consultation' && !!patientId && vtGateCleared && !wizardSkipped &&
          ctxVisitType && ctxVisitType !== 'new_consult' && (
           <VisitTypeOpeningPanel
             onComplete={() => {
