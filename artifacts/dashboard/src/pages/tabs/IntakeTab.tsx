@@ -1047,6 +1047,56 @@ export default function IntakeTab() {
         })()}
       </CollapsibleCard>
 
+      {/* ── Compact triage summary — driven by intake data above ── */}
+      {(() => {
+        const r = triageResult;
+        if (!r.acuity || r.acuity === 'routine') return null;
+        const ACUITY_STYLE: Record<string, { bg: string; border: string; badge: string; text: string }> = {
+          urgent:   { bg: '#fff1f2', border: '#fecdd3', badge: '#dc2626', text: '#7f1d1d' },
+          priority: { bg: '#fff7ed', border: '#fed7aa', badge: '#ea580c', text: '#7c2d12' },
+          review:   { bg: '#fefce8', border: '#fef08a', badge: '#ca8a04', text: '#713f12' },
+        };
+        const s = ACUITY_STYLE[r.acuity] ?? ACUITY_STYLE.review;
+        const ACTION_LABELS: Record<string, string> = {
+          emergency_now:    'Escalate now — emergency pathway',
+          same_day_call:    'Same-day clinical call',
+          priority_24_48h:  'Priority review in 24–48 hours',
+          routine_booking:  'Routine booking',
+        };
+        return (
+          <div style={{
+            borderRadius: 10, border: `1px solid ${s.border}`,
+            background: s.bg, padding: '12px 16px',
+            display: 'flex', gap: 12, alignItems: 'flex-start',
+          }}>
+            <div style={{ flexShrink: 0 }}>
+              <span style={{
+                display: 'inline-block', borderRadius: 6,
+                background: s.badge, color: '#fff',
+                fontWeight: 800, fontSize: 11, letterSpacing: '0.07em',
+                padding: '3px 9px', textTransform: 'uppercase',
+              }}>
+                {r.acuity} · {r.score}
+              </span>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: s.text, marginBottom: r.reasons.length ? 4 : 0 }}>
+                {ACTION_LABELS[r.recommendedAction] ?? r.recommendedAction}
+              </div>
+              {r.reasons.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                  {r.reasons.map(reason => (
+                    <span key={reason} style={{ fontSize: 11, color: s.text, background: s.border, borderRadius: 4, padding: '1px 7px' }}>
+                      {reason}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
     </div>
   );
 }

@@ -257,73 +257,51 @@ export default function NavSidebar({
 
   let lastGroup = '';
 
-  // ── Consultation ambient mode: icon-only section nav replacing global nav ──
+  // ── Consultation ambient mode: 4-icon phase rail only ────────────────────
   if (consultAmbient) {
+    const AMBIENT_RAIL: Array<{ label: string; Icon: React.FC<{ size?: number; strokeWidth?: number }>; sections: Section[] }> = [
+      { label: 'History',    Icon: FileEdit,       sections: ['hpi', 'pmh', 'surgical', 'medications', 'allergies', 'nurse_apcq'] },
+      { label: 'Exam',       Icon: Stethoscope,    sections: ['examination', 'wounds'] },
+      { label: 'Assessment', Icon: ClipboardCheck, sections: ['assessment', 'ai_consultant'] },
+      { label: 'Plan',       Icon: FileCheck2,     sections: ['plan', 'prescriptions'] },
+    ];
     return (
-      <nav className="nav-sidebar nav-sidebar--collapsed" aria-label="Consultation sections" style={{ overflowY: 'auto' }}>
-        <div className="nav-sidebar__body" style={{ paddingTop: 8 }}>
-          {visiblePhases.map(phase => (
-            <div key={phase.key} style={{ marginBottom: 4 }}>
-              {phase.items.map(sub => {
-                const SubIcon = sub.icon;
-                const done = !!sectionCompletion[sub.id];
-                const isCurrent = activeSection === sub.id;
-                const isNext = !done && !isCurrent && !!suggestedBlocks?.includes(sub.id);
-                return (
-                  <button
-                    key={sub.id}
-                    onClick={() => onSection(sub.id)}
-                    title={sub.label}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      width: '100%', height: 40, border: 'none', cursor: 'pointer',
-                      position: 'relative', borderRadius: 0,
-                      background: isCurrent
-                        ? 'rgba(13,148,136,0.2)'
-                        : 'transparent',
-                      color: isCurrent
-                        ? '#0d9488'
-                        : done
-                          ? 'rgba(255,255,255,0.3)'
-                          : 'rgba(255,255,255,0.6)',
-                      transition: 'background 0.15s, color 0.15s',
-                    }}
-                  >
-                    <SubIcon size={16} strokeWidth={isCurrent ? 2.5 : 2} />
-                    {done && !isCurrent && (
-                      <span style={{
-                        position: 'absolute', top: 6, right: 8,
-                        width: 8, height: 8, borderRadius: '50%',
-                        background: '#0d9488',
-                      }} />
-                    )}
-                    {isNext && !done && (
-                      <span style={{
-                        position: 'absolute', top: 6, right: 8,
-                        width: 6, height: 6, borderRadius: '50%',
-                        background: '#f59e0b',
-                      }} />
-                    )}
-                    {isCurrent && (
-                      <span style={{
-                        position: 'absolute', left: 0, top: 8, bottom: 8,
-                        width: 3, borderRadius: '0 2px 2px 0',
-                        background: '#0d9488',
-                      }} />
-                    )}
-                  </button>
-                );
-              })}
-              {/* Phase divider */}
-              <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '2px 10px' }} />
-            </div>
-          ))}
+      <nav className="nav-sidebar nav-sidebar--collapsed" aria-label="Consultation phases" style={{ overflowY: 'hidden' }}>
+        <div className="nav-sidebar__body" style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {AMBIENT_RAIL.map(({ label, Icon, sections }) => {
+            const isCurrent = sections.includes(activeSection);
+            const doneCount = sections.filter(s => !!sectionCompletion[s]).length;
+            const allDone = doneCount > 0 && doneCount === sections.filter(s => visiblePhases.flatMap(p => p.items).some(i => i.id === s)).length;
+            return (
+              <button
+                key={label}
+                onClick={() => onSection(sections[0])}
+                title={label}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: '100%', height: 44, border: 'none', cursor: 'pointer',
+                  position: 'relative', borderRadius: 0,
+                  background: isCurrent ? 'rgba(13,148,136,0.2)' : 'transparent',
+                  color: isCurrent ? '#0d9488' : allDone ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.55)',
+                  transition: 'background 0.15s, color 0.15s',
+                }}
+              >
+                <Icon size={17} strokeWidth={isCurrent ? 2.5 : 1.8} />
+                {allDone && !isCurrent && (
+                  <span style={{ position: 'absolute', top: 8, right: 10, width: 7, height: 7, borderRadius: '50%', background: '#0d9488' }} />
+                )}
+                {isCurrent && (
+                  <span style={{ position: 'absolute', left: 0, top: 10, bottom: 10, width: 3, borderRadius: '0 2px 2px 0', background: '#0d9488' }} />
+                )}
+              </button>
+            );
+          })}
         </div>
         <button
           className="nsb-toggle"
           onClick={onToggle}
           title="Exit consultation focus"
-          style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+          style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10 }}
         >
           <PanelLeftOpen size={14} strokeWidth={2} />
         </button>

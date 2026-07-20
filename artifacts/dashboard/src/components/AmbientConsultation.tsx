@@ -164,7 +164,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const ctx = useAppContext();
   const {
     activeCcKey, symptoms, hpiNotes, setHpiNotes,
-    vitals, setActiveSection,
+    vitals, activeSection, setActiveSection,
     allergies: allergyText, setAllergies,
     examNotes, setExamNotes,
     examGeneral, setExamGeneral,
@@ -192,6 +192,30 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const [dismissedPrompts, setDismissedPrompts] = useState<string[]>([]);
   const [hpiCollapsed, setHpiCollapsed] = useState(false);
   const [assessAccordion, setAssessAccordion] = useState(false);
+
+  // Wrap phase change to keep sidebar rail in sync
+  function changePhase(phase: ConsultPhase) {
+    setConsultPhase(phase);
+    const sectionMap: Record<ConsultPhase, Section> = {
+      history: 'hpi', exam: 'examination', assessment: 'assessment', plan: 'plan',
+    };
+    setActiveSection(sectionMap[phase]);
+  }
+
+  // Sync sidebar icon taps → consultation phase
+  useEffect(() => {
+    const H = ['hpi','pmh','surgical','medications','allergies','nurse_apcq','family_hx','toxic','ros'];
+    const E = ['examination','wounds'];
+    const A = ['assessment','ai_consultant'];
+    const P = ['plan','prescriptions','dosing','fluid_nutrition','referring_providers'];
+    let target: ConsultPhase | null = null;
+    if (H.includes(activeSection)) target = 'history';
+    else if (E.includes(activeSection)) target = 'exam';
+    else if (A.includes(activeSection)) target = 'assessment';
+    else if (P.includes(activeSection)) target = 'plan';
+    if (target && target !== consultPhase) setConsultPhase(target);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSection]);
 
   // ── Voice state ────────────────────────────────────────────────────────────
   const [micOpen, setMicOpen]         = useState(false);
@@ -408,7 +432,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
 
   // ── Phase transitions ──────────────────────────────────────────────────────
   function enterExam() {
-    setConsultPhase('exam');
+    changePhase('exam');
     setActiveDrawer(null);
   }
 
@@ -442,7 +466,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     parts.push('\n\n' + '─'.repeat(40) + '\n\nWorking Diagnosis:\n\nDifferential Diagnoses:\n1. \n2. \n3. \n\nKey Concerns / Red Flags:\n\nMissing Information:');
     const draft = parts.join('');
     if (!assessment.trim()) ctx.setAssessment(draft);
-    setConsultPhase('assessment');
+    changePhase('assessment');
     setActiveDrawer(null);
   }
 
@@ -458,7 +482,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         '6. Safety-net / Patient instructions:\n   \n',
       );
     }
-    setConsultPhase('plan');
+    changePhase('plan');
   }
 
   const fullTranscript = transcript + (interim ? interim : '');
@@ -499,7 +523,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               key={p.key}
               type="button"
               onClick={() => {
-                if (done) setConsultPhase(p.key);
+                if (done) changePhase(p.key);
               }}
               disabled={i > phaseIdx}
               title={done ? `Return to ${p.label}` : active ? `Current phase: ${p.label}` : undefined}
@@ -1260,7 +1284,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
 
           {/* Phase nav */}
           <div style={{ display: 'flex', gap: 8 }}>
-            <button type="button" onClick={() => setConsultPhase('history')}
+            <button type="button" onClick={() => changePhase('history')}
               style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)',
                 background: 'var(--card)', color: 'var(--muted)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               ← History
@@ -1334,7 +1358,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           </div>
 
           <div style={{ display: 'flex', gap: 8 }}>
-            <button type="button" onClick={() => setConsultPhase('exam')}
+            <button type="button" onClick={() => changePhase('exam')}
               style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)',
                 background: 'var(--card)', color: 'var(--muted)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               ← Exam
@@ -1389,7 +1413,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           </div>
 
           <div style={{ display: 'flex', gap: 8 }}>
-            <button type="button" onClick={() => setConsultPhase('assessment')}
+            <button type="button" onClick={() => changePhase('assessment')}
               style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)',
                 background: 'var(--card)', color: 'var(--muted)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
               ← Assessment
