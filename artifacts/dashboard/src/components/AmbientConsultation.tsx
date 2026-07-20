@@ -49,33 +49,6 @@ function abnormalVitals(vitals: Record<string, string>): string[] {
   return flags;
 }
 
-// ── Section navigation map ─────────────────────────────────────────────────────
-// Ordered for surgical outpatient consultation. Sections after 'hpi' only.
-
-const SECTION_NAV: Partial<Record<Section, { label: string; icon: string }>> = {
-  pmh:           { label: 'PMH',         icon: '📋' },
-  surgical:      { label: 'Surgical Hx', icon: '🔪' },
-  medications:   { label: 'Medications', icon: '💊' },
-  allergies:     { label: 'Allergies',   icon: '⚠️' },
-  family_hx:     { label: 'Family Hx',  icon: '🧬' },
-  ros:           { label: 'Systems',     icon: '🔍' },
-  examination:   { label: 'Exam',        icon: '🩺' },
-  investigations:{ label: 'Labs',        icon: '🧪' },
-  radiology:     { label: 'Imaging',     icon: '📡' },
-  attachments:   { label: 'Reports',     icon: '📎' },
-  assessment:    { label: 'Assessment',  icon: '🎯' },
-  plan:          { label: 'Plan',        icon: '📝' },
-  procedures:    { label: 'Procedure',   icon: '⚕️' },
-  prescriptions: { label: 'Rx',          icon: '💉' },
-};
-
-// Fallback order when no CC matrix is active
-const DEFAULT_NAV_ORDER: Section[] = [
-  'pmh', 'surgical', 'medications', 'allergies',
-  'examination', 'investigations', 'radiology',
-  'assessment', 'plan',
-];
-
 type SegmentSource = 'local' | 'ollama' | 'cloud';
 
 async function persistCallLog(
@@ -111,9 +84,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const ctx = useAppContext();
   const {
     activeCcKey, symptoms, hpiNotes, setHpiNotes,
-    vitals, setActiveSection, patientName, age, sex,
-    allergies: allergyText,
-    examNotes, assessment, plan,
+    vitals, setActiveSection,
+    examNotes, assessment, setAssessment, plan, setPlan,
     orderedInvestigations, radiologyRequests,
   } = ctx;
 
@@ -130,7 +102,6 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const recogRef = useRef<SpeechRecognition | null>(null);
 
   // Photo state
-  const [photosOpen, setPhotosOpen]   = useState(false);
   const [cameraRef] = useState(() => ({ current: null as HTMLInputElement | null }));
 
   // DX engine
@@ -143,11 +114,6 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
 
   // Vitals: only surface abnormal values
   const vitalFlags = abnormalVitals(vitals as Record<string, string>);
-
-  // Build ordered section nav from CC matrix or default
-  const navSections: Section[] = ccMatrix
-    ? (ccMatrix.sections.filter(s => s !== 'hpi' && s in SECTION_NAV) as Section[])
-    : DEFAULT_NAV_ORDER;
 
   // Passive safety reminders — recomputed whenever relevant state changes
   const safetyReminders = useMemo(() => computeReminders({
@@ -330,115 +296,64 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   // ── Render ───────────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
 
-      {/* ── CC / patient context bar ─── */}
-      {(ccLabel || vitalFlags.length > 0) && (
+      {/* ── HPI card — primary workspace, fills available height ── */}
+      <div style={{
+        borderRadius: 10, border: '1px solid #334155', background: '#111827',
+        overflow: 'hidden', display: 'flex', flexDirection: 'column',
+      }}>
+        {/* Toolbar */}
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '6px 12px', borderRadius: 8,
-          background: '#1e293b',
-          border: '1px solid #334155',
-          gap: 8, flexWrap: 'nowrap', overflow: 'hidden',
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '7px 10px', borderBottom: '1px solid #1a2535',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, overflow: 'hidden' }}>
-            {ccLabel && (
-              <span style={{
-                fontSize: 13, fontWeight: 700, color: '#f1f5f9',
-                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-              }}>
-                {ccLabel}
-              </span>
-            )}
-            {visitType && (
-              <span style={{
-                fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
-                color: '#0d9488', background: 'rgba(13,148,136,0.12)',
-                border: '1px solid rgba(13,148,136,0.3)',
-                borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0,
-              }}>
-                {visitType.replace(/_/g, ' ')}
-              </span>
-            )}
-          </div>
-          {/* Abnormal vitals badge — only shown if triggered */}
+          {/* Mic toggle */}
+          <button
+            type="button"
+            onClick={() => {
+              if (!micOpen) { setMicOpen(true); if (!recording && !pendingSoap) startRecording(); }
+              else if (recording) void handleSegment();
+              else setMicOpen(false);
+            }}
+            disabled={!SPEECH_SUPPORTED && !micOpen}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
+              fontSize: 11, fontWeight: 700,
+              background: recording ? '#dc2626' : micOpen ? '#0d9488' : 'rgba(13,148,136,0.14)',
+              color: recording ? '#fff' : micOpen ? '#fff' : '#0d9488',
+              transition: 'all 0.15s',
+            }}
+            title={recording ? 'Stop & analyse' : micOpen ? 'Close mic' : 'Dictate HPI'}
+          >
+            <span style={{
+              display: 'inline-block', width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+              background: recording ? '#fff' : 'currentColor',
+              animation: recording ? 'ambPulse 1s ease-in-out infinite' : 'none',
+            }} />
+            {recording ? 'Stop' : segmenting ? 'Analysing…' : accepted ? '✓ Loaded' : '🎙 Dictate'}
+          </button>
+          <button
+            type="button" onClick={() => goToSection('hpi')}
+            style={{ padding: '4px 8px', borderRadius: 6, fontSize: 10, fontWeight: 600, border: '1px solid #1e293b', background: 'transparent', color: '#475569', cursor: 'pointer' }}
+            title="Open full HPI editor"
+          >Full ↗</button>
+          <span style={{ flex: 1 }} />
+          {/* Inline DX hint */}
+          {ctx.paneTop[0] && ctx.paneTop[0].probability > 0.3 && (
+            <span style={{ fontSize: 10, color: '#475569', whiteSpace: 'nowrap' }}>
+              📍 {ctx.paneTop[0].disease.label} {Math.round(ctx.paneTop[0].probability * 100)}%
+            </span>
+          )}
+          {/* Abnormal vitals */}
           {vitalFlags.length > 0 && (
             <button
-              type="button"
-              onClick={() => goToSection('monitoring')}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                padding: '3px 9px', borderRadius: 6, border: 'none', cursor: 'pointer',
-                background: '#7f1d1d', color: '#fca5a5',
-                fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0,
-              }}
-              title="Abnormal vitals — tap to review"
-            >
-              ⚠ {vitalFlags.join(' · ')}
-            </button>
+              type="button" onClick={() => goToSection('monitoring')}
+              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, border: 'none', cursor: 'pointer', background: '#7f1d1d', color: '#fca5a5', fontSize: 10, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0 }}
+              title="Abnormal vitals"
+            >⚠ {vitalFlags.join(' · ')}</button>
           )}
-        </div>
-      )}
-
-      {/* ── Presenting History — primary field ─── */}
-      <div style={{
-        borderRadius: 10,
-        border: '1px solid #334155',
-        background: '#111827',
-        overflow: 'hidden',
-      }}>
-        {/* Label row */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '8px 12px 0',
-        }}>
-          <span style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: '0.1em',
-            textTransform: 'uppercase', color: '#64748b',
-          }}>
-            Presenting History
-          </span>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            {/* Inline mic toggle */}
-            <button
-              type="button"
-              onClick={() => {
-                if (!micOpen) { setMicOpen(true); if (!recording && !pendingSoap) startRecording(); }
-                else if (recording) void handleSegment();
-                else setMicOpen(false);
-              }}
-              disabled={!SPEECH_SUPPORTED && !micOpen}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                padding: '4px 10px', borderRadius: 6, border: 'none', cursor: 'pointer',
-                fontSize: 11, fontWeight: 700,
-                background: recording ? '#dc2626' : micOpen ? '#0d9488' : 'rgba(13,148,136,0.12)',
-                color: recording ? '#fff' : micOpen ? '#fff' : '#0d9488',
-                transition: 'all 0.15s',
-              }}
-              title={recording ? 'Stop & analyse' : micOpen ? 'Close mic' : 'Dictate HPI'}
-            >
-              <span style={{
-                display: 'inline-block', width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-                background: recording ? '#fff' : 'currentColor',
-                animation: recording ? 'ambPulse 1s ease-in-out infinite' : 'none',
-              }} />
-              {recording ? 'Stop' : segmenting ? 'Analysing…' : accepted ? '✓ Loaded' : '🎙 Dictate'}
-            </button>
-            {/* Go to full HPI tab */}
-            <button
-              type="button"
-              onClick={() => goToSection('hpi')}
-              style={{
-                padding: '4px 9px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                border: '1px solid #334155', background: 'transparent',
-                color: '#64748b', cursor: 'pointer',
-              }}
-              title="Open full HPI editor"
-            >
-              Full HPI ↗
-            </button>
-          </div>
         </div>
 
         {/* HPI textarea */}
@@ -451,360 +366,165 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               : 'Presenting history — tap 🎙 Dictate to start, or type directly.'
           }
           style={{
-            display: 'block', width: '100%', minHeight: 130,
-            padding: '10px 12px', border: 'none', resize: 'vertical',
+            display: 'block', width: '100%', minHeight: '50vh',
+            padding: '12px', border: 'none', resize: 'vertical',
             background: 'transparent', color: '#f1f5f9',
             fontSize: 13, lineHeight: 1.7, fontFamily: 'Georgia, serif',
             outline: 'none', boxSizing: 'border-box',
           }}
         />
 
-        {/* Mic expansion panel — only when open */}
+        {/* Mic expansion panel */}
         {micOpen && (
           <div style={{
             borderTop: `1px solid ${recording ? 'rgba(220,38,38,0.4)' : '#334155'}`,
             padding: '8px 12px',
             background: recording ? 'rgba(220,38,38,0.05)' : 'rgba(13,148,136,0.04)',
           }}>
-            {/* Transcript rolling preview */}
             {(fullTranscript || recording) && (
-              <div style={{
-                fontSize: 12, lineHeight: 1.6, color: '#94a3b8',
-                fontFamily: 'Georgia, serif', maxHeight: 72, overflowY: 'auto',
-                marginBottom: pendingSoap ? 8 : 0,
-              }}>
+              <div style={{ fontSize: 12, lineHeight: 1.6, color: '#94a3b8', fontFamily: 'Georgia, serif', maxHeight: 72, overflowY: 'auto', marginBottom: pendingSoap ? 8 : 0 }}>
                 {transcript}
                 {interim && <span style={{ color: '#475569' }}>{interim}</span>}
-                {recording && !fullTranscript && (
-                  <span style={{ color: '#475569', fontStyle: 'italic' }}>Listening…</span>
-                )}
+                {recording && !fullTranscript && <span style={{ color: '#475569', fontStyle: 'italic' }}>Listening…</span>}
               </div>
             )}
-
-            {/* SOAP preview — after stop & segment */}
-            {pendingSoap && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <div style={{ fontSize: 10, fontWeight: 800, color: '#f59e0b', letterSpacing: '0.06em' }}>
-                  PREVIEW — review then accept
-                  {segmentSource && (
-                    <span style={{
-                      marginLeft: 8, fontSize: 9, padding: '1px 6px', borderRadius: 8,
-                      background: segmentSource === 'cloud' ? 'rgba(59,130,246,.2)' : 'rgba(16,185,129,.2)',
-                      color: segmentSource === 'cloud' ? '#60a5fa' : '#059669',
-                    }}>
-                      {segmentSource === 'local' ? '⚡ Local' : segmentSource === 'ollama' ? '🟢 Ollama' : '🤖 Cloud'}
-                    </span>
-                  )}
-                </div>
-                {([
-                  ['HPI', pendingSoap.hpi],
-                  ['Assessment', pendingSoap.assessment],
-                  ['Plan', pendingSoap.plan],
-                  ...Object.entries(pendingSoap.examination ?? {}).filter(([, v]) => v?.trim()).map(([k, v]) => [`Exam — ${k}`, v]),
-                ] as [string, string | undefined][]).filter(([, v]) => v?.trim()).map(([label, text]) => (
-                  <div key={label} style={{
-                    background: '#1e293b', borderRadius: 6, padding: '6px 10px',
-                    border: '1px solid #334155',
-                  }}>
-                    <div style={{ fontSize: 9, fontWeight: 800, color: '#0d9488', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 2 }}>{label}</div>
-                    <div style={{ fontSize: 12, lineHeight: 1.5, color: '#cbd5e1', fontFamily: 'Georgia, serif' }}>{text}</div>
-                  </div>
-                ))}
-                <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
-                  <button
-                    type="button" onClick={acceptSoap}
-                    style={{
-                      flex: 1, padding: '7px', borderRadius: 7, border: 'none',
-                      background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer',
-                    }}
-                  >
-                    ↓ Accept
-                  </button>
-                  <button
-                    type="button" onClick={() => { setPendingSoap(null); setTranscript(''); }}
-                    style={{
-                      padding: '7px 14px', borderRadius: 7, border: '1px solid #334155',
-                      background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer',
-                    }}
-                  >
-                    Discard
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Controls row */}
             {!pendingSoap && (
               <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                 {!recording && transcript && !segmenting && (
-                  <button
-                    type="button" onClick={() => void handleSegment()}
-                    style={{
-                      padding: '5px 14px', borderRadius: 6, border: 'none',
-                      background: '#0d9488', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer',
-                    }}
-                  >
-                    Analyse transcript →
+                  <button type="button" onClick={() => void handleSegment()} style={{ padding: '5px 14px', borderRadius: 6, border: 'none', background: '#0d9488', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                    Analyse →
                   </button>
                 )}
                 {!recording && (
-                  <button
-                    type="button" onClick={() => { setTranscript(''); setVoiceError(null); setMicOpen(false); }}
-                    style={{
-                      padding: '5px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                      border: '1px solid #334155', background: 'transparent', color: '#64748b', cursor: 'pointer',
-                    }}
-                  >
+                  <button type="button" onClick={() => { setTranscript(''); setVoiceError(null); setMicOpen(false); }} style={{ padding: '5px 10px', borderRadius: 6, fontSize: 11, border: '1px solid #334155', background: 'transparent', color: '#64748b', cursor: 'pointer' }}>
                     Close
                   </button>
                 )}
-                {segmenting && (
-                  <span style={{ fontSize: 11, color: '#f59e0b' }}>Analysing…</span>
-                )}
+                {segmenting && <span style={{ fontSize: 11, color: '#f59e0b' }}>Analysing…</span>}
               </div>
             )}
-
-            {voiceError && (
-              <div style={{ marginTop: 6, fontSize: 11, color: '#fca5a5', padding: '4px 8px', borderRadius: 5, background: 'rgba(220,38,38,0.1)' }}>
-                {voiceError}
-              </div>
-            )}
+            {voiceError && <div style={{ marginTop: 6, fontSize: 11, color: '#fca5a5', padding: '4px 8px', borderRadius: 5, background: 'rgba(220,38,38,0.1)' }}>{voiceError}</div>}
           </div>
         )}
       </div>
 
-      {/* ── Algorithm section navigation ─── */}
-      {navSections.length > 0 && (
-        <div>
-          <div style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
-            textTransform: 'uppercase', color: '#64748b', marginBottom: 6,
-          }}>
-            Continue with
+      {/* ── SOAP preview ── */}
+      {pendingSoap && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '10px 12px', borderRadius: 10, border: '1px solid #334155', background: '#111827' }}>
+          <div style={{ fontSize: 10, fontWeight: 800, color: '#f59e0b', letterSpacing: '0.06em' }}>
+            PREVIEW — review then accept
+            {segmentSource && (
+              <span style={{ marginLeft: 8, fontSize: 9, padding: '1px 6px', borderRadius: 8, background: segmentSource === 'cloud' ? 'rgba(59,130,246,.2)' : 'rgba(16,185,129,.2)', color: segmentSource === 'cloud' ? '#60a5fa' : '#059669' }}>
+                {segmentSource === 'local' ? '⚡ Local' : segmentSource === 'ollama' ? '🟢 Ollama' : '🤖 Cloud'}
+              </span>
+            )}
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {navSections.map(s => {
-              const nav = SECTION_NAV[s];
-              if (!nav) return null;
-              return (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => goToSection(s)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 5,
-                    padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
-                    border: '1.5px solid #334155',
-                    background: '#1e293b',
-                    color: '#e2e8f0',
-                    fontSize: 12, fontWeight: 600,
-                    transition: 'border-color 0.12s, background 0.12s',
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#0d9488';
-                    (e.currentTarget as HTMLButtonElement).style.color = '#0d9488';
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#334155';
-                    (e.currentTarget as HTMLButtonElement).style.color = '#e2e8f0';
-                  }}
-                >
-                  {nav.icon} {nav.label}
-                </button>
-              );
-            })}
+          {([
+            ['HPI', pendingSoap.hpi],
+            ['Assessment', pendingSoap.assessment],
+            ['Plan', pendingSoap.plan],
+            ...Object.entries(pendingSoap.examination ?? {}).filter(([, v]) => v?.trim()).map(([k, v]) => [`Exam — ${k}`, v]),
+          ] as [string, string | undefined][]).filter(([, v]) => v?.trim()).map(([label, text]) => (
+            <div key={label} style={{ background: '#1e293b', borderRadius: 6, padding: '6px 10px', border: '1px solid #334155' }}>
+              <div style={{ fontSize: 9, fontWeight: 800, color: '#0d9488', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 2 }}>{label}</div>
+              <div style={{ fontSize: 12, lineHeight: 1.5, color: '#cbd5e1', fontFamily: 'Georgia, serif' }}>{text}</div>
+            </div>
+          ))}
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button type="button" onClick={acceptSoap} style={{ flex: 1, padding: '7px', borderRadius: 7, border: 'none', background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
+              ↓ Accept
+            </button>
+            <button type="button" onClick={() => { setPendingSoap(null); setTranscript(''); }} style={{ padding: '7px 14px', borderRadius: 7, border: '1px solid #334155', background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer' }}>
+              Discard
+            </button>
           </div>
         </div>
       )}
 
-      {/* ── Passive safety reminders ─── */}
-      {safetyReminders.length > 0 && (
-        <div>
-          <div style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
-            textTransform: 'uppercase', color: '#64748b', marginBottom: 5,
-          }}>
-            Reminders
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {safetyReminders.map(r => (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => goToSection(r.section)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 7,
-                  padding: '5px 10px', borderRadius: 7, cursor: 'pointer', textAlign: 'left',
-                  border: r.urgency === 'flag'
-                    ? '1px solid rgba(245,158,11,0.4)'
-                    : '1px solid #334155',
-                  background: r.urgency === 'flag'
-                    ? 'rgba(245,158,11,0.06)'
-                    : '#1e293b',
-                  color: r.urgency === 'flag' ? '#d97706' : '#64748b',
-                  fontSize: 11, fontWeight: 600,
-                }}
-                title={`Go to ${r.section}`}
-              >
-                <span style={{ flexShrink: 0, opacity: 0.7 }}>
-                  {r.urgency === 'flag' ? '◈' : '○'}
-                </span>
-                <span>{r.text}</span>
-              </button>
-            ))}
-          </div>
+      {/* ── Pathognomic alerts ── */}
+      {pathognomicAlerts.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {pathognomicAlerts.map(a => (
+            <div key={a.diseaseId} style={{ background: a.specificity === 'definitive' ? '#fef2f2' : '#fffbeb', border: `1px solid ${a.specificity === 'definitive' ? '#fca5a5' : '#fde68a'}`, borderRadius: 7, padding: '5px 10px', fontSize: 12, color: a.specificity === 'definitive' ? '#991b1b' : '#92400e', display: 'flex', gap: 6, alignItems: 'center' }}>
+              <span style={{ fontWeight: 800 }}>{a.specificity === 'definitive' ? '⚠ Pathognomonic:' : '◈ Strong indicator:'}</span>
+              {a.diseaseLabel}
+              <span style={{ opacity: 0.6, fontStyle: 'italic' }}>— {a.finding}</span>
+            </div>
+          ))}
         </div>
       )}
 
-      {/* ── Footer bar: photos + summary ─── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <button
-          type="button"
-          onClick={() => setPhotosOpen(p => !p)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 5,
-            padding: '6px 12px', borderRadius: 8,
-            border: '1px solid #334155',
-            background: '#1e293b',
-            color: photosOpen ? '#0d9488' : '#64748b',
-            fontSize: 12, fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          📷 Photos {ctx.examPhotos.length > 0 ? `(${ctx.examPhotos.length})` : ''}
-        </button>
-        <span style={{ flex: 1 }} />
-        <button
-          type="button"
-          onClick={() => goToSection('examination')}
-          style={{
-            padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer',
-            border: '1px solid rgba(13,148,136,0.4)', background: 'rgba(13,148,136,0.08)', color: '#0d9488',
-          }}
-        >
-          🩺 Exam →
-        </button>
-        <button
-          type="button"
-          onClick={onFinalise}
-          style={{
-            padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 800, cursor: 'pointer',
-            border: '2px solid #0d9488', background: '#0d9488', color: '#fff',
-          }}
-        >
-          📋 Summary
-        </button>
+      {/* ── Safety flag chips — urgent only, compact ── */}
+      {safetyReminders.filter(r => r.urgency === 'flag').length > 0 && (
+        <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
+          {safetyReminders.filter(r => r.urgency === 'flag').map(r => (
+            <button
+              key={r.id} type="button" onClick={() => goToSection(r.section)}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '4px 9px', borderRadius: 20, border: '1px solid rgba(245,158,11,0.4)', background: 'rgba(245,158,11,0.06)', color: '#d97706', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}
+            >
+              ◈ {r.text}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Assessment + Plan quick-entry ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        {([
+          ['Assessment', assessment, setAssessment, 'Provisional diagnosis…', '#0d9488'],
+          ['Plan', plan, setPlan, 'Management plan…', '#475569'],
+        ] as [string, string, (v: string) => void, string, string][]).map(([label, value, setter, placeholder, labelColor]) => (
+          <div key={label} style={{ background: '#111827', borderRadius: 8, border: '1px solid #334155', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '5px 10px', fontSize: 9, fontWeight: 800, letterSpacing: '.1em', color: labelColor, textTransform: 'uppercase', borderBottom: '1px solid #1a2535', flexShrink: 0 }}>
+              {label}
+            </div>
+            <textarea
+              value={value}
+              onChange={e => setter(e.target.value)}
+              placeholder={placeholder}
+              style={{ display: 'block', width: '100%', minHeight: 72, padding: '8px 10px', border: 'none', background: 'transparent', color: '#f1f5f9', fontSize: 12, lineHeight: 1.6, outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+            />
+          </div>
+        ))}
       </div>
 
-      {/* Photos panel — thumbnails always visible; capture toggled */}
-      {(photosOpen || ctx.examPhotos.length > 0) && (
-        <div style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #334155', background: '#1e293b' }}>
-          <input
-            ref={el => { cameraRef.current = el; }}
-            type="file" accept="image/*" capture="environment"
-            style={{ display: 'none' }}
-            onChange={async e => {
-              const file = e.target.files?.[0];
-              if (!file) return;
-              const reader = new FileReader();
-              reader.onload = ev => {
-                const dataUrl = ev.target?.result as string;
-                if (dataUrl) ctx.setExamPhotos([
-                  ...ctx.examPhotos,
-                  { id: crypto.randomUUID(), dataUrl, mimeType: file.type, bodyRegion: 'wound', description: '', distanceCm: '', dateAdded: new Date().toISOString() },
-                ]);
-              };
-              reader.readAsDataURL(file);
-              e.target.value = '';
-            }}
-          />
-          {photosOpen && (
-            <button
-              type="button" onClick={() => cameraRef.current?.click()}
-              style={{ padding: '7px 14px', borderRadius: 7, border: '1.5px solid #0d9488', background: '#f0fdfa', color: '#0d9488', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-            >
-              📷 Capture photo
-            </button>
-          )}
-          {ctx.examPhotos.length > 0 && (
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: photosOpen ? 8 : 0 }}>
-              {ctx.examPhotos.map(p => (
-                <div key={p.id} style={{ position: 'relative', width: 68, height: 68 }}>
-                  <img src={p.dataUrl} alt={p.bodyRegion} style={{ width: 68, height: 68, borderRadius: 7, objectFit: 'cover', border: '1.5px solid #e2e8f0' }} />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Live DX from transcript ─── */}
-      {(pathognomicAlerts.length > 0 || (dxUpdatedAt && ctx.paneTop.length > 0)) && (
-        <div style={{ borderTop: '1px solid #334155', paddingTop: 10 }}>
-          {pathognomicAlerts.length > 0 && (
-            <div style={{ marginBottom: 8 }}>
-              {pathognomicAlerts.map(a => (
-                <div key={a.diseaseId} style={{
-                  background: a.specificity === 'definitive' ? '#fef2f2' : '#fffbeb',
-                  border: `1px solid ${a.specificity === 'definitive' ? '#fca5a5' : '#fde68a'}`,
-                  borderRadius: 7, padding: '5px 10px', marginBottom: 4,
-                  fontSize: 12, color: a.specificity === 'definitive' ? '#991b1b' : '#92400e',
-                  display: 'flex', gap: 6, alignItems: 'center',
-                }}>
-                  <span style={{ fontWeight: 800 }}>{a.specificity === 'definitive' ? '⚠ Pathognomonic:' : '◈ Strong indicator:'}</span>
-                  {a.diseaseLabel}
-                  <span style={{ opacity: 0.6, fontStyle: 'italic' }}>— {a.finding}</span>
-                </div>
-              ))}
-            </div>
-          )}
-          {ctx.paneTop.length > 0 && (
-            <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '.08em', color: '#64748b', marginBottom: 6, textTransform: 'uppercase' }}>
-                Differential (from transcript)
-              </div>
-              {ctx.paneTop.slice(0, 3).map(r => (
-                <div key={r.disease.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <div style={{ flex: 1, height: 18, background: '#f1f5f9', borderRadius: 4, overflow: 'hidden', position: 'relative' }}>
-                    <div style={{
-                      position: 'absolute', left: 0, top: 0, bottom: 0,
-                      width: `${Math.round(r.probability * 100)}%`,
-                      background: r.probability > 0.5 ? '#0d9488' : r.probability > 0.25 ? '#f59e0b' : '#94a3b8',
-                      borderRadius: 4,
-                    }} />
-                    <span style={{ position: 'absolute', left: 6, top: 0, bottom: 0, display: 'flex', alignItems: 'center', fontSize: 11, fontWeight: 600, color: r.probability > 0.5 ? '#fff' : '#0f172a' }}>
-                      {r.disease.label}
-                    </span>
-                  </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, minWidth: 34, color: '#64748b', textAlign: 'right' }}>
-                    {Math.round(r.probability * 100)}%
-                  </span>
-                </div>
-              ))}
-              {(() => {
-                const top1 = ctx.paneTop[0];
-                if (!top1 || top1.probability < 0.3) return null;
-                const proto = getProtocol(top1.disease.id);
-                if (!proto) return null;
-                const statInvx = proto.investigations.filter(i => i.urgency === 'stat' || i.urgency === 'urgent').slice(0, 3);
-                if (!statInvx.length) return null;
-                return (
-                  <div style={{ marginTop: 8, fontSize: 11, color: '#334155' }}>
-                    <div style={{ fontWeight: 700, fontSize: 10, letterSpacing: '.08em', color: '#0d9488', textTransform: 'uppercase', marginBottom: 4 }}>
-                      If {top1.disease.label}
-                    </div>
-                    {statInvx.map(i => (
-                      <div key={i.label} style={{ display: 'flex', gap: 5, marginBottom: 2 }}>
-                        <span style={{ color: i.urgency === 'stat' ? '#dc2626' : '#d97706', fontWeight: 700 }}>{i.urgency.toUpperCase()}</span>
-                        <span>{i.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </div>
-          )}
-        </div>
-      )}
+      {/* ── Photos + Summary row ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <input
+          ref={el => { cameraRef.current = el; }}
+          type="file" accept="image/*" capture="environment"
+          style={{ display: 'none' }}
+          onChange={async e => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+              const dataUrl = ev.target?.result as string;
+              if (dataUrl) ctx.setExamPhotos([
+                ...ctx.examPhotos,
+                { id: crypto.randomUUID(), dataUrl, mimeType: file.type, bodyRegion: 'wound', description: '', distanceCm: '', dateAdded: new Date().toISOString() },
+              ]);
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+          }}
+        />
+        <button
+          type="button" onClick={() => cameraRef.current?.click()}
+          style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '6px 10px', borderRadius: 7, border: '1px solid #334155', background: '#1e293b', color: '#64748b', fontSize: 12, cursor: 'pointer' }}
+          title="Add photo"
+        >📷{ctx.examPhotos.length > 0 ? ` ${ctx.examPhotos.length}` : ''}</button>
+        {ctx.examPhotos.map(p => (
+          <div key={p.id} style={{ width: 44, height: 44, flexShrink: 0 }}>
+            <img src={p.dataUrl} alt={p.bodyRegion} style={{ width: 44, height: 44, borderRadius: 6, objectFit: 'cover', border: '1.5px solid #334155' }} />
+          </div>
+        ))}
+        <span style={{ flex: 1 }} />
+        <button
+          type="button" onClick={onFinalise}
+          style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 800, cursor: 'pointer', border: '2px solid #0d9488', background: '#0d9488', color: '#fff' }}
+        >📋 Summary</button>
+      </div>
 
       <style>{`
         @keyframes ambPulse {
