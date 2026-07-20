@@ -21,6 +21,7 @@ export type SectionCompletion = Partial<Record<Section, boolean>>;
 
 interface NavSidebarProps {
   collapsed: boolean;
+  consultAmbient?: boolean;
   onToggle: () => void;
   topSection: TopSection;
   onTopSection: (s: TopSection) => void;
@@ -191,7 +192,7 @@ const FD_NAV_ITEMS: TopItem[] = [
 ];
 
 export default function NavSidebar({
-  collapsed, onToggle,
+  collapsed, consultAmbient = false, onToggle,
   topSection, onTopSection,
   activeSection, onSection,
   userRole, hasUrgentRedFlag, urgentCount, acuity,
@@ -255,6 +256,80 @@ export default function NavSidebar({
   const activePhaseKey = visiblePhases.find(p => p.hasActive)?.key;
 
   let lastGroup = '';
+
+  // ── Consultation ambient mode: icon-only section nav replacing global nav ──
+  if (consultAmbient) {
+    return (
+      <nav className="nav-sidebar nav-sidebar--collapsed" aria-label="Consultation sections" style={{ overflowY: 'auto' }}>
+        <div className="nav-sidebar__body" style={{ paddingTop: 8 }}>
+          {visiblePhases.map(phase => (
+            <div key={phase.key} style={{ marginBottom: 4 }}>
+              {phase.items.map(sub => {
+                const SubIcon = sub.icon;
+                const done = !!sectionCompletion[sub.id];
+                const isCurrent = activeSection === sub.id;
+                const isNext = !done && !isCurrent && !!suggestedBlocks?.includes(sub.id);
+                return (
+                  <button
+                    key={sub.id}
+                    onClick={() => onSection(sub.id)}
+                    title={sub.label}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      width: '100%', height: 40, border: 'none', cursor: 'pointer',
+                      position: 'relative', borderRadius: 0,
+                      background: isCurrent
+                        ? 'rgba(13,148,136,0.2)'
+                        : 'transparent',
+                      color: isCurrent
+                        ? '#0d9488'
+                        : done
+                          ? 'rgba(255,255,255,0.3)'
+                          : 'rgba(255,255,255,0.6)',
+                      transition: 'background 0.15s, color 0.15s',
+                    }}
+                  >
+                    <SubIcon size={16} strokeWidth={isCurrent ? 2.5 : 2} />
+                    {done && !isCurrent && (
+                      <span style={{
+                        position: 'absolute', top: 6, right: 8,
+                        width: 8, height: 8, borderRadius: '50%',
+                        background: '#0d9488',
+                      }} />
+                    )}
+                    {isNext && !done && (
+                      <span style={{
+                        position: 'absolute', top: 6, right: 8,
+                        width: 6, height: 6, borderRadius: '50%',
+                        background: '#f59e0b',
+                      }} />
+                    )}
+                    {isCurrent && (
+                      <span style={{
+                        position: 'absolute', left: 0, top: 8, bottom: 8,
+                        width: 3, borderRadius: '0 2px 2px 0',
+                        background: '#0d9488',
+                      }} />
+                    )}
+                  </button>
+                );
+              })}
+              {/* Phase divider */}
+              <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '2px 10px' }} />
+            </div>
+          ))}
+        </div>
+        <button
+          className="nsb-toggle"
+          onClick={onToggle}
+          title="Exit consultation focus"
+          style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10 }}
+        >
+          <PanelLeftOpen size={14} strokeWidth={2} />
+        </button>
+      </nav>
+    );
+  }
 
   return (
     <nav className={`nav-sidebar${collapsed ? ' nav-sidebar--collapsed' : ''}`} aria-label="Navigation">

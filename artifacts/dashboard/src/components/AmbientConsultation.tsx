@@ -337,14 +337,14 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '6px 12px', borderRadius: 8,
-          background: 'var(--surface, #1e293b)',
-          border: '1px solid var(--line, #334155)',
+          background: '#1e293b',
+          border: '1px solid #334155',
           gap: 8, flexWrap: 'nowrap', overflow: 'hidden',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, overflow: 'hidden' }}>
             {ccLabel && (
               <span style={{
-                fontSize: 13, fontWeight: 700, color: 'var(--ink, #f1f5f9)',
+                fontSize: 13, fontWeight: 700, color: '#f1f5f9',
                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
               }}>
                 {ccLabel}
@@ -383,8 +383,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       {/* ── Presenting History — primary field ─── */}
       <div style={{
         borderRadius: 10,
-        border: '1px solid var(--line, #334155)',
-        background: 'var(--card, #111827)',
+        border: '1px solid #334155',
+        background: '#111827',
         overflow: 'hidden',
       }}>
         {/* Label row */}
@@ -431,7 +431,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               onClick={() => goToSection('hpi')}
               style={{
                 padding: '4px 9px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                border: '1px solid var(--line, #334155)', background: 'transparent',
+                border: '1px solid #334155', background: 'transparent',
                 color: '#64748b', cursor: 'pointer',
               }}
               title="Open full HPI editor"
@@ -453,7 +453,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           style={{
             display: 'block', width: '100%', minHeight: 130,
             padding: '10px 12px', border: 'none', resize: 'vertical',
-            background: 'transparent', color: 'var(--ink, #f1f5f9)',
+            background: 'transparent', color: '#f1f5f9',
             fontSize: 13, lineHeight: 1.7, fontFamily: 'Georgia, serif',
             outline: 'none', boxSizing: 'border-box',
           }}
@@ -462,7 +462,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         {/* Mic expansion panel — only when open */}
         {micOpen && (
           <div style={{
-            borderTop: `1px solid ${recording ? 'rgba(220,38,38,0.4)' : 'var(--line, #334155)'}`,
+            borderTop: `1px solid ${recording ? 'rgba(220,38,38,0.4)' : '#334155'}`,
             padding: '8px 12px',
             background: recording ? 'rgba(220,38,38,0.05)' : 'rgba(13,148,136,0.04)',
           }}>
@@ -503,8 +503,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   ...Object.entries(pendingSoap.examination ?? {}).filter(([, v]) => v?.trim()).map(([k, v]) => [`Exam — ${k}`, v]),
                 ] as [string, string | undefined][]).filter(([, v]) => v?.trim()).map(([label, text]) => (
                   <div key={label} style={{
-                    background: 'var(--surface, #1e293b)', borderRadius: 6, padding: '6px 10px',
-                    border: '1px solid var(--line, #334155)',
+                    background: '#1e293b', borderRadius: 6, padding: '6px 10px',
+                    border: '1px solid #334155',
                   }}>
                     <div style={{ fontSize: 9, fontWeight: 800, color: '#0d9488', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 2 }}>{label}</div>
                     <div style={{ fontSize: 12, lineHeight: 1.5, color: '#cbd5e1', fontFamily: 'Georgia, serif' }}>{text}</div>
@@ -523,7 +523,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   <button
                     type="button" onClick={() => { setPendingSoap(null); setTranscript(''); }}
                     style={{
-                      padding: '7px 14px', borderRadius: 7, border: '1px solid var(--line, #334155)',
+                      padding: '7px 14px', borderRadius: 7, border: '1px solid #334155',
                       background: 'transparent', color: '#64748b', fontSize: 12, cursor: 'pointer',
                     }}
                   >
@@ -552,7 +552,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     type="button" onClick={() => { setTranscript(''); setVoiceError(null); setMicOpen(false); }}
                     style={{
                       padding: '5px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                      border: '1px solid var(--line, #334155)', background: 'transparent', color: '#64748b', cursor: 'pointer',
+                      border: '1px solid #334155', background: 'transparent', color: '#64748b', cursor: 'pointer',
                     }}
                   >
                     Close
@@ -594,9 +594,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   style={{
                     display: 'flex', alignItems: 'center', gap: 5,
                     padding: '6px 12px', borderRadius: 8, cursor: 'pointer',
-                    border: '1.5px solid var(--line, #334155)',
-                    background: 'var(--surface, #1e293b)',
-                    color: 'var(--ink, #e2e8f0)',
+                    border: '1.5px solid #334155',
+                    background: '#1e293b',
+                    color: '#e2e8f0',
                     fontSize: 12, fontWeight: 600,
                     transition: 'border-color 0.12s, background 0.12s',
                   }}
@@ -605,8 +605,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     (e.currentTarget as HTMLButtonElement).style.color = '#0d9488';
                   }}
                   onMouseLeave={e => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--line, #334155)';
-                    (e.currentTarget as HTMLButtonElement).style.color = 'var(--ink, #e2e8f0)';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#334155';
+                    (e.currentTarget as HTMLButtonElement).style.color = '#e2e8f0';
                   }}
                 >
                   {nav.icon} {nav.label}
@@ -637,10 +637,10 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   padding: '5px 10px', borderRadius: 7, cursor: 'pointer', textAlign: 'left',
                   border: r.urgency === 'flag'
                     ? '1px solid rgba(245,158,11,0.4)'
-                    : '1px solid var(--line, #334155)',
+                    : '1px solid #334155',
                   background: r.urgency === 'flag'
                     ? 'rgba(245,158,11,0.06)'
-                    : 'var(--surface, #1e293b)',
+                    : '#1e293b',
                   color: r.urgency === 'flag' ? '#d97706' : '#64748b',
                   fontSize: 11, fontWeight: 600,
                 }}
@@ -664,8 +664,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           style={{
             display: 'flex', alignItems: 'center', gap: 5,
             padding: '6px 12px', borderRadius: 8,
-            border: '1px solid var(--line, #334155)',
-            background: 'var(--surface, #1e293b)',
+            border: '1px solid #334155',
+            background: '#1e293b',
             color: photosOpen ? '#0d9488' : '#64748b',
             fontSize: 12, fontWeight: 600, cursor: 'pointer',
           }}
@@ -695,9 +695,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         </button>
       </div>
 
-      {/* Photos panel */}
-      {photosOpen && (
-        <div style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid var(--line, #334155)', background: 'var(--surface, #1e293b)' }}>
+      {/* Photos panel — thumbnails always visible; capture toggled */}
+      {(photosOpen || ctx.examPhotos.length > 0) && (
+        <div style={{ padding: '10px 12px', borderRadius: 10, border: '1px solid #334155', background: '#1e293b' }}>
           <input
             ref={el => { cameraRef.current = el; }}
             type="file" accept="image/*" capture="environment"
@@ -717,14 +717,16 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               e.target.value = '';
             }}
           />
-          <button
-            type="button" onClick={() => cameraRef.current?.click()}
-            style={{ padding: '7px 14px', borderRadius: 7, border: '1.5px solid #0d9488', background: '#f0fdfa', color: '#0d9488', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
-          >
-            📷 Capture photo
-          </button>
+          {photosOpen && (
+            <button
+              type="button" onClick={() => cameraRef.current?.click()}
+              style={{ padding: '7px 14px', borderRadius: 7, border: '1.5px solid #0d9488', background: '#f0fdfa', color: '#0d9488', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+            >
+              📷 Capture photo
+            </button>
+          )}
           {ctx.examPhotos.length > 0 && (
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: photosOpen ? 8 : 0 }}>
               {ctx.examPhotos.map(p => (
                 <div key={p.id} style={{ position: 'relative', width: 68, height: 68 }}>
                   <img src={p.dataUrl} alt={p.bodyRegion} style={{ width: 68, height: 68, borderRadius: 7, objectFit: 'cover', border: '1.5px solid #e2e8f0' }} />
@@ -737,7 +739,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
 
       {/* ── Live DX from transcript ─── */}
       {(pathognomicAlerts.length > 0 || (dxUpdatedAt && ctx.paneTop.length > 0)) && (
-        <div style={{ borderTop: '1px solid var(--line, #334155)', paddingTop: 10 }}>
+        <div style={{ borderTop: '1px solid #334155', paddingTop: 10 }}>
           {pathognomicAlerts.length > 0 && (
             <div style={{ marginBottom: 8 }}>
               {pathognomicAlerts.map(a => (

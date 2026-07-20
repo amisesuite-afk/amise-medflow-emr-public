@@ -612,25 +612,75 @@ export default function HomePage() {
   if (age) metaParts.push(`Age ${age}`);
   if (sex && sex !== 'unknown') metaParts.push(sex);
 
-  const sidebarWidth = zenMode ? 0 : (collapsed || topSection === 'consultation') ? 52 : 182;
+  // Ambient consultation = full-focus consultation mode; collapse all UI chrome
+  const consultAmbient = topSection === 'consultation' && wizardSkipped && ambientMode;
+  const allergyList = allergies.split(',').map((a: string) => a.trim()).filter(Boolean);
+  const ccLabel = activeCcKey ? (getMatrix(activeCcKey)?.name ?? null)
+    : (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
+
+  const sidebarWidth = zenMode ? 0 : consultAmbient ? 52 : (collapsed || topSection === 'consultation') ? 52 : 182;
 
   if (userRole === 'nurse') return <Suspense fallback={null}><ErrorBoundary><NursePreVisitView /></ErrorBoundary></Suspense>;
 
   return (
     <div
       className="app"
-      style={{ gridTemplateColumns: `${sidebarWidth}px 1fr`, transition: 'grid-template-columns 200ms ease' }}
+      style={{
+        gridTemplateColumns: `${sidebarWidth}px 1fr`,
+        gridTemplateRows: consultAmbient ? '40px 1fr' : 'var(--header-h) 1fr',
+        transition: 'grid-template-columns 200ms ease, grid-template-rows 200ms ease',
+      }}
     >
       {/* ── Sticky header ── */}
-      <header className="app-header">
-        <div className="header-brand" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <header className="app-header" style={consultAmbient ? { padding: '0 12px', gap: 10 } : {}}>
+
+        {/* ── Ambient consultation: ultra-slim context strip ── */}
+        {consultAmbient && (
+          <>
+            {ccLabel && (
+              <span style={{ fontSize: 13, fontWeight: 800, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '40%' }}>
+                {ccLabel}
+              </span>
+            )}
+            <span style={{ fontSize: 12, color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {patientName.trim() || 'Patient'}{metaParts.length > 0 ? ` · ${metaParts.join(' · ')}` : ''}
+            </span>
+            {allergyList.length > 0 ? (
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', background: '#422006', border: '1px solid #78350f', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                ⚠ {allergyList[0]}{allergyList.length > 1 ? ` +${allergyList.length - 1}` : ''}
+              </span>
+            ) : patientName ? (
+              <span style={{ fontSize: 10, color: '#334155', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
+            ) : null}
+            <span style={{ flex: 1 }} />
+            {encounterId && (
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#dc2626', whiteSpace: 'nowrap', flexShrink: 0 }}>● Open</span>
+            )}
+            {saveStatus === 'saving' && (
+              <span style={{ fontSize: 10, color: '#94a3b8', whiteSpace: 'nowrap', flexShrink: 0 }}>⏳</span>
+            )}
+            {hasRole(userRole, 'doctor') && (
+              <button
+                type="button"
+                onClick={() => setShowAiPanel(p => !p)}
+                style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', background: showAiPanel ? '#312e81' : 'rgba(13,148,136,0.2)', color: '#0d9488', fontSize: 12, fontWeight: 700 }}
+                title="AI Consultant"
+              >
+                🧠
+              </button>
+            )}
+          </>
+        )}
+
+        {!consultAmbient && <div className="header-brand" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <img src="/amise-logo.jpg" alt="" style={{ height: 30, width: 'auto', objectFit: 'contain' }} />
           Amise Medical
-        </div>
-        {DEMO_MODE
+        </div>}
+        {!consultAmbient && DEMO_MODE
           ? <span className="proto-pill" style={{ background: 'rgba(251,191,36,.15)', border: '1px solid rgba(251,191,36,.35)', color: '#fbbf24' }}>⚗ DEMO MODE — local trial only</span>
           : null
         }
+        {!consultAmbient && (
         <div className="header-patient" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {patientPhoto && (
             <img
@@ -644,6 +694,8 @@ export default function HomePage() {
             {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
           </div>
         </div>
+        )}
+        {!consultAmbient && (
         <div className="header-right">
           {/* Encounter mode pill — hidden in consultation (EncounterContextPicker handles it) */}
           {topSection !== 'consultation' && (
@@ -852,11 +904,13 @@ export default function HomePage() {
             </div>
           )}
         </div>
+        )}
       </header>
 
       {/* ── Collapsible sidebar — auto-collapsed (icon-only) during active consultation ── */}
       <NavSidebar
         collapsed={collapsed || zenMode || topSection === 'consultation'}
+        consultAmbient={consultAmbient}
         onToggle={() => zenMode ? setZenMode(false) : setCollapsed(c => !c)}
         topSection={topSection}
         onTopSection={s => { setTopSection(s); setZenMode(false); }}
@@ -1464,7 +1518,7 @@ export default function HomePage() {
         </Suspense>
       </main>
 
-      <FloatingActions />
+      {!consultAmbient && <FloatingActions />}
 
       {/* AI slide-in panel — triggered from header button */}
       {hasRole(userRole, 'doctor') && showAiPanel && (
