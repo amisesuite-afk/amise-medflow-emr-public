@@ -769,7 +769,7 @@ export default function HomePage() {
           )}
 
 
-          <ResultsAlertBadge patientId={patientId ?? undefined} />
+          {topSection !== 'finaldoc' && <ResultsAlertBadge patientId={patientId ?? undefined} />}
 
           {/* Encounter status badge — red = open, green = closed/none */}
           {patientId && (
@@ -850,8 +850,8 @@ export default function HomePage() {
             </select>
           </div>}
 
-          {/* Acuity badge — clickable, shows score breakdown */}
-          <div ref={acuityRef} style={{ position: 'relative' }}>
+          {/* Acuity badge — hidden on summary/finaldoc */}
+          {topSection !== 'finaldoc' && <div ref={acuityRef} style={{ position: 'relative' }}>
             <button
               type="button"
               className={`acuity-badge ${acuityClass(triageResult.acuity)}`}
@@ -898,9 +898,9 @@ export default function HomePage() {
                 </div>
               </div>
             )}
-          </div>
+          </div>}
 
-          {triageResult.isPrimarilySurgical && (
+          {triageResult.isPrimarilySurgical && topSection !== 'finaldoc' && (
             <div
               className="surgical-badge"
               title={`Surgical pathway match: ${triageResult.surgicalMatches.map(m => m.label).join(', ')}`}
@@ -911,8 +911,8 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* AI Registrar button — header, doctor-only */}
-          {hasRole(userRole, 'doctor') && (
+          {/* AI Registrar button — header, doctor-only; hidden on summary */}
+          {hasRole(userRole, 'doctor') && topSection !== 'finaldoc' && (
             <button
               type="button"
               onClick={() => setShowAiPanel(p => !p)}
