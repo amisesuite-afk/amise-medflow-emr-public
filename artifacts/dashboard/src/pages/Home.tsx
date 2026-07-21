@@ -730,8 +730,8 @@ export default function HomePage() {
         )}
         {!consultAmbient && (
         <div className="header-right">
-          {/* Encounter mode pill — hidden in consultation (EncounterContextPicker handles it) */}
-          {topSection !== 'consultation' && (
+          {/* Encounter mode pill — hidden in consultation and finaldoc */}
+          {topSection !== 'consultation' && topSection !== 'finaldoc' && (
           <div className="site-pill" aria-label="Encounter mode">
             {(['outpatient', 'inpatient'] as const).map(mode => (
               <button
@@ -752,8 +752,8 @@ export default function HomePage() {
           </div>
           )}
 
-          {/* Site picker — outpatient only; inpatient is always Tapion */}
-          {topSection !== 'consultation' && encounterMode === 'outpatient' && (
+          {/* Site picker — outpatient only; inpatient is always Tapion; hidden in finaldoc */}
+          {topSection !== 'consultation' && topSection !== 'finaldoc' && encounterMode === 'outpatient' && (
           <div className="site-pill" aria-label="Clinic site">
             {SITE_CODES.map(code => (
               <button
@@ -811,8 +811,8 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Visit type dropdown — header */}
-          <div style={{ position: 'relative' }}>
+          {/* Visit type dropdown — header; hidden in finaldoc */}
+          {topSection !== 'finaldoc' && <div style={{ position: 'relative' }}>
             <select
               value={ctxVisitType ?? ''}
               onChange={e => {
@@ -848,7 +848,7 @@ export default function HomePage() {
                 </option>
               ))}
             </select>
-          </div>
+          </div>}
 
           {/* Acuity badge — clickable, shows score breakdown */}
           <div ref={acuityRef} style={{ position: 'relative' }}>
