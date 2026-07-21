@@ -257,6 +257,48 @@ export default function NavSidebar({
 
   let lastGroup = '';
 
+  // ── Summary / document focus mode: 4-icon rail ───────────────────────────
+  if (topSection === 'finaldoc' && !consultAmbient) {
+    const SUMMARY_RAIL: Array<{ id: TopSection; Icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string }> = [
+      { id: 'patients',     Icon: Users,         label: 'Patients'     },
+      { id: 'intake',       Icon: ClipboardList, label: 'Intake'       },
+      { id: 'consultation', Icon: Stethoscope,   label: 'Consultation' },
+      { id: 'finaldoc',     Icon: FileCheck2,    label: 'Summary'      },
+    ];
+    return (
+      <nav className="nav-sidebar nav-sidebar--collapsed" aria-label="Summary navigation" style={{ overflowY: 'hidden' }}>
+        <div className="nav-sidebar__body" style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {SUMMARY_RAIL.map(({ id, Icon, label }) => {
+            const isActive = topSection === id;
+            return (
+              <button
+                key={id}
+                onClick={() => handleTop(navList.find(n => n.id === id) ?? { id, icon: Icon, label, roles: [], group: '' } as TopItem)}
+                title={label}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: '100%', height: 44, border: 'none', cursor: 'pointer',
+                  position: 'relative', borderRadius: 0,
+                  background: isActive ? 'rgba(13,148,136,0.2)' : 'transparent',
+                  color: isActive ? '#0d9488' : 'rgba(255,255,255,0.55)',
+                  transition: 'background 0.15s, color 0.15s',
+                }}
+              >
+                <Icon size={17} strokeWidth={isActive ? 2.5 : 1.8} />
+                {isActive && (
+                  <span style={{ position: 'absolute', left: 0, top: 10, bottom: 10, width: 3, borderRadius: '0 2px 2px 0', background: '#0d9488' }} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <button className="nsb-toggle" onClick={onToggle} title="Expand sidebar">
+          <PanelLeftOpen size={14} strokeWidth={2} />
+        </button>
+      </nav>
+    );
+  }
+
   // ── Consultation ambient mode: 4-icon phase rail only ────────────────────
   if (consultAmbient) {
     const AMBIENT_RAIL: Array<{ label: string; Icon: React.FC<{ size?: number; strokeWidth?: number }>; sections: Section[] }> = [

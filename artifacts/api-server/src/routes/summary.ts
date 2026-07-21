@@ -51,7 +51,7 @@ const SummaryRequestSchema = z.object({
     familyHistory: z.array(z.string()),
     toxicHabits: z.array(z.string()),
   }),
-  examination: z.record(z.string()).optional(),
+  examination: z.record(z.unknown()).optional(),
   assessment: z.string().optional(),
   differentials: z.string().optional(),
   plan: z.string().optional(),
