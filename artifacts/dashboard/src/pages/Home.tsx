@@ -713,7 +713,7 @@ export default function HomePage() {
           ? <span className="proto-pill" style={{ background: 'rgba(251,191,36,.15)', border: '1px solid rgba(251,191,36,.35)', color: '#fbbf24' }}>⚗ DEMO MODE — local trial only</span>
           : null
         }
-        {!consultAmbient && (
+        {!consultAmbient && topSection !== 'finaldoc' && (
         <div className="header-patient" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {patientPhoto && (
             <img
@@ -771,8 +771,8 @@ export default function HomePage() {
 
           {topSection !== 'finaldoc' && <ResultsAlertBadge patientId={patientId ?? undefined} />}
 
-          {/* Encounter status badge — red = open, green = closed/none */}
-          {patientId && (
+          {/* Encounter status badge — hidden on summary page */}
+          {patientId && topSection !== 'finaldoc' && (
             <div
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
