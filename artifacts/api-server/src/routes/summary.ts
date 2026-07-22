@@ -92,7 +92,7 @@ function buildPrompt(d: SummaryRequest): string {
   );
 
   const examLines = Object.entries(d.examination ?? {})
-    .filter(([, v]) => v.trim())
+    .filter(([, v]) => typeof v === 'string' && v.trim())
     .map(([k, v]) => `${k}: ${v}`);
 
   const vitalsStr = vitalLines.length ? vitalLines.join(' | ') : 'Not recorded';

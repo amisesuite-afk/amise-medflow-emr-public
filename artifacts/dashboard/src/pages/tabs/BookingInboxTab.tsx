@@ -361,13 +361,13 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         const d = await r.json() as { error?: string };
         throw new Error(d.error ?? `HTTP ${r.status}`);
       }
-      const d = await r.json() as { encounterId: string };
+      const d = await r.json() as { encounterId: string; patientId?: string };
       setCheckedInEncounterId(d.encounterId);
       setCheckInOk(true);
       await load();
-      // Load the patient into the consultation context so staff can jump straight to their chart
       setPatientName(selected.patient_name);
       if (selected.patient_phone) setPhone(selected.patient_phone);
+      if (d.patientId) setPatientId(d.patientId);
       setTopSection('consultation');
     } catch (e) {
       setCheckInErr(errMsg(e));

@@ -372,10 +372,6 @@ export default function HomePage() {
     }
   }, [patientId]);
 
-  // Auto-clear gate if a visit type is already set (e.g. patient loaded from another entry point)
-  useEffect(() => {
-    if (ctxVisitType) setVtGateCleared(true);
-  }, [ctxVisitType]);
 
   const userRole = profile?.role ?? 'front_desk';
   const { activePathway, matchedPathways } = usePathway();
@@ -720,7 +716,7 @@ export default function HomePage() {
         }
         {!consultAmbient && topSection !== 'finaldoc' && (
         <div className="header-patient" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {patientPhoto && (
+          {patientPhoto && topSection !== 'consultation' && (
             <img
               src={patientPhoto}
               alt=""
@@ -729,7 +725,11 @@ export default function HomePage() {
           )}
           <div>
             <span className="header-name">{patientLabel}</span>
-            {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
+            {(mrNumber || metaParts.length > 0) && (
+              <span className="header-meta">
+                {[mrNumber || null, ...metaParts].filter(Boolean).join(' · ')}
+              </span>
+            )}
           </div>
         </div>
         )}
@@ -774,10 +774,10 @@ export default function HomePage() {
           )}
 
 
-          {topSection !== 'finaldoc' && <ResultsAlertBadge patientId={patientId ?? undefined} />}
+          {topSection !== 'finaldoc' && topSection !== 'consultation' && <ResultsAlertBadge patientId={patientId ?? undefined} />}
 
-          {/* Encounter status badge — hidden on summary page */}
-          {patientId && topSection !== 'finaldoc' && (
+          {/* Encounter status badge — hidden on summary and consultation pages */}
+          {patientId && topSection !== 'finaldoc' && topSection !== 'consultation' && (
             <div
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
@@ -855,8 +855,8 @@ export default function HomePage() {
             </select>
           </div>}
 
-          {/* Acuity badge — hidden on summary/finaldoc */}
-          {topSection !== 'finaldoc' && <div ref={acuityRef} style={{ position: 'relative' }}>
+          {/* Acuity badge — hidden on summary and consultation */}
+          {topSection !== 'finaldoc' && topSection !== 'consultation' && <div ref={acuityRef} style={{ position: 'relative' }}>
             <button
               type="button"
               className={`acuity-badge ${acuityClass(triageResult.acuity)}`}
@@ -905,7 +905,7 @@ export default function HomePage() {
             )}
           </div>}
 
-          {triageResult.isPrimarilySurgical && topSection !== 'finaldoc' && (
+          {triageResult.isPrimarilySurgical && topSection !== 'finaldoc' && topSection !== 'consultation' && (
             <div
               className="surgical-badge"
               title={`Surgical pathway match: ${triageResult.surgicalMatches.map(m => m.label).join(', ')}`}
@@ -916,8 +916,8 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* AI Registrar button — header, doctor-only; hidden on summary */}
-          {hasRole(userRole, 'doctor') && topSection !== 'finaldoc' && (
+          {/* AI Registrar button — header, doctor-only; hidden on summary and consultation */}
+          {hasRole(userRole, 'doctor') && topSection !== 'finaldoc' && topSection !== 'consultation' && (
             <button
               type="button"
               onClick={() => setShowAiPanel(p => !p)}
@@ -1163,7 +1163,7 @@ export default function HomePage() {
         {topSection === 'consultation' && <CriticalResultAlert />}
 
         {/* No-patient guard */}
-        {topSection === 'consultation' && !patientId && (
+        {topSection === 'consultation' && !patientId && !patientName && (
           <div style={{ background: '#fef9c3', border: '1.5px solid #fbbf24', borderRadius: 10, padding: '14px 18px', color: '#92400e', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 20 }}>👤</span>
             No patient loaded — check in a patient first.
@@ -1171,7 +1171,7 @@ export default function HomePage() {
         )}
 
         {/* Visit type gate — required first step before consultation or intake */}
-        {(topSection === 'consultation' || topSection === 'intake') && !!patientId && !vtGateCleared && (
+        {(topSection === 'consultation' || topSection === 'intake') && (!!patientId || !!patientName) && !vtGateCleared && (
           <div style={{ padding: '32px 16px', maxWidth: 680, margin: '0 auto' }}>
             <div style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--ink)', marginBottom: 6 }}>

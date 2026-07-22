@@ -125,7 +125,7 @@ router.post('/api/visit/check-in/:appointmentId', async (req, res) => {
     });
 
     logger.info({ encounterId: encounter.id, appointmentId }, '[visit/check-in] patient checked in');
-    res.json({ encounterId: encounter.id, status: 'checked_in' });
+    res.json({ encounterId: encounter.id, patientId, status: 'checked_in' });
   } catch (err) {
     logger.error({ err }, '[visit/check-in] error');
     res.status(502).json({ error: errStr(err) });
