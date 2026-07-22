@@ -156,7 +156,7 @@ interface TopItem {
 // ── Doctor / Nurse navigation — clinical workflow order ───────────────────────
 const DR_NAV_ITEMS: TopItem[] = [
   // Clinical
-  { id: 'intake',          icon: ClipboardList,   label: 'Intake',          roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
+  { id: 'intake',          icon: ClipboardList,   label: 'Intake',          roles: ['nurse', 'admin'], group: 'Clinical' },
   { id: 'consultation',    icon: Stethoscope,     label: 'Consultation',    roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
   { id: 'procedures',      icon: Scissors,        label: 'Procedures',      roles: ['doctor', 'admin'],          group: 'Clinical' },
   { id: 'trauma',          icon: Zap,             label: 'Trauma',          roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
