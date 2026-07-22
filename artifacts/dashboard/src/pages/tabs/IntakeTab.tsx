@@ -1,5 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useAppContext } from '@/context/AppContext';
+
+const ClinicalScoresPanel = lazy(() => import('@/components/ClinicalScoresPanel'));
+function ClinicalScoresPanelLazy() {
+  return <Suspense fallback={null}><ClinicalScoresPanel /></Suspense>;
+}
 import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PathwaySuggestions from '@/components/PathwaySuggestions';
@@ -122,6 +127,7 @@ export default function IntakeTab() {
     setPmhNotes,
     orderedInvestigations, setOrderedInvestigations,
     setTopSection,
+    setExtractedLabs,
   } = useAppContext();
 
   // Referral detail — stored in procedureData['referral'] to avoid context bloat
@@ -294,6 +300,15 @@ export default function IntakeTab() {
     if (scanResult.patientName && !patientName.trim()) setPatientName(scanResult.patientName);
     if (scanResult.age && !age.trim()) setAge(scanResult.age);
     if (scanResult.sex && sex === 'unknown') setSex(scanResult.sex as Sex);
+    // Apply extracted lab values — feeds clinical scoring tools
+    const el = (scanResult as Record<string, unknown>).extracted_labs as Record<string, number | null> | null;
+    if (el && typeof el === 'object') {
+      const numeric: Record<string, number | null> = {};
+      for (const [k, v] of Object.entries(el)) {
+        if (v !== null && v !== undefined && typeof v === 'number') numeric[k] = v;
+      }
+      if (Object.keys(numeric).length > 0) setExtractedLabs(numeric);
+    }
     showToast('Referral data applied to EMR', 'success');
     setScanResult(null);
     setScanText('');
@@ -1046,6 +1061,9 @@ export default function IntakeTab() {
           );
         })()}
       </CollapsibleCard>
+
+      {/* ── Clinical scores — Tokyo, Ranson's, BISAP, PEP risk, NEWS2 ── */}
+      <ClinicalScoresPanelLazy />
 
       {/* ── Compact triage summary — driven by intake data above ── */}
       {(() => {

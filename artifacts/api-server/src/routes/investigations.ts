@@ -573,7 +573,35 @@ Return ONLY valid JSON (no markdown fences, no explanation):
   "imaging": string[],
   "patientName": string | null,
   "age": string | null,
-  "sex": string | null
+  "sex": string | null,
+  "extracted_labs": {
+    "wbc": number | null,
+    "haemoglobin": number | null,
+    "platelets": number | null,
+    "inr": number | null,
+    "crp": number | null,
+    "bilirubin_total": number | null,
+    "bilirubin_direct": number | null,
+    "alp": number | null,
+    "ggt": number | null,
+    "ast": number | null,
+    "alt": number | null,
+    "albumin": number | null,
+    "sodium": number | null,
+    "potassium": number | null,
+    "urea": number | null,
+    "creatinine": number | null,
+    "egfr": number | null,
+    "glucose": number | null,
+    "hba1c": number | null,
+    "amylase": number | null,
+    "lipase": number | null,
+    "ldh": number | null,
+    "calcium": number | null,
+    "pao2": number | null,
+    "ca19_9": number | null,
+    "cea": number | null
+  } | null
 }
 
 visitType must be one of: "new_consult", "follow_up", "post_op", "ercp", "endoscopy_ogd", "endoscopy_col", "breast", "urgent", "telephone", "diabetic_foot", or null.
@@ -599,7 +627,8 @@ labs: Investigation tests requested or mentioned (e.g. ["FBC", "U&E", "LFTs", "H
 imaging: Imaging studies mentioned or requested (e.g. ["Ultrasound abdomen", "CT abdomen/pelvis"]).
 patientName: Full patient name if stated.
 age: Patient age as a number string only (e.g. "45").
-sex: Patient sex if stated — one of "male", "female", "other", "unknown".`;
+sex: Patient sex if stated — one of "male", "female", "other", "unknown".
+extracted_labs: Numeric values ONLY for lab results that are EXPLICITLY STATED with their value in the document. Convert all values to standard SI units (mmol/L, µmol/L, IU/L, g/L, ×10⁹/L). Set to null for any test not mentioned or without a numeric result. Do NOT invent or estimate values. Conversion rules: bilirubin mg/dL → µmol/L multiply by 17.1; BUN mg/dL → urea mmol/L divide by 2.8; glucose mg/dL → mmol/L divide by 18; haemoglobin g/dL → g/L multiply by 10; HbA1c % → mmol/mol subtract 2.15 then multiply by 10.929.`;
 
 router.post('/api/investigations/scan-referral', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;

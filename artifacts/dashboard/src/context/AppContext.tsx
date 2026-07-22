@@ -362,6 +362,16 @@ interface CtxValue {
   /** Active CC matrix ID — drives tab visibility and clinical pre-loading. */
   activeCcKey: string | null;
   setActiveCcKey(v: string | null): void;
+
+  /** Structured numeric lab values extracted from referral letter or in-house results.
+   *  Used to auto-populate clinical scoring tools (Tokyo, Ranson, BISAP, PEP risk). */
+  extractedLabs: Record<string, number | null>;
+  setExtractedLabs(v: Record<string, number | null>): void;
+  updateExtractedLab(key: string, value: number | null): void;
+
+  /** Per-encounter clinical scores — mirrors encounters.clinical_scores in DB. */
+  clinicalScores: Record<string, unknown>;
+  setClinicalScores(v: Record<string, unknown>): void;
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -512,6 +522,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [problems, setProblems] = useState<PatientProblem[]>([]);
   const [wounds, setWounds] = useState<WoundAssessment[]>([]);
+  const [extractedLabs, setExtractedLabs] = useState<Record<string, number | null>>({});
+  const [clinicalScores, setClinicalScores] = useState<Record<string, unknown>>({});
 
   // ── Global save status tracking ───────────────────────────────────────────
   const [saveStatus, _setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -712,6 +724,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   function toggleSurgical(v: string) { setSurgicalHistory(c => toggleList(c, v)); }
   function toggleMedication(v: string) { setMedications(c => toggleList(c, v)); }
   function toggleToxicHabit(v: string) { setToxicHabits(c => toggleList(c, v)); }
+  function updateExtractedLab(key: string, value: number | null) {
+    setExtractedLabs(c => ({ ...c, [key]: value }));
+  }
 
   // ── Timer refs for autosave debouncing (hoisted so clearPatient can cancel them) ─
   const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -774,6 +789,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setActiveCcKey(null);
     setProblems([]);
     setWounds([]);
+    setExtractedLabs({});
+    setClinicalScores({});
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
@@ -1248,6 +1265,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     lastSaveError,
     activeCcKey,
     setActiveCcKey,
+    extractedLabs, setExtractedLabs, updateExtractedLab,
+    clinicalScores, setClinicalScores,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
