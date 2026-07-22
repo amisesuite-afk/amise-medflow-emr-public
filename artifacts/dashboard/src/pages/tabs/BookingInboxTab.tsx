@@ -218,7 +218,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const {
     currentSite,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
-    setTopSection,
+    setTopSection, clearPatient,
   } = useAppContext();
   const narrow = useNarrow();
 
@@ -365,6 +365,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       setCheckedInEncounterId(d.encounterId);
       setCheckInOk(true);
       await load();
+      clearPatient();
       setPatientName(selected.patient_name);
       if (selected.patient_phone) setPhone(selected.patient_phone);
       if (d.patientId) setPatientId(d.patientId);
@@ -1470,6 +1471,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                   <button
                     type="button"
                     onClick={() => {
+                      clearPatient();
                       setPatientName(p.full_name);
                       if (p.dob) {
                         setDob(p.dob);

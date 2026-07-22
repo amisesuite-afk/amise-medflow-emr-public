@@ -41,7 +41,7 @@ export default function EncounterTimelineTab() {
     setExamFindings, setExamNotes,
     setActiveSection,
     referredBy, procedureData,
-    setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
+    setPatientName, setAge, setSex, setDob, setPhone, setPatientId, clearPatient,
   } = useAppContext();
 
   // ── Patient search (shown when no patient loaded) ────────────────────────
@@ -81,6 +81,7 @@ export default function EncounterTimelineTab() {
   }
 
   function selectFromSearch(p: PatientListRow) {
+    clearPatient();
     setPatientName(p.full_name ?? '');
     if (p.date_of_birth) {
       setDob(p.date_of_birth);

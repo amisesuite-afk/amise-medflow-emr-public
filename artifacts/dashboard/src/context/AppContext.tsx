@@ -759,7 +759,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
     setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1);
     setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
-    setProcedures(''); setBilling(''); setDocuments('');
+    setProcedures(''); setBilling(''); setDocuments(''); setSurgicalClassifications({});
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
     setProgressNotes([]);

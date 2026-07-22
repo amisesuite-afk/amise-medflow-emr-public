@@ -103,7 +103,7 @@ export default function PatientSearchTab() {
 
   const {
     setPatientName, setAge, setSex, setDob, setPhone,
-    setPatientId, setEncounterId, setComorbidities,
+    setPatientId, setEncounterId, setComorbidities, clearPatient,
     setAssessment, setDifferentials, setIcdCodes, setPlan,
     setAllergies, setMedications, setPatientPhoto,
     setSurgicalHistory, setSurgicalNotes, setToxicHabits,
@@ -237,6 +237,7 @@ export default function PatientSearchTab() {
 
   async function loadPatient(p: PatientListRowEx) {
     setSelected(p.id);
+    clearPatient();
 
     if (p.full_name) setPatientName(p.full_name);
     if (p.date_of_birth) {
