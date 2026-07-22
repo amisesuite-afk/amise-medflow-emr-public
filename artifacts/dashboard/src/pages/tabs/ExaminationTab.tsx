@@ -60,6 +60,19 @@ function computeVisibleSystems(
     matchesAny(sx, ['leg pain', 'leg swelling', 'calf', 'claudication', 'ankle swelling', 'limb ischaemia'])
   ) visible.add('extremities');
 
+  if (
+    matchesAny(sx, ['anal', 'rectal', 'haemorrhoid', 'fissure', 'fistula', 'perianal', 'bowel habit', 'rectal bleed', 'constipation', 'diarrhoea', 'pr '])
+  ) { visible.add('anal'); visible.add('perineal'); }
+
+  if (
+    matchesAny(sx, ['groin', 'hernia', 'scrotal', 'testicular', 'labial', 'genital', 'perineal', 'inguinal'])
+  ) { visible.add('genital'); visible.add('perineal'); }
+
+  if (
+    matchesAny(sx, ['skin', 'rash', 'lesion', 'melanoma', 'mole', 'jaundice', 'itch']) ||
+    matchesAny(pmh, ['melanoma', 'skin cancer', 'scc', 'bcc'])
+  ) visible.add('skin');
+
   if (leadingDxId) {
     for (const f of DX_EXAM_FOCUS[leadingDxId] ?? []) visible.add(f.system);
   }
@@ -73,7 +86,7 @@ interface ExamSystem {
   reportLabel: string;
   icon: string;
   chips: string[];
-  legacyKey: 'examGeneral' | 'examCardio' | 'examResp' | 'examAbdomen' | 'examBreast' | 'examWound' | 'examNeuro' | 'examExtremities';
+  legacyKey?: 'examGeneral' | 'examCardio' | 'examResp' | 'examAbdomen' | 'examBreast' | 'examWound' | 'examNeuro' | 'examExtremities';
   normalProse: string;
 }
 
@@ -88,15 +101,6 @@ const EXAM_SYSTEMS: ExamSystem[] = [
     chips: ['Well-nourished', 'Cachectic', 'Pale', 'Jaundiced', 'Cyanosed', 'Oedematous', 'Diaphoretic', 'In distress', 'Alert and oriented', 'GCS < 15'],
   },
   {
-    key: 'cardiovascular',
-    label: 'Cardiovascular',
-    reportLabel: 'Cardiovascular',
-    icon: '❤️',
-    legacyKey: 'examCardio',
-    normalProse: 'Heart sounds I and II present and normal. No murmurs, rubs, or gallops audible. JVP not elevated. Peripheral pulses present and equal bilaterally. Capillary refill time less than two seconds. No peripheral oedema.',
-    chips: ['S1+S2 normal', 'Murmur present', 'Tachycardia', 'Bradycardia', 'Irregular rhythm', 'JVP elevated', 'Peripheral oedema', 'Peripheral pulses absent', 'Capillary refill > 2s'],
-  },
-  {
     key: 'respiratory',
     label: 'Respiratory',
     reportLabel: 'Respiratory',
@@ -104,6 +108,15 @@ const EXAM_SYSTEMS: ExamSystem[] = [
     legacyKey: 'examResp',
     normalProse: 'Chest clear to auscultation bilaterally with equal air entry. No wheeze, crackles, or pleural rub. Respiratory rate and pattern normal. Trachea central. Percussion note resonant throughout.',
     chips: ['Clear to auscultation', 'Crackles (L)', 'Crackles (R)', 'Wheeze', 'Reduced breath sounds (L)', 'Reduced breath sounds (R)', 'Dull to percussion', 'Pleural rub', 'Trachea deviated'],
+  },
+  {
+    key: 'cardiovascular',
+    label: 'Cardiovascular',
+    reportLabel: 'Cardiovascular',
+    icon: '❤️',
+    legacyKey: 'examCardio',
+    normalProse: 'Heart sounds I and II present and normal. No murmurs, rubs, or gallops audible. JVP not elevated. Peripheral pulses present and equal bilaterally. Capillary refill time less than two seconds. No peripheral oedema.',
+    chips: ['S1+S2 normal', 'Murmur present', 'Tachycardia', 'Bradycardia', 'Irregular rhythm', 'JVP elevated', 'Peripheral oedema', 'Peripheral pulses absent', 'Capillary refill > 2s'],
   },
   {
     key: 'abdomen',
@@ -118,6 +131,55 @@ const EXAM_SYSTEMS: ExamSystem[] = [
       "Murphy's sign +", "Rovsing's sign +", 'Bowel sounds absent', 'Bowel sounds hyperactive',
       'Hepatomegaly', 'Splenomegaly', 'Mass palpable', 'Hernia present', 'PR: blood',
     ],
+  },
+  {
+    key: 'perineal',
+    label: 'Perineal',
+    reportLabel: 'Perineal',
+    icon: '🔎',
+    normalProse: 'Perineum intact. No erythema, excoriation, skin tags, or fistula openings visible. No obvious swelling or discharge.',
+    chips: ['Normal', 'Skin tags', 'Fissure', 'Fistula orifice', 'Erythema', 'Maceration', 'Excoriation', 'Discharge', 'Mass / swelling'],
+  },
+  {
+    key: 'anal',
+    label: 'Anal / Rectal',
+    reportLabel: 'Anal',
+    icon: '🩺',
+    normalProse: 'Anus and perianal skin normal on inspection. Digital rectal examination: normal sphincter tone. No masses, tenderness, or blood on the examining glove. Prostate/cervix not assessed at this encounter.',
+    chips: [
+      'Normal inspection', 'External haemorrhoids', 'Internal haemorrhoids', 'Fissure', 'Fistula',
+      'Perianal abscess', 'Prolapse', 'Normal sphincter tone', 'Reduced tone', 'Mass palpable',
+      'Tenderness DRE', 'Blood on glove', 'Prostate enlarged', 'Prostate nodule',
+    ],
+  },
+  {
+    key: 'genital',
+    label: 'Genital',
+    reportLabel: 'Genital',
+    icon: '🔍',
+    normalProse: 'External genitalia normal. No herniae. Scrotal / labial examination: no masses, tenderness, or swelling.',
+    chips: [
+      'Normal', 'Inguinal hernia (L)', 'Inguinal hernia (R)', 'Testicular mass', 'Testicular tenderness',
+      'Scrotal swelling', 'Varicocele', 'Hydrocele', 'Labial mass', 'Labial tenderness', 'Discharge',
+    ],
+  },
+  {
+    key: 'neurological',
+    label: 'Neurological',
+    reportLabel: 'Neurological',
+    icon: '🧠',
+    legacyKey: 'examNeuro',
+    normalProse: 'Alert and oriented in time, place, and person. GCS 15/15. No focal neurological deficit. Cranial nerves grossly intact. Motor power and sensation preserved in all four limbs. Coordination intact. Reflexes symmetrical.',
+    chips: ['GCS 15', 'GCS < 15', 'Oriented', 'Confused', 'Focal deficit', 'Weakness (L)', 'Weakness (R)', 'Sensory loss', 'No focal deficit'],
+  },
+  {
+    key: 'extremities',
+    label: 'Extremities',
+    reportLabel: 'Extremities',
+    icon: '🦵',
+    legacyKey: 'examExtremities',
+    normalProse: 'Peripheral pulses palpable bilaterally including dorsalis pedis and posterior tibial. No peripheral oedema. Calves soft and non-tender bilaterally. No features of peripheral arterial disease. Skin warm and well-perfused.',
+    chips: ['Pulses present', 'DP absent', 'PT absent', 'Femoral reduced', 'Varicose veins', 'DVT signs', 'Oedema present', 'Wound present', 'Healthy skin'],
   },
   {
     key: 'breast',
@@ -147,22 +209,15 @@ const EXAM_SYSTEMS: ExamSystem[] = [
     ],
   },
   {
-    key: 'neurological',
-    label: 'Neurological',
-    reportLabel: 'Neurological',
-    icon: '🧠',
-    legacyKey: 'examNeuro',
-    normalProse: 'Alert and oriented in time, place, and person. GCS 15/15. No focal neurological deficit. Cranial nerves grossly intact. Motor power and sensation preserved in all four limbs. Coordination intact. Reflexes symmetrical.',
-    chips: ['GCS 15', 'GCS < 15', 'Oriented', 'Confused', 'Focal deficit', 'Weakness (L)', 'Weakness (R)', 'Sensory loss', 'No focal deficit'],
-  },
-  {
-    key: 'extremities',
-    label: 'Extremities',
-    reportLabel: 'Extremities',
-    icon: '🦵',
-    legacyKey: 'examExtremities',
-    normalProse: 'Peripheral pulses palpable bilaterally including dorsalis pedis and posterior tibial. No peripheral oedema. Calves soft and non-tender bilaterally. No features of peripheral arterial disease. Skin warm and well-perfused.',
-    chips: ['Pulses present', 'DP absent', 'PT absent', 'Femoral reduced', 'Varicose veins', 'DVT signs', 'Oedema present', 'Wound present', 'Healthy skin'],
+    key: 'skin',
+    label: 'Skin / Integument',
+    reportLabel: 'Skin',
+    icon: '🧴',
+    normalProse: 'Skin intact. No rashes, lesions, ulceration, or hyperpigmentation. No jaundice, cyanosis, or pallor. No spider naevi or caput medusae.',
+    chips: [
+      'Normal', 'Rash', 'Lesion present', 'Pigmented lesion', 'Ulcer', 'Scar',
+      'Jaundice', 'Pallor', 'Cyanosis', 'Spider naevi', 'Petechiae / purpura',
+    ],
   },
 ];
 
@@ -183,10 +238,10 @@ const DX_EXAM_FOCUS: Record<string, { system: string; chips: string[] }[]> = {
   mesenteric_ischaemia:   [{ system: 'abdomen',        chips: ['Diffuse tenderness', 'Bowel sounds absent', 'Rigidity'] }],
   hernia_reducible:       [{ system: 'abdomen',        chips: ['Hernia present', 'Soft'] }],
   hernia_strangulated:    [{ system: 'abdomen',        chips: ['Hernia present', 'Guarding', 'In distress'] }],
-  anal_fissure:           [{ system: 'abdomen',        chips: ['PR: blood'] }],
-  perianal_abscess:       [{ system: 'wound',          chips: ['Abscess', 'Cellulitis'] }],
-  pilonidal_abscess:      [{ system: 'wound',          chips: ['Abscess', 'Cellulitis'] }],
-  fournier_gangrene:      [{ system: 'wound',          chips: ['Necrotic', 'Wet gangrene', 'Cellulitis', 'Malodorous'] }],
+  anal_fissure:           [{ system: 'anal',           chips: ['Fissure', 'Tenderness DRE', 'Blood on glove'] }, { system: 'perineal', chips: ['Fissure', 'Erythema'] }],
+  perianal_abscess:       [{ system: 'perineal',       chips: ['Mass / swelling', 'Erythema', 'Discharge'] }, { system: 'anal', chips: ['Perianal abscess'] }],
+  pilonidal_abscess:      [{ system: 'perineal',       chips: ['Mass / swelling', 'Erythema', 'Discharge'] }],
+  fournier_gangrene:      [{ system: 'perineal',       chips: ['Erythema', 'Discharge', 'Mass / swelling'] }, { system: 'wound', chips: ['Necrotic', 'Wet gangrene', 'Cellulitis', 'Malodorous'] }],
   breast_cancer:          [{ system: 'breast',         chips: ['Mass (L)', 'Mass (R)', 'Hard', 'Fixed', 'Skin tethering', 'Axillary nodes palpable'] }],
   fibroadenoma:           [{ system: 'breast',         chips: ['Mass (L)', 'Mass (R)', 'Soft', 'Mobile'] }],
   stroke_tia:             [{ system: 'neurological',   chips: ['Focal deficit', 'Weakness (L)', 'Weakness (R)', 'Sensory loss', 'GCS < 15'] }],
@@ -245,7 +300,8 @@ function buildExamProse(
 export default function ExaminationTab() {
   const ctx = useAppContext();
   const { examFindings, setExamFindings, examNotes, setExamNotes, anatomicalFindings, examPhotos,
-          symptoms, symptomDetails, age, sex, comorbidities, pmhNotes, surgicalHistory } = ctx;
+          symptoms, symptomDetails, age, sex, comorbidities, pmhNotes, surgicalHistory,
+          vitals, updateVital } = ctx;
 
   // Local UI state — which systems are explicitly omitted (not examined)
   const [examOmit, setExamOmit] = useState<Record<string, boolean>>({});
@@ -500,6 +556,55 @@ export default function ExaminationTab() {
         title="Examination findings"
         badge={`${systemsWithData} / ${EXAM_SYSTEMS.length} documented`}
       >
+        {/* ── Vitals summary row (from intake / front desk) ── */}
+        {(() => {
+          const VITAL_DISPLAY = [
+            { key: 'systolicBp',     label: 'SBP', unit: 'mmHg', danger: (v: number) => v > 160 || v < 90 },
+            { key: 'diastolicBp',    label: 'DBP', unit: 'mmHg', danger: (v: number) => v > 100 || v < 60 },
+            { key: 'heartRate',      label: 'P',   unit: 'bpm',  danger: (v: number) => v > 120 || v < 50  },
+            { key: 'temperatureC',   label: 'T',   unit: '°C',   danger: (v: number) => v >= 38.5 || v < 36.0 },
+            { key: 'respiratoryRate',label: 'R',   unit: '/min', danger: (v: number) => v > 24 || v < 10  },
+            { key: 'spo2',           label: 'SpO₂',unit: '%',    danger: (v: number) => v < 94             },
+            { key: 'glucoseMmol',    label: 'RBS', unit: 'mmol/L',danger: (v: number) => v < 3.5 || v > 20},
+          ] as const;
+          const recorded = VITAL_DISPLAY.filter(v => vitals[v.key] && vitals[v.key] !== '');
+          if (!recorded.length) return null;
+          return (
+            <div style={{
+              display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
+              padding: '8px 10px', borderRadius: 8,
+              background: '#f0fdf4', border: '1px solid #86efac', marginBottom: 12,
+            }}>
+              <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#166534', marginRight: 4 }}>Vitals</span>
+              {recorded.map(v => {
+                const num = parseFloat(vitals[v.key]);
+                const bad = Number.isFinite(num) && v.danger(num);
+                return (
+                  <div key={v.key} style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    padding: '3px 9px', borderRadius: 6,
+                    background: bad ? '#fef2f2' : '#fff',
+                    border: `1px solid ${bad ? '#fca5a5' : '#d1fae5'}`,
+                    minWidth: 44,
+                  }}>
+                    <span style={{ fontSize: 9, color: '#6b7280', fontWeight: 600, letterSpacing: '0.05em' }}>{v.label}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: bad ? '#dc2626' : '#166534', fontVariantNumeric: 'tabular-nums' }}>{vitals[v.key]}</span>
+                    <span style={{ fontSize: 9, color: '#9ca3af' }}>{v.unit}</span>
+                  </div>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => { /* navigate to intake vitals — caller sets topSection */ }}
+                title="Update vitals in Intake"
+                style={{ fontSize: 11, color: '#0d9488', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', marginLeft: 4 }}
+              >
+                ✎ edit
+              </button>
+            </div>
+          );
+        })()}
+
         {/* Hidden-systems summary + toggle */}
         {(() => {
           const hiddenSystems = EXAM_SYSTEMS.filter(s =>

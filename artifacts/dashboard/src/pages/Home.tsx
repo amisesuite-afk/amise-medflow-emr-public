@@ -364,11 +364,11 @@ export default function HomePage() {
     return () => document.removeEventListener('mousedown', handle);
   }, [contextOpen]);
 
-  // Reset wizard + guided mode + visit type gate whenever a different patient is loaded
+  // Go directly to AmbientConsultation on patient load — no blocking gate or wizard
   useEffect(() => {
     if (patientId !== prevPatientIdRef.current) {
       prevPatientIdRef.current = patientId;
-      if (patientId) { setWizardSkipped(false); setGuidedMode(false); setAmbientMode(true); setVtGateCleared(false); }
+      if (patientId) { setWizardSkipped(true); setGuidedMode(false); setAmbientMode(true); setVtGateCleared(true); }
     }
   }, [patientId]);
 
@@ -1170,83 +1170,6 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Visit type gate — required first step before consultation or intake */}
-        {(topSection === 'consultation' || topSection === 'intake') && (!!patientId || !!patientName) && !vtGateCleared && (
-          <div style={{ padding: '32px 16px', maxWidth: 680, margin: '0 auto' }}>
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--ink)', marginBottom: 6 }}>
-                What type of visit is this?
-              </div>
-              <div style={{ fontSize: 13, color: 'var(--muted)' }}>
-                Select the visit type to configure the data collection workflow
-              </div>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 10 }}>
-              {VISIT_TYPES.map(vt => (
-                <button
-                  key={vt.id}
-                  type="button"
-                  onClick={() => {
-                    ctxSetVisitType(vt.id);
-                    setIsPostOp(vt.id === 'post_op');
-                    setPostOpDays('');
-                    if (vt.id === 'ercp' || vt.id === 'endoscopy_ogd' || vt.id === 'endoscopy_col') {
-                      setEncounterType('endoscopy');
-                    } else if (vt.id === 'urgent') {
-                      setEncounterType('major_emergency');
-                    } else if (vt.id === 'post_op' || vt.id === 'follow_up') {
-                      setEncounterType('quick_consult');
-                    } else {
-                      setEncounterType('surgical_consult');
-                    }
-                    setVtGateCleared(true);
-                  }}
-                  style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
-                    padding: '14px 16px', borderRadius: 10, cursor: 'pointer',
-                    border: `1.5px solid ${vt.color}44`,
-                    background: `${vt.color}0d`,
-                    textAlign: 'left', transition: 'border-color 0.15s, background 0.15s',
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = vt.color;
-                    (e.currentTarget as HTMLButtonElement).style.background = `${vt.color}1a`;
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = `${vt.color}44`;
-                    (e.currentTarget as HTMLButtonElement).style.background = `${vt.color}0d`;
-                  }}
-                >
-                  <span style={{ fontSize: 22, marginBottom: 8, lineHeight: 1 }}>{vt.icon}</span>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: vt.color, marginBottom: 3 }}>{vt.label}</span>
-                  <span style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.4 }}>{vt.desc}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Encounter start wizard — new consult only; suppressed for typed visit flows */}
-        {topSection === 'consultation' && !!patientId && vtGateCleared && !activeCcKey && !wizardSkipped &&
-         (!ctxVisitType || ctxVisitType === 'new_consult') && (
-          <EncounterStartWizard
-            onComplete={() => setWizardSkipped(true)}
-            onSkip={() => setWizardSkipped(true)}
-          />
-        )}
-
-        {/* Visit type opening panel — focused intake for follow-up, post-op, endoscopy, etc. */}
-        {topSection === 'consultation' && !!patientId && vtGateCleared && !wizardSkipped &&
-         ctxVisitType && ctxVisitType !== 'new_consult' && (
-          <VisitTypeOpeningPanel
-            onComplete={() => {
-              const startTab = VISIT_TYPE_START[ctxVisitType];
-              if (startTab) setActiveSection(startTab);
-              setWizardSkipped(true);
-            }}
-            onGoToTriage={() => { setActiveSection('triage'); setWizardSkipped(true); }}
-          />
-        )}
 
         {/* Ambient consultation — voice-first default after wizard */}
         {topSection === 'consultation' && !!patientId && wizardSkipped && ambientMode && (

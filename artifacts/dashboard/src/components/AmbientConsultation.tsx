@@ -76,6 +76,28 @@ const HISTORY_SHORTCUTS: { section: Section; icon: string; label: string }[] = [
   { section: 'radiology',      icon: '🩻', label: 'Imaging'      },
 ];
 
+const CC_ITEMS: { id: string; label: string }[] = [
+  { id: 'abd_pain',     label: 'Abdominal pain'           },
+  { id: 'hernia',       label: 'Groin / hernia lump'       },
+  { id: 'breast',       label: 'Breast lump / change'      },
+  { id: 'reflux',       label: 'Reflux / heartburn'        },
+  { id: 'bowel',        label: 'Change in bowel habit'     },
+  { id: 'rectal_bleed', label: 'Rectal bleeding'           },
+  { id: 'weight_loss',  label: 'Unintentional weight loss' },
+  { id: 'jaundice',     label: 'Jaundice'                  },
+  { id: 'wound',        label: 'Wound / post-op review'    },
+  { id: 'neck_lump',    label: 'Neck lump / thyroid'       },
+  { id: 'dysphagia',    label: 'Difficulty swallowing'     },
+  { id: 'bloating',     label: 'Bloating / distension'     },
+  { id: 'skin',         label: 'Skin lesion / melanoma'    },
+  { id: 'anal',         label: 'Anal pain / haemorrhoids'  },
+  { id: 'nausea',       label: 'Nausea / vomiting'         },
+  { id: 'followup',     label: 'Follow-up / review'        },
+  { id: 'screening',    label: 'Screening / wellness'      },
+  { id: 'ercp',         label: 'ERCP / biliary workup'     },
+  { id: 'other',        label: 'Other'                     },
+];
+
 const COMMON_CONDITIONS = [
   'Hypertension', 'T2DM', 'T1DM', 'IHD', 'Atrial fibrillation',
   'GORD', 'COPD', 'Asthma', 'CKD', 'Hypothyroid',
@@ -163,7 +185,7 @@ interface Props {
 export default function AmbientConsultation({ visitType, onDetailedMode, onFinalise }: Props) {
   const ctx = useAppContext();
   const {
-    activeCcKey, symptoms, hpiNotes, setHpiNotes,
+    activeCcKey, setActiveCcKey, symptoms, hpiNotes, setHpiNotes,
     vitals, activeSection, setActiveSection,
     allergies: allergyText, setAllergies,
     examNotes, setExamNotes,
@@ -857,6 +879,58 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       ════════════════════════════════════════ */}
       {consultPhase === 'history' && (
         <>
+          {/* ── Chief Complaint picker ── */}
+          <div style={{ ...drawerStyle, gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={sectionLabel}>Chief Complaint</span>
+              {activeCcKey && (
+                <button type="button" onClick={() => setActiveCcKey(null)}
+                  style={{ fontSize: 10, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
+                  ✕ clear
+                </button>
+              )}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {CC_ITEMS.map(cc => {
+                const on = activeCcKey === cc.id;
+                return (
+                  <button key={cc.id} type="button" style={chipBtn(on)} onClick={() => {
+                    setActiveCcKey(on ? null : cc.id);
+                    if (!on && !hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
+                  }}>
+                    {cc.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── Inline PMH ── */}
+          <div style={{ ...drawerStyle, gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={sectionLabel}>Past Medical History</span>
+              <button type="button"
+                style={{ ...chipBtn(pmhNotes.includes('NKPMH')), fontSize: 11, padding: '3px 9px' }}
+                onClick={() => {
+                  if (pmhNotes.includes('NKPMH')) { setPmhNotes(''); }
+                  else { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); }
+                }}>
+                No PMH
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {COMMON_CONDITIONS.map(cond => {
+                const on = comorbidities.includes(cond);
+                return (
+                  <button key={cond} type="button" style={chipBtn(on)}
+                    onClick={() => setComorbidities(on ? comorbidities.filter(c => c !== cond) : [...comorbidities, cond])}>
+                    {cond}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* ── HPI card ── */}
           <div style={{
             borderRadius: 10,
