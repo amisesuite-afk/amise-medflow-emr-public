@@ -8,6 +8,7 @@ import ConsultationRequestsView from './ConsultationRequestsView';
 import { errMsg } from '@/lib/err';
 import { fmtPhone } from '@/lib/fmt';
 import { supabase } from '@/lib/supabase';
+import { loadPMH, loadEncounterData, getLatestOpenEncounter } from '@/lib/db';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -74,6 +75,20 @@ function apiUrl(path: string) {
 
 const PREP_TYPES = new Set(['colonoscopy', 'ogd', 'egd', 'ercp_workup', 'pre_op', 'flexi_sig']);
 function requiresPrep(type: string) { return PREP_TYPES.has(type.toLowerCase()); }
+
+function mapApptTypeToVisitType(apptType: string): string {
+  const t = apptType.toLowerCase().replace(/-/g, '_');
+  if (t.includes('follow') || t === 'review') return 'follow_up';
+  if (t.includes('post_op') || t.includes('postop')) return 'post_op';
+  if (t === 'ercp' || t.startsWith('ercp')) return 'ercp';
+  if (t.includes('ogd') || t.includes('egd') || t.includes('upper_gi')) return 'endoscopy_ogd';
+  if (t.includes('colon') || t.includes('lower_gi')) return 'endoscopy_col';
+  if (t.includes('breast')) return 'breast';
+  if (t === 'telephone' || t.includes('phone_consult')) return 'telephone';
+  if (t.includes('diabetic') || t.includes('foot')) return 'diabetic_foot';
+  if (t.includes('urgent') || t.includes('emergency')) return 'urgent';
+  return 'new_consult';
+}
 
 function apptLabel(type: string) {
   return type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -219,6 +234,8 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     currentSite,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
     setTopSection, clearPatient,
+    setComorbidities, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes,
+    setEncounterId, setVisitType,
   } = useAppContext();
   const narrow = useNarrow();
 
@@ -277,6 +294,30 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [nrOk, setNrOk]                       = useState(false);
   const nrNameRef                             = useRef<HTMLInputElement>(null);
   const [view, setView]                       = useState<InboxView>('bookings');
+
+  // Pre-populate consultation context from Supabase patient data.
+  // Called fire-and-forget after patient identity is set; errors are non-fatal.
+  const loadPatientContext = useCallback(async (patientId: string, apptType?: string) => {
+    if (apptType) setVisitType(mapApptTypeToVisitType(apptType));
+    const [pmhResult, encResult] = await Promise.all([
+      loadPMH(patientId),
+      getLatestOpenEncounter(patientId),
+    ]);
+    if (!pmhResult.error && pmhResult.conditions.length > 0) {
+      setComorbidities(pmhResult.conditions);
+    }
+    if (!encResult.error && encResult.encounterId) {
+      setEncounterId(encResult.encounterId);
+      const encData = await loadEncounterData(encResult.encounterId, patientId);
+      if (!encData.error && encData.data) {
+        const d = encData.data;
+        if (d.allergens.length) setAllergies(d.allergens.join(', '));
+        if (d.medications.length) setMedications(d.medications);
+        if (d.surgicalHistory.length) setSurgicalHistory(d.surgicalHistory);
+        if (d.surgicalNotes) setSurgicalNotes(d.surgicalNotes);
+      }
+    }
+  }, [setVisitType, setComorbidities, setEncounterId, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes]);
 
   const load = useCallback(async () => {
     try {
@@ -368,7 +409,15 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
       clearPatient();
       setPatientName(selected.patient_name);
       if (selected.patient_phone) setPhone(selected.patient_phone);
-      if (d.patientId) setPatientId(d.patientId);
+      if (d.patientId) {
+        setPatientId(d.patientId);
+        setEncounterId(d.encounterId);
+        const apptType = resolveApptType(selected);
+        setVisitType(mapApptTypeToVisitType(apptType));
+        void loadPMH(d.patientId).then(r => {
+          if (!r.error && r.conditions.length > 0) setComorbidities(r.conditions);
+        });
+      }
       setTopSection('consultation');
     } catch (e) {
       setCheckInErr(errMsg(e));
@@ -1488,6 +1537,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                       if (p.phone) setPhone(p.phone);
                       setPatientId(p.id);
                       setTopSection('consultation');
+                      void loadPatientContext(p.id);
                     }}
                     style={{
                       flexShrink: 0, padding: '7px 14px', borderRadius: 7,
