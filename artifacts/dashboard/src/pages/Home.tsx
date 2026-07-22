@@ -372,6 +372,11 @@ export default function HomePage() {
     }
   }, [patientId]);
 
+  // Auto-clear gate if a visit type is already set (e.g. patient loaded from another entry point)
+  useEffect(() => {
+    if (ctxVisitType) setVtGateCleared(true);
+  }, [ctxVisitType]);
+
   const userRole = profile?.role ?? 'front_desk';
   const { activePathway, matchedPathways } = usePathway();
   const topMatchScore = matchedPathways[0]?.score ?? 0;
@@ -1165,8 +1170,8 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Visit type gate — required first step before CC or any intake flow */}
-        {topSection === 'consultation' && !!patientId && !vtGateCleared && !wizardSkipped && (
+        {/* Visit type gate — required first step before consultation or intake */}
+        {(topSection === 'consultation' || topSection === 'intake') && !!patientId && !vtGateCleared && (
           <div style={{ padding: '32px 16px', maxWidth: 680, margin: '0 auto' }}>
             <div style={{ marginBottom: 24 }}>
               <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--ink)', marginBottom: 6 }}>
@@ -1532,7 +1537,7 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ConsultContextBanner />}
 
         {/* Clinical sections */}
-        {topSection === 'intake'        && <IntakeTab />}
+        {topSection === 'intake'        && vtGateCleared && <IntakeTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'hpi'         && <HpiTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'triage'      && <TriageTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'pmh'         && <PmhTab />}
