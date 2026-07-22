@@ -614,8 +614,10 @@ export default function HomePage() {
   if (age) metaParts.push(`Age ${age}`);
   if (sex && sex !== 'unknown') metaParts.push(sex);
 
-  // Ambient consultation = full-focus consultation mode; collapse all UI chrome
-  const consultAmbient = topSection === 'consultation' && wizardSkipped && ambientMode;
+  // Ambient consultation = any active consultation with a patient loaded.
+  // wizardSkipped / ambientMode no longer gate this — the wizard and visit-type
+  // gate are gone; patient loaded + consultation section = ambient mode, always.
+  const consultAmbient = topSection === 'consultation' && (!!patientId || !!patientName);
   const allergyList = allergies.split(',').map((a: string) => a.trim()).filter(Boolean);
   const ccLabel = activeCcKey ? (getMatrix(activeCcKey)?.name ?? null)
     : (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
@@ -1171,8 +1173,8 @@ export default function HomePage() {
         )}
 
 
-        {/* Ambient consultation — voice-first default after wizard */}
-        {topSection === 'consultation' && !!patientId && wizardSkipped && ambientMode && (
+        {/* Ambient consultation — renders whenever a patient is loaded in consultation */}
+        {topSection === 'consultation' && (!!patientId || !!patientName) && (
           <AmbientConsultation
             visitType={ctxVisitType ?? headerVisitMode}
             onDetailedMode={() => { setAmbientMode(false); setGuidedMode(true); }}
