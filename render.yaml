@@ -19,13 +19,17 @@ services:
         generateValue: true
       - key: GMAIL_USER
         value: amisesuite@gmail.com
-      # Calendar IDs — update in Render dashboard once calendars are shared
+      # Calendar IDs — MUST be updated in Render dashboard before going live.
+      # Obtain each calendar ID from Google Calendar → Settings → that calendar's settings page
+      # (format is usually xxxxxxxx@group.calendar.google.com for shared calendars).
+      # These placeholder values will produce a Google Calendar API 404 on first use,
+      # making it obvious they have not been configured.
       - key: CALENDAR_ID_RODNEY_BAY
-        value: amisesuite@gmail.com
+        value: UNCONFIGURED_RODNEY_BAY@group.calendar.google.com
       - key: CALENDAR_ID_CASTRIES
-        value: amisesuite@gmail.com
+        value: UNCONFIGURED_CASTRIES@group.calendar.google.com
       - key: CALENDAR_ID_TAPION_ERCP
-        value: amisesuite@gmail.com
+        value: UNCONFIGURED_TAPION_ERCP@group.calendar.google.com
       # ── Cron job URLs (set in Render dashboard → Cron Jobs, or use
       #    an external cron service like cron-job.org to POST to these) ──
       # POST /api/cron/reminders         — every 30 min (48h SMS + 24h email + post-visit)

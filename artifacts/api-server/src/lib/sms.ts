@@ -101,8 +101,7 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
   }
 
   if (provider === 'digicel') {
-    logger.warn('[SMS] Digicel provider not implemented; falling back to log');
-    return { action: 'skipped' };
+    throw new Error('[SMS] Digicel provider (SMS_PROVIDER=digicel) is not implemented. Set SMS_PROVIDER=twilio or SMS_PROVIDER=dry_run.');
   }
 
   throw new Error(`Unknown SMS_PROVIDER: ${provider}`);

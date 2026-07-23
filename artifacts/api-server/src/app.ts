@@ -73,8 +73,6 @@ app.use(cors({
     // Vercel preview/production URLs for this project
     if (/^https:\/\/[\w-]+-amisesuite-afks-projects\.vercel\.app$/.test(origin)) return cb(null, true);
     if (/^https:\/\/amise[\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
-    // Vercel auto-generated preview slugs (word-word-word-NN.vercel.app)
-    if (/^https:\/\/[a-z]{2,12}-[a-z]{2,12}-[a-z]{2,12}-\d{1,4}\.vercel\.app$/.test(origin)) return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
