@@ -116,6 +116,13 @@ const COMMON_ALLERGENS = [
   'NSAIDs', 'Aspirin', 'Codeine', 'Morphine', 'IV contrast', 'Latex',
 ];
 
+const COMMON_MEDICATIONS = [
+  'Aspirin', 'Clopidogrel', 'Warfarin', 'Rivaroxaban', 'Apixaban', 'Enoxaparin',
+  'Metformin', 'Insulin', 'Gliclazide', 'SGLT2 inhibitor',
+  'ACE inhibitor', 'ARB', 'Beta-blocker', 'Amlodipine', 'Furosemide', 'Statin',
+  'PPI / omeprazole', 'NSAIDs', 'Prednisolone', 'Methotrexate', 'Azathioprine',
+];
+
 const COMMON_LABS = [
   'FBC', 'U&E', 'LFT', 'CRP', 'Coags', 'Lipase', 'Amylase',
   'GXM', 'HbA1c', 'TSH', 'Blood cultures', 'CA-125', 'CEA',
@@ -671,11 +678,29 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       {activeDrawer === 'medications' && (
         <div style={drawerStyle}>
           <div style={sectionLabel}>Current Medications</div>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button type="button" onClick={() => setMedications(medications.includes('None') ? [] : ['None'])}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 6 }}>
+            <button type="button" onClick={() => { setMedications(medications.includes('None') ? [] : ['None']); if (!medications.includes('None')) setMedicationsText(''); }}
               style={chipBtn(medications.includes('None'))}>
               {medications.includes('None') ? '✓ ' : ''}None
             </button>
+            {!medications.includes('None') && COMMON_MEDICATIONS.map(med => {
+              const on = medicationsText.split('\n').some(l => l.trim().toLowerCase().includes(med.toLowerCase()));
+              return (
+                <button key={med} type="button"
+                  onClick={() => {
+                    const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
+                    const newLines = on
+                      ? lines.filter(l => !l.toLowerCase().includes(med.toLowerCase()))
+                      : [...lines, med];
+                    const newText = newLines.join('\n');
+                    setMedicationsText(newText);
+                    setMedications(newLines);
+                  }}
+                  style={chipBtn(on)}>
+                  {on ? '✓ ' : ''}{med}
+                </button>
+              );
+            })}
           </div>
           <textarea
             value={medicationsText}
