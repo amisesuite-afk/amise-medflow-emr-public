@@ -284,6 +284,7 @@ export async function saveAssessment(
     .select();
 
   if (error) { console.error('[db] saveAssessment:', error); return { error: error.message }; }
+  logClinicalSave('autosave_assessment', 'assessments', input.encounter_id, { icd10: input.icdCodes.join(', ') || null });
   return { error: null };
 }
 
@@ -304,6 +305,7 @@ export async function savePlan(
     }, { onConflict: 'encounter_id' });
 
   if (error) { console.error('[db] savePlan:', error); return { error: error.message }; }
+  logClinicalSave('autosave_plan', 'plans', input.encounter_id, { chars: input.description?.length ?? 0 });
   return { error: null };
 }
 
@@ -571,7 +573,7 @@ export async function savePmhNotes(
     console.error('[db] savePmhNotes:', error);
     return { error: error.message };
   }
-
+  logClinicalSave('autosave_pmh', 'patients', patientId);
   return { error: null };
 }
 
@@ -613,6 +615,7 @@ export async function saveHpiNote(
   });
 
   if (error) { console.error('[db] saveHpiNote:', error); return { error: error.message }; }
+  logClinicalSave('autosave_hpi', 'clinical_notes', encounterId, { chars: hpiNotes.length });
   return { error: null };
 }
 
@@ -1099,6 +1102,7 @@ export async function syncAllergyList(
     .select();
 
   if (error) { console.error('[db] syncAllergyList:', error); return { error: error.message }; }
+  logClinicalSave('autosave_allergies', 'allergies', patientId, { count: allergens.length });
   return { error: null };
 }
 
@@ -1147,6 +1151,7 @@ export async function syncMedicationList(
 
   const { error: insErr } = await supabase.from('medications').insert(rows);
   if (insErr) { console.error('[db] syncMedicationList insert:', insErr); return { error: insErr.message }; }
+  logClinicalSave('autosave_medications', 'medications', encounterId, { count: rows.length });
   return { error: null };
 }
 
@@ -1203,6 +1208,7 @@ export async function saveExamFindings(
   });
 
   if (error) { console.error('[db] saveExamFindings:', error); return { error: error.message }; }
+  logClinicalSave('autosave_exam', 'clinical_notes', encounterId, { systems: Object.keys(examFindings).filter(k => examFindings[k].length > 0) });
   return { error: null };
 }
 
@@ -1363,12 +1369,20 @@ export async function loadEncounterData(
       .maybeSingle(),
   ]);
 
-  const firstError = assessRes.error ?? planRes.error ?? allergyRes.error ?? medRes.error
-    ?? hpiRes.error ?? patRes.error ?? investRes.error ?? examRes.error;
-  if (firstError) {
-    console.error('[db] loadEncounterData:', firstError);
-    return { data: null, error: firstError.message };
-  }
+  // Log individual query failures but continue with whatever data is available.
+  // A single table error must not blank the entire encounter (resilient partial load).
+  [
+    [assessRes.error, 'assessments'],
+    [planRes.error, 'plans'],
+    [allergyRes.error, 'allergies'],
+    [medRes.error, 'medications'],
+    [hpiRes.error, 'clinical_notes/hpi'],
+    [patRes.error, 'patients'],
+    [investRes.error, 'investigation_results'],
+    [examRes.error, 'clinical_notes/exam'],
+  ].forEach(([err, table]) => {
+    if (err) console.error(`[db] loadEncounterData ${String(table)}:`, err);
+  });
 
   const assessRow = assessRes.data as { diagnosis: string | null; differentials: string | null; icd10_code: string | null } | null;
   const planRow   = planRes.data   as { description: string | null } | null;
@@ -1456,6 +1470,19 @@ export function logPaneSession(input: PaneSessionLog): void {
     mode: 'cds',
   }).then(({ error }) => {
     if (error) console.warn('[db] logPaneSession:', error.message);
+  });
+}
+
+function logClinicalSave(action: string, tableName: string, recordId: string, summary?: Record<string, unknown>): void {
+  if (!supabase) return;
+  void supabase.from('audit_logs').insert({
+    action,
+    table_name: tableName,
+    record_id:  recordId,
+    new_values: summary ?? null,
+    mode:       'autosave',
+  }).then(({ error }) => {
+    if (error) console.warn('[db] audit:', error.message);
   });
 }
 

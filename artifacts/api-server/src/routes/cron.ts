@@ -47,31 +47,45 @@ router.post('/api/cron/reminders', async (req, res) => {
       };
       const slotDisplay = formatSlotForDisplay(slot as any);
 
-      // 48h SMS reminder — send once (reminder_sent_at IS NULL)
+      // 48h SMS reminder — claim the row atomically before sending to prevent
+      // double-send when two cron instances overlap (DB-level CAS).
       if (hoursUntil <= 48 && hoursUntil > 2 && !appt.reminder_sent_at && appt.patient_phone) {
-        const prepInstructions = getPrepInstructions(appt.appointment_type);
-        const body = smsBody48h({ ...slotDisplay, prepInstructions });
-        const result = await sendSms({ to: appt.patient_phone, body });
-        if (result.action === 'sent' || result.action === 'skipped') {
-          await sb().from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', appt.id);
-          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'sms_48h' } });
+        const { data: claimed } = await sb()
+          .from('appointment_requests')
+          .update({ reminder_sent_at: now.toISOString() })
+          .eq('id', appt.id)
+          .is('reminder_sent_at', null)  // only update if still unclaimed
+          .select('id');
+        if (claimed && claimed.length > 0) {
+          const prepInstructions = getPrepInstructions(appt.appointment_type);
+          const body = smsBody48h({ ...slotDisplay, prepInstructions });
+          const result = await sendSms({ to: appt.patient_phone, body });
+          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'sms_48h', sms_result: result.action } });
           results.push({ id: appt.id, action: 'sms_48h_sent' });
         }
+        // claimed.length === 0 means another instance already sent it — skip silently
       }
 
-      // 24h email reminder with prep instructions — send once (prep_sms_sent IS false/null).
+      // 24h email reminder — claim atomically via prep_sms_sent flag.
       // NOTE: patient_ack_sent_at is set during the booking-ack SMS flow, so it cannot
       // be used here — it would silently suppress the email for every normal booking.
       if (hoursUntil <= 24 && hoursUntil > 1 && !appt.prep_sms_sent && appt.patient_email && !appt.patient_email.endsWith('@noreply.amise.internal')) {
-        const draft = await draftReply({ template: 'confirmation', patientFirstName: firstName, bookingDetails: slotDisplay });
-        const prepInstructions = getPrepInstructions(appt.appointment_type);
-        const prepSection = prepInstructions
-          ? `\n\n---\nPREPARATION INSTRUCTIONS\n\n${prepInstructions}\n\nIf you have any questions about your preparation, please call us at ${process.env.PRACTICE_PHONE ?? '+1 758 284 0557'}.`
-          : '';
-        await sendOrDraft({ to: appt.patient_email, subject: `Reminder: ${draft.subject}`, body: `${draft.body}${prepSection}` }, 'auto');
-        await sb().from('appointment_requests').update({ prep_sms_sent: true }).eq('id', appt.id);
-        await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions } });
-        results.push({ id: appt.id, action: 'email_24h_sent' });
+        const { data: claimedPrep } = await sb()
+          .from('appointment_requests')
+          .update({ prep_sms_sent: true })
+          .eq('id', appt.id)
+          .eq('prep_sms_sent', false)  // only update if still unclaimed
+          .select('id');
+        if (claimedPrep && claimedPrep.length > 0) {
+          const draft = await draftReply({ template: 'confirmation', patientFirstName: firstName, bookingDetails: slotDisplay });
+          const prepInstructions = getPrepInstructions(appt.appointment_type);
+          const prepSection = prepInstructions
+            ? `\n\n---\nPREPARATION INSTRUCTIONS\n\n${prepInstructions}\n\nIf you have any questions about your preparation, please call us at ${process.env.PRACTICE_PHONE ?? '+1 758 284 0557'}.`
+            : '';
+          await sendOrDraft({ to: appt.patient_email, subject: `Reminder: ${draft.subject}`, body: `${draft.body}${prepSection}` }, 'auto');
+          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions } });
+          results.push({ id: appt.id, action: 'email_24h_sent' });
+        }
       }
 
     } catch (err) {

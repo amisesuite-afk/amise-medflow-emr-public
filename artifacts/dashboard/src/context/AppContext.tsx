@@ -550,6 +550,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const pendingSaves = useRef(0);
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const saveEpoch = useRef(0);
+  // Write-ahead queue: holds failed save closures for retry on reconnect (D3)
+  const offlineQueue = useRef<Array<() => Promise<unknown>>>([]);
 
   const trackedSave = useCallback(async <T,>(fn: () => Promise<T>): Promise<T | undefined> => {
     const epoch = saveEpoch.current;
@@ -570,8 +572,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       _setSaveStatus('error');
       _setLastSaveError(err instanceof Error ? err.message : 'Save failed');
       console.error('[autosave] error:', err);
+      if (!navigator.onLine) {
+        offlineQueue.current.push(fn as () => Promise<unknown>);
+        console.info('[autosave] queued for retry when online — queue length:', offlineQueue.current.length);
+      }
       return undefined;
     }
+  }, []);
+
+  // Flush the write-ahead queue when the browser regains connectivity
+  useEffect(() => {
+    const flush = async () => {
+      const tasks = offlineQueue.current.splice(0);
+      if (!tasks.length) return;
+      console.info('[autosave] online — retrying', tasks.length, 'queued saves');
+      for (const task of tasks) {
+        try {
+          await task();
+        } catch {
+          offlineQueue.current.push(task);
+        }
+      }
+      if (offlineQueue.current.length > 0) _setSaveStatus('error');
+    };
+    window.addEventListener('online', flush);
+    return () => window.removeEventListener('online', flush);
   }, []);
 
   const ENC_KEY = 'amise-enc-v1';

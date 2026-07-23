@@ -5,6 +5,7 @@ import { AppProvider } from '@/context/AppContext';
 import { ToastProvider } from '@/components/ToastProvider';
 import HomePage from '@/pages/Home';
 import LoginPage from '@/components/LoginPage';
+import IdleLock from '@/components/IdleLock';
 import MobileEncounterPage from '@/pages/MobileEncounterPage';
 import PwaUpdatePrompt from '@/components/PwaUpdatePrompt';
 
@@ -85,11 +86,14 @@ function AuthGuard() {
   if (IS_MOBILE_PATH) return <MobileEncounterPage />;
 
   return (
-    <AppProvider>
-      <ToastProvider>
-        <HomePage />
-      </ToastProvider>
-    </AppProvider>
+    <>
+      <IdleLock />
+      <AppProvider>
+        <ToastProvider>
+          <HomePage />
+        </ToastProvider>
+      </AppProvider>
+    </>
   );
 }
 
