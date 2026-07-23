@@ -87,6 +87,24 @@
 -- 25. Preferred slot type fix: appointment_requests.preferred_slot timestamptz -> text
 \i supabase-preferred-slot-text-migration.sql
 
+-- 26. Align appointment_requests columns with application code:
+--     adds appointment_type, location, triage_acuity, triage_score,
+--     confirmed_slot, staff_confirmed_at, patient_confirmed_at,
+--     prep_sms_sent, reminder_sent_at, whatsapp_from, google_event_id, reason.
+--     Backfills from old column names (chief_complaint→appointment_type etc.)
+\i supabase-appointment-requests-align-migration.sql
+
+-- 27. Patient photo URL: patients.photo_url text (nullable)
+\i supabase-add-photo-url.sql
+
+-- 28. Web intake delivery method: adds 'web_intake' to
+--     questionnaire_sessions.delivery_method CHECK constraint
+\i supabase-web-intake-delivery-method-migration.sql
+
+-- 29. Clinical scores + extracted labs: encounters.clinical_scores jsonb,
+--     encounters.extracted_labs jsonb, GIN index on clinical_scores
+\i supabase-clinical-scores-migration.sql
+
 -- ============================================================
 -- FULL TABLE INVENTORY (after all migrations)
 -- ============================================================
