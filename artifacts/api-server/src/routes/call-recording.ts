@@ -37,8 +37,8 @@ const router = Router();
 function requireUploadKey(req: Request, res: Response, next: NextFunction): void {
   const key = process.env.RECORDING_UPLOAD_KEY?.trim();
   if (!key) {
-    logger.warn('[call-recording] RECORDING_UPLOAD_KEY not set — upload endpoint is open');
-    next();
+    logger.error('[call-recording] RECORDING_UPLOAD_KEY not set — upload endpoint disabled for safety');
+    res.status(503).json({ error: 'Upload endpoint not configured — set RECORDING_UPLOAD_KEY' });
     return;
   }
   // Accept key via header OR query param (query param avoids Samsung keyboard tab-injection bug)
