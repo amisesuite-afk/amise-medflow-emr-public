@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { supabase } from '@/lib/supabase';
+import { searchMedications } from '@workspace/triage-engine';
 import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, footer, signoff, escH, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
@@ -101,11 +102,21 @@ const FORMULARY: FormularyDrug[] = [
 function searchFormulary(query: string): FormularyDrug[] {
   if (!query || query.length < 2) return [];
   const q = query.toLowerCase();
-  return FORMULARY.filter(d =>
+  const local = FORMULARY.filter(d =>
     d.name.toLowerCase().includes(q) ||
     (d.genericName && d.genericName.toLowerCase().includes(q)) ||
     (d.category && d.category.toLowerCase().includes(q))
   );
+  const localNames = new Set(local.map(d => d.name.toLowerCase()));
+  const engine = searchMedications(query)
+    .filter(m => !localNames.has(m.genericName.toLowerCase()))
+    .map((m): FormularyDrug => ({
+      name: m.genericName,
+      genericName: m.genericName,
+      defaultDose: m.commonDoses[0] ?? '',
+      category: m.class,
+    }));
+  return [...local, ...engine];
 }
 
 function uid(): string {

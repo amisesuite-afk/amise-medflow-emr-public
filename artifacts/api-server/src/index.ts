@@ -1,6 +1,8 @@
 import * as Sentry from "@sentry/node";
 import app from "./app";
 import { logger } from "./lib/logger";
+import { loadRevokedJtis } from "./lib/patient-auth";
+import { sb } from "./lib/supabase";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -47,6 +49,18 @@ const port = Number(rawPort);
 if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
+
+// Load persisted token blacklist on startup (best-effort — server starts even if this fails)
+void sb().from('patient_token_blacklist')
+  .select('jti')
+  .gt('exp', new Date().toISOString())
+  .then(({ data, error }) => {
+    if (error) { logger.warn({ err: error.message }, '[patient-auth] could not load token blacklist on startup'); return; }
+    if (data?.length) {
+      loadRevokedJtis(data.map((r: { jti: string }) => r.jti));
+      logger.info({ count: data.length }, '[patient-auth] loaded revoked token JTIs');
+    }
+  });
 
 const server = app.listen(port, (err) => {
   if (err) {

@@ -56,6 +56,26 @@ export interface PatientJwtPayload {
   email: string;
   iat: number;
   exp: number;
+  jti?: string;     // unique token ID — present on tokens issued after T2 fix
+}
+
+// ── In-memory token blacklist (revoked JTIs) ──────────────────────────────────
+// Survives for the life of the process. JTIs are added on logout and checked on
+// every authenticated request. On Render Starter (single instance) this is sufficient.
+// We also persist to Supabase so the list survives server restarts.
+
+const revokedJtis = new Set<string>();
+
+export function revokeJti(jti: string): void {
+  revokedJtis.add(jti);
+}
+
+export function isJtiRevoked(jti: string): boolean {
+  return revokedJtis.has(jti);
+}
+
+export function loadRevokedJtis(jtis: string[]): void {
+  for (const jti of jtis) revokedJtis.add(jti);
 }
 
 function b64url(buf: Buffer | string): string {
@@ -72,9 +92,10 @@ function jwtSecret(): string {
   return s;
 }
 
-export function signPatientJwt(payload: Omit<PatientJwtPayload, 'iat' | 'exp'>, expiresInDays = 90): string {
+export function signPatientJwt(payload: Omit<PatientJwtPayload, 'iat' | 'exp' | 'jti'>, expiresInDays = 90): string {
   const now = Math.floor(Date.now() / 1000);
-  const full: PatientJwtPayload = { ...payload, iat: now, exp: now + expiresInDays * 86400 };
+  const jti = randomBytes(16).toString('hex');
+  const full: PatientJwtPayload = { ...payload, jti, iat: now, exp: now + expiresInDays * 86400 };
   const body = b64url(JSON.stringify(full));
   const sig = createHmac('sha256', jwtSecret()).update(`${JWT_HEADER}.${body}`).digest('base64url');
   return `${JWT_HEADER}.${body}.${sig}`;

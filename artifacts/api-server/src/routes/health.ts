@@ -33,4 +33,38 @@ router.get("/api/healthz/env", (req, res) => {
   });
 });
 
+// ── GET /api/healthz/schema ───────────────────────────────────────────────────
+// Returns which expected tables exist in Supabase. Protected by CRON_SECRET.
+// Useful for operators to verify migrations have been applied without logging
+// into the Supabase dashboard.
+
+const EXPECTED_TABLES = [
+  'patients', 'encounters', 'assessments', 'plans', 'clinical_notes',
+  'allergies', 'medications', 'audit_logs', 'appointment_requests',
+  'questionnaire_sessions', 'patient_accounts', 'user_profiles',
+  'clinical_guidelines', 'patient_token_blacklist',
+] as const;
+
+router.get('/api/healthz/schema', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+  try {
+    const results = await Promise.all(
+      EXPECTED_TABLES.map(async table => {
+        const { error } = await (await import('../lib/supabase.js')).sb()
+          .from(table as string)
+          .select('count', { count: 'exact', head: true });
+        return { table, exists: !error, error: error?.message ?? null };
+      })
+    );
+    const missing = results.filter(r => !r.exists);
+    res.json({
+      ok: missing.length === 0,
+      tables: results,
+      missingCount: missing.length,
+    });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err instanceof Error ? err.message : String(err) });
+  }
+});
+
 export default router;

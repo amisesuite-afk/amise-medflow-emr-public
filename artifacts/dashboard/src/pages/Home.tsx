@@ -270,16 +270,6 @@ function acuityClass(a: string) {
   return a === 'urgent' ? 'urgent' : a === 'priority' ? 'priority' : a === 'review' ? 'review' : '';
 }
 
-function StubPanel({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="stub-panel">
-      <div className="stub-panel__icon">🚧</div>
-      <div className="stub-panel__title">{title}</div>
-      <div className="stub-panel__desc">{description}</div>
-    </div>
-  );
-}
-
 export default function HomePage() {
   const { profile, signOut } = useAuth();
   const {

@@ -20,6 +20,9 @@ import {
   verifyPassword,
   signPatientJwt,
   verifyPatientJwt,
+  revokeJti,
+  isJtiRevoked,
+  loadRevokedJtis,
 } from '../lib/patient-auth.js';
 import { sendOrDraft } from '../lib/gmail.js';
 
@@ -280,9 +283,19 @@ router.post('/api/patient/auth/change-password', async (req, res) => {
 
 // ── POST /api/patient/auth/logout ────────────────────────────────────────────
 
-router.post('/api/patient/auth/logout', (_req, res) => {
-  // JWTs are stateless — the client deletes the token locally.
-  // This endpoint exists for forward-compatibility (token blacklist, audit log).
+router.post('/api/patient/auth/logout', (req, res) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (token) {
+    const payload = verifyPatientJwt(token);
+    if (payload?.jti) {
+      revokeJti(payload.jti);
+      // Persist to Supabase so the blacklist survives server restarts
+      void sb().from('patient_token_blacklist')
+        .insert({ jti: payload.jti, exp: new Date(payload.exp * 1000).toISOString() })
+        .then(({ error }) => { if (error) log.warn({ err: error.message }, '[patient-auth] blacklist persist failed'); });
+    }
+  }
   res.json({ success: true });
 });
 
@@ -311,6 +324,10 @@ export async function requirePatientAuth(
     const payload = verifyPatientJwt(bearerToken);
     if (!payload) {
       res.status(401).json({ error: 'Invalid or expired session — please log in again' });
+      return;
+    }
+    if (payload.jti && isJtiRevoked(payload.jti)) {
+      res.status(401).json({ error: 'Session has been revoked — please log in again' });
       return;
     }
     req.patientAuth = {
