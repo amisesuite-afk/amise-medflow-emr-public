@@ -8,7 +8,7 @@ import ConsultationRequestsView from './ConsultationRequestsView';
 import { errMsg } from '@/lib/err';
 import { fmtPhone } from '@/lib/fmt';
 import { supabase } from '@/lib/supabase';
-import { loadPMH, loadEncounterData, getLatestOpenEncounter } from '@/lib/db';
+import { loadPMH, loadEncounterData, getLatestOpenEncounter, getLatestClosedEncounter } from '@/lib/db';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -236,6 +236,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     setTopSection, clearPatient,
     setComorbidities, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes,
     setEncounterId, setVisitType,
+    setPriorEncounterSummary,
   } = useAppContext();
   const narrow = useNarrow();
 
@@ -317,7 +318,11 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         if (d.surgicalNotes) setSurgicalNotes(d.surgicalNotes);
       }
     }
-  }, [setVisitType, setComorbidities, setEncounterId, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes]);
+    // Non-blocking: prior closed encounter for follow-up baseline strip
+    void getLatestClosedEncounter(patientId).then(({ data }) => {
+      setPriorEncounterSummary(data);
+    });
+  }, [setVisitType, setComorbidities, setEncounterId, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes, setPriorEncounterSummary]);
 
   const load = useCallback(async () => {
     try {

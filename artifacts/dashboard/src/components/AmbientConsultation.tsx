@@ -6,7 +6,7 @@
  */
 
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import { useAppContext, type Section } from '@/context/AppContext';
+import { useAppContext, type Section, type PriorEncounterSummary } from '@/context/AppContext';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { getAIProviderConfig, segmentSoapWithOllama, type SegmentedSoap } from '@/lib/ai-provider';
 import { localSegmentSoap } from '@/lib/local-soap-segmenter';
@@ -879,6 +879,11 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       ════════════════════════════════════════ */}
       {consultPhase === 'history' && (
         <>
+          {/* ── Prior visit baseline strip — follow-up visits only ── */}
+          {visitType === 'follow_up' && ctx.priorEncounterSummary && (
+            <PriorVisitStrip summary={ctx.priorEncounterSummary} />
+          )}
+
           {/* ── Chief Complaint picker ── */}
           <div style={{ ...drawerStyle, gap: 8 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -1501,6 +1506,111 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           50%       { opacity: 0.2; }
         }
       `}</style>
+    </div>
+  );
+}
+
+// ── Prior Visit Baseline Strip ────────────────────────────────────────────────
+
+function fmtDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch {
+    return iso;
+  }
+}
+
+function PriorVisitStrip({ summary: s }: { summary: PriorEncounterSummary }) {
+  const [expanded, setExpanded] = useState(false);
+  const typeLabel = s.encounterType.replace(/_/g, ' ');
+
+  return (
+    <div style={{
+      borderRadius: 10,
+      border: '1px solid #bae6fd',
+      background: '#f0f9ff',
+      padding: '10px 14px',
+      fontSize: 13,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{
+            fontSize: 10, fontWeight: 800, letterSpacing: '.07em', textTransform: 'uppercase',
+            color: '#0284c7', background: '#e0f2fe', borderRadius: 5, padding: '2px 7px',
+          }}>
+            Prior visit
+          </span>
+          <span style={{ fontWeight: 700, color: '#0c4a6e', fontSize: 13 }}>
+            {fmtDate(s.encounterDate)}
+          </span>
+          <span style={{ color: '#64748b', fontSize: 12 }}>{typeLabel}</span>
+          {s.chiefComplaint && (
+            <span style={{ color: '#475569', fontSize: 12 }}>· {s.chiefComplaint}</span>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => setExpanded(v => !v)}
+          style={{ fontSize: 11, color: '#0284c7', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 700, flexShrink: 0 }}
+        >
+          {expanded ? 'Hide ▲' : 'Show ▼'}
+        </button>
+      </div>
+
+      {expanded && (
+        <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {s.assessment && (
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.06em', textTransform: 'uppercase', color: '#64748b', marginBottom: 3 }}>
+                Assessment
+              </div>
+              <div style={{ fontSize: 12, color: '#1e293b', whiteSpace: 'pre-wrap', background: '#fff', borderRadius: 6, padding: '6px 10px', border: '1px solid #e0f2fe' }}>
+                {s.assessment}
+              </div>
+            </div>
+          )}
+          {s.plan && (
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.06em', textTransform: 'uppercase', color: '#64748b', marginBottom: 3 }}>
+                Plan
+              </div>
+              <div style={{ fontSize: 12, color: '#1e293b', whiteSpace: 'pre-wrap', background: '#fff', borderRadius: 6, padding: '6px 10px', border: '1px solid #e0f2fe' }}>
+                {s.plan}
+              </div>
+            </div>
+          )}
+          {s.medications.length > 0 && (
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.06em', textTransform: 'uppercase', color: '#64748b', marginBottom: 3 }}>
+                Medications at last visit
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                {s.medications.map(m => (
+                  <span key={m} style={{ fontSize: 11, background: '#fff', border: '1px solid #bae6fd', borderRadius: 5, padding: '2px 8px', color: '#0c4a6e' }}>
+                    {m}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+          {s.allergies && (
+            <div style={{ fontSize: 12, color: '#dc2626', fontWeight: 600 }}>
+              ⚠ Allergies on record: {s.allergies}
+            </div>
+          )}
+          {s.surgicalHistory.length > 0 && (
+            <div>
+              <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.06em', textTransform: 'uppercase', color: '#64748b', marginBottom: 3 }}>
+                Surgical history
+              </div>
+              <div style={{ fontSize: 12, color: '#475569' }}>{s.surgicalHistory.join(' · ')}</div>
+            </div>
+          )}
+          <div style={{ fontSize: 11, color: '#94a3b8', fontStyle: 'italic', marginTop: 2 }}>
+            Read-only — from prior encounter record. Confirm with patient before relying on this data.
+          </div>
+        </div>
+      )}
     </div>
   );
 }

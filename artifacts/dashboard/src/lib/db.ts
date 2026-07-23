@@ -721,6 +721,75 @@ export async function getLatestOpenEncounter(
   return { encounterId: (data as { id: string } | null)?.id ?? null, error: null };
 }
 
+// ─── getLatestClosedEncounter ─────────────────────────────────────────────────
+
+export interface ClosedEncounterSnapshot {
+  encounterId: string;
+  encounterDate: string;
+  encounterType: string;
+  chiefComplaint: string | null;
+  assessment: string | null;
+  plan: string | null;
+  medications: string[];
+  allergies: string;
+  surgicalHistory: string[];
+}
+
+export async function getLatestClosedEncounter(
+  patient_id: string,
+): Promise<{ data: ClosedEncounterSnapshot | null; error: string | null }> {
+  if (!supabase) return { data: null, error: notConfigured('getLatestClosedEncounter') };
+
+  const { data, error } = await supabase
+    .from('encounters')
+    .select(`
+      id, encounter_date, encounter_type, chief_complaint,
+      diagnosis, plan,
+      encounter_medications(name),
+      encounter_allergens(name),
+      encounter_surgical_history(procedure)
+    `)
+    .eq('patient_id', patient_id)
+    .neq('status', 'open')
+    .order('encounter_date', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[db] getLatestClosedEncounter:', error);
+    return { data: null, error: error.message };
+  }
+
+  if (!data) return { data: null, error: null };
+
+  const row = data as {
+    id: string;
+    encounter_date: string;
+    encounter_type: string;
+    chief_complaint: string | null;
+    diagnosis: string | null;
+    plan: string | null;
+    encounter_medications: Array<{ name: string }> | null;
+    encounter_allergens: Array<{ name: string }> | null;
+    encounter_surgical_history: Array<{ procedure: string }> | null;
+  };
+
+  return {
+    data: {
+      encounterId: row.id,
+      encounterDate: row.encounter_date,
+      encounterType: row.encounter_type,
+      chiefComplaint: row.chief_complaint,
+      assessment: row.diagnosis,
+      plan: row.plan,
+      medications: (row.encounter_medications ?? []).map(m => m.name),
+      allergies: (row.encounter_allergens ?? []).map(a => a.name).join(', '),
+      surgicalHistory: (row.encounter_surgical_history ?? []).map(s => s.procedure),
+    },
+    error: null,
+  };
+}
+
 export async function getLatestAppointmentType(
   patient_id: string,
 ): Promise<string | null> {

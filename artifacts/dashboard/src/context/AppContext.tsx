@@ -372,6 +372,24 @@ interface CtxValue {
   /** Per-encounter clinical scores — mirrors encounters.clinical_scores in DB. */
   clinicalScores: Record<string, unknown>;
   setClinicalScores(v: Record<string, unknown>): void;
+
+  /** Summary snapshot of the patient's most recent closed encounter.
+   *  Null when not a follow-up visit or not yet loaded.
+   *  Read-only in the consultation — never overwritten by AI output. */
+  priorEncounterSummary: PriorEncounterSummary | null;
+  setPriorEncounterSummary(v: PriorEncounterSummary | null): void;
+}
+
+export interface PriorEncounterSummary {
+  encounterId: string;
+  encounterDate: string;
+  encounterType: string;
+  chiefComplaint: string | null;
+  assessment: string | null;
+  plan: string | null;
+  medications: string[];
+  allergies: string;
+  surgicalHistory: string[];
 }
 
 const AppContext = createContext<CtxValue | null>(null);
@@ -524,6 +542,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [wounds, setWounds] = useState<WoundAssessment[]>([]);
   const [extractedLabs, setExtractedLabs] = useState<Record<string, number | null>>({});
   const [clinicalScores, setClinicalScores] = useState<Record<string, unknown>>({});
+  const [priorEncounterSummary, setPriorEncounterSummary] = useState<PriorEncounterSummary | null>(null);
 
   // ── Global save status tracking ───────────────────────────────────────────
   const [saveStatus, _setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -791,6 +810,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setWounds([]);
     setExtractedLabs({});
     setClinicalScores({});
+    setPriorEncounterSummary(null);
     try {
       localStorage.removeItem(ENC_KEY);
       localStorage.removeItem('amise-attachments-v1');
@@ -1267,6 +1287,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setActiveCcKey,
     extractedLabs, setExtractedLabs, updateExtractedLab,
     clinicalScores, setClinicalScores,
+    priorEncounterSummary, setPriorEncounterSummary,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

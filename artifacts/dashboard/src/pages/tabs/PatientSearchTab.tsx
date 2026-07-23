@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, listPatientsBySite, getLatestOpenEncounter, getLatestAppointmentType, loadPMH, loadEncounterData, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
+import { listPatients, listPatientsBySite, getLatestOpenEncounter, getLatestAppointmentType, getLatestClosedEncounter, loadPMH, loadEncounterData, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
 import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { fmtPhone } from '@/lib/fmt';
@@ -114,6 +114,7 @@ export default function PatientSearchTab() {
     toggleSymptom, setFreeText, symptoms, freeText,
     setMedicationsText,
     comorbidities, surgicalHistory, toxicHabits,
+    setPriorEncounterSummary,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -309,6 +310,11 @@ export default function PatientSearchTab() {
         routeByAppointmentType(apptType);
       }
     }
+
+    // Non-blocking: load most recent closed encounter for follow-up baseline strip
+    void getLatestClosedEncounter(p.id).then(({ data }) => {
+      setPriorEncounterSummary(data);
+    });
 
     // Check for questionnaire intake data
     setQuestionnaireData(null);
