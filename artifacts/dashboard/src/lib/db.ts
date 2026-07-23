@@ -1266,6 +1266,88 @@ export async function loadDischargeNotes(
   catch { return { data: null, error: null }; }
 }
 
+// ─── saveInpatientDetails / loadInpatientDetails ─────────────────────────────
+
+const INPATIENT_PREFIX = '[INPATIENT_JSON]';
+
+/** Persists inpatient admission fields to clinical_notes so they survive page reload. */
+export async function saveInpatientDetails(
+  encounterId: string,
+  patientId: string,
+  data: Record<string, unknown>,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveInpatientDetails') };
+
+  const { error: delErr } = await supabase.from('clinical_notes')
+    .delete()
+    .eq('encounter_id', encounterId)
+    .like('content', `${INPATIENT_PREFIX}%`);
+  if (delErr) { console.error('[db] saveInpatientDetails delete:', delErr); return { error: delErr.message }; }
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    note_type:    'consultation',
+    status:       'draft',
+    content:      `${INPATIENT_PREFIX}\n${JSON.stringify(data)}`,
+    ai_assisted:  false,
+  });
+
+  if (error) { console.error('[db] saveInpatientDetails:', error); return { error: error.message }; }
+  logClinicalSave('autosave_inpatient', 'clinical_notes', encounterId);
+  return { error: null };
+}
+
+/** Loads inpatient admission fields from clinical_notes. */
+export async function loadInpatientDetails(
+  encounterId: string,
+): Promise<{ data: Record<string, unknown> | null; error: string | null }> {
+  if (!supabase) return { data: null, error: null };
+
+  const { data, error } = await supabase
+    .from('clinical_notes')
+    .select('content')
+    .eq('encounter_id', encounterId)
+    .like('content', `${INPATIENT_PREFIX}%`)
+    .maybeSingle();
+
+  if (error) { console.error('[db] loadInpatientDetails:', error); return { data: null, error: error.message }; }
+  if (!data) return { data: null, error: null };
+
+  const content = (data as { content: string }).content;
+  const jsonStr = content.startsWith(`${INPATIENT_PREFIX}\n`) ? content.slice(INPATIENT_PREFIX.length + 1) : null;
+  if (!jsonStr) return { data: null, error: null };
+  try { return { data: JSON.parse(jsonStr) as Record<string, unknown>, error: null }; }
+  catch { return { data: null, error: null }; }
+}
+
+// ─── saveAiConsult ────────────────────────────────────────────────────────────
+
+const AI_CONSULT_PREFIX = '[AI_CONSULT_JSON]';
+
+/** Appends one AI consultation response to clinical_notes (INSERT, not upsert). */
+export async function saveAiConsult(
+  encounterId: string,
+  patientId: string,
+  consultationType: string,
+  response: Record<string, unknown>,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('saveAiConsult') };
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId,
+    patient_id:   patientId,
+    note_type:    'consultation',
+    status:       'draft',
+    content:      `${AI_CONSULT_PREFIX}\n${JSON.stringify({ consultationType, savedAt: new Date().toISOString(), ...response })}`,
+    ai_assisted:  true,
+  });
+
+  if (error) { console.error('[db] saveAiConsult:', error); return { error: error.message }; }
+  logClinicalSave('ai_consult', 'clinical_notes', encounterId, { consultationType });
+  return { error: null };
+}
+
 // ─── closeEncounter ───────────────────────────────────────────────────────────
 
 export async function closeEncounter(
@@ -1273,12 +1355,15 @@ export async function closeEncounter(
 ): Promise<{ error: string | null }> {
   if (!supabase) return { error: notConfigured('closeEncounter') };
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('encounters')
     .update({ status: 'closed' })
-    .eq('id', encounterId);
+    .eq('id', encounterId)
+    .in('status', ['open', 'in_progress'])
+    .select('id');
 
   if (error) { console.error('[db] closeEncounter:', error); return { error: error.message }; }
+  if (!data?.length) return { error: 'This encounter is no longer open — it may have been closed by another session. Please refresh.' };
   return { error: null };
 }
 
@@ -1318,6 +1403,7 @@ export interface EncounterData {
     burnTimeOfInjury: string;
     burnInhalation: boolean;
   } | null;
+  inpatientDetails: Record<string, unknown> | null;
 }
 
 /** Fetches the clinical snapshot for an encounter: assessment, plan, allergies,
@@ -1406,12 +1492,13 @@ export async function loadEncounterData(
     } catch { /* malformed — return empty */ }
   }
 
-  const [surgRes, toxicRes, rosRes, procRes, traumaRes] = await Promise.all([
+  const [surgRes, toxicRes, rosRes, procRes, traumaRes, inpatientRes] = await Promise.all([
     loadSurgicalHistory(patientId),
     loadToxicHabits(patientId),
     loadRosFindings(encounterId),
     loadProcedureData(encounterId),
     loadTraumaRecord(encounterId),
+    loadInpatientDetails(encounterId),
   ]);
 
   return {
@@ -1436,6 +1523,7 @@ export async function loadEncounterData(
       familyHistoryNotes: patRow?.family_history_notes ?? '',
       orderedInvestigations: investRows.map(r => r.test_name),
       traumaData:      traumaRes,
+      inpatientDetails: inpatientRes.data,
     },
     error: null,
   };

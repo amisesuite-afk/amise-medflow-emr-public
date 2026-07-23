@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { errMsg } from '@/lib/err';
+import { saveAiConsult } from '@/lib/db';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -842,6 +843,9 @@ export default function AiConsultantTab() {
       const data = await r.json();
       const resp = (data.consultation ?? data) as AiConsultResponse;
       setAiResponse(resp);
+      if (encounterId && patientId) {
+        void saveAiConsult(encounterId, patientId, consultationType, resp as unknown as Record<string, unknown>);
+      }
 
       // Auto-add AI-suggested labs to suggestions
       if (resp.suggestedInvestigations?.length) {

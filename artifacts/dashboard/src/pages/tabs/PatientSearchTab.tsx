@@ -115,6 +115,9 @@ export default function PatientSearchTab() {
     setMedicationsText,
     comorbidities, surgicalHistory, toxicHabits,
     setPriorEncounterSummary,
+    setWard, setDateAdmission, setDateDischarge, setAdmittingSurgeon,
+    setReferringPhysician, setNokName, setNokRelation, setNokTel,
+    setBloodGroup, setMrNumber,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -300,6 +303,19 @@ export default function PatientSearchTab() {
           if (d.pmhNotes) setPmhNotes(d.pmhNotes);
           if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
           if (d.orderedInvestigations.length) setOrderedInvestigations(d.orderedInvestigations);
+          if (d.inpatientDetails) {
+            const ip = d.inpatientDetails;
+            if (typeof ip.ward === 'string') setWard(ip.ward);
+            if (typeof ip.dateAdmission === 'string') setDateAdmission(ip.dateAdmission);
+            if (typeof ip.dateDischarge === 'string') setDateDischarge(ip.dateDischarge);
+            if (typeof ip.admittingSurgeon === 'string') setAdmittingSurgeon(ip.admittingSurgeon);
+            if (typeof ip.referringPhysician === 'string') setReferringPhysician(ip.referringPhysician);
+            if (typeof ip.nokName === 'string') setNokName(ip.nokName);
+            if (typeof ip.nokRelation === 'string') setNokRelation(ip.nokRelation);
+            if (typeof ip.nokTel === 'string') setNokTel(ip.nokTel);
+            if (typeof ip.bloodGroup === 'string') setBloodGroup(ip.bloodGroup);
+            if (typeof ip.mrNumber === 'string') setMrNumber(ip.mrNumber);
+          }
         }
         showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
         const apptType = await getLatestAppointmentType(p.id);

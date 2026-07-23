@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState,
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -785,6 +785,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const pmhTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const investigationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const encounterTypeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inpatientTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function clearPatient() {
     // Invalidate in-flight saves and cancel all debounce timers
@@ -801,6 +802,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (pmhTimerRef.current) { clearTimeout(pmhTimerRef.current); pmhTimerRef.current = null; }
     if (investigationTimerRef.current) { clearTimeout(investigationTimerRef.current); investigationTimerRef.current = null; }
     if (encounterTypeTimerRef.current) { clearTimeout(encounterTypeTimerRef.current); encounterTypeTimerRef.current = null; }
+    if (inpatientTimerRef.current) { clearTimeout(inpatientTimerRef.current); inpatientTimerRef.current = null; }
     setPatientId(null); setEncounterId(null);
     setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto(''); setExamPhotos([]);
     setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
@@ -1051,6 +1053,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [encounterId, encounterType, encounterMode]);
 
+  // ── Autosave inpatient admission details (encounter-level, debounced 3 s) ──
+  useEffect(() => {
+    if (!patientId || !encounterId) return;
+    if (!ward && !dateAdmission && !dateDischarge && !nokName) return;
+    if (inpatientTimerRef.current) clearTimeout(inpatientTimerRef.current);
+    inpatientTimerRef.current = setTimeout(() => {
+      inpatientTimerRef.current = null;
+      void trackedSave(() => saveInpatientDetails(encounterId, patientId, {
+        ward, dateAdmission, dateDischarge, admittingSurgeon,
+        referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber,
+      }));
+    }, 3000);
+    return () => { if (inpatientTimerRef.current) clearTimeout(inpatientTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patientId, encounterId, ward, dateAdmission, dateDischarge, admittingSurgeon,
+    referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber]);
+
   // ── Flush pending debounced saves on page close / hide ──────────────────
   const flushPendingSaves = useCallback(() => {
     if (autoSaveTimerRef.current && patientId && encounterId) {
@@ -1120,12 +1139,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       encounterTypeTimerRef.current = null;
       void trackedSave(() => updateEncounterType(encounterId, toDbEncounterType(encounterType, encounterMode)));
     }
+    if (inpatientTimerRef.current && patientId && encounterId) {
+      clearTimeout(inpatientTimerRef.current);
+      inpatientTimerRef.current = null;
+      void trackedSave(() => saveInpatientDetails(encounterId, patientId, {
+        ward, dateAdmission, dateDischarge, admittingSurgeon,
+        referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber,
+      }));
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan,
     triageResult.acuity, triageResult.score, medications, medicationsText,
     allergies, examFindings, examNotes, surgicalHistory, surgicalNotes,
     toxicHabits, rosFindings, procedureData, traumaData,
     hpiNotes, pmhNotes, familyHistoryNotes, orderedInvestigations, encounterType, encounterMode,
+    ward, dateAdmission, dateDischarge, admittingSurgeon, referringPhysician,
+    nokName, nokRelation, nokTel, bloodGroup, mrNumber,
     trackedSave]);
 
   // Stable ref so event handlers always see the latest flush function
@@ -1138,7 +1167,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
        surgicalTimerRef.current || toxicTimerRef.current || rosTimerRef.current ||
        procedureTimerRef.current || traumaTimerRef.current ||
        hpiTimerRef.current || pmhTimerRef.current || investigationTimerRef.current ||
-       encounterTypeTimerRef.current), []);
+       encounterTypeTimerRef.current || inpatientTimerRef.current), []);
 
   useEffect(() => {
     function handleBeforeUnload(e: BeforeUnloadEvent) {

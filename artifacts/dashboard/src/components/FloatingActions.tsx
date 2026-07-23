@@ -104,6 +104,7 @@ export default function FloatingActions() {
     encounterId, setEncounterId,
     symptoms, triageResult,
     currentSite,
+    assessment, icdCodes,
   } = useAppContext();
   const { showToast } = useToast();
   const [saving, setSaving] = useState(false);
@@ -205,15 +206,32 @@ export default function FloatingActions() {
 
   async function handleSign() {
     if (!encounterId) { setShowModal(false); clearPatient(); return; }
+
+    // D5: Require assessment + at least one ICD code before closing
+    if (!assessment.trim()) {
+      showToast('Please document an assessment before closing this encounter.', 'error');
+      return;
+    }
+    if (icdCodes.length === 0) {
+      showToast('Please add at least one ICD-10 code before closing this encounter.', 'error');
+      return;
+    }
+
     setSigning(true);
     try {
       if (!DEMO_MODE) {
-        const { error } = await supabase!
+        const { data: rows, error } = await supabase!
           .from('encounters')
           .update({ status: 'completed', closed_at: new Date().toISOString() })
-          .eq('id', encounterId);
+          .eq('id', encounterId)
+          .in('status', ['open', 'in_progress'])
+          .select('id');
         if (error) {
           showToast(`Could not close encounter: ${error.message}`, 'error');
+          return;
+        }
+        if (!rows?.length) {
+          showToast('Encounter is no longer open — it may have been closed by another session. Please refresh.', 'error');
           return;
         }
       }

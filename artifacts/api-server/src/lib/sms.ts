@@ -34,8 +34,11 @@ setInterval(() => {
 }, 5 * 60 * 1000).unref();
 
 async function getTwilioClient() {
+  const sid   = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  if (!sid || !token) throw new Error('[SMS] TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN must be set to use the twilio provider');
   const { default: twilio } = await import('twilio');
-  return twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
+  return twilio(sid, token);
 }
 
 export async function sendSms(args: SmsArgs): Promise<SmsResult> {
