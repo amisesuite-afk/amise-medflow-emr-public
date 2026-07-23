@@ -121,7 +121,8 @@ export default function IntakeTab() {
     policyNumber, setPolicyNumber,
     procedureData, setProcedureData,
     hpiNotes, setHpiNotes,
-    setVisitType,
+    visitType, setVisitType,
+    encounterType,
     setMedicationsText,
     setSurgicalNotes,
     setPmhNotes,
@@ -129,6 +130,28 @@ export default function IntakeTab() {
     setTopSection,
     setExtractedLabs,
   } = useAppContext();
+
+  // Visit-type context flags — drive card ordering and conditional sections
+  const isEmergency = visitType === 'urgent' || encounterType === 'major_emergency';
+  const isErcp = visitType === 'ercp';
+
+  // Card visual order — CSS flex `order` property.
+  // Emergency: triage banner → vitals → CC → identity → referral
+  // ERCP:      referral → ERCP checklist → vitals → CC → identity
+  // Default:   identity → referral → CC → vitals → scores → triage
+  type CardKey = 'triage' | 'vitals' | 'cc' | 'identity' | 'referral' | 'ercp_checklist' | 'pathways' | 'scores';
+  function cardOrder(k: CardKey): number {
+    if (isEmergency) {
+      const map: Record<CardKey, number> = { triage: 0, vitals: 1, cc: 2, identity: 3, referral: 4, pathways: 5, scores: 6, ercp_checklist: 10 };
+      return map[k];
+    }
+    if (isErcp) {
+      const map: Record<CardKey, number> = { referral: 1, ercp_checklist: 2, vitals: 3, cc: 4, identity: 5, pathways: 6, scores: 7, triage: 8 };
+      return map[k];
+    }
+    const map: Record<CardKey, number> = { identity: 1, referral: 2, cc: 3, pathways: 4, vitals: 5, scores: 6, triage: 7, ercp_checklist: 10 };
+    return map[k];
+  }
 
   // Referral detail — stored in procedureData['referral'] to avoid context bloat
   interface ReferralData { date: string; dx: string; summary: string }
@@ -356,7 +379,8 @@ export default function IntakeTab() {
     <div className="gap-y">
 
       {/* ── 1. PATIENT IDENTITY & REGISTRATION ──────────────────────────────── */}
-      <CollapsibleCard title="Patient identity &amp; registration" badge={triageResult.missingCriticalFields.length > 0 ? `${triageResult.missingCriticalFields.length} missing` : undefined} badgeVariant={triageResult.missingCriticalFields.length > 0 ? 'warn' : 'default'}>
+      <div style={{ order: cardOrder('identity') }}>
+      <CollapsibleCard title="Patient identity &amp; registration" badge={triageResult.missingCriticalFields.length > 0 ? `${triageResult.missingCriticalFields.length} missing` : undefined} badgeVariant={triageResult.missingCriticalFields.length > 0 ? 'warn' : 'default'} defaultOpen={!isEmergency}>
         <PatientPhotoCapture />
 
         {/* Core demographics */}
@@ -683,8 +707,11 @@ export default function IntakeTab() {
         )}
       </CollapsibleCard>
 
+      </div>{/* end identity wrapper */}
+
       {/* ── 1b. REFERRAL / REPORT AI SCAN ──────────────────────────────────── */}
-      <CollapsibleCard title="Referral letter / reports" defaultOpen>
+      <div style={{ order: cardOrder('referral') }}>
+      <CollapsibleCard title="Referral letter / reports" defaultOpen={!isEmergency}>
         <input
           ref={fileInputRef}
           type="file"
@@ -859,8 +886,20 @@ export default function IntakeTab() {
           </div>
         )}
       </CollapsibleCard>
+      </div>{/* end referral wrapper */}
+
+      {/* ── ERCP PRE-PROCEDURE CHECKLIST — only shown when visitType === 'ercp' ── */}
+      {isErcp && (
+        <div style={{ order: cardOrder('ercp_checklist') }}>
+        <ErpcChecklist
+          data={(procedureData['ercp_checklist'] as ErpcChecklistData | undefined) ?? defaultErpcData()}
+          onChange={d => setProcedureData({ ...procedureData, ercp_checklist: d })}
+        />
+        </div>
+      )}
 
       {/* ── 2. CHIEF COMPLAINT / REASON FOR VISIT ───────────────────────────── */}
+      <div style={{ order: cardOrder('cc') }}>
       <CollapsibleCard
         title="Chief complaint / reason for visit"
         badge={symptoms.length > 0 ? `${symptoms.length} symptom${symptoms.length !== 1 ? 's' : ''}` : undefined}
@@ -909,11 +948,15 @@ export default function IntakeTab() {
           />
         </div>
       </CollapsibleCard>
+      </div>{/* end cc wrapper */}
 
       {/* Clinical pathway suggestions — shown when specific combos detected */}
+      <div style={{ order: cardOrder('pathways') }}>
       <PathwaySuggestions />
+      </div>
 
       {/* ── 3. VITAL SIGNS ──────────────────────────────────────────────────── */}
+      <div style={{ order: cardOrder('vitals') }}>
       <CollapsibleCard title="Vital signs" badge={triageResult.vitalRedFlags.length > 0 ? `${triageResult.vitalRedFlags.length} alert` : 'optional'} badgeVariant={triageResult.vitalRedFlags.length > 0 ? 'danger' : 'default'}>
         <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 8px' }}>
           Scroll wheel to set value · or type directly below each wheel
@@ -1061,11 +1104,15 @@ export default function IntakeTab() {
           );
         })()}
       </CollapsibleCard>
+      </div>{/* end vitals wrapper */}
 
       {/* ── Clinical scores — Tokyo, Ranson's, BISAP, PEP risk, NEWS2 ── */}
+      <div style={{ order: cardOrder('scores') }}>
       <ClinicalScoresPanelLazy />
+      </div>
 
       {/* ── Compact triage summary — driven by intake data above ── */}
+      <div style={{ order: cardOrder('triage') }}>
       {(() => {
         const r = triageResult;
         if (!r.acuity || r.acuity === 'routine') return null;
@@ -1114,7 +1161,299 @@ export default function IntakeTab() {
           </div>
         );
       })()}
+      </div>{/* end triage wrapper */}
 
     </div>
+  );
+}
+
+// ── ERCP Pre-procedure Checklist ─────────────────────────────────────────────
+
+export interface ErpcChecklistData {
+  // Consent
+  consentSigned: boolean;
+  consentDate: string;
+  // Coagulation / anticoagulation
+  inrChecked: boolean;
+  inrValue: string;
+  anticoagulantHeld: boolean;
+  anticoagulantDetails: string;
+  // Fasting
+  fastingHours: string;
+  ivAccessInserted: boolean;
+  // Allergies
+  contrastAllergyReviewed: boolean;
+  latexAllergyReviewed: boolean;
+  // Antibiotics
+  prophylacticAntibioticsGiven: boolean;
+  antibioticDetails: string;
+  // Pre-op imaging / labs
+  liverFunctionChecked: boolean;
+  bilirubin: string;
+  alkPhos: string;
+  mrcp: boolean;
+  ultrasound: boolean;
+  // Indication
+  indication: string;
+  // Anaesthesia
+  anaesthesiaType: string;
+  // Theatre checklist
+  fluoroscopyAvailable: boolean;
+  cSprayGiven: boolean;
+  glucagonAvailable: boolean;
+  // Notes
+  notes: string;
+}
+
+function defaultErpcData(): ErpcChecklistData {
+  return {
+    consentSigned: false, consentDate: '',
+    inrChecked: false, inrValue: '', anticoagulantHeld: false, anticoagulantDetails: '',
+    fastingHours: '', ivAccessInserted: false,
+    contrastAllergyReviewed: false, latexAllergyReviewed: false,
+    prophylacticAntibioticsGiven: false, antibioticDetails: '',
+    liverFunctionChecked: false, bilirubin: '', alkPhos: '', mrcp: false, ultrasound: false,
+    indication: '', anaesthesiaType: 'sedation',
+    fluoroscopyAvailable: false, cSprayGiven: false, glucagonAvailable: false,
+    notes: '',
+  };
+}
+
+const ERCP_ANAESTHESIA = [
+  { value: 'sedation',  label: 'Conscious sedation' },
+  { value: 'ga',        label: 'General anaesthesia' },
+  { value: 'mac',       label: 'MAC / deep sedation' },
+];
+
+const ERCP_INDICATIONS = [
+  'Choledocholithiasis', 'Cholangitis', 'Biliary stricture', 'Pancreatic duct pathology',
+  'Biliary leak', 'Sphincterotomy / stenting', 'Tissue sampling', 'Other',
+];
+
+function ErpcChecklist({
+  data: d,
+  onChange,
+}: {
+  data: ErpcChecklistData;
+  onChange: (next: ErpcChecklistData) => void;
+}) {
+  function set<K extends keyof ErpcChecklistData>(k: K, v: ErpcChecklistData[K]) {
+    onChange({ ...d, [k]: v });
+  }
+
+  const missingCount = [
+    !d.consentSigned,
+    !d.inrChecked,
+    !d.ivAccessInserted,
+    !d.contrastAllergyReviewed,
+    !d.fluoroscopyAvailable,
+    !d.fastingHours,
+    !d.indication,
+  ].filter(Boolean).length;
+
+  return (
+    <CollapsibleCard
+      title="ERCP pre-procedure checklist"
+      badge={missingCount > 0 ? `${missingCount} incomplete` : 'Ready'}
+      badgeVariant={missingCount > 0 ? 'warn' : 'default'}
+      defaultOpen
+    >
+      {/* ── Indication ── */}
+      <div className="fld">
+        <label>Indication</label>
+        <select value={d.indication} onChange={e => set('indication', e.target.value)}>
+          <option value="">— Select —</option>
+          {ERCP_INDICATIONS.map(i => <option key={i} value={i}>{i}</option>)}
+        </select>
+      </div>
+
+      <div className="form-grid cols-2" style={{ marginTop: 10 }}>
+        {/* ── Anaesthesia ── */}
+        <div className="fld">
+          <label>Anaesthesia type</label>
+          <select value={d.anaesthesiaType} onChange={e => set('anaesthesiaType', e.target.value)}>
+            {ERCP_ANAESTHESIA.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
+          </select>
+        </div>
+
+        {/* ── Fasting ── */}
+        <div className="fld">
+          <label>Fasting duration (hours)</label>
+          <input
+            type="number" inputMode="numeric" min={0} max={72} step={1}
+            value={d.fastingHours}
+            onChange={e => set('fastingHours', e.target.value)}
+            placeholder="e.g. 6"
+          />
+        </div>
+      </div>
+
+      {/* ── Consent ── */}
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          Consent
+        </div>
+        <div className="check-row">
+          <label>
+            <input type="checkbox" checked={d.consentSigned} onChange={e => set('consentSigned', e.target.checked)} />
+            Signed consent obtained
+          </label>
+        </div>
+        {d.consentSigned && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Consent date</label>
+            <input type="date" value={d.consentDate} onChange={e => set('consentDate', e.target.value)} />
+          </div>
+        )}
+      </div>
+
+      {/* ── Coagulation ── */}
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          Coagulation / Anticoagulation
+        </div>
+        <div className="check-row">
+          <label>
+            <input type="checkbox" checked={d.inrChecked} onChange={e => set('inrChecked', e.target.checked)} />
+            INR checked
+          </label>
+          <label>
+            <input type="checkbox" checked={d.anticoagulantHeld} onChange={e => set('anticoagulantHeld', e.target.checked)} />
+            Anticoagulant held / bridged
+          </label>
+        </div>
+        <div className="form-grid cols-2" style={{ marginTop: 6 }}>
+          <div className="fld">
+            <label>INR value</label>
+            <input
+              type="number" inputMode="decimal" step={0.1} min={0} max={10}
+              value={d.inrValue}
+              onChange={e => set('inrValue', e.target.value)}
+              placeholder="e.g. 1.1"
+              className={d.inrValue && parseFloat(d.inrValue) > 1.5 ? 'warn' : ''}
+            />
+          </div>
+          <div className="fld">
+            <label>Anticoagulant details</label>
+            <input value={d.anticoagulantDetails} onChange={e => set('anticoagulantDetails', e.target.value)} placeholder="e.g. Warfarin held ×5 days" />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Liver function / imaging ── */}
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          Pre-procedure investigations
+        </div>
+        <div className="check-row">
+          <label>
+            <input type="checkbox" checked={d.liverFunctionChecked} onChange={e => set('liverFunctionChecked', e.target.checked)} />
+            LFTs checked
+          </label>
+          <label>
+            <input type="checkbox" checked={d.mrcp} onChange={e => set('mrcp', e.target.checked)} />
+            MRCP reviewed
+          </label>
+          <label>
+            <input type="checkbox" checked={d.ultrasound} onChange={e => set('ultrasound', e.target.checked)} />
+            USS reviewed
+          </label>
+        </div>
+        <div className="form-grid cols-2" style={{ marginTop: 6 }}>
+          <div className="fld">
+            <label>Bilirubin (µmol/L)</label>
+            <input
+              type="number" inputMode="decimal" step={1} min={0}
+              value={d.bilirubin}
+              onChange={e => set('bilirubin', e.target.value)}
+              placeholder="e.g. 42"
+              className={d.bilirubin && parseFloat(d.bilirubin) > 200 ? 'danger' : d.bilirubin && parseFloat(d.bilirubin) > 40 ? 'warn' : ''}
+            />
+          </div>
+          <div className="fld">
+            <label>ALP (U/L)</label>
+            <input
+              type="number" inputMode="decimal" step={1} min={0}
+              value={d.alkPhos}
+              onChange={e => set('alkPhos', e.target.value)}
+              placeholder="e.g. 185"
+              className={d.alkPhos && parseFloat(d.alkPhos) > 400 ? 'warn' : ''}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Allergies ── */}
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          Allergy review
+        </div>
+        <div className="check-row">
+          <label>
+            <input type="checkbox" checked={d.contrastAllergyReviewed} onChange={e => set('contrastAllergyReviewed', e.target.checked)} />
+            Contrast allergy reviewed
+          </label>
+          <label>
+            <input type="checkbox" checked={d.latexAllergyReviewed} onChange={e => set('latexAllergyReviewed', e.target.checked)} />
+            Latex allergy reviewed
+          </label>
+        </div>
+      </div>
+
+      {/* ── Antibiotics ── */}
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          Prophylactic antibiotics
+        </div>
+        <div className="check-row">
+          <label>
+            <input type="checkbox" checked={d.prophylacticAntibioticsGiven} onChange={e => set('prophylacticAntibioticsGiven', e.target.checked)} />
+            Prophylactic antibiotics given
+          </label>
+        </div>
+        {d.prophylacticAntibioticsGiven && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Antibiotic / dose / route</label>
+            <input value={d.antibioticDetails} onChange={e => set('antibioticDetails', e.target.value)} placeholder="e.g. Co-amoxiclav 1.2 g IV" />
+          </div>
+        )}
+      </div>
+
+      {/* ── Theatre readiness ── */}
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          Theatre / equipment readiness
+        </div>
+        <div className="check-row">
+          <label>
+            <input type="checkbox" checked={d.ivAccessInserted} onChange={e => set('ivAccessInserted', e.target.checked)} />
+            IV access confirmed
+          </label>
+          <label>
+            <input type="checkbox" checked={d.fluoroscopyAvailable} onChange={e => set('fluoroscopyAvailable', e.target.checked)} />
+            Fluoroscopy / C-arm available
+          </label>
+          <label>
+            <input type="checkbox" checked={d.cSprayGiven} onChange={e => set('cSprayGiven', e.target.checked)} />
+            Throat spray given
+          </label>
+          <label>
+            <input type="checkbox" checked={d.glucagonAvailable} onChange={e => set('glucagonAvailable', e.target.checked)} />
+            Glucagon available
+          </label>
+        </div>
+      </div>
+
+      {/* ── Free notes ── */}
+      <div className="fld" style={{ marginTop: 10 }}>
+        <label>Pre-procedure notes</label>
+        <textarea
+          value={d.notes}
+          onChange={e => set('notes', e.target.value)}
+          placeholder="Additional pre-procedure notes or concerns…"
+          style={{ minHeight: 60 }}
+        />
+      </div>
+    </CollapsibleCard>
   );
 }
