@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
-import { type SiteCode } from '@/lib/supabase';
+import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
@@ -704,6 +704,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.referringPhysician === 'string') setReferringPhysician(d.referringPhysician);
       if (d.paneState && typeof d.paneState === 'object') setPaneState(d.paneState as PaneState);
       if (d.traumaData && typeof d.traumaData === 'object') setTraumaData(d.traumaData as TraumaData);
+      // Restore patient/encounter IDs so autosave hooks can re-connect to Supabase
+      if (typeof d.patientId === 'string') {
+        setPatientId(d.patientId);
+        if (typeof d.encounterId === 'string') {
+          setEncounterId(d.encounterId);
+          // Background-validate encounter is still open; clear if not
+          if (supabase) {
+            void supabase
+              .from('encounters')
+              .select('status')
+              .eq('id', d.encounterId)
+              .maybeSingle()
+              .then(({ data }) => {
+                if (!data || (data.status !== 'open' && data.status !== 'in_progress')) {
+                  setEncounterId(null);
+                }
+              });
+          }
+        }
+      }
       // Large blobs stored separately (can be large base64)
       try {
         const ar = localStorage.getItem('amise-attachments-v1');
@@ -738,6 +758,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
       medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
+      patientId, encounterId,
       patientName, age, sex, dob, phone, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
       weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
@@ -759,6 +780,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
     medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
+    patientId, encounterId,
     patientName, age, sex, dob, phone, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
     weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,

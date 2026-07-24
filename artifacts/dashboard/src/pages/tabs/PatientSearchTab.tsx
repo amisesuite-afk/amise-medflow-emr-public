@@ -588,8 +588,8 @@ export default function PatientSearchTab() {
           </div>
           <div className="psearch-hint-body">
             {siteFilter === 'all'
-              ? 'Click + New patient to start an intake, then Save patient to add them to the registry.'
-              : `No encounters recorded at ${SITE_LABELS[siteFilter]}. Switch to All locations to see all patients.`}
+              ? 'Use the + New patient button below to register your first patient.'
+              : `No encounters recorded at ${SITE_LABELS[siteFilter]}. Switch to "All locations" to see all patients.`}
           </div>
         </div>
       )}
