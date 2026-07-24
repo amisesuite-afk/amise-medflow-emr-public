@@ -380,6 +380,17 @@ interface CtxValue {
   setPriorEncounterSummary(v: PriorEncounterSummary | null): void;
 }
 
+export interface PriorVitalSnapshot {
+  sbp: number | null;
+  dbp: number | null;
+  hr: number | null;
+  tempC: number | null;
+  spo2: number | null;
+  rr: number | null;
+  weightKg: number | null;
+  bmi: number | null;
+}
+
 export interface PriorEncounterSummary {
   encounterId: string;
   encounterDate: string;
@@ -390,6 +401,7 @@ export interface PriorEncounterSummary {
   medications: string[];
   allergies: string;
   surgicalHistory: string[];
+  vitals: PriorVitalSnapshot | null;
 }
 
 const AppContext = createContext<CtxValue | null>(null);

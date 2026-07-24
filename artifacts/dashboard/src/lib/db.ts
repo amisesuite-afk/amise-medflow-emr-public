@@ -726,6 +726,17 @@ export async function getLatestOpenEncounter(
 
 // ─── getLatestClosedEncounter ─────────────────────────────────────────────────
 
+export interface VitalSnapshot {
+  sbp: number | null;
+  dbp: number | null;
+  hr: number | null;
+  tempC: number | null;
+  spo2: number | null;
+  rr: number | null;
+  weightKg: number | null;
+  bmi: number | null;
+}
+
 export interface ClosedEncounterSnapshot {
   encounterId: string;
   encounterDate: string;
@@ -736,6 +747,7 @@ export interface ClosedEncounterSnapshot {
   medications: string[];
   allergies: string;
   surgicalHistory: string[];
+  vitals: VitalSnapshot | null;
 }
 
 export async function getLatestClosedEncounter(
@@ -750,7 +762,8 @@ export async function getLatestClosedEncounter(
       diagnosis, plan,
       encounter_medications(name),
       encounter_allergens(name),
-      encounter_surgical_history(procedure)
+      encounter_surgical_history(procedure),
+      vitals(bp_systolic, bp_diastolic, heart_rate, temperature_c, oxygen_saturation, respiratory_rate, weight_kg, bmi)
     `)
     .eq('patient_id', patient_id)
     .neq('status', 'open')
@@ -765,6 +778,12 @@ export async function getLatestClosedEncounter(
 
   if (!data) return { data: null, error: null };
 
+  type VitalRow = {
+    bp_systolic: number | null; bp_diastolic: number | null;
+    heart_rate: number | null; temperature_c: number | null;
+    oxygen_saturation: number | null; respiratory_rate: number | null;
+    weight_kg: number | null; bmi: number | null;
+  };
   const row = data as {
     id: string;
     encounter_date: string;
@@ -775,6 +794,7 @@ export async function getLatestClosedEncounter(
     encounter_medications: Array<{ name: string }> | null;
     encounter_allergens: Array<{ name: string }> | null;
     encounter_surgical_history: Array<{ procedure: string }> | null;
+    vitals: VitalRow[] | null;
   };
 
   return {
@@ -788,6 +808,20 @@ export async function getLatestClosedEncounter(
       medications: (row.encounter_medications ?? []).map(m => m.name),
       allergies: (row.encounter_allergens ?? []).map(a => a.name).join(', '),
       surgicalHistory: (row.encounter_surgical_history ?? []).map(s => s.procedure),
+      vitals: (() => {
+        const v = (row.vitals ?? []).at(-1);
+        if (!v) return null;
+        return {
+          sbp: v.bp_systolic,
+          dbp: v.bp_diastolic,
+          hr: v.heart_rate,
+          tempC: v.temperature_c,
+          spo2: v.oxygen_saturation,
+          rr: v.respiratory_rate,
+          weightKg: v.weight_kg,
+          bmi: v.bmi,
+        } satisfies VitalSnapshot;
+      })(),
     },
     error: null,
   };

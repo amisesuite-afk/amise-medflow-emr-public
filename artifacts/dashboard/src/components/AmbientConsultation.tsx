@@ -1549,6 +1549,17 @@ function PriorVisitStrip({ summary: s }: { summary: PriorEncounterSummary }) {
   const [expanded, setExpanded] = useState(false);
   const typeLabel = s.encounterType.replace(/_/g, ' ');
 
+  // Compact vital pills for the always-visible header strip
+  const headerVitals = s.vitals ? (() => {
+    const v = s.vitals;
+    const items: string[] = [];
+    if (v.sbp !== null && v.dbp !== null) items.push(`BP ${v.sbp}/${v.dbp}`);
+    if (v.hr !== null) items.push(`HR ${v.hr}`);
+    if (v.weightKg !== null) items.push(`${v.weightKg} kg`);
+    if (v.spo2 !== null) items.push(`SpO₂ ${v.spo2}%`);
+    return items.join(' · ');
+  })() : null;
+
   return (
     <div style={{
       borderRadius: 10,
@@ -1558,19 +1569,26 @@ function PriorVisitStrip({ summary: s }: { summary: PriorEncounterSummary }) {
       fontSize: 13,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: '.07em', textTransform: 'uppercase',
-            color: '#0284c7', background: '#e0f2fe', borderRadius: 5, padding: '2px 7px',
-          }}>
-            Prior visit
-          </span>
-          <span style={{ fontWeight: 700, color: '#0c4a6e', fontSize: 13 }}>
-            {fmtDate(s.encounterDate)}
-          </span>
-          <span style={{ color: '#64748b', fontSize: 12 }}>{typeLabel}</span>
-          {s.chiefComplaint && (
-            <span style={{ color: '#475569', fontSize: 12 }}>· {s.chiefComplaint}</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <span style={{
+              fontSize: 10, fontWeight: 800, letterSpacing: '.07em', textTransform: 'uppercase',
+              color: '#0284c7', background: '#e0f2fe', borderRadius: 5, padding: '2px 7px', flexShrink: 0,
+            }}>
+              Prior visit
+            </span>
+            <span style={{ fontWeight: 700, color: '#0c4a6e', fontSize: 13 }}>
+              {fmtDate(s.encounterDate)}
+            </span>
+            <span style={{ color: '#64748b', fontSize: 12 }}>{typeLabel}</span>
+            {s.chiefComplaint && (
+              <span style={{ color: '#475569', fontSize: 12 }}>· {s.chiefComplaint}</span>
+            )}
+          </div>
+          {headerVitals && !expanded && (
+            <div style={{ fontSize: 11, color: '#0369a1', paddingLeft: 2 }}>
+              {headerVitals}
+            </div>
           )}
         </div>
         <button
@@ -1618,6 +1636,43 @@ function PriorVisitStrip({ summary: s }: { summary: PriorEncounterSummary }) {
               </div>
             </div>
           )}
+          {s.vitals && (() => {
+            const v = s.vitals;
+            const fmt = (n: number | null, unit: string, decimals = 0) =>
+              n !== null ? `${decimals ? n.toFixed(decimals) : n} ${unit}` : null;
+            const pills: { label: string; value: string; danger?: boolean; warn?: boolean }[] = [
+              v.sbp !== null && v.dbp !== null
+                ? { label: 'BP', value: `${v.sbp}/${v.dbp}`, danger: v.sbp > 160 || v.sbp < 90, warn: v.sbp >= 140 }
+                : null,
+              v.hr !== null ? { label: 'HR', value: `${v.hr} bpm`, danger: v.hr > 120 || v.hr < 50 } : null,
+              v.spo2 !== null ? { label: 'SpO₂', value: `${v.spo2}%`, danger: v.spo2 < 94 } : null,
+              v.tempC !== null ? { label: 'T', value: `${v.tempC}°C`, warn: v.tempC >= 38, danger: v.tempC >= 39 } : null,
+              v.rr !== null ? { label: 'RR', value: fmt(v.rr, '/min')!, danger: v.rr > 24 } : null,
+              v.weightKg !== null ? { label: 'Wt', value: fmt(v.weightKg, 'kg', 1)! } : null,
+              v.bmi !== null ? { label: 'BMI', value: fmt(v.bmi, '', 1)!, warn: v.bmi >= 30, danger: v.bmi >= 35 } : null,
+            ].filter((x): x is NonNullable<typeof x> => x !== null);
+            if (!pills.length) return null;
+            return (
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.06em', textTransform: 'uppercase', color: '#64748b', marginBottom: 5 }}>
+                  Baseline vitals at prior visit
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                  {pills.map(p => (
+                    <span key={p.label} style={{
+                      fontSize: 11, borderRadius: 5, padding: '2px 8px',
+                      background: p.danger ? '#fee2e2' : p.warn ? '#fef3c7' : '#fff',
+                      border: `1px solid ${p.danger ? '#fca5a5' : p.warn ? '#fde68a' : '#bae6fd'}`,
+                      color: p.danger ? '#991b1b' : p.warn ? '#92400e' : '#0c4a6e',
+                      fontWeight: 600,
+                    }}>
+                      <span style={{ opacity: 0.7, fontWeight: 400 }}>{p.label} </span>{p.value}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
           {s.allergies && (
             <div style={{ fontSize: 12, color: '#dc2626', fontWeight: 600 }}>
               ⚠ Allergies on record: {s.allergies}
