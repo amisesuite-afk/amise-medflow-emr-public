@@ -288,7 +288,7 @@ router.post('/api/ai/edit-note', async (req, res) => {
   const { section, currentText, instruction } = req.body as {
     section?: string; currentText?: string; instruction?: string;
   };
-  if (!section || !currentText === undefined || !instruction) {
+  if (!section || currentText === undefined || currentText === '' || !instruction) {
     res.status(400).json({ error: 'section, currentText, and instruction are required' });
     return;
   }

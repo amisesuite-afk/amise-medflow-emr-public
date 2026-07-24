@@ -420,6 +420,7 @@ router.get('/api/booking/requests', async (req, res) => {
 
 // POST /api/booking/notify-red-flags — called by front-desk after web intake with red flags
 router.post('/api/booking/notify-red-flags', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   try {
     const { bookingId, patientName, chiefComplaint, redFlags, urgency } = (req.body ?? {}) as {
       bookingId?: string;

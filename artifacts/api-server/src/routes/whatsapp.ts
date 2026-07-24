@@ -22,7 +22,7 @@
 
 import { Router, type Request, type Response } from 'express';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { getSupabaseAdmin, audit } from '../lib/supabase.js';
+import { getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
 import { sendSms, smsBodyStaffNewBooking, toE164 } from '../lib/sms.js';
 import Anthropic from '@anthropic-ai/sdk';
@@ -444,18 +444,9 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
 
 // ── PATCH /api/whatsapp/:id/reply ─────────────────────────────────────────────
 // Staff approves/edits the AI draft and sends it to the patient.
-// Auth: CRON_SECRET header (same pattern as cron endpoints) — replace with
-//       session auth once the dashboard integrates the reply button.
 
 router.patch('/api/whatsapp/:id/reply', async (req: Request, res: Response) => {
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const provided = req.headers['x-cron-secret'] as string | undefined;
-    if (!provided || provided !== cronSecret) {
-      res.status(401).json({ error: 'Unauthorised' });
-      return;
-    }
-  }
+  if (!(await requireStaffAuth(req, res))) return;
 
   const { id } = req.params;
   const { reply_text } = req.body as { reply_text?: string };

@@ -25,6 +25,10 @@ import procedureReportRouter from "./procedure-report";
 import dischargeSummaryRouter from "./discharge-summary";
 import patientAuthRouter from "./patient-auth";
 import patientRouter from "./patient";
+import documentScanRouter from "./document-scan";
+import generateEndoscopyReportRouter from "./generate-endoscopy-report";
+import generateOperativeNoteRouter from "./generate-operative-note";
+import suggestCodesRouter from "./suggest-codes";
 
 const router: IRouter = Router();
 
@@ -54,5 +58,9 @@ router.use(procedureReportRouter);
 router.use(dischargeSummaryRouter);
 router.use(patientAuthRouter);
 router.use(patientRouter);
+router.use('/api/document-scan', documentScanRouter);
+router.use('/api/generate-endoscopy-report', generateEndoscopyReportRouter);
+router.use('/api/generate-operative-note', generateOperativeNoteRouter);
+router.use('/api/suggest-codes', suggestCodesRouter);
 
 export default router;
