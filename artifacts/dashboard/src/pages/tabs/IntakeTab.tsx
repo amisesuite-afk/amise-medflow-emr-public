@@ -129,6 +129,7 @@ export default function IntakeTab() {
     orderedInvestigations, setOrderedInvestigations,
     setTopSection,
     setExtractedLabs,
+    traumaData, setTraumaData,
   } = useAppContext();
 
   // Visit-type context flags — drive card ordering and conditional sections
@@ -139,17 +140,18 @@ export default function IntakeTab() {
   // Emergency: triage banner → vitals → CC → identity → referral
   // ERCP:      referral → ERCP checklist → vitals → CC → identity
   // Default:   identity → referral → CC → vitals → scores → triage
-  type CardKey = 'triage' | 'vitals' | 'cc' | 'identity' | 'referral' | 'ercp_checklist' | 'pathways' | 'scores';
+  type CardKey = 'triage' | 'abcde' | 'vitals' | 'cc' | 'identity' | 'referral' | 'ercp_checklist' | 'pathways' | 'scores';
   function cardOrder(k: CardKey): number {
     if (isEmergency) {
-      const map: Record<CardKey, number> = { triage: 0, vitals: 1, cc: 2, identity: 3, referral: 4, pathways: 5, scores: 6, ercp_checklist: 10 };
+      // abcde primary survey (major_emergency only) slots between triage banner and vitals
+      const map: Record<CardKey, number> = { triage: 0, abcde: 1, vitals: 2, cc: 3, identity: 4, referral: 5, pathways: 6, scores: 7, ercp_checklist: 10 };
       return map[k];
     }
     if (isErcp) {
-      const map: Record<CardKey, number> = { referral: 1, ercp_checklist: 2, vitals: 3, cc: 4, identity: 5, pathways: 6, scores: 7, triage: 8 };
+      const map: Record<CardKey, number> = { referral: 1, ercp_checklist: 2, vitals: 3, cc: 4, identity: 5, pathways: 6, scores: 7, triage: 8, abcde: 9 };
       return map[k];
     }
-    const map: Record<CardKey, number> = { identity: 1, referral: 2, cc: 3, pathways: 4, vitals: 5, scores: 6, triage: 7, ercp_checklist: 10 };
+    const map: Record<CardKey, number> = { identity: 1, referral: 2, cc: 3, pathways: 4, vitals: 5, scores: 6, triage: 7, ercp_checklist: 10, abcde: 11 };
     return map[k];
   }
 
@@ -1105,6 +1107,133 @@ export default function IntakeTab() {
         })()}
       </CollapsibleCard>
       </div>{/* end vitals wrapper */}
+
+      {/* ── ABCDE Quick Primary Survey — major_emergency encounters only ─────── */}
+      {encounterType === 'major_emergency' && (
+        <div style={{ order: cardOrder('abcde') }}>
+          <CollapsibleCard title="ABCDE Primary Survey" badge="Quick" badgeVariant="warn" defaultOpen>
+            {(() => {
+              function abcdeGet(letter: string, field: string): string {
+                return (traumaData.abcde[letter] as Record<string, string> | undefined)?.[field] ?? '';
+              }
+              function abcdeSet(letter: string, field: string, value: string) {
+                setTraumaData(prev => ({
+                  ...prev,
+                  abcde: { ...prev.abcde, [letter]: { ...(prev.abcde[letter] ?? {}), [field]: value } },
+                }));
+              }
+
+              const gcsE = parseInt(abcdeGet('D', 'gcsE') || '0') || 0;
+              const gcsV = parseInt(abcdeGet('D', 'gcsV') || '0') || 0;
+              const gcsM = parseInt(abcdeGet('D', 'gcsM') || '0') || 0;
+              const gcsTotal = (gcsE && gcsV && gcsM) ? gcsE + gcsV + gcsM : null;
+
+              const rowStyle: React.CSSProperties = {
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '7px 0', borderBottom: '1px solid var(--border, #f1f5f9)',
+              };
+              const badge = (letter: string, color: string) => (
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 26, height: 26, borderRadius: '50%', background: color,
+                  color: '#fff', fontWeight: 900, fontSize: 13, flexShrink: 0,
+                }}>{letter}</span>
+              );
+              const titleStyle: React.CSSProperties = {
+                fontSize: 11, fontWeight: 700, color: '#374151',
+                width: 84, flexShrink: 0,
+              };
+              const sel = (
+                letter: string, field: string, options: string[], placeholder: string,
+                { flex = 1 }: { flex?: number } = {},
+              ) => (
+                <select
+                  value={abcdeGet(letter, field)}
+                  onChange={e => abcdeSet(letter, field, e.target.value)}
+                  style={{ fontSize: 12, flex, minWidth: 0 }}
+                >
+                  <option value="">{placeholder}</option>
+                  {options.map(o => <option key={o} value={o}>{o}</option>)}
+                </select>
+              );
+
+              const abnormalA = !!abcdeGet('A', 'airwayStatus') && abcdeGet('A', 'airwayStatus') !== 'Patent';
+              const abnormalB = !!abcdeGet('B', 'airEntry') && abcdeGet('B', 'airEntry') !== 'Bilateral equal';
+              const abnormalC = !!abcdeGet('C', 'haemorrhage') && abcdeGet('C', 'haemorrhage') !== 'None obvious';
+              const abnormalD = gcsTotal !== null && gcsTotal < 15;
+              const criticalCount = [abnormalA, abnormalB, abnormalC, abnormalD].filter(Boolean).length;
+
+              return (
+                <div style={{ paddingTop: 2 }}>
+                  <div style={rowStyle}>
+                    {badge('A', '#dc2626')}
+                    <span style={titleStyle}>Airway</span>
+                    {sel('A', 'airwayStatus', ['Patent', 'Noisy / Partially obstructed', 'Obstructed', 'Secured — ETT', 'Secured — LMA', 'Surgical airway (cric)'], 'Airway status')}
+                    {sel('A', 'cSpine', ['Hard collar applied', 'Cleared clinically (NEXUS / CCR)', 'Cleared radiologically', 'Not immobilised'], 'C-spine')}
+                  </div>
+                  <div style={rowStyle}>
+                    {badge('B', '#f97316')}
+                    <span style={titleStyle}>Breathing</span>
+                    {sel('B', 'airEntry', ['Bilateral equal', 'Reduced — left', 'Reduced — right', 'Absent — left', 'Absent — right'], 'Air entry')}
+                    {sel('B', 'o2Delivery', ['None', 'Nasal prongs', 'Face mask', 'NRB mask (15 L/min)', 'BVM ventilation', 'Mechanically ventilated'], 'O₂ delivery')}
+                  </div>
+                  <div style={rowStyle}>
+                    {badge('C', '#ef4444')}
+                    <span style={titleStyle}>Circulation</span>
+                    {sel('C', 'haemorrhage', ['None obvious', 'External — controlled', 'External — uncontrolled', 'Internal — suspected', 'External + internal'], 'Haemorrhage')}
+                    {sel('C', 'ivAccess', ['None', '1 × peripheral IV', '2 × peripheral IV', 'Intraosseous (IO)', 'Central venous access'], 'IV access')}
+                  </div>
+                  <div style={{ ...rowStyle, flexWrap: 'wrap', gap: 6 }}>
+                    {badge('D', '#8b5cf6')}
+                    <span style={titleStyle}>Disability</span>
+                    {sel('D', 'pupils', ['Equal and reactive (PERLA)', 'Unequal', 'Fixed and dilated — bilateral', 'Fixed and dilated — left', 'Fixed and dilated — right', 'Sluggish reaction'], 'Pupils')}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+                      <span style={{ fontSize: 11, color: '#6b7280', marginRight: 2 }}>GCS:</span>
+                      {(['E', 'V', 'M'] as const).map(axis => {
+                        const maxVal = axis === 'E' ? 4 : axis === 'V' ? 5 : 6;
+                        return (
+                          <select
+                            key={axis}
+                            value={abcdeGet('D', `gcs${axis}`)}
+                            onChange={e => abcdeSet('D', `gcs${axis}`, e.target.value)}
+                            style={{ fontSize: 12, width: 50 }}
+                          >
+                            <option value="">{axis}?</option>
+                            {Array.from({ length: maxVal }, (_, i) => String(i + 1)).map(v => (
+                              <option key={v} value={v}>{axis}{v}</option>
+                            ))}
+                          </select>
+                        );
+                      })}
+                      {gcsTotal !== null && (
+                        <span style={{
+                          fontSize: 12, fontWeight: 700, marginLeft: 4,
+                          color: gcsTotal < 9 ? '#dc2626' : gcsTotal < 13 ? '#ea580c' : '#16a34a',
+                        }}>= {gcsTotal}</span>
+                      )}
+                    </div>
+                  </div>
+                  <div style={{ ...rowStyle, borderBottom: 'none' }}>
+                    {badge('E', '#0ea5e9')}
+                    <span style={titleStyle}>Exposure</span>
+                    {sel('E', 'hypothermia', ['None (>35°C)', 'Mild (32–35°C)', 'Moderate (28–32°C)', 'Severe (<28°C)'], 'Temperature')}
+                    {sel('E', 'logRoll', ['Not yet performed', 'Completed — no spinal tenderness', 'Completed — spinal tenderness noted', 'Contraindicated'], 'Log roll')}
+                  </div>
+                  {criticalCount > 0 && (
+                    <div style={{
+                      marginTop: 8, padding: '6px 10px', borderRadius: 7,
+                      background: '#fff1f2', border: '1px solid #fecdd3',
+                      fontSize: 11, color: '#7f1d1d', fontWeight: 600,
+                    }}>
+                      ⚠ {criticalCount} abnormal finding{criticalCount !== 1 ? 's' : ''} — complete full primary survey in the Trauma tab
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          </CollapsibleCard>
+        </div>
+      )}
 
       {/* ── Clinical scores — Tokyo, Ranson's, BISAP, PEP risk, NEWS2 ── */}
       <div style={{ order: cardOrder('scores') }}>
