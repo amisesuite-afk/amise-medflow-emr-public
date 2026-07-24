@@ -1316,10 +1316,14 @@ export interface ErpcChecklistData {
   // Antibiotics
   prophylacticAntibioticsGiven: boolean;
   antibioticDetails: string;
+  // PEP prophylaxis (ESGE Grade A)
+  indomethacinGiven: boolean;
   // Pre-op imaging / labs
   liverFunctionChecked: boolean;
   bilirubin: string;
   alkPhos: string;
+  plateletCount: string;
+  amylaseBaseline: string;
   mrcp: boolean;
   ultrasound: boolean;
   // Indication
@@ -1341,7 +1345,8 @@ function defaultErpcData(): ErpcChecklistData {
     fastingHours: '', ivAccessInserted: false,
     contrastAllergyReviewed: false, latexAllergyReviewed: false,
     prophylacticAntibioticsGiven: false, antibioticDetails: '',
-    liverFunctionChecked: false, bilirubin: '', alkPhos: '', mrcp: false, ultrasound: false,
+    indomethacinGiven: false,
+    liverFunctionChecked: false, bilirubin: '', alkPhos: '', plateletCount: '', amylaseBaseline: '', mrcp: false, ultrasound: false,
     indication: '', anaesthesiaType: 'sedation',
     fluoroscopyAvailable: false, cSprayGiven: false, glucagonAvailable: false,
     notes: '',
@@ -1378,6 +1383,7 @@ function ErpcChecklist({
     !d.fluoroscopyAvailable,
     !d.fastingHours,
     !d.indication,
+    !d.indomethacinGiven,
   ].filter(Boolean).length;
 
   return (
@@ -1509,6 +1515,25 @@ function ErpcChecklist({
               className={d.alkPhos && parseFloat(d.alkPhos) > 400 ? 'warn' : ''}
             />
           </div>
+          <div className="fld">
+            <label>Platelet count (×10⁹/L)</label>
+            <input
+              type="number" inputMode="decimal" step={1} min={0}
+              value={d.plateletCount}
+              onChange={e => set('plateletCount', e.target.value)}
+              placeholder="e.g. 180"
+              className={d.plateletCount && parseFloat(d.plateletCount) < 50 ? 'danger' : d.plateletCount && parseFloat(d.plateletCount) < 100 ? 'warn' : ''}
+            />
+          </div>
+          <div className="fld">
+            <label>Amylase baseline (U/L)</label>
+            <input
+              type="number" inputMode="decimal" step={1} min={0}
+              value={d.amylaseBaseline}
+              onChange={e => set('amylaseBaseline', e.target.value)}
+              placeholder="e.g. 54"
+            />
+          </div>
         </div>
       </div>
 
@@ -1546,6 +1571,22 @@ function ErpcChecklist({
             <input value={d.antibioticDetails} onChange={e => set('antibioticDetails', e.target.value)} placeholder="e.g. Co-amoxiclav 1.2 g IV" />
           </div>
         )}
+      </div>
+
+      {/* ── PEP prophylaxis — ESGE Grade A ── */}
+      <div style={{ marginTop: 10, padding: '10px 12px', borderRadius: 8, background: 'rgba(14,165,233,0.06)', border: '1px solid #bae6fd' }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          PEP Prophylaxis — ESGE Grade A
+        </div>
+        <div className="check-row">
+          <label>
+            <input type="checkbox" checked={d.indomethacinGiven} onChange={e => set('indomethacinGiven', e.target.checked)} />
+            Rectal indomethacin 100 mg given
+          </label>
+        </div>
+        <div style={{ fontSize: 11, color: '#0369a1', marginTop: 5, lineHeight: 1.45 }}>
+          ESGE Grade A — reduces post-ERCP pancreatitis risk in all patients unless contraindicated (NSAID allergy, renal impairment, active peptic ulcer disease).
+        </div>
       </div>
 
       {/* ── Theatre readiness ── */}
