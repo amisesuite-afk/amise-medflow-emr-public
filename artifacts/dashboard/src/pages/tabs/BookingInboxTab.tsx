@@ -237,6 +237,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     setComorbidities, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes,
     setEncounterId, setVisitType,
     setPriorEncounterSummary,
+    setClinicalScores, setExtractedLabs,
   } = useAppContext();
   const narrow = useNarrow();
 
@@ -316,13 +317,15 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         if (d.medications.length) setMedications(d.medications);
         if (d.surgicalHistory.length) setSurgicalHistory(d.surgicalHistory);
         if (d.surgicalNotes) setSurgicalNotes(d.surgicalNotes);
+        if (Object.keys(d.clinicalScores).length) setClinicalScores(d.clinicalScores);
+        if (Object.keys(d.extractedLabs).length) setExtractedLabs(d.extractedLabs);
       }
     }
     // Non-blocking: prior closed encounter for follow-up baseline strip
     void getLatestClosedEncounter(patientId).then(({ data }) => {
       setPriorEncounterSummary(data);
     });
-  }, [setVisitType, setComorbidities, setEncounterId, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes, setPriorEncounterSummary]);
+  }, [setVisitType, setComorbidities, setEncounterId, setAllergies, setMedications, setSurgicalHistory, setSurgicalNotes, setPriorEncounterSummary, setClinicalScores, setExtractedLabs]);
 
   const load = useCallback(async () => {
     try {

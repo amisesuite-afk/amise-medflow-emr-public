@@ -1421,6 +1421,8 @@ export interface EncounterData {
   pmhNotes: string;
   familyHistoryNotes: string;
   orderedInvestigations: string[];
+  clinicalScores: Record<string, unknown>;
+  extractedLabs: Record<string, number | null>;
   traumaData: {
     mechanism: string[];
     timeOfInjury: string;
@@ -1449,7 +1451,7 @@ export async function loadEncounterData(
 ): Promise<{ data: EncounterData; error: null } | { data: null; error: string }> {
   if (!supabase) return { data: null, error: notConfigured('loadEncounterData') };
 
-  const [assessRes, planRes, allergyRes, medRes, hpiRes, patRes, investRes, examRes] = await Promise.all([
+  const [assessRes, planRes, allergyRes, medRes, hpiRes, patRes, investRes, examRes, encScoresRes] = await Promise.all([
     supabase.from('assessments')
       .select('diagnosis, differentials, icd10_code')
       .eq('encounter_id', encounterId)
@@ -1487,6 +1489,10 @@ export async function loadEncounterData(
       .eq('encounter_id', encounterId)
       .like('content', '[EXAMINATION_JSON]%')
       .maybeSingle(),
+    supabase.from('encounters')
+      .select('clinical_scores, extracted_labs')
+      .eq('id', encounterId)
+      .maybeSingle(),
   ]);
 
   // Log individual query failures but continue with whatever data is available.
@@ -1500,6 +1506,7 @@ export async function loadEncounterData(
     [patRes.error, 'patients'],
     [investRes.error, 'investigation_results'],
     [examRes.error, 'clinical_notes/exam'],
+    [encScoresRes.error, 'encounters/scores'],
   ].forEach(([err, table]) => {
     if (err) console.error(`[db] loadEncounterData ${String(table)}:`, err);
   });
@@ -1558,6 +1565,8 @@ export async function loadEncounterData(
       orderedInvestigations: investRows.map(r => r.test_name),
       traumaData:      traumaRes,
       inpatientDetails: inpatientRes.data,
+      clinicalScores:  ((encScoresRes.data as { clinical_scores: Record<string, unknown> | null } | null)?.clinical_scores) ?? {},
+      extractedLabs:   ((encScoresRes.data as { extracted_labs: Record<string, number | null> | null } | null)?.extracted_labs) ?? {},
     },
     error: null,
   };
@@ -1605,6 +1614,25 @@ function logClinicalSave(action: string, tableName: string, recordId: string, su
     mode:       'autosave',
   }).then(({ error }) => {
     if (error) console.warn('[db] audit:', error.message);
+  });
+}
+
+// ─── saveClinicalScores ───────────────────────────────────────────────────────
+
+export async function saveClinicalScores(
+  encounterId: string,
+  clinicalScores: Record<string, unknown>,
+  extractedLabs: Record<string, number | null>,
+): Promise<void> {
+  if (!supabase) return;
+  const { error } = await supabase
+    .from('encounters')
+    .update({ clinical_scores: clinicalScores, extracted_labs: extractedLabs })
+    .eq('id', encounterId);
+  if (error) { console.error('[db] saveClinicalScores:', error); return; }
+  logClinicalSave('autosave_clinical_scores', 'encounters', encounterId, {
+    scoreKeys: Object.keys(clinicalScores),
+    labCount: Object.keys(extractedLabs).filter(k => !k.endsWith('_unit') && extractedLabs[k] !== null).length,
   });
 }
 

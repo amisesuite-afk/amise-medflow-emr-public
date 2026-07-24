@@ -118,6 +118,7 @@ export default function PatientSearchTab() {
     setWard, setDateAdmission, setDateDischarge, setAdmittingSurgeon,
     setReferringPhysician, setNokName, setNokRelation, setNokTel,
     setBloodGroup, setMrNumber,
+    setClinicalScores, setExtractedLabs,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -303,6 +304,8 @@ export default function PatientSearchTab() {
           if (d.pmhNotes) setPmhNotes(d.pmhNotes);
           if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
           if (d.orderedInvestigations.length) setOrderedInvestigations(d.orderedInvestigations);
+          if (Object.keys(d.clinicalScores).length) setClinicalScores(d.clinicalScores);
+          if (Object.keys(d.extractedLabs).length) setExtractedLabs(d.extractedLabs);
           if (d.inpatientDetails) {
             const ip = d.inpatientDetails;
             if (typeof ip.ward === 'string') setWard(ip.ward);
