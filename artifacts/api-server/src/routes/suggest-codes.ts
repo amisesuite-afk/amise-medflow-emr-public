@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
+import { requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
@@ -31,6 +32,7 @@ Rules:
 - Use current ICD-10-CM and CPT editions`;
 
 router.post('/', async (req: Request, res: Response) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { assessment, plan, procedures, symptoms, patientAge, patientSex } = req.body as {
     assessment?: string;
     plan?: string;

@@ -16,7 +16,7 @@ export default function SmartTextarea({ value, onChange, onKeyDown: parentKeyDow
   const [triggerStart, setTriggerStart] = useState<number | null>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const { listening, supported: speechSupported, start: startSpeech, stop: stopSpeech } = useSpeechInput();
+  const { listening, supported: speechSupported, start: startSpeech, stop: stopSpeech, error: micError, clearError: clearMicError } = useSpeechInput();
 
   // Check text before cursor for a dot-trigger
   function detectTrigger(el: HTMLTextAreaElement) {
@@ -97,6 +97,7 @@ export default function SmartTextarea({ value, onChange, onKeyDown: parentKeyDow
     if (listening) {
       stopSpeech();
     } else {
+      clearMicError();
       startSpeech(transcript => {
         const sep = value && !value.endsWith('\n') && !value.endsWith(' ') ? ' ' : '';
         onChange(value + sep + transcript);
@@ -133,6 +134,22 @@ export default function SmartTextarea({ value, onChange, onKeyDown: parentKeyDow
         >
           {listening ? '■' : '🎤'}
         </button>
+      )}
+
+      {micError && (
+        <div style={{
+          marginTop: 4, padding: '5px 8px', borderRadius: 5, fontSize: 11,
+          background: '#fef2f2', border: '1px solid #fca5a5', color: '#b91c1c',
+          display: 'flex', alignItems: 'center', gap: 6,
+        }}>
+          <span style={{ flex: 1 }}>{micError}</span>
+          <button
+            type="button"
+            onClick={clearMicError}
+            style={{ border: 'none', background: 'none', color: '#b91c1c', cursor: 'pointer', fontSize: 12, padding: 0, lineHeight: 1 }}
+            aria-label="Dismiss"
+          >✕</button>
+        </div>
       )}
 
       {matches.length > 0 && (

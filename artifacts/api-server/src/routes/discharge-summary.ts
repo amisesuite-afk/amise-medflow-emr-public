@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
+import { requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
@@ -62,6 +63,7 @@ function fmt(v: unknown): string {
 }
 
 router.post('/api/ai/discharge-summary', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   try {
     const body = req.body as DischargeSummaryRequest;
     const {

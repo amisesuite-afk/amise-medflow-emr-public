@@ -21,6 +21,8 @@ const SR_CLASS = (typeof window !== 'undefined')
   ? (window.SpeechRecognition ?? window.webkitSpeechRecognition)
   : null;
 const SPEECH_SUPPORTED = !!SR_CLASS;
+// iOS Safari has webkitSpeechRecognition but ignores continuous=true; use single-session restarts
+const IS_IOS = typeof navigator !== 'undefined' && /iP(hone|ad|od)/i.test(navigator.userAgent);
 
 // ── Abnormal vitals detection ──────────────────────────────────────────────────
 function abnormalVitals(vitals: Record<string, string>): string[] {
@@ -296,15 +298,32 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     setInterim('');
   }, []);
 
-  const startRecording = useCallback(() => {
+  const startRecording = useCallback(async () => {
     if (!SR_CLASS) return;
+
+    // Pre-check permission where the API is available (Chrome, Firefox, modern Safari).
+    // If already denied, surface a clear message immediately rather than letting the
+    // browser fire a cryptic 'not-allowed' error on recog.start().
+    if ('permissions' in navigator) {
+      try {
+        const perm = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+        if (perm.state === 'denied') {
+          setVoiceError(
+            'Microphone access is blocked. On iPhone/iPad: Settings → Safari → Microphone → Allow. On desktop: tap the lock icon in the address bar and allow microphone, then tap Retry.',
+          );
+          return;
+        }
+      } catch { /* Permissions API not supported on this browser — proceed */ }
+    }
+
     setPendingSoap(null);
     setAccepted(false);
     setVoiceError(null);
     setTranscript('');
     const recog = new SR_CLASS();
-    recog.continuous = true;
-    recog.interimResults = true;
+    // iOS Safari silently ignores continuous=true; single-session + onend restart is the correct workaround
+    recog.continuous    = !IS_IOS;
+    recog.interimResults = !IS_IOS;
     recog.lang = 'en-GB';
     recog.onresult = (e: SpeechRecognitionEvent) => {
       let fin = '';
@@ -317,10 +336,33 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       setInterim(int);
     };
     recog.onerror = (e: SpeechRecognitionErrorEvent) => {
-      if (e.error !== 'no-speech') setVoiceError(`Mic error: ${e.error}`);
+      if (e.error === 'no-speech' || e.error === 'aborted') { setRecording(false); return; }
+      const MESSAGES: Record<string, string> = {
+        'not-allowed':
+          'Microphone access blocked. On iPhone/iPad: Settings → Safari → Microphone → Allow. On desktop: tap the lock icon and allow microphone, then tap Retry.',
+        'service-not-allowed':
+          'Speech recognition is unavailable in this browser — use the Full HPI editor to type.',
+        'network':
+          'Speech recognition requires an internet connection — check connectivity and tap Retry.',
+      };
+      setVoiceError(MESSAGES[e.error] ?? `Mic error: ${e.error} — tap Retry.`);
       setRecording(false);
     };
-    recog.onend = () => { setRecording(false); setInterim(''); };
+    recog.onend = () => {
+      setInterim('');
+      // iOS: restart if surgeon is still in recording mode (continuous simulation)
+      if (IS_IOS) {
+        setRecording(prev => {
+          if (prev) {
+            try { recog.start(); } catch { /* already stopped or aborted */ }
+            return true;
+          }
+          return false;
+        });
+      } else {
+        setRecording(false);
+      }
+    };
     recogRef.current = recog;
     recog.start();
     setRecording(true);
@@ -351,14 +393,6 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   // run once on mount; intentional empty-dep omission
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCcKey]);
-
-  // Auto-start mic on fresh consultation
-  useEffect(() => {
-    if (!SPEECH_SUPPORTED || hpiNotes.trim()) return;
-    setMicOpen(true);
-    startRecording();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   async function handleSegment() {
     const text = (transcript + ' ' + interim).trim();
@@ -520,7 +554,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   function handleDictateClick() {
     if (!micOpen) {
       setMicOpen(true);
-      if (!recording && !pendingSoap) startRecording();
+      if (!recording && !pendingSoap) void startRecording();
     } else if (recording) {
       void handleSegment();
     } else {
@@ -1121,9 +1155,25 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 )}
 
                 {voiceError && (
-                  <div style={{ marginTop: 6, fontSize: 11, color: '#dc2626', padding: '4px 8px',
-                    borderRadius: 5, background: '#fef2f2', border: '1px solid #fca5a5' }}>
-                    {voiceError}
+                  <div style={{
+                    marginTop: 6, padding: '8px 10px', borderRadius: 6,
+                    background: '#fef2f2', border: '1px solid #fca5a5',
+                    display: 'flex', alignItems: 'flex-start', gap: 8,
+                  }}>
+                    <span style={{ flex: 1, fontSize: 11, color: '#b91c1c', lineHeight: 1.5 }}>
+                      {voiceError}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => { setVoiceError(null); void startRecording(); }}
+                      style={{
+                        flexShrink: 0, padding: '3px 10px', borderRadius: 5,
+                        border: '1px solid #fca5a5', background: '#fff',
+                        color: '#dc2626', fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                      }}
+                    >
+                      Retry
+                    </button>
                   </div>
                 )}
               </div>
