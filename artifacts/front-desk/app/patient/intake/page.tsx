@@ -529,10 +529,15 @@ export default function IntakePage() {
     let insertData: { id: string } | null = null;
     let insertError: unknown = null;
     try {
-      const result = await sb
-        .from('patient_intake')
-        .insert({
-          patient_id:       patientId,
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) throw new Error('Session expired — please sign in again');
+      const r = await fetch(`${API}/api/patient/intake`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
           visit_type:       visitType || null,
           complaint_track:  complaintTrack || null,
           complexity_score: complexity,
@@ -549,11 +554,10 @@ export default function IntakePage() {
             specifics ? `Location/specifics: ${specifics}` : '',
             additionalNotes.trim(),
           ].filter(Boolean).join('\n') || null,
-        })
-        .select('id')
-        .single();
-      insertData = result.data;
-      insertError = result.error;
+        }),
+      });
+      if (!r.ok) throw new Error(`Submit failed (${r.status})`);
+      insertData = await r.json() as { id: string };
     } catch (err) {
       insertError = err;
     }
@@ -565,12 +569,6 @@ export default function IntakePage() {
       alert('Could not submit. Please check your connection and try again, or call us at 758-284-0557 / 758-720-7111.');
       return;
     }
-
-    fetch(`${API}/api/patient/intake-summary`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ intake_id: insertData.id }),
-    }).catch(() => {});
 
     fade(() => setScreen('done'));
   }
@@ -586,20 +584,24 @@ export default function IntakePage() {
     let insertData: { id: string } | null = null;
     let insertError: unknown = null;
     try {
-      const result = await sb
-        .from('patient_intake')
-        .insert({
-          patient_id:       patientId,
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) throw new Error('Session expired — please sign in again');
+      const r = await fetch(`${API}/api/patient/intake`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
           visit_type:       visitType || 'unsure',
           complaint_track:  'minimal',
           complexity_score: 0,
           chief_complaint:  bailName ? `Minimal intake — ${bailName}` : 'Minimal intake',
           additional_notes: bailPhone ? `Patient prefers call at: ${bailPhone}` : 'Patient preferred to discuss with doctor',
-        })
-        .select('id')
-        .single();
-      insertData = result.data;
-      insertError = result.error;
+        }),
+      });
+      if (!r.ok) throw new Error(`Submit failed (${r.status})`);
+      insertData = await r.json() as { id: string };
     } catch (err) {
       insertError = err;
     }
@@ -611,12 +613,6 @@ export default function IntakePage() {
       alert('Could not submit. Please check your connection and try again, or call us at 758-284-0557 / 758-720-7111.');
       return;
     }
-
-    fetch(`${API}/api/patient/intake-summary`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ intake_id: insertData.id }),
-    }).catch(() => {});
 
     fade(() => setScreen('done'));
   }
