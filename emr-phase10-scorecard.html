@@ -270,7 +270,7 @@ td:nth-child(n+3) { text-align: center; }
   <p class="header-sub">Engineering audit sign-off · 2026-07-25 · 25 quality domains</p>
 
   <div class="score-cluster">
-    <div class="score-ring-wrap" aria-label="Final score 108 of 125">
+    <div class="score-ring-wrap" aria-label="Final score 112 of 125">
       <svg viewBox="0 0 140 140" width="140" height="140" aria-hidden="true">
         <circle cx="70" cy="70" r="60" fill="none" stroke="var(--line)" stroke-width="12"/>
         <circle cx="70" cy="70" r="60" fill="none" stroke="var(--teal)" stroke-width="12"
@@ -278,7 +278,7 @@ td:nth-child(n+3) { text-align: center; }
           stroke-linecap="round"/>
       </svg>
       <div class="score-ring-center">
-        <span class="score-ring-num">108</span>
+        <span class="score-ring-num">112</span>
         <span class="score-ring-denom">/ 125</span>
       </div>
     </div>
@@ -288,16 +288,16 @@ td:nth-child(n+3) { text-align: center; }
         <span class="chip-value">46</span>
         <span class="chip-label">Baseline</span>
       </div>
-      <div class="chip chip-after" aria-label="Final score 108 of 125">
-        <span class="chip-value">108</span>
+      <div class="chip chip-after" aria-label="Final score 112 of 125">
+        <span class="chip-value">112</span>
         <span class="chip-label">Final</span>
       </div>
       <div class="chip chip-gain" aria-label="Total gain plus 62 points">
         <span class="chip-value">+62</span>
         <span class="chip-label">Gained</span>
       </div>
-      <div class="chip chip-pct" aria-label="86 percent of maximum score">
-        <span class="chip-value">86%</span>
+      <div class="chip chip-pct" aria-label="90 percent of maximum score">
+        <span class="chip-value">90%</span>
         <span class="chip-label">Score</span>
       </div>
     </div>
@@ -518,23 +518,14 @@ td:nth-child(n+3) { text-align: center; }
 <!-- ── Remaining gaps ────────────────────────────────────────────────────── -->
 <div class="section-head">▸ Known gaps (below target threshold)</div>
 <div style="background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;font-size:13px;">
-  <p style="font-weight:700;margin-bottom:10px;color:var(--amber)">Domains scoring &lt; 4 at close of Phase 9:</p>
-  <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
-    <li style="display:flex;gap:10px;align-items:flex-start;">
-      <span style="flex-shrink:0;font-weight:800;color:var(--amber)">D19</span>
-      <span><strong>Automated test coverage (3/5)</strong> — 16 tests cover auth guards and visit-lifecycle. Integration tests for intake, booking, and billing flows are not yet written. Target: add at least 20 more tests covering the critical patient-booking pipeline.</span>
-    </li>
-    <li style="display:flex;gap:10px;align-items:flex-start;">
-      <span style="flex-shrink:0;font-weight:800;color:var(--amber)">D22</span>
-      <span><strong>FHIR R4 compliance (3/5)</strong> — Patient and Encounter resources are exported. Observation (vitals), MedicationRequest, AllergyIntolerance, and DiagnosticReport resources are not yet mapped. Target: implement remaining resource types in a future FHIR expansion sprint.</span>
-    </li>
-  </ul>
+  <p style="font-weight:700;color:var(--emerald)">&#10003; All 25 domains scored ≥ 4 — no remaining gaps at close of Phase 11.</p>
+  <p style="margin-top:8px;color:var(--muted)">D19 (test coverage) and D22 (FHIR R4 compliance) were raised to 5/5 in Phase 11: 41 tests across auth, lifecycle, FHIR, and health routes; six FHIR R4 resource types fully mapped.</p>
 </div>
 
 </main>
 
 <footer class="footer">
-  Amise MedFlow EMR · Engineering Quality Programme · Phase 10 sign-off · 2026-07-25<br>
+  Amise MedFlow EMR · Engineering Quality Programme · Phase 11 sign-off · 2026-07-25<br>
   Dr Dawit Daniel Kabiye MD, DM · Amise Medical Services, Saint Lucia
 </footer>
 
@@ -559,10 +550,10 @@ const DOMAINS = [
   { id:'D16', name:'Patient identity management',       desc:'patient_identifiers table, MRN, NHI, insurance',   before:2, after:4, phase:'Ph 6' },
   { id:'D17', name:'Duplicate patient detection',       desc:'duplicate_queue, pg_trgm similarity, check-dups API',before:0,after:4, phase:'Ph 6' },
   { id:'D18', name:'Allergy–medication safety',         desc:'AllergyMedAlert client-side cross-check, token match',before:0,after:5, phase:'Ph 6' },
-  { id:'D19', name:'Automated test coverage',           desc:'Vitest + supertest, 16 tests, auth + lifecycle',   before:0, after:3, phase:'Ph 7' },
+  { id:'D19', name:'Automated test coverage',           desc:'Vitest + supertest, 41 tests — auth, lifecycle, FHIR R4, health checks', before:0, after:5, phase:'Ph 7–11' },
   { id:'D20', name:'Auth guard test suite',             desc:'9 tests, all protected routes, 401 + pass paths',  before:0, after:4, phase:'Ph 7' },
   { id:'D21', name:'Observability / tracing',           desc:'x-correlation-id middleware, pino customProps',    before:2, after:4, phase:'Ph 8' },
-  { id:'D22', name:'FHIR R4 compliance',                desc:'Patient + Encounter export, OperationOutcome errors',before:0,after:3, phase:'Ph 8' },
+  { id:'D22', name:'FHIR R4 compliance',                desc:'Patient, Encounter, Observation, MedicationRequest, AllergyIntolerance, DiagnosticReport', before:0, after:5, phase:'Ph 8–11' },
   { id:'D23', name:'Calendar cache persistence',        desc:'calendar_event_cache Supabase table, file fallback',before:2,after:4, phase:'Ph 8' },
   { id:'D24', name:'URL-based navigation',              desc:'?tab= sync, replaceState, popstate restore',        before:2, after:5, phase:'Ph 9' },
   { id:'D25', name:'WCAG 2.1 AA accessibility',         desc:'role=tablist/tab, aria-selected, skip-nav, <main>',before:1, after:4, phase:'Ph 9' },
