@@ -163,13 +163,17 @@ export default function LoginScreen({ prefillEmail = '', prefillPassword = '', o
         <div style={s.card}>
           <div style={s.wordmark}>AMISE</div>
           <div style={s.heading}>Check your email</div>
-          <div style={s.success}>
-            We've sent a temporary password to <strong>{requestEmail}</strong>.
-            Open the link in the email or enter the password below.
-            It's valid for 72 hours.
-          </div>
-          <button type="button" style={s.btn} onClick={() => { setEmail(requestEmail); setView('login'); }}>
-            Enter password →
+          {error ? (
+            <div style={s.error}>{error}</div>
+          ) : (
+            <div style={s.success}>
+              We've sent a temporary password to <strong>{requestEmail}</strong>.
+              Open the link in the email or enter the password below.
+              It's valid for 72 hours.
+            </div>
+          )}
+          <button type="button" style={s.btn} onClick={() => { setEmail(requestEmail); setError(null); setView('login'); }}>
+            {error ? '← Back to login' : 'Enter password →'}
           </button>
         </div>
       </div>
@@ -229,7 +233,19 @@ export default function LoginScreen({ prefillEmail = '', prefillPassword = '', o
           <button
             type="button"
             style={s.ghost}
-            onClick={() => { setRequestEmail(email); setError(null); setView('request-sent'); void requestAccess(email.trim().toLowerCase()).catch(err => setError(err instanceof Error ? err.message : 'Error')); }}
+            onClick={() => {
+              if (!email.trim()) {
+                setError('Please enter your email address above first.');
+                return;
+              }
+              setRequestEmail(email);
+              setError(null);
+              setLoading(true);
+              requestAccess(email.trim().toLowerCase())
+                .then(() => setView('request-sent'))
+                .catch(err => setError(err instanceof Error ? err.message : 'Could not send access email'))
+                .finally(() => setLoading(false));
+            }}
           >
             Send me access
           </button>
