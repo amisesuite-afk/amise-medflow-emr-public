@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amise MedFlow EMR — Phase 10 Quality Scorecard</title>
+<style>
+/* ── Reset ──────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
+:root {
+  --bg:          #0a1f1d;
+  --surface:     #121e1d;
+  --card:        #162523;
+  --line:        #1e3330;
+  --text:        #e2e8f0;
+  --muted:       #7da89e;
+  --teal:        #0d9488;
+  --teal-light:  #6ee7b7;
+  --emerald:     #22c55e;
+  --amber:       #f59e0b;
+  --red:         #f87171;
+  --score-0:     #3f1d1d;
+  --score-1:     #713f12;
+  --score-2:     #854d0e;
+  --score-3:     #1e3a5f;
+  --score-4:     #14532d;
+  --score-5:     #0d9488;
+  --radius:      8px;
+  --gap:         20px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg:         #f0fdf9;
+    --surface:    #ffffff;
+    --card:       #f8fffe;
+    --line:       #d1fae5;
+    --text:       #1e3a3a;
+    --muted:      #4b6d69;
+    --score-0:    #fee2e2;
+    --score-1:    #fef3c7;
+    --score-2:    #fde68a;
+    --score-3:    #bfdbfe;
+    --score-4:    #bbf7d0;
+    --score-5:    #6ee7b7;
+  }
+}
+:root[data-theme="light"] {
+  --bg:         #f0fdf9;
+  --surface:    #ffffff;
+  --card:       #f8fffe;
+  --line:       #d1fae5;
+  --text:       #1e3a3a;
+  --muted:      #4b6d69;
+  --score-0:    #fee2e2;
+  --score-1:    #fef3c7;
+  --score-2:    #fde68a;
+  --score-3:    #bfdbfe;
+  --score-4:    #bbf7d0;
+  --score-5:    #6ee7b7;
+}
+:root[data-theme="dark"] {
+  --bg:         #0a1f1d;
+  --surface:    #121e1d;
+  --card:       #162523;
+  --line:       #1e3330;
+  --text:       #e2e8f0;
+  --muted:      #7da89e;
+  --score-0:    #3f1d1d;
+  --score-1:    #713f12;
+  --score-2:    #854d0e;
+  --score-3:    #1e3a5f;
+  --score-4:    #14532d;
+  --score-5:    #0d9488;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+  padding: 0 0 60px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  background: linear-gradient(135deg, #0a1f1d 0%, #0d2e2a 60%, #0e3530 100%);
+  border-bottom: 1px solid var(--line);
+  padding: 40px 24px 32px;
+  text-align: center;
+}
+@media (prefers-color-scheme: light) {
+  .header { background: linear-gradient(135deg, #f0fdf9 0%, #ecfdf5 60%, #d1fae5 100%); }
+}
+:root[data-theme="light"] .header { background: linear-gradient(135deg, #f0fdf9 0%, #ecfdf5 60%, #d1fae5 100%); }
+:root[data-theme="dark"]  .header { background: linear-gradient(135deg, #0a1f1d 0%, #0d2e2a 60%, #0e3530 100%); }
+
+.header-eyebrow {
+  font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 10px;
+}
+.header-title {
+  font-size: clamp(20px, 5vw, 30px); font-weight: 800;
+  color: var(--text); line-height: 1.2; margin-bottom: 4px;
+}
+.header-sub {
+  font-size: 13px; color: var(--muted); margin-bottom: 28px;
+}
+
+/* ── Score ring ──────────────────────────────────────────────────────────── */
+.score-cluster {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 32px; align-items: center;
+}
+.score-ring-wrap { position: relative; width: 140px; height: 140px; flex-shrink: 0; }
+.score-ring-wrap svg { transform: rotate(-90deg); }
+.score-ring-center {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.score-ring-num {
+  font-size: 30px; font-weight: 900; color: var(--teal);
+  font-variant-numeric: tabular-nums; line-height: 1;
+}
+.score-ring-denom { font-size: 13px; color: var(--muted); }
+
+.score-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.chip {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 10px; padding: 14px 22px; min-width: 100px;
+}
+.chip-value { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; }
+.chip-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.chip-before .chip-value { color: var(--amber); }
+.chip-after  .chip-value { color: var(--emerald); }
+.chip-gain   .chip-value { color: var(--teal-light); }
+.chip-pct    .chip-value { color: var(--teal); }
+
+/* ── Content ─────────────────────────────────────────────────────────────── */
+.content { max-width: 900px; margin: 0 auto; padding: 32px 16px; }
+
+/* ── Section heading ─────────────────────────────────────────────────────── */
+.section-head {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--teal); margin: 36px 0 14px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* ── Domain table ────────────────────────────────────────────────────────── */
+.domain-table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  background: var(--surface); padding: 10px 12px;
+  text-align: left; font-size: 10px; font-weight: 800; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--muted);
+  border-bottom: 1px solid var(--line); white-space: nowrap;
+}
+thead th:nth-child(n+3) { text-align: center; }
+tbody tr { border-bottom: 1px solid var(--line); }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface); }
+td { padding: 9px 12px; vertical-align: middle; }
+td:nth-child(n+3) { text-align: center; }
+
+.dom-num {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.dom-phase {
+  display: inline-block; font-size: 9px; font-weight: 800; letter-spacing: .06em;
+  padding: 1px 6px; border-radius: 10px; border: 1px solid;
+  margin-top: 3px; white-space: nowrap;
+}
+.dom-name { font-weight: 600; line-height: 1.3; }
+.dom-desc { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+
+/* Score cells */
+.sc {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 6px; font-weight: 800;
+  font-size: 13px; font-variant-numeric: tabular-nums;
+}
+.sc-0 { background: var(--score-0); color: var(--red); }
+.sc-1 { background: var(--score-1); color: #fbbf24; }
+.sc-2 { background: var(--score-2); color: #fcd34d; }
+.sc-3 { background: var(--score-3); color: #93c5fd; }
+.sc-4 { background: var(--score-4); color: var(--emerald); }
+.sc-5 { background: var(--score-5); color: #fff; }
+
+/* Delta bar */
+.delta-wrap { display: flex; align-items: center; gap: 6px; justify-content: center; }
+.delta-bar { height: 8px; border-radius: 4px; background: var(--emerald); min-width: 4px; }
+.delta-num {
+  font-size: 11px; font-weight: 800; color: var(--emerald);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.delta-0 .delta-bar { background: var(--line); }
+.delta-0 .delta-num { color: var(--muted); }
+
+/* Phase colour scheme */
+.ph1 { border-color: #f87171; color: #f87171; }
+.ph2 { border-color: #fb923c; color: #fb923c; }
+.ph3 { border-color: #facc15; color: #facc15; }
+.ph4 { border-color: #4ade80; color: #4ade80; }
+.ph5 { border-color: #34d399; color: #34d399; }
+.ph6 { border-color: #22d3ee; color: #22d3ee; }
+.ph7 { border-color: #818cf8; color: #818cf8; }
+.ph8 { border-color: #c084fc; color: #c084fc; }
+.ph9 { border-color: #f472b6; color: #f472b6; }
+.ph0 { border-color: var(--muted); color: var(--muted); }
+
+/* ── Sign-off checklist ──────────────────────────────────────────────────── */
+.checklist { display: flex; flex-direction: column; gap: 8px; }
+.check-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 12px 14px;
+}
+.check-tick {
+  flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 900;
+  background: var(--score-5); color: #fff; margin-top: 1px;
+}
+.check-body { flex: 1; }
+.check-title { font-weight: 700; font-size: 13px; }
+.check-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ── Phase timeline ──────────────────────────────────────────────────────── */
+.timeline { display: flex; flex-direction: column; gap: 4px; }
+.tl-row {
+  display: grid; grid-template-columns: 80px 1fr;
+  align-items: center; gap: 10px;
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 10px 14px; font-size: 12px;
+}
+.tl-phase { font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.tl-title { font-weight: 600; }
+.tl-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.tl-done {
+  font-size: 9px; font-weight: 800; letter-spacing: .08em;
+  color: var(--emerald); background: var(--score-4);
+  padding: 2px 7px; border-radius: 8px; margin-left: auto; white-space: nowrap;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.footer {
+  text-align: center; color: var(--muted); font-size: 11px; margin-top: 48px;
+  padding: 24px; border-top: 1px solid var(--line);
+}
+
+@media (max-width: 600px) {
+  .tl-row { grid-template-columns: 1fr; }
+  .tl-done { margin-left: 0; margin-top: 4px; display: inline-block; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────────────── -->
+<header class="header">
+  <div class="header-eyebrow">Amise Medical Services · Saint Lucia</div>
+  <h1 class="header-title">Amise MedFlow EMR<br>Phase 10 Quality Scorecard</h1>
+  <p class="header-sub">Engineering audit sign-off · 2026-07-25 · 25 quality domains</p>
+
+  <div class="score-cluster">
+    <div class="score-ring-wrap" aria-label="Final score 108 of 125">
+      <svg viewBox="0 0 140 140" width="140" height="140" aria-hidden="true">
+        <circle cx="70" cy="70" r="60" fill="none" stroke="var(--line)" stroke-width="12"/>
+        <circle cx="70" cy="70" r="60" fill="none" stroke="var(--teal)" stroke-width="12"
+          stroke-dasharray="376.99" stroke-dashoffset="69.6"
+          stroke-linecap="round"/>
+      </svg>
+      <div class="score-ring-center">
+        <span class="score-ring-num">108</span>
+        <span class="score-ring-denom">/ 125</span>
+      </div>
+    </div>
+
+    <div class="score-chips">
+      <div class="chip chip-before" aria-label="Baseline score 46 of 125">
+        <span class="chip-value">46</span>
+        <span class="chip-label">Baseline</span>
+      </div>
+      <div class="chip chip-after" aria-label="Final score 108 of 125">
+        <span class="chip-value">108</span>
+        <span class="chip-label">Final</span>
+      </div>
+      <div class="chip chip-gain" aria-label="Total gain plus 62 points">
+        <span class="chip-value">+62</span>
+        <span class="chip-label">Gained</span>
+      </div>
+      <div class="chip chip-pct" aria-label="86 percent of maximum score">
+        <span class="chip-value">86%</span>
+        <span class="chip-label">Score</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="content">
+
+<!-- ── Phase timeline ──────────────────────────────────────────────────── -->
+<div class="section-head">▸ Phase completion</div>
+<div class="timeline" role="list">
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph1">Phase 1</span></div>
+    <div>
+      <div class="tl-title">Security remediation</div>
+      <div class="tl-sub">Auth guards on all protected routes · CORS hardening · requireStaffAuth</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph2">Phase 2</span></div>
+    <div>
+      <div class="tl-title">Schema hardening</div>
+      <div class="tl-sub">updated_at / deleted_at across 21 tables · audit_logs enrichment · service_role grants</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph3">Phase 3</span></div>
+    <div>
+      <div class="tl-title">Encounter closure gate</div>
+      <div class="tl-sub">POST /api/visit/sign-notes · auto-sign on encounter complete · immutability enforcement</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph4">Phase 4</span></div>
+    <div>
+      <div class="tl-title">Follow-up pipeline</div>
+      <div class="tl-sub">escalation_events table · referral lifecycle PATCH · critical result cron · OpenTasksBanner</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph5">Phase 5</span></div>
+    <div>
+      <div class="tl-title">Offline resilience</div>
+      <div class="tl-sub">IndexedDB sync outbox · durable pending queue · SyncStatusIndicator component</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph6">Phase 6</span></div>
+    <div>
+      <div class="tl-title">Patient identity</div>
+      <div class="tl-sub">patient_identifiers table · duplicate_queue · pg_trgm fuzzy matching · AllergyMedAlert</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph7">Phase 7</span></div>
+    <div>
+      <div class="tl-title">Automated tests</div>
+      <div class="tl-sub">Vitest + supertest · 16 tests · auth guard suite · visit-lifecycle business logic suite</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph8">Phase 8</span></div>
+    <div>
+      <div class="tl-title">Observability &amp; interoperability</div>
+      <div class="tl-sub">Correlation IDs · calendar_event_cache Supabase table · FHIR R4 Patient + Encounter export</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph9">Phase 9</span></div>
+    <div>
+      <div class="tl-title">UX &amp; accessibility</div>
+      <div class="tl-sub">URL-based tab navigation (?tab=) · WCAG 2.1 AA aria attributes · skip-nav link · keyboard tabs</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+  <div class="tl-row" role="listitem">
+    <div><span class="tl-phase ph0">Phase 10</span></div>
+    <div>
+      <div class="tl-title">Sign-off &amp; scorecard</div>
+      <div class="tl-sub">25-domain re-assessment · sign-off checklist · this artifact</div>
+    </div>
+    <span class="tl-done">✓ COMPLETE</span>
+  </div>
+</div>
+
+<!-- ── Domain scorecard ──────────────────────────────────────────────────── -->
+<div class="section-head">▸ 25-domain quality scorecard</div>
+<p style="font-size:12px;color:var(--muted);margin-bottom:14px;">
+  Scores 0–5 per domain (5 = excellent). Baseline = pre-engagement. Final = post Phase 9.
+</p>
+
+<div class="domain-table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th style="min-width:220px">Domain</th>
+      <th>Before</th>
+      <th>After</th>
+      <th style="min-width:120px">Gain</th>
+      <th>Phase</th>
+    </tr>
+  </thead>
+  <tbody id="domain-rows"></tbody>
+</table>
+</div>
+
+<!-- ── Sign-off checklist ────────────────────────────────────────────────── -->
+<div class="section-head">▸ Engineering sign-off checklist</div>
+<div class="checklist" role="list">
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">All protected routes require authentication</div>
+      <div class="check-detail">requireStaffAuth guards every /api route that accesses patient data. 9 auth-guard tests verify 401 on unauthenticated requests.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">Clinical notes are immutable once signed</div>
+      <div class="check-detail">sign-notes endpoint only updates status='draft' rows. The encounter complete flow auto-signs before closing, preventing re-opening of notes.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">Critical results trigger staff escalation within 2 hours</div>
+      <div class="check-detail">POST /api/cron/escalate-results checks critical is_critical=true results unacknowledged for &gt;2h, fires SMS, and inserts escalation_events row.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">Allergy–medication conflicts surface before prescribing</div>
+      <div class="check-detail">AllergyMedAlert component runs client-side tokenised cross-check on every keypress. Confirmed conflicts require explicit acknowledgement.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">Offline edits are durable across page reloads</div>
+      <div class="check-detail">IndexedDB outbox persists pending saves. Executor registry replays on reconnect. SyncStatusIndicator shows amber/red when edits are queued.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">Every new Supabase table has RLS + service_role grants</div>
+      <div class="check-detail">All Phase 4–8 migrations follow the New Table Checklist in CLAUDE.md: RLS enabled, staff-access policy, GRANT to authenticated + service_role.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">Correlation IDs flow through every log line</div>
+      <div class="check-detail">correlationId middleware runs before pino-http. x-correlation-id is echoed or generated per request and stamped in customProps.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">FHIR R4 Patient and Encounter resources are exportable</div>
+      <div class="check-detail">GET /api/fhir/Patient/:id and /api/fhir/Encounter/:id return conformant application/fhir+json with OperationOutcome on error.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">Tab navigation is bookmarkable and browser-back works</div>
+      <div class="check-detail">setActiveSection syncs ?tab= via history.replaceState. popstate listener restores section on browser back/forward. Initial load reads from URL.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">Key interactive elements are keyboard-accessible</div>
+      <div class="check-detail">Tab strip has role=tablist + role=tab + aria-selected. Progress dots are &lt;button&gt; elements. Skip-nav link visible on focus. &lt;main id=main-content&gt; anchor present.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">AI safety gates remain enforced</div>
+      <div class="check-detail">FORBIDDEN_PATTERNS scan applied before every AI-drafted patient message. AI urgency uses max(questionnaire_severity, ai_severity) — never downgrades a red flag.</div>
+    </div>
+  </div>
+
+  <div class="check-item" role="listitem">
+    <div class="check-tick" aria-hidden="true">✓</div>
+    <div class="check-body">
+      <div class="check-title">Calendar cache persists across Render restarts</div>
+      <div class="check-detail">syncCalendarCache upserts to Supabase calendar_event_cache. loadCache reads Supabase first; falls back to JSON file during first-deploy grace period.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Remaining gaps ────────────────────────────────────────────────────── -->
+<div class="section-head">▸ Known gaps (below target threshold)</div>
+<div style="background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;font-size:13px;">
+  <p style="font-weight:700;margin-bottom:10px;color:var(--amber)">Domains scoring &lt; 4 at close of Phase 9:</p>
+  <ul style="list-style:none;display:flex;flex-direction:column;gap:8px;">
+    <li style="display:flex;gap:10px;align-items:flex-start;">
+      <span style="flex-shrink:0;font-weight:800;color:var(--amber)">D19</span>
+      <span><strong>Automated test coverage (3/5)</strong> — 16 tests cover auth guards and visit-lifecycle. Integration tests for intake, booking, and billing flows are not yet written. Target: add at least 20 more tests covering the critical patient-booking pipeline.</span>
+    </li>
+    <li style="display:flex;gap:10px;align-items:flex-start;">
+      <span style="flex-shrink:0;font-weight:800;color:var(--amber)">D22</span>
+      <span><strong>FHIR R4 compliance (3/5)</strong> — Patient and Encounter resources are exported. Observation (vitals), MedicationRequest, AllergyIntolerance, and DiagnosticReport resources are not yet mapped. Target: implement remaining resource types in a future FHIR expansion sprint.</span>
+    </li>
+  </ul>
+</div>
+
+</main>
+
+<footer class="footer">
+  Amise MedFlow EMR · Engineering Quality Programme · Phase 10 sign-off · 2026-07-25<br>
+  Dr Dawit Daniel Kabiye MD, DM · Amise Medical Services, Saint Lucia
+</footer>
+
+<script>
+// ── Domain data ────────────────────────────────────────────────────────────
+const DOMAINS = [
+  { id:'D01', name:'Authentication & authorisation',    desc:'Route guards, JWT validation, staff-token check', before:3, after:5, phase:'Ph 1' },
+  { id:'D02', name:'Rate limiting',                     desc:'Per-route rate limits, burst protection',          before:4, after:5, phase:'Ph 1' },
+  { id:'D03', name:'Security headers',                  desc:'Helmet CSP, HSTS, frame options, CORS policy',    before:5, after:5, phase:'Ph 1' },
+  { id:'D04', name:'Input validation',                  desc:'Request body validation, UUID guards, size limits',before:3, after:4, phase:'Ph 1' },
+  { id:'D05', name:'Audit trail',                       desc:'audit_logs completeness, action taxonomy, RLS',    before:3, after:5, phase:'Ph 2' },
+  { id:'D06', name:'Schema integrity',                  desc:'Timestamps, soft deletes, FK constraints',        before:2, after:5, phase:'Ph 2' },
+  { id:'D07', name:'Row-level security & grants',       desc:'RLS policies, service_role grants, anon revokes', before:2, after:5, phase:'Ph 2' },
+  { id:'D08', name:'Encounter lifecycle',               desc:'Open → in_progress → closed gate, status checks', before:3, after:5, phase:'Ph 3' },
+  { id:'D09', name:'Clinical note signing',             desc:'Draft → signed immutability, auto-sign on close',  before:1, after:5, phase:'Ph 3' },
+  { id:'D10', name:'Clinical safety gates',             desc:'Urgency floor, forbidden-content scan, AI gate',   before:4, after:5, phase:'Ph 3' },
+  { id:'D11', name:'Referral lifecycle',                desc:'Status PATCH, sent_at stamps, open-tasks API',     before:3, after:4, phase:'Ph 4' },
+  { id:'D12', name:'Escalation alerting',               desc:'Critical result cron, SMS alert, escalation_events',before:1,after:4, phase:'Ph 4' },
+  { id:'D13', name:'Patient task management',           desc:'patient_tasks schema, open-tasks banner, due_at',  before:2, after:4, phase:'Ph 4' },
+  { id:'D14', name:'Offline resilience',                desc:'IndexedDB outbox, executor registry, retry backoff',before:1,after:4, phase:'Ph 5' },
+  { id:'D15', name:'Sync status visibility',            desc:'SyncStatusIndicator — amber/red on pending/error', before:0, after:4, phase:'Ph 5' },
+  { id:'D16', name:'Patient identity management',       desc:'patient_identifiers table, MRN, NHI, insurance',   before:2, after:4, phase:'Ph 6' },
+  { id:'D17', name:'Duplicate patient detection',       desc:'duplicate_queue, pg_trgm similarity, check-dups API',before:0,after:4, phase:'Ph 6' },
+  { id:'D18', name:'Allergy–medication safety',         desc:'AllergyMedAlert client-side cross-check, token match',before:0,after:5, phase:'Ph 6' },
+  { id:'D19', name:'Automated test coverage',           desc:'Vitest + supertest, 16 tests, auth + lifecycle',   before:0, after:3, phase:'Ph 7' },
+  { id:'D20', name:'Auth guard test suite',             desc:'9 tests, all protected routes, 401 + pass paths',  before:0, after:4, phase:'Ph 7' },
+  { id:'D21', name:'Observability / tracing',           desc:'x-correlation-id middleware, pino customProps',    before:2, after:4, phase:'Ph 8' },
+  { id:'D22', name:'FHIR R4 compliance',                desc:'Patient + Encounter export, OperationOutcome errors',before:0,after:3, phase:'Ph 8' },
+  { id:'D23', name:'Calendar cache persistence',        desc:'calendar_event_cache Supabase table, file fallback',before:2,after:4, phase:'Ph 8' },
+  { id:'D24', name:'URL-based navigation',              desc:'?tab= sync, replaceState, popstate restore',        before:2, after:5, phase:'Ph 9' },
+  { id:'D25', name:'WCAG 2.1 AA accessibility',         desc:'role=tablist/tab, aria-selected, skip-nav, <main>',before:1, after:4, phase:'Ph 9' },
+];
+
+const phaseClass = (ph) => 'ph' + (ph.match(/\d+/)?.[0] ?? '0');
+
+const BAR_MAX = 5;
+const BAR_W = 60; // px max bar width
+
+function scoreCell(v) {
+  return `<td><span class="sc sc-${v}" aria-label="Score ${v} of 5">${v}</span></td>`;
+}
+
+function deltaCell(before, after) {
+  const d = after - before;
+  const w = Math.round((d / BAR_MAX) * BAR_W);
+  if (d === 0) return `<td><div class="delta-wrap delta-0"><div class="delta-bar" style="width:4px"></div><span class="delta-num">—</span></div></td>`;
+  return `<td><div class="delta-wrap"><div class="delta-bar" style="width:${w}px"></div><span class="delta-num">+${d}</span></div></td>`;
+}
+
+const tbody = document.getElementById('domain-rows');
+DOMAINS.forEach((d, i) => {
+  const pc = phaseClass(d.phase);
+  tbody.insertAdjacentHTML('beforeend', `
+    <tr>
+      <td>
+        <div class="dom-num">${d.id}</div>
+        <div><span class="dom-phase ${pc}">${d.phase}</span></div>
+      </td>
+      <td>
+        <div class="dom-name">${d.name}</div>
+        <div class="dom-desc">${d.desc}</div>
+      </td>
+      ${scoreCell(d.before)}
+      ${scoreCell(d.after)}
+      ${deltaCell(d.before, d.after)}
+      <td style="font-size:10px;color:var(--muted);white-space:nowrap">${d.phase}</td>
+    </tr>
+  `);
+});
+
+// Totals row
+const before = DOMAINS.reduce((s,d) => s + d.before, 0);
+const after  = DOMAINS.reduce((s,d) => s + d.after, 0);
+tbody.insertAdjacentHTML('beforeend', `
+  <tr style="background:var(--surface);font-weight:800;border-top:2px solid var(--line)">
+    <td colspan="2" style="text-align:right;font-size:12px;color:var(--muted)">Total (25 domains × 5)</td>
+    <td><span class="sc sc-0" style="width:auto;padding:0 8px;font-size:13px" aria-label="Baseline total ${before}">${before}</span></td>
+    <td><span class="sc sc-5" style="width:auto;padding:0 8px;font-size:13px" aria-label="Final total ${after}">${after}</span></td>
+    <td><div class="delta-wrap"><div class="delta-bar" style="width:60px"></div><span class="delta-num">+${after-before}</span></div></td>
+    <td></td>
+  </tr>
+`);
+
+// Animate score ring to final score
+const circle = document.querySelector('.score-ring-wrap circle:last-child');
+const CIRCUMFERENCE = 2 * Math.PI * 60; // 376.99
+const pct = after / 125;
+circle.setAttribute('stroke-dashoffset', (CIRCUMFERENCE * (1 - pct)).toFixed(2));
+</script>
+</body>
+</html>
