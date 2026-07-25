@@ -61,6 +61,9 @@ services:
       # DOCTOR_NOTIFY_EMAIL      = amisesuite@gmail.com
       # STAFF_NOTIFY_EMAIL       = amisesuite@gmail.com
       #
+      # ── Patient app ──
+      # PATIENT_APP_URL = https://amise-patient-app.vercel.app
+      #
       # ── CORS / portal URLs (required for cross-origin API calls) ──
       # PORTAL_URL    = https://front-desk-amisesuite-afks-projects.vercel.app
       # DASHBOARD_URL = https://dashboard-lemon-gamma-44.vercel.app
