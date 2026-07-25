@@ -86,6 +86,7 @@ import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
 import ConsultContextBanner from '@/components/ConsultContextBanner';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
+import OpenTasksBanner from '@/components/OpenTasksBanner';
 import VoiceDictation from '@/components/VoiceDictation';
 import AmbientConsultation from '@/components/AmbientConsultation';
 import { getMatrix } from '@/lib/cc-matrices';
@@ -1272,6 +1273,7 @@ export default function HomePage() {
                 }}>
                   <EncounterContextPicker />
                   {!!patientId && <PreviousVisitStrip />}
+                  <OpenTasksBanner patientId={patientId} encounterId={encounterId} />
                   <ProblemListStrip />
                   <ClinicalPromptsStrip />
                   <FollowUpQueueStrip />

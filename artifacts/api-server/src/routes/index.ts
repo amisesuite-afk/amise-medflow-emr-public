@@ -29,6 +29,7 @@ import documentScanRouter from "./document-scan";
 import generateEndoscopyReportRouter from "./generate-endoscopy-report";
 import generateOperativeNoteRouter from "./generate-operative-note";
 import suggestCodesRouter from "./suggest-codes";
+import referralsRouter from "./referrals";
 
 const router: IRouter = Router();
 
@@ -62,5 +63,6 @@ router.use('/api/document-scan', documentScanRouter);
 router.use('/api/generate-endoscopy-report', generateEndoscopyReportRouter);
 router.use('/api/generate-operative-note', generateOperativeNoteRouter);
 router.use('/api/suggest-codes', suggestCodesRouter);
+router.use(referralsRouter);
 
 export default router;
