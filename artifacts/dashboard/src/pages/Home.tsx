@@ -87,6 +87,7 @@ import ConsultContextBanner from '@/components/ConsultContextBanner';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import OpenTasksBanner from '@/components/OpenTasksBanner';
+import SyncStatusIndicator from '@/components/SyncStatusIndicator';
 import VoiceDictation from '@/components/VoiceDictation';
 import AmbientConsultation from '@/components/AmbientConsultation';
 import { getMatrix } from '@/lib/cc-matrices';
@@ -293,6 +294,7 @@ export default function HomePage() {
     encounterId,
     saveStatus,
     lastSaveError,
+    syncStatus,
     freeText,
     surgicalHistory, surgicalNotes,
     medications, medicationsText,
@@ -672,8 +674,8 @@ export default function HomePage() {
               </span>
             )}
             <span style={{ flex: 1 }} />
-            {/* Save indicator */}
-            {saveStatus === 'saving' && <span style={{ fontSize: 10, color: '#94a3b8', flexShrink: 0 }}>⏳</span>}
+            {/* Sync status indicator */}
+            <SyncStatusIndicator saveStatus={saveStatus} />
             {/* Encounter status + close */}
             {encounterId ? (
               <button
