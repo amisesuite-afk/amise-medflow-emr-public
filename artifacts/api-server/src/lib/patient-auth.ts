@@ -54,6 +54,7 @@ export interface PatientJwtPayload {
   sub: string;      // patient_account id
   patientId: string;
   email: string;
+  purpose?: 'session' | 'magic';
   iat: number;
   exp: number;
   jti?: string;     // unique token ID — present on tokens issued after T2 fix

@@ -12,7 +12,7 @@
  */
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import { sb } from '../lib/supabase.js';
+import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import {
   generateTempPassword,
@@ -25,6 +25,7 @@ import {
   loadRevokedJtis,
 } from '../lib/patient-auth.js';
 import { sendOrDraft } from '../lib/gmail.js';
+import { sendSms } from '../lib/sms.js';
 
 const router = Router();
 
@@ -278,6 +279,180 @@ router.post('/api/patient/auth/change-password', async (req, res) => {
     const message = err instanceof Error ? err.message : 'Password change failed';
     log.error({ err }, 'patient change-password error');
     res.status(500).json({ error: message });
+  }
+});
+
+// ── POST /api/patient/auth/magic-link ────────────────────────────────────────
+// Staff-only: generate a single-use 7-day JWT and send it to the patient via
+// email (or SMS if deliveryMethod='sms'). Patient clicks link → exchange-link
+// endpoint converts it to a 30-day session without a password.
+
+router.post('/api/patient/auth/magic-link', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { patientEmail, patientPhone, patientName, patientId: rawPatientId,
+          appointmentRequestId, deliveryMethod } =
+    req.body as {
+      patientEmail?: string;
+      patientPhone?: string;
+      patientName?: string;
+      patientId?: string;
+      appointmentRequestId?: string;
+      deliveryMethod?: 'email' | 'sms';
+    };
+
+  if (!patientEmail && !patientPhone && !appointmentRequestId) {
+    res.status(400).json({ error: 'patientEmail, patientPhone, or appointmentRequestId is required' });
+    return;
+  }
+
+  try {
+    let email = patientEmail?.trim().toLowerCase();
+    let resolvedPatientId = rawPatientId;
+
+    if (!email && appointmentRequestId) {
+      const { data: appt } = await sb()
+        .from('appointment_requests')
+        .select('email, patient_id')
+        .eq('id', appointmentRequestId)
+        .maybeSingle();
+      if (appt?.email) email = (appt.email as string).toLowerCase();
+      if (!resolvedPatientId && appt?.patient_id) resolvedPatientId = appt.patient_id as string;
+    }
+
+    if (!email) {
+      res.status(400).json({ error: 'Could not resolve patient email' });
+      return;
+    }
+
+    const account = await upsertAccount(email, resolvedPatientId);
+    const effectivePatientId = (account.patient_id ?? resolvedPatientId) ?? '';
+
+    const magicToken = signPatientJwt(
+      { sub: account.id, patientId: effectivePatientId, email, purpose: 'magic' },
+      7,
+    );
+    const magicUrl = `${PATIENT_APP_URL}?token=${encodeURIComponent(magicToken)}`;
+    const greet = patientName ? `Dear ${patientName},\n\n` : '';
+
+    const method = deliveryMethod ?? (patientPhone && !patientEmail ? 'sms' : 'email');
+
+    if (method === 'sms' && patientPhone) {
+      try {
+        await sendSms({
+          to: patientPhone,
+          body: `Amise Medical: Please complete your pre-visit questionnaire: ${magicUrl}`,
+        });
+        log.info({ accountId: account.id, email }, 'magic link sent via SMS');
+        res.json({ sent: true, method: 'sms' });
+        return;
+      } catch (smsErr) {
+        log.warn({ err: smsErr }, 'magic link SMS failed — falling back to email');
+      }
+    }
+
+    await sendOrDraft(
+      {
+        to: email,
+        subject: 'AMISE Patient App — Pre-visit questionnaire',
+        body: `${greet}Please complete your pre-visit questionnaire before your appointment.\n\nTap the link below to begin:\n${magicUrl}\n\nThis link is valid for 7 days. If you did not make an appointment with us, please disregard this message.\n\nAmise Medical Services\n+1 (758) 284-0557`,
+      },
+      'auto',
+    );
+    log.info({ accountId: account.id, email }, 'magic link sent via email');
+    res.json({ sent: true, method: 'email' });
+  } catch (err) {
+    log.error({ err }, 'magic link error');
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to issue magic link' });
+  }
+});
+
+// ── POST /api/patient/auth/exchange-link ──────────────────────────────────────
+// Public, rate-limited. Validates a magic-link JWT, revokes it (single-use),
+// and returns a fresh 30-day session token.
+
+const exchangeLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many link exchange attempts, please try again in an hour.' },
+});
+
+router.post('/api/patient/auth/exchange-link', exchangeLimiter, async (req, res) => {
+  const { token } = req.body as { token?: string };
+
+  if (!token) {
+    res.status(400).json({ error: 'token is required' });
+    return;
+  }
+
+  const payload = verifyPatientJwt(token);
+  if (!payload || payload.purpose !== 'magic') {
+    res.status(401).json({ error: 'Invalid or expired magic link' });
+    return;
+  }
+
+  if (payload.jti && isJtiRevoked(payload.jti)) {
+    res.status(401).json({ error: 'This link has already been used — please log in normally' });
+    return;
+  }
+
+  // Revoke so the magic link cannot be reused
+  if (payload.jti) {
+    revokeJti(payload.jti);
+    void sb().from('patient_token_blacklist')
+      .insert({ jti: payload.jti, exp: new Date(payload.exp * 1000).toISOString() })
+      .then(({ error }) => { if (error) log.warn({ err: error.message }, '[patient-auth] blacklist persist failed'); });
+  }
+
+  try {
+    let patientName: string | null = null;
+    let isReturnPatient = false;
+    const patientId = payload.patientId;
+
+    if (patientId) {
+      const { data: patient } = await sb()
+        .from('patients')
+        .select('full_name')
+        .eq('id', patientId)
+        .maybeSingle();
+      if (patient) patientName = patient.full_name as string;
+
+      const { data: pv } = await sb()
+        .from('previsit_submissions')
+        .select('id')
+        .eq('patient_id', patientId)
+        .not('passport', 'is', null)
+        .limit(1)
+        .maybeSingle();
+      isReturnPatient = !!pv;
+    }
+
+    await sb()
+      .from('patient_accounts')
+      .update({ last_login_at: new Date().toISOString() })
+      .eq('id', payload.sub);
+
+    const sessionToken = signPatientJwt({
+      sub: payload.sub,
+      patientId: patientId ?? '',
+      email: payload.email,
+    }, 30);
+
+    log.info({ accountId: payload.sub }, 'magic link exchanged for session');
+    res.json({
+      success: true,
+      sessionToken,
+      email: payload.email,
+      patientName,
+      patientId,
+      isReturnPatient,
+      mustChangePassword: false,
+    });
+  } catch (err) {
+    log.error({ err }, 'magic link exchange error');
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Exchange failed' });
   }
 });
 

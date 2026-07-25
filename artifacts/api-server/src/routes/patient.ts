@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { randomBytes } from 'node:crypto';
 import Anthropic from '@anthropic-ai/sdk';
 import { sb, getSupabaseAdmin, requireStaffAuth, audit } from '../lib/supabase.js';
 import { errStr } from '../lib/logger.js';
@@ -181,6 +182,156 @@ router.post('/api/patient/monitoring', requirePatientAuth, async (req: PatientAu
     const message = err instanceof Error ? err.message : 'Failed to save monitoring update';
     log.error({ err }, 'patient monitoring error');
     res.status(500).json({ error: message });
+  }
+});
+
+// ── GET /api/patient/previsit-data ─────────────────────────────────────────
+// Returns clinic record data to pre-fill the patient's pre-visit questionnaire.
+
+router.get('/api/patient/previsit-data', requirePatientAuth, async (req: PatientAuthRequest, res) => {
+  const patientId = req.patientAuth!.patientId;
+
+  if (!patientId) {
+    res.status(400).json({ error: 'No patient linked to this account' });
+    return;
+  }
+
+  try {
+    const [apptRes, allergyRes, medRes, vitalsRes, assessmentRes] = await Promise.all([
+      sb().from('appointment_requests')
+        .select('cc, reason, appointment_type')
+        .eq('patient_id', patientId)
+        .in('status', ['confirmed', 'staff_confirmed', 'patient_confirmed', 'pending', 'waitlisted'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      sb().from('allergies')
+        .select('allergen, reaction, severity')
+        .eq('patient_id', patientId)
+        .eq('status', 'active'),
+      sb().from('medications')
+        .select('name, dose, frequency')
+        .eq('patient_id', patientId)
+        .eq('status', 'active'),
+      sb().from('vitals')
+        .select('bp_systolic, bp_diastolic, heart_rate, temperature_c, oxygen_saturation, weight_kg, glucose_mmol, recorded_at')
+        .eq('patient_id', patientId)
+        .order('recorded_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      sb().from('assessments')
+        .select('diagnoses, created_at')
+        .eq('patient_id', patientId)
+        .order('created_at', { ascending: false })
+        .limit(10),
+    ]);
+
+    const pmhSet = new Set<string>();
+    for (const a of assessmentRes.data ?? []) {
+      const diags = (a as { diagnoses?: unknown }).diagnoses;
+      if (Array.isArray(diags)) {
+        for (const d of diags) {
+          if (typeof d === 'string' && d.trim()) pmhSet.add(d.trim());
+          else if (d && typeof d === 'object' && 'description' in d && typeof (d as Record<string, unknown>).description === 'string') {
+            pmhSet.add(((d as Record<string, unknown>).description as string).trim());
+          }
+        }
+      }
+    }
+
+    const appt = apptRes.data as { cc?: string; reason?: string; appointment_type?: string } | null;
+
+    const allergyLines = (allergyRes.data ?? []).map((a: Record<string, unknown>) => {
+      const parts = [a.allergen as string];
+      if (a.reaction) parts.push(`— ${a.reaction as string}`);
+      if (a.severity) parts.push(`(${a.severity as string})`);
+      return parts.join(' ');
+    }).join('\n');
+
+    res.json({
+      chiefComplaint: appt?.cc || appt?.reason || '',
+      appointmentType: appt?.appointment_type || '',
+      allergies: allergyLines,
+      medications: (medRes.data ?? []).map((m: Record<string, unknown>) => ({
+        name: (m.name as string) ?? '',
+        dose: (m.dose as string) ?? '',
+        frequency: (m.frequency as string) ?? '',
+      })),
+      pmh: Array.from(pmhSet),
+      lastVitals: vitalsRes.data ?? null,
+    });
+  } catch (err: unknown) {
+    log.error({ err }, 'previsit-data error');
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to fetch pre-fill data' });
+  }
+});
+
+// ── POST /api/patient/upload ────────────────────────────────────────────────
+// Uploads a document (base64 data URI) to Supabase Storage bucket
+// 'patient-documents' under path previsit/<patientId>/<ts>-<uuid>.<ext>.
+
+const MIME_EXT: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png':  'png',
+  'image/gif':  'gif',
+  'image/webp': 'webp',
+  'application/pdf': 'pdf',
+};
+
+router.post('/api/patient/upload', requirePatientAuth, async (req: PatientAuthRequest, res) => {
+  const patientId = req.patientAuth!.patientId;
+
+  if (!patientId) {
+    res.status(400).json({ error: 'No patient linked to this account' });
+    return;
+  }
+
+  const { dataUrl, fileName, label } = req.body as {
+    dataUrl?: string;
+    fileName?: string;
+    label?: string;
+  };
+
+  if (!dataUrl) {
+    res.status(400).json({ error: 'dataUrl is required' });
+    return;
+  }
+
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+  if (!match) {
+    res.status(400).json({ error: 'dataUrl must be a base64 data URI' });
+    return;
+  }
+
+  const mimeType = match[1];
+  const fileBuffer = Buffer.from(match[2], 'base64');
+  const ext = MIME_EXT[mimeType] ?? 'bin';
+  const uid = randomBytes(8).toString('hex');
+  const storagePath = `previsit/${patientId}/${Date.now()}-${uid}.${ext}`;
+
+  try {
+    const { error: uploadErr } = await sb().storage
+      .from('patient-documents')
+      .upload(storagePath, fileBuffer, { contentType: mimeType, upsert: false });
+
+    if (uploadErr) throw new Error(uploadErr.message);
+
+    const { data: urlData } = sb().storage
+      .from('patient-documents')
+      .getPublicUrl(storagePath);
+
+    log.info({ patientId, storagePath }, 'patient document uploaded');
+    res.json({
+      success: true,
+      path: storagePath,
+      publicUrl: urlData.publicUrl,
+      fileName: fileName ?? `document.${ext}`,
+      fileType: mimeType,
+      label: label ?? 'Document',
+    });
+  } catch (err: unknown) {
+    log.error({ err }, 'patient upload error');
+    res.status(502).json({ error: err instanceof Error ? err.message : 'Upload failed' });
   }
 });
 
