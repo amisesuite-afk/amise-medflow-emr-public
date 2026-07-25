@@ -32,10 +32,19 @@ function apiUrl(path: string) {
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
 }
 
+interface CcContext {
+  ccKey: string;
+  ccLabel: string;
+  icd10Hint?: string;
+  ddx?: string[];
+  pearl?: string;
+}
+
 interface NarrativeInputProps {
   section: string;
   placeholder: string;
   chipOptions?: string[];
+  ccContext?: CcContext | null;
   onParsed: (data: Record<string, unknown>) => void;
   minHeight?: number;
   label?: string;
@@ -49,6 +58,7 @@ export default function NarrativeInput({
   section,
   placeholder,
   chipOptions = [],
+  ccContext = null,
   onParsed,
   minHeight = 100,
   label = 'Dictate or paste clinical notes',
@@ -141,7 +151,7 @@ export default function NarrativeInput({
       const r = await fetch(apiUrl('/api/narrative/parse'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
-        body: JSON.stringify({ section, text: trimmed, chipOptions }),
+        body: JSON.stringify({ section, text: trimmed, chipOptions, ccContext: ccContext ?? undefined }),
       });
       if (!r.ok) throw new Error(await r.text());
       const { parsed } = await r.json() as { parsed: Record<string, unknown> };

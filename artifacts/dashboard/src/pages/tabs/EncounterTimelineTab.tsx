@@ -37,10 +37,11 @@ export default function EncounterTimelineTab() {
     setAssessment, setDifferentials, setIcdCodes, setPlan,
     setMedications, setMedicationsText, setAllergies,
     setSurgicalHistory, setSurgicalNotes,
-    setToxicHabits,
+    setToxicHabits, setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
+    setExamFindings, setExamNotes,
     setActiveSection,
     referredBy, procedureData,
-    setPatientName, setAge, setSex, setDob, setPhone, setPatientId,
+    setPatientName, setAge, setSex, setDob, setPhone, setPatientId, clearPatient,
   } = useAppContext();
 
   // ── Patient search (shown when no patient loaded) ────────────────────────
@@ -80,6 +81,7 @@ export default function EncounterTimelineTab() {
   }
 
   function selectFromSearch(p: PatientListRow) {
+    clearPatient();
     setPatientName(p.full_name ?? '');
     if (p.date_of_birth) {
       setDob(p.date_of_birth);
@@ -148,6 +150,12 @@ export default function EncounterTimelineTab() {
     setSurgicalHistory(d.surgicalHistory ?? []);
     setSurgicalNotes(d.surgicalNotes ?? '');
     setToxicHabits(d.toxicHabits ?? []);
+    if (d.hpiNotes) setHpiNotes(d.hpiNotes);
+    if (Object.keys(d.examFindings).length) setExamFindings(d.examFindings);
+    if (Object.keys(d.examNotes).length) setExamNotes(d.examNotes);
+    if (d.pmhNotes) setPmhNotes(d.pmhNotes);
+    if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
+    if (d.orderedInvestigations?.length) setOrderedInvestigations(d.orderedInvestigations);
     setActiveSection('assessment');
   }
 

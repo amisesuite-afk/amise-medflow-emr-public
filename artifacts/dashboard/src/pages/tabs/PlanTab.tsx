@@ -6,6 +6,7 @@ import { errMsg } from '@/lib/err';
 import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
 import NarrativeInput from '@/components/NarrativeInput';
+import { getMatrix } from '@/lib/cc-matrices';
 
 const BMI_NOTES: Record<string, string> = {
   'Obese class I':  'BMI 30–34.9 (Obese I): Increased DVT risk — prescribe LMWH (e.g. enoxaparin 40mg SC od) + TED stockings. Laparoscopic access may be technically difficult. Monitor wound site closely post-op.',
@@ -68,13 +69,14 @@ function addDaysISO(isoDate: string, days: number): string {
 function buildPlanText(
   protocol: NonNullable<ReturnType<typeof getProtocol>>,
   isInpatient: boolean,
+  surgeon: string,
 ): string {
   const lines: string[] = [];
 
   if (isInpatient) {
     lines.push(
       '## Admission orders',
-      '- Admit under Dr Dawit Daniel Kabiye, MD, DM — General / Endoscopic Surgery',
+      `- Admit under ${surgeon} — General / Endoscopic Surgery`,
       '- Monitoring: VS q4h, I&O charting, daily weights',
       '- DVT prophylaxis: LMWH (if not contraindicated)',
       '- VTE risk assessment documented',
@@ -147,6 +149,8 @@ function buildNursingOrders(isPreOp: boolean, isPostOp: boolean): string {
 export default function PlanTab() {
   const {
     plan, setPlan,
+    followUpNotes, setFollowUpNotes,
+    referralNotes, setReferralNotes,
     triageResult,
     weightKg, heightCm,
     paneTop, paneConverged,
@@ -154,13 +158,23 @@ export default function PlanTab() {
     encounterMode,
     symptoms,
     patientId, patientName, phone, currentSite,
+    activeCcKey,
+    admittingSurgeon,
   } = useAppContext();
+
+  const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
+  const ccContext = ccMatrix ? {
+    ccKey: ccMatrix.id,
+    ccLabel: ccMatrix.name,
+    icd10Hint: ccMatrix.icd10Hint,
+    ddx: ccMatrix.ddx,
+    pearl: ccMatrix.pearl,
+  } : null;
 
   const acuity = triageResult.acuity;
   const bmiData = calcBmiClass(weightKg, heightCm);
 
   // Review / follow-up scheduling
-  const [followUpNotes, setFollowUpNotes] = useState('');
   const [reviewIn, setReviewIn] = useState('');
   const [reviewCustomDate, setReviewCustomDate] = useState('');
   const [scheduling, setScheduling] = useState(false);
@@ -264,7 +278,7 @@ export default function PlanTab() {
 
   function handleGeneratePlan() {
     if (!protocol) return;
-    setPlan(buildPlanText(protocol, isInpatient));
+    setPlan(buildPlanText(protocol, isInpatient, admittingSurgeon));
   }
 
   function handleGenerateNursing() {
@@ -288,6 +302,7 @@ export default function PlanTab() {
             section="plan"
             placeholder="Dictate or paste the management plan — AI will extract structured steps, investigations, prescriptions, and follow-up…"
             label="Dictate management plan"
+            ccContext={ccContext}
             onParsed={data => {
               const p = data.plan as string | undefined;
               if (p?.trim()) setPlan(p.trim());
@@ -555,6 +570,8 @@ export default function PlanTab() {
         <div className="fld">
           <label>Referrals made / requested</label>
           <textarea
+            value={referralNotes}
+            onChange={e => setReferralNotes(e.target.value)}
             placeholder="Gastroenterology — urgent ERCP&#10;Dietitian&#10;Physiotherapy&#10;Diabetes team…"
             style={{ minHeight: 80 }}
           />

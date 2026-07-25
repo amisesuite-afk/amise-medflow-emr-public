@@ -9,6 +9,7 @@ import { getCdsSuggestions } from '@/lib/clinical-cds';
 import { useSpeechInput } from '@/hooks/useSpeechInput';
 import ClinicalAlgorithmPanel from '@/components/ClinicalAlgorithmPanel';
 import NarrativeInput from '@/components/NarrativeInput';
+import { getMatrix } from '@/lib/cc-matrices';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -521,8 +522,17 @@ export default function AssessmentTab() {
     triageResult,
     symptoms, examFindings, vitals, investigationResults,
     comorbidities, age, sex, isPostOp, procedureData, rosFindings,
-    paneTop, paneConverged, icdCodes,
+    paneTop, paneConverged, icdCodes, activeCcKey,
   } = useAppContext();
+
+  const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
+  const ccContext = ccMatrix ? {
+    ccKey: ccMatrix.id,
+    ccLabel: ccMatrix.name,
+    icd10Hint: ccMatrix.icd10Hint,
+    ddx: ccMatrix.ddx,
+    pearl: ccMatrix.pearl,
+  } : null;
 
   const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
     ? paneTop[0].disease.id
@@ -650,6 +660,7 @@ export default function AssessmentTab() {
             section="assessment"
             placeholder="Dictate or paste your clinical impression and differentials — AI will extract assessment, ranked differentials, and ICD hint…"
             label="Dictate clinical assessment"
+            ccContext={ccContext}
             onParsed={data => {
               const a = data.assessment as string | undefined;
               const d = data.differentials as string | undefined;

@@ -3,8 +3,8 @@
 html, body, #root { height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
   color: #1a2e2b;
   background: #0d2520;
   -webkit-font-smoothing: antialiased;
@@ -55,11 +55,11 @@ textarea { resize: vertical; }
   /* Typography scale */
   --fs-xs:   10px;
   --fs-sm:   11px;
-  --fs-base: 13px;
-  --fs-md:   14px;
-  --fs-lg:   15px;
-  --fs-xl:   17px;
-  --fs-2xl:  22px;
+  --fs-base: 14px;
+  --fs-md:   15px;
+  --fs-lg:   16px;
+  --fs-xl:   18px;
+  --fs-2xl:  24px;
 
   /* Radius */
   --r-sm:  6px;
@@ -75,8 +75,8 @@ textarea { resize: vertical; }
 
   /* Layout */
   --sidebar-w:      182px;
-  --header-h:        58px;
-  --content-max-w: 1280px;
+  --header-h:        62px;
+  --content-max-w: 1360px;
 }
 
 /* ── Dark mode ──────────────────────────────────── */
@@ -116,7 +116,7 @@ textarea { resize: vertical; }
 /* ── App shell ──────────────────────────────────── */
 .app {
   display: grid;
-  grid-template-rows: 58px 1fr;
+  grid-template-rows: var(--header-h) 1fr;
   grid-template-columns: 182px 1fr;
   height: 100dvh;
   overflow: hidden;
@@ -128,7 +128,7 @@ textarea { resize: vertical; }
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 14px;
+  padding: 0 18px;
   background: var(--header-bg);
   border-bottom: 1px solid #1c3e37;
   z-index: 20;
@@ -542,10 +542,10 @@ textarea { resize: vertical; }
 .main-content {
   background: var(--bg);
   overflow-y: auto;
-  padding: 12px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 /* Constrain very wide screens while keeping the shell edge-to-edge */
 .main-content > * {
@@ -592,13 +592,13 @@ textarea { resize: vertical; }
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--shadow-sm);
 }
 .ccard-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 13px 18px;
   width: 100%;
   text-align: left;
   background: none;
@@ -625,24 +625,24 @@ textarea { resize: vertical; }
   transition: transform .18s;
 }
 .chevron.open { transform: rotate(-90deg); }
-.ccard-body { padding: 12px 14px 14px; border-top: 1px solid var(--line); }
+.ccard-body { padding: 14px 18px 18px; border-top: 1px solid var(--line); }
 
 /* ── Form grid ──────────────────────────────────── */
-.form-grid { display: grid; gap: 10px; grid-template-columns: repeat(4, 1fr); }
+.form-grid { display: grid; gap: 14px; grid-template-columns: repeat(4, 1fr); }
 .form-grid.cols-2 { grid-template-columns: 1fr 1fr; }
 .form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 .form-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
 .form-grid.cols-7 { grid-template-columns: repeat(7, 1fr); }
-.fld { display: flex; flex-direction: column; gap: 4px; }
+.fld { display: flex; flex-direction: column; gap: 5px; }
 .fld label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 .fld input, .fld select, .fld textarea {
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 7px 9px;
+  padding: 8px 10px;
   background: #fafcfb;
   color: var(--ink);
   outline: none;
-  font-size: 13px;
+  font-size: 14px;
   transition: border-color .15s;
 }
 .fld input:focus, .fld select:focus, .fld textarea:focus { border-color: var(--accent); }
@@ -737,8 +737,8 @@ textarea { resize: vertical; }
 }
 
 /* ── Two-col grid ───────────────────────────────── */
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
 
 /* ── Triage info rows ───────────────────────────── */
 .triage-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
@@ -746,7 +746,7 @@ textarea { resize: vertical; }
 .triage-value { font-size: 13px; font-weight: 700; color: var(--ink); }
 
 /* ── Exam textareas ─────────────────────────────── */
-.exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .exam-field label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
 .exam-field textarea {
   width: 100%;
@@ -794,8 +794,8 @@ textarea { resize: vertical; }
   letter-spacing: .06em;
   margin-bottom: 6px;
 }
-.gap-y { display: flex; flex-direction: column; gap: 10px; }
-.gap-y-sm { display: flex; flex-direction: column; gap: 6px; }
+.gap-y { display: flex; flex-direction: column; gap: 14px; }
+.gap-y-sm { display: flex; flex-direction: column; gap: 8px; }
 
 ul.list { padding-left: 16px; display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
 ul.list li { line-height: 1.4; }
@@ -1794,7 +1794,7 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
 }
 @media (max-width: 660px) {
   /* Horizontal nav bar layout */
-  .app { grid-template-columns: 1fr !important; grid-template-rows: 58px auto 1fr; }
+  .app { grid-template-columns: 1fr !important; grid-template-rows: var(--header-h) auto 1fr; }
   .nav-sidebar {
     grid-row: 2 !important; grid-column: 1 !important;
     flex-direction: column !important;
@@ -1958,8 +1958,8 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   display: flex;
   gap: 2px;
   overflow-x: auto;
-  padding: 0 0 10px;
-  margin: 0 0 4px;
+  padding: 2px 0 12px;
+  margin: 0 0 2px;
   border-bottom: 1px solid #e2e8f0;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
@@ -1968,9 +1968,9 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
 .consult-tabstrip::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 .ct-tab {
   flex-shrink: 0;
-  padding: 5px 12px;
+  padding: 6px 14px;
   border: none;
-  border-radius: 6px;
+  border-radius: 7px;
   background: transparent;
   color: #64748b;
   font-size: 12px;

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",
+    "@supabase/supabase-js": "^2.49.4",
     "@vitejs/plugin-react": "catalog:",
     "concurrently": "^9.1.0",
     "cors": "^2.8.6",

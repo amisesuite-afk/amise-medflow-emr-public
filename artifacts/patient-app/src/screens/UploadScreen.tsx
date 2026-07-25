@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { addMonitoringPhoto } from '../api';
+import { uploadFile } from '../api';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -164,10 +164,7 @@ const UploadScreen: React.FC<Props> = ({ token }) => {
     setPendingFile(null);
 
     try {
-      await addMonitoringPhoto(token, {
-        dataUrl: pendingFile.preview,
-        context: `${pendingLabel} — ${pendingDate}${pendingProvider ? ' — ' + pendingProvider : ''}`,
-      });
+      await uploadFile(token, pendingFile.preview, pendingFile.fileName, pendingLabel);
       setEntries((prev) =>
         prev.map((e) => (e.id === id ? { ...e, status: 'done' } : e)),
       );
@@ -175,7 +172,7 @@ const UploadScreen: React.FC<Props> = ({ token }) => {
       setEntries((prev) =>
         prev.map((e) =>
           e.id === id
-            ? { ...e, status: 'error', errorMsg: 'Upload failed. Saved locally.' }
+            ? { ...e, status: 'error', errorMsg: 'Upload failed. Please try again.' }
             : e,
         ),
       );
@@ -241,7 +238,7 @@ const UploadScreen: React.FC<Props> = ({ token }) => {
 
           {/* Preview */}
           <div style={{ marginBottom: '12px' }}>
-            {pendingFile.preview === 'pdf' ? (
+            {pendingFile.fileType === 'application/pdf' || !pendingFile.fileType.startsWith('image/') ? (
               <div
                 style={{
                   backgroundColor: '#060e1a',
@@ -381,7 +378,7 @@ const UploadScreen: React.FC<Props> = ({ token }) => {
                   border: '1px solid #1e3a5f',
                 }}
               >
-                {entry.preview === 'pdf' ? (
+                {entry.fileType === 'application/pdf' || !entry.fileType.startsWith('image/') ? (
                   <span style={{ fontSize: '24px' }}>📄</span>
                 ) : (
                   <img

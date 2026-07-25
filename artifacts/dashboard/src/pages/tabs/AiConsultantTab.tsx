@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { errMsg } from '@/lib/err';
+import { saveAiConsult } from '@/lib/db';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -732,7 +733,7 @@ export default function AiConsultantTab() {
         const now = new Date().toISOString();
         const { data: overdueTasks } = await supabase
           .from('patient_tasks')
-          .select('id, patient_id, title, task_type, due_date')
+          .select('id, patient_id, description, task_type, due_date')
           .eq('status', 'open')
           .lt('due_date', now)
           .order('due_date', { ascending: true })
@@ -741,7 +742,7 @@ export default function AiConsultantTab() {
           alerts.push({
             id: 'overdue-tasks', category: 'pending_task', severity: 'medium',
             title: `${overdueTasks.length} overdue task${overdueTasks.length !== 1 ? 's' : ''}`,
-            detail: overdueTasks.map(t => t.title).join('; '),
+            detail: overdueTasks.map(t => t.description).join('; '),
             timestamp: new Date().toISOString(), dismissed: false,
             actionLabel: 'View tasks', actionNav: { top: 'tasks', section: 'tasks' },
           });
@@ -842,6 +843,9 @@ export default function AiConsultantTab() {
       const data = await r.json();
       const resp = (data.consultation ?? data) as AiConsultResponse;
       setAiResponse(resp);
+      if (encounterId && patientId) {
+        void saveAiConsult(encounterId, patientId, consultationType, resp as unknown as Record<string, unknown>);
+      }
 
       // Auto-add AI-suggested labs to suggestions
       if (resp.suggestedInvestigations?.length) {

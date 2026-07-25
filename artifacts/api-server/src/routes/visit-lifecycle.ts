@@ -125,7 +125,7 @@ router.post('/api/visit/check-in/:appointmentId', async (req, res) => {
     });
 
     logger.info({ encounterId: encounter.id, appointmentId }, '[visit/check-in] patient checked in');
-    res.json({ encounterId: encounter.id, status: 'checked_in' });
+    res.json({ encounterId: encounter.id, patientId, status: 'checked_in' });
   } catch (err) {
     logger.error({ err }, '[visit/check-in] error');
     res.status(502).json({ error: errStr(err) });
@@ -181,6 +181,13 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
         status: 'pending',
       });
     }
+
+    // Sign all draft clinical notes before closing
+    await supa
+      .from('clinical_notes')
+      .update({ status: 'signed', updated_at: new Date().toISOString() })
+      .eq('encounter_id', encounterId)
+      .eq('status', 'draft');
 
     // Close encounter
     const { error: closeErr } = await supa
@@ -309,6 +316,52 @@ router.post('/api/visit/medication-reconciliation/:encounterId', async (req, res
     res.json({ encounterId, reconciled: medications.length });
   } catch (err) {
     logger.error({ err }, '[visit/med-recon] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// POST /api/visit/sign-notes/:encounterId -- sign all draft clinical notes for an encounter
+router.post('/api/visit/sign-notes/:encounterId', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { encounterId } = req.params;
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    const { data: encounter, error: fetchErr } = await supa
+      .from('encounters')
+      .select('id, patient_id')
+      .eq('id', encounterId)
+      .maybeSingle();
+
+    if (fetchErr || !encounter) {
+      res.status(404).json({ error: 'Encounter not found' });
+      return;
+    }
+
+    const { data: updated, error: signErr } = await supa
+      .from('clinical_notes')
+      .update({ status: 'signed', updated_at: new Date().toISOString() })
+      .eq('encounter_id', encounterId)
+      .eq('status', 'draft')
+      .select('id');
+
+    if (signErr) throw signErr;
+
+    const signed = updated?.length ?? 0;
+
+    await audit({
+      action: 'sign',
+      entityType: 'clinical_notes',
+      entityId: encounterId,
+      patientId: encounter.patient_id ?? undefined,
+      payload: { notes_signed: signed },
+    });
+
+    logger.info({ encounterId, signed }, '[visit/sign-notes] notes signed');
+    res.json({ encounterId, signed });
+  } catch (err) {
+    logger.error({ err }, '[visit/sign-notes] error');
     res.status(502).json({ error: errStr(err) });
   }
 });

@@ -34,8 +34,11 @@ setInterval(() => {
 }, 5 * 60 * 1000).unref();
 
 async function getTwilioClient() {
+  const sid   = process.env.TWILIO_ACCOUNT_SID;
+  const token = process.env.TWILIO_AUTH_TOKEN;
+  if (!sid || !token) throw new Error('[SMS] TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN must be set to use the twilio provider');
   const { default: twilio } = await import('twilio');
-  return twilio(process.env.TWILIO_ACCOUNT_SID!, process.env.TWILIO_AUTH_TOKEN!);
+  return twilio(sid, token);
 }
 
 export async function sendSms(args: SmsArgs): Promise<SmsResult> {
@@ -98,8 +101,7 @@ export async function sendSms(args: SmsArgs): Promise<SmsResult> {
   }
 
   if (provider === 'digicel') {
-    logger.warn('[SMS] Digicel provider not implemented; falling back to log');
-    return { action: 'skipped' };
+    throw new Error('[SMS] Digicel provider (SMS_PROVIDER=digicel) is not implemented. Set SMS_PROVIDER=twilio or SMS_PROVIDER=dry_run.');
   }
 
   throw new Error(`Unknown SMS_PROVIDER: ${provider}`);

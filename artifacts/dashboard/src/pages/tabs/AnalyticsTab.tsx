@@ -23,11 +23,10 @@ function todayECT(): string {
 }
 
 function monthStart(offsetMonths = 0): string {
-  const d = new Date();
-  d.setUTCDate(1);
-  d.setUTCHours(0, 0, 0, 0);
-  d.setUTCMonth(d.getUTCMonth() + offsetMonths);
-  return d.toISOString();
+  // Compute month boundary in ECT (UTC-4) so day boundaries match the practice timezone.
+  // todayECT() gives "YYYY-MM-DD"; midnight ECT = 04:00 UTC.
+  const [year, month] = todayECT().split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1 + offsetMonths, 1, 4, 0, 0, 0)).toISOString();
 }
 
 function pct(n: number, total: number): string {
@@ -45,6 +44,7 @@ const ACUITY_COLORS: Record<string, string> = {
 const SITE_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
   tapion:     'Tapion / ERCP',
+  castries:   'Castries',
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────

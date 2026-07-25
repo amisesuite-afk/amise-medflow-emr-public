@@ -1,4 +1,5 @@
-import { useState, useId } from 'react';
+import { useState, useId, useEffect, useRef } from 'react';
+import { saveDischargeNotes, loadDischargeNotes } from '@/lib/db';
 import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import IcdPicker from '@/components/IcdPicker';
 import {
@@ -720,6 +721,81 @@ export default function InpatientTab() {
   const [signoffContact, setSignoffContact] = useState('');
   const [signoffDate, setSignoffDate] = useState('');
 
+  // ── Load persisted discharge notes from DB on mount ───────────────────────
+  useEffect(() => {
+    if (!ctx.encounterId) return;
+    void loadDischargeNotes(ctx.encounterId).then(({ data }) => {
+      // Always reset to defaults first so stale data from a previous encounter never persists
+      setHistoryProse('');
+      setProcedureDate(''); setOperator('Dr. Dawit D Kabiye'); setInstrument('');
+      setAnaesthesia(''); setIndication(''); setProcedureNarrative('');
+      setDischargeDx(''); setComplications(''); setPostProcCourse('');
+      setFollowupHeading('Follow-up Appointment'); setFollowupBody('');
+      setHaem(DEFAULT_HAEM); setLft(DEFAULT_LFT);
+      setLftLabel1('Admission'); setLftLabel2('Day 3');
+      setTumour(DEFAULT_TUMOUR); setAmylase(DEFAULT_AMYLASE);
+      setImaging([{ modality: '', region: '', date: '', findings: '' }]);
+      setMedications([{ name: '', dose: '', route: '', frequency: '' }]);
+      setLifestyle([{ text: '' }]); setFollowupPlan([{ text: '' }]);
+      setRedFlags([{ text: 'Fever > 38.5 °C' }, { text: 'Increasing pain or distension' }, { text: 'Wound breakdown or discharge' }]);
+      setSignoffName('Dr. Dawit D Kabiye'); setSignoffRole('MD, DM · General & Endoscopic Surgery');
+      setSignoffContact(''); setSignoffDate('');
+      if (!data) return;
+      if (data.historyProse)      setHistoryProse(data.historyProse as string);
+      if (data.procedureDate)     setProcedureDate(data.procedureDate as string);
+      if (data.operator)          setOperator(data.operator as string);
+      if (data.instrument)        setInstrument(data.instrument as string);
+      if (data.anaesthesia)       setAnaesthesia(data.anaesthesia as string);
+      if (data.indication)        setIndication(data.indication as string);
+      if (data.procedureNarrative) setProcedureNarrative(data.procedureNarrative as string);
+      if (data.dischargeDx)       setDischargeDx(data.dischargeDx as string);
+      if (data.complications)     setComplications(data.complications as string);
+      if (data.postProcCourse)    setPostProcCourse(data.postProcCourse as string);
+      if (data.followupHeading)   setFollowupHeading(data.followupHeading as string);
+      if (data.followupBody)      setFollowupBody(data.followupBody as string);
+      if (data.haem)              setHaem(data.haem as LabRow[]);
+      if (data.lft)               setLft(data.lft as TrendRow[]);
+      if (data.lftLabel1)         setLftLabel1(data.lftLabel1 as string);
+      if (data.lftLabel2)         setLftLabel2(data.lftLabel2 as string);
+      if (data.tumour)            setTumour(data.tumour as LabRow[]);
+      if (data.amylase)           setAmylase(data.amylase as LabRow[]);
+      if (data.imaging)           setImaging(data.imaging as ImagingRow[]);
+      if (data.medications)       setMedications(data.medications as MedRow[]);
+      if (data.lifestyle)         setLifestyle(data.lifestyle as ListItem[]);
+      if (data.followupPlan)      setFollowupPlan(data.followupPlan as ListItem[]);
+      if (data.redFlags)          setRedFlags(data.redFlags as ListItem[]);
+      if (data.signoffName)       setSignoffName(data.signoffName as string);
+      if (data.signoffRole)       setSignoffRole(data.signoffRole as string);
+      if (data.signoffContact)    setSignoffContact(data.signoffContact as string);
+      if (data.signoffDate)       setSignoffDate(data.signoffDate as string);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctx.encounterId]);
+
+  // ── Autosave discharge notes to DB (debounced 5 s) ───────────────────────
+  const dischargeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!ctx.encounterId || !ctx.patientId) return;
+    if (dischargeTimerRef.current) clearTimeout(dischargeTimerRef.current);
+    dischargeTimerRef.current = setTimeout(() => {
+      void saveDischargeNotes(ctx.encounterId!, ctx.patientId!, {
+        historyProse, procedureDate, operator, instrument, anaesthesia, indication,
+        procedureNarrative, dischargeDx, complications, postProcCourse,
+        followupHeading, followupBody,
+        haem, lft, lftLabel1, lftLabel2, tumour, amylase, imaging,
+        medications, lifestyle, followupPlan, redFlags,
+        signoffName, signoffRole, signoffContact, signoffDate,
+      });
+    }, 5000);
+    return () => { if (dischargeTimerRef.current) clearTimeout(dischargeTimerRef.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctx.encounterId, ctx.patientId,
+    historyProse, procedureDate, operator, instrument, anaesthesia, indication,
+    procedureNarrative, dischargeDx, complications, postProcCourse,
+    followupHeading, followupBody,
+    haem, lft, lftLabel1, lftLabel2, tumour, amylase, imaging,
+    medications, lifestyle, followupPlan, redFlags,
+    signoffName, signoffRole, signoffContact, signoffDate]);
 
   const los = (ctx.dateAdmission && ctx.dateDischarge)
     ? (() => { const d = Math.round((new Date(ctx.dateDischarge).getTime() - new Date(ctx.dateAdmission).getTime()) / 86_400_000); return d >= 0 ? `${d} day${d === 1 ? '' : 's'}` : ''; })()

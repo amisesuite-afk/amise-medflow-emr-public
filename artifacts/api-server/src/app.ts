@@ -10,6 +10,7 @@ import fs from "node:fs";
 import { fileURLToPath } from "url";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { correlationId } from "./middlewares/correlation";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -17,9 +18,13 @@ const app: Express = express();
 
 app.set("trust proxy", 1);
 
+// Correlation ID must run before pino-http so the ID appears in every log line.
+app.use(correlationId);
+
 app.use(
   pinoHttp({
     logger,
+    customProps: (req) => ({ correlationId: (req as any).correlationId }),
     serializers: {
       req(req) {
         return {
@@ -70,19 +75,30 @@ const allowedOrigins = [
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    // Vercel preview/production URLs for this project
+    // Vercel preview URLs scoped tightly to this project's team slug.
+    // The first pattern matches deployment-specific URLs; the second matches
+    // the stable project alias. Both are scoped to amisesuite-afk to prevent
+    // unrelated Vercel deployments from receiving credentialed responses.
     if (/^https:\/\/[\w-]+-amisesuite-afks-projects\.vercel\.app$/.test(origin)) return cb(null, true);
-    if (/^https:\/\/amise[\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
-    // Vercel auto-generated preview slugs (word-word-word-NN.vercel.app)
-    if (/^https:\/\/[a-z]{2,12}-[a-z]{2,12}-[a-z]{2,12}-\d{1,4}\.vercel\.app$/.test(origin)) return cb(null, true);
+    if (/^https:\/\/amise-medflow[\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-// Raw binary body for Tasker "File To Send" uploads (must run before router, only for this path)
+// Raw binary body for Tasker "File To Send" uploads.
+// IMPORTANT: the upload key is validated BEFORE buffering the body so an
+// unauthenticated caller cannot stream 50 MB through the server.
 app.use('/api/calls/recording-upload', (req, res, next) => {
+  const uploadKey = process.env.RECORDING_UPLOAD_KEY;
+  if (uploadKey) {
+    const provided = req.headers['x-upload-key'];
+    if (provided !== uploadKey) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+  }
   const ct = req.headers['content-type'] ?? '';
   if (!ct.includes('multipart/form-data') && !ct.includes('application/json') && !ct.includes('urlencoded')) {
     express.raw({ type: '*/*', limit: '50mb' })(req, res, next);

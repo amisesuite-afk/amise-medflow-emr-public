@@ -3,30 +3,42 @@ import { useState, useRef, useCallback } from 'react';
 interface SpeechInputResult {
   listening: boolean;
   supported: boolean;
+  error: string | null;
+  clearError: () => void;
   start: (onResult: (text: string) => void) => void;
   stop: () => void;
 }
 
 export function useSpeechInput(): SpeechInputResult {
   const [listening, setListening] = useState(false);
-  const recRef = useRef<any>(null);
+  const [error, setError]         = useState<string | null>(null);
+  const recRef = useRef<SpeechRecognition | null>(null);
 
   const supported = typeof window !== 'undefined' &&
-    !!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition);
+    !!(window.SpeechRecognition ?? window.webkitSpeechRecognition);
 
   const start = useCallback((onResult: (text: string) => void) => {
     if (!supported) return;
-    const SR = ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition) as any;
+    setError(null);
+    const SR = (window.SpeechRecognition ?? window.webkitSpeechRecognition)!;
     const rec = new SR();
     rec.lang = 'en-GB';
     rec.continuous = false;
     rec.interimResults = false;
-    rec.onresult = (e: any) => {
-      const transcript: string = e.results[0][0].transcript;
-      onResult(transcript);
+    rec.onresult = (e: SpeechRecognitionEvent) => {
+      onResult(e.results[0][0].transcript);
     };
     rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
+    rec.onerror = (e: SpeechRecognitionErrorEvent) => {
+      setListening(false);
+      if (e.error === 'no-speech' || e.error === 'aborted') return;
+      const MESSAGES: Record<string, string> = {
+        'not-allowed': 'Microphone access blocked — check browser or device settings.',
+        'service-not-allowed': 'Speech recognition unavailable in this browser.',
+        'network': 'Speech recognition requires an internet connection.',
+      };
+      setError(MESSAGES[e.error] ?? `Mic error: ${e.error}`);
+    };
     recRef.current = rec;
     rec.start();
     setListening(true);
@@ -37,5 +49,7 @@ export function useSpeechInput(): SpeechInputResult {
     setListening(false);
   }, []);
 
-  return { listening, supported, start, stop };
+  const clearError = useCallback(() => setError(null), []);
+
+  return { listening, supported, error, clearError, start, stop };
 }

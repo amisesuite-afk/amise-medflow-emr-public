@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
-import { sb } from '../lib/supabase.js';
+import { requireStaffAuth, sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { AI_DISABLED } from '../lib/ai-guard.js';
 
@@ -69,6 +69,7 @@ interface ConsultRequest {
 }
 
 router.post('/api/ai-consult', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   if (AI_DISABLED) {
     res.status(503).json({
       error: 'AI features are temporarily disabled (DISABLE_AI=true). Re-enable the service to use this feature.',
@@ -283,10 +284,11 @@ Respond with ONLY a JSON object (no markdown fences, no preamble). Follow the re
 // ── AI Note Editing ───────────────────────────────────────────────────────────
 
 router.post('/api/ai/edit-note', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { section, currentText, instruction } = req.body as {
     section?: string; currentText?: string; instruction?: string;
   };
-  if (!section || !currentText === undefined || !instruction) {
+  if (!section || currentText === undefined || currentText === '' || !instruction) {
     res.status(400).json({ error: 'section, currentText, and instruction are required' });
     return;
   }
@@ -305,6 +307,7 @@ router.post('/api/ai/edit-note', async (req, res) => {
 // ── AI Document Pre-fill (discharge / referral) ──────────────────────────────
 
 router.post('/api/ai/fill-document', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   if (AI_DISABLED) { res.status(503).json({ error: 'AI features are disabled' }); return; }
   const {
     docType, patientName, age, sex, symptoms, assessment, plan,
@@ -362,6 +365,7 @@ interface DrugInputDI { drugName: string; dose?: string; frequency?: string; }
 interface DrugInteraction { drug1: string; drug2: string; severity: 'major' | 'moderate' | 'minor'; description: string; mechanism: string; }
 
 router.post('/api/ai/drug-interactions', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
   if (AI_DISABLED) { res.status(503).json({ error: 'AI features are disabled' }); return; }
   const drugs: DrugInputDI[] = Array.isArray(req.body?.drugs) ? req.body.drugs : [];
   if (drugs.length < 2) { res.json({ interactions: [] }); return; }

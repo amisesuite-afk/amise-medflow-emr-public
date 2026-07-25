@@ -1,1 +1,1 @@
-https://finance-auditor.vercel.app
+Error:Theprovidedpath“~/work/amise-medflow-emr-public/amise-medflow-emr-public/artifacts/finance-auditor”doesnotexist.TochangeyourProjectSettings,gotohttps://vercel.com/amisesuite-afks-projects/finance-auditor/settings

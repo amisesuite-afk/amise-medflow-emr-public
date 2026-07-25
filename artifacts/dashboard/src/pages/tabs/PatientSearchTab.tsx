@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, listPatientsBySite, getLatestOpenEncounter, getLatestAppointmentType, loadPMH, loadEncounterData, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
+import { listPatients, listPatientsBySite, getLatestOpenEncounter, getLatestAppointmentType, getLatestClosedEncounter, loadPMH, loadEncounterData, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
 import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { fmtPhone } from '@/lib/fmt';
@@ -103,15 +103,22 @@ export default function PatientSearchTab() {
 
   const {
     setPatientName, setAge, setSex, setDob, setPhone,
-    setPatientId, setEncounterId, setComorbidities,
+    setPatientId, setEncounterId, setComorbidities, clearPatient,
     setAssessment, setDifferentials, setIcdCodes, setPlan,
     setAllergies, setMedications, setPatientPhoto,
     setSurgicalHistory, setSurgicalNotes, setToxicHabits,
     setRosFindings, setProcedureData, setTraumaData,
+    setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
+    setExamFindings, setExamNotes,
     setTopSection, setActiveSection,
     toggleSymptom, setFreeText, symptoms, freeText,
     setMedicationsText,
     comorbidities, surgicalHistory, toxicHabits,
+    setPriorEncounterSummary,
+    setWard, setDateAdmission, setDateDischarge, setAdmittingSurgeon,
+    setReferringPhysician, setNokName, setNokRelation, setNokTel,
+    setBloodGroup, setMrNumber,
+    setClinicalScores, setExtractedLabs,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -235,6 +242,7 @@ export default function PatientSearchTab() {
 
   async function loadPatient(p: PatientListRowEx) {
     setSelected(p.id);
+    clearPatient();
 
     if (p.full_name) setPatientName(p.full_name);
     if (p.date_of_birth) {
@@ -290,6 +298,27 @@ export default function PatientSearchTab() {
           if (Object.keys(d.rosFindings).length) setRosFindings(d.rosFindings as Record<string, import('@/context/AppContext').RosFinding>);
           if (Object.keys(d.procedureData).length) setProcedureData(d.procedureData);
           if (d.traumaData) setTraumaData(d.traumaData);
+          if (d.hpiNotes) setHpiNotes(d.hpiNotes);
+          if (Object.keys(d.examFindings).length) setExamFindings(d.examFindings);
+          if (Object.keys(d.examNotes).length) setExamNotes(d.examNotes);
+          if (d.pmhNotes) setPmhNotes(d.pmhNotes);
+          if (d.familyHistoryNotes) setFamilyHistoryNotes(d.familyHistoryNotes);
+          if (d.orderedInvestigations.length) setOrderedInvestigations(d.orderedInvestigations);
+          if (Object.keys(d.clinicalScores).length) setClinicalScores(d.clinicalScores);
+          if (Object.keys(d.extractedLabs).length) setExtractedLabs(d.extractedLabs);
+          if (d.inpatientDetails) {
+            const ip = d.inpatientDetails;
+            if (typeof ip.ward === 'string') setWard(ip.ward);
+            if (typeof ip.dateAdmission === 'string') setDateAdmission(ip.dateAdmission);
+            if (typeof ip.dateDischarge === 'string') setDateDischarge(ip.dateDischarge);
+            if (typeof ip.admittingSurgeon === 'string') setAdmittingSurgeon(ip.admittingSurgeon);
+            if (typeof ip.referringPhysician === 'string') setReferringPhysician(ip.referringPhysician);
+            if (typeof ip.nokName === 'string') setNokName(ip.nokName);
+            if (typeof ip.nokRelation === 'string') setNokRelation(ip.nokRelation);
+            if (typeof ip.nokTel === 'string') setNokTel(ip.nokTel);
+            if (typeof ip.bloodGroup === 'string') setBloodGroup(ip.bloodGroup);
+            if (typeof ip.mrNumber === 'string') setMrNumber(ip.mrNumber);
+          }
         }
         showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
         const apptType = await getLatestAppointmentType(p.id);
@@ -300,6 +329,11 @@ export default function PatientSearchTab() {
         routeByAppointmentType(apptType);
       }
     }
+
+    // Non-blocking: load most recent closed encounter for follow-up baseline strip
+    void getLatestClosedEncounter(p.id).then(({ data }) => {
+      setPriorEncounterSummary(data);
+    });
 
     // Check for questionnaire intake data
     setQuestionnaireData(null);
@@ -554,8 +588,8 @@ export default function PatientSearchTab() {
           </div>
           <div className="psearch-hint-body">
             {siteFilter === 'all'
-              ? 'Click + New patient to start an intake, then Save patient to add them to the registry.'
-              : `No encounters recorded at ${SITE_LABELS[siteFilter]}. Switch to All locations to see all patients.`}
+              ? 'Use the + New patient button below to register your first patient.'
+              : `No encounters recorded at ${SITE_LABELS[siteFilter]}. Switch to "All locations" to see all patients.`}
           </div>
         </div>
       )}

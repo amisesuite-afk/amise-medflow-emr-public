@@ -3,6 +3,7 @@ import CollapsibleCard from '@/components/CollapsibleCard';
 import ChipGroup from '@/components/ChipGroup';
 import NarrativeInput from '@/components/NarrativeInput';
 import DrugInteractionAlert from '@/components/DrugInteractionAlert';
+import AllergyMedAlert from '@/components/AllergyMedAlert';
 import MedicationReconciliationCard from '@/components/MedicationReconciliationCard';
 
 const MEDICATION_OPTIONS = [
@@ -24,7 +25,7 @@ const MEDICATION_OPTIONS = [
 ];
 
 export default function MedicationsTab() {
-  const { medications, toggleMedication, medicationsText, setMedicationsText } = useAppContext();
+  const { medications, toggleMedication, medicationsText, setMedicationsText, allergies } = useAppContext();
 
   function handleMedsParsed(data: Record<string, unknown>) {
     const matched = (data.matched as string[] | undefined) ?? [];
@@ -46,6 +47,7 @@ export default function MedicationsTab() {
         minHeight={100}
       />
 
+      <AllergyMedAlert allergies={allergies} medications={medications} medicationsText={medicationsText} />
       <DrugInteractionAlert medications={medications} medicationsText={medicationsText} />
       <CollapsibleCard title="Current medications" badge={medications.length || undefined}>
         <ChipGroup options={MEDICATION_OPTIONS} selected={medications} onToggle={toggleMedication} />

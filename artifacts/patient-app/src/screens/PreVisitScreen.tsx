@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { submitPrevisit } from '../api';
+import { submitPrevisit, getPrevisitData, type PrevisitPrefill } from '../api';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -15,6 +15,17 @@ interface PhotoEntry {
   id: string;
   dataUrl: string;
   context: string;
+}
+
+interface HomeVitals {
+  bp_systolic: string;
+  bp_diastolic: string;
+  heart_rate: string;
+  temperature_c: string;
+  oxygen_saturation: string;
+  weight_kg: string;
+  glucose_mmol: string;
+  measured_at: string;
 }
 
 interface PreVisitData {
@@ -48,6 +59,8 @@ interface PreVisitData {
   ros: Record<string, RosValue>;
   // Step 9
   photos: PhotoEntry[];
+  // Step 10
+  homeVitals: HomeVitals;
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -86,7 +99,7 @@ const ROS_SYSTEMS: Record<string, string[]> = {
 const PHOTO_CONTEXTS = ['Wound', 'Swelling', 'Rash', 'Scar', 'Other'];
 
 const STORAGE_KEY_PREFIX = 'amise_previsit_';
-const TOTAL_STEPS = 10;
+const TOTAL_STEPS = 11;
 
 // ─── Style helpers ────────────────────────────────────────────────────────────
 
@@ -159,6 +172,11 @@ function defaultData(): PreVisitData {
     allergies: '',
     ros,
     photos: [],
+    homeVitals: {
+      bp_systolic: '', bp_diastolic: '', heart_rate: '',
+      temperature_c: '', oxygen_saturation: '', weight_kg: '',
+      glucose_mmol: '', measured_at: '',
+    },
   };
 }
 
@@ -244,6 +262,26 @@ const RosToggle: React.FC<RosToggleProps> = ({ value, onChange }) => {
   );
 };
 
+const PrefillBanner: React.FC = () => (
+  <div
+    style={{
+      backgroundColor: '#0d2a2a',
+      border: '1px solid #0d9488',
+      borderRadius: '10px',
+      padding: '10px 14px',
+      marginBottom: '16px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+    }}
+  >
+    <span style={{ fontSize: '18px', flexShrink: 0 }}>✅</span>
+    <p style={{ color: '#5eead4', fontSize: '13px', lineHeight: 1.4 }}>
+      Some fields have been pre-filled from your clinic records — please review and update as needed.
+    </p>
+  </div>
+);
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 interface Props {
@@ -256,6 +294,48 @@ const PreVisitScreen: React.FC<Props> = ({ token }) => {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [prefill, setPrefill] = useState<PrevisitPrefill | null>(null);
+  const [prefillApplied, setPrefillApplied] = useState(false);
+
+  // Fetch clinic record data to pre-populate the form (best-effort)
+  useEffect(() => {
+    getPrevisitData(token)
+      .then(pf => {
+        setPrefill(pf);
+        // Only pre-populate on a fresh (empty) form so we don't clobber patient edits
+        setData(prev => {
+          const isBlank =
+            !prev.chiefComplaint &&
+            prev.medications.length === 1 && !prev.medications[0].name &&
+            !prev.allergies &&
+            prev.pmhConditions.length === 0 &&
+            prev.pmhList.length === 0;
+          if (!isBlank) return prev;
+
+          // Match PMH diagnoses against known conditions list
+          const matchedConditions = PMH_CONDITIONS.filter(c =>
+            pf.pmh.some(d => d.toLowerCase().includes(c.toLowerCase()))
+          );
+          const unmatchedPmh = pf.pmh.filter(d =>
+            !PMH_CONDITIONS.some(c => d.toLowerCase().includes(c.toLowerCase()))
+          );
+          const meds = pf.medications.length > 0
+            ? pf.medications
+            : [{ name: '', dose: '', frequency: '' }];
+
+          setPrefillApplied(true);
+          return {
+            ...prev,
+            chiefComplaint: pf.chiefComplaint || prev.chiefComplaint,
+            allergies: pf.allergies || prev.allergies,
+            medications: meds,
+            pmhConditions: matchedConditions,
+            pmhList: unmatchedPmh,
+          };
+        });
+      })
+      .catch(() => { /* prefill is best-effort */ });
+  }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Persist on every change
   useEffect(() => {
@@ -295,6 +375,10 @@ const PreVisitScreen: React.FC<Props> = ({ token }) => {
       ...prev,
       ros: { ...prev.ros, [symptom]: value },
     }));
+  }
+
+  function updateHomeVital(field: keyof HomeVitals, value: string) {
+    setData((prev) => ({ ...prev, homeVitals: { ...prev.homeVitals, [field]: value } }));
   }
 
   function addPmhItem() {
@@ -414,6 +498,7 @@ const PreVisitScreen: React.FC<Props> = ({ token }) => {
         allergies: data.allergies,
         ros: data.ros,
         photos: data.photos.map((p) => ({ dataUrl: p.dataUrl, context: p.context })),
+        home_vitals: data.homeVitals,
       });
       setSubmitted(true);
     } catch (err: unknown) {
@@ -1124,8 +1209,142 @@ const PreVisitScreen: React.FC<Props> = ({ token }) => {
           </div>
         );
 
-      // ── Step 10: Review & submit
-      case 10:
+      // ── Step 10: Home vitals (patient self-measured)
+      case 10: {
+        const hv = data.homeVitals;
+        const lastV = prefill?.lastVitals;
+        return (
+          <div>
+            <p style={questionTitle}>Home vitals (optional)</p>
+            <p style={{ ...labelStyle, marginBottom: '14px' }}>
+              If you have a blood pressure monitor or scales at home, please enter your most recent readings. This helps your surgeon review your baseline before the appointment.
+            </p>
+
+            {lastV?.recorded_at && (
+              <div style={{ ...card, borderColor: '#0d9488' }}>
+                <p style={{ color: '#5eead4', fontSize: '12px', fontWeight: 600, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  Last recorded in clinic ({new Date(lastV.recorded_at).toLocaleDateString()})
+                </p>
+                <p style={{ color: '#94a3b8', fontSize: '13px', lineHeight: 1.7 }}>
+                  {lastV.bp_systolic && lastV.bp_diastolic ? `BP ${lastV.bp_systolic}/${lastV.bp_diastolic} mmHg · ` : ''}
+                  {lastV.heart_rate ? `HR ${lastV.heart_rate} bpm · ` : ''}
+                  {lastV.weight_kg ? `Wt ${lastV.weight_kg} kg` : ''}
+                </p>
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+              <div>
+                <label style={labelStyle}>Systolic BP (mmHg)</label>
+                <input
+                  style={{ ...inputStyle, marginBottom: 0 }}
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="e.g. 120"
+                  value={hv.bp_systolic}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateHomeVital('bp_systolic', e.target.value)}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Diastolic BP (mmHg)</label>
+                <input
+                  style={{ ...inputStyle, marginBottom: 0 }}
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="e.g. 80"
+                  value={hv.bp_diastolic}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateHomeVital('bp_diastolic', e.target.value)}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Heart rate (bpm)</label>
+                <input
+                  style={{ ...inputStyle, marginBottom: 0 }}
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="e.g. 72"
+                  value={hv.heart_rate}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateHomeVital('heart_rate', e.target.value)}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Temperature (°C)</label>
+                <input
+                  style={{ ...inputStyle, marginBottom: 0 }}
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="e.g. 36.8"
+                  step="0.1"
+                  value={hv.temperature_c}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateHomeVital('temperature_c', e.target.value)}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Oxygen saturation (%)</label>
+                <input
+                  style={{ ...inputStyle, marginBottom: 0 }}
+                  type="number"
+                  inputMode="numeric"
+                  placeholder="e.g. 98"
+                  value={hv.oxygen_saturation}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateHomeVital('oxygen_saturation', e.target.value)}
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Weight (kg)</label>
+                <input
+                  style={{ ...inputStyle, marginBottom: 0 }}
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="e.g. 75.0"
+                  step="0.1"
+                  value={hv.weight_kg}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateHomeVital('weight_kg', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <label style={labelStyle}>Blood glucose (mmol/L)</label>
+            <input
+              style={inputStyle}
+              type="number"
+              inputMode="decimal"
+              placeholder="e.g. 5.4"
+              step="0.1"
+              value={hv.glucose_mmol}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateHomeVital('glucose_mmol', e.target.value)}
+            />
+
+            <label style={labelStyle}>When were these measured?</label>
+            <input
+              style={inputStyle}
+              type="datetime-local"
+              value={hv.measured_at}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateHomeVital('measured_at', e.target.value)}
+            />
+
+            <button
+              onClick={() => setStep(11)}
+              style={{
+                marginTop: '4px',
+                width: '100%',
+                padding: '10px',
+                border: 'none',
+                borderRadius: '8px',
+                color: '#94a3b8',
+                fontSize: '13px',
+                background: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Skip — no home readings available
+            </button>
+          </div>
+        );
+      }
+
+      // ── Step 11: Review & submit
+      case 11:
         return (
           <div>
             <p style={questionTitle}>Review & Submit</p>
@@ -1201,6 +1420,19 @@ const PreVisitScreen: React.FC<Props> = ({ token }) => {
               </p>
             </div>
 
+            {(data.homeVitals.bp_systolic || data.homeVitals.heart_rate || data.homeVitals.weight_kg) && (
+              <div style={card}>
+                <p style={{ color: '#0d9488', fontWeight: 600, marginBottom: '6px' }}>Home vitals</p>
+                <p style={{ color: '#cbd5e1', fontSize: '13px', lineHeight: 1.7 }}>
+                  {data.homeVitals.bp_systolic && data.homeVitals.bp_diastolic
+                    ? `BP ${data.homeVitals.bp_systolic}/${data.homeVitals.bp_diastolic} mmHg · `
+                    : ''}
+                  {data.homeVitals.heart_rate ? `HR ${data.homeVitals.heart_rate} bpm · ` : ''}
+                  {data.homeVitals.weight_kg ? `Wt ${data.homeVitals.weight_kg} kg` : ''}
+                </p>
+              </div>
+            )}
+
             {submitError && (
               <div
                 style={{
@@ -1258,6 +1490,7 @@ const PreVisitScreen: React.FC<Props> = ({ token }) => {
       </h1>
       <ProgressBar />
       <NavBar />
+      {prefillApplied && [1, 4, 5, 7].includes(step) && <PrefillBanner />}
       {renderStep()}
       {step < TOTAL_STEPS && (
         <button

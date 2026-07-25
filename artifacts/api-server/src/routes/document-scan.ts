@@ -10,6 +10,7 @@
 
 import { Router, type Request, type Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
+import { requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
@@ -72,6 +73,7 @@ interface ExtractedData {
 }
 
 router.post('/', async (req: Request, res: Response) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { imageBase64, mimeType } = req.body as ScanRequest;
 
   if (!imageBase64 || !mimeType) {

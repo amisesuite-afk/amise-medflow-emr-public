@@ -318,10 +318,73 @@ router.post('/api/patient/sms-code/verify', async (req, res) => {
   }
 });
 
+// ── POST /api/patient/intake ──────────────────────────────────────────────────
+// Patient submits their pre-consultation intake form.
+// Validates the patient JWT, inserts the row, and fires AI generation
+// server-side — the client needs only one call and receives the intake id.
+router.post('/api/patient/intake', async (req, res) => {
+  const patientId = await getPatientId(req.headers.authorization);
+  if (!patientId) {
+    res.status(401).json({ error: 'Authentication required' });
+    return;
+  }
+
+  const {
+    visit_type, complaint_track, complexity_score, chief_complaint,
+    symptoms, duration_days, severity, prior_treatment, current_meds,
+    allergies_note, referral_reason, additional_notes,
+  } = req.body as Record<string, unknown>;
+
+  try {
+    const { data, error } = await sb()
+      .from('patient_intake')
+      .insert({
+        patient_id:       patientId,
+        visit_type:       visit_type ?? null,
+        complaint_track:  complaint_track ?? null,
+        complexity_score: typeof complexity_score === 'number' ? complexity_score : 0,
+        chief_complaint:  chief_complaint ?? null,
+        symptoms:         Array.isArray(symptoms) && symptoms.length > 0 ? symptoms : null,
+        duration_days:    typeof duration_days === 'number' ? duration_days : null,
+        severity:         typeof severity === 'number' ? severity : null,
+        prior_treatment:  prior_treatment ?? null,
+        current_meds:     current_meds ?? null,
+        allergies_note:   allergies_note ?? null,
+        referral_reason:  referral_reason ?? null,
+        additional_notes: additional_notes ?? null,
+      })
+      .select('id')
+      .single();
+
+    if (error || !data) throw error ?? new Error('Insert failed');
+
+    await audit({
+      action: 'draft',
+      entityType: 'patient_intake',
+      entityId: data.id,
+      payload: { patient_id: patientId, visit_type, complexity_score },
+    });
+
+    // Fire-and-forget — AI generation happens server-side, no second client call needed
+    generateSummary(data.id).catch(err =>
+      logger.error({ err, intakeId: data.id }, '[patient/intake] AI summary generation failed'),
+    );
+
+    logger.info({ intakeId: data.id, patientId }, '[patient/intake] submitted');
+    res.status(201).json({ id: data.id });
+  } catch (err) {
+    logger.error({ err }, '[patient/intake] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 // ── POST /api/patient/intake-summary ─────────────────────────────────────────
-// Generate AI pre-consult summary for a patient_intake row.
-// Called by the patient portal after intake submission (fire-and-forget).
+// Staff-only manual re-trigger for AI summary generation.
+// AI is fired automatically by POST /api/patient/intake.
+// This endpoint exists as a fallback when generation failed or needs re-running.
 router.post('/api/patient/intake-summary', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
   const { intake_id } = (req.body ?? {}) as { intake_id?: string };
 
   if (!intake_id) {
@@ -329,9 +392,7 @@ router.post('/api/patient/intake-summary', async (req, res) => {
     return;
   }
 
-  // Respond immediately — generation runs async
   res.json({ status: 'generating' });
-
   void generateSummary(intake_id);
 });
 

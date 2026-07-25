@@ -8,7 +8,7 @@ import UploadScreen from './screens/UploadScreen';
 import VoiceScreen from './screens/VoiceScreen';
 import LoginScreen from './screens/LoginScreen';
 import ChangePasswordScreen from './screens/ChangePasswordScreen';
-import { getStoredSession, saveSession, clearSession, getPatientProfile } from './api';
+import { getStoredSession, saveSession, clearSession, getPatientProfile, exchangeMagicLink } from './api';
 import type { PatientSession, PatientProfile } from './api';
 
 // ── URL param helpers ─────────────────────────────────────────────────────────
@@ -18,6 +18,7 @@ function getUrlParams() {
   return {
     email: p.get('email') ?? '',
     pw: p.get('pw') ?? '',
+    token: p.get('token') ?? '',
   };
 }
 
@@ -25,6 +26,7 @@ function stripUrlCredentials() {
   const url = new URL(window.location.href);
   url.searchParams.delete('email');
   url.searchParams.delete('pw');
+  url.searchParams.delete('token');
   window.history.replaceState({}, '', url.toString());
 }
 
@@ -37,6 +39,27 @@ const App: React.FC = () => {
   const [profile, setProfile] = useState<PatientProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>('passport');
+  const [isExchanging, setIsExchanging] = useState(!!urlParams.token);
+  const [exchangeError, setExchangeError] = useState<string | null>(null);
+
+  // Exchange magic link token on first render if present in URL
+  useEffect(() => {
+    if (!urlParams.token) return;
+    setIsExchanging(true);
+    exchangeMagicLink(urlParams.token)
+      .then(s => {
+        saveSession(s);
+        setSession(s);
+        setActiveTab('previsit');
+      })
+      .catch(err => {
+        setExchangeError(err instanceof Error ? err.message : 'This link has expired or already been used.');
+      })
+      .finally(() => {
+        stripUrlCredentials();
+        setIsExchanging(false);
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Refresh profile whenever we have a session
   useEffect(() => {
@@ -71,6 +94,32 @@ const App: React.FC = () => {
     clearSession();
     setSession(null);
     setProfile(null);
+  }
+
+  // ── Magic link in progress ───────────────────────────────────────────────
+
+  if (isExchanging) {
+    return (
+      <div style={{ minHeight: '100dvh', backgroundColor: '#060e1a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ fontSize: '32px' }}>⏳</div>
+        <p style={{ color: '#94a3b8', fontSize: '15px' }}>Signing you in…</p>
+      </div>
+    );
+  }
+
+  if (exchangeError) {
+    return (
+      <div style={{ minHeight: '100dvh', backgroundColor: '#060e1a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', padding: '24px' }}>
+        <div style={{ fontSize: '32px' }}>⚠️</div>
+        <p style={{ color: '#f87171', fontSize: '15px', textAlign: 'center', maxWidth: '320px' }}>{exchangeError}</p>
+        <button
+          onClick={() => setExchangeError(null)}
+          style={{ padding: '12px 24px', borderRadius: '10px', border: 'none', backgroundColor: '#0d9488', color: '#fff', fontSize: '15px', cursor: 'pointer' }}
+        >
+          Go to login
+        </button>
+      </div>
+    );
   }
 
   // ── No session → Login ───────────────────────────────────────────────────

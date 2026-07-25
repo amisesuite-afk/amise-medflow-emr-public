@@ -51,7 +51,9 @@ export function requireCronSecret(req: any, res: any): boolean {
     res.status(503).json({ error: 'CRON_SECRET not configured' });
     return false;
   }
-  const provided = req.headers['x-cron-secret'] || req.query?.secret;
+  // Header-only: never accept the secret as a query parameter because URL
+  // query strings appear in access logs, proxy logs, and browser history.
+  const provided = req.headers['x-cron-secret'];
   if (provided !== secret) {
     res.status(401).json({ error: 'Unauthorized' });
     return false;
@@ -63,25 +65,29 @@ export type AuditAction =
   | 'classify' | 'triage' | 'draft' | 'send' | 'book' | 'notify'
   | 'remind' | 'escalate' | 'error' | 'skip'
   | 'portal_invite_sent' | 'extract' | 'change_request' | 'auto_cancel'
-  | 'lab_alert_sent';
+  | 'lab_alert_sent' | 'sign' | 'escalate';
 
 export async function audit(args: {
   action: AuditAction;
   entityType?: string;
   entityId?: string;
+  patientId?: string;
+  userEmail?: string;
   payload?: Record<string, unknown>;
 }): Promise<void> {
   try {
-    // audit_logs columns: table_name (text), record_id (uuid), new_values (jsonb)
-    // record_id is uuid — only set it when entityId looks like a valid UUID
     const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const recordId = args.entityId && uuidRe.test(args.entityId) ? args.entityId : null;
+    const recordId  = args.entityId  && uuidRe.test(args.entityId)  ? args.entityId  : null;
+    const patientId = args.patientId && uuidRe.test(args.patientId) ? args.patientId : null;
     await sb().from('audit_logs').insert({
-      action: args.action,
-      table_name: args.entityType ?? null,
-      record_id: recordId,
-      new_values: args.payload ?? null,
-      mode: process.env.MODE,
+      action:        args.action,
+      table_name:    args.entityType ?? null,
+      resource_type: args.entityType ?? null,
+      record_id:     recordId,
+      patient_id:    patientId,
+      user_email:    args.userEmail ?? null,
+      new_values:    args.payload ?? null,
+      mode:          process.env.MODE,
     });
   } catch (err) {
     logger.error({ err }, '[audit] failed');

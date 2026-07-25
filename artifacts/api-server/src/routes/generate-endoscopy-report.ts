@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
+import { requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
@@ -43,6 +44,7 @@ Style requirements:
 - 300–500 words for the procedure description section`;
 
 router.post('/', async (req: Request, res: Response) => {
+  if (!(await requireStaffAuth(req, res))) return;
   const { patient, procedureType, fields, date } = req.body as {
     patient: { name: string; age: string; sex: string; dob: string };
     procedureType: string;

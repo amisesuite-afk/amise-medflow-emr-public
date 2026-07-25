@@ -22,7 +22,7 @@
 
 import { Router, type Request, type Response } from 'express';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { getSupabaseAdmin, audit } from '../lib/supabase.js';
+import { getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
 import { sendSms, smsBodyStaffNewBooking, toE164 } from '../lib/sms.js';
 import Anthropic from '@anthropic-ai/sdk';
@@ -91,8 +91,8 @@ function extractMessage(req: Request, provider: Provider): InboundWA | null {
 function verifyMeta(req: Request): boolean {
   const secret = process.env.WHATSAPP_APP_SECRET;
   if (!secret) {
-    logger.warn('[whatsapp/inbound] WHATSAPP_APP_SECRET not set — skipping Meta signature check');
-    return true;
+    logger.error('[whatsapp/inbound] WHATSAPP_APP_SECRET not set — rejecting Meta webhook (fail-closed)');
+    return false;
   }
   const sig = req.headers['x-hub-signature-256'] as string | undefined;
   if (!sig) return false;
@@ -108,7 +108,10 @@ function verifyMeta(req: Request): boolean {
 async function verifyTwilio(req: Request): Promise<boolean> {
   const sig   = req.headers['x-twilio-signature'] as string | undefined;
   const token = process.env.TWILIO_AUTH_TOKEN;
-  if (!sig || !token) return true; // skip when not configured
+  if (!sig || !token) {
+    logger.error('[whatsapp/twilio] signature or TWILIO_AUTH_TOKEN missing — rejecting (fail-closed)');
+    return false;
+  }
   try {
     const { validateRequest } = await import('twilio');
     const proto   = (req.headers['x-forwarded-proto'] as string | undefined) ?? 'https';
@@ -119,7 +122,10 @@ async function verifyTwilio(req: Request): Promise<boolean> {
 
 function verifyHmac(req: Request): boolean {
   const secret = process.env.WHATSAPP_APP_SECRET;
-  if (!secret) return true;
+  if (!secret) {
+    logger.error('[whatsapp/meta] WHATSAPP_APP_SECRET not set — rejecting webhook (fail-closed)');
+    return false;
+  }
   const hubSig = req.headers['x-hub-signature-256'] as string | undefined;
   if (!hubSig) return false;
   try {
@@ -438,18 +444,9 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
 
 // ── PATCH /api/whatsapp/:id/reply ─────────────────────────────────────────────
 // Staff approves/edits the AI draft and sends it to the patient.
-// Auth: CRON_SECRET header (same pattern as cron endpoints) — replace with
-//       session auth once the dashboard integrates the reply button.
 
 router.patch('/api/whatsapp/:id/reply', async (req: Request, res: Response) => {
-  const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const provided = req.headers['x-cron-secret'] as string | undefined;
-    if (!provided || provided !== cronSecret) {
-      res.status(401).json({ error: 'Unauthorised' });
-      return;
-    }
-  }
+  if (!(await requireStaffAuth(req, res))) return;
 
   const { id } = req.params;
   const { reply_text } = req.body as { reply_text?: string };
@@ -598,7 +595,8 @@ router.post('/api/whatsapp/meta', async (req, res) => {
       return;
     }
   } else {
-    logger.warn('[whatsapp/meta] WHATSAPP_APP_SECRET not set — skipping signature validation');
+    logger.error('[whatsapp/meta] WHATSAPP_APP_SECRET not set — dropping webhook (fail-closed)');
+    return;
   }
 
   const payload = req.body as MetaWebhookPayload;

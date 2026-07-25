@@ -82,10 +82,12 @@ import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
-import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
+import ConsultContextBanner from '@/components/ConsultContextBanner';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
+import OpenTasksBanner from '@/components/OpenTasksBanner';
+import SyncStatusIndicator from '@/components/SyncStatusIndicator';
 import VoiceDictation from '@/components/VoiceDictation';
 import AmbientConsultation from '@/components/AmbientConsultation';
 import { getMatrix } from '@/lib/cc-matrices';
@@ -270,16 +272,6 @@ function acuityClass(a: string) {
   return a === 'urgent' ? 'urgent' : a === 'priority' ? 'priority' : a === 'review' ? 'review' : '';
 }
 
-function StubPanel({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="stub-panel">
-      <div className="stub-panel__icon">🚧</div>
-      <div className="stub-panel__title">{title}</div>
-      <div className="stub-panel__desc">{description}</div>
-    </div>
-  );
-}
-
 export default function HomePage() {
   const { profile, signOut } = useAuth();
   const {
@@ -302,6 +294,7 @@ export default function HomePage() {
     encounterId,
     saveStatus,
     lastSaveError,
+    syncStatus,
     freeText,
     surgicalHistory, surgicalNotes,
     medications, medicationsText,
@@ -331,11 +324,14 @@ export default function HomePage() {
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
   const [headerVisitMode, setHeaderVisitMode] = useState<'new' | 'followup'>('new');
   const [wizardSkipped, setWizardSkipped] = useState(false);
+  const [vtGateCleared, setVtGateCleared] = useState(false);
   const [guidedMode, setGuidedMode] = useState(false);
   const [ambientMode, setAmbientMode] = useState(true);
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const [contextOpen, setContextOpen] = useState(false);
   const prevPatientIdRef = useRef<string | null>(null);
   const acuityRef = useRef<HTMLDivElement>(null);
+  const contextPanelRef = useRef<HTMLDivElement>(null);
 
   // Close acuity breakdown on outside click
   useEffect(() => {
@@ -349,13 +345,26 @@ export default function HomePage() {
     return () => document.removeEventListener('mousedown', handle);
   }, [showAcuityBreakdown]);
 
-  // Reset wizard + guided mode whenever a different patient is loaded
+  // Close context popover on outside click
+  useEffect(() => {
+    if (!contextOpen) return;
+    function handle(e: MouseEvent) {
+      if (contextPanelRef.current && !contextPanelRef.current.contains(e.target as Node)) {
+        setContextOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handle);
+    return () => document.removeEventListener('mousedown', handle);
+  }, [contextOpen]);
+
+  // Go directly to AmbientConsultation on patient load — no blocking gate or wizard
   useEffect(() => {
     if (patientId !== prevPatientIdRef.current) {
       prevPatientIdRef.current = patientId;
-      if (patientId) { setWizardSkipped(false); setGuidedMode(false); setAmbientMode(true); }
+      if (patientId) { setWizardSkipped(true); setGuidedMode(false); setAmbientMode(true); setVtGateCleared(true); }
     }
   }, [patientId]);
+
 
   const userRole = profile?.role ?? 'front_desk';
   const { activePathway, matchedPathways } = usePathway();
@@ -598,27 +607,111 @@ export default function HomePage() {
   if (age) metaParts.push(`Age ${age}`);
   if (sex && sex !== 'unknown') metaParts.push(sex);
 
-  const sidebarWidth = zenMode ? 0 : (collapsed || topSection === 'consultation') ? 52 : 182;
+  // Ambient consultation = any active consultation with a patient loaded.
+  // wizardSkipped / ambientMode no longer gate this — the wizard and visit-type
+  // gate are gone; patient loaded + consultation section = ambient mode, always.
+  const consultAmbient = topSection === 'consultation' && (!!patientId || !!patientName);
+  const allergyList = allergies.split(',').map((a: string) => a.trim()).filter(Boolean);
+  const ccLabel = activeCcKey ? (getMatrix(activeCcKey)?.name ?? null)
+    : (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
+
+  const sidebarWidth = zenMode ? 0 : consultAmbient ? 52 : (collapsed || topSection === 'consultation') ? 52 : 182;
 
   if (userRole === 'nurse') return <Suspense fallback={null}><ErrorBoundary><NursePreVisitView /></ErrorBoundary></Suspense>;
 
   return (
     <div
       className="app"
-      style={{ gridTemplateColumns: `${sidebarWidth}px 1fr`, transition: 'grid-template-columns 200ms ease' }}
+      style={{
+        gridTemplateColumns: `${sidebarWidth}px 1fr`,
+        gridTemplateRows: consultAmbient ? '48px 1fr' : 'var(--header-h) 1fr',
+        transition: 'grid-template-columns 200ms ease, grid-template-rows 200ms ease',
+      }}
     >
       {/* ── Sticky header ── */}
-      <header className="app-header">
-        <div className="header-brand" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <header className="app-header" style={consultAmbient ? { padding: '0 12px', gap: 10 } : {}}>
+
+        {/* ── Ambient consultation: slim identity strip ── */}
+        {consultAmbient && (
+          <>
+            {/* Patient name */}
+            <span style={{ fontSize: 13, fontWeight: 800, color: '#f1f5f9', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 160 }}>
+              {patientName.trim() || 'Patient'}
+            </span>
+            {/* MRN */}
+            {mrNumber && (
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', background: 'rgba(13,148,136,0.15)', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                {mrNumber}
+              </span>
+            )}
+            {/* Age / sex */}
+            {(age || (sex && sex !== 'unknown')) && (
+              <span style={{ fontSize: 10, color: '#94a3b8', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                {[age && `${age}y`, sex && sex !== 'unknown' && sex].filter(Boolean).join(' ')}
+              </span>
+            )}
+            {/* Allergy alert */}
+            {allergyList.length > 0 ? (
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#fbbf24', background: '#422006', border: '1px solid #78350f', borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                ⚠ {allergyList[0]}{allergyList.length > 1 ? ` +${allergyList.length - 1}` : ''}
+              </span>
+            ) : patientName ? (
+              <span style={{ fontSize: 10, color: '#475569', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
+            ) : null}
+            {/* Visit type pill */}
+            {ctxVisitType && (() => {
+              const vt = VISIT_TYPES.find(v => v.id === ctxVisitType);
+              return vt ? (
+                <span style={{ fontSize: 10, fontWeight: 700, color: vt.color, background: `${vt.color}22`, border: `1px solid ${vt.color}44`, borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  {vt.icon} {vt.label}
+                </span>
+              ) : null;
+            })()}
+            {/* CC label */}
+            {ccLabel && (
+              <span style={{ fontSize: 10, color: '#cbd5e1', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 7px', whiteSpace: 'nowrap', flexShrink: 0, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {ccLabel}
+              </span>
+            )}
+            <span style={{ flex: 1 }} />
+            {/* Sync status indicator */}
+            <SyncStatusIndicator saveStatus={saveStatus} />
+            {/* Encounter status + close */}
+            {encounterId ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm('Mark this encounter as complete and close it?')) {
+                    setTopSection('finaldoc');
+                  }
+                }}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, border: '1px solid rgba(220,38,38,0.4)', background: 'rgba(220,38,38,0.1)', color: '#fca5a5', fontSize: 10, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+                title="Close this encounter"
+              >● In progress — Close</button>
+            ) : null}
+            {/* AI Consultant */}
+            {hasRole(userRole, 'doctor') && (
+              <button
+                type="button"
+                onClick={() => setShowAiPanel(p => !p)}
+                style={{ padding: '3px 8px', borderRadius: 6, border: 'none', cursor: 'pointer', background: showAiPanel ? '#312e81' : 'rgba(13,148,136,0.2)', color: '#0d9488', fontSize: 12, fontWeight: 700, flexShrink: 0 }}
+                title="AI Consultant"
+              >🧠</button>
+            )}
+          </>
+        )}
+
+        {!consultAmbient && <div className="header-brand" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <img src="/amise-logo.jpg" alt="" style={{ height: 30, width: 'auto', objectFit: 'contain' }} />
           Amise Medical
-        </div>
-        {DEMO_MODE
+        </div>}
+        {!consultAmbient && DEMO_MODE
           ? <span className="proto-pill" style={{ background: 'rgba(251,191,36,.15)', border: '1px solid rgba(251,191,36,.35)', color: '#fbbf24' }}>⚗ DEMO MODE — local trial only</span>
           : null
         }
+        {!consultAmbient && topSection !== 'finaldoc' && (
         <div className="header-patient" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {patientPhoto && (
+          {patientPhoto && topSection !== 'consultation' && (
             <img
               src={patientPhoto}
               alt=""
@@ -627,12 +720,18 @@ export default function HomePage() {
           )}
           <div>
             <span className="header-name">{patientLabel}</span>
-            {metaParts.length > 0 && <span className="header-meta">{metaParts.join(' · ')}</span>}
+            {(mrNumber || metaParts.length > 0) && (
+              <span className="header-meta">
+                {[mrNumber || null, ...metaParts].filter(Boolean).join(' · ')}
+              </span>
+            )}
           </div>
         </div>
+        )}
+        {!consultAmbient && (
         <div className="header-right">
-          {/* Encounter mode pill — hidden in consultation (EncounterContextPicker handles it) */}
-          {topSection !== 'consultation' && (
+          {/* Encounter mode pill — hidden in consultation and finaldoc */}
+          {topSection !== 'consultation' && topSection !== 'finaldoc' && (
           <div className="site-pill" aria-label="Encounter mode">
             {(['outpatient', 'inpatient'] as const).map(mode => (
               <button
@@ -653,8 +752,8 @@ export default function HomePage() {
           </div>
           )}
 
-          {/* Site picker — outpatient only; inpatient is always Tapion */}
-          {topSection !== 'consultation' && encounterMode === 'outpatient' && (
+          {/* Site picker — outpatient only; inpatient is always Tapion; hidden in finaldoc */}
+          {topSection !== 'consultation' && topSection !== 'finaldoc' && encounterMode === 'outpatient' && (
           <div className="site-pill" aria-label="Clinic site">
             {SITE_CODES.map(code => (
               <button
@@ -670,10 +769,10 @@ export default function HomePage() {
           )}
 
 
-          <ResultsAlertBadge patientId={patientId ?? undefined} />
+          {topSection !== 'finaldoc' && topSection !== 'consultation' && <ResultsAlertBadge patientId={patientId ?? undefined} />}
 
-          {/* Encounter status badge — red = open, green = closed/none */}
-          {patientId && (
+          {/* Encounter status badge — hidden on summary and consultation pages */}
+          {patientId && topSection !== 'finaldoc' && topSection !== 'consultation' && (
             <div
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 5,
@@ -712,8 +811,8 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Visit type dropdown — header */}
-          <div style={{ position: 'relative' }}>
+          {/* Visit type dropdown — header; hidden in finaldoc */}
+          {topSection !== 'finaldoc' && <div style={{ position: 'relative' }}>
             <select
               value={ctxVisitType ?? ''}
               onChange={e => {
@@ -731,6 +830,7 @@ export default function HomePage() {
                 } else {
                   setEncounterType('surgical_consult');
                 }
+                setVtGateCleared(true);
               }}
               aria-label="Visit type"
               style={{
@@ -748,10 +848,10 @@ export default function HomePage() {
                 </option>
               ))}
             </select>
-          </div>
+          </div>}
 
-          {/* Acuity badge — clickable, shows score breakdown */}
-          <div ref={acuityRef} style={{ position: 'relative' }}>
+          {/* Acuity badge — hidden on summary and consultation */}
+          {topSection !== 'finaldoc' && topSection !== 'consultation' && <div ref={acuityRef} style={{ position: 'relative' }}>
             <button
               type="button"
               className={`acuity-badge ${acuityClass(triageResult.acuity)}`}
@@ -798,9 +898,9 @@ export default function HomePage() {
                 </div>
               </div>
             )}
-          </div>
+          </div>}
 
-          {triageResult.isPrimarilySurgical && (
+          {triageResult.isPrimarilySurgical && topSection !== 'finaldoc' && topSection !== 'consultation' && (
             <div
               className="surgical-badge"
               title={`Surgical pathway match: ${triageResult.surgicalMatches.map(m => m.label).join(', ')}`}
@@ -811,8 +911,8 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* AI Registrar button — header, doctor-only */}
-          {hasRole(userRole, 'doctor') && (
+          {/* AI Registrar button — header, doctor-only; hidden on summary and consultation */}
+          {hasRole(userRole, 'doctor') && topSection !== 'finaldoc' && topSection !== 'consultation' && (
             <button
               type="button"
               onClick={() => setShowAiPanel(p => !p)}
@@ -838,11 +938,13 @@ export default function HomePage() {
             </div>
           )}
         </div>
+        )}
       </header>
 
       {/* ── Collapsible sidebar — auto-collapsed (icon-only) during active consultation ── */}
       <NavSidebar
         collapsed={collapsed || zenMode || topSection === 'consultation'}
+        consultAmbient={consultAmbient}
         onToggle={() => zenMode ? setZenMode(false) : setCollapsed(c => !c)}
         topSection={topSection}
         onTopSection={s => { setTopSection(s); setZenMode(false); }}
@@ -862,7 +964,7 @@ export default function HomePage() {
       />
 
       {/* ── Main content ── */}
-      <main ref={swipeRef} className="main-content">
+      <main id="main-content" ref={swipeRef} className="main-content">
         {/* Zen mode exit chip */}
         {zenMode && (
           <button
@@ -976,8 +1078,8 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Patient context banner — sticky at top of consultation */}
-        {topSection === 'consultation' && (() => {
+        {/* Patient context banner — sticky at top of consultation (hidden in ambient mode — slim header covers it) */}
+        {topSection === 'consultation' && !consultAmbient && (() => {
           const allergyList = allergies.split(',').map(a => a.trim()).filter(Boolean);
           const acuityColors: Record<string, { bg: string; text: string }> = {
             urgent:   { bg: '#7f1d1d', text: '#fca5a5' },
@@ -1056,37 +1158,16 @@ export default function HomePage() {
         {topSection === 'consultation' && <CriticalResultAlert />}
 
         {/* No-patient guard */}
-        {topSection === 'consultation' && !patientId && (
+        {topSection === 'consultation' && !patientId && !patientName && (
           <div style={{ background: '#fef9c3', border: '1.5px solid #fbbf24', borderRadius: 10, padding: '14px 18px', color: '#92400e', fontSize: 14, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 20 }}>👤</span>
             No patient loaded — check in a patient first.
           </div>
         )}
 
-        {/* Encounter start wizard — new consult only; suppressed for typed visit flows */}
-        {topSection === 'consultation' && !!patientId && !activeCcKey && !wizardSkipped &&
-         (!ctxVisitType || ctxVisitType === 'new_consult') && (
-          <EncounterStartWizard
-            onComplete={() => setWizardSkipped(true)}
-            onSkip={() => setWizardSkipped(true)}
-          />
-        )}
 
-        {/* Visit type opening panel — focused intake for follow-up, post-op, endoscopy, etc. */}
-        {topSection === 'consultation' && !!patientId && !wizardSkipped &&
-         ctxVisitType && ctxVisitType !== 'new_consult' && (
-          <VisitTypeOpeningPanel
-            onComplete={() => {
-              const startTab = VISIT_TYPE_START[ctxVisitType];
-              if (startTab) setActiveSection(startTab);
-              setWizardSkipped(true);
-            }}
-            onGoToTriage={() => { setActiveSection('triage'); setWizardSkipped(true); }}
-          />
-        )}
-
-        {/* Ambient consultation — voice-first default after wizard */}
-        {topSection === 'consultation' && !!patientId && wizardSkipped && ambientMode && (
+        {/* Ambient consultation — renders whenever a patient is loaded in consultation */}
+        {topSection === 'consultation' && (!!patientId || !!patientName) && (
           <AmbientConsultation
             visitType={ctxVisitType ?? headerVisitMode}
             onDetailedMode={() => { setAmbientMode(false); setGuidedMode(true); }}
@@ -1094,14 +1175,115 @@ export default function HomePage() {
           />
         )}
 
-        {/* Context strips — hidden in guided/ambient mode to eliminate noise */}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <EncounterContextPicker />}
-        {topSection === 'consultation' && !!patientId && !ambientMode && !guidedMode && <PreviousVisitStrip />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <ChiefComplaintStrip />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && !!activeCcKey && <ClinicalWorkflowBar />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <ProblemListStrip />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <ClinicalPromptsStrip />}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && <FollowUpQueueStrip />}
+        {/* Compact context bar — single 40 px strip showing key at-a-glance info;
+             full detail panels drop down on demand via "Context ▼" button */}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && (() => {
+          const allergyList = allergies.split(',').map(a => a.trim()).filter(Boolean);
+          const vtMatch = ctxVisitType && ctxVisitType !== 'new_consult'
+            ? VISIT_TYPES.find(v => v.id === ctxVisitType) : null;
+          const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
+          const ccLabel = ccMatrix?.name ?? (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
+
+          return (
+            <div ref={contextPanelRef} style={{ position: 'relative' }}>
+              {/* ── Compact info bar ── */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'nowrap',
+                padding: '0 14px', height: 42,
+                background: 'var(--card)', border: '1px solid var(--line)',
+                borderRadius: 10, overflow: 'hidden',
+              }}>
+                {/* Visit type badge */}
+                {vtMatch && (
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, letterSpacing: '.03em',
+                    color: vtMatch.color, background: `${vtMatch.color}18`,
+                    border: `1px solid ${vtMatch.color}44`,
+                    borderRadius: 5, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0,
+                  }}>
+                    {vtMatch.icon} {vtMatch.label}
+                  </span>
+                )}
+
+                {/* Chief complaint / symptoms */}
+                {ccLabel && (
+                  <>
+                    {vtMatch && <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>}
+                    <span style={{
+                      fontSize: 12, fontWeight: 600, color: 'var(--ink)',
+                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220,
+                    }}>
+                      {ccLabel}
+                    </span>
+                  </>
+                )}
+
+                <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>
+
+                {/* Allergies */}
+                {allergyList.length > 0 ? (
+                  <span style={{
+                    fontSize: 11, fontWeight: 700, color: '#b45309',
+                    background: '#fffbeb', border: '1px solid #fcd34d',
+                    borderRadius: 4, padding: '2px 7px', whiteSpace: 'nowrap', flexShrink: 0,
+                  }}>
+                    ⚠ {allergyList.slice(0, 2).join(', ')}{allergyList.length > 2 ? ` +${allergyList.length - 2}` : ''}
+                  </span>
+                ) : (
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
+                )}
+
+                {/* PMH count */}
+                {comorbidities.length > 0 && (
+                  <>
+                    <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                      {comorbidities.length} PMH
+                    </span>
+                  </>
+                )}
+
+                <span style={{ flex: 1, minWidth: 0 }} />
+
+                {/* Context toggle */}
+                <button
+                  type="button"
+                  onClick={() => setContextOpen(o => !o)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    padding: '4px 11px', borderRadius: 6, cursor: 'pointer',
+                    border: `1px solid ${contextOpen ? 'var(--accent)' : 'var(--line)'}`,
+                    background: contextOpen ? 'var(--accent)' : 'transparent',
+                    color: contextOpen ? '#fff' : 'var(--muted)',
+                    fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0,
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  Context <span style={{ fontSize: 8, marginLeft: 2 }}>{contextOpen ? '▲' : '▼'}</span>
+                </button>
+              </div>
+
+              {/* ── Full context popover ── */}
+              {contextOpen && (
+                <div style={{
+                  position: 'absolute', top: 'calc(100% + 5px)', left: 0, right: 0,
+                  zIndex: 200, background: 'var(--card)',
+                  border: '1px solid var(--line)', borderRadius: 12,
+                  boxShadow: '0 8px 32px rgba(0,0,0,.14)',
+                  display: 'flex', flexDirection: 'column',
+                  maxHeight: '70vh', overflowY: 'auto',
+                }}>
+                  <EncounterContextPicker />
+                  {!!patientId && <PreviousVisitStrip />}
+                  <OpenTasksBanner patientId={patientId} encounterId={encounterId} />
+                  <ProblemListStrip />
+                  <ClinicalPromptsStrip />
+                  <FollowUpQueueStrip />
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
 
         {/* Consultation navigation — guided (one step at a time) or full tab strip */}
@@ -1110,6 +1292,36 @@ export default function HomePage() {
           const total = consultTabs.length;
           const prevTab = curIdx > 0 ? consultTabs[curIdx - 1] : null;
           const nextTab = curIdx < total - 1 ? consultTabs[curIdx + 1] : null;
+
+          // ── Algorithm-guided mode: CC drives the workflow; no tab menu ──────────
+          if (activeCcKey) {
+            return (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0 6px', alignItems: 'center', gap: 8 }}>
+                {prevTab ? (
+                  <button type="button" onClick={() => setActiveSection(prevTab.id)}
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)' }}>
+                    ← {prevTab.label}
+                  </button>
+                ) : <span />}
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <button type="button" onClick={() => setAmbientMode(true)}
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
+                    🎙 Ambient
+                  </button>
+                  {nextTab && (
+                    <button type="button" onClick={() => setActiveSection(nextTab.id)}
+                      style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#0d9488', color: '#fff' }}>
+                      {nextTab.label} →
+                    </button>
+                  )}
+                  <button type="button" onClick={() => setTopSection('finaldoc')}
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
+                    📋 Summary
+                  </button>
+                </div>
+              </div>
+            );
+          }
 
           if (guidedMode) {
             return (
@@ -1154,16 +1366,19 @@ export default function HomePage() {
                     />
                   </div>
                 )}
-                {/* Progress dots — tap any to jump */}
-                <div style={{ display: 'flex', gap: 5, padding: '8px 0 10px', alignItems: 'center' }}>
+                {/* Progress dots — tap or keyboard-navigate to any section */}
+                <div role="tablist" aria-label="Consultation sections" style={{ display: 'flex', gap: 5, padding: '8px 0 10px', alignItems: 'center' }}>
                   {consultTabs.map((t, i) => (
-                    <div
+                    <button
                       key={t.id}
-                      title={t.label}
+                      type="button"
+                      role="tab"
+                      aria-selected={i === curIdx}
+                      aria-label={t.label}
                       onClick={() => setActiveSection(t.id)}
                       style={{
                         width: i === curIdx ? 28 : 8, height: 8, borderRadius: 4, cursor: 'pointer',
-                        transition: 'all 0.2s ease',
+                        transition: 'all 0.2s ease', border: 'none', padding: 0,
                         background: i === curIdx ? '#0d9488'
                           : sectionCompletion[t.id as Section] ? '#6ee7b7'
                           : '#e2e8f0',
@@ -1198,11 +1413,15 @@ export default function HomePage() {
           // Full tab strip
           return (
             <>
-              <div className="consult-tabstrip">
+              <div className="consult-tabstrip" role="tablist" aria-label="Consultation sections">
                 {consultTabs.map(tab => (
                   <button
                     key={tab.id}
                     type="button"
+                    role="tab"
+                    aria-selected={activeSection === tab.id}
+                    aria-controls={`tabpanel-${tab.id}`}
+                    id={`tab-${tab.id}`}
                     className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
                     onClick={() => setActiveSection(tab.id)}
                   >
@@ -1210,30 +1429,27 @@ export default function HomePage() {
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0 8px', gap: 8, alignItems: 'center' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0 8px', gap: 8, alignItems: 'center' }}>
                 {prevTab ? (
                   <button type="button" onClick={() => setActiveSection(prevTab.id)}
-                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1px solid #d1d5db', background: '#f9fafb', color: '#374151' }}>
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)' }}>
                     ← {prevTab.label}
                   </button>
                 ) : <span />}
-                <span style={{ fontSize: 11, color: '#9ca3af' }}>
-                  {curIdx >= 0 ? `${curIdx + 1} / ${consultTabs.length}` : ''}
-                </span>
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                   <button type="button" onClick={() => setAmbientMode(true)}
-                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
                     🎙 Ambient
                   </button>
                   {nextTab && (
                     <button type="button" onClick={() => setActiveSection(nextTab.id)}
-                      style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#1F7A8C', color: '#fff' }}>
+                      style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#1F7A8C', color: '#fff' }}>
                       {nextTab.label} →
                     </button>
                   )}
                   <button type="button" onClick={() => setTopSection('finaldoc')}
                     title="Open encounter summary, export, and sign-off"
-                    style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
+                    style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1.5px solid #0d9488', background: 'transparent', color: '#0d9488' }}>
                     📋 Summary
                   </button>
                 </div>
@@ -1242,8 +1458,12 @@ export default function HomePage() {
           );
         })()}
 
+        {/* Algorithm workflow guide — always visible when CC is active */}
+        {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ClinicalWorkflowBar />}
+        {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ConsultContextBanner />}
+
         {/* Clinical sections */}
-        {topSection === 'intake'        && <IntakeTab />}
+        {topSection === 'intake'        && vtGateCleared && <IntakeTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'hpi'         && <HpiTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'triage'      && <TriageTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'pmh'         && <PmhTab />}
@@ -1254,13 +1474,16 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'toxic'       && <ToxicHabitsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'scales'      && <ScalesTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'ros'         && <RosTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'examination'        &&
-          (hasRole(userRole, 'nurse') || (hasRole(userRole, 'doctor') && ['breast','diabetic_foot','follow_up','post_op','urgent'].includes(ctxVisitType))) &&
+        {topSection === 'consultation' && !ambientMode && activeSection === 'examination' &&
+          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) &&
           <ExaminationTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications'    && hasRole(userRole, 'nurse')  && <SurgicalClassificationsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'investigations' && hasRole(userRole, 'nurse')  && <InvestigationsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'radiology'     && hasRole(userRole, 'nurse')  && <RadiologyTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'attachments'   && hasRole(userRole, 'nurse')  && <AttachmentsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications' && hasRole(userRole, 'nurse') && <SurgicalClassificationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'investigations' &&
+          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <InvestigationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'radiology' &&
+          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <RadiologyTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'attachments' &&
+          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <AttachmentsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && hasRole(userRole, 'doctor') && <ProceduresTab />}
@@ -1316,7 +1539,7 @@ export default function HomePage() {
         </Suspense>
       </main>
 
-      <FloatingActions />
+      {!consultAmbient && <FloatingActions />}
 
       {/* AI slide-in panel — triggered from header button */}
       {hasRole(userRole, 'doctor') && showAiPanel && (

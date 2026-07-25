@@ -4,7 +4,7 @@ import { sendSms, smsBody48h, smsBodyPostVisit, smsBodyStaffEscalation, getPrepI
 import { sendOrDraft } from '../lib/gmail.js';
 import { draftReply } from '../lib/claude.js';
 import { formatSlotForDisplay } from '../lib/calendar.js';
-import { logger } from '../lib/logger.js';
+import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
 
@@ -47,31 +47,45 @@ router.post('/api/cron/reminders', async (req, res) => {
       };
       const slotDisplay = formatSlotForDisplay(slot as any);
 
-      // 48h SMS reminder — send once (reminder_sent_at IS NULL)
+      // 48h SMS reminder — claim the row atomically before sending to prevent
+      // double-send when two cron instances overlap (DB-level CAS).
       if (hoursUntil <= 48 && hoursUntil > 2 && !appt.reminder_sent_at && appt.patient_phone) {
-        const prepInstructions = getPrepInstructions(appt.appointment_type);
-        const body = smsBody48h({ ...slotDisplay, prepInstructions });
-        const result = await sendSms({ to: appt.patient_phone, body });
-        if (result.action === 'sent' || result.action === 'skipped') {
-          await sb().from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', appt.id);
-          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'sms_48h' } });
+        const { data: claimed } = await sb()
+          .from('appointment_requests')
+          .update({ reminder_sent_at: now.toISOString() })
+          .eq('id', appt.id)
+          .is('reminder_sent_at', null)  // only update if still unclaimed
+          .select('id');
+        if (claimed && claimed.length > 0) {
+          const prepInstructions = getPrepInstructions(appt.appointment_type);
+          const body = smsBody48h({ ...slotDisplay, prepInstructions });
+          const result = await sendSms({ to: appt.patient_phone, body });
+          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'sms_48h', sms_result: result.action } });
           results.push({ id: appt.id, action: 'sms_48h_sent' });
         }
+        // claimed.length === 0 means another instance already sent it — skip silently
       }
 
-      // 24h email reminder with prep instructions — send once (prep_sms_sent IS false/null).
+      // 24h email reminder — claim atomically via prep_sms_sent flag.
       // NOTE: patient_ack_sent_at is set during the booking-ack SMS flow, so it cannot
       // be used here — it would silently suppress the email for every normal booking.
       if (hoursUntil <= 24 && hoursUntil > 1 && !appt.prep_sms_sent && appt.patient_email && !appt.patient_email.endsWith('@noreply.amise.internal')) {
-        const draft = await draftReply({ template: 'confirmation', patientFirstName: firstName, bookingDetails: slotDisplay });
-        const prepInstructions = getPrepInstructions(appt.appointment_type);
-        const prepSection = prepInstructions
-          ? `\n\n---\nPREPARATION INSTRUCTIONS\n\n${prepInstructions}\n\nIf you have any questions about your preparation, please call us at ${process.env.PRACTICE_PHONE ?? '+1 758 284 0557'}.`
-          : '';
-        await sendOrDraft({ to: appt.patient_email, subject: `Reminder: ${draft.subject}`, body: `${draft.body}${prepSection}` }, 'auto');
-        await sb().from('appointment_requests').update({ prep_sms_sent: true }).eq('id', appt.id);
-        await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions } });
-        results.push({ id: appt.id, action: 'email_24h_sent' });
+        const { data: claimedPrep } = await sb()
+          .from('appointment_requests')
+          .update({ prep_sms_sent: true })
+          .eq('id', appt.id)
+          .eq('prep_sms_sent', false)  // only update if still unclaimed
+          .select('id');
+        if (claimedPrep && claimedPrep.length > 0) {
+          const draft = await draftReply({ template: 'confirmation', patientFirstName: firstName, bookingDetails: slotDisplay });
+          const prepInstructions = getPrepInstructions(appt.appointment_type);
+          const prepSection = prepInstructions
+            ? `\n\n---\nPREPARATION INSTRUCTIONS\n\n${prepInstructions}\n\nIf you have any questions about your preparation, please call us at ${process.env.PRACTICE_PHONE ?? '+1 758 284 0557'}.`
+            : '';
+          await sendOrDraft({ to: appt.patient_email, subject: `Reminder: ${draft.subject}`, body: `${draft.body}${prepSection}` }, 'auto');
+          await audit({ action: 'remind', entityType: 'appointment_request', entityId: appt.id, payload: { kind: 'email_24h', prep_included: !!prepInstructions } });
+          results.push({ id: appt.id, action: 'email_24h_sent' });
+        }
       }
 
     } catch (err) {
@@ -389,6 +403,88 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
 
   logger.info({ count: results.length }, '[cron/staff-escalation] done');
   res.json({ processed: results.length, results });
+});
+
+// POST /api/cron/escalate-results
+// Checks for critical investigation_results unacknowledged for >2 h.
+// Sends an SMS to the doctor and records an escalation_events row.
+// Run every 30 minutes via Render/cron scheduler.
+router.post('/api/cron/escalate-results', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const cutoff = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+  const doctorPhone = process.env.STAFF_NOTIFY_PHONE ?? process.env.DOCTOR_NOTIFY_EMAIL ?? null;
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // Find critical results reported >2h ago that are still unacknowledged
+    const { data: criticals, error: fetchErr } = await supa
+      .from('investigation_results')
+      .select('id, patient_id, test_name, test_category, result_value, reported_at')
+      .eq('is_critical', true)
+      .in('status', ['resulted'])
+      .is('acknowledged_at', null)
+      .lt('reported_at', cutoff)
+      .limit(20);
+
+    if (fetchErr) throw fetchErr;
+
+    const results: { id: string; action: string }[] = [];
+
+    for (const result of criticals ?? []) {
+      try {
+        // Check if we already escalated this result (avoid duplicate SMS)
+        const { data: existing } = await supa
+          .from('escalation_events')
+          .select('id')
+          .eq('entity_type', 'investigation_result')
+          .eq('entity_id', result.id)
+          .is('resolved_at', null)
+          .maybeSingle();
+
+        if (existing) {
+          results.push({ id: result.id, action: 'already_escalated' });
+          continue;
+        }
+
+        const hoursSince = ((Date.now() - new Date(result.reported_at).getTime()) / 3_600_000).toFixed(1);
+        const body = `CRITICAL RESULT UNACKNOWLEDGED (${hoursSince}h): ${result.test_name} — ${result.result_value ?? 'see inbox'}. Patient ID ${(result.patient_id as string | null)?.slice(0, 8) ?? 'unknown'}. Please review now in the EMR results inbox.`;
+
+        const smsResult = doctorPhone
+          ? await sendSms({ to: doctorPhone, body })
+          : { action: 'dry_run' as const };
+
+        await supa.from('escalation_events').insert({
+          entity_type: 'investigation_result',
+          entity_id: result.id,
+          patient_id: result.patient_id ?? null,
+          reason: `Critical result unacknowledged for ${hoursSince}h`,
+          escalated_via: smsResult.action === 'sent' ? 'sms' : 'dry_run',
+          escalated_to: doctorPhone,
+        });
+
+        await audit({
+          action: 'escalate',
+          entityType: 'investigation_result',
+          entityId: result.id,
+          patientId: result.patient_id ?? undefined,
+          payload: { hours_unacknowledged: hoursSince, via: smsResult.action },
+        });
+
+        results.push({ id: result.id, action: smsResult.action });
+      } catch (err) {
+        logger.error({ err, resultId: result.id }, '[cron/escalate-results] per-result error');
+        results.push({ id: result.id, action: 'error' });
+      }
+    }
+
+    logger.info({ count: results.length }, '[cron/escalate-results] done');
+    res.json({ processed: results.length, results });
+  } catch (err) {
+    logger.error({ err }, '[cron/escalate-results] error');
+    res.status(502).json({ error: errStr(err) });
+  }
 });
 
 export default router;

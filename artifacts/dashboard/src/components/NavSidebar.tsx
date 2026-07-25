@@ -21,6 +21,7 @@ export type SectionCompletion = Partial<Record<Section, boolean>>;
 
 interface NavSidebarProps {
   collapsed: boolean;
+  consultAmbient?: boolean;
   onToggle: () => void;
   topSection: TopSection;
   onTopSection: (s: TopSection) => void;
@@ -155,7 +156,7 @@ interface TopItem {
 // ── Doctor / Nurse navigation — clinical workflow order ───────────────────────
 const DR_NAV_ITEMS: TopItem[] = [
   // Clinical
-  { id: 'intake',          icon: ClipboardList,   label: 'Intake',          roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
+  { id: 'intake',          icon: ClipboardList,   label: 'Intake',          roles: ['nurse', 'admin'], group: 'Clinical' },
   { id: 'consultation',    icon: Stethoscope,     label: 'Consultation',    roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
   { id: 'procedures',      icon: Scissors,        label: 'Procedures',      roles: ['doctor', 'admin'],          group: 'Clinical' },
   { id: 'trauma',          icon: Zap,             label: 'Trauma',          roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
@@ -191,7 +192,7 @@ const FD_NAV_ITEMS: TopItem[] = [
 ];
 
 export default function NavSidebar({
-  collapsed, onToggle,
+  collapsed, consultAmbient = false, onToggle,
   topSection, onTopSection,
   activeSection, onSection,
   userRole, hasUrgentRedFlag, urgentCount, acuity,
@@ -255,6 +256,100 @@ export default function NavSidebar({
   const activePhaseKey = visiblePhases.find(p => p.hasActive)?.key;
 
   let lastGroup = '';
+
+  // ── Summary / document focus mode: 4-icon rail ───────────────────────────
+  if (topSection === 'finaldoc' && !consultAmbient) {
+    const SUMMARY_RAIL: Array<{ id: TopSection; Icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string }> = [
+      { id: 'patients',     Icon: Users,         label: 'Patients'     },
+      { id: 'intake',       Icon: ClipboardList, label: 'Intake'       },
+      { id: 'consultation', Icon: Stethoscope,   label: 'Consultation' },
+      { id: 'finaldoc',     Icon: FileCheck2,    label: 'Summary'      },
+    ];
+    return (
+      <nav className="nav-sidebar nav-sidebar--collapsed" aria-label="Summary navigation" style={{ overflowY: 'hidden' }}>
+        <div className="nav-sidebar__body" style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {SUMMARY_RAIL.map(({ id, Icon, label }) => {
+            const isActive = topSection === id;
+            return (
+              <button
+                key={id}
+                onClick={() => handleTop(navList.find(n => n.id === id) ?? { id, icon: Icon, label, roles: [], group: '' } as TopItem)}
+                title={label}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: '100%', height: 44, border: 'none', cursor: 'pointer',
+                  position: 'relative', borderRadius: 0,
+                  background: isActive ? 'rgba(13,148,136,0.2)' : 'transparent',
+                  color: isActive ? '#0d9488' : 'rgba(255,255,255,0.55)',
+                  transition: 'background 0.15s, color 0.15s',
+                }}
+              >
+                <Icon size={17} strokeWidth={isActive ? 2.5 : 1.8} />
+                {isActive && (
+                  <span style={{ position: 'absolute', left: 0, top: 10, bottom: 10, width: 3, borderRadius: '0 2px 2px 0', background: '#0d9488' }} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <button className="nsb-toggle" onClick={onToggle} title="Expand sidebar">
+          <PanelLeftOpen size={14} strokeWidth={2} />
+        </button>
+      </nav>
+    );
+  }
+
+  // ── Consultation ambient mode: 4-icon phase rail only ────────────────────
+  if (consultAmbient) {
+    const AMBIENT_RAIL: Array<{ label: string; Icon: React.FC<{ size?: number; strokeWidth?: number }>; sections: Section[] }> = [
+      { label: 'History',    Icon: FileEdit,       sections: ['hpi', 'pmh', 'surgical', 'medications', 'allergies', 'nurse_apcq'] },
+      { label: 'Exam',       Icon: Stethoscope,    sections: ['examination', 'wounds'] },
+      { label: 'Assessment', Icon: ClipboardCheck, sections: ['assessment', 'ai_consultant'] },
+      { label: 'Plan',       Icon: FileCheck2,     sections: ['plan', 'prescriptions'] },
+    ];
+    return (
+      <nav className="nav-sidebar nav-sidebar--collapsed" aria-label="Consultation phases" style={{ overflowY: 'hidden' }}>
+        <div className="nav-sidebar__body" style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {AMBIENT_RAIL.map(({ label, Icon, sections }) => {
+            const isCurrent = sections.includes(activeSection);
+            const doneCount = sections.filter(s => !!sectionCompletion[s]).length;
+            const allDone = doneCount > 0 && doneCount === sections.filter(s => visiblePhases.flatMap(p => p.items).some(i => i.id === s)).length;
+            return (
+              <button
+                key={label}
+                onClick={() => onSection(sections[0])}
+                title={label}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  width: '100%', height: 44, border: 'none', cursor: 'pointer',
+                  position: 'relative', borderRadius: 0,
+                  background: isCurrent ? 'rgba(13,148,136,0.2)' : 'transparent',
+                  color: isCurrent ? '#0d9488' : allDone ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.55)',
+                  transition: 'background 0.15s, color 0.15s',
+                }}
+              >
+                <Icon size={17} strokeWidth={isCurrent ? 2.5 : 1.8} />
+                {allDone && !isCurrent && (
+                  <span style={{ position: 'absolute', top: 8, right: 10, width: 7, height: 7, borderRadius: '50%', background: '#0d9488' }} />
+                )}
+                {isCurrent && (
+                  <span style={{ position: 'absolute', left: 0, top: 10, bottom: 10, width: 3, borderRadius: '0 2px 2px 0', background: '#0d9488' }} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <button
+          className="nsb-toggle"
+          onClick={onToggle}
+          title="Exit consultation focus"
+          style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10 }}
+        >
+          <PanelLeftOpen size={14} strokeWidth={2} />
+        </button>
+      </nav>
+    );
+  }
 
   return (
     <nav className={`nav-sidebar${collapsed ? ' nav-sidebar--collapsed' : ''}`} aria-label="Navigation">

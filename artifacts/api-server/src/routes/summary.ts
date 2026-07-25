@@ -6,6 +6,20 @@ import { checkForbiddenContent, FORBIDDEN_PATTERNS } from '@workspace/triage-eng
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
+
+/** Run FORBIDDEN_PATTERNS over every line of a plain-text document.
+ *  Used on template fallbacks so the safety filter applies regardless of
+ *  whether Claude generated the text or not. */
+function scanTemplate(text: string): string {
+  if (!checkForbiddenContent(text).safe) {
+    return text.split('\n').map(line => {
+      if (FORBIDDEN_PATTERNS.some(p => p.test(line))) return '[REDACTED — requires clinical review]';
+      FORBIDDEN_PATTERNS.forEach(p => { p.lastIndex = 0; });
+      return line;
+    }).join('\n');
+  }
+  return text;
+}
 const MODEL = process.env.CLAUDE_MODEL || 'claude-opus-4-5';
 
 const SUMMARY_SYSTEM = `You are a clinical documentation assistant for Amise Medical Services, Saint Lucia — a general and endoscopic surgery practice led by Dr Dawit Daniel Kabiye, MD, DM.
@@ -51,7 +65,7 @@ const SummaryRequestSchema = z.object({
     familyHistory: z.array(z.string()),
     toxicHabits: z.array(z.string()),
   }),
-  examination: z.record(z.string()).optional(),
+  examination: z.record(z.unknown()).optional(),
   assessment: z.string().optional(),
   differentials: z.string().optional(),
   plan: z.string().optional(),
@@ -92,7 +106,7 @@ function buildPrompt(d: SummaryRequest): string {
   );
 
   const examLines = Object.entries(d.examination ?? {})
-    .filter(([, v]) => v.trim())
+    .filter(([, v]) => typeof v === 'string' && v.trim())
     .map(([k, v]) => `${k}: ${v}`);
 
   const vitalsStr = vitalLines.length ? vitalLines.join(' | ') : 'Not recorded';
@@ -262,7 +276,7 @@ Follow-up
 Follow-up: ${str(d.plan)?.toLowerCase().includes('follow') ? str(d.plan) : 'As arranged with clinic'}`;
 }
 
-router.post('/api/summary/generate', async (req, res) => {
+router.post('/api/summary/generate', requireAuth, async (req, res) => {
   const parsed = SummaryRequestSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid request', details: parsed.error.flatten() });
@@ -270,7 +284,7 @@ router.post('/api/summary/generate', async (req, res) => {
   }
 
   if (!process.env.ANTHROPIC_API_KEY) {
-    res.json({ document: buildTemplateSoap(req.body) });
+    res.json({ document: scanTemplate(buildTemplateSoap(req.body)) });
     return;
   }
 
@@ -300,7 +314,7 @@ router.post('/api/summary/generate', async (req, res) => {
 
     res.json({ document });
   } catch {
-    res.json({ document: buildTemplateSoap(req.body) });
+    res.json({ document: scanTemplate(buildTemplateSoap(req.body)) });
   }
 });
 
@@ -479,7 +493,7 @@ function buildSoapPolishFallback(d: SoapPolishRequest): {
   };
 }
 
-router.post('/api/soap/polish', async (req, res) => {
+router.post('/api/soap/polish', requireAuth, async (req, res) => {
   const parsed = SoapPolishSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid request', details: parsed.error.flatten() });
@@ -533,8 +547,12 @@ router.post('/api/soap/polish', async (req, res) => {
 
     res.json(polished);
   } catch {
-    // On AI failure, fall back to plain concatenation
-    res.json(buildSoapPolishFallback(parsed.data));
+    // On AI failure, fall back to plain concatenation — scan each section
+    const fb = buildSoapPolishFallback(parsed.data);
+    for (const key of ['subjective', 'objective', 'assessment', 'plan'] as const) {
+      if (fb[key]) fb[key] = scanTemplate(fb[key]);
+    }
+    res.json(fb);
   }
 });
 

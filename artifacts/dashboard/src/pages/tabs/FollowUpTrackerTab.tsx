@@ -43,7 +43,7 @@ export default function FollowUpTrackerTab() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { setTopSection, setPatientId, setPatientName, setActiveSection } = useAppContext();
+  const { setTopSection, setPatientId, setPatientName, setActiveSection, clearPatient } = useAppContext();
   const { profile } = useAuth();
   const userRole = profile?.role ?? 'front_desk';
   const isClinical = userRole === 'doctor' || userRole === 'nurse' || userRole === 'admin';
@@ -164,6 +164,7 @@ export default function FollowUpTrackerTab() {
                     item={e}
                     onOpen={() => {
                       const name = e.patients?.full_name ?? 'Unknown patient';
+                      clearPatient();
                       setPatientId(e.patient_id);
                       setPatientName(name);
                       setTopSection('consultation');
