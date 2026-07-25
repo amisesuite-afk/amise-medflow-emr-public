@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Save } from 'lucide-react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { saveNewPatient, createEncounter } from '@/lib/db';
+import { saveNewPatient, createEncounter, closeEncounter } from '@/lib/db';
 import { DEMO_MODE } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
 
@@ -393,18 +392,9 @@ export default function FloatingActions() {
     setSigning(true);
     try {
       if (!DEMO_MODE) {
-        const { data: rows, error } = await supabase!
-          .from('encounters')
-          .update({ status: 'completed', closed_at: new Date().toISOString() })
-          .eq('id', encounterId)
-          .in('status', ['open', 'in_progress'])
-          .select('id');
+        const { error } = await closeEncounter(encounterId);
         if (error) {
-          showToast(`Could not close encounter: ${error.message}`, 'error');
-          return;
-        }
-        if (!rows?.length) {
-          showToast('Encounter is no longer open — it may have been closed by another session. Please refresh.', 'error');
+          showToast(`Could not close encounter: ${error}`, 'error');
           return;
         }
       }

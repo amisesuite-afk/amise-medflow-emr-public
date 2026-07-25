@@ -4,6 +4,8 @@
  */
 
 import { supabase, type SiteCode } from './supabase';
+import { getApiOrigin } from './api-origin';
+import { staffAuthHeaders } from './staff-auth';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -1382,12 +1384,43 @@ export async function saveAiConsult(
   return { error: null };
 }
 
+// ─── signEncounterNotes ───────────────────────────────────────────────────────
+
+/** Signs all draft clinical notes for an encounter via the API server.
+ *  Returns the count of notes signed, or an error string. */
+export async function signEncounterNotes(
+  encounterId: string,
+): Promise<{ signed: number; error: string | null }> {
+  const base = getApiOrigin();
+  try {
+    const res = await fetch(`${base}/api/visit/sign-notes/${encounterId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({})) as { error?: string };
+      return { signed: 0, error: err.error ?? `HTTP ${res.status}` };
+    }
+    const data = await res.json() as { signed: number };
+    return { signed: data.signed, error: null };
+  } catch (e) {
+    return { signed: 0, error: e instanceof Error ? e.message : 'Sign request failed' };
+  }
+}
+
 // ─── closeEncounter ───────────────────────────────────────────────────────────
 
+/** Signs all draft notes and marks the encounter closed.
+ *  Note signing is best-effort — a signing failure is logged but does not
+ *  block closure, because the clinician's intent to close must be honoured. */
 export async function closeEncounter(
   encounterId: string,
 ): Promise<{ error: string | null }> {
   if (!supabase) return { error: notConfigured('closeEncounter') };
+
+  // Sign notes first (best-effort — don't block closure on a sign failure)
+  const { error: signErr } = await signEncounterNotes(encounterId);
+  if (signErr) console.warn('[db] closeEncounter: note signing failed —', signErr);
 
   const { data, error } = await supabase
     .from('encounters')
