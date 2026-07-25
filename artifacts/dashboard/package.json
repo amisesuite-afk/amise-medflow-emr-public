@@ -41,8 +41,8 @@
     "@replit/vite-plugin-cartographer": "catalog:",
     "@replit/vite-plugin-dev-banner": "catalog:",
     "@replit/vite-plugin-runtime-error-modal": "catalog:",
-    "@supabase/supabase-js": "^2.105.4",
-    "@tailwindcss/typography": "^0.5.15",
+    "@supabase/supabase-js": "^2.110.8",
+    "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@types/node": "catalog:",
@@ -65,7 +65,7 @@
     "react-day-picker": "^9.11.1",
     "react-dom": "catalog:",
     "react-hook-form": "^7.55.0",
-    "react-icons": "^5.4.0",
+    "react-icons": "^5.7.0",
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.2",
     "sonner": "^2.0.7",
@@ -76,11 +76,11 @@
     "vite": "catalog:",
     "vite-plugin-pwa": "^1.3.0",
     "workbox-window": "^7.4.1",
-    "wouter": "^3.3.5",
+    "wouter": "^3.10.0",
     "zod": "catalog:"
   },
   "dependencies": {
-    "@sentry/react": "^10.58.0",
+    "@sentry/react": "^10.68.0",
     "@workspace/triage-engine": "workspace:*",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1"
