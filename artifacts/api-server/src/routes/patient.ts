@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
-import { sb, requireStaffAuth } from '../lib/supabase.js';
+import { sb, getSupabaseAdmin, requireStaffAuth, audit } from '../lib/supabase.js';
+import { errStr } from '../lib/logger.js';
 import { logger as log } from '../lib/logger.js';
 import { requirePatientAuth, type PatientAuthRequest } from './patient-auth.js';
 
@@ -345,6 +346,79 @@ router.post('/api/patients/:targetId/merge', async (req, res) => {
     message: `Merged "${source.full_name}" into "${target.full_name}"`,
     warnings: errors.length > 0 ? errors : undefined,
   });
+});
+
+// POST /api/patient/check-duplicates
+// Called by the dashboard after creating a new patient. Uses pg_trgm similarity
+// to find potential duplicates and enqueues them in duplicate_queue for staff review.
+router.post('/api/patient/check-duplicates', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { patientId } = (req.body ?? {}) as { patientId?: string };
+  if (!patientId) { res.status(400).json({ error: 'patientId required' }); return; }
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // Fetch the new patient
+    const { data: newPt, error: fetchErr } = await supa
+      .from('patients')
+      .select('id, full_name, phone')
+      .eq('id', patientId)
+      .maybeSingle();
+
+    if (fetchErr || !newPt) { res.status(404).json({ error: 'Patient not found' }); return; }
+
+    // Use pg_trgm similarity to find candidates by name (threshold 0.4)
+    const { data: candidates, error: simErr } = await supa.rpc('find_similar_patients', {
+      p_name: newPt.full_name,
+      p_phone: newPt.phone ?? '',
+      p_exclude_id: patientId,
+      p_threshold: 0.4,
+    }) as { data: Array<{ id: string; full_name: string; phone: string | null; name_sim: number }> | null; error: unknown };
+
+    if (simErr) {
+      // pg_trgm RPC may not exist yet — fall back to silent no-op
+      log.warn({ simErr }, '[patient/check-duplicates] similarity RPC unavailable');
+      res.json({ queued: 0 });
+      return;
+    }
+
+    let queued = 0;
+    for (const candidate of candidates ?? []) {
+      const matchReason =
+        candidate.name_sim >= 0.7 && newPt.phone && newPt.phone === candidate.phone
+          ? 'name_phone'
+          : candidate.name_sim >= 0.6
+          ? 'name_only'
+          : 'phone_only';
+
+      // Ensure consistent ordering of patient_id_a / patient_id_b
+      const [idA, idB] = [patientId, candidate.id].sort();
+
+      const { error: queueErr } = await supa.from('duplicate_queue').upsert({
+        patient_id_a: idA,
+        patient_id_b: idB,
+        match_score: candidate.name_sim,
+        match_reason: matchReason,
+        status: 'pending',
+      }, { onConflict: 'patient_id_a,patient_id_b', ignoreDuplicates: true });
+
+      if (!queueErr) queued++;
+    }
+
+    await audit({
+      action: 'classify',
+      entityType: 'patient',
+      entityId: patientId,
+      payload: { action: 'duplicate_check', candidates_found: candidates?.length ?? 0, queued },
+    });
+
+    log.info({ patientId, queued }, '[patient/check-duplicates] done');
+    res.json({ queued });
+  } catch (err) {
+    log.error({ err }, '[patient/check-duplicates] error');
+    res.status(502).json({ error: errStr(err) });
+  }
 });
 
 export default router;

@@ -338,7 +338,19 @@ export async function saveNewPatient(
     return { patient: null, error: error.message };
   }
 
-  return { patient: data as SavedPatient, error: null };
+  const saved = data as SavedPatient;
+
+  // Fire-and-forget duplicate check via the API server (best-effort, non-blocking)
+  const base = getApiOrigin();
+  staffAuthHeaders().then(headers =>
+    fetch(`${base}/api/patient/check-duplicates`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify({ patientId: saved.id }),
+    }).catch(e => console.warn('[db] duplicate check failed:', e))
+  ).catch(() => {});
+
+  return { patient: saved, error: null };
 }
 
 // ─── createEncounter ──────────────────────────────────────────────────────────
