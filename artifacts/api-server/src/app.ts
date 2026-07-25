@@ -10,6 +10,7 @@ import fs from "node:fs";
 import { fileURLToPath } from "url";
 import router from "./routes";
 import { logger } from "./lib/logger";
+import { correlationId } from "./middlewares/correlation";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -17,9 +18,13 @@ const app: Express = express();
 
 app.set("trust proxy", 1);
 
+// Correlation ID must run before pino-http so the ID appears in every log line.
+app.use(correlationId);
+
 app.use(
   pinoHttp({
     logger,
+    customProps: (req) => ({ correlationId: (req as any).correlationId }),
     serializers: {
       req(req) {
         return {

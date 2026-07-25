@@ -30,6 +30,7 @@ import generateEndoscopyReportRouter from "./generate-endoscopy-report";
 import generateOperativeNoteRouter from "./generate-operative-note";
 import suggestCodesRouter from "./suggest-codes";
 import referralsRouter from "./referrals";
+import fhirRouter from "./fhir";
 
 const router: IRouter = Router();
 
@@ -64,5 +65,6 @@ router.use('/api/generate-endoscopy-report', generateEndoscopyReportRouter);
 router.use('/api/generate-operative-note', generateOperativeNoteRouter);
 router.use('/api/suggest-codes', suggestCodesRouter);
 router.use(referralsRouter);
+router.use(fhirRouter);
 
 export default router;

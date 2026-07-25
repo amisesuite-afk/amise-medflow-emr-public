@@ -3,12 +3,14 @@ import { google } from 'googleapis';
 import { findSlots, formatSlotForDisplay, fetchUpcomingEvents, AvailableSlot } from '../lib/calendar';
 import { SLOT_RULES, AppointmentType, SlotRule, Location } from '@workspace/triage-engine';
 import { requireAuth } from '../middlewares/auth';
-import { requireCronSecret } from '../lib/supabase.js';
+import { requireCronSecret, sb } from '../lib/supabase.js';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { logger } from '../lib/logger.js';
 
 // Resolves correctly in both ts-node (src/routes/) and esbuild bundle (dist/)
 const CACHE_PATH = join(process.cwd(), 'src/data/calendar-cache.json');
+const CACHE_KEY = 'combined';
 
 const router = Router();
 
@@ -77,19 +79,40 @@ router.get('/api/scheduling/slots', async (req, res) => {
 });
 
 // ── /api/scheduling/sync ─────────────────────────────────────────────────────
-// Fetches live events from Google Calendar and writes calendar-cache.json.
+// Fetches live events from Google Calendar and persists them in Supabase
+// (calendar_event_cache table). The JSON file is kept as a local fallback.
 
 async function syncCalendarCache(): Promise<{ synced: boolean; eventCount?: number; syncedAt?: string; error?: string }> {
   try {
     const events = await fetchUpcomingEvents(45);
-    const cache = {
-      calendarId: process.env.CALENDAR_ID_RODNEY_BAY ?? 'amisesuite@gmail.com',
-      fetchedAt: new Date().toISOString(),
-      timeZone: 'America/St_Lucia',
-      events,
-    };
-    writeFileSync(CACHE_PATH, JSON.stringify(cache, null, 2), 'utf-8');
-    return { synced: true, eventCount: events.length, syncedAt: cache.fetchedAt };
+    const calendarId = process.env.CALENDAR_ID_RODNEY_BAY ?? 'amisesuite@gmail.com';
+    const fetchedAt = new Date().toISOString();
+
+    // Primary: persist to Supabase calendar_event_cache
+    try {
+      const { error: upsertErr } = await sb()
+        .from('calendar_event_cache')
+        .upsert({
+          calendar_key: CACHE_KEY,
+          calendar_id: calendarId,
+          fetched_at: fetchedAt,
+          time_zone: 'America/St_Lucia',
+          events,
+          updated_at: fetchedAt,
+        }, { onConflict: 'calendar_key' });
+      if (upsertErr) logger.warn({ err: upsertErr.message }, '[calendar-sync] Supabase upsert failed');
+    } catch (sbErr) {
+      logger.warn({ err: sbErr }, '[calendar-sync] Supabase unavailable, using file fallback');
+    }
+
+    // Fallback: write to JSON file (survives Render container restart gap)
+    try {
+      writeFileSync(CACHE_PATH, JSON.stringify({ calendarId, fetchedAt, timeZone: 'America/St_Lucia', events }, null, 2), 'utf-8');
+    } catch {
+      // Non-fatal: file write may fail in read-only container environments
+    }
+
+    return { synced: true, eventCount: events.length, syncedAt: fetchedAt };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     return { synced: false, error: msg };
@@ -125,7 +148,7 @@ interface CalendarCache {
   events: CachedEvent[];
 }
 
-function loadCache(): CalendarCache | null {
+function loadCacheFromFile(): CalendarCache | null {
   try {
     const raw = readFileSync(CACHE_PATH, 'utf-8');
     return JSON.parse(raw) as CalendarCache;
@@ -134,8 +157,30 @@ function loadCache(): CalendarCache | null {
   }
 }
 
-router.get('/api/scheduling/upcoming', requireAuth, (req, res) => {
-  const cache = loadCache();
+async function loadCache(): Promise<CalendarCache | null> {
+  // Primary: Supabase
+  try {
+    const { data } = await sb()
+      .from('calendar_event_cache')
+      .select('calendar_id, fetched_at, time_zone, events')
+      .eq('calendar_key', CACHE_KEY)
+      .maybeSingle();
+    if (data) {
+      return {
+        calendarId: data.calendar_id as string,
+        fetchedAt:  data.fetched_at as string,
+        timeZone:   data.time_zone as string,
+        events:     (data.events ?? []) as CachedEvent[],
+      };
+    }
+  } catch {
+    // Fall through to file
+  }
+  return loadCacheFromFile();
+}
+
+router.get('/api/scheduling/upcoming', requireAuth, async (req, res) => {
+  const cache = await loadCache();
   if (!cache) {
     res.status(503).json({ error: 'Calendar cache not available' });
     return;
