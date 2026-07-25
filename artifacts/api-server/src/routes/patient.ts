@@ -30,8 +30,20 @@ Example: "A 4 × 3 cm erythematous, indurated swelling over the right groin. The
 router.get('/api/patient/profile', requirePatientAuth, async (req: PatientAuthRequest, res) => {
   const patientId = req.patientAuth!.patientId;
 
+  // Account exists but not yet linked to a patient record (e.g. created via
+  // "request access" without a booking). Return a minimal valid profile so the
+  // app can proceed — the account can be linked to a patient later by staff.
   if (!patientId) {
-    res.status(400).json({ error: 'No patient linked to this account' });
+    res.json({
+      patientName: null,
+      appointmentDate: null,
+      status: null,
+      hasSubmission: false,
+      hasPendingPrevisit: false,
+      isReturnPatient: false,
+      passport: null,
+      monitoringCount: 0,
+    });
     return;
   }
 
