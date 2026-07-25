@@ -51,7 +51,9 @@ export function requireCronSecret(req: any, res: any): boolean {
     res.status(503).json({ error: 'CRON_SECRET not configured' });
     return false;
   }
-  const provided = req.headers['x-cron-secret'] || req.query?.secret;
+  // Header-only: never accept the secret as a query parameter because URL
+  // query strings appear in access logs, proxy logs, and browser history.
+  const provided = req.headers['x-cron-secret'];
   if (provided !== secret) {
     res.status(401).json({ error: 'Unauthorized' });
     return false;

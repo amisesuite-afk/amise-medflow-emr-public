@@ -1,12 +1,39 @@
 import { Router, type IRouter } from "express";
 import { HealthCheckResponse } from "@workspace/api-zod";
-import { requireCronSecret } from "../lib/supabase.js";
+import { requireCronSecret, sb } from "../lib/supabase.js";
 
 const router: IRouter = Router();
+
+// ── GET /api/healthz ──────────────────────────────────────────────────────────
+// Liveness probe — always returns 200 if the process is alive.
+// Use /api/readyz for a readiness check that verifies Supabase connectivity.
 
 router.get("/api/healthz", (_req, res) => {
   const data = HealthCheckResponse.parse({ status: "ok" });
   res.json(data);
+});
+
+// ── GET /api/readyz ───────────────────────────────────────────────────────────
+// Readiness probe for orchestrators (Railway, Render, k8s, ECS).
+// Returns 200 when the server can accept traffic; 503 when Supabase is
+// unreachable. Orchestrators should route traffic only when this returns 200.
+// No authentication required — the response contains no sensitive data.
+
+router.get('/api/readyz', async (_req, res) => {
+  try {
+    const { error } = await sb()
+      .from('user_profiles')
+      .select('id', { count: 'exact', head: true })
+      .limit(1);
+    if (error) throw new Error(error.message);
+    res.json({ status: 'ready', supabase: 'ok', uptime: process.uptime() });
+  } catch (err) {
+    res.status(503).json({
+      status: 'not_ready',
+      supabase: 'error',
+      detail: err instanceof Error ? err.message : String(err),
+    });
+  }
 });
 
 router.get("/api/healthz/env", (req, res) => {

@@ -88,4 +88,41 @@ function shutdown(signal: string) {
 }
 
 process.on("SIGTERM", () => shutdown("SIGTERM"));
-process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGINT",  () => shutdown("SIGINT"));
+
+// Catch synchronous throws that escape all request handlers (e.g. in middleware
+// or event-emitter callbacks). Without this the process crashes with no
+// structured log entry and Sentry never receives the event.
+process.on('uncaughtException', (err: Error) => {
+  logger.fatal({ err }, '[process] uncaughtException — initiating graceful shutdown');
+  Sentry.captureException(err);
+  shutdown('uncaughtException');
+});
+
+// Catch promise rejections that were never handled. Node ≥ 15 turns these into
+// process crashes; logging here gives us a structured record and Sentry capture
+// before any crash occurs.
+process.on('unhandledRejection', (reason: unknown) => {
+  const err = reason instanceof Error ? reason : new Error(String(reason));
+  logger.error({ err }, '[process] unhandledRejection');
+  Sentry.captureException(err);
+  // Don't shut down here — an unhandled rejection in a non-critical path
+  // should not take down the entire server. The orchestrator's health check
+  // will initiate a restart if the server becomes unhealthy.
+});
+
+// Probe Supabase after the server is listening — logs a warning but does not
+// abort startup; the /api/readyz endpoint will surface the failure to the
+// orchestrator's health check until connectivity is restored.
+void (async () => {
+  try {
+    const { error } = await sb()
+      .from('user_profiles')
+      .select('id', { count: 'exact', head: true })
+      .limit(1);
+    if (error) throw new Error(error.message);
+    logger.info('[startup] Supabase connectivity confirmed');
+  } catch (err) {
+    logger.warn({ err }, '[startup] Supabase probe failed — readyz will return 503 until resolved');
+  }
+})();
