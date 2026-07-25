@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { z } from 'zod';
 import { getSupabaseAdmin, audit, requireStaffAuth, requireCronSecret } from '../lib/supabase.js';
 import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions, toE164 } from '../lib/sms.js';
@@ -18,7 +18,7 @@ const bookingRateLimit = rateLimit({
   limit: 5,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
-  keyGenerator: (req) => req.body?.patient_phone || req.ip || '',
+  keyGenerator: (req) => req.body?.patient_phone || ipKeyGenerator(req),
   validate: { ip: false },
   message: { error: 'Too many booking requests. Please try again later or call us.' },
 });
