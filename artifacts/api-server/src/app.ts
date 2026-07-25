@@ -69,6 +69,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 const allowedOrigins = [
   process.env.PORTAL_URL,
   process.env.DASHBOARD_URL,
+  process.env.PATIENT_APP_URL,
   ...(isDev ? ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'] : []),
 ].filter(Boolean) as string[];
 
@@ -76,11 +77,9 @@ app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
     // Vercel preview URLs scoped tightly to this project's team slug.
-    // The first pattern matches deployment-specific URLs; the second matches
-    // the stable project alias. Both are scoped to amisesuite-afk to prevent
-    // unrelated Vercel deployments from receiving credentialed responses.
     if (/^https:\/\/[\w-]+-amisesuite-afks-projects\.vercel\.app$/.test(origin)) return cb(null, true);
-    if (/^https:\/\/amise-medflow[\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
+    // Any amise-* Vercel deployment (patient app, dashboard aliases, etc.).
+    if (/^https:\/\/amise[\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
