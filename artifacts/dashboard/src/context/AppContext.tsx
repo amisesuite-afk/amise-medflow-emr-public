@@ -409,11 +409,52 @@ export interface PriorEncounterSummary {
 
 const AppContext = createContext<CtxValue | null>(null);
 
+// Valid Section values derived from the type — used for URL param validation.
+const VALID_SECTIONS: string[] = [
+  'intake', 'triage', 'hpi', 'pmh', 'surgical', 'medications',
+  'allergies', 'family_hx', 'toxic', 'scales', 'ros', 'examination', 'investigations',
+  'radiology', 'attachments', 'classifications',
+  'assessment', 'plan', 'progress',
+  'procedures', 'billing', 'documents',
+  'monitoring', 'apcq', 'nurse_apcq',
+  'prescriptions', 'ai_consultant', 'tasks',
+  'referring_providers', 'encounter_history',
+  'who_checklist', 'consent', 'letters', 'patient_education', 'periop', 'dosing',
+  'fluid_nutrition', 'blood_gas', 'wounds',
+];
+
+function readTabFromUrl(): Section {
+  try {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    if (tab && VALID_SECTIONS.includes(tab)) return tab as Section;
+  } catch { /* ignore */ }
+  return 'intake';
+}
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const { profile } = useAuth();
 
-  const [activeSection, setActiveSection] = useState<Section>('intake');
+  const [activeSection, _setActiveSection] = useState<Section>(readTabFromUrl);
   const [topSection, setTopSection] = useState<TopSection>(readNavFromStorage);
+
+  const setActiveSection = useCallback((s: Section) => {
+    _setActiveSection(s);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', s);
+      window.history.replaceState(null, '', url.toString());
+    } catch { /* ignore — may fail in iframe or restricted origin */ }
+  }, []);
+
+  // Restore activeSection from URL on browser back/forward navigation.
+  useEffect(() => {
+    const onPopState = () => {
+      const tab = new URLSearchParams(window.location.search).get('tab');
+      if (tab && VALID_SECTIONS.includes(tab)) _setActiveSection(tab as Section);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
 
   useEffect(() => {
     try { localStorage.setItem(NAV_STORAGE_KEY, topSection); } catch { /* ignore */ }

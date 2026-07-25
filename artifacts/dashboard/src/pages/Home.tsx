@@ -964,7 +964,7 @@ export default function HomePage() {
       />
 
       {/* ── Main content ── */}
-      <main ref={swipeRef} className="main-content">
+      <main id="main-content" ref={swipeRef} className="main-content">
         {/* Zen mode exit chip */}
         {zenMode && (
           <button
@@ -1366,16 +1366,19 @@ export default function HomePage() {
                     />
                   </div>
                 )}
-                {/* Progress dots — tap any to jump */}
-                <div style={{ display: 'flex', gap: 5, padding: '8px 0 10px', alignItems: 'center' }}>
+                {/* Progress dots — tap or keyboard-navigate to any section */}
+                <div role="tablist" aria-label="Consultation sections" style={{ display: 'flex', gap: 5, padding: '8px 0 10px', alignItems: 'center' }}>
                   {consultTabs.map((t, i) => (
-                    <div
+                    <button
                       key={t.id}
-                      title={t.label}
+                      type="button"
+                      role="tab"
+                      aria-selected={i === curIdx}
+                      aria-label={t.label}
                       onClick={() => setActiveSection(t.id)}
                       style={{
                         width: i === curIdx ? 28 : 8, height: 8, borderRadius: 4, cursor: 'pointer',
-                        transition: 'all 0.2s ease',
+                        transition: 'all 0.2s ease', border: 'none', padding: 0,
                         background: i === curIdx ? '#0d9488'
                           : sectionCompletion[t.id as Section] ? '#6ee7b7'
                           : '#e2e8f0',
@@ -1410,11 +1413,15 @@ export default function HomePage() {
           // Full tab strip
           return (
             <>
-              <div className="consult-tabstrip">
+              <div className="consult-tabstrip" role="tablist" aria-label="Consultation sections">
                 {consultTabs.map(tab => (
                   <button
                     key={tab.id}
                     type="button"
+                    role="tab"
+                    aria-selected={activeSection === tab.id}
+                    aria-controls={`tabpanel-${tab.id}`}
+                    id={`tab-${tab.id}`}
                     className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
                     onClick={() => setActiveSection(tab.id)}
                   >

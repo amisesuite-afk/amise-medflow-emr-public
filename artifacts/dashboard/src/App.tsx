@@ -87,6 +87,25 @@ function AuthGuard() {
 
   return (
     <>
+      {/* Skip-navigation — visually hidden, shown on focus for keyboard users (WCAG 2.4.1) */}
+      <a
+        href="#main-content"
+        style={{
+          position: 'absolute', left: '-9999px', top: 'auto', width: 1, height: 1,
+          overflow: 'hidden', zIndex: 9999,
+        }}
+        onFocus={e => Object.assign((e.currentTarget as HTMLAnchorElement).style, {
+          left: '50%', top: 8, width: 'auto', height: 'auto',
+          transform: 'translateX(-50%)', overflow: 'visible',
+          padding: '8px 20px', background: '#0d9488', color: '#fff',
+          fontWeight: 700, borderRadius: 6,
+        })}
+        onBlur={e => Object.assign((e.currentTarget as HTMLAnchorElement).style, {
+          left: '-9999px', width: 1, height: 1, overflow: 'hidden', transform: 'none',
+        })}
+      >
+        Skip to main content
+      </a>
       <IdleLock />
       <AppProvider>
         <ToastProvider>
