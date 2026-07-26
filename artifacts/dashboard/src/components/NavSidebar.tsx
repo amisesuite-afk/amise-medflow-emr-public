@@ -8,7 +8,7 @@ import {
   Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig, Check,
   MessageSquare, Tags, ClipboardMinus, ScrollText, MailOpen, GraduationCap, ShieldCheck,
   Calculator, Droplets, Bandage, UserCheck, ArrowLeftRight, PhoneIncoming,
-  CalendarClock,
+  CalendarClock, Link2,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/supabase';
 import type { Section, TopSection, EncounterType } from '@/context/AppContext';
@@ -187,8 +187,9 @@ const FD_NAV_ITEMS: TopItem[] = [
   { id: 'patients',        icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'admin'], group: 'Admin' },
   { id: 'billing',         icon: Receipt,         label: 'Billing',          roles: ['front_desk', 'admin'], group: 'Admin' },
   { id: 'dashboard',       icon: LayoutDashboard, label: 'Dashboard',        roles: ['front_desk', 'admin'], group: 'Admin' },
-  { id: 'analytics',       icon: BarChart2,       label: 'Analytics',        roles: ['admin'],               group: 'Admin' },
-  { id: 'settings',        icon: Settings,        label: 'Settings',         roles: ['admin'],               group: 'Admin' },
+  { id: 'patient_accounts', icon: Link2,           label: 'Portal Accounts',  roles: ['front_desk', 'admin'], group: 'Admin' },
+  { id: 'analytics',        icon: BarChart2,       label: 'Analytics',        roles: ['admin'],               group: 'Admin' },
+  { id: 'settings',         icon: Settings,        label: 'Settings',         roles: ['admin'],               group: 'Admin' },
 ];
 
 export default function NavSidebar({

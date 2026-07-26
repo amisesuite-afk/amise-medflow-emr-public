@@ -281,6 +281,18 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
   const [portalErr, setPortalErr]                 = useState<string | null>(null);
   const [portalOk, setPortalOk]                   = useState(false);
 
+  // Patient account link state
+  type AcctStatus = null | 'loading' | 'not_found' | { id: string; patient_id: string | null; patient_name: string | null };
+  const [acctStatus, setAcctStatus]               = useState<AcctStatus>(null);
+  const [linkSearchQ, setLinkSearchQ]             = useState('');
+  const [linkSearchResults, setLinkSearchResults] = useState<Array<{ id: string; full_name: string; mrn?: string; phone?: string }>>([]);
+  const [linkSearching, setLinkSearching]         = useState(false);
+  const [linking, setLinking]                     = useState(false);
+  const [linkOk, setLinkOk]                       = useState(false);
+  const [linkErr, setLinkErr]                     = useState<string | null>(null);
+  const [showLinkSearch, setShowLinkSearch]       = useState(false);
+  const linkTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Manual entry state
   const [showNewRequest, setShowNewRequest]   = useState(false);
   const [nrName, setNrName]                   = useState('');
@@ -394,7 +406,70 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     setCheckInOk(false);
     setCheckInErr(null);
     setCheckedInEncounterId(null);
+    setAcctStatus(null);
+    setLinkSearchQ('');
+    setLinkSearchResults([]);
+    setLinkOk(false);
+    setLinkErr(null);
+    setShowLinkSearch(false);
   }, [selected?.id]);
+
+  // Fetch account status whenever a booking with an email is selected
+  useEffect(() => {
+    if (!selected?.patient_email) return;
+    setAcctStatus('loading');
+    void (async () => {
+      try {
+        const r = await fetch(apiUrl(`/api/admin/patient-accounts?email=${encodeURIComponent(selected.patient_email!)}`), {
+          headers: await staffAuthHeaders(),
+        });
+        const d = await r.json() as { accounts?: Array<{ id: string; patient_id: string | null; patient_name: string | null }> };
+        const acct = d.accounts?.[0] ?? null;
+        setAcctStatus(acct ? { id: acct.id, patient_id: acct.patient_id, patient_name: acct.patient_name } : 'not_found');
+      } catch { setAcctStatus('not_found'); }
+    })();
+  }, [selected?.id, selected?.patient_email]);
+
+  // Patient search debounce inside link panel
+  useEffect(() => {
+    if (!showLinkSearch) return;
+    if (linkSearchQ.trim().length < 2) { setLinkSearchResults([]); return; }
+    if (linkTimer.current) clearTimeout(linkTimer.current);
+    linkTimer.current = setTimeout(async () => {
+      setLinkSearching(true);
+      try {
+        const r = await fetch(apiUrl(`/api/patients/search?q=${encodeURIComponent(linkSearchQ.trim())}&limit=6`), {
+          headers: await staffAuthHeaders(),
+        });
+        const d = await r.json() as { patients?: Array<{ id: string; full_name: string; mrn?: string; phone?: string }> };
+        setLinkSearchResults(d.patients ?? []);
+      } catch { setLinkSearchResults([]); }
+      finally { setLinkSearching(false); }
+    }, 300);
+    return () => { if (linkTimer.current) clearTimeout(linkTimer.current); };
+  }, [linkSearchQ, showLinkSearch]);
+
+  async function handleLinkAccount(patientId: string) {
+    if (typeof acctStatus !== 'object' || !acctStatus) return;
+    setLinking(true);
+    setLinkErr(null);
+    try {
+      const r = await fetch(apiUrl(`/api/admin/patient-accounts/${acctStatus.id}/link`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({ patient_id: patientId }),
+      });
+      const d = await r.json() as { success?: boolean; patient_name?: string; error?: string };
+      if (!r.ok) throw new Error(d.error ?? `HTTP ${r.status}`);
+      setAcctStatus({ ...acctStatus, patient_id: patientId, patient_name: d.patient_name ?? null });
+      setLinkOk(true);
+      setShowLinkSearch(false);
+    } catch (e) {
+      setLinkErr(e instanceof Error ? e.message : 'Link failed');
+    } finally {
+      setLinking(false);
+    }
+  }
 
   async function handleCheckIn() {
     if (!selected) return;
@@ -1405,6 +1480,97 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
               >
                 {portalRegistering ? 'Enabling…' : portalOk ? '✓ Portal Access Enabled' : 'Enable Portal Access'}
               </button>
+            </div>
+          )}
+
+          {/* ── Patient account link ─────────────────────────────────── */}
+          {selected.patient_email && acctStatus !== null && acctStatus !== 'loading' && (
+            <div style={{ marginBottom: 20, padding: '14px 16px', borderRadius: 10, background: '#fff', border: '2px solid #e5e7eb' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+                Patient Portal Account
+              </div>
+              {acctStatus === 'not_found' ? (
+                <div style={{ fontSize: 12, color: '#6b7280' }}>
+                  No portal account for <strong>{selected.patient_email}</strong> yet.
+                  Use "Send Access" above to create one.
+                </div>
+              ) : (
+                <>
+                  {linkOk && (
+                    <div style={{ marginBottom: 8, padding: '6px 10px', borderRadius: 6, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontSize: 12, fontWeight: 600 }}>
+                      ✓ Account linked to {acctStatus.patient_name}
+                    </div>
+                  )}
+                  {!linkOk && (
+                    <div style={{ fontSize: 12, color: '#374151', marginBottom: 10 }}>
+                      Account: <strong>{selected.patient_email}</strong>
+                      {acctStatus.patient_name ? (
+                        <span style={{ marginLeft: 8, padding: '2px 8px', borderRadius: 99, background: '#f0fdf4', border: '1px solid #86efac', color: '#15803d', fontWeight: 700, fontSize: 11 }}>
+                          ✓ Linked — {acctStatus.patient_name}
+                        </span>
+                      ) : (
+                        <span style={{ marginLeft: 8, padding: '2px 8px', borderRadius: 99, background: '#fff7ed', border: '1px solid #fed7aa', color: '#c2410c', fontWeight: 700, fontSize: 11 }}>
+                          Not linked to a patient record
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {!acctStatus.patient_name && !linkOk && (
+                    <>
+                      <button
+                        onClick={() => setShowLinkSearch(s => !s)}
+                        style={{
+                          padding: '7px 14px', borderRadius: 7, border: '1px solid #0d9488',
+                          background: showLinkSearch ? '#0d9488' : 'transparent',
+                          color: showLinkSearch ? '#fff' : '#0d9488',
+                          fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                        }}
+                      >
+                        {showLinkSearch ? '✕ Cancel' : 'Link to patient record →'}
+                      </button>
+                      {showLinkSearch && (
+                        <div style={{ marginTop: 10 }}>
+                          <input
+                            type="text"
+                            placeholder="Search by name, phone, or MRN…"
+                            value={linkSearchQ}
+                            onChange={e => setLinkSearchQ(e.target.value)}
+                            autoFocus
+                            style={{ width: '100%', padding: '8px 12px', borderRadius: 7, border: '1px solid #d1d5db', fontSize: 13, outline: 'none', boxSizing: 'border-box', marginBottom: 6 }}
+                          />
+                          {linkErr && (
+                            <div style={{ padding: '6px 10px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12, marginBottom: 6 }}>
+                              {linkErr}
+                            </div>
+                          )}
+                          {linkSearching && <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 6 }}>Searching…</div>}
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            {linkSearchResults.map(p => (
+                              <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', borderRadius: 7, background: '#f9fafb', border: '1px solid #e5e7eb' }}>
+                                <div>
+                                  <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>{p.full_name}</span>
+                                  {p.mrn && <span style={{ fontSize: 11, color: '#0d9488', marginLeft: 8 }}>{p.mrn}</span>}
+                                  {p.phone && <span style={{ fontSize: 11, color: '#6b7280', marginLeft: 8 }}>{p.phone}</span>}
+                                </div>
+                                <button
+                                  onClick={() => void handleLinkAccount(p.id)}
+                                  disabled={linking}
+                                  style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', opacity: linking ? 0.6 : 1 }}
+                                >
+                                  {linking ? '…' : 'Link'}
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          {!linkSearching && linkSearchQ.trim().length >= 2 && linkSearchResults.length === 0 && (
+                            <div style={{ fontSize: 12, color: '#9ca3af' }}>No patients found</div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
             </div>
           )}
 

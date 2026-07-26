@@ -72,6 +72,7 @@ const PatientEducationTab        = lazy(() => import('./tabs/PatientEducationTab
 const PatientTasksTab            = lazy(() => import('./tabs/PatientTasksTab'));
 const FollowUpTrackerTab         = lazy(() => import('./tabs/FollowUpTrackerTab'));
 const CheckInTab                 = lazy(() => import('./tabs/CheckInTab'));
+const PatientAccountsTab         = lazy(() => import('./tabs/PatientAccountsTab'));
 import EncounterStartWizard from '@/components/EncounterStartWizard';
 import VisitTypeOpeningPanel from '@/components/VisitTypeOpeningPanel';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
@@ -1535,6 +1536,7 @@ export default function HomePage() {
         {topSection === 'ai_consultant'     && hasRole(userRole, 'doctor')     && <AiConsultantTab />}
         {topSection === 'tasks'                                                && <PatientTasksTab />}
         {topSection === 'followup_tracker'                                     && <FollowUpTrackerTab />}
+        {topSection === 'patient_accounts' && roleIn(userRole, 'front_desk', 'admin') && <PatientAccountsTab />}
         </ErrorBoundary>
         </Suspense>
       </main>

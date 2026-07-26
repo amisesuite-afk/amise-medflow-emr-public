@@ -31,6 +31,7 @@ import generateOperativeNoteRouter from "./generate-operative-note";
 import suggestCodesRouter from "./suggest-codes";
 import referralsRouter from "./referrals";
 import fhirRouter from "./fhir";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -66,5 +67,6 @@ router.use('/api/generate-operative-note', generateOperativeNoteRouter);
 router.use('/api/suggest-codes', suggestCodesRouter);
 router.use(referralsRouter);
 router.use(fhirRouter);
+router.use(adminRouter);
 
 export default router;
