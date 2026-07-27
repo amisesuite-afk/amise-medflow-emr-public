@@ -679,7 +679,7 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
       if (jsonMatch) raw = jsonMatch[0];
     }
 
-    let parsed: { documentSummary?: string; patientName?: string | null; reportDate?: string | null; urgency?: string; extractedFacts?: unknown[]; flags?: unknown[] };
+    let parsed: { documentSummary?: string | null; patientName?: string | null; reportDate?: string | null; urgency?: string; extractedFacts?: unknown[]; flags?: unknown[] };
     try {
       parsed = JSON.parse(raw);
     } catch {
