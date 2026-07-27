@@ -71,6 +71,7 @@ const LetterGeneratorTab         = lazy(() => import('./tabs/LetterGeneratorTab'
 const PatientEducationTab        = lazy(() => import('./tabs/PatientEducationTab'));
 const PatientTasksTab            = lazy(() => import('./tabs/PatientTasksTab'));
 const FollowUpTrackerTab         = lazy(() => import('./tabs/FollowUpTrackerTab'));
+const PatientsHubTab             = lazy(() => import('./tabs/PatientsHubTab'));
 const CheckInTab                 = lazy(() => import('./tabs/CheckInTab'));
 const PatientAccountsTab         = lazy(() => import('./tabs/PatientAccountsTab'));
 import EncounterStartWizard from '@/components/EncounterStartWizard';
@@ -1515,7 +1516,7 @@ export default function HomePage() {
 
         {/* Previously-stub sections */}
         {topSection === 'dashboard'  && <DashboardTab />}
-        {topSection === 'patients'   && <PatientSearchTab />}
+        {topSection === 'patients'   && <PatientsHubTab />}
         {topSection === 'scheduling' && <SchedulingTab />}
         {topSection === 'analytics'   && hasRole(userRole, 'doctor') && <AnalyticsTab />}
         {topSection === 'quality'       && hasRole(userRole, 'doctor') && <QualityImprovementTab />}
@@ -1531,11 +1532,12 @@ export default function HomePage() {
         {topSection === 'calls_queue'    && roleIn(userRole, 'front_desk', 'admin') && <CallsQueueTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
-        {topSection === 'visit_lifecycle'                                        && <VisitManagerTab />}
+        {topSection === 'visit_lifecycle'                                        && <PatientsHubTab defaultTab="visits" />}
         {topSection === 'prescriptions'     && hasRole(userRole, 'doctor')     && <PrescriptionsTab />}
         {topSection === 'ai_consultant'     && hasRole(userRole, 'doctor')     && <AiConsultantTab />}
         {topSection === 'tasks'                                                && <PatientTasksTab />}
-        {topSection === 'followup_tracker'                                     && <FollowUpTrackerTab />}
+        {topSection === 'followup_tracker' && roleIn(userRole, 'front_desk')     && <FollowUpTrackerTab />}
+        {topSection === 'followup_tracker' && !roleIn(userRole, 'front_desk')   && <PatientsHubTab defaultTab="followup" />}
         {topSection === 'patient_accounts' && roleIn(userRole, 'front_desk', 'admin') && <PatientAccountsTab />}
         </ErrorBoundary>
         </Suspense>
