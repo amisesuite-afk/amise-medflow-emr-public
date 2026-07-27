@@ -33,6 +33,7 @@ import referralsRouter from "./referrals";
 import fhirRouter from "./fhir";
 import adminRouter from "./admin";
 import analyticsRouter from "./analytics";
+import theatreRouter from "./theatre";
 
 const router: IRouter = Router();
 
@@ -70,5 +71,6 @@ router.use(referralsRouter);
 router.use(fhirRouter);
 router.use(adminRouter);
 router.use(analyticsRouter);
+router.use(theatreRouter);
 
 export default router;
