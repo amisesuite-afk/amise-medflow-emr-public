@@ -74,6 +74,9 @@ interface AiExtractedData {
   reportDate?: string | null;
   urgency?: 'urgent' | 'routine' | null;
   extractedFacts?: ExtractedFact[];
+  suggestedPatientId?: string | null;
+  suggestedPatientName?: string | null;
+  suggestedPatientMrn?: string | null;
 }
 
 interface ReceivedDoc {
@@ -592,8 +595,11 @@ function ReceivedDocCard({
   doc: ReceivedDoc;
   onMatched: (docId: string) => void;
 }) {
-  const aiName    = doc.ai_extracted_data?.patientName ?? null;
-  const aiUrgency = doc.ai_extracted_data?.urgency ?? 'routine';
+  const aiName        = doc.ai_extracted_data?.patientName ?? null;
+  const aiUrgency     = doc.ai_extracted_data?.urgency ?? 'routine';
+  const suggestedId   = doc.ai_extracted_data?.suggestedPatientId ?? null;
+  const suggestedName = doc.ai_extracted_data?.suggestedPatientName ?? null;
+  const suggestedMrn  = doc.ai_extracted_data?.suggestedPatientMrn ?? null;
 
   const [showMatch, setShowMatch]   = useState(false);
   const [searchQ, setSearchQ]       = useState('');
@@ -821,32 +827,51 @@ function ReceivedDocCard({
       {/* Match panel */}
       {!showMatch ? (
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setShowMatch(true)}
-            style={{
-              fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: 'pointer',
-              border: '1px solid #6366f1', background: '#6366f1', color: '#fff', fontWeight: 700,
-            }}
-          >
-            {aiName ? `File for ${aiName} →` : 'Match to patient →'}
-          </button>
-          {aiName && (
+
+          {suggestedId ? (
+            /* Patient found in system — one click to file */
+            <button
+              onClick={() => void handleMatch(suggestedId)}
+              disabled={matching}
+              style={{
+                fontSize: 11, fontWeight: 700, padding: '5px 13px', borderRadius: 5,
+                border: 'none', background: '#16a34a', color: '#fff',
+                cursor: matching ? 'default' : 'pointer', opacity: matching ? 0.7 : 1,
+              }}
+            >
+              {matching ? 'Filing…' : `✓ File for ${suggestedName}${suggestedMrn ? ` · ${suggestedMrn}` : ''} →`}
+            </button>
+          ) : aiName ? (
+            /* AI found a name but no existing patient — one click to create + file */
             <button
               onClick={() => void handleCreateAndMatch(aiName)}
               disabled={creating || matching}
               style={{
-                fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 5,
+                fontSize: 11, fontWeight: 700, padding: '5px 13px', borderRadius: 5,
                 border: '1.5px dashed #0d9488', background: '#f0fdfa', color: '#0f766e',
-                cursor: (creating || matching) ? 'default' : 'pointer',
-                opacity: (creating || matching) ? 0.7 : 1,
+                cursor: (creating || matching) ? 'default' : 'pointer', opacity: (creating || matching) ? 0.7 : 1,
               }}
             >
               {creating ? 'Creating…' : `+ Create & file for ${aiName}`}
             </button>
-          )}
-          {createErr && (
+          ) : null}
+
+          {/* Always show manual search option to override AI */}
+          <button
+            onClick={() => setShowMatch(true)}
+            style={{
+              fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: 'pointer', fontWeight: 700,
+              border: '1px solid #6366f1',
+              background: suggestedId || aiName ? 'transparent' : '#6366f1',
+              color:      suggestedId || aiName ? '#6366f1'    : '#fff',
+            }}
+          >
+            {suggestedId ? 'Wrong patient? Search →' : aiName ? 'Search instead →' : 'Match to patient →'}
+          </button>
+
+          {(matchErr || createErr) && (
             <div style={{ fontSize: 11, color: '#b91c1c', padding: '3px 8px', background: '#fef2f2', borderRadius: 5 }}>
-              {createErr}
+              {matchErr ?? createErr}
             </div>
           )}
         </div>
@@ -854,7 +879,8 @@ function ReceivedDocCard({
         <div style={{ marginTop: 6, padding: '10px 11px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 7 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg)', marginBottom: 7 }}>
             Search for the patient this result belongs to
-            {aiName && <span style={{ fontWeight: 400, color: '#0d9488', marginLeft: 6 }}>(AI suggested: {aiName})</span>}
+            {suggestedName && <span style={{ fontWeight: 400, color: '#0d9488', marginLeft: 6 }}>(AI matched: {suggestedName})</span>}
+            {!suggestedName && aiName && <span style={{ fontWeight: 400, color: '#0d9488', marginLeft: 6 }}>(AI suggested: {aiName})</span>}
           </div>
           <input
             type="text"
