@@ -330,14 +330,38 @@ router.get('/api/patients/search', async (req, res) => {
   }
 
   // Name / email ILIKE
-  const { data } = await sb()
+  const { data: nameMatches } = await sb()
     .from('patients')
     .select('id, full_name, mrn, phone, email')
     .or(`full_name.ilike.%${q}%,email.ilike.%${q}%`)
     .order('full_name')
     .limit(limit);
 
-  res.json({ patients: data ?? [] });
+  // Also search filed document file names and titles — finds patients whose
+  // name appears on a previously stored file even if the spelling differs
+  // from the patient record (e.g. "Lucius_Lake_CBC.pdf" → patient Lucius Lake)
+  const { data: docHits } = await sb()
+    .from('documents')
+    .select('patient_id')
+    .not('patient_id', 'is', null)
+    .or(`file_name.ilike.%${q}%,title.ilike.%${q}%`)
+    .limit(20);
+
+  const extraIds = [...new Set((docHits ?? []).map(d => d.patient_id as string))];
+  const seenIds  = new Set((nameMatches ?? []).map(p => p.id as string));
+  const newIds   = extraIds.filter(id => !seenIds.has(id));
+
+  let docPatients: typeof nameMatches = [];
+  if (newIds.length > 0) {
+    const { data } = await sb()
+      .from('patients')
+      .select('id, full_name, mrn, phone, email')
+      .in('id', newIds)
+      .limit(limit);
+    docPatients = data ?? [];
+  }
+
+  res.json({ patients: [...(nameMatches ?? []), ...docPatients].slice(0, limit) });
 });
 
 // ── PATCH /api/calls/:id/resolve ─────────────────────────────────────────────

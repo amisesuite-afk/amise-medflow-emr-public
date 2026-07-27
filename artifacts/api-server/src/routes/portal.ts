@@ -700,16 +700,41 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
     let suggestedPatientMrn:  string | null = null;
 
     if (parsed.patientName?.trim()) {
-      const { data: matches } = await sb()
+      const name = parsed.patientName.trim();
+
+      // 1. Search by patient full_name
+      const { data: nameMatches } = await sb()
         .from('patients')
         .select('id, full_name, mrn')
-        .ilike('full_name', `%${parsed.patientName.trim()}%`)
+        .ilike('full_name', `%${name}%`)
         .limit(3);
 
-      if (matches?.length === 1) {
-        suggestedPatientId   = matches[0].id        as string;
-        suggestedPatientName = matches[0].full_name as string;
-        suggestedPatientMrn  = matches[0].mrn       as string | null;
+      let candidates = nameMatches ?? [];
+
+      // 2. If no name match, also search filed document file_name / title
+      if (candidates.length === 0) {
+        const { data: docHits } = await sb()
+          .from('documents')
+          .select('patient_id')
+          .not('patient_id', 'is', null)
+          .or(`file_name.ilike.%${name}%,title.ilike.%${name}%`)
+          .limit(5);
+
+        const patientIds = [...new Set((docHits ?? []).map(d => d.patient_id as string))];
+        if (patientIds.length > 0) {
+          const { data: docPatients } = await sb()
+            .from('patients')
+            .select('id, full_name, mrn')
+            .in('id', patientIds)
+            .limit(3);
+          candidates = docPatients ?? [];
+        }
+      }
+
+      if (candidates.length === 1) {
+        suggestedPatientId   = candidates[0].id        as string;
+        suggestedPatientName = candidates[0].full_name as string;
+        suggestedPatientMrn  = candidates[0].mrn       as string | null;
       }
     }
 
