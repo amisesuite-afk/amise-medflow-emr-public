@@ -80,6 +80,8 @@ interface ReceivedDoc {
   id: string;
   title: string;
   document_type: string;
+  mime_type: string | null;
+  storage_path: string | null;
   ai_extracted_data: AiExtractedData | null;
   ai_flags: AiFlag[] | null;
   notes: string | null;
@@ -602,7 +604,24 @@ function ReceivedDocCard({
   const [creating, setCreating]     = useState(false);
   const [createErr, setCreateErr]   = useState<string | null>(null);
   const [urgency, setUrgency]       = useState<'urgent' | 'routine'>(aiUrgency === 'urgent' ? 'urgent' : 'routine');
+  const [viewing, setViewing]       = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  async function handleViewOriginal() {
+    setViewing(true);
+    try {
+      const res = await fetch(apiUrl(`/api/documents/${doc.id}/signed-url`), {
+        headers: await staffAuthHeaders(),
+      });
+      const d = await res.json() as { url?: string; error?: string };
+      if (!res.ok || !d.url) throw new Error(d.error ?? 'Could not open file');
+      window.open(d.url, '_blank', 'noopener,noreferrer');
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Could not open file');
+    } finally {
+      setViewing(false);
+    }
+  }
 
   // Pre-fill search with AI-extracted patient name when match panel opens
   useEffect(() => {
@@ -723,9 +742,23 @@ function ReceivedDocCard({
             ABNORMAL
           </span>
         )}
-        <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--muted)' }}>
+        <span style={{ fontSize: 11, color: 'var(--muted)', marginLeft: 'auto' }}>
           {relTime(doc.created_at)}
         </span>
+        {doc.storage_path && (
+          <button
+            onClick={() => void handleViewOriginal()}
+            disabled={viewing}
+            title="Open original document"
+            style={{
+              fontSize: 11, padding: '2px 9px', borderRadius: 5, cursor: viewing ? 'default' : 'pointer',
+              border: '1px solid #6366f1', background: 'transparent', color: '#6366f1', fontWeight: 600,
+              opacity: viewing ? 0.6 : 1, whiteSpace: 'nowrap',
+            }}
+          >
+            {viewing ? 'Opening…' : '📄 View original'}
+          </button>
+        )}
       </div>
 
       {/* Source + AI patient hint */}
