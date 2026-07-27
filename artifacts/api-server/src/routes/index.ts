@@ -32,6 +32,7 @@ import suggestCodesRouter from "./suggest-codes";
 import referralsRouter from "./referrals";
 import fhirRouter from "./fhir";
 import adminRouter from "./admin";
+import analyticsRouter from "./analytics";
 
 const router: IRouter = Router();
 
@@ -68,5 +69,6 @@ router.use('/api/suggest-codes', suggestCodesRouter);
 router.use(referralsRouter);
 router.use(fhirRouter);
 router.use(adminRouter);
+router.use(analyticsRouter);
 
 export default router;
