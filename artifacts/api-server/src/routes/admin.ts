@@ -97,6 +97,47 @@ router.post('/api/admin/patient-accounts/:id/link', async (req, res) => {
   }
 });
 
+// ── DELETE /api/admin/patient-accounts/:id ───────────────────────────────────
+// Removes an unlinked portal account. Refuses to delete accounts that are
+// already linked to a patient record — those must be unlinked first.
+
+router.delete('/api/admin/patient-accounts/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { id } = req.params;
+
+  try {
+    const { data: account, error: fetchErr } = await sb()
+      .from('patient_accounts')
+      .select('id, email, patient_id')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr) throw fetchErr;
+    if (!account) {
+      res.status(404).json({ error: 'Account not found' });
+      return;
+    }
+    if (account.patient_id) {
+      res.status(409).json({ error: 'Cannot delete a linked account — unlink it from the patient record first.' });
+      return;
+    }
+
+    const { error: delErr } = await sb()
+      .from('patient_accounts')
+      .delete()
+      .eq('id', id);
+
+    if (delErr) throw delErr;
+
+    log.info({ accountId: id, email: account.email }, 'unlinked portal account deleted by staff');
+    res.json({ success: true });
+  } catch (err) {
+    log.error({ err }, 'admin delete patient account error');
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to delete account' });
+  }
+});
+
 // ── POST /api/admin/patients/quick-create ────────────────────────────────────
 // Create a minimal patient record from a name (e.g. extracted from a lab
 // report). MRN is auto-assigned by DB trigger. All fields except full_name

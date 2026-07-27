@@ -50,6 +50,10 @@ export default function PatientAccountsTab() {
   const [linking, setLinking] = useState(false);
   const [linkErr, setLinkErr] = useState<string | null>(null);
 
+  // Delete state
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchAccounts = useCallback(async () => {
@@ -92,6 +96,24 @@ export default function PatientAccountsTab() {
     }, 300);
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
   }, [patientSearch, expandedId]);
+
+  async function handleDelete(accountId: string) {
+    setDeleting(true);
+    try {
+      const r = await fetch(apiUrl(`/api/admin/patient-accounts/${accountId}`), {
+        method: 'DELETE',
+        headers: await staffAuthHeaders(),
+      });
+      const d = await r.json() as { success?: boolean; error?: string };
+      if (!r.ok) throw new Error(d.error ?? `HTTP ${r.status}`);
+      setAccounts(prev => prev.filter(a => a.id !== accountId));
+      setDeleteConfirmId(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Delete failed');
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   function openLinkPanel(accountId: string) {
     if (expandedId === accountId) { setExpandedId(null); return; }
@@ -194,7 +216,7 @@ export default function PatientAccountsTab() {
           {/* Column headers */}
           {visible.length > 0 && (
             <div style={{
-              display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 1fr 100px',
+              display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 1fr 160px',
               padding: '6px 14px', fontSize: 11, fontWeight: 700, color: '#9ca3af',
               letterSpacing: '0.05em', textTransform: 'uppercase',
             }}>
@@ -210,7 +232,7 @@ export default function PatientAccountsTab() {
             <div key={account.id}>
               {/* Account row */}
               <div style={{
-                display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 1fr 100px',
+                display: 'grid', gridTemplateColumns: '2fr 2fr 1fr 1fr 160px',
                 alignItems: 'center', padding: '10px 14px', borderRadius: 8,
                 background: expandedId === account.id ? '#f0fdf4' : '#fff',
                 border: `1px solid ${expandedId === account.id ? '#86efac' : '#e5e7eb'}`,
@@ -233,19 +255,58 @@ export default function PatientAccountsTab() {
                 </div>
                 <div style={{ fontSize: 12, color: '#6b7280' }}>{fmtTime(account.last_login_at)}</div>
                 <div style={{ fontSize: 12, color: '#6b7280' }}>{fmt(account.created_at)}</div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'right', display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                   {!account.patient_id ? (
-                    <button
-                      onClick={() => openLinkPanel(account.id)}
-                      style={{
-                        padding: '5px 12px', borderRadius: 6, border: '1px solid #0d9488',
-                        background: expandedId === account.id ? '#0d9488' : 'transparent',
-                        color: expandedId === account.id ? '#fff' : '#0d9488',
-                        fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                      }}
-                    >
-                      {expandedId === account.id ? '✕ Cancel' : 'Link →'}
-                    </button>
+                    <>
+                      <button
+                        onClick={() => openLinkPanel(account.id)}
+                        style={{
+                          padding: '5px 12px', borderRadius: 6, border: '1px solid #0d9488',
+                          background: expandedId === account.id ? '#0d9488' : 'transparent',
+                          color: expandedId === account.id ? '#fff' : '#0d9488',
+                          fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                        }}
+                      >
+                        {expandedId === account.id ? '✕ Cancel' : 'Link →'}
+                      </button>
+                      {deleteConfirmId === account.id ? (
+                        <>
+                          <button
+                            onClick={() => void handleDelete(account.id)}
+                            disabled={deleting}
+                            style={{
+                              padding: '5px 10px', borderRadius: 6, border: 'none',
+                              background: '#dc2626', color: '#fff',
+                              fontSize: 12, fontWeight: 700, cursor: 'pointer',
+                              opacity: deleting ? 0.6 : 1,
+                            }}
+                          >
+                            {deleting ? '…' : 'Confirm'}
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirmId(null)}
+                            style={{
+                              padding: '5px 8px', borderRadius: 6, border: '1px solid #e5e7eb',
+                              background: 'transparent', color: '#6b7280',
+                              fontSize: 12, cursor: 'pointer',
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => { setDeleteConfirmId(account.id); setExpandedId(null); }}
+                          style={{
+                            padding: '5px 10px', borderRadius: 6, border: '1px solid #fca5a5',
+                            background: 'transparent', color: '#dc2626',
+                            fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                          }}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </>
                   ) : (
                     <button
                       onClick={() => openLinkPanel(account.id)}
