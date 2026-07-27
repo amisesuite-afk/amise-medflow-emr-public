@@ -698,4 +698,195 @@ router.post('/api/investigations/scan-referral', async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// GET /api/investigations/received-documents
+// List email-received documents not yet matched to a patient (inbox for
+// incoming lab/pathology/imaging results that arrived via email).
+// ---------------------------------------------------------------------------
+router.get('/api/investigations/received-documents', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // All received-email documents with completed AI extraction
+    const { data: docs, error: docsErr } = await supa
+      .from('documents')
+      .select('id, title, document_type, mime_type, ai_extracted_data, ai_flags, notes, created_at, patient_id')
+      .eq('source', 'received_email')
+      .in('ai_extraction_status', ['done', 'failed', 'skipped'])
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (docsErr) throw docsErr;
+
+    const docList = docs ?? [];
+    if (docList.length === 0) {
+      res.json({ documents: [] });
+      return;
+    }
+
+    // Find which docs are already linked to an investigation_results row
+    const docIds = docList.map(d => d.id as string);
+    const { data: linked } = await supa
+      .from('investigation_results')
+      .select('linked_document_id')
+      .in('linked_document_id', docIds);
+
+    const linkedIds = new Set((linked ?? []).map(r => r.linked_document_id as string));
+
+    // Return only unmatched docs (or docs where patient_id is null = no patient yet)
+    const unmatched = docList.filter(d => !linkedIds.has(d.id as string));
+
+    res.json({ documents: unmatched });
+  } catch (err) {
+    logger.error({ err }, '[investigations/received-documents] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/received-documents/:id/match
+// Match an email-received document to a patient and file it as a result in
+// investigation_results so it appears in the Results Inbox.
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/received-documents/:id/match', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+
+  const { patientId, testName, testCategory, isCritical, notes: extraNotes } = (req.body ?? {}) as {
+    patientId?: string;
+    testName?: string;
+    testCategory?: string;
+    isCritical?: boolean;
+    notes?: string;
+  };
+
+  if (!patientId) {
+    res.status(400).json({ error: 'patientId is required' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // Fetch the document
+    const { data: doc, error: docErr } = await supa
+      .from('documents')
+      .select('id, title, document_type, ai_extracted_data, ai_flags, notes, created_at')
+      .eq('id', id)
+      .eq('source', 'received_email')
+      .maybeSingle();
+
+    if (docErr || !doc) {
+      res.status(404).json({ error: 'Document not found or not an email-received document' });
+      return;
+    }
+
+    // Check not already matched
+    const { data: existing } = await supa
+      .from('investigation_results')
+      .select('id')
+      .eq('linked_document_id', id)
+      .maybeSingle();
+
+    if (existing) {
+      res.status(409).json({ error: 'This document has already been matched to a result' });
+      return;
+    }
+
+    // Parse AI extraction data
+    let aiData: { documentSummary?: string; reportDate?: string | null; extractedFacts?: Array<{ label: string; value: string; unit?: string | null; referenceRange?: string | null; markedAbnormal?: boolean }> } = {};
+    try {
+      aiData = typeof doc.ai_extracted_data === 'string'
+        ? JSON.parse(doc.ai_extracted_data)
+        : (doc.ai_extracted_data as typeof aiData ?? {});
+    } catch { /* use empty */ }
+
+    let aiFlags: Array<{ type: string; severity: string; label: string; detail?: string }> = [];
+    try {
+      aiFlags = typeof doc.ai_flags === 'string'
+        ? JSON.parse(doc.ai_flags)
+        : (Array.isArray(doc.ai_flags) ? doc.ai_flags as typeof aiFlags : []);
+    } catch { /* use empty */ }
+
+    const isAbnormal = (aiData.extractedFacts ?? []).some(f => f.markedAbnormal);
+    const autoIsCritical = aiFlags.some(f => f.severity === 'urgent');
+    const finalIsCritical = isCritical ?? autoIsCritical;
+
+    // Build analytes from extractedFacts
+    const analytes = (aiData.extractedFacts ?? []).length > 0
+      ? (aiData.extractedFacts ?? []).map(f => ({
+          name:     f.label,
+          value:    f.value,
+          unit:     f.unit ?? null,
+          ref:      f.referenceRange ?? null,
+          abnormal: f.markedAbnormal ?? false,
+          critical: false,
+        }))
+      : null;
+
+    // Derive result_value from AI summary if no individual analytes
+    const resultValue = analytes ? null : (aiData.documentSummary ?? null);
+
+    // Infer test_category from document_type
+    const categoryFromType: Record<string, string> = {
+      lab_report:    'other',
+      imaging_report: 'other',
+    };
+    const finalTestCategory = testCategory ?? categoryFromType[doc.document_type as string] ?? 'other';
+
+    // Extract provider name from notes ("Received by email from Tapion Pathology (email@…)…")
+    const providerMatch = (doc.notes as string | null)?.match(/^Received by email from ([^(]+)/);
+    const performingLab = providerMatch ? providerMatch[1].trim() : null;
+
+    // Reported date from AI or document created_at
+    let reportedAt: string = doc.created_at as string;
+    if (aiData.reportDate) {
+      const d = new Date(aiData.reportDate);
+      if (!isNaN(d.getTime())) reportedAt = d.toISOString();
+    }
+
+    const combinedNotes = [doc.notes as string | null, extraNotes].filter(Boolean).join('\n');
+
+    const { data: result, error: insertErr } = await supa
+      .from('investigation_results')
+      .insert({
+        patient_id:        patientId,
+        encounter_id:      null,
+        test_name:         testName ?? (aiData.documentSummary ?? (doc.title as string)),
+        test_category:     finalTestCategory,
+        performing_lab:    performingLab,
+        result_value:      resultValue,
+        analytes:          analytes,
+        is_abnormal:       isAbnormal,
+        is_critical:       finalIsCritical,
+        status:            'resulted',
+        reported_at:       reportedAt,
+        linked_document_id: id,
+        notes:             combinedNotes || null,
+      })
+      .select('id')
+      .single();
+
+    if (insertErr) throw insertErr;
+
+    // Update documents.patient_id to link the document to the patient
+    await supa.from('documents').update({ patient_id: patientId }).eq('id', id);
+
+    await audit({
+      action: 'extract',
+      entityType: 'investigation_result',
+      entityId: result.id,
+      payload: { source: 'received_email', document_id: id, patientId, isCritical: finalIsCritical },
+    });
+
+    logger.info({ resultId: result.id, docId: id, patientId, isCritical: finalIsCritical }, '[investigations/received-documents/match] matched');
+    res.json({ id: result.id, status: 'resulted', isCritical: finalIsCritical });
+  } catch (err) {
+    logger.error({ err }, '[investigations/received-documents/match] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 export default router;

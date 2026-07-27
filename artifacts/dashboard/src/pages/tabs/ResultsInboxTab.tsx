@@ -53,6 +53,45 @@ interface ImagingOrder {
   action_taken?: string | null;
 }
 
+interface ExtractedFact {
+  label: string;
+  value: string;
+  unit?: string | null;
+  referenceRange?: string | null;
+  markedAbnormal?: boolean;
+}
+
+interface AiFlag {
+  type: string;
+  label: string;
+  severity: 'info' | 'attention' | 'urgent';
+  detail?: string;
+}
+
+interface AiExtractedData {
+  documentSummary?: string;
+  reportDate?: string | null;
+  extractedFacts?: ExtractedFact[];
+}
+
+interface ReceivedDoc {
+  id: string;
+  title: string;
+  document_type: string;
+  ai_extracted_data: AiExtractedData | null;
+  ai_flags: AiFlag[] | null;
+  notes: string | null;
+  created_at: string;
+  patient_id: string | null;
+}
+
+interface PatientSearchResult {
+  id: string;
+  full_name: string;
+  mrn?: string;
+  phone?: string;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function relTime(iso: string | null): string {
@@ -399,14 +438,218 @@ function ImagingCard({
   );
 }
 
+// ─── Received-from-email document card ───────────────────────────────────────
+
+function ReceivedDocCard({
+  doc,
+  onMatched,
+}: {
+  doc: ReceivedDoc;
+  onMatched: (docId: string) => void;
+}) {
+  const [showMatch, setShowMatch]         = useState(false);
+  const [searchQ, setSearchQ]             = useState('');
+  const [results, setResults]             = useState<PatientSearchResult[]>([]);
+  const [searching, setSearching]         = useState(false);
+  const [matching, setMatching]           = useState(false);
+  const [matchErr, setMatchErr]           = useState<string | null>(null);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const facts = doc.ai_extracted_data?.extractedFacts ?? [];
+  const flags = doc.ai_flags ?? [];
+  const summary = doc.ai_extracted_data?.documentSummary;
+
+  // Extract provider name from notes
+  const providerMatch = doc.notes?.match(/^Received by email from ([^(]+)/);
+  const providerLabel = providerMatch ? providerMatch[1].trim() : 'Unknown sender';
+
+  // Extract email subject from notes
+  const subjectMatch = doc.notes?.match(/subject: "([^"]+)"/);
+  const emailSubject = subjectMatch ? subjectMatch[1] : null;
+
+  const hasCriticalFlag = flags.some(f => f.severity === 'urgent');
+  const hasAbnormal = facts.some(f => f.markedAbnormal);
+
+  useEffect(() => {
+    if (!showMatch || searchQ.trim().length < 2) { setResults([]); return; }
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await fetch(apiUrl(`/api/patients/search?q=${encodeURIComponent(searchQ.trim())}&limit=8`), {
+          headers: await staffAuthHeaders(),
+        });
+        const d = await res.json() as { patients?: PatientSearchResult[] };
+        setResults(d.patients ?? []);
+      } catch { setResults([]); }
+      finally { setSearching(false); }
+    }, 300);
+    return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
+  }, [searchQ, showMatch]);
+
+  async function handleMatch(patientId: string) {
+    setMatching(true);
+    setMatchErr(null);
+    try {
+      const res = await fetch(apiUrl(`/api/investigations/received-documents/${doc.id}/match`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({ patientId }),
+      });
+      const d = await res.json() as { id?: string; isCritical?: boolean; error?: string };
+      if (!res.ok) throw new Error(d.error ?? `HTTP ${res.status}`);
+      if (d.isCritical) {
+        alert('CRITICAL result filed — this result has been flagged as critical. Please notify the patient and/or clinician immediately.');
+      }
+      onMatched(doc.id);
+    } catch (e) {
+      setMatchErr(e instanceof Error ? e.message : 'Match failed');
+    } finally {
+      setMatching(false);
+    }
+  }
+
+  const borderColor = hasCriticalFlag ? '#dc2626' : hasAbnormal ? '#d97706' : '#6366f1';
+  const bgColor     = hasCriticalFlag ? '#fef2f2' : hasAbnormal ? '#fffbeb' : '#f5f3ff';
+
+  return (
+    <div style={{ border: `1px solid ${borderColor}`, borderLeft: `3px solid ${borderColor}`, borderRadius: 8, background: bgColor, padding: '11px 13px' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
+        <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--fg)' }}>
+          {summary ?? doc.title}
+        </span>
+        {hasCriticalFlag && (
+          <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 4, background: '#b91c1c', color: '#fff' }}>
+            URGENT FLAG
+          </span>
+        )}
+        {!hasCriticalFlag && hasAbnormal && (
+          <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4, background: '#d97706', color: '#fff' }}>
+            ABNORMAL
+          </span>
+        )}
+        <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--muted)' }}>
+          {relTime(doc.created_at)}
+        </span>
+      </div>
+
+      {/* Source */}
+      <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 5 }}>
+        <b style={{ color: '#6366f1' }}>Email from:</b> {providerLabel}
+        {emailSubject && <span style={{ color: 'var(--muted)' }}> · {emailSubject}</span>}
+      </div>
+
+      {/* Extracted facts */}
+      {facts.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 6 }}>
+          {facts.map((f, i) => (
+            <span key={i} style={{
+              fontSize: 11, padding: '2px 7px', borderRadius: 4, fontFamily: 'monospace',
+              background: f.markedAbnormal ? '#fef3c7' : 'var(--neu-bg, #f8fafc)',
+              color: f.markedAbnormal ? '#92400e' : 'var(--muted)',
+              border: `1px solid ${f.markedAbnormal ? '#fcd34d' : '#e2e8f0'}`,
+            }}>
+              {f.label}: <b>{f.value}</b>{f.unit ? ` ${f.unit}` : ''}{f.referenceRange ? ` [${f.referenceRange}]` : ''}{f.markedAbnormal ? ' ↑' : ''}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* AI flags */}
+      {flags.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 3, marginBottom: 6 }}>
+          {flags.map((fl, i) => (
+            <div key={i} style={{
+              fontSize: 11, padding: '4px 8px', borderRadius: 5,
+              background: fl.severity === 'urgent' ? '#fee2e2' : fl.severity === 'attention' ? '#fef3c7' : '#f0f9ff',
+              color: fl.severity === 'urgent' ? '#b91c1c' : fl.severity === 'attention' ? '#92400e' : '#0369a1',
+              border: `1px solid ${fl.severity === 'urgent' ? '#fca5a5' : fl.severity === 'attention' ? '#fcd34d' : '#bae6fd'}`,
+            }}>
+              <b>{fl.label}:</b> {fl.detail}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Match panel */}
+      {!showMatch ? (
+        <button
+          onClick={() => setShowMatch(true)}
+          style={{
+            fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: 'pointer',
+            border: '1px solid #6366f1', background: '#6366f1', color: '#fff', fontWeight: 700,
+          }}
+        >
+          Match to patient →
+        </button>
+      ) : (
+        <div style={{ marginTop: 6, padding: '10px 11px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 7 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg)', marginBottom: 7 }}>
+            Search for the patient this result belongs to
+          </div>
+          <input
+            type="text"
+            placeholder="Type patient name, phone, or MRN…"
+            value={searchQ}
+            onChange={e => setSearchQ(e.target.value)}
+            autoFocus
+            style={{ width: '100%', boxSizing: 'border-box', padding: '7px 10px', borderRadius: 6, border: '1px solid var(--border)', fontSize: 12, outline: 'none', marginBottom: 6 }}
+          />
+          {matchErr && (
+            <div style={{ fontSize: 11, color: '#b91c1c', padding: '4px 8px', background: '#fef2f2', borderRadius: 5, marginBottom: 6 }}>
+              {matchErr}
+            </div>
+          )}
+          {searching && <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6 }}>Searching…</div>}
+          {results.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 6 }}>
+              {results.map(p => (
+                <div key={p.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', background: '#fff', border: '1px solid var(--border)', borderRadius: 6 }}>
+                  <div>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg)' }}>{p.full_name}</span>
+                    {p.mrn && <span style={{ fontSize: 11, color: '#0d9488', marginLeft: 8 }}>{p.mrn}</span>}
+                    {p.phone && <span style={{ fontSize: 11, color: 'var(--muted)', marginLeft: 8 }}>{p.phone}</span>}
+                  </div>
+                  <button
+                    onClick={() => void handleMatch(p.id)}
+                    disabled={matching}
+                    style={{
+                      fontSize: 11, fontWeight: 700, padding: '4px 12px', borderRadius: 5,
+                      border: 'none', background: '#6366f1', color: '#fff',
+                      cursor: matching ? 'default' : 'pointer', opacity: matching ? 0.7 : 1,
+                    }}
+                  >
+                    {matching ? 'Filing…' : 'File'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {!searching && searchQ.trim().length >= 2 && results.length === 0 && (
+            <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6 }}>No patients found.</div>
+          )}
+          <button
+            onClick={() => { setShowMatch(false); setSearchQ(''); setResults([]); setMatchErr(null); }}
+            style={{ fontSize: 11, padding: '3px 9px', borderRadius: 5, border: '1px solid var(--border)', background: 'none', color: 'var(--muted)', cursor: 'pointer' }}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main tab ─────────────────────────────────────────────────────────────────
 
-type TabId = 'labs' | 'imaging';
+type TabId = 'labs' | 'imaging' | 'received';
 type Filter = 'all' | 'critical';
 
 export default function ResultsInboxTab() {
   const [labResults, setLabResults]       = useState<LabResult[]>([]);
   const [imagingOrders, setImagingOrders] = useState<ImagingOrder[]>([]);
+  const [receivedDocs, setReceivedDocs]   = useState<ReceivedDoc[]>([]);
   const [names, setNames]                 = useState<Map<string, string>>(new Map());
   const [loading, setLoading]             = useState(false);
   const [error, setError]                 = useState<string | null>(null);
@@ -420,16 +663,37 @@ export default function ResultsInboxTab() {
     setError(null);
     try {
       const headers = await staffAuthHeaders();
-      const res = await fetch(apiUrl('/api/investigations/pending'), { headers });
-      if (!res.ok) {
-        const txt = await res.text().catch(() => res.statusText);
-        throw new Error(txt || `HTTP ${res.status}`);
+      const [pendingRes, receivedRes] = await Promise.all([
+        fetch(apiUrl('/api/investigations/pending'), { headers }),
+        fetch(apiUrl('/api/investigations/received-documents'), { headers }),
+      ]);
+      if (!pendingRes.ok) {
+        const txt = await pendingRes.text().catch(() => pendingRes.statusText);
+        throw new Error(txt || `HTTP ${pendingRes.status}`);
       }
-      const body = await res.json() as { labResults: LabResult[]; imagingOrders: ImagingOrder[] };
+      const body = await pendingRes.json() as { labResults: LabResult[]; imagingOrders: ImagingOrder[] };
       setLabResults(body.labResults ?? []);
       setImagingOrders(body.imagingOrders ?? []);
 
-      // Resolve patient names
+      if (receivedRes.ok) {
+        const recBody = await receivedRes.json() as { documents?: ReceivedDoc[] };
+        const docs = (recBody.documents ?? []).map(d => ({
+          ...d,
+          ai_extracted_data: typeof d.ai_extracted_data === 'string'
+            ? JSON.parse(d.ai_extracted_data) as AiExtractedData
+            : (d.ai_extracted_data ?? null),
+          ai_flags: typeof d.ai_flags === 'string'
+            ? JSON.parse(d.ai_flags) as AiFlag[]
+            : (d.ai_flags ?? null),
+        }));
+        setReceivedDocs(docs);
+        // Auto-switch to received tab if there are unmatched docs and no pending results
+        if (docs.length > 0 && body.labResults.length === 0 && body.imagingOrders.length === 0) {
+          setActiveTab('received');
+        }
+      }
+
+      // Resolve patient names for filed results
       const allIds = [
         ...new Set([
           ...(body.labResults ?? []).map(r => r.patient_id),
@@ -503,10 +767,16 @@ export default function ResultsInboxTab() {
     }
   }
 
+  function removeReceivedDoc(docId: string) {
+    setReceivedDocs(prev => prev.filter(d => d.id !== docId));
+  }
+
   // Counts exclude already-reviewed items (reviewed in this session)
   const unreviewedLabCount  = labResults.filter(r => r.status !== 'reviewed' && !r.acknowledged_at).length;
   const unreviewedImgCount  = imagingOrders.filter(r => r.status !== 'reviewed' && !r.acknowledged_at).length;
   const criticalLabCount    = labResults.filter(r => r.is_critical && r.status !== 'reviewed' && !r.acknowledged_at).length;
+  const receivedCount       = receivedDocs.length;
+  const receivedUrgentCount = receivedDocs.filter(d => (d.ai_flags ?? []).some(f => f.severity === 'urgent')).length;
 
   const filteredLabs = filter === 'critical'
     ? labResults.filter(r => r.is_critical)
@@ -525,6 +795,11 @@ export default function ResultsInboxTab() {
           </div>
         </div>
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+          {receivedUrgentCount > 0 && (
+            <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 6, background: '#7c3aed', color: '#fff' }}>
+              {receivedUrgentCount} urgent email
+            </span>
+          )}
           {criticalLabCount > 0 && (
             <span style={{ fontSize: 12, fontWeight: 700, padding: '3px 10px', borderRadius: 6, background: '#b91c1c', color: '#fff' }}>
               {criticalLabCount} critical
@@ -548,8 +823,11 @@ export default function ResultsInboxTab() {
 
       {/* Tab strip + filter */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, borderBottom: '1px solid var(--border)', paddingBottom: 8 }}>
-        {(['labs', 'imaging'] as TabId[]).map(t => {
-          const count = t === 'labs' ? unreviewedLabCount : unreviewedImgCount;
+        {([
+          { id: 'received' as TabId, label: 'Received', count: receivedCount, accent: '#6366f1', critCount: receivedUrgentCount },
+          { id: 'labs'     as TabId, label: 'Lab results', count: unreviewedLabCount, accent: '#0f172a', critCount: criticalLabCount },
+          { id: 'imaging'  as TabId, label: 'Imaging', count: unreviewedImgCount, accent: '#0f172a', critCount: 0 },
+        ]).map(({ id: t, label, count, accent, critCount }) => {
           const isActive = activeTab === t;
           return (
             <button
@@ -557,17 +835,17 @@ export default function ResultsInboxTab() {
               onClick={() => setActiveTab(t)}
               style={{
                 fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 6,
-                border: isActive ? '1.5px solid #0f172a' : '1px solid var(--border)',
-                background: isActive ? '#0f172a' : 'var(--surface)',
+                border: isActive ? `1.5px solid ${accent}` : '1px solid var(--border)',
+                background: isActive ? accent : 'var(--surface)',
                 color: isActive ? '#fff' : 'var(--muted)',
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
               }}
             >
-              {t === 'labs' ? 'Lab results' : 'Imaging'}
+              {label}
               {count > 0 && (
                 <span style={{
                   fontSize: 10, fontWeight: 800, padding: '1px 5px', borderRadius: 10,
-                  background: isActive ? '#fff3' : (t === 'labs' && criticalLabCount > 0 ? '#b91c1c' : '#94a3b8'),
+                  background: isActive ? '#fff3' : (critCount > 0 ? (t === 'received' ? '#7c3aed' : '#b91c1c') : '#94a3b8'),
                   color: '#fff',
                   minWidth: 16, textAlign: 'center',
                 }}>
@@ -599,8 +877,31 @@ export default function ResultsInboxTab() {
       </div>
 
       {/* Content */}
-      {loading && (unreviewedLabCount + unreviewedImgCount) === 0 ? (
+      {loading && (unreviewedLabCount + unreviewedImgCount + receivedCount) === 0 ? (
         <div style={{ textAlign: 'center', color: 'var(--muted)', padding: 40, fontSize: 13 }}>Loading…</div>
+      ) : activeTab === 'received' ? (
+        receivedDocs.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: 48, color: 'var(--muted)', fontSize: 13 }}>
+            <div style={{ fontSize: 15, marginBottom: 8 }}>No unmatched email reports.</div>
+            <div style={{ fontSize: 12 }}>
+              Results received via amisesuite@gmail.com appear here once the Gmail cron runs.<br />
+              Add lab senders under <b>Settings → Referring Providers</b> so their emails are picked up.
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ fontSize: 11, color: 'var(--muted)', padding: '4px 2px' }}>
+              These results arrived by email and need to be matched to a patient before they appear in the patient record.
+            </div>
+            {receivedDocs.map(d => (
+              <ReceivedDocCard
+                key={d.id}
+                doc={d}
+                onMatched={removeReceivedDoc}
+              />
+            ))}
+          </div>
+        )
       ) : activeTab === 'labs' ? (
         filteredLabs.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 48, color: 'var(--muted)', fontSize: 13 }}>
