@@ -72,6 +72,7 @@ const PatientEducationTab        = lazy(() => import('./tabs/PatientEducationTab
 const PatientTasksTab            = lazy(() => import('./tabs/PatientTasksTab'));
 const FollowUpTrackerTab         = lazy(() => import('./tabs/FollowUpTrackerTab'));
 const PatientsHubTab             = lazy(() => import('./tabs/PatientsHubTab'));
+const InsightsHubTab             = lazy(() => import('./tabs/InsightsHubTab'));
 const CheckInTab                 = lazy(() => import('./tabs/CheckInTab'));
 const PatientAccountsTab         = lazy(() => import('./tabs/PatientAccountsTab'));
 import EncounterStartWizard from '@/components/EncounterStartWizard';
@@ -1518,8 +1519,8 @@ export default function HomePage() {
         {topSection === 'dashboard'  && <DashboardTab />}
         {topSection === 'patients'   && <PatientsHubTab />}
         {topSection === 'scheduling' && <SchedulingTab />}
-        {topSection === 'analytics'   && hasRole(userRole, 'doctor') && <AnalyticsTab />}
-        {topSection === 'quality'       && hasRole(userRole, 'doctor') && <QualityImprovementTab />}
+        {topSection === 'analytics'   && hasRole(userRole, 'doctor') && <InsightsHubTab />}
+        {topSection === 'quality'       && hasRole(userRole, 'doctor') && <InsightsHubTab defaultTab="qi" />}
         {topSection === 'results_inbox' && hasRole(userRole, 'nurse')  && <ResultsInboxTab />}
         {topSection === 'settings'   && hasRole(userRole, 'admin')  && <SettingsTab />}
         {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
