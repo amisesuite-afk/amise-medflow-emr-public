@@ -709,11 +709,11 @@ router.get('/api/investigations/received-documents', async (req, res) => {
   try {
     const supa = getSupabaseAdmin();
 
-    // All received-email documents with completed AI extraction
+    // Email-received and manually-uploaded documents with completed AI extraction
     const { data: docs, error: docsErr } = await supa
       .from('documents')
       .select('id, title, document_type, mime_type, ai_extracted_data, ai_flags, notes, created_at, patient_id')
-      .eq('source', 'received_email')
+      .in('source', ['received_email', 'manual_upload'])
       .in('ai_extraction_status', ['done', 'failed', 'skipped'])
       .order('created_at', { ascending: false })
       .limit(100);
@@ -775,11 +775,11 @@ router.post('/api/investigations/received-documents/:id/match', async (req, res)
       .from('documents')
       .select('id, title, document_type, ai_extracted_data, ai_flags, notes, created_at')
       .eq('id', id)
-      .eq('source', 'received_email')
+      .in('source', ['received_email', 'manual_upload'])
       .maybeSingle();
 
     if (docErr || !doc) {
-      res.status(404).json({ error: 'Document not found or not an email-received document' });
+      res.status(404).json({ error: 'Document not found or not an email-received/manual-upload document' });
       return;
     }
 

@@ -438,6 +438,100 @@ function ImagingCard({
   );
 }
 
+// ─── Manual upload bar ───────────────────────────────────────────────────────
+
+const DOC_TYPES = [
+  { value: 'lab_report',     label: 'Lab / Path report' },
+  { value: 'imaging_report', label: 'Imaging / XR report' },
+  { value: 'other',          label: 'Other' },
+];
+
+function ManualUploadBar({ onUploaded }: { onUploaded: () => void }) {
+  const [uploading, setUploading] = useState(false);
+  const [docType, setDocType]     = useState('lab_report');
+  const [provider, setProvider]   = useState('');
+  const [err, setErr]             = useState<string | null>(null);
+  const [ok, setOk]               = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleFile(file: File) {
+    if (file.size > 20 * 1024 * 1024) {
+      setErr('File too large (max 20 MB)');
+      return;
+    }
+    setUploading(true);
+    setErr(null);
+    setOk(false);
+    try {
+      const b64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve((reader.result as string).split(',')[1] ?? '');
+        reader.onerror = () => reject(new Error('File read failed'));
+      });
+      const res = await fetch(apiUrl('/api/investigations/manual-upload-document'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({
+          dataBase64: b64,
+          mimeType: file.type || 'application/octet-stream',
+          fileName: file.name,
+          providerName: provider.trim() || undefined,
+          documentType: docType,
+        }),
+      });
+      const d = await res.json() as { id?: string; error?: string };
+      if (!res.ok) throw new Error(d.error ?? `HTTP ${res.status}`);
+      setOk(true);
+      setTimeout(() => { setOk(false); onUploaded(); }, 2000);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Upload failed');
+    } finally {
+      setUploading(false);
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '8px 10px', background: '#f5f3ff', border: '1px solid #c4b5fd', borderRadius: 8, flexWrap: 'wrap' }}>
+      <span style={{ fontSize: 12, fontWeight: 700, color: '#6d28d9', whiteSpace: 'nowrap' }}>Upload scan / photo</span>
+      <select
+        value={docType}
+        onChange={e => setDocType(e.target.value)}
+        style={{ fontSize: 11, padding: '4px 8px', borderRadius: 5, border: '1px solid #c4b5fd', background: '#fff', color: '#374151', cursor: 'pointer' }}
+      >
+        {DOC_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+      </select>
+      <input
+        type="text"
+        placeholder="Provider / lab name (optional)"
+        value={provider}
+        onChange={e => setProvider(e.target.value)}
+        style={{ flex: 1, minWidth: 140, fontSize: 11, padding: '4px 8px', borderRadius: 5, border: '1px solid #c4b5fd', outline: 'none', background: '#fff', color: '#374151' }}
+      />
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".pdf,image/jpeg,image/png,image/webp"
+        style={{ display: 'none' }}
+        onChange={e => { const f = e.target.files?.[0]; if (f) void handleFile(f); }}
+      />
+      <button
+        onClick={() => inputRef.current?.click()}
+        disabled={uploading}
+        style={{
+          fontSize: 11, fontWeight: 700, padding: '5px 13px', borderRadius: 5, cursor: uploading ? 'default' : 'pointer',
+          border: 'none', background: ok ? '#16a34a' : '#6d28d9', color: '#fff',
+          opacity: uploading ? 0.7 : 1, whiteSpace: 'nowrap',
+        }}
+      >
+        {uploading ? 'Uploading…' : ok ? '✓ Queued' : '+ Upload'}
+      </button>
+      {err && <span style={{ fontSize: 11, color: '#b91c1c' }}>{err}</span>}
+    </div>
+  );
+}
+
 // ─── Received-from-email document card ───────────────────────────────────────
 
 function ReceivedDocCard({
@@ -880,28 +974,31 @@ export default function ResultsInboxTab() {
       {loading && (unreviewedLabCount + unreviewedImgCount + receivedCount) === 0 ? (
         <div style={{ textAlign: 'center', color: 'var(--muted)', padding: 40, fontSize: 13 }}>Loading…</div>
       ) : activeTab === 'received' ? (
-        receivedDocs.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 48, color: 'var(--muted)', fontSize: 13 }}>
-            <div style={{ fontSize: 15, marginBottom: 8 }}>No unmatched email reports.</div>
-            <div style={{ fontSize: 12 }}>
-              Results received via amisesuite@gmail.com appear here once the Gmail cron runs.<br />
-              Add lab senders under <b>Settings → Referring Providers</b> so their emails are picked up.
+        <>
+          <ManualUploadBar onUploaded={() => void load()} />
+          {receivedDocs.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: 40, color: 'var(--muted)', fontSize: 13 }}>
+              <div style={{ fontSize: 15, marginBottom: 8 }}>No unmatched reports.</div>
+              <div style={{ fontSize: 12 }}>
+                Results received via amisesuite@gmail.com appear here automatically (15 min cron).<br />
+                Use the upload button above to manually add a scan or photo.
+              </div>
             </div>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ fontSize: 11, color: 'var(--muted)', padding: '4px 2px' }}>
-              These results arrived by email and need to be matched to a patient before they appear in the patient record.
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 11, color: 'var(--muted)', padding: '4px 2px' }}>
+                Match each report to a patient to file it in their record.
+              </div>
+              {receivedDocs.map(d => (
+                <ReceivedDocCard
+                  key={d.id}
+                  doc={d}
+                  onMatched={removeReceivedDoc}
+                />
+              ))}
             </div>
-            {receivedDocs.map(d => (
-              <ReceivedDocCard
-                key={d.id}
-                doc={d}
-                onMatched={removeReceivedDoc}
-              />
-            ))}
-          </div>
-        )
+          )}
+        </>
       ) : activeTab === 'labs' ? (
         filteredLabs.length === 0 ? (
           <div style={{ textAlign: 'center', padding: 48, color: 'var(--muted)', fontSize: 13 }}>

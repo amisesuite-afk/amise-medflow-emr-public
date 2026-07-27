@@ -61,6 +61,16 @@ export async function listUnreadMessages(maxResults = 20): Promise<string[]> {
   return (data.messages || []).map(m => m.id!);
 }
 
+export async function listMessagesByQuery(q: string, maxResults = 50): Promise<string[]> {
+  const gmail = getGmail();
+  const { data } = await withRetry(() => gmail.users.messages.list({
+    userId: 'me',
+    q,
+    maxResults,
+  }));
+  return (data.messages || []).map(m => m.id!);
+}
+
 export interface ParsedMessage {
   id: string;
   threadId: string;
