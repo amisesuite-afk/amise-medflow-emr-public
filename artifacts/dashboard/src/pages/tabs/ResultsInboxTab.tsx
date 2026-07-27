@@ -663,6 +663,8 @@ function ReceivedDocCard({
   const subjectMatch = doc.notes?.match(/subject: "([^"]+)"/);
   const emailSubject = subjectMatch ? subjectMatch[1] : null;
 
+  const isUnknownSender = doc.notes?.includes('⚠ Unknown sender') ?? false;
+
   const hasCriticalFlag = flags.some(f => f.severity === 'urgent') || urgency === 'urgent';
   const hasAbnormal     = facts.some(f => f.markedAbnormal);
 
@@ -783,7 +785,12 @@ function ReceivedDocCard({
 
       {/* Source + AI patient hint */}
       <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 5 }}>
-        <b style={{ color: '#6366f1' }}>Email from:</b> {providerLabel}
+        <b style={{ color: isUnknownSender ? '#b45309' : '#6366f1' }}>Email from:</b> {providerLabel}
+        {isUnknownSender && (
+          <span style={{ marginLeft: 6, fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4, background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>
+            ⚠ Unknown sender
+          </span>
+        )}
         {emailSubject && <span style={{ color: 'var(--muted)' }}> · {emailSubject}</span>}
         {aiName && (
           <span style={{ marginLeft: 8, color: '#0d9488' }}>
