@@ -692,10 +692,40 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
 
     const flags = Array.isArray(parsed.flags) ? parsed.flags : [];
 
+    // Auto-match: if AI extracted a patient name, search the patients table for an
+    // unambiguous match (exactly one hit). Stored as a suggestion only — staff must
+    // confirm before filing. Never auto-files without human action.
+    let suggestedPatientId:   string | null = null;
+    let suggestedPatientName: string | null = null;
+    let suggestedPatientMrn:  string | null = null;
+
+    if (parsed.patientName?.trim()) {
+      const { data: matches } = await sb()
+        .from('patients')
+        .select('id, full_name, mrn')
+        .ilike('full_name', `%${parsed.patientName.trim()}%`)
+        .limit(3);
+
+      if (matches?.length === 1) {
+        suggestedPatientId   = matches[0].id        as string;
+        suggestedPatientName = matches[0].full_name as string;
+        suggestedPatientMrn  = matches[0].mrn       as string | null;
+      }
+    }
+
     await sb()
       .from('documents')
       .update({
-        ai_extracted_data:    JSON.stringify({ documentSummary: parsed.documentSummary ?? null, patientName: parsed.patientName ?? null, reportDate: parsed.reportDate ?? null, urgency: parsed.urgency === 'urgent' ? 'urgent' : 'routine', extractedFacts: parsed.extractedFacts ?? [] }),
+        ai_extracted_data: JSON.stringify({
+          documentSummary:     parsed.documentSummary ?? null,
+          patientName:         parsed.patientName ?? null,
+          reportDate:          parsed.reportDate ?? null,
+          urgency:             parsed.urgency === 'urgent' ? 'urgent' : 'routine',
+          extractedFacts:      parsed.extractedFacts ?? [],
+          suggestedPatientId,
+          suggestedPatientName,
+          suggestedPatientMrn,
+        }),
         ai_flags:             flags.length ? JSON.stringify(flags) : null,
         ai_extraction_status: 'done',
         ai_extraction_at:     new Date().toISOString(),
