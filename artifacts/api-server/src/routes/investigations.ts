@@ -712,7 +712,7 @@ router.get('/api/investigations/received-documents', async (req, res) => {
     // Email-received and manually-uploaded documents with completed AI extraction
     const { data: docs, error: docsErr } = await supa
       .from('documents')
-      .select('id, title, document_type, mime_type, ai_extracted_data, ai_flags, notes, created_at, patient_id')
+      .select('id, title, document_type, mime_type, storage_path, ai_extracted_data, ai_flags, notes, created_at, patient_id')
       .in('source', ['received_email', 'manual_upload'])
       .in('ai_extraction_status', ['done', 'failed', 'skipped'])
       .order('created_at', { ascending: false })
@@ -741,6 +741,33 @@ router.get('/api/investigations/received-documents', async (req, res) => {
     res.json({ documents: unmatched });
   } catch (err) {
     logger.error({ err }, '[investigations/received-documents] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/documents/:id/signed-url
+// Generate a short-lived signed URL so staff can view the original file.
+// ---------------------------------------------------------------------------
+router.get('/api/documents/:id/signed-url', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+  try {
+    const supa = getSupabaseAdmin();
+    const { data: doc, error: docErr } = await supa
+      .from('documents')
+      .select('storage_path, mime_type')
+      .eq('id', id)
+      .single();
+    if (docErr || !doc) { res.status(404).json({ error: 'Document not found' }); return; }
+    if (!doc.storage_path) { res.status(404).json({ error: 'No file stored for this document' }); return; }
+    const { data: signed, error: signErr } = await supa.storage
+      .from('patient-documents')
+      .createSignedUrl(doc.storage_path as string, 300); // 5-minute window
+    if (signErr || !signed?.signedUrl) throw signErr ?? new Error('Could not generate signed URL');
+    res.json({ url: signed.signedUrl, mimeType: doc.mime_type });
+  } catch (err) {
+    logger.error({ err }, '[documents/signed-url] error');
     res.status(502).json({ error: errStr(err) });
   }
 });

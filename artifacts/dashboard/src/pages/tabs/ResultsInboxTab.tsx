@@ -70,7 +70,9 @@ interface AiFlag {
 
 interface AiExtractedData {
   documentSummary?: string;
+  patientName?: string | null;
   reportDate?: string | null;
+  urgency?: 'urgent' | 'routine' | null;
   extractedFacts?: ExtractedFact[];
 }
 
@@ -78,6 +80,8 @@ interface ReceivedDoc {
   id: string;
   title: string;
   document_type: string;
+  mime_type: string | null;
+  storage_path: string | null;
   ai_extracted_data: AiExtractedData | null;
   ai_flags: AiFlag[] | null;
   notes: string | null;
@@ -588,15 +592,45 @@ function ReceivedDocCard({
   doc: ReceivedDoc;
   onMatched: (docId: string) => void;
 }) {
-  const [showMatch, setShowMatch]         = useState(false);
-  const [searchQ, setSearchQ]             = useState('');
-  const [results, setResults]             = useState<PatientSearchResult[]>([]);
-  const [searching, setSearching]         = useState(false);
-  const [matching, setMatching]           = useState(false);
-  const [matchErr, setMatchErr]           = useState<string | null>(null);
-  const [creating, setCreating]           = useState(false);
-  const [createErr, setCreateErr]         = useState<string | null>(null);
+  const aiName    = doc.ai_extracted_data?.patientName ?? null;
+  const aiUrgency = doc.ai_extracted_data?.urgency ?? 'routine';
+
+  const [showMatch, setShowMatch]   = useState(false);
+  const [searchQ, setSearchQ]       = useState('');
+  const [results, setResults]       = useState<PatientSearchResult[]>([]);
+  const [searching, setSearching]   = useState(false);
+  const [matching, setMatching]     = useState(false);
+  const [matchErr, setMatchErr]     = useState<string | null>(null);
+  const [creating, setCreating]     = useState(false);
+  const [createErr, setCreateErr]   = useState<string | null>(null);
+  const [urgency, setUrgency]       = useState<'urgent' | 'routine'>(aiUrgency === 'urgent' ? 'urgent' : 'routine');
+  const [viewing, setViewing]       = useState(false);
+  const [docUrl, setDocUrl]         = useState<string | null>(null);
+  const [docMimeType, setDocMimeType] = useState<string | null>(null);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  async function handleViewOriginal() {
+    if (docUrl) { setDocUrl(null); return; } // toggle off
+    setViewing(true);
+    try {
+      const res = await fetch(apiUrl(`/api/documents/${doc.id}/signed-url`), {
+        headers: await staffAuthHeaders(),
+      });
+      const d = await res.json() as { url?: string; mimeType?: string; error?: string };
+      if (!res.ok || !d.url) throw new Error(d.error ?? 'Could not open file');
+      setDocUrl(d.url);
+      setDocMimeType(d.mimeType ?? null);
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Could not open file');
+    } finally {
+      setViewing(false);
+    }
+  }
+
+  // Pre-fill search with AI-extracted patient name when match panel opens
+  useEffect(() => {
+    if (showMatch && aiName && !searchQ) setSearchQ(aiName);
+  }, [showMatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const facts = doc.ai_extracted_data?.extractedFacts ?? [];
   const flags = doc.ai_flags ?? [];
@@ -607,6 +641,14 @@ function ReceivedDocCard({
     ? rawSummary
     : null;
 
+  // If the document title itself is raw JSON (old extraction bug), try to salvage it
+  const displayTitle = (() => {
+    if (summary) return summary;
+    const t = doc.title ?? '';
+    if (!t.trimStart().startsWith('{')) return t;
+    try { return (JSON.parse(t) as { documentSummary?: string }).documentSummary ?? t; } catch { return t; }
+  })();
+
   // Extract provider name from notes
   const providerMatch = doc.notes?.match(/^Received by email from ([^(]+)/);
   const providerLabel = providerMatch ? providerMatch[1].trim() : 'Unknown sender';
@@ -615,8 +657,8 @@ function ReceivedDocCard({
   const subjectMatch = doc.notes?.match(/subject: "([^"]+)"/);
   const emailSubject = subjectMatch ? subjectMatch[1] : null;
 
-  const hasCriticalFlag = flags.some(f => f.severity === 'urgent');
-  const hasAbnormal = facts.some(f => f.markedAbnormal);
+  const hasCriticalFlag = flags.some(f => f.severity === 'urgent') || urgency === 'urgent';
+  const hasAbnormal     = facts.some(f => f.markedAbnormal);
 
   useEffect(() => {
     if (!showMatch || searchQ.trim().length < 2) { setResults([]); return; }
@@ -685,9 +727,24 @@ function ReceivedDocCard({
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
         <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--fg)' }}>
-          {summary ?? doc.title}
+          {displayTitle}
         </span>
-        {hasCriticalFlag && (
+
+        {/* Urgency toggle badge */}
+        <button
+          title="Toggle urgency"
+          onClick={() => setUrgency(u => u === 'urgent' ? 'routine' : 'urgent')}
+          style={{
+            fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 4, cursor: 'pointer',
+            border: 'none',
+            background: urgency === 'urgent' ? '#b91c1c' : '#d1d5db',
+            color:      urgency === 'urgent' ? '#fff'    : '#374151',
+          }}
+        >
+          {urgency === 'urgent' ? 'URGENT' : 'ROUTINE'}
+        </button>
+
+        {hasCriticalFlag && urgency !== 'urgent' && (
           <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 4, background: '#b91c1c', color: '#fff' }}>
             URGENT FLAG
           </span>
@@ -697,15 +754,36 @@ function ReceivedDocCard({
             ABNORMAL
           </span>
         )}
-        <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--muted)' }}>
+        <span style={{ fontSize: 11, color: 'var(--muted)', marginLeft: 'auto' }}>
           {relTime(doc.created_at)}
         </span>
+        {doc.storage_path && (
+          <button
+            onClick={() => void handleViewOriginal()}
+            disabled={viewing}
+            title={docUrl ? 'Hide document' : 'Show original document inline'}
+            style={{
+              fontSize: 11, padding: '2px 9px', borderRadius: 5, cursor: viewing ? 'default' : 'pointer',
+              border: `1px solid ${docUrl ? '#374151' : '#6366f1'}`,
+              background: docUrl ? '#374151' : 'transparent',
+              color: docUrl ? '#fff' : '#6366f1', fontWeight: 600,
+              opacity: viewing ? 0.6 : 1, whiteSpace: 'nowrap',
+            }}
+          >
+            {viewing ? 'Loading…' : docUrl ? '✕ Hide' : '📄 View original'}
+          </button>
+        )}
       </div>
 
-      {/* Source */}
+      {/* Source + AI patient hint */}
       <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 5 }}>
         <b style={{ color: '#6366f1' }}>Email from:</b> {providerLabel}
         {emailSubject && <span style={{ color: 'var(--muted)' }}> · {emailSubject}</span>}
+        {aiName && (
+          <span style={{ marginLeft: 8, color: '#0d9488' }}>
+            · <b>Patient (AI):</b> {aiName}
+          </span>
+        )}
       </div>
 
       {/* Extracted facts */}
@@ -742,19 +820,41 @@ function ReceivedDocCard({
 
       {/* Match panel */}
       {!showMatch ? (
-        <button
-          onClick={() => setShowMatch(true)}
-          style={{
-            fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: 'pointer',
-            border: '1px solid #6366f1', background: '#6366f1', color: '#fff', fontWeight: 700,
-          }}
-        >
-          Match to patient →
-        </button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setShowMatch(true)}
+            style={{
+              fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: 'pointer',
+              border: '1px solid #6366f1', background: '#6366f1', color: '#fff', fontWeight: 700,
+            }}
+          >
+            {aiName ? `File for ${aiName} →` : 'Match to patient →'}
+          </button>
+          {aiName && (
+            <button
+              onClick={() => void handleCreateAndMatch(aiName)}
+              disabled={creating || matching}
+              style={{
+                fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 5,
+                border: '1.5px dashed #0d9488', background: '#f0fdfa', color: '#0f766e',
+                cursor: (creating || matching) ? 'default' : 'pointer',
+                opacity: (creating || matching) ? 0.7 : 1,
+              }}
+            >
+              {creating ? 'Creating…' : `+ Create & file for ${aiName}`}
+            </button>
+          )}
+          {createErr && (
+            <div style={{ fontSize: 11, color: '#b91c1c', padding: '3px 8px', background: '#fef2f2', borderRadius: 5 }}>
+              {createErr}
+            </div>
+          )}
+        </div>
       ) : (
         <div style={{ marginTop: 6, padding: '10px 11px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 7 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg)', marginBottom: 7 }}>
             Search for the patient this result belongs to
+            {aiName && <span style={{ fontWeight: 400, color: '#0d9488', marginLeft: 6 }}>(AI suggested: {aiName})</span>}
           </div>
           <input
             type="text"
@@ -822,6 +922,25 @@ function ReceivedDocCard({
           >
             Cancel
           </button>
+        </div>
+      )}
+
+      {/* Inline document viewer */}
+      {docUrl && (
+        <div style={{ marginTop: 10, borderRadius: 7, overflow: 'hidden', border: '1px solid var(--border)' }}>
+          {docMimeType?.startsWith('image/') ? (
+            <img
+              src={docUrl}
+              alt="Original document"
+              style={{ display: 'block', width: '100%', maxHeight: 700, objectFit: 'contain', background: '#f8fafc' }}
+            />
+          ) : (
+            <embed
+              src={docUrl}
+              type="application/pdf"
+              style={{ display: 'block', width: '100%', height: 700 }}
+            />
+          )}
         </div>
       )}
     </div>
@@ -1078,17 +1197,44 @@ export default function ResultsInboxTab() {
               </div>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div style={{ fontSize: 11, color: 'var(--muted)', padding: '4px 2px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+              <div style={{ fontSize: 11, color: 'var(--muted)', padding: '4px 2px 8px' }}>
                 Match each report to a patient to file it in their record.
               </div>
-              {receivedDocs.map(d => (
-                <ReceivedDocCard
-                  key={d.id}
-                  doc={d}
-                  onMatched={removeReceivedDoc}
-                />
-              ))}
+              {(() => {
+                const CATEGORY_ORDER = [
+                  { key: 'lab_report',       label: 'Labs' },
+                  { key: 'imaging_report',   label: 'Imaging' },
+                  { key: 'endoscopy_report', label: 'Endoscopy reports' },
+                  { key: 'histology_report', label: 'Histology reports' },
+                  { key: 'other',            label: 'Other' },
+                ];
+                const knownKeys = new Set(CATEGORY_ORDER.map(c => c.key));
+                // Docs with an unrecognised type get bucketed into 'other'
+                const normalised = receivedDocs.map(d => ({
+                  ...d,
+                  document_type: knownKeys.has(d.document_type) ? d.document_type : 'other',
+                }));
+                return CATEGORY_ORDER
+                  .map(cat => ({ ...cat, docs: normalised.filter(d => d.document_type === cat.key) }))
+                  .filter(cat => cat.docs.length > 0)
+                  .map(cat => (
+                    <div key={cat.key} style={{ marginBottom: 14 }}>
+                      <div style={{
+                        fontSize: 10, fontWeight: 800, letterSpacing: '0.07em', textTransform: 'uppercase',
+                        color: 'var(--muted)', padding: '2px 4px 6px',
+                        borderBottom: '1px solid var(--border)', marginBottom: 8,
+                      }}>
+                        {cat.label} <span style={{ fontWeight: 500, opacity: 0.7 }}>({cat.docs.length})</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {cat.docs.map(d => (
+                          <ReceivedDocCard key={d.id} doc={d} onMatched={removeReceivedDoc} />
+                        ))}
+                      </div>
+                    </div>
+                  ));
+              })()}
             </div>
           )}
         </>

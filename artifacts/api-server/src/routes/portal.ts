@@ -634,17 +634,21 @@ export async function extractDocumentInsights(documentId: string): Promise<void>
       ? { type: 'document' as const, source: { type: 'base64' as const, media_type: 'application/pdf' as const, data: base64 } }
       : { type: 'image' as const, source: { type: 'base64' as const, media_type: doc.mime_type as 'image/jpeg' | 'image/png' | 'image/webp', data: base64 } };
 
-    const instructions = `This is a clinical document ("${doc.title}", type: ${doc.document_type}) uploaded by a patient of a surgical/endoscopy practice in Saint Lucia${patient?.full_name ? ` (patient: ${patient.full_name})` : ''}.
+    const instructions = `This is a clinical document ("${doc.title}", type: ${doc.document_type}) received by a surgical/endoscopy practice in Saint Lucia${patient?.full_name ? ` (patient on file: ${patient.full_name})` : ''}.
 
 Read the document and TRANSCRIBE — do not interpret or diagnose — what it states. Extract:
+- The patient's full name exactly as printed on the document header (letterhead, label, or patient line).
 - Each named test/measurement/finding with its stated value, unit, and any reference range PRINTED ON THE DOCUMENT ITSELF.
 - Whether the document itself marks/flags that item as out-of-range, abnormal, critical, or urgent (only report what the document marks — never decide this yourself).
 - Key dates (collection/report/procedure date).
+- Whether the document as a whole is urgent: mark "urgent" only if the document contains critical/panic values, is stamped URGENT/STAT, or has a finding the document itself flags as requiring immediate attention. Otherwise mark "routine".
 
 Return a JSON object with this exact schema (no markdown fences, no commentary):
 {
-  "documentSummary": "one factual sentence describing what this document is (e.g. 'Full blood count report dated 12 March 2026')",
+  "documentSummary": "one factual sentence: report type, patient name, date, and lab/facility (e.g. 'Full blood count for John Smith dated 12 March 2026 from SLU Lab Services')",
+  "patientName": "patient full name as printed on the document, or null if not visible",
   "reportDate": "date string as printed, or null",
+  "urgency": "urgent or routine",
   "extractedFacts": [{"label": "string", "value": "string", "unit": "string|null", "referenceRange": "string|null", "markedAbnormal": true|false}],
   "flags": [{"type": "out_of_range|urgent_marking|incomplete|illegible|other", "label": "short label", "severity": "info|attention|urgent", "detail": "one factual sentence quoting/describing what the document shows — no interpretation"}]
 }
@@ -675,7 +679,7 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
       if (jsonMatch) raw = jsonMatch[0];
     }
 
-    let parsed: { documentSummary?: string; reportDate?: string | null; extractedFacts?: unknown[]; flags?: unknown[] };
+    let parsed: { documentSummary?: string | null; patientName?: string | null; reportDate?: string | null; urgency?: string; extractedFacts?: unknown[]; flags?: unknown[] };
     try {
       parsed = JSON.parse(raw);
     } catch {
@@ -691,7 +695,7 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
     await sb()
       .from('documents')
       .update({
-        ai_extracted_data:    JSON.stringify({ documentSummary: parsed.documentSummary ?? null, reportDate: parsed.reportDate ?? null, extractedFacts: parsed.extractedFacts ?? [] }),
+        ai_extracted_data:    JSON.stringify({ documentSummary: parsed.documentSummary ?? null, patientName: parsed.patientName ?? null, reportDate: parsed.reportDate ?? null, urgency: parsed.urgency === 'urgent' ? 'urgent' : 'routine', extractedFacts: parsed.extractedFacts ?? [] }),
         ai_flags:             flags.length ? JSON.stringify(flags) : null,
         ai_extraction_status: 'done',
         ai_extraction_at:     new Date().toISOString(),
