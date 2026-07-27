@@ -446,13 +446,35 @@ const DOC_TYPES = [
   { value: 'other',          label: 'Other' },
 ];
 
-function ManualUploadBar({ onUploaded }: { onUploaded: () => void }) {
+function ManualUploadBar({ onUploaded, onBackfill }: { onUploaded: () => void; onBackfill: () => void }) {
   const [uploading, setUploading] = useState(false);
   const [docType, setDocType]     = useState('lab_report');
   const [provider, setProvider]   = useState('');
   const [err, setErr]             = useState<string | null>(null);
   const [ok, setOk]               = useState(false);
+  const [backfilling, setBackfilling] = useState(false);
+  const [backfillOk, setBackfillOk]   = useState<{ docs: number; already: number } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  async function triggerBackfill() {
+    setBackfilling(true);
+    setBackfillOk(null);
+    setErr(null);
+    try {
+      const res = await fetch(apiUrl('/api/cron/email-documents/backfill?days=30'), {
+        method: 'POST',
+        headers: await staffAuthHeaders(),
+      });
+      const d = await res.json() as { documentsCreated?: number; alreadyStored?: number; errors?: unknown[]; error?: string };
+      if (!res.ok) throw new Error(d.error ?? `HTTP ${res.status}`);
+      setBackfillOk({ docs: d.documentsCreated ?? 0, already: d.alreadyStored ?? 0 });
+      setTimeout(() => { setBackfillOk(null); onBackfill(); }, 3000);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Backfill failed');
+    } finally {
+      setBackfilling(false);
+    }
+  }
 
   async function handleFile(file: File) {
     if (file.size > 20 * 1024 * 1024) {
@@ -493,41 +515,64 @@ function ManualUploadBar({ onUploaded }: { onUploaded: () => void }) {
   }
 
   return (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '8px 10px', background: '#f5f3ff', border: '1px solid #c4b5fd', borderRadius: 8, flexWrap: 'wrap' }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: '#6d28d9', whiteSpace: 'nowrap' }}>Upload scan / photo</span>
-      <select
-        value={docType}
-        onChange={e => setDocType(e.target.value)}
-        style={{ fontSize: 11, padding: '4px 8px', borderRadius: 5, border: '1px solid #c4b5fd', background: '#fff', color: '#374151', cursor: 'pointer' }}
-      >
-        {DOC_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
-      </select>
-      <input
-        type="text"
-        placeholder="Provider / lab name (optional)"
-        value={provider}
-        onChange={e => setProvider(e.target.value)}
-        style={{ flex: 1, minWidth: 140, fontSize: 11, padding: '4px 8px', borderRadius: 5, border: '1px solid #c4b5fd', outline: 'none', background: '#fff', color: '#374151' }}
-      />
-      <input
-        ref={inputRef}
-        type="file"
-        accept=".pdf,image/jpeg,image/png,image/webp"
-        style={{ display: 'none' }}
-        onChange={e => { const f = e.target.files?.[0]; if (f) void handleFile(f); }}
-      />
-      <button
-        onClick={() => inputRef.current?.click()}
-        disabled={uploading}
-        style={{
-          fontSize: 11, fontWeight: 700, padding: '5px 13px', borderRadius: 5, cursor: uploading ? 'default' : 'pointer',
-          border: 'none', background: ok ? '#16a34a' : '#6d28d9', color: '#fff',
-          opacity: uploading ? 0.7 : 1, whiteSpace: 'nowrap',
-        }}
-      >
-        {uploading ? 'Uploading…' : ok ? '✓ Queued' : '+ Upload'}
-      </button>
-      {err && <span style={{ fontSize: 11, color: '#b91c1c' }}>{err}</span>}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      {/* Backfill row */}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '8px 10px', background: '#eff6ff', border: '1px solid #93c5fd', borderRadius: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#1d4ed8', whiteSpace: 'nowrap' }}>Pull from Gmail</span>
+        <span style={{ fontSize: 11, color: '#3b82f6', flex: 1 }}>
+          {backfillOk
+            ? `✓ Found ${backfillOk.docs} new · ${backfillOk.already} already stored`
+            : 'Scans amisesuite@gmail.com for lab results from the past 30 days (all senders + dawitson forwards)'}
+        </span>
+        <button
+          onClick={() => void triggerBackfill()}
+          disabled={backfilling}
+          style={{
+            fontSize: 11, fontWeight: 700, padding: '5px 13px', borderRadius: 5, cursor: backfilling ? 'default' : 'pointer',
+            border: 'none', background: backfillOk ? '#16a34a' : '#1d4ed8', color: '#fff',
+            opacity: backfilling ? 0.7 : 1, whiteSpace: 'nowrap',
+          }}
+        >
+          {backfilling ? 'Scanning…' : backfillOk ? '✓ Done' : '↙ Pull 30 days'}
+        </button>
+      </div>
+      {/* Manual upload row */}
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center', padding: '8px 10px', background: '#f5f3ff', border: '1px solid #c4b5fd', borderRadius: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#6d28d9', whiteSpace: 'nowrap' }}>Upload scan / photo</span>
+        <select
+          value={docType}
+          onChange={e => setDocType(e.target.value)}
+          style={{ fontSize: 11, padding: '4px 8px', borderRadius: 5, border: '1px solid #c4b5fd', background: '#fff', color: '#374151', cursor: 'pointer' }}
+        >
+          {DOC_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+        </select>
+        <input
+          type="text"
+          placeholder="Provider / lab name (optional)"
+          value={provider}
+          onChange={e => setProvider(e.target.value)}
+          style={{ flex: 1, minWidth: 140, fontSize: 11, padding: '4px 8px', borderRadius: 5, border: '1px solid #c4b5fd', outline: 'none', background: '#fff', color: '#374151' }}
+        />
+        <input
+          ref={inputRef}
+          type="file"
+          accept=".pdf,image/jpeg,image/png,image/webp"
+          style={{ display: 'none' }}
+          onChange={e => { const f = e.target.files?.[0]; if (f) void handleFile(f); }}
+        />
+        <button
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          style={{
+            fontSize: 11, fontWeight: 700, padding: '5px 13px', borderRadius: 5, cursor: uploading ? 'default' : 'pointer',
+            border: 'none', background: ok ? '#16a34a' : '#6d28d9', color: '#fff',
+            opacity: uploading ? 0.7 : 1, whiteSpace: 'nowrap',
+          }}
+        >
+          {uploading ? 'Uploading…' : ok ? '✓ Queued' : '+ Upload PDF/photo'}
+        </button>
+      </div>
+      {err && <div style={{ fontSize: 11, color: '#b91c1c', padding: '4px 8px', background: '#fef2f2', borderRadius: 5 }}>{err}</div>}
     </div>
   );
 }
@@ -547,6 +592,8 @@ function ReceivedDocCard({
   const [searching, setSearching]         = useState(false);
   const [matching, setMatching]           = useState(false);
   const [matchErr, setMatchErr]           = useState<string | null>(null);
+  const [creating, setCreating]           = useState(false);
+  const [createErr, setCreateErr]         = useState<string | null>(null);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const facts = doc.ai_extracted_data?.extractedFacts ?? [];
@@ -580,6 +627,26 @@ function ReceivedDocCard({
     }, 300);
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
   }, [searchQ, showMatch]);
+
+  async function handleCreateAndMatch(name: string) {
+    setCreating(true);
+    setCreateErr(null);
+    try {
+      const res = await fetch(apiUrl('/api/admin/patients/quick-create'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify({ fullName: name }),
+      });
+      const d = await res.json() as { id?: string; mrn?: string; full_name?: string; error?: string };
+      if (!res.ok) throw new Error(d.error ?? `HTTP ${res.status}`);
+      if (!d.id) throw new Error('No patient ID returned');
+      await handleMatch(d.id);
+    } catch (e) {
+      setCreateErr(e instanceof Error ? e.message : 'Failed to create patient');
+    } finally {
+      setCreating(false);
+    }
+  }
 
   async function handleMatch(patientId: string) {
     setMatching(true);
@@ -721,10 +788,29 @@ function ReceivedDocCard({
             </div>
           )}
           {!searching && searchQ.trim().length >= 2 && results.length === 0 && (
-            <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 6 }}>No patients found.</div>
+            <div style={{ marginBottom: 6 }}>
+              <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 5 }}>No patients found.</div>
+              <button
+                onClick={() => void handleCreateAndMatch(searchQ.trim())}
+                disabled={creating || matching}
+                style={{
+                  fontSize: 11, fontWeight: 700, padding: '5px 13px', borderRadius: 5,
+                  border: '1.5px dashed #6366f1', background: '#f5f3ff', color: '#4f46e5',
+                  cursor: (creating || matching) ? 'default' : 'pointer',
+                  opacity: (creating || matching) ? 0.7 : 1,
+                }}
+              >
+                {creating ? 'Creating patient…' : `+ Create patient: "${searchQ.trim()}"`}
+              </button>
+              {createErr && (
+                <div style={{ fontSize: 11, color: '#b91c1c', padding: '4px 8px', background: '#fef2f2', borderRadius: 5, marginTop: 4 }}>
+                  {createErr}
+                </div>
+              )}
+            </div>
           )}
           <button
-            onClick={() => { setShowMatch(false); setSearchQ(''); setResults([]); setMatchErr(null); }}
+            onClick={() => { setShowMatch(false); setSearchQ(''); setResults([]); setMatchErr(null); setCreateErr(null); }}
             style={{ fontSize: 11, padding: '3px 9px', borderRadius: 5, border: '1px solid var(--border)', background: 'none', color: 'var(--muted)', cursor: 'pointer' }}
           >
             Cancel
@@ -975,7 +1061,7 @@ export default function ResultsInboxTab() {
         <div style={{ textAlign: 'center', color: 'var(--muted)', padding: 40, fontSize: 13 }}>Loading…</div>
       ) : activeTab === 'received' ? (
         <>
-          <ManualUploadBar onUploaded={() => void load()} />
+          <ManualUploadBar onUploaded={() => void load()} onBackfill={() => void load()} />
           {receivedDocs.length === 0 ? (
             <div style={{ textAlign: 'center', padding: 40, color: 'var(--muted)', fontSize: 13 }}>
               <div style={{ fontSize: 15, marginBottom: 8 }}>No unmatched reports.</div>

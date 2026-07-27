@@ -97,4 +97,51 @@ router.post('/api/admin/patient-accounts/:id/link', async (req, res) => {
   }
 });
 
+// ── POST /api/admin/patients/quick-create ────────────────────────────────────
+// Create a minimal patient record from a name (e.g. extracted from a lab
+// report). MRN is auto-assigned by DB trigger. All fields except full_name
+// are optional. Returns { id, mrn, full_name } for immediate use in result
+// matching without a round-trip to the full patient creation form.
+
+router.post('/api/admin/patients/quick-create', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  const { fullName, dateOfBirth, sex, phone, email } = (req.body ?? {}) as {
+    fullName?: string;
+    dateOfBirth?: string;
+    sex?: string;
+    phone?: string;
+    email?: string;
+  };
+
+  if (!fullName?.trim()) {
+    res.status(400).json({ error: 'fullName is required' });
+    return;
+  }
+
+  const VALID_SEX = ['male', 'female', 'other', 'unknown'];
+
+  try {
+    const { data, error } = await sb()
+      .from('patients')
+      .insert({
+        full_name:     fullName.trim(),
+        date_of_birth: dateOfBirth ?? null,
+        sex:           (sex && VALID_SEX.includes(sex)) ? sex : 'unknown',
+        phone:         phone?.trim() ?? null,
+        email:         email?.trim().toLowerCase() ?? null,
+      })
+      .select('id, mrn, full_name')
+      .single();
+
+    if (error) throw error;
+
+    log.info({ id: data.id, mrn: data.mrn, fullName }, '[admin/patients/quick-create] created');
+    res.json({ id: data.id, mrn: data.mrn, full_name: data.full_name });
+  } catch (err) {
+    log.error({ err }, '[admin/patients/quick-create] error');
+    res.status(500).json({ error: err instanceof Error ? err.message : 'Failed to create patient' });
+  }
+});
+
 export default router;

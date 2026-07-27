@@ -115,16 +115,20 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
   return summary;
 }
 
-// Backfill: process ALL messages (read or unread) from known providers
-// within the last `days` days. Skips any message whose attachment has already
-// been stored (upsert: false on storage upload will throw — caught and counted
-// as a skip rather than an error so re-runs are safe).
+// Backfill: process ALL messages (read or unread) from known providers AND
+// trusted internal forwarders (dawitson@gmail.com, amisesuite@gmail.com self-
+// forwards with PDF attachments) within the last `days` days.
+// Safe to re-run — duplicate uploads counted as alreadyStored not errors.
 export async function backfillDocumentEmails(days = 30, maxMessages = 100): Promise<EmailDocumentSummary & { alreadyStored: number }> {
   const summary: EmailDocumentSummary & { alreadyStored: number } = {
     processed: 0, documentsCreated: 0, skipped: 0, alreadyStored: 0, errors: [],
   };
 
-  // Build Gmail query: messages from any known active lab/radiology provider
+  // YYYY/MM/DD format for Gmail after: filter
+  const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000);
+  const dateStr = `${cutoff.getFullYear()}/${String(cutoff.getMonth() + 1).padStart(2, '0')}/${String(cutoff.getDate()).padStart(2, '0')}`;
+
+  // Build provider map from referring_providers
   const { data: providers } = await sb()
     .from('referring_providers')
     .select('id, name, email, provider_type, default_document_type')
@@ -132,13 +136,21 @@ export async function backfillDocumentEmails(days = 30, maxMessages = 100): Prom
     .not('email', 'is', null);
 
   const activeProviders = (providers ?? []).filter(p => p.email);
-  if (!activeProviders.length) return summary;
+  const providerByEmail = new Map(activeProviders.map(p => [p.email as string, p]));
 
-  const fromParts = activeProviders.map(p => `from:${p.email as string}`).join(' OR ');
-  // YYYY/MM/DD format for Gmail after: filter
-  const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000);
-  const dateStr = `${cutoff.getFullYear()}/${String(cutoff.getMonth() + 1).padStart(2, '0')}/${String(cutoff.getDate()).padStart(2, '0')}`;
-  const query = `(${fromParts}) after:${dateStr} -in:sent`;
+  // Synthetic providers for trusted internal forwarders (not in referring_providers
+  // to avoid the regular cron marking their routine emails as read)
+  const INTERNAL_FORWARDERS: Record<string, { name: string; default_document_type: string }> = {
+    'dawitson@gmail.com': { name: 'Dr. Dawit (Internal Forward)', default_document_type: 'lab_report' },
+  };
+
+  // Build combined Gmail query
+  const fromSources: string[] = activeProviders.map(p => `from:${p.email as string}`);
+  fromSources.push('from:dawitson@gmail.com');
+  // Self-forwards: amisesuite@gmail.com with PDF attachment in inbox
+  fromSources.push('from:amisesuite@gmail.com has:attachment filename:.pdf');
+
+  const query = `(${fromSources.join(' OR ')}) after:${dateStr}`;
 
   let messageIds: string[];
   try {
@@ -148,14 +160,20 @@ export async function backfillDocumentEmails(days = 30, maxMessages = 100): Prom
     return summary;
   }
 
-  const providerByEmail = new Map(activeProviders.map(p => [p.email as string, p]));
-
   for (const id of messageIds) {
     try {
       const msg = await getMessage(id);
-      const provider = providerByEmail.get(msg.from.toLowerCase());
+      const fromKey = msg.from.toLowerCase();
 
-      if (!provider) {
+      // Determine provider — registered provider, internal forwarder, or skip
+      const regProvider = providerByEmail.get(fromKey);
+      const intProvider = INTERNAL_FORWARDERS[fromKey];
+
+      const providerName    = regProvider ? regProvider.name as string : intProvider?.name ?? null;
+      const docType         = regProvider ? regProvider.default_document_type as string : intProvider?.default_document_type ?? 'lab_report';
+      const providerIdValue = regProvider ? regProvider.id as string : null;
+
+      if (!providerName) {
         summary.skipped++;
         continue;
       }
@@ -177,7 +195,6 @@ export async function backfillDocumentEmails(days = 30, maxMessages = 100): Prom
             .upload(storagePath, buffer, { contentType: attachment.mimeType, upsert: false });
 
           if (uploadError) {
-            // "already exists" — this message was already stored
             if ((uploadError as { statusCode?: number | string }).statusCode === 409 ||
                 uploadError.message?.includes('already exists')) {
               summary.alreadyStored++;
@@ -190,8 +207,8 @@ export async function backfillDocumentEmails(days = 30, maxMessages = 100): Prom
             .from('documents')
             .insert({
               patient_id:           null,
-              document_type:        provider.default_document_type,
-              title:                attachment.filename || `${provider.name} document`,
+              document_type:        docType,
+              title:                attachment.filename || `${providerName} document`,
               file_name:            attachment.filename,
               storage_path:         storagePath,
               mime_type:            attachment.mimeType,
@@ -199,7 +216,7 @@ export async function backfillDocumentEmails(days = 30, maxMessages = 100): Prom
               source:               'received_email',
               created_by:           null,
               ai_extraction_status: 'pending',
-              notes:                `Received by email from ${provider.name as string} (${msg.from}), subject: "${msg.subject}".`,
+              notes:                `Received by email from ${providerName} (${msg.from}), subject: "${msg.subject}".`,
             })
             .select('id')
             .single();
@@ -209,7 +226,7 @@ export async function backfillDocumentEmails(days = 30, maxMessages = 100): Prom
           summary.documentsCreated++;
           await audit({
             action: 'extract', entityType: 'document', entityId: doc.id,
-            payload: { source: 'received_email_backfill', provider_id: provider.id, message_id: id },
+            payload: { source: 'received_email_backfill', provider_id: providerIdValue, message_id: id },
           });
           void extractDocumentInsights(doc.id);
         } catch (err) {
