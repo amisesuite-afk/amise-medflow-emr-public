@@ -70,7 +70,9 @@ interface AiFlag {
 
 interface AiExtractedData {
   documentSummary?: string;
+  patientName?: string | null;
   reportDate?: string | null;
+  urgency?: 'urgent' | 'routine' | null;
   extractedFacts?: ExtractedFact[];
 }
 
@@ -588,15 +590,24 @@ function ReceivedDocCard({
   doc: ReceivedDoc;
   onMatched: (docId: string) => void;
 }) {
-  const [showMatch, setShowMatch]         = useState(false);
-  const [searchQ, setSearchQ]             = useState('');
-  const [results, setResults]             = useState<PatientSearchResult[]>([]);
-  const [searching, setSearching]         = useState(false);
-  const [matching, setMatching]           = useState(false);
-  const [matchErr, setMatchErr]           = useState<string | null>(null);
-  const [creating, setCreating]           = useState(false);
-  const [createErr, setCreateErr]         = useState<string | null>(null);
+  const aiName    = doc.ai_extracted_data?.patientName ?? null;
+  const aiUrgency = doc.ai_extracted_data?.urgency ?? 'routine';
+
+  const [showMatch, setShowMatch]   = useState(false);
+  const [searchQ, setSearchQ]       = useState('');
+  const [results, setResults]       = useState<PatientSearchResult[]>([]);
+  const [searching, setSearching]   = useState(false);
+  const [matching, setMatching]     = useState(false);
+  const [matchErr, setMatchErr]     = useState<string | null>(null);
+  const [creating, setCreating]     = useState(false);
+  const [createErr, setCreateErr]   = useState<string | null>(null);
+  const [urgency, setUrgency]       = useState<'urgent' | 'routine'>(aiUrgency === 'urgent' ? 'urgent' : 'routine');
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Pre-fill search with AI-extracted patient name when match panel opens
+  useEffect(() => {
+    if (showMatch && aiName && !searchQ) setSearchQ(aiName);
+  }, [showMatch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const facts = doc.ai_extracted_data?.extractedFacts ?? [];
   const flags = doc.ai_flags ?? [];
@@ -615,8 +626,8 @@ function ReceivedDocCard({
   const subjectMatch = doc.notes?.match(/subject: "([^"]+)"/);
   const emailSubject = subjectMatch ? subjectMatch[1] : null;
 
-  const hasCriticalFlag = flags.some(f => f.severity === 'urgent');
-  const hasAbnormal = facts.some(f => f.markedAbnormal);
+  const hasCriticalFlag = flags.some(f => f.severity === 'urgent') || urgency === 'urgent';
+  const hasAbnormal     = facts.some(f => f.markedAbnormal);
 
   useEffect(() => {
     if (!showMatch || searchQ.trim().length < 2) { setResults([]); return; }
@@ -687,7 +698,22 @@ function ReceivedDocCard({
         <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--fg)' }}>
           {summary ?? doc.title}
         </span>
-        {hasCriticalFlag && (
+
+        {/* Urgency toggle badge */}
+        <button
+          title="Toggle urgency"
+          onClick={() => setUrgency(u => u === 'urgent' ? 'routine' : 'urgent')}
+          style={{
+            fontSize: 10, fontWeight: 800, padding: '2px 8px', borderRadius: 4, cursor: 'pointer',
+            border: 'none',
+            background: urgency === 'urgent' ? '#b91c1c' : '#d1d5db',
+            color:      urgency === 'urgent' ? '#fff'    : '#374151',
+          }}
+        >
+          {urgency === 'urgent' ? 'URGENT' : 'ROUTINE'}
+        </button>
+
+        {hasCriticalFlag && urgency !== 'urgent' && (
           <span style={{ fontSize: 10, fontWeight: 800, padding: '2px 7px', borderRadius: 4, background: '#b91c1c', color: '#fff' }}>
             URGENT FLAG
           </span>
@@ -702,10 +728,15 @@ function ReceivedDocCard({
         </span>
       </div>
 
-      {/* Source */}
+      {/* Source + AI patient hint */}
       <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 5 }}>
         <b style={{ color: '#6366f1' }}>Email from:</b> {providerLabel}
         {emailSubject && <span style={{ color: 'var(--muted)' }}> · {emailSubject}</span>}
+        {aiName && (
+          <span style={{ marginLeft: 8, color: '#0d9488' }}>
+            · <b>Patient (AI):</b> {aiName}
+          </span>
+        )}
       </div>
 
       {/* Extracted facts */}
@@ -742,19 +773,41 @@ function ReceivedDocCard({
 
       {/* Match panel */}
       {!showMatch ? (
-        <button
-          onClick={() => setShowMatch(true)}
-          style={{
-            fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: 'pointer',
-            border: '1px solid #6366f1', background: '#6366f1', color: '#fff', fontWeight: 700,
-          }}
-        >
-          Match to patient →
-        </button>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => setShowMatch(true)}
+            style={{
+              fontSize: 11, padding: '4px 11px', borderRadius: 5, cursor: 'pointer',
+              border: '1px solid #6366f1', background: '#6366f1', color: '#fff', fontWeight: 700,
+            }}
+          >
+            {aiName ? `File for ${aiName} →` : 'Match to patient →'}
+          </button>
+          {aiName && (
+            <button
+              onClick={() => void handleCreateAndMatch(aiName)}
+              disabled={creating || matching}
+              style={{
+                fontSize: 11, fontWeight: 700, padding: '4px 11px', borderRadius: 5,
+                border: '1.5px dashed #0d9488', background: '#f0fdfa', color: '#0f766e',
+                cursor: (creating || matching) ? 'default' : 'pointer',
+                opacity: (creating || matching) ? 0.7 : 1,
+              }}
+            >
+              {creating ? 'Creating…' : `+ Create & file for ${aiName}`}
+            </button>
+          )}
+          {createErr && (
+            <div style={{ fontSize: 11, color: '#b91c1c', padding: '3px 8px', background: '#fef2f2', borderRadius: 5 }}>
+              {createErr}
+            </div>
+          )}
+        </div>
       ) : (
         <div style={{ marginTop: 6, padding: '10px 11px', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 7 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--fg)', marginBottom: 7 }}>
             Search for the patient this result belongs to
+            {aiName && <span style={{ fontWeight: 400, color: '#0d9488', marginLeft: 6 }}>(AI suggested: {aiName})</span>}
           </div>
           <input
             type="text"
