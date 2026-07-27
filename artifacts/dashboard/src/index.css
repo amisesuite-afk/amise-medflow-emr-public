@@ -1406,6 +1406,46 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   color: #fff;
 }
 
+/* ── Patients Hub — List / Visits / Follow-up tabs ── */
+.patients-hub {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.patients-hub-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  padding: 0 16px;
+  background: var(--card);
+  flex-shrink: 0;
+}
+.patients-hub-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 18px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .13s, border-color .13s;
+  white-space: nowrap;
+}
+.patients-hub-tab:hover { color: var(--ink); }
+.patients-hub-tab--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+.patients-hub-content {
+  flex: 1;
+  overflow: auto;
+}
+
 /* ── Patient list site filter chips ─────────────── */
 .psearch-site-filter {
   display: flex;
