@@ -441,9 +441,11 @@ function ImagingCard({
 // ─── Manual upload bar ───────────────────────────────────────────────────────
 
 const DOC_TYPES = [
-  { value: 'lab_report',     label: 'Lab / Path report' },
-  { value: 'imaging_report', label: 'Imaging / XR report' },
-  { value: 'other',          label: 'Other' },
+  { value: 'lab_report',       label: 'Labs' },
+  { value: 'imaging_report',   label: 'Imaging' },
+  { value: 'endoscopy_report', label: 'Endoscopy report' },
+  { value: 'histology_report', label: 'Histology report' },
+  { value: 'other',            label: 'Other' },
 ];
 
 function ManualUploadBar({ onUploaded, onBackfill }: { onUploaded: () => void; onBackfill: () => void }) {
@@ -598,7 +600,12 @@ function ReceivedDocCard({
 
   const facts = doc.ai_extracted_data?.extractedFacts ?? [];
   const flags = doc.ai_flags ?? [];
-  const summary = doc.ai_extracted_data?.documentSummary;
+
+  // Guard: if the AI stored raw JSON as the summary, discard it
+  const rawSummary = doc.ai_extracted_data?.documentSummary;
+  const summary = (rawSummary && !rawSummary.trimStart().startsWith('{'))
+    ? rawSummary
+    : null;
 
   // Extract provider name from notes
   const providerMatch = doc.notes?.match(/^Received by email from ([^(]+)/);

@@ -667,13 +667,23 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
       .trim();
 
     const fenceMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-    const raw = (fenceMatch ? fenceMatch[1] : rawText).trim();
+    let raw = (fenceMatch ? fenceMatch[1] : rawText).trim();
+
+    // If no fenced block, try to extract the outermost JSON object from anywhere in the text
+    if (!fenceMatch) {
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) raw = jsonMatch[0];
+    }
 
     let parsed: { documentSummary?: string; reportDate?: string | null; extractedFacts?: unknown[]; flags?: unknown[] };
     try {
       parsed = JSON.parse(raw);
     } catch {
-      parsed = { documentSummary: raw.slice(0, 300), extractedFacts: [], flags: [{ type: 'illegible', label: 'Could not parse document', severity: 'attention', detail: 'AI extraction did not return structured data — please review manually.' }] };
+      parsed = {
+        documentSummary: null,
+        extractedFacts: [],
+        flags: [{ type: 'illegible', label: 'Could not parse document', severity: 'attention', detail: 'AI extraction did not return structured data — please review manually.' }],
+      };
     }
 
     const flags = Array.isArray(parsed.flags) ? parsed.flags : [];
