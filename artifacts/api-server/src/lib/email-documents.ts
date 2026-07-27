@@ -1,5 +1,5 @@
 import { sb, audit } from './supabase.js';
-import { listUnreadMessages, getMessage, getAttachmentData, markRead } from './gmail.js';
+import { listUnreadMessages, listMessagesByQuery, getMessage, getAttachmentData, markRead } from './gmail.js';
 import { extractDocumentInsights } from '../routes/portal.js';
 import { errStr } from './logger.js';
 
@@ -106,6 +106,132 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
 
       if (allOk) {
         await markRead(id);
+      }
+    } catch (err) {
+      summary.errors.push({ messageId: id, error: errStr(err) });
+    }
+  }
+
+  return summary;
+}
+
+// Backfill: process ALL messages (read or unread) from known providers AND
+// trusted internal forwarders (dawitson@gmail.com, amisesuite@gmail.com self-
+// forwards with PDF attachments) within the last `days` days.
+// Safe to re-run — duplicate uploads counted as alreadyStored not errors.
+export async function backfillDocumentEmails(days = 30, maxMessages = 100): Promise<EmailDocumentSummary & { alreadyStored: number }> {
+  const summary: EmailDocumentSummary & { alreadyStored: number } = {
+    processed: 0, documentsCreated: 0, skipped: 0, alreadyStored: 0, errors: [],
+  };
+
+  // YYYY/MM/DD format for Gmail after: filter
+  const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000);
+  const dateStr = `${cutoff.getFullYear()}/${String(cutoff.getMonth() + 1).padStart(2, '0')}/${String(cutoff.getDate()).padStart(2, '0')}`;
+
+  // Build provider map from referring_providers
+  const { data: providers } = await sb()
+    .from('referring_providers')
+    .select('id, name, email, provider_type, default_document_type')
+    .eq('active', true)
+    .not('email', 'is', null);
+
+  const activeProviders = (providers ?? []).filter(p => p.email);
+  const providerByEmail = new Map(activeProviders.map(p => [p.email as string, p]));
+
+  // Synthetic providers for trusted internal forwarders (not in referring_providers
+  // to avoid the regular cron marking their routine emails as read)
+  const INTERNAL_FORWARDERS: Record<string, { name: string; default_document_type: string }> = {
+    'dawitson@gmail.com': { name: 'Dr. Dawit (Internal Forward)', default_document_type: 'lab_report' },
+  };
+
+  // Build combined Gmail query
+  const fromSources: string[] = activeProviders.map(p => `from:${p.email as string}`);
+  fromSources.push('from:dawitson@gmail.com');
+  // Self-forwards: amisesuite@gmail.com with PDF attachment in inbox
+  fromSources.push('from:amisesuite@gmail.com has:attachment filename:.pdf');
+
+  const query = `(${fromSources.join(' OR ')}) after:${dateStr}`;
+
+  let messageIds: string[];
+  try {
+    messageIds = await listMessagesByQuery(query, maxMessages);
+  } catch (err) {
+    summary.errors.push({ messageId: 'list', error: errStr(err) });
+    return summary;
+  }
+
+  for (const id of messageIds) {
+    try {
+      const msg = await getMessage(id);
+      const fromKey = msg.from.toLowerCase();
+
+      // Determine provider — registered provider, internal forwarder, or skip
+      const regProvider = providerByEmail.get(fromKey);
+      const intProvider = INTERNAL_FORWARDERS[fromKey];
+
+      const providerName    = regProvider ? regProvider.name as string : intProvider?.name ?? null;
+      const docType         = regProvider ? regProvider.default_document_type as string : intProvider?.default_document_type ?? 'lab_report';
+      const providerIdValue = regProvider ? regProvider.id as string : null;
+
+      if (!providerName) {
+        summary.skipped++;
+        continue;
+      }
+
+      summary.processed++;
+
+      const relevantAttachments = msg.attachments.filter(a => ATTACHMENT_MIME.has(a.mimeType));
+      if (!relevantAttachments.length) continue;
+
+      for (const attachment of relevantAttachments) {
+        try {
+          const buffer = await getAttachmentData(id, attachment.attachmentId);
+          const ext = attachment.filename.includes('.') ? attachment.filename.slice(attachment.filename.lastIndexOf('.')) : '';
+          const storagePath = `received-email/${id}-${attachment.attachmentId}${ext}`;
+
+          const { error: uploadError } = await sb()
+            .storage
+            .from('patient-documents')
+            .upload(storagePath, buffer, { contentType: attachment.mimeType, upsert: false });
+
+          if (uploadError) {
+            if ((uploadError as { statusCode?: number | string }).statusCode === 409 ||
+                uploadError.message?.includes('already exists')) {
+              summary.alreadyStored++;
+              continue;
+            }
+            throw uploadError;
+          }
+
+          const { data: doc, error: insertError } = await sb()
+            .from('documents')
+            .insert({
+              patient_id:           null,
+              document_type:        docType,
+              title:                attachment.filename || `${providerName} document`,
+              file_name:            attachment.filename,
+              storage_path:         storagePath,
+              mime_type:            attachment.mimeType,
+              file_size_bytes:      attachment.size || buffer.length,
+              source:               'received_email',
+              created_by:           null,
+              ai_extraction_status: 'pending',
+              notes:                `Received by email from ${providerName} (${msg.from}), subject: "${msg.subject}".`,
+            })
+            .select('id')
+            .single();
+
+          if (insertError) throw insertError;
+
+          summary.documentsCreated++;
+          await audit({
+            action: 'extract', entityType: 'document', entityId: doc.id,
+            payload: { source: 'received_email_backfill', provider_id: providerIdValue, message_id: id },
+          });
+          void extractDocumentInsights(doc.id);
+        } catch (err) {
+          summary.errors.push({ messageId: id, error: errStr(err) });
+        }
       }
     } catch (err) {
       summary.errors.push({ messageId: id, error: errStr(err) });
