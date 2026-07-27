@@ -484,6 +484,18 @@ importers:
         specifier: 'catalog:'
         version: 3.25.76
 
+  artifacts/folder-watcher:
+    dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.47.0
+        version: 2.107.0
+      chokidar:
+        specifier: ^4.0.3
+        version: 4.0.3
+      dotenv:
+        specifier: ^16.5.0
+        version: 16.6.1
+
   artifacts/front-desk:
     dependencies:
       '@anthropic-ai/sdk':
