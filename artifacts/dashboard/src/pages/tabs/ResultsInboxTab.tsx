@@ -894,20 +894,23 @@ function ReceivedDocCard({
               ))}
             </div>
           )}
-          {!searching && searchQ.trim().length >= 2 && results.length === 0 && (
+          {/* Create & file — shown as soon as a name is typed, whether or not results came back */}
+          {!searching && searchQ.trim().length >= 2 && (
             <div style={{ marginBottom: 6 }}>
-              <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 5 }}>No patients found.</div>
+              {results.length === 0 && (
+                <div style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 5 }}>No existing patients found.</div>
+              )}
               <button
                 onClick={() => void handleCreateAndMatch(searchQ.trim())}
                 disabled={creating || matching}
                 style={{
                   fontSize: 11, fontWeight: 700, padding: '5px 13px', borderRadius: 5,
-                  border: '1.5px dashed #6366f1', background: '#f5f3ff', color: '#4f46e5',
+                  border: '1.5px dashed #0d9488', background: '#f0fdfa', color: '#0f766e',
                   cursor: (creating || matching) ? 'default' : 'pointer',
                   opacity: (creating || matching) ? 0.7 : 1,
                 }}
               >
-                {creating ? 'Creating patient…' : `+ Create patient: "${searchQ.trim()}"`}
+                {creating ? 'Creating patient…' : `+ New patient "${searchQ.trim()}" & file`}
               </button>
               {createErr && (
                 <div style={{ fontSize: 11, color: '#b91c1c', padding: '4px 8px', background: '#fef2f2', borderRadius: 5, marginTop: 4 }}>
