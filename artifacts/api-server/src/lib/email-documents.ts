@@ -14,6 +14,40 @@ export interface EmailDocumentSummary {
   errors: { messageId: string; error: string }[];
 }
 
+// Synthetic providers for trusted internal forwarders (not in referring_providers
+// to avoid the regular cron marking their routine emails as read).
+const INTERNAL_FORWARDERS: Record<string, { name: string; default_document_type: string }> = {
+  'dawitson@gmail.com': { name: 'Dr. Dawit (Internal Forward)', default_document_type: 'lab_report' },
+};
+
+// Resolve sender to { name, docType, providerId } using referring_providers +
+// internal forwarder list. Falls through to the raw from address for any
+// unknown sender — all PDFs enter the queue, none are silently discarded.
+async function resolveSender(fromEmail: string): Promise<{
+  providerName: string;
+  docType: string;
+  providerId: string | null;
+  isKnown: boolean;
+}> {
+  const fromKey = fromEmail.toLowerCase();
+  const { data: reg } = await sb()
+    .from('referring_providers')
+    .select('id, name, default_document_type')
+    .eq('email', fromKey)
+    .eq('active', true)
+    .maybeSingle();
+
+  if (reg) {
+    return { providerName: reg.name as string, docType: reg.default_document_type as string, providerId: reg.id as string, isKnown: true };
+  }
+  const int = INTERNAL_FORWARDERS[fromKey];
+  if (int) {
+    return { providerName: int.name, docType: int.default_document_type, providerId: null, isKnown: true };
+  }
+  // Unknown sender — still accept the PDF; AI extraction will identify document type
+  return { providerName: fromEmail, docType: 'other', providerId: null, isKnown: false };
+}
+
 export async function processIncomingDocumentEmails(maxMessages = 20): Promise<EmailDocumentSummary> {
   const summary: EmailDocumentSummary = { processed: 0, documentsCreated: 0, skipped: 0, errors: [] };
 
@@ -28,28 +62,17 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
   for (const id of messageIds) {
     try {
       const msg = await getMessage(id);
-
-      const { data: provider } = await sb()
-        .from('referring_providers')
-        .select('id, name, provider_type, default_document_type')
-        .eq('email', msg.from.toLowerCase())
-        .eq('active', true)
-        .maybeSingle();
-
-      if (!provider) {
-        summary.skipped++;
-        continue;
-      }
-
-      summary.processed++;
-
       const relevantAttachments = msg.attachments.filter(a => ATTACHMENT_MIME.has(a.mimeType));
 
+      // Skip messages with no relevant attachments at all
       if (!relevantAttachments.length) {
+        summary.skipped++;
         await markRead(id);
         continue;
       }
 
+      summary.processed++;
+      const { providerName, docType, providerId, isKnown } = await resolveSender(msg.from);
       let allOk = true;
 
       for (const attachment of relevantAttachments) {
@@ -61,10 +84,7 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
           const { error: uploadError } = await sb()
             .storage
             .from('patient-documents')
-            .upload(storagePath, buffer, {
-              contentType: attachment.mimeType,
-              upsert: false,
-            });
+            .upload(storagePath, buffer, { contentType: attachment.mimeType, upsert: false });
 
           if (uploadError) throw uploadError;
 
@@ -72,8 +92,8 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
             .from('documents')
             .insert({
               patient_id:           null,
-              document_type:        provider.default_document_type,
-              title:                attachment.filename || `${provider.name} document`,
+              document_type:        docType,
+              title:                attachment.filename || `${providerName} document`,
               file_name:            attachment.filename,
               storage_path:         storagePath,
               mime_type:            attachment.mimeType,
@@ -81,7 +101,7 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
               source:               'received_email',
               created_by:           null,
               ai_extraction_status: 'pending',
-              notes:                `Received by email from ${provider.name} (${msg.from}), subject: "${msg.subject}".`,
+              notes:                `Received by email from ${providerName} (${msg.from}), subject: "${msg.subject}".${isKnown ? '' : ' ⚠ Unknown sender — review before filing.'}`,
             })
             .select('id')
             .single();
@@ -89,14 +109,10 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
           if (insertError) throw insertError;
 
           summary.documentsCreated++;
-
           await audit({
-            action:     'extract',
-            entityType: 'document',
-            entityId:   doc.id,
-            payload:    { source: 'received_email', provider_id: provider.id, message_id: id },
+            action: 'extract', entityType: 'document', entityId: doc.id,
+            payload: { source: 'received_email', provider_id: providerId, message_id: id, known_sender: isKnown },
           });
-
           void extractDocumentInsights(doc.id);
         } catch (err) {
           allOk = false;
@@ -104,9 +120,7 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
         }
       }
 
-      if (allOk) {
-        await markRead(id);
-      }
+      if (allOk) await markRead(id);
     } catch (err) {
       summary.errors.push({ messageId: id, error: errStr(err) });
     }
@@ -115,42 +129,20 @@ export async function processIncomingDocumentEmails(maxMessages = 20): Promise<E
   return summary;
 }
 
-// Backfill: process ALL messages (read or unread) from known providers AND
-// trusted internal forwarders (dawitson@gmail.com, amisesuite@gmail.com self-
-// forwards with PDF attachments) within the last `days` days.
+// Backfill: pull ALL emails with PDF/image attachments within the last `days`
+// days — regardless of sender. Known providers and internal forwarders get their
+// document type resolved; all others land as 'other' with an unknown-sender note.
 // Safe to re-run — duplicate uploads counted as alreadyStored not errors.
-export async function backfillDocumentEmails(days = 30, maxMessages = 100): Promise<EmailDocumentSummary & { alreadyStored: number }> {
+export async function backfillDocumentEmails(days = 30, maxMessages = 200): Promise<EmailDocumentSummary & { alreadyStored: number }> {
   const summary: EmailDocumentSummary & { alreadyStored: number } = {
     processed: 0, documentsCreated: 0, skipped: 0, alreadyStored: 0, errors: [],
   };
 
-  // YYYY/MM/DD format for Gmail after: filter
   const cutoff = new Date(Date.now() - days * 24 * 3600 * 1000);
   const dateStr = `${cutoff.getFullYear()}/${String(cutoff.getMonth() + 1).padStart(2, '0')}/${String(cutoff.getDate()).padStart(2, '0')}`;
 
-  // Build provider map from referring_providers
-  const { data: providers } = await sb()
-    .from('referring_providers')
-    .select('id, name, email, provider_type, default_document_type')
-    .eq('active', true)
-    .not('email', 'is', null);
-
-  const activeProviders = (providers ?? []).filter(p => p.email);
-  const providerByEmail = new Map(activeProviders.map(p => [p.email as string, p]));
-
-  // Synthetic providers for trusted internal forwarders (not in referring_providers
-  // to avoid the regular cron marking their routine emails as read)
-  const INTERNAL_FORWARDERS: Record<string, { name: string; default_document_type: string }> = {
-    'dawitson@gmail.com': { name: 'Dr. Dawit (Internal Forward)', default_document_type: 'lab_report' },
-  };
-
-  // Build combined Gmail query
-  const fromSources: string[] = activeProviders.map(p => `from:${p.email as string}`);
-  fromSources.push('from:dawitson@gmail.com');
-  // Self-forwards: amisesuite@gmail.com with PDF attachment in inbox
-  fromSources.push('from:amisesuite@gmail.com has:attachment filename:.pdf');
-
-  const query = `(${fromSources.join(' OR ')}) after:${dateStr}`;
+  // Broad query: any email with a PDF, image, or JPEG/PNG attachment
+  const query = `has:attachment (filename:.pdf OR filename:.jpg OR filename:.jpeg OR filename:.png) after:${dateStr}`;
 
   let messageIds: string[];
   try {
@@ -163,25 +155,11 @@ export async function backfillDocumentEmails(days = 30, maxMessages = 100): Prom
   for (const id of messageIds) {
     try {
       const msg = await getMessage(id);
-      const fromKey = msg.from.toLowerCase();
-
-      // Determine provider — registered provider, internal forwarder, or skip
-      const regProvider = providerByEmail.get(fromKey);
-      const intProvider = INTERNAL_FORWARDERS[fromKey];
-
-      const providerName    = regProvider ? regProvider.name as string : intProvider?.name ?? null;
-      const docType         = regProvider ? regProvider.default_document_type as string : intProvider?.default_document_type ?? 'lab_report';
-      const providerIdValue = regProvider ? regProvider.id as string : null;
-
-      if (!providerName) {
-        summary.skipped++;
-        continue;
-      }
+      const relevantAttachments = msg.attachments.filter(a => ATTACHMENT_MIME.has(a.mimeType));
+      if (!relevantAttachments.length) { summary.skipped++; continue; }
 
       summary.processed++;
-
-      const relevantAttachments = msg.attachments.filter(a => ATTACHMENT_MIME.has(a.mimeType));
-      if (!relevantAttachments.length) continue;
+      const { providerName, docType, providerId, isKnown } = await resolveSender(msg.from);
 
       for (const attachment of relevantAttachments) {
         try {
@@ -216,7 +194,7 @@ export async function backfillDocumentEmails(days = 30, maxMessages = 100): Prom
               source:               'received_email',
               created_by:           null,
               ai_extraction_status: 'pending',
-              notes:                `Received by email from ${providerName} (${msg.from}), subject: "${msg.subject}".`,
+              notes:                `Received by email from ${providerName} (${msg.from}), subject: "${msg.subject}".${isKnown ? '' : ' ⚠ Unknown sender — review before filing.'}`,
             })
             .select('id')
             .single();
@@ -226,7 +204,7 @@ export async function backfillDocumentEmails(days = 30, maxMessages = 100): Prom
           summary.documentsCreated++;
           await audit({
             action: 'extract', entityType: 'document', entityId: doc.id,
-            payload: { source: 'received_email_backfill', provider_id: providerIdValue, message_id: id },
+            payload: { source: 'received_email_backfill', provider_id: providerId, message_id: id, known_sender: isKnown },
           });
           void extractDocumentInsights(doc.id);
         } catch (err) {
