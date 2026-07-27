@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
-import { getSupabaseAdmin, requireStaffAuth, audit } from '../lib/supabase.js';
+import { getSupabaseAdmin, requireStaffAuth, requireCronSecret, audit } from '../lib/supabase.js';
+import { extractDocumentInsights } from './portal.js';
 import { logger, errStr } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
 import { sendOrDraft } from '../lib/gmail.js';
@@ -713,7 +714,7 @@ router.get('/api/investigations/received-documents', async (req, res) => {
     const { data: docs, error: docsErr } = await supa
       .from('documents')
       .select('id, title, document_type, mime_type, storage_path, ai_extracted_data, ai_flags, notes, created_at, patient_id')
-      .in('source', ['received_email', 'manual_upload'])
+      .in('source', ['received_email', 'manual_upload', 'local_folder'])
       .in('ai_extraction_status', ['done', 'failed', 'skipped'])
       .order('created_at', { ascending: false })
       .limit(100);
@@ -773,6 +774,23 @@ router.get('/api/documents/:id/signed-url', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// POST /api/documents/:id/extract
+// Trigger AI extraction for a single document. Called by the local folder
+// watcher after it uploads a file, using the CRON_SECRET header.
+// ---------------------------------------------------------------------------
+router.post('/api/documents/:id/extract', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+  const { id } = req.params as { id: string };
+  try {
+    await extractDocumentInsights(id);
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err, id }, '[documents/extract] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // POST /api/investigations/received-documents/:id/match
 // Match an email-received document to a patient and file it as a result in
 // investigation_results so it appears in the Results Inbox.
@@ -802,7 +820,7 @@ router.post('/api/investigations/received-documents/:id/match', async (req, res)
       .from('documents')
       .select('id, title, document_type, ai_extracted_data, ai_flags, notes, created_at')
       .eq('id', id)
-      .in('source', ['received_email', 'manual_upload'])
+      .in('source', ['received_email', 'manual_upload', 'local_folder'])
       .maybeSingle();
 
     if (docErr || !doc) {
