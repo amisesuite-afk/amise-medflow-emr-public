@@ -277,6 +277,114 @@ export async function fetchUpcomingEvents(daysAhead = 30): Promise<CalendarEvent
   return events;
 }
 
+// ── Theatre list helpers ──────────────────────────────────────────────────────
+
+export interface CalendarEventFull extends CalendarEvent {
+  calendarId: string;
+}
+
+/** Fetch only theatre/endoscopy events for a specific ECT date (YYYY-MM-DD). */
+export async function fetchEventsForDate(dateStr: string): Promise<CalendarEventFull[]> {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  // ECT is UTC-4; midnight ECT = 04:00 UTC
+  const timeMin = new Date(Date.UTC(y, m - 1, d, 4, 0, 0)).toISOString();
+  const timeMax = new Date(Date.UTC(y, m - 1, d + 1, 4, 0, 0)).toISOString();
+
+  const cal = getCalendar();
+  const calIds = [
+    process.env.CALENDAR_ID_RODNEY_BAY,
+    process.env.CALENDAR_ID_TAPION_ERCP,
+  ].filter(Boolean) as string[];
+
+  const seen = new Set<string>();
+  const events: CalendarEventFull[] = [];
+
+  for (const calId of calIds) {
+    const { data } = await cal.events.list({
+      calendarId: calId,
+      timeMin,
+      timeMax,
+      singleEvents: true,
+      orderBy: 'startTime',
+      maxResults: 50,
+    });
+    for (const e of data.items ?? []) {
+      if (!e.id || seen.has(e.id) || e.status === 'cancelled') continue;
+      seen.add(e.id);
+      const startVal = e.start?.dateTime ?? e.start?.date ?? '';
+      const endVal   = e.end?.dateTime   ?? e.end?.date   ?? '';
+      const summary  = e.summary ?? '(No title)';
+      const type = classifyEvent(summary);
+      if (type !== 'theatre' && type !== 'endoscopy') continue;
+      events.push({ id: e.id, summary, start: startVal, end: endVal, type, calendarId: calId });
+    }
+  }
+
+  events.sort((a, b) => a.start.localeCompare(b.start));
+  return events;
+}
+
+/** Patch the description of an existing Google Calendar event. */
+export async function updateEventDescription(
+  calendarId: string,
+  eventId: string,
+  description: string,
+): Promise<void> {
+  const cal = getCalendar();
+  await cal.events.patch({ calendarId, eventId, requestBody: { description } });
+}
+
+export interface TheatreCaseSummary {
+  patientName: string; procedure: string; durationMin: number;
+  position?: string | null; anaesthetic?: string | null;
+  equipment?: string[] | null; antibiotics?: string | null; notes?: string | null;
+}
+
+/** Build a plain-text operating list for embedding in the Google Calendar event description. */
+export function formatOperatingListDescription(
+  cases: TheatreCaseSummary[],
+  sessionStartHHMM: string,
+  location: string,
+  date: string,
+): string {
+  if (cases.length === 0) return 'Operating list published — no cases added yet.';
+
+  const lines: string[] = [
+    `AMISE MEDICAL SERVICES — OPERATING LIST`,
+    `${date}  ·  ${location}`,
+    `Surgeon: Mr Dawit Daniel Kabiye MD DM`,
+    '',
+  ];
+
+  let curMin = (() => {
+    const [h, m] = sessionStartHHMM.split(':').map(Number);
+    return h * 60 + (m ?? 0);
+  })();
+
+  for (let i = 0; i < cases.length; i++) {
+    const c = cases[i];
+    const endMin = curMin + c.durationMin;
+    const fmt = (n: number) =>
+      `${String(Math.floor(n / 60)).padStart(2, '0')}:${String(n % 60).padStart(2, '0')}`;
+    lines.push(`Case ${i + 1}  ${fmt(curMin)}–${fmt(endMin)} (${c.durationMin} min)`);
+    lines.push(`  Patient:   ${c.patientName}`);
+    lines.push(`  Procedure: ${c.procedure}`);
+    if (c.position)   lines.push(`  Position:  ${c.position}`);
+    if (c.anaesthetic) lines.push(`  Anaesth:   ${c.anaesthetic}`);
+    if (c.equipment?.length) lines.push(`  Equipment: ${c.equipment.join(', ')}`);
+    const abx = c.antibiotics;
+    if (abx && abx !== 'None' && abx !== 'None routine')
+      lines.push(`  Prophy:    ${abx}`);
+    if (c.notes) lines.push(`  Notes:     ${c.notes}`);
+    lines.push('');
+    curMin = endMin + 15; // 15-min turnover
+  }
+
+  lines.push(`${cases.length} case${cases.length !== 1 ? 's' : ''}`);
+  lines.push(`Published ${new Date().toLocaleString('en-LC', { timeZone: 'America/St_Lucia' })}`);
+  return lines.join('\n');
+}
+
 function classifyEvent(summary: string): CalendarEvent['type'] {
   const s = summary.toLowerCase();
   if (/theatre|\bhernia repair\b|\bla theatre\b|rectal.*excision|excision.*ga|excision.*la|laparotomy|cholecystectomy|appendicectomy|colostomy/.test(s)) return 'theatre';
