@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import DocumentCapture from '@/components/DocumentCapture';
 
 const API_ORIGIN = getApiOrigin();
 function apiUrl(path: string) {
@@ -463,7 +464,7 @@ function ManualUploadBar({ onUploaded, onBackfill }: { onUploaded: () => void; o
   const [ok, setOk]               = useState(false);
   const [backfilling, setBackfilling] = useState(false);
   const [backfillOk, setBackfillOk]   = useState<{ docs: number; already: number } | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+
 
   async function triggerBackfill() {
     setBackfilling(true);
@@ -519,7 +520,7 @@ function ManualUploadBar({ onUploaded, onBackfill }: { onUploaded: () => void; o
       setErr(e instanceof Error ? e.message : 'Upload failed');
     } finally {
       setUploading(false);
-      if (inputRef.current) inputRef.current.value = '';
+      // file input value is reset inside DocumentCapture after each pick
     }
   }
 
@@ -562,24 +563,19 @@ function ManualUploadBar({ onUploaded, onBackfill }: { onUploaded: () => void; o
           onChange={e => setProvider(e.target.value)}
           style={{ flex: 1, minWidth: 140, fontSize: 11, padding: '4px 8px', borderRadius: 5, border: '1px solid #c4b5fd', outline: 'none', background: '#fff', color: '#374151' }}
         />
-        <input
-          ref={inputRef}
-          type="file"
-          accept=".pdf,image/jpeg,image/png,image/webp"
-          style={{ display: 'none' }}
-          onChange={e => { const f = e.target.files?.[0]; if (f) void handleFile(f); }}
-        />
-        <button
-          onClick={() => inputRef.current?.click()}
-          disabled={uploading}
-          style={{
-            fontSize: 11, fontWeight: 700, padding: '5px 13px', borderRadius: 5, cursor: uploading ? 'default' : 'pointer',
-            border: 'none', background: ok ? '#16a34a' : '#6d28d9', color: '#fff',
-            opacity: uploading ? 0.7 : 1, whiteSpace: 'nowrap',
-          }}
-        >
-          {uploading ? 'Uploading…' : ok ? '✓ Queued' : '+ Upload PDF/photo'}
-        </button>
+        {ok ? (
+          <span style={{ fontSize: 11, fontWeight: 700, color: '#16a34a', whiteSpace: 'nowrap' }}>✓ Queued</span>
+        ) : uploading ? (
+          <span style={{ fontSize: 11, color: '#6b7280', whiteSpace: 'nowrap' }}>Uploading…</span>
+        ) : (
+          <DocumentCapture
+            onFile={f => void handleFile(f)}
+            accept=".pdf,image/jpeg,image/png,image/webp"
+            cameraLabel="📷 Photo"
+            fileLabel="📁 PDF / file"
+            disabled={uploading}
+          />
+        )}
       </div>
       {err && <div style={{ fontSize: 11, color: '#b91c1c', padding: '4px 8px', background: '#fef2f2', borderRadius: 5 }}>{err}</div>}
     </div>
