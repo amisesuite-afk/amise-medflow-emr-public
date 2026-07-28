@@ -1307,6 +1307,19 @@ export default function HomePage() {
                   </button>
                 ) : <span />}
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={() => setVoiceOpen(v => !v)}
+                    title="Voice dictation — dictate into SOAP sections"
+                    style={{
+                      padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                      cursor: 'pointer', border: 'none', whiteSpace: 'nowrap',
+                      background: voiceOpen ? '#0d9488' : '#f0fdf4',
+                      color: voiceOpen ? '#fff' : '#0d9488',
+                    }}
+                  >
+                    🎙 Dictate
+                  </button>
                   <button type="button" onClick={() => setAmbientMode(true)}
                     style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
                     🎙 Ambient
@@ -1440,6 +1453,19 @@ export default function HomePage() {
                   </button>
                 ) : <span />}
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={() => setVoiceOpen(v => !v)}
+                    title="Voice dictation — dictate into SOAP sections"
+                    style={{
+                      padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                      cursor: 'pointer', border: 'none', whiteSpace: 'nowrap',
+                      background: voiceOpen ? '#0d9488' : '#f0fdf4',
+                      color: voiceOpen ? '#fff' : '#0d9488',
+                    }}
+                  >
+                    🎙 Dictate
+                  </button>
                   <button type="button" onClick={() => setAmbientMode(true)}
                     style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: '1px solid #6ee7b7', background: '#f0fdf4', color: '#0d9488' }}>
                     🎙 Ambient
@@ -1460,6 +1486,16 @@ export default function HomePage() {
             </>
           );
         })()}
+
+        {/* Voice dictation panel — shared across all non-guided consultation modes */}
+        {topSection === 'consultation' && !ambientMode && !guidedMode && voiceOpen && (
+          <div style={{ marginBottom: 10 }}>
+            <VoiceDictation
+              visitType={ctxVisitType ?? headerVisitMode}
+              onClose={() => setVoiceOpen(false)}
+            />
+          </div>
+        )}
 
         {/* Algorithm workflow guide — always visible when CC is active */}
         {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ClinicalWorkflowBar />}
