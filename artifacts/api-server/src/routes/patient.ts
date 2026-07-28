@@ -5,6 +5,7 @@ import { sb, getSupabaseAdmin, requireStaffAuth, audit } from '../lib/supabase.j
 import { errStr } from '../lib/logger.js';
 import { logger as log } from '../lib/logger.js';
 import { requirePatientAuth, type PatientAuthRequest } from './patient-auth.js';
+import { extractDocumentInsights } from './portal.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -332,7 +333,27 @@ router.post('/api/patient/upload', requirePatientAuth, async (req: PatientAuthRe
       .from('patient-documents')
       .getPublicUrl(storagePath);
 
-    log.info({ patientId, storagePath }, 'patient document uploaded');
+    // Register in documents table so staff can review and AI extraction fires.
+    const { data: docRow } = await sb()
+      .from('documents')
+      .insert({
+        patient_id:    patientId,
+        document_type: 'other',
+        title:         label ?? fileName ?? `Patient upload`,
+        file_name:     fileName ?? `document.${ext}`,
+        storage_path:  storagePath,
+        mime_type:     mimeType,
+        file_size_bytes: fileBuffer.length,
+        source:        'uploaded',
+      })
+      .select('id')
+      .single();
+
+    if (docRow?.id) {
+      void extractDocumentInsights(docRow.id);
+    }
+
+    log.info({ patientId, storagePath, documentId: docRow?.id }, 'patient document uploaded');
     res.json({
       success: true,
       path: storagePath,
@@ -340,6 +361,7 @@ router.post('/api/patient/upload', requirePatientAuth, async (req: PatientAuthRe
       fileName: fileName ?? `document.${ext}`,
       fileType: mimeType,
       label: label ?? 'Document',
+      document_id: docRow?.id ?? null,
     });
   } catch (err: unknown) {
     log.error({ err }, 'patient upload error');
