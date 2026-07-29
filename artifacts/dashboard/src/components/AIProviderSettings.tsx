@@ -85,7 +85,7 @@ export default function AIProviderSettings() {
       {config.type === 'ollama' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
           <div style={{ background: 'rgba(245,158,11,.08)', border: '1px solid rgba(245,158,11,.3)', borderRadius: 8, padding: '10px 12px', fontSize: 11.5, color: '#92400e', lineHeight: 1.6 }}>
-            <strong>Setup:</strong> Run <code style={{ background: 'rgba(0,0,0,.07)', padding: '1px 4px', borderRadius: 3 }}>OLLAMA_ORIGINS=* ollama serve</code> on your local machine or LAN server. Then install a model: <code style={{ background: 'rgba(0,0,0,.07)', padding: '1px 4px', borderRadius: 3 }}>ollama pull phi3:mini</code>
+            <strong>Setup:</strong> Run <code style={{ background: 'rgba(0,0,0,.07)', padding: '1px 4px', borderRadius: 3 }}>OLLAMA_ORIGINS=* ollama serve</code> on your local machine or LAN server. Then install a model: <code style={{ background: 'rgba(0,0,0,.07)', padding: '1px 4px', borderRadius: 3 }}>ollama pull llama3.1:8b</code>
           </div>
 
           <div>
@@ -104,7 +104,7 @@ export default function AIProviderSettings() {
               style={inp}
               value={config.ollamaModel}
               onChange={e => save({ ollamaModel: e.target.value })}
-              placeholder="phi3:mini"
+              placeholder="llama3.1:8b"
             />
             {testResult?.models && testResult.models.length > 0 && (
               <div style={{ marginTop: 4, fontSize: 11, color: '#64748b' }}>
