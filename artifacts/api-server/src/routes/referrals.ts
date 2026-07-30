@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
+import { createWorkflowTask, resolveWorkflowTask } from '../lib/workflow-tasks.js';
 
 const router = Router();
 
@@ -47,7 +48,7 @@ router.patch('/api/referrals/:id', async (req, res) => {
 
     const { data: existing, error: fetchErr } = await supa
       .from('referrals')
-      .select('id, patient_id, status')
+      .select('id, patient_id, encounter_id, status, referral_type, referred_to')
       .eq('id', id)
       .maybeSingle();
 
@@ -87,6 +88,22 @@ router.patch('/api/referrals/:id', async (req, res) => {
     });
 
     logger.info({ id, status }, '[referrals/patch] updated');
+
+    // Workflow task lifecycle for referrals
+    if (status === 'sent' && existing.status !== 'sent') {
+      void createWorkflowTask({
+        task_type:   'await_referral',
+        patient_id:  existing.patient_id ?? undefined,
+        encounter_id: (existing as { encounter_id?: string }).encounter_id ?? undefined,
+        source_type: 'referral',
+        source_id:   id,
+        title:       `Awaiting referral response: ${(existing as { referred_to?: string }).referred_to ?? (existing as { referral_type?: string }).referral_type ?? 'specialist'}`,
+        priority:    'normal',
+      });
+    } else if (status === 'accepted' || status === 'declined' || status === 'completed') {
+      void resolveWorkflowTask({ task_type: 'await_referral', source_type: 'referral', source_id: id, resolution_note: `Referral ${status}` });
+    }
+
     res.json({ id, status: status ?? existing.status });
   } catch (err) {
     logger.error({ err }, '[referrals/patch] error');

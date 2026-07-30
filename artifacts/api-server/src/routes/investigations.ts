@@ -6,6 +6,7 @@ import { extractDocumentInsights } from './portal.js';
 import { logger, errStr } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
 import { sendOrDraft } from '../lib/gmail.js';
+import { createWorkflowTask, resolveWorkflowTask } from '../lib/workflow-tasks.js';
 
 const router = Router();
 
@@ -151,6 +152,18 @@ router.post('/api/investigations/lab-order', async (req, res) => {
     });
 
     logger.info({ id: data.id, encounterId, testName }, '[investigations/lab-order] created');
+
+    void createWorkflowTask({
+      task_type:   'await_investigation',
+      patient_id:  patientId,
+      encounter_id: encounterId,
+      source_type: 'investigation_result',
+      source_id:   data.id,
+      title:       `Awaiting result: ${testName}`,
+      details:     testCategory,
+      priority:    urgency === 'urgent' ? 'urgent' : 'normal',
+    });
+
     res.json({ id: data.id, status: 'ordered' });
   } catch (err) {
     logger.error({ err }, '[investigations/lab-order] error');
@@ -210,6 +223,18 @@ router.post('/api/investigations/imaging-order', async (req, res) => {
     });
 
     logger.info({ id: data.id, encounterId, orderType, bodyArea }, '[investigations/imaging-order] created');
+
+    void createWorkflowTask({
+      task_type:   'await_investigation',
+      patient_id:  patientId,
+      encounter_id: encounterId,
+      source_type: 'imaging_order',
+      source_id:   data.id,
+      title:       `Awaiting report: ${orderType} ${bodyArea}`,
+      details:     clinicalIndication,
+      priority:    urgency === 'urgent' ? 'urgent' : 'normal',
+    });
+
     res.json({ id: data.id, status: 'ordered' });
   } catch (err) {
     logger.error({ err }, '[investigations/imaging-order] error');
@@ -244,7 +269,7 @@ router.post('/api/investigations/result/:id', async (req, res) => {
     // Verify the investigation exists
     const { data: existing, error: fetchErr } = await supa
       .from('investigation_results')
-      .select('id, status')
+      .select('id, status, patient_id, encounter_id')
       .eq('id', id)
       .maybeSingle();
 
@@ -280,6 +305,20 @@ router.post('/api/investigations/result/:id', async (req, res) => {
     });
 
     logger.info({ id, isCritical: isCritical ?? false }, '[investigations/result] recorded');
+
+    // Close the awaiting task; open a review task for the clinician
+    void resolveWorkflowTask({ task_type: 'await_investigation', source_type: 'investigation_result', source_id: id, resolution_note: 'Result received' });
+    void createWorkflowTask({
+      task_type:   'review_result',
+      patient_id:  existing.patient_id ?? undefined,
+      encounter_id: existing.encounter_id ?? undefined,
+      source_type: 'investigation_result',
+      source_id:   id,
+      title:       `Review result${isCritical ? ' — CRITICAL' : isAbnormal ? ' — abnormal' : ''}`,
+      details:     resultValue ?? null,
+      priority:    isCritical ? 'urgent' : isAbnormal ? 'high' : 'normal',
+    });
+
     res.json({ id, status: 'resulted' });
   } catch (err) {
     logger.error({ err }, '[investigations/result] error');
@@ -312,7 +351,7 @@ router.post('/api/investigations/imaging-report/:id', async (req, res) => {
     // Verify the imaging order exists
     const { data: existing, error: fetchErr } = await supa
       .from('imaging_orders')
-      .select('id, status')
+      .select('id, status, patient_id, encounter_id, order_type, body_area')
       .eq('id', id)
       .maybeSingle();
 
@@ -344,6 +383,18 @@ router.post('/api/investigations/imaging-report/:id', async (req, res) => {
     });
 
     logger.info({ id }, '[investigations/imaging-report] recorded');
+
+    void resolveWorkflowTask({ task_type: 'await_investigation', source_type: 'imaging_order', source_id: id, resolution_note: 'Report received' });
+    void createWorkflowTask({
+      task_type:   'review_result',
+      patient_id:  existing.patient_id ?? undefined,
+      encounter_id: existing.encounter_id ?? undefined,
+      source_type: 'imaging_order',
+      source_id:   id,
+      title:       `Review imaging report: ${(existing.order_type as string | null) ?? ''} ${(existing.body_area as string | null) ?? ''}`.trim(),
+      priority:    'normal',
+    });
+
     res.json({ id, status: 'reported' });
   } catch (err) {
     logger.error({ err }, '[investigations/imaging-report] error');
@@ -406,6 +457,10 @@ router.post('/api/investigations/review/:id', async (req, res) => {
     });
 
     logger.info({ id, table }, '[investigations/review] marked reviewed');
+
+    const sourceType = table === 'investigation_results' ? 'investigation_result' : 'imaging_order';
+    void resolveWorkflowTask({ task_type: 'review_result', source_type: sourceType, source_id: id, resolution_note: 'Reviewed by clinician' });
+
     res.json({ id, status: 'reviewed' });
   } catch (err) {
     logger.error({ err }, '[investigations/review] error');

@@ -3,6 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import DocumentCapture from '@/components/DocumentCapture';
 
 interface DocumentRow {
   id: string;
@@ -183,13 +184,23 @@ export default function DocumentsTab() {
                 placeholder="Brief description of this document"
               />
 
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.25rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.25rem', flexWrap: 'wrap' }}>
                 <button
                   className="btn-secondary"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   Choose file(s)
                 </button>
+                <DocumentCapture
+                  onFile={f => {
+                    const dt = new DataTransfer();
+                    dt.items.add(f);
+                    void handleFiles(dt.files);
+                  }}
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.tiff,.bmp,.heic"
+                  cameraLabel="📷 Camera"
+                  fileLabel={null}
+                />
                 <span style={{ fontSize: '0.85em', opacity: 0.7 }}>PDF, image, or Word document</span>
               </div>
 

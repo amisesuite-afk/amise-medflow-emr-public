@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getSupabaseAdmin, audit, requireStaffAuth } from '../lib/supabase.js';
+import { getSupabaseAdmin, audit, requireStaffAuth, getStaffUserId } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
 
@@ -339,9 +339,15 @@ router.post('/api/visit/sign-notes/:encounterId', async (req, res) => {
       return;
     }
 
+    const signedBy = await getStaffUserId(req);
     const { data: updated, error: signErr } = await supa
       .from('clinical_notes')
-      .update({ status: 'signed', updated_at: new Date().toISOString() })
+      .update({
+        status: 'signed',
+        signed_by: signedBy,
+        signed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
       .eq('encounter_id', encounterId)
       .eq('status', 'draft')
       .select('id');
@@ -362,6 +368,90 @@ router.post('/api/visit/sign-notes/:encounterId', async (req, res) => {
     res.json({ encounterId, signed });
   } catch (err) {
     logger.error({ err }, '[visit/sign-notes] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// POST /api/visit/amend-note/:noteId -- amend a signed clinical note
+// Creates a new version with previous_version_id pointing to the original.
+// The original note's status becomes 'amended' (read-only).
+router.post('/api/visit/amend-note/:noteId', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { noteId } = req.params;
+  const { content, reason } = req.body as { content?: string; reason?: string };
+
+  if (!content?.trim()) {
+    res.status(400).json({ error: 'content is required' });
+    return;
+  }
+  if (!reason?.trim()) {
+    res.status(400).json({ error: 'reason is required — document why the note is being amended' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+    const signedBy = await getStaffUserId(req);
+
+    const { data: original, error: fetchErr } = await supa
+      .from('clinical_notes')
+      .select('id, patient_id, encounter_id, note_type, status, version')
+      .eq('id', noteId)
+      .maybeSingle();
+
+    if (fetchErr || !original) {
+      res.status(404).json({ error: 'Note not found' });
+      return;
+    }
+    if (original.status === 'draft') {
+      res.status(409).json({ error: 'Note has not been signed — edit it directly instead of amending' });
+      return;
+    }
+    if (original.status === 'amended') {
+      res.status(409).json({ error: 'This note has already been superseded — amend the latest version' });
+      return;
+    }
+
+    // Mark original as amended
+    await supa.from('clinical_notes')
+      .update({ status: 'amended', updated_at: new Date().toISOString() })
+      .eq('id', noteId);
+
+    // Insert new version
+    const { data: newNote, error: insertErr } = await supa
+      .from('clinical_notes')
+      .insert({
+        patient_id:          original.patient_id,
+        encounter_id:        original.encounter_id,
+        note_type:           original.note_type,
+        status:              'signed',
+        content:             content.trim(),
+        ai_assisted:         false,
+        signed_by:           signedBy,
+        signed_at:           new Date().toISOString(),
+        amended_reason:      reason.trim(),
+        version:             ((original.version as number) ?? 1) + 1,
+        previous_version_id: noteId,
+        created_by:          signedBy,
+        updated_at:          new Date().toISOString(),
+      })
+      .select('id')
+      .single();
+
+    if (insertErr) throw insertErr;
+
+    await audit({
+      action: 'amend',
+      entityType: 'clinical_notes',
+      entityId: noteId,
+      patientId: original.patient_id ?? undefined,
+      payload: { newNoteId: newNote.id, reason: reason.trim() },
+    });
+
+    logger.info({ originalId: noteId, newNoteId: newNote.id }, '[visit/amend-note] amendment created');
+    res.json({ originalId: noteId, newNoteId: newNote.id, version: ((original.version as number) ?? 1) + 1 });
+  } catch (err) {
+    logger.error({ err }, '[visit/amend-note] error');
     res.status(502).json({ error: errStr(err) });
   }
 });

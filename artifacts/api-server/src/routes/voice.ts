@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { requireStaffAuth, sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { assemblePatientContext, formatContextBlock } from '../lib/patient-context.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -36,11 +37,12 @@ router.post('/api/voice/segment', async (req, res) => {
   const ok = await requireStaffAuth(req, res);
   if (!ok) return;
 
-  const { transcript, visitType, context, patientId } = req.body as {
+  const { transcript, visitType, context, patientId, encounterId } = req.body as {
     transcript: string;
     visitType?: string;
     context?: string;
-    patientId?: string;     // present when called from an active in-session recording
+    patientId?: string;
+    encounterId?: string;
   };
 
   if (!transcript?.trim()) {
@@ -48,12 +50,29 @@ router.post('/api/voice/segment', async (req, res) => {
     return;
   }
 
+  // Fetch patient context when a patientId is available so the segmenter
+  // can resolve shorthand, infer medication/allergy references, and flag
+  // contradictions with the known record.
+  let patientContextBlock = '';
+  if (patientId) {
+    try {
+      const ctx = await assemblePatientContext(patientId, encounterId);
+      if (ctx) patientContextBlock = '\n\n' + formatContextBlock(ctx);
+    } catch (e) {
+      log.warn({ err: e }, 'voice/segment: patient context fetch failed — proceeding without');
+    }
+  }
+
   const contextNote = [
     visitType ? `Visit type: ${visitType}` : '',
     context   ? `Clinical context: ${context}` : '',
   ].filter(Boolean).join('. ');
 
-  const userPrompt = `${contextNote ? contextNote + '\n\n' : ''}Raw voice transcript:\n\n${transcript.trim()}\n\nSegment this into SOAP components now.`;
+  const userPrompt = [
+    contextNote,
+    patientContextBlock,
+    `Raw voice transcript:\n\n${transcript.trim()}\n\nSegment this into SOAP components now.`,
+  ].filter(Boolean).join('\n\n');
 
   try {
     const resp = await client.messages.create({
@@ -80,9 +99,11 @@ router.post('/api/voice/segment', async (req, res) => {
       return;
     }
 
-    // Persist audit trail — fire-and-forget, never blocks the response
-    void (async () => {
+    // Store as AI_PROPOSED — fire-and-forget, never blocks response
+    let proposalId: string | null = null;
+    await (async () => {
       try {
+        // Save call log
         await sb().from('call_logs').insert({
           patient_id:     patientId ?? null,
           source:         'ambient',
@@ -90,13 +111,29 @@ router.post('/api/voice/segment', async (req, res) => {
           transcript:     transcript.trim(),
           soap_segmented: segmented,
         });
+        // Save AI proposal for clinician review
+        const { data: proposal } = await sb()
+          .from('ai_proposals')
+          .insert({
+            patient_id:     patientId   ?? null,
+            encounter_id:   encounterId ?? null,
+            proposal_type:  'soap_segment',
+            source_type:    'voice_transcript',
+            source_content: transcript.trim().slice(0, 4000), // cap stored size
+            model:          MODEL,
+            content:        segmented,
+            status:         'proposed',
+          })
+          .select('id')
+          .single();
+        if (proposal?.id) proposalId = proposal.id as string;
       } catch (saveErr) {
-        log.warn({ saveErr }, 'voice segment: call_log save failed (non-fatal)');
+        log.warn({ saveErr }, 'voice segment: proposal save failed (non-fatal)');
       }
     })();
 
     log.info({ chars: transcript.length, patientId: patientId ?? 'anon' }, 'voice transcript segmented');
-    res.json({ success: true, segmented });
+    res.json({ success: true, segmented, proposalId });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Voice segmentation failed';
     log.error({ err }, 'voice segment error');
