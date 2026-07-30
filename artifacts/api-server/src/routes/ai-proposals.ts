@@ -8,6 +8,7 @@
 import { Router } from 'express';
 import { sb, requireStaffAuth, getStaffUserId } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 
@@ -57,6 +58,7 @@ router.post('/api/ai-proposals', async (req, res) => {
     if (error) throw error;
 
     log.info({ id: data.id, proposalType, model }, '[ai-proposals] stored');
+    void logAudit(req, 'ai_call', 'ai_proposal', data.id as string, patientId, { proposalType, model });
     res.status(201).json(data);
   } catch (err) {
     log.error({ err }, '[ai-proposals] store error');
@@ -123,6 +125,7 @@ router.post('/api/ai-proposals/:id/review', async (req, res) => {
     if (error) throw error;
 
     log.info({ id, decision, reviewedBy }, '[ai-proposals] reviewed');
+    void logAudit(req, decision === 'approved' ? 'ai_approve' : decision === 'rejected' ? 'ai_reject' : 'approve', 'ai_proposal', id, undefined, { decision, rejectionReason });
     res.json(data);
   } catch (err) {
     log.error({ err }, '[ai-proposals] review error');

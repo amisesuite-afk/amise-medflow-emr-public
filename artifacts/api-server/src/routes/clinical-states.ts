@@ -11,6 +11,7 @@
 import { Router } from 'express';
 import { sb, requireStaffAuth, getStaffUserId } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 
@@ -151,6 +152,7 @@ router.post('/api/clinical-states', async (req, res) => {
     });
 
     log.info({ id: data.id, title, patientId }, '[clinical-states] created');
+    void logAudit(req, 'create', 'clinical_state', data.id as string, patientId, { stateType, title });
     res.status(201).json(data);
   } catch (err) {
     log.error({ err }, '[clinical-states] create error');
@@ -320,6 +322,7 @@ router.post('/api/clinical-states/:id/transition', async (req, res) => {
     if (transRes.error) log.warn({ err: transRes.error }, '[clinical-states] transition log failed');
 
     log.info({ id, fromStatus, toStatus, transitionedBy }, '[clinical-states] transition');
+    void logAudit(req, 'state_transition', 'clinical_state', id, undefined, { fromStatus, toStatus, reason });
     res.json({ state: updateRes.data, transitionId: transRes.data?.id });
   } catch (err) {
     log.error({ err }, '[clinical-states] transition error');

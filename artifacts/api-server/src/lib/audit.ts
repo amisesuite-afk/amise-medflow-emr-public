@@ -1,20 +1,21 @@
-import { sb } from './supabase.js'
-import { logger } from './logger.js'
-import type { Request } from 'express'
+import { sb } from './supabase.js';
+import { logger } from './logger.js';
+import type { Request } from 'express';
 
 /**
- * Write a structured audit-log entry to the `audit_log` table.
+ * Write a structured audit-log entry to the canonical `audit_log` table.
+ * Call fire-and-forget (`void logAudit(...)`). Never throws.
  *
- * Call fire-and-forget (void logAudit(...)) — this function never throws.
- * Any DB or auth error is caught and logged silently so it cannot affect
- * the calling request's response.
+ * action taxonomy:
+ *   view, create, update, delete, approve, reject, export
+ *   sign, amend, ai_call, ai_approve, ai_reject
+ *   login, logout, access_denied
+ *   task_resolve, task_dismiss, state_transition
  *
- * @param req          - The Express Request (used to extract caller identity + IP).
- * @param action       - Verb: 'view' | 'create' | 'update' | 'delete' | 'approve' | 'export'
- * @param resourceType - Entity kind: 'patient' | 'appointment' | 'document' | 'note' | 'prescription'
- * @param resourceId   - The primary-key value of the affected record (string / UUID).
- * @param patientId    - UUID of the associated patient, when known.
- * @param details      - Arbitrary structured context written to the `details` jsonb column.
+ * resource_type taxonomy:
+ *   patient, encounter, clinical_note, investigation_result, imaging_order
+ *   document, ai_proposal, clinical_state, workflow_task, referral
+ *   invoice, appointment, user, system, voice_transcript
  */
 export async function logAudit(
   req: Request,
@@ -25,40 +26,39 @@ export async function logAudit(
   details?: Record<string, unknown>,
 ): Promise<void> {
   try {
-    // Attempt to resolve the calling user from the Authorization Bearer JWT.
-    // Falls back gracefully when the header is absent (e.g. cron / x-staff-token calls).
-    let userId: string | null = null
-    let userEmail: string | null = null
+    let userId: string | null = null;
+    let userEmail: string | null = null;
 
-    const authHeader = req.headers?.authorization
+    const authHeader = req.headers?.authorization;
     if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-      const jwt = authHeader.slice(7)
-      const { data } = await sb().auth.getUser(jwt)
+      const { data } = await sb().auth.getUser(authHeader.slice(7));
       if (data?.user) {
-        userId = data.user.id
-        userEmail = data.user.email ?? null
+        userId    = data.user.id;
+        userEmail = data.user.email ?? null;
       }
     }
 
-    // Best-effort IP extraction — respects X-Forwarded-For set by proxies.
-    const forwarded = req.headers?.['x-forwarded-for']
+    const forwarded = req.headers?.['x-forwarded-for'];
     const ipAddress: string | null =
       (typeof forwarded === 'string' ? forwarded.split(',')[0]?.trim() : null)
-      ?? (req as any).socket?.remoteAddress
-      ?? null
+      ?? (req as unknown as { socket?: { remoteAddress?: string } }).socket?.remoteAddress
+      ?? null;
+
+    const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
     await sb().from('audit_log').insert({
-      user_id: userId,
-      user_email: userEmail,
+      user_id:       userId,
+      user_email:    userEmail,
       action,
       resource_type: resourceType,
-      resource_id: resourceId ?? null,
-      patient_id: patientId ?? null,
-      details: details ?? null,
-      ip_address: ipAddress,
-    })
+      resource_id:   resourceId && uuidRe.test(resourceId) ? resourceId : null,
+      patient_id:    patientId  && uuidRe.test(patientId)  ? patientId  : null,
+      details:       details ?? null,
+      ip_address:    ipAddress,
+      user_agent:    (req.headers?.['user-agent'] as string | undefined) ?? null,
+      mode:          process.env.MODE ?? null,
+    });
   } catch (err) {
-    // Never propagate — audit failures must not break clinical workflows.
-    logger.error({ err }, '[audit] logAudit insert failed')
+    logger.error({ err }, '[audit] logAudit insert failed');
   }
 }

@@ -90,15 +90,14 @@ export async function audit(args: {
     const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const recordId  = args.entityId  && uuidRe.test(args.entityId)  ? args.entityId  : null;
     const patientId = args.patientId && uuidRe.test(args.patientId) ? args.patientId : null;
-    await sb().from('audit_logs').insert({
+    await sb().from('audit_log').insert({
       action:        args.action,
-      table_name:    args.entityType ?? null,
       resource_type: args.entityType ?? null,
-      record_id:     recordId,
+      resource_id:   recordId,
       patient_id:    patientId,
       user_email:    args.userEmail ?? null,
-      new_values:    args.payload ?? null,
-      mode:          process.env.MODE,
+      details:       args.payload ? { payload: args.payload } : null,
+      mode:          process.env.MODE ?? null,
     });
   } catch (err) {
     logger.error({ err }, '[audit] failed');

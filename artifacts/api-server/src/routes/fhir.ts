@@ -16,6 +16,7 @@
 import { Router } from 'express';
 import { getSupabaseAdmin, requireStaffAuth } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 const FHIR_SERVER = process.env.API_BASE_URL ?? 'https://api.amisemedflow.com';
@@ -144,6 +145,7 @@ router.get('/api/fhir/Patient/:id', async (req, res) => {
     res.setHeader('Content-Type', 'application/fhir+json');
     res.json(patient);
     logger.info({ patientId: id }, '[fhir] Patient exported');
+    void logAudit(req, 'export', 'patient', id, id, { format: 'fhir_r4', resource: 'Patient' });
   } catch (err) {
     logger.error({ err }, '[fhir] Patient export error');
     res.status(502).json({ resourceType: 'OperationOutcome', issue: [{ severity: 'error', code: 'exception', diagnostics: errStr(err) }] });
