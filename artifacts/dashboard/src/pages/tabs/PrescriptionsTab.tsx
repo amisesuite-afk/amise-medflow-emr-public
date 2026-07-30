@@ -3,7 +3,6 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
-import { supabase } from '@/lib/supabase';
 import { searchMedications } from '@workspace/triage-engine';
 import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, footer, signoff, escH, AMISE_LOGO_SVG,
@@ -290,16 +289,11 @@ export default function PrescriptionsTab() {
     if (!ctx.patientId) return;
     setHistoryLoading(true);
     try {
-      if (!supabase) { setHistory([]); return; }
-      const { data, error } = await supabase
-        .from('prescriptions')
-        .select('*')
-        .eq('patient_id', ctx.patientId)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      setHistory((data as PrescriptionRecord[]) ?? []);
+      const resp = await fetch(`/api/prescriptions/patient/${ctx.patientId}`);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const body = await resp.json() as { prescriptions: PrescriptionRecord[] };
+      setHistory(body.prescriptions ?? []);
     } catch {
-      // Table may not exist yet — silently degrade
       setHistory([]);
     } finally {
       setHistoryLoading(false);
@@ -442,21 +436,23 @@ export default function PrescriptionsTab() {
     }
     setSigning(true);
     try {
-      // Save to Supabase if patient is persisted
-      if (ctx.patientId && supabase) {
-        const payload = {
-          patient_id: ctx.patientId,
-          encounter_id: ctx.encounterId,
-          prescribed_by: profile?.id ?? 'unknown',
-          prescriber_name: prescriberName,
-          status: 'signed' as const,
-          items: rxItems,
-          notes: '',
-        };
-        const { error } = await supabase.from('prescriptions').insert(payload);
-        if (error) {
-          console.error('[PrescriptionsTab] save error:', error);
-          showToast('Prescription saved locally but Supabase save failed', 'error');
+      // Save via API if patient is persisted
+      if (ctx.patientId) {
+        const resp = await fetch('/api/prescriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            patientId:      ctx.patientId,
+            encounterId:    ctx.encounterId ?? undefined,
+            prescriberName,
+            status:         'signed',
+            items:          rxItems,
+            notes:          '',
+          }),
+        });
+        if (!resp.ok) {
+          console.error('[PrescriptionsTab] save error:', await resp.text());
+          showToast('Prescription saved locally but server save failed', 'error');
         } else {
           showToast('Prescription signed and saved', 'success');
           void loadHistory();

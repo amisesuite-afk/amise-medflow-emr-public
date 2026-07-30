@@ -38,6 +38,7 @@ import aiProposalsRouter from "./ai-proposals";
 import workflowTasksRouter from "./workflow-tasks";
 import clinicalStatesRouter from "./clinical-states";
 import auditRouter from "./audit";
+import prescriptionsRouter from "./prescriptions";
 
 const router: IRouter = Router();
 
@@ -80,5 +81,6 @@ router.use(theatreRouter);
 router.use(workflowTasksRouter);
 router.use(clinicalStatesRouter);
 router.use(auditRouter);
+router.use(prescriptionsRouter);
 
 export default router;
