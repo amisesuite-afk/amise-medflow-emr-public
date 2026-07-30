@@ -85,7 +85,7 @@ function sortTasks(tasks: WorkflowTask[]): WorkflowTask[] {
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function WorkflowTasksTab() {
-  const { currentPatient, currentEncounterId } = useAppContext();
+  const { patientId, encounterId: ctxEncounterId } = useAppContext();
   const { showToast } = useToast();
 
   const [tasks, setTasks]           = useState<WorkflowTask[]>([]);
@@ -105,7 +105,7 @@ export default function WorkflowTasksTab() {
 
     try {
       const params = new URLSearchParams();
-      if (currentPatient?.id) params.set('patientId', currentPatient.id);
+      if (patientId) params.set('patientId', patientId);
       if (statusFilter !== 'all') params.set('status', statusFilter);
       if (typeFilter !== 'all')   params.set('type', typeFilter);
 
@@ -120,7 +120,7 @@ export default function WorkflowTasksTab() {
     } finally {
       setLoading(false);
     }
-  }, [currentPatient?.id, statusFilter, typeFilter, showToast]);
+  }, [patientId, statusFilter, typeFilter, showToast]);
 
   useEffect(() => { void load(); }, [load]);
 
@@ -219,8 +219,8 @@ export default function WorkflowTasksTab() {
       {/* Manual create form */}
       {showCreate && (
         <CreateTaskForm
-          patientId={currentPatient?.id ?? null}
-          encounterId={currentEncounterId ?? null}
+          patientId={patientId ?? null}
+          encounterId={ctxEncounterId ?? null}
           onCreated={async () => { setShowCreate(false); await load(); }}
           onCancel={() => setShowCreate(false)}
           showToast={showToast}
