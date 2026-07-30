@@ -436,4 +436,287 @@ router.get("/api/billing/daily-summary", async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// POST /api/billing/save-and-invoice/:encounterId
+// Batch-insert line items for an encounter and immediately generate an invoice.
+// Body: { patientId, lines: [{ chargeCode, chargeDescription, quantity,
+//         unitPriceXcd, discountXcd, category, notes? }], notes?: string }
+// ---------------------------------------------------------------------------
+router.post("/api/billing/save-and-invoice/:encounterId", async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { encounterId } = req.params;
+  const { patientId, lines, notes: invoiceNotes } = req.body ?? {};
+
+  if (!patientId || !Array.isArray(lines) || lines.length === 0) {
+    res.status(400).json({ error: "Required: patientId and lines (non-empty array)" });
+    return;
+  }
+
+  for (const l of lines) {
+    if (!l.chargeCode || !l.chargeDescription || l.unitPriceXcd == null || !l.category) {
+      res.status(400).json({
+        error: "Each line requires: chargeCode, chargeDescription, unitPriceXcd, category",
+      });
+      return;
+    }
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // 1. Insert all line items as pending
+    const insertPayload = (lines as any[]).map((l) => ({
+      encounter_id:       encounterId,
+      patient_id:         patientId,
+      charge_code:        l.chargeCode,
+      charge_description: l.chargeDescription,
+      unit_price_xcd:     Number(l.unitPriceXcd),
+      discount_xcd:       Number(l.discountXcd ?? 0),
+      quantity:           Number(l.quantity ?? 1),
+      category:           l.category,
+      notes:              l.notes ?? invoiceNotes ?? null,
+      status:             "pending",
+    }));
+
+    const { data: inserted, error: insertErr } = await supa
+      .from("billing_charges")
+      .insert(insertPayload)
+      .select("id");
+
+    if (insertErr) throw insertErr;
+    if (!inserted || inserted.length === 0) throw new Error("Insert returned no rows");
+
+    // 2. Generate invoice number: INV-YYYYMMDD-XXXX
+    const today = new Date();
+    const dateStr =
+      String(today.getFullYear()) +
+      String(today.getMonth() + 1).padStart(2, "0") +
+      String(today.getDate()).padStart(2, "0");
+
+    const invoicePrefix = `INV-${dateStr}-`;
+    const { count, error: countErr } = await supa
+      .from("billing_charges")
+      .select("invoice_number", { count: "exact", head: true })
+      .like("invoice_number", `${invoicePrefix}%`)
+      .not("invoice_number", "is", null);
+
+    if (countErr) throw countErr;
+
+    const seq = (count ?? 0) + 1;
+    const invoiceNumber = `${invoicePrefix}${String(seq).padStart(4, "0")}`;
+    const now = new Date().toISOString();
+
+    const chargeIds = inserted.map((c: any) => c.id);
+
+    const { error: updateErr } = await supa
+      .from("billing_charges")
+      .update({ status: "invoiced", invoice_number: invoiceNumber, invoiced_at: now })
+      .in("id", chargeIds);
+
+    if (updateErr) throw updateErr;
+
+    // 3. Compute totals for response
+    const lineItems = (lines as any[]).map((l, i) => {
+      const qty     = Number(l.quantity ?? 1);
+      const unit    = Number(l.unitPriceXcd);
+      const disc    = Number(l.discountXcd ?? 0);
+      return {
+        id:                chargeIds[i]?.id ?? chargeIds[i],
+        chargeCode:        l.chargeCode,
+        chargeDescription: l.chargeDescription,
+        category:          l.category,
+        quantity:          qty,
+        unitPriceXcd:      unit,
+        discountXcd:       disc,
+        lineTotal:         qty * unit - disc,
+      };
+    });
+
+    const totalXcd = lineItems.reduce((sum, li) => sum + li.lineTotal, 0);
+
+    await audit({
+      action:     "book",
+      entityType: "billing_invoice",
+      entityId:   invoiceNumber,
+      payload:    { encounter_id: encounterId, charge_count: lines.length, total_xcd: totalXcd },
+    });
+
+    logger.info({ invoiceNumber, encounterId, chargeCount: lines.length, totalXcd }, "[billing/save-and-invoice] done");
+
+    res.json({ invoiceNumber, encounterId, lineItems, totalXcd, chargeCount: lineItems.length, invoicedAt: now });
+  } catch (err) {
+    logger.error({ err }, "[billing/save-and-invoice] error");
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/billing/receipt/:invoiceNumber
+// Returns a self-contained HTML receipt for the given invoice.
+// ---------------------------------------------------------------------------
+router.get("/api/billing/receipt/:invoiceNumber", async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { invoiceNumber } = req.params;
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    const { data: charges, error: fetchErr } = await supa
+      .from("billing_charges")
+      .select("*")
+      .eq("invoice_number", invoiceNumber)
+      .order("created_at", { ascending: true });
+
+    if (fetchErr) throw fetchErr;
+
+    if (!charges || charges.length === 0) {
+      res.status(404).json({ error: "Invoice not found" });
+      return;
+    }
+
+    const firstCharge = charges[0] as any;
+    const patientId   = firstCharge.patient_id as string;
+
+    // Fetch patient name
+    const { data: patient } = await supa
+      .from("patients")
+      .select("first_name, last_name, date_of_birth")
+      .eq("id", patientId)
+      .maybeSingle();
+
+    const patientName  = patient
+      ? `${(patient as any).first_name ?? ""} ${(patient as any).last_name ?? ""}`.trim()
+      : "Unknown Patient";
+
+    const invoicedAt   = firstCharge.invoiced_at as string | null;
+    const paidAt       = firstCharge.paid_at     as string | null;
+    const paymentMethod = firstCharge.payment_method as string | null;
+    const invoiceDate  = invoicedAt
+      ? new Date(invoicedAt).toLocaleDateString("en-LC", { timeZone: "America/St_Lucia", day: "2-digit", month: "long", year: "numeric" })
+      : new Date().toLocaleDateString("en-LC", { timeZone: "America/St_Lucia", day: "2-digit", month: "long", year: "numeric" });
+
+    const lineItems = (charges as any[]).map((c) => ({
+      code:        c.charge_code    as string,
+      description: c.charge_description as string,
+      category:    c.category       as string,
+      qty:         Number(c.quantity),
+      unit:        Number(c.unit_price_xcd),
+      disc:        Number(c.discount_xcd),
+      total:       Number(c.quantity) * Number(c.unit_price_xcd) - Number(c.discount_xcd),
+    }));
+
+    const subtotal    = lineItems.reduce((s, l) => s + l.qty * l.unit, 0);
+    const discTotal   = lineItems.reduce((s, l) => s + l.disc, 0);
+    const grandTotal  = subtotal - discTotal;
+    const isPaid      = (charges as any[]).every((c) => c.status === "paid");
+
+    const fmt = (n: number) =>
+      n.toLocaleString("en-LC", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const rows = lineItems
+      .map(
+        (l) => `
+      <tr>
+        <td>${l.code}</td>
+        <td>${l.description}</td>
+        <td class="num">${l.qty}</td>
+        <td class="num">$${fmt(l.unit)}</td>
+        <td class="num">${l.disc > 0 ? `-$${fmt(l.disc)}` : "—"}</td>
+        <td class="num">$${fmt(l.total)}</td>
+      </tr>`
+      )
+      .join("");
+
+    const receiptHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Receipt ${invoiceNumber}</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#1a1a1a;background:#fff;padding:32px}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+  .practice h1{font-size:18px;font-weight:700;color:#1a4a6e}
+  .practice p{font-size:11px;color:#555;line-height:1.6}
+  .invoice-meta{text-align:right;font-size:12px;line-height:1.7}
+  .invoice-meta .inv-no{font-size:16px;font-weight:700;color:#1a4a6e}
+  .status-badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:600;
+    background:${isPaid ? "#d1fae5" : "#fef3c7"};color:${isPaid ? "#065f46" : "#92400e"};margin-top:4px}
+  .patient-box{background:#f7f9fc;border:1px solid #dde3ec;border-radius:6px;padding:12px 16px;margin-bottom:20px}
+  .patient-box h2{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#64748b;margin-bottom:4px}
+  .patient-box p{font-size:13px;font-weight:600}
+  table{width:100%;border-collapse:collapse;margin-bottom:16px}
+  thead th{background:#1a4a6e;color:#fff;font-size:11px;text-transform:uppercase;
+    letter-spacing:.06em;padding:7px 10px;text-align:left}
+  thead th.num{text-align:right}
+  tbody tr:nth-child(even){background:#f7f9fc}
+  tbody td{padding:6px 10px;border-bottom:1px solid #e8ecf1;vertical-align:top}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .totals{margin-left:auto;width:260px}
+  .totals tr td{padding:4px 10px}
+  .totals tr.grand td{font-weight:700;font-size:14px;border-top:2px solid #1a4a6e;padding-top:6px}
+  .payment-info{margin-top:16px;font-size:12px;color:#555;border-top:1px solid #e8ecf1;padding-top:12px}
+  .footer{margin-top:28px;font-size:10px;color:#94a3b8;text-align:center;border-top:1px solid #e8ecf1;padding-top:12px}
+  @media print{body{padding:16px}button{display:none}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="practice">
+    <h1>Amise Medical Services</h1>
+    <p>Surgical &amp; Endoscopic Practice<br>
+    Dr Dawit Daniel Kabiye MD DM<br>
+    Tapion Hospital · Rodney Bay Medical Centre<br>
+    Saint Lucia, West Indies<br>
+    Tel: +1 (758) 284-0557</p>
+  </div>
+  <div class="invoice-meta">
+    <div class="inv-no">${invoiceNumber}</div>
+    <div>Date: ${invoiceDate}</div>
+    ${paidAt ? `<div>Paid: ${new Date(paidAt).toLocaleDateString("en-LC", { timeZone: "America/St_Lucia", day: "2-digit", month: "long", year: "numeric" })}</div>` : ""}
+    <div><span class="status-badge">${isPaid ? "PAID" : "INVOICED"}</span></div>
+  </div>
+</div>
+
+<div class="patient-box">
+  <h2>Patient</h2>
+  <p>${patientName}</p>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Code</th><th>Description</th>
+      <th class="num">Qty</th><th class="num">Unit (XCD)</th>
+      <th class="num">Discount</th><th class="num">Total (XCD)</th>
+    </tr>
+  </thead>
+  <tbody>${rows}</tbody>
+</table>
+
+<table class="totals">
+  <tbody>
+    <tr><td>Subtotal</td><td class="num">$${fmt(subtotal)}</td></tr>
+    ${discTotal > 0 ? `<tr><td>Discount</td><td class="num">-$${fmt(discTotal)}</td></tr>` : ""}
+    <tr class="grand"><td>Total (XCD)</td><td class="num">$${fmt(grandTotal)}</td></tr>
+  </tbody>
+</table>
+
+${isPaid && paymentMethod ? `<div class="payment-info">Payment received via <strong>${paymentMethod}</strong>. Thank you.</div>` : ""}
+
+<div class="footer">
+  This receipt was generated by Amise MedFlow EMR. For billing enquiries contact the practice directly.<br>
+  Prices are in Eastern Caribbean Dollars (XCD). © Amise Medical Services.
+</div>
+</body>
+</html>`;
+
+    logger.info({ invoiceNumber }, "[billing/receipt] generated");
+    res.json({ receiptHtml });
+  } catch (err) {
+    logger.error({ err }, "[billing/receipt] error");
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 export default router;

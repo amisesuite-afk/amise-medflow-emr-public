@@ -2,6 +2,11 @@ import { useState, useMemo } from 'react';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
 import CodingAssistant from '@/components/CodingAssistant';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
+
+const API_ORIGIN = getApiOrigin();
+function apiUrl(path: string) { return API_ORIGIN ? `${API_ORIGIN}${path}` : path; }
 
 // ── Fee schedule ──────────────────────────────────────────────────────────
 interface FeeItem { code: string; description: string; fee: number; }
@@ -269,6 +274,14 @@ export default function BillingTab() {
   const [insurerPct, setInsurerPct] = useState('80');
   const [selectedGroup, setSelectedGroup] = useState(FEE_SCHEDULE[0].group);
 
+  // Save-to-record state
+  const [savingBill, setSavingBill]       = useState(false);
+  const [savedInvoice, setSavedInvoice]   = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [savingPayment, setSavingPayment] = useState(false);
+  const [paymentSaved, setPaymentSaved]   = useState(false);
+  const [saveError, setSaveError]         = useState<string | null>(null);
+
   const apptLabel = APPT_LABELS[ctx.triageResult.appointmentType] ?? ctx.triageResult.appointmentType;
 
   const subtotal = useMemo(() => lines.reduce((s, l) => s + l.qty * l.unit, 0), [lines]);
@@ -304,6 +317,83 @@ export default function BillingTab() {
     rodney_bay: 'Rodney Bay Medical Centre',
     tapion:     'Tapion Hospital',
   };
+
+  async function saveAndInvoice() {
+    if (!ctx.encounterId || !ctx.patientId || lines.length === 0) return;
+    setSavingBill(true);
+    setSaveError(null);
+    try {
+      const headers = await staffAuthHeaders();
+      const payload = {
+        patientId: ctx.patientId,
+        lines: lines.map(l => ({
+          chargeCode:        l.code,
+          chargeDescription: l.description,
+          quantity:          l.qty,
+          unitPriceXcd:      l.unit,
+          discountXcd:       0,
+          category:          'consultation',
+          notes:             ctx.billing || null,
+        })),
+      };
+      const res = await fetch(apiUrl(`/api/billing/save-and-invoice/${ctx.encounterId}`), {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(d.error ?? `HTTP ${res.status}`);
+      }
+      const data = await res.json() as { invoiceNumber: string };
+      setSavedInvoice(data.invoiceNumber);
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : 'Save failed');
+    } finally {
+      setSavingBill(false);
+    }
+  }
+
+  async function recordPayment() {
+    if (!savedInvoice) return;
+    setSavingPayment(true);
+    setSaveError(null);
+    try {
+      const headers = await staffAuthHeaders();
+      const res = await fetch(apiUrl(`/api/billing/payment/${savedInvoice}`), {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentMethod }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(d.error ?? `HTTP ${res.status}`);
+      }
+      setPaymentSaved(true);
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : 'Payment save failed');
+    } finally {
+      setSavingPayment(false);
+    }
+  }
+
+  async function printReceipt() {
+    if (!savedInvoice) return;
+    try {
+      const headers = await staffAuthHeaders();
+      const res = await fetch(apiUrl(`/api/billing/receipt/${savedInvoice}`), { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json() as { receiptHtml: string };
+      const w = window.open('', '_blank');
+      if (!w) return;
+      w.document.open();
+      w.document.write(data.receiptHtml);
+      w.document.close();
+      setTimeout(() => w.print(), 500);
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : 'Receipt failed');
+    }
+  }
 
   function handlePrint() {
     printSuperbill({
@@ -547,6 +637,99 @@ export default function BillingTab() {
           Fee information must not appear in automated patient communications.
         </p>
       </CollapsibleCard>
+
+      {/* Save to Record & Generate Receipt */}
+      {ctx.encounterId && ctx.patientId && lines.length > 0 && (
+        <CollapsibleCard title="Save to record & generate receipt" defaultOpen>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {saveError && (
+              <div style={{ padding: '8px 12px', background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 6, fontSize: 12, color: '#b91c1c' }}>
+                {saveError}
+              </div>
+            )}
+
+            {/* Step 1: Save & Invoice */}
+            {!savedInvoice ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ flex: 1, fontSize: 12, color: 'var(--muted)' }}>
+                  Saves {lines.length} line item{lines.length > 1 ? 's' : ''} to the billing record and generates invoice {fmt(total)} XCD.
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void saveAndInvoice()}
+                  disabled={savingBill}
+                  style={{
+                    padding: '8px 18px', borderRadius: 7, border: 'none',
+                    background: savingBill ? '#94a3b8' : '#0f5fa8',
+                    color: '#fff', fontWeight: 700, fontSize: 13,
+                    cursor: savingBill ? 'default' : 'pointer', whiteSpace: 'nowrap',
+                  }}
+                >
+                  {savingBill ? 'Saving…' : 'Save & invoice'}
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#16a34a' }}>✓ Invoice {savedInvoice}</span>
+                <span style={{ fontSize: 11, color: '#15803d' }}>generated · {fmt(total)} XCD</span>
+              </div>
+            )}
+
+            {/* Step 2: Record payment */}
+            {savedInvoice && !paymentSaved && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>Payment method:</span>
+                <select
+                  value={paymentMethod}
+                  onChange={e => setPaymentMethod(e.target.value)}
+                  style={{ fontSize: 12, padding: '4px 8px', borderRadius: 5, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--fg)' }}
+                >
+                  <option value="cash">Cash</option>
+                  <option value="card">Card</option>
+                  <option value="insurance">Insurance</option>
+                  <option value="transfer">Bank transfer</option>
+                  <option value="waived">Waived</option>
+                </select>
+                <button
+                  type="button"
+                  onClick={() => void recordPayment()}
+                  disabled={savingPayment}
+                  style={{
+                    padding: '6px 16px', borderRadius: 6, border: '1px solid #0f5fa8',
+                    background: savingPayment ? '#93c5fd' : '#eff6ff',
+                    color: '#0f5fa8', fontWeight: 700, fontSize: 12,
+                    cursor: savingPayment ? 'default' : 'pointer',
+                  }}
+                >
+                  {savingPayment ? 'Saving…' : 'Record payment'}
+                </button>
+              </div>
+            )}
+
+            {paymentSaved && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: '#eff6ff', border: '1px solid #93c5fd', borderRadius: 6 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: '#1d4ed8' }}>✓ Payment recorded</span>
+                <span style={{ fontSize: 11, color: '#1e40af' }}>via {paymentMethod}</span>
+              </div>
+            )}
+
+            {/* Step 3: Print receipt */}
+            {savedInvoice && (
+              <button
+                type="button"
+                onClick={() => void printReceipt()}
+                style={{
+                  padding: '8px 0', borderRadius: 7, border: '1px solid #0f5fa8',
+                  background: '#fff', color: '#0f5fa8', fontWeight: 700, fontSize: 13,
+                  cursor: 'pointer', width: '100%',
+                }}
+              >
+                Print receipt — {savedInvoice}
+              </button>
+            )}
+          </div>
+        </CollapsibleCard>
+      )}
 
       {/* Print superbill */}
       <button

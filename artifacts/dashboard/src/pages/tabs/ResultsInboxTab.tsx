@@ -35,6 +35,9 @@ interface LabResult {
   created_at: string;
   acknowledged_at?: string | null;
   action_taken?: string | null;
+  patient_notified_at?: string | null;
+  patient_notified_by?: string | null;
+  notification_method?: string | null;
 }
 
 interface ImagingOrder {
@@ -52,6 +55,9 @@ interface ImagingOrder {
   created_at: string;
   acknowledged_at?: string | null;
   action_taken?: string | null;
+  patient_notified_at?: string | null;
+  patient_notified_by?: string | null;
+  notification_method?: string | null;
 }
 
 interface ExtractedFact {
@@ -249,15 +255,92 @@ function ReviewedBadge({ acknowledgedAt, actionTaken }: { acknowledgedAt?: strin
   );
 }
 
+// ─── Notify patient section ───────────────────────────────────────────────────
+
+const NOTIFY_METHODS = [
+  { value: 'phone',      label: 'Phone call' },
+  { value: 'sms',        label: 'SMS' },
+  { value: 'whatsapp',   label: 'WhatsApp' },
+  { value: 'in_person',  label: 'In person' },
+  { value: 'letter',     label: 'Letter' },
+];
+
+function NotifyPatientSection({
+  notifiedAt,
+  notifiedBy,
+  method,
+  saving,
+  onNotify,
+}: {
+  notifiedAt?: string | null;
+  notifiedBy?: string | null;
+  method?: string | null;
+  saving: boolean;
+  onNotify: (method: string) => void;
+}) {
+  const [selectedMethod, setSelectedMethod] = useState('phone');
+
+  if (notifiedAt) {
+    const methodLabel = NOTIFY_METHODS.find(m => m.value === method)?.label ?? method ?? '';
+    return (
+      <div style={{ marginTop: 6, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          fontSize: 11, fontWeight: 700, color: '#1d4ed8',
+          padding: '3px 8px', borderRadius: 4,
+          background: '#dbeafe', border: '1px solid #93c5fd',
+          alignSelf: 'flex-start',
+        }}>
+          ✉ Patient notified{notifiedAt ? ` · ${relTime(notifiedAt)}` : ''}
+        </span>
+        {methodLabel && (
+          <span style={{ fontSize: 11, color: 'var(--muted)' }}>via {methodLabel}</span>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+      <span style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600 }}>Notify patient via:</span>
+      <select
+        value={selectedMethod}
+        onChange={e => setSelectedMethod(e.target.value)}
+        style={{
+          fontSize: 11, padding: '3px 7px', borderRadius: 4, border: '1px solid var(--border)',
+          background: 'var(--surface)', color: 'var(--fg)', cursor: 'pointer',
+        }}
+      >
+        {NOTIFY_METHODS.map(m => (
+          <option key={m.value} value={m.value}>{m.label}</option>
+        ))}
+      </select>
+      <button
+        onClick={() => onNotify(selectedMethod)}
+        disabled={saving}
+        style={{
+          fontSize: 11, padding: '3px 11px', borderRadius: 5, cursor: saving ? 'default' : 'pointer',
+          border: '1px solid #3b82f6', background: saving ? '#93c5fd' : '#3b82f6',
+          color: '#fff', fontWeight: 600,
+        }}
+      >
+        {saving ? '…' : '✉ Mark notified'}
+      </button>
+    </div>
+  );
+}
+
 // ─── Lab result card ─────────────────────────────────────────────────────────
 
 function LabCard({
-  result, name, reviewing, onAcknowledge,
+  result, name, reviewing, notifying, onAcknowledge, onNotify,
 }: {
   result: LabResult;
   name: string;
   reviewing: boolean;
+  notifying: boolean;
   onAcknowledge: (id: string, actionText: string | null) => void;
+  onNotify: (id: string, method: string) => void;
 }) {
   const [showForm, setShowForm] = useState(false);
 
@@ -326,7 +409,16 @@ function LabCard({
 
       {/* Review / acknowledge area */}
       {isReviewed ? (
-        <ReviewedBadge acknowledgedAt={result.acknowledged_at} actionTaken={result.action_taken} />
+        <>
+          <ReviewedBadge acknowledgedAt={result.acknowledged_at} actionTaken={result.action_taken} />
+          <NotifyPatientSection
+            notifiedAt={result.patient_notified_at}
+            notifiedBy={result.patient_notified_by}
+            method={result.notification_method}
+            saving={notifying}
+            onNotify={method => onNotify(result.id, method)}
+          />
+        </>
       ) : showForm ? (
         <AcknowledgeForm
           saving={reviewing}
@@ -352,12 +444,14 @@ function LabCard({
 // ─── Imaging order card ───────────────────────────────────────────────────────
 
 function ImagingCard({
-  order, name, reviewing, onAcknowledge,
+  order, name, reviewing, notifying, onAcknowledge, onNotify,
 }: {
   order: ImagingOrder;
   name: string;
   reviewing: boolean;
+  notifying: boolean;
   onAcknowledge: (id: string, actionText: string | null) => void;
+  onNotify: (id: string, method: string) => void;
 }) {
   const urgStyle = URGENCY_STYLE[order.urgency] ?? URGENCY_STYLE.routine;
   const [expanded, setExpanded] = useState(false);
@@ -423,7 +517,16 @@ function ImagingCard({
 
       {/* Review / acknowledge area */}
       {isReviewed ? (
-        <ReviewedBadge acknowledgedAt={order.acknowledged_at} actionTaken={order.action_taken} />
+        <>
+          <ReviewedBadge acknowledgedAt={order.acknowledged_at} actionTaken={order.action_taken} />
+          <NotifyPatientSection
+            notifiedAt={order.patient_notified_at}
+            notifiedBy={order.patient_notified_by}
+            method={order.notification_method}
+            saving={notifying}
+            onNotify={method => onNotify(order.id, method)}
+          />
+        </>
       ) : showForm ? (
         <AcknowledgeForm
           saving={reviewing}
@@ -994,6 +1097,7 @@ export default function ResultsInboxTab() {
   const [activeTab, setActiveTab]         = useState<TabId>('labs');
   const [filter, setFilter]               = useState<Filter>('all');
   const [reviewing, setReviewing]         = useState<Set<string>>(new Set());
+  const [notifying, setNotifying]         = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const load = useCallback(async () => {
@@ -1058,29 +1162,21 @@ export default function ResultsInboxTab() {
     actionText: string | null,
     table: 'investigation_results' | 'imaging_orders',
   ) {
-    if (!supabase) {
-      setError('Supabase client not available');
-      return;
-    }
     setReviewing(s => new Set(s).add(id));
     try {
-      const now = new Date().toISOString();
-      const payload: Record<string, unknown> = {
-        status: 'reviewed',
-        acknowledged_at: now,
-      };
-      if (actionText !== null) payload.action_taken = actionText;
+      const headers = await staffAuthHeaders();
+      const res = await fetch(apiUrl(`/api/investigations/review/${id}`), {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table, actionTaken: actionText }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(d.error ?? `HTTP ${res.status}`);
+      }
+      const data = await res.json() as { acknowledged_at?: string };
+      const now = data.acknowledged_at ?? new Date().toISOString();
 
-      const { error: sbErr } = await supabase
-        .from(table)
-        .update(payload)
-        .eq('id', id);
-
-      if (sbErr) throw sbErr;
-
-      // Update local state: mark item as reviewed so the reviewed badge is shown.
-      // The item will disappear from the list on the next refresh (90 s) since
-      // the pending endpoint no longer returns reviewed results.
       if (table === 'investigation_results') {
         setLabResults(prev =>
           prev.map(r =>
@@ -1102,6 +1198,50 @@ export default function ResultsInboxTab() {
       setError(err instanceof Error ? err.message : 'Acknowledge failed');
     } finally {
       setReviewing(s => { const n = new Set(s); n.delete(id); return n; });
+    }
+  }
+
+  async function notifyPatient(
+    id: string,
+    method: string,
+    table: 'investigation_results' | 'imaging_orders',
+  ) {
+    setNotifying(s => new Set(s).add(id));
+    try {
+      const headers = await staffAuthHeaders();
+      const res = await fetch(apiUrl(`/api/investigations/notify-patient/${id}`), {
+        method: 'POST',
+        headers: { ...headers, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ table, method }),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(d.error ?? `HTTP ${res.status}`);
+      }
+      const data = await res.json() as { patient_notified_at?: string; notification_method?: string };
+      const notifiedAt = data.patient_notified_at ?? new Date().toISOString();
+
+      if (table === 'investigation_results') {
+        setLabResults(prev =>
+          prev.map(r =>
+            r.id === id
+              ? { ...r, patient_notified_at: notifiedAt, notification_method: method }
+              : r,
+          ),
+        );
+      } else {
+        setImagingOrders(prev =>
+          prev.map(r =>
+            r.id === id
+              ? { ...r, patient_notified_at: notifiedAt, notification_method: method }
+              : r,
+          ),
+        );
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Notify patient failed');
+    } finally {
+      setNotifying(s => { const n = new Set(s); n.delete(id); return n; });
     }
   }
 
@@ -1283,7 +1423,9 @@ export default function ResultsInboxTab() {
                 result={r}
                 name={names.get(r.patient_id) ?? r.patient_id}
                 reviewing={reviewing.has(r.id)}
+                notifying={notifying.has(r.id)}
                 onAcknowledge={(id, text) => void acknowledge(id, text, 'investigation_results')}
+                onNotify={(id, method) => void notifyPatient(id, method, 'investigation_results')}
               />
             ))}
           </div>
@@ -1301,7 +1443,9 @@ export default function ResultsInboxTab() {
                 order={r}
                 name={names.get(r.patient_id) ?? r.patient_id}
                 reviewing={reviewing.has(r.id)}
+                notifying={notifying.has(r.id)}
                 onAcknowledge={(id, text) => void acknowledge(id, text, 'imaging_orders')}
+                onNotify={(id, method) => void notifyPatient(id, method, 'imaging_orders')}
               />
             ))}
           </div>

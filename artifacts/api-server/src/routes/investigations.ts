@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
-import { getSupabaseAdmin, requireStaffAuth, requireCronSecret, audit } from '../lib/supabase.js';
+import { getSupabaseAdmin, requireStaffAuth, requireCronSecret, audit, getStaffUserId } from '../lib/supabase.js';
 import { extractDocumentInsights } from './portal.js';
 import { logger, errStr } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
@@ -410,8 +410,9 @@ router.post('/api/investigations/review/:id', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
   const { id } = req.params;
 
-  const { table } = (req.body ?? {}) as {
+  const { table, actionTaken } = (req.body ?? {}) as {
     table?: 'investigation_results' | 'imaging_orders';
+    actionTaken?: string | null;
   };
 
   if (!table || (table !== 'investigation_results' && table !== 'imaging_orders')) {
@@ -421,11 +422,12 @@ router.post('/api/investigations/review/:id', async (req, res) => {
 
   try {
     const supa = getSupabaseAdmin();
+    const reviewedBy = await getStaffUserId(req);
 
-    // Verify the record exists
+    // Verify the record exists and fetch fields needed for follow-up tasks
     const { data: existing, error: fetchErr } = await supa
       .from(table)
-      .select('id, status')
+      .select('id, status, patient_id, encounter_id, is_abnormal, is_critical, test_name, order_type, body_area')
       .eq('id', id)
       .maybeSingle();
 
@@ -436,13 +438,18 @@ router.post('/api/investigations/review/:id', async (req, res) => {
 
     const now = new Date().toISOString();
 
+    const updatePayload: Record<string, unknown> = {
+      status:          'reviewed',
+      reviewed_at:     now,
+      acknowledged_at: now,
+      updated_at:      now,
+    };
+    if (reviewedBy) updatePayload.reviewed_by = reviewedBy;
+    if (actionTaken != null) updatePayload.action_taken = actionTaken;
+
     const { error } = await supa
       .from(table)
-      .update({
-        status: 'reviewed',
-        reviewed_at: now,
-        updated_at: now,
-      })
+      .update(updatePayload)
       .eq('id', id);
 
     if (error) throw error;
@@ -459,11 +466,115 @@ router.post('/api/investigations/review/:id', async (req, res) => {
     logger.info({ id, table }, '[investigations/review] marked reviewed');
 
     const sourceType = table === 'investigation_results' ? 'investigation_result' : 'imaging_order';
-    void resolveWorkflowTask({ task_type: 'review_result', source_type: sourceType, source_id: id, resolution_note: 'Reviewed by clinician' });
+    void resolveWorkflowTask({
+      task_type:       'review_result',
+      source_type:     sourceType,
+      source_id:       id,
+      resolved_by:     reviewedBy ?? undefined,
+      resolution_note: 'Reviewed by clinician',
+    });
 
-    res.json({ id, status: 'reviewed' });
+    // Auto-create inform_patient task for abnormal or critical results
+    const rec = existing as Record<string, unknown>;
+    if (rec.is_abnormal || rec.is_critical) {
+      const label = table === 'investigation_results'
+        ? (rec.test_name as string | null | undefined) ?? 'lab result'
+        : `${(rec.order_type as string | null | undefined) ?? ''} ${(rec.body_area as string | null | undefined) ?? ''}`.trim() || 'imaging result';
+
+      void createWorkflowTask({
+        task_type:   'inform_patient',
+        patient_id:  rec.patient_id  as string | null,
+        encounter_id: rec.encounter_id as string | null,
+        source_type:  sourceType,
+        source_id:    id,
+        title:        `Notify patient of ${rec.is_critical ? 'critical' : 'abnormal'} result: ${label}`,
+        priority:     rec.is_critical ? 'urgent' : 'high',
+      });
+    }
+
+    res.json({ id, status: 'reviewed', acknowledged_at: now });
   } catch (err) {
     logger.error({ err }, '[investigations/review] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/notify-patient/:id
+// Records that the patient was notified of a result and resolves the
+// inform_patient workflow task.
+// Body: { table: 'investigation_results' | 'imaging_orders', method: string, notifiedBy?: string }
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/notify-patient/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+
+  const { table, method, notifiedBy } = (req.body ?? {}) as {
+    table?:      'investigation_results' | 'imaging_orders';
+    method?:     string;
+    notifiedBy?: string;
+  };
+
+  if (!table || (table !== 'investigation_results' && table !== 'imaging_orders')) {
+    res.status(400).json({ error: 'table must be "investigation_results" or "imaging_orders"' });
+    return;
+  }
+  if (!method || typeof method !== 'string' || !method.trim()) {
+    res.status(400).json({ error: 'method is required (e.g. phone, sms, whatsapp, letter, in_person)' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+    const staffId = await getStaffUserId(req);
+    const now = new Date().toISOString();
+    const by = (notifiedBy ?? staffId ?? 'staff').toString();
+
+    const { data: existing, error: fetchErr } = await supa
+      .from(table)
+      .select('id, patient_id, encounter_id')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr || !existing) {
+      res.status(404).json({ error: 'Record not found' });
+      return;
+    }
+
+    const { error } = await supa
+      .from(table)
+      .update({
+        patient_notified_at:  now,
+        patient_notified_by:  by,
+        notification_method:  method.trim(),
+        updated_at:           now,
+      })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    const entityType = table === 'investigation_results' ? 'investigation_result' : 'imaging_order';
+    const sourceType  = entityType;
+
+    await audit({
+      action:     'notify',
+      entityType,
+      entityId:   id,
+      payload:    { patient_notified_at: now, notification_method: method.trim(), patient_notified_by: by },
+    });
+
+    void resolveWorkflowTask({
+      task_type:       'inform_patient',
+      source_type:     sourceType,
+      source_id:       id,
+      resolved_by:     staffId ?? undefined,
+      resolution_note: `Patient notified via ${method.trim()}`,
+    });
+
+    logger.info({ id, table, method }, '[investigations/notify-patient] patient notified');
+    res.json({ id, patient_notified_at: now, notification_method: method.trim() });
+  } catch (err) {
+    logger.error({ err }, '[investigations/notify-patient] error');
     res.status(502).json({ error: errStr(err) });
   }
 });
