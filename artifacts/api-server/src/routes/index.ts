@@ -35,6 +35,7 @@ import adminRouter from "./admin";
 import analyticsRouter from "./analytics";
 import theatreRouter from "./theatre";
 import aiProposalsRouter from "./ai-proposals";
+import workflowTasksRouter from "./workflow-tasks";
 
 const router: IRouter = Router();
 
@@ -74,5 +75,6 @@ router.use(adminRouter);
 router.use(aiProposalsRouter);
 router.use(analyticsRouter);
 router.use(theatreRouter);
+router.use(workflowTasksRouter);
 
 export default router;
