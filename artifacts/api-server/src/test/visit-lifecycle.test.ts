@@ -33,6 +33,7 @@ vi.mock('../lib/supabase.js', () => ({
   getSupabaseAdmin: () => ({ from: mockFrom, auth: { getUser: vi.fn() } }),
   requireStaffAuth: vi.fn().mockResolvedValue(true),
   requireCronSecret: vi.fn().mockReturnValue(true),
+  getStaffUserId: vi.fn().mockResolvedValue('staff-uuid'),
   audit: vi.fn().mockResolvedValue(undefined),
 }));
 
