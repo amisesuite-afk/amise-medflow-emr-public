@@ -37,6 +37,7 @@ export type EncounterType =
 
 export interface ProgressNote {
   id: string;
+  dbNoteId?: string;
   date: string;
   author: string;
   type: 'SOAP' | 'Ward Round' | 'Follow-up';

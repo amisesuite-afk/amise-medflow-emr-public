@@ -372,6 +372,42 @@ router.post('/api/visit/sign-notes/:encounterId', async (req, res) => {
   }
 });
 
+// POST /api/visit/sign-note/:noteId -- sign a single draft clinical note
+router.post('/api/visit/sign-note/:noteId', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { noteId } = req.params;
+
+  try {
+    const supa = getSupabaseAdmin();
+    const signedBy = await getStaffUserId(req);
+
+    const { data: note, error: fetchErr } = await supa
+      .from('clinical_notes')
+      .select('id, patient_id, status')
+      .eq('id', noteId)
+      .maybeSingle();
+
+    if (fetchErr || !note) { res.status(404).json({ error: 'Note not found' }); return; }
+    if (note.status !== 'draft') {
+      res.status(409).json({ error: `Note is already ${note.status}` });
+      return;
+    }
+
+    const { error: updateErr } = await supa
+      .from('clinical_notes')
+      .update({ status: 'signed', signed_by: signedBy, signed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .eq('id', noteId);
+
+    if (updateErr) throw updateErr;
+
+    void logAudit(req, 'sign', 'clinical_note', noteId, note.patient_id ?? undefined, {});
+    res.json({ noteId, status: 'signed' });
+  } catch (err) {
+    logger.error({ err }, '[visit/sign-note] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 // POST /api/visit/amend-note/:noteId -- amend a signed clinical note
 // Creates a new version with previous_version_id pointing to the original.
 // The original note's status becomes 'amended' (read-only).

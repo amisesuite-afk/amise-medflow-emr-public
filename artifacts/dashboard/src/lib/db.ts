@@ -1058,6 +1058,82 @@ export async function saveLabPanel(
 
 // ─── saveClinicalNote ─────────────────────────────────────────────────────────
 
+export interface ClinicalNoteRow {
+  id: string;
+  note_type: string;
+  status: string;
+  content: string;
+  signed_by: string | null;
+  signed_at: string | null;
+  version: number;
+  previous_version_id: string | null;
+  created_at: string;
+  ai_assisted: boolean;
+}
+
+/** Fetches clinical notes for an encounter, excluding internal JSON blobs (HPI, exam, AI consult, discharge, inpatient). */
+export async function loadEncounterClinicalNotes(
+  encounterId: string,
+): Promise<ClinicalNoteRow[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('clinical_notes')
+    .select('id, note_type, status, content, signed_by, signed_at, version, previous_version_id, created_at, ai_assisted')
+    .eq('encounter_id', encounterId)
+    .not('content', 'like', '[HPI]%')
+    .not('content', 'like', '[EXAMINATION%')
+    .not('content', 'like', '[AI_CONSULT%')
+    .not('content', 'like', '[DISCHARGE%')
+    .not('content', 'like', '[INPATIENT%')
+    .order('created_at', { ascending: false });
+  if (error) { console.error('[db] loadEncounterClinicalNotes:', error); return []; }
+  return (data ?? []) as ClinicalNoteRow[];
+}
+
+/** Signs a single draft clinical note by its DB id. */
+export async function signNote(
+  noteId: string,
+): Promise<{ error: string | null }> {
+  const base = getApiOrigin();
+  try {
+    const res = await fetch(`${base}/api/visit/sign-note/${noteId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({})) as { error?: string };
+      return { error: err.error ?? `HTTP ${res.status}` };
+    }
+    return { error: null };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Sign request failed' };
+  }
+}
+
+/** Amends a signed note. Creates a new version with previous_version_id pointing to the original. */
+export async function amendNote(
+  noteId: string,
+  content: string,
+  reason: string,
+): Promise<{ newNoteId: string | null; error: string | null }> {
+  const base = getApiOrigin();
+  try {
+    const res = await fetch(`${base}/api/visit/amend-note/${noteId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+      body: JSON.stringify({ content, reason }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({})) as { error?: string };
+      return { newNoteId: null, error: err.error ?? `HTTP ${res.status}` };
+    }
+    const data = await res.json() as { newNoteId: string };
+    return { newNoteId: data.newNoteId, error: null };
+  } catch (e) {
+    return { newNoteId: null, error: e instanceof Error ? e.message : 'Amend request failed' };
+  }
+}
+
 /** Persists a ProgressNote to `clinical_notes` as a SOAP-formatted text note
  *  in `draft` status. The physician can later sign it (status → 'signed').
  *  The note is marked ai_assisted: false because it's staff-authored. */
@@ -1077,8 +1153,8 @@ export async function saveClinicalNote(
   },
   patientId: string,
   encounterId: string,
-): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('saveClinicalNote') };
+): Promise<{ noteId: string | null; error: string | null }> {
+  if (!supabase) return { noteId: null, error: notConfigured('saveClinicalNote') };
 
   const parts: string[] = [];
 
@@ -1112,17 +1188,17 @@ export async function saveClinicalNote(
 
   const content = parts.join('\n\n') || '(No content entered)';
 
-  const { error } = await supabase.from('clinical_notes').insert({
+  const { data, error } = await supabase.from('clinical_notes').insert({
     encounter_id: encounterId,
     patient_id:   patientId,
     note_type:    'soap',
     status:       'draft',
     content,
     ai_assisted:  false,
-  });
+  }).select('id').single();
 
-  if (error) { console.error('[db] saveClinicalNote:', error); return { error: error.message }; }
-  return { error: null };
+  if (error) { console.error('[db] saveClinicalNote:', error); return { noteId: null, error: error.message }; }
+  return { noteId: (data as { id: string }).id, error: null };
 }
 
 // ─── syncAllergyList ──────────────────────────────────────────────────────────
