@@ -99,9 +99,11 @@ router.post('/api/voice/segment', async (req, res) => {
       return;
     }
 
-    // Persist audit trail — fire-and-forget, never blocks the response
-    void (async () => {
+    // Store as AI_PROPOSED — fire-and-forget, never blocks response
+    let proposalId: string | null = null;
+    await (async () => {
       try {
+        // Save call log
         await sb().from('call_logs').insert({
           patient_id:     patientId ?? null,
           source:         'ambient',
@@ -109,13 +111,29 @@ router.post('/api/voice/segment', async (req, res) => {
           transcript:     transcript.trim(),
           soap_segmented: segmented,
         });
+        // Save AI proposal for clinician review
+        const { data: proposal } = await sb()
+          .from('ai_proposals')
+          .insert({
+            patient_id:     patientId   ?? null,
+            encounter_id:   encounterId ?? null,
+            proposal_type:  'soap_segment',
+            source_type:    'voice_transcript',
+            source_content: transcript.trim().slice(0, 4000), // cap stored size
+            model:          MODEL,
+            content:        segmented,
+            status:         'proposed',
+          })
+          .select('id')
+          .single();
+        if (proposal?.id) proposalId = proposal.id as string;
       } catch (saveErr) {
-        log.warn({ saveErr }, 'voice segment: call_log save failed (non-fatal)');
+        log.warn({ saveErr }, 'voice segment: proposal save failed (non-fatal)');
       }
     })();
 
     log.info({ chars: transcript.length, patientId: patientId ?? 'anon' }, 'voice transcript segmented');
-    res.json({ success: true, segmented });
+    res.json({ success: true, segmented, proposalId });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Voice segmentation failed';
     log.error({ err }, 'voice segment error');

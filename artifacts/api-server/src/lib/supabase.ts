@@ -44,6 +44,17 @@ export async function requireStaffAuth(req: any, res: any): Promise<boolean> {
   return false;
 }
 
+/** Extract the authenticated staff user's UUID from the request JWT. Returns null for cron/service calls. */
+export async function getStaffUserId(req: any): Promise<string | null> {
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    const jwt = authHeader.slice(7);
+    const { data, error } = await sb().auth.getUser(jwt);
+    if (!error && data?.user?.id) return data.user.id;
+  }
+  return null;
+}
+
 export function requireCronSecret(req: any, res: any): boolean {
   const secret = process.env.CRON_SECRET;
   if (!secret) {
