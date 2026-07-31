@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { listPatientEncounters, loadEncounterData, type EncounterSummary, type PatientListRow } from '@/lib/db';
-import { supabase } from '@/lib/supabase';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { DEMO_MODE } from '@/context/AuthContext';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
@@ -64,12 +65,11 @@ export default function EncounterTimelineTab() {
     }
     setSearching(true);
     try {
-      if (!supabase) return;
-      const isPhone = /^\+?\d[\d\s()-]{3,}$/.test(q.trim());
-      const { data } = isPhone
-        ? await supabase.from('patients').select('id,full_name,sex,phone,date_of_birth,created_at').ilike('phone', `%${q.replace(/[\s()-]/g,'')}%`).limit(20)
-        : await supabase.from('patients').select('id,full_name,sex,phone,date_of_birth,created_at').ilike('full_name', `%${q}%`).order('created_at', { ascending: false }).limit(20);
-      setSearchResults((data ?? []) as PatientListRow[]);
+      const base = getApiOrigin();
+      const headers = await staffAuthHeaders();
+      const res = await fetch(`${base}/api/patients?q=${encodeURIComponent(q.trim())}&limit=20`, { headers });
+      const json = res.ok ? (await res.json() as { patients: PatientListRow[] }) : { patients: [] };
+      setSearchResults(json.patients ?? []);
     } finally { setSearching(false); }
   }
 

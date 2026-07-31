@@ -102,11 +102,12 @@ export default function DocumentsTab() {
           patient_id: patientId,
           encounter_id: encounterId ?? null,
           document_type: uploadType,
-          original_filename: file.name,
+          file_name: file.name,
           storage_path: path,
           mime_type: file.type,
-          uploaded_by: userId,
-          description: uploadDescription,
+          source: 'uploaded',
+          created_by: userId,
+          notes: uploadDescription,
         });
 
         if (insertErr) {

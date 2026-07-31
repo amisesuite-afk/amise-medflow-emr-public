@@ -41,6 +41,9 @@ import auditRouter from "./audit";
 import prescriptionsRouter from "./prescriptions";
 import woundAssessmentsRouter from "./wound-assessments";
 import mmCasesRouter from "./mm-cases";
+import encountersRouter from "./encounters";
+import clinicalNotesRouter from "./clinical-notes";
+import patientsStaffRouter from "./patients-staff";
 
 const router: IRouter = Router();
 
@@ -86,5 +89,8 @@ router.use(auditRouter);
 router.use(prescriptionsRouter);
 router.use(woundAssessmentsRouter);
 router.use(mmCasesRouter);
+router.use(encountersRouter);
+router.use(clinicalNotesRouter);
+router.use(patientsStaffRouter);
 
 export default router;

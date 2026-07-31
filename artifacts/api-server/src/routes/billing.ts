@@ -719,4 +719,71 @@ ${isPaid && paymentMethod ? `<div class="payment-info">Payment received via <str
   }
 });
 
+// ---------------------------------------------------------------------------
+// PATCH /api/billing/charge/:id -- edit a pending charge
+// ---------------------------------------------------------------------------
+router.patch("/api/billing/charge/:id", async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+  const { chargeDescription, quantity, unitPriceXcd, discountXcd, notes } = req.body ?? {};
+
+  try {
+    const supa = getSupabaseAdmin();
+    const { data: existing, error: fetchErr } = await supa
+      .from("billing_charges").select("id, status").eq("id", id).maybeSingle();
+    if (fetchErr || !existing) { res.status(404).json({ error: "Charge not found" }); return; }
+    if ((existing as Record<string, unknown>).status !== "pending") {
+      res.status(400).json({ error: "Only pending charges can be edited" }); return;
+    }
+
+    const patch: Record<string, unknown> = {};
+    if (chargeDescription !== undefined) patch.charge_description = chargeDescription;
+    if (quantity !== undefined)           patch.quantity           = Number(quantity);
+    if (unitPriceXcd !== undefined)       patch.unit_price_xcd    = Number(unitPriceXcd);
+    if (discountXcd !== undefined)        patch.discount_xcd      = Number(discountXcd);
+    if (notes !== undefined)              patch.notes             = notes || null;
+
+    if (!Object.keys(patch).length) { res.status(400).json({ error: "No updatable fields provided" }); return; }
+
+    const { error: updateErr } = await supa.from("billing_charges").update(patch).eq("id", id);
+    if (updateErr) throw updateErr;
+
+    await audit({ action: "change_request", entityType: "billing_charge", entityId: id, payload: patch });
+    logger.info({ id }, "[billing/charge-patch] updated");
+    res.json({ id, ...patch });
+  } catch (err) {
+    logger.error({ err }, "[billing/charge-patch] error");
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/billing/charge/:id/void -- void a charge
+// ---------------------------------------------------------------------------
+router.post("/api/billing/charge/:id/void", async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+
+  try {
+    const supa = getSupabaseAdmin();
+    const { data: existing, error: fetchErr } = await supa
+      .from("billing_charges").select("id, status").eq("id", id).maybeSingle();
+    if (fetchErr || !existing) { res.status(404).json({ error: "Charge not found" }); return; }
+
+    const status = (existing as Record<string, unknown>).status as string;
+    if (status === "paid")  { res.status(400).json({ error: "Paid charges cannot be voided" }); return; }
+    if (status === "void")  { res.status(400).json({ error: "Charge is already voided" }); return; }
+
+    const { error: updateErr } = await supa.from("billing_charges").update({ status: "void" }).eq("id", id);
+    if (updateErr) throw updateErr;
+
+    await audit({ action: "change_request", entityType: "billing_charge", entityId: id, payload: { status: "void" } });
+    logger.info({ id }, "[billing/charge-void] voided");
+    res.json({ id, status: "void" });
+  } catch (err) {
+    logger.error({ err }, "[billing/charge-void] error");
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 export default router;
