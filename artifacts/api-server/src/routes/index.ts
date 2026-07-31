@@ -39,6 +39,8 @@ import workflowTasksRouter from "./workflow-tasks";
 import clinicalStatesRouter from "./clinical-states";
 import auditRouter from "./audit";
 import prescriptionsRouter from "./prescriptions";
+import woundAssessmentsRouter from "./wound-assessments";
+import mmCasesRouter from "./mm-cases";
 
 const router: IRouter = Router();
 
@@ -82,5 +84,7 @@ router.use(workflowTasksRouter);
 router.use(clinicalStatesRouter);
 router.use(auditRouter);
 router.use(prescriptionsRouter);
+router.use(woundAssessmentsRouter);
+router.use(mmCasesRouter);
 
 export default router;

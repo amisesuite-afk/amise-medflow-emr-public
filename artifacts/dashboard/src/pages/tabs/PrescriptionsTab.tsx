@@ -142,7 +142,7 @@ const BTN: React.CSSProperties = {
   cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5,
   whiteSpace: 'nowrap',
 };
-const BTN_PRIMARY: React.CSSProperties = { ...BTN, background: '#1a3a5c', color: '#fff', border: 'none' };
+const BTN_PRIMARY: React.CSSProperties = { ...BTN, background: 'var(--panel-hd)', color: '#fff', border: 'none' };
 const BTN_GHOST: React.CSSProperties = { ...BTN, background: '#f4f6f9', color: '#1a1a1a', border: '1px solid #d1d5db' };
 const BTN_ACCENT: React.CSSProperties = { ...BTN, background: 'var(--accent, #0b8278)', color: '#fff', border: 'none' };
 const BTN_DANGER: React.CSSProperties = { ...BTN, background: '#dc2626', color: '#fff', border: 'none' };

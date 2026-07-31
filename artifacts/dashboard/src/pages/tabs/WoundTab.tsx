@@ -114,15 +114,15 @@ export default function WoundTab() {
     <div className="gap-y">
 
       {/* Header */}
-      <div style={{ background: '#0f172a', borderRadius: 10, padding: '16px 20px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ background: 'var(--panel-hd)', borderRadius: 10, padding: '16px 20px', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <div style={{ fontWeight: 800, fontSize: 15 }}>Wound Assessment</div>
-          <div style={{ fontSize: 12, color: '#94a3b8', marginTop: 2 }}>
+          <div style={{ fontSize: 12, color: 'var(--sidebar-text)', marginTop: 2 }}>
             ASEPSIS scoring · CDC SSI classification · Drain tracking
           </div>
         </div>
         <button type="button" onClick={openNew}
-          style={{ background: '#1d4ed8', color: '#fff', border: 'none', borderRadius: 7, padding: '8px 16px', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+          style={{ background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: 7, padding: '8px 16px', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
           + New Wound
         </button>
       </div>
@@ -333,7 +333,7 @@ export default function WoundTab() {
 
           <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
             <button type="button" onClick={handleSave} disabled={saving}
-              style={{ background: saving ? '#94a3b8' : '#1d4ed8', color: '#fff', border: 'none', borderRadius: 7, padding: '9px 22px', fontWeight: 700, fontSize: 13, cursor: saving ? 'default' : 'pointer' }}>
+              style={{ background: saving ? '#94a3b8' : 'var(--accent)', color: '#fff', border: 'none', borderRadius: 7, padding: '9px 22px', fontWeight: 700, fontSize: 13, cursor: saving ? 'default' : 'pointer' }}>
               {saving ? 'Saving…' : 'Save Assessment'}
             </button>
             <button type="button" onClick={closeForm} style={btnSecondary}>Cancel</button>

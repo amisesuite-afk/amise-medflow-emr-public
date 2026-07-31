@@ -1,7 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { getSupabase } from '@/lib/supabase';
-import { useAuth } from '@/context/AuthContext';
 
 /* ── Types ─────────────────────────────────────────────────────────────── */
 
@@ -267,7 +265,7 @@ function CaseForm({ initial, onSave, onCancel }: {
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={save} disabled={!form.procedure.trim() || !form.complication.trim()} style={{
           padding: '9px 18px', borderRadius: 7, border: 'none',
-          background: form.procedure && form.complication ? '#0b2545' : '#d1d5db',
+          background: form.procedure && form.complication ? 'var(--accent)' : '#d1d5db',
           color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer',
         }}>
           {initial ? 'Save changes' : 'Log case'}
@@ -286,7 +284,6 @@ type QIView = 'register' | 'metrics';
 
 export default function QualityImprovementTab() {
   const { patientName } = useAppContext();
-  const { session } = useAuth();
 
   const [cases, setCases] = useState<MMCase[]>([]);
   const [loading, setLoading] = useState(true);
@@ -296,74 +293,61 @@ export default function QualityImprovementTab() {
   const [filterStatus, setFilterStatus] = useState<ReviewStatus | 'all'>('all');
   const [filterGrade, setFilterGrade] = useState<ClavienGrade | 'all'>('all');
 
-  const loadFromDb = useCallback(async () => {
-    const sb = getSupabase();
-    if (!sb) {
-      // Fallback: load from localStorage if Supabase not configured
-      try { setCases(JSON.parse(localStorage.getItem('mm_case_register_v1') ?? '[]') as MMCase[]); }
-      catch { /* ignore */ }
+  const loadFromApi = useCallback(async () => {
+    try {
+      const resp = await fetch('/api/mm-cases');
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const body = await resp.json() as { cases: Record<string, unknown>[] };
+      setCases((body.cases ?? []).map(r => dbRowToCase(r)));
+    } catch {
+      setCases([]);
+    } finally {
       setLoading(false);
-      return;
     }
-    const { data, error } = await sb
-      .from('mm_cases')
-      .select('*')
-      .order('date', { ascending: false });
-    if (!error && data) setCases(data.map(r => dbRowToCase(r as Record<string, unknown>)));
-    setLoading(false);
   }, []);
 
-  useEffect(() => { void loadFromDb(); }, [loadFromDb]);
+  useEffect(() => { void loadFromApi(); }, [loadFromApi]);
 
   async function saveCase(c: MMCase) {
-    const sb = getSupabase();
-    const row = {
-      date:           c.date,
-      patient_ref:    c.patientRef,
-      procedure:      c.procedure,
-      complication:   c.complication,
-      category:       c.category,
-      grade:          c.grade,
-      grade_suffix:   c.gradeSuffix,
-      contributing:   c.contributing,
-      re_operation:   c.reOperation,
-      icu_admission:  c.icuAdmission,
-      death:          c.death,
-      lessons_learned: c.lessonsLearned,
-      action_items:   c.actionItems,
-      review_status:  c.reviewStatus,
-      review_date:    c.reviewDate || null,
-      reviewed_by:    c.reviewedBy,
-    };
     const isNew = !c.id;
-    if (sb) {
+    const payload = {
+      date: c.date, patientRef: c.patientRef, procedure: c.procedure,
+      complication: c.complication, category: c.category, grade: c.grade || undefined,
+      gradeSuffix: c.gradeSuffix, contributing: c.contributing,
+      reOperation: c.reOperation, icuAdmission: c.icuAdmission, death: c.death,
+      lessonsLearned: c.lessonsLearned, actionItems: c.actionItems,
+      reviewStatus: c.reviewStatus, reviewDate: c.reviewDate || undefined,
+      reviewedBy: c.reviewedBy,
+    };
+    try {
       if (isNew) {
-        const { data } = await sb.from('mm_cases').insert({ ...row, created_by: session?.user.id ?? null }).select('id').single();
-        if (data) c = { ...c, id: (data as { id: string }).id };
-        else c = { ...c, id: `local-${Date.now()}` };
+        const resp = await fetch('/api/mm-cases', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (resp.ok) {
+          const body = await resp.json() as { case: { id: string } };
+          c = { ...c, id: body.case.id };
+        }
       } else {
-        await sb.from('mm_cases').update(row).eq('id', c.id);
+        await fetch(`/api/mm-cases/${c.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
       }
-    } else {
-      if (isNew) c = { ...c, id: `local-${Date.now()}` };
-    }
-    const updatedCases = isNew ? [c, ...cases] : cases.map(x => x.id === c.id ? c : x);
-    setCases(updatedCases);
-    if (!sb) {
-      try { localStorage.setItem('mm_case_register_v1', JSON.stringify(updatedCases)); } catch { /* */ }
-    }
+    } catch { /* optimistic update continues */ }
+    setCases(prev => isNew ? [c, ...prev] : prev.map(x => x.id === c.id ? c : x));
     setAdding(false);
     setEditId(null);
   }
 
   async function deleteCase(id: string) {
-    const sb = getSupabase();
-    if (sb) await sb.from('mm_cases').delete().eq('id', id);
-    const updatedCases = cases.filter(x => x.id !== id);
-    setCases(updatedCases);
-    if (!sb) {
-      try { localStorage.setItem('mm_case_register_v1', JSON.stringify(updatedCases)); } catch { /* */ }
-    }
+    try {
+      await fetch(`/api/mm-cases/${id}`, { method: 'DELETE' });
+    } catch { /* */ }
+    setCases(prev => prev.filter(x => x.id !== id));
   }
 
   async function cycleStatus(id: string) {
@@ -371,13 +355,14 @@ export default function QualityImprovementTab() {
     const c = cases.find(x => x.id === id);
     if (!c) return;
     const next = ORDER[(ORDER.indexOf(c.reviewStatus) + 1) % ORDER.length];
-    const sb = getSupabase();
-    if (sb) await sb.from('mm_cases').update({ review_status: next }).eq('id', id);
-    const updatedCases = cases.map(x => x.id === id ? { ...x, reviewStatus: next } : x);
-    setCases(updatedCases);
-    if (!sb) {
-      try { localStorage.setItem('mm_case_register_v1', JSON.stringify(updatedCases)); } catch { /* */ }
-    }
+    setCases(prev => prev.map(x => x.id === id ? { ...x, reviewStatus: next } : x));
+    try {
+      await fetch(`/api/mm-cases/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewStatus: next }),
+      });
+    } catch { /* optimistic update already applied */ }
   }
 
   /* ── Filtered list ── */
@@ -410,15 +395,15 @@ export default function QualityImprovementTab() {
   };
   const pillActive: React.CSSProperties = {
     ...pill,
-    background: '#0b2545', color: '#fff', border: '1px solid #0b2545',
+    background: 'var(--accent)', color: '#fff', border: '1px solid var(--accent)',
   };
 
   return (
     <div style={{ maxWidth: 900 }}>
       {/* Header */}
-      <div style={{ background: '#0b2545', color: '#fff', borderRadius: 10, padding: '14px 18px', marginBottom: 16 }}>
+      <div style={{ background: 'var(--panel-hd)', color: '#fff', borderRadius: 10, padding: '14px 18px', marginBottom: 16 }}>
         <div style={{ fontWeight: 800, fontSize: 15 }}>Quality Improvement &amp; M&amp;M Register</div>
-        <div style={{ fontSize: 12, color: '#93c5fd', marginTop: 2 }}>
+        <div style={{ fontSize: 12, color: 'var(--sidebar-text)', marginTop: 2 }}>
           Morbidity &amp; Mortality case log · RACS-aligned peer review workflow
           {patientName.trim() ? ` · ${patientName}` : ''}
         </div>
@@ -471,7 +456,7 @@ export default function QualityImprovementTab() {
             {!adding && !editId && (
               <button onClick={() => setAdding(true)} style={{
                 padding: '7px 14px', borderRadius: 6, border: 'none',
-                background: '#0b2545', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+                background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
               }}>
                 + Log case
               </button>

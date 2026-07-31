@@ -2218,45 +2218,8 @@ export function emptyWound(label = 'Wound'): WoundAssessment {
   };
 }
 
-export async function saveWoundAssessment(
-  patientId: string,
-  encounterId: string | null,
-  wound: WoundAssessment,
-): Promise<{ id: string | null; error: string | null }> {
-  if (!supabase) return { id: null, error: notConfigured('saveWoundAssessment') };
-  const row = {
-    patient_id:      patientId,
-    encounter_id:    encounterId ?? null,
-    label:           wound.label,
-    location:        wound.location || null,
-    wound_class:     wound.woundClass || null,
-    closure:         wound.closure || null,
-    status:          wound.status,
-    dressing:        wound.dressing || null,
-    drain:           wound.drain,
-    drain_output_ml: wound.drainOutputMl ? parseInt(wound.drainOutputMl) : null,
-    asepsis_score:   wound.asepsisScore,
-    asepsis_details: wound.asepsisDetails as unknown as Record<string, unknown>,
-    notes:           wound.notes || null,
-    assessed_date:   wound.assessedDate,
-    updated_at:      new Date().toISOString(),
-  };
-  if (wound.id.startsWith('tmp-')) {
-    const { data, error } = await supabase.from('wound_assessments').insert(row).select('id').single();
-    if (error) return { id: null, error: error.message };
-    return { id: (data as Record<string, string>).id, error: null };
-  }
-  const { error } = await supabase.from('wound_assessments').update(row).eq('id', wound.id);
-  return { id: wound.id, error: error?.message ?? null };
-}
-
-export async function loadWoundAssessments(patientId: string, encounterId?: string): Promise<WoundAssessment[]> {
-  if (!supabase) return [];
-  let q = supabase.from('wound_assessments').select('*').eq('patient_id', patientId);
-  if (encounterId) q = q.eq('encounter_id', encounterId);
-  const { data, error } = await q.order('assessed_date', { ascending: false });
-  if (error || !data) return [];
-  return (data as Array<Record<string, unknown>>).map(r => ({
+function dbRowToWound(r: Record<string, unknown>): WoundAssessment {
+  return {
     id:            r.id as string,
     label:         (r.label as string) ?? 'Wound',
     location:      (r.location as string) ?? '',
@@ -2270,13 +2233,72 @@ export async function loadWoundAssessments(patientId: string, encounterId?: stri
     asepsisDetails:(r.asepsis_details as AsepsisDetails) ?? { serous: 0, erythema: 0, purulent: 0, separation: 0, isolatedBacteria: false, prolongedStay: false, additionalTx: 0 },
     notes:         (r.notes as string) ?? '',
     assessedDate:  (r.assessed_date as string) ?? new Date().toISOString().slice(0, 10),
-  }));
+  };
+}
+
+export async function saveWoundAssessment(
+  patientId: string,
+  encounterId: string | null,
+  wound: WoundAssessment,
+): Promise<{ id: string | null; error: string | null }> {
+  const payload = {
+    patientId, encounterId,
+    label:          wound.label,
+    location:       wound.location || undefined,
+    woundClass:     wound.woundClass || undefined,
+    closure:        wound.closure || undefined,
+    status:         wound.status,
+    dressing:       wound.dressing || undefined,
+    drain:          wound.drain,
+    drainOutputMl:  wound.drainOutputMl ? parseInt(wound.drainOutputMl) : undefined,
+    asepsisScore:   wound.asepsisScore,
+    asepsisDetails: wound.asepsisDetails,
+    notes:          wound.notes || undefined,
+    assessedDate:   wound.assessedDate,
+  };
+  try {
+    if (wound.id.startsWith('tmp-')) {
+      const resp = await fetch('/api/wound-assessments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!resp.ok) return { id: null, error: `HTTP ${resp.status}` };
+      const body = await resp.json() as { wound: { id: string } };
+      return { id: body.wound.id, error: null };
+    }
+    const resp = await fetch(`/api/wound-assessments/${wound.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok) return { id: null, error: `HTTP ${resp.status}` };
+    return { id: wound.id, error: null };
+  } catch (e) {
+    return { id: null, error: e instanceof Error ? e.message : 'Network error' };
+  }
+}
+
+export async function loadWoundAssessments(patientId: string, encounterId?: string): Promise<WoundAssessment[]> {
+  try {
+    const qs = encounterId ? `?encounterId=${encounterId}` : '';
+    const resp = await fetch(`/api/wound-assessments/patient/${patientId}${qs}`);
+    if (!resp.ok) return [];
+    const body = await resp.json() as { wounds: Record<string, unknown>[] };
+    return (body.wounds ?? []).map(dbRowToWound);
+  } catch {
+    return [];
+  }
 }
 
 export async function deleteWoundAssessment(woundId: string): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('deleteWoundAssessment') };
-  const { error } = await supabase.from('wound_assessments').delete().eq('id', woundId);
-  return { error: error?.message ?? null };
+  try {
+    const resp = await fetch(`/api/wound-assessments/${woundId}`, { method: 'DELETE' });
+    if (!resp.ok) return { error: `HTTP ${resp.status}` };
+    return { error: null };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Network error' };
+  }
 }
 
 /* ── Encounter timeline ───────────────────────────────────────────────────── */

@@ -15,24 +15,36 @@ textarea { resize: vertical; }
 
 /* ── CSS vars ───────────────────────────────────── */
 :root {
-  /* Brand palette */
-  --accent:    #0b8278;
-  --accent2:   #0f5f76;
-  --accent-lt: #e4f5f2;
+  /* Brand palette — Caribbean surgical green */
+  --accent:      #0b9b8e;
+  --accent-dark: #087a70;
+  --accent2:     #0f6b7a;
+  --accent-lt:   #e0f5f2;
+  --green-vivid: #12b5a5;
 
   /* Semantic colours — light mode defaults */
-  --ink:       #1a2e2b;
-  --muted:     #5a706c;
-  --line:      #d8e8e4;
-  --bg:        #f0f6f4;
+  --ink:       #182b28;
+  --muted:     #516963;
+  --faint:     #8aada8;
+  --line:      #d4e6e2;
+  --bg:        #eef5f3;
   --card:      #ffffff;
 
+  /* Convenience aliases used by component inline styles */
+  --surface:   var(--card);
+  --fg:        var(--ink);
+  --border:    var(--line);
+
+  /* Section header — dark tropical green (replaces hardcoded navy) */
+  --panel-hd:  #0d2822;
+  --panel-hd2: #0f3530;
+
   /* Shell */
-  --sidebar-bg: #0d2520;
-  --sidebar-text: #8fc4b9;
-  --sidebar-active-bg: rgba(11,130,120,.18);
-  --sidebar-active-text: #5df0e0;
-  --header-bg: #0f2e29;
+  --sidebar-bg: #091e1a;
+  --sidebar-text: #7bbfb6;
+  --sidebar-active-bg: rgba(11,155,142,.16);
+  --sidebar-active-text: #4de8d8;
+  --header-bg: #0d2520;
 
   /* Acuity */
   --urgent:    #b91c1c;
@@ -82,35 +94,44 @@ textarea { resize: vertical; }
 /* ── Dark mode ──────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:        #0f1c19;
-    --card:      #162421;
-    --ink:       #d0e8e4;
-    --muted:     #5a8a82;
-    --line:      #1e3832;
-    --accent-lt: rgba(11,130,120,.18);
-    --sidebar-bg: #070e0d;
-    --header-bg:  #0a1612;
+    --bg:        #0d1a17;
+    --card:      #142220;
+    --ink:       #cde8e4;
+    --muted:     #568880;
+    --faint:     #3d6660;
+    --line:      #1c3632;
+    --accent-lt: rgba(11,155,142,.16);
+    --sidebar-bg: #060f0d;
+    --header-bg:  #091410;
+    --panel-hd:   #0d2822;
+    --panel-hd2:  #0f3530;
   }
 }
 :root[data-theme="dark"] {
-  --bg:        #0f1c19;
-  --card:      #162421;
-  --ink:       #d0e8e4;
-  --muted:     #5a8a82;
-  --line:      #1e3832;
-  --accent-lt: rgba(11,130,120,.18);
-  --sidebar-bg: #070e0d;
-  --header-bg:  #0a1612;
+  --bg:        #0d1a17;
+  --card:      #142220;
+  --ink:       #cde8e4;
+  --muted:     #568880;
+  --faint:     #3d6660;
+  --line:      #1c3632;
+  --accent-lt: rgba(11,155,142,.16);
+  --sidebar-bg: #060f0d;
+  --header-bg:  #091410;
+  --panel-hd:   #0d2822;
+  --panel-hd2:  #0f3530;
 }
 :root[data-theme="light"] {
-  --bg:        #f0f6f4;
+  --bg:        #eef5f3;
   --card:      #ffffff;
-  --ink:       #1a2e2b;
-  --muted:     #5a706c;
-  --line:      #d8e8e4;
-  --accent-lt: #e4f5f2;
-  --sidebar-bg: #0d2520;
-  --header-bg:  #0f2e29;
+  --ink:       #182b28;
+  --muted:     #516963;
+  --faint:     #8aada8;
+  --line:      #d4e6e2;
+  --accent-lt: #e0f5f2;
+  --sidebar-bg: #091e1a;
+  --header-bg:  #0d2520;
+  --panel-hd:   #0d2822;
+  --panel-hd2:  #0f3530;
 }
 
 /* ── App shell ──────────────────────────────────── */
