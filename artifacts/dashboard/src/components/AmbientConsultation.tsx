@@ -1279,6 +1279,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               isOpen={openSec === 'cc'} onToggle={() => toggleSec('cc')}
               hasData={!!activeCcKey}
               summaryText={activeCcKey ? (CC_ITEMS.find(c => c.id === activeCcKey)?.label ?? '') : 'Tap to select'}
+              onAdvance={() => advanceSec('cc')}
             >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {CC_ITEMS.map(cc => {
@@ -1287,7 +1288,6 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     <button key={cc.id} type="button" style={chipBtn(on)} onClick={() => {
                       setActiveCcKey(on ? null : cc.id);
                       if (!on && !hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
-                      if (!on) advanceSec('cc');
                     }}>{cc.label}</button>
                   );
                 })}
