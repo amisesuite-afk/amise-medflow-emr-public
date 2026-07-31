@@ -183,82 +183,86 @@ const sectionLabel: React.CSSProperties = {
   color: 'var(--muted)',
 };
 
-// ── Collapsible clinical section card ─────────────────────────────────────────
-function SectionCard({
-  label, icon, isOpen, onToggle, hasData, summary, emptyLabel,
-  noneAction, children,
+// ── Compact dropdown field row inside a shared card ───────────────────────────
+function HistoryFieldRow({
+  icon, label, isOpen, onToggle,
+  summaryText, hasData,
+  noneLabel, onNone,
+  isLast,
+  children,
 }: {
-  label: string; icon: string; isOpen: boolean; onToggle: () => void;
-  hasData: boolean; summary: string; emptyLabel: string;
-  noneAction?: { label: string; onTap: () => void };
+  icon: string; label: string; isOpen: boolean; onToggle: () => void;
+  summaryText: string; hasData: boolean;
+  noneLabel?: string; onNone?: () => void;
+  isLast?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <div style={{
-      borderRadius: 10,
-      border: `1.5px solid ${hasData ? 'rgba(0,180,160,0.45)' : 'var(--line)'}`,
-      background: 'var(--card)',
-      overflow: 'hidden',
-      transition: 'border-color 0.18s',
-    }}>
-      {/* Header row */}
-      <div style={{
-        display: 'flex', alignItems: 'center',
-        padding: isOpen ? '10px 12px 10px' : '9px 12px',
-        borderBottom: isOpen ? '1px solid var(--line)' : 'none',
-        gap: 6,
-      }}>
-        <button type="button" onClick={onToggle}
-          style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 7,
-            background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', minWidth: 0, padding: 0 }}>
-          <span style={{ fontSize: 13, flexShrink: 0 }}>{icon}</span>
-          <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
-            textTransform: 'uppercase', color: hasData ? 'var(--accent)' : 'var(--muted)',
-            flexShrink: 0, transition: 'color 0.15s' }}>
-            {label}
-          </span>
-          {!isOpen && (
-            hasData
-              ? <span style={{ fontSize: 12, color: 'var(--ink)', flex: 1,
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginLeft: 2 }}>
-                  {summary}
-                </span>
-              : <span style={{ fontSize: 12, color: 'var(--faint)', flex: 1, marginLeft: 2 }}>
-                  {emptyLabel}
-                </span>
-          )}
-        </button>
-
-        {/* Quick-set none button — only when collapsed and empty */}
-        {!isOpen && !hasData && noneAction && (
-          <button type="button" onClick={e => { e.stopPropagation(); noneAction.onTap(); }}
-            style={{ fontSize: 10, fontWeight: 700, padding: '2px 9px', borderRadius: 10,
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+          padding: '11px 14px', background: isOpen ? 'rgba(0,180,160,0.04)' : 'none',
+          border: 'none', cursor: 'pointer', textAlign: 'left' as const,
+          transition: 'background 0.12s',
+        }}
+      >
+        <span style={{ fontSize: 13, flexShrink: 0, lineHeight: 1 }}>{icon}</span>
+        <span style={{
+          fontSize: 10, fontWeight: 800, letterSpacing: '0.07em',
+          textTransform: 'uppercase' as const,
+          color: hasData ? 'var(--accent)' : 'var(--muted)',
+          flexShrink: 0, minWidth: 84, transition: 'color 0.15s',
+        }}>{label}</span>
+        <span style={{
+          fontSize: 12.5, color: hasData ? 'var(--ink)' : 'var(--faint)',
+          flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          textAlign: 'left' as const,
+        }}>
+          {summaryText}
+        </span>
+        {!isOpen && !hasData && noneLabel && onNone && (
+          <span
+            role="button"
+            onClick={e => { e.stopPropagation(); onNone(); }}
+            style={{
+              fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 9,
               border: '1px solid var(--line)', background: 'transparent',
-              color: 'var(--muted)', cursor: 'pointer', flexShrink: 0, letterSpacing: '0.03em' }}>
-            {noneAction.label}
-          </button>
+              color: 'var(--muted)', cursor: 'pointer', flexShrink: 0,
+              userSelect: 'none' as const, lineHeight: '16px', display: 'inline-block',
+            }}
+          >
+            {noneLabel}
+          </span>
         )}
-
-        {/* Completion dot */}
         {hasData && !isOpen && (
-          <span style={{ width: 7, height: 7, borderRadius: '50%',
-            background: 'var(--accent)', flexShrink: 0 }} />
+          <span style={{
+            width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)',
+            flexShrink: 0, display: 'inline-block',
+          }} />
         )}
+        <span style={{
+          color: 'var(--muted)', fontSize: 11, flexShrink: 0, lineHeight: 1,
+          display: 'inline-block',
+          transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s',
+        }}>▾</span>
+      </button>
 
-        {/* Chevron */}
-        <button type="button" onClick={onToggle}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 2px',
-            color: 'var(--muted)', fontSize: 11, flexShrink: 0, lineHeight: 1,
-            transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}>
-          ▾
-        </button>
-      </div>
-
-      {/* Expandable body */}
       {isOpen && (
-        <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{
+          padding: '8px 14px 14px',
+          display: 'flex', flexDirection: 'column', gap: 8,
+          borderTop: '1px solid var(--line)',
+          background: 'rgba(0,180,160,0.02)',
+        }}>
           {children}
         </div>
+      )}
+
+      {!isLast && (
+        <div style={{ height: 1, background: 'var(--line)' }} />
       )}
     </div>
   );
@@ -1039,15 +1043,18 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             <PriorVisitStrip summary={ctx.priorEncounterSummary} />
           )}
 
-          {/* ── Clinical history accordion ── */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-
+          {/* ── Clinical history — compact dropdown rows ── */}
+          <div style={{
+            borderRadius: 10, border: '1px solid var(--line)',
+            background: 'var(--card)', overflow: 'hidden',
+          }}>
             {/* Chief Complaint */}
-            <SectionCard label="Chief Complaint" icon="🩺"
+            <HistoryFieldRow
+              icon="🩺" label="Chief Complaint"
               isOpen={openSec === 'cc'} onToggle={() => toggleSec('cc')}
               hasData={!!activeCcKey}
-              summary={CC_ITEMS.find(c => c.id === activeCcKey)?.label ?? ''}
-              emptyLabel="Select chief complaint">
+              summaryText={activeCcKey ? (CC_ITEMS.find(c => c.id === activeCcKey)?.label ?? '') : 'Tap to select'}
+            >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {CC_ITEMS.map(cc => {
                   const on = activeCcKey === cc.id;
@@ -1055,190 +1062,27 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     <button key={cc.id} type="button" style={chipBtn(on)} onClick={() => {
                       setActiveCcKey(on ? null : cc.id);
                       if (!on && !hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
-                      if (!on) toggleSec('hpi');
+                      if (!on) setOpenSec(null);
                     }}>{cc.label}</button>
                   );
                 })}
               </div>
-            </SectionCard>
-
-            {/* Presenting History */}
-            <SectionCard label={ccLabel ? `${ccLabel} — History` : 'Presenting History'} icon="📝"
-              isOpen={openSec === 'hpi'} onToggle={() => toggleSec('hpi')}
-              hasData={!!hpiNotes.trim()}
-              summary={hpiNotes.slice(0, 70) + (hpiNotes.length > 70 ? '…' : '')}
-              emptyLabel="Dictate or type presenting history">
-              {/* Dictate controls */}
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <button
-                  type="button"
-                  onClick={handleDictateClick}
-                  disabled={!SPEECH_SUPPORTED && !micOpen}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 5,
-                    padding: '5px 12px', borderRadius: 7, border: 'none',
-                    cursor: 'pointer', fontSize: 12, fontWeight: 700,
-                    background: recording ? '#dc2626' : micOpen ? 'var(--accent)' : 'rgba(0,180,160,0.1)',
-                    color: recording ? '#fff' : micOpen ? '#fff' : 'var(--accent)',
-                    transition: 'all 0.15s',
-                  }}
-                  title={recording ? 'Stop & analyse' : micOpen ? 'Close mic' : 'Dictate HPI'}
-                >
-                  <span style={{
-                    display: 'inline-block', width: 7, height: 7,
-                    borderRadius: '50%', flexShrink: 0,
-                    background: recording ? '#fff' : 'currentColor',
-                    animation: recording ? 'ambPulse 1s ease-in-out infinite' : 'none',
-                  }} />
-                  {recording ? 'Stop' : segmenting ? 'Analysing…' : accepted ? '✓ Loaded' : '🎙 Dictate'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setActiveSection('hpi'); onDetailedMode(); }}
-                  style={{
-                    padding: '4px 9px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                    border: '1px solid var(--line)', background: 'transparent',
-                    color: 'var(--muted)', cursor: 'pointer',
-                  }}
-                  title="Open full HPI editor"
-                >
-                  Full HPI ↗
-                </button>
-              </div>
-              {/* HPI textarea */}
-              <textarea
-                value={hpiNotes}
-                onChange={e => setHpiNotes(e.target.value)}
-                placeholder={
-                  ccLabel
-                    ? `Presenting history of ${ccLabel}. Dictate or type directly.`
-                    : 'Presenting history — tap 🎙 Dictate to start, or type directly.'
-                }
-                style={{
-                  display: 'block', width: '100%', minHeight: 160,
-                  padding: '10px 12px', border: '1px solid var(--line)',
-                  borderRadius: 7, resize: 'vertical' as const,
-                  background: 'var(--bg)', color: 'var(--ink)',
-                  fontSize: 15, lineHeight: 1.75, fontFamily: 'Georgia, serif',
-                  outline: 'none', boxSizing: 'border-box' as const,
-                }}
-              />
-              {/* Mic expansion panel */}
-              {micOpen && (
-                <div style={{
-                  borderRadius: 8,
-                  border: `1px solid ${recording ? 'rgba(220,38,38,0.3)' : 'var(--line)'}`,
-                  padding: '10px 12px',
-                  background: recording ? 'rgba(220,38,38,0.03)' : 'rgba(0,180,160,0.03)',
-                }}>
-                  {(fullTranscript || recording) && (
-                    <div style={{
-                      fontSize: 13, lineHeight: 1.6, color: 'var(--muted)',
-                      fontFamily: 'Georgia, serif', maxHeight: 80, overflowY: 'auto',
-                      marginBottom: pendingSoap ? 10 : 0,
-                    }}>
-                      {transcript}
-                      {interim && <span style={{ color: 'var(--ink)', opacity: 0.5 }}>{interim}</span>}
-                      {recording && !fullTranscript && (
-                        <span style={{ fontStyle: 'italic' }}>Listening…</span>
-                      )}
-                    </div>
-                  )}
-                  {pendingSoap && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <div style={{ fontSize: 10, fontWeight: 800, color: '#d97706', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
-                        PREVIEW — review then accept
-                        {segmentSource && (
-                          <span style={{
-                            fontSize: 9, padding: '1px 6px', borderRadius: 8,
-                            background: segmentSource === 'cloud' ? 'rgba(59,130,246,.15)' : 'rgba(16,185,129,.15)',
-                            color: segmentSource === 'cloud' ? '#2563eb' : '#059669',
-                          }}>
-                            {segmentSource === 'local' ? '⚡ Local' : segmentSource === 'ollama' ? '🟢 Ollama' : '🤖 Cloud'}
-                          </span>
-                        )}
-                      </div>
-                      {([
-                        ['HPI', pendingSoap.hpi],
-                        ['Assessment', pendingSoap.assessment],
-                        ['Plan', pendingSoap.plan],
-                        ...Object.entries(pendingSoap.examination ?? {}).filter(([, v]) => v?.trim()).map(([k, v]) => [`Exam — ${k}`, v]),
-                      ] as [string, string | undefined][]).filter(([, v]) => v?.trim()).map(([label, text]) => (
-                        <div key={label} style={{
-                          background: 'var(--bg)', borderRadius: 7, padding: '8px 11px',
-                          border: '1px solid var(--line)',
-                        }}>
-                          <div style={{ ...sectionLabel, marginBottom: 3 }}>{label}</div>
-                          <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink)', fontFamily: 'Georgia, serif' }}>{text}</div>
-                        </div>
-                      ))}
-                      <div style={{ display: 'flex', gap: 6 }}>
-                        <button type="button" onClick={acceptSoap}
-                          style={{ flex: 1, padding: '8px', borderRadius: 7, border: 'none',
-                            background: 'var(--accent)', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
-                          ↓ Accept
-                        </button>
-                        <button type="button" onClick={() => { setPendingSoap(null); setTranscript(''); }}
-                          style={{ padding: '8px 14px', borderRadius: 7, border: '1px solid var(--line)',
-                            background: 'transparent', color: 'var(--muted)', fontSize: 12, cursor: 'pointer' }}>
-                          Discard
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  {!pendingSoap && (
-                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-                      {!recording && transcript && !segmenting && (
-                        <button type="button" onClick={() => void handleSegment()}
-                          style={{ padding: '5px 14px', borderRadius: 6, border: 'none',
-                            background: 'var(--accent)', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
-                          Analyse transcript →
-                        </button>
-                      )}
-                      {!recording && (
-                        <button type="button" onClick={() => { setTranscript(''); setVoiceError(null); setMicOpen(false); }}
-                          style={{ padding: '5px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                            border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)', cursor: 'pointer' }}>
-                          Close
-                        </button>
-                      )}
-                      {segmenting && <span style={{ fontSize: 11, color: '#d97706' }}>Analysing…</span>}
-                    </div>
-                  )}
-                  {voiceError && (
-                    <div style={{
-                      marginTop: 6, padding: '8px 10px', borderRadius: 6,
-                      background: '#fef2f2', border: '1px solid #fca5a5',
-                      display: 'flex', alignItems: 'flex-start', gap: 8,
-                    }}>
-                      <span style={{ flex: 1, fontSize: 11, color: '#b91c1c', lineHeight: 1.5 }}>{voiceError}</span>
-                      <button
-                        type="button"
-                        onClick={() => { setVoiceError(null); void startRecording(); }}
-                        style={{
-                          flexShrink: 0, padding: '3px 10px', borderRadius: 5,
-                          border: '1px solid #fca5a5', background: '#fff',
-                          color: '#dc2626', fontSize: 11, fontWeight: 700, cursor: 'pointer',
-                        }}
-                      >
-                        Retry
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </SectionCard>
+            </HistoryFieldRow>
 
             {/* Past Medical History */}
-            <SectionCard label="Past Medical History" icon="📋"
+            <HistoryFieldRow
+              icon="📋" label="PMH"
               isOpen={openSec === 'pmh'} onToggle={() => toggleSec('pmh')}
               hasData={comorbidities.length > 0 || pmhNotes.includes('NKPMH')}
-              summary={
-                pmhNotes.includes('NKPMH') ? 'No known PMH'
-                  : comorbidities.slice(0, 4).join(', ') + (comorbidities.length > 4 ? ` +${comorbidities.length - 4} more` : '')
+              summaryText={
+                pmhNotes.includes('NKPMH') ? 'No PMH'
+                : comorbidities.length > 0
+                  ? comorbidities.slice(0, 4).join(', ') + (comorbidities.length > 4 ? ` +${comorbidities.length - 4}` : '')
+                  : 'No PMH'
               }
-              emptyLabel="None documented"
-              noneAction={{ label: 'No PMH', onTap: () => { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); } }}>
+              noneLabel="No PMH"
+              onNone={() => { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); }}
+            >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 <button type="button"
                   style={{ ...chipBtn(pmhNotes.includes('NKPMH')), fontSize: 11, padding: '3px 9px' }}
@@ -1259,17 +1103,24 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 })}
               </div>
               <textarea value={pmhNotes.includes('NKPMH') ? '' : pmhNotes} onChange={e => setPmhNotes(e.target.value)}
-                placeholder="Additional conditions, relevant detail (e.g. year of diagnosis, control status)…"
+                placeholder="Additional detail…"
                 style={drawerTextarea} rows={2} />
-            </SectionCard>
+            </HistoryFieldRow>
 
             {/* Surgical History */}
-            <SectionCard label="Surgical History" icon="🔪"
+            <HistoryFieldRow
+              icon="🔪" label="Surgical Hx"
               isOpen={openSec === 'surgical'} onToggle={() => toggleSec('surgical')}
               hasData={surgicalHistory.length > 0}
-              summary={surgicalHistory.includes('No prior surgery') ? 'No prior surgery' : surgicalHistory.slice(0, 3).join(', ') + (surgicalHistory.length > 3 ? ` +${surgicalHistory.length - 3} more` : '')}
-              emptyLabel="None documented"
-              noneAction={{ label: 'No surgery', onTap: () => setSurgicalHistory(['No prior surgery']) }}>
+              summaryText={
+                surgicalHistory.includes('No prior surgery') ? 'No prior surgery'
+                : surgicalHistory.length > 0
+                  ? surgicalHistory.slice(0, 3).join(', ') + (surgicalHistory.length > 3 ? ` +${surgicalHistory.length - 3}` : '')
+                  : 'None'
+              }
+              noneLabel="No surgery"
+              onNone={() => setSurgicalHistory(['No prior surgery'])}
+            >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 {['No prior surgery', ...COMMON_SURGERY].map(s => {
                   const on = surgicalHistory.includes(s);
@@ -1283,18 +1134,25 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 })}
               </div>
               <textarea value={surgicalNotes} onChange={e => setSurgicalNotes(e.target.value)}
-                placeholder="Other procedures, dates, complications…"
+                placeholder="Procedures, dates, complications…"
                 style={drawerTextarea} rows={2} />
-            </SectionCard>
+            </HistoryFieldRow>
 
             {/* Medications */}
-            <SectionCard label="Medications" icon="💊"
+            <HistoryFieldRow
+              icon="💊" label="Medications"
               isOpen={openSec === 'medications'} onToggle={() => toggleSec('medications')}
               hasData={medications.length > 0 || !!medicationsText.trim()}
-              summary={medications.includes('None') ? 'None' : medications.slice(0, 3).join(', ') + (medications.length > 3 ? ` +${medications.length - 3} more` : '')}
-              emptyLabel="None documented"
-              noneAction={{ label: 'None', onTap: () => { setMedications(['None']); setMedicationsText(''); } }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 4 }}>
+              summaryText={
+                medications.includes('None') ? 'None'
+                : medications.length > 0
+                  ? medications.slice(0, 3).join(', ') + (medications.length > 3 ? ` +${medications.length - 3}` : '')
+                  : 'None'
+              }
+              noneLabel="None"
+              onNone={() => { setMedications(['None']); setMedicationsText(''); }}
+            >
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
                 <button type="button"
                   onClick={() => { setMedications(medications.includes('None') ? [] : ['None']); if (!medications.includes('None')) setMedicationsText(''); }}
                   style={chipBtn(medications.includes('None'))}>
@@ -1324,18 +1182,21 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   setMedicationsText(e.target.value);
                   setMedications(e.target.value ? e.target.value.split('\n').map(s => s.trim()).filter(Boolean) : []);
                 }}
-                placeholder={'One per line:\nAmlodipine 5 mg OD\nMetformin 500 mg BD\nAtorvastatin 20 mg ON'}
+                placeholder={'One per line:\nAmlodipine 5 mg OD\nMetformin 500 mg BD'}
                 style={drawerTextarea} rows={4} />
-            </SectionCard>
+            </HistoryFieldRow>
 
             {/* Allergies */}
-            <SectionCard label="Allergies" icon="⚠️"
+            <HistoryFieldRow
+              icon="⚠️" label="Allergies"
               isOpen={openSec === 'allergies'} onToggle={() => toggleSec('allergies')}
               hasData={!!allergyText.trim()}
-              summary={allergyText}
-              emptyLabel="NKDA"
-              noneAction={{ label: 'NKDA', onTap: () => setAllergies('NKDA') }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 4 }}>
+              summaryText={allergyText || 'NKDA'}
+              noneLabel="NKDA"
+              onNone={() => setAllergies('NKDA')}
+              isLast
+            >
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
                 <button type="button"
                   onClick={() => setAllergies(allergyText === 'NKDA' ? '' : 'NKDA')}
                   style={chipBtn(allergyText === 'NKDA')}>
@@ -1359,11 +1220,176 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               <input
                 value={allergyText === 'NKDA' ? '' : allergyText}
                 onChange={e => setAllergies(e.target.value)}
-                placeholder="Other allergen / reaction detail…"
+                placeholder="Other allergen / reaction…"
                 style={{ ...drawerTextarea, resize: undefined }}
               />
-            </SectionCard>
+            </HistoryFieldRow>
+          </div>
 
+          {/* ── Presenting History ── */}
+          <div style={{
+            borderRadius: 10,
+            border: `1px solid ${hpiNotes.trim() ? 'rgba(0,180,160,0.4)' : 'var(--line)'}`,
+            background: 'var(--card)', overflow: 'hidden',
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 14px',
+              borderBottom: '1px solid var(--line)',
+            }}>
+              <span style={{ fontSize: 13 }}>📝</span>
+              <span style={{ ...sectionLabel, color: hpiNotes.trim() ? 'var(--accent)' : 'var(--muted)' }}>
+                {ccLabel ? `${ccLabel} — History` : 'Presenting History'}
+              </span>
+              <div style={{ flex: 1 }} />
+              <button
+                type="button"
+                onClick={handleDictateClick}
+                disabled={!SPEECH_SUPPORTED && !micOpen}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '4px 10px', borderRadius: 7, border: 'none',
+                  cursor: 'pointer', fontSize: 11, fontWeight: 700,
+                  background: recording ? '#dc2626' : micOpen ? 'var(--accent)' : 'rgba(0,180,160,0.1)',
+                  color: recording ? '#fff' : micOpen ? '#fff' : 'var(--accent)',
+                  transition: 'all 0.15s',
+                }}
+                title={recording ? 'Stop & analyse' : micOpen ? 'Close mic' : 'Dictate HPI'}
+              >
+                <span style={{
+                  display: 'inline-block', width: 6, height: 6,
+                  borderRadius: '50%', flexShrink: 0,
+                  background: recording ? '#fff' : 'currentColor',
+                  animation: recording ? 'ambPulse 1s ease-in-out infinite' : 'none',
+                }} />
+                {recording ? 'Stop' : segmenting ? 'Analysing…' : accepted ? '✓ Loaded' : '🎙 Dictate'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setActiveSection('hpi'); onDetailedMode(); }}
+                style={{
+                  padding: '3px 8px', borderRadius: 6, fontSize: 10, fontWeight: 600,
+                  border: '1px solid var(--line)', background: 'transparent',
+                  color: 'var(--muted)', cursor: 'pointer',
+                }}
+              >Full HPI ↗</button>
+            </div>
+            <textarea
+              value={hpiNotes}
+              onChange={e => setHpiNotes(e.target.value)}
+              placeholder={
+                ccLabel
+                  ? `Presenting history of ${ccLabel}. Dictate or type directly.`
+                  : 'Presenting history — tap 🎙 Dictate to start, or type directly.'
+              }
+              style={{
+                display: 'block', width: '100%', minHeight: 140,
+                padding: '10px 14px', border: 'none', resize: 'vertical' as const,
+                background: 'transparent', color: 'var(--ink)',
+                fontSize: 15, lineHeight: 1.75, fontFamily: 'Georgia, serif',
+                outline: 'none', boxSizing: 'border-box' as const,
+              }}
+            />
+            {micOpen && (
+              <div style={{
+                borderTop: `1px solid ${recording ? 'rgba(220,38,38,0.3)' : 'var(--line)'}`,
+                padding: '10px 14px',
+                background: recording ? 'rgba(220,38,38,0.03)' : 'rgba(0,180,160,0.03)',
+              }}>
+                {(fullTranscript || recording) && (
+                  <div style={{
+                    fontSize: 13, lineHeight: 1.6, color: 'var(--muted)',
+                    fontFamily: 'Georgia, serif', maxHeight: 80, overflowY: 'auto',
+                    marginBottom: pendingSoap ? 10 : 0,
+                  }}>
+                    {transcript}
+                    {interim && <span style={{ color: 'var(--ink)', opacity: 0.5 }}>{interim}</span>}
+                    {recording && !fullTranscript && <span style={{ fontStyle: 'italic' }}>Listening…</span>}
+                  </div>
+                )}
+                {pendingSoap && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <div style={{ fontSize: 10, fontWeight: 800, color: '#d97706', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      PREVIEW — review then accept
+                      {segmentSource && (
+                        <span style={{
+                          fontSize: 9, padding: '1px 6px', borderRadius: 8,
+                          background: segmentSource === 'cloud' ? 'rgba(59,130,246,.15)' : 'rgba(16,185,129,.15)',
+                          color: segmentSource === 'cloud' ? '#2563eb' : '#059669',
+                        }}>
+                          {segmentSource === 'local' ? '⚡ Local' : segmentSource === 'ollama' ? '🟢 Ollama' : '🤖 Cloud'}
+                        </span>
+                      )}
+                    </div>
+                    {([
+                      ['HPI', pendingSoap.hpi],
+                      ['Assessment', pendingSoap.assessment],
+                      ['Plan', pendingSoap.plan],
+                      ...Object.entries(pendingSoap.examination ?? {}).filter(([, v]) => v?.trim()).map(([k, v]) => [`Exam — ${k}`, v]),
+                    ] as [string, string | undefined][]).filter(([, v]) => v?.trim()).map(([label, text]) => (
+                      <div key={label} style={{
+                        background: 'var(--bg)', borderRadius: 7, padding: '8px 11px',
+                        border: '1px solid var(--line)',
+                      }}>
+                        <div style={{ ...sectionLabel, marginBottom: 3 }}>{label}</div>
+                        <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink)', fontFamily: 'Georgia, serif' }}>{text}</div>
+                      </div>
+                    ))}
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button type="button" onClick={acceptSoap}
+                        style={{ flex: 1, padding: '8px', borderRadius: 7, border: 'none',
+                          background: 'var(--accent)', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
+                        ↓ Accept
+                      </button>
+                      <button type="button" onClick={() => { setPendingSoap(null); setTranscript(''); }}
+                        style={{ padding: '8px 14px', borderRadius: 7, border: '1px solid var(--line)',
+                          background: 'transparent', color: 'var(--muted)', fontSize: 12, cursor: 'pointer' }}>
+                        Discard
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {!pendingSoap && (
+                  <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                    {!recording && transcript && !segmenting && (
+                      <button type="button" onClick={() => void handleSegment()}
+                        style={{ padding: '5px 14px', borderRadius: 6, border: 'none',
+                          background: 'var(--accent)', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                        Analyse transcript →
+                      </button>
+                    )}
+                    {!recording && (
+                      <button type="button" onClick={() => { setTranscript(''); setVoiceError(null); setMicOpen(false); }}
+                        style={{ padding: '5px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
+                          border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)', cursor: 'pointer' }}>
+                        Close
+                      </button>
+                    )}
+                    {segmenting && <span style={{ fontSize: 11, color: '#d97706' }}>Analysing…</span>}
+                  </div>
+                )}
+                {voiceError && (
+                  <div style={{
+                    marginTop: 6, padding: '8px 10px', borderRadius: 6,
+                    background: '#fef2f2', border: '1px solid #fca5a5',
+                    display: 'flex', alignItems: 'flex-start', gap: 8,
+                  }}>
+                    <span style={{ flex: 1, fontSize: 11, color: '#b91c1c', lineHeight: 1.5 }}>{voiceError}</span>
+                    <button
+                      type="button"
+                      onClick={() => { setVoiceError(null); void startRecording(); }}
+                      style={{
+                        flexShrink: 0, padding: '3px 10px', borderRadius: 5,
+                        border: '1px solid #fca5a5', background: '#fff',
+                        color: '#dc2626', fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                      }}
+                    >
+                      Retry
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* ── AI quiet prompt — one at a time ── */}
