@@ -3,7 +3,6 @@ name: Deploy — Amise Finance Auditor (Vercel)
 on:
   push:
     branches:
-      - 'claude/**'
       - main
     paths:
       - 'artifacts/finance-auditor/**'

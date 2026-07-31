@@ -26,6 +26,7 @@ export default function LetterGeneratorTab() {
     assessment, differentials, plan, icdCodes,
     hpiNotes, freeText,
     surgicalHistory,
+    patientId, encounterId,
   } = useAppContext();
 
   const [letterType, setLetterType] = useState<LetterType>('referral');
@@ -36,6 +37,8 @@ export default function LetterGeneratorTab() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   async function generate() {
     setLoading(true); setError(null); setOutput('');
@@ -89,6 +92,37 @@ export default function LetterGeneratorTab() {
     await navigator.clipboard.writeText(output);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  const NOTE_TYPE_MAP: Record<LetterType, string> = {
+    referral: 'referral_letter',
+    clinical_discharge: 'discharge',
+    patient_discharge: 'discharge',
+    gp_summary: 'consultation',
+    insurance: 'other',
+    sick_cert: 'other',
+  };
+
+  async function saveToRecord() {
+    if (!patientId || !output) return;
+    setSaving(true);
+    try {
+      const res = await fetch(apiUrl('/api/clinical-notes'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientId,
+          encounterId: encounterId ?? undefined,
+          noteType: NOTE_TYPE_MAP[letterType] ?? 'other',
+          content: output,
+          aiAssisted: true,
+          aiModelUsed: 'claude',
+        }),
+      });
+      if (res.ok) { setSaved(true); setTimeout(() => setSaved(false), 3000); }
+    } finally {
+      setSaving(false);
+    }
   }
 
   const inp: React.CSSProperties = { fontSize: 13, padding: '6px 10px', border: '1px solid #d1d5db', borderRadius: 6, outline: 'none', width: '100%' };
@@ -145,6 +179,12 @@ export default function LetterGeneratorTab() {
       {output && (
         <CollapsibleCard title="Generated letter">
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginBottom: 8 }}>
+            {patientId && (
+              <button type="button" onClick={() => void saveToRecord()} disabled={saving || saved}
+                style={{ fontSize: 12, padding: '4px 12px', borderRadius: 5, border: '1px solid var(--border,#d1d5db)', background: saved ? '#d1fae5' : 'var(--panel-hd,#0b9b8e)', color: saved ? '#065f46' : '#fff', cursor: saving || saved ? 'default' : 'pointer', fontWeight: 600 }}>
+                {saved ? '✓ Saved' : saving ? 'Saving…' : 'Save to record'}
+              </button>
+            )}
             <button type="button" onClick={() => void copy()}
               style={{ fontSize: 12, padding: '4px 12px', borderRadius: 5, border: '1px solid #d1d5db', background: '#fff', cursor: 'pointer', fontWeight: 600 }}>
               {copied ? '✓ Copied' : 'Copy'}

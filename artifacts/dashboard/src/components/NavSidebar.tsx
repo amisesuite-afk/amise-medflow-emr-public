@@ -163,13 +163,11 @@ const DR_NAV_ITEMS: TopItem[] = [
   // Results & Summary
   { id: 'results_inbox',    icon: ClipboardMinus,  label: 'Results Inbox',    roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
   { id: 'finaldoc',         icon: FileCheck2,      label: 'Summary',          roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
-  { id: 'visit_lifecycle',  icon: HeartPulse,      label: 'Visits',           roles: ['doctor', 'admin'],          group: 'Results' },
-  { id: 'followup_tracker', icon: CalendarClock,   label: 'Follow-up Tracker',roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
+  // Patients — List · Visits · Follow-up combined hub
+  { id: 'patients',        icon: Users,           label: 'Patients',        roles: ['nurse', 'doctor', 'admin'], group: 'Patients' },
   // Reference
-  { id: 'analytics',       icon: BarChart2,       label: 'Analytics',       roles: ['doctor', 'admin'],          group: 'Reference' },
-  { id: 'quality',         icon: Activity,        label: 'QI / M&M',        roles: ['doctor', 'admin'],          group: 'Reference' },
+  { id: 'analytics',       icon: BarChart2,       label: 'Analytics & QI',  roles: ['doctor', 'admin'],          group: 'Reference' },
   { id: 'vademecum',       icon: BookOpen,        label: 'Disease Dict.',   roles: ['nurse', 'doctor', 'admin'], group: 'Reference' },
-  { id: 'patients',        icon: Users,           label: 'Patient List',    roles: ['doctor', 'admin'],          group: 'Reference' },
   { id: 'settings',        icon: Settings,        label: 'Settings',        roles: ['admin'],                    group: 'Reference' },
 ];
 

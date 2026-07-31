@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
 import { listPatients, listPatientsBySite, getLatestOpenEncounter, getLatestAppointmentType, getLatestClosedEncounter, loadPMH, loadEncounterData, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
-import { supabase, SITE_LABELS, type SiteCode } from '@/lib/supabase';
+import { SITE_LABELS, type SiteCode } from '@/lib/supabase';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { fmtPhone } from '@/lib/fmt';
 
@@ -180,25 +182,12 @@ export default function PatientSearchTab() {
     }
     setSearching(true);
     try {
-      if (!supabase) throw new Error('Supabase not configured — check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
-      const isPhone = /^\+?\d[\d\s()-]{3,}$/.test(q.trim());
-      const dbQuery = isPhone
-        ? supabase
-            .from('patients')
-            .select('id, full_name, sex, phone, date_of_birth, created_at')
-            .ilike('phone', `%${q.replace(/[\s()-]/g, '')}%`)
-            .order('created_at', { ascending: false })
-            .limit(30)
-        : supabase
-            .from('patients')
-            .select('id, full_name, sex, phone, date_of_birth, created_at')
-            .ilike('full_name', `%${q}%`)
-            .order('created_at', { ascending: false })
-            .limit(30);
-
-      const { data, error: err } = await dbQuery;
-      if (err) throw err;
-      setSearchResults((data ?? []) as PatientListRowEx[]);
+      const base = getApiOrigin();
+      const headers = await staffAuthHeaders();
+      const res = await fetch(`${base}/api/patients?q=${encodeURIComponent(q.trim())}&limit=30`, { headers });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json() as { patients: PatientListRowEx[] };
+      setSearchResults(json.patients ?? []);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Search failed';
       showToast(`Search error: ${msg}`, 'error');

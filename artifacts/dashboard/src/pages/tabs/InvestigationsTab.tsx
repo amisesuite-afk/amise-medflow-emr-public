@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { getActivePathways } from '@/lib/clinical-pathways';
@@ -7,6 +7,7 @@ import { staffAuthHeaders } from '@/lib/staff-auth';
 import ResultsTrackerCard from '@/components/ResultsTrackerCard';
 import LabInterpretationPanel from '@/components/LabInterpretationPanel';
 import { useToast } from '@/components/ToastProvider';
+import DocumentCapture from '@/components/DocumentCapture';
 
 function filterBySex(lab: string, sex: string): boolean {
   if (lab.includes('(M)') && sex === 'female') return false;
@@ -279,9 +280,8 @@ export default function InvestigationsTab() {
   const [reqLabEmail, setReqLabEmail] = useState('');
   const [emailing, setEmailing] = useState(false);
 
-  // AI result scan — staff uploads a lab report; Claude drafts the
+  // AI result scan — staff uploads / photos a lab report; Claude drafts the
   // extracted results, staff review/edit, then confirm to apply.
-  const scanInputRef = useRef<HTMLInputElement>(null);
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [scanMeta, setScanMeta] = useState<{ labName: string | null; reportDate: string | null } | null>(null);
@@ -290,8 +290,10 @@ export default function InvestigationsTab() {
   async function handleScanFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
-    if (!file) return;
+    if (file) void handleScanFileRaw(file);
+  }
 
+  async function handleScanFileRaw(file: File) {
     setScanning(true);
     setScanError(null);
     setScanMeta(null);
@@ -622,26 +624,17 @@ export default function InvestigationsTab() {
           nothing is saved until you review and confirm each entry below.
         </p>
 
-        <input
-          ref={scanInputRef}
-          type="file"
-          accept="image/*,application/pdf"
-          style={{ display: 'none' }}
-          onChange={e => void handleScanFile(e)}
-        />
-        <button
-          type="button"
-          onClick={() => scanInputRef.current?.click()}
-          disabled={scanning}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '8px 18px', borderRadius: 8, border: '1.5px dashed #6b7280',
-            background: '#f9fafb', color: '#374151', fontSize: 13,
-            cursor: scanning ? 'wait' : 'pointer', fontWeight: 500,
-          }}
-        >
-          {scanning ? 'Reading report…' : '+ Upload lab report'}
-        </button>
+        {scanning ? (
+          <span style={{ fontSize: 13, color: '#6b7280', fontStyle: 'italic' }}>Reading report…</span>
+        ) : (
+          <DocumentCapture
+            onFile={f => void handleScanFileRaw(f)}
+            accept="image/*,application/pdf"
+            cameraLabel="📷 Photo"
+            fileLabel="📁 PDF / file"
+            disabled={scanning}
+          />
+        )}
 
         {scanError && (
           <div style={{ marginTop: 10, padding: '8px 12px', borderRadius: 6, background: '#fef2f2', border: '1px solid #fca5a5', color: '#dc2626', fontSize: 12 }}>

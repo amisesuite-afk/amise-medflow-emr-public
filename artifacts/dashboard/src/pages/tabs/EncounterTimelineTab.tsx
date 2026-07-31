@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { listPatientEncounters, loadEncounterData, type EncounterSummary, type PatientListRow } from '@/lib/db';
-import { supabase } from '@/lib/supabase';
+import { listPatientEncounters, loadEncounterData, createEncounter, type EncounterSummary, type PatientListRow } from '@/lib/db';
+import { getApiOrigin } from '@/lib/api-origin';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 import { DEMO_MODE } from '@/context/AuthContext';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
@@ -42,6 +43,7 @@ export default function EncounterTimelineTab() {
     setActiveSection,
     referredBy, procedureData,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId, clearPatient,
+    setEncounterId, siteCode,
   } = useAppContext();
 
   // ── Patient search (shown when no patient loaded) ────────────────────────
@@ -64,12 +66,11 @@ export default function EncounterTimelineTab() {
     }
     setSearching(true);
     try {
-      if (!supabase) return;
-      const isPhone = /^\+?\d[\d\s()-]{3,}$/.test(q.trim());
-      const { data } = isPhone
-        ? await supabase.from('patients').select('id,full_name,sex,phone,date_of_birth,created_at').ilike('phone', `%${q.replace(/[\s()-]/g,'')}%`).limit(20)
-        : await supabase.from('patients').select('id,full_name,sex,phone,date_of_birth,created_at').ilike('full_name', `%${q}%`).order('created_at', { ascending: false }).limit(20);
-      setSearchResults((data ?? []) as PatientListRow[]);
+      const base = getApiOrigin();
+      const headers = await staffAuthHeaders();
+      const res = await fetch(`${base}/api/patients?q=${encodeURIComponent(q.trim())}&limit=20`, { headers });
+      const json = res.ok ? (await res.json() as { patients: PatientListRow[] }) : { patients: [] };
+      setSearchResults(json.patients ?? []);
     } finally { setSearching(false); }
   }
 
@@ -106,6 +107,20 @@ export default function EncounterTimelineTab() {
   const [loading, setLoading] = useState(false);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
+
+  async function startEncounter() {
+    if (!patientId) return;
+    setStarting(true);
+    const result = await createEncounter({ patient_id: patientId, site: siteCode ?? undefined });
+    setStarting(false);
+    if (result.error || !result.encounter) {
+      setError(result.error ?? 'Failed to create encounter');
+      return;
+    }
+    setEncounterId(result.encounter.id);
+    void load();
+  }
 
   const load = useCallback(async () => {
     if (!patientId) return;
@@ -231,6 +246,18 @@ export default function EncounterTimelineTab() {
             {encounters.length > 0 ? `${encounters.length} encounter${encounters.length !== 1 ? 's' : ''}` : ''}
           </div>
         </div>
+        <div style={{ display: 'flex', gap: 6 }}>
+        <button
+          onClick={() => void startEncounter()}
+          disabled={starting || !patientId}
+          style={{
+            fontSize: 11, padding: '5px 10px', borderRadius: 6,
+            border: 'none', background: 'var(--panel-hd,#0b9b8e)', color: '#fff',
+            fontWeight: 700, cursor: starting ? 'default' : 'pointer',
+          }}
+        >
+          {starting ? '…' : '+ New encounter'}
+        </button>
         <button
           onClick={() => void load()}
           disabled={loading}
@@ -242,6 +269,7 @@ export default function EncounterTimelineTab() {
         >
           {loading ? '…' : '↻ Refresh'}
         </button>
+        </div>
       </div>
 
       {error && (

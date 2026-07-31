@@ -11,6 +11,7 @@ import { fileURLToPath } from "url";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { correlationId } from "./middlewares/correlation";
+import { phiAuditMiddleware } from "./lib/phi-audit-middleware";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -134,6 +135,7 @@ app.use('/api/patient/sms-code', smsLimiter);
 app.use('/api/patient/request-consult', publicLimiter);
 app.use('/api/whatsapp', webhookLimiter);
 
+app.use(phiAuditMiddleware);
 app.use(router);
 
 app.all("/api/{*splat}", (_req, res) => {

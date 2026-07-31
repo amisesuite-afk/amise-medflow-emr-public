@@ -634,17 +634,21 @@ export async function extractDocumentInsights(documentId: string): Promise<void>
       ? { type: 'document' as const, source: { type: 'base64' as const, media_type: 'application/pdf' as const, data: base64 } }
       : { type: 'image' as const, source: { type: 'base64' as const, media_type: doc.mime_type as 'image/jpeg' | 'image/png' | 'image/webp', data: base64 } };
 
-    const instructions = `This is a clinical document ("${doc.title}", type: ${doc.document_type}) uploaded by a patient of a surgical/endoscopy practice in Saint Lucia${patient?.full_name ? ` (patient: ${patient.full_name})` : ''}.
+    const instructions = `This is a clinical document ("${doc.title}", type: ${doc.document_type}) received by a surgical/endoscopy practice in Saint Lucia${patient?.full_name ? ` (patient on file: ${patient.full_name})` : ''}.
 
 Read the document and TRANSCRIBE — do not interpret or diagnose — what it states. Extract:
+- The patient's full name exactly as printed on the document header (letterhead, label, or patient line).
 - Each named test/measurement/finding with its stated value, unit, and any reference range PRINTED ON THE DOCUMENT ITSELF.
 - Whether the document itself marks/flags that item as out-of-range, abnormal, critical, or urgent (only report what the document marks — never decide this yourself).
 - Key dates (collection/report/procedure date).
+- Whether the document as a whole is urgent: mark "urgent" only if the document contains critical/panic values, is stamped URGENT/STAT, or has a finding the document itself flags as requiring immediate attention. Otherwise mark "routine".
 
 Return a JSON object with this exact schema (no markdown fences, no commentary):
 {
-  "documentSummary": "one factual sentence describing what this document is (e.g. 'Full blood count report dated 12 March 2026')",
+  "documentSummary": "one factual sentence: report type, patient name, date, and lab/facility (e.g. 'Full blood count for John Smith dated 12 March 2026 from SLU Lab Services')",
+  "patientName": "patient full name as printed on the document, or null if not visible",
   "reportDate": "date string as printed, or null",
+  "urgency": "urgent or routine",
   "extractedFacts": [{"label": "string", "value": "string", "unit": "string|null", "referenceRange": "string|null", "markedAbnormal": true|false}],
   "flags": [{"type": "out_of_range|urgent_marking|incomplete|illegible|other", "label": "short label", "severity": "info|attention|urgent", "detail": "one factual sentence quoting/describing what the document shows — no interpretation"}]
 }
@@ -667,21 +671,86 @@ RULES: Transcribe only what is printed on the document. Do NOT diagnose, interpr
       .trim();
 
     const fenceMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
-    const raw = (fenceMatch ? fenceMatch[1] : rawText).trim();
+    let raw = (fenceMatch ? fenceMatch[1] : rawText).trim();
 
-    let parsed: { documentSummary?: string; reportDate?: string | null; extractedFacts?: unknown[]; flags?: unknown[] };
+    // If no fenced block, try to extract the outermost JSON object from anywhere in the text
+    if (!fenceMatch) {
+      const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) raw = jsonMatch[0];
+    }
+
+    let parsed: { documentSummary?: string | null; patientName?: string | null; reportDate?: string | null; urgency?: string; extractedFacts?: unknown[]; flags?: unknown[] };
     try {
       parsed = JSON.parse(raw);
     } catch {
-      parsed = { documentSummary: raw.slice(0, 300), extractedFacts: [], flags: [{ type: 'illegible', label: 'Could not parse document', severity: 'attention', detail: 'AI extraction did not return structured data — please review manually.' }] };
+      parsed = {
+        documentSummary: null,
+        extractedFacts: [],
+        flags: [{ type: 'illegible', label: 'Could not parse document', severity: 'attention', detail: 'AI extraction did not return structured data — please review manually.' }],
+      };
     }
 
     const flags = Array.isArray(parsed.flags) ? parsed.flags : [];
 
+    // Auto-match: if AI extracted a patient name, search the patients table for an
+    // unambiguous match (exactly one hit). Stored as a suggestion only — staff must
+    // confirm before filing. Never auto-files without human action.
+    let suggestedPatientId:   string | null = null;
+    let suggestedPatientName: string | null = null;
+    let suggestedPatientMrn:  string | null = null;
+
+    if (parsed.patientName?.trim()) {
+      const name = parsed.patientName.trim();
+
+      // 1. Search by patient full_name
+      const { data: nameMatches } = await sb()
+        .from('patients')
+        .select('id, full_name, mrn')
+        .ilike('full_name', `%${name}%`)
+        .limit(3);
+
+      let candidates = nameMatches ?? [];
+
+      // 2. If no name match, also search filed document file_name / title
+      if (candidates.length === 0) {
+        const { data: docHits } = await sb()
+          .from('documents')
+          .select('patient_id')
+          .not('patient_id', 'is', null)
+          .or(`file_name.ilike.%${name}%,title.ilike.%${name}%`)
+          .limit(5);
+
+        const patientIds = [...new Set((docHits ?? []).map(d => d.patient_id as string))];
+        if (patientIds.length > 0) {
+          const { data: docPatients } = await sb()
+            .from('patients')
+            .select('id, full_name, mrn')
+            .in('id', patientIds)
+            .limit(3);
+          candidates = docPatients ?? [];
+        }
+      }
+
+      if (candidates.length === 1) {
+        suggestedPatientId   = candidates[0].id        as string;
+        suggestedPatientName = candidates[0].full_name as string;
+        suggestedPatientMrn  = candidates[0].mrn       as string | null;
+      }
+    }
+
     await sb()
       .from('documents')
       .update({
-        ai_extracted_data:    JSON.stringify({ documentSummary: parsed.documentSummary ?? null, reportDate: parsed.reportDate ?? null, extractedFacts: parsed.extractedFacts ?? [] }),
+        ai_extracted_data: JSON.stringify({
+          documentSummary:     parsed.documentSummary ?? null,
+          patientName:         parsed.patientName ?? null,
+          reportDate:          parsed.reportDate ?? null,
+          urgency:             parsed.urgency === 'urgent' ? 'urgent' : 'routine',
+          extractedFacts:      parsed.extractedFacts ?? [],
+          suggestedPatientId,
+          suggestedPatientName,
+          suggestedPatientMrn,
+        }),
         ai_flags:             flags.length ? JSON.stringify(flags) : null,
         ai_extraction_status: 'done',
         ai_extraction_at:     new Date().toISOString(),

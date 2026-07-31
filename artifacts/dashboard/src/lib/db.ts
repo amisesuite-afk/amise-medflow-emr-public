@@ -112,42 +112,45 @@ export interface PatientListRow {
 export async function savePatientFull(
   input: FullPatientInput,
 ): Promise<{ patient: SavedPatient; error: null } | { patient: null; error: string }> {
-  if (!supabase) return { patient: null, error: notConfigured('savePatientFull') };
+  try {
+    const base = getApiOrigin();
+    const authHeaders = await staffAuthHeaders();
+    const body: Record<string, unknown> = {
+      fullName: input.full_name.trim(),
+      sex: input.sex || 'unknown',
+    };
+    if (input.dob) body.dateOfBirth = input.dob;
+    else { const d = ageToDob(input.age); if (d) body.dateOfBirth = d; }
+    if (input.phone.trim())              body.phone              = input.phone.trim();
+    if (input.email.trim())              body.email              = input.email.trim();
+    if (input.address.trim())            body.address            = input.address.trim();
+    if (input.quarter.trim())            body.quarter            = input.quarter.trim();
+    if (input.referredBy.trim())         body.referredBy         = input.referredBy.trim();
+    if (input.insuranceProvider.trim())  body.insuranceProvider  = input.insuranceProvider.trim();
+    if (input.policyNumber.trim())       body.policyNumber       = input.policyNumber.trim();
+    if (input.nhiNumber.trim())          body.nhiNumber          = input.nhiNumber.trim();
+    if (input.preAuthStatus)             body.preAuthStatus      = input.preAuthStatus;
+    if (input.occupation?.trim())        body.occupation         = input.occupation.trim();
+    if (input.nokName?.trim())           body.nokName            = input.nokName.trim();
+    if (input.nokRelation && input.nokRelation !== 'Other') body.nokRelation = input.nokRelation;
+    if (input.nokTel?.trim())            body.nokTel             = input.nokTel.trim();
 
-  const row: Record<string, unknown> = {
-    full_name: input.full_name.trim(),
-    sex:       input.sex || 'unknown',
-  };
-  if (input.dob)              row.date_of_birth        = input.dob;
-  else {
-    const d = ageToDob(input.age);
-    if (d) row.date_of_birth = d;
+    const res = await fetch(`${base}/api/patients`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      return { patient: null, error: txt };
+    }
+    const json = await res.json() as { patient: SavedPatient };
+    return { patient: json.patient, error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'savePatientFull failed';
+    console.error('[db] savePatientFull:', msg);
+    return { patient: null, error: msg };
   }
-  if (input.phone.trim())              row.phone                = input.phone.trim();
-  if (input.email.trim())              row.email                = input.email.trim();
-  if (input.address.trim())            row.address              = input.address.trim();
-  if (input.quarter.trim())            row.quarter              = input.quarter.trim();
-  if (input.referredBy.trim())         row.referred_by          = input.referredBy.trim();
-  if (input.insuranceProvider.trim())  row.insurance_provider   = input.insuranceProvider.trim();
-  if (input.policyNumber.trim())       row.policy_number        = input.policyNumber.trim();
-  if (input.nhiNumber.trim())          row.nhi_number           = input.nhiNumber.trim();
-  if (input.preAuthStatus)                   row.pre_auth_status = input.preAuthStatus;
-  if (input.occupation?.trim())              row.occupation      = input.occupation.trim();
-  if (input.nokName?.trim())                 row.nok_name        = input.nokName.trim();
-  if (input.nokRelation && input.nokRelation !== 'Other') row.nok_relation = input.nokRelation;
-  if (input.nokTel?.trim())                  row.nok_phone       = input.nokTel.trim();
-
-  const { data, error } = await supabase
-    .from('patients')
-    .insert(row)
-    .select('id, full_name')
-    .single();
-
-  if (error) {
-    console.error('[db] savePatientFull:', error);
-    return { patient: null, error: error.message };
-  }
-  return { patient: data as SavedPatient, error: null };
 }
 
 // ─── uploadPatientPhoto ───────────────────────────────────────────────────────
@@ -316,41 +319,42 @@ export async function savePlan(
 export async function saveNewPatient(
   input: NewPatientInput,
 ): Promise<{ patient: SavedPatient; error: null } | { patient: null; error: string }> {
-  if (!supabase) return { patient: null, error: notConfigured('saveNewPatient') };
+  try {
+    const base = getApiOrigin();
+    const authHeaders = await staffAuthHeaders();
+    const body: Record<string, unknown> = {
+      fullName: input.full_name.trim(),
+      sex: input.sex || 'unknown',
+    };
+    const dob = ageToDob(input.age);
+    if (dob) body.dateOfBirth = dob;
+    if (input.phone.trim()) body.phone = input.phone.trim();
 
-  const row: Record<string, unknown> = {
-    full_name: input.full_name.trim(),
-    sex: input.sex || 'unknown',
-  };
+    const res = await fetch(`${base}/api/patients`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      return { patient: null, error: txt };
+    }
+    const json = await res.json() as { patient: SavedPatient };
+    const saved = json.patient;
 
-  const dob = ageToDob(input.age);
-  if (dob) row.date_of_birth = dob;
-  if (input.phone.trim()) row.phone = input.phone.trim();
-
-  const { data, error } = await supabase
-    .from('patients')
-    .insert(row)
-    .select('id, full_name')
-    .single();
-
-  if (error) {
-    console.error('[db] saveNewPatient:', error);
-    return { patient: null, error: error.message };
-  }
-
-  const saved = data as SavedPatient;
-
-  // Fire-and-forget duplicate check via the API server (best-effort, non-blocking)
-  const base = getApiOrigin();
-  staffAuthHeaders().then(headers =>
+    // Fire-and-forget duplicate check (best-effort, non-blocking)
     fetch(`${base}/api/patient/check-duplicates`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...headers },
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
       body: JSON.stringify({ patientId: saved.id }),
-    }).catch(e => console.warn('[db] duplicate check failed:', e))
-  ).catch(() => {});
+    }).catch(e => console.warn('[db] duplicate check failed:', e));
 
-  return { patient: saved, error: null };
+    return { patient: saved, error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'saveNewPatient failed';
+    console.error('[db] saveNewPatient:', msg);
+    return { patient: null, error: msg };
+  }
 }
 
 // ─── createEncounter ──────────────────────────────────────────────────────────
@@ -358,29 +362,29 @@ export async function saveNewPatient(
 export async function createEncounter(
   input: NewEncounterInput,
 ): Promise<{ encounter: SavedEncounter; error: null } | { encounter: null; error: string }> {
-  if (!supabase) return { encounter: null, error: notConfigured('createEncounter') };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const body: Record<string, unknown> = { patientId: input.patient_id };
+    if (input.chief_complaint?.trim()) body.chiefComplaint = input.chief_complaint.trim();
+    if (input.site) body.site = input.site;
 
-  const row: Record<string, unknown> = {
-    patient_id: input.patient_id,
-    status: 'open',
-    encounter_type: 'outpatient',
-  };
-
-  if (input.chief_complaint?.trim()) row.chief_complaint = input.chief_complaint.trim();
-  if (input.site) row.site = input.site;
-
-  const { data, error } = await supabase
-    .from('encounters')
-    .insert(row)
-    .select('id')
-    .single();
-
-  if (error) {
-    console.error('[db] createEncounter:', error);
-    return { encounter: null, error: error.message };
+    const res = await fetch(`${base}/api/encounters`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      return { encounter: null, error: txt };
+    }
+    const json = await res.json() as { encounter: SavedEncounter };
+    return { encounter: json.encounter, error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'createEncounter failed';
+    console.error('[db] createEncounter:', msg);
+    return { encounter: null, error: msg };
   }
-
-  return { encounter: data as SavedEncounter, error: null };
 }
 
 // ─── listPatients ─────────────────────────────────────────────────────────────
@@ -388,20 +392,18 @@ export async function createEncounter(
 export async function listPatients(): Promise<
   { patients: PatientListRow[]; error: null } | { patients: null; error: string }
 > {
-  if (!supabase) return { patients: null, error: notConfigured('listPatients') };
-
-  const { data, error } = await supabase
-    .from('patients')
-    .select('id, full_name, sex, phone, date_of_birth, created_at')
-    .order('created_at', { ascending: false })
-    .limit(100);
-
-  if (error) {
-    console.error('[db] listPatients:', error);
-    return { patients: null, error: error.message };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const res = await fetch(`${base}/api/patients?limit=100`, { headers });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json() as { patients: PatientListRow[] };
+    return { patients: json.patients ?? [], error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'listPatients failed';
+    console.error('[db] listPatients:', msg);
+    return { patients: null, error: msg };
   }
-
-  return { patients: (data ?? []) as PatientListRow[], error: null };
 }
 
 // ─── searchPatients ───────────────────────────────────────────────────────────
@@ -409,19 +411,17 @@ export async function listPatients(): Promise<
 /** Full-text search on full_name (ilike) and phone (ilike).
  *  Returns up to 20 matches ordered by most recently registered. */
 export async function searchPatients(query: string): Promise<PatientListRow[]> {
-  if (!supabase || !query.trim()) return [];
-  const q = `%${query.trim()}%`;
-  const { data, error } = await supabase
-    .from('patients')
-    .select('id, full_name, sex, phone, date_of_birth, created_at')
-    .or(`full_name.ilike.${q},phone.ilike.${q}`)
-    .order('created_at', { ascending: false })
-    .limit(20);
-  if (error) {
-    console.error('[db] searchPatients:', error);
+  if (!query.trim()) return [];
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const res = await fetch(`${base}/api/patients?q=${encodeURIComponent(query.trim())}&limit=20`, { headers });
+    if (!res.ok) return [];
+    const json = await res.json() as { patients: PatientListRow[] };
+    return json.patients ?? [];
+  } catch {
     return [];
   }
-  return (data ?? []) as PatientListRow[];
 }
 
 // ─── updateDefaultSite ───────────────────────────────────────────────────────
@@ -449,35 +449,18 @@ export async function updateDefaultSite(userId: string, site: SiteCode): Promise
 export async function listPatientsBySite(
   site: SiteCode,
 ): Promise<{ patients: PatientListRow[]; error: null } | { patients: null; error: string }> {
-  if (!supabase) return { patients: null, error: notConfigured('listPatientsBySite') };
-
-  // Include: encounters tagged to this site, OR encounters with no site set (legacy rows).
-  const { data: encRows, error: encErr } = await supabase
-    .from('encounters')
-    .select('patient_id')
-    .or(`site.eq.${site},site.is.null`);
-
-  if (encErr) {
-    console.error('[db] listPatientsBySite encounters:', encErr);
-    return { patients: null, error: encErr.message };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const res = await fetch(`${base}/api/patients?site=${encodeURIComponent(site)}&limit=100`, { headers });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json() as { patients: PatientListRow[] };
+    return { patients: json.patients ?? [], error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'listPatientsBySite failed';
+    console.error('[db] listPatientsBySite:', msg);
+    return { patients: null, error: msg };
   }
-
-  const ids = [...new Set((encRows ?? []).map((r: { patient_id: string }) => r.patient_id))];
-  if (ids.length === 0) return { patients: [], error: null };
-
-  const { data, error } = await supabase
-    .from('patients')
-    .select('id, full_name, sex, phone, date_of_birth, created_at')
-    .in('id', ids)
-    .order('created_at', { ascending: false })
-    .limit(100);
-
-  if (error) {
-    console.error('[db] listPatientsBySite patients:', error);
-    return { patients: null, error: error.message };
-  }
-
-  return { patients: (data ?? []) as PatientListRow[], error: null };
 }
 
 // ─── loadPMH ─────────────────────────────────────────────────────────────────
@@ -485,28 +468,22 @@ export async function listPatientsBySite(
 export async function loadPMH(
   patientId: string,
 ): Promise<{ conditions: string[]; error: string | null }> {
-  if (!supabase) return { conditions: [], error: notConfigured('loadPMH') };
-
-  const { data, error } = await supabase
-    .from('pmh_items')
-    .select('condition')
-    .eq('patient_id', patientId)
-    .eq('status', 'active');
-
-  if (error) {
-    // Table does not exist yet (PG code 42P01) — warn silently, return empty
-    if ((error as { code?: string }).code === '42P01') {
-      console.warn('[db] loadPMH: pmh_items table does not exist yet — skipping');
-      return { conditions: [], error: null };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const res = await fetch(`${base}/api/problems/${encodeURIComponent(patientId)}?status=active`, { headers });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      console.error('[db] loadPMH:', txt);
+      return { conditions: [], error: txt };
     }
-    console.error('[db] loadPMH:', error);
-    return { conditions: [], error: error.message };
+    const json = await res.json() as { problems: Array<{ condition: string }> };
+    return { conditions: (json.problems ?? []).map(p => p.condition), error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'loadPMH failed';
+    console.error('[db] loadPMH:', msg);
+    return { conditions: [], error: msg };
   }
-
-  return {
-    conditions: (data ?? []).map((r: { condition: string }) => r.condition),
-    error: null,
-  };
 }
 
 // ─── savePMHItem ──────────────────────────────────────────────────────────────
@@ -521,48 +498,55 @@ export async function savePMHItem(
   encounterId: string | null,
   condition: string,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('savePMHItem') };
-
-  const row: Record<string, unknown> = {
-    patient_id: patientId,
-    condition,
-    status: 'active',
-  };
-  if (encounterId) row.encounter_id = encounterId;
-
-  const { error } = await supabase
-    .from('pmh_items')
-    .upsert(row, { onConflict: 'patient_id,condition' });
-
-  if (error) {
-    console.error('[db] savePMHItem:', error);
-    return { error: error.message };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const body: Record<string, unknown> = { patientId, condition };
+    if (encounterId) body.encounterId = encounterId;
+    const res = await fetch(`${base}/api/problems`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      console.error('[db] savePMHItem:', txt);
+      return { error: txt };
+    }
+    return { error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'savePMHItem failed';
+    console.error('[db] savePMHItem:', msg);
+    return { error: msg };
   }
-
-  return { error: null };
 }
 
 // ─── removePMHItem ────────────────────────────────────────────────────────────
 
-/** Soft-delete: sets status = 'resolved'. Does not delete the row. */
+/** Soft-delete: sets status = 'resolved' via API. Does not delete the row. */
 export async function removePMHItem(
   patientId: string,
   condition: string,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('removePMHItem') };
-
-  const { error } = await supabase
-    .from('pmh_items')
-    .update({ status: 'resolved' })
-    .eq('patient_id', patientId)
-    .eq('condition', condition);
-
-  if (error) {
-    console.error('[db] removePMHItem:', error);
-    return { error: error.message };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const res = await fetch(`${base}/api/problems/resolve-condition`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify({ patientId, condition }),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      console.error('[db] removePMHItem:', txt);
+      return { error: txt };
+    }
+    return { error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'removePMHItem failed';
+    console.error('[db] removePMHItem:', msg);
+    return { error: msg };
   }
-
-  return { error: null };
 }
 
 // ─── savePmhNotes ─────────────────────────────────────────────────────────────
@@ -1058,6 +1042,82 @@ export async function saveLabPanel(
 
 // ─── saveClinicalNote ─────────────────────────────────────────────────────────
 
+export interface ClinicalNoteRow {
+  id: string;
+  note_type: string;
+  status: string;
+  content: string;
+  signed_by: string | null;
+  signed_at: string | null;
+  version: number;
+  previous_version_id: string | null;
+  created_at: string;
+  ai_assisted: boolean;
+}
+
+/** Fetches clinical notes for an encounter, excluding internal JSON blobs (HPI, exam, AI consult, discharge, inpatient). */
+export async function loadEncounterClinicalNotes(
+  encounterId: string,
+): Promise<ClinicalNoteRow[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('clinical_notes')
+    .select('id, note_type, status, content, signed_by, signed_at, version, previous_version_id, created_at, ai_assisted')
+    .eq('encounter_id', encounterId)
+    .not('content', 'like', '[HPI]%')
+    .not('content', 'like', '[EXAMINATION%')
+    .not('content', 'like', '[AI_CONSULT%')
+    .not('content', 'like', '[DISCHARGE%')
+    .not('content', 'like', '[INPATIENT%')
+    .order('created_at', { ascending: false });
+  if (error) { console.error('[db] loadEncounterClinicalNotes:', error); return []; }
+  return (data ?? []) as ClinicalNoteRow[];
+}
+
+/** Signs a single draft clinical note by its DB id. */
+export async function signNote(
+  noteId: string,
+): Promise<{ error: string | null }> {
+  const base = getApiOrigin();
+  try {
+    const res = await fetch(`${base}/api/visit/sign-note/${noteId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({})) as { error?: string };
+      return { error: err.error ?? `HTTP ${res.status}` };
+    }
+    return { error: null };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Sign request failed' };
+  }
+}
+
+/** Amends a signed note. Creates a new version with previous_version_id pointing to the original. */
+export async function amendNote(
+  noteId: string,
+  content: string,
+  reason: string,
+): Promise<{ newNoteId: string | null; error: string | null }> {
+  const base = getApiOrigin();
+  try {
+    const res = await fetch(`${base}/api/visit/amend-note/${noteId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+      body: JSON.stringify({ content, reason }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({})) as { error?: string };
+      return { newNoteId: null, error: err.error ?? `HTTP ${res.status}` };
+    }
+    const data = await res.json() as { newNoteId: string };
+    return { newNoteId: data.newNoteId, error: null };
+  } catch (e) {
+    return { newNoteId: null, error: e instanceof Error ? e.message : 'Amend request failed' };
+  }
+}
+
 /** Persists a ProgressNote to `clinical_notes` as a SOAP-formatted text note
  *  in `draft` status. The physician can later sign it (status → 'signed').
  *  The note is marked ai_assisted: false because it's staff-authored. */
@@ -1077,8 +1137,8 @@ export async function saveClinicalNote(
   },
   patientId: string,
   encounterId: string,
-): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('saveClinicalNote') };
+): Promise<{ noteId: string | null; error: string | null }> {
+  if (!supabase) return { noteId: null, error: notConfigured('saveClinicalNote') };
 
   const parts: string[] = [];
 
@@ -1112,17 +1172,17 @@ export async function saveClinicalNote(
 
   const content = parts.join('\n\n') || '(No content entered)';
 
-  const { error } = await supabase.from('clinical_notes').insert({
+  const { data, error } = await supabase.from('clinical_notes').insert({
     encounter_id: encounterId,
     patient_id:   patientId,
     note_type:    'soap',
     status:       'draft',
     content,
     ai_assisted:  false,
-  });
+  }).select('id').single();
 
-  if (error) { console.error('[db] saveClinicalNote:', error); return { error: error.message }; }
-  return { error: null };
+  if (error) { console.error('[db] saveClinicalNote:', error); return { noteId: null, error: error.message }; }
+  return { noteId: (data as { id: string }).id, error: null };
 }
 
 // ─── syncAllergyList ──────────────────────────────────────────────────────────
@@ -2142,45 +2202,8 @@ export function emptyWound(label = 'Wound'): WoundAssessment {
   };
 }
 
-export async function saveWoundAssessment(
-  patientId: string,
-  encounterId: string | null,
-  wound: WoundAssessment,
-): Promise<{ id: string | null; error: string | null }> {
-  if (!supabase) return { id: null, error: notConfigured('saveWoundAssessment') };
-  const row = {
-    patient_id:      patientId,
-    encounter_id:    encounterId ?? null,
-    label:           wound.label,
-    location:        wound.location || null,
-    wound_class:     wound.woundClass || null,
-    closure:         wound.closure || null,
-    status:          wound.status,
-    dressing:        wound.dressing || null,
-    drain:           wound.drain,
-    drain_output_ml: wound.drainOutputMl ? parseInt(wound.drainOutputMl) : null,
-    asepsis_score:   wound.asepsisScore,
-    asepsis_details: wound.asepsisDetails as unknown as Record<string, unknown>,
-    notes:           wound.notes || null,
-    assessed_date:   wound.assessedDate,
-    updated_at:      new Date().toISOString(),
-  };
-  if (wound.id.startsWith('tmp-')) {
-    const { data, error } = await supabase.from('wound_assessments').insert(row).select('id').single();
-    if (error) return { id: null, error: error.message };
-    return { id: (data as Record<string, string>).id, error: null };
-  }
-  const { error } = await supabase.from('wound_assessments').update(row).eq('id', wound.id);
-  return { id: wound.id, error: error?.message ?? null };
-}
-
-export async function loadWoundAssessments(patientId: string, encounterId?: string): Promise<WoundAssessment[]> {
-  if (!supabase) return [];
-  let q = supabase.from('wound_assessments').select('*').eq('patient_id', patientId);
-  if (encounterId) q = q.eq('encounter_id', encounterId);
-  const { data, error } = await q.order('assessed_date', { ascending: false });
-  if (error || !data) return [];
-  return (data as Array<Record<string, unknown>>).map(r => ({
+function dbRowToWound(r: Record<string, unknown>): WoundAssessment {
+  return {
     id:            r.id as string,
     label:         (r.label as string) ?? 'Wound',
     location:      (r.location as string) ?? '',
@@ -2194,13 +2217,72 @@ export async function loadWoundAssessments(patientId: string, encounterId?: stri
     asepsisDetails:(r.asepsis_details as AsepsisDetails) ?? { serous: 0, erythema: 0, purulent: 0, separation: 0, isolatedBacteria: false, prolongedStay: false, additionalTx: 0 },
     notes:         (r.notes as string) ?? '',
     assessedDate:  (r.assessed_date as string) ?? new Date().toISOString().slice(0, 10),
-  }));
+  };
+}
+
+export async function saveWoundAssessment(
+  patientId: string,
+  encounterId: string | null,
+  wound: WoundAssessment,
+): Promise<{ id: string | null; error: string | null }> {
+  const payload = {
+    patientId, encounterId,
+    label:          wound.label,
+    location:       wound.location || undefined,
+    woundClass:     wound.woundClass || undefined,
+    closure:        wound.closure || undefined,
+    status:         wound.status,
+    dressing:       wound.dressing || undefined,
+    drain:          wound.drain,
+    drainOutputMl:  wound.drainOutputMl ? parseInt(wound.drainOutputMl) : undefined,
+    asepsisScore:   wound.asepsisScore,
+    asepsisDetails: wound.asepsisDetails,
+    notes:          wound.notes || undefined,
+    assessedDate:   wound.assessedDate,
+  };
+  try {
+    if (wound.id.startsWith('tmp-')) {
+      const resp = await fetch('/api/wound-assessments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!resp.ok) return { id: null, error: `HTTP ${resp.status}` };
+      const body = await resp.json() as { wound: { id: string } };
+      return { id: body.wound.id, error: null };
+    }
+    const resp = await fetch(`/api/wound-assessments/${wound.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok) return { id: null, error: `HTTP ${resp.status}` };
+    return { id: wound.id, error: null };
+  } catch (e) {
+    return { id: null, error: e instanceof Error ? e.message : 'Network error' };
+  }
+}
+
+export async function loadWoundAssessments(patientId: string, encounterId?: string): Promise<WoundAssessment[]> {
+  try {
+    const qs = encounterId ? `?encounterId=${encounterId}` : '';
+    const resp = await fetch(`/api/wound-assessments/patient/${patientId}${qs}`);
+    if (!resp.ok) return [];
+    const body = await resp.json() as { wounds: Record<string, unknown>[] };
+    return (body.wounds ?? []).map(dbRowToWound);
+  } catch {
+    return [];
+  }
 }
 
 export async function deleteWoundAssessment(woundId: string): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('deleteWoundAssessment') };
-  const { error } = await supabase.from('wound_assessments').delete().eq('id', woundId);
-  return { error: error?.message ?? null };
+  try {
+    const resp = await fetch(`/api/wound-assessments/${woundId}`, { method: 'DELETE' });
+    if (!resp.ok) return { error: `HTTP ${resp.status}` };
+    return { error: null };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Network error' };
+  }
 }
 
 /* ── Encounter timeline ───────────────────────────────────────────────────── */
@@ -2217,48 +2299,14 @@ export interface EncounterSummary {
 }
 
 export async function listPatientEncounters(patientId: string): Promise<EncounterSummary[]> {
-  if (!supabase) return [];
-  const { data, error } = await supabase
-    .from('encounters')
-    .select('id, created_at, status, encounter_type, chief_complaint, site')
-    .eq('patient_id', patientId)
-    .order('created_at', { ascending: false })
-    .limit(50);
-  if (error || !data) return [];
-
-  const rows = data as Array<Record<string, unknown>>;
-
-  // Fetch assessments for these encounters in one query
-  const ids = rows.map(r => r.id as string);
-  const { data: aData } = ids.length
-    ? await supabase
-        .from('assessments')
-        .select('encounter_id, diagnosis, icd10_code')
-        .in('encounter_id', ids)
-    : { data: [] };
-
-  const aMap = new Map<string, { diagnosis: string; icd10_code: string }>();
-  for (const a of ((aData ?? []) as Array<Record<string, unknown>>)) {
-    const eid = a.encounter_id as string;
-    if (!aMap.has(eid)) {
-      aMap.set(eid, {
-        diagnosis: (a.diagnosis as string) ?? '',
-        icd10_code: (a.icd10_code as string) ?? '',
-      });
-    }
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const res = await fetch(`${base}/api/encounters/patient/${patientId}`, { headers });
+    if (!res.ok) return [];
+    const json = await res.json() as { encounters: EncounterSummary[] };
+    return json.encounters ?? [];
+  } catch {
+    return [];
   }
-
-  return rows.map(r => {
-    const a = aMap.get(r.id as string);
-    return {
-      id:            r.id as string,
-      createdAt:     r.created_at as string,
-      status:        (r.status as string) ?? '',
-      encounterType: (r.encounter_type as string) ?? 'outpatient',
-      chiefComplaint:(r.chief_complaint as string | null) ?? null,
-      site:          (r.site as string | null) ?? null,
-      diagnosis:     a?.diagnosis ?? null,
-      icd10Code:     a?.icd10_code ?? null,
-    };
-  });
 }

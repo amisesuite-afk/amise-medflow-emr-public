@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { requireStaffAuth, sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { AI_DISABLED } from '../lib/ai-guard.js';
+import { assemblePatientContext, formatContextBlock } from '../lib/patient-context.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -80,11 +81,24 @@ router.post('/api/ai-consult', async (req, res) => {
 
   try {
     const body = req.body as ConsultRequest;
-    const { patientContext, consultationType, specificQuestion, icd10Codes, guidelinesContext } = body;
+    const { patientContext, consultationType, specificQuestion, icd10Codes, guidelinesContext, patientId, encounterId } = body;
 
     if (!patientContext || !consultationType) {
       res.status(400).json({ error: 'patientContext and consultationType are required' });
       return;
+    }
+
+    // Server-side context augmentation — fills gaps in client-sent context with
+    // DB-fetched medications, allergies, problem list, recent results, and
+    // patient-app passport data.
+    let serverContextBlock = '';
+    if (patientId) {
+      try {
+        const ctx = await assemblePatientContext(patientId, encounterId);
+        if (ctx) serverContextBlock = '\n\n' + formatContextBlock(ctx);
+      } catch (e) {
+        log.warn({ err: e }, 'ai-consult: patient context fetch failed — proceeding without');
+      }
     }
 
     const contextParts: string[] = [];
@@ -191,7 +205,7 @@ router.post('/api/ai-consult', async (req, res) => {
     const typeInstruction = consultTypeLabels[consultationType] || `Consultation type: ${consultationType}`;
 
     const userPrompt = `CLINICAL CONTEXT:
-${contextParts.join('\n\n')}
+${contextParts.join('\n\n')}${serverContextBlock}
 ${guidelinesBlock}
 
 CONSULTATION REQUEST:

@@ -1,0 +1,20 @@
+{
+  "name": "medflow-folder-watcher",
+  "version": "1.0.0",
+  "description": "Watches a local folder and uploads new PDFs/images to the MedFlow Results Inbox",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "pm2:start": "pm2 start index.js --name medflow-watcher --restart-delay=5000",
+    "pm2:stop": "pm2 stop medflow-watcher",
+    "pm2:logs": "pm2 logs medflow-watcher"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.0",
+    "chokidar": "^4.0.3",
+    "dotenv": "^16.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

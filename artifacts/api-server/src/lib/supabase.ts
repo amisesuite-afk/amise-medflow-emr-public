@@ -44,6 +44,17 @@ export async function requireStaffAuth(req: any, res: any): Promise<boolean> {
   return false;
 }
 
+/** Extract the authenticated staff user's UUID from the request JWT. Returns null for cron/service calls. */
+export async function getStaffUserId(req: any): Promise<string | null> {
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    const jwt = authHeader.slice(7);
+    const { data, error } = await sb().auth.getUser(jwt);
+    if (!error && data?.user?.id) return data.user.id;
+  }
+  return null;
+}
+
 export function requireCronSecret(req: any, res: any): boolean {
   const secret = process.env.CRON_SECRET;
   if (!secret) {
@@ -65,13 +76,14 @@ export type AuditAction =
   | 'classify' | 'triage' | 'draft' | 'send' | 'book' | 'notify'
   | 'remind' | 'escalate' | 'error' | 'skip'
   | 'portal_invite_sent' | 'extract' | 'change_request' | 'auto_cancel'
-  | 'lab_alert_sent' | 'sign' | 'escalate';
+  | 'lab_alert_sent' | 'sign' | 'amend' | 'create' | 'resolve';
 
 export async function audit(args: {
   action: AuditAction;
   entityType?: string;
   entityId?: string;
   patientId?: string;
+  userId?: string;
   userEmail?: string;
   payload?: Record<string, unknown>;
 }): Promise<void> {
@@ -79,15 +91,16 @@ export async function audit(args: {
     const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const recordId  = args.entityId  && uuidRe.test(args.entityId)  ? args.entityId  : null;
     const patientId = args.patientId && uuidRe.test(args.patientId) ? args.patientId : null;
-    await sb().from('audit_logs').insert({
+    const userId    = args.userId    && uuidRe.test(args.userId)    ? args.userId    : null;
+    await sb().from('audit_log').insert({
       action:        args.action,
-      table_name:    args.entityType ?? null,
       resource_type: args.entityType ?? null,
-      record_id:     recordId,
+      resource_id:   recordId,
       patient_id:    patientId,
+      user_id:       userId,
       user_email:    args.userEmail ?? null,
-      new_values:    args.payload ?? null,
-      mode:          process.env.MODE,
+      details:       args.payload ? { payload: args.payload } : null,
+      mode:          process.env.MODE ?? null,
     });
   } catch (err) {
     logger.error({ err }, '[audit] failed');

@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
-import { getSupabaseAdmin, requireStaffAuth, audit } from '../lib/supabase.js';
+import { getSupabaseAdmin, requireStaffAuth, requireCronSecret, audit, getStaffUserId } from '../lib/supabase.js';
+import { extractDocumentInsights } from './portal.js';
 import { logger, errStr } from '../lib/logger.js';
 import { logAudit } from '../lib/audit.js';
 import { sendOrDraft } from '../lib/gmail.js';
+import { createWorkflowTask, resolveWorkflowTask } from '../lib/workflow-tasks.js';
 
 const router = Router();
 
@@ -150,6 +152,18 @@ router.post('/api/investigations/lab-order', async (req, res) => {
     });
 
     logger.info({ id: data.id, encounterId, testName }, '[investigations/lab-order] created');
+
+    void createWorkflowTask({
+      task_type:   'await_investigation',
+      patient_id:  patientId,
+      encounter_id: encounterId,
+      source_type: 'investigation_result',
+      source_id:   data.id,
+      title:       `Awaiting result: ${testName}`,
+      details:     testCategory,
+      priority:    urgency === 'urgent' ? 'urgent' : 'normal',
+    });
+
     res.json({ id: data.id, status: 'ordered' });
   } catch (err) {
     logger.error({ err }, '[investigations/lab-order] error');
@@ -209,6 +223,18 @@ router.post('/api/investigations/imaging-order', async (req, res) => {
     });
 
     logger.info({ id: data.id, encounterId, orderType, bodyArea }, '[investigations/imaging-order] created');
+
+    void createWorkflowTask({
+      task_type:   'await_investigation',
+      patient_id:  patientId,
+      encounter_id: encounterId,
+      source_type: 'imaging_order',
+      source_id:   data.id,
+      title:       `Awaiting report: ${orderType} ${bodyArea}`,
+      details:     clinicalIndication,
+      priority:    urgency === 'urgent' ? 'urgent' : 'normal',
+    });
+
     res.json({ id: data.id, status: 'ordered' });
   } catch (err) {
     logger.error({ err }, '[investigations/imaging-order] error');
@@ -243,7 +269,7 @@ router.post('/api/investigations/result/:id', async (req, res) => {
     // Verify the investigation exists
     const { data: existing, error: fetchErr } = await supa
       .from('investigation_results')
-      .select('id, status')
+      .select('id, status, patient_id, encounter_id')
       .eq('id', id)
       .maybeSingle();
 
@@ -279,6 +305,20 @@ router.post('/api/investigations/result/:id', async (req, res) => {
     });
 
     logger.info({ id, isCritical: isCritical ?? false }, '[investigations/result] recorded');
+
+    // Close the awaiting task; open a review task for the clinician
+    void resolveWorkflowTask({ task_type: 'await_investigation', source_type: 'investigation_result', source_id: id, resolution_note: 'Result received' });
+    void createWorkflowTask({
+      task_type:   'review_result',
+      patient_id:  existing.patient_id ?? undefined,
+      encounter_id: existing.encounter_id ?? undefined,
+      source_type: 'investigation_result',
+      source_id:   id,
+      title:       `Review result${isCritical ? ' — CRITICAL' : isAbnormal ? ' — abnormal' : ''}`,
+      details:     resultValue ?? null,
+      priority:    isCritical ? 'urgent' : isAbnormal ? 'high' : 'normal',
+    });
+
     res.json({ id, status: 'resulted' });
   } catch (err) {
     logger.error({ err }, '[investigations/result] error');
@@ -311,7 +351,7 @@ router.post('/api/investigations/imaging-report/:id', async (req, res) => {
     // Verify the imaging order exists
     const { data: existing, error: fetchErr } = await supa
       .from('imaging_orders')
-      .select('id, status')
+      .select('id, status, patient_id, encounter_id, order_type, body_area')
       .eq('id', id)
       .maybeSingle();
 
@@ -343,6 +383,18 @@ router.post('/api/investigations/imaging-report/:id', async (req, res) => {
     });
 
     logger.info({ id }, '[investigations/imaging-report] recorded');
+
+    void resolveWorkflowTask({ task_type: 'await_investigation', source_type: 'imaging_order', source_id: id, resolution_note: 'Report received' });
+    void createWorkflowTask({
+      task_type:   'review_result',
+      patient_id:  existing.patient_id ?? undefined,
+      encounter_id: existing.encounter_id ?? undefined,
+      source_type: 'imaging_order',
+      source_id:   id,
+      title:       `Review imaging report: ${(existing.order_type as string | null) ?? ''} ${(existing.body_area as string | null) ?? ''}`.trim(),
+      priority:    'normal',
+    });
+
     res.json({ id, status: 'reported' });
   } catch (err) {
     logger.error({ err }, '[investigations/imaging-report] error');
@@ -358,8 +410,9 @@ router.post('/api/investigations/review/:id', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
   const { id } = req.params;
 
-  const { table } = (req.body ?? {}) as {
+  const { table, actionTaken } = (req.body ?? {}) as {
     table?: 'investigation_results' | 'imaging_orders';
+    actionTaken?: string | null;
   };
 
   if (!table || (table !== 'investigation_results' && table !== 'imaging_orders')) {
@@ -369,11 +422,12 @@ router.post('/api/investigations/review/:id', async (req, res) => {
 
   try {
     const supa = getSupabaseAdmin();
+    const reviewedBy = await getStaffUserId(req);
 
-    // Verify the record exists
+    // Verify the record exists and fetch fields needed for follow-up tasks
     const { data: existing, error: fetchErr } = await supa
       .from(table)
-      .select('id, status')
+      .select('id, status, patient_id, encounter_id, is_abnormal, is_critical, test_name, order_type, body_area')
       .eq('id', id)
       .maybeSingle();
 
@@ -384,13 +438,18 @@ router.post('/api/investigations/review/:id', async (req, res) => {
 
     const now = new Date().toISOString();
 
+    const updatePayload: Record<string, unknown> = {
+      status:          'reviewed',
+      reviewed_at:     now,
+      acknowledged_at: now,
+      updated_at:      now,
+    };
+    if (reviewedBy) updatePayload.reviewed_by = reviewedBy;
+    if (actionTaken != null) updatePayload.action_taken = actionTaken;
+
     const { error } = await supa
       .from(table)
-      .update({
-        status: 'reviewed',
-        reviewed_at: now,
-        updated_at: now,
-      })
+      .update(updatePayload)
       .eq('id', id);
 
     if (error) throw error;
@@ -405,9 +464,117 @@ router.post('/api/investigations/review/:id', async (req, res) => {
     });
 
     logger.info({ id, table }, '[investigations/review] marked reviewed');
-    res.json({ id, status: 'reviewed' });
+
+    const sourceType = table === 'investigation_results' ? 'investigation_result' : 'imaging_order';
+    void resolveWorkflowTask({
+      task_type:       'review_result',
+      source_type:     sourceType,
+      source_id:       id,
+      resolved_by:     reviewedBy ?? undefined,
+      resolution_note: 'Reviewed by clinician',
+    });
+
+    // Auto-create inform_patient task for abnormal or critical results
+    const rec = existing as Record<string, unknown>;
+    if (rec.is_abnormal || rec.is_critical) {
+      const label = table === 'investigation_results'
+        ? (rec.test_name as string | null | undefined) ?? 'lab result'
+        : `${(rec.order_type as string | null | undefined) ?? ''} ${(rec.body_area as string | null | undefined) ?? ''}`.trim() || 'imaging result';
+
+      void createWorkflowTask({
+        task_type:   'inform_patient',
+        patient_id:  rec.patient_id  as string | null,
+        encounter_id: rec.encounter_id as string | null,
+        source_type:  sourceType,
+        source_id:    id,
+        title:        `Notify patient of ${rec.is_critical ? 'critical' : 'abnormal'} result: ${label}`,
+        priority:     rec.is_critical ? 'urgent' : 'high',
+      });
+    }
+
+    res.json({ id, status: 'reviewed', acknowledged_at: now });
   } catch (err) {
     logger.error({ err }, '[investigations/review] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/notify-patient/:id
+// Records that the patient was notified of a result and resolves the
+// inform_patient workflow task.
+// Body: { table: 'investigation_results' | 'imaging_orders', method: string, notifiedBy?: string }
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/notify-patient/:id', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+
+  const { table, method, notifiedBy } = (req.body ?? {}) as {
+    table?:      'investigation_results' | 'imaging_orders';
+    method?:     string;
+    notifiedBy?: string;
+  };
+
+  if (!table || (table !== 'investigation_results' && table !== 'imaging_orders')) {
+    res.status(400).json({ error: 'table must be "investigation_results" or "imaging_orders"' });
+    return;
+  }
+  if (!method || typeof method !== 'string' || !method.trim()) {
+    res.status(400).json({ error: 'method is required (e.g. phone, sms, whatsapp, letter, in_person)' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+    const staffId = await getStaffUserId(req);
+    const now = new Date().toISOString();
+    const by = (notifiedBy ?? staffId ?? 'staff').toString();
+
+    const { data: existing, error: fetchErr } = await supa
+      .from(table)
+      .select('id, patient_id, encounter_id')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchErr || !existing) {
+      res.status(404).json({ error: 'Record not found' });
+      return;
+    }
+
+    const { error } = await supa
+      .from(table)
+      .update({
+        patient_notified_at:  now,
+        patient_notified_by:  by,
+        notification_method:  method.trim(),
+        updated_at:           now,
+      })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    const entityType = table === 'investigation_results' ? 'investigation_result' : 'imaging_order';
+    const sourceType  = entityType;
+
+    await audit({
+      action:     'notify',
+      entityType,
+      entityId:   id,
+      payload:    { patient_notified_at: now, notification_method: method.trim(), patient_notified_by: by },
+    });
+
+    void resolveWorkflowTask({
+      task_type:       'inform_patient',
+      source_type:     sourceType,
+      source_id:       id,
+      resolved_by:     staffId ?? undefined,
+      resolution_note: `Patient notified via ${method.trim()}`,
+    });
+
+    logger.info({ id, table, method }, '[investigations/notify-patient] patient notified');
+    res.json({ id, patient_notified_at: now, notification_method: method.trim() });
+  } catch (err) {
+    logger.error({ err }, '[investigations/notify-patient] error');
     res.status(502).json({ error: errStr(err) });
   }
 });
@@ -694,6 +861,241 @@ router.post('/api/investigations/scan-referral', async (req, res) => {
     res.json({ extracted });
   } catch (err) {
     logger.error({ err }, '[scan-referral] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/investigations/received-documents
+// List email-received documents not yet matched to a patient (inbox for
+// incoming lab/pathology/imaging results that arrived via email).
+// ---------------------------------------------------------------------------
+router.get('/api/investigations/received-documents', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // Email-received and manually-uploaded documents with completed AI extraction
+    const { data: docs, error: docsErr } = await supa
+      .from('documents')
+      .select('id, title, document_type, mime_type, storage_path, ai_extracted_data, ai_flags, notes, created_at, patient_id')
+      .in('source', ['received_email', 'manual_upload', 'local_folder'])
+      .in('ai_extraction_status', ['done', 'failed', 'skipped'])
+      .order('created_at', { ascending: false })
+      .limit(100);
+
+    if (docsErr) throw docsErr;
+
+    const docList = docs ?? [];
+    if (docList.length === 0) {
+      res.json({ documents: [] });
+      return;
+    }
+
+    // Find which docs are already linked to an investigation_results row
+    const docIds = docList.map(d => d.id as string);
+    const { data: linked } = await supa
+      .from('investigation_results')
+      .select('linked_document_id')
+      .in('linked_document_id', docIds);
+
+    const linkedIds = new Set((linked ?? []).map(r => r.linked_document_id as string));
+
+    // Return only unmatched docs (or docs where patient_id is null = no patient yet)
+    const unmatched = docList.filter(d => !linkedIds.has(d.id as string));
+
+    res.json({ documents: unmatched });
+  } catch (err) {
+    logger.error({ err }, '[investigations/received-documents] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// GET /api/documents/:id/signed-url
+// Generate a short-lived signed URL so staff can view the original file.
+// ---------------------------------------------------------------------------
+router.get('/api/documents/:id/signed-url', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+  try {
+    const supa = getSupabaseAdmin();
+    const { data: doc, error: docErr } = await supa
+      .from('documents')
+      .select('storage_path, mime_type')
+      .eq('id', id)
+      .single();
+    if (docErr || !doc) { res.status(404).json({ error: 'Document not found' }); return; }
+    if (!doc.storage_path) { res.status(404).json({ error: 'No file stored for this document' }); return; }
+    const { data: signed, error: signErr } = await supa.storage
+      .from('patient-documents')
+      .createSignedUrl(doc.storage_path as string, 300); // 5-minute window
+    if (signErr || !signed?.signedUrl) throw signErr ?? new Error('Could not generate signed URL');
+    res.json({ url: signed.signedUrl, mimeType: doc.mime_type });
+  } catch (err) {
+    logger.error({ err }, '[documents/signed-url] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/documents/:id/extract
+// Trigger AI extraction for a single document. Called by the local folder
+// watcher after it uploads a file, using the CRON_SECRET header.
+// ---------------------------------------------------------------------------
+router.post('/api/documents/:id/extract', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+  const { id } = req.params as { id: string };
+  try {
+    await extractDocumentInsights(id);
+    res.json({ ok: true });
+  } catch (err) {
+    logger.error({ err, id }, '[documents/extract] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/investigations/received-documents/:id/match
+// Match an email-received document to a patient and file it as a result in
+// investigation_results so it appears in the Results Inbox.
+// ---------------------------------------------------------------------------
+router.post('/api/investigations/received-documents/:id/match', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { id } = req.params;
+
+  const { patientId, testName, testCategory, isCritical, notes: extraNotes } = (req.body ?? {}) as {
+    patientId?: string;
+    testName?: string;
+    testCategory?: string;
+    isCritical?: boolean;
+    notes?: string;
+  };
+
+  if (!patientId) {
+    res.status(400).json({ error: 'patientId is required' });
+    return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    // Fetch the document
+    const { data: doc, error: docErr } = await supa
+      .from('documents')
+      .select('id, title, document_type, ai_extracted_data, ai_flags, notes, created_at')
+      .eq('id', id)
+      .in('source', ['received_email', 'manual_upload', 'local_folder'])
+      .maybeSingle();
+
+    if (docErr || !doc) {
+      res.status(404).json({ error: 'Document not found or not an email-received/manual-upload document' });
+      return;
+    }
+
+    // Check not already matched
+    const { data: existing } = await supa
+      .from('investigation_results')
+      .select('id')
+      .eq('linked_document_id', id)
+      .maybeSingle();
+
+    if (existing) {
+      res.status(409).json({ error: 'This document has already been matched to a result' });
+      return;
+    }
+
+    // Parse AI extraction data
+    let aiData: { documentSummary?: string; reportDate?: string | null; extractedFacts?: Array<{ label: string; value: string; unit?: string | null; referenceRange?: string | null; markedAbnormal?: boolean }> } = {};
+    try {
+      aiData = typeof doc.ai_extracted_data === 'string'
+        ? JSON.parse(doc.ai_extracted_data)
+        : (doc.ai_extracted_data as typeof aiData ?? {});
+    } catch { /* use empty */ }
+
+    let aiFlags: Array<{ type: string; severity: string; label: string; detail?: string }> = [];
+    try {
+      aiFlags = typeof doc.ai_flags === 'string'
+        ? JSON.parse(doc.ai_flags)
+        : (Array.isArray(doc.ai_flags) ? doc.ai_flags as typeof aiFlags : []);
+    } catch { /* use empty */ }
+
+    const isAbnormal = (aiData.extractedFacts ?? []).some(f => f.markedAbnormal);
+    const autoIsCritical = aiFlags.some(f => f.severity === 'urgent');
+    const finalIsCritical = isCritical ?? autoIsCritical;
+
+    // Build analytes from extractedFacts
+    const analytes = (aiData.extractedFacts ?? []).length > 0
+      ? (aiData.extractedFacts ?? []).map(f => ({
+          name:     f.label,
+          value:    f.value,
+          unit:     f.unit ?? null,
+          ref:      f.referenceRange ?? null,
+          abnormal: f.markedAbnormal ?? false,
+          critical: false,
+        }))
+      : null;
+
+    // Derive result_value from AI summary if no individual analytes
+    const resultValue = analytes ? null : (aiData.documentSummary ?? null);
+
+    // Infer test_category from document_type
+    const categoryFromType: Record<string, string> = {
+      lab_report:    'other',
+      imaging_report: 'other',
+    };
+    const finalTestCategory = testCategory ?? categoryFromType[doc.document_type as string] ?? 'other';
+
+    // Extract provider name from notes ("Received by email from Tapion Pathology (email@…)…")
+    const providerMatch = (doc.notes as string | null)?.match(/^Received by email from ([^(]+)/);
+    const performingLab = providerMatch ? providerMatch[1].trim() : null;
+
+    // Reported date from AI or document created_at
+    let reportedAt: string = doc.created_at as string;
+    if (aiData.reportDate) {
+      const d = new Date(aiData.reportDate);
+      if (!isNaN(d.getTime())) reportedAt = d.toISOString();
+    }
+
+    const combinedNotes = [doc.notes as string | null, extraNotes].filter(Boolean).join('\n');
+
+    const { data: result, error: insertErr } = await supa
+      .from('investigation_results')
+      .insert({
+        patient_id:        patientId,
+        encounter_id:      null,
+        test_name:         testName ?? (aiData.documentSummary ?? (doc.title as string)),
+        test_category:     finalTestCategory,
+        performing_lab:    performingLab,
+        result_value:      resultValue,
+        analytes:          analytes,
+        is_abnormal:       isAbnormal,
+        is_critical:       finalIsCritical,
+        status:            'resulted',
+        reported_at:       reportedAt,
+        linked_document_id: id,
+        notes:             combinedNotes || null,
+      })
+      .select('id')
+      .single();
+
+    if (insertErr) throw insertErr;
+
+    // Update documents.patient_id to link the document to the patient
+    await supa.from('documents').update({ patient_id: patientId }).eq('id', id);
+
+    await audit({
+      action: 'extract',
+      entityType: 'investigation_result',
+      entityId: result.id,
+      payload: { source: 'received_email', document_id: id, patientId, isCritical: finalIsCritical },
+    });
+
+    logger.info({ resultId: result.id, docId: id, patientId, isCritical: finalIsCritical }, '[investigations/received-documents/match] matched');
+    res.json({ id: result.id, status: 'resulted', isCritical: finalIsCritical });
+  } catch (err) {
+    logger.error({ err }, '[investigations/received-documents/match] error');
     res.status(502).json({ error: errStr(err) });
   }
 });

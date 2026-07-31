@@ -2,12 +2,13 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { height: 100%; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   color: #1a2e2b;
-  background: #0d2520;
+  background: #0a1e1b;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { border: none; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
@@ -15,24 +16,39 @@ textarea { resize: vertical; }
 
 /* ── CSS vars ───────────────────────────────────── */
 :root {
-  /* Brand palette */
-  --accent:    #0b8278;
-  --accent2:   #0f5f76;
-  --accent-lt: #e4f5f2;
+  /* Brand palette — Caribbean Sea */
+  --accent:      #00b4a0;   /* vivid Caribbean turquoise */
+  --accent-dark: #008f7e;
+  --accent2:     #0077a8;   /* deep ocean blue */
+  --accent-lt:   #d6f5f1;
+  --green-vivid: #00cdb8;
+  --coral:       #f26d51;   /* sunset coral — secondary highlight */
+  --coral-lt:    #fff0ec;
+  --gold:        #f5b800;   /* tropical gold — badges, warnings */
 
   /* Semantic colours — light mode defaults */
-  --ink:       #1a2e2b;
-  --muted:     #5a706c;
-  --line:      #d8e8e4;
-  --bg:        #f0f6f4;
+  --ink:       #122320;
+  --muted:     #4e6660;
+  --faint:     #85aaa4;
+  --line:      #cde7e3;
+  --bg:        #f0f7f6;
   --card:      #ffffff;
 
+  /* Convenience aliases used by component inline styles */
+  --surface:   var(--card);
+  --fg:        var(--ink);
+  --border:    var(--line);
+
+  /* Section header — deep Caribbean night */
+  --panel-hd:  #091f1c;
+  --panel-hd2: #0d2e29;
+
   /* Shell */
-  --sidebar-bg: #0d2520;
-  --sidebar-text: #8fc4b9;
-  --sidebar-active-bg: rgba(11,130,120,.18);
-  --sidebar-active-text: #5df0e0;
-  --header-bg: #0f2e29;
+  --sidebar-bg: #071714;
+  --sidebar-text: #6ab8ae;
+  --sidebar-active-bg: rgba(0,180,160,.14);
+  --sidebar-active-text: #40e0d0;
+  --header-bg: #0a1e1b;
 
   /* Acuity */
   --urgent:    #b91c1c;
@@ -82,35 +98,44 @@ textarea { resize: vertical; }
 /* ── Dark mode ──────────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg:        #0f1c19;
-    --card:      #162421;
-    --ink:       #d0e8e4;
-    --muted:     #5a8a82;
-    --line:      #1e3832;
-    --accent-lt: rgba(11,130,120,.18);
-    --sidebar-bg: #070e0d;
-    --header-bg:  #0a1612;
+    --bg:        #0c1917;
+    --card:      #122120;
+    --ink:       #c8e8e4;
+    --muted:     #508880;
+    --faint:     #3a6360;
+    --line:      #1a3430;
+    --accent-lt: rgba(0,180,160,.15);
+    --sidebar-bg: #050e0c;
+    --header-bg:  #071310;
+    --panel-hd:   #091f1c;
+    --panel-hd2:  #0d2e29;
   }
 }
 :root[data-theme="dark"] {
-  --bg:        #0f1c19;
-  --card:      #162421;
-  --ink:       #d0e8e4;
-  --muted:     #5a8a82;
-  --line:      #1e3832;
-  --accent-lt: rgba(11,130,120,.18);
-  --sidebar-bg: #070e0d;
-  --header-bg:  #0a1612;
+  --bg:        #0c1917;
+  --card:      #122120;
+  --ink:       #c8e8e4;
+  --muted:     #508880;
+  --faint:     #3a6360;
+  --line:      #1a3430;
+  --accent-lt: rgba(0,180,160,.15);
+  --sidebar-bg: #050e0c;
+  --header-bg:  #071310;
+  --panel-hd:   #091f1c;
+  --panel-hd2:  #0d2e29;
 }
 :root[data-theme="light"] {
-  --bg:        #f0f6f4;
+  --bg:        #f0f7f6;
   --card:      #ffffff;
-  --ink:       #1a2e2b;
-  --muted:     #5a706c;
-  --line:      #d8e8e4;
-  --accent-lt: #e4f5f2;
-  --sidebar-bg: #0d2520;
-  --header-bg:  #0f2e29;
+  --ink:       #122320;
+  --muted:     #4e6660;
+  --faint:     #85aaa4;
+  --line:      #cde7e3;
+  --accent-lt: #d6f5f1;
+  --sidebar-bg: #071714;
+  --header-bg:  #0a1e1b;
+  --panel-hd:   #091f1c;
+  --panel-hd2:  #0d2e29;
 }
 
 /* ── App shell ──────────────────────────────────── */
@@ -130,7 +155,7 @@ textarea { resize: vertical; }
   gap: 10px;
   padding: 0 18px;
   background: var(--header-bg);
-  border-bottom: 1px solid #1c3e37;
+  border-bottom: 1px solid rgba(0,180,160,.18);
   z-index: 20;
 }
 .header-brand {
@@ -278,7 +303,7 @@ textarea { resize: vertical; }
   display: flex;
   flex-direction: column;
   background: var(--sidebar-bg);
-  border-right: 1px solid #1c3e37;
+  border-right: 1px solid rgba(0,180,160,.12);
   overflow: hidden;
   transition: width .2s ease;
   min-width: 0;
@@ -291,7 +316,7 @@ textarea { resize: vertical; }
 }
 .nav-sidebar__body::-webkit-scrollbar { width: 4px; }
 .nav-sidebar__body::-webkit-scrollbar-track { background: transparent; }
-.nav-sidebar__body::-webkit-scrollbar-thumb { background: #1c3e37; border-radius: 2px; }
+.nav-sidebar__body::-webkit-scrollbar-thumb { background: rgba(0,180,160,.2); border-radius: 2px; }
 
 /* Top-level item */
 .nsb-item {
@@ -360,7 +385,7 @@ textarea { resize: vertical; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #4d7a70;
+  color: #3e7a72;
   padding: 14px 14px 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -500,10 +525,10 @@ textarea { resize: vertical; }
   gap: 8px;
   padding: 10px 12px;
   width: 100%;
-  color: #3d6056;
+  color: #3a6a62;
   font-size: 12px;
   font-weight: 600;
-  border-top: 1px solid #1c3e37;
+  border-top: 1px solid rgba(0,180,160,.1);
   white-space: nowrap;
   overflow: hidden;
   transition: color .12s, background .12s;
@@ -1406,6 +1431,46 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   color: #fff;
 }
 
+/* ── Patients Hub — List / Visits / Follow-up tabs ── */
+.patients-hub {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.patients-hub-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  padding: 0 16px;
+  background: var(--card);
+  flex-shrink: 0;
+}
+.patients-hub-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 18px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .13s, border-color .13s;
+  white-space: nowrap;
+}
+.patients-hub-tab:hover { color: var(--ink); }
+.patients-hub-tab--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+.patients-hub-content {
+  flex: 1;
+  overflow: auto;
+}
+
 /* ── Patient list site filter chips ─────────────── */
 .psearch-site-filter {
   display: flex;
@@ -1799,7 +1864,7 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
     grid-row: 2 !important; grid-column: 1 !important;
     flex-direction: column !important;
     width: 100% !important; height: auto !important;
-    border-right: none; border-bottom: 1px solid #1c3e37;
+    border-right: none; border-bottom: 1px solid rgba(0,180,160,.12);
   }
   .nav-sidebar__body {
     flex-direction: row !important;
@@ -1832,7 +1897,7 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
     flex-direction: row !important;
     display: flex !important;
     overflow-x: auto; overflow-y: hidden;
-    border-top: 1px solid #1c3e37; background: rgba(0,0,0,.3);
+    border-top: 1px solid rgba(0,180,160,.1); background: rgba(0,0,0,.3);
     padding: 0 4px; order: 999;
   }
   .nsb-sub::-webkit-scrollbar { height: 0; }
@@ -1981,10 +2046,10 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
 }
 .ct-tab:hover { background: #f1f5f9; color: #334155; }
 .ct-tab--active {
-  background: #0d9488;
+  background: var(--accent);
   color: #fff;
 }
 .ct-tab--active:hover {
-  background: #0f766e;
+  background: var(--accent-dark);
   color: #fff;
 }

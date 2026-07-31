@@ -183,6 +183,91 @@ const sectionLabel: React.CSSProperties = {
   color: 'var(--muted)',
 };
 
+// ── Compact dropdown field row inside a shared card ───────────────────────────
+function HistoryFieldRow({
+  icon, label, isOpen, onToggle,
+  summaryText, hasData,
+  noneLabel, onNone,
+  isLast,
+  children,
+}: {
+  icon: string; label: string; isOpen: boolean; onToggle: () => void;
+  summaryText: string; hasData: boolean;
+  noneLabel?: string; onNone?: () => void;
+  isLast?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+          padding: '11px 14px', background: isOpen ? 'rgba(0,180,160,0.04)' : 'none',
+          border: 'none', cursor: 'pointer', textAlign: 'left' as const,
+          transition: 'background 0.12s',
+        }}
+      >
+        <span style={{ fontSize: 13, flexShrink: 0, lineHeight: 1 }}>{icon}</span>
+        <span style={{
+          fontSize: 10, fontWeight: 800, letterSpacing: '0.07em',
+          textTransform: 'uppercase' as const,
+          color: hasData ? 'var(--accent)' : 'var(--muted)',
+          flexShrink: 0, minWidth: 84, transition: 'color 0.15s',
+        }}>{label}</span>
+        <span style={{
+          fontSize: 12.5, color: hasData ? 'var(--ink)' : 'var(--faint)',
+          flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          textAlign: 'left' as const,
+        }}>
+          {summaryText}
+        </span>
+        {!isOpen && !hasData && noneLabel && onNone && (
+          <span
+            role="button"
+            onClick={e => { e.stopPropagation(); onNone(); }}
+            style={{
+              fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 9,
+              border: '1px solid var(--line)', background: 'transparent',
+              color: 'var(--muted)', cursor: 'pointer', flexShrink: 0,
+              userSelect: 'none' as const, lineHeight: '16px', display: 'inline-block',
+            }}
+          >
+            {noneLabel}
+          </span>
+        )}
+        {hasData && !isOpen && (
+          <span style={{
+            width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)',
+            flexShrink: 0, display: 'inline-block',
+          }} />
+        )}
+        <span style={{
+          color: 'var(--muted)', fontSize: 11, flexShrink: 0, lineHeight: 1,
+          display: 'inline-block',
+          transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s',
+        }}>▾</span>
+      </button>
+
+      {isOpen && (
+        <div style={{
+          padding: '8px 14px 14px',
+          display: 'flex', flexDirection: 'column', gap: 8,
+          borderTop: '1px solid var(--line)',
+          background: 'rgba(0,180,160,0.02)',
+        }}>
+          {children}
+        </div>
+      )}
+
+      {!isLast && (
+        <div style={{ height: 1, background: 'var(--line)' }} />
+      )}
+    </div>
+  );
+}
+
 // ── Props ──────────────────────────────────────────────────────────────────────
 interface Props {
   visitType?: string;
@@ -223,6 +308,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const [dismissedPrompts, setDismissedPrompts] = useState<string[]>([]);
   const [hpiCollapsed, setHpiCollapsed] = useState(false);
   const [assessAccordion, setAssessAccordion] = useState(false);
+  // History-phase collapsible section accordion
+  const [openSec, setOpenSec] = useState<string | null>('cc');
+  const toggleSec = (id: string) => setOpenSec(s => s === id ? null : id);
 
   // Wrap phase change to keep sidebar rail in sync
   function changePhase(phase: ConsultPhase) {
@@ -620,24 +708,36 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         <div style={{ display: 'flex', gap: 6, overflowX: 'auto', flexWrap: 'nowrap', WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
           {HISTORY_SHORTCUTS.map(({ section, icon, label }) => {
             const done = !!sectionDone[section as keyof typeof sectionDone];
-            const isActive = activeDrawer === section;
+            // In history phase, PMH/Surgical/Meds/Allergies scroll into section cards
+            const histSecs = ['pmh', 'surgical', 'medications', 'allergies'];
+            const isHistSec = histSecs.includes(section);
+            const isActive = isHistSec && consultPhase === 'history'
+              ? openSec === section
+              : activeDrawer === section;
             return (
               <button
                 key={section}
                 type="button"
-                onClick={() => setActiveDrawer(d => d === section ? null : section)}
+                onClick={() => {
+                  if (isHistSec && consultPhase === 'history') {
+                    toggleSec(section);
+                    setActiveDrawer(null);
+                  } else {
+                    setActiveDrawer(d => d === section ? null : section);
+                  }
+                }}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
                   padding: '6px 12px', borderRadius: 18, cursor: 'pointer',
                   fontSize: 12, fontWeight: 600, minHeight: 36, position: 'relative',
-                  border: `1.5px solid ${isActive ? '#0d9488' : done ? '#0d9488' : 'var(--line)'}`,
-                  background: isActive ? '#0d9488' : done ? 'rgba(13,148,136,0.08)' : 'var(--card)',
-                  color: isActive ? '#fff' : done ? '#0d9488' : 'var(--ink)',
+                  border: `1.5px solid ${isActive ? 'var(--accent)' : done ? 'var(--accent)' : 'var(--line)'}`,
+                  background: isActive ? 'var(--accent)' : done ? 'rgba(0,180,160,0.08)' : 'var(--card)',
+                  color: isActive ? '#fff' : done ? 'var(--accent)' : 'var(--ink)',
                   transition: 'all 0.15s', whiteSpace: 'nowrap',
                 }}
               >
                 {done && !isActive && (
-                  <span style={{ position: 'absolute', top: 4, right: 4, width: 6, height: 6, borderRadius: '50%', background: '#0d9488' }} />
+                  <span style={{ position: 'absolute', top: 4, right: 4, width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)' }} />
                 )}
                 <span style={{ fontSize: 14 }}>{icon}</span>
                 {label}
@@ -943,113 +1043,237 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             <PriorVisitStrip summary={ctx.priorEncounterSummary} />
           )}
 
-          {/* ── Chief Complaint picker ── */}
-          <div style={{ ...drawerStyle, gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={sectionLabel}>Chief Complaint</span>
-              {activeCcKey && (
-                <button type="button" onClick={() => setActiveCcKey(null)}
-                  style={{ fontSize: 10, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
-                  ✕ clear
-                </button>
-              )}
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {CC_ITEMS.map(cc => {
-                const on = activeCcKey === cc.id;
-                return (
-                  <button key={cc.id} type="button" style={chipBtn(on)} onClick={() => {
-                    setActiveCcKey(on ? null : cc.id);
-                    if (!on && !hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
+          {/* ── Clinical history — compact dropdown rows ── */}
+          <div style={{
+            borderRadius: 10, border: '1px solid var(--line)',
+            background: 'var(--card)', overflow: 'hidden',
+          }}>
+            {/* Chief Complaint */}
+            <HistoryFieldRow
+              icon="🩺" label="Chief Complaint"
+              isOpen={openSec === 'cc'} onToggle={() => toggleSec('cc')}
+              hasData={!!activeCcKey}
+              summaryText={activeCcKey ? (CC_ITEMS.find(c => c.id === activeCcKey)?.label ?? '') : 'Tap to select'}
+            >
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {CC_ITEMS.map(cc => {
+                  const on = activeCcKey === cc.id;
+                  return (
+                    <button key={cc.id} type="button" style={chipBtn(on)} onClick={() => {
+                      setActiveCcKey(on ? null : cc.id);
+                      if (!on && !hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
+                      if (!on) setOpenSec(null);
+                    }}>{cc.label}</button>
+                  );
+                })}
+              </div>
+            </HistoryFieldRow>
+
+            {/* Past Medical History */}
+            <HistoryFieldRow
+              icon="📋" label="PMH"
+              isOpen={openSec === 'pmh'} onToggle={() => toggleSec('pmh')}
+              hasData={comorbidities.length > 0 || pmhNotes.includes('NKPMH')}
+              summaryText={
+                pmhNotes.includes('NKPMH') ? 'No PMH'
+                : comorbidities.length > 0
+                  ? comorbidities.slice(0, 4).join(', ') + (comorbidities.length > 4 ? ` +${comorbidities.length - 4}` : '')
+                  : 'No PMH'
+              }
+              noneLabel="No PMH"
+              onNone={() => { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); }}
+            >
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                <button type="button"
+                  style={{ ...chipBtn(pmhNotes.includes('NKPMH')), fontSize: 11, padding: '3px 9px' }}
+                  onClick={() => {
+                    if (pmhNotes.includes('NKPMH')) { setPmhNotes(''); }
+                    else { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); }
                   }}>
-                    {cc.label}
-                  </button>
-                );
-              })}
-            </div>
+                  No PMH
+                </button>
+                {!pmhNotes.includes('NKPMH') && COMMON_CONDITIONS.map(cond => {
+                  const on = comorbidities.includes(cond);
+                  return (
+                    <button key={cond} type="button" style={chipBtn(on)}
+                      onClick={() => setComorbidities(on ? comorbidities.filter(c => c !== cond) : [...comorbidities, cond])}>
+                      {on ? '✓ ' : ''}{cond}
+                    </button>
+                  );
+                })}
+              </div>
+              <textarea value={pmhNotes.includes('NKPMH') ? '' : pmhNotes} onChange={e => setPmhNotes(e.target.value)}
+                placeholder="Additional detail…"
+                style={drawerTextarea} rows={2} />
+            </HistoryFieldRow>
+
+            {/* Surgical History */}
+            <HistoryFieldRow
+              icon="🔪" label="Surgical Hx"
+              isOpen={openSec === 'surgical'} onToggle={() => toggleSec('surgical')}
+              hasData={surgicalHistory.length > 0}
+              summaryText={
+                surgicalHistory.includes('No prior surgery') ? 'No prior surgery'
+                : surgicalHistory.length > 0
+                  ? surgicalHistory.slice(0, 3).join(', ') + (surgicalHistory.length > 3 ? ` +${surgicalHistory.length - 3}` : '')
+                  : 'None'
+              }
+              noneLabel="No surgery"
+              onNone={() => setSurgicalHistory(['No prior surgery'])}
+            >
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                {['No prior surgery', ...COMMON_SURGERY].map(s => {
+                  const on = surgicalHistory.includes(s);
+                  return (
+                    <button key={s} type="button"
+                      onClick={() => setSurgicalHistory(on ? surgicalHistory.filter(x => x !== s) : [...surgicalHistory, s])}
+                      style={chipBtn(on)}>
+                      {on ? '✓ ' : ''}{s}
+                    </button>
+                  );
+                })}
+              </div>
+              <textarea value={surgicalNotes} onChange={e => setSurgicalNotes(e.target.value)}
+                placeholder="Procedures, dates, complications…"
+                style={drawerTextarea} rows={2} />
+            </HistoryFieldRow>
+
+            {/* Medications */}
+            <HistoryFieldRow
+              icon="💊" label="Medications"
+              isOpen={openSec === 'medications'} onToggle={() => toggleSec('medications')}
+              hasData={medications.length > 0 || !!medicationsText.trim()}
+              summaryText={
+                medications.includes('None') ? 'None'
+                : medications.length > 0
+                  ? medications.slice(0, 3).join(', ') + (medications.length > 3 ? ` +${medications.length - 3}` : '')
+                  : 'None'
+              }
+              noneLabel="None"
+              onNone={() => { setMedications(['None']); setMedicationsText(''); }}
+            >
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
+                <button type="button"
+                  onClick={() => { setMedications(medications.includes('None') ? [] : ['None']); if (!medications.includes('None')) setMedicationsText(''); }}
+                  style={chipBtn(medications.includes('None'))}>
+                  {medications.includes('None') ? '✓ ' : ''}None
+                </button>
+                {!medications.includes('None') && COMMON_MEDICATIONS.map(med => {
+                  const on = medicationsText.split('\n').some(l => l.trim().toLowerCase().includes(med.toLowerCase()));
+                  return (
+                    <button key={med} type="button"
+                      onClick={() => {
+                        const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
+                        const newLines = on
+                          ? lines.filter(l => !l.toLowerCase().includes(med.toLowerCase()))
+                          : [...lines, med];
+                        setMedicationsText(newLines.join('\n'));
+                        setMedications(newLines);
+                      }}
+                      style={chipBtn(on)}>
+                      {on ? '✓ ' : ''}{med}
+                    </button>
+                  );
+                })}
+              </div>
+              <textarea
+                value={medicationsText}
+                onChange={e => {
+                  setMedicationsText(e.target.value);
+                  setMedications(e.target.value ? e.target.value.split('\n').map(s => s.trim()).filter(Boolean) : []);
+                }}
+                placeholder={'One per line:\nAmlodipine 5 mg OD\nMetformin 500 mg BD'}
+                style={drawerTextarea} rows={4} />
+            </HistoryFieldRow>
+
+            {/* Allergies */}
+            <HistoryFieldRow
+              icon="⚠️" label="Allergies"
+              isOpen={openSec === 'allergies'} onToggle={() => toggleSec('allergies')}
+              hasData={!!allergyText.trim()}
+              summaryText={allergyText || 'NKDA'}
+              noneLabel="NKDA"
+              onNone={() => setAllergies('NKDA')}
+              isLast
+            >
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
+                <button type="button"
+                  onClick={() => setAllergies(allergyText === 'NKDA' ? '' : 'NKDA')}
+                  style={chipBtn(allergyText === 'NKDA')}>
+                  {allergyText === 'NKDA' ? '✓ ' : ''}NKDA
+                </button>
+                {COMMON_ALLERGENS.map(a => {
+                  const on = allergyText.includes(a);
+                  return (
+                    <button key={a} type="button"
+                      onClick={() => {
+                        if (allergyText === 'NKDA') { setAllergies(a); return; }
+                        const curr = allergyText.split(',').map(s => s.trim()).filter(Boolean);
+                        setAllergies(on ? curr.filter(x => x !== a).join(', ') : [...curr, a].join(', '));
+                      }}
+                      style={chipBtn(on)}>
+                      {on ? '✓ ' : ''}{a}
+                    </button>
+                  );
+                })}
+              </div>
+              <input
+                value={allergyText === 'NKDA' ? '' : allergyText}
+                onChange={e => setAllergies(e.target.value)}
+                placeholder="Other allergen / reaction…"
+                style={{ ...drawerTextarea, resize: undefined }}
+              />
+            </HistoryFieldRow>
           </div>
 
-          {/* ── Inline PMH ── */}
-          <div style={{ ...drawerStyle, gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={sectionLabel}>Past Medical History</span>
-              <button type="button"
-                style={{ ...chipBtn(pmhNotes.includes('NKPMH')), fontSize: 11, padding: '3px 9px' }}
-                onClick={() => {
-                  if (pmhNotes.includes('NKPMH')) { setPmhNotes(''); }
-                  else { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); }
-                }}>
-                No PMH
-              </button>
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {COMMON_CONDITIONS.map(cond => {
-                const on = comorbidities.includes(cond);
-                return (
-                  <button key={cond} type="button" style={chipBtn(on)}
-                    onClick={() => setComorbidities(on ? comorbidities.filter(c => c !== cond) : [...comorbidities, cond])}>
-                    {cond}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ── HPI card ── */}
+          {/* ── Presenting History ── */}
           <div style={{
             borderRadius: 10,
-            border: '1px solid var(--line)',
-            background: 'var(--card)',
-            overflow: 'hidden',
+            border: `1px solid ${hpiNotes.trim() ? 'rgba(0,180,160,0.4)' : 'var(--line)'}`,
+            background: 'var(--card)', overflow: 'hidden',
           }}>
-            {/* Label + controls */}
             <div style={{
-              display: 'flex', alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '10px 14px 0',
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 14px',
+              borderBottom: '1px solid var(--line)',
             }}>
-              <span style={sectionLabel}>
-                {ccLabel ? `${ccLabel} — Presenting History` : 'Presenting History'}
+              <span style={{ fontSize: 13 }}>📝</span>
+              <span style={{ ...sectionLabel, color: hpiNotes.trim() ? 'var(--accent)' : 'var(--muted)' }}>
+                {ccLabel ? `${ccLabel} — History` : 'Presenting History'}
               </span>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <button
-                  type="button"
-                  onClick={handleDictateClick}
-                  disabled={!SPEECH_SUPPORTED && !micOpen}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 5,
-                    padding: '5px 12px', borderRadius: 7, border: 'none',
-                    cursor: 'pointer', fontSize: 12, fontWeight: 700,
-                    background: recording ? '#dc2626' : micOpen ? '#0d9488' : 'rgba(13,148,136,0.1)',
-                    color: recording ? '#fff' : micOpen ? '#fff' : '#0d9488',
-                    transition: 'all 0.15s',
-                  }}
-                  title={recording ? 'Stop & analyse' : micOpen ? 'Close mic' : 'Dictate HPI'}
-                >
-                  <span style={{
-                    display: 'inline-block', width: 7, height: 7,
-                    borderRadius: '50%', flexShrink: 0,
-                    background: recording ? '#fff' : 'currentColor',
-                    animation: recording ? 'ambPulse 1s ease-in-out infinite' : 'none',
-                  }} />
-                  {recording ? 'Stop' : segmenting ? 'Analysing…' : accepted ? '✓ Loaded' : '🎙 Dictate'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setActiveSection('hpi'); onDetailedMode(); }}
-                  style={{
-                    padding: '4px 9px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                    border: '1px solid var(--line)', background: 'transparent',
-                    color: 'var(--muted)', cursor: 'pointer',
-                  }}
-                  title="Open full HPI editor"
-                >
-                  Full HPI ↗
-                </button>
-              </div>
+              <div style={{ flex: 1 }} />
+              <button
+                type="button"
+                onClick={handleDictateClick}
+                disabled={!SPEECH_SUPPORTED && !micOpen}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '4px 10px', borderRadius: 7, border: 'none',
+                  cursor: 'pointer', fontSize: 11, fontWeight: 700,
+                  background: recording ? '#dc2626' : micOpen ? 'var(--accent)' : 'rgba(0,180,160,0.1)',
+                  color: recording ? '#fff' : micOpen ? '#fff' : 'var(--accent)',
+                  transition: 'all 0.15s',
+                }}
+                title={recording ? 'Stop & analyse' : micOpen ? 'Close mic' : 'Dictate HPI'}
+              >
+                <span style={{
+                  display: 'inline-block', width: 6, height: 6,
+                  borderRadius: '50%', flexShrink: 0,
+                  background: recording ? '#fff' : 'currentColor',
+                  animation: recording ? 'ambPulse 1s ease-in-out infinite' : 'none',
+                }} />
+                {recording ? 'Stop' : segmenting ? 'Analysing…' : accepted ? '✓ Loaded' : '🎙 Dictate'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setActiveSection('hpi'); onDetailedMode(); }}
+                style={{
+                  padding: '3px 8px', borderRadius: 6, fontSize: 10, fontWeight: 600,
+                  border: '1px solid var(--line)', background: 'transparent',
+                  color: 'var(--muted)', cursor: 'pointer',
+                }}
+              >Full HPI ↗</button>
             </div>
-
-            {/* HPI textarea */}
             <textarea
               value={hpiNotes}
               onChange={e => setHpiNotes(e.target.value)}
@@ -1059,22 +1283,19 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   : 'Presenting history — tap 🎙 Dictate to start, or type directly.'
               }
               style={{
-                display: 'block', width: '100%', minHeight: 160,
-                padding: '12px 14px', border: 'none', resize: 'vertical',
+                display: 'block', width: '100%', minHeight: 140,
+                padding: '10px 14px', border: 'none', resize: 'vertical' as const,
                 background: 'transparent', color: 'var(--ink)',
                 fontSize: 15, lineHeight: 1.75, fontFamily: 'Georgia, serif',
-                outline: 'none', boxSizing: 'border-box',
+                outline: 'none', boxSizing: 'border-box' as const,
               }}
             />
-
-            {/* Mic expansion panel */}
             {micOpen && (
               <div style={{
                 borderTop: `1px solid ${recording ? 'rgba(220,38,38,0.3)' : 'var(--line)'}`,
                 padding: '10px 14px',
-                background: recording ? 'rgba(220,38,38,0.03)' : 'rgba(13,148,136,0.03)',
+                background: recording ? 'rgba(220,38,38,0.03)' : 'rgba(0,180,160,0.03)',
               }}>
-                {/* Transcript preview */}
                 {(fullTranscript || recording) && (
                   <div style={{
                     fontSize: 13, lineHeight: 1.6, color: 'var(--muted)',
@@ -1083,13 +1304,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   }}>
                     {transcript}
                     {interim && <span style={{ color: 'var(--ink)', opacity: 0.5 }}>{interim}</span>}
-                    {recording && !fullTranscript && (
-                      <span style={{ fontStyle: 'italic' }}>Listening…</span>
-                    )}
+                    {recording && !fullTranscript && <span style={{ fontStyle: 'italic' }}>Listening…</span>}
                   </div>
                 )}
-
-                {/* SOAP preview */}
                 {pendingSoap && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     <div style={{ fontSize: 10, fontWeight: 800, color: '#d97706', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -1121,7 +1338,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button type="button" onClick={acceptSoap}
                         style={{ flex: 1, padding: '8px', borderRadius: 7, border: 'none',
-                          background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
+                          background: 'var(--accent)', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
                         ↓ Accept
                       </button>
                       <button type="button" onClick={() => { setPendingSoap(null); setTranscript(''); }}
@@ -1132,14 +1349,12 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     </div>
                   </div>
                 )}
-
-                {/* Controls row */}
                 {!pendingSoap && (
                   <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
                     {!recording && transcript && !segmenting && (
                       <button type="button" onClick={() => void handleSegment()}
                         style={{ padding: '5px 14px', borderRadius: 6, border: 'none',
-                          background: '#0d9488', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
+                          background: 'var(--accent)', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
                         Analyse transcript →
                       </button>
                     )}
@@ -1153,16 +1368,13 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     {segmenting && <span style={{ fontSize: 11, color: '#d97706' }}>Analysing…</span>}
                   </div>
                 )}
-
                 {voiceError && (
                   <div style={{
                     marginTop: 6, padding: '8px 10px', borderRadius: 6,
                     background: '#fef2f2', border: '1px solid #fca5a5',
                     display: 'flex', alignItems: 'flex-start', gap: 8,
                   }}>
-                    <span style={{ flex: 1, fontSize: 11, color: '#b91c1c', lineHeight: 1.5 }}>
-                      {voiceError}
-                    </span>
+                    <span style={{ flex: 1, fontSize: 11, color: '#b91c1c', lineHeight: 1.5 }}>{voiceError}</span>
                     <button
                       type="button"
                       onClick={() => { setVoiceError(null); void startRecording(); }}

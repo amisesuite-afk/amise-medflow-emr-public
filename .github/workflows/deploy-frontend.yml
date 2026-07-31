@@ -3,7 +3,6 @@ name: Deploy — Amise Front Desk (Vercel)
 on:
   push:
     branches:
-      - 'claude/**'
       - main
   workflow_dispatch:
 

@@ -18,7 +18,7 @@ export type AIProviderType = 'cloud' | 'ollama';
 export interface AIProviderConfig {
   type: AIProviderType;
   ollamaUrl: string;     // e.g. http://localhost:11434 or http://192.168.1.10:11434
-  ollamaModel: string;   // e.g. phi3:mini, llama3.2:3b, mistral:7b
+  ollamaModel: string;   // e.g. llama3.1:8b, qwen2.5:7b, mistral:7b
 }
 
 const STORAGE_KEY = 'amise-ai-provider';
@@ -26,7 +26,7 @@ const STORAGE_KEY = 'amise-ai-provider';
 export const DEFAULT_CONFIG: AIProviderConfig = {
   type: 'cloud',
   ollamaUrl: 'http://localhost:11434',
-  ollamaModel: 'phi3:mini',
+  ollamaModel: 'llama3.1:8b',
 };
 
 export function getAIProviderConfig(): AIProviderConfig {

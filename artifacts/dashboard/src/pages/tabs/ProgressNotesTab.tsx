@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ToastProvider';
-import { saveClinicalNote } from '@/lib/db';
+import { saveClinicalNote, loadEncounterClinicalNotes, signNote, amendNote, type ClinicalNoteRow } from '@/lib/db';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { getAIProviderConfig, polishSoapWithOllama } from '@/lib/ai-provider';
@@ -322,6 +322,63 @@ export default function ProgressNotesTab() {
 
   const [expandedNote, setExpandedNote] = useState<string | null>(null);
 
+  // ── Signed notes from DB ────────────────────────────────────────────────────
+  const [dbNotes, setDbNotes] = useState<ClinicalNoteRow[]>([]);
+  const [expandedDbNote, setExpandedDbNote] = useState<string | null>(null);
+
+  const refreshDbNotes = useCallback(async () => {
+    if (!ctx.encounterId) return;
+    const rows = await loadEncounterClinicalNotes(ctx.encounterId);
+    setDbNotes(rows);
+  }, [ctx.encounterId]);
+
+  useEffect(() => { void refreshDbNotes(); }, [refreshDbNotes]);
+
+  // ── Sign a single draft note ────────────────────────────────────────────────
+  const [signingId, setSigningId] = useState<string | null>(null);
+
+  async function handleSignNote(dbNoteId: string, inMemoryId?: string) {
+    if (signingId) return;
+    setSigningId(dbNoteId);
+    try {
+      const { error } = await signNote(dbNoteId);
+      if (error) { showToast(`Sign failed: ${error}`, 'error'); return; }
+      if (inMemoryId) {
+        ctx.setProgressNotes(ctx.progressNotes.filter(n => n.id !== inMemoryId));
+      }
+      await refreshDbNotes();
+      showToast('Note signed', 'success');
+    } finally {
+      setSigningId(null);
+    }
+  }
+
+  // ── Amend a signed note ─────────────────────────────────────────────────────
+  const [amendTarget, setAmendTarget] = useState<ClinicalNoteRow | null>(null);
+  const [amendContent, setAmendContent] = useState('');
+  const [amendReason, setAmendReason] = useState('');
+  const [amendSaving, setAmendSaving] = useState(false);
+
+  function openAmendModal(note: ClinicalNoteRow) {
+    setAmendTarget(note);
+    setAmendContent(note.content);
+    setAmendReason('');
+  }
+
+  async function handleSubmitAmend() {
+    if (!amendTarget || !amendReason.trim() || !amendContent.trim() || amendSaving) return;
+    setAmendSaving(true);
+    try {
+      const { error } = await amendNote(amendTarget.id, amendContent, amendReason);
+      if (error) { showToast(`Amendment failed: ${error}`, 'error'); return; }
+      setAmendTarget(null);
+      await refreshDbNotes();
+      showToast('Amendment created', 'success');
+    } finally {
+      setAmendSaving(false);
+    }
+  }
+
   // Auto-compute post-op day
   const postOpDay = useMemo(() => {
     if (!ctx.dateAdmission || !date) return null;
@@ -531,16 +588,18 @@ export default function ProgressNotesTab() {
         assessment,
         plan,
       };
-      ctx.setProgressNotes([note, ...ctx.progressNotes]);
 
       if (ctx.patientId && ctx.encounterId) {
-        const { error } = await saveClinicalNote(note, ctx.patientId, ctx.encounterId);
+        const { noteId, error } = await saveClinicalNote(note, ctx.patientId, ctx.encounterId);
         if (error) {
           console.error('[progress-notes] save failed:', error);
           showToast(`Save failed: ${error}`, 'error');
           return;
         }
+        if (noteId) note.dbNoteId = noteId;
       }
+
+      ctx.setProgressNotes([note, ...ctx.progressNotes]);
 
       // Reset form
       setChiefComplaint(''); setSelectedSymptoms([]); setIntervalHistory('');
@@ -585,6 +644,15 @@ export default function ProgressNotesTab() {
                       {note.chiefComplaint && <span style={{ fontSize: 11, color: '#374151' }}>— {note.chiefComplaint}</span>}
                     </div>
                     <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                      {note.dbNoteId && (
+                        <button type="button"
+                          onClick={e => { e.stopPropagation(); void handleSignNote(note.dbNoteId!, note.id); }}
+                          disabled={signingId === note.dbNoteId}
+                          title="Sign and lock this note"
+                          style={{ ...BTN, padding: '3px 9px', fontSize: 11, background: signingId === note.dbNoteId ? '#9ca3af' : '#16a34a', color: '#fff', cursor: signingId === note.dbNoteId ? 'not-allowed' : 'pointer' }}>
+                          {signingId === note.dbNoteId ? '…' : 'Sign'}
+                        </button>
+                      )}
                       <button type="button"
                         onClick={e => { e.stopPropagation(); printDoc(buildNoteHtml(note, ctx.patientName, siteName)); }}
                         style={{ ...BTN, padding: '3px 9px', fontSize: 11, background: C.navy, color: '#fff' }}>🖨</button>
@@ -626,6 +694,99 @@ export default function ProgressNotesTab() {
             })}
           </div>
         </CollapsibleCard>
+      )}
+
+      {/* Signed / amended notes from DB */}
+      {dbNotes.length > 0 && (
+        <CollapsibleCard title={`Signed Notes — DB (${dbNotes.length})`} defaultOpen={dbNotes.some(n => n.status === 'signed')}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {dbNotes.map(note => {
+              const isSigned  = note.status === 'signed';
+              const isAmended = note.status === 'amended';
+              const isDraft   = note.status === 'draft';
+              const expanded  = expandedDbNote === note.id;
+              const statusColor = isSigned ? '#16a34a' : isAmended ? '#92400e' : '#6b7280';
+              const statusBg    = isSigned ? '#f0fdf4' : isAmended ? '#fffbeb' : '#f9fafb';
+              const signedDate  = note.signed_at ? new Date(note.signed_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : null;
+              const createdDate = new Date(note.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+              const preview = note.content.slice(0, 120).replace(/\n/g, ' ');
+              return (
+                <div key={note.id} style={{ border: `1.5px solid ${statusColor}40`, borderRadius: 8, overflow: 'hidden' }}>
+                  <div style={{ background: statusBg, padding: '7px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+                    onClick={() => setExpandedDbNote(expanded ? null : note.id)}>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', flex: 1, minWidth: 0 }}>
+                      <span style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', color: statusColor, background: statusColor + '20', borderRadius: 6, padding: '1px 7px' }}>
+                        {note.status}
+                      </span>
+                      <span style={{ fontSize: 11, color: C.muted }}>{note.note_type} · {createdDate}</span>
+                      {note.version > 1 && <span style={{ fontSize: 11, color: C.muted }}>v{note.version}</span>}
+                      {signedDate && <span style={{ fontSize: 11, color: '#16a34a' }}>Signed {signedDate}</span>}
+                      {!expanded && <span style={{ fontSize: 11, color: '#374151', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 200 }}>{preview}</span>}
+                    </div>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+                      {isSigned && (
+                        <button type="button"
+                          onClick={e => { e.stopPropagation(); openAmendModal(note); }}
+                          style={{ ...BTN, padding: '3px 9px', fontSize: 11, background: '#92400e', color: '#fff' }}>
+                          Amend
+                        </button>
+                      )}
+                      {isDraft && (
+                        <button type="button"
+                          onClick={e => { e.stopPropagation(); void handleSignNote(note.id); }}
+                          disabled={signingId === note.id}
+                          style={{ ...BTN, padding: '3px 9px', fontSize: 11, background: signingId === note.id ? '#9ca3af' : '#16a34a', color: '#fff', cursor: signingId === note.id ? 'not-allowed' : 'pointer' }}>
+                          {signingId === note.id ? '…' : 'Sign'}
+                        </button>
+                      )}
+                      <span style={{ color: C.muted, fontSize: 12 }}>{expanded ? '▲' : '▼'}</span>
+                    </div>
+                  </div>
+                  {expanded && (
+                    <div style={{ padding: '10px 14px', background: '#fff' }}>
+                      <pre style={{ fontFamily: 'inherit', fontSize: 12, whiteSpace: 'pre-wrap', margin: 0, color: '#1a1a1a', lineHeight: 1.6 }}>{note.content}</pre>
+                      {isAmended && <div style={{ marginTop: 8, fontSize: 11, color: '#92400e', fontWeight: 700 }}>This note has been superseded by an amendment.</div>}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </CollapsibleCard>
+      )}
+
+      {/* Amend modal */}
+      {amendTarget && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <div style={{ background: '#fff', borderRadius: 12, width: '100%', maxWidth: 600, padding: 24, display: 'flex', flexDirection: 'column', gap: 14, maxHeight: '90vh', overflowY: 'auto' }}>
+            <div style={{ fontWeight: 800, fontSize: 16, color: C.navy }}>Amend Clinical Note</div>
+            <div style={{ fontSize: 12, color: C.muted }}>
+              Creating an amendment preserves the original signed note and creates a new version. Both versions remain in the audit trail.
+            </div>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 700, color: C.muted, display: 'block', marginBottom: 4 }}>Reason for Amendment <span style={{ color: '#dc2626' }}>*</span></label>
+              <input value={amendReason} onChange={e => setAmendReason(e.target.value)}
+                placeholder="e.g. Correction of medication dose, added post-op findings…"
+                style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #d1d5db', borderRadius: 7, fontSize: 13, boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, fontWeight: 700, color: C.muted, display: 'block', marginBottom: 4 }}>Amendment Content</label>
+              <textarea value={amendContent} onChange={e => setAmendContent(e.target.value)}
+                style={{ width: '100%', padding: '7px 10px', border: '1.5px solid #d1d5db', borderRadius: 7, fontSize: 12, minHeight: 220, resize: 'vertical', fontFamily: 'monospace', boxSizing: 'border-box' }} />
+            </div>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button type="button" onClick={() => setAmendTarget(null)}
+                style={{ padding: '8px 18px', borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: '1px solid #d1d5db', background: '#f9fafb', color: '#374151' }}>
+                Cancel
+              </button>
+              <button type="button" onClick={() => void handleSubmitAmend()}
+                disabled={!amendReason.trim() || amendSaving}
+                style={{ padding: '8px 18px', borderRadius: 7, fontSize: 13, fontWeight: 700, cursor: !amendReason.trim() || amendSaving ? 'not-allowed' : 'pointer', background: !amendReason.trim() || amendSaving ? '#9ca3af' : '#92400e', color: '#fff', border: 'none' }}>
+                {amendSaving ? 'Saving…' : 'Submit Amendment'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* New note form */}
