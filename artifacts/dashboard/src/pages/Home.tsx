@@ -316,6 +316,7 @@ export default function HomePage() {
     plan,
     progressNotes,
     mrNumber, setMrNumber,
+    recentEncounters,
   } = useAppContext();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -1298,6 +1299,27 @@ export default function HomePage() {
                     </span>
                   </>
                 )}
+
+                {/* Last encounter chip */}
+                {(() => {
+                  const last = recentEncounters.find(e => e.id !== encounterId);
+                  if (!last) return null;
+                  const d = new Date(last.createdAt);
+                  const label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+                  const type = last.encounterType === 'outpatient' ? '' : ` · ${last.encounterType}`;
+                  const dx = last.diagnosis ? ` — ${last.diagnosis.slice(0, 28)}${last.diagnosis.length > 28 ? '…' : ''}` : '';
+                  return (
+                    <>
+                      <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>
+                      <span style={{
+                        fontSize: 11, color: 'var(--muted)', whiteSpace: 'nowrap', flexShrink: 0,
+                        overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 200,
+                      }}>
+                        Last: <b style={{ color: 'var(--ink)' }}>{label}</b>{type}{dx}
+                      </span>
+                    </>
+                  );
+                })()}
 
                 <span style={{ flex: 1, minWidth: 0 }} />
 

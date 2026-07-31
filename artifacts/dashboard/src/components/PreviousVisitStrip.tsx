@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
-import { listPatientEncounters, type EncounterSummary } from '@/lib/db';
 
 const TYPE_LABELS: Record<string, string> = {
   quick_consult:    'Quick Review',
@@ -15,20 +14,9 @@ function fmt(iso: string): string {
 }
 
 export default function PreviousVisitStrip() {
-  const { patientId, encounterId } = useAppContext();
-  const [encounters, setEncounters] = useState<EncounterSummary[]>([]);
+  const { patientId, encounterId, recentEncounters } = useAppContext();
+  const encounters = recentEncounters.filter(r => r.id !== encounterId);
   const [expanded, setExpanded] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!patientId) { setEncounters([]); return; }
-    setLoading(true);
-    void listPatientEncounters(patientId).then(rows => {
-      // Exclude the current open encounter
-      setEncounters(rows.filter(r => r.id !== encounterId));
-      setLoading(false);
-    });
-  }, [patientId, encounterId]);
 
   if (!patientId || encounters.length === 0) return null;
 
@@ -77,10 +65,7 @@ export default function PreviousVisitStrip() {
           <div style={{ fontSize: 10, fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
             Reference only — does not modify current encounter
           </div>
-          {loading ? (
-            <div style={{ fontSize: 12, color: '#b45309' }}>Loading…</div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {encounters.map(enc => (
                 <div key={enc.id} style={{
                   background: '#fff',
@@ -118,7 +103,6 @@ export default function PreviousVisitStrip() {
                 </div>
               ))}
             </div>
-          )}
         </div>
       )}
     </div>

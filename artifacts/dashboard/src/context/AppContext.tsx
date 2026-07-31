@@ -3,7 +3,7 @@ import { enqueue, flush, type SyncStatus } from '@/lib/sync-outbox';
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores } from '@/lib/db';
+import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, type EncounterSummary } from '@/lib/db';
 import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
@@ -351,6 +351,9 @@ interface CtxValue {
   updateProblemStatus(id: string, status: PatientProblem['status']): Promise<void>;
   deleteProblem(id: string): Promise<void>;
 
+  /** Previous encounters for the loaded patient (excludes current encounter). */
+  recentEncounters: EncounterSummary[];
+
   /** Wound assessments for current encounter. */
   wounds: WoundAssessment[];
   setWounds: React.Dispatch<React.SetStateAction<WoundAssessment[]>>;
@@ -596,6 +599,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [activeCcKey, setActiveCcKey] = useState<string | null>(null);
 
   const [problems, setProblems] = useState<PatientProblem[]>([]);
+  const [recentEncounters, setRecentEncounters] = useState<EncounterSummary[]>([]);
   const [wounds, setWounds] = useState<WoundAssessment[]>([]);
   const [extractedLabs, setExtractedLabs] = useState<Record<string, number | null>>({});
   const [clinicalScores, setClinicalScores] = useState<Record<string, unknown>>({});
@@ -961,6 +965,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!patientId) { setProblems([]); return; }
     void loadPatientProblems(patientId).then(setProblems);
+  }, [patientId]);
+
+  // ── Load recent encounters whenever patient changes ───────────────────────
+  useEffect(() => {
+    if (!patientId) { setRecentEncounters([]); return; }
+    void listPatientEncounters(patientId).then(setRecentEncounters);
   }, [patientId]);
 
   // ── Load wound assessments whenever encounter changes ─────────────────────
@@ -1400,6 +1410,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     paneConverged, setPaneConverged,
     traumaData, setTraumaData,
     problems,
+    recentEncounters,
     addProblem: async (problem) => {
       const tmp: PatientProblem = { ...problem, id: `tmp-${Date.now()}` };
       setProblems(prev => [...prev, tmp]);
