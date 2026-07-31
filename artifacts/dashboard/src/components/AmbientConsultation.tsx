@@ -125,6 +125,32 @@ const COMMON_MEDICATIONS = [
   'PPI / omeprazole', 'NSAIDs', 'Prednisolone', 'Methotrexate', 'Azathioprine',
 ];
 
+// ── Medication intelligence: standard doses + quick options ──────────────────
+type MedInfo = { default: string; options: string[]; note?: string };
+const MED_INFO: Record<string, MedInfo> = {
+  'Aspirin':          { default: '75 mg OD',        options: ['75 mg OD', '150 mg OD', '300 mg OD (loading)'],          note: 'Take with food. Caution: peptic ulcer, bleeding risk.' },
+  'Clopidogrel':      { default: '75 mg OD',        options: ['75 mg OD', '300 mg stat (loading)', '600 mg stat (loading)'], note: 'Monitor for bleeding. Hold 5–7 days pre-op.' },
+  'Warfarin':         { default: '5 mg OD',         options: ['1 mg OD', '2 mg OD', '3 mg OD', '5 mg OD', 'dose per INR'], note: 'Dose per INR. Target INR 2–3 (AF/DVT) or 2.5–3.5 (metallic valve).' },
+  'Rivaroxaban':      { default: '20 mg OD',        options: ['10 mg OD', '15 mg BD (acute)', '20 mg OD'],              note: 'Take with evening meal. Renal dose-adjust if CrCl <50.' },
+  'Apixaban':         { default: '5 mg BD',         options: ['2.5 mg BD', '5 mg BD', '10 mg BD (acute 7d)'],           note: 'Reduce to 2.5 mg BD if ≥2 of: age ≥80, weight ≤60 kg, Cr ≥133.' },
+  'Enoxaparin':       { default: '40 mg SC OD',     options: ['20 mg SC OD', '40 mg SC OD', '1.5 mg/kg SC OD (therapeutic)', '1 mg/kg SC BD (therapeutic)'], note: 'Prophylactic vs therapeutic dose. Renally cleared — adjust if CrCl <30.' },
+  'Metformin':        { default: '500 mg BD',       options: ['500 mg OD', '500 mg BD', '850 mg BD', '1 g BD', '1 g TDS'], note: 'Take with meals. Hold 48 h peri-contrast/pre-op. Caution: CKD eGFR <30.' },
+  'Insulin':          { default: 'as per regimen',  options: ['basal (glargine/detemir)', 'basal-bolus', 'pre-mixed BD', 'sliding scale'], note: 'Document type, units, and timing. Adjust peri-op per protocol.' },
+  'Gliclazide':       { default: '80 mg OD',        options: ['40 mg OD', '80 mg OD', '160 mg OD', '80 mg BD'],         note: 'Hold on day of surgery / procedure. Hypoglycaemia risk.' },
+  'SGLT2 inhibitor':  { default: 'as prescribed',   options: ['Empagliflozin 10 mg OD', 'Dapagliflozin 10 mg OD', 'Canagliflozin 100 mg OD'], note: 'Hold ≥3 days pre-op (DKA risk). Renal contraindication if eGFR <45.' },
+  'ACE inhibitor':    { default: 'as prescribed',   options: ['Ramipril 2.5 mg OD', 'Ramipril 5 mg OD', 'Ramipril 10 mg OD', 'Lisinopril 5 mg OD', 'Lisinopril 10 mg OD'], note: 'Hold on day of surgery (hypotension risk). Monitor K⁺ and renal function.' },
+  'ARB':              { default: 'as prescribed',   options: ['Losartan 50 mg OD', 'Losartan 100 mg OD', 'Candesartan 8 mg OD', 'Valsartan 80 mg OD'], note: 'Hold on day of surgery. Similar cautions to ACE inhibitor.' },
+  'Beta-blocker':     { default: 'as prescribed',   options: ['Bisoprolol 2.5 mg OD', 'Bisoprolol 5 mg OD', 'Bisoprolol 10 mg OD', 'Atenolol 50 mg OD', 'Carvedilol 6.25 mg BD'], note: 'Continue peri-op (abrupt cessation → rebound tachycardia). Rate-control in AF.' },
+  'Amlodipine':       { default: '5 mg OD',         options: ['2.5 mg OD', '5 mg OD', '10 mg OD'],                      note: 'Can cause peripheral oedema. Continue peri-op.' },
+  'Furosemide':       { default: '40 mg OD',        options: ['20 mg OD', '40 mg OD', '80 mg OD', '40 mg BD'],          note: 'Monitor electrolytes (K⁺, Na⁺). Hold if dehydrated/hypotensive.' },
+  'Statin':           { default: 'as prescribed',   options: ['Atorvastatin 10 mg ON', 'Atorvastatin 20 mg ON', 'Atorvastatin 40 mg ON', 'Rosuvastatin 10 mg ON', 'Simvastatin 40 mg ON'], note: 'Take at night. Continue peri-op (cardioprotective).' },
+  'PPI / omeprazole': { default: 'Omeprazole 20 mg OD', options: ['Omeprazole 20 mg OD', 'Omeprazole 40 mg OD', 'Lansoprazole 30 mg OD', 'Pantoprazole 40 mg OD'], note: 'Take 30–60 min before breakfast. Review need at 8 weeks.' },
+  'NSAIDs':           { default: 'Ibuprofen 400 mg TDS', options: ['Ibuprofen 400 mg TDS', 'Ibuprofen 600 mg TDS', 'Naproxen 500 mg BD', 'Diclofenac 50 mg TDS'], note: 'Take with food. Avoid in CKD, peptic ulcer, anticoagulation. Hold pre-op.' },
+  'Prednisolone':     { default: '5 mg OD',         options: ['1 mg OD', '5 mg OD', '10 mg OD', '20 mg OD', '40 mg OD', '1 mg/kg OD'], note: 'Steroid card. Stress dosing peri-op if on >5 mg >3 months. Bone protection.' },
+  'Methotrexate':     { default: '7.5 mg once weekly', options: ['7.5 mg weekly', '10 mg weekly', '15 mg weekly', '20 mg weekly', '25 mg weekly'], note: 'ONCE WEEKLY only — daily dosing is fatal. Folate supplementation required.' },
+  'Azathioprine':     { default: '50 mg OD',        options: ['25 mg OD', '50 mg OD', '100 mg OD', '150 mg OD'],        note: 'Monitor FBC monthly. Check TPMT before starting. Drug interaction: allopurinol.' },
+};
+
 // ── Examination: default normal text per system ───────────────────────────────
 const EXAM_NORMALS: Record<string, string> = {
   General:     'Alert and oriented, no acute distress. Well-nourished. Comfortable at rest. No pallor, jaundice or cyanosis.',
@@ -469,6 +495,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   // History-phase collapsible section accordion
   const [openSec, setOpenSec] = useState<string | null>('cc');
   const toggleSec = (id: string) => setOpenSec(s => s === id ? null : id);
+  const [pendingMed, setPendingMed] = useState<{ name: string; dose: string } | null>(null);
   const SEC_ORDER = ['cc', 'pmh', 'surgical', 'medications', 'allergies'] as const;
   const advanceSec = (current: string) => {
     const idx = SEC_ORDER.indexOf(current as typeof SEC_ORDER[number]);
@@ -979,29 +1006,66 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         <div style={drawerStyle}>
           <div style={sectionLabel}>Current Medications</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 6 }}>
-            <button type="button" onClick={() => { setMedications(medications.includes('None') ? [] : ['None']); if (!medications.includes('None')) setMedicationsText(''); }}
+            <button type="button" onClick={() => { setMedications(medications.includes('None') ? [] : ['None']); if (!medications.includes('None')) { setMedicationsText(''); setPendingMed(null); } }}
               style={chipBtn(medications.includes('None'))}>
               {medications.includes('None') ? '✓ ' : ''}None
             </button>
             {!medications.includes('None') && COMMON_MEDICATIONS.map(med => {
-              const on = medicationsText.split('\n').some(l => l.trim().toLowerCase().includes(med.toLowerCase()));
+              const on = medicationsText.split('\n').some(l => l.trim().toLowerCase().startsWith(med.toLowerCase()));
               return (
                 <button key={med} type="button"
                   onClick={() => {
-                    const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
-                    const newLines = on
-                      ? lines.filter(l => !l.toLowerCase().includes(med.toLowerCase()))
-                      : [...lines, med];
-                    const newText = newLines.join('\n');
-                    setMedicationsText(newText);
-                    setMedications(newLines);
+                    if (on) {
+                      const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
+                      const newLines = lines.filter(l => !l.toLowerCase().startsWith(med.toLowerCase()));
+                      setMedicationsText(newLines.join('\n'));
+                      setMedications(newLines);
+                      if (pendingMed?.name === med) setPendingMed(null);
+                    } else {
+                      setPendingMed({ name: med, dose: MED_INFO[med]?.default ?? '' });
+                    }
                   }}
-                  style={chipBtn(on)}>
+                  style={pendingMed?.name === med ? { ...chipBtn(false), border: '2px solid var(--accent)', background: 'rgba(0,180,160,0.08)' } : chipBtn(on)}>
                   {on ? '✓ ' : ''}{med}
                 </button>
               );
             })}
           </div>
+          {pendingMed && (
+            <div style={{ borderRadius: 8, border: '1px solid rgba(0,180,160,0.35)', background: 'rgba(0,180,160,0.04)', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 4 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--accent)' }}>{pendingMed.name}</span>
+                <button type="button" onClick={() => setPendingMed(null)} style={{ fontSize: 12, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px' }}>✕</button>
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                {(MED_INFO[pendingMed.name]?.options ?? []).map(opt => (
+                  <button key={opt} type="button" onClick={() => setPendingMed(p => p ? { ...p, dose: opt } : null)}
+                    style={{ fontSize: 11, padding: '3px 9px', borderRadius: 8, cursor: 'pointer', fontWeight: 600,
+                      border: pendingMed.dose === opt ? '1px solid var(--accent)' : '1px solid var(--line)',
+                      background: pendingMed.dose === opt ? 'rgba(0,180,160,0.12)' : 'transparent',
+                      color: pendingMed.dose === opt ? 'var(--accent)' : 'var(--muted)',
+                    }}>{opt}</button>
+                ))}
+              </div>
+              <input value={pendingMed.dose}
+                onChange={e => setPendingMed(p => p ? { ...p, dose: e.target.value } : null)}
+                placeholder="Custom dose / frequency…"
+                style={{ ...drawerTextarea, resize: 'none' as const, padding: '5px 8px', fontSize: 12 }} />
+              {MED_INFO[pendingMed.name]?.note && (
+                <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.4 }}>⚠ {MED_INFO[pendingMed.name].note}</div>
+              )}
+              <button type="button" onClick={() => {
+                const line = pendingMed.dose.trim() ? `${pendingMed.name} ${pendingMed.dose.trim()}` : pendingMed.name;
+                const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
+                const newLines = [...lines, line];
+                setMedicationsText(newLines.join('\n'));
+                setMedications(newLines);
+                setPendingMed(null);
+              }} style={{ alignSelf: 'flex-end', fontSize: 12, fontWeight: 700, padding: '5px 16px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
+                + Add
+              </button>
+            </div>
+          )}
           <textarea
             value={medicationsText}
             onChange={e => {
@@ -1279,7 +1343,6 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               isOpen={openSec === 'cc'} onToggle={() => toggleSec('cc')}
               hasData={!!activeCcKey}
               summaryText={activeCcKey ? (CC_ITEMS.find(c => c.id === activeCcKey)?.label ?? '') : 'Tap to select'}
-              onAdvance={() => advanceSec('cc')}
             >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {CC_ITEMS.map(cc => {
@@ -1288,6 +1351,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     <button key={cc.id} type="button" style={chipBtn(on)} onClick={() => {
                       setActiveCcKey(on ? null : cc.id);
                       if (!on && !hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
+                      if (!on) advanceSec('cc');
                     }}>{cc.label}</button>
                   );
                 })}
@@ -1387,29 +1451,67 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 <button type="button"
                   onClick={() => {
                     if (medications.includes('None')) { setMedications([]); }
-                    else { setMedications(['None']); setMedicationsText(''); advanceSec('medications'); }
+                    else { setMedications(['None']); setMedicationsText(''); setPendingMed(null); advanceSec('medications'); }
                   }}
                   style={chipBtn(medications.includes('None'))}>
                   {medications.includes('None') ? '✓ ' : ''}None
                 </button>
                 {!medications.includes('None') && COMMON_MEDICATIONS.map(med => {
-                  const on = medicationsText.split('\n').some(l => l.trim().toLowerCase().includes(med.toLowerCase()));
+                  const on = medicationsText.split('\n').some(l => l.trim().toLowerCase().startsWith(med.toLowerCase()));
                   return (
                     <button key={med} type="button"
                       onClick={() => {
-                        const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
-                        const newLines = on
-                          ? lines.filter(l => !l.toLowerCase().includes(med.toLowerCase()))
-                          : [...lines, med];
-                        setMedicationsText(newLines.join('\n'));
-                        setMedications(newLines);
+                        if (on) {
+                          const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
+                          const newLines = lines.filter(l => !l.toLowerCase().startsWith(med.toLowerCase()));
+                          setMedicationsText(newLines.join('\n'));
+                          setMedications(newLines);
+                          if (pendingMed?.name === med) setPendingMed(null);
+                        } else {
+                          setPendingMed({ name: med, dose: MED_INFO[med]?.default ?? '' });
+                        }
                       }}
-                      style={chipBtn(on)}>
+                      style={pendingMed?.name === med ? { ...chipBtn(false), border: '2px solid var(--accent)', background: 'rgba(0,180,160,0.08)' } : chipBtn(on)}>
                       {on ? '✓ ' : ''}{med}
                     </button>
                   );
                 })}
               </div>
+              {pendingMed && (
+                <div style={{ borderRadius: 8, border: '1px solid rgba(0,180,160,0.35)', background: 'rgba(0,180,160,0.04)', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--accent)' }}>{pendingMed.name}</span>
+                    <button type="button" onClick={() => setPendingMed(null)} style={{ fontSize: 12, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                    {(MED_INFO[pendingMed.name]?.options ?? []).map(opt => (
+                      <button key={opt} type="button" onClick={() => setPendingMed(p => p ? { ...p, dose: opt } : null)}
+                        style={{ fontSize: 11, padding: '3px 9px', borderRadius: 8, cursor: 'pointer', fontWeight: 600,
+                          border: pendingMed.dose === opt ? '1px solid var(--accent)' : '1px solid var(--line)',
+                          background: pendingMed.dose === opt ? 'rgba(0,180,160,0.12)' : 'transparent',
+                          color: pendingMed.dose === opt ? 'var(--accent)' : 'var(--muted)',
+                        }}>{opt}</button>
+                    ))}
+                  </div>
+                  <input value={pendingMed.dose}
+                    onChange={e => setPendingMed(p => p ? { ...p, dose: e.target.value } : null)}
+                    placeholder="Custom dose / frequency…"
+                    style={{ padding: '5px 8px', fontSize: 12, borderRadius: 6, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--ink)', width: '100%', boxSizing: 'border-box' as const }} />
+                  {MED_INFO[pendingMed.name]?.note && (
+                    <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.4 }}>⚠ {MED_INFO[pendingMed.name].note}</div>
+                  )}
+                  <button type="button" onClick={() => {
+                    const line = pendingMed.dose.trim() ? `${pendingMed.name} ${pendingMed.dose.trim()}` : pendingMed.name;
+                    const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
+                    const newLines = [...lines, line];
+                    setMedicationsText(newLines.join('\n'));
+                    setMedications(newLines);
+                    setPendingMed(null);
+                  }} style={{ alignSelf: 'flex-end', fontSize: 12, fontWeight: 700, padding: '5px 16px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
+                    + Add
+                  </button>
+                </div>
+              )}
               <textarea
                 value={medicationsText}
                 onChange={e => {
