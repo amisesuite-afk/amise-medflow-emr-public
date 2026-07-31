@@ -5,11 +5,13 @@ import { logger, errStr } from '../lib/logger.js';
 const router = Router();
 
 const VALID_STATUSES = ['active', 'resolved'];
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // GET /api/problems/:patientId
 router.get('/api/problems/:patientId', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
   const { patientId } = req.params;
+  if (!UUID_RE.test(patientId)) { res.status(400).json({ error: 'Invalid patientId' }); return; }
   const statusFilter = req.query.status as string | undefined;
   const limit = Math.min(Number(req.query.limit ?? 500), 1000);
 
@@ -44,10 +46,12 @@ router.post('/api/problems', async (req, res) => {
   const condition = (body.condition as string)?.trim();
 
   if (!patientId) { res.status(400).json({ error: 'patientId is required' }); return; }
+  if (!UUID_RE.test(patientId)) { res.status(400).json({ error: 'Invalid patientId' }); return; }
   if (!condition) { res.status(400).json({ error: 'condition is required' }); return; }
 
   try {
     const supa = getSupabaseAdmin();
+    const staffId = await getStaffUserId(req);
 
     const { data, error } = await supa
       .from('pmh_items')
@@ -65,7 +69,8 @@ router.post('/api/problems', async (req, res) => {
 
     await audit({
       action: 'create', entityType: 'pmh_item', entityId: data.id,
-      payload: { condition, patientId, statusForced: 'active' },
+      patientId, userId: staffId ?? undefined,
+      payload: { condition, statusForced: 'active' },
     });
 
     logger.info({ id: data.id, condition }, '[problems/create] upserted');
@@ -86,10 +91,12 @@ router.patch('/api/problems/resolve-condition', async (req, res) => {
   const condition = (body.condition as string)?.trim();
 
   if (!patientId) { res.status(400).json({ error: 'patientId is required' }); return; }
+  if (!UUID_RE.test(patientId)) { res.status(400).json({ error: 'Invalid patientId' }); return; }
   if (!condition) { res.status(400).json({ error: 'condition is required' }); return; }
 
   try {
     const supa = getSupabaseAdmin();
+    const staffId = await getStaffUserId(req);
 
     const { data: existing, error: fetchErr } = await supa
       .from('pmh_items')
@@ -108,10 +115,10 @@ router.patch('/api/problems/resolve-condition', async (req, res) => {
 
     if (updateErr) throw updateErr;
 
-    const staffId = await getStaffUserId(req);
     await audit({
       action: 'change_request', entityType: 'pmh_item', entityId: (existing as { id: string }).id,
-      payload: { status: 'resolved', staffId },
+      patientId, userId: staffId ?? undefined,
+      payload: { status: 'resolved' },
     });
 
     logger.info({ patientId, condition }, '[problems/resolve-condition] resolved');
@@ -139,7 +146,7 @@ router.patch('/api/problems/:id', async (req, res) => {
   try {
     const supa = getSupabaseAdmin();
     const { data: existing, error: fetchErr } = await supa
-      .from('pmh_items').select('id').eq('id', id).maybeSingle();
+      .from('pmh_items').select('id, patient_id').eq('id', id).maybeSingle();
     if (fetchErr || !existing) { res.status(404).json({ error: 'Problem not found' }); return; }
 
     const staffId = await getStaffUserId(req);
@@ -150,9 +157,11 @@ router.patch('/api/problems/:id', async (req, res) => {
     const { error: updateErr } = await supa.from('pmh_items').update(patch).eq('id', id);
     if (updateErr) throw updateErr;
 
+    const rec = existing as { id: string; patient_id: string };
     await audit({
       action: 'change_request', entityType: 'pmh_item', entityId: id,
-      payload: { status: body.status, staffId },
+      patientId: rec.patient_id, userId: staffId ?? undefined,
+      payload: { status: body.status },
     });
 
     logger.info({ id, status: body.status }, '[problems/patch] updated');

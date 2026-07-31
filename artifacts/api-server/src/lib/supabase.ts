@@ -83,6 +83,7 @@ export async function audit(args: {
   entityType?: string;
   entityId?: string;
   patientId?: string;
+  userId?: string;
   userEmail?: string;
   payload?: Record<string, unknown>;
 }): Promise<void> {
@@ -90,11 +91,13 @@ export async function audit(args: {
     const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const recordId  = args.entityId  && uuidRe.test(args.entityId)  ? args.entityId  : null;
     const patientId = args.patientId && uuidRe.test(args.patientId) ? args.patientId : null;
+    const userId    = args.userId    && uuidRe.test(args.userId)    ? args.userId    : null;
     await sb().from('audit_log').insert({
       action:        args.action,
       resource_type: args.entityType ?? null,
       resource_id:   recordId,
       patient_id:    patientId,
+      user_id:       userId,
       user_email:    args.userEmail ?? null,
       details:       args.payload ? { payload: args.payload } : null,
       mode:          process.env.MODE ?? null,

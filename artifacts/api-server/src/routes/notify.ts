@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { getSupabaseAdmin, requireStaffAuth, audit } from '../lib/supabase.js';
+import { getSupabaseAdmin, requireStaffAuth, audit, getStaffUserId } from '../lib/supabase.js';
 import { sendSms, toE164 } from '../lib/sms.js';
 import { logger, errStr } from '../lib/logger.js';
+import { checkForbiddenContent } from '@workspace/triage-engine';
 
 const router = Router();
 
@@ -9,6 +10,8 @@ const VALID_TEMPLATES = ['appointment_reminder', 'result_ready', 'postop_checkin
 type Template = typeof VALID_TEMPLATES[number];
 
 const PRACTICE_PHONE = process.env.PRACTICE_LINE_TAPION ?? process.env.PRACTICE_PHONE ?? '+17582840557';
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const SMS_MAX_CHARS = 1600; // ~10 segments — protects against abuse and runaway cost
 
 function buildMessage(template: Template, patientName: string, data: Record<string, unknown>): string {
   const first = (patientName.split(' ')[0] ?? patientName).trim();
@@ -31,6 +34,7 @@ function buildMessage(template: Template, patientName: string, data: Record<stri
     case 'general': {
       const msg = ((data.message as string | undefined) ?? '').trim();
       if (!msg) throw new Error('message is required for the general template');
+      if (msg.length > SMS_MAX_CHARS) throw new Error(`message exceeds ${SMS_MAX_CHARS} character limit`);
       return msg;
     }
   }
@@ -40,6 +44,12 @@ function buildMessage(template: Template, patientName: string, data: Record<stri
 router.post('/api/notify/:patientId', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
   const { patientId } = req.params;
+
+  if (!UUID_RE.test(patientId)) {
+    res.status(400).json({ error: 'Invalid patientId' });
+    return;
+  }
+
   const body = (req.body ?? {}) as Record<string, unknown>;
 
   const template = body.template as string | undefined;
@@ -54,6 +64,7 @@ router.post('/api/notify/:patientId', async (req, res) => {
 
   try {
     const supa = getSupabaseAdmin();
+    const staffId = await getStaffUserId(req);
 
     const { data: patient, error: patErr } = await supa
       .from('patients')
@@ -82,10 +93,19 @@ router.post('/api/notify/:patientId', async (req, res) => {
       return;
     }
 
+    // H-1: block any outbound SMS that contains forbidden clinical content
+    const { safe, violations } = checkForbiddenContent(message);
+    if (!safe) {
+      logger.warn({ patientId, template, violations }, '[notify/send] forbidden content blocked');
+      res.status(422).json({ error: 'Message contains forbidden clinical content and cannot be sent' });
+      return;
+    }
+
     const result = await sendSms({ to: toE164(phone), body: message });
 
     await audit({
       action: 'notify', entityType: 'patient', entityId: patientId,
+      patientId, userId: staffId ?? undefined,
       payload: { template, channel: result.channel ?? null, action: result.action },
     });
 
@@ -93,7 +113,9 @@ router.post('/api/notify/:patientId', async (req, res) => {
     res.json({ action: result.action, channel: result.channel ?? null, template });
   } catch (err) {
     logger.error({ err }, '[notify/send] error');
-    res.status(502).json({ error: errStr(err) });
+    // M-1: strip phone numbers from error strings before returning them to the client
+    const safe = errStr(err).replace(/\+?[\d\s\-().]{7,}/g, '[redacted]');
+    res.status(502).json({ error: safe });
   }
 });
 

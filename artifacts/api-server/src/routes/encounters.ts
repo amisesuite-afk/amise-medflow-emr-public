@@ -7,6 +7,7 @@ const router = Router();
 const VALID_STATUS = ['open', 'in_progress', 'closed', 'cancelled'];
 const VALID_TYPES  = ['outpatient', 'inpatient', 'emergency', 'procedure', 'telehealth'];
 const VALID_SITES  = ['rodney_bay', 'castries', 'tapion'];
+const UUID_RE      = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // POST /api/encounters
 router.post('/api/encounters', async (req, res) => {
@@ -15,6 +16,7 @@ router.post('/api/encounters', async (req, res) => {
 
   const patientId = (body.patientId as string)?.trim();
   if (!patientId) { res.status(400).json({ error: 'patientId is required' }); return; }
+  if (!UUID_RE.test(patientId)) { res.status(400).json({ error: 'Invalid patientId' }); return; }
 
   const encounterType = (body.encounterType as string) ?? 'outpatient';
   if (!VALID_TYPES.includes(encounterType)) {
@@ -48,7 +50,8 @@ router.post('/api/encounters', async (req, res) => {
 
     await audit({
       action: 'create', entityType: 'encounter', entityId: data.id,
-      payload: { patientId, encounterType, site: site ?? null },
+      patientId, userId: staffId ?? undefined,
+      payload: { encounterType, site: site ?? null },
     });
 
     logger.info({ id: data.id, patientId, encounterType }, '[encounters/create] created');
@@ -153,7 +156,8 @@ router.patch('/api/encounters/:id', async (req, res) => {
     const staffId = await getStaffUserId(req);
     await audit({
       action: 'change_request', entityType: 'encounter', entityId: id,
-      payload: { status: body.status, staffId },
+      userId: staffId ?? undefined,
+      payload: { status: body.status },
     });
 
     logger.info({ id, status: body.status }, '[encounters/patch] updated');

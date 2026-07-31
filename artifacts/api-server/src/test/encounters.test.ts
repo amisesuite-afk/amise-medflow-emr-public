@@ -7,9 +7,12 @@ const mockFrom = vi.fn();
 vi.mock('../lib/supabase.js', () => ({
   getSupabaseAdmin: () => ({ from: mockFrom }),
   requireStaffAuth: vi.fn().mockResolvedValue(true),
-  getStaffUserId:   vi.fn().mockResolvedValue('staff-uuid'),
+  getStaffUserId:   vi.fn().mockResolvedValue('aaaaaaaa-0000-0000-0000-000000000001'),
   audit:            vi.fn().mockResolvedValue(undefined),
 }));
+
+const PAT_ID = 'a0000000-0000-0000-0000-000000000001';
+const ENC_ID = 'b0000000-0000-0000-0000-000000000001';
 
 const { default: encountersRouter } = await import('../routes/encounters.js');
 const app = express();
@@ -55,13 +58,13 @@ describe('POST /api/encounters', () => {
   });
 
   it('returns 400 for invalid encounterType', async () => {
-    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1', encounterType: 'walk-in' });
+    const res = await request(app).post('/api/encounters').send({ patientId: PAT_ID, encounterType: 'walk-in' });
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/encounterType/i);
   });
 
   it('returns 400 for invalid site', async () => {
-    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1', site: 'miami' });
+    const res = await request(app).post('/api/encounters').send({ patientId: PAT_ID, site: 'miami' });
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/site/i);
   });
@@ -69,7 +72,7 @@ describe('POST /api/encounters', () => {
   it('creates an encounter with defaults and returns 201', async () => {
     const created = { id: 'enc-new', status: 'open', encounter_type: 'outpatient', site: null, chief_complaint: null, created_at: '2026-07-31T10:00:00Z' };
     mockFrom.mockReturnValueOnce(mkChain({ data: created, error: null }));
-    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1' });
+    const res = await request(app).post('/api/encounters').send({ patientId: PAT_ID });
     expect(res.status).toBe(201);
     expect(res.body.encounter.id).toBe('enc-new');
     expect(res.body.encounter.status).toBe('open');
@@ -78,14 +81,14 @@ describe('POST /api/encounters', () => {
   it('creates encounter with site and chiefComplaint', async () => {
     const created = { id: 'enc-2', status: 'open', encounter_type: 'outpatient', site: 'tapion', chief_complaint: 'Chest pain', created_at: '2026-07-31T10:00:00Z' };
     mockFrom.mockReturnValueOnce(mkChain({ data: created, error: null }));
-    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1', site: 'tapion', chiefComplaint: 'Chest pain' });
+    const res = await request(app).post('/api/encounters').send({ patientId: PAT_ID, site: 'tapion', chiefComplaint: 'Chest pain' });
     expect(res.status).toBe(201);
     expect(res.body.encounter.site).toBe('tapion');
   });
 
   it('returns 502 on DB insert error', async () => {
     mockFrom.mockReturnValueOnce(mkChain(err('insert failed')));
-    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1' });
+    const res = await request(app).post('/api/encounters').send({ patientId: PAT_ID });
     expect(res.status).toBe(502);
   });
 });
@@ -167,7 +170,7 @@ describe('PATCH /api/encounters/:id', () => {
 
   it('updates encounter and returns id with patch', async () => {
     mockFrom
-      .mockReturnValueOnce(mkChain(ok({ id: 'enc-1', patient_id: 'pat-1', status: 'open' })))
+      .mockReturnValueOnce(mkChain(ok({ id: 'enc-1', patient_id: PAT_ID, status: 'open' })))
       .mockReturnValueOnce(mkChain(ok(null)));
     const res = await request(app).patch('/api/encounters/enc-1').send({ status: 'closed' });
     expect(res.status).toBe(200);
@@ -177,7 +180,7 @@ describe('PATCH /api/encounters/:id', () => {
 
   it('updates chiefComplaint to null when empty string', async () => {
     mockFrom
-      .mockReturnValueOnce(mkChain(ok({ id: 'enc-1', patient_id: 'pat-1', status: 'open' })))
+      .mockReturnValueOnce(mkChain(ok({ id: 'enc-1', patient_id: PAT_ID, status: 'open' })))
       .mockReturnValueOnce(mkChain(ok(null)));
     const res = await request(app).patch('/api/encounters/enc-1').send({ chiefComplaint: '' });
     expect(res.status).toBe(200);
@@ -186,7 +189,7 @@ describe('PATCH /api/encounters/:id', () => {
 
   it('returns 502 on DB update error', async () => {
     mockFrom
-      .mockReturnValueOnce(mkChain(ok({ id: 'enc-1', patient_id: 'pat-1', status: 'open' })))
+      .mockReturnValueOnce(mkChain(ok({ id: 'enc-1', patient_id: PAT_ID, status: 'open' })))
       .mockReturnValueOnce(mkChain(err('update failed')));
     const res = await request(app).patch('/api/encounters/enc-1').send({ status: 'in_progress' });
     expect(res.status).toBe(502);
