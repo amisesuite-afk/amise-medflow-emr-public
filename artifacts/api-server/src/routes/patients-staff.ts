@@ -70,6 +70,35 @@ router.get('/api/patients', async (req, res) => {
   }
 });
 
+// GET /api/patients/names?ids=uuid1,uuid2,...
+// Bulk-fetch patient display names for up to 100 IDs. Used by the results inbox
+// to resolve patient_id → full_name without direct Supabase access.
+router.get('/api/patients/names', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const raw = (req.query.ids as string | undefined) ?? '';
+  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const ids = raw.split(',').map(s => s.trim()).filter(s => uuidRe.test(s)).slice(0, 100);
+
+  if (ids.length === 0) { res.json({ names: {} }); return; }
+
+  try {
+    const { data, error } = await getSupabaseAdmin()
+      .from('patients')
+      .select('id, full_name')
+      .in('id', ids);
+    if (error) throw error;
+
+    const names: Record<string, string> = {};
+    for (const r of ((data ?? []) as Array<{ id: string; full_name: string | null }>)) {
+      if (r.full_name) names[r.id] = r.full_name;
+    }
+    res.json({ names });
+  } catch (err) {
+    logger.error({ err }, '[patients-staff/names] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 // GET /api/patients/:id
 router.get('/api/patients/:id', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;

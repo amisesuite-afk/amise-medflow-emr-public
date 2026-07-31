@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabase } from '@/lib/supabase';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import DocumentCapture from '@/components/DocumentCapture';
@@ -138,16 +137,18 @@ const CAT_LABEL: Record<string, string> = {
 // ─── Patient name cache ───────────────────────────────────────────────────────
 
 async function fetchPatientNames(ids: string[]): Promise<Map<string, string>> {
-  if (!supabase || ids.length === 0) return new Map();
-  const { data } = await supabase
-    .from('patients')
-    .select('id, full_name')
-    .in('id', ids);
-  const m = new Map<string, string>();
-  for (const r of ((data ?? []) as Array<{ id: string; full_name: string | null }>)) {
-    if (r.full_name) m.set(r.id, r.full_name);
+  if (ids.length === 0) return new Map();
+  try {
+    const res = await fetch(
+      apiUrl(`/api/patients/names?ids=${ids.map(encodeURIComponent).join(',')}`),
+      { headers: await staffAuthHeaders() },
+    );
+    if (!res.ok) return new Map();
+    const body = await res.json() as { names?: Record<string, string> };
+    return new Map(Object.entries(body.names ?? {}));
+  } catch {
+    return new Map();
   }
-  return m;
 }
 
 // ─── Acknowledge inline form ──────────────────────────────────────────────────

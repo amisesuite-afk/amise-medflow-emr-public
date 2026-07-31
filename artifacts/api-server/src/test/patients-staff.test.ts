@@ -217,3 +217,44 @@ describe('PATCH /api/patients/:id', () => {
     expect(res.status).toBe(502);
   });
 });
+
+// ── GET /api/patients/names ──────────────────────────────────────────────────
+
+const ID1 = 'a0000000-0000-0000-0000-000000000001';
+const ID2 = 'a0000000-0000-0000-0000-000000000002';
+
+describe('GET /api/patients/names', () => {
+  it('returns empty object when no ids provided', async () => {
+    const res = await request(app).get('/api/patients/names');
+    expect(res.status).toBe(200);
+    expect(res.body.names).toEqual({});
+  });
+
+  it('returns name map for valid UUIDs', async () => {
+    const rows = [
+      { id: ID1, full_name: 'Marie Dupont' },
+      { id: ID2, full_name: 'Jean Pierre' },
+    ];
+    mockFrom.mockReturnValueOnce(mkChain(ok(rows)));
+    const res = await request(app).get(`/api/patients/names?ids=${ID1},${ID2}`);
+    expect(res.status).toBe(200);
+    expect(res.body.names[ID1]).toBe('Marie Dupont');
+    expect(res.body.names[ID2]).toBe('Jean Pierre');
+  });
+
+  it('silently drops non-UUID ids', async () => {
+    mockFrom.mockReturnValueOnce(mkChain(ok([])));
+    const res = await request(app).get(`/api/patients/names?ids=bad-id,${ID1}`);
+    expect(res.status).toBe(200);
+    const chain = mockFrom.mock.results[0].value;
+    const inCall = (chain.in as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(inCall[1]).not.toContain('bad-id');
+    expect(inCall[1]).toContain(ID1);
+  });
+
+  it('returns 502 on DB error', async () => {
+    mockFrom.mockReturnValueOnce(mkChain(err('DB down')));
+    const res = await request(app).get(`/api/patients/names?ids=${ID1}`);
+    expect(res.status).toBe(502);
+  });
+});
