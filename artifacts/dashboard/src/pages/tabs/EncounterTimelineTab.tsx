@@ -43,7 +43,7 @@ export default function EncounterTimelineTab() {
     setActiveSection,
     referredBy, procedureData,
     setPatientName, setAge, setSex, setDob, setPhone, setPatientId, clearPatient,
-    setEncounterId, siteCode,
+    setEncounterId, currentSite: siteCode,
   } = useAppContext();
 
   // ── Patient search (shown when no patient loaded) ────────────────────────
