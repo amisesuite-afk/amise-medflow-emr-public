@@ -45,6 +45,51 @@ const err = (msg: string)   => ({ data: null, error: { message: msg } });
 
 beforeEach(() => vi.clearAllMocks());
 
+// ── POST /api/encounters ─────────────────────────────────────────────────────
+
+describe('POST /api/encounters', () => {
+  it('returns 400 when patientId is missing', async () => {
+    const res = await request(app).post('/api/encounters').send({});
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/patientId/i);
+  });
+
+  it('returns 400 for invalid encounterType', async () => {
+    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1', encounterType: 'walk-in' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/encounterType/i);
+  });
+
+  it('returns 400 for invalid site', async () => {
+    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1', site: 'miami' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/site/i);
+  });
+
+  it('creates an encounter with defaults and returns 201', async () => {
+    const created = { id: 'enc-new', status: 'open', encounter_type: 'outpatient', site: null, chief_complaint: null, created_at: '2026-07-31T10:00:00Z' };
+    mockFrom.mockReturnValueOnce(mkChain({ data: created, error: null }));
+    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1' });
+    expect(res.status).toBe(201);
+    expect(res.body.encounter.id).toBe('enc-new');
+    expect(res.body.encounter.status).toBe('open');
+  });
+
+  it('creates encounter with site and chiefComplaint', async () => {
+    const created = { id: 'enc-2', status: 'open', encounter_type: 'outpatient', site: 'tapion', chief_complaint: 'Chest pain', created_at: '2026-07-31T10:00:00Z' };
+    mockFrom.mockReturnValueOnce(mkChain({ data: created, error: null }));
+    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1', site: 'tapion', chiefComplaint: 'Chest pain' });
+    expect(res.status).toBe(201);
+    expect(res.body.encounter.site).toBe('tapion');
+  });
+
+  it('returns 502 on DB insert error', async () => {
+    mockFrom.mockReturnValueOnce(mkChain(err('insert failed')));
+    const res = await request(app).post('/api/encounters').send({ patientId: 'pat-1' });
+    expect(res.status).toBe(502);
+  });
+});
+
 // ── GET /api/encounters/patient/:patientId ─────────────────────────────────────
 
 describe('GET /api/encounters/patient/:patientId', () => {

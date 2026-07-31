@@ -44,6 +44,8 @@ import mmCasesRouter from "./mm-cases";
 import encountersRouter from "./encounters";
 import clinicalNotesRouter from "./clinical-notes";
 import patientsStaffRouter from "./patients-staff";
+import problemsRouter from "./problems";
+import notifyRouter from "./notify";
 
 const router: IRouter = Router();
 
@@ -92,5 +94,7 @@ router.use(mmCasesRouter);
 router.use(encountersRouter);
 router.use(clinicalNotesRouter);
 router.use(patientsStaffRouter);
+router.use(problemsRouter);
+router.use(notifyRouter);
 
 export default router;

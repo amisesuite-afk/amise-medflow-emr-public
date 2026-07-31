@@ -362,29 +362,29 @@ export async function saveNewPatient(
 export async function createEncounter(
   input: NewEncounterInput,
 ): Promise<{ encounter: SavedEncounter; error: null } | { encounter: null; error: string }> {
-  if (!supabase) return { encounter: null, error: notConfigured('createEncounter') };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const body: Record<string, unknown> = { patientId: input.patient_id };
+    if (input.chief_complaint?.trim()) body.chiefComplaint = input.chief_complaint.trim();
+    if (input.site) body.site = input.site;
 
-  const row: Record<string, unknown> = {
-    patient_id: input.patient_id,
-    status: 'open',
-    encounter_type: 'outpatient',
-  };
-
-  if (input.chief_complaint?.trim()) row.chief_complaint = input.chief_complaint.trim();
-  if (input.site) row.site = input.site;
-
-  const { data, error } = await supabase
-    .from('encounters')
-    .insert(row)
-    .select('id')
-    .single();
-
-  if (error) {
-    console.error('[db] createEncounter:', error);
-    return { encounter: null, error: error.message };
+    const res = await fetch(`${base}/api/encounters`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      return { encounter: null, error: txt };
+    }
+    const json = await res.json() as { encounter: SavedEncounter };
+    return { encounter: json.encounter, error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'createEncounter failed';
+    console.error('[db] createEncounter:', msg);
+    return { encounter: null, error: msg };
   }
-
-  return { encounter: data as SavedEncounter, error: null };
 }
 
 // ─── listPatients ─────────────────────────────────────────────────────────────
@@ -468,28 +468,22 @@ export async function listPatientsBySite(
 export async function loadPMH(
   patientId: string,
 ): Promise<{ conditions: string[]; error: string | null }> {
-  if (!supabase) return { conditions: [], error: notConfigured('loadPMH') };
-
-  const { data, error } = await supabase
-    .from('pmh_items')
-    .select('condition')
-    .eq('patient_id', patientId)
-    .eq('status', 'active');
-
-  if (error) {
-    // Table does not exist yet (PG code 42P01) — warn silently, return empty
-    if ((error as { code?: string }).code === '42P01') {
-      console.warn('[db] loadPMH: pmh_items table does not exist yet — skipping');
-      return { conditions: [], error: null };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const res = await fetch(`${base}/api/problems/${encodeURIComponent(patientId)}?status=active`, { headers });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      console.error('[db] loadPMH:', txt);
+      return { conditions: [], error: txt };
     }
-    console.error('[db] loadPMH:', error);
-    return { conditions: [], error: error.message };
+    const json = await res.json() as { problems: Array<{ condition: string }> };
+    return { conditions: (json.problems ?? []).map(p => p.condition), error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'loadPMH failed';
+    console.error('[db] loadPMH:', msg);
+    return { conditions: [], error: msg };
   }
-
-  return {
-    conditions: (data ?? []).map((r: { condition: string }) => r.condition),
-    error: null,
-  };
 }
 
 // ─── savePMHItem ──────────────────────────────────────────────────────────────

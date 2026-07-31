@@ -8,6 +8,57 @@ const VALID_STATUS = ['open', 'in_progress', 'closed', 'cancelled'];
 const VALID_TYPES  = ['outpatient', 'inpatient', 'emergency', 'procedure', 'telehealth'];
 const VALID_SITES  = ['rodney_bay', 'castries', 'tapion'];
 
+// POST /api/encounters
+router.post('/api/encounters', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const body = (req.body ?? {}) as Record<string, unknown>;
+
+  const patientId = (body.patientId as string)?.trim();
+  if (!patientId) { res.status(400).json({ error: 'patientId is required' }); return; }
+
+  const encounterType = (body.encounterType as string) ?? 'outpatient';
+  if (!VALID_TYPES.includes(encounterType)) {
+    res.status(400).json({ error: `encounterType must be one of: ${VALID_TYPES.join(', ')}` }); return;
+  }
+  const site = body.site as string | undefined;
+  if (site && !VALID_SITES.includes(site)) {
+    res.status(400).json({ error: `site must be one of: ${VALID_SITES.join(', ')}` }); return;
+  }
+
+  try {
+    const supa = getSupabaseAdmin();
+    const staffId = await getStaffUserId(req);
+
+    const row: Record<string, unknown> = {
+      patient_id:     patientId,
+      status:         'open',
+      encounter_type: encounterType,
+      created_by:     staffId ?? null,
+    };
+    if ((body.chiefComplaint as string)?.trim()) row.chief_complaint = (body.chiefComplaint as string).trim();
+    if (site) row.site = site;
+
+    const { data, error } = await supa
+      .from('encounters')
+      .insert(row)
+      .select('id, status, encounter_type, site, chief_complaint, created_at')
+      .single();
+
+    if (error) throw error;
+
+    await audit({
+      action: 'change_request', entityType: 'encounter', entityId: data.id,
+      payload: { patientId, encounterType, site: site ?? null },
+    });
+
+    logger.info({ id: data.id, patientId, encounterType }, '[encounters/create] created');
+    res.status(201).json({ encounter: data });
+  } catch (err) {
+    logger.error({ err }, '[encounters/create] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
 // GET /api/encounters/patient/:patientId
 router.get('/api/encounters/patient/:patientId', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;

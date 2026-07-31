@@ -1,0 +1,17 @@
+-- ── Slices P, Q, R, S — API routes only ─────────────────────────────────────
+-- No schema changes required for these slices.
+--
+-- All routes use existing tables:
+--   encounters            (supabase-schema.sql)          — Slice P: POST /api/encounters
+--   pmh_items             (supabase-missing-tables-migration.sql) — Slice Q: GET/POST/PATCH /api/problems
+--   investigation_results (supabase-schema.sql)          — Slice R: GET /api/investigations/*
+--   imaging_orders        (supabase-schema.sql)          — Slice R: GET /api/investigations/*
+--   patients              (supabase-schema.sql)          — Slice S: POST /api/notify/:patientId
+--
+-- The pmh_items table was created in supabase-missing-tables-migration.sql with
+-- the correct UNIQUE constraint on (patient_id, condition), enabling the upsert
+-- pattern used by POST /api/problems.
+--
+-- Run this only if you want to record the slice boundary in your SQL history.
+-- It is a no-op.
+SELECT 1 AS slice_pqrs_no_schema_changes_required;
