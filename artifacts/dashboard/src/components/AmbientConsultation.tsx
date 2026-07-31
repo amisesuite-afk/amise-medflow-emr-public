@@ -495,6 +495,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   // History-phase collapsible section accordion
   const [openSec, setOpenSec] = useState<string | null>('cc');
   const toggleSec = (id: string) => setOpenSec(s => s === id ? null : id);
+  const [extraCcKeys, setExtraCcKeys] = useState<string[]>([]);
   const [pendingMed, setPendingMed] = useState<{ name: string; dose: string } | null>(null);
   const SEC_ORDER = ['cc', 'pmh', 'surgical', 'medications', 'allergies'] as const;
   const advanceSec = (current: string) => {
@@ -1342,16 +1343,35 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               icon="🩺" label="Chief Complaint"
               isOpen={openSec === 'cc'} onToggle={() => toggleSec('cc')}
               hasData={!!activeCcKey}
-              summaryText={activeCcKey ? (CC_ITEMS.find(c => c.id === activeCcKey)?.label ?? '') : 'Tap to select'}
+              summaryText={(() => {
+                const allSelected = [activeCcKey, ...extraCcKeys].filter(Boolean) as string[];
+                if (allSelected.length === 0) return 'Tap to select';
+                return allSelected.map(k => CC_ITEMS.find(c => c.id === k)?.label ?? k).join(', ');
+              })()}
             >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {CC_ITEMS.map(cc => {
-                  const on = activeCcKey === cc.id;
+                  const isPrimary = activeCcKey === cc.id;
+                  const isExtra   = extraCcKeys.includes(cc.id);
+                  const on = isPrimary || isExtra;
                   return (
                     <button key={cc.id} type="button" style={chipBtn(on)} onClick={() => {
-                      setActiveCcKey(on ? null : cc.id);
-                      if (!on && !hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
-                      if (!on) advanceSec('cc');
+                      if (isPrimary) {
+                        // Deselect primary — promote first extra to primary if any
+                        const [next, ...rest] = extraCcKeys;
+                        setActiveCcKey(next ?? null);
+                        setExtraCcKeys(rest);
+                      } else if (isExtra) {
+                        setExtraCcKeys(extraCcKeys.filter(k => k !== cc.id));
+                      } else if (!activeCcKey) {
+                        // No primary yet — set as primary and auto-advance
+                        setActiveCcKey(cc.id);
+                        if (!hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
+                        advanceSec('cc');
+                      } else {
+                        // Primary already set — add as extra, stay open for more
+                        setExtraCcKeys([...extraCcKeys, cc.id]);
+                      }
                     }}>{cc.label}</button>
                   );
                 })}
