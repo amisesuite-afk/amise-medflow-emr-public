@@ -227,12 +227,14 @@ function HistoryFieldRow({
   icon, label, isOpen, onToggle,
   summaryText, hasData,
   noneLabel, onNone,
+  onAdvance,
   isLast,
   children,
 }: {
   icon: string; label: string; isOpen: boolean; onToggle: () => void;
   summaryText: string; hasData: boolean;
   noneLabel?: string; onNone?: () => void;
+  onAdvance?: () => void;
   isLast?: boolean;
   children: React.ReactNode;
 }) {
@@ -265,7 +267,7 @@ function HistoryFieldRow({
         {!isOpen && !hasData && noneLabel && onNone && (
           <span
             role="button"
-            onClick={e => { e.stopPropagation(); onNone(); }}
+            onClick={e => { e.stopPropagation(); onNone(); onAdvance?.(); }}
             style={{
               fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 9,
               border: '1px solid var(--line)', background: 'transparent',
@@ -297,6 +299,15 @@ function HistoryFieldRow({
           background: 'rgba(0,180,160,0.02)',
         }}>
           {children}
+          {onAdvance && (
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button type="button" onClick={onAdvance} style={{
+                fontSize: 11, fontWeight: 700, padding: '4px 13px', borderRadius: 9,
+                border: '1px solid rgba(0,180,160,0.4)', background: 'rgba(0,180,160,0.08)',
+                color: 'var(--accent)', cursor: 'pointer',
+              }}>Next ›</button>
+            </div>
+          )}
         </div>
       )}
 
@@ -458,6 +469,11 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   // History-phase collapsible section accordion
   const [openSec, setOpenSec] = useState<string | null>('cc');
   const toggleSec = (id: string) => setOpenSec(s => s === id ? null : id);
+  const SEC_ORDER = ['cc', 'pmh', 'surgical', 'medications', 'allergies'] as const;
+  const advanceSec = (current: string) => {
+    const idx = SEC_ORDER.indexOf(current as typeof SEC_ORDER[number]);
+    setOpenSec(idx >= 0 && idx < SEC_ORDER.length - 1 ? SEC_ORDER[idx + 1] : null);
+  };
   // Quick exam: which system is expanded + CC-specific extra systems (Perianal, Breast, etc.)
   const [openExamSys, setOpenExamSys] = useState<string | null>(null);
   const [extraExams, setExtraExams] = useState<Record<string, string>>({});
@@ -1271,7 +1287,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                     <button key={cc.id} type="button" style={chipBtn(on)} onClick={() => {
                       setActiveCcKey(on ? null : cc.id);
                       if (!on && !hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
-                      if (!on) setOpenSec(null);
+                      if (!on) advanceSec('cc');
                     }}>{cc.label}</button>
                   );
                 })}
@@ -1291,13 +1307,14 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               }
               noneLabel="No PMH"
               onNone={() => { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); }}
+              onAdvance={() => advanceSec('pmh')}
             >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 <button type="button"
                   style={{ ...chipBtn(pmhNotes.includes('NKPMH')), fontSize: 11, padding: '3px 9px' }}
                   onClick={() => {
                     if (pmhNotes.includes('NKPMH')) { setPmhNotes(''); }
-                    else { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); }
+                    else { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); advanceSec('pmh'); }
                   }}>
                   No PMH
                 </button>
@@ -1329,13 +1346,17 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               }
               noneLabel="No surgery"
               onNone={() => setSurgicalHistory(['No prior surgery'])}
+              onAdvance={() => advanceSec('surgical')}
             >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                 {['No prior surgery', ...COMMON_SURGERY].map(s => {
                   const on = surgicalHistory.includes(s);
                   return (
                     <button key={s} type="button"
-                      onClick={() => setSurgicalHistory(on ? surgicalHistory.filter(x => x !== s) : [...surgicalHistory, s])}
+                      onClick={() => {
+                        setSurgicalHistory(on ? surgicalHistory.filter(x => x !== s) : [...surgicalHistory, s]);
+                        if (s === 'No prior surgery' && !on) advanceSec('surgical');
+                      }}
                       style={chipBtn(on)}>
                       {on ? '✓ ' : ''}{s}
                     </button>
@@ -1360,10 +1381,14 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               }
               noneLabel="None"
               onNone={() => { setMedications(['None']); setMedicationsText(''); }}
+              onAdvance={() => advanceSec('medications')}
             >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
                 <button type="button"
-                  onClick={() => { setMedications(medications.includes('None') ? [] : ['None']); if (!medications.includes('None')) setMedicationsText(''); }}
+                  onClick={() => {
+                    if (medications.includes('None')) { setMedications([]); }
+                    else { setMedications(['None']); setMedicationsText(''); advanceSec('medications'); }
+                  }}
                   style={chipBtn(medications.includes('None'))}>
                   {medications.includes('None') ? '✓ ' : ''}None
                 </button>
@@ -1402,12 +1427,15 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               hasData={!!allergyText.trim()}
               summaryText={allergyText || 'NKDA'}
               noneLabel="NKDA"
-              onNone={() => setAllergies('NKDA')}
+              onNone={() => { setAllergies('NKDA'); setOpenSec(null); }}
               isLast
             >
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
                 <button type="button"
-                  onClick={() => setAllergies(allergyText === 'NKDA' ? '' : 'NKDA')}
+                  onClick={() => {
+                    if (allergyText === 'NKDA') { setAllergies(''); }
+                    else { setAllergies('NKDA'); setOpenSec(null); }
+                  }}
                   style={chipBtn(allergyText === 'NKDA')}>
                   {allergyText === 'NKDA' ? '✓ ' : ''}NKDA
                 </button>
