@@ -47,7 +47,7 @@ router.post('/api/encounters', async (req, res) => {
     if (error) throw error;
 
     await audit({
-      action: 'change_request', entityType: 'encounter', entityId: data.id,
+      action: 'create', entityType: 'encounter', entityId: data.id,
       payload: { patientId, encounterType, site: site ?? null },
     });
 

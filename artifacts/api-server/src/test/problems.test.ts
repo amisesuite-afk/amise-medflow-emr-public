@@ -140,6 +140,38 @@ describe('POST /api/problems', () => {
   });
 });
 
+// ── PATCH /api/problems/resolve-condition ────────────────────────────────────
+
+describe('PATCH /api/problems/resolve-condition', () => {
+  it('returns 400 when patientId missing', async () => {
+    const res = await request(app).patch('/api/problems/resolve-condition').send({ condition: 'HTN' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/patientId/i);
+  });
+
+  it('returns 400 when condition missing', async () => {
+    const res = await request(app).patch('/api/problems/resolve-condition').send({ patientId: 'pat-1' });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/condition/i);
+  });
+
+  it('returns 404 when problem not found', async () => {
+    mockFrom.mockReturnValueOnce(mkChain(ok(null)));
+    const res = await request(app).patch('/api/problems/resolve-condition').send({ patientId: 'pat-1', condition: 'HTN' });
+    expect(res.status).toBe(404);
+  });
+
+  it('resolves condition and returns id + status', async () => {
+    mockFrom
+      .mockReturnValueOnce(mkChain(ok({ id: 'prob-1' })))
+      .mockReturnValueOnce(mkChain(ok(null)));
+    const res = await request(app).patch('/api/problems/resolve-condition').send({ patientId: 'pat-1', condition: 'HTN' });
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe('prob-1');
+    expect(res.body.status).toBe('resolved');
+  });
+});
+
 // ── PATCH /api/problems/:id ───────────────────────────────────────────────────
 
 describe('PATCH /api/problems/:id', () => {
@@ -147,6 +179,11 @@ describe('PATCH /api/problems/:id', () => {
     const res = await request(app).patch('/api/problems/prob-1').send({ status: 'deleted' });
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/status/i);
+  });
+
+  it('returns 400 for empty body', async () => {
+    const res = await request(app).patch('/api/problems/prob-1').send({});
+    expect(res.status).toBe(400);
   });
 
   it('returns 404 when problem not found', async () => {

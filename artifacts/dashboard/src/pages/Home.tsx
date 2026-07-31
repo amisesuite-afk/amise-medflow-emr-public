@@ -280,7 +280,7 @@ export default function HomePage() {
   const {
     activeSection, setActiveSection,
     topSection, setTopSection,
-    patientName, age, sex,
+    patientName, phone, age, sex,
     comorbidities,
     triageResult,
     currentSite, setCurrentSite,
@@ -332,6 +332,11 @@ export default function HomePage() {
   const [ambientMode, setAmbientMode] = useState(true);
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
+  const [notifyOpen, setNotifyOpen] = useState(false);
+  const [notifyTemplate, setNotifyTemplate] = useState<'appointment_reminder' | 'result_ready' | 'postop_checkin' | 'general'>('result_ready');
+  const [notifyData, setNotifyData] = useState({ day: '', date: '', time: '', location: 'Rodney Bay', message: '' });
+  const [notifyBusy, setNotifyBusy] = useState(false);
+  const [notifyStatus, setNotifyStatus] = useState<{ ok: boolean; msg: string } | null>(null);
   const prevPatientIdRef = useRef<string | null>(null);
   const acuityRef = useRef<HTMLDivElement>(null);
   const contextPanelRef = useRef<HTMLDivElement>(null);
@@ -604,6 +609,35 @@ export default function HomePage() {
     setActiveSection(s);
     if (topSection === 'consultation') setZenMode(true);
   }, [topSection, setActiveSection]);
+
+  async function sendPatientNotification() {
+    if (!patientId || notifyBusy) return;
+    setNotifyBusy(true);
+    setNotifyStatus(null);
+    try {
+      const headers = await staffAuthHeaders();
+      const body: Record<string, unknown> = { template: notifyTemplate };
+      if (notifyTemplate === 'appointment_reminder') {
+        body.data = { day: notifyData.day, date: notifyData.date, time: notifyData.time, location: notifyData.location };
+      } else if (notifyTemplate === 'general') {
+        body.data = { message: notifyData.message };
+      }
+      const res = await fetch(`${API_ORIGIN}/api/notify/${patientId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify(body),
+      });
+      const json = await res.json() as { action?: string; error?: string };
+      if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
+      const label = json.action === 'skipped' ? 'Message queued (dry-run mode)' : 'Message sent';
+      setNotifyStatus({ ok: true, msg: label });
+      setTimeout(() => { setNotifyOpen(false); setNotifyStatus(null); }, 1800);
+    } catch (e) {
+      setNotifyStatus({ ok: false, msg: e instanceof Error ? e.message : 'Send failed' });
+    } finally {
+      setNotifyBusy(false);
+    }
+  }
 
   const patientLabel = patientName.trim() || 'No patient loaded';
   const metaParts: string[] = [];
@@ -1134,13 +1168,32 @@ export default function HomePage() {
                 ) : null;
               })()}
 
+              {/* Notify patient button */}
+              {patientId && phone && (
+                <button
+                  type="button"
+                  onClick={() => { setNotifyOpen(true); setNotifyStatus(null); }}
+                  title="Send patient notification (SMS/WhatsApp)"
+                  style={{
+                    marginLeft: 'auto', padding: '2px 10px', borderRadius: 5, border: 'none',
+                    cursor: 'pointer', fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
+                    flexShrink: 0, whiteSpace: 'nowrap',
+                    background: '#0f3460', color: '#93c5fd',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  ✉ Notify
+                </button>
+              )}
+
               {/* Guided mode toggle */}
               <button
                 type="button"
                 onClick={() => setGuidedMode(g => !g)}
                 title={guidedMode ? 'Exit guided mode — show all sections' : 'Enter guided mode — one step at a time'}
                 style={{
-                  marginLeft: 'auto', padding: '2px 10px', borderRadius: 5, border: 'none',
+                  marginLeft: patientId && phone ? undefined : 'auto',
+                  padding: '2px 10px', borderRadius: 5, border: 'none',
                   cursor: 'pointer', fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
                   flexShrink: 0, whiteSpace: 'nowrap',
                   background: guidedMode ? '#0d9488' : '#1e293b',
@@ -1598,6 +1651,145 @@ export default function HomePage() {
               <AiConsultantTab />
             </ErrorBoundary>
           </Suspense>
+        </div>
+      )}
+
+      {/* ── Patient notify modal ─────────────────────────────────────────────── */}
+      {notifyOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Send patient notification"
+          style={{
+            position: 'fixed', inset: 0, zIndex: 2000,
+            background: 'rgba(0,0,0,0.55)', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', padding: 16,
+          }}
+          onClick={e => { if (e.target === e.currentTarget) setNotifyOpen(false); }}
+        >
+          <div style={{
+            background: 'var(--bg, #0f172a)', border: '1px solid var(--line, #1e293b)',
+            borderRadius: 12, padding: '20px 22px', width: '100%', maxWidth: 440,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+          }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink, #f1f5f9)' }}>
+                ✉ Notify {patientName ? patientName.split(' ')[0] : 'Patient'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setNotifyOpen(false)}
+                style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 16, color: '#64748b', lineHeight: 1 }}
+              >✕</button>
+            </div>
+
+            {/* Template picker */}
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+              {([
+                { id: 'result_ready',        label: 'Result ready' },
+                { id: 'postop_checkin',      label: 'Post-op check-in' },
+                { id: 'appointment_reminder',label: 'Appointment reminder' },
+                { id: 'general',             label: 'Custom message' },
+              ] as const).map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setNotifyTemplate(t.id)}
+                  style={{
+                    padding: '4px 11px', borderRadius: 20, fontSize: 11, fontWeight: 700,
+                    border: `1px solid ${notifyTemplate === t.id ? '#3b82f6' : '#334155'}`,
+                    background: notifyTemplate === t.id ? '#1d4ed8' : 'transparent',
+                    color: notifyTemplate === t.id ? '#fff' : '#94a3b8',
+                    cursor: 'pointer', transition: 'all 0.12s',
+                  }}
+                >{t.label}</button>
+              ))}
+            </div>
+
+            {/* Conditional fields */}
+            {notifyTemplate === 'appointment_reminder' && (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+                {(['day', 'date', 'time', 'location'] as const).map(field => (
+                  <label key={field} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{field}</span>
+                    <input
+                      type="text"
+                      value={notifyData[field]}
+                      placeholder={field === 'day' ? 'e.g. Tuesday' : field === 'date' ? 'e.g. 5 Aug 2026' : field === 'time' ? 'e.g. 10:00 AM' : 'e.g. Rodney Bay'}
+                      onChange={e => setNotifyData(d => ({ ...d, [field]: e.target.value }))}
+                      style={{
+                        padding: '6px 8px', borderRadius: 6, fontSize: 12,
+                        border: '1px solid #334155', background: '#1e293b', color: '#f1f5f9',
+                        outline: 'none',
+                      }}
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
+
+            {notifyTemplate === 'general' && (
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Message</span>
+                  <textarea
+                    value={notifyData.message}
+                    onChange={e => setNotifyData(d => ({ ...d, message: e.target.value }))}
+                    rows={3}
+                    placeholder="Type the message to send to the patient…"
+                    style={{
+                      padding: '6px 8px', borderRadius: 6, fontSize: 12, resize: 'vertical',
+                      border: '1px solid #334155', background: '#1e293b', color: '#f1f5f9',
+                      outline: 'none', fontFamily: 'inherit',
+                    }}
+                  />
+                </label>
+              </div>
+            )}
+
+            {(notifyTemplate === 'result_ready' || notifyTemplate === 'postop_checkin') && (
+              <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12, lineHeight: 1.5 }}>
+                A pre-written message will be sent to the patient's phone on file.
+              </p>
+            )}
+
+            {/* Status feedback */}
+            {notifyStatus && (
+              <div style={{
+                padding: '7px 11px', borderRadius: 6, fontSize: 12, fontWeight: 600,
+                marginBottom: 12,
+                background: notifyStatus.ok ? '#052e16' : '#450a0a',
+                color: notifyStatus.ok ? '#4ade80' : '#f87171',
+                border: `1px solid ${notifyStatus.ok ? '#166534' : '#991b1b'}`,
+              }}>
+                {notifyStatus.ok ? '✓ ' : '✕ '}{notifyStatus.msg}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setNotifyOpen(false)}
+                style={{
+                  padding: '7px 16px', borderRadius: 7, fontSize: 12, fontWeight: 700,
+                  border: '1px solid #334155', background: 'transparent', color: '#94a3b8', cursor: 'pointer',
+                }}
+              >Cancel</button>
+              <button
+                type="button"
+                onClick={sendPatientNotification}
+                disabled={notifyBusy}
+                style={{
+                  padding: '7px 16px', borderRadius: 7, fontSize: 12, fontWeight: 700,
+                  border: 'none', background: notifyBusy ? '#1e3a8a' : '#1d4ed8',
+                  color: notifyBusy ? '#93c5fd' : '#fff', cursor: notifyBusy ? 'default' : 'pointer',
+                  transition: 'all 0.15s',
+                }}
+              >{notifyBusy ? 'Sending…' : 'Send SMS'}</button>
+            </div>
+          </div>
         </div>
       )}
 

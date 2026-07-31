@@ -8,6 +8,7 @@ const mockSendSms = vi.fn();
 vi.mock('../lib/supabase.js', () => ({
   getSupabaseAdmin: () => ({ from: mockFrom }),
   requireStaffAuth: vi.fn().mockResolvedValue(true),
+  audit:            vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('../lib/sms.js', () => ({

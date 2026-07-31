@@ -498,48 +498,55 @@ export async function savePMHItem(
   encounterId: string | null,
   condition: string,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('savePMHItem') };
-
-  const row: Record<string, unknown> = {
-    patient_id: patientId,
-    condition,
-    status: 'active',
-  };
-  if (encounterId) row.encounter_id = encounterId;
-
-  const { error } = await supabase
-    .from('pmh_items')
-    .upsert(row, { onConflict: 'patient_id,condition' });
-
-  if (error) {
-    console.error('[db] savePMHItem:', error);
-    return { error: error.message };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const body: Record<string, unknown> = { patientId, condition };
+    if (encounterId) body.encounterId = encounterId;
+    const res = await fetch(`${base}/api/problems`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      console.error('[db] savePMHItem:', txt);
+      return { error: txt };
+    }
+    return { error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'savePMHItem failed';
+    console.error('[db] savePMHItem:', msg);
+    return { error: msg };
   }
-
-  return { error: null };
 }
 
 // ─── removePMHItem ────────────────────────────────────────────────────────────
 
-/** Soft-delete: sets status = 'resolved'. Does not delete the row. */
+/** Soft-delete: sets status = 'resolved' via API. Does not delete the row. */
 export async function removePMHItem(
   patientId: string,
   condition: string,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('removePMHItem') };
-
-  const { error } = await supabase
-    .from('pmh_items')
-    .update({ status: 'resolved' })
-    .eq('patient_id', patientId)
-    .eq('condition', condition);
-
-  if (error) {
-    console.error('[db] removePMHItem:', error);
-    return { error: error.message };
+  try {
+    const base = getApiOrigin();
+    const headers = await staffAuthHeaders();
+    const res = await fetch(`${base}/api/problems/resolve-condition`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...headers },
+      body: JSON.stringify({ patientId, condition }),
+    });
+    if (!res.ok) {
+      const txt = await res.text().catch(() => `HTTP ${res.status}`);
+      console.error('[db] removePMHItem:', txt);
+      return { error: txt };
+    }
+    return { error: null };
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : 'removePMHItem failed';
+    console.error('[db] removePMHItem:', msg);
+    return { error: msg };
   }
-
-  return { error: null };
 }
 
 // ─── savePmhNotes ─────────────────────────────────────────────────────────────
