@@ -196,6 +196,26 @@ function SourceBadge({ source }: { source?: string }) {
   );
 }
 
+const ACUITY_CFG: Record<string, { label: string; bg: string; color: string; border: string }> = {
+  urgent:   { label: 'URGENT',   bg: '#fef2f2', color: '#dc2626', border: '#fecaca' },
+  priority: { label: 'PRIORITY', bg: '#fff7ed', color: '#c2410c', border: '#fed7aa' },
+  routine:  { label: 'ROUTINE',  bg: '#f3f4f6', color: '#6b7280', border: '#e5e7eb' },
+};
+
+function AcuityChip({ acuity, score }: { acuity: string; score?: number }) {
+  const cfg = ACUITY_CFG[acuity] ?? { label: acuity.toUpperCase(), bg: '#f3f4f6', color: '#6b7280', border: '#e5e7eb' };
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      padding: '1px 7px', borderRadius: 99,
+      fontSize: 10, fontWeight: 700, letterSpacing: 0.3,
+      background: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}`,
+    }}>
+      {cfg.label}{score !== undefined ? <span style={{ opacity: 0.7, marginLeft: 3 }}>· {score}</span> : null}
+    </span>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 type InboxView = 'bookings' | 'consult_requests' | 'today_queue';
@@ -916,9 +936,15 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
                     <StatusBadge status={req.status} />
                   </div>
 
-                  {/* Row 2: Appt type + source + prep chip */}
+                  {/* Row 2: Appt type + acuity + source + prep chip */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
                     <span style={{ fontSize: 12, color: '#374151' }}>{apptLabel(resolveApptType(req))}</span>
+                    {resolveTriageAcuity(req) && (
+                      <AcuityChip
+                        acuity={resolveTriageAcuity(req)!}
+                        score={req.triage_score ?? undefined}
+                      />
+                    )}
                     <SourceBadge source={req.source} />
                     {requiresPrep(resolveApptType(req)) && (
                       <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: '#fff7ed', color: '#c2410c', border: '1px solid #fed7aa' }}>
