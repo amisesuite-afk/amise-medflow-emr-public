@@ -193,6 +193,7 @@ router.patch('/api/referrals/:id', async (req, res) => {
 
     logger.info({ id, status }, '[referrals/patch] updated');
 
+    // Workflow task lifecycle for referrals
     if (status === 'sent' && existing.status !== 'sent') {
       const recipient = (existing as { referral_to?: string; referral_type?: string }).referral_to
         ?? (existing as { referral_type?: string }).referral_type
