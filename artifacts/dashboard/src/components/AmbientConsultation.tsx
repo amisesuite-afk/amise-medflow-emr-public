@@ -125,6 +125,45 @@ const COMMON_MEDICATIONS = [
   'PPI / omeprazole', 'NSAIDs', 'Prednisolone', 'Methotrexate', 'Azathioprine',
 ];
 
+// ── Examination: default normal text per system ───────────────────────────────
+const EXAM_NORMALS: Record<string, string> = {
+  General:     'Alert and oriented, no acute distress. Well-nourished. Comfortable at rest. No pallor, jaundice or cyanosis.',
+  Abdomen:     'Soft, non-tender, non-distended. No guarding or rigidity. Bowel sounds present. No organomegaly or palpable masses.',
+  CVS:         'Regular rate and rhythm. S1 S2 heard, no murmurs, rubs or gallops. Peripheral pulses full and equal bilaterally.',
+  Resp:        'Clear to auscultation bilaterally. Good air entry throughout. No wheeze, crackles or rhonchi.',
+  Extremities: 'No peripheral oedema. No calf tenderness. Peripheral pulses intact distally.',
+  Wound:       'Clean, dry and intact. No erythema, discharge or dehiscence. Healing well.',
+  Perianal:    'No external haemorrhoids or fissure. DRE: No mass, normal sphincter tone. No blood on glove.',
+  Breast:      'No skin changes or nipple abnormality. No discrete lump on palpation. No axillary lymphadenopathy.',
+  Neck:        'No goitre or palpable thyroid mass. Trachea midline. No cervical lymphadenopathy.',
+  Hernia:      'No inguinal, femoral or umbilical hernia palpable. Hernial orifices intact. Cough impulse absent.',
+};
+
+// ── CC → recommended exam systems ─────────────────────────────────────────────
+const CC_EXAM_MAP: Record<string, string[]> = {
+  abd_pain:     ['General', 'Abdomen', 'CVS', 'Resp'],
+  hernia:       ['General', 'Abdomen', 'Hernia', 'CVS'],
+  breast:       ['General', 'Breast', 'CVS'],
+  reflux:       ['General', 'Abdomen', 'CVS'],
+  bowel:        ['General', 'Abdomen', 'Perianal', 'CVS'],
+  rectal_bleed: ['General', 'Abdomen', 'Perianal'],
+  weight_loss:  ['General', 'Abdomen', 'CVS', 'Resp'],
+  jaundice:     ['General', 'Abdomen', 'CVS', 'Resp'],
+  wound:        ['General', 'Wound', 'Extremities'],
+  neck_lump:    ['General', 'Neck', 'CVS'],
+  dysphagia:    ['General', 'Abdomen', 'Neck', 'CVS'],
+  bloating:     ['General', 'Abdomen', 'CVS'],
+  skin:         ['General', 'Wound'],
+  anal:         ['General', 'Abdomen', 'Perianal'],
+  nausea:       ['General', 'Abdomen', 'CVS'],
+  followup:     ['General', 'Abdomen'],
+  screening:    ['General', 'Abdomen', 'CVS', 'Resp', 'Breast'],
+  ercp:         ['General', 'Abdomen', 'CVS', 'Resp'],
+  other:        ['General', 'Abdomen', 'CVS'],
+};
+
+const ALL_STD_EXAM = ['General', 'Abdomen', 'CVS', 'Resp', 'Extremities', 'Wound'];
+
 const COMMON_LABS = [
   'FBC', 'U&E', 'LFT', 'CRP', 'Coags', 'Lipase', 'Amylase',
   'GXM', 'HbA1c', 'TSH', 'Blood cultures', 'CA-125', 'CEA',
@@ -268,6 +307,114 @@ function HistoryFieldRow({
   );
 }
 
+// ── Smart exam system row ──────────────────────────────────────────────────────
+function ExamRow({
+  name, value, onChange, isRelevant, normalText, isOpen, onToggle,
+}: {
+  name: string; value: string; onChange: (v: string) => void;
+  isRelevant: boolean; normalText: string; isOpen: boolean; onToggle: () => void;
+}) {
+  const filled  = !!value.trim() && value !== 'Not done';
+  const notDone = value === 'Not done';
+  return (
+    <div style={{
+      borderRadius: 8,
+      border: `1px solid ${filled ? 'rgba(0,180,160,0.4)' : isRelevant ? 'rgba(0,180,160,0.22)' : 'var(--line)'}`,
+      background: 'var(--card)', overflow: 'hidden', transition: 'border-color 0.15s',
+    }}>
+      <button type="button" onClick={onToggle}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 7, width: '100%',
+          padding: '8px 12px', background: 'none', border: 'none',
+          cursor: 'pointer', textAlign: 'left' as const,
+        }}>
+        <span style={{
+          width: 7, height: 7, borderRadius: '50%', flexShrink: 0, display: 'inline-block',
+          background: filled ? 'var(--accent)' : notDone ? 'var(--faint)' : isRelevant ? 'rgba(0,180,160,0.35)' : 'transparent',
+          border: (filled || notDone) ? 'none' : `1.5px solid ${isRelevant ? 'rgba(0,180,160,0.55)' : 'var(--line)'}`,
+        }} />
+        <span style={{
+          fontSize: 10, fontWeight: 800, letterSpacing: '0.07em', textTransform: 'uppercase' as const,
+          color: filled ? 'var(--accent)' : isRelevant ? 'var(--accent)' : 'var(--muted)',
+          flexShrink: 0, minWidth: 80, transition: 'color 0.15s',
+        }}>{name}</span>
+        {!isOpen && (
+          filled ? (
+            <span style={{ fontSize: 12, color: 'var(--ink)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' as const }}>
+              {value.length > 65 ? value.slice(0, 65) + '…' : value}
+            </span>
+          ) : notDone ? (
+            <span style={{ fontSize: 11, color: 'var(--faint)', fontStyle: 'italic', flex: 1, textAlign: 'left' as const }}>Not done</span>
+          ) : isRelevant ? (
+            <span style={{ fontSize: 11, color: 'rgba(0,180,160,0.75)', flex: 1, textAlign: 'left' as const }}>tap to examine ›</span>
+          ) : (
+            <span style={{ fontSize: 11, color: 'var(--faint)', flex: 1, textAlign: 'left' as const }}>—</span>
+          )
+        )}
+        {!filled && !notDone && (
+          <span role="button"
+            onClick={e => { e.stopPropagation(); onChange(normalText); }}
+            style={{
+              fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 9,
+              border: '1px solid rgba(0,180,160,0.4)', background: 'rgba(0,180,160,0.07)',
+              color: 'var(--accent)', cursor: 'pointer', flexShrink: 0,
+              whiteSpace: 'nowrap' as const, userSelect: 'none' as const,
+            }}>Normal</span>
+        )}
+        {filled && !isOpen && (
+          <span role="button"
+            onClick={e => { e.stopPropagation(); onChange(''); }}
+            style={{
+              fontSize: 11, padding: '1px 5px', borderRadius: 9,
+              border: '1px solid var(--line)', background: 'transparent',
+              color: 'var(--faint)', cursor: 'pointer', flexShrink: 0,
+              userSelect: 'none' as const,
+            }}>✕</span>
+        )}
+        <span style={{
+          color: 'var(--muted)', fontSize: 11, flexShrink: 0, lineHeight: 1,
+          display: 'inline-block',
+          transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s',
+        }}>▾</span>
+      </button>
+
+      {isOpen && (
+        <div style={{ borderTop: '1px solid var(--line)', padding: '8px 12px 10px', background: 'rgba(0,180,160,0.02)' }}>
+          <div style={{ display: 'flex', gap: 5, marginBottom: 7, flexWrap: 'wrap' as const }}>
+            <button type="button" onClick={() => onChange(normalText)}
+              style={{
+                fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 8,
+                border: '1px solid rgba(0,180,160,0.4)', background: 'rgba(0,180,160,0.08)',
+                color: 'var(--accent)', cursor: 'pointer',
+              }}>✓ Normal</button>
+            <button type="button" onClick={() => { onChange('Not done'); onToggle(); }}
+              style={{
+                fontSize: 10, fontWeight: 600, padding: '3px 10px', borderRadius: 8,
+                border: '1px solid var(--line)', background: 'transparent',
+                color: 'var(--muted)', cursor: 'pointer',
+              }}>Not done</button>
+            {value && (
+              <button type="button" onClick={() => onChange('')}
+                style={{
+                  fontSize: 10, padding: '3px 8px', borderRadius: 8, marginLeft: 'auto',
+                  border: '1px solid var(--line)', background: 'transparent',
+                  color: 'var(--faint)', cursor: 'pointer',
+                }}>Clear</button>
+            )}
+          </div>
+          <textarea
+            value={value === 'Not done' ? '' : value}
+            onChange={e => onChange(e.target.value)}
+            placeholder={`${name} — tap Normal above, or type findings…`}
+            style={{ ...drawerTextarea, minHeight: 56 }}
+            rows={3}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Props ──────────────────────────────────────────────────────────────────────
 interface Props {
   visitType?: string;
@@ -311,6 +458,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   // History-phase collapsible section accordion
   const [openSec, setOpenSec] = useState<string | null>('cc');
   const toggleSec = (id: string) => setOpenSec(s => s === id ? null : id);
+  // Quick exam: which system is expanded + CC-specific extra systems (Perianal, Breast, etc.)
+  const [openExamSys, setOpenExamSys] = useState<string | null>(null);
+  const [extraExams, setExtraExams] = useState<Record<string, string>>({});
 
   // Wrap phase change to keep sidebar rail in sync
   function changePhase(phase: ConsultPhase) {
@@ -878,32 +1028,91 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         </div>
       )}
 
-      {activeDrawer === 'examination' && (
-        <div style={drawerStyle}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={sectionLabel}>Quick Examination Notes</span>
-            <button type="button" onClick={enterExam}
-              style={{ fontSize: 11, color: '#0d9488', border: '1px solid rgba(13,148,136,0.3)',
-                background: 'rgba(13,148,136,0.06)', padding: '3px 9px', borderRadius: 5, cursor: 'pointer', fontWeight: 600 }}>
-              Full Exam phase →
-            </button>
-          </div>
-          {([
-            ['General', examGeneral, setExamGeneral],
-            ['Abdomen', examAbdomen, setExamAbdomen],
-            ['CVS', examCardio, setExamCardio],
-            ['Resp', examResp, setExamResp],
-            ['Extremities', examExtremities, setExamExtremities],
-            ['Wound', examWound, setExamWound],
-          ] as [string, string, (v: string) => void][]).map(([label, value, setter]) => (
-            <div key={label}>
-              <div style={{ ...sectionLabel, marginBottom: 3 }}>{label}</div>
-              <textarea value={value} onChange={e => setter(e.target.value)}
-                placeholder={`${label}…`} rows={2} style={drawerTextarea} />
+      {activeDrawer === 'examination' && (() => {
+        const ccPlan = activeCcKey ? (CC_EXAM_MAP[activeCcKey] ?? ['General', 'Abdomen', 'CVS', 'Resp']) : ['General', 'Abdomen', 'CVS', 'Resp'];
+        const ccExtras = ccPlan.filter(s => !ALL_STD_EXAM.includes(s));
+        const relevantStd = ccPlan.filter(s => ALL_STD_EXAM.includes(s));
+        const nonRelevantStd = ALL_STD_EXAM.filter(s => !ccPlan.includes(s));
+        const orderedSystems = [...relevantStd, ...nonRelevantStd];
+
+        const stdExamFields: Record<string, [string, (v: string) => void]> = {
+          General:     [examGeneral,     setExamGeneral],
+          Abdomen:     [examAbdomen,     setExamAbdomen],
+          CVS:         [examCardio,      setExamCardio],
+          Resp:        [examResp,        setExamResp],
+          Extremities: [examExtremities, setExamExtremities],
+          Wound:       [examWound,       setExamWound],
+        };
+
+        const handleSetAllNormal = () => {
+          ccPlan.forEach(sys => {
+            const text = EXAM_NORMALS[sys] ?? `${sys}: Normal.`;
+            if (stdExamFields[sys]) stdExamFields[sys][1](text);
+            else setExtraExams(prev => ({ ...prev, [sys]: text }));
+          });
+          setOpenExamSys(null);
+        };
+
+        return (
+          <div style={drawerStyle}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={sectionLabel}>
+                {ccLabel ? `Examination — ${ccLabel}` : 'Examination'}
+              </span>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                <button type="button" onClick={handleSetAllNormal}
+                  style={{
+                    fontSize: 10, fontWeight: 700, padding: '3px 10px', borderRadius: 8,
+                    border: '1px solid rgba(0,180,160,0.4)', background: 'rgba(0,180,160,0.08)',
+                    color: 'var(--accent)', cursor: 'pointer',
+                  }}>All normal</button>
+                <button type="button" onClick={enterExam}
+                  style={{
+                    fontSize: 11, color: 'var(--accent)', border: '1px solid rgba(0,180,160,0.3)',
+                    background: 'rgba(0,180,160,0.06)', padding: '3px 9px', borderRadius: 5,
+                    cursor: 'pointer', fontWeight: 600,
+                  }}>Full Exam →</button>
+              </div>
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* Standard systems: CC-relevant first, then rest */}
+            {orderedSystems.map(sys => {
+              const [val, setter] = stdExamFields[sys];
+              return (
+                <ExamRow key={sys}
+                  name={sys} value={val} onChange={setter}
+                  isRelevant={relevantStd.includes(sys)}
+                  normalText={EXAM_NORMALS[sys] ?? `${sys}: Normal.`}
+                  isOpen={openExamSys === sys}
+                  onToggle={() => setOpenExamSys(s => s === sys ? null : sys)}
+                />
+              );
+            })}
+
+            {/* CC-specific extra systems (Perianal, Breast, Neck, Hernia) */}
+            {ccExtras.map(sys => (
+              <ExamRow key={sys}
+                name={sys}
+                value={extraExams[sys] ?? ''}
+                onChange={v => setExtraExams(prev => ({ ...prev, [sys]: v }))}
+                isRelevant
+                normalText={EXAM_NORMALS[sys] ?? `${sys}: Normal.`}
+                isOpen={openExamSys === sys}
+                onToggle={() => setOpenExamSys(s => s === sys ? null : sys)}
+              />
+            ))}
+
+            {/* Additional findings */}
+            <div>
+              <div style={{ ...sectionLabel, marginBottom: 4, color: 'var(--muted)' }}>Additional findings</div>
+              <textarea value={examNotes['additional'] ?? ''} onChange={e => setExamNotes({ ...examNotes, additional: e.target.value })}
+                placeholder="Any additional examination findings…"
+                style={drawerTextarea} rows={2} />
+            </div>
+          </div>
+        );
+      })()}
 
       {activeDrawer === 'investigations' && (
         <div style={drawerStyle}>
