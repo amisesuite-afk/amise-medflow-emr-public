@@ -864,50 +864,68 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       const imgStr = radiologyRequests.map(r => `${r.modality} ${r.anatomicalRegion}`).join(', ');
       parts.push(`\n\nImaging ordered: ${imgStr}`);
     }
-    parts.push('\n\n' + '─'.repeat(40) + '\n\nWorking Diagnosis:\n\nDifferential Diagnoses:\n1. \n2. \n3. \n\nKey Concerns / Red Flags:\n\nMissing Information:');
+    // Working diagnosis + differentials from dictionary (no AI needed for known diagnoses)
+    const dxForAssess = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
+    const protoForAssess = dxForAssess ? getProtocol(dxForAssess) : null;
+    const dxLabelForAssess = dxForAssess ? (DISEASES.find(d => d.id === dxForAssess)?.label ?? '') : '';
+    const icd10ForAssess = dxForAssess ? (DISEASES.find(d => d.id === dxForAssess)?.icd10 ?? '') : '';
+    const topDiffs = suggestedDx.slice(0, 3).map((r, i) => `${i + 1}. ${r.disease.label} (${r.disease.icd10}) — ${Math.round(r.probability * 100)}%`).join('\n');
+    const rfForAssess = protoForAssess?.redFlags.map(r => `   ⚠ ${r}`).join('\n') ?? '';
+
+    parts.push('\n\n' + '─'.repeat(40));
+    parts.push(`\n\nWorking Diagnosis: ${dxLabelForAssess}${icd10ForAssess ? ` (${icd10ForAssess})` : ''}${!workingDxId && dxForAssess ? ' — AI suggestion, confirm' : ''}`);
+    parts.push(`\n\nDifferential Diagnoses:\n${topDiffs || '1. \n2. \n3. '}`);
+    if (rfForAssess) parts.push(`\n\nKey Concerns / Red Flags:\n${rfForAssess}`);
+    else parts.push('\n\nKey Concerns / Red Flags:');
+    parts.push('\n\nMissing Information:');
+
     const draft = parts.join('');
     if (!assessment.trim()) ctx.setAssessment(draft);
     changePhase('assessment');
     setActiveDrawer(null);
   }
 
+  function buildProtocolPlan(dxId: string, isAutoSuggested: boolean): string {
+    const proto = getProtocol(dxId);
+    if (!proto) return '';
+    const IMAGING_KW = ['uss', 'ct ', 'mri', 'mrcp', 'pet', 'cxr', 'x-ray', 'xr ', 'ultrasound', 'scan', 'echo', 'angio', 'radiograph', 'chest x', 'ercp'];
+    const isImaging = (label: string) => IMAGING_KW.some(k => label.toLowerCase().includes(k));
+    const labInvx     = proto.investigations.filter(i => !isImaging(i.label));
+    const imagingInvx = proto.investigations.filter(i => isImaging(i.label));
+    const labLines  = labInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
+    const imgLines  = imagingInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
+    const immediate = proto.management.filter(m => m.phase === 'immediate').map(m => `   • ${m.step}`).join('\n');
+    const surgical  = proto.management.filter(m => m.phase === 'surgical').map(m => `   • ${m.step}`).join('\n');
+    const conserv   = proto.management.filter(m => m.phase === 'conservative').map(m => `   • ${m.step}`).join('\n');
+    const followup  = proto.management.filter(m => m.phase === 'followup').map(m => `   • ${m.step}`).join('\n');
+    const rfLines   = proto.redFlags.map(r => `   ⚠ ${r}`).join('\n');
+    const dxLabel   = DISEASES.find(d => d.id === dxId)?.label ?? proto.label;
+    const icd10     = DISEASES.find(d => d.id === dxId)?.icd10 ?? '';
+    return (
+      `Management Plan — ${dxLabel}${isAutoSuggested ? ' ⚠ AI suggestion — confirm diagnosis' : ''}\n` +
+      `ICD-10: ${icd10}\n\n` +
+      (proto.keyPoints.length ? `Key Points:\n${proto.keyPoints.map(k => `   • ${k}`).join('\n')}\n\n` : '') +
+      `1. Investigations (Labs):\n${labLines || '   —'}\n\n` +
+      `2. Imaging:\n${imgLines || '   —'}\n\n` +
+      `3. Procedures / Referrals:\n   ${proto.referral ?? ''}\n\n` +
+      `4. Management:\n${[immediate, conserv, surgical].filter(Boolean).join('\n') || '   —'}\n\n` +
+      `5. Follow-up:\n${followup || '   —'}\n\n` +
+      `6. Red Flags / Safety-net:\n${rfLines || '   —'}\n`
+    );
+  }
+
   function enterPlan() {
-    if (!plan.trim()) {
-      // Use the confirmed working Dx, or fall back to the top-ranked suggestion
-      const dxId = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
-      const proto = dxId ? getProtocol(dxId) : null;
-      const isAutoSuggested = !workingDxId && !!dxId;
-
-      if (proto) {
-        // Separate investigations into labs and imaging by label keyword
-        const IMAGING_KEYWORDS = ['uss', 'ct ', 'mri', 'mrcp', 'pet', 'cxr', 'x-ray', 'xr ', 'ultrasound', 'scan', 'echo', 'angio', 'radiograph', 'chest x', 'ercp'];
-        const isImaging = (label: string) => IMAGING_KEYWORDS.some(k => label.toLowerCase().includes(k));
-        const labInvx     = proto.investigations.filter(i => !isImaging(i.label));
-        const imagingInvx = proto.investigations.filter(i => isImaging(i.label));
-
-        const labLines  = labInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
-        const imgLines  = imagingInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
-        const immediate = proto.management.filter(m => m.phase === 'immediate').map(m => `   • ${m.step}`).join('\n');
-        const surgical  = proto.management.filter(m => m.phase === 'surgical').map(m => `   • ${m.step}`).join('\n');
-        const conserv   = proto.management.filter(m => m.phase === 'conservative').map(m => `   • ${m.step}`).join('\n');
-        const followup  = proto.management.filter(m => m.phase === 'followup').map(m => `   • ${m.step}`).join('\n');
-        const rfLines   = proto.redFlags.map(r => `   ⚠ ${r}`).join('\n');
-        const dxLabel   = DISEASES.find(d => d.id === dxId)?.label ?? proto.label;
-        const icd10     = DISEASES.find(d => d.id === dxId)?.icd10 ?? '';
-
-        ctx.setPlan(
-          `Management Plan — ${dxLabel}${isAutoSuggested ? ' ⚠ AI suggestion — confirm diagnosis' : ''}\n` +
-          `ICD-10: ${icd10}\n\n` +
-          (proto.keyPoints.length ? `Key Points:\n${proto.keyPoints.map(k => `   • ${k}`).join('\n')}\n\n` : '') +
-          `1. Investigations (Labs):\n${labLines || '   —'}\n\n` +
-          `2. Imaging:\n${imgLines || '   —'}\n\n` +
-          `3. Procedures / Referrals:\n   ${proto.referral ?? ''}\n\n` +
-          `4. Management:\n${[immediate, conserv, surgical].filter(Boolean).join('\n') || '   —'}\n\n` +
-          `5. Follow-up:\n${followup || '   —'}\n\n` +
-          `6. Red Flags / Safety-net:\n${rfLines || '   —'}\n`,
-        );
-        // Surface the auto-suggested Dx so the assessment phase shows it as selected
-        if (isAutoSuggested) setWorkingDxId(dxId);
+    // Confirmed working Dx: ALWAYS seed from protocol — surgeon has committed to a diagnosis.
+    // No working Dx: use top suggestion if plan is still empty, otherwise preserve user edits.
+    if (workingDxId) {
+      const built = buildProtocolPlan(workingDxId, false);
+      if (built) ctx.setPlan(built);
+    } else if (!plan.trim()) {
+      const topId = suggestedDx.length > 0 ? suggestedDx[0].disease.id : null;
+      const built = topId ? buildProtocolPlan(topId, true) : '';
+      if (built) {
+        ctx.setPlan(built);
+        setWorkingDxId(topId!);
       } else {
         ctx.setPlan(
           'Management Plan\n\n' +
