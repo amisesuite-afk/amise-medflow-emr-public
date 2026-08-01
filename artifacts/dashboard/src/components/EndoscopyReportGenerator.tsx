@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
+import { supabase } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 
 const API_ORIGIN = getApiOrigin();
@@ -65,9 +66,13 @@ export default function EndoscopyReportGenerator({ type }: { type: EndoProcType 
     const today = new Date().toLocaleDateString('en-LC', { timeZone: 'America/St_Lucia', dateStyle: 'long' });
 
     try {
+      const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+      const authHeaders: Record<string, string> = session?.access_token
+        ? { Authorization: `Bearer ${session.access_token}` }
+        : {};
       const res = await fetch(apiUrl('/api/generate-endoscopy-report'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({
           patient: { name: patientName || 'Unknown', age, sex, dob },
           procedureType: type,

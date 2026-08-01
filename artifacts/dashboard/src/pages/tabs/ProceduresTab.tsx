@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { supabase } from '@/lib/supabase';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import ProcedureImagePanel, { type ProcImage } from '@/components/ProcedureImagePanel';
 import ClavienDindoGrader from '@/components/ClavienDindoGrader';
@@ -1658,6 +1659,69 @@ function PostopForm({ data, onChange }: { data: PostopData; onChange: (d: Postop
 
 // ── Procedure PDF export ──────────────────────────────────────────────────────
 
+function buildPreopSeed(
+  comorbidities: string[],
+  medications: string[],
+  toxicHabits: string[],
+  allergies: string,
+  assessment: string,
+  plan: string,
+): PreopData {
+  const cardiacRisk: string[] = [];
+  for (const c of comorbidities) {
+    if (/hypertension|high blood pressure/i.test(c)) cardiacRisk.push('Hypertension');
+    if (/\bihd\b|ischaemic heart|angina/i.test(c)) cardiacRisk.push('IHD / angina');
+    if (/\bmi\b|prior mi|infarct|myocardial infarct/i.test(c)) cardiacRisk.push('Prior MI');
+    if (/\bccf\b|heart failure|cardiac failure|cardiomyopathy/i.test(c)) cardiacRisk.push('CCF');
+    if (/arrhythmia|\baf\b|atrial fib|atrial flutter|\bsvt\b|\bvt\b|pacemaker/i.test(c)) cardiacRisk.push('Arrhythmia');
+    if (/\bdiabetes\b|\bdm\b|type [12] diabetes/i.test(c)) cardiacRisk.push('Diabetes');
+    if (/obesity|\bbmi\b|morbid obes/i.test(c)) cardiacRisk.push('Obesity (BMI >30)');
+  }
+  if (cardiacRisk.length === 0) cardiacRisk.push('None identified');
+
+  const respiratoryRisk: string[] = [];
+  for (const c of comorbidities) {
+    if (/\basthma\b/i.test(c)) respiratoryRisk.push('Asthma');
+    if (/\bcopd\b|emphysema|chronic obstructive/i.test(c)) respiratoryRisk.push('COPD');
+    if (/\bosa\b|sleep apno|cpap|bipap/i.test(c)) respiratoryRisk.push('OSA / CPAP');
+    if (/\bild\b|interstitial lung|pulmonary fibrosis/i.test(c)) respiratoryRisk.push('Interstitial lung disease');
+  }
+  for (const t of toxicHabits) {
+    if (/smok/i.test(t)) respiratoryRisk.push('Smoker (active)');
+  }
+  if (respiratoryRisk.length === 0) respiratoryRisk.push('None identified');
+
+  const serious = comorbidities.filter(c =>
+    /\bihd\b|ischaemic heart|angina|\bmi\b|infarct|\bccf\b|heart failure|cardiomyopathy|\bcopd\b|emphysema|\bosa\b|sleep apno|arrhythmia|\baf\b|atrial fib|renal fail|\bckd\b|dialysis|cancer|malignancy|cirrhosis|\bstroke\b|\btia\b/i.test(c),
+  );
+  const asaGrade = serious.length >= 1 ? 'ASA III'
+    : comorbidities.length === 0 && toxicHabits.length === 0 ? 'ASA I'
+    : 'ASA II';
+
+  const anticoagNames = ['warfarin', 'clopidogrel', 'rivaroxaban', 'apixaban', 'dabigatran', 'edoxaban', 'ticagrelor', 'prasugrel', 'xarelto', 'eliquis', 'pradaxa', 'brilinta'];
+  const prophylaxis: string[] = [];
+  if (medications.some(m => anticoagNames.some(a => m.toLowerCase().includes(a)))) {
+    prophylaxis.push('Anticoagulant held / bridged');
+  }
+
+  const procRegex = /laparoscop|cholecyst|appendicect|colectomy|gastrectomy|hernia repair|thyroidectomy|mastectomy|prostatectomy|colostomy|ileostomy|hemicolectomy|bowel resect|right hemi|left hemi|anterior resect|hartmann|whipple|pancreatectomy|splenectomy|adrenalectomy|parathyroid|fundoplication|heller|stoma|inguinal|umbilical|incisional|ventral|open repair|endoscopy|colonoscopy|\bogd\b|ercp|bronch/i;
+  let plannedProcedure = '';
+  for (const line of [...plan.split('\n'), ...assessment.split('\n')]) {
+    if (procRegex.test(line)) {
+      const clean = line.trim().replace(/^[-•*·]\s*/, '').replace(/^(?:plan|assessment|diagnosis)[:\s]+/i, '');
+      if (clean.length > 3 && clean.length < 120) { plannedProcedure = clean; break; }
+    }
+  }
+
+  const parts: string[] = [];
+  if (allergies) parts.push(`ALLERGIES: ${allergies}`);
+  const pmhLine = comorbidities.filter(c => !/^none$/i.test(c));
+  if (pmhLine.length > 0) parts.push(`PMH: ${pmhLine.join(', ')}`);
+  if (medications.length > 0) parts.push(`Medications: ${medications.join(', ')}`);
+
+  return { ...EMPTY_PREOP, plannedProcedure, asaGrade, cardiacRisk, respiratoryRisk, prophylaxis, additionalNotes: parts.join('\n') };
+}
+
 function buildProcHtml(
   type: ProcType,
   ogd: OgdData, colon: ColonData, ercp: ErcpData, preop: PreopData, postop: PostopData,
@@ -1665,6 +1729,9 @@ function buildProcHtml(
   freeText: string, patientName: string,
   draft: string,
   images: ProcImage[],
+  dob?: string,
+  nhiNumber?: string,
+  allergies?: string,
 ): string {
   const now = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
   const row = (label: string, val: string | string[]) => {
@@ -1784,6 +1851,7 @@ function buildProcHtml(
       row('Planned procedure', preop.plannedProcedure),
       row('Urgency', preop.urgency),
       row('ASA grade', preop.asaGrade),
+      allergies ? `<tr><td style="padding:4px 10px 4px 0;font-weight:600;color:#dc2626;white-space:nowrap;vertical-align:top">&#9888; Allergies</td><td style="padding:4px 0 4px 10px;color:#dc2626;font-weight:600">${allergies.replace(/</g, '&lt;')}</td></tr>` : '',
       row('Airway', preop.airway),
       row('Dentition', preop.dentition),
       row('Cardiac risk', preop.cardiacRisk),
@@ -1822,6 +1890,10 @@ function buildProcHtml(
     preop: 'Pre-operative Assessment', postop: 'Operative Note', other: 'Procedure Note',
   };
 
+  const allergyBanner = allergies
+    ? `<div style="margin:8px 0 12px;padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:4px;font-size:12px;font-weight:700;color:#dc2626">&#9888; ALLERGIES: ${allergies.replace(/</g, '&lt;')}</div>`
+    : '';
+
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${typeLabel[type]}</title>
 <style>
 body{font-family:Arial,sans-serif;max-width:760px;margin:32px auto;color:#111;font-size:13px}
@@ -1830,7 +1902,10 @@ body{font-family:Arial,sans-serif;max-width:760px;margin:32px auto;color:#111;fo
 </style></head><body>
 ${letterhead}
 <h1 style="font-size:16px;margin:0 0 4px">${typeLabel[type]}</h1>
-<h2 style="font-size:13px;color:#6b7280;font-weight:400;margin:0 0 16px">${patientName} &nbsp;|&nbsp; ${now}</h2>
+<div style="font-size:13px;color:#374151;margin:0 0 4px">
+  <strong>${patientName}</strong>${dob ? ` &nbsp;&middot;&nbsp; DOB: ${dob}` : ''}${nhiNumber ? ` &nbsp;&middot;&nbsp; NHI: ${nhiNumber}` : ''} &nbsp;|&nbsp; <span style="color:#6b7280">${now}</span>
+</div>
+${allergyBanner}
 ${draftBlock || structuredBody}
 ${!draftBlock ? '' : `<details style="margin-top:16px"><summary style="font-size:11px;color:#94a3b8;cursor:pointer">Structured data</summary>${structuredBody}</details>`}
 ${imageGrid}
@@ -1861,12 +1936,29 @@ const PROC_TABS: { id: ProcType; label: string }[] = [
 ];
 
 export default function ProceduresTab() {
-  const { procedureData, setProcedureData, procedures, setProcedures, patientName, age, sex, encounterType } = useAppContext();
+  const {
+    procedureData, setProcedureData, procedures, setProcedures,
+    patientName, age, sex, dob, nhiNumber, encounterType,
+    comorbidities, medications, allergies: allergyText, assessment, plan, toxicHabits,
+  } = useAppContext();
   const [activeType, setActiveType] = useState<ProcType>(encounterType === 'endoscopy' ? 'ogd' : 'preop');
+  const preopSeededRef = useRef(false);
 
   useEffect(() => {
     setActiveType(encounterType === 'endoscopy' ? 'ogd' : 'preop');
   }, [encounterType]);
+
+  useEffect(() => {
+    if (activeType !== 'preop') return;
+    if (preopSeededRef.current) return;
+    const current = (procedureData['preop'] as PreopData | undefined) ?? EMPTY_PREOP;
+    if (current.plannedProcedure !== '' || current.cardiacRisk.length > 0) return;
+    preopSeededRef.current = true;
+    const seed = buildPreopSeed(comorbidities, medications, toxicHabits ?? [], allergyText ?? '', assessment ?? '', plan ?? '');
+    setProcedureData({ ...procedureData, preop: seed });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeType]);
+
   const [draftLoading, setDraftLoading] = useState(false);
 
   function getTyped<T>(key: string, empty: T): T {
@@ -1902,9 +1994,13 @@ export default function ProceduresTab() {
     const imgs = getImages(type).map(img => ({ label: img.label, finding: img.finding }));
     setDraftLoading(true);
     try {
+      const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+      const authHeaders: Record<string, string> = session?.access_token
+        ? { Authorization: `Bearer ${session.access_token}` }
+        : {};
       const resp = await fetch('/api/ai/procedure-report', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({
           type,
           data: dataMap[type],
@@ -1958,7 +2054,7 @@ export default function ProceduresTab() {
         ))}
         <button
           type="button"
-          onClick={() => printProcNote(buildProcHtml(activeType, ogd, colon, ercp, preop, postop, bronch, procedures, patientName || 'Patient', getDraft(activeType), getImages(activeType)))}
+          onClick={() => printProcNote(buildProcHtml(activeType, ogd, colon, ercp, preop, postop, bronch, procedures, patientName || 'Patient', getDraft(activeType), getImages(activeType), dob || undefined, nhiNumber || undefined, allergyText || undefined))}
           style={{
             marginLeft: 'auto',
             padding: '6px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600,
