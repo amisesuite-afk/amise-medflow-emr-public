@@ -122,7 +122,16 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'monitoring',        label: 'Vitals'        },
     { id: 'tasks',             label: 'Tasks'         },
   ],
+  day_of_surgery: [
+    { id: 'who_checklist',     label: 'WHO'           },
+    { id: 'periop',            label: 'Periop'        },
+    { id: 'procedures',        label: 'Op Note'       },
+    { id: 'prescriptions',     label: 'Rx'            },
+    { id: 'monitoring',        label: 'Vitals'        },
+    { id: 'progress',          label: 'Notes'         },
+  ],
   ercp: [
+    { id: 'who_checklist',     label: 'WHO'           },
     { id: 'hpi',               label: 'Indication'    },
     { id: 'pmh',               label: 'PMH'           },
     { id: 'medications',       label: 'Meds'          },
@@ -136,6 +145,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'progress',          label: 'Notes'         },
   ],
   endoscopy_ogd: [
+    { id: 'who_checklist',     label: 'WHO'           },
     { id: 'hpi',               label: 'Indication'    },
     { id: 'pmh',               label: 'PMH'           },
     { id: 'medications',       label: 'Meds'          },
@@ -148,6 +158,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'progress',          label: 'Notes'         },
   ],
   endoscopy_col: [
+    { id: 'who_checklist',     label: 'WHO'           },
     { id: 'hpi',               label: 'Indication'    },
     { id: 'pmh',               label: 'PMH'           },
     { id: 'medications',       label: 'Meds'          },
@@ -205,15 +216,16 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
 
 // Where to land the cursor the instant the visit type panel completes
 const VISIT_TYPE_START: Partial<Record<string, Section>> = {
-  follow_up:      'hpi',
-  post_op:        'wounds',
-  ercp:           'hpi',
-  endoscopy_ogd:  'hpi',
-  endoscopy_col:  'hpi',
-  breast:         'examination',
-  telephone:      'progress',
-  diabetic_foot:  'wounds',
-  urgent:         'triage',
+  follow_up:       'hpi',
+  post_op:         'wounds',
+  day_of_surgery:  'who_checklist',
+  ercp:            'who_checklist',
+  endoscopy_ogd:   'who_checklist',
+  endoscopy_col:   'who_checklist',
+  breast:          'examination',
+  telephone:       'progress',
+  diabetic_foot:   'wounds',
+  urgent:          'triage',
 };
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;

@@ -123,21 +123,28 @@ export const CLINICAL_PHASES: ClinicalPhase[] = [
     label: 'Documents',
     minRole: 'nurse',
     items: [
-      { id: 'periop',             icon: ShieldAlert,   label: 'Perioperative Safety', minRole: 'nurse' },
-      { id: 'who_checklist',      icon: ShieldCheck,   label: 'WHO Safety Checklist', minRole: 'nurse' },
       { id: 'consent',            icon: ScrollText,    label: 'Surgical Consent',     minRole: 'doctor' },
       { id: 'letters',            icon: MailOpen,      label: 'Letters',              minRole: 'doctor' },
       { id: 'patient_education',  icon: GraduationCap, label: 'Patient Education',    minRole: 'doctor' },
+    ],
+  },
+  {
+    key: 'operative',
+    label: 'Theatre / Endoscopy',
+    minRole: 'nurse',
+    items: [
+      { id: 'who_checklist',      icon: ShieldCheck,   label: 'WHO Safety Checklist', minRole: 'nurse' },
+      { id: 'periop',             icon: ShieldAlert,   label: 'Perioperative Safety', minRole: 'nurse' },
     ],
   },
 ];
 
 const ENCOUNTER_PHASE_VISIBILITY: Record<EncounterType, ReadonlySet<string>> = {
   quick_consult:    new Set(['history', 'examination', 'assessment', 'plan']),
-  endoscopy:        new Set(['history', 'examination', 'workup', 'assessment', 'plan', 'documents']),
+  endoscopy:        new Set(['history', 'examination', 'workup', 'assessment', 'plan', 'documents', 'operative']),
   surgical_consult: new Set(['history', 'social_ros', 'examination', 'workup', 'assessment', 'plan', 'documents']),
-  office_procedure: new Set(['history', 'examination', 'workup', 'assessment', 'plan', 'documents']),
-  major_emergency:  new Set(['history', 'social_ros', 'examination', 'workup', 'assessment', 'plan', 'documents']),
+  office_procedure: new Set(['history', 'examination', 'workup', 'assessment', 'plan', 'documents', 'operative']),
+  major_emergency:  new Set(['history', 'social_ros', 'examination', 'workup', 'assessment', 'plan', 'documents', 'operative']),
 };
 
 const BILLING_SUB: { id: Section; icon: React.FC<{ size?: number; strokeWidth?: number }>; label: string }[] = [

@@ -2,6 +2,7 @@ export const VISIT_TYPES = [
   { id: 'new_consult',      label: 'First Consult',   icon: '🩺', color: '#0d9488', desc: 'New patient or new problem' },
   { id: 'follow_up',        label: 'Follow-up',       icon: '🔄', color: '#2563eb', desc: 'Interval review — SOAP format' },
   { id: 'post_op',          label: 'Post-op Review',  icon: '🩹', color: '#7c3aed', desc: 'Wound/recovery review after surgery' },
+  { id: 'day_of_surgery',   label: 'Day of Surgery',  icon: '🏥', color: '#0f172a', desc: 'Operative day — WHO checklist, anaesthetic, op note, specimen' },
   { id: 'ercp',             label: 'ERCP',            icon: '🔭', color: '#0891b2', desc: 'Endoscopic retrograde cholangiopancreatography' },
   { id: 'endoscopy_ogd',    label: 'OGD',             icon: '🔭', color: '#0891b2', desc: 'Upper GI endoscopy' },
   { id: 'endoscopy_col',    label: 'Colonoscopy',     icon: '🔭', color: '#0891b2', desc: 'Lower GI endoscopy' },
