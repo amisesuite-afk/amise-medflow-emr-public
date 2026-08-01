@@ -2078,7 +2078,7 @@ export default function ProceduresTab() {
           <ProcSection title="Endoscopic images" defaultOpen={false} badge={getImages('ogd').length || undefined}>
             <ProcedureImagePanel
               images={getImages('ogd')} onChange={imgs => setImages('ogd', imgs)}
-              title="OGD Images"
+              title="OGD Images" procType="ogd"
               siteLabels={['Lips / mouth', 'Oesophagus', 'GEJ / Z-line', 'Fundus', 'Body of stomach', 'Antrum', 'Pylorus', 'Duodenal bulb', 'D2 / papilla', 'Incisura angularis']}
             />
           </ProcSection>
@@ -2098,7 +2098,7 @@ export default function ProceduresTab() {
           <ProcSection title="Colonoscopy images" defaultOpen={false} badge={getImages('colonoscopy').length || undefined}>
             <ProcedureImagePanel
               images={getImages('colonoscopy')} onChange={imgs => setImages('colonoscopy', imgs)}
-              title="Colonoscopy Images"
+              title="Colonoscopy Images" procType="colonoscopy"
               siteLabels={['Anus / rectum', 'Sigmoid colon', 'Descending colon', 'Splenic flexure', 'Transverse colon', 'Hepatic flexure', 'Ascending colon', 'Caecum', 'Ileocaecal valve', 'Terminal ileum', 'Polyp', 'Post-polypectomy site']}
             />
           </ProcSection>
@@ -2118,7 +2118,7 @@ export default function ProceduresTab() {
           <ProcSection title="ERCP images" defaultOpen={false} badge={getImages('ercp').length || undefined}>
             <ProcedureImagePanel
               images={getImages('ercp')} onChange={imgs => setImages('ercp', imgs)}
-              title="ERCP Images"
+              title="ERCP Images" procType="ercp"
               siteLabels={['Papilla', 'Post-sphincterotomy', 'Cholangiogram', 'CBD with stones', 'Stent in situ', 'Balloon trawl', 'Pancreatogram', 'Fluoroscopy frame', 'Cholangioscopy view']}
             />
           </ProcSection>
@@ -2138,7 +2138,7 @@ export default function ProceduresTab() {
           <ProcSection title="Bronchoscopy images" defaultOpen={false} badge={getImages('bronch').length || undefined}>
             <ProcedureImagePanel
               images={getImages('bronch')} onChange={imgs => setImages('bronch', imgs)}
-              title="Bronchoscopy Images"
+              title="Bronchoscopy Images" procType="bronch"
               siteLabels={['Vocal cords', 'Subglottis / trachea', 'Carina', 'Right main bronchus', 'RUL bronchus', 'RML bronchus', 'RLL bronchus', 'Left main bronchus', 'LUL bronchus', 'Lingula', 'LLL bronchus', 'Lesion / mass', 'BAL site', 'Post-biopsy']}
             />
           </ProcSection>
@@ -2166,7 +2166,7 @@ export default function ProceduresTab() {
           <ProcSection title="Operative images" defaultOpen={false} badge={getImages('postop').length || undefined}>
             <ProcedureImagePanel
               images={getImages('postop')} onChange={imgs => setImages('postop', imgs)}
-              title="Operative / Laparoscopic Images"
+              title="Operative / Laparoscopic Images" procType="surgical"
               siteLabels={['Port placement', 'Initial findings', 'Dissection', 'Critical structure', 'Critical view of safety', 'Specimen', 'Haemostasis confirmed', 'Drain in situ', 'Port closure', 'Other']}
             />
           </ProcSection>

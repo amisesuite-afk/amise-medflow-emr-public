@@ -1,4 +1,13 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import { useAppContext } from '@/context/AppContext';
+import { supabase } from '@/lib/supabase';
+import { getApiOrigin } from '@/lib/api-origin';
+
+const API_ORIGIN = getApiOrigin();
+function apiUrl(p: string) {
+  if (API_ORIGIN) return `${API_ORIGIN}${p}`;
+  return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${p}`;
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -16,6 +25,7 @@ interface Props {
   onChange: (images: ProcImage[]) => void;
   siteLabels?: string[];
   title?: string;
+  procType?: string; // ogd | colonoscopy | ercp | bronch | surgical
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -44,8 +54,11 @@ async function filesToImages(files: FileList | null, siteLabels: string[]): Prom
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function ProcedureImagePanel({ images, onChange, siteLabels = [], title = 'Endoscopic / Operative Images' }: Props) {
+export default function ProcedureImagePanel({ images, onChange, siteLabels = [], title = 'Endoscopic / Operative Images', procType }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const { nhiNumber } = useAppContext();
+  const [fetching, setFetching] = useState(false);
+  const [fetchMsg, setFetchMsg] = useState<string | null>(null);
 
   async function handleFiles(files: FileList | null) {
     const newImgs = await filesToImages(files, siteLabels);
@@ -61,6 +74,49 @@ export default function ProcedureImagePanel({ images, onChange, siteLabels = [],
     onChange(images.filter(img => img.id !== id));
   }
 
+  async function fetchFromCapture() {
+    setFetching(true);
+    setFetchMsg(null);
+    try {
+      const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+      const authHeaders: Record<string, string> = session?.access_token
+        ? { Authorization: `Bearer ${session.access_token}` }
+        : {};
+
+      const params = new URLSearchParams();
+      if (nhiNumber) params.set('nhi', nhiNumber);
+      if (procType) params.set('type', procType);
+
+      const res = await fetch(apiUrl(`/api/endoscopy-capture/pending?${params}`), { headers: authHeaders });
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+
+      const json = await res.json() as { images: Array<{ dataUrl: string; mimeType: string; timestamp: string; stationId: string }>; count: number };
+      if (json.count === 0) {
+        setFetchMsg('No images waiting in capture queue.');
+        return;
+      }
+
+      const newImgs: ProcImage[] = json.images.map(ci => ({
+        id: uid(),
+        dataUrl: ci.dataUrl,
+        mimeType: ci.mimeType,
+        label: siteLabels[0] ?? '',
+        finding: ci.stationId !== 'Capture station' ? ci.stationId : '',
+        timestamp: ci.timestamp,
+      }));
+      onChange([...images, ...newImgs]);
+
+      // Clear the queue after successful fetch
+      await fetch(apiUrl(`/api/endoscopy-capture/pending?${params}`), { method: 'DELETE', headers: authHeaders });
+      setFetchMsg(`${newImgs.length} image${newImgs.length !== 1 ? 's' : ''} imported from capture software.`);
+      setTimeout(() => setFetchMsg(null), 4000);
+    } catch (e) {
+      setFetchMsg(e instanceof Error ? e.message : 'Fetch failed');
+    } finally {
+      setFetching(false);
+    }
+  }
+
   return (
     <div style={{ marginTop: 16, borderTop: '1px solid #e2e8f0', paddingTop: 14 }}>
 
@@ -69,7 +125,12 @@ export default function ProcedureImagePanel({ images, onChange, siteLabels = [],
         <div style={{ fontSize: 12, fontWeight: 700, color: '#0d9488', letterSpacing: '0.04em' }}>
           {title.toUpperCase()} {images.length > 0 && <span style={{ color: '#94a3b8', fontWeight: 400 }}>({images.length})</span>}
         </div>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <button type="button" onClick={() => void fetchFromCapture()} disabled={fetching}
+            title="Pull images from MediView / endoscopy capture software via the API bridge"
+            style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, border: '1px solid #0d9488', background: fetching ? '#e5e7eb' : '#fff', color: '#0d9488', cursor: fetching ? 'not-allowed' : 'pointer', opacity: fetching ? 0.7 : 1 }}>
+            {fetching ? '⏳ Fetching…' : '📡 Fetch from capture'}
+          </button>
           <button type="button" onClick={() => fileRef.current?.click()}
             style={{ padding: '5px 12px', borderRadius: 6, fontSize: 12, fontWeight: 600, border: '1px dashed #0d9488', background: '#f0fdfa', color: '#0d9488', cursor: 'pointer' }}>
             + Import images
@@ -78,6 +139,11 @@ export default function ProcedureImagePanel({ images, onChange, siteLabels = [],
             onChange={e => void handleFiles(e.target.files)} />
         </div>
       </div>
+      {fetchMsg && (
+        <div style={{ marginBottom: 8, padding: '5px 10px', borderRadius: 6, fontSize: 12, background: fetchMsg.includes('No images') ? '#fef3c7' : '#d1fae5', color: fetchMsg.includes('No images') ? '#92400e' : '#065f46' }}>
+          {fetchMsg}
+        </div>
+      )}
 
       {/* Drop zone (empty state) */}
       {images.length === 0 && (
