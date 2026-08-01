@@ -938,8 +938,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   }
 
   // ── AI Consult for complex / unclear presentations ─────────────────────────
-  const [aiConsulting, setAiConsulting] = React.useState(false);
-  const [aiConsultError, setAiConsultError] = React.useState<string | null>(null);
+  const [aiConsulting, setAiConsulting] = useState(false);
+  const [aiConsultError, setAiConsultError] = useState<string | null>(null);
 
   async function aiAssist(_phase: string) {
     if (aiConsulting) return;
@@ -967,7 +967,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           investigations: {},
           assessment: assessment,
           medications: [],
-          allergies: allergies ? [{ allergen: allergies, reaction: '', severity: 'unknown' }] : [],
+          allergies: allergyText ? [{ allergen: allergyText, reaction: '', severity: 'unknown' }] : [],
           comorbidities: [],
           rosFindings: {},
         },
@@ -1003,6 +1003,15 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       setAiConsulting(false);
     }
   }
+
+  // Auto-populate plan from protocol the moment working Dx is confirmed or changed.
+  // Fires regardless of phase so when the surgeon arrives at Plan it's already there.
+  useEffect(() => {
+    if (!workingDxId) return;
+    const built = buildProtocolPlan(workingDxId, false);
+    if (built) ctx.setPlan(built);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workingDxId]);
 
   const fullTranscript = transcript + (interim ? interim : '');
 
@@ -2317,21 +2326,80 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   </div>
                 )}
 
-                {/* Selected Dx detail — key points + red flags */}
-                {activeProto && (
-                  <div style={{ borderTop: '1px solid var(--line)', padding: '8px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {activeProto.keyPoints.length > 0 && (
-                      <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.55 }}>
-                        {activeProto.keyPoints.map((k, i) => <div key={i}>• {k}</div>)}
+                {/* Selected Dx detail — key points, red flags, protocol actions preview */}
+                {activeProto && (() => {
+                  const IMAGING_KW = ['uss', 'ct ', 'mri', 'mrcp', 'pet', 'cxr', 'x-ray', 'xr ', 'ultrasound', 'scan', 'echo', 'angio', 'radiograph', 'chest x', 'ercp'];
+                  const isImaging = (label: string) => IMAGING_KW.some(k => label.toLowerCase().includes(k));
+                  const labs    = activeProto.investigations.filter(i => !isImaging(i.label));
+                  const imaging = activeProto.investigations.filter(i =>  isImaging(i.label));
+                  const immediate = activeProto.management.filter(m => m.phase === 'immediate');
+                  const labelStyle: React.CSSProperties = {
+                    fontSize: 9, fontWeight: 800, letterSpacing: '0.07em', textTransform: 'uppercase',
+                    color: 'var(--muted)', marginBottom: 3, marginTop: 6,
+                  };
+                  const urgencyColor = (u: string) => u === 'stat' ? '#ef4444' : u === 'urgent' ? '#d97706' : 'var(--muted)';
+                  return (
+                    <div style={{ borderTop: '1px solid var(--line)', padding: '8px 14px', display: 'flex', flexDirection: 'column', gap: 0 }}>
+                      {activeProto.keyPoints.length > 0 && (
+                        <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.6 }}>
+                          {activeProto.keyPoints.map((k, i) => <div key={i}>• {k}</div>)}
+                        </div>
+                      )}
+                      {activeProto.redFlags.length > 0 && (
+                        <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.6, marginTop: 4 }}>
+                          {activeProto.redFlags.map((r, i) => <div key={i}>⚠ {r}</div>)}
+                        </div>
+                      )}
+
+                      {/* Protocol Actions — labs */}
+                      {labs.length > 0 && (
+                        <>
+                          <div style={labelStyle}>Labs</div>
+                          {labs.map((inv, i) => (
+                            <div key={i} style={{ fontSize: 11, color: 'var(--ink)', lineHeight: 1.6, display: 'flex', gap: 5, alignItems: 'baseline' }}>
+                              <span style={{ fontSize: 9, fontWeight: 800, color: urgencyColor(inv.urgency), flexShrink: 0 }}>[{inv.urgency.toUpperCase()}]</span>
+                              {inv.label}
+                            </div>
+                          ))}
+                        </>
+                      )}
+
+                      {/* Protocol Actions — imaging */}
+                      {imaging.length > 0 && (
+                        <>
+                          <div style={labelStyle}>Imaging</div>
+                          {imaging.map((inv, i) => (
+                            <div key={i} style={{ fontSize: 11, color: 'var(--ink)', lineHeight: 1.6, display: 'flex', gap: 5, alignItems: 'baseline' }}>
+                              <span style={{ fontSize: 9, fontWeight: 800, color: urgencyColor(inv.urgency), flexShrink: 0 }}>[{inv.urgency.toUpperCase()}]</span>
+                              {inv.label}
+                            </div>
+                          ))}
+                        </>
+                      )}
+
+                      {/* Protocol Actions — immediate management */}
+                      {immediate.length > 0 && (
+                        <>
+                          <div style={labelStyle}>Immediate Management</div>
+                          {immediate.map((m, i) => (
+                            <div key={i} style={{ fontSize: 11, color: 'var(--ink)', lineHeight: 1.6 }}>• {m.step}</div>
+                          ))}
+                        </>
+                      )}
+
+                      {activeProto.referral && (
+                        <>
+                          <div style={labelStyle}>Referral</div>
+                          <div style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600, lineHeight: 1.6 }}>{activeProto.referral}</div>
+                        </>
+                      )}
+
+                      <div style={{ marginTop: 6, fontSize: 10, color: 'var(--muted)', fontStyle: 'italic' }}>
+                        Full plan with surgical options and follow-up in Plan phase →
                       </div>
-                    )}
-                    {activeProto.redFlags.length > 0 && (
-                      <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.55, marginTop: activeProto.keyPoints.length > 0 ? 4 : 0 }}>
-                        {activeProto.redFlags.map((r, i) => <div key={i}>⚠ {r}</div>)}
-                      </div>
-                    )}
-                  </div>
-                )}
+                    </div>
+                  );
+                })()}
 
                 {/* Ask AI footer */}
                 <div style={{ borderTop: '1px solid var(--line)', padding: '8px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
