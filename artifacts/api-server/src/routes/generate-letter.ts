@@ -7,6 +7,16 @@ const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 const MODEL = process.env.CLAUDE_MODEL || 'claude-sonnet-4-6';
 
+const SYSTEM_PROMPT = `You are a specialist medical documentation writer for Amise Medical Services, a general and endoscopic surgery practice in Saint Lucia, led by Dr Dawit Daniel Kabiye, MD, DM.
+
+Requirements:
+- British English spelling throughout
+- Professional medical prose — not bullet points in the clinical narrative (except where the letter type specifically calls for a list)
+- Third person, past tense for clinical events
+- Do NOT invent, assume, or embellish any clinical details not explicitly provided
+- Omit sections for which no data is provided
+- Output the letter only — no preamble, no commentary, no filler`;
+
 const PRACTICE = 'Amise Medical Services — General & Endoscopic Surgery\nDr Dawit Daniel Kabiye, MD, DM\nRodney Bay Medical Centre, Saint Lucia\nTel: +1 (758) 284-0557';
 const TODAY = () => new Date().toLocaleDateString('en-LC', { timeZone: 'America/St_Lucia', dateStyle: 'long' });
 
@@ -45,7 +55,7 @@ Tone: formal, professional, clinician-to-clinician. Third person. Past tense for
 
 router.post('/', async (req: Request, res: Response) => {
   if (!(await requireStaffAuth(req, res))) return;
-  const { letterType, recipient, specialty, reason, patient, pmh, pmhNotes, surgicalHistory, medications, allergies, hpi, assessment, differentials, plan, icdCodes } = req.body as Record<string, unknown>;
+  const { letterType, recipient, specialty, reason, patient, pmh, pmhNotes, surgicalHistory, medications, allergies, hpi, examination, vitals, assessment, differentials, plan, icdCodes } = req.body as Record<string, unknown>;
 
   if (!patient || !(patient as Record<string, string>).name) {
     res.status(400).json({ error: 'Patient name required' });
@@ -65,6 +75,7 @@ PATIENT:
   Name: ${(patient as Record<string, string>).name}
   Age/Sex: ${(patient as Record<string, string>).age || '—'}y / ${(patient as Record<string, string>).sex || '—'}
   DOB: ${(patient as Record<string, string>).dob || '—'}
+  NHI: ${(patient as Record<string, string>).nhiNumber || '—'}
   Phone: ${(patient as Record<string, string>).phone || '—'}
 
 PMH: ${Array.isArray(pmh) && (pmh as string[]).length ? (pmh as string[]).join(', ') : 'None documented'}
@@ -75,7 +86,20 @@ Allergies: ${allergies || 'NKDA'}
 
 PRESENTING COMPLAINT / HPI:
 ${hpi || 'Not documented'}
-
+${examination && typeof examination === 'object' ? `
+EXAMINATION FINDINGS:
+${Object.entries(examination as Record<string,string>).map(([k,v]) => `  ${k}: ${v}`).join('\n')}` : ''}
+${vitals && typeof vitals === 'object' ? (() => {
+  const v = vitals as Record<string, string>;
+  const parts: string[] = [];
+  if (v.systolicBp && v.diastolicBp) parts.push(`BP ${v.systolicBp}/${v.diastolicBp} mmHg`);
+  if (v.heartRate) parts.push(`HR ${v.heartRate} bpm`);
+  if (v.temperatureC) parts.push(`Temp ${v.temperatureC}°C`);
+  if (v.spo2) parts.push(`SpO₂ ${v.spo2}%`);
+  if (v.respiratoryRate) parts.push(`RR ${v.respiratoryRate}/min`);
+  if (v.glucoseMmol) parts.push(`BSL ${v.glucoseMmol} mmol/L`);
+  return parts.length ? `\nVITAL SIGNS: ${parts.join('  ·  ')}` : '';
+})() : ''}
 ASSESSMENT / DIAGNOSIS:
 ${assessment || 'Not documented'}
 ${differentials ? `Differentials: ${differentials}` : ''}
@@ -96,7 +120,8 @@ ${plan || 'Not documented'}
 
     const stream = await client.messages.stream({
       model: MODEL,
-      max_tokens: 1200,
+      max_tokens: 2000,
+      system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: prompt }],
     });
 

@@ -28,6 +28,8 @@ export default function LetterGeneratorTab() {
     assessment, differentials, plan, icdCodes,
     hpiNotes, freeText,
     surgicalHistory,
+    examGeneral, examCardio, examResp, examAbdomen, examBreast, examWound, examNeuro, examExtremities,
+    vitals,
     patientId, encounterId,
   } = useAppContext();
 
@@ -45,6 +47,14 @@ export default function LetterGeneratorTab() {
   async function generate() {
     setLoading(true); setError(null); setOutput('');
     try {
+      const examFields: Record<string, string> = {};
+      const examMap: [string, string][] = [
+        ['General', examGeneral], ['Cardiovascular', examCardio], ['Respiratory', examResp],
+        ['Abdomen', examAbdomen], ['Breast', examBreast], ['Wound', examWound],
+        ['Neurological', examNeuro], ['Extremities', examExtremities],
+      ];
+      examMap.forEach(([k, v]) => { if (v?.trim()) examFields[k] = v.trim(); });
+
       const context = {
         letterType,
         recipient, specialty, reason,
@@ -55,6 +65,8 @@ export default function LetterGeneratorTab() {
         medications: [...medications, ...medicationsText.split('\n').filter(Boolean)],
         allergies,
         hpi: hpiNotes || freeText,
+        examination: Object.keys(examFields).length ? examFields : undefined,
+        vitals: Object.values(vitals).some(v => v) ? vitals : undefined,
         assessment,
         differentials,
         plan,
@@ -164,9 +176,12 @@ export default function LetterGeneratorTab() {
     if (!patientId || !output) return;
     setSaving(true);
     try {
+      const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+      const authHeaders: Record<string, string> = session?.access_token
+        ? { Authorization: `Bearer ${session.access_token}` } : {};
       const res = await fetch(apiUrl('/api/clinical-notes'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({
           patientId,
           encounterId: encounterId ?? undefined,
@@ -305,17 +320,33 @@ export default function LetterGeneratorTab() {
             </div>
 
             {/* Date */}
-            <div style={{ fontSize: 12, color: '#475569', marginBottom: 20 }}>
+            <div style={{ fontSize: 12, color: '#475569', marginBottom: 8 }}>
               {new Date().toLocaleDateString('en-GB', {
                 day: 'numeric', month: 'long', year: 'numeric',
                 timeZone: 'America/St_Lucia',
               })}
             </div>
 
-            {/* Body */}
-            <div style={{ fontSize: 13.5, lineHeight: 1.75, color: '#1e293b', whiteSpace: 'pre-wrap' }}>
-              {output}
-            </div>
+            {/* Patient reference */}
+            {(patientName || dob || nhiNumber) && (
+              <div style={{ fontSize: 12, color: '#374151', fontWeight: 600, marginBottom: 20 }}>
+                Re: {[patientName, dob ? `DOB: ${dob}` : '', nhiNumber ? `NHI: ${nhiNumber}` : ''].filter(Boolean).join(' · ')}
+              </div>
+            )}
+
+            {/* Body — editable */}
+            <textarea
+              value={output}
+              onChange={e => setOutput(e.target.value)}
+              spellCheck
+              style={{
+                width: '100%', fontSize: 13.5, lineHeight: 1.75, color: '#1e293b',
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                border: 'none', outline: 'none', resize: 'vertical',
+                background: 'transparent', padding: 0,
+                minHeight: Math.max(200, output.split('\n').length * 26),
+              }}
+            />
 
             {/* Signature block */}
             <div style={{ marginTop: 40, paddingTop: 16, borderTop: '1px solid #e2e8f0' }}>
