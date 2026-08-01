@@ -5,6 +5,10 @@ import { endocrineProtocols } from './protocols/endocrine.js';
 import { vascularProtocols } from './protocols/vascular.js';
 import { gynaecologyProtocols } from './protocols/gynaecology.js';
 import { traumaProtocols } from './protocols/trauma.js';
+import { upperGIProtocols } from './protocols/upperGI.js';
+import { skinSoftTissueProtocols } from './protocols/skinSoftTissue.js';
+import { urologyProtocols } from './protocols/urology.js';
+import { postOpWoundsProtocols } from './protocols/postOpWounds.js';
 
 export type { ManagementProtocol, InvestigationItem, ManagementStep } from './types.js';
 
@@ -18,6 +22,10 @@ const ALL_PROTOCOLS = [
   ...vascularProtocols,
   ...gynaecologyProtocols,
   ...traumaProtocols,
+  ...upperGIProtocols,
+  ...skinSoftTissueProtocols,
+  ...urologyProtocols,
+  ...postOpWoundsProtocols,
 ];
 
 const _byDiseaseId = new Map(ALL_PROTOCOLS.map(p => [p.diseaseId, p]));

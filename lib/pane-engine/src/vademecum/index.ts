@@ -9,6 +9,10 @@ import './specialties/endocrine.js';
 import './specialties/vascular.js';
 import './specialties/gynaecology.js';
 import './specialties/trauma.js';
+import './specialties/upperGI.js';
+import './specialties/skinSoftTissue.js';
+import './specialties/urology.js';
+import './specialties/postOpWounds.js';
 
 import { getRegisteredDiseases, getRegisteredFeatures } from './registry.js';
 

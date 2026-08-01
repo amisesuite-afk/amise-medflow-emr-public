@@ -1,0 +1,225 @@
+import type { ManagementProtocol } from '../types.js';
+
+export const postOpWoundsProtocols: ManagementProtocol[] = [
+  {
+    diseaseId: 'surgical_site_infection',
+    icd10Prefixes: ['T81.4'],
+    label: 'Surgical Site Infection (SSI)',
+    keyPoints: [
+      'SSI is classified as superficial incisional, deep incisional, or organ/space — organ/space SSI (e.g. anastomotic leak) is most serious.',
+      'S. aureus (including MRSA) is the commonest pathogen; bowel surgery adds gram-negatives and anaerobes.',
+      'CDC criteria: infection within 30 days (or 90 days if implant) — purulent discharge, culture positive, or clinician diagnosis.',
+    ],
+    redFlags: [
+      'Purulent discharge with systemic sepsis — IV antibiotics + urgent wound exploration.',
+      'Wound dehiscence with evisceration — emergency return to theatre for fascial closure.',
+      'SIRS / septic shock from organ/space SSI — emergency re-laparotomy or CT-guided drainage.',
+    ],
+    investigations: [
+      { label: 'Wound swab C&S + MRSA screen', urgency: 'urgent' },
+      { label: 'FBC, CRP, blood cultures (if systemic sepsis)', urgency: 'urgent' },
+      { label: 'CT abdomen/pelvis with IV contrast (deep / organ-space SSI, exclude anastomotic leak)', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'surgical', step: 'Superficial incisional SSI: open wound, drain pus, wound swab, irrigate with saline; leave to heal by secondary intention.' },
+      { phase: 'conservative', step: 'Antibiotics guided by swab culture; empirical: co-amoxiclav 625 mg TDS × 5–7 days. Add metronidazole for colorectal wounds.' },
+      { phase: 'conservative', step: 'Wound dressings: alginate for wet wounds, hydrofibre for cavity; negative pressure wound therapy (NPWT) for large wounds.' },
+      { phase: 'surgical', step: 'Deep incisional SSI: formal surgical debridement under GA + VAC dressing; daily nursing review.' },
+      { phase: 'conservative', step: 'Prevention: pre-op chlorhexidine skin wash, appropriate prophylactic antibiotics, maintain normothermia intraoperatively, tight glucose control post-op.' },
+      { phase: 'followup', step: 'Wound review at 48 h and 1 week; swab at 5 days to confirm sensitivity; formal wound care nurse referral for complex wounds.' },
+    ],
+    referral: 'Surgical ward / outpatient wound clinic; microbiologist for MRSA or resistant organisms.',
+  },
+  {
+    diseaseId: 'wound_dehiscence',
+    icd10Prefixes: ['T81.31'],
+    label: 'Wound Dehiscence / Burst Abdomen',
+    keyPoints: [
+      'Fascial dehiscence (burst abdomen) occurs in 1–3% of laparotomies — peak day 5–8 post-op.',
+      'Serosanguineous "salmon-pink" discharge from wound is the classic warning sign preceding dehiscence.',
+      'Risk factors: obesity, malnutrition, infection, corticosteroids, COPD, haematoma, closure under tension.',
+    ],
+    redFlags: [
+      'Visible bowel or omentum through wound — emergency return to theatre within 2 h.',
+      'Wound dehiscence with peritonitis signs — possible anastomotic leak; CT urgently + return to theatre.',
+    ],
+    investigations: [
+      { label: 'Clinical diagnosis (do not poke wound)', urgency: 'stat' },
+      { label: 'FBC, CRP, blood cultures if systemically unwell', urgency: 'urgent' },
+      { label: 'CT abdomen/pelvis (exclude anastomotic leak / collection as precipitating cause)', urgency: 'urgent' },
+      { label: 'Albumin, pre-albumin (nutritional assessment)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'immediate', step: 'Moist saline-soaked swabs to cover exposed bowel; 1:1 discussion with patient; IV access, NBM, analgesia.' },
+      { phase: 'surgical', step: 'Return to theatre: washout, mass closure with No.1 PDS × 2 sutures (4:1 ratio, small bites technique), ± retention sutures.' },
+      { phase: 'surgical', step: 'If bowel contamination or re-closure not possible: planned ventral hernia (Bogota bag / VAC) with delayed closure.' },
+      { phase: 'conservative', step: 'Nutritional optimisation: NG feeds or TPN; dietitian review.' },
+      { phase: 'conservative', step: 'Abdominal support garment post-closure; address modifiable risk factors (smoking cessation, glucose control, steroids review).' },
+      { phase: 'followup', step: 'Wound review at 2 weeks; incisional hernia surveillance at 6 months (common after burst abdomen).' },
+    ],
+    referral: 'Surgical emergency — take to theatre within 2 h.',
+  },
+  {
+    diseaseId: 'anastomotic_leak',
+    icd10Prefixes: ['K91.89'],
+    label: 'Anastomotic Leak',
+    keyPoints: [
+      'Anastomotic leak complicates 2–10% of colorectal resections (higher for low anterior resection) and 3–5% of oesophago-gastric anastomoses.',
+      'International Study Group classification: grade A (clinically insignificant) → grade C (emergency re-operation).',
+      'CT with rectal water-soluble contrast or oral contrast is the diagnostic standard.',
+    ],
+    redFlags: [
+      'Peritonitis, haemodynamic instability, or organ failure post-bowel surgery — emergency re-laparotomy.',
+      'Oesophago-gastric or gastric anastomotic leak — emergency repair or drainage; high mortality.',
+    ],
+    investigations: [
+      { label: 'CT abdomen/pelvis with IV ± oral/rectal contrast (extraluminal air, fluid, contrast leak)', urgency: 'stat' },
+      { label: 'FBC, CRP, WBC (WBC >12 post-op day 5 strongly suggests leak)', urgency: 'urgent' },
+      { label: 'Blood cultures × 2, U&E, lactate', urgency: 'urgent' },
+      { label: 'Contrast water-soluble enema (grade C colonic anastomosis — confirm site)', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'immediate', step: 'Aggressive IV fluid resuscitation; IV broad-spectrum antibiotics (piperacillin-tazobactam + metronidazole); NBM; ICU referral.' },
+      { phase: 'conservative', step: 'Grade A (radiological only, no symptoms): antibiotics, NPO, drainage if collection — monitor closely.' },
+      { phase: 'surgical', step: 'Grade B (symptomatic, not peritonitic): CT-guided percutaneous drainage ± endoscopic vacuum therapy (EVT) for rectal anastomotic leak.' },
+      { phase: 'surgical', step: 'Grade C (peritonitis / haemodynamic instability): emergency laparotomy — Hartmann\'s procedure or wash-out with defunctioning ileostomy.' },
+      { phase: 'surgical', step: 'Oesophageal leak: fully covered SEMS + drain; re-operate if contaminated.' },
+      { phase: 'followup', step: 'Post-Hartmann\'s: stoma reversal counselling at 3 months; CT at 6–8 weeks; colorectal MDT.' },
+    ],
+    referral: 'Emergency surgical ward / HDU + colorectal surgeon on-call.',
+  },
+  {
+    diseaseId: 'postop_seroma',
+    icd10Prefixes: ['T81.89'],
+    label: 'Post-operative Seroma',
+    keyPoints: [
+      'Seroma is a collection of serous fluid in dead-space created by surgery — commonest after mastectomy, axillary dissection, and hernia repair.',
+      'Most seromas resolve spontaneously; aspiration is reserved for large, tense, or symptomatic collections.',
+      'Prophylactic quilting sutures (obliterating dead space) and compression dressings reduce seroma formation.',
+    ],
+    redFlags: [
+      'Seroma with wound erythema, fever, or purulent fluid — suspect infected seroma (SSI); swab and treat as SSI.',
+    ],
+    investigations: [
+      { label: 'Clinical diagnosis (soft, fluctuant, non-tender, post-op wound)', urgency: 'routine' },
+      { label: 'USS (confirm seroma vs haematoma vs abscess; guide aspiration)', urgency: 'routine' },
+      { label: 'Aspirate for C&S if infected seroma suspected', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Expectant management for small (<50 mL) asymptomatic seromas — majority resolve in 6–8 weeks.' },
+      { phase: 'surgical', step: 'Needle aspiration under aseptic technique for large, tense, or symptomatic seromas — repeat if recollects.' },
+      { phase: 'conservative', step: 'Compression garment post-aspiration — reduces recollection.' },
+      { phase: 'surgical', step: 'Persistent / multiloculated seroma: USS-guided drain insertion; sclerotherapy with tetracycline (specialist centres).' },
+      { phase: 'followup', step: 'Review in 2 weeks; USS to confirm resolution post-aspiration.' },
+    ],
+  },
+  {
+    diseaseId: 'postop_haematoma',
+    icd10Prefixes: ['T81.0'],
+    label: 'Post-operative Haematoma',
+    keyPoints: [
+      'Post-operative haematoma occurs in 1–3% of wounds — risk increased by anticoagulation, antiplatelet therapy, hypertension, and poor haemostasis.',
+      'Expanding haematoma in the neck (post-thyroid / carotid) can compress the airway — a true surgical emergency.',
+      'Most small haematomas are absorbed; large or expanding require surgical evacuation.',
+    ],
+    redFlags: [
+      'Cervical haematoma (post-thyroidectomy / carotid endarterectomy) with stridor — emergency bedside wound opening + return to theatre.',
+      'Rapidly expanding haematoma with haemodynamic instability — return to theatre for haemostasis.',
+    ],
+    investigations: [
+      { label: 'Clinical examination (tense, swollen wound, bruising)', urgency: 'routine' },
+      { label: 'FBC, coagulation screen (identify coagulopathy)', urgency: 'urgent' },
+      { label: 'USS wound (confirm haematoma, guide aspiration of liquefied collections)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Small haematoma (<5 cm): elevate, pressure dressing; review coagulation; withhold anticoagulants; observe 24 h.' },
+      { phase: 'surgical', step: 'Large / expanding haematoma: return to theatre — evacuate clot, achieve haemostasis, re-close or VAC.' },
+      { phase: 'surgical', step: 'Cervical haematoma with airway compromise: immediate wound opening at bedside (undo sutures + skin clips), secure airway, emergency re-operation.' },
+      { phase: 'conservative', step: 'Reverse anticoagulation if safe (protamine for heparin; vitamin K + FFP for warfarin; idarucizumab for dabigatran).' },
+      { phase: 'followup', step: 'Review anticoagulation plan with haematology / cardiology post-event; wound review at 2 weeks.' },
+    ],
+    referral: 'Surgical emergency (expanding / neck haematoma); elective surgical clinic for stable cases.',
+  },
+  {
+    diseaseId: 'ileus_postop',
+    icd10Prefixes: ['K56.0'],
+    label: 'Post-operative Ileus',
+    keyPoints: [
+      'Physiological ileus lasts 1–3 days after laparotomy — prolonged (>3 days) is pathological.',
+      'ERAS (Enhanced Recovery After Surgery) protocols reduce ileus: early feeding, mobilisation, IV fluid restriction, and alvimopan / methylnaltrexone.',
+      'Must distinguish from mechanical obstruction (adhesions, internal hernia) — CT with contrast.',
+    ],
+    redFlags: [
+      'Ileus not resolving by day 5, or abdominal distension worsening — CT to exclude mechanical cause or anastomotic leak.',
+      'Caecal diameter >12 cm on AXR (Ogilvie syndrome) — colonoscopic decompression urgently.',
+    ],
+    investigations: [
+      { label: 'AXR (dilated loops, caecal diameter)', urgency: 'routine' },
+      { label: 'CT abdomen/pelvis with IV contrast (exclude mechanical obstruction, anastomotic leak, SSI)', urgency: 'urgent' },
+      { label: 'FBC, U&E, Mg²⁺ (hypokalaemia and hypomagnesaemia worsen ileus)', urgency: 'urgent' },
+      { label: 'Abdominal USS (limited in ileus — not first choice)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'NBM until flatus / bowel sounds; NGT decompression if vomiting and distension.' },
+      { phase: 'conservative', step: 'Correct electrolytes: IV KCl (target K ≥3.5); IV MgSO₄ (target Mg >0.85 mmol/L).' },
+      { phase: 'conservative', step: 'Early mobilisation; aim for no IV fluids by day 2 (oral sips tolerated); chewing gum stimulates motilin.' },
+      { phase: 'conservative', step: 'Review opiate analgesia — switch to NSAID / paracetamol ± epidural to reduce opioid-induced ileus.' },
+      { phase: 'conservative', step: 'Alvimopan (peripheral mu-opioid antagonist) or methylnaltrexone — accelerates GI recovery post-laparotomy.' },
+      { phase: 'surgical', step: 'Ogilvie syndrome (acute colonic pseudo-obstruction): IV neostigmine (2 mg over 3–5 min, monitoring HR) or colonoscopic decompression.' },
+      { phase: 'followup', step: 'Full diet re-introduction when flatus returns; dietitian review if prolonged (>5 days ileus) for TPN.' },
+    ],
+  },
+  {
+    diseaseId: 'adhesion_obstruction',
+    icd10Prefixes: ['K56.5'],
+    label: 'Small Bowel Obstruction — Adhesions',
+    keyPoints: [
+      'Adhesions account for 60% of all SBO — risk peaks within 5 years of laparotomy but continues lifelong.',
+      'Gastrografin (water-soluble contrast) challenge at 24 h both predicts and promotes resolution without surgery (65–80% success).',
+      'Closed-loop obstruction or ischaemic signs (constant pain, pyrexia, raised lactate) demand emergency surgery.',
+    ],
+    redFlags: [
+      'Constant pain (not colicky), fever, raised WBC, peritonitis — ischaemic bowel; emergency laparotomy.',
+      'Transition point in previously unscarred abdomen — consider malignancy or internal hernia.',
+    ],
+    investigations: [
+      { label: 'AXR (dilated small bowel, absence of large bowel gas)', urgency: 'urgent' },
+      { label: 'CT abdomen/pelvis with IV contrast (transition point, ischaemia, closed loop)', urgency: 'urgent' },
+      { label: 'FBC, U&E, lactate, blood cultures (if peritonism)', urgency: 'urgent' },
+    ],
+    management: [
+      { phase: 'immediate', step: 'Drip and suck: NGT decompression, IV fluids, catheter (hourly UO), NBM; correct electrolytes.' },
+      { phase: 'conservative', step: 'Gastrografin challenge at 24 h (100 mL oral / NGT) — if contrast reaches colon in 24 h, >95% resolve without surgery.' },
+      { phase: 'surgical', step: 'Failure to resolve at 48–72 h, or ischaemia signs — emergency laparoscopy or laparotomy + adhesiolysis.' },
+      { phase: 'surgical', step: 'Ischaemic bowel: resection ± primary anastomosis (Hartmann\'s if contaminated).' },
+      { phase: 'followup', step: 'Counsel on recurrence risk (30% at 10 years); consider Seprafilm / icodextrin barrier at index surgery.' },
+    ],
+    referral: 'Emergency surgical admission.',
+  },
+  {
+    diseaseId: 'incisional_hernia_early',
+    icd10Prefixes: ['K43.0', 'K43.1'],
+    label: 'Early Incisional Hernia / Fascial Disruption',
+    keyPoints: [
+      'Incisional hernia occurs in 10–15% of laparotomy closures — risk highest in first 2 years post-op.',
+      'Subclinical fascial dehiscence ("early incisional hernia") may present as bulge before formal hernia is clinically obvious.',
+      'CT defines the fascial defect size and content — guides timing and type of repair.',
+    ],
+    redFlags: [
+      'Acute pain with irreducible hernia at incision site — strangulation; emergency repair.',
+    ],
+    investigations: [
+      { label: 'Clinical examination (Valsalva, standing vs supine)', urgency: 'routine' },
+      { label: 'CT abdomen (defect size, content, recurrence, mesh if prior repair)', urgency: 'routine' },
+      { label: 'USS (small defects, seroma vs hernia)', urgency: 'routine' },
+    ],
+    management: [
+      { phase: 'conservative', step: 'Optimise modifiable risk factors before elective repair: BMI <35, smoking cessation ≥4 weeks, glucose control (HbA1c <69 mmol/mol), treat COPD.' },
+      { phase: 'conservative', step: 'Abdominal support belt / hernia garment for symptomatic relief while awaiting surgery.' },
+      { phase: 'surgical', step: 'Small defect (EHS W1, <4 cm): open mesh sublay repair.' },
+      { phase: 'surgical', step: 'Medium-large defect (EHS W2–3): laparoscopic IPOM or open Rives-Stoppa retromuscular repair ± component separation.' },
+      { phase: 'followup', step: 'Review at 6 weeks post-repair; USS or CT at 6 months for large mesh repairs.' },
+    ],
+    referral: 'General surgery / hernia centre for complex defects.',
+  },
+];
