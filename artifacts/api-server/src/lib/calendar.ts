@@ -283,6 +283,53 @@ export interface CalendarEventFull extends CalendarEvent {
   calendarId: string;
 }
 
+/** Fetch ALL non-cancelled, non-break events from all three calendars for a given ECT date (YYYY-MM-DD).
+ *  Used by the daily summary to surface every appointment — clinic, theatre, and endoscopy. */
+export async function fetchAllEventsForDate(dateStr: string): Promise<CalendarEventFull[]> {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const timeMin = new Date(Date.UTC(y, m - 1, d, 4, 0, 0)).toISOString();   // midnight ECT = 04:00 UTC
+  const timeMax = new Date(Date.UTC(y, m - 1, d + 1, 4, 0, 0)).toISOString();
+
+  const cal = getCalendar();
+  const calIds = [
+    process.env.CALENDAR_ID_RODNEY_BAY,
+    process.env.CALENDAR_ID_CASTRIES,
+    process.env.CALENDAR_ID_TAPION_ERCP,
+  ].filter(Boolean) as string[];
+
+  const seen = new Set<string>();
+  const events: CalendarEventFull[] = [];
+
+  for (const calId of calIds) {
+    let data;
+    try {
+      ({ data } = await cal.events.list({
+        calendarId: calId,
+        timeMin,
+        timeMax,
+        singleEvents: true,
+        orderBy: 'startTime',
+        maxResults: 100,
+      }));
+    } catch {
+      continue; // skip unavailable calendars gracefully
+    }
+    for (const e of data.items ?? []) {
+      if (!e.id || seen.has(e.id) || e.status === 'cancelled') continue;
+      seen.add(e.id);
+      const summary  = e.summary ?? '(No title)';
+      const type     = classifyEvent(summary);
+      if (type === 'break') continue;
+      const startVal = e.start?.dateTime ?? e.start?.date ?? '';
+      const endVal   = e.end?.dateTime   ?? e.end?.date   ?? '';
+      events.push({ id: e.id, summary, start: startVal, end: endVal, type, calendarId: calId });
+    }
+  }
+
+  events.sort((a, b) => a.start.localeCompare(b.start));
+  return events;
+}
+
 /** Fetch only theatre/endoscopy events for a specific ECT date (YYYY-MM-DD). */
 export async function fetchEventsForDate(dateStr: string): Promise<CalendarEventFull[]> {
   const [y, m, d] = dateStr.split('-').map(Number);

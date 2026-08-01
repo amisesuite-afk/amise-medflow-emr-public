@@ -3,7 +3,7 @@ import { sb, getSupabaseAdmin, audit, requireCronSecret } from '../lib/supabase.
 import { sendSms, smsBody48h, smsBodyPostVisit, smsBodyStaffEscalation, getPrepInstructions } from '../lib/sms.js';
 import { sendOrDraft } from '../lib/gmail.js';
 import { draftReply } from '../lib/claude.js';
-import { formatSlotForDisplay } from '../lib/calendar.js';
+import { formatSlotForDisplay, fetchAllEventsForDate } from '../lib/calendar.js';
 import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
@@ -142,29 +142,41 @@ router.post('/api/cron/daily-summary', async (req, res) => {
   const startOfDay = new Date(ectMidnight.getTime() - ECT_OFFSET_MS);
   const endOfDay   = new Date(startOfDay.getTime() + 86400_000 - 1);
   const dateLabel  = startOfDay.toLocaleDateString('en-LC', { timeZone: 'America/St_Lucia', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-  const { data: appointments } = await sb()
-    .from('appointment_requests')
-    .select('id, patient_name, patient_email, appointment_type, location, confirmed_slot')
-    .in('status', ['staff_confirmed', 'patient_confirmed'])
-    .gte('confirmed_slot', startOfDay.toISOString())
-    .lte('confirmed_slot', endOfDay.toISOString());
-
-  const { data: escalations } = await sb()
-    .from('audit_logs')
-    .select('action, record_id, created_at')
-    .eq('action', 'escalate')
-    .gte('created_at', startOfDay.toISOString())
-    .lte('created_at', endOfDay.toISOString());
-
-  const { data: pending } = await sb()
-    .from('appointment_requests')
-    .select('id')
-    .eq('status', 'pending');
-
   // todayEctDateString: ectMidnight has UTC hours zeroed to represent ECT midnight,
   // so its ISO date part equals today's date in ECT (America/St_Lucia, UTC-4).
   const todayEctDateString = ectMidnight.toISOString().slice(0, 10);
+
+  // Run all queries in parallel
+  const [
+    { data: appointments },
+    { data: escalations },
+    { data: pending },
+  ] = await Promise.all([
+    sb()
+      .from('appointment_requests')
+      .select('id, patient_name, patient_email, appointment_type, location, confirmed_slot')
+      .in('status', ['staff_confirmed', 'patient_confirmed'])
+      .gte('confirmed_slot', startOfDay.toISOString())
+      .lte('confirmed_slot', endOfDay.toISOString()),
+    sb()
+      .from('audit_logs')
+      .select('action, record_id, created_at')
+      .eq('action', 'escalate')
+      .gte('created_at', startOfDay.toISOString())
+      .lte('created_at', endOfDay.toISOString()),
+    sb()
+      .from('appointment_requests')
+      .select('id')
+      .eq('status', 'pending'),
+  ]);
+
+  // Fetch today's schedule from Google Calendar (all 3 calendars, all event types)
+  let calEvents: Awaited<ReturnType<typeof fetchAllEventsForDate>> = [];
+  try {
+    calEvents = await fetchAllEventsForDate(todayEctDateString);
+  } catch (err) {
+    req.log.warn({ err }, '[cron/daily-summary] Google Calendar fetch failed — Supabase data only');
+  }
 
   // Mark any open/in_progress tasks whose due_date has passed as overdue.
   await sb()
@@ -181,16 +193,30 @@ router.post('/api/cron/daily-summary', async (req, res) => {
     .order('due_date', { ascending: true })
     .limit(20);
 
+  const totalAppts = calEvents.length || (appointments?.length ?? 0);
+
   const summaryLines: string[] = [
     `Daily Summary — Amise Front Desk AI — ${dateLabel}`,
     '',
-    `Appointments today: ${appointments?.length ?? 0}`,
+    `Appointments today: ${totalAppts}`,
     `Escalations today: ${escalations?.length ?? 0}`,
     `Pending replies: ${pending?.length ?? 0}`,
   ];
 
-  if (appointments?.length) {
-    summaryLines.push('', 'Today\'s schedule:');
+  // Google Calendar is the source of truth for the day's schedule
+  if (calEvents.length) {
+    summaryLines.push('', "Today's schedule (Google Calendar):");
+    for (const ev of calEvents) {
+      const t = ev.start.includes('T') ? new Date(ev.start) : null;
+      const timeStr = t
+        ? t.toLocaleTimeString('en-GB', { timeZone: 'America/St_Lucia', hour: '2-digit', minute: '2-digit', hour12: false })
+        : 'All day';
+      const typeTag = ev.type !== 'clinic' ? ` [${ev.type}]` : '';
+      summaryLines.push(`  ${timeStr}${typeTag} — ${ev.summary}`);
+    }
+  } else if (appointments?.length) {
+    // Fallback: Supabase confirmed appointments (Google Calendar unavailable)
+    summaryLines.push('', "Today's schedule (intake system):");
     for (const appt of appointments) {
       const t = new Date(appt.confirmed_slot);
       const ectTime = t.toLocaleTimeString('en-GB', { timeZone: 'America/St_Lucia', hour: '2-digit', minute: '2-digit', hour12: false });
