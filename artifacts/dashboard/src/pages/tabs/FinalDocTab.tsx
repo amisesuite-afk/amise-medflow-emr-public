@@ -6,7 +6,7 @@ import { closeEncounter } from '@/lib/db';
 import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, inlineText, callout, footer, signoff, escH, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
-import { printDoc, saveBlobAsPDF } from './lib/pdfExport';
+import { printDoc, saveBlobAsPDF, downloadAsWord } from './lib/pdfExport';
 
 // ── Local types ───────────────────────────────────────────────────────────────
 
@@ -370,8 +370,9 @@ function buildReferralHtml(ctx: Ctx, referTo: string, referNotes: string): strin
   const meds = [...ctx.medications, ...(ctx.medicationsText ? [ctx.medicationsText] : [])];
   const allergy = ctx.allergies || 'NKDA (No Known Drug Allergies)';
 
+  const patientRef = [ctx.dob ? `DOB: ${ctx.dob}` : '', ctx.nhiNumber ? `NHI: ${ctx.nhiNumber}` : ''].filter(Boolean).join(' · ');
   const meta = metaGrid([
-    { label: 'Patient',   value: ctx.patientName || '—', sub: ageLine || undefined },
+    { label: 'Patient',   value: ctx.patientName || '—', sub: [ageLine, patientRef].filter(Boolean).join(' · ') || undefined },
     { label: 'Address',   value: ctx.address || '' },
     { label: 'Referring to', value: referTo || 'Specialist Colleague' },
     { label: 'Date',      value: now },
@@ -438,8 +439,9 @@ function buildDischargeHtml(ctx: Ctx, state: DischargePrintState): string {
   const preMeds = [...ctx.medications, ...(ctx.medicationsText ? [ctx.medicationsText] : [])];
   const allFlags = [...state.redFlags, ...(state.warnings ? [state.warnings] : [])];
 
+  const dischPatientRef = [ageLine, ctx.dob ? `DOB: ${ctx.dob}` : '', ctx.nhiNumber ? `NHI: ${ctx.nhiNumber}` : ''].filter(Boolean).join(' · ');
   const meta = metaGrid([
-    { label: 'Patient',   value: ctx.patientName || '—', sub: ageLine || undefined },
+    { label: 'Patient',   value: ctx.patientName || '—', sub: dischPatientRef || undefined },
     { label: 'Contact',   value: ctx.phone || '' },
     { label: 'Clinician', value: 'Dr Dawit Daniel Kabiye, MD, DM', sub: 'General & Endoscopic Surgery' },
     { label: 'Date',      value: now },
@@ -491,6 +493,112 @@ function buildDischargeHtml(ctx: Ctx, state: DischargePrintState): string {
     footer('Please keep this summary for your records. Contact our office if you have questions about your care.');
 
   return wrapDoc(`Discharge — ${ctx.patientName || 'Patient'}`, body);
+}
+
+// ── Word body builders ────────────────────────────────────────────────────────
+
+function h(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function wordMeta(rows: [string, string][]): string {
+  return `<table style="width:100%;border-collapse:collapse;margin-bottom:12pt">${
+    rows.filter(([,v]) => v).map(([l,v]) =>
+      `<tr><td style="font-weight:700;color:#0B2545;width:30%;font-size:10pt;padding:2pt 6pt 2pt 0;vertical-align:top;white-space:nowrap">${h(l)}</td><td style="font-size:10.5pt;padding:2pt 0">${h(v)}</td></tr>`
+    ).join('')
+  }</table>`;
+}
+function wordHdr(title: string): string {
+  return `<h3 style="font-size:10pt;font-weight:700;color:#0B2545;border-bottom:.75pt solid #C8A24B;padding-bottom:3pt;margin:12pt 0 5pt">${h(title)}</h3>`;
+}
+function wordBulList(items: string[]): string {
+  return items.filter(Boolean).map(i => `<p style="margin:2pt 0;font-size:10.5pt;padding-left:12pt">• ${h(i)}</p>`).join('');
+}
+function wordSig(): string {
+  return `<div style="margin-top:36pt"><p style="margin:0;font-weight:700;font-size:11pt">Dr Dawit Daniel Kabiye, MD, DM</p>
+<p style="margin:0;font-size:10pt;color:#374151">General &amp; Endoscopic Surgery · Amise Medical Services</p>
+<br><div style="border-bottom:1pt solid #333;width:220pt;height:20pt"></div>
+<p style="margin:2pt 0;font-size:9pt;color:#6B7280">Licence #: ............&nbsp;&nbsp;&nbsp;Date: ..................</p></div>`;
+}
+
+function buildNoteWordBody(text: string, ctx: Ctx): string {
+  const site = SITE_INFO[ctx.currentSite] ?? SITE_INFO.rodney_bay;
+  const now = ectNow();
+  const cleaned = cleanForPrint(text);
+  const patLine = [ctx.patientName || '—', ctx.age ? `${ctx.age} yrs` : '', ctx.sex !== 'unknown' ? ctx.sex : '', ctx.dob ? `DOB: ${ctx.dob}` : '', ctx.nhiNumber ? `NHI: ${ctx.nhiNumber}` : ''].filter(Boolean).join(' · ');
+  return `<h1 style="font-size:14pt;font-weight:700;color:#0B2545;margin:0 0 2pt">Clinical Encounter Note</h1>
+<h2 style="font-size:10pt;color:#374151;font-weight:400;margin:0 0 10pt">Amise Medical Services · ${h(site.name)}</h2>
+${wordMeta([['Patient', patLine], ['Contact', ctx.phone || ''], ['Date', now], ['Clinician', 'Dr Dawit Daniel Kabiye, MD, DM · General & Endoscopic Surgery']])}
+<p style="white-space:pre-wrap;font-family:Arial;font-size:10.5pt;line-height:1.6;color:#1A1A1A">${h(cleaned)}</p>
+${wordSig()}
+<p style="margin-top:28pt;border-top:.5pt solid #0B2545;padding-top:4pt;font-size:8pt;color:#6B7280;font-style:italic">Prepared from clinical encounter data entered at time of consultation. Verify all details before issuing.</p>`;
+}
+
+function buildReferralWordBody(ctx: Ctx, referTo: string, referNotes: string): string {
+  const site = SITE_INFO[ctx.currentSite] ?? SITE_INFO.rodney_bay;
+  const now = ectNow();
+  const ageLine = [ctx.age ? `${ctx.age} yrs` : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(', ');
+  const patLine = [ctx.patientName || '—', ageLine, ctx.dob ? `DOB: ${ctx.dob}` : '', ctx.nhiNumber ? `NHI: ${ctx.nhiNumber}` : ''].filter(Boolean).join(' · ');
+  const meds = [...ctx.medications, ...(ctx.medicationsText ? [ctx.medicationsText] : [])];
+  const allergy = ctx.allergies || 'NKDA (No Known Drug Allergies)';
+  let body = `<h1 style="font-size:14pt;font-weight:700;color:#0B2545;margin:0 0 2pt">Referral Letter</h1>
+<h2 style="font-size:10pt;color:#374151;font-weight:400;margin:0 0 10pt">Amise Medical Services · ${h(site.name)}</h2>
+${wordMeta([['Patient', patLine], ['Address', ctx.address || ''], ['Referring to', referTo || 'Specialist Colleague'], ['Date', now]])}
+<p style="margin:8pt 0 4pt;font-size:10.5pt">Dear Colleague${referTo ? ` / ${h(referTo)}` : ''},</p>
+<p style="margin:0 0 8pt;font-size:10.5pt">I am grateful for your review of <strong>${h(ctx.patientName || 'this patient')}</strong>${ageLine ? `, ${h(ageLine)},` : ''} who attended ${h(site.name)} on ${h(now)}.</p>`;
+  if (ctx.symptoms.length || ctx.freeText) {
+    body += wordHdr('Presenting History');
+    if (ctx.symptoms.length) body += `<p style="font-size:10.5pt;margin:2pt 0">CC: ${h(ctx.symptoms.join(', '))}${ctx.durationDays ? ` (${ctx.durationDays} days)` : ''}</p>`;
+    if (ctx.freeText) body += `<p style="font-size:10.5pt;margin:4pt 0;white-space:pre-wrap">${h(ctx.freeText)}</p>`;
+  }
+  if (ctx.comorbidities.length || ctx.pmhNotes) {
+    body += wordHdr('Past Medical History');
+    body += wordBulList(ctx.comorbidities);
+    if (ctx.pmhNotes) body += `<p style="font-size:10.5pt;margin:2pt 0">${h(ctx.pmhNotes)}</p>`;
+  }
+  if (meds.length) { body += wordHdr('Current Medications'); body += wordBulList(meds); }
+  body += wordHdr('Allergies');
+  body += `<p style="font-size:10.5pt;margin:2pt 0;color:#dc2626;font-weight:600">${h(allergy)}</p>`;
+  if (ctx.assessment) { body += wordHdr('Clinical Assessment'); body += `<p style="font-size:10.5pt;margin:2pt 0">${h(ctx.assessment)}</p>`; }
+  if (referNotes) { body += wordHdr('Reason for Referral'); body += `<p style="font-size:10.5pt;margin:2pt 0;white-space:pre-wrap">${h(referNotes)}</p>`; }
+  body += `<p style="margin-top:12pt;font-size:10.5pt">I would be grateful for your review and further management. Please do not hesitate to contact our rooms if further information is required.</p>`;
+  body += wordSig();
+  body += `<p style="margin-top:28pt;border-top:.5pt solid #0B2545;padding-top:4pt;font-size:8pt;color:#6B7280;font-style:italic">Prepared at time of consultation. Please verify clinical details before acting on this referral.</p>`;
+  return body;
+}
+
+function buildDischargeWordBody(ctx: Ctx, state: DischargePrintState): string {
+  const site = SITE_INFO[ctx.currentSite] ?? SITE_INFO.rodney_bay;
+  const now = ectNow();
+  const ageLine = [ctx.age ? `${ctx.age} yrs` : '', ctx.sex !== 'unknown' ? ctx.sex : ''].filter(Boolean).join(', ');
+  const patLine = [ctx.patientName || '—', ageLine, ctx.dob ? `DOB: ${ctx.dob}` : '', ctx.nhiNumber ? `NHI: ${ctx.nhiNumber}` : ''].filter(Boolean).join(' · ');
+  const allFlags = [...state.redFlags, ...(state.warnings ? [state.warnings] : [])];
+  let body = `<h1 style="font-size:14pt;font-weight:700;color:#0B2545;margin:0 0 2pt">Discharge Summary</h1>
+<h2 style="font-size:10pt;color:#374151;font-weight:400;margin:0 0 10pt">Amise Medical Services · ${h(site.name)}</h2>
+${wordMeta([['Patient', patLine], ['Contact', ctx.phone || ''], ['Clinician', 'Dr Dawit Daniel Kabiye, MD, DM'], ['Date', now]])}`;
+  if (state.draft) {
+    body += `<p style="white-space:pre-wrap;font-size:10.5pt;line-height:1.6;margin-top:8pt">${h(state.draft)}</p>`;
+  } else {
+    if (ctx.assessment) { body += wordHdr('Diagnosis'); body += `<p style="font-size:10.5pt;margin:2pt 0">${h(ctx.assessment)}${ctx.icdCodes.length ? ` (${ctx.icdCodes.join(', ')})` : ''}</p>`; }
+    if (ctx.procedures) { body += wordHdr('Procedure Performed'); body += `<p style="font-size:10.5pt;margin:2pt 0">${h(ctx.procedures)}</p>`; }
+    if (state.condition) { body += wordHdr('Condition on Discharge'); body += `<p style="font-size:10.5pt;margin:2pt 0">${h(state.condition)}</p>`; }
+  }
+  if (state.meds.length > 0) {
+    body += wordHdr('Medications on Discharge');
+    body += `<table style="width:100%;border-collapse:collapse;font-size:10pt"><tr style="background:#f0f4f8">${['Drug','Dose','Route','Frequency','Duration'].map(h2=>`<th style="text-align:left;padding:3pt 6pt;font-weight:700;color:#0B2545">${h2}</th>`).join('')}</tr>`;
+    body += state.meds.map(m=>`<tr style="border-top:.5pt solid #E5E7EB">${[m.drug,m.dose,m.route,m.frequency,m.duration].map(v=>`<td style="padding:3pt 6pt">${h(v)}</td>`).join('')}</tr>`).join('');
+    body += `</table>`;
+  }
+  const instrParts: string[] = [];
+  if (state.wound) instrParts.push(`Wound care: ${state.wound}`);
+  if (state.diet) instrParts.push(`Diet: ${state.diet}`);
+  if (state.activity) instrParts.push(`Activity: ${state.activity}`);
+  if (instrParts.length) { body += wordHdr('Discharge Instructions'); instrParts.forEach(p => { body += `<p style="font-size:10.5pt;margin:2pt 0">${h(p)}</p>`; }); }
+  if (state.followup) { body += wordHdr('Follow-up Plan'); body += `<p style="font-size:10.5pt;margin:2pt 0;white-space:pre-wrap">${h(state.followup)}</p>`; }
+  if (allFlags.length) {
+    body += `<div style="margin-top:10pt;border:1pt solid #fca5a5;padding:8pt;border-radius:4pt"><p style="font-weight:700;color:#991b1b;font-size:10pt;margin:0 0 4pt">⚠ Return Immediately If:</p>${wordBulList(allFlags)}</div>`;
+  }
+  body += wordSig();
+  body += `<p style="margin-top:28pt;border-top:.5pt solid #0B2545;padding-top:4pt;font-size:8pt;color:#6B7280;font-style:italic">Please keep this summary for your records. Contact our office if you have questions about your care.</p>`;
+  return body;
 }
 
 // printHtml / downloadHtml → now provided by pdfExport (printDoc / saveBlobAsPDF)
@@ -887,6 +995,12 @@ export default function FinalDocTab() {
           🖨 Print
         </button>
 
+        <button type="button" style={hasFinal ? BTN_GHOST : btnDisabled(BTN_GHOST)}
+          disabled={!hasFinal}
+          onClick={() => downloadAsWord(buildNoteWordBody(finalDocument, ctx), `note-${patSlug}-${dateStr}`, `Clinical Note — ${ctx.patientName || 'Patient'}`)}>
+          📄 Word
+        </button>
+
         <div style={{ width: 1, height: 20, background: '#e5e7eb', margin: '0 2px' }} />
 
         <button type="button" style={BTN_ACCENT}
@@ -967,6 +1081,10 @@ export default function FinalDocTab() {
             <button type="button" style={BTN_GHOST}
               onClick={() => printDoc(buildReferralHtml(ctx, referTo, referNotes))}>
               🖨 Print
+            </button>
+            <button type="button" style={BTN_GHOST}
+              onClick={() => downloadAsWord(buildReferralWordBody(ctx, referTo, referNotes), `referral-${patSlug}-${dateStr}`, `Referral — ${ctx.patientName || 'Patient'}`)}>
+              📄 Word
             </button>
             <button type="button" style={{ ...BTN_GHOST, marginLeft: 'auto' }} onClick={() => setShowReferral(false)}>× Close</button>
           </div>
@@ -1167,6 +1285,10 @@ export default function FinalDocTab() {
             <button type="button" style={BTN_GHOST}
               onClick={() => printDoc(buildDischargeHtml(ctx, dischargePrintState))}>
               🖨 Print
+            </button>
+            <button type="button" style={BTN_GHOST}
+              onClick={() => downloadAsWord(buildDischargeWordBody(ctx, dischargePrintState), `discharge-${patSlug}-${dateStr}`, `Discharge Summary — ${ctx.patientName || 'Patient'}`)}>
+              📄 Word
             </button>
           </div>
         </div>
