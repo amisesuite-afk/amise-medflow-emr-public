@@ -12,7 +12,7 @@ import { getAIProviderConfig, segmentSoapWithOllama, type SegmentedSoap } from '
 import { localSegmentSoap } from '@/lib/local-soap-segmenter';
 import { getApiOrigin } from '@/lib/api-origin';
 import { getMatrix } from '@/lib/cc-matrices';
-import { DISEASES, initPaneState, updatePosterior, topDiagnoses, applyModifiers, getProtocol } from '@workspace/pane-engine';
+import { DISEASES, getDiseaseSpecialty, initPaneState, updatePosterior, topDiagnoses, applyModifiers, getProtocol } from '@workspace/pane-engine';
 import { extractFeaturesFromTranscript, detectPathognomonic, type PathognomicMatch } from '@/lib/transcript-dx-mapper';
 import { computeReminders } from '@/lib/safety-engine';
 
@@ -189,6 +189,26 @@ const CC_EXAM_MAP: Record<string, string[]> = {
 };
 
 const ALL_STD_EXAM = ['General', 'Abdomen', 'CVS', 'Resp', 'Extremities', 'Wound'];
+
+// CC key → ranked disease specialties for deterministic differential suggestions
+const CC_DX_SPECIALTY: Record<string, string[]> = {
+  abd_pain:     ['general_surgery', 'hepatobiliary', 'colorectal'],
+  hernia:       ['hernia', 'general_surgery'],
+  breast:       ['breast'],
+  reflux:       ['general_surgery'],
+  bowel:        ['colorectal', 'general_surgery'],
+  rectal_bleed: ['colorectal', 'general_surgery'],
+  weight_loss:  ['general_surgery', 'colorectal', 'breast', 'hepatobiliary'],
+  jaundice:     ['hepatobiliary', 'general_surgery'],
+  wound:        ['general_surgery', 'vascular'],
+  neck_lump:    ['endocrine'],
+  dysphagia:    ['general_surgery'],
+  bloating:     ['general_surgery', 'colorectal'],
+  skin:         ['general_surgery'],
+  anal:         ['colorectal'],
+  nausea:       ['general_surgery', 'hepatobiliary'],
+  ercp:         ['hepatobiliary'],
+};
 
 const COMMON_LABS = [
   'FBC', 'U&E', 'LFT', 'CRP', 'Coags', 'Lipase', 'Amylase',
@@ -497,6 +517,23 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const toggleSec = (id: string) => setOpenSec(s => s === id ? null : id);
   const [extraCcKeys, setExtraCcKeys] = useState<string[]>([]);
   const [pendingMed, setPendingMed] = useState<{ name: string; dose: string } | null>(null);
+  const [workingDxId, setWorkingDxId] = useState<string | null>(null);
+  const [dxSearch, setDxSearch] = useState('');
+  const [dxDropOpen, setDxDropOpen] = useState(false);
+  // CC-mapped or Bayesian ranked disease suggestions for Assessment
+  const suggestedDx = useMemo(() => {
+    if (ctx.paneTop.length > 0) return ctx.paneTop.slice(0, 5);
+    const specOrder = CC_DX_SPECIALTY[activeCcKey ?? ''] ?? [];
+    const sorted = [...DISEASES].sort((a, b) => {
+      const ai = specOrder.indexOf(getDiseaseSpecialty(a.id));
+      const bi = specOrder.indexOf(getDiseaseSpecialty(b.id));
+      const aRank = ai === -1 ? 999 : ai;
+      const bRank = bi === -1 ? 999 : bi;
+      if (aRank !== bRank) return aRank - bRank;
+      return b.prior - a.prior;
+    });
+    return sorted.slice(0, 5).map(d => ({ disease: d, probability: d.prior }));
+  }, [ctx.paneTop, activeCcKey]);
   const SEC_ORDER = ['cc', 'pmh', 'surgical', 'medications', 'allergies'] as const;
   const advanceSec = (current: string) => {
     const idx = SEC_ORDER.indexOf(current as typeof SEC_ORDER[number]);
@@ -817,15 +854,36 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
 
   function enterPlan() {
     if (!plan.trim()) {
-      ctx.setPlan(
-        'Management Plan\n\n' +
-        '1. Investigations:\n   \n\n' +
-        '2. Imaging:\n   \n\n' +
-        '3. Procedures / Referrals:\n   \n\n' +
-        '4. Medications:\n   \n\n' +
-        '5. Follow-up:\n   \n\n' +
-        '6. Safety-net / Patient instructions:\n   \n',
-      );
+      const proto = workingDxId ? getProtocol(workingDxId) : null;
+      if (proto) {
+        const invLines  = proto.investigations.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
+        const immediate = proto.management.filter(m => m.phase === 'immediate').map(m => `   • ${m.step}`).join('\n');
+        const surgical  = proto.management.filter(m => m.phase === 'surgical').map(m => `   • ${m.step}`).join('\n');
+        const conserv   = proto.management.filter(m => m.phase === 'conservative').map(m => `   • ${m.step}`).join('\n');
+        const followup  = proto.management.filter(m => m.phase === 'followup').map(m => `   • ${m.step}`).join('\n');
+        const rfLines   = proto.redFlags.map(r => `   ⚠ ${r}`).join('\n');
+        ctx.setPlan(
+          `Management Plan — ${proto.label}\n` +
+          `ICD-10: ${DISEASES.find(d => d.id === workingDxId)?.icd10 ?? ''}\n\n` +
+          (proto.keyPoints.length ? `Key Points:\n${proto.keyPoints.map(k => `   • ${k}`).join('\n')}\n\n` : '') +
+          `1. Investigations:\n${invLines || '   '}\n\n` +
+          `2. Imaging:\n   (see investigations above)\n\n` +
+          `3. Procedures / Referrals:\n   ${proto.referral ?? ''}\n\n` +
+          `4. Management:\n${[immediate, conserv, surgical].filter(Boolean).join('\n') || '   '}\n\n` +
+          `5. Follow-up:\n${followup || '   '}\n\n` +
+          `6. Red Flags / Safety-net:\n${rfLines || '   '}\n`,
+        );
+      } else {
+        ctx.setPlan(
+          'Management Plan\n\n' +
+          '1. Investigations:\n   \n\n' +
+          '2. Imaging:\n   \n\n' +
+          '3. Procedures / Referrals:\n   \n\n' +
+          '4. Medications:\n   \n\n' +
+          '5. Follow-up:\n   \n\n' +
+          '6. Safety-net / Patient instructions:\n   \n',
+        );
+      }
     }
     changePhase('plan');
   }
@@ -2036,21 +2094,81 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             </span>
           </div>
 
-          {/* DX differential — at top of assessment */}
-          {ctx.paneTop.length > 0 && (
-            <div style={{ borderRadius: 9, border: '1px solid var(--line)', background: 'var(--card)', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={sectionLabel}>Probabilistic Differential (AI)</div>
-              {ctx.paneTop.slice(0, 4).map(r => (
-                <div key={r.disease.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ flex: 1, height: 20, background: 'var(--bg)', borderRadius: 5, overflow: 'hidden', position: 'relative' }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.round(r.probability * 100)}%`,
-                      background: r.probability > 0.5 ? '#0d9488' : r.probability > 0.25 ? '#d97706' : '#94a3b8', borderRadius: 5 }} />
-                    <span style={{ position: 'absolute', left: 8, top: 0, bottom: 0, display: 'flex', alignItems: 'center',
-                      fontSize: 11, fontWeight: 600, color: r.probability > 0.5 ? '#fff' : 'var(--ink)' }}>
-                      {r.disease.label}
-                    </span>
+          {/* ── Working Diagnosis picker ── */}
+          <div style={{ borderRadius: 9, border: `1px solid ${workingDxId ? 'rgba(0,180,160,0.4)' : 'var(--line)'}`, background: 'var(--card)', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={sectionLabel}>Working Diagnosis</div>
+            {workingDxId ? (() => {
+              const dx = DISEASES.find(d => d.id === workingDxId);
+              const proto = getProtocol(workingDxId);
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderRadius: 7, background: 'rgba(0,180,160,0.08)', border: '1px solid rgba(0,180,160,0.3)' }}>
+                    <span style={{ flex: 1, fontWeight: 700, fontSize: 14, color: 'var(--accent)' }}>{dx?.label}</span>
+                    <span style={{ fontSize: 11, fontFamily: 'monospace', fontWeight: 700, color: 'var(--muted)', background: 'var(--bg)', padding: '2px 7px', borderRadius: 5 }}>{dx?.icd10}</span>
+                    <button type="button" onClick={() => setWorkingDxId(null)} style={{ fontSize: 13, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>✕</button>
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, minWidth: 34, color: 'var(--muted)', textAlign: 'right' }}>
+                  {proto?.keyPoints.length && (
+                    <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.5, paddingLeft: 4 }}>
+                      {proto.keyPoints.map((k, i) => <div key={i}>• {k}</div>)}
+                    </div>
+                  )}
+                  {proto?.redFlags.length && (
+                    <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.5, paddingLeft: 4 }}>
+                      {proto.redFlags.map((r, i) => <div key={i}>⚠ {r}</div>)}
+                    </div>
+                  )}
+                </div>
+              );
+            })() : (
+              <div style={{ position: 'relative' }}>
+                <input
+                  value={dxSearch}
+                  onChange={e => { setDxSearch(e.target.value); setDxDropOpen(true); }}
+                  onFocus={() => setDxDropOpen(true)}
+                  onBlur={() => setTimeout(() => setDxDropOpen(false), 150)}
+                  placeholder="Search diagnosis or ICD-10 code…"
+                  style={{ width: '100%', padding: '7px 10px', borderRadius: 7, border: '1px solid var(--line)', background: 'var(--bg)', color: 'var(--ink)', fontSize: 13, outline: 'none', boxSizing: 'border-box' as const }}
+                />
+                {dxDropOpen && dxSearch.length > 0 && (() => {
+                  const q = dxSearch.toLowerCase();
+                  const hits = DISEASES.filter(d => d.label.toLowerCase().includes(q) || d.icd10.toLowerCase().includes(q)).slice(0, 8);
+                  return hits.length > 0 ? (
+                    <div style={{ position: 'absolute', zIndex: 50, left: 0, right: 0, top: '100%', marginTop: 3, borderRadius: 8, border: '1px solid var(--line)', background: 'var(--card)', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden' }}>
+                      {hits.map(d => (
+                        <button key={d.id} type="button" onMouseDown={() => { setWorkingDxId(d.id); setDxSearch(''); setDxDropOpen(false); }}
+                          style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '9px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' as const, borderBottom: '1px solid var(--line)' }}>
+                          <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{d.label}</span>
+                          <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--accent)', fontWeight: 700 }}>{d.icd10}</span>
+                          <span style={{ fontSize: 10, color: 'var(--muted)' }}>{getDiseaseSpecialty(d.id).replace(/_/g, ' ')}</span>
+                        </button>
+                      ))}
+                    </div>
+                  ) : null;
+                })()}
+              </div>
+            )}
+          </div>
+
+          {/* ── Differential Diagnoses — CC-mapped or Bayesian ── */}
+          {suggestedDx.length > 0 && (
+            <div style={{ borderRadius: 9, border: '1px solid var(--line)', background: 'var(--card)', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={sectionLabel}>{ctx.paneTop.length > 0 ? 'Probabilistic Differential' : 'Suggested Differentials'}</span>
+                <span style={{ fontSize: 10, color: 'var(--muted)' }}>tap to set working Dx</span>
+              </div>
+              {suggestedDx.map(r => (
+                <div key={r.disease.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <button type="button" onClick={() => setWorkingDxId(r.disease.id)}
+                    style={{ flex: 1, position: 'relative', height: 24, background: 'var(--bg)', borderRadius: 5, overflow: 'hidden', border: workingDxId === r.disease.id ? '1.5px solid var(--accent)' : '1px solid var(--line)', cursor: 'pointer', padding: 0 }}>
+                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.max(8, Math.round(r.probability * 100))}%`,
+                      background: r.probability > 0.5 ? '#0d9488' : r.probability > 0.25 ? '#d97706' : '#94a3b8', borderRadius: 5, transition: 'width 0.3s' }} />
+                    <span style={{ position: 'absolute', left: 9, top: 0, bottom: 0, display: 'flex', alignItems: 'center',
+                      fontSize: 11, fontWeight: 600, color: r.probability > 0.4 ? '#fff' : 'var(--ink)', gap: 6 }}>
+                      {r.disease.label}
+                      <span style={{ fontSize: 10, fontFamily: 'monospace', opacity: 0.8 }}>{r.disease.icd10}</span>
+                    </span>
+                  </button>
+                  <span style={{ fontSize: 11, fontWeight: 700, minWidth: 34, color: 'var(--muted)', textAlign: 'right' as const }}>
                     {Math.round(r.probability * 100)}%
                   </span>
                 </div>
@@ -2060,18 +2178,18 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
 
           <div style={{ borderRadius: 10, border: '1px solid var(--line)', background: 'var(--card)', overflow: 'hidden' }}>
             <div style={{ padding: '10px 14px 0' }}>
-              <div style={sectionLabel}>Clinical Assessment</div>
+              <div style={sectionLabel}>Clinical Notes</div>
             </div>
             <textarea
               value={assessment}
               onChange={e => ctx.setAssessment(e.target.value)}
-              placeholder="Clinical assessment — working diagnosis, differentials, key concerns, missing information…"
+              placeholder="Key concerns, missing information, additional clinical notes…"
               style={{
-                display: 'block', width: '100%', minHeight: 280,
+                display: 'block', width: '100%', minHeight: 180,
                 padding: '10px 14px', border: 'none', background: 'transparent',
                 color: 'var(--ink)', fontSize: 14, lineHeight: 1.75,
                 fontFamily: 'Georgia, serif', outline: 'none',
-                resize: 'vertical', boxSizing: 'border-box',
+                resize: 'vertical', boxSizing: 'border-box' as const,
               }}
             />
           </div>
