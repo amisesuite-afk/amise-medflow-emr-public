@@ -851,37 +851,19 @@ export default function SummaryTab() {
         }),
       };
 
-      // If VITE_API_URL is set, use the API server directly; otherwise try same-origin
-      // proxy but fall back to direct Anthropic call if the server is unavailable.
       let summaryText: string | null = null;
 
-      if (API_ORIGIN) {
-        // Deployed with explicit API URL — call server, no fallback needed
-        const res = await fetch(apiUrl('/api/summary/generate'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
-        }
-        const data = await res.json() as { document: string };
-        summaryText = data.document;
-      } else {
-        // No API_ORIGIN — use same-origin proxy (Vite dev proxy or production Next.js)
-        const res = await fetch(apiUrl('/api/summary/generate'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
-        }
-        const data = await res.json() as { document: string };
-        summaryText = data.document;
+      const res = await fetch(apiUrl('/api/summary/generate'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? `HTTP ${res.status}`);
       }
+      const data = await res.json() as { document: string };
+      summaryText = data.document;
 
       setDocument(summaryText ?? '');
     } catch (e) {

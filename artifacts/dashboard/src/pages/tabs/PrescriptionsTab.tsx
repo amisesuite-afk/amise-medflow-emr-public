@@ -8,6 +8,7 @@ import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, footer, signoff, escH, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
 import { saveBlobAsPDF, printDoc } from './lib/pdfExport';
+import { staffAuthHeaders } from '@/lib/staff-auth';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -289,7 +290,9 @@ export default function PrescriptionsTab() {
     if (!ctx.patientId) return;
     setHistoryLoading(true);
     try {
-      const resp = await fetch(`/api/prescriptions/patient/${ctx.patientId}`);
+      const resp = await fetch(`/api/prescriptions/patient/${ctx.patientId}`, {
+        headers: await staffAuthHeaders(),
+      });
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const body = await resp.json() as { prescriptions: PrescriptionRecord[] };
       setHistory(body.prescriptions ?? []);
@@ -328,7 +331,7 @@ export default function PrescriptionsTab() {
         };
         const resp = await fetch('/api/ai/drug-interactions', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
           body: JSON.stringify(payload),
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -440,7 +443,7 @@ export default function PrescriptionsTab() {
       if (ctx.patientId) {
         const resp = await fetch('/api/prescriptions', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
           body: JSON.stringify({
             patientId:      ctx.patientId,
             encounterId:    ctx.encounterId ?? undefined,
