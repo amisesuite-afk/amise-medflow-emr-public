@@ -23,7 +23,7 @@ function apiUrl(path: string) {
 
 export default function LetterGeneratorTab() {
   const {
-    patientName, age, sex, dob, phone,
+    patientName, age, sex, dob, nhiNumber, phone,
     comorbidities, pmhNotes, medications, medicationsText, allergies,
     assessment, differentials, plan, icdCodes,
     hpiNotes, freeText,
@@ -48,7 +48,7 @@ export default function LetterGeneratorTab() {
       const context = {
         letterType,
         recipient, specialty, reason,
-        patient: { name: patientName, age, sex, dob, phone },
+        patient: { name: patientName, age, sex, dob, nhiNumber, phone },
         pmh: comorbidities,
         pmhNotes,
         surgicalHistory,
@@ -107,6 +107,58 @@ export default function LetterGeneratorTab() {
     insurance: 'other',
     sick_cert: 'other',
   };
+
+  function printLetter() {
+    const label = LETTER_TYPES.find(l => l.id === letterType)?.label ?? 'Letter';
+    const dateStr = new Date().toLocaleDateString('en-GB', {
+      day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/St_Lucia',
+    });
+    const safe = output.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const patientRef = [
+      patientName,
+      dob ? `DOB: ${dob}` : '',
+      nhiNumber ? `NHI: ${nhiNumber}` : '',
+    ].filter(Boolean).join(' · ');
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+    <title>${label} — ${patientName || 'Patient'}</title>
+    <style>
+      body{font-family:Georgia,"Times New Roman",serif;max-width:700px;margin:40px auto;font-size:13.5px;line-height:1.75;color:#1e293b}
+      .hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #0d2520;padding-bottom:16px;margin-bottom:20px}
+      .org{font-size:18px;font-weight:700;color:#0d2520}.org-sub{font-size:13px;color:#1e293b;font-style:italic;margin-top:3px}
+      .org-dept{font-size:12px;color:#475569;margin-top:2px}.addr{text-align:right;font-size:11px;color:#475569;line-height:1.7}
+      .date{font-size:12px;color:#475569;margin-bottom:8px}
+      .pt-ref{font-size:12px;color:#374151;margin-bottom:20px;font-weight:600}
+      .body{white-space:pre-wrap}
+      .sig{margin-top:40px;padding-top:16px;border-top:1px solid #e2e8f0}
+      .sig-name{font-size:13px;font-weight:600;color:#0d2520}.sig-role{font-size:12px;color:#475569}
+      @media print{body{margin:24px;max-width:100%}}
+    </style></head><body>
+    <div class="hd">
+      <div>
+        <div class="org">Amise Medical Services</div>
+        <div class="org-sub">Dr Dawit Daniel Kabiye, MD, DM</div>
+        <div class="org-dept">General &amp; Endoscopic Surgery</div>
+      </div>
+      <div class="addr">
+        <div>Rodney Bay, Providence Building</div><div>Tapion Hospital (ERCP / Surgery)</div>
+        <div>Saint Lucia, W.I.</div>
+        <div style="margin-top:4px">Tel: +1 (758) 284-0557</div><div>+1 (758) 720-7111</div>
+      </div>
+    </div>
+    <div class="date">${dateStr}</div>
+    ${patientRef ? `<div class="pt-ref">Re: ${patientRef}</div>` : ''}
+    <div class="body">${safe}</div>
+    <div class="sig">
+      <div class="sig-name">Dr Dawit Daniel Kabiye, MD, DM</div>
+      <div class="sig-role">Consultant General &amp; Endoscopic Surgeon</div>
+      <div class="sig-role">Amise Medical Services, Saint Lucia</div>
+      <div class="sig-role" style="margin-top:8px">Date: ______________________</div>
+    </div>
+    <script>window.onload = () => window.print();</script>
+    </body></html>`;
+    const w = window.open('', '_blank');
+    if (w) { w.document.open(); w.document.write(html); w.document.close(); }
+  }
 
   async function saveToRecord() {
     if (!patientId || !output) return;
@@ -198,11 +250,14 @@ export default function LetterGeneratorTab() {
               onClick={() => {
                 const label = LETTER_TYPES.find(l => l.id === letterType)?.label ?? 'Letter';
                 const issued = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+                const patientRef = [patientName, dob ? `DOB: ${dob}` : '', nhiNumber ? `NHI: ${nhiNumber}` : ''].filter(Boolean).join(' &middot; ');
                 const body = `
                   <div style="border-bottom:2pt solid #0B2545;margin-bottom:12px;padding-bottom:8px">
                     <div style="font-size:15pt;font-weight:700;color:#0B2545">Amise Medical Services</div>
                     <div style="font-size:9pt;color:#6B7280">Dr Dawit Daniel Kabiye, MD, DM &mdash; General &amp; Endoscopic Surgery &mdash; Saint Lucia</div>
                   </div>
+                  <p style="font-size:10pt;color:#374151;font-weight:600;margin-bottom:12px">${issued}</p>
+                  ${patientRef ? `<p style="font-size:10pt;font-weight:700;color:#0B2545;margin-bottom:16px">Re: ${patientRef}</p>` : ''}
                   <p class="narrative">${output.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p>
                   <div class="sig"><div class="sig-line"></div>
                     <p style="font-size:10pt;font-weight:700;color:#1A1A1A;margin-top:4px">Dr Dawit Daniel Kabiye, MD, DM</p>
@@ -216,9 +271,9 @@ export default function LetterGeneratorTab() {
               style={{ fontSize: 12, padding: '4px 12px', borderRadius: 5, border: '1px solid #2563eb', background: '#eff6ff', color: '#1d4ed8', cursor: 'pointer', fontWeight: 700 }}>
               📄 Word
             </button>
-            <button type="button" onClick={() => window.print()}
+            <button type="button" onClick={printLetter}
               style={{ fontSize: 12, padding: '4px 12px', borderRadius: 5, border: '1px solid #d1d5db', background: '#fff', cursor: 'pointer', fontWeight: 600 }}>
-              Print
+              🖨 Print
             </button>
           </div>
 
@@ -270,16 +325,6 @@ export default function LetterGeneratorTab() {
             </div>
           </div>
 
-          {/* Print styles */}
-          <style>{`
-            @media print {
-              body > *:not(#letter-print-area) { display: none !important; }
-              #letter-print-area {
-                position: fixed; top: 0; left: 0; width: 100%;
-                border: none !important; padding: 32px 48px !important;
-              }
-            }
-          `}</style>
         </CollapsibleCard>
       )}
     </div>
