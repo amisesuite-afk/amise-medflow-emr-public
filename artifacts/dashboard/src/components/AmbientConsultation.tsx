@@ -573,8 +573,10 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   }, [activeSection]);
 
   // Auto-seed standard exam fields with normal text when entering exam phase
+  // Triggered by consultPhase change (full flow) OR activeDrawer opening to
+  // 'examination' (Quick Exam tab bar shortcut, which sets activeDrawer not activeSection)
   useEffect(() => {
-    if (consultPhase !== 'exam') return;
+    if (consultPhase !== 'exam' && activeDrawer !== 'examination') return;
     if (!examGeneral.trim())     setExamGeneral(EXAM_NORMALS.General);
     if (!examAbdomen.trim())     setExamAbdomen(EXAM_NORMALS.Abdomen);
     if (!examCardio.trim())      setExamCardio(EXAM_NORMALS.CVS);
@@ -582,7 +584,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     if (!examExtremities.trim()) setExamExtremities(EXAM_NORMALS.Extremities);
     if (!examWound.trim())       setExamWound(EXAM_NORMALS.Wound);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [consultPhase]);
+  }, [consultPhase, activeDrawer]);
 
   // ── Voice state ────────────────────────────────────────────────────────────
   const [micOpen, setMicOpen]         = useState(false);
