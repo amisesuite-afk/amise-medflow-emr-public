@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import SmartTextarea from '@/components/SmartTextarea';
+import { downloadAsWord } from './lib/pdfExport';
 
 /* ── Canvas signature pad ───────────────────────────────────────────────── */
 interface SigPadProps {
@@ -239,7 +240,7 @@ function procedureRisks(procedure: string): string[] {
 }
 
 function printConsentPdf(opts: {
-  patientName: string; age: string; sex: string;
+  patientName: string; age: string; sex: string; dob?: string; nhiNumber?: string;
   procedure: string; anaesthesia: string; alternatives: string;
   generalRisks: string[]; specificRisks: string[];
   capacity: boolean; interpreterUsed: boolean;
@@ -276,6 +277,8 @@ function printConsentPdf(opts: {
   <div class="section-title">Patient details</div>
   <div class="field"><label>Name:</label> ${opts.patientName || '—'}</div>
   <div class="field"><label>Age / Sex:</label> ${[opts.age && `${opts.age}y`, opts.sex].filter(Boolean).join(' · ') || '—'}</div>
+  ${opts.dob ? `<div class="field"><label>Date of birth:</label> ${opts.dob}</div>` : ''}
+  ${opts.nhiNumber ? `<div class="field"><label>NHI number:</label> ${opts.nhiNumber}</div>` : ''}
 </div>
 
 <div class="section">
@@ -302,7 +305,7 @@ ${allRisks.length > 0 ? `<div class="section">
   <div class="sig-box">
     <label>Patient signature</label>
     ${opts.patientSig ? `<img class="sig" src="${opts.patientSig}" alt="patient signature" />` : '<div style="height:70px;border:1px dashed #aaa;margin:4px 0;"></div>'}
-    <div style="font-size:11px;color:#555;margin-top:2px;">${opts.patientName || ''} — ${opts.consentDate}</div>
+    <div style="font-size:11px;color:#555;margin-top:2px;">${opts.patientName || ''}${opts.dob ? ` · DOB: ${opts.dob}` : ''}${opts.nhiNumber ? ` · NHI: ${opts.nhiNumber}` : ''} — ${opts.consentDate}</div>
   </div>
   <div class="sig-box">
     <label>Clinician signature</label>
@@ -323,7 +326,7 @@ ${allRisks.length > 0 ? `<div class="section">
 }
 
 export default function SurgicalConsentTab() {
-  const { patientName, age, sex } = useAppContext();
+  const { patientName, age, sex, dob, nhiNumber, plan, assessment } = useAppContext();
   const [procedure, setProcedure] = useState('');
   const [anaesthesia, setAnaesthesia] = useState('General anaesthesia');
   const [alternatives, setAlternatives] = useState('');
@@ -336,8 +339,20 @@ export default function SurgicalConsentTab() {
   const [notes, setNotes] = useState('');
   const [patientSig, setPatientSig] = useState('');
   const [clinicianSig, setClinicianSig] = useState('');
-  const [clinicianName, setClinicianName] = useState('');
+  const [clinicianName, setClinicianName] = useState('Dr Dawit Daniel Kabiye, MD, DM');
   const [signed, setSigned] = useState(false);
+  const seededRef = useRef(false);
+
+  useEffect(() => {
+    if (seededRef.current) return;
+    if (procedure) return;
+    const src = plan || assessment || '';
+    const m = src.match(/(?:plan(?:ned)?(?:\s+(?:procedure|operation|surgery))?|for|procedure)[:\s–-]+([^\n.;,]{6,80})/i);
+    if (m) {
+      seededRef.current = true;
+      setProcedure(m[1].trim());
+    }
+  }, [plan, assessment, procedure]);
 
   const procedureSpecific = procedureRisks(procedure);
   const toggleRisk = (arr: string[], setArr: (v: string[]) => void, v: string) =>
@@ -526,7 +541,7 @@ export default function SurgicalConsentTab() {
             <button
               type="button"
               onClick={() => printConsentPdf({
-                patientName, age, sex,
+                patientName, age, sex, dob, nhiNumber,
                 procedure, anaesthesia, alternatives,
                 generalRisks, specificRisks,
                 capacity, interpreterUsed,
@@ -537,6 +552,50 @@ export default function SurgicalConsentTab() {
               style={{ flex: 1, padding: '8px', borderRadius: 7, border: '1.5px solid #1e3a5f', background: '#fff', color: '#1e3a5f', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
             >
               🖨 Print / Save PDF
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const allRisks = [...generalRisks, ...specificRisks];
+                const body = `
+                  <div style="border-bottom:2pt solid #C8A24B;margin-bottom:12px;padding-bottom:8px">
+                    <div style="font-size:15pt;font-weight:700;color:#0B2545">AMISE MEDICAL SERVICES</div>
+                    <div style="font-size:9pt;color:#6B7280">Dr Dawit Daniel Kabiye, MD, DM &mdash; General &amp; Endoscopic Surgery &mdash; Saint Lucia</div>
+                  </div>
+                  <h1>Surgical Consent Form</h1>
+                  <h2>${patientName || 'Patient'}${dob ? ` &middot; DOB: ${dob}` : ''}${nhiNumber ? ` &middot; NHI: ${nhiNumber}` : ''}&nbsp;|&nbsp;${consentDate}</h2>
+                  <h3>Procedure</h3>
+                  <table><tr><td class="lbl">Operation:</td><td>${procedure}</td></tr>
+                  <tr><td class="lbl">Anaesthesia:</td><td>${anaesthesia}</td></tr>
+                  ${alternatives ? `<tr><td class="lbl">Alternatives discussed:</td><td>${alternatives}</td></tr>` : ''}
+                  </table>
+                  ${allRisks.length > 0 ? `<h3>Risks discussed</h3><p>${allRisks.join(' · ')}</p>` : ''}
+                  <h3>Capacity &amp; Consent</h3>
+                  <p>${capacity ? '&#10003; Patient has capacity to consent' : '&#9888; Capacity assessment required'}</p>
+                  ${interpreterUsed ? '<p>&#10003; Interpreter used</p>' : ''}
+                  ${patientQuestions ? `<p><strong>Questions:</strong> ${patientQuestions}</p>` : ''}
+                  ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ''}
+                  <div class="sig" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40pt">
+                    <div>
+                      <div class="sig-line"></div>
+                      <p style="font-size:10pt;font-weight:700;margin-top:4px">${patientName || 'Patient'}</p>
+                      <p style="font-size:9pt;color:#6B7280">Date: ${consentDate}</p>
+                    </div>
+                    <div>
+                      <div class="sig-line"></div>
+                      <p style="font-size:10pt;font-weight:700;margin-top:4px">${clinicianName}</p>
+                      <p style="font-size:9pt;color:#6B7280">Consultant General &amp; Endoscopic Surgeon</p>
+                      <p style="font-size:9pt;color:#6B7280">Date: ${consentDate}</p>
+                    </div>
+                  </div>
+                  <div class="footer">This consent form was completed at Amise Medical Services, Saint Lucia. AI-Assisted Draft &mdash; Reviewed and Signed by Clinician.</div>
+                `;
+                const fname = `${(patientName || 'Patient').replace(/\s+/g, '_')}_Consent_${consentDate}`;
+                downloadAsWord(body, fname, `Surgical Consent — ${patientName || 'Patient'}`);
+              }}
+              style={{ padding: '8px 14px', borderRadius: 7, border: '1px solid #2563eb', background: '#eff6ff', color: '#1d4ed8', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}
+            >
+              📄 Word
             </button>
             <button type="button" onClick={() => setSigned(false)}
               style={{ padding: '8px 14px', borderRadius: 7, border: '1px solid #d1d5db', background: '#fff', color: '#6b7280', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}>

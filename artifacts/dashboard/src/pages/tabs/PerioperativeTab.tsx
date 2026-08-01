@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import PatientPrepCard from '@/components/PatientPrepCard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -504,6 +505,9 @@ export default function PerioperativeTab() {
           </div>
         )}
       </CollapsibleCard>
+
+      {/* ─── Patient Prep Instructions ─────────────────────────────────────── */}
+      <PatientPrepCard />
 
       {/* ─── Section 3: Pre-operative Preparation ───────────────────────────── */}
       <CollapsibleCard title={`Pre-operative Preparation Checklist — ${doneItems}/${totalItems}`} defaultOpen={false}>
