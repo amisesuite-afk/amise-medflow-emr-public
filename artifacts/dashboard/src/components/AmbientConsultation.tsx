@@ -937,6 +937,73 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     changePhase('plan');
   }
 
+  // ── AI Consult for complex / unclear presentations ─────────────────────────
+  const [aiConsulting, setAiConsulting] = React.useState(false);
+  const [aiConsultError, setAiConsultError] = React.useState<string | null>(null);
+
+  async function aiAssist(_phase: string) {
+    if (aiConsulting) return;
+    setAiConsulting(true);
+    setAiConsultError(null);
+    try {
+      const headers = await staffAuthHeaders();
+      const dxForQuery = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
+      const dxLabel = dxForQuery ? (DISEASES.find(d => d.id === dxForQuery)?.label ?? '') : '';
+      const icd10 = dxForQuery ? (DISEASES.find(d => d.id === dxForQuery)?.icd10 ?? '') : '';
+      const body = {
+        consultationType: 'clinical_decision_support',
+        specificQuestion: `Patient presents with: ${ctx.symptoms.join(', ') || 'see history'}. ${dxLabel ? `Working impression: ${dxLabel} (${icd10}).` : 'Diagnosis unclear.'} Please provide differential, recommended investigations, and management outline.`,
+        patientContext: {
+          demographics: { name: ctx.patientName ?? '', age: ctx.age ?? '', sex: ctx.sex ?? '', dob: ctx.dob ?? '' },
+          vitals: {},
+          symptoms: ctx.symptoms,
+          examFindings: {
+            general: examGeneral ? [examGeneral] : [],
+            abdomen: examAbdomen ? [examAbdomen] : [],
+            cardiovascular: examCardio ? [examCardio] : [],
+            respiratory: examResp ? [examResp] : [],
+            extremities: examExtremities ? [examExtremities] : [],
+          },
+          investigations: {},
+          assessment: assessment,
+          medications: [],
+          allergies: allergies ? [{ allergen: allergies, reaction: '', severity: 'unknown' }] : [],
+          comorbidities: [],
+          rosFindings: {},
+        },
+        icd10Codes: dxForQuery ? [{ code: icd10, description: dxLabel }] : [],
+        guidelinesContext: [],
+        patientId: ctx.patientId ?? undefined,
+      };
+      const res = await fetch('/api/ai-consult', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error(`AI consult failed (${res.status})`);
+      const data = await res.json() as {
+        assessmentSummary?: string;
+        recommendations?: Array<{ text: string; priority: string }>;
+        redFlags?: string[];
+        suggestedInvestigations?: string[];
+      };
+      const lines: string[] = ['\n\n── AI Clinical Decision Support ──'];
+      if (data.assessmentSummary) lines.push(data.assessmentSummary);
+      if (data.redFlags?.length) lines.push('\nRed Flags: ' + data.redFlags.join('; '));
+      if (data.suggestedInvestigations?.length) lines.push('\nSuggested Investigations: ' + data.suggestedInvestigations.join('; '));
+      if (data.recommendations?.length) {
+        lines.push('\nRecommendations:');
+        data.recommendations.forEach((r, i) => lines.push(`  ${i + 1}. [${r.priority.toUpperCase()}] ${r.text}`));
+      }
+      lines.push('── (AI suggestion — confirm with clinical judgement) ──');
+      ctx.setAssessment((assessment ? assessment : '') + lines.join('\n'));
+    } catch (err) {
+      setAiConsultError(err instanceof Error ? err.message : 'AI consult failed');
+    } finally {
+      setAiConsulting(false);
+    }
+  }
+
   const fullTranscript = transcript + (interim ? interim : '');
 
   // ── Dictate button handler ─────────────────────────────────────────────────
@@ -2148,94 +2215,141 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             </span>
           </div>
 
-          {/* ── Working Diagnosis picker ── */}
-          <div style={{ borderRadius: 9, border: `1px solid ${workingDxId ? 'rgba(0,180,160,0.4)' : 'var(--line)'}`, background: 'var(--card)', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={sectionLabel}>Working Diagnosis</div>
-            {workingDxId ? (() => {
-              const dx = DISEASES.find(d => d.id === workingDxId);
-              const proto = getProtocol(workingDxId);
-              return (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderRadius: 7, background: 'rgba(0,180,160,0.08)', border: '1px solid rgba(0,180,160,0.3)' }}>
-                    <span style={{ flex: 1, fontWeight: 700, fontSize: 14, color: 'var(--accent)' }}>{dx?.label}</span>
-                    <span style={{ fontSize: 11, fontFamily: 'monospace', fontWeight: 700, color: 'var(--muted)', background: 'var(--bg)', padding: '2px 7px', borderRadius: 5 }}>{dx?.icd10}</span>
-                    <button type="button" onClick={() => setWorkingDxId(null)} style={{ fontSize: 13, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', lineHeight: 1 }}>✕</button>
-                  </div>
-                  {proto?.keyPoints.length && (
-                    <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.5, paddingLeft: 4 }}>
-                      {proto.keyPoints.map((k, i) => <div key={i}>• {k}</div>)}
-                    </div>
+          {/* ── Unified Diagnosis Picker ── */}
+          {(() => {
+            const activeDx = workingDxId ? DISEASES.find(d => d.id === workingDxId) : null;
+            const activeProto = workingDxId ? getProtocol(workingDxId) : null;
+            const isSearching = dxSearch.length > 0;
+            const searchHits = isSearching
+              ? DISEASES.filter(d => d.label.toLowerCase().includes(dxSearch.toLowerCase()) || d.icd10.toLowerCase().includes(dxSearch.toLowerCase())).slice(0, 8)
+              : [];
+            const listRows = isSearching ? searchHits : suggestedDx.map(r => ({ disease: r.disease, probability: r.probability }));
+
+            return (
+              <div style={{ borderRadius: 9, border: `1px solid ${workingDxId ? 'rgba(0,180,160,0.45)' : 'var(--line)'}`, background: 'var(--card)', display: 'flex', flexDirection: 'column', gap: 0, overflow: 'hidden' }}>
+                {/* Header */}
+                <div style={{ padding: '10px 14px 8px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid var(--line)' }}>
+                  <span style={sectionLabel}>Working Diagnosis</span>
+                  {activeDx && (
+                    <>
+                      <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: 'var(--accent)' }}>{activeDx.label}</span>
+                      <span style={{ fontSize: 11, fontFamily: 'monospace', fontWeight: 700, color: 'var(--muted)', background: 'var(--bg)', padding: '2px 7px', borderRadius: 5 }}>{activeDx.icd10}</span>
+                      <button type="button" onClick={() => setWorkingDxId(null)} style={{ fontSize: 13, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 4px', lineHeight: 1 }}>✕</button>
+                    </>
                   )}
-                  {proto?.redFlags.length && (
-                    <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.5, paddingLeft: 4 }}>
-                      {proto.redFlags.map((r, i) => <div key={i}>⚠ {r}</div>)}
-                    </div>
+                  {!activeDx && (
+                    <span style={{ fontSize: 11, color: 'var(--muted)' }}>
+                      {suggestedDx.length > 0 ? (ctx.paneTop.length > 0 ? 'probabilistic ranking' : 'symptom-mapped suggestions') : 'search to select'}
+                    </span>
                   )}
                 </div>
-              );
-            })() : (
-              <div style={{ position: 'relative' }}>
-                <input
-                  value={dxSearch}
-                  onChange={e => { setDxSearch(e.target.value); setDxDropOpen(true); }}
-                  onFocus={() => setDxDropOpen(true)}
-                  onBlur={() => setTimeout(() => setDxDropOpen(false), 150)}
-                  placeholder="Search diagnosis or ICD-10 code…"
-                  style={{ width: '100%', padding: '7px 10px', borderRadius: 7, border: '1px solid var(--line)', background: 'var(--bg)', color: 'var(--ink)', fontSize: 13, outline: 'none', boxSizing: 'border-box' as const }}
-                />
-                {dxDropOpen && dxSearch.length > 0 && (() => {
-                  const q = dxSearch.toLowerCase();
-                  const hits = DISEASES.filter(d => d.label.toLowerCase().includes(q) || d.icd10.toLowerCase().includes(q)).slice(0, 8);
-                  return hits.length > 0 ? (
-                    <div style={{ position: 'absolute', zIndex: 50, left: 0, right: 0, top: '100%', marginTop: 3, borderRadius: 8, border: '1px solid var(--line)', background: 'var(--card)', boxShadow: '0 4px 16px rgba(0,0,0,0.12)', overflow: 'hidden' }}>
-                      {hits.map(d => (
-                        <button key={d.id} type="button" onMouseDown={() => { setWorkingDxId(d.id); setDxSearch(''); setDxDropOpen(false); }}
-                          style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '9px 12px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' as const, borderBottom: '1px solid var(--line)' }}>
-                          <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{d.label}</span>
-                          <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--accent)', fontWeight: 700 }}>{d.icd10}</span>
-                          <span style={{ fontSize: 10, color: 'var(--muted)' }}>{getDiseaseSpecialty(d.id).replace(/_/g, ' ')}</span>
-                        </button>
-                      ))}
-                    </div>
-                  ) : null;
-                })()}
-              </div>
-            )}
-          </div>
 
-          {/* ── Differential Diagnoses — CC-mapped or Bayesian ── */}
-          {suggestedDx.length > 0 && (
-            <div style={{ borderRadius: 9, border: '1px solid var(--line)', background: 'var(--card)', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={sectionLabel}>{ctx.paneTop.length > 0 ? 'Probabilistic Differential' : 'Suggested Differentials'}</span>
-                <span style={{ fontSize: 10, color: 'var(--muted)' }}>tap to set working Dx</span>
-              </div>
-              {suggestedDx.map(r => {
-                const isSelected = workingDxId === r.disease.id;
-                return (
-                  <div key={r.disease.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <button type="button" onClick={() => setWorkingDxId(isSelected ? null : r.disease.id)}
-                      style={{ flex: 1, position: 'relative', height: 30, background: 'var(--bg)', borderRadius: 6, overflow: 'hidden', border: isSelected ? '1.5px solid var(--accent)' : '1px solid var(--line)', cursor: 'pointer', padding: 0 }}>
-                      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.max(8, Math.round(r.probability * 100))}%`,
-                        background: r.probability > 0.5 ? '#0d9488' : r.probability > 0.25 ? '#d97706' : '#94a3b8', borderRadius: 6, transition: 'width 0.3s' }} />
-                      <span style={{ position: 'absolute', left: 9, top: 0, bottom: 0, display: 'flex', alignItems: 'center',
-                        fontSize: 11, fontWeight: 600, color: r.probability > 0.4 ? '#fff' : 'var(--ink)', gap: 6 }}>
-                        {r.disease.label}
-                        <span style={{ fontSize: 10, fontFamily: 'monospace', opacity: 0.8 }}>{r.disease.icd10}</span>
-                      </span>
-                      <span style={{ position: 'absolute', right: 8, top: 0, bottom: 0, display: 'flex', alignItems: 'center', fontSize: 10, fontWeight: 700, color: r.probability > 0.4 ? 'rgba(255,255,255,0.8)' : 'var(--muted)' }}>
-                        {Math.round(r.probability * 100)}%
-                      </span>
-                    </button>
-                    <button type="button" onClick={() => setWorkingDxId(isSelected ? null : r.disease.id)}
-                      style={{ flexShrink: 0, padding: '4px 9px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: isSelected ? '1.5px solid var(--accent)' : '1px solid var(--line)', background: isSelected ? 'var(--accent)' : 'var(--card)', color: isSelected ? '#fff' : 'var(--muted)', whiteSpace: 'nowrap' as const }}>
-                      {isSelected ? '✓ Set' : 'Use →'}
-                    </button>
+                {/* Search input */}
+                <div style={{ padding: '8px 14px', borderBottom: '1px solid var(--line)' }}>
+                  <input
+                    value={dxSearch}
+                    onChange={e => { setDxSearch(e.target.value); setDxDropOpen(true); }}
+                    onFocus={() => setDxDropOpen(true)}
+                    onBlur={() => setTimeout(() => setDxDropOpen(false), 150)}
+                    placeholder={activeDx ? `Change diagnosis — currently ${activeDx.label}` : 'Search diagnosis or ICD-10 code…'}
+                    style={{ width: '100%', padding: '7px 10px', borderRadius: 7, border: '1px solid var(--line)', background: 'var(--bg)', color: 'var(--ink)', fontSize: 13, outline: 'none', boxSizing: 'border-box' as const }}
+                  />
+                </div>
+
+                {/* Ranked list — search results or engine suggestions */}
+                {(listRows.length > 0) && (
+                  <div style={{ padding: '6px 14px 8px', display: 'flex', flexDirection: 'column', gap: 5 }}>
+                    {isSearching ? (
+                      searchHits.map(d => {
+                        const isSelected = workingDxId === d.id;
+                        return (
+                          <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', borderRadius: 7,
+                              background: isSelected ? 'rgba(0,180,160,0.08)' : 'var(--bg)',
+                              border: isSelected ? '1.5px solid rgba(0,180,160,0.4)' : '1px solid var(--line)' }}>
+                              <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--ink)' }}>{d.label}</span>
+                              <span style={{ fontSize: 11, fontFamily: 'monospace', color: 'var(--accent)', fontWeight: 700 }}>{d.icd10}</span>
+                              <span style={{ fontSize: 10, color: 'var(--muted)' }}>{getDiseaseSpecialty(d.id).replace(/_/g, ' ')}</span>
+                            </div>
+                            <button type="button" onMouseDown={() => { setWorkingDxId(isSelected ? null : d.id); setDxSearch(''); setDxDropOpen(false); }}
+                              style={{ flexShrink: 0, padding: '6px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                                border: isSelected ? '1.5px solid var(--accent)' : '1px solid var(--line)',
+                                background: isSelected ? 'var(--accent)' : 'var(--card)',
+                                color: isSelected ? '#fff' : 'var(--muted)', whiteSpace: 'nowrap' as const }}>
+                              {isSelected ? '✓ Set' : 'Use →'}
+                            </button>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      suggestedDx.map(r => {
+                        const isSelected = workingDxId === r.disease.id;
+                        return (
+                          <div key={r.disease.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <button type="button" onClick={() => setWorkingDxId(isSelected ? null : r.disease.id)}
+                              style={{ flex: 1, position: 'relative', height: 32, background: 'var(--bg)', borderRadius: 7, overflow: 'hidden',
+                                border: isSelected ? '1.5px solid var(--accent)' : '1px solid var(--line)', cursor: 'pointer', padding: 0 }}>
+                              <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0,
+                                width: `${Math.max(6, Math.round(r.probability * 100))}%`,
+                                background: r.probability > 0.5 ? '#0d9488' : r.probability > 0.25 ? '#d97706' : '#94a3b8',
+                                borderRadius: 7, transition: 'width 0.3s', opacity: 0.85 }} />
+                              <span style={{ position: 'absolute', left: 10, top: 0, bottom: 0, display: 'flex', alignItems: 'center',
+                                fontSize: 12, fontWeight: 600, color: r.probability > 0.4 ? '#fff' : 'var(--ink)', gap: 7 }}>
+                                {r.disease.label}
+                                <span style={{ fontSize: 10, fontFamily: 'monospace', opacity: 0.8 }}>{r.disease.icd10}</span>
+                              </span>
+                              <span style={{ position: 'absolute', right: 9, top: 0, bottom: 0, display: 'flex', alignItems: 'center',
+                                fontSize: 11, fontWeight: 700, color: r.probability > 0.4 ? 'rgba(255,255,255,0.85)' : 'var(--muted)' }}>
+                                {Math.round(r.probability * 100)}%
+                              </span>
+                            </button>
+                            <button type="button" onClick={() => setWorkingDxId(isSelected ? null : r.disease.id)}
+                              style={{ flexShrink: 0, padding: '5px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer',
+                                border: isSelected ? '1.5px solid var(--accent)' : '1px solid var(--line)',
+                                background: isSelected ? 'var(--accent)' : 'var(--card)',
+                                color: isSelected ? '#fff' : 'var(--muted)', whiteSpace: 'nowrap' as const }}>
+                              {isSelected ? '✓ Set' : 'Use →'}
+                            </button>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
-                );
-              })}
-            </div>
-          )}
+                )}
+
+                {/* Selected Dx detail — key points + red flags */}
+                {activeProto && (
+                  <div style={{ borderTop: '1px solid var(--line)', padding: '8px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {activeProto.keyPoints.length > 0 && (
+                      <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.55 }}>
+                        {activeProto.keyPoints.map((k, i) => <div key={i}>• {k}</div>)}
+                      </div>
+                    )}
+                    {activeProto.redFlags.length > 0 && (
+                      <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.55, marginTop: activeProto.keyPoints.length > 0 ? 4 : 0 }}>
+                        {activeProto.redFlags.map((r, i) => <div key={i}>⚠ {r}</div>)}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Ask AI footer */}
+                <div style={{ borderTop: '1px solid var(--line)', padding: '8px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <button type="button" onClick={() => { void aiAssist('assessment'); }}
+                    disabled={aiConsulting}
+                    style={{ width: '100%', padding: '7px 10px', borderRadius: 7, border: '1px dashed var(--accent)', background: 'transparent',
+                      color: aiConsulting ? 'var(--muted)' : 'var(--accent)', fontSize: 12, fontWeight: 600,
+                      cursor: aiConsulting ? 'not-allowed' : 'pointer', letterSpacing: '0.01em',
+                      opacity: aiConsulting ? 0.6 : 1 }}>
+                    {aiConsulting ? '✦ Consulting AI…' : '✦ Ask AI — complex or unclear presentation'}
+                  </button>
+                  {aiConsultError && (
+                    <div style={{ fontSize: 11, color: 'var(--coral)', paddingLeft: 2 }}>{aiConsultError}</div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           <div style={{ borderRadius: 10, border: '1px solid var(--line)', background: 'var(--card)', overflow: 'hidden' }}>
             <div style={{ padding: '10px 14px 0' }}>
