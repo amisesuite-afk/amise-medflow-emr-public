@@ -102,7 +102,7 @@ const API_ORIGIN = getApiOrigin();
 const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
   follow_up: [
     { id: 'hpi',               label: 'Interval Hx'  },
-    { id: 'examination',       label: 'Exam'          },
+    { id: 'examination',       label: 'Full Exam'     },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
     { id: 'prescriptions',     label: 'RX'            },
@@ -114,7 +114,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
   post_op: [
     { id: 'wounds',            label: 'Wound'         },
     { id: 'hpi',               label: 'POD Hx'        },
-    { id: 'examination',       label: 'Exam'          },
+    { id: 'examination',       label: 'Full Exam'     },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
     { id: 'prescriptions',     label: 'RX'            },
@@ -180,7 +180,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
   diabetic_foot: [
     { id: 'wounds',            label: 'Wound'         },
     { id: 'hpi',               label: 'Foot Hx'       },
-    { id: 'examination',       label: 'Exam'          },
+    { id: 'examination',       label: 'Full Exam'     },
     { id: 'investigations',    label: 'Labs'          },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
@@ -195,7 +195,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'pmh',               label: 'PMH'           },
     { id: 'medications',       label: 'Meds'          },
     { id: 'allergies',         label: 'Allergies'     },
-    { id: 'examination',       label: 'Exam'          },
+    { id: 'examination',       label: 'Full Exam'     },
     { id: 'investigations',    label: 'Labs'          },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
@@ -468,7 +468,7 @@ export default function HomePage() {
       { id: 'toxic', label: 'Social' },
       { id: 'ros', label: 'ROS' },
       ...(hasRole(userRole, 'nurse') ? [
-        { id: 'examination' as Section, label: 'Exam' },
+        { id: 'examination' as Section, label: 'Full Exam' },
         { id: 'wounds' as Section, label: 'Wounds' },
         { id: 'investigations' as Section, label: 'Labs' },
         { id: 'blood_gas' as Section, label: 'ABG' },

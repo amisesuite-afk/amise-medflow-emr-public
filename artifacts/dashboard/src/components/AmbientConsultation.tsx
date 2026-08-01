@@ -1215,9 +1215,14 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           <div style={drawerStyle}>
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={sectionLabel}>
-                {ccLabel ? `Examination — ${ccLabel}` : 'Examination'}
-              </span>
+              <div>
+                <span style={sectionLabel}>
+                  {ccLabel ? `Examination — ${ccLabel}` : 'Examination'}
+                </span>
+                <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>
+                  Prose entry · shared with Full Exam tab
+                </div>
+              </div>
               <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 <button type="button" onClick={handleSetAllNormal}
                   style={{
