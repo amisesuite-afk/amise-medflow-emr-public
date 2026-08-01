@@ -10,7 +10,7 @@ import ExamGuidePanel from '@/components/ExamGuidePanel';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 
 // Systems always shown regardless of clinical context
-const CORE_SYSTEM_KEYS = new Set(['general', 'abdomen']);
+const CORE_SYSTEM_KEYS = new Set(['general', 'abdomen', 'cardiovascular', 'respiratory', 'extremities']);
 
 function matchesAny(haystack: string, needles: string[]): boolean {
   const h = haystack.toLowerCase();
