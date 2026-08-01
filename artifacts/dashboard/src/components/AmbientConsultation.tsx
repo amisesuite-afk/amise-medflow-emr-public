@@ -153,16 +153,18 @@ const MED_INFO: Record<string, MedInfo> = {
 
 // ── Examination: default normal text per system ───────────────────────────────
 const EXAM_NORMALS: Record<string, string> = {
-  General:     'Alert and oriented, no acute distress. Well-nourished. Comfortable at rest. No pallor, jaundice or cyanosis.',
-  Abdomen:     'Soft, non-tender, non-distended. No guarding or rigidity. Bowel sounds present. No organomegaly or palpable masses.',
-  CVS:         'Regular rate and rhythm. S1 S2 heard, no murmurs, rubs or gallops. Peripheral pulses full and equal bilaterally.',
-  Resp:        'Clear to auscultation bilaterally. Good air entry throughout. No wheeze, crackles or rhonchi.',
-  Extremities: 'No peripheral oedema. No calf tenderness. Peripheral pulses intact distally.',
-  Wound:       'Clean, dry and intact. No erythema, discharge or dehiscence. Healing well.',
-  Perianal:    'No external haemorrhoids or fissure. DRE: No mass, normal sphincter tone. No blood on glove.',
-  Breast:      'No skin changes or nipple abnormality. No discrete lump on palpation. No axillary lymphadenopathy.',
-  Neck:        'No goitre or palpable thyroid mass. Trachea midline. No cervical lymphadenopathy.',
-  Hernia:      'No inguinal, femoral or umbilical hernia palpable. Hernial orifices intact. Cough impulse absent.',
+  General:     'Well-appearing and comfortable at rest. Haemodynamically stable. Afebrile. No pallor, jaundice, cyanosis, or peripheral oedema. No acute distress.',
+  Abdomen:     'Abdomen soft and non-tender on palpation. No guarding, rigidity, or rebound tenderness. Bowel sounds present and normal. No hepatosplenomegaly or palpable masses. Hernial orifices intact. No shifting dullness or fluid thrill.',
+  CVS:         'Heart sounds I and II present and normal. No murmurs, rubs, or gallops audible. JVP not elevated. Peripheral pulses present and equal bilaterally. Capillary refill time less than two seconds. No peripheral oedema.',
+  Resp:        'Chest clear to auscultation bilaterally with equal air entry. No wheeze, crackles, or pleural rub. Respiratory rate and pattern normal. Trachea central. Percussion note resonant throughout.',
+  Extremities: 'Peripheral pulses palpable bilaterally including dorsalis pedis and posterior tibial. No peripheral oedema. Calves soft and non-tender bilaterally. No features of peripheral arterial disease. Skin warm and well-perfused.',
+  Wound:       'Wound healing by primary intention. No surrounding erythema, induration, swelling, or purulent discharge. Wound edges well-approximated. Sutures/staples intact. No features of wound dehiscence or infection.',
+  Perianal:    'Anus and perianal skin normal on inspection. Digital rectal examination: normal sphincter tone. No masses, tenderness, or blood on the examining glove.',
+  Breast:      "No visible skin changes, peau d'orange, or nipple retraction. No nipple discharge. No palpable masses on bimanual examination of either breast. No cervical, supraclavicular, or axillary lymphadenopathy.",
+  Neck:        'No goitre or palpable thyroid mass. Trachea central. No cervical or supraclavicular lymphadenopathy.',
+  Hernia:      'No inguinal, femoral, or umbilical hernia palpable. Hernial orifices intact. No cough impulse.',
+  Neuro:       'Alert and oriented in time, place, and person. GCS 15/15. No focal neurological deficit. Cranial nerves grossly intact. Motor power and sensation preserved in all four limbs. Coordination intact. Reflexes symmetrical.',
+  Skin:        "Skin intact. No rashes, lesions, ulceration, or hyperpigmentation. No jaundice, cyanosis, or pallor. No spider naevi or caput medusae.",
 };
 
 // ── CC → recommended exam systems ─────────────────────────────────────────────
