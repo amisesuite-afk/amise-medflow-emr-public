@@ -864,20 +864,16 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       const imgStr = radiologyRequests.map(r => `${r.modality} ${r.anatomicalRegion}`).join(', ');
       parts.push(`\n\nImaging ordered: ${imgStr}`);
     }
-    // Working diagnosis + differentials from dictionary (no AI needed for known diagnoses)
+    // Clinical notes: supplementary only — Working Dx and differentials are shown
+    // as structured UI above, not duplicated here. Only seed red flags from the
+    // protocol (dictionary-first) and leave space for surgeon's additional notes.
     const dxForAssess = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
     const protoForAssess = dxForAssess ? getProtocol(dxForAssess) : null;
-    const dxLabelForAssess = dxForAssess ? (DISEASES.find(d => d.id === dxForAssess)?.label ?? '') : '';
-    const icd10ForAssess = dxForAssess ? (DISEASES.find(d => d.id === dxForAssess)?.icd10 ?? '') : '';
-    const topDiffs = suggestedDx.slice(0, 3).map((r, i) => `${i + 1}. ${r.disease.label} (${r.disease.icd10}) — ${Math.round(r.probability * 100)}%`).join('\n');
-    const rfForAssess = protoForAssess?.redFlags.map(r => `   ⚠ ${r}`).join('\n') ?? '';
+    const rfForAssess = protoForAssess?.redFlags.map(r => `⚠ ${r}`).join('\n') ?? '';
 
     parts.push('\n\n' + '─'.repeat(40));
-    parts.push(`\n\nWorking Diagnosis: ${dxLabelForAssess}${icd10ForAssess ? ` (${icd10ForAssess})` : ''}${!workingDxId && dxForAssess ? ' — AI suggestion, confirm' : ''}`);
-    parts.push(`\n\nDifferential Diagnoses:\n${topDiffs || '1. \n2. \n3. '}`);
-    if (rfForAssess) parts.push(`\n\nKey Concerns / Red Flags:\n${rfForAssess}`);
-    else parts.push('\n\nKey Concerns / Red Flags:');
-    parts.push('\n\nMissing Information:');
+    if (rfForAssess) parts.push(`\n\nRed Flags to monitor:\n${rfForAssess}`);
+    parts.push('\n\nAdditional clinical notes / missing information:');
 
     const draft = parts.join('');
     if (!assessment.trim()) ctx.setAssessment(draft);
@@ -2244,11 +2240,12 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           <div style={{ borderRadius: 10, border: '1px solid var(--line)', background: 'var(--card)', overflow: 'hidden' }}>
             <div style={{ padding: '10px 14px 0' }}>
               <div style={sectionLabel}>Clinical Notes</div>
+              <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 1 }}>Working Dx and differentials above — add red flags, missing information, or free text here</div>
             </div>
             <textarea
               value={assessment}
               onChange={e => ctx.setAssessment(e.target.value)}
-              placeholder="Key concerns, missing information, additional clinical notes…"
+              placeholder="Additional clinical observations, red flags to monitor, missing information…"
               style={{
                 display: 'block', width: '100%', minHeight: 180,
                 padding: '10px 14px', border: 'none', background: 'transparent',
