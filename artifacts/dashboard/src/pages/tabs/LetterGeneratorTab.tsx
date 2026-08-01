@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { getApiOrigin } from '@/lib/api-origin';
+import { supabase } from '@/lib/supabase';
+import { downloadAsWord } from './lib/pdfExport';
 
 type LetterType = 'referral' | 'gp_summary' | 'insurance' | 'sick_cert' | 'patient_discharge' | 'clinical_discharge';
 
@@ -59,9 +61,12 @@ export default function LetterGeneratorTab() {
         icdCodes,
       };
 
+      const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+      const authHeaders: Record<string, string> = session?.access_token
+        ? { Authorization: `Bearer ${session.access_token}` } : {};
       const res = await fetch(apiUrl('/api/generate-letter'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify(context),
       });
 
@@ -188,6 +193,28 @@ export default function LetterGeneratorTab() {
             <button type="button" onClick={() => void copy()}
               style={{ fontSize: 12, padding: '4px 12px', borderRadius: 5, border: '1px solid #d1d5db', background: '#fff', cursor: 'pointer', fontWeight: 600 }}>
               {copied ? '✓ Copied' : 'Copy'}
+            </button>
+            <button type="button"
+              onClick={() => {
+                const label = LETTER_TYPES.find(l => l.id === letterType)?.label ?? 'Letter';
+                const issued = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+                const body = `
+                  <div style="border-bottom:2pt solid #0B2545;margin-bottom:12px;padding-bottom:8px">
+                    <div style="font-size:15pt;font-weight:700;color:#0B2545">Amise Medical Services</div>
+                    <div style="font-size:9pt;color:#6B7280">Dr Dawit Daniel Kabiye, MD, DM &mdash; General &amp; Endoscopic Surgery &mdash; Saint Lucia</div>
+                  </div>
+                  <p class="narrative">${output.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</p>
+                  <div class="sig"><div class="sig-line"></div>
+                    <p style="font-size:10pt;font-weight:700;color:#1A1A1A;margin-top:4px">Dr Dawit Daniel Kabiye, MD, DM</p>
+                    <p style="font-size:9pt;color:#6B7280">Consultant General &amp; Endoscopic Surgeon</p>
+                    <p style="font-size:9pt;color:#6B7280">Date: ______________________</p>
+                  </div>
+                  <div class="footer">Amise Medical Services &middot; Saint Lucia &middot; ${issued} &middot; AI-Assisted Draft &mdash; Reviewed, Approved &amp; Signed by Clinician</div>`;
+                const fname = `${(patientName || 'Patient').replace(/\s+/g, '_')}_${label.replace(/[\s/]+/g, '_')}_${new Date().toISOString().slice(0, 10)}`;
+                downloadAsWord(body, fname, `${label} — ${patientName || 'Patient'}`);
+              }}
+              style={{ fontSize: 12, padding: '4px 12px', borderRadius: 5, border: '1px solid #2563eb', background: '#eff6ff', color: '#1d4ed8', cursor: 'pointer', fontWeight: 700 }}>
+              📄 Word
             </button>
             <button type="button" onClick={() => window.print()}
               style={{ fontSize: 12, padding: '4px 12px', borderRadius: 5, border: '1px solid #d1d5db', background: '#fff', cursor: 'pointer', fontWeight: 600 }}>

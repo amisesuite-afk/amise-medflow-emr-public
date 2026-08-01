@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import { downloadAsWord } from './lib/pdfExport';
 
 interface Sheet {
   id: string;
@@ -79,26 +80,90 @@ GO TO ER IF
   {
     id: 'colonoscopy',
     title: 'After your colonoscopy',
-    tags: ['colonoscopy', 'scope', 'bowel'],
+    tags: ['colonoscopy', 'scope', 'bowel', 'polypectomy', 'colon'],
     content: `WHAT WAS DONE
-A flexible camera was passed through your bowel to examine the lining of your colon. Biopsies or polyp removal may have been performed.
+A flexible camera was passed through your rectum to examine the lining of your entire colon. Biopsies, polyp removal (polypectomy), or other treatment may have been performed.
 
 IMMEDIATELY AFTER
-• You may feel bloated and pass wind — this is normal and will settle quickly.
-• You may feel a little drowsy if sedation was given — do not drive for 24 hours.
-• Resume normal diet and fluids straight away unless advised otherwise.
+• Bloating and passing wind is very common — this is air from the examination and will pass quickly.
+• You may feel a little drowsy if sedation was given — do not drive for 24 hours. A responsible adult must take you home.
+• You may eat and drink normally straight away unless your doctor has advised otherwise. Start with a light meal.
+• Continue to gently dab or rinse instead of wiping after bowel movements for the first 24–48 hours to prevent irritation.
 
-IF A POLYP WAS REMOVED
-• Avoid strenuous activity for 24 hours.
-• You may see a small amount of blood in your stool — this is normal for 1–2 days.
+IF A POLYP WAS REMOVED (POLYPECTOMY)
+• Avoid strenuous activity and heavy lifting for 24 hours.
+• A small amount of blood in your stool is normal for 1–2 days after polypectomy. Slight spotting can occur for up to 2 weeks.
+• Blood thinners (aspirin, warfarin, clopidogrel/Plavix): discuss with your surgeon when to restart — usually 1–2 days after a small polyp. Do not restart without advice.
+• Avoid NSAIDs (ibuprofen, naproxen, diclofenac) for 7 days after polypectomy.
+• No air travel for 24 hours.
 
-GO TO ER IMMEDIATELY IF
-• Significant rectal bleeding (more than a teaspoon)
-• Severe abdominal pain or distension
-• Fever >38.5°C
-• No bowel movement within 24 hours if you were having a bowel problem
+BIOPSY RESULTS
+If biopsies were taken, results are usually available within 2–3 weeks. We will contact you or arrange a clinic appointment to discuss them. Your next surveillance colonoscopy timing depends on the findings (typically 1, 3, 5, or 10 years).
 
-RESULTS: If biopsies were taken, results are usually available in 2–3 weeks. We will contact you to discuss.`,
+GO TO THE EMERGENCY ROOM IMMEDIATELY IF
+• Rectal bleeding more than a tablespoon, or bleeding that does not stop after 30 minutes
+• Severe or worsening abdominal pain or distension
+• Fever above 38.5°C
+• Difficulty passing stool or wind for more than 48 hours
+
+FOLLOW-UP: As arranged by your surgical team.`,
+  },
+  {
+    id: 'ogd',
+    title: 'After your gastroscopy (OGD)',
+    tags: ['ogd', 'gastroscopy', 'endoscopy', 'upper gi', 'stomach', 'oesophagus', 'duodenum'],
+    content: `WHAT WAS DONE
+A thin, flexible camera (gastroscope) was passed through your mouth to examine your oesophagus (food pipe), stomach, and the first part of your small intestine (duodenum). Biopsies or treatment may have been performed.
+
+IMMEDIATELY AFTER
+• A mild sore throat or discomfort on swallowing is normal and will settle within 1–2 days. Throat lozenges may help.
+• Bloating and belching are common — trapped air from the examination will pass quickly.
+• You may feel a little drowsy if sedation was given.
+• You may eat and drink normally once any numbness from the local throat spray has worn off (usually within 1 hour). Start with a light meal and avoid very hot or spicy food for 24 hours.
+
+IF YOU HAD SEDATION: Do not drive, operate machinery, or make important decisions for 24 hours. A responsible adult must accompany you home.
+IF NO SEDATION WAS GIVEN: You may leave immediately and drive as normal once the throat numbness has gone.
+
+BIOPSIES
+If a biopsy was taken, you may notice a very small amount of blood in your saliva — this is normal and will settle quickly. Avoid vigorous gargling for 24 hours.
+Results are usually available within 2–3 weeks. We will contact you to discuss.
+
+GO TO THE EMERGENCY ROOM IF YOU HAVE
+• Difficulty swallowing or new chest pain after leaving the unit
+• Vomiting blood, or black/tarry stools
+• Severe or worsening abdominal or chest pain
+• Fever above 38°C
+• Any sudden change that concerns you
+
+FOLLOW-UP: As arranged by your surgical team.`,
+  },
+  {
+    id: 'bronchoscopy',
+    title: 'After your bronchoscopy',
+    tags: ['bronchoscopy', 'bronch', 'lung', 'airway', 'chest', 'respiratory'],
+    content: `WHAT WAS DONE
+A thin, flexible camera (bronchoscope) was passed through your nose or mouth and into your airways to examine your lungs and air passages. Biopsies, washings, or lavage may have been taken.
+
+IMMEDIATELY AFTER
+• Hoarseness, a mild sore throat, or a sore nose are common and will settle within 1–2 days.
+• A small amount of blood-tinged mucus when you cough is normal for up to 24 hours after the procedure.
+• Do NOT eat or drink anything until the numbness from the local anaesthetic has completely worn off — the nurse will tell you when it is safe (usually about 2 hours after the procedure).
+• A mild temperature (below 38°C) for up to 24 hours is not unusual.
+• You may feel drowsy if sedation was given.
+
+IF YOU HAD SEDATION: Do not drive, operate machinery, or sign legal documents for 24 hours. A responsible adult must accompany you home.
+
+BIOPSY RESULTS
+Results are usually available within 1–2 weeks. We will contact you or arrange a clinic appointment to discuss findings.
+
+GO TO THE EMERGENCY ROOM IMMEDIATELY IF YOU HAVE
+• Coughing up bright red (frank) blood
+• Increasing breathlessness, wheezing, or difficulty breathing
+• Fever above 38°C
+• Chest pain
+• Any sudden change that worries you
+
+FOLLOW-UP: Please keep your follow-up appointment even if you are feeling well.`,
   },
   {
     id: 'ercp',
@@ -155,13 +220,60 @@ BLOOD CLOT SIGNS (go to ER)
   },
 ];
 
+function printSheet(sheet: Sheet, patient: { name: string; dob: string; nhi: string }) {
+  const issued = new Date().toLocaleDateString('en-LC', { timeZone: 'America/St_Lucia', dateStyle: 'long' });
+  const safeContent = sheet.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+  <title>${sheet.title} — ${patient.name || 'Patient'}</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;max-width:700px;margin:32px auto;font-size:13px;line-height:1.65;color:#1a1a1a}
+    .lh{border-bottom:2px solid #b91c1c;padding-bottom:10px;margin-bottom:14px}
+    .lh-name{font-size:19px;font-weight:800;color:#b91c1c}
+    .lh-sub{font-size:11px;color:#374151;margin-top:2px}
+    h1{font-size:16px;font-weight:800;color:#1e3a5f;margin:0 0 8px}
+    .pt{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:8px 12px;margin-bottom:14px;font-size:12px}
+    pre{white-space:pre-wrap;font-family:inherit;margin:0;font-size:13px;line-height:1.7}
+    .ft{margin-top:24px;border-top:1px solid #e2e8f0;padding-top:8px;font-size:10px;color:#94a3b8}
+    @media print{body{margin:16px;max-width:100%}}
+  </style></head><body>
+  <div class="lh">
+    <div class="lh-name">AMISE MEDICAL SERVICES</div>
+    <div class="lh-sub">Dr Dawit Daniel Kabiye, MD, DM &mdash; General &amp; Endoscopic Surgery &mdash; Saint Lucia</div>
+    <div class="lh-sub">Tapion Hospital: (758) 459-2227 / 284-0557 &nbsp;&nbsp;|&nbsp;&nbsp; Rodney Bay: (758) 452-9557 / 720-7111</div>
+  </div>
+  <h1>${sheet.title}</h1>
+  ${patient.name ? `<div class="pt"><strong>${patient.name}</strong>${patient.dob ? ` &middot; DOB: ${patient.dob}` : ''}${patient.nhi ? ` &middot; NHI: ${patient.nhi}` : ''} &nbsp;|&nbsp; Issued: ${issued}</div>` : ''}
+  <pre>${safeContent}</pre>
+  <div class="ft">Amise Medical Services &middot; ${issued} &middot; For ${patient.name || 'patient'} only. If concerned, call (758) 459-2227 or attend the nearest emergency department.</div>
+  <script>window.onload = () => window.print();</script>
+  </body></html>`;
+  const w = window.open('', '_blank');
+  if (w) { w.document.open(); w.document.write(html); w.document.close(); }
+}
+
+function wordExportSheet(sheet: Sheet, patient: { name: string; dob: string; nhi: string }) {
+  const issued = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+  const body = `
+    <div style="border-bottom:2pt solid #b91c1c;margin-bottom:12px;padding-bottom:8px">
+      <div style="font-size:15pt;font-weight:700;color:#b91c1c">AMISE MEDICAL SERVICES</div>
+      <div style="font-size:9pt;color:#6B7280">Dr Dawit Daniel Kabiye, MD, DM &mdash; General &amp; Endoscopic Surgery &mdash; Saint Lucia</div>
+    </div>
+    <h1>${sheet.title}</h1>
+    ${patient.name ? `<h2>${patient.name}${patient.dob ? ` &middot; DOB: ${patient.dob}` : ''}${patient.nhi ? ` &middot; NHI: ${patient.nhi}` : ''} | ${issued}</h2>` : ''}
+    <p class="narrative">${sheet.content.replace(/\n/g, '<br>')}</p>
+    <div class="footer">Amise Medical Services &middot; ${issued} &middot; For ${patient.name || 'patient'} only.</div>`;
+  const fname = `${(patient.name || 'Patient').replace(/\s+/g, '_')}_${sheet.id}_${new Date().toISOString().slice(0, 10)}`;
+  downloadAsWord(body, fname, sheet.title);
+}
+
 export default function PatientEducationTab() {
-  const { assessment, symptoms } = useAppContext();
+  const { patientName, dob, nhiNumber, assessment, plan, symptoms } = useAppContext();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Sheet | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const allText = [assessment, ...symptoms].join(' ').toLowerCase();
+  const patient = { name: patientName ?? '', dob: dob ?? '', nhi: nhiNumber ?? '' };
+  const allText = [assessment, plan, ...symptoms].join(' ').toLowerCase();
 
   const scored = SHEETS.map(s => {
     let score = 0;
@@ -211,14 +323,25 @@ export default function PatientEducationTab() {
 
       {selected && (
         <CollapsibleCard title={selected.title}>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
-            <button type="button" onClick={() => void copy(selected.content)}
-              style={{ fontSize: 12, fontWeight: 600, padding: '5px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: '#fff', cursor: 'pointer' }}>
-              {copied ? '✓ Copied' : 'Copy text'}
+          {patient.name && (
+            <div style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: 6, padding: '6px 12px', marginBottom: 10, fontSize: 12, color: '#0369a1' }}>
+              Will print for: <strong>{patient.name}</strong>
+              {patient.dob ? ` · DOB: ${patient.dob}` : ''}
+              {patient.nhi ? ` · NHI: ${patient.nhi}` : ''}
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+            <button type="button" onClick={() => printSheet(selected, patient)}
+              style={{ fontSize: 12, fontWeight: 700, padding: '6px 16px', borderRadius: 6, border: 'none', background: '#1e3a5f', color: '#fff', cursor: 'pointer' }}>
+              🖨 Print
             </button>
-            <button type="button" onClick={() => window.print()}
-              style={{ fontSize: 12, fontWeight: 600, padding: '5px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: '#fff', cursor: 'pointer' }}>
-              Print
+            <button type="button" onClick={() => wordExportSheet(selected, patient)}
+              style={{ fontSize: 12, fontWeight: 700, padding: '6px 16px', borderRadius: 6, border: '1px solid #2563eb', background: '#eff6ff', color: '#1d4ed8', cursor: 'pointer' }}>
+              📄 Word
+            </button>
+            <button type="button" onClick={() => void copy(selected.content)}
+              style={{ fontSize: 12, fontWeight: 600, padding: '6px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: '#fff', color: '#374151', cursor: 'pointer' }}>
+              {copied ? '✓ Copied' : '📋 Copy text'}
             </button>
           </div>
           <pre style={{ whiteSpace: 'pre-wrap', fontSize: 13, fontFamily: 'inherit', lineHeight: 1.7, color: '#1e293b', margin: 0 }}>
