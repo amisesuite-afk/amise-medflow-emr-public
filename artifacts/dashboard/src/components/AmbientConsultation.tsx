@@ -873,29 +873,45 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
 
   function enterPlan() {
     if (!plan.trim()) {
-      const proto = workingDxId ? getProtocol(workingDxId) : null;
+      // Use the confirmed working Dx, or fall back to the top-ranked suggestion
+      const dxId = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
+      const proto = dxId ? getProtocol(dxId) : null;
+      const isAutoSuggested = !workingDxId && !!dxId;
+
       if (proto) {
-        const invLines  = proto.investigations.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
+        // Separate investigations into labs and imaging by label keyword
+        const IMAGING_KEYWORDS = ['uss', 'ct ', 'mri', 'mrcp', 'pet', 'cxr', 'x-ray', 'xr ', 'ultrasound', 'scan', 'echo', 'angio', 'radiograph', 'chest x', 'ercp'];
+        const isImaging = (label: string) => IMAGING_KEYWORDS.some(k => label.toLowerCase().includes(k));
+        const labInvx     = proto.investigations.filter(i => !isImaging(i.label));
+        const imagingInvx = proto.investigations.filter(i => isImaging(i.label));
+
+        const labLines  = labInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
+        const imgLines  = imagingInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
         const immediate = proto.management.filter(m => m.phase === 'immediate').map(m => `   • ${m.step}`).join('\n');
         const surgical  = proto.management.filter(m => m.phase === 'surgical').map(m => `   • ${m.step}`).join('\n');
         const conserv   = proto.management.filter(m => m.phase === 'conservative').map(m => `   • ${m.step}`).join('\n');
         const followup  = proto.management.filter(m => m.phase === 'followup').map(m => `   • ${m.step}`).join('\n');
         const rfLines   = proto.redFlags.map(r => `   ⚠ ${r}`).join('\n');
+        const dxLabel   = DISEASES.find(d => d.id === dxId)?.label ?? proto.label;
+        const icd10     = DISEASES.find(d => d.id === dxId)?.icd10 ?? '';
+
         ctx.setPlan(
-          `Management Plan — ${proto.label}\n` +
-          `ICD-10: ${DISEASES.find(d => d.id === workingDxId)?.icd10 ?? ''}\n\n` +
+          `Management Plan — ${dxLabel}${isAutoSuggested ? ' ⚠ AI suggestion — confirm diagnosis' : ''}\n` +
+          `ICD-10: ${icd10}\n\n` +
           (proto.keyPoints.length ? `Key Points:\n${proto.keyPoints.map(k => `   • ${k}`).join('\n')}\n\n` : '') +
-          `1. Investigations:\n${invLines || '   '}\n\n` +
-          `2. Imaging:\n   (see investigations above)\n\n` +
+          `1. Investigations (Labs):\n${labLines || '   —'}\n\n` +
+          `2. Imaging:\n${imgLines || '   —'}\n\n` +
           `3. Procedures / Referrals:\n   ${proto.referral ?? ''}\n\n` +
-          `4. Management:\n${[immediate, conserv, surgical].filter(Boolean).join('\n') || '   '}\n\n` +
-          `5. Follow-up:\n${followup || '   '}\n\n` +
-          `6. Red Flags / Safety-net:\n${rfLines || '   '}\n`,
+          `4. Management:\n${[immediate, conserv, surgical].filter(Boolean).join('\n') || '   —'}\n\n` +
+          `5. Follow-up:\n${followup || '   —'}\n\n` +
+          `6. Red Flags / Safety-net:\n${rfLines || '   —'}\n`,
         );
+        // Surface the auto-suggested Dx so the assessment phase shows it as selected
+        if (isAutoSuggested) setWorkingDxId(dxId);
       } else {
         ctx.setPlan(
           'Management Plan\n\n' +
-          '1. Investigations:\n   \n\n' +
+          '1. Investigations (Labs):\n   \n\n' +
           '2. Imaging:\n   \n\n' +
           '3. Procedures / Referrals:\n   \n\n' +
           '4. Medications:\n   \n\n' +
@@ -2180,23 +2196,30 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 <span style={sectionLabel}>{ctx.paneTop.length > 0 ? 'Probabilistic Differential' : 'Suggested Differentials'}</span>
                 <span style={{ fontSize: 10, color: 'var(--muted)' }}>tap to set working Dx</span>
               </div>
-              {suggestedDx.map(r => (
-                <div key={r.disease.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <button type="button" onClick={() => setWorkingDxId(r.disease.id)}
-                    style={{ flex: 1, position: 'relative', height: 24, background: 'var(--bg)', borderRadius: 5, overflow: 'hidden', border: workingDxId === r.disease.id ? '1.5px solid var(--accent)' : '1px solid var(--line)', cursor: 'pointer', padding: 0 }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.max(8, Math.round(r.probability * 100))}%`,
-                      background: r.probability > 0.5 ? '#0d9488' : r.probability > 0.25 ? '#d97706' : '#94a3b8', borderRadius: 5, transition: 'width 0.3s' }} />
-                    <span style={{ position: 'absolute', left: 9, top: 0, bottom: 0, display: 'flex', alignItems: 'center',
-                      fontSize: 11, fontWeight: 600, color: r.probability > 0.4 ? '#fff' : 'var(--ink)', gap: 6 }}>
-                      {r.disease.label}
-                      <span style={{ fontSize: 10, fontFamily: 'monospace', opacity: 0.8 }}>{r.disease.icd10}</span>
-                    </span>
-                  </button>
-                  <span style={{ fontSize: 11, fontWeight: 700, minWidth: 34, color: 'var(--muted)', textAlign: 'right' as const }}>
-                    {Math.round(r.probability * 100)}%
-                  </span>
-                </div>
-              ))}
+              {suggestedDx.map(r => {
+                const isSelected = workingDxId === r.disease.id;
+                return (
+                  <div key={r.disease.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <button type="button" onClick={() => setWorkingDxId(isSelected ? null : r.disease.id)}
+                      style={{ flex: 1, position: 'relative', height: 30, background: 'var(--bg)', borderRadius: 6, overflow: 'hidden', border: isSelected ? '1.5px solid var(--accent)' : '1px solid var(--line)', cursor: 'pointer', padding: 0 }}>
+                      <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${Math.max(8, Math.round(r.probability * 100))}%`,
+                        background: r.probability > 0.5 ? '#0d9488' : r.probability > 0.25 ? '#d97706' : '#94a3b8', borderRadius: 6, transition: 'width 0.3s' }} />
+                      <span style={{ position: 'absolute', left: 9, top: 0, bottom: 0, display: 'flex', alignItems: 'center',
+                        fontSize: 11, fontWeight: 600, color: r.probability > 0.4 ? '#fff' : 'var(--ink)', gap: 6 }}>
+                        {r.disease.label}
+                        <span style={{ fontSize: 10, fontFamily: 'monospace', opacity: 0.8 }}>{r.disease.icd10}</span>
+                      </span>
+                      <span style={{ position: 'absolute', right: 8, top: 0, bottom: 0, display: 'flex', alignItems: 'center', fontSize: 10, fontWeight: 700, color: r.probability > 0.4 ? 'rgba(255,255,255,0.8)' : 'var(--muted)' }}>
+                        {Math.round(r.probability * 100)}%
+                      </span>
+                    </button>
+                    <button type="button" onClick={() => setWorkingDxId(isSelected ? null : r.disease.id)}
+                      style={{ flexShrink: 0, padding: '4px 9px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: isSelected ? '1.5px solid var(--accent)' : '1px solid var(--line)', background: isSelected ? 'var(--accent)' : 'var(--card)', color: isSelected ? '#fff' : 'var(--muted)', whiteSpace: 'nowrap' as const }}>
+                      {isSelected ? '✓ Set' : 'Use →'}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
 
