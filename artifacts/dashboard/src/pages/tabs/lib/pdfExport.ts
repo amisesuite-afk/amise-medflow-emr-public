@@ -121,6 +121,42 @@ export async function saveBlobAsPDF(html: string, filename: string): Promise<voi
   }
 }
 
+// ── Word (.doc) export — wraps HTML in Office namespace so Word opens it ─────
+//
+// Word 2007+ treats any file with .doc extension containing a full HTML document
+// (with the Office:Word XML namespace header) as an editable Word document.
+// No server-side processing or npm packages required.
+//
+// Usage: downloadAsWord(bodyHtml, 'Colonoscopy_Report', 'Colonoscopy Report')
+// bodyHtml should be the inner HTML content (letterhead, headings, text, sig).
+
+export function downloadAsWord(bodyHtml: string, filename: string, docTitle?: string): void {
+  const title = (docTitle ?? filename).replace(/</g, '&lt;');
+  const html =
+    `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">` +
+    `<head><meta charset="utf-8"><title>${title}</title>` +
+    `<!--[if gte mso 9]><xml><w:WordDocument><w:View>Normal</w:View><w:Zoom>0</w:Zoom><w:DoNotOptimizeForBrowser/></w:WordDocument></xml><![endif]-->` +
+    `<style>` +
+    `@page WordSection1{size:8.5in 11in;margin:1in 1in 1in 1in;mso-header-margin:.5in;mso-footer-margin:.5in}` +
+    `div.WordSection1{page:WordSection1}` +
+    `body{font-family:Arial,Helvetica,sans-serif;font-size:11pt;color:#1A1A1A;line-height:1.5}` +
+    `h1{font-size:15pt;font-weight:700;color:#0B2545;margin:0 0 4px}` +
+    `h2{font-size:11pt;color:#374151;font-weight:400;margin:0 0 12px}` +
+    `h3{font-size:11pt;font-weight:700;color:#0B2545;border-bottom:.75pt solid #C8A24B;padding-bottom:3px;margin:14px 0 6px}` +
+    `table{border-collapse:collapse;width:100%;margin:4px 0}` +
+    `td{font-size:10pt;vertical-align:top;padding:3px 8px 3px 0}` +
+    `td.lbl{font-weight:700;color:#0B2545;width:30%;white-space:nowrap}` +
+    `p.allergy{color:#dc2626;font-weight:700;font-size:11pt;border:1pt solid #fecaca;padding:4px 8px;margin:8px 0}` +
+    `pre,p.narrative{white-space:pre-wrap;font-family:Georgia,"Times New Roman",serif;font-size:11pt;line-height:1.6;margin-top:12px}` +
+    `.sig{margin-top:48pt}.sig-line{border-bottom:1pt solid #333;width:220px;height:24px;display:inline-block}` +
+    `.footer{margin-top:36pt;border-top:.5pt solid #0B2545;padding-top:6px;font-size:8pt;color:#6B7280;font-style:italic}` +
+    `</style></head>` +
+    `<body><div class="WordSection1">${bodyHtml}</div></body></html>`;
+
+  const blob = new Blob([html], { type: 'application/msword;charset=utf-8' });
+  _triggerDownload(blob, filename.endsWith('.doc') ? filename : `${filename}.doc`);
+}
+
 // ── Internal helpers ──────────────────────────────────────────────────────────
 
 function _triggerDownload(blob: Blob, filename: string): void {

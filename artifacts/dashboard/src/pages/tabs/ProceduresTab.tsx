@@ -8,6 +8,7 @@ import PathologySpecimenTracker from '@/components/PathologySpecimenTracker';
 import PostopCarePlan from '@/components/PostopCarePlan';
 import EndoscopyReportGenerator from '@/components/EndoscopyReportGenerator';
 import SurveillanceProtocolCard from '@/components/SurveillanceProtocolCard';
+import { downloadAsWord } from './lib/pdfExport';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -103,18 +104,47 @@ function DraftReportPanel({
 }) {
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState('');
+  const { patientName, dob, nhiNumber, allergies: allergyText } = useAppContext();
 
   const typeLabels: Record<ProcType, string> = {
     ogd: 'OGD', colonoscopy: 'Colonoscopy', ercp: 'ERCP', bronch: 'Bronchoscopy',
     preop: 'Pre-op Assessment', postop: 'Operative Note', other: 'Note',
   };
 
+  function handleDownloadWord() {
+    const label = typeLabels[procType];
+    const dateStr = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+    const patient = patientName || 'Patient';
+    const safeAllergy = allergyText ? allergyText.replace(/</g, '&lt;') : '';
+    const safeDraft = (draft || '').replace(/</g, '&lt;');
+
+    const body = `
+      <div style="border-bottom:2pt solid #C8A24B;margin-bottom:12px;padding-bottom:8px">
+        <div style="font-size:15pt;font-weight:700;color:#0B2545">AMISE MEDICAL SERVICES</div>
+        <div style="font-size:9pt;color:#6B7280">Dr Dawit Daniel Kabiye, MD, DM &mdash; General &amp; Endoscopic Surgery &mdash; Saint Lucia</div>
+      </div>
+      <h1>${label} Report</h1>
+      <h2>${patient}${dob ? ` &middot; DOB: ${dob}` : ''}${nhiNumber ? ` &middot; NHI: ${nhiNumber}` : ''} &nbsp;|&nbsp; ${dateStr}</h2>
+      ${safeAllergy ? `<p class="allergy">&#9888; ALLERGIES: ${safeAllergy}</p>` : ''}
+      <p class="narrative">${safeDraft}</p>
+      <div class="sig">
+        <div class="sig-line"></div>
+        <p style="font-size:10pt;font-weight:700;color:#1A1A1A;margin-top:4px">Dr Dawit Daniel Kabiye, MD, DM</p>
+        <p style="font-size:9pt;color:#6B7280">Consultant General &amp; Endoscopic Surgeon &mdash; Amise Medical Services</p>
+        <p style="font-size:9pt;color:#6B7280">Date: ______________________</p>
+      </div>
+      <div class="footer">Amise Medical Services &middot; Saint Lucia &middot; AI-Assisted Draft &mdash; Reviewed, Approved, and Signed by Surgeon</div>
+    `;
+    const filename = `${patient.replace(/\s+/g, '_')}_${label.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}`;
+    downloadAsWord(body, filename, `${label} — ${patient}`);
+  }
+
   return (
     <div style={hero
       ? { background: '#f0fdfa', border: '1px solid #99f6e4', borderRadius: 8, padding: '14px 16px' }
       : { marginTop: 16, borderTop: '1px solid #e2e8f0', paddingTop: 16 }
     }>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
         <button
           type="button"
           onClick={onGenerate}
@@ -140,6 +170,12 @@ function DraftReportPanel({
               onClick={() => { setEditText(draft); setEditing(true); }}
               style={{ padding: '7px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600, border: '1px solid #d1d5db', background: '#f8fafc', color: '#374151', cursor: 'pointer' }}
             >✏️ Edit</button>
+            <button
+              type="button"
+              onClick={handleDownloadWord}
+              title="Download as editable Word document"
+              style={{ padding: '7px 14px', borderRadius: 7, fontSize: 12, fontWeight: 600, border: '1px solid #2563eb', background: '#eff6ff', color: '#1d4ed8', cursor: 'pointer' }}
+            >📄 Word</button>
             <span style={{ fontSize: 11, color: '#10b981', fontWeight: 600 }}>✓ Draft ready</span>
           </>
         )}
