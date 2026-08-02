@@ -9,4 +9,4 @@ export type { PriorModifier } from './engine/infoGain.js';
 export { DISEASES, FEATURES } from './vademecum/index.js';
 export { getDiseaseSpecialty } from './vademecum/registry.js';
 export { getProtocol, getProtocolByIcd, getAllProtocols } from './management/index.js';
-export type { ManagementProtocol, InvestigationItem, ManagementStep } from './management/index.js';
+export type { ManagementProtocol, InvestigationItem, ManagementStep, ProtocolMedication } from './management/index.js';

@@ -9,6 +9,18 @@ export interface ManagementStep {
   step: string;
 }
 
+export interface ProtocolMedication {
+  drugName: string;
+  dose: string;
+  frequency: string;
+  route: string;
+  duration?: string;
+  indication: string;
+  phase: 'immediate' | 'conservative' | 'surgical' | 'followup' | 'prophylaxis';
+  /** When multiple drug options exist for the same indication (e.g. first-line vs alternative) */
+  alternativeTo?: string;
+}
+
 export interface ManagementProtocol {
   diseaseId: string;
   /** ICD-10 prefix(es) for lookup via ICD picker (startsWith match). */
@@ -21,5 +33,6 @@ export interface ManagementProtocol {
   redFlags: string[];
   investigations: InvestigationItem[];
   management: ManagementStep[];
+  medications?: ProtocolMedication[];
   referral?: string;
 }

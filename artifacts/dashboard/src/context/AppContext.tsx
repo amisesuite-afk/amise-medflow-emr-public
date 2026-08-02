@@ -4,7 +4,7 @@ import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSi
 import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, type EncounterSummary } from '@/lib/db';
-import type { PaneState, RankedDiagnosis } from '@workspace/pane-engine';
+import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
@@ -315,6 +315,7 @@ interface CtxValue {
 
   attachments: ClinicalAttachment[]; setAttachments(v: ClinicalAttachment[]): void;
   radiologyRequests: RadiologyRequest[]; setRadiologyRequests(v: RadiologyRequest[]): void;
+  pendingPrescriptions: ProtocolMedication[]; setPendingPrescriptions(v: ProtocolMedication[]): void;
   finalDocument: string; setFinalDocument(v: string): void;
   progressNotes: ProgressNote[]; setProgressNotes(v: ProgressNote[]): void;
   vitalRecords: VitalRecord[]; setVitalRecords(v: VitalRecord[]): void;
@@ -574,6 +575,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [attachments, setAttachments] = useState<ClinicalAttachment[]>([]);
   const [radiologyRequests, setRadiologyRequests] = useState<RadiologyRequest[]>([]);
+  const [pendingPrescriptions, setPendingPrescriptions] = useState<ProtocolMedication[]>([]);
   const [finalDocument, setFinalDocument] = useState('');
   const [progressNotes, setProgressNotes] = useState<ProgressNote[]>([]);
   const [vitalRecords, setVitalRecords] = useState<VitalRecord[]>([]);
@@ -1389,6 +1391,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     triageResult,
     attachments, setAttachments,
     radiologyRequests, setRadiologyRequests,
+    pendingPrescriptions, setPendingPrescriptions,
     finalDocument, setFinalDocument,
     progressNotes, setProgressNotes,
     vitalRecords, setVitalRecords,

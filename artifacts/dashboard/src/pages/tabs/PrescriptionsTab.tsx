@@ -638,6 +638,92 @@ export default function PrescriptionsTab() {
         </CollapsibleCard>
       )}
 
+      {/* ── Protocol medications queue ── */}
+      {ctx.pendingPrescriptions.length > 0 && (
+        <CollapsibleCard
+          title="Protocol medications"
+          badge={ctx.pendingPrescriptions.length}
+          defaultOpen={true}
+        >
+          <p style={{ fontSize: 11, color: '#6B7280', marginBottom: 8 }}>
+            {ctx.pendingPrescriptions.length} medication{ctx.pendingPrescriptions.length !== 1 ? 's' : ''} queued from the protocol — review and import.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+            {ctx.pendingPrescriptions.map((med, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 10px',
+                  background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0',
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#15803d' }}>{med.drugName}</div>
+                  <div style={{ fontSize: 11, color: '#374151', marginTop: 1 }}>
+                    {[med.dose, med.frequency, med.route, med.duration].filter(Boolean).join(' · ')}
+                  </div>
+                  {med.indication && (
+                    <div style={{ fontSize: 10, color: '#6B7280', marginTop: 1 }}>Indication: {med.indication}</div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (rxItems.some(r => r.drugName.toLowerCase() === med.drugName.toLowerCase())) {
+                      showToast(`${med.drugName} is already in the Rx list`, 'info');
+                      return;
+                    }
+                    setRxItems(prev => [...prev, {
+                      id: uid(), drugName: med.drugName, dose: med.dose,
+                      frequency: med.frequency, route: med.route,
+                      duration: med.duration ?? '', quantity: '', refills: '0',
+                      instructions: '', indication: med.indication, noSubstitution: false,
+                    }]);
+                    ctx.setPendingPrescriptions(ctx.pendingPrescriptions.filter((_, i) => i !== idx));
+                    showToast(`${med.drugName} added to Rx`, 'success');
+                  }}
+                  style={{ ...BTN_ACCENT, padding: '3px 10px', fontSize: 11 }}
+                >
+                  Import
+                </button>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              style={BTN_GHOST}
+              onClick={() => ctx.setPendingPrescriptions([])}
+            >
+              Clear queue
+            </button>
+            <button
+              type="button"
+              style={BTN_ACCENT}
+              onClick={() => {
+                const newItems = ctx.pendingPrescriptions
+                  .filter(med => !rxItems.some(r => r.drugName.toLowerCase() === med.drugName.toLowerCase()))
+                  .map(med => ({
+                    id: uid(), drugName: med.drugName, dose: med.dose,
+                    frequency: med.frequency, route: med.route,
+                    duration: med.duration ?? '', quantity: '', refills: '0',
+                    instructions: '', indication: med.indication, noSubstitution: false,
+                  }));
+                if (newItems.length === 0) {
+                  showToast('All queued medications are already in the Rx list', 'info');
+                  return;
+                }
+                setRxItems(prev => [...prev, ...newItems]);
+                ctx.setPendingPrescriptions([]);
+                showToast(`${newItems.length} medication${newItems.length !== 1 ? 's' : ''} imported`, 'success');
+              }}
+            >
+              Import all
+            </button>
+          </div>
+        </CollapsibleCard>
+      )}
+
       {/* ── Interaction warnings ── */}
       {rxItems.length >= 2 && (
         <div style={{

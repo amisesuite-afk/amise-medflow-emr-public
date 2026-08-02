@@ -2521,6 +2521,61 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                         </>
                       )}
 
+                      {/* Protocol Actions — medications */}
+                      {activeProto.medications && activeProto.medications.length > 0 && (() => {
+                        const meds = activeProto.medications!;
+                        const queuedNames = new Set(ctx.pendingPrescriptions.map(m => m.drugName.toLowerCase()));
+                        const pending = meds.filter(m => !queuedNames.has(m.drugName.toLowerCase()));
+                        return (
+                          <>
+                            <div style={{ ...labelStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                              <span>Protocol Medications</span>
+                              {pending.length > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => ctx.setPendingPrescriptions([...ctx.pendingPrescriptions, ...pending])}
+                                  style={{ fontSize: 9, fontWeight: 800, color: 'var(--accent)', background: 'none', border: '1px solid var(--accent)', borderRadius: 4, padding: '1px 6px', cursor: 'pointer', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                                  + Queue all ({pending.length})
+                                </button>
+                              )}
+                              {pending.length === 0 && meds.length > 0 && (
+                                <span style={{ fontSize: 9, color: '#16a34a', fontWeight: 700 }}>✓ In Rx queue</span>
+                              )}
+                            </div>
+                            {meds.map((med, i) => {
+                              const isQueued = queuedNames.has(med.drugName.toLowerCase());
+                              return (
+                                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 5, marginBottom: 4 }}>
+                                  <button
+                                    type="button"
+                                    onClick={() => { if (!isQueued) ctx.setPendingPrescriptions([...ctx.pendingPrescriptions, med]); }}
+                                    disabled={isQueued}
+                                    style={{
+                                      minWidth: 18, height: 18, borderRadius: 3, fontSize: 11, fontWeight: 700,
+                                      border: isQueued ? 'none' : '1px solid var(--accent)',
+                                      background: isQueued ? '#d1fae5' : 'none',
+                                      color: isQueued ? '#16a34a' : 'var(--accent)',
+                                      cursor: isQueued ? 'default' : 'pointer', padding: 0,
+                                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1,
+                                    }}>
+                                    {isQueued ? '✓' : '＋'}
+                                  </button>
+                                  <div>
+                                    <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--ink)' }}>{med.drugName}</span>
+                                    <span style={{ fontSize: 10, color: 'var(--muted)', marginLeft: 4 }}>
+                                      {[med.dose, med.frequency, med.route].filter(Boolean).join(' · ')}
+                                    </span>
+                                    {med.indication && (
+                                      <div style={{ fontSize: 9, color: 'var(--muted)' }}>{med.indication}</div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </>
+                        );
+                      })()}
+
                       {activeProto.referral && (
                         <>
                           <div style={labelStyle}>Referral</div>

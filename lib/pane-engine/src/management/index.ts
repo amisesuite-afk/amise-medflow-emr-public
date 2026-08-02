@@ -10,7 +10,7 @@ import { skinSoftTissueProtocols } from './protocols/skinSoftTissue.js';
 import { urologyProtocols } from './protocols/urology.js';
 import { postOpWoundsProtocols } from './protocols/postOpWounds.js';
 
-export type { ManagementProtocol, InvestigationItem, ManagementStep } from './types.js';
+export type { ManagementProtocol, InvestigationItem, ManagementStep, ProtocolMedication } from './types.js';
 
 const ALL_PROTOCOLS = [
   ...generalSurgeryProtocols,
