@@ -343,19 +343,17 @@ ${ctx.orderedInvestigations.length ? `<div class="section">
 <div class="sec-body">${items(ctx.orderedInvestigations)}</div>
 </div>` : ''}
 
-${ctx.assessment ? `<div class="section">
+${ctx.assessment || ctx.icdCodes.length || ctx.differentials ? `<div class="section">
 <div class="sec-hdr">Assessment</div>
-<div class="sec-body">${escHtml(ctx.assessment).replace(/\n/g, '<br>')}</div>
-</div>` : ''}
-
-${ctx.icdCodes.length ? `<div class="section">
-<div class="sec-hdr">ICD-10 Codes</div>
-<div class="sec-body">${items(ctx.icdCodes)}</div>
-</div>` : ''}
+<div class="sec-body">
+${ctx.icdCodes.length ? `<div style="font-weight:700;font-size:11px;color:#0B2545;margin-bottom:4px">Working Diagnosis: ${escHtml(ctx.icdCodes.join('  ·  '))}</div>` : ''}
+${ctx.differentials ? `<div style="margin-bottom:6px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#475569">Differential Diagnoses</span><br>${escHtml(ctx.differentials).replace(/\n/g, '<br>')}</div>` : ''}
+${ctx.assessment ? `<div style="white-space:pre-wrap;line-height:1.7">${escHtml(ctx.assessment).replace(/\n/g, '<br>')}</div>` : ''}
+</div></div>` : ''}
 
 ${ctx.plan ? `<div class="section">
-<div class="sec-hdr">Plan</div>
-<div class="sec-body">${escHtml(ctx.plan).replace(/\n/g, '<br>')}</div>
+<div class="sec-hdr">Management Plan</div>
+<div class="sec-body" style="font-family:monospace;font-size:11px;line-height:1.75;white-space:pre-wrap">${escHtml(ctx.plan)}</div>
 </div>` : ''}
 
 <div class="sig">

@@ -923,29 +923,37 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     if (medsStr) parts.push(`\n\nMedications: ${medsStr}`);
     else if (medications.includes('None')) parts.push('\n\nMedications: None');
     if (allergyText) parts.push(`\n\nAllergies: ${allergyText}`);
-    const examParts: string[] = [];
-    if (examGeneral)    examParts.push(`  General: ${examGeneral}`);
-    if (examAbdomen)    examParts.push(`  Abdomen: ${examAbdomen}`);
-    if (examCardio)     examParts.push(`  CVS: ${examCardio}`);
-    if (examResp)       examParts.push(`  Resp: ${examResp}`);
-    if (examExtremities) examParts.push(`  Extremities: ${examExtremities}`);
-    if (examWound)      examParts.push(`  Wound: ${examWound}`);
-    if (examParts.length) parts.push(`\n\nExamination:\n${examParts.join('\n')}`);
-    if (orderedInvestigations.length) parts.push(`\n\nInvestigations ordered: ${orderedInvestigations.join(', ')}`);
-    if (radiologyRequests.length) {
-      const imgStr = radiologyRequests.map(r => `${r.modality} ${r.anatomicalRegion}`).join(', ');
-      parts.push(`\n\nImaging ordered: ${imgStr}`);
-    }
-    // Clinical notes: supplementary only — Working Dx and differentials are shown
-    // as structured UI above, not duplicated here. Only seed red flags from the
-    // protocol (dictionary-first) and leave space for surgeon's additional notes.
-    const dxForAssess = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
-    const protoForAssess = dxForAssess ? getProtocol(dxForAssess) : null;
-    const rfForAssess = protoForAssess?.redFlags.map(r => `⚠ ${r}`).join('\n') ?? '';
+    // Exam is rendered in its own "Physical Examination" section in the printed note —
+    // do not copy it into the assessment text (avoids verbatim duplication).
+    // Show investigation queue count only; full list rendered in Investigations section.
+    const invParts: string[] = [];
+    if (orderedInvestigations.length) invParts.push(`${orderedInvestigations.length} lab order${orderedInvestigations.length > 1 ? 's' : ''} queued`);
+    if (radiologyRequests.length) invParts.push(`${radiologyRequests.length} imaging request${radiologyRequests.length > 1 ? 's' : ''} queued`);
+    if (invParts.length) parts.push(`\n\nInvestigations: ${invParts.join(', ')}`);
 
-    parts.push('\n\n' + '─'.repeat(40));
-    if (rfForAssess) parts.push(`\n\nRed Flags to monitor:\n${rfForAssess}`);
-    parts.push('\n\nAdditional clinical notes / missing information:');
+    // Working Dx (from confirmed workingDxId or top PANE suggestion) + ranked differentials
+    const dxForAssess = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
+    const dxLabelForAssess = dxForAssess ? (DISEASES.find(d => d.id === dxForAssess)?.label ?? dxForAssess) : null;
+    const protoForAssess = dxForAssess ? getProtocol(dxForAssess) : null;
+    const rfForAssess = protoForAssess?.redFlags.map(r => `  ⚠ ${r}`).join('\n') ?? '';
+    const top3 = suggestedDx.slice(0, 3);
+    const diffLines = top3.length > 0
+      ? top3.map((rd, i) => {
+          const pct = Math.round(rd.probability * 100);
+          return `  ${i + 1}. ${rd.disease.label}${pct > 0 ? ` (${pct}% pre-test probability)` : ''}`;
+        }).join('\n')
+      : '  1.\n  2.\n  3.';
+
+    parts.push('\n\n' + '━'.repeat(44));
+    if (dxLabelForAssess) {
+      parts.push(`\n\nWorking Diagnosis: ${dxLabelForAssess}${workingDxId ? '' : '  ⚠ AI suggestion — please confirm'}`);
+    } else {
+      parts.push('\n\nWorking Diagnosis:');
+    }
+    parts.push('\n\nClinical reasoning:');
+    parts.push(`\n\nRanked differentials:\n${diffLines}`);
+    if (rfForAssess) parts.push(`\n\nRed flags to monitor:\n${rfForAssess}`);
+    parts.push('\n\nMissing / pending information:');
 
     const draft = parts.join('');
     if (!assessment.trim()) ctx.setAssessment(draft);
@@ -957,29 +965,58 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     const proto = getProtocol(dxId);
     if (!proto) return '';
     const IMAGING_KW = ['uss', 'ct ', 'mri', 'mrcp', 'pet', 'cxr', 'x-ray', 'xr ', 'ultrasound', 'scan', 'echo', 'angio', 'radiograph', 'chest x', 'ercp'];
-    const isImaging = (label: string) => IMAGING_KW.some(k => label.toLowerCase().includes(k));
-    const labInvx     = proto.investigations.filter(i => !isImaging(i.label));
-    const imagingInvx = proto.investigations.filter(i => isImaging(i.label));
-    const labLines  = labInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
-    const imgLines  = imagingInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
-    const immediate = proto.management.filter(m => m.phase === 'immediate').map(m => `   • ${m.step}`).join('\n');
-    const surgical  = proto.management.filter(m => m.phase === 'surgical').map(m => `   • ${m.step}`).join('\n');
-    const conserv   = proto.management.filter(m => m.phase === 'conservative').map(m => `   • ${m.step}`).join('\n');
-    const followup  = proto.management.filter(m => m.phase === 'followup').map(m => `   • ${m.step}`).join('\n');
-    const rfLines   = proto.redFlags.map(r => `   ⚠ ${r}`).join('\n');
-    const dxLabel   = DISEASES.find(d => d.id === dxId)?.label ?? proto.label;
-    const icd10     = DISEASES.find(d => d.id === dxId)?.icd10 ?? '';
-    return (
-      `Management Plan — ${dxLabel}${isAutoSuggested ? ' ⚠ AI suggestion — confirm diagnosis' : ''}\n` +
-      `ICD-10: ${icd10}\n\n` +
-      (proto.keyPoints.length ? `Key Points:\n${proto.keyPoints.map(k => `   • ${k}`).join('\n')}\n\n` : '') +
-      `1. Investigations (Labs):\n${labLines || '   —'}\n\n` +
-      `2. Imaging:\n${imgLines || '   —'}\n\n` +
-      `3. Procedures / Referrals:\n   ${proto.referral ?? ''}\n\n` +
-      `4. Management:\n${[immediate, conserv, surgical].filter(Boolean).join('\n') || '   —'}\n\n` +
-      `5. Follow-up:\n${followup || '   —'}\n\n` +
-      `6. Red Flags / Safety-net:\n${rfLines || '   —'}\n`
-    );
+    const isImaging  = (label: string) => IMAGING_KW.some(k => label.toLowerCase().includes(k));
+    const labInvx    = proto.investigations.filter(i => !isImaging(i.label));
+    const imagingInvx= proto.investigations.filter(i =>  isImaging(i.label));
+    const labLines   = labInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
+    const imgLines   = imagingInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
+    const immediate  = proto.management.filter(m => m.phase === 'immediate').map(m => `   • ${m.step}`).join('\n');
+    const surgical   = proto.management.filter(m => m.phase === 'surgical').map(m => `   • ${m.step}`).join('\n');
+    const conserv    = proto.management.filter(m => m.phase === 'conservative').map(m => `   • ${m.step}`).join('\n');
+    const followup   = proto.management.filter(m => m.phase === 'followup').map(m => `   • ${m.step}`).join('\n');
+    const rfLines    = proto.redFlags.map(r => `   ⚠ ${r}`).join('\n');
+    const dxLabel    = DISEASES.find(d => d.id === dxId)?.label ?? proto.label;
+    const icd10      = DISEASES.find(d => d.id === dxId)?.icd10 ?? '';
+
+    // Severity scoring prompts — required grading systems for diseases managed by grade
+    const SEVERITY_PROMPTS: Partial<Record<string, string>> = {
+      cholecystitis:     'Tokyo Guidelines TG18 — document grade before initiating management:\n   □ Grade I   — mild (no organ dysfunction, responds to initial treatment)\n   □ Grade II  — moderate (local complications or systemic features without organ dysfunction)\n   □ Grade III — severe (organ dysfunction: cardiovascular / neurological / respiratory / renal / hepatic / haematological)',
+      cholangitis:       'Tokyo Guidelines TG18:\n   □ Grade I   — mild (responds to initial antibiotics within 24 h)\n   □ Grade II  — moderate (no organ dysfunction, does not respond within 24 h)\n   □ Grade III — severe (organ dysfunction present — emergency biliary decompression)',
+      pancreatitis:      'Severity at 48 h — complete at least one system:\n   BISAP: ___ / 5    Modified Glasgow: ___ / 8    Ranson: ___ / 11\n   □ Mild  (BISAP 0–1 / Glasgow ≤1 / Ranson <3 — general ward)\n   □ Moderately severe  (BISAP 2 / local complications / no persistent organ failure — close monitoring)\n   □ Severe  (BISAP ≥3 / Glasgow ≥3 / SIRS criteria met — HDU/ICU)',
+      appendicitis:      'Alvarado score: ___ / 10\n   □ ≤4   — low probability (observe or CT before theatre)\n   □ 5–6  — intermediate (CT abdomen/pelvis or diagnostic laparoscopy)\n   □ 7–8  — high probability (proceed to laparoscopic appendicectomy)\n   □ ≥9   — diagnostic certainty (immediate appendicectomy without delay)',
+      diverticulitis:    'Hinchey Classification:\n   □ Stage I  — pericolic or mesenteric abscess (IV antibiotics ± CT-guided drain)\n   □ Stage II — pelvic or remote abscess (CT-guided percutaneous drainage)\n   □ Stage III — generalised purulent peritonitis (emergency surgery)\n   □ Stage IV — generalised faeculent peritonitis (emergency Hartmann\'s)',
+      bowel_obstruction: 'CT Classification:\n   □ Closed-loop obstruction (high ischaemia risk — urgent OR)\n   □ Single-point adhesive SBO without ischaemia (conservative 48-h trial)\n   □ Large bowel obstruction — cause: _______________',
+    };
+    const severityPrompt = SEVERITY_PROMPTS[dxId];
+
+    // Structured medications — replaces ambiguous prose in management steps
+    let medsBlock = '';
+    if (proto.medications && proto.medications.length > 0) {
+      const medLines = proto.medications.map(m => {
+        const header = `${m.drugName}  ${m.dose}  ${m.route}  ${m.frequency}${m.duration ? `  × ${m.duration}` : ''}`;
+        const altNote = m.alternativeTo ? `  [alternative to ${m.alternativeTo}]` : '';
+        return `   • ${header}${altNote}\n     → ${m.indication}`;
+      });
+      medsBlock = medLines.join('\n');
+    }
+
+    // Sequential section builder
+    let n = 0;
+    const S = (label: string, content: string) => `\n${++n}. ${label}:\n${content}`;
+
+    let out = `Management Plan — ${dxLabel}${isAutoSuggested ? '  ⚠ AI suggestion — confirm diagnosis before proceeding' : ''}\n`;
+    out += `ICD-10: ${icd10}\n`;
+    if (severityPrompt) out += `\n━━━ SEVERITY ASSESSMENT (complete before management) ━━━\n${severityPrompt}\n`;
+    out += S('Investigations (Labs)', labLines || '   —');
+    out += S('Imaging', imgLines || '   —');
+    out += S('Referral', `   ${proto.referral ?? ''}`);
+    out += S('Immediate Management', immediate || '   —');
+    if (medsBlock) out += S('Medications', medsBlock);
+    if (conserv) out += S('Conservative / Non-operative Options', conserv);
+    if (surgical) out += S('Surgical Options', surgical);
+    out += S('Follow-up', followup || '   —');
+    out += S('Red Flags / Safety-net', rfLines || '   —');
+    return out;
   }
 
   function enterPlan() {
