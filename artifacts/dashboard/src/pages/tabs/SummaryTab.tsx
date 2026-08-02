@@ -225,6 +225,21 @@ function sharedHead(title: string): string {
   .sig-title{font-size:11px;color:#555;margin-top:2px}
   .sig-lic{font-size:10px;color:#888;margin-top:3px}
   .sig-right{font-size:10px;color:#aaa;text-align:right}
+  /* ── Clinical note extras ── */
+  .sub-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:#64748b;margin-bottom:4px}
+  .lbl{font-weight:700;color:#475569}
+  .sec-hdr--warn{background:#fef2f2;color:#b91c1c}
+  .dx-field{background:#0B2545;color:#fff;padding:10px 16px;border-radius:6px;margin-bottom:12px}
+  .dx-label{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:#93c5fd;margin-bottom:4px;font-weight:700}
+  .dx-name{font-size:14px;font-weight:700;letter-spacing:.2px}
+  .diff-block{border-left:3px solid #1a3a5c;padding:8px 14px;margin-bottom:10px;background:#f8fafc;border-radius:0 4px 4px 0}
+  .diff-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:#64748b;margin-bottom:5px}
+  .diff-item{font-size:12px;padding:2px 0;color:#1e293b}
+  .med-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:4px}
+  .med-table th{background:#1a3a5c;color:#fff;padding:5px 8px;text-align:left;font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px}
+  .med-table td{padding:5px 8px;border-bottom:1px solid #e2e8f0;vertical-align:top}
+  .med-table tr:nth-child(even) td{background:#f8fafc}
+  .med-ind{font-size:10px;color:#64748b;font-style:italic}
   @page{margin:16mm 18mm;size:A4}
   @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;max-width:100%;padding:0}}
 </style>
@@ -268,27 +283,52 @@ function buildDirectSummaryHtml(ctx: DirectCtx, meta: PrintMeta): string {
   const site = SITE_INFO[meta.site] ?? SITE_INFO.rodney_bay;
   const now = new Date();
   const ect = { timeZone: 'America/St_Lucia' };
-  const consultDate = now.toLocaleString('en-GB', { ...ect, day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+  const consultDate = now.toLocaleString('en-GB', {
+    ...ect, day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true,
+  });
 
   const vitalsArr = Object.entries({
-    'BP': ctx.vitals.systolicBp ? `${ctx.vitals.systolicBp}/${ctx.vitals.diastolicBp} mmHg` : '',
-    'HR': ctx.vitals.heartRate ? `${ctx.vitals.heartRate} bpm` : '',
-    'Temp': ctx.vitals.temperatureC ? `${ctx.vitals.temperatureC} °C` : '',
-    'RR': ctx.vitals.respiratoryRate ? `${ctx.vitals.respiratoryRate}/min` : '',
-    'SpO₂': ctx.vitals.spo2 ? `${ctx.vitals.spo2}%` : '',
-    'BSL': ctx.vitals.glucoseMmol ? `${ctx.vitals.glucoseMmol} mmol/L` : '',
+    'BP':   ctx.vitals.systolicBp      ? `${ctx.vitals.systolicBp}/${ctx.vitals.diastolicBp} mmHg` : '',
+    'HR':   ctx.vitals.heartRate       ? `${ctx.vitals.heartRate} bpm` : '',
+    'Temp': ctx.vitals.temperatureC    ? `${ctx.vitals.temperatureC} °C` : '',
+    'RR':   ctx.vitals.respiratoryRate ? `${ctx.vitals.respiratoryRate}/min` : '',
+    'SpO₂': ctx.vitals.spo2           ? `${ctx.vitals.spo2}%` : '',
+    'BSL':  ctx.vitals.glucoseMmol    ? `${ctx.vitals.glucoseMmol} mmol/L` : '',
   }).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
 
   const examLines = [
-    ctx.examGeneral && `General: ${ctx.examGeneral}`,
-    ctx.examCardio && `Cardiovascular: ${ctx.examCardio}`,
-    ctx.examResp && `Respiratory: ${ctx.examResp}`,
-    ctx.examAbdomen && `Abdomen: ${ctx.examAbdomen}`,
-    ctx.examNeuro && `Neurological: ${ctx.examNeuro}`,
+    ctx.examGeneral     && `General: ${ctx.examGeneral}`,
+    ctx.examCardio      && `Cardiovascular: ${ctx.examCardio}`,
+    ctx.examResp        && `Respiratory: ${ctx.examResp}`,
+    ctx.examAbdomen     && `Abdomen: ${ctx.examAbdomen}`,
+    ctx.examNeuro       && `Neurological: ${ctx.examNeuro}`,
     ctx.examExtremities && `Extremities: ${ctx.examExtremities}`,
-    ctx.examBreast && `Breast/Local: ${ctx.examBreast}`,
-    ctx.examWound && `Wound: ${ctx.examWound}`,
+    ctx.examBreast      && `Breast / Local: ${ctx.examBreast}`,
+    ctx.examWound       && `Wound: ${ctx.examWound}`,
   ].filter(Boolean) as string[];
+
+  // Prescribed medications table — rendered from protocol queue if populated
+  const hasMedTable = ctx.pendingPrescriptions && ctx.pendingPrescriptions.length > 0;
+  const medTableHtml = hasMedTable
+    ? `<table class="med-table">
+<thead><tr><th>Drug</th><th>Dose</th><th>Route</th><th>Frequency</th><th>Duration</th><th>Phase</th></tr></thead>
+<tbody>
+${ctx.pendingPrescriptions.map(m => `<tr>
+  <td><strong>${escHtml(m.drugName)}</strong>${m.alternativeTo ? `<br><span class="med-ind">alt: ${escHtml(m.alternativeTo)}</span>` : ''}</td>
+  <td>${escHtml(m.dose)}</td>
+  <td>${escHtml(m.route)}</td>
+  <td>${escHtml(m.frequency)}</td>
+  <td>${m.duration ? escHtml(m.duration) : '—'}</td>
+  <td style="text-transform:capitalize">${escHtml(m.phase)}</td>
+</tr>
+<tr><td colspan="6" style="padding:0 8px 6px;border-bottom:1.5px solid #cbd5e1" class="med-ind">↳ ${escHtml(m.indication)}</td></tr>`).join('')}
+</tbody></table>`
+    : '';
+
+  const hasPmhSurgHx = ctx.comorbidities.length || ctx.pmhNotes || ctx.surgicalHistory.length || ctx.surgicalNotes;
+  const hasInvestigations = ctx.orderedInvestigations.length || (ctx.radiologyRequests && ctx.radiologyRequests.length);
+  const hasAssessment = ctx.assessment || ctx.icdCodes.length || ctx.differentials;
 
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 ${sharedHead(`Clinical Note — ${ctx.patientName || 'Patient'}`)}
@@ -301,36 +341,40 @@ ${ctx.symptoms.length || ctx.freeText ? `<div class="section">
 <div class="sec-hdr">Presenting Complaint</div>
 <div class="sec-body">
 ${items(ctx.symptoms)}
-${ctx.freeText ? `<div style="margin-top:4px">${escHtml(ctx.freeText)}</div>` : ''}
-${ctx.durationDays ? `<div>Duration: ${escHtml(ctx.durationDays)} days</div>` : ''}
-${ctx.painScore ? `<div>Pain score: ${escHtml(ctx.painScore)}/10</div>` : ''}
+${ctx.freeText ? `<div style="margin-top:4px;white-space:pre-wrap">${escHtml(ctx.freeText)}</div>` : ''}
+${ctx.durationDays ? `<div style="margin-top:6px"><span class="lbl">Duration:</span> ${escHtml(ctx.durationDays)} days</div>` : ''}
+${ctx.painScore ? `<div><span class="lbl">Pain score:</span> ${escHtml(ctx.painScore)}/10</div>` : ''}
 </div></div>` : ''}
 
 ${vitalsArr.length ? `<div class="section">
 <div class="sec-hdr">Vital Signs</div>
-<div class="sec-body">${vitalsArr.map(v => `<span style="margin-right:18px">${escHtml(v)}</span>`).join('')}</div>
-</div>` : ''}
+<div class="sec-body"><div style="display:flex;flex-wrap:wrap;gap:4px 22px;font-variant-numeric:tabular-nums">
+${vitalsArr.map(v => `<span>${escHtml(v)}</span>`).join('')}
+</div></div></div>` : ''}
 
-${ctx.comorbidities.length || ctx.pmhNotes ? `<div class="section">
-<div class="sec-hdr">Past Medical History</div>
+${hasPmhSurgHx ? `<div class="section">
+<div class="sec-hdr">Medical &amp; Surgical History</div>
 <div class="sec-body">
+${ctx.comorbidities.length || ctx.pmhNotes ? `<div style="margin-bottom:8px">
+<div class="sub-lbl">Past Medical</div>
 ${items(ctx.comorbidities)}
 ${ctx.pmhNotes ? `<div>${escHtml(ctx.pmhNotes)}</div>` : ''}
+</div>` : ''}
+${ctx.surgicalHistory.length || ctx.surgicalNotes ? `<div>
+<div class="sub-lbl">Surgical</div>
+${items(ctx.surgicalHistory)}
+${ctx.surgicalNotes ? `<div>${escHtml(ctx.surgicalNotes)}</div>` : ''}
+</div>` : ''}
 </div></div>` : ''}
 
-${ctx.surgicalHistory.length || ctx.surgicalNotes ? `<div class="section">
-<div class="sec-hdr">Surgical History</div>
-<div class="sec-body">${items(ctx.surgicalHistory)}${ctx.surgicalNotes ? `<div>${escHtml(ctx.surgicalNotes)}</div>` : ''}</div>
-</div>` : ''}
-
 ${ctx.medications.length || ctx.medicationsText ? `<div class="section">
-<div class="sec-hdr">Medications</div>
+<div class="sec-hdr">Current Medications</div>
 <div class="sec-body">${items(ctx.medications)}${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}</div>
 </div>` : ''}
 
 ${ctx.allergies ? `<div class="section">
-<div class="sec-hdr">Allergies</div>
-<div class="sec-body">${escHtml(ctx.allergies)}</div>
+<div class="sec-hdr sec-hdr--warn">Allergies</div>
+<div class="sec-body" style="font-weight:700;color:#b91c1c">${escHtml(ctx.allergies)}</div>
 </div>` : ''}
 
 ${examLines.length ? `<div class="section">
@@ -338,22 +382,50 @@ ${examLines.length ? `<div class="section">
 <div class="sec-body">${examLines.map(l => `<div class="item">${escHtml(l)}</div>`).join('')}</div>
 </div>` : ''}
 
-${ctx.orderedInvestigations.length ? `<div class="section">
+${hasInvestigations ? `<div class="section">
 <div class="sec-hdr">Investigations Ordered</div>
-<div class="sec-body">${items(ctx.orderedInvestigations)}</div>
+<div class="sec-body">
+${ctx.orderedInvestigations.length ? `<div style="margin-bottom:6px">
+<div class="sub-lbl">Laboratory</div>
+${items(ctx.orderedInvestigations)}
 </div>` : ''}
+${ctx.radiologyRequests && ctx.radiologyRequests.length ? `<div>
+<div class="sub-lbl">Radiology / Imaging</div>
+${ctx.radiologyRequests.map(r => {
+  const label = [r.modality, r.anatomicalRegion, r.laterality && r.laterality !== 'N/A' ? r.laterality : ''].filter(Boolean).join(' — ');
+  const detail = [r.urgency, r.indication].filter(Boolean).join(' · ');
+  return `<div class="item">${escHtml(label)}${detail ? `<span style="color:#64748b;font-size:11px"> (${escHtml(detail)})</span>` : ''}</div>`;
+}).join('')}
+</div>` : ''}
+</div></div>` : ''}
 
-${ctx.assessment || ctx.icdCodes.length || ctx.differentials ? `<div class="section">
+${hasAssessment ? `<div class="section">
 <div class="sec-hdr">Assessment</div>
 <div class="sec-body">
-${ctx.icdCodes.length ? `<div style="font-weight:700;font-size:11px;color:#0B2545;margin-bottom:4px">Working Diagnosis: ${escHtml(ctx.icdCodes.join('  ·  '))}</div>` : ''}
-${ctx.differentials ? `<div style="margin-bottom:6px"><span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#475569">Differential Diagnoses</span><br>${escHtml(ctx.differentials).replace(/\n/g, '<br>')}</div>` : ''}
-${ctx.assessment ? `<div style="white-space:pre-wrap;line-height:1.7">${escHtml(ctx.assessment).replace(/\n/g, '<br>')}</div>` : ''}
+${ctx.icdCodes.length ? `<div class="dx-field">
+<div class="dx-label">Working Diagnosis</div>
+<div class="dx-name">${escHtml(ctx.icdCodes.join('  ·  '))}</div>
+</div>` : ''}
+${ctx.differentials ? `<div class="diff-block">
+<div class="diff-lbl">Ranked Differential Diagnoses</div>
+${escHtml(ctx.differentials).split('\n').filter(l => l.trim()).map(l => `<div class="diff-item">${l}</div>`).join('')}
+</div>` : ''}
+${ctx.assessment ? `<div style="white-space:pre-wrap;line-height:1.8;font-size:12.5px${ctx.icdCodes.length || ctx.differentials ? ';margin-top:10px' : ''}">${escHtml(ctx.assessment)}</div>` : ''}
 </div></div>` : ''}
 
 ${ctx.plan ? `<div class="section">
 <div class="sec-hdr">Management Plan</div>
-<div class="sec-body" style="font-family:monospace;font-size:11px;line-height:1.75;white-space:pre-wrap">${escHtml(ctx.plan)}</div>
+<div class="sec-body" style="font-family:'Courier New',Courier,monospace;font-size:11px;line-height:1.85;white-space:pre-wrap">${escHtml(ctx.plan)}</div>
+</div>` : ''}
+
+${medTableHtml ? `<div class="section">
+<div class="sec-hdr">Prescribed Medications</div>
+<div class="sec-body">${medTableHtml}</div>
+</div>` : ''}
+
+${ctx.followUpNotes ? `<div class="section">
+<div class="sec-hdr">Follow-up</div>
+<div class="sec-body">${escHtml(ctx.followUpNotes).replace(/\n/g, '<br>')}</div>
 </div>` : ''}
 
 <div class="sig">
