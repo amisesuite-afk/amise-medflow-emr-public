@@ -1235,10 +1235,7 @@ export default function IntakeTab() {
         </div>
       )}
 
-      {/* ── Clinical scores — Tokyo, Ranson's, BISAP, PEP risk, NEWS2 ── */}
-      <div style={{ order: cardOrder('scores') }}>
-      <ClinicalScoresPanelLazy />
-      </div>
+      {/* Clinical scores moved to Consultation → Assessment tab only */}
 
       {/* ── Compact triage summary — driven by intake data above ── */}
       <div style={{ order: cardOrder('triage') }}>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CCTemplate } from '@/lib/cc-matrices';
+import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -132,7 +133,7 @@ function PromptField({
 
 export default function ChiefComplaintStrip() {
   const {
-    symptoms, procedureData, setProcedureData,
+    symptoms, symptomDetails, procedureData, setProcedureData,
     setEncounterType, setActiveCcKey, setActiveSection,
   } = useAppContext();
 
@@ -144,10 +145,37 @@ export default function ChiefComplaintStrip() {
 
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
 
-  // Auto-populate CC entries from intake symptoms the first time consultation opens
+  // Auto-populate CC entries from intake symptoms the first time consultation opens.
+  // Also translates symptomDetails (from SmartSymptomPicker branch questions) into
+  // structured SOCRATES answers so intake selections are visible in consultation.
   useEffect(() => {
     if (entries.length > 0 || symptoms.length === 0) return;
-    const initial = symptoms.slice(0, 3).map(s => ({ complaint: s, answers: {} as Record<string, string> }));
+
+    const initial = symptoms.slice(0, 3).map(s => {
+      const matrix  = getMatrixByName(s);
+      const details = symptomDetails[s] ?? symptomDetails[s.toLowerCase()] ?? [];
+      const branches = SYMPTOM_BRANCHES[s] ?? SYMPTOM_BRANCHES[s.toLowerCase()] ?? [];
+      const answers: Record<string, string> = {};
+
+      if (details.length > 0 && branches.length > 0) {
+        for (const branch of branches) {
+          const selected = branch.options.filter(opt => details.includes(opt));
+          if (selected.length === 0) continue;
+          // Match branch question label to the closest cc-matrix prompt key
+          const qLower = branch.question.toLowerCase();
+          const prompt = matrix.prompts.find(p =>
+            p.label.toLowerCase().includes(qLower) ||
+            qLower.includes(p.key.toLowerCase()) ||
+            p.key.toLowerCase() === qLower
+          );
+          const key = prompt ? prompt.key : qLower.replace(/\s+/g, '_');
+          answers[key] = selected.join(', ');
+        }
+      }
+
+      return { complaint: s, answers };
+    });
+
     setProcedureData({ ...procedureData, cc: initial });
     const first = initial[0];
     if (first) {
