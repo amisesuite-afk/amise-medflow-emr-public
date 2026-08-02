@@ -297,6 +297,16 @@ function buildExamProse(
   return 'On examination:\n' + lines.join('\n');
 }
 
+const VITAL_DISPLAY = [
+  { key: 'systolicBp'      as const, label: 'SBP',   unit: 'mmHg',   danger: (v: number) => v > 160 || v < 90  },
+  { key: 'diastolicBp'     as const, label: 'DBP',   unit: 'mmHg',   danger: (v: number) => v > 100 || v < 60  },
+  { key: 'heartRate'       as const, label: 'P',     unit: 'bpm',    danger: (v: number) => v > 120 || v < 50   },
+  { key: 'temperatureC'    as const, label: 'T',     unit: '°C',     danger: (v: number) => v >= 38.5 || v < 36 },
+  { key: 'respiratoryRate' as const, label: 'R',     unit: '/min',   danger: (v: number) => v > 24 || v < 10   },
+  { key: 'spo2'            as const, label: 'SpO₂',  unit: '%',      danger: (v: number) => v < 94              },
+  { key: 'glucoseMmol'     as const, label: 'RBS',   unit: 'mmol/L', danger: (v: number) => v < 3.5 || v > 20  },
+];
+
 export default function ExaminationTab() {
   const ctx = useAppContext();
   const { examFindings, setExamFindings, examNotes, setExamNotes, anatomicalFindings, examPhotos,
@@ -308,6 +318,7 @@ export default function ExaminationTab() {
   const [reportVisible, setReportVisible] = useState(false);
   const [reportCopied, setReportCopied] = useState(false);
   const [showAllSystems, setShowAllSystems] = useState(false);
+  const [editVitals, setEditVitals] = useState(false);
 
   const ageNum = age ? Number(age) : null;
 
@@ -556,51 +567,93 @@ export default function ExaminationTab() {
         title="Examination findings"
         badge={`${systemsWithData} / ${EXAM_SYSTEMS.length} documented`}
       >
-        {/* ── Vitals summary row (from intake / front desk) ── */}
+        {/* ── Vitals panel (from intake / nurse — editable here) ── */}
         {(() => {
-          const VITAL_DISPLAY = [
-            { key: 'systolicBp',     label: 'SBP', unit: 'mmHg', danger: (v: number) => v > 160 || v < 90 },
-            { key: 'diastolicBp',    label: 'DBP', unit: 'mmHg', danger: (v: number) => v > 100 || v < 60 },
-            { key: 'heartRate',      label: 'P',   unit: 'bpm',  danger: (v: number) => v > 120 || v < 50  },
-            { key: 'temperatureC',   label: 'T',   unit: '°C',   danger: (v: number) => v >= 38.5 || v < 36.0 },
-            { key: 'respiratoryRate',label: 'R',   unit: '/min', danger: (v: number) => v > 24 || v < 10  },
-            { key: 'spo2',           label: 'SpO₂',unit: '%',    danger: (v: number) => v < 94             },
-            { key: 'glucoseMmol',    label: 'RBS', unit: 'mmol/L',danger: (v: number) => v < 3.5 || v > 20},
-          ] as const;
           const recorded = VITAL_DISPLAY.filter(v => vitals[v.key] && vitals[v.key] !== '');
-          if (!recorded.length) return null;
+          if (!recorded.length && !editVitals) return (
+            <button
+              type="button"
+              onClick={() => setEditVitals(true)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '7px 14px', borderRadius: 8, marginBottom: 12, cursor: 'pointer',
+                border: '1px dashed #86efac', background: '#f0fdf4',
+                fontSize: 12, color: '#15803d', fontWeight: 600,
+              }}
+            >
+              + Add vitals
+            </button>
+          );
           return (
             <div style={{
-              display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center',
-              padding: '8px 10px', borderRadius: 8,
+              padding: '10px 12px', borderRadius: 8,
               background: '#f0fdf4', border: '1px solid #86efac', marginBottom: 12,
             }}>
-              <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#166534', marginRight: 4 }}>Vitals</span>
-              {recorded.map(v => {
-                const num = parseFloat(vitals[v.key]);
-                const bad = Number.isFinite(num) && v.danger(num);
-                return (
-                  <div key={v.key} style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center',
-                    padding: '3px 9px', borderRadius: 6,
-                    background: bad ? '#fef2f2' : '#fff',
-                    border: `1px solid ${bad ? '#fca5a5' : '#d1fae5'}`,
-                    minWidth: 44,
-                  }}>
-                    <span style={{ fontSize: 9, color: '#6b7280', fontWeight: 600, letterSpacing: '0.05em' }}>{v.label}</span>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: bad ? '#dc2626' : '#166534', fontVariantNumeric: 'tabular-nums' }}>{vitals[v.key]}</span>
-                    <span style={{ fontSize: 9, color: '#9ca3af' }}>{v.unit}</span>
-                  </div>
-                );
-              })}
-              <button
-                type="button"
-                onClick={() => { /* navigate to intake vitals — caller sets topSection */ }}
-                title="Update vitals in Intake"
-                style={{ fontSize: 11, color: '#0d9488', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px', marginLeft: 4 }}
-              >
-                ✎ edit
-              </button>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
+                <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#166534', marginRight: 4 }}>Vitals</span>
+                {recorded.map(v => {
+                  const num = parseFloat(vitals[v.key]);
+                  const bad = Number.isFinite(num) && v.danger(num);
+                  return (
+                    <div key={v.key} style={{
+                      display: 'flex', flexDirection: 'column', alignItems: 'center',
+                      padding: '3px 9px', borderRadius: 6,
+                      background: bad ? '#fef2f2' : '#fff',
+                      border: `1px solid ${bad ? '#fca5a5' : '#d1fae5'}`,
+                      minWidth: 44,
+                    }}>
+                      <span style={{ fontSize: 9, color: '#6b7280', fontWeight: 600, letterSpacing: '0.05em' }}>{v.label}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: bad ? '#dc2626' : '#166534', fontVariantNumeric: 'tabular-nums' }}>{vitals[v.key]}</span>
+                      <span style={{ fontSize: 9, color: '#9ca3af' }}>{v.unit}</span>
+                    </div>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => setEditVitals(e => !e)}
+                  style={{
+                    fontSize: 11, fontWeight: 700, cursor: 'pointer', marginLeft: 'auto',
+                    padding: '4px 10px', borderRadius: 5,
+                    border: `1px solid #0d9488`,
+                    background: editVitals ? '#0d9488' : 'transparent',
+                    color: editVitals ? '#fff' : '#0d9488',
+                  }}
+                >
+                  {editVitals ? '✓ Done' : '✎ Edit'}
+                </button>
+              </div>
+              {editVitals && (
+                <div style={{
+                  display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
+                  gap: 8, marginTop: 10, paddingTop: 10, borderTop: '1px solid #d1fae5',
+                }}>
+                  {VITAL_DISPLAY.map(v => {
+                    const num = parseFloat(vitals[v.key]);
+                    const bad = vitals[v.key] !== '' && Number.isFinite(num) && v.danger(num);
+                    return (
+                      <label key={v.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: bad ? '#dc2626' : '#166534' }}>
+                          {v.label} <span style={{ fontWeight: 400, color: '#6b7280', textTransform: 'none' }}>({v.unit})</span>
+                        </span>
+                        <input
+                          type="number"
+                          value={vitals[v.key] ?? ''}
+                          onChange={e => updateVital(v.key, e.target.value)}
+                          placeholder="—"
+                          style={{
+                            padding: '6px 8px', borderRadius: 6, width: '100%',
+                            border: `1px solid ${bad ? '#fca5a5' : vitals[v.key] ? '#0d9488' : '#d1fae5'}`,
+                            fontSize: 14, fontWeight: 700, outline: 'none',
+                            background: bad ? '#fef2f2' : '#fff',
+                            color: bad ? '#dc2626' : '#166534',
+                            fontVariantNumeric: 'tabular-nums',
+                          }}
+                        />
+                      </label>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })()}

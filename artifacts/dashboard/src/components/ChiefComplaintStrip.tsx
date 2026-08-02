@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CCTemplate } from '@/lib/cc-matrices';
 
@@ -144,6 +144,21 @@ export default function ChiefComplaintStrip() {
 
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
 
+  // Auto-populate CC entries from intake symptoms the first time consultation opens
+  useEffect(() => {
+    if (entries.length > 0 || symptoms.length === 0) return;
+    const initial = symptoms.slice(0, 3).map(s => ({ complaint: s, answers: {} as Record<string, string> }));
+    setProcedureData({ ...procedureData, cc: initial });
+    const first = initial[0];
+    if (first) {
+      const matrix = getMatrixByName(first.complaint);
+      setActiveCcKey(matrix.id);
+      setEncounterType(matrix.encounterType);
+    }
+    setExpanded(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function activateMatrix(complaint: string) {
     const matrix = getMatrixByName(complaint);
     setActiveCcKey(matrix.id);
@@ -209,6 +224,11 @@ export default function ChiefComplaintStrip() {
         <span style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#475569', flexShrink: 0 }}>
           Chief Complaint
         </span>
+        {entries.length > 0 && symptoms.length > 0 && entries.some(e => symptoms.includes(e.complaint)) && (
+          <span style={{ fontSize: 9, fontWeight: 700, color: '#0d9488', background: '#ccfbf1', borderRadius: 4, padding: '2px 7px', letterSpacing: '0.04em', flexShrink: 0 }}>
+            ↑ FROM INTAKE
+          </span>
+        )}
 
         {/* Active CC chips */}
         {entries.length > 0 && (
