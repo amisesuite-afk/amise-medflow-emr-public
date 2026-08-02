@@ -26,6 +26,9 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'surgical', step: 'High-grade dysplasia / T1a cancer: EMR ± RFA — curative; avoids oesophagectomy.' },
       { phase: 'followup', step: 'Post-ablation OGD at 3, 12 months then annually × 5 years.' },
     ],
+    medications: [
+      { drugName: 'Esomeprazole', dose: '40 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', indication: 'High-dose PPI — reduces dysplasia risk and controls underlying GORD; mainstay of pharmacological management', phase: 'conservative' },
+    ],
     referral: 'Gastroenterology / upper GI surgery — complex dysplasia to specialist Barrett\'s unit.',
   },
   {
@@ -55,6 +58,11 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'surgical', step: 'McKeown three-phase oesophagectomy — upper/mid thoracic SCC.' },
       { phase: 'conservative', step: 'Unresectable / metastatic: platinum-based chemotherapy ± ramucirumab; palliative self-expanding metal stent (SEMS) for dysphagia.' },
       { phase: 'followup', step: 'CT at 3-monthly × 2 years post-resection; dietetic review (weight management post-oesophagectomy).' },
+    ],
+    medications: [
+      { drugName: 'Morphine sulfate', dose: '2.5–5 mg', frequency: 'Q4H (every 4 hours)', route: 'IV (intravenous)', indication: 'Analgesia — dysphagia-related pain and tumour discomfort', phase: 'immediate' },
+      { drugName: 'Ondansetron', dose: '4 mg', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Antiemetic — chemo-associated nausea', phase: 'immediate' },
+      { drugName: 'Cisplatin', dose: '80 mg/m²', frequency: 'Every 3 weeks (perioperative cycle)', route: 'IV (intravenous)', duration: 'Perioperative — oncology-led', indication: 'Neoadjuvant / perioperative chemotherapy component (FLOT/CROSS regimen) — refer oncology; do not prescribe without MDT decision', phase: 'conservative' },
     ],
     referral: 'Urgent upper GI / thoracic MDT — two-week wait referral.',
   },
@@ -87,6 +95,14 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'conservative', step: 'H. pylori eradication in all patients (triple therapy: PPI + amoxicillin + clarithromycin × 7 days).' },
       { phase: 'followup', step: 'CT + OGD at 12 months; dietetic monitoring (B12 injections 3-monthly after gastrectomy).' },
     ],
+    medications: [
+      { drugName: 'Omeprazole', dose: '20 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '14 days', indication: 'H. pylori eradication — triple therapy (PPI component)', phase: 'immediate' },
+      { drugName: 'Amoxicillin', dose: '1 g', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '14 days', indication: 'H. pylori eradication — triple therapy', phase: 'immediate' },
+      { drugName: 'Clarithromycin', dose: '500 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '14 days', indication: 'H. pylori eradication — triple therapy', phase: 'immediate' },
+      { drugName: 'Ondansetron', dose: '4 mg', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Antiemetic — perioperative and chemotherapy-associated nausea', phase: 'immediate' },
+      { drugName: 'Paracetamol', dose: '1 g', frequency: 'QDS (four times daily)', route: 'IV / PO (intravenous or oral)', indication: 'Multimodal analgesia — perioperative pain management', phase: 'immediate' },
+      { drugName: 'Hydroxocobalamin', dose: '1 mg', frequency: 'Every 3 months', route: 'IM (intramuscular)', duration: 'Lifelong', indication: 'B12 replacement — loss of gastric intrinsic factor post-gastrectomy; prevents subacute combined degeneration', phase: 'conservative' },
+    ],
     referral: 'Urgent upper GI MDT — two-week wait.',
   },
   {
@@ -115,6 +131,11 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'surgical', step: 'Type II/III repair: laparoscopic reduction, crural repair ± mesh, fundoplication.' },
       { phase: 'followup', step: 'Post-op OGD at 3 months; symptom review; PPI wean at 3–6 months.' },
     ],
+    medications: [
+      { drugName: 'Omeprazole', dose: '20 mg', frequency: 'OD (once daily)', route: 'PO (oral)', indication: 'PPI — symptomatic GORD management (Type I sliding hernia); 30 min before breakfast', phase: 'conservative' },
+      { drugName: 'Gaviscon Advance', dose: '10 ml', frequency: 'QDS (four times daily)', route: 'PO (oral)', indication: 'Alginate barrier — after meals and at bedtime; symptom relief adjunct to PPI', phase: 'conservative' },
+      { drugName: 'Metoclopramide', dose: '10 mg', frequency: 'TDS (three times daily)', route: 'PO (oral)', duration: 'Short-term only (max 5 days)', indication: 'Promotility agent — reduces reflux symptoms; caution extrapyramidal side effects with prolonged use', phase: 'conservative' },
+    ],
     referral: 'Upper GI surgery — elective; emergency if volvulus or incarceration.',
   },
   {
@@ -142,6 +163,11 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'surgical', step: 'POEM (per-oral endoscopic myotomy): endoscopic full-thickness myotomy — no external incisions.' },
       { phase: 'conservative', step: 'Botulinum toxin injection into LOS (elderly / unfit — temporary 6–12 months).' },
       { phase: 'followup', step: 'Timed barium swallow at 3 months; manometry at 12 months to confirm response.' },
+    ],
+    medications: [
+      { drugName: 'Botulinum toxin A', dose: '80–100 units', frequency: 'Single procedural injection', route: 'Endoscopic (intra-sphincteric, LOS)', duration: '6–12 months (temporary effect)', indication: 'LOS chemical denervation — elderly / high surgical risk; temporary bridge to definitive myotomy', phase: 'immediate' },
+      { drugName: 'Glyceryl trinitrate (GTN)', dose: '400 mcg', frequency: 'Before each meal', route: 'SL (sublingual)', indication: 'Smooth muscle relaxant — reduces LOS pressure; symptom bridge while awaiting definitive procedure', phase: 'conservative' },
+      { drugName: 'Nifedipine', dose: '10–20 mg SR', frequency: 'BD (twice daily)', route: 'PO (oral)', indication: 'Calcium channel blocker — reduces LOS pressure; alternative to GTN (less effective, more side effects)', phase: 'conservative', alternativeTo: 'Glyceryl trinitrate (GTN)' },
     ],
     referral: 'Upper GI / specialist oesophageal centre.',
   },
@@ -172,6 +198,13 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'surgical', step: 'Late / contaminated: oesophageal exclusion + T-tube drainage; oesophagectomy in severe cases.' },
       { phase: 'followup', step: 'Water-soluble swallow at 7–10 days to confirm healing; prolonged IV antibiotics (4–6 weeks).' },
     ],
+    medications: [
+      { drugName: 'Piperacillin-tazobactam (Tazocin)', dose: '4.5 g', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Broad-spectrum antibiotics — polymicrobial mediastinal and pleural contamination', phase: 'immediate' },
+      { drugName: 'Metronidazole', dose: '500 mg', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Anaerobic cover — essential adjunct for mediastinal and pleural soiling', phase: 'immediate' },
+      { drugName: 'Morphine sulfate', dose: '2.5–5 mg', frequency: 'Q4H (every 4 hours)', route: 'IV (intravenous)', indication: 'Analgesia — severe chest and epigastric pain characteristic of perforation', phase: 'immediate' },
+      { drugName: 'Ondansetron', dose: '4 mg', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Antiemetic — prevents further vomiting and extension of perforation', phase: 'immediate' },
+      { drugName: 'Pantoprazole', dose: '40 mg', frequency: 'OD (once daily)', route: 'IV (intravenous)', indication: 'PPI — mucosal protection and acid suppression during prolonged NBM', phase: 'immediate' },
+    ],
     referral: 'Emergency thoracic / upper GI surgery + ICU.',
   },
   {
@@ -200,6 +233,12 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'conservative', step: 'Post-endoscopy: PPI BD × 4 weeks; alcohol cessation counselling.' },
       { phase: 'followup', step: 'Outpatient review in 4–6 weeks; repeat OGD only if re-bleeding.' },
     ],
+    medications: [
+      { drugName: 'Omeprazole', dose: '40 mg', frequency: 'BD (twice daily)', route: 'IV (intravenous)', indication: 'PPI — post-endoscopy haemostasis support and mucosal healing', phase: 'immediate' },
+      { drugName: 'Ondansetron', dose: '4 mg', frequency: 'TDS (three times daily)', route: 'IV / PO (intravenous or oral)', indication: 'Antiemetic — reduces further retching and risk of re-tear', phase: 'immediate' },
+      { drugName: 'Paracetamol', dose: '1 g', frequency: 'QDS (four times daily)', route: 'PO / IV (oral or intravenous)', indication: 'Analgesia — avoid NSAIDs which increase bleeding risk', phase: 'immediate' },
+      { drugName: 'Omeprazole', dose: '20 mg', frequency: 'OD (once daily)', route: 'PO (oral)', duration: '4 weeks', indication: 'PPI — acid suppression post-discharge; continuation of inpatient PPI', phase: 'followup', alternativeTo: 'Omeprazole IV 40 mg BD' },
+    ],
     referral: 'Gastroenterology / on-call medical or surgical team for urgent endoscopy.',
   },
   {
@@ -227,6 +266,14 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'conservative', step: 'Lifestyle: avoid alcohol, caffeine, spicy foods; small frequent meals.' },
       { phase: 'conservative', step: 'Autoimmune: B12 injections (hydroxocobalamin 1 mg IM every 3 months lifelong).' },
       { phase: 'followup', step: 'Symptom review at 4–6 weeks; repeat OGD only if symptoms persist or alarm features.' },
+    ],
+    medications: [
+      { drugName: 'Omeprazole', dose: '20 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '7 days', indication: 'H. pylori eradication — triple therapy (PPI component)', phase: 'immediate' },
+      { drugName: 'Amoxicillin', dose: '1 g', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '7 days', indication: 'H. pylori eradication — triple therapy (antibiotic 1)', phase: 'immediate' },
+      { drugName: 'Clarithromycin', dose: '500 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '7 days', indication: 'H. pylori eradication — triple therapy (antibiotic 2, first line)', phase: 'immediate' },
+      { drugName: 'Metronidazole', dose: '400 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '7 days', indication: 'H. pylori eradication — substitute for clarithromycin if local resistance suspected', phase: 'immediate', alternativeTo: 'Clarithromycin' },
+      { drugName: 'Esomeprazole', dose: '40 mg', frequency: 'OD (once daily)', route: 'PO (oral)', indication: 'PPI — NSAID-induced gastritis; higher potency than omeprazole for erosive gastritis', phase: 'conservative' },
+      { drugName: 'Hydroxocobalamin', dose: '1 mg', frequency: 'Every 3 months', route: 'IM (intramuscular)', duration: 'Lifelong', indication: 'B12 replacement — autoimmune / pernicious anaemia gastritis; prevents neurological complications', phase: 'conservative' },
     ],
   },
   {
@@ -258,6 +305,14 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'surgical', step: 'Refractory peptic ulcer bleeding: interventional radiology (embolisation) or emergency surgery (oversewing ± pyloroplasty).' },
       { phase: 'followup', step: 'H. pylori test-and-treat post-discharge; secondary prophylaxis (PPI long-term if NSAID cannot be stopped; propranolol ± endoscopic surveillance for varices).' },
     ],
+    medications: [
+      { drugName: 'Omeprazole', dose: '80 mg bolus then 8 mg/h infusion', frequency: 'Continuous infusion × 72 h', route: 'IV (intravenous)', duration: '72 hours', indication: 'High-dose PPI — peptic ulcer haemorrhage; stabilises clot at ulcer base post-endoscopic haemostasis', phase: 'immediate' },
+      { drugName: 'Terlipressin', dose: '2 mg', frequency: 'QDS (every 6 hours) × 5 days', route: 'IV (intravenous)', duration: '5 days', indication: 'Vasoactive agent — reduces portal pressure and splanchnic blood flow in variceal bleeding', phase: 'immediate' },
+      { drugName: 'Ceftriaxone', dose: '1 g', frequency: 'OD (once daily)', route: 'IV (intravenous)', duration: '7 days', indication: 'Prophylactic antibiotic — prevents spontaneous bacterial peritonitis (SBP) in cirrhotic variceal bleeding', phase: 'immediate' },
+      { drugName: 'Tranexamic acid', dose: '1 g', frequency: 'Stat (single dose)', route: 'IV (intravenous)', indication: 'Antifibrinolytic — if endoscopy is delayed and haemorrhage is trauma-related or massive', phase: 'immediate' },
+      { drugName: 'Propranolol', dose: '20–40 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', indication: 'Non-selective beta-blocker — secondary prophylaxis of variceal re-bleeding; reduces portal pressure', phase: 'conservative' },
+      { drugName: 'Omeprazole', dose: '20 mg', frequency: 'OD (once daily)', route: 'PO (oral)', indication: 'PPI — long-term ulcer prevention post-discharge', phase: 'followup', alternativeTo: 'Omeprazole IV infusion' },
+    ],
     referral: 'Emergency gastroenterology / general surgery + endoscopy on-call.',
   },
   {
@@ -284,6 +339,14 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'surgical', step: 'Refractory benign: laparoscopic gastrojejunostomy or pyloroplasty.' },
       { phase: 'surgical', step: 'Malignant (unresectable): palliative gastroduodenal SEMS or surgical bypass (gastrojejunostomy).' },
       { phase: 'followup', step: 'Nutritional support (NG feeds initially); OGD at 6–8 weeks to confirm dilation response.' },
+    ],
+    medications: [
+      { drugName: '0.9% Sodium chloride with KCl', dose: 'KCl 20–40 mmol per litre bag', frequency: 'As required (titrate to electrolytes)', route: 'IV (intravenous)', indication: 'Correct hypochloraemic hypokalaemic metabolic alkalosis from protracted vomiting', phase: 'immediate' },
+      { drugName: 'Omeprazole', dose: '40 mg', frequency: 'OD (once daily)', route: 'IV (intravenous)', indication: 'PPI — mucosal protection and acid suppression during NBM and NGT drainage', phase: 'immediate' },
+      { drugName: 'Omeprazole', dose: '20 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '7 days', indication: 'H. pylori eradication — triple therapy (PPI component; if H. pylori positive)', phase: 'immediate', alternativeTo: 'Omeprazole IV 40 mg OD' },
+      { drugName: 'Amoxicillin', dose: '1 g', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '7 days', indication: 'H. pylori eradication — triple therapy (if H. pylori positive)', phase: 'immediate' },
+      { drugName: 'Clarithromycin', dose: '500 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', duration: '7 days', indication: 'H. pylori eradication — triple therapy (if H. pylori positive)', phase: 'immediate' },
+      { drugName: 'Ondansetron', dose: '4 mg', frequency: 'TDS (three times daily)', route: 'IV (intravenous)', indication: 'Antiemetic — comfort during NGT decompression and rehydration', phase: 'immediate' },
     ],
     referral: 'Upper GI surgery + gastroenterology; MDT if malignant.',
   },
@@ -312,6 +375,12 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'surgical', step: 'Refractory: SEMS (temporary / retrievable) or surgical oesophagogastroplasty.' },
       { phase: 'followup', step: 'Symptom review at 4–6 weeks post-dilation; repeat OGD if dysphagia returns.' },
     ],
+    medications: [
+      { drugName: 'Esomeprazole', dose: '40 mg', frequency: 'BD (twice daily)', route: 'PO (oral)', indication: 'High-dose PPI — prevents recurrence of peptic strictures by sustained acid suppression', phase: 'conservative' },
+      { drugName: 'Fluticasone propionate', dose: '500 mcg', frequency: 'BD (twice daily)', route: 'PO (swallowed — not inhaled; use inhaler device to deliver dose into oropharynx then swallow)', indication: 'Topical steroid — eosinophilic oesophagitis (EoE); reduces eosinophilic inflammation', phase: 'conservative' },
+      { drugName: 'Budesonide orodispersible', dose: '1 mg', frequency: 'BD (twice daily)', route: 'PO (oral, orodispersible tablet)', indication: 'Topical steroid — alternative for eosinophilic oesophagitis; licensed orodispersible formulation', phase: 'conservative', alternativeTo: 'Fluticasone propionate' },
+      { drugName: 'Omeprazole', dose: '20 mg', frequency: 'OD (once daily)', route: 'PO (oral)', indication: 'PPI — acid suppression post-dilation; ongoing prevention of acid-mediated stricture recurrence', phase: 'followup' },
+    ],
     referral: 'Gastroenterology / upper GI surgery.',
   },
   {
@@ -337,6 +406,11 @@ export const upperGIProtocols: ManagementProtocol[] = [
       { phase: 'conservative', step: 'Subcutaneous octreotide before meals — reduces symptoms in refractory cases.' },
       { phase: 'surgical', step: 'Refractory: surgical reconstruction (Roux-en-Y conversion, reversed jejunal segment).' },
       { phase: 'followup', step: 'Dietitian review at 3 months; weight and nutritional status monitoring.' },
+    ],
+    medications: [
+      { drugName: 'Acarbose', dose: '50 mg', frequency: 'TDS (three times daily) with meals', route: 'PO (oral)', indication: 'Alpha-glucosidase inhibitor — first-line pharmacotherapy for late dumping; delays carbohydrate absorption and blunts postprandial glucose spike', phase: 'conservative' },
+      { drugName: 'Octreotide', dose: '50 mcg', frequency: 'Before each main meal', route: 'SC (subcutaneous)', indication: 'Somatostatin analogue — refractory dumping; slows gastric emptying, reduces gut peptide release and insulin surge', phase: 'conservative' },
+      { drugName: 'Loperamide', dose: '2 mg', frequency: 'As required (before meals or at onset of diarrhoea)', route: 'PO (oral)', indication: 'Antidiarrhoeal — diarrhoea-predominant dumping; reduces intestinal transit', phase: 'conservative' },
     ],
     referral: 'Upper GI surgery (post-gastrectomy clinic) + dietitian.',
   },

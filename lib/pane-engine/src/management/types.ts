@@ -16,7 +16,7 @@ export interface ProtocolMedication {
   route: string;
   duration?: string;
   indication: string;
-  phase: 'immediate' | 'conservative' | 'surgical' | 'followup' | 'prophylaxis';
+  phase: 'immediate' | 'conservative' | 'surgical' | 'followup' | 'prophylaxis' | 'maintenance' | 'discharge';
   /** When multiple drug options exist for the same indication (e.g. first-line vs alternative) */
   alternativeTo?: string;
 }
