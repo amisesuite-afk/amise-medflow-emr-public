@@ -211,14 +211,22 @@ function buildDocument(ctx: Ctx): string {
 
   // Assessment
   lines.push(sec('ASSESSMENT'));
+  let extractedDiffs = '';
   if (ctx.assessment) {
     // Strip history preamble if voice/AI injected it before the real diagnosis content.
-    // Any ─{10+} separator in the stored text marks the boundary; take what follows.
+    // Any ─{10+} separator marks the boundary; take what follows.
     let assessBody = ctx.assessment;
     const sepMatch = assessBody.match(/─{10,}/);
     if (sepMatch?.index !== undefined && sepMatch.index > 0) {
       const afterSep = assessBody.slice(sepMatch.index + sepMatch[0].length).trimStart();
       if (afterSep) assessBody = afterSep;
+    }
+    // Pull out any "Ranked differentials:" block injected by voice/AI — it belongs
+    // in the Differentials section, not inside Assessment.
+    const diffMatch = assessBody.match(/\n*Ranked differentials?:[\s\S]*/i);
+    if (diffMatch && diffMatch.index !== undefined) {
+      extractedDiffs = assessBody.slice(diffMatch.index).replace(/\n*Ranked differentials?:\s*/i, '').trim();
+      assessBody = assessBody.slice(0, diffMatch.index).trimEnd();
     }
     lines.push(assessBody);
   } else {
@@ -229,10 +237,11 @@ function buildDocument(ctx: Ctx): string {
   } else {
     lines.push(hint('add ICD-10 code(s)'));
   }
-  if (ctx.differentials) {
+  const diffsToShow = ctx.differentials || extractedDiffs;
+  if (diffsToShow) {
     lines.push('');
     lines.push('Differentials:');
-    lines.push(ctx.differentials);
+    lines.push(diffsToShow);
   } else {
     lines.push(hint('list differential diagnoses in order of probability'));
   }
