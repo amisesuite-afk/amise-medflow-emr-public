@@ -80,6 +80,36 @@ function fmtDateTime(iso: string): string {
 
 type Step = 'search' | 'new-form' | 'patient-ready' | 'encounter-open';
 
+// ── Intake clinical constants ──────────────────────────────────────────────────
+const INTAKE_SYMPTOMS = [
+  'Abdominal pain', 'Hernia / abdominal wall', 'Breast lump',
+  'Rectal bleeding', 'Change in bowel habit', 'Dysphagia',
+  'Reflux / heartburn', 'Jaundice', 'Unintentional weight loss',
+  'Wound review', 'Skin lesion / lump', 'Thyroid / neck lump',
+  'Haematuria', 'Nausea / vomiting', 'Anorectal symptoms',
+  'Post-operative review', 'Pre-operative visit', 'Incidental finding',
+];
+
+const INTAKE_VITALS = [
+  { key: 'systolicBp'      as const, label: 'SBP',   unit: 'mmHg',   placeholder: '120', danger: (v: number) => v > 160 || v < 90  },
+  { key: 'diastolicBp'     as const, label: 'DBP',   unit: 'mmHg',   placeholder: '80',  danger: (v: number) => v > 100 || v < 60  },
+  { key: 'heartRate'       as const, label: 'Pulse', unit: 'bpm',    placeholder: '72',  danger: (v: number) => v > 120 || v < 50   },
+  { key: 'temperatureC'    as const, label: 'Temp',  unit: '°C',     placeholder: '37',  danger: (v: number) => v >= 38.5 || v < 36 },
+  { key: 'respiratoryRate' as const, label: 'RR',    unit: '/min',   placeholder: '16',  danger: (v: number) => v > 24 || v < 10   },
+  { key: 'spo2'            as const, label: 'SpO₂',  unit: '%',      placeholder: '98',  danger: (v: number) => v < 94              },
+  { key: 'glucoseMmol'     as const, label: 'RBS',   unit: 'mmol/L', placeholder: '5.5', danger: (v: number) => v < 3.5 || v > 20  },
+];
+
+const INTAKE_COMORBIDITIES = [
+  'Type 2 diabetes', 'Type 1 diabetes', 'Hypertension',
+  'Ischaemic heart disease', 'Heart failure', 'Atrial fibrillation',
+  'Chronic kidney disease', 'Dialysis', 'COPD / asthma',
+  'Active cancer', 'DVT / PE history', 'Liver cirrhosis',
+  'Immunosuppressed', 'Steroid use', 'Sickle cell disease', 'Pregnancy',
+];
+
+const INTAKE_HABITS = ['Smoking', 'Ex-smoker', 'Alcohol use', 'Recreational drugs'];
+
 const NOK_RELATIONS = ['Spouse', 'Partner', 'Parent', 'Child', 'Sibling', 'Grandparent', 'Aunt/Uncle', 'Friend', 'Guardian', 'Carer', 'Other'];
 
 function PatientChip({ p, onSelect }: { p: PatientListRow; onSelect: () => void }) {
@@ -132,6 +162,11 @@ export default function CheckInTab() {
     postOpReviewNum, setPostOpReviewNum,
     setIsPostOp, setPostOpDays,
     setEncounterType,
+    freeText, setFreeText, durationDays, setDurationDays, painScore, setPainScore,
+    symptoms, toggleSymptom, vitals, updateVital,
+    allergies, setAllergies, comorbidities, toggleComorbidity,
+    medicationsText, setMedicationsText, surgicalNotes, setSurgicalNotes,
+    toxicHabits, toggleToxicHabit,
   } = useAppContext();
 
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -151,6 +186,7 @@ export default function CheckInTab() {
   const [inviteResult, setInviteResult] = useState<'sent' | 'error' | null>(null);
   const [duplicateCandidates, setDuplicateCandidates] = useState<PatientListRow[] | null>(null);
   const [bypassDuplicate, setBypassDuplicate] = useState(false);
+  const [openSec, setOpenSec] = useState({ cc: true, vitals: true, medical: false, social: false });
 
   // Load referring providers
   useEffect(() => {
@@ -731,6 +767,217 @@ export default function CheckInTab() {
                       <option key={n} value={n}>{n === 1 ? '1st review' : n === 2 ? '2nd review' : n === 3 ? '3rd review' : `${n}th review`}</option>
                     ))}
                   </select>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* ── Clinical Intake ─────────────────────────────────────────────── */}
+
+          {/* Reason for Visit */}
+          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+            <button
+              type="button"
+              onClick={() => setOpenSec(s => ({ ...s, cc: !s.cc }))}
+              style={{ width: '100%', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+            >
+              <span style={{ fontSize: 15 }}>🩺</span>
+              <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: '#111827' }}>Reason for Visit</span>
+              {symptoms.length > 0 && (
+                <span style={{ fontSize: 11, fontWeight: 700, background: '#0d9488', color: '#fff', borderRadius: 20, padding: '2px 8px' }}>{symptoms.length}</span>
+              )}
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>{openSec.cc ? '▲' : '▼'}</span>
+            </button>
+            {openSec.cc && (
+              <div style={{ padding: '0 16px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {INTAKE_SYMPTOMS.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => toggleSymptom(s)}
+                      style={{
+                        padding: '5px 11px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                        border: symptoms.includes(s) ? '1.5px solid #0d9488' : '1.5px solid #e5e7eb',
+                        background: symptoms.includes(s) ? '#ccfbf1' : '#f9fafb',
+                        color: symptoms.includes(s) ? '#0f766e' : '#374151',
+                        transition: 'all .1s',
+                      }}
+                    >{s}</button>
+                  ))}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div className="fld" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 10 }}>Duration (days)</label>
+                    <input inputMode="numeric" value={durationDays} onChange={e => setDurationDays(e.target.value)} placeholder="e.g. 7" style={{ padding: '8px', fontSize: 13 }} />
+                  </div>
+                  <div className="fld" style={{ marginBottom: 0 }}>
+                    <label style={{ fontSize: 10 }}>Pain score (0–10)</label>
+                    <input inputMode="numeric" value={painScore} onChange={e => setPainScore(e.target.value)} placeholder="0–10" style={{ padding: '8px', fontSize: 13 }} />
+                  </div>
+                </div>
+                <div className="fld" style={{ marginBottom: 0 }}>
+                  <label style={{ fontSize: 10 }}>Patient's own words</label>
+                  <textarea
+                    value={freeText} onChange={e => setFreeText(e.target.value)}
+                    rows={2} placeholder="Brief description of the complaint…"
+                    style={{ padding: '8px', fontSize: 13, borderRadius: 8, border: '1.5px solid #e5e7eb', resize: 'vertical', fontFamily: 'inherit' }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Vitals */}
+          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+            <button
+              type="button"
+              onClick={() => setOpenSec(s => ({ ...s, vitals: !s.vitals }))}
+              style={{ width: '100%', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+            >
+              <span style={{ fontSize: 15 }}>📊</span>
+              <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: '#111827' }}>Vitals</span>
+              {INTAKE_VITALS.some(v => vitals[v.key]) && (
+                <span style={{ fontSize: 11, fontWeight: 700, background: '#0d9488', color: '#fff', borderRadius: 20, padding: '2px 8px' }}>
+                  {INTAKE_VITALS.filter(v => vitals[v.key]).length} entered
+                </span>
+              )}
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>{openSec.vitals ? '▲' : '▼'}</span>
+            </button>
+            {openSec.vitals && (
+              <div style={{ padding: '0 16px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 8 }}>
+                  {INTAKE_VITALS.map(v => {
+                    const val = vitals[v.key];
+                    const isDanger = val ? v.danger(parseFloat(val)) : false;
+                    return (
+                      <div key={v.key} className="fld" style={{ marginBottom: 0 }}>
+                        <label style={{ fontSize: 10, color: isDanger ? '#dc2626' : undefined }}>
+                          {v.label} <span style={{ color: '#9ca3af', fontWeight: 400 }}>{v.unit}</span>
+                        </label>
+                        <input
+                          inputMode="decimal"
+                          value={val ?? ''}
+                          onChange={e => updateVital(v.key, e.target.value)}
+                          placeholder={v.placeholder}
+                          style={{
+                            padding: '8px', fontSize: 13, textAlign: 'center',
+                            borderColor: isDanger ? '#dc2626' : undefined,
+                            color: isDanger ? '#dc2626' : undefined,
+                            fontWeight: isDanger ? 700 : undefined,
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPreVisitStatus('vitals_done')}
+                  style={{ alignSelf: 'flex-start', padding: '7px 16px', borderRadius: 8, border: 'none', background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}
+                >
+                  ✓ Mark vitals recorded
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Medical Screen */}
+          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+            <button
+              type="button"
+              onClick={() => setOpenSec(s => ({ ...s, medical: !s.medical }))}
+              style={{ width: '100%', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+            >
+              <span style={{ fontSize: 15 }}>🏥</span>
+              <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: '#111827' }}>Medical Screen</span>
+              {(comorbidities.length > 0 || allergies.trim()) && (
+                <span style={{ fontSize: 11, fontWeight: 700, background: '#f59e0b', color: '#fff', borderRadius: 20, padding: '2px 8px' }}>
+                  {comorbidities.length > 0 ? `${comorbidities.length} PMH` : ''}{comorbidities.length > 0 && allergies.trim() ? ' · ' : ''}{allergies.trim() ? 'allergies' : ''}
+                </span>
+              )}
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>{openSec.medical ? '▲' : '▼'}</span>
+            </button>
+            {openSec.medical && (
+              <div style={{ padding: '0 16px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div className="fld" style={{ marginBottom: 0 }}>
+                  <label style={{ fontSize: 10, color: '#dc2626', fontWeight: 700 }}>⚠ ALLERGIES & REACTIONS</label>
+                  <textarea
+                    value={allergies} onChange={e => setAllergies(e.target.value)}
+                    rows={2} placeholder="Drugs, food, latex… NKDA"
+                    style={{ padding: '8px', fontSize: 13, borderRadius: 8, border: '1.5px solid #fca5a5', resize: 'vertical', fontFamily: 'inherit' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: '#374151', display: 'block', marginBottom: 6 }}>PAST MEDICAL HISTORY</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {INTAKE_COMORBIDITIES.map(c => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => toggleComorbidity(c)}
+                        style={{
+                          padding: '5px 11px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                          border: comorbidities.includes(c) ? '1.5px solid #f59e0b' : '1.5px solid #e5e7eb',
+                          background: comorbidities.includes(c) ? '#fef3c7' : '#f9fafb',
+                          color: comorbidities.includes(c) ? '#92400e' : '#374151',
+                          transition: 'all .1s',
+                        }}
+                      >{c}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="fld" style={{ marginBottom: 0 }}>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: '#374151' }}>CURRENT MEDICATIONS</label>
+                  <textarea
+                    value={medicationsText} onChange={e => setMedicationsText(e.target.value)}
+                    rows={2} placeholder="List current medications, doses, frequency…"
+                    style={{ padding: '8px', fontSize: 13, borderRadius: 8, border: '1.5px solid #e5e7eb', resize: 'vertical', fontFamily: 'inherit' }}
+                  />
+                </div>
+                <div className="fld" style={{ marginBottom: 0 }}>
+                  <label style={{ fontSize: 10, fontWeight: 700, color: '#374151' }}>SURGICAL / PROCEDURE HISTORY</label>
+                  <textarea
+                    value={surgicalNotes} onChange={e => setSurgicalNotes(e.target.value)}
+                    rows={2} placeholder="Previous operations, procedures, anaesthetic issues…"
+                    style={{ padding: '8px', fontSize: 13, borderRadius: 8, border: '1.5px solid #e5e7eb', resize: 'vertical', fontFamily: 'inherit' }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Social Screen */}
+          <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb', overflow: 'hidden' }}>
+            <button
+              type="button"
+              onClick={() => setOpenSec(s => ({ ...s, social: !s.social }))}
+              style={{ width: '100%', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+            >
+              <span style={{ fontSize: 15 }}>🌿</span>
+              <span style={{ flex: 1, fontSize: 13, fontWeight: 700, color: '#111827' }}>Social Screen</span>
+              {toxicHabits.length > 0 && (
+                <span style={{ fontSize: 11, fontWeight: 700, background: '#6b7280', color: '#fff', borderRadius: 20, padding: '2px 8px' }}>{toxicHabits.length}</span>
+              )}
+              <span style={{ fontSize: 11, color: '#9ca3af' }}>{openSec.social ? '▲' : '▼'}</span>
+            </button>
+            {openSec.social && (
+              <div style={{ padding: '0 16px 14px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {INTAKE_HABITS.map(h => (
+                    <button
+                      key={h}
+                      type="button"
+                      onClick={() => toggleToxicHabit(h)}
+                      style={{
+                        padding: '5px 14px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                        border: toxicHabits.includes(h) ? '1.5px solid #6b7280' : '1.5px solid #e5e7eb',
+                        background: toxicHabits.includes(h) ? '#f3f4f6' : '#f9fafb',
+                        color: toxicHabits.includes(h) ? '#111827' : '#374151',
+                        transition: 'all .1s',
+                      }}
+                    >{h}</button>
+                  ))}
                 </div>
               </div>
             )}
