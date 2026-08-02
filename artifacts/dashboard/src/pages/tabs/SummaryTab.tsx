@@ -240,6 +240,27 @@ function sharedHead(title: string): string {
   .med-table td{padding:5px 8px;border-bottom:1px solid #e2e8f0;vertical-align:top}
   .med-table tr:nth-child(even) td{background:#f8fafc}
   .med-ind{font-size:10px;color:#64748b;font-style:italic}
+  /* ── Plan renderer ── */
+  .pl-title{font-size:13px;font-weight:700;color:#0B2545;margin-bottom:4px}
+  .pl-icd{font-size:10px;color:#94a3b8;margin-bottom:8px;font-style:italic}
+  .pl-section-box{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#b91c1c;border:1px solid #fca5a5;background:#fef2f2;padding:4px 10px;border-radius:4px;margin:10px 0 6px}
+  .pl-checkbox{font-size:12px;padding-left:20px;position:relative;margin-bottom:4px;color:#334155}
+  .pl-checkbox::before{content:"☐";position:absolute;left:3px;font-size:11px;color:#1a3a5c}
+  .pl-warn{font-size:12px;padding-left:18px;position:relative;color:#b91c1c;font-weight:600;margin-bottom:4px}
+  .pl-warn::before{content:"⚠";position:absolute;left:1px;font-size:11px}
+  .pl-note{font-size:11px;color:#64748b;font-style:italic;padding-left:14px;margin-bottom:3px}
+  .pl-bullet{font-size:12px;padding-left:18px;position:relative;margin-bottom:4px;color:#1e293b}
+  .pl-bullet::before{content:"•";position:absolute;left:5px;color:#1a3a5c}
+  .pl-num-row{display:flex;gap:10px;margin:8px 0 4px;align-items:flex-start}
+  .pl-num{min-width:20px;height:20px;background:#0B2545;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .pl-num-body{flex:1}
+  .pl-num-label{font-size:12.5px;font-weight:700;color:#1a3a5c;margin-bottom:3px}
+  .pl-badge{font-size:9px;font-weight:700;letter-spacing:.5px;padding:1px 5px;border-radius:3px;text-transform:uppercase;vertical-align:middle;margin-left:4px}
+  .pl-urgent{background:#fee2e2;color:#b91c1c}
+  .pl-stat{background:#dcfce7;color:#15803d}
+  .pl-routine{background:#dbeafe;color:#1d4ed8}
+  .pl-gap{height:5px}
+  .pl-line{font-size:12px;color:#334155;margin-bottom:3px}
   @page{margin:16mm 18mm;size:A4}
   @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;max-width:100%;padding:0}}
 </style>
@@ -277,6 +298,120 @@ function sharedPatient(ctx: DirectCtx): string {
 
 function items(arr: string[]): string {
   return arr.map(a => `<div class="item">${escHtml(a)}</div>`).join('');
+}
+
+function planTextToHtml(plan: string): string {
+  const lines = plan.split('\n');
+  const out: string[] = [];
+  let inNumbered = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const t   = raw.trimEnd();
+    const ts  = t.trim();
+
+    if (!ts) {
+      if (inNumbered) { out.push('</div>'); inNumbered = false; }
+      out.push('<div class="pl-gap"></div>');
+      continue;
+    }
+
+    // First line: plan title (may contain ⚠)
+    if (i === 0) {
+      out.push(`<div class="pl-title">${escHtml(ts)}</div>`);
+      continue;
+    }
+
+    // ICD-10 subtitle
+    if (ts.startsWith('ICD-10:')) {
+      out.push(`<div class="pl-icd">${escHtml(ts)}</div>`);
+      continue;
+    }
+
+    // ━━━ SECTION BOX ━━━
+    if (ts.startsWith('━━━')) {
+      if (inNumbered) { out.push('</div>'); inNumbered = false; }
+      const label = ts.replace(/━/g, '').trim();
+      out.push(`<div class="pl-section-box">${escHtml(label)}</div>`);
+      continue;
+    }
+
+    // □ checkbox items
+    if (ts.startsWith('□ ')) {
+      out.push(`<div class="pl-checkbox">${escHtml(ts.slice(2))}</div>`);
+      continue;
+    }
+
+    // ⚠ warning line
+    if (ts.startsWith('⚠ ') || ts.startsWith('⚠')) {
+      out.push(`<div class="pl-warn">${escHtml(ts.replace(/^⚠\s*/, ''))}</div>`);
+      continue;
+    }
+
+    // → indication / note line
+    if (ts.startsWith('→ ')) {
+      out.push(`<div class="pl-note">${escHtml(ts.slice(2))}</div>`);
+      continue;
+    }
+
+    // • bullet
+    if (/^[•\-]\s/.test(ts)) {
+      // replace [URGENT]/[STAT]/[ROUTINE] badges inline
+      const inner = escHtml(ts.replace(/^[•\-]\s*/, ''))
+        .replace(/\[URGENT\]/g, '<span class="pl-badge pl-urgent">URGENT</span>')
+        .replace(/\[STAT\]/g,   '<span class="pl-badge pl-stat">STAT</span>')
+        .replace(/\[ROUTINE\]/g,'<span class="pl-badge pl-routine">ROUTINE</span>');
+      out.push(`<div class="pl-bullet">${inner}</div>`);
+      continue;
+    }
+
+    // Numbered section: "1. Label:" or "1. Label"
+    const numMatch = ts.match(/^(\d+)\.\s+(.+)$/);
+    if (numMatch) {
+      if (inNumbered) out.push('</div>');
+      const [, num, label] = numMatch;
+      const labelInner = escHtml(label)
+        .replace(/\[URGENT\]/g, '<span class="pl-badge pl-urgent">URGENT</span>')
+        .replace(/\[STAT\]/g,   '<span class="pl-badge pl-stat">STAT</span>')
+        .replace(/\[ROUTINE\]/g,'<span class="pl-badge pl-routine">ROUTINE</span>');
+      out.push(`<div class="pl-num-row"><span class="pl-num">${escHtml(num)}</span><div class="pl-num-body"><div class="pl-num-label">${labelInner}</div>`);
+      inNumbered = true;
+      continue;
+    }
+
+    // Plain [BADGE] standalone line
+    if (/^\[(URGENT|STAT|ROUTINE)\]/.test(ts)) {
+      const inner = escHtml(ts)
+        .replace(/\[URGENT\]/g, '<span class="pl-badge pl-urgent">URGENT</span>')
+        .replace(/\[STAT\]/g,   '<span class="pl-badge pl-stat">STAT</span>')
+        .replace(/\[ROUTINE\]/g,'<span class="pl-badge pl-routine">ROUTINE</span>');
+      out.push(`<div class="pl-line">${inner}</div>`);
+      continue;
+    }
+
+    // Indented lines (2+ spaces or tab) inside numbered section
+    if (inNumbered && /^\s{2,}/.test(raw)) {
+      const inner = escHtml(ts.replace(/^[•\-]\s*/, ''))
+        .replace(/\[URGENT\]/g, '<span class="pl-badge pl-urgent">URGENT</span>')
+        .replace(/\[STAT\]/g,   '<span class="pl-badge pl-stat">STAT</span>')
+        .replace(/\[ROUTINE\]/g,'<span class="pl-badge pl-routine">ROUTINE</span>');
+      out.push(`<div class="pl-bullet">${inner}</div>`);
+      continue;
+    }
+
+    // Close numbered block before a plain line
+    if (inNumbered) { out.push('</div></div>'); inNumbered = false; }
+
+    // Default plain line
+    const inner = escHtml(ts)
+      .replace(/\[URGENT\]/g, '<span class="pl-badge pl-urgent">URGENT</span>')
+      .replace(/\[STAT\]/g,   '<span class="pl-badge pl-stat">STAT</span>')
+      .replace(/\[ROUTINE\]/g,'<span class="pl-badge pl-routine">ROUTINE</span>');
+    out.push(`<div class="pl-line">${inner}</div>`);
+  }
+
+  if (inNumbered) out.push('</div></div>');
+  return out.join('\n');
 }
 
 function buildDirectSummaryHtml(ctx: DirectCtx, meta: PrintMeta): string {
@@ -415,7 +550,7 @@ ${ctx.assessment ? `<div style="white-space:pre-wrap;line-height:1.8;font-size:1
 
 ${ctx.plan ? `<div class="section">
 <div class="sec-hdr">Management Plan</div>
-<div class="sec-body" style="font-family:'Courier New',Courier,monospace;font-size:11px;line-height:1.85;white-space:pre-wrap">${escHtml(ctx.plan)}</div>
+<div class="sec-body" style="line-height:1.75">${planTextToHtml(ctx.plan)}</div>
 </div>` : ''}
 
 ${medTableHtml ? `<div class="section">

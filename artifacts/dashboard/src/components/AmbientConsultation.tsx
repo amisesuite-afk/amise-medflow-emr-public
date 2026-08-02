@@ -909,27 +909,111 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     setActiveDrawer(null);
   }
 
+  // Generates perioperative comorbidity block: ASA class, additional labs,
+  // medication adjustments, consult triggers — based on selected PMH chips.
+  function buildComorbidityImplications(comorbs: string[]): string {
+    const hasDm      = comorbs.some(c => c.toLowerCase().includes('diabetes'));
+    const hasT1Dm    = comorbs.includes('Type 1 diabetes');
+    const hasHtn     = comorbs.includes('Hypertension');
+    const hasCkd     = comorbs.includes('Chronic kidney disease');
+    const hasDial    = comorbs.includes('Dialysis');
+    const hasIhd     = comorbs.includes('Ischaemic heart disease');
+    const hasAf      = comorbs.includes('Atrial fibrillation');
+    const hasHf      = comorbs.includes('Heart failure');
+    const hasCirc    = comorbs.includes('Liver cirrhosis');
+    const hasDvt     = comorbs.includes('DVT / PE history');
+    const hasCopd    = comorbs.includes('COPD / asthma');
+    const hasCancer  = comorbs.includes('Active cancer') || comorbs.includes('Chemotherapy / immunotherapy');
+    const hasSteroid = comorbs.includes('Steroid use') || comorbs.includes('Immunosuppressed');
+    const hasSickle  = comorbs.includes('Sickle cell disease');
+
+    const hasSurgRel = hasDm || hasHtn || hasCkd || hasDial || hasIhd || hasAf || hasHf
+                    || hasCirc || hasDvt || hasCopd || hasCancer || hasSteroid || hasSickle;
+    if (!hasSurgRel) return '';
+
+    let asaClass = 1;
+    if (hasDial || hasCirc || hasHf) asaClass = 3;
+    else if (hasDm || hasHtn || hasCkd || hasIhd || hasAf || hasCopd || hasDvt || hasCancer) asaClass = 2;
+    const asaLabels = ['', 'I — Healthy', 'II — Mild systemic disease', 'III — Severe systemic disease', 'IV — Life-threatening'];
+
+    const addDx: string[] = [];
+    const addLabs: string[] = [];
+    const medAdj: string[] = [];
+    const consults: string[] = [];
+
+    if (hasDm) {
+      addDx.push(hasT1Dm ? 'Type 1 Diabetes Mellitus' : 'Type 2 Diabetes Mellitus');
+      addLabs.push('HbA1c', 'fasting glucose (pre-op)', 'eGFR');
+      if (hasT1Dm) addLabs.push('ketones');
+      medAdj.push('Hold metformin 24–48 h pre-operatively (lactic acidosis / contrast risk)');
+      medAdj.push('VRII if HbA1c >69 mmol/mol — target perioperative glucose 6–10 mmol/L');
+      consults.push('Endocrinology / Internal Medicine if insulin-dependent or HbA1c >86 mmol/mol (>10%)');
+    }
+    if (hasHtn) {
+      addLabs.push('ECG', 'eGFR', 'electrolytes');
+      medAdj.push('Continue antihypertensives perioperatively (hold ACE inhibitor / ARB on morning of surgery)');
+      consults.push('Cardiology if SBP >160 or DBP >100 uncontrolled at presentation');
+    }
+    if (hasCkd || hasDial) {
+      addDx.push(hasDial ? 'ESRD — dialysis-dependent' : 'Chronic Kidney Disease');
+      addLabs.push('eGFR', 'creatinine', 'electrolytes', 'urine ACR', 'FBC (anaemia of CKD)');
+      medAdj.push('Avoid NSAIDs and nephrotoxic agents · Adjust antibiotic doses per eGFR');
+      medAdj.push('Volume loading before IV contrast if eGFR <60 (defer contrast if eGFR <30)');
+      consults.push(hasDial ? 'Nephrology — perioperative dialysis scheduling' : 'Nephrology if eGFR <30 mL/min/1.73 m²');
+    }
+    if (hasIhd || hasHf || hasAf) {
+      addLabs.push('ECG', 'troponin (baseline)', 'BNP / NT-proBNP');
+      if (hasHf) addLabs.push('echo (if not within 12 months)', 'CXR');
+      medAdj.push('Continue beta-blockers perioperatively — do not withdraw acutely');
+      if (hasAf) medAdj.push('Review anticoagulation — bridge or hold DOAC per haematology / cardiology');
+      consults.push('Cardiology — pre-operative cardiac risk assessment (Lee RCRI score)');
+    }
+    if (hasCirc) {
+      addLabs.push('LFTs', 'INR', 'albumin', 'bilirubin', 'FBC (thrombocytopenia)', 'fibrinogen');
+      medAdj.push('FFP / vitamin K pre-operatively if INR >1.5 · Avoid hepatotoxic drugs');
+      consults.push('Hepatology / Internal Medicine — Child-Pugh / MELD score required before elective surgery');
+    }
+    if (hasDvt) {
+      addLabs.push('coagulation screen', 'thrombophilia screen (if first unprovoked event)');
+      medAdj.push('Bridge therapeutic anticoagulation perioperatively per haematology');
+      consults.push('Haematology if on therapeutic anticoagulation or known thrombophilia');
+    }
+    if (hasCopd) {
+      addLabs.push('CXR', 'spirometry / PEFR', 'ABG if SpO₂ <92% or severe COPD');
+      medAdj.push('Continue inhalers perioperatively · Nebulised salbutamol pre-op if wheeze');
+      consults.push('Respiratory / anaesthetics if FEV1 <50% predicted or home supplemental oxygen');
+    }
+    if (hasCancer) {
+      medAdj.push('Hold chemotherapy / immunotherapy perioperatively — confirm timing with oncology');
+      consults.push('Oncology — confirm surgical timing within treatment plan');
+    }
+    if (hasSteroid) {
+      medAdj.push('Steroid cover: hydrocortisone 50–100 mg IV at induction then TDS × 24–48 h (if >10 mg prednisolone/day for >3 weeks)');
+      medAdj.push('Do not stop immunosuppressants abruptly — discuss with prescribing team');
+    }
+    if (hasSickle) {
+      addLabs.push('FBC', 'Hb electrophoresis', 'cross-match', 'reticulocyte count');
+      medAdj.push('Aggressive perioperative hydration · Avoid hypoxia, hypothermia, acidosis, tourniquet');
+      consults.push('Haematology — perioperative sickle cell management plan');
+    }
+
+    const lines: string[] = [`━━━ PERIOPERATIVE CONSIDERATIONS (comorbidities) ━━━`];
+    lines.push(`ASA Physical Status: Class ${asaLabels[asaClass]}`);
+    if (addDx.length)   lines.push(`Concurrent diagnoses: ${addDx.join(' · ')}`);
+    if (addLabs.length) lines.push(`Additional investigations: ${addLabs.join(' · ')}`);
+    if (medAdj.length)  { lines.push('Medication adjustments:'); medAdj.forEach(m => lines.push(`  • ${m}`)); }
+    if (consults.length){ lines.push('Consults required:'); consults.forEach(c => lines.push(`  → ${c}`)); }
+    return lines.join('\n');
+  }
+
   function enterAssessment() {
     const parts: string[] = [];
-    if (ccLabel) parts.push(`Chief Complaint: ${ccLabel}`);
-    if (visitType) parts.push(`\nVisit Type: ${visitType.replace(/_/g, ' ')}`);
-    if (hpiNotes.trim()) parts.push(`\n\nPresenting History:\n${hpiNotes.trim()}`);
-    const pmhStr = comorbidities.filter(c => c !== 'NKPMH').join(', ') || pmhNotes.trim();
-    if (pmhStr) parts.push(`\n\nPast Medical History: ${pmhStr}`);
-    const surgStr = surgicalHistory.filter(s => s !== 'No prior surgery').join(', ') || surgicalNotes.trim();
-    if (surgStr) parts.push(`\n\nSurgical History: ${surgStr}`);
-    else if (surgicalHistory.includes('No prior surgery')) parts.push('\n\nSurgical History: No prior surgery');
-    const medsStr = medications.filter(m => m !== 'None').join(', ') || medicationsText.trim();
-    if (medsStr) parts.push(`\n\nMedications: ${medsStr}`);
-    else if (medications.includes('None')) parts.push('\n\nMedications: None');
-    if (allergyText) parts.push(`\n\nAllergies: ${allergyText}`);
-    // Exam is rendered in its own "Physical Examination" section in the printed note —
-    // do not copy it into the assessment text (avoids verbatim duplication).
-    // Show investigation queue count only; full list rendered in Investigations section.
+
+    // Investigation queue count only — full list rendered in its own section in the printed note
     const invParts: string[] = [];
     if (orderedInvestigations.length) invParts.push(`${orderedInvestigations.length} lab order${orderedInvestigations.length > 1 ? 's' : ''} queued`);
     if (radiologyRequests.length) invParts.push(`${radiologyRequests.length} imaging request${radiologyRequests.length > 1 ? 's' : ''} queued`);
-    if (invParts.length) parts.push(`\n\nInvestigations: ${invParts.join(', ')}`);
+    if (invParts.length) parts.push(`Investigations: ${invParts.join(', ')}`);
 
     // Working Dx (from confirmed workingDxId or top PANE suggestion) + ranked differentials
     const dxForAssess = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
@@ -944,18 +1028,23 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         }).join('\n')
       : '  1.\n  2.\n  3.';
 
-    parts.push('\n\n' + '━'.repeat(44));
+    parts.push('━'.repeat(44));
     if (dxLabelForAssess) {
-      parts.push(`\n\nWorking Diagnosis: ${dxLabelForAssess}${workingDxId ? '' : '  ⚠ AI suggestion — please confirm'}`);
+      parts.push(`Working Diagnosis: ${dxLabelForAssess}${workingDxId ? '' : '  ⚠ AI suggestion — please confirm'}`);
     } else {
-      parts.push('\n\nWorking Diagnosis:');
+      parts.push('Working Diagnosis:');
     }
-    parts.push('\n\nClinical reasoning:');
-    parts.push(`\n\nRanked differentials:\n${diffLines}`);
-    if (rfForAssess) parts.push(`\n\nRed flags to monitor:\n${rfForAssess}`);
-    parts.push('\n\nMissing / pending information:');
+    parts.push('Clinical reasoning:');
+    parts.push(`Ranked differentials:\n${diffLines}`);
+    if (rfForAssess) parts.push(`Red flags to monitor:\n${rfForAssess}`);
 
-    const draft = parts.join('');
+    // PMH comorbidity implications — ASA class, labs, medication adjustments, consults
+    const comorbBlock = buildComorbidityImplications(comorbidities);
+    if (comorbBlock) parts.push(comorbBlock);
+
+    parts.push('Missing / pending information:');
+
+    const draft = parts.join('\n\n');
     if (!assessment.trim()) ctx.setAssessment(draft);
     changePhase('assessment');
     setActiveDrawer(null);
