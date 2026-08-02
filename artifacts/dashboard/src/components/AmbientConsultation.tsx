@@ -15,6 +15,7 @@ import { getMatrix } from '@/lib/cc-matrices';
 import { DISEASES, getDiseaseSpecialty, initPaneState, updatePosterior, topDiagnoses, applyModifiers, getProtocol } from '@workspace/pane-engine';
 import { extractFeaturesFromTranscript, detectPathognomonic, type PathognomicMatch } from '@/lib/transcript-dx-mapper';
 import { computeReminders } from '@/lib/safety-engine';
+import type { RadiologyRequest } from '@/pages/tabs/RadiologyTab';
 
 // ── Web Speech API ─────────────────────────────────────────────────────────────
 const SR_CLASS = (typeof window !== 'undefined')
@@ -40,6 +41,77 @@ function abnormalVitals(vitals: Record<string, string>): string[] {
   if (Number.isFinite(spo2)) { if (spo2 < 94)  flags.push(`SpO₂ ${Math.round(spo2)}%↓`); }
   if (Number.isFinite(temp)) { if (temp > 38.5) flags.push(`T ${temp.toFixed(1)}°C`);  if (temp < 36.0) flags.push(`T ${temp.toFixed(1)}°C↓`); }
   return flags;
+}
+
+// ── Protocol imaging label → RadiologyRequest parser ──────────────────────────
+// Maps a free-text investigation label from the protocol dictionary to a
+// RadiologyRequest object that can be pushed directly into ctx.radiologyRequests.
+function parseImagingLabel(label: string, urgency: string, indication: string): RadiologyRequest {
+  const l = label.toLowerCase();
+  const id = crypto.randomUUID();
+  const urg: RadiologyRequest['urgency'] = urgency === 'stat' ? 'emergency' : urgency === 'urgent' ? 'urgent' : 'routine';
+
+  let modality: RadiologyRequest['modality'] = 'Other';
+  let anatomicalRegion = '';
+  let ctContrast: RadiologyRequest['ctContrast'] = 'none';
+  let mriProtocol = '';
+  let scopeType = '';
+  let functionalType = '';
+  let otherDescription = '';
+
+  if (l.includes('mrcp')) {
+    modality = 'MRI'; mriProtocol = 'MRCP (magnetic cholangiopancreatography)'; anatomicalRegion = 'Abdomen';
+  } else if (l.includes('mri')) {
+    modality = 'MRI';
+    if (l.includes('brain')) anatomicalRegion = 'Brain';
+    else if (l.includes('spine')) anatomicalRegion = l.includes('cervical') ? 'Cervical Spine' : l.includes('lumbar') ? 'Lumbar Spine' : 'Thoracic Spine';
+    else if (l.includes('pelvis')) anatomicalRegion = 'Pelvis';
+    else if (l.includes('breast')) { anatomicalRegion = 'Breast'; mriProtocol = 'MRI Breast bilateral with Gad'; }
+    else if (l.includes('liver')) { anatomicalRegion = 'Liver'; mriProtocol = 'MRI Liver (Eovist/Primovist)'; }
+    else anatomicalRegion = 'Abdomen';
+    if (l.includes('gad') || l.includes('contrast') || l.includes('gadolinium')) mriProtocol = mriProtocol || 'MRI Abdomen with Gad';
+  } else if (l.includes('pet')) {
+    modality = 'Functional'; functionalType = 'Other'; otherDescription = 'PET scan';
+  } else if (l.includes('ct') || l.includes('computed')) {
+    modality = 'CT';
+    if (l.includes('iv contrast') || l.includes('with contrast') || l.includes('with iv')) ctContrast = 'IV';
+    if (l.includes('oral contrast')) ctContrast = ctContrast === 'IV' ? 'both' : 'oral';
+    if (l.includes('chest') && (l.includes('abdomen') || l.includes('pelvis'))) anatomicalRegion = 'Abdomen & Pelvis (TAP)';
+    else if (l.includes('chest')) anatomicalRegion = 'Chest';
+    else if (l.includes('brain') || l.includes('head')) anatomicalRegion = 'Brain';
+    else if (l.includes('abdomen') && l.includes('pelvis')) anatomicalRegion = 'Abdomen & Pelvis (TAP)';
+    else if (l.includes('abdomen')) anatomicalRegion = 'Abdomen';
+    else if (l.includes('pelvis')) anatomicalRegion = 'Pelvis';
+    else if (l.includes('spine')) anatomicalRegion = 'Lumbar Spine';
+    else anatomicalRegion = 'Abdomen';
+  } else if (l.includes('cxr') || l.includes('chest x') || l.includes('x-ray') || l.includes('xr ') || l.includes('erect cxr') || l.includes('axr')) {
+    modality = 'XRay';
+    anatomicalRegion = (l.includes('axr') || l.includes('abdo')) ? 'Abdomen' : 'Chest';
+  } else if (l.includes('ercp')) {
+    modality = 'Scope'; scopeType = 'ERCP';
+  } else if (l.includes('uss') || l.includes('ultrasound') || l.includes('echo')) {
+    modality = l.includes('echo') ? 'Functional' : 'Ultrasound';
+    if (l.includes('echo')) { functionalType = 'Echocardiogram'; }
+    else if (l.includes('thyroid')) anatomicalRegion = 'Thyroid';
+    else if (l.includes('breast')) anatomicalRegion = 'Breast';
+    else if (l.includes('testis') || l.includes('scrotal')) anatomicalRegion = 'Testis';
+    else if (l.includes('groin') || l.includes('hernia')) anatomicalRegion = 'Groin';
+    else if (l.includes('pelvis')) anatomicalRegion = 'Pelvis';
+    else if (l.includes('liver') || l.includes('hepat')) anatomicalRegion = 'Liver';
+    else if (l.includes('abdomen') || l.includes('abdo')) anatomicalRegion = 'Abdomen';
+    else anatomicalRegion = 'Abdomen';
+  } else if (l.includes('angio')) {
+    modality = 'Other'; otherDescription = label;
+  } else if (l.includes('scan')) {
+    modality = 'Functional'; otherDescription = label;
+  }
+
+  return {
+    id, modality, anatomicalRegion, laterality: '', indication, clinicalQuestion: '',
+    urgency: urg, ctContrast, ctContrastType: '', ctEgfr: '',
+    mriProtocol, mriSequences: '', scopeType, functionalType, otherDescription,
+    resultReceived: false, resultNotes: '',
+  };
 }
 
 // ── Persist call log ───────────────────────────────────────────────────────────
@@ -2351,31 +2423,93 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                         </div>
                       )}
 
-                      {/* Protocol Actions — labs */}
-                      {labs.length > 0 && (
-                        <>
-                          <div style={labelStyle}>Labs</div>
-                          {labs.map((inv, i) => (
-                            <div key={i} style={{ fontSize: 11, color: 'var(--ink)', lineHeight: 1.6, display: 'flex', gap: 5, alignItems: 'baseline' }}>
-                              <span style={{ fontSize: 9, fontWeight: 800, color: urgencyColor(inv.urgency), flexShrink: 0 }}>[{inv.urgency.toUpperCase()}]</span>
-                              {inv.label}
+                      {/* Protocol Actions — labs with Order button */}
+                      {labs.length > 0 && (() => {
+                        const dxLabel = DISEASES.find(d => d.id === workingDxId)?.label ?? '';
+                        const alreadyOrdered = new Set(ctx.orderedInvestigations.map(s => s.toLowerCase()));
+                        const pending = labs.filter(i => !alreadyOrdered.has(i.label.toLowerCase()));
+                        return (
+                          <>
+                            <div style={{ ...labelStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                              <span>Labs</span>
+                              {pending.length > 0 && (
+                                <button type="button" onClick={() => {
+                                  const newLabels = pending.map(i => i.label);
+                                  ctx.setOrderedInvestigations([...ctx.orderedInvestigations, ...newLabels]);
+                                }}
+                                  style={{ fontSize: 9, fontWeight: 800, color: 'var(--accent)', background: 'none', border: '1px solid var(--accent)', borderRadius: 4, padding: '1px 6px', cursor: 'pointer', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                                  + Order all ({pending.length})
+                                </button>
+                              )}
+                              {pending.length === 0 && labs.length > 0 && (
+                                <span style={{ fontSize: 9, color: '#16a34a', fontWeight: 700 }}>✓ Ordered</span>
+                              )}
                             </div>
-                          ))}
-                        </>
-                      )}
+                            {labs.map((inv, i) => {
+                              const ordered = alreadyOrdered.has(inv.label.toLowerCase());
+                              return (
+                                <div key={i} style={{ fontSize: 11, lineHeight: 1.6, display: 'flex', gap: 5, alignItems: 'center', opacity: ordered ? 0.5 : 1 }}>
+                                  <span style={{ fontSize: 9, fontWeight: 800, color: urgencyColor(inv.urgency), flexShrink: 0 }}>[{inv.urgency.toUpperCase()}]</span>
+                                  <span style={{ flex: 1, color: 'var(--ink)', textDecoration: ordered ? 'line-through' : 'none' }}>{inv.label}</span>
+                                  {!ordered && (
+                                    <button type="button" onClick={() => ctx.setOrderedInvestigations([...ctx.orderedInvestigations, inv.label])}
+                                      style={{ fontSize: 9, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', flexShrink: 0 }}>＋</button>
+                                  )}
+                                </div>
+                              );
+                            })}
+                            <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 2, fontStyle: 'italic' }}>
+                              Ordered labs appear in Investigations tab → {dxLabel}
+                            </div>
+                          </>
+                        );
+                      })()}
 
-                      {/* Protocol Actions — imaging */}
-                      {imaging.length > 0 && (
-                        <>
-                          <div style={labelStyle}>Imaging</div>
-                          {imaging.map((inv, i) => (
-                            <div key={i} style={{ fontSize: 11, color: 'var(--ink)', lineHeight: 1.6, display: 'flex', gap: 5, alignItems: 'baseline' }}>
-                              <span style={{ fontSize: 9, fontWeight: 800, color: urgencyColor(inv.urgency), flexShrink: 0 }}>[{inv.urgency.toUpperCase()}]</span>
-                              {inv.label}
+                      {/* Protocol Actions — imaging with Order button */}
+                      {imaging.length > 0 && (() => {
+                        const dxLabel = DISEASES.find(d => d.id === workingDxId)?.label ?? '';
+                        const existingIds = new Set(ctx.radiologyRequests.map(r => `${r.modality}:${r.anatomicalRegion}`.toLowerCase()));
+                        const pending = imaging.filter(inv => {
+                          const parsed = parseImagingLabel(inv.label, inv.urgency, dxLabel);
+                          return !existingIds.has(`${parsed.modality}:${parsed.anatomicalRegion}`.toLowerCase());
+                        });
+                        return (
+                          <>
+                            <div style={{ ...labelStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                              <span>Imaging</span>
+                              {pending.length > 0 && (
+                                <button type="button" onClick={() => {
+                                  const newRequests = pending.map(inv => parseImagingLabel(inv.label, inv.urgency, dxLabel));
+                                  ctx.setRadiologyRequests([...ctx.radiologyRequests, ...newRequests]);
+                                }}
+                                  style={{ fontSize: 9, fontWeight: 800, color: 'var(--accent)', background: 'none', border: '1px solid var(--accent)', borderRadius: 4, padding: '1px 6px', cursor: 'pointer', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                                  + Order all ({pending.length})
+                                </button>
+                              )}
+                              {pending.length === 0 && imaging.length > 0 && (
+                                <span style={{ fontSize: 9, color: '#16a34a', fontWeight: 700 }}>✓ Ordered</span>
+                              )}
                             </div>
-                          ))}
-                        </>
-                      )}
+                            {imaging.map((inv, i) => {
+                              const parsed = parseImagingLabel(inv.label, inv.urgency, dxLabel);
+                              const ordered = existingIds.has(`${parsed.modality}:${parsed.anatomicalRegion}`.toLowerCase());
+                              return (
+                                <div key={i} style={{ fontSize: 11, lineHeight: 1.6, display: 'flex', gap: 5, alignItems: 'center', opacity: ordered ? 0.5 : 1 }}>
+                                  <span style={{ fontSize: 9, fontWeight: 800, color: urgencyColor(inv.urgency), flexShrink: 0 }}>[{inv.urgency.toUpperCase()}]</span>
+                                  <span style={{ flex: 1, color: 'var(--ink)', textDecoration: ordered ? 'line-through' : 'none' }}>{inv.label}</span>
+                                  {!ordered && (
+                                    <button type="button" onClick={() => ctx.setRadiologyRequests([...ctx.radiologyRequests, parsed])}
+                                      style={{ fontSize: 9, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer', padding: '0 2px', flexShrink: 0 }}>＋</button>
+                                  )}
+                                </div>
+                              );
+                            })}
+                            <div style={{ fontSize: 10, color: 'var(--muted)', marginTop: 2, fontStyle: 'italic' }}>
+                              Ordered imaging appears in Radiology tab → {dxLabel}
+                            </div>
+                          </>
+                        );
+                      })()}
 
                       {/* Protocol Actions — immediate management */}
                       {immediate.length > 0 && (
