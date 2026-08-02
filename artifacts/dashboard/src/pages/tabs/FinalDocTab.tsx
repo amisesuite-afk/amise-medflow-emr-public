@@ -212,7 +212,15 @@ function buildDocument(ctx: Ctx): string {
   // Assessment
   lines.push(sec('ASSESSMENT'));
   if (ctx.assessment) {
-    lines.push(`Working Dx:  ${ctx.assessment}`);
+    // Strip history preamble if voice/AI injected it before the real diagnosis content.
+    // Any ─{10+} separator in the stored text marks the boundary; take what follows.
+    let assessBody = ctx.assessment;
+    const sepMatch = assessBody.match(/─{10,}/);
+    if (sepMatch?.index !== undefined && sepMatch.index > 0) {
+      const afterSep = assessBody.slice(sepMatch.index + sepMatch[0].length).trimStart();
+      if (afterSep) assessBody = afterSep;
+    }
+    lines.push(assessBody);
   } else {
     lines.push(hint('enter working diagnosis / clinical impression'));
   }

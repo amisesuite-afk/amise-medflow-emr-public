@@ -1007,45 +1007,39 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   }
 
   function enterAssessment() {
-    const parts: string[] = [];
-
-    // Investigation queue count only — full list rendered in its own section in the printed note
-    const invParts: string[] = [];
-    if (orderedInvestigations.length) invParts.push(`${orderedInvestigations.length} lab order${orderedInvestigations.length > 1 ? 's' : ''} queued`);
-    if (radiologyRequests.length) invParts.push(`${radiologyRequests.length} imaging request${radiologyRequests.length > 1 ? 's' : ''} queued`);
-    if (invParts.length) parts.push(`Investigations: ${invParts.join(', ')}`);
-
-    // Working Dx (from confirmed workingDxId or top PANE suggestion) + ranked differentials
+    // Working Dx from confirmed selection or top PANE suggestion
     const dxForAssess = workingDxId ?? (suggestedDx.length > 0 ? suggestedDx[0].disease.id : null);
     const dxLabelForAssess = dxForAssess ? (DISEASES.find(d => d.id === dxForAssess)?.label ?? dxForAssess) : null;
     const protoForAssess = dxForAssess ? getProtocol(dxForAssess) : null;
     const rfForAssess = protoForAssess?.redFlags.map(r => `  ⚠ ${r}`).join('\n') ?? '';
     const top3 = suggestedDx.slice(0, 3);
-    const diffLines = top3.length > 0
-      ? top3.map((rd, i) => {
-          const pct = Math.round(rd.probability * 100);
-          return `  ${i + 1}. ${rd.disease.label}${pct > 0 ? ` (${pct}% pre-test probability)` : ''}`;
-        }).join('\n')
-      : '  1.\n  2.\n  3.';
 
-    parts.push('━'.repeat(44));
-    if (dxLabelForAssess) {
-      parts.push(`Working Diagnosis: ${dxLabelForAssess}${workingDxId ? '' : '  ⚠ AI suggestion — please confirm'}`);
-    } else {
-      parts.push('Working Diagnosis:');
+    // Ranked differentials go in ctx.differentials (their own section in the printed note)
+    if (!ctx.differentials?.trim() && top3.length > 0) {
+      const diffLines = top3.map((rd, i) => {
+        const pct = Math.round(rd.probability * 100);
+        return `  ${i + 1}. ${rd.disease.label}${pct > 0 ? ` (${pct}% pre-test probability)` : ''}`;
+      }).join('\n');
+      ctx.setDifferentials(diffLines);
     }
-    parts.push('Clinical reasoning:');
-    parts.push(`Ranked differentials:\n${diffLines}`);
-    if (rfForAssess) parts.push(`Red flags to monitor:\n${rfForAssess}`);
 
-    // PMH comorbidity implications — ASA class, labs, medication adjustments, consults
-    const comorbBlock = buildComorbidityImplications(comorbidities);
-    if (comorbBlock) parts.push(comorbBlock);
+    // Build assessment draft — diagnosis label + reasoning notes only
+    // (investigation count and differentials go in their own document sections)
+    if (!assessment.trim()) {
+      const parts: string[] = [];
+      if (dxLabelForAssess) {
+        parts.push(`Working Diagnosis: ${dxLabelForAssess}${workingDxId ? '' : '  ⚠ AI suggestion — please confirm'}`);
+      } else {
+        parts.push('Working Diagnosis:');
+      }
+      parts.push('Clinical reasoning:');
+      if (rfForAssess) parts.push(`Red flags to monitor:\n${rfForAssess}`);
+      const comorbBlock = buildComorbidityImplications(comorbidities);
+      if (comorbBlock) parts.push(comorbBlock);
+      parts.push('Missing / pending information:');
+      ctx.setAssessment(parts.join('\n\n'));
+    }
 
-    parts.push('Missing / pending information:');
-
-    const draft = parts.join('\n\n');
-    if (!assessment.trim()) ctx.setAssessment(draft);
     changePhase('assessment');
     setActiveDrawer(null);
   }
