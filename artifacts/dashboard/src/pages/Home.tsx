@@ -110,6 +110,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'monitoring',        label: 'Monitor'       },
     { id: 'tasks',             label: 'Tasks'         },
     { id: 'referring_providers', label: 'Referrals'  },
+    { id: 'letters',           label: 'Letters'       },
   ],
   post_op: [
     { id: 'wounds',            label: 'Wound'         },
@@ -121,6 +122,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'progress',          label: 'Notes'         },
     { id: 'monitoring',        label: 'Vitals'        },
     { id: 'tasks',             label: 'Tasks'         },
+    { id: 'letters',           label: 'Letters'       },
   ],
   day_of_surgery: [
     { id: 'who_checklist',     label: 'WHO'           },
@@ -143,6 +145,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
     { id: 'progress',          label: 'Notes'         },
+    { id: 'letters',           label: 'Letters'       },
   ],
   endoscopy_ogd: [
     { id: 'who_checklist',     label: 'WHO'           },
@@ -156,6 +159,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
     { id: 'progress',          label: 'Notes'         },
+    { id: 'letters',           label: 'Letters'       },
   ],
   endoscopy_col: [
     { id: 'who_checklist',     label: 'WHO'           },
@@ -169,6 +173,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
     { id: 'progress',          label: 'Notes'         },
+    { id: 'letters',           label: 'Letters'       },
   ],
   breast: [
     { id: 'hpi',               label: 'Breast Hx'    },
@@ -180,6 +185,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'plan',              label: 'Plan'          },
     { id: 'referring_providers', label: 'Referrals'  },
     { id: 'tasks',             label: 'Tasks'         },
+    { id: 'letters',           label: 'Letters'       },
   ],
   telephone: [
     { id: 'progress',          label: 'Call Record'   },
@@ -187,6 +193,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'plan',              label: 'Plan'          },
     { id: 'prescriptions',     label: 'RX'            },
     { id: 'tasks',             label: 'Follow-up'     },
+    { id: 'letters',           label: 'Letters'       },
   ],
   diabetic_foot: [
     { id: 'wounds',            label: 'Wound'         },
@@ -199,6 +206,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'referring_providers', label: 'Referrals'  },
     { id: 'progress',          label: 'Notes'         },
     { id: 'tasks',             label: 'Tasks'         },
+    { id: 'letters',           label: 'Letters'       },
   ],
   urgent: [
     { id: 'triage',            label: 'Triage'        },
@@ -211,6 +219,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
     { id: 'progress',          label: 'Notes'         },
+    { id: 'letters',           label: 'Letters'       },
   ],
 };
 
@@ -397,14 +406,14 @@ export default function HomePage() {
     quick_consult: new Set<Section>([
       'triage', 'hpi', 'pmh', 'medications', 'allergies',
       'examination', 'assessment', 'plan', 'prescriptions', 'referring_providers',
-      'encounter_history', 'progress', 'monitoring', 'tasks',
+      'encounter_history', 'progress', 'monitoring', 'tasks', 'letters',
     ]),
     endoscopy: new Set<Section>([
       'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
       'examination', 'investigations', 'radiology', 'attachments',
       'assessment', 'plan', 'procedures',
       'prescriptions', 'referring_providers',
-      'encounter_history', 'progress', 'monitoring', 'tasks',
+      'encounter_history', 'progress', 'monitoring', 'tasks', 'letters',
     ]),
     surgical_consult: new Set<Section>([
       'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
@@ -412,20 +421,20 @@ export default function HomePage() {
       'examination', 'investigations', 'radiology', 'attachments',
       'assessment', 'plan', 'procedures',
       'prescriptions', 'referring_providers',
-      'encounter_history', 'progress', 'monitoring', 'tasks',
+      'encounter_history', 'progress', 'monitoring', 'tasks', 'letters',
     ]),
     office_procedure: new Set<Section>([
       'triage', 'hpi', 'pmh', 'medications', 'allergies',
       'examination', 'investigations', 'attachments',
       'assessment', 'plan', 'prescriptions',
-      'encounter_history', 'progress', 'monitoring', 'tasks',
+      'encounter_history', 'progress', 'monitoring', 'tasks', 'letters',
     ]),
     major_emergency: new Set<Section>([
       'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros',
       'examination', 'wounds', 'investigations', 'blood_gas', 'radiology', 'attachments',
       'assessment', 'plan', 'prescriptions', 'dosing', 'fluid_nutrition', 'referring_providers',
-      'encounter_history', 'progress', 'monitoring', 'tasks',
+      'encounter_history', 'progress', 'monitoring', 'tasks', 'letters',
     ]),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), []);
@@ -496,6 +505,7 @@ export default function HomePage() {
         { id: 'fluid_nutrition' as Section, label: 'Fluids' },
         { id: 'referring_providers' as Section, label: 'Referrals' },
         { id: 'encounter_history' as Section, label: 'History' },
+        { id: 'letters' as Section, label: 'Letters' },
       ] : []),
       { id: 'progress', label: 'Notes' },
       { id: 'monitoring', label: 'Monitor' },
