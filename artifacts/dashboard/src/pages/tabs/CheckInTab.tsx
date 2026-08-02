@@ -149,6 +149,8 @@ export default function CheckInTab() {
   const [referringProviders, setReferringProviders] = useState<string[]>([]);
   const [inviting, setInviting] = useState(false);
   const [inviteResult, setInviteResult] = useState<'sent' | 'error' | null>(null);
+  const [duplicateCandidates, setDuplicateCandidates] = useState<PatientListRow[] | null>(null);
+  const [bypassDuplicate, setBypassDuplicate] = useState(false);
 
   // Load referring providers
   useEffect(() => {
@@ -199,11 +201,34 @@ export default function CheckInTab() {
     setOccupation(''); setNokName(''); setNokRelation(''); setNokTel('');
     setSaveError(null); setEncounterError(null); setEncounterStartedAt(null);
     setInviteResult(null); setSearchQuery(''); setSearchResults([]);
+    setDuplicateCandidates(null); setBypassDuplicate(false);
     setStep('search');
+  }
+
+  function normName(n: string) { return n.toLowerCase().trim().replace(/\s+/g, ' '); }
+  function digitsOnly(s: string) { return s.replace(/\D/g, ''); }
+  function isDuplicateCandidate(p: PatientListRow): boolean {
+    const sameName = normName(p.full_name ?? '') === normName(patientName);
+    const ph = phone.trim() ? digitsOnly(phone) : '';
+    const pph = p.phone ? digitsOnly(p.phone) : '';
+    const samePhone = ph.length >= 7 && pph.length >= 7 && ph === pph;
+    return sameName || samePhone;
   }
 
   async function handleCheckIn() {
     setSaving(true); setSaveError(null);
+
+    // Pre-save duplicate check (skip if user already confirmed bypass)
+    if (!bypassDuplicate && patientName.trim()) {
+      const candidates = await searchPatients(patientName.trim());
+      const matches = candidates.filter(isDuplicateCandidate);
+      if (matches.length > 0) {
+        setSaving(false);
+        setDuplicateCandidates(matches);
+        return;
+      }
+    }
+
     const { patient, error } = await savePatientFull({
       full_name: patientName, age, dob, sex, phone, email,
       address, quarter, referredBy, insuranceProvider,
@@ -229,6 +254,7 @@ export default function CheckInTab() {
         void uploadPatientPhoto(patient.id, patientPhoto).then(url => { if (url) setPatientPhoto(url); });
       }
     }
+    setBypassDuplicate(false);
     setPreVisitStatus('registered');
     setStep('patient-ready');
   }
@@ -476,13 +502,84 @@ export default function CheckInTab() {
           <div style={{ display: 'flex', gap: 10 }}>
             <button type="button" onClick={() => void handleCheckIn()} disabled={!patientName.trim() || saving}
               style={{ flex: 1, padding: '14px 24px', borderRadius: 10, border: 'none', background: patientName.trim() && !saving ? 'var(--accent)' : '#9ca3af', color: '#fff', fontWeight: 800, fontSize: 16, minHeight: 48, cursor: patientName.trim() && !saving ? 'pointer' : 'not-allowed' }}>
-              {saving ? 'Saving…' : 'Register Patient →'}
+              {saving ? 'Checking…' : 'Register Patient →'}
             </button>
             <button type="button" onClick={handleReset}
               style={{ padding: '14px 20px', borderRadius: 10, border: '1.5px solid #d1d5db', background: 'transparent', color: '#6b7280', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
               Cancel
             </button>
           </div>
+
+          {/* ── Duplicate-patient warning modal ── */}
+          {duplicateCandidates && (
+            <div style={{
+              position: 'fixed', inset: 0, zIndex: 9999,
+              background: 'rgba(0,0,0,0.55)', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', padding: 16,
+            }}>
+              <div style={{
+                background: '#fff', borderRadius: 16, maxWidth: 480, width: '100%',
+                boxShadow: '0 20px 60px rgba(0,0,0,0.3)', overflow: 'hidden',
+              }}>
+                {/* Header */}
+                <div style={{ background: '#7f1d1d', padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                  <span style={{ fontSize: 22, flexShrink: 0 }}>⚠️</span>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>Possible Duplicate Patient</div>
+                    <div style={{ fontSize: 12, color: '#fca5a5', marginTop: 2 }}>
+                      {duplicateCandidates.length} existing record{duplicateCandidates.length !== 1 ? 's' : ''} match
+                      {duplicateCandidates.length !== 1 ? '' : 'es'} the name or phone you entered.
+                      Select the existing patient, or confirm this is a different person.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Existing matches */}
+                <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 280, overflowY: 'auto' }}>
+                  {duplicateCandidates.map(p => {
+                    const a = calcAge(p.date_of_birth);
+                    return (
+                      <button key={p.id} type="button"
+                        onClick={() => { setDuplicateCandidates(null); loadPatient(p); }}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 12,
+                          padding: '10px 14px', borderRadius: 10,
+                          border: '2px solid #0d9488', background: '#f0fdfa',
+                          cursor: 'pointer', textAlign: 'left', width: '100%',
+                        }}>
+                        <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#ccfbf1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>👤</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{p.full_name ?? '—'}</div>
+                          <div style={{ fontSize: 12, color: '#6b7280' }}>
+                            {[p.sex && p.sex !== 'unknown' ? p.sex : null, a ? `${a} y` : null, p.date_of_birth ? `b. ${fmtDob(p.date_of_birth)}` : null, p.phone].filter(Boolean).join(' · ')}
+                          </div>
+                        </div>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', flexShrink: 0 }}>Use This →</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Footer actions */}
+                <div style={{ padding: '12px 16px', borderTop: '1px solid #f3f4f6', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button type="button"
+                    onClick={() => {
+                      setDuplicateCandidates(null);
+                      setBypassDuplicate(true);
+                      void handleCheckIn();
+                    }}
+                    style={{ flex: '1 1 180px', padding: '11px 16px', borderRadius: 9, border: '2px solid #dc2626', background: '#fff', color: '#dc2626', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                    Register as New (Different Person)
+                  </button>
+                  <button type="button"
+                    onClick={() => setDuplicateCandidates(null)}
+                    style={{ padding: '11px 16px', borderRadius: 9, border: '1.5px solid #d1d5db', background: 'transparent', color: '#6b7280', fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
+                    Back to Form
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
 
