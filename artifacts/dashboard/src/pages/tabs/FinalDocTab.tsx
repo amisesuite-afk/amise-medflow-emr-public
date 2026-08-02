@@ -213,16 +213,21 @@ function buildDocument(ctx: Ctx): string {
   lines.push(sec('ASSESSMENT'));
   let extractedDiffs = '';
   if (ctx.assessment) {
-    // Strip history preamble if voice/AI injected it before the real diagnosis content.
-    // Any ─{10+} separator marks the boundary; take what follows.
     let assessBody = ctx.assessment;
-    const sepMatch = assessBody.match(/─{10,}/);
+    // Strategy 1: any horizontal-rule separator (─ U+2500 or ━ U+2501, 10+ chars)
+    // marks the boundary between a history-context preamble and the real assessment.
+    const sepMatch = assessBody.match(/[─━]{10,}/u);
     if (sepMatch?.index !== undefined && sepMatch.index > 0) {
       const afterSep = assessBody.slice(sepMatch.index + sepMatch[0].length).trimStart();
       if (afterSep) assessBody = afterSep;
     }
-    // Pull out any "Ranked differentials:" block injected by voice/AI — it belongs
-    // in the Differentials section, not inside Assessment.
+    // Strategy 2: if "Working Diagnosis:" still isn't at the start, jump to it.
+    // Handles cases where the separator was absent or a different character.
+    const wdMatch = assessBody.match(/Working Diagnosis:/i);
+    if (wdMatch?.index !== undefined && wdMatch.index > 10) {
+      assessBody = assessBody.slice(wdMatch.index).trimStart();
+    }
+    // Pull out any "Ranked differentials:" block — belongs in the Differentials section.
     const diffMatch = assessBody.match(/\n*Ranked differentials?:[\s\S]*/i);
     if (diffMatch && diffMatch.index !== undefined) {
       extractedDiffs = assessBody.slice(diffMatch.index).replace(/\n*Ranked differentials?:\s*/i, '').trim();
