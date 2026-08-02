@@ -16,7 +16,8 @@ export type Section =
   | 'monitoring' | 'apcq' | 'nurse_apcq'
   | 'prescriptions' | 'ai_consultant' | 'tasks'
   | 'referring_providers' | 'encounter_history'
-  | 'who_checklist' | 'consent' | 'letters' | 'patient_education' | 'periop' | 'dosing' | 'fluid_nutrition' | 'blood_gas' | 'wounds';
+  | 'who_checklist' | 'consent' | 'letters' | 'patient_education' | 'periop' | 'dosing' | 'fluid_nutrition' | 'blood_gas' | 'wounds'
+  | 'brief';
 
 /**
  * Encounter complexity tier. Controls which consultation sections are
@@ -416,7 +417,7 @@ const AppContext = createContext<CtxValue | null>(null);
 
 // Valid Section values derived from the type — used for URL param validation.
 const VALID_SECTIONS: string[] = [
-  'intake', 'triage', 'hpi', 'pmh', 'surgical', 'medications',
+  'intake', 'brief', 'triage', 'hpi', 'pmh', 'surgical', 'medications',
   'allergies', 'family_hx', 'toxic', 'scales', 'ros', 'examination', 'investigations',
   'radiology', 'attachments', 'classifications',
   'assessment', 'plan', 'progress',

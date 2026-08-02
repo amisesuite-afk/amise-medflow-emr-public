@@ -75,6 +75,7 @@ const PatientsHubTab             = lazy(() => import('./tabs/PatientsHubTab'));
 const InsightsHubTab             = lazy(() => import('./tabs/InsightsHubTab'));
 const CheckInTab                 = lazy(() => import('./tabs/CheckInTab'));
 const PatientAccountsTab         = lazy(() => import('./tabs/PatientAccountsTab'));
+const BriefTab                   = lazy(() => import('./tabs/BriefTab'));
 import EncounterStartWizard from '@/components/EncounterStartWizard';
 import VisitTypeOpeningPanel from '@/components/VisitTypeOpeningPanel';
 import ResultsAlertBadge from '@/components/ResultsAlertBadge';
@@ -101,6 +102,7 @@ const API_ORIGIN = getApiOrigin();
 // Narrower lists = less noise; renamed labels = more signal.
 const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
   follow_up: [
+    { id: 'brief',             label: 'Brief'         },
     { id: 'hpi',               label: 'Interval Hx'  },
     { id: 'examination',       label: 'Full Exam'     },
     { id: 'assessment',        label: 'Assess'        },
@@ -113,6 +115,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'letters',           label: 'Letters'       },
   ],
   post_op: [
+    { id: 'brief',             label: 'Brief'         },
     { id: 'wounds',            label: 'Wound'         },
     { id: 'hpi',               label: 'POD Hx'        },
     { id: 'examination',       label: 'Full Exam'     },
@@ -176,6 +179,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'letters',           label: 'Letters'       },
   ],
   breast: [
+    { id: 'brief',             label: 'Brief'         },
     { id: 'hpi',               label: 'Breast Hx'    },
     { id: 'pmh',               label: 'PMH'           },
     { id: 'examination',       label: 'CBE'           },
@@ -196,6 +200,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'letters',           label: 'Letters'       },
   ],
   diabetic_foot: [
+    { id: 'brief',             label: 'Brief'         },
     { id: 'wounds',            label: 'Wound'         },
     { id: 'hpi',               label: 'Foot Hx'       },
     { id: 'examination',       label: 'Full Exam'     },
@@ -209,6 +214,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'letters',           label: 'Letters'       },
   ],
   urgent: [
+    { id: 'brief',             label: 'Brief'         },
     { id: 'triage',            label: 'Triage'        },
     { id: 'hpi',               label: 'Presenting Hx' },
     { id: 'pmh',               label: 'PMH'           },
@@ -225,16 +231,16 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
 
 // Where to land the cursor the instant the visit type panel completes
 const VISIT_TYPE_START: Partial<Record<string, Section>> = {
-  follow_up:       'hpi',
-  post_op:         'wounds',
+  follow_up:       'brief',
+  post_op:         'brief',
   day_of_surgery:  'who_checklist',
   ercp:            'who_checklist',
   endoscopy_ogd:   'who_checklist',
   endoscopy_col:   'who_checklist',
-  breast:          'examination',
+  breast:          'brief',
   telephone:       'progress',
-  diabetic_foot:   'wounds',
-  urgent:          'triage',
+  diabetic_foot:   'brief',
+  urgent:          'brief',
 };
 function apiUrl(path: string) {
   if (API_ORIGIN) return `${API_ORIGIN}${path}`;
@@ -404,19 +410,19 @@ export default function HomePage() {
   /* ── Sections shown per encounter type — accordion effect ── */
   const ENCOUNTER_TAB_SETS: Record<EncounterType, ReadonlySet<Section>> = useMemo(() => ({
     quick_consult: new Set<Section>([
-      'triage', 'hpi', 'pmh', 'medications', 'allergies',
+      'brief', 'triage', 'hpi', 'pmh', 'medications', 'allergies',
       'examination', 'assessment', 'plan', 'prescriptions', 'referring_providers',
       'encounter_history', 'progress', 'monitoring', 'tasks', 'letters',
     ]),
     endoscopy: new Set<Section>([
-      'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
+      'brief', 'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
       'examination', 'investigations', 'radiology', 'attachments',
       'assessment', 'plan', 'procedures',
       'prescriptions', 'referring_providers',
       'encounter_history', 'progress', 'monitoring', 'tasks', 'letters',
     ]),
     surgical_consult: new Set<Section>([
-      'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
+      'brief', 'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros',
       'examination', 'investigations', 'radiology', 'attachments',
       'assessment', 'plan', 'procedures',
@@ -424,13 +430,13 @@ export default function HomePage() {
       'encounter_history', 'progress', 'monitoring', 'tasks', 'letters',
     ]),
     office_procedure: new Set<Section>([
-      'triage', 'hpi', 'pmh', 'medications', 'allergies',
+      'brief', 'triage', 'hpi', 'pmh', 'medications', 'allergies',
       'examination', 'investigations', 'attachments',
       'assessment', 'plan', 'prescriptions',
       'encounter_history', 'progress', 'monitoring', 'tasks', 'letters',
     ]),
     major_emergency: new Set<Section>([
-      'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
+      'brief', 'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
       'family_hx', 'toxic', 'ros',
       'examination', 'wounds', 'investigations', 'blood_gas', 'radiology', 'attachments',
       'assessment', 'plan', 'prescriptions', 'dosing', 'fluid_nutrition', 'referring_providers',
@@ -441,7 +447,7 @@ export default function HomePage() {
 
   /* ── Section icon map for encounter progress rail ── */
   const SECTION_ICONS: Partial<Record<Section, string>> = {
-    triage: '⚡', hpi: '📝', pmh: '🏥', surgical: '⚕️',
+    brief: '📋', triage: '⚡', hpi: '📝', pmh: '🏥', surgical: '⚕️',
     medications: '💊', allergies: '⚠', family_hx: '👨‍👩‍👧', toxic: '🚬',
     ros: '📋', examination: '🩺', wounds: '🩹',
     investigations: '🧪', blood_gas: '💨', radiology: '📡', attachments: '📎',
@@ -479,6 +485,7 @@ export default function HomePage() {
       ? new Set<Section>(matrix.sections)
       : ENCOUNTER_TAB_SETS[encounterType];
     const all: { id: Section; label: string }[] = [
+      { id: 'brief', label: 'Brief' },
       { id: 'triage', label: 'Triage' },
       { id: 'hpi', label: 'HPI' },
       { id: 'pmh', label: 'PMH' },
@@ -488,15 +495,18 @@ export default function HomePage() {
       { id: 'family_hx', label: 'Family Hx' },
       { id: 'toxic', label: 'Social' },
       { id: 'ros', label: 'ROS' },
+      { id: 'examination' as Section, label: 'Exam' },
+      { id: 'wounds' as Section, label: 'Wounds' },
       ...(hasRole(userRole, 'nurse') ? [
-        { id: 'examination' as Section, label: 'Full Exam' },
-        { id: 'wounds' as Section, label: 'Wounds' },
         { id: 'investigations' as Section, label: 'Labs' },
         { id: 'blood_gas' as Section, label: 'ABG' },
         { id: 'radiology' as Section, label: 'Radiology' },
         { id: 'attachments' as Section, label: 'Attach' },
       ] : []),
       ...(hasRole(userRole, 'doctor') ? [
+        { id: 'investigations' as Section, label: 'Labs' },
+        { id: 'radiology' as Section, label: 'Imaging' },
+        { id: 'attachments' as Section, label: 'Reports' },
         { id: 'assessment' as Section, label: 'Assess' },
         { id: 'plan' as Section, label: 'Plan' },
         { id: 'procedures' as Section, label: 'Procedure' },
@@ -612,6 +622,13 @@ export default function HomePage() {
   // Exit zen mode when navigating away from consultation
   useEffect(() => {
     if (topSection !== 'consultation') setZenMode(false);
+  }, [topSection]);
+
+  // Land on Brief when entering consultation from a non-consultation section
+  useEffect(() => {
+    if (topSection !== 'consultation') return;
+    if (activeSection === 'intake') setActiveSection('brief');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topSection]);
 
   // Reset to new consultation when patient or CC changes
@@ -1600,6 +1617,7 @@ export default function HomePage() {
 
         {/* Clinical sections */}
         {topSection === 'intake'        && vtGateCleared && <IntakeTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'brief'        && <BriefTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'hpi'         && <HpiTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'triage'      && <TriageTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'pmh'         && <PmhTab />}
