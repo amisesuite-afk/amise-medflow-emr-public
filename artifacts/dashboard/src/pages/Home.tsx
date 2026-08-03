@@ -102,6 +102,29 @@ const API_ORIGIN = getApiOrigin();
 // Tabs shown and their display labels, ordered by clinical priority, per visit type.
 // Narrower lists = less noise; renamed labels = more signal.
 const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
+  new_consult: [
+    { id: 'brief',             label: 'Brief'         },
+    { id: 'hpi',               label: 'HPI'           },
+    { id: 'pmh',               label: 'PMH'           },
+    { id: 'surgical',          label: 'Surgical'      },
+    { id: 'medications',       label: 'Meds'          },
+    { id: 'allergies',         label: 'Allergies'     },
+    { id: 'family_hx',         label: 'Family Hx'    },
+    { id: 'toxic',             label: 'Social'        },
+    { id: 'ros',               label: 'ROS'           },
+    { id: 'examination',       label: 'Exam'          },
+    { id: 'investigations',    label: 'Labs'          },
+    { id: 'radiology',         label: 'Imaging'       },
+    { id: 'attachments',       label: 'Reports'       },
+    { id: 'assessment',        label: 'Assess'        },
+    { id: 'plan',              label: 'Plan'          },
+    { id: 'sphere',            label: '360°'          },
+    { id: 'prescriptions',     label: 'RX'            },
+    { id: 'referring_providers', label: 'Referrals'  },
+    { id: 'tasks',             label: 'Tasks'         },
+    { id: 'progress',          label: 'Notes'         },
+    { id: 'letters',           label: 'Letters'       },
+  ],
   follow_up: [
     { id: 'brief',             label: 'Brief'         },
     { id: 'hpi',               label: 'Interval Hx'  },
@@ -501,7 +524,7 @@ export default function HomePage() {
   const consultTabs = useMemo<{ id: Section; label: string }[]>(() => {
     // Visit-type-specific tabs: narrowed list, visit-aware labels, clinically ordered.
     // Only bypassed when a CC matrix is active (matrix takes precedence).
-    if (ctxVisitType && ctxVisitType !== 'new_consult' && !activeCcKey) {
+    if (ctxVisitType && !activeCcKey) {
       const vtTabs = VISIT_TYPE_TABS[ctxVisitType];
       if (vtTabs) {
         const doctorOnly = new Set<Section>(['assessment','plan','procedures','prescriptions','dosing','fluid_nutrition','referring_providers','encounter_history']);
@@ -1234,7 +1257,7 @@ export default function HomePage() {
                 <span style={{ fontSize: 11, color: '#334155', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
               )}
               {/* Visit type badge — persistent context during encounter */}
-              {ctxVisitType && ctxVisitType !== 'new_consult' && (() => {
+              {ctxVisitType && (() => {
                 const vt = VISIT_TYPES.find(v => v.id === ctxVisitType);
                 return vt ? (
                   <span style={{
@@ -1315,7 +1338,7 @@ export default function HomePage() {
              full detail panels drop down on demand via "Context ▼" button */}
         {topSection === 'consultation' && !ambientMode && !guidedMode && (() => {
           const allergyList = allergies.split(',').map(a => a.trim()).filter(Boolean);
-          const vtMatch = ctxVisitType && ctxVisitType !== 'new_consult'
+          const vtMatch = ctxVisitType
             ? VISIT_TYPES.find(v => v.id === ctxVisitType) : null;
           const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
           const ccLabel = ccMatrix?.name ?? (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
