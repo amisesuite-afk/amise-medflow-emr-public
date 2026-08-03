@@ -100,6 +100,11 @@ export default function PatientSearchTab() {
   const [selected,      setSelected]      = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Session-side hidden IDs (remove without touching DB)
+  const [hiddenIds,        setHiddenIds]        = useState<Set<string>>(new Set());
+  // ID awaiting duplicate confirmation before loading
+  const [pendingConfirmId, setPendingConfirmId] = useState<string | null>(null);
+
   const [questionnaireData, setQuestionnaireData] = useState<QuestionnaireIntakeData | null>(null);
   const [qPopulated, setQPopulated] = useState(false);
 
@@ -130,6 +135,8 @@ export default function PatientSearchTab() {
     setLoadingAll(true);
     setSearchResults(null);
     setQuery('');
+    setHiddenIds(new Set());
+    setPendingConfirmId(null);
 
     const all = loadDemoPatients();
     const filtered = siteFilter === 'all'
@@ -148,6 +155,8 @@ export default function PatientSearchTab() {
       setLoadingAll(true);
       setSearchResults(null);
       setQuery('');
+      setHiddenIds(new Set());
+      setPendingConfirmId(null);
 
       const result = siteFilter === 'all'
         ? await listPatients()
@@ -400,8 +409,45 @@ export default function PatientSearchTab() {
   }
   void saveDemoPatient; // referenced in JSX below
 
-  const displayList = searchResults ?? allPatients;
+  const rawList    = searchResults ?? allPatients;
+  const displayList = rawList.filter(p => !hiddenIds.has(p.id));
   const isSearching = query.trim().length > 0;
+
+  // Names that appear more than once in the visible list
+  const duplicateNames = new Set(
+    displayList
+      .map(p => (p.full_name ?? '').toLowerCase().trim())
+      .filter((name, _i, arr) => name && arr.indexOf(name) !== arr.lastIndexOf(name)),
+  );
+  const isDuplicateName = (p: PatientListRowEx) =>
+    duplicateNames.has((p.full_name ?? '').toLowerCase().trim());
+
+  function handleRemove(id: string, e: React.MouseEvent) {
+    e.stopPropagation();
+    if (pendingConfirmId === id) setPendingConfirmId(null);
+    setHiddenIds(prev => new Set([...prev, id]));
+  }
+
+  function handleClearList() {
+    const ids = displayList.map(p => p.id);
+    setHiddenIds(prev => new Set([...prev, ...ids]));
+    setPendingConfirmId(null);
+  }
+
+  function handleRowClick(p: PatientListRowEx) {
+    if (isDuplicateName(p)) {
+      // First click sets pending; second click (confirm) proceeds
+      if (pendingConfirmId === p.id) {
+        setPendingConfirmId(null);
+        void loadPatient(p);
+      } else {
+        setPendingConfirmId(p.id);
+      }
+    } else {
+      setPendingConfirmId(null);
+      void loadPatient(p);
+    }
+  }
 
   const formatDate = (d: string | null) => {
     if (!d) return '';
@@ -528,40 +574,137 @@ export default function PatientSearchTab() {
         )}
       </div>
 
+      {duplicateNames.size > 0 && (
+        <div style={{
+          background: '#fffbeb', border: '1px solid #f59e0b', borderRadius: 8,
+          padding: '7px 12px', fontSize: 12, color: '#92400e', display: 'flex', alignItems: 'center', gap: 6,
+        }}>
+          <span style={{ fontSize: 14 }}>⚠</span>
+          <span>
+            <strong>Duplicate names detected</strong> — verify date of birth and record ID before starting an encounter.
+            Tap the correct record once to confirm, then again to load.
+          </span>
+        </div>
+      )}
+
       {displayList.length > 0 && (
         <div className="psearch-results">
-          {displayList.map(p => (
+          {/* Clear-list control */}
+          <div style={{
+            display: 'flex', justifyContent: 'flex-end', padding: '2px 4px 4px',
+          }}>
             <button
-              key={p.id}
-              className={`psearch-row ${selected === p.id ? 'psearch-row--loaded' : ''}`}
-              onClick={() => void loadPatient(p)}
+              type="button"
+              onClick={handleClearList}
+              style={{
+                fontSize: 11, color: '#6b7280', background: 'none', border: 'none',
+                cursor: 'pointer', padding: '2px 6px', borderRadius: 4,
+                textDecoration: 'underline', textUnderlineOffset: 2,
+              }}
             >
-              <div className="psearch-row-main">
-                <span className="psearch-row-name">{p.full_name ?? '—'}</span>
-                {p.acuity && (
-                  <span style={{
-                    ...acuityBadgeStyle(p.acuity),
-                    fontSize: 10, fontWeight: 700, borderRadius: 4,
-                    padding: '1px 6px', marginLeft: 6, textTransform: 'uppercase', letterSpacing: 0.4,
-                  }}>
-                    {p.acuity}{p.score !== undefined ? ` · ${p.score}` : ''}
-                  </span>
-                )}
-                <span className="psearch-row-meta">
-                  {[p.age ? `Age ${p.age}` : ageFromDob(p.date_of_birth), p.sex, fmtPhone(p.phone)].filter(Boolean).join(' · ')}
-                </span>
-              </div>
-              <div className="psearch-row-right">
-                {selected === p.id
-                  ? <span className="psearch-loaded-badge">✓ Loaded</span>
-                  : <span className="psearch-load-hint">Load →</span>
-                }
-                {p.created_at && (
-                  <span className="psearch-row-dob">Added {formatDate(p.created_at)}</span>
-                )}
-              </div>
+              Clear list
             </button>
-          ))}
+          </div>
+
+          {displayList.map(p => {
+            const isDup     = isDuplicateName(p);
+            const isPending = pendingConfirmId === p.id;
+            return (
+              <div key={p.id} style={{ position: 'relative' }}>
+                <button
+                  className={`psearch-row ${selected === p.id ? 'psearch-row--loaded' : ''}`}
+                  style={isDup ? { borderLeft: '3px solid #f59e0b', paddingLeft: 9 } : undefined}
+                  onClick={() => handleRowClick(p)}
+                >
+                  <div className="psearch-row-main">
+                    <span className="psearch-row-name">{p.full_name ?? '—'}</span>
+                    {isDup && (
+                      <span style={{
+                        fontSize: 9, fontWeight: 700, borderRadius: 4, padding: '1px 5px',
+                        background: '#fef3c7', color: '#b45309', border: '1px solid #fcd34d',
+                        marginLeft: 5, textTransform: 'uppercase', letterSpacing: 0.3,
+                      }}>
+                        Duplicate name
+                      </span>
+                    )}
+                    {p.acuity && (
+                      <span style={{
+                        ...acuityBadgeStyle(p.acuity),
+                        fontSize: 10, fontWeight: 700, borderRadius: 4,
+                        padding: '1px 6px', marginLeft: 6, textTransform: 'uppercase', letterSpacing: 0.4,
+                      }}>
+                        {p.acuity}{p.score !== undefined ? ` · ${p.score}` : ''}
+                      </span>
+                    )}
+                    <span className="psearch-row-meta">
+                      {[p.age ? `Age ${p.age}` : ageFromDob(p.date_of_birth), p.sex, fmtPhone(p.phone)].filter(Boolean).join(' · ')}
+                    </span>
+                  </div>
+                  <div className="psearch-row-right">
+                    {selected === p.id
+                      ? <span className="psearch-loaded-badge">✓ Loaded</span>
+                      : isPending
+                        ? <span style={{ fontSize: 11, fontWeight: 700, color: '#b45309' }}>Tap again to confirm →</span>
+                        : <span className="psearch-load-hint">Load →</span>
+                    }
+                    {p.created_at && (
+                      <span className="psearch-row-dob">Added {formatDate(p.created_at)}</span>
+                    )}
+                  </div>
+                </button>
+
+                {/* Duplicate confirmation panel */}
+                {isPending && (
+                  <div style={{
+                    margin: '-2px 0 4px 0', padding: '7px 12px',
+                    background: '#fffbeb', border: '1px solid #fcd34d',
+                    borderTop: 'none', borderRadius: '0 0 6px 6px',
+                    fontSize: 12, color: '#78350f',
+                  }}>
+                    ⚠ Another patient shares this name. Confirm this is the correct record before loading.
+                    <div style={{ marginTop: 5, display: 'flex', gap: 8 }}>
+                      <button
+                        type="button"
+                        onClick={() => { setPendingConfirmId(null); void loadPatient(p); }}
+                        style={{
+                          padding: '4px 12px', borderRadius: 5, fontSize: 11, fontWeight: 700,
+                          background: '#b45309', color: '#fff', border: 'none', cursor: 'pointer',
+                        }}
+                      >
+                        Yes — load this patient
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPendingConfirmId(null)}
+                        style={{
+                          padding: '4px 10px', borderRadius: 5, fontSize: 11,
+                          background: '#f3f4f6', color: '#374151', border: '1px solid #d1d5db', cursor: 'pointer',
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Per-row remove button */}
+                <button
+                  type="button"
+                  aria-label={`Remove ${p.full_name ?? 'patient'} from list`}
+                  onClick={e => handleRemove(p.id, e)}
+                  style={{
+                    position: 'absolute', top: 6, right: 4, zIndex: 2,
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    fontSize: 13, color: '#9ca3af', padding: '2px 4px', lineHeight: 1,
+                    borderRadius: 4,
+                  }}
+                  title="Remove from list"
+                >
+                  ✕
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
 
