@@ -484,13 +484,15 @@ ${sharedHeader(site, consultDate)}
 ${sharedPatient(ctx)}
 <div class="title">CLINICAL NOTE</div>
 
-${ctx.symptoms.length || ctx.freeText ? `<div class="section">
+${ctx.symptoms.length || ctx.freeText || ctx.hpiNotes ? `<div class="section">
 <div class="sec-hdr">Presenting Complaint</div>
 <div class="sec-body">
 ${items(ctx.symptoms)}
 ${ctx.freeText ? `<div style="margin-top:4px;white-space:pre-wrap">${escHtml(ctx.freeText)}</div>` : ''}
 ${ctx.durationDays ? `<div style="margin-top:6px"><span class="lbl">Duration:</span> ${escHtml(ctx.durationDays)} days</div>` : ''}
 ${ctx.painScore ? `<div><span class="lbl">Pain score:</span> ${escHtml(ctx.painScore)}/10</div>` : ''}
+${ctx.hpiNotes ? `<div class="sub-lbl" style="margin-top:${ctx.symptoms.length || ctx.freeText ? '12' : '0'}px">History of Presenting Illness</div>
+<div style="white-space:pre-wrap;line-height:1.75;font-size:12.5px;margin-top:4px">${escHtml(ctx.hpiNotes)}</div>` : ''}
 </div></div>` : ''}
 
 ${vitalsArr.length ? `<div class="section">
@@ -581,12 +583,7 @@ ${(() => {
 ${ctx.plan ? `<div class="section">
 <div class="sec-hdr">Management Plan</div>
 <div class="sec-body" style="line-height:1.75">${(() => {
-  let planBody = ctx.plan;
-  // Sync plan title with working diagnosis from assessment so they always match
-  const wdLabel = ctx.assessment?.match(/Working Diagnosis:\s*([^⚠\n]+)/i)?.[1]?.trim();
-  if (wdLabel) {
-    planBody = planBody.replace(/^(Management Plan\s*(?:—|-)\s*)[^\n]*/m, `$1${wdLabel}`);
-  }
+  const planBody = ctx.plan;
   const dedupNote = hasInvestigations
     ? '<div style="font-size:11px;color:#0d9488;background:#f0fdfa;border:1px solid #99f6e4;border-radius:4px;padding:5px 10px;margin-bottom:10px">↑ Investigations already ordered above — plan sections 1–2 may overlap</div>'
     : '';
