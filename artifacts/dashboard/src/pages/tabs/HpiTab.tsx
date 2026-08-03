@@ -1,17 +1,275 @@
-import { useMemo, useCallback, useEffect } from 'react';
+// ─── HpiTab — Adaptive HPI Builder ───────────────────────────────────────────
+//
+// Merges SYMPTOM_BRANCHES triage questions with CC-matrix SOCRATES prompts into
+// a tap-to-fill interview. HPI prose regenerates in real-time as chips are
+// selected — same pattern as the Quick Exam tab. No button needed.
+
+import { useMemo, useEffect, useRef, useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import SmartTextarea from '@/components/SmartTextarea';
-import SmartSymptomPicker from '@/components/SmartSymptomPicker';
+import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getSuggestedPhrases } from '@/data/dot-phrases';
 import { getMatrixByName } from '@/lib/cc-matrices';
-import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
+import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
-// ── Clinical prose composer ────────────────────────────────────────────────────
-// Turns CC matrix answers + intake data into a consultant-quality HPI narrative.
+// ── Chip utilities ────────────────────────────────────────────────────────────
+
+function parseChips(hint: string): string[] {
+  if (!hint) return [];
+  return hint.split(/\s*[·→]\s*/).map(s => s.trim()).filter(s => s.length > 0 && s.length < 60);
+}
+function strip(opt: string): string { return opt.replace(/\s*\([^)]*\)/g, '').trim(); }
+function toggleChip(current: string, label: string, multi: boolean): string {
+  if (multi) {
+    const parts = current.split(',').map(s => s.trim()).filter(Boolean);
+    return parts.includes(label) ? parts.filter(p => p !== label).join(', ') : [...parts, label].join(', ');
+  }
+  return current.trim() === label ? '' : label;
+}
+function isActive(current: string, opt: string): boolean {
+  return current.split(',').map(s => s.trim()).includes(strip(opt));
+}
+
+// ── SYMPTOM_BRANCHES → SOCRATES key map ──────────────────────────────────────
+
+const BRANCH_KEY: Record<string, string> = {
+  'Location': 'site',       'Site': 'site',           'Site / radiation': 'site',
+  'Character': 'character', 'Type': 'character',      'Colour': 'character',
+  'Associated': 'assoc',    'Associated features': 'assoc', 'Associated symptoms': 'assoc',
+  'Onset': 'onset',         'Onset / duration': 'onset',
+  'Radiation': 'radiation', 'Spread': 'radiation',
+  'Severity': 'severity',   'Amount': 'severity',
+  'Timing': 'timing',       'Pattern': 'timing',      'Frequency': 'timing',
+  'Triggers': 'triggers',   'Exacerbating factors': 'triggers',
+  'Relief': 'relief',
+  'Timeframe': 'duration',  'Duration': 'duration',
+};
+const MULTI_KEYS = new Set(['assoc', 'symptoms', 'sympt', 'systemic', 'risk', 'alarm']);
+
+// ── Field type ────────────────────────────────────────────────────────────────
+
+interface HpiField { key: string; label: string; chips: string[]; multi: boolean; triage: boolean }
+
+function buildFields(complaint: string): HpiField[] {
+  const lower = complaint.toLowerCase();
+  const branches = SYMPTOM_BRANCHES[lower]
+    ?? SYMPTOM_BRANCHES[lower.split(' ').slice(0, 2).join(' ')]
+    ?? [];
+  const matrix = getMatrixByName(complaint);
+
+  const seen = new Set<string>();
+  const fields: HpiField[] = [];
+
+  for (const b of branches) {
+    const key = BRANCH_KEY[b.question] ?? b.question.toLowerCase().replace(/\W+/g, '_');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    fields.push({ key, label: b.question, chips: b.options, multi: MULTI_KEYS.has(key), triage: true });
+  }
+
+  for (const p of matrix.prompts) {
+    if (seen.has(p.key)) continue;
+    seen.add(p.key);
+    const chips = parseChips(p.hint);
+    fields.push({ key: p.key, label: p.label, chips, multi: MULTI_KEYS.has(p.key), triage: false });
+  }
+
+  return fields;
+}
+
+// ── HpiFieldRow ───────────────────────────────────────────────────────────────
+
+function HpiFieldRow({ field, value, onChange }: {
+  field: HpiField; value: string; onChange: (v: string) => void;
+}) {
+  const accent = field.triage ? '#0d9488' : '#3b82f6';
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{
+          fontSize: 10, fontWeight: 800, color: field.triage ? '#0d9488' : '#64748b',
+          textTransform: 'uppercase', letterSpacing: '0.06em',
+        }}>
+          {field.label}
+        </span>
+        {field.triage && (
+          <span style={{
+            fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
+            border: '1px solid #0d9488', color: '#0d9488', letterSpacing: '0.04em',
+          }}>TRIAGE</span>
+        )}
+        {value && (
+          <span style={{ marginLeft: 'auto', fontSize: 11, color: '#34d399', fontWeight: 600 }}>
+            {value.length > 32 ? value.slice(0, 30) + '…' : value}
+          </span>
+        )}
+      </div>
+
+      {field.chips.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+          {field.chips.map(chip => {
+            const active = isActive(value, chip);
+            return (
+              <button
+                key={chip}
+                type="button"
+                onClick={() => onChange(toggleChip(value, strip(chip), field.multi))}
+                style={{
+                  padding: '4px 11px', borderRadius: 20, fontSize: 11,
+                  fontWeight: active ? 700 : 400, cursor: 'pointer',
+                  border: `1px solid ${active ? accent : '#334155'}`,
+                  background: active ? accent : '#1e293b',
+                  color: active ? '#fff' : '#94a3b8',
+                  transition: 'all 0.1s',
+                }}
+              >
+                {strip(chip)}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={field.chips.length > 0 ? 'Add detail or type custom answer…' : `${field.label}…`}
+        style={{
+          padding: '6px 10px', borderRadius: 6, fontSize: 12, outline: 'none',
+          border: `1px solid ${value ? accent : '#1e293b'}`,
+          background: '#070d1a', color: '#e2e8f0',
+          transition: 'border-color 0.1s',
+        }}
+        onFocus={e => (e.currentTarget.style.borderColor = accent)}
+        onBlur={e => (e.currentTarget.style.borderColor = value ? accent : '#1e293b')}
+      />
+    </div>
+  );
+}
+
+// ── HpiBuilderCard — one per CC entry ─────────────────────────────────────────
+
+function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
+  entry: CCEntry;
+  onAnswerChange: (key: string, value: string) => void;
+  onReset: () => void;
+}) {
+  const fields        = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
+  const triageFields  = fields.filter(f => f.triage);
+  const socratesFields = fields.filter(f => !f.triage);
+  const [showSocrates, setShowSocrates] = useState(false);
+  const filledTriage  = triageFields.filter(f => entry.answers[f.key]?.trim()).length;
+  const filledSocrates = socratesFields.filter(f => entry.answers[f.key]?.trim()).length;
+  const matrix = getMatrixByName(entry.complaint);
+
+  return (
+    <div style={{ background: '#0f172a', borderRadius: 10, border: '1px solid #1e293b', overflow: 'hidden', marginBottom: 10 }}>
+
+      {/* ── Card header ── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '9px 14px', borderBottom: '1px solid #1e293b', background: '#070d1a',
+      }}>
+        <span style={{ fontSize: 12 }}>{matrix.icon ?? '📋'}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9' }}>{entry.complaint}</span>
+        {(filledTriage + filledSocrates) > 0 && (
+          <span style={{
+            fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10,
+            background: '#064e3b', color: '#34d399',
+          }}>
+            {filledTriage + filledSocrates} filled
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={onReset}
+          style={{
+            marginLeft: 'auto', fontSize: 11, padding: '3px 9px', borderRadius: 5,
+            border: '1px solid #334155', background: 'transparent', color: '#64748b', cursor: 'pointer',
+          }}
+        >
+          ↺ Clear
+        </button>
+      </div>
+
+      <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+        {/* ── Triage key questions ── */}
+        {triageFields.length > 0 && (
+          <div>
+            <div style={{
+              fontSize: 9, fontWeight: 800, color: '#0d9488',
+              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8,
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              ⚡ Triage key questions
+              {filledTriage > 0 && (
+                <span style={{ fontWeight: 400, color: '#34d399' }}>· {filledTriage}/{triageFields.length} answered</span>
+              )}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {triageFields.map(f => (
+                <HpiFieldRow
+                  key={f.key}
+                  field={f}
+                  value={entry.answers[f.key] ?? ''}
+                  onChange={v => onAnswerChange(f.key, v)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── SOCRATES detail (expandable) ── */}
+        {socratesFields.length > 0 && (
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowSocrates(p => !p)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                fontSize: 11, color: '#64748b', background: 'none',
+                border: 'none', cursor: 'pointer', padding: 0,
+              }}
+            >
+              <span style={{ fontSize: 10 }}>{showSocrates ? '▾' : '▸'}</span>
+              <span>SOCRATES detail</span>
+              {filledSocrates > 0 && (
+                <span style={{ color: '#3b82f6', fontWeight: 700 }}>· {filledSocrates}/{socratesFields.length} filled</span>
+              )}
+            </button>
+
+            {showSocrates && (
+              <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {socratesFields.map(f => (
+                  <HpiFieldRow
+                    key={f.key}
+                    field={f}
+                    value={entry.answers[f.key] ?? ''}
+                    onChange={v => onAnswerChange(f.key, v)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {fields.length === 0 && (
+          <div style={{ fontSize: 13, color: '#475569', fontStyle: 'italic' }}>
+            No structured questions available — document in the HPI narrative below.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── prose utilities ───────────────────────────────────────────────────────────
 
 function lc(s: string) { return s.charAt(0).toLowerCase() + s.slice(1).trimEnd(); }
 function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1); }
@@ -51,17 +309,15 @@ function composeHpiNarrative(
   painScore: string,
   freeText: string,
 ): string {
-  const agePart  = age  ? `${age}-year-old` : '';
-  const sexPart  = sex && sex !== 'unknown' ? sex : '';
-  const demo     = [agePart, sexPart].filter(Boolean).join(' ');
+  const agePart   = age  ? `${age}-year-old` : '';
+  const sexPart   = sex && sex !== 'unknown' ? sex : '';
+  const demo      = [agePart, sexPart].filter(Boolean).join(' ');
   const firstName = patientName.trim().split(' ')[0] ?? '';
-  const subject  = firstName ? `${firstName}, a ${demo},` : demo ? `A ${demo}` : 'The patient';
-  const dur      = durPhrase(durationDays);
+  const subject   = firstName ? `${firstName}, a ${demo},` : demo ? `A ${demo}` : 'The patient';
+  const dur       = durPhrase(durationDays);
   const durClause = dur ? `${dur} history of` : 'a history of';
-
   const paragraphs: string[] = [];
 
-  // ── No CC matrix — fall back to symptoms + freeText ──────────────────────
   if (entries.length === 0) {
     const cc = symptoms.length > 0 ? symptoms.join(' and ') : 'presenting complaints';
     paragraphs.push(`${cap(subject)} presenting with ${durClause} ${cc}.`);
@@ -69,12 +325,10 @@ function composeHpiNarrative(
     return paragraphs.join('\n\n');
   }
 
-  // ── One paragraph per CC entry ────────────────────────────────────────────
   entries.forEach((entry, idx) => {
     const ans  = entry.answers;
     const noun = primaryNoun(entry.complaint.toLowerCase());
 
-    // Pull SOCRATES fields from the matrix answers
     const onset      = get(ans, 'onset', 'duration', 'presentation');
     const site       = get(ans, 'site');
     const character  = get(ans, 'character');
@@ -92,28 +346,19 @@ function composeHpiNarrative(
     const jaundice   = get(ans, 'jaundice');
     const meds       = get(ans, 'meds', 'therapy');
 
-    // ── Sentence 1 — opening ────────────────────────────────────────────────
-    // "[Subject] presents with a 2-day history of acute abdominal pain[, with sudden onset / beginning in the epigastrium]."
     let open = idx === 0
       ? `${cap(subject)} presents with ${durClause} ${lc(entry.complaint)}`
       : `Additionally, ${lc(entry.complaint)}`;
-
     if (onset && onset.length <= 100) open += `, ${lc(onset)}`;
     paragraphs.push(open + '.');
 
-    // ── Sentence 2 — localisation & character ──────────────────────────────
-    // "The pain is localised to the right iliac fossa, radiating to the back, constant and colicky in character."
     const locParts: string[] = [];
     if (site)      locParts.push(`localised to the ${lc(site)}`);
     if (radiation) locParts.push(`radiating to ${lc(radiation)}`);
     if (character) locParts.push(`${lc(character)} in character`);
     if (timing)    locParts.push(lc(timing));
-    if (locParts.length) {
-      paragraphs.push(`The ${noun} is ${locParts.join(', ')}.`);
-    }
+    if (locParts.length) paragraphs.push(`The ${noun} is ${locParts.join(', ')}.`);
 
-    // ── Sentence 3 — associated symptoms ───────────────────────────────────
-    // "Associated symptoms include nausea and vomiting, fever, and weight loss."
     const assocItems: string[] = [];
     if (assoc)      assocItems.push(lc(assoc));
     if (fever)      assocItems.push(`fever — ${lc(fever)}`);
@@ -121,50 +366,42 @@ function composeHpiNarrative(
     if (bleeding)   assocItems.push(`bleeding — ${lc(bleeding)}`);
     if (weightloss) assocItems.push(`weight loss — ${lc(weightloss)}`);
     if (jaundice)   assocItems.push(`jaundice — ${lc(jaundice)}`);
-    if (assocItems.length) {
-      paragraphs.push(`Associated features include ${assocItems.join('; ')}.`);
-    }
+    if (assocItems.length) paragraphs.push(`Associated features include ${assocItems.join('; ')}.`);
 
-    // ── Sentence 4 — severity + modifying factors ───────────────────────────
     const modParts: string[] = [];
-    if (severity) modParts.push(cap(lc(severity)));
+    if (severity)  modParts.push(cap(lc(severity)));
     if (painScore && idx === 0) modParts.push(`Pain is rated ${painScore}/10`);
-    if (exac)     modParts.push(cap(lc(exac)));
-    if (relief)   modParts.push(cap(lc(relief)));
+    if (exac)      modParts.push(cap(lc(exac)));
+    if (relief)    modParts.push(cap(lc(relief)));
     if (modParts.length) paragraphs.push(modParts.join('. ') + '.');
 
-    // ── Sentence 5 — prior history & treatment ──────────────────────────────
     const histParts: string[] = [];
     if (prev) histParts.push(cap(lc(prev)));
     if (meds) histParts.push(cap(lc(meds)));
     if (histParts.length) paragraphs.push(histParts.join('. ') + '.');
   });
 
-  // ── Freetext integration ─────────────────────────────────────────────────
-  // Incorporate the patient's own words as a final context sentence, not a quote.
   if (freeText.trim()) {
     paragraphs.push(`In the patient's own words: ${lc(freeText.trim())}.`);
   }
 
-  // Collapse consecutive short paragraphs into one if they read as one thought
-  return paragraphs
-    .filter(Boolean)
-    .join('\n\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
+  return paragraphs.filter(Boolean).join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// ── Main component ────────────────────────────────────────────────────────────
 
 export default function HpiTab() {
   const {
     hpiNotes, setHpiNotes,
-    freeText, setFreeText, durationDays, setDurationDays, painScore, setPainScore,
+    freeText, setFreeText,
+    durationDays, setDurationDays,
+    painScore, setPainScore,
     symptoms, symptomDetails,
-    isPostOp, setIsPostOp, postOpDays, setPostOpDays,
+    isPostOp, setIsPostOp,
+    postOpDays, setPostOpDays,
     pregnancyPossible, setPregnancyPossible,
     age, sex, patientName,
-    procedureData,
+    procedureData, setProcedureData,
   } = useAppContext();
 
   const entries = useMemo(
@@ -177,61 +414,83 @@ export default function HpiTab() {
     () => computeRankedDifferentials({ symptoms, symptomDetails, age: ageNum, sex }),
     [symptoms, symptomDetails, ageNum, sex],
   );
-  const leadingDxId   = useMemo(() => (ranked[0]?.confidence ?? 0) >= 40 ? ranked[0].id   : null, [ranked]);
-  const leadingDxName = useMemo(() => (ranked[0]?.confidence ?? 0) >= 40 ? ranked[0].name : null, [ranked]);
+  const leadingDxId   = (ranked[0]?.confidence ?? 0) >= 40 ? ranked[0]!.id   : null;
+  const leadingDxName = (ranked[0]?.confidence ?? 0) >= 40 ? ranked[0]!.name : null;
   const suggestedPhrases = useMemo(() => getSuggestedPhrases(leadingDxId, 4), [leadingDxId]);
 
-  const hasSourceData = entries.length > 0 || symptoms.length > 0 || freeText.trim().length > 0;
+  // ── Live prose — recomputes on every chip tap ────────────────────────────────
+  const liveProse = useMemo(
+    () => composeHpiNarrative(entries, age, sex, patientName, symptoms, durationDays, painScore, freeText),
+    [entries, age, sex, patientName, symptoms, durationDays, painScore, freeText],
+  );
 
-  const compose = useCallback(() => {
-    return composeHpiNarrative(
-      entries, age, sex, patientName,
-      symptoms, durationDays, painScore, freeText,
-    );
-  }, [entries, age, sex, patientName, symptoms, durationDays, painScore, freeText]);
-
-  // Auto-populate on mount when HPI is blank and source data exists
+  // Keep narrative in sync with live prose unless the doctor has manually edited it.
+  // We detect "manually edited" by checking if hpiNotes diverges from the previous auto-draft.
+  const prevLiveRef = useRef('');
   useEffect(() => {
-    if (hpiNotes.trim()) return;
-    const draft = compose();
-    if (draft) setHpiNotes(draft);
-  // Run only once on mount — deps intentionally omitted
+    if (!liveProse) return;
+    if (hpiNotes === '' || hpiNotes === prevLiveRef.current) {
+      setHpiNotes(liveProse);
+    }
+    prevLiveRef.current = liveProse;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [liveProse]);
+
+  function updateAnswer(entryIdx: number, key: string, value: string) {
+    const updated = entries.map((e, i) =>
+      i === entryIdx ? { ...e, answers: { ...e.answers, [key]: value } } : e,
+    );
+    setProcedureData({ ...procedureData, cc: updated });
+  }
+
+  function resetEntry(entryIdx: number) {
+    const updated = entries.map((e, i) => i === entryIdx ? { ...e, answers: {} } : e);
+    setProcedureData({ ...procedureData, cc: updated });
+  }
 
   function insertPhrase(text: string) {
     const sep = hpiNotes && !hpiNotes.endsWith('\n') ? '\n\n' : '';
     setHpiNotes(hpiNotes + sep + text);
+    prevLiveRef.current = ''; // mark as manually edited
   }
 
   function regenerate() {
-    const draft = compose();
-    if (draft) setHpiNotes(draft);
+    setHpiNotes(liveProse);
+    prevLiveRef.current = liveProse;
   }
+
+  const hasSourceData = entries.length > 0 || symptoms.length > 0 || freeText.trim().length > 0;
+  const narrativeEdited = hpiNotes !== liveProse && hpiNotes.trim().length > 0;
 
   return (
     <div className="gap-y">
-      <CollapsibleCard
-        title="Chief complaint / reason for visit"
-        badge={symptoms.length > 0 ? `${symptoms.length} symptom${symptoms.length !== 1 ? 's' : ''}` : undefined}
-        badgeVariant={symptoms.length > 0 ? 'default' : undefined}
-      >
-        <SmartSymptomPicker />
 
-        <div className="form-grid cols-2" style={{ marginTop: 12 }}>
+      {/* ── CC strip — add / edit complaints ── */}
+      <ChiefComplaintStrip />
+
+      {/* ── Context: duration, pain, flags ── */}
+      <CollapsibleCard title="Context" defaultOpen={!!(durationDays || painScore || freeText)}>
+        <div className="form-grid cols-2">
           <div className="fld">
             <label>Duration of symptoms (days)</label>
-            <input type="number" inputMode="numeric" min={0} step={1} value={durationDays} onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 3" />
+            <input
+              type="number" inputMode="numeric" min={0} step={1}
+              value={durationDays}
+              onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))}
+              placeholder="e.g. 3"
+            />
           </div>
           <div className="fld">
             <label>Pain score (0–10)</label>
-            <input type="number" inputMode="numeric" min={0} max={10} step={1} value={painScore}
+            <input
+              type="number" inputMode="numeric" min={0} max={10} step={1}
+              value={painScore}
               onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setPainScore(v && Number(v) > 10 ? '10' : v); }}
-              placeholder="0-10"
-              className={painScore && Number(painScore) >= 8 ? 'danger' : painScore && Number(painScore) >= 5 ? 'warn' : ''} />
+              placeholder="0–10"
+              className={painScore && Number(painScore) >= 8 ? 'danger' : painScore && Number(painScore) >= 5 ? 'warn' : ''}
+            />
           </div>
         </div>
-
         <div className="check-row" style={{ marginTop: 8 }}>
           <label>
             <input type="checkbox" checked={isPostOp} onChange={e => setIsPostOp(e.target.checked)} />
@@ -244,64 +503,112 @@ export default function HpiTab() {
           {isPostOp && (
             <div className="inline-field">
               <span>Days since op:</span>
-              <input type="number" inputMode="numeric" min={0} step={1} value={postOpDays} onChange={e => setPostOpDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="days" />
+              <input
+                type="number" inputMode="numeric" min={0} step={1}
+                value={postOpDays}
+                onChange={e => setPostOpDays(e.target.value.replace(/[^0-9]/g, ''))}
+                placeholder="days"
+              />
             </div>
           )}
         </div>
-
         <div className="fld" style={{ marginTop: 10 }}>
-          <label>Patient message / additional notes</label>
+          <label>Patient message / referral notes</label>
           <textarea
             value={freeText}
             onChange={e => setFreeText(e.target.value)}
-            placeholder="Paste patient email or WhatsApp message here, or add presenting history notes…"
-            style={{ minHeight: 80 }}
+            placeholder="Paste patient email or WhatsApp message here — incorporated into the HPI prose below…"
+            style={{ minHeight: 70 }}
           />
         </div>
       </CollapsibleCard>
 
-      <ChiefComplaintStrip />
-      <CollapsibleCard title="History of present illness" badge={hpiNotes.trim() ? '✓' : undefined}>
+      {/* ── Adaptive HPI builder cards ── */}
+      {entries.length === 0 ? (
+        <div style={{
+          padding: '24px 16px', textAlign: 'center', borderRadius: 10,
+          border: '1px dashed #334155', color: '#64748b', fontSize: 13,
+        }}>
+          <div style={{ fontSize: 22, marginBottom: 6 }}>📋</div>
+          <div style={{ fontWeight: 700, marginBottom: 4, color: '#94a3b8' }}>No chief complaint selected</div>
+          <div style={{ fontSize: 12, lineHeight: 1.5 }}>
+            Add a complaint in the CC strip above — triage questions and SOCRATES prompts
+            will appear here and auto-generate the HPI prose below.
+          </div>
+        </div>
+      ) : (
+        <>
+          <div style={{
+            fontSize: 9, fontWeight: 800, color: '#475569',
+            textTransform: 'uppercase', letterSpacing: '0.1em',
+            marginBottom: 6, paddingLeft: 2,
+          }}>
+            Adaptive HPI · {entries.length} complaint{entries.length !== 1 ? 's' : ''}
+          </div>
+          {entries.map((entry, idx) => (
+            <HpiBuilderCard
+              key={entry.complaint + idx}
+              entry={entry}
+              onAnswerChange={(key, value) => updateAnswer(idx, key, value)}
+              onReset={() => resetEntry(idx)}
+            />
+          ))}
+        </>
+      )}
+
+      {/* ── HPI narrative — live, auto-updating ── */}
+      <CollapsibleCard
+        title="HPI narrative"
+        badge={hpiNotes.trim() ? '✓' : undefined}
+      >
         <div className="fld">
-          {/* Header row */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, flexWrap: 'wrap', gap: 6 }}>
-            <label style={{ marginBottom: 0, fontWeight: 600 }}>HPI narrative</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              {hasSourceData && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginBottom: 6, flexWrap: 'wrap', gap: 6,
+          }}>
+            <label style={{ marginBottom: 0, fontWeight: 600, fontSize: 12 }}>
+              {narrativeEdited
+                ? 'Edited narrative'
+                : 'Live draft — updates as you tap above'}
+            </label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {narrativeEdited && hasSourceData && (
                 <button
                   type="button"
                   onClick={regenerate}
                   style={{
-                    fontSize: 11, padding: '4px 12px', borderRadius: 5, cursor: 'pointer',
-                    border: '1px solid #0d9488',
-                    background: hpiNotes.trim() ? 'transparent' : '#0d9488',
-                    color: hpiNotes.trim() ? '#0d9488' : '#fff',
-                    fontWeight: 700,
+                    fontSize: 11, padding: '3px 10px', borderRadius: 5,
+                    border: '1px solid #0d9488', background: 'transparent',
+                    color: '#0d9488', fontWeight: 700, cursor: 'pointer',
                   }}
-                  title="Rewrite HPI narrative from CC matrix and intake data"
                 >
-                  {hpiNotes.trim() ? '↺ Rewrite from CC' : '✦ Auto-draft HPI'}
+                  ↺ Regenerate from CC
                 </button>
               )}
-              <span style={{ fontSize: 11, color: '#6b7280', display: 'flex', alignItems: 'center', gap: 4 }}>
-                🎤 Dictate
-              </span>
             </div>
           </div>
 
-          {/* Dx-aware phrase chips */}
           {suggestedPhrases.length > 0 && (
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>
+              <div style={{
+                fontSize: 10, fontWeight: 700, color: '#94a3b8',
+                textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4,
+              }}>
                 Phrases — {leadingDxName}
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {suggestedPhrases.map(p => (
-                  <button key={p.trigger} type="button" onClick={() => insertPhrase(p.text)}
-                    title={`Insert: .${p.trigger}`}
-                    style={{ fontSize: 11, padding: '3px 9px', borderRadius: 5,
-                      border: '1px solid #c7d2fe', background: '#eef2ff', color: '#4338ca',
-                      cursor: 'pointer', fontWeight: 500 }}>
+                  <button
+                    key={p.trigger}
+                    type="button"
+                    onClick={() => insertPhrase(p.text)}
+                    title={`.${p.trigger}`}
+                    style={{
+                      fontSize: 11, padding: '3px 9px', borderRadius: 5,
+                      border: '1px solid #c7d2fe', background: '#eef2ff',
+                      color: '#4338ca', cursor: 'pointer', fontWeight: 500,
+                    }}
+                  >
                     + {p.label}
                   </button>
                 ))}
@@ -311,40 +618,23 @@ export default function HpiTab() {
 
           <SmartTextarea
             value={hpiNotes}
-            onChange={setHpiNotes}
+            onChange={v => { setHpiNotes(v); prevLiveRef.current = ''; }}
             placeholder={
               hasSourceData
-                ? 'Auto-drafting HPI from CC matrix…'
-                : 'Document the presenting illness — onset, site, character, radiation, associations, timing, exacerbating/relieving factors, severity.\n\nTap 🎤 to dictate or type .hpi for a template.'
+                ? 'Tap triage chips above to auto-build the HPI…'
+                : 'Document the presenting illness — onset, site, character, radiation, associations, timing, exacerbating/relieving factors, severity.'
             }
             style={{ minHeight: 200, width: '100%', lineHeight: 1.65 }}
           />
 
           {hpiNotes.trim() && (
             <div style={{ marginTop: 4, fontSize: 11, color: '#94a3b8' }}>
-              Review and edit the draft above before signing — the narrative is based on CC matrix and intake data.
+              Review and edit the draft above before signing — generated from CC matrix and intake data.
             </div>
           )}
         </div>
       </CollapsibleCard>
 
-      {(freeText.trim() || durationDays) && (
-        <CollapsibleCard title="Patient's own words (intake)" defaultOpen={false}>
-          {durationDays && (
-            <div style={{ fontSize: 13, marginBottom: 6 }}>
-              <span style={{ fontWeight: 600 }}>Duration:</span> {durationDays} day{durationDays === '1' ? '' : 's'}
-            </div>
-          )}
-          {freeText.trim() && (
-            <div style={{ fontSize: 13, whiteSpace: 'pre-wrap', color: 'var(--fg)', fontStyle: 'italic' }}>
-              "{freeText.trim()}"
-            </div>
-          )}
-          <p style={{ marginTop: 8, fontSize: 11, color: 'var(--muted)' }}>
-            Verbatim from the patient's intake questionnaire — already incorporated into the HPI draft above.
-          </p>
-        </CollapsibleCard>
-      )}
     </div>
   );
 }
