@@ -852,7 +852,14 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     if (!pendingSoap) return;
     const s = pendingSoap;
     if (s.hpi?.trim()) setHpiNotes(hpiNotes ? hpiNotes + '\n\n' + s.hpi : s.hpi);
-    if (s.assessment?.trim()) ctx.setAssessment(assessment ? assessment + '\n\n' + s.assessment : s.assessment);
+    if (s.assessment?.trim()) {
+      // If Claude echoed patient history context before the real clinical assessment,
+      // jump to the first assessment marker so history never lands in ctx.assessment.
+      let cleanAssessment = s.assessment;
+      const wdIdx = cleanAssessment.search(/Working Diagnosis:|Clinical Impression:|Impression:|Assessment\s*:/i);
+      if (wdIdx > 10) cleanAssessment = cleanAssessment.slice(wdIdx).trim();
+      if (cleanAssessment) ctx.setAssessment(assessment ? assessment + '\n\n' + cleanAssessment : cleanAssessment);
+    }
     if (s.plan?.trim()) ctx.setPlan(plan ? plan + '\n\n' + s.plan : s.plan);
     if (s.allergies?.trim()) setAllergies(s.allergies);
     if (s.examination) {

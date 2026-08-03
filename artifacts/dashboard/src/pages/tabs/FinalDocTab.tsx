@@ -214,19 +214,10 @@ function buildDocument(ctx: Ctx): string {
   let extractedDiffs = '';
   if (ctx.assessment) {
     let assessBody = ctx.assessment;
-    // Strategy 1: any horizontal-rule separator (─ U+2500 or ━ U+2501, 10+ chars)
-    // marks the boundary between a history-context preamble and the real assessment.
-    const sepMatch = assessBody.match(/[─━]{10,}/u);
-    if (sepMatch?.index !== undefined && sepMatch.index > 0) {
-      const afterSep = assessBody.slice(sepMatch.index + sepMatch[0].length).trimStart();
-      if (afterSep) assessBody = afterSep;
-    }
-    // Strategy 2: if "Working Diagnosis:" still isn't at the start, jump to it.
-    // Handles cases where the separator was absent or a different character.
-    const wdMatch = assessBody.match(/Working Diagnosis:/i);
-    if (wdMatch?.index !== undefined && wdMatch.index > 10) {
-      assessBody = assessBody.slice(wdMatch.index).trimStart();
-    }
+    // Jump to the first real assessment marker — strips any history context
+    // that voice/AI echoed before the clinical impression.
+    const wdIdx = assessBody.search(/Working Diagnosis:|Clinical Impression:|Impression:/i);
+    if (wdIdx > 10) assessBody = assessBody.slice(wdIdx).trimStart();
     // Pull out any "Ranked differentials:" block — belongs in the Differentials section.
     const diffMatch = assessBody.match(/\n*Ranked differentials?:[\s\S]*/i);
     if (diffMatch && diffMatch.index !== undefined) {
