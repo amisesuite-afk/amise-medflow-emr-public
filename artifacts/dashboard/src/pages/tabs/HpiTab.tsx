@@ -2,6 +2,7 @@ import { useMemo, useCallback, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import SmartTextarea from '@/components/SmartTextarea';
+import SmartSymptomPicker from '@/components/SmartSymptomPicker';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getSuggestedPhrases } from '@/data/dot-phrases';
 import { getMatrixByName } from '@/lib/cc-matrices';
@@ -158,8 +159,10 @@ function composeHpiNarrative(
 export default function HpiTab() {
   const {
     hpiNotes, setHpiNotes,
-    freeText, durationDays, painScore,
+    freeText, setFreeText, durationDays, setDurationDays, painScore, setPainScore,
     symptoms, symptomDetails,
+    isPostOp, setIsPostOp, postOpDays, setPostOpDays,
+    pregnancyPossible, setPregnancyPossible,
     age, sex, patientName,
     procedureData,
   } = useAppContext();
@@ -208,6 +211,55 @@ export default function HpiTab() {
 
   return (
     <div className="gap-y">
+      <CollapsibleCard
+        title="Chief complaint / reason for visit"
+        badge={symptoms.length > 0 ? `${symptoms.length} symptom${symptoms.length !== 1 ? 's' : ''}` : undefined}
+        badgeVariant={symptoms.length > 0 ? 'default' : undefined}
+      >
+        <SmartSymptomPicker />
+
+        <div className="form-grid cols-2" style={{ marginTop: 12 }}>
+          <div className="fld">
+            <label>Duration of symptoms (days)</label>
+            <input type="number" inputMode="numeric" min={0} step={1} value={durationDays} onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 3" />
+          </div>
+          <div className="fld">
+            <label>Pain score (0–10)</label>
+            <input type="number" inputMode="numeric" min={0} max={10} step={1} value={painScore}
+              onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setPainScore(v && Number(v) > 10 ? '10' : v); }}
+              placeholder="0-10"
+              className={painScore && Number(painScore) >= 8 ? 'danger' : painScore && Number(painScore) >= 5 ? 'warn' : ''} />
+          </div>
+        </div>
+
+        <div className="check-row" style={{ marginTop: 8 }}>
+          <label>
+            <input type="checkbox" checked={isPostOp} onChange={e => setIsPostOp(e.target.checked)} />
+            Post-op / recent procedure
+          </label>
+          <label>
+            <input type="checkbox" checked={pregnancyPossible} onChange={e => setPregnancyPossible(e.target.checked)} />
+            Pregnancy possible
+          </label>
+          {isPostOp && (
+            <div className="inline-field">
+              <span>Days since op:</span>
+              <input type="number" inputMode="numeric" min={0} step={1} value={postOpDays} onChange={e => setPostOpDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="days" />
+            </div>
+          )}
+        </div>
+
+        <div className="fld" style={{ marginTop: 10 }}>
+          <label>Patient message / additional notes</label>
+          <textarea
+            value={freeText}
+            onChange={e => setFreeText(e.target.value)}
+            placeholder="Paste patient email or WhatsApp message here, or add presenting history notes…"
+            style={{ minHeight: 80 }}
+          />
+        </div>
+      </CollapsibleCard>
+
       <ChiefComplaintStrip />
       <CollapsibleCard title="History of present illness" badge={hpiNotes.trim() ? '✓' : undefined}>
         <div className="fld">
