@@ -7,6 +7,7 @@ import AnatomicalSketch from '@/components/AnatomicalSketch';
 import ExamPhotoPanel from '@/components/ExamPhotoPanel';
 import WoundAssessmentCard from '@/components/WoundAssessmentCard';
 import ExamGuidePanel from '@/components/ExamGuidePanel';
+import WheelPicker from '@/components/WheelPicker';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 
 // Systems always shown regardless of clinical context
@@ -307,11 +308,23 @@ const VITAL_DISPLAY = [
   { key: 'glucoseMmol'     as const, label: 'RBS',   unit: 'mmol/L', danger: (v: number) => v < 3.5 || v > 20  },
 ];
 
+const VITAL_WHEEL_FIELDS = [
+  { key: 'systolicBp'      as const, label: 'SBP',  unit: 'mmHg',   placeholder: '120', min: 60,  max: 260, step: 1,   decimals: 0, defaultVal: 120, normalRange: [90,  140] as [number,number] },
+  { key: 'diastolicBp'     as const, label: 'DBP',  unit: 'mmHg',   placeholder: '80',  min: 40,  max: 160, step: 1,   decimals: 0, defaultVal: 80,  normalRange: [60,  90]  as [number,number] },
+  { key: 'heartRate'       as const, label: 'P',    unit: 'bpm',    placeholder: '88',  min: 30,  max: 220, step: 1,   decimals: 0, defaultVal: 80,  normalRange: [60,  100] as [number,number] },
+  { key: 'temperatureC'    as const, label: 'T',    unit: '°C',     placeholder: '37.0',min: 34,  max: 43,  step: 0.1, decimals: 1, defaultVal: 37,  normalRange: [36.1,37.5] as [number,number] },
+  { key: 'respiratoryRate' as const, label: 'R',    unit: '/min',   placeholder: '16',  min: 8,   max: 60,  step: 1,   decimals: 0, defaultVal: 16,  normalRange: [12,  20]  as [number,number] },
+  { key: 'spo2'            as const, label: 'SpO₂', unit: '%',      placeholder: '98',  min: 70,  max: 100, step: 1,   decimals: 0, defaultVal: 98,  normalRange: [95,  100] as [number,number] },
+  { key: 'glucoseMmol'     as const, label: 'RBS',  unit: 'mmol/L', placeholder: '6.4', min: 1,   max: 35,  step: 0.1, decimals: 1, defaultVal: 6,   normalRange: [4,   7.8] as [number,number] },
+];
+
 export default function ExaminationTab() {
   const ctx = useAppContext();
   const { examFindings, setExamFindings, examNotes, setExamNotes, anatomicalFindings, examPhotos,
           symptoms, symptomDetails, age, sex, comorbidities, pmhNotes, surgicalHistory,
-          vitals, updateVital } = ctx;
+          vitals, updateVital,
+          weightKg, setWeightKg, heightCm, setHeightCm,
+          waistCm, setWaistCm, hipCm, setHipCm, muacCm, setMuacCm } = ctx;
 
   // Local UI state — which systems are explicitly omitted (not examined)
   const [examOmit, setExamOmit] = useState<Record<string, boolean>>({});
@@ -623,35 +636,54 @@ export default function ExaminationTab() {
                 </button>
               </div>
               {editVitals && (
-                <div style={{
-                  display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))',
-                  gap: 8, marginTop: 10, paddingTop: 10, borderTop: '1px solid #d1fae5',
-                }}>
-                  {VITAL_DISPLAY.map(v => {
-                    const num = parseFloat(vitals[v.key]);
-                    const bad = vitals[v.key] !== '' && Number.isFinite(num) && v.danger(num);
-                    return (
-                      <label key={v.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: bad ? '#dc2626' : '#166534' }}>
-                          {v.label} <span style={{ fontWeight: 400, color: '#6b7280', textTransform: 'none' }}>({v.unit})</span>
-                        </span>
-                        <input
-                          type="number"
-                          value={vitals[v.key] ?? ''}
-                          onChange={e => updateVital(v.key, e.target.value)}
-                          placeholder="—"
-                          style={{
-                            padding: '6px 8px', borderRadius: 6, width: '100%',
-                            border: `1px solid ${bad ? '#fca5a5' : vitals[v.key] ? '#0d9488' : '#d1fae5'}`,
-                            fontSize: 14, fontWeight: 700, outline: 'none',
-                            background: bad ? '#fef2f2' : '#fff',
-                            color: bad ? '#dc2626' : '#166534',
-                            fontVariantNumeric: 'tabular-nums',
-                          }}
-                        />
-                      </label>
-                    );
-                  })}
+                <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #d1fae5' }}>
+                  <p style={{ fontSize: 11, color: '#6b7280', margin: '0 0 8px' }}>
+                    Scroll wheel to set value · or type directly below each wheel
+                  </p>
+                  <div style={{ overflowX: 'auto', paddingBottom: 6 }}>
+                    <div style={{ display: 'flex', gap: 0, alignItems: 'stretch', minWidth: 'max-content' }}>
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {VITAL_WHEEL_FIELDS.map(({ key, label, unit, placeholder, min, max, step, decimals, defaultVal, normalRange }) => {
+                          const val = vitals[key] ?? '';
+                          const n = parseFloat(val);
+                          const isAbnormal = val.trim() !== '' && Number.isFinite(n) && (n < normalRange[0] || n > normalRange[1]);
+                          return (
+                            <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 52 }}>
+                              <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: isAbnormal ? '#dc2626' : '#6b7280' }}>
+                                {label}
+                              </span>
+                              <WheelPicker value={val} onChange={v => updateVital(key, v)} min={min} max={max} step={step} decimals={decimals} defaultVal={defaultVal} normalRange={normalRange} />
+                              <input inputMode="decimal" value={val} onChange={e => updateVital(key, e.target.value)} placeholder={placeholder}
+                                style={{ width: 46, fontSize: 11, padding: '3px 4px', textAlign: 'center', borderRadius: 6, border: `1.5px solid ${isAbnormal ? '#fca5a5' : '#d1d5db'}`, background: isAbnormal ? '#fff5f5' : '#fff', color: isAbnormal ? '#dc2626' : '#166534', outline: 'none', fontVariantNumeric: 'tabular-nums' }}
+                              />
+                              <span style={{ fontSize: 9, color: isAbnormal ? '#dc2626' : '#9ca3af', fontWeight: isAbnormal ? 700 : 400 }}>
+                                {isAbnormal ? '⚠ ' : ''}{unit}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div style={{ width: 1, background: '#e2e8f0', margin: '0 10px', flexShrink: 0 }} />
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        {[
+                          { label: 'Wt',    unit: 'kg', value: weightKg, onChange: setWeightKg, min: 20,  max: 300, step: 0.5, decimals: 1, defaultVal: 70  },
+                          { label: 'Ht',    unit: 'cm', value: heightCm, onChange: setHeightCm, min: 50,  max: 220, step: 1,   decimals: 0, defaultVal: 165 },
+                          { label: 'Waist', unit: 'cm', value: waistCm,  onChange: setWaistCm,  min: 40,  max: 200, step: 0.5, decimals: 1, defaultVal: 88  },
+                          { label: 'Hip',   unit: 'cm', value: hipCm,    onChange: setHipCm,    min: 40,  max: 200, step: 0.5, decimals: 1, defaultVal: 100 },
+                          { label: 'MUAC',  unit: 'cm', value: muacCm,   onChange: setMuacCm,   min: 10,  max: 60,  step: 0.5, decimals: 1, defaultVal: 28  },
+                        ].map(f => (
+                          <div key={f.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 52 }}>
+                            <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#6b7280' }}>{f.label}</span>
+                            <WheelPicker value={f.value} onChange={f.onChange} min={f.min} max={f.max} step={f.step} decimals={f.decimals} defaultVal={f.defaultVal} normalRange={[f.min, f.max]} />
+                            <input inputMode="decimal" value={f.value} onChange={e => f.onChange(e.target.value)} placeholder={f.unit}
+                              style={{ width: 46, fontSize: 11, padding: '3px 4px', textAlign: 'center', borderRadius: 6, border: '1.5px solid #d1d5db', background: '#fff', color: '#166534', outline: 'none' }}
+                            />
+                            <span style={{ fontSize: 9, color: '#9ca3af' }}>{f.unit}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
