@@ -134,7 +134,7 @@ function PromptField({
 export default function ChiefComplaintStrip() {
   const {
     symptoms, symptomDetails, procedureData, setProcedureData,
-    setEncounterType, setActiveCcKey, setActiveSection,
+    setEncounterType, setActiveCcKey, setActiveSection, freeText,
   } = useAppContext();
 
   const [expanded, setExpanded]       = useState<number | null>(null);
@@ -145,11 +145,20 @@ export default function ChiefComplaintStrip() {
 
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
 
-  // Auto-populate CC entries from intake symptoms the first time consultation opens.
-  // Also translates symptomDetails (from SmartSymptomPicker branch questions) into
-  // structured SOCRATES answers so intake selections are visible in consultation.
+  // Auto-populate CC entries from intake symptoms or freeText the first time
+  // consultation opens. Also translates symptomDetails into structured SOCRATES
+  // answers so intake selections are visible in consultation.
   useEffect(() => {
-    if (entries.length > 0 || symptoms.length === 0) return;
+    if (entries.length > 0) return;
+
+    // freeText-only path: no symptoms but patient message/referral text present
+    if (symptoms.length === 0) {
+      const ft = freeText.trim();
+      if (!ft) return;
+      setProcedureData({ ...procedureData, cc: [{ complaint: ft.slice(0, 200), answers: {} }] });
+      setExpanded(0);
+      return;
+    }
 
     const initial = symptoms.slice(0, 3).map(s => {
       const matrix  = getMatrixByName(s);

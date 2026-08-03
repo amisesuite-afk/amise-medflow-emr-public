@@ -100,8 +100,18 @@ export default function PatientSearchTab() {
   const [selected,      setSelected]      = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Session-side hidden IDs (remove without touching DB)
-  const [hiddenIds,        setHiddenIds]        = useState<Set<string>>(new Set());
+  // Persisted hidden IDs — survives page reloads via localStorage
+  const HIDDEN_KEY = 'amise-hidden-patients-v1';
+  const [hiddenIds, _setHiddenIds] = useState<Set<string>>(
+    () => new Set<string>(JSON.parse(localStorage.getItem(HIDDEN_KEY) ?? '[]')),
+  );
+  function setHiddenIds(updater: (prev: Set<string>) => Set<string>) {
+    _setHiddenIds(prev => {
+      const next = updater(prev);
+      localStorage.setItem(HIDDEN_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  }
   // ID awaiting duplicate confirmation before loading
   const [pendingConfirmId, setPendingConfirmId] = useState<string | null>(null);
 
@@ -135,7 +145,6 @@ export default function PatientSearchTab() {
     setLoadingAll(true);
     setSearchResults(null);
     setQuery('');
-    setHiddenIds(new Set());
     setPendingConfirmId(null);
 
     const all = loadDemoPatients();
@@ -155,7 +164,6 @@ export default function PatientSearchTab() {
       setLoadingAll(true);
       setSearchResults(null);
       setQuery('');
-      setHiddenIds(new Set());
       setPendingConfirmId(null);
 
       const result = siteFilter === 'all'
