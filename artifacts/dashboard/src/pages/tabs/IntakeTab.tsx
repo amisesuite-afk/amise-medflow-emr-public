@@ -7,13 +7,10 @@ function ClinicalScoresPanelLazy() {
 }
 import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
-import PathwaySuggestions from '@/components/PathwaySuggestions';
-import SmartSymptomPicker from '@/components/SmartSymptomPicker';
 import PatientPhotoCapture from '@/components/PatientPhotoCapture';
-import WheelPicker from '@/components/WheelPicker';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
-import { Sex, VitalSigns } from '@workspace/triage-engine';
+import { Sex } from '@workspace/triage-engine';
 import { SL_COMMUNITIES, SL_DOCTORS, formatSlPhone, isValidSlPhone, type SlDoctor } from '@/data/st-lucia';
 
 const DEMO_PATIENTS_KEY = 'amise-patients-v1';
@@ -55,37 +52,7 @@ function apiUrl(path: string) {
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
 }
 
-interface VitalField {
-  key: keyof VitalSigns;
-  label: string;
-  unit: string;
-  placeholder: string;
-  min: number; max: number; step: number; decimals: number;
-  defaultVal: number;
-  normalRange: [number, number];
-}
 
-const VITAL_FIELDS: VitalField[] = [
-  { key: 'systolicBp',      label: 'SBP',   unit: 'mmHg',   placeholder: '120', min: 60,  max: 260, step: 1,   decimals: 0, defaultVal: 120, normalRange: [90,  140] },
-  { key: 'diastolicBp',     label: 'DBP',   unit: 'mmHg',   placeholder: '80',  min: 40,  max: 160, step: 1,   decimals: 0, defaultVal: 80,  normalRange: [60,  90]  },
-  { key: 'heartRate',       label: 'P',     unit: 'bpm',    placeholder: '88',  min: 30,  max: 220, step: 1,   decimals: 0, defaultVal: 80,  normalRange: [60,  100] },
-  { key: 'temperatureC',    label: 'T',     unit: '°C',     placeholder: '37.0',min: 34.0,max: 43.0,step: 0.1, decimals: 1, defaultVal: 37.0,normalRange: [36.1,37.5]},
-  { key: 'respiratoryRate', label: 'R',     unit: '/min',   placeholder: '16',  min: 8,   max: 60,  step: 1,   decimals: 0, defaultVal: 16,  normalRange: [12,  20]  },
-  { key: 'spo2',            label: 'SpO₂',  unit: '%',      placeholder: '98',  min: 70,  max: 100, step: 1,   decimals: 0, defaultVal: 98,  normalRange: [95,  100] },
-  { key: 'glucoseMmol',     label: 'RBS',   unit: 'mmol/L', placeholder: '6.4', min: 1.0, max: 35.0,step: 0.1, decimals: 1, defaultVal: 6.0, normalRange: [4.0, 7.8] },
-];
-
-function vitalClass(key: keyof VitalSigns, raw: string): string {
-  const n = parseFloat(raw);
-  if (isNaN(n)) return '';
-  if (key === 'systolicBp' && n < 90) return 'danger';
-  if (key === 'heartRate' && n > 120) return 'danger';
-  if (key === 'respiratoryRate' && n > 24) return 'danger';
-  if (key === 'temperatureC' && n >= 38) return 'warn';
-  if (key === 'spo2' && n < 94) return 'danger';
-  if (key === 'glucoseMmol' && (n < 3.5 || n > 20)) return 'danger';
-  return '';
-}
 
 export default function IntakeTab() {
   const {
@@ -93,18 +60,10 @@ export default function IntakeTab() {
     age, setAge, sex, setSex, dob, setDob, phone, setPhone,
     address, setAddress, quarter, setQuarter,
     referredBy, setReferredBy,
-    durationDays, setDurationDays, painScore, setPainScore,
-    isPostOp, setIsPostOp, postOpDays, setPostOpDays,
-    pregnancyPossible, setPregnancyPossible,
-    vitals, updateVital,
-    symptoms,
     freeText, setFreeText,
     triageResult,
     weightKg, setWeightKg,
     heightCm, setHeightCm,
-    waistCm, setWaistCm,
-    hipCm, setHipCm,
-    muacCm, setMuacCm,
     encounterMode,
     currentSite, setCurrentSite,
     mrNumber, setMrNumber,
@@ -140,18 +99,17 @@ export default function IntakeTab() {
   // Emergency: triage banner → vitals → CC → identity → referral
   // ERCP:      referral → ERCP checklist → vitals → CC → identity
   // Default:   identity → referral → CC → vitals → scores → triage
-  type CardKey = 'triage' | 'abcde' | 'vitals' | 'cc' | 'identity' | 'referral' | 'ercp_checklist' | 'pathways' | 'scores';
+  type CardKey = 'triage' | 'abcde' | 'identity' | 'referral' | 'ercp_checklist';
   function cardOrder(k: CardKey): number {
     if (isEmergency) {
-      // abcde primary survey (major_emergency only) slots between triage banner and vitals
-      const map: Record<CardKey, number> = { triage: 0, abcde: 1, vitals: 2, cc: 3, identity: 4, referral: 5, pathways: 6, scores: 7, ercp_checklist: 10 };
+      const map: Record<CardKey, number> = { triage: 0, abcde: 1, identity: 2, referral: 3, ercp_checklist: 10 };
       return map[k];
     }
     if (isErcp) {
-      const map: Record<CardKey, number> = { referral: 1, ercp_checklist: 2, vitals: 3, cc: 4, identity: 5, pathways: 6, scores: 7, triage: 8, abcde: 9 };
+      const map: Record<CardKey, number> = { referral: 1, ercp_checklist: 2, identity: 3, triage: 8, abcde: 9 };
       return map[k];
     }
-    const map: Record<CardKey, number> = { identity: 1, referral: 2, cc: 3, pathways: 4, vitals: 5, scores: 6, triage: 7, ercp_checklist: 10, abcde: 11 };
+    const map: Record<CardKey, number> = { identity: 1, referral: 2, triage: 3, ercp_checklist: 10, abcde: 11 };
     return map[k];
   }
 
@@ -164,19 +122,6 @@ export default function IntakeTab() {
 
   const [checkedIn, setCheckedIn] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
-
-  function calcBmi(): { bmi: number; class: string; color: string; rec: string } | null {
-    const w = parseFloat(weightKg);
-    const h = parseFloat(heightCm);
-    if (!w || !h || h < 50) return null;
-    const bmi = w / Math.pow(h / 100, 2);
-    if (bmi < 18.5) return { bmi, class: 'Underweight',    color: '#3b82f6', rec: 'Nutritional support pre-op. Increased wound healing risk.' };
-    if (bmi < 25)   return { bmi, class: 'Normal',         color: '#16a34a', rec: 'Standard surgical risk.' };
-    if (bmi < 30)   return { bmi, class: 'Overweight',     color: '#ca8a04', rec: 'Consider VTE prophylaxis. Monitor wound healing.' };
-    if (bmi < 35)   return { bmi, class: 'Obese class I',  color: '#ea580c', rec: 'High VTE risk — LMWH + TED stockings. Difficult laparoscopic access. Prone to SSI.' };
-    if (bmi < 40)   return { bmi, class: 'Obese class II', color: '#dc2626', rec: 'Very high anaesthetic risk. Airway assessment mandatory. Bariatric equipment required.' };
-    return           { bmi, class: 'Obese class III',      color: '#7f1d1d', rec: 'Extreme surgical risk. Senior anaesthetic review required. HDU bed post-op.' };
-  }
 
   const { showToast } = useToast();
   const [saving, setSaving] = useState(false);
@@ -900,211 +845,23 @@ export default function IntakeTab() {
         </div>
       )}
 
-      {/* ── 2. PRESENTING COMPLAINT / NOTES ─────────────────────────────────── */}
-      {/* Symptom selection happens in the Consultation › CC strip. This card    */}
-      {/* captures context notes, duration, and pain score at intake only.       */}
-      <div style={{ order: cardOrder('cc') }}>
-      <CollapsibleCard
-        title="Presenting complaint"
-      >
-        <div className="form-grid cols-2" style={{ marginTop: 0 }}>
-          <div className="fld">
-            <label>Duration of symptoms (days)</label>
-            <input type="number" inputMode="numeric" min={0} step={1} value={durationDays} onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 3" />
-          </div>
-          <div className="fld">
-            <label>Pain score (0–10)</label>
-            <input type="number" inputMode="numeric" min={0} max={10} step={1} value={painScore}
-              onChange={e => { const v = e.target.value.replace(/[^0-9]/g, ''); setPainScore(v && Number(v) > 10 ? '10' : v); }}
-              placeholder="0-10"
-              className={painScore && Number(painScore) >= 8 ? 'danger' : painScore && Number(painScore) >= 5 ? 'warn' : ''} />
-          </div>
-        </div>
-
-        <div className="check-row" style={{ marginTop: 8 }}>
-          <label>
-            <input type="checkbox" checked={isPostOp} onChange={e => setIsPostOp(e.target.checked)} />
-            Post-op / recent procedure
-          </label>
-          <label>
-            <input type="checkbox" checked={pregnancyPossible} onChange={e => setPregnancyPossible(e.target.checked)} />
-            Pregnancy possible
-          </label>
-          {isPostOp && (
-            <div className="inline-field">
-              <span>Days since op:</span>
-              <input type="number" inputMode="numeric" min={0} step={1} value={postOpDays} onChange={e => setPostOpDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="days" />
-            </div>
-          )}
-        </div>
-
-        <div className="fld" style={{ marginTop: 10 }}>
-          <label>Patient message / referral notes</label>
+      {/* ── Patient message — pre-populates Consultation CC and HPI ── */}
+      {/* CC selection, duration, pain score, vitals → Consultation tabs  */}
+      <CollapsibleCard title="Patient message / notes" defaultOpen={!!freeText}>
+        <div className="fld">
           <textarea
             value={freeText}
             onChange={e => setFreeText(e.target.value)}
-            placeholder="Paste patient WhatsApp message, email, or referral letter here — will populate the consultation CC and HPI…"
+            placeholder="Paste patient WhatsApp message, email, or referral text here — pre-fills the Consultation CC and HPI automatically…"
             style={{ minHeight: 80 }}
           />
+          {freeText.trim() && (
+            <span style={{ fontSize: 11, color: '#0d9488', marginTop: 4, display: 'block' }}>
+              ✓ Will auto-populate Consultation CC and HPI when doctor opens the case
+            </span>
+          )}
         </div>
       </CollapsibleCard>
-      </div>{/* end cc wrapper */}
-
-      {/* Clinical pathway suggestions — shown when specific combos detected */}
-      <div style={{ order: cardOrder('pathways') }}>
-      <PathwaySuggestions />
-      </div>
-
-      {/* ── 3. VITAL SIGNS ──────────────────────────────────────────────────── */}
-      <div style={{ order: cardOrder('vitals') }}>
-      <CollapsibleCard title="Vital signs" badge={triageResult.vitalRedFlags.length > 0 ? `${triageResult.vitalRedFlags.length} alert` : 'optional'} badgeVariant={triageResult.vitalRedFlags.length > 0 ? 'danger' : 'default'}>
-        <p style={{ fontSize: 11, color: 'var(--muted)', margin: '0 0 8px' }}>
-          Scroll wheel to set value · or type directly below each wheel
-        </p>
-        <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
-          <div style={{ display: 'flex', gap: 0, alignItems: 'stretch', minWidth: 'max-content' }}>
-            {/* Vital signs */}
-            <div style={{ display: 'flex', gap: 6 }}>
-              {VITAL_FIELDS.map(({ key, label, unit, placeholder, min, max, step, decimals, defaultVal, normalRange }) => {
-                const val = vitals[key];
-                const isAbnormal = val.trim() !== '' && Number.isFinite(parseFloat(val)) &&
-                  (parseFloat(val) < normalRange[0] || parseFloat(val) > normalRange[1]);
-                return (
-                  <div key={key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 52 }}>
-                    <span style={{
-                      fontSize: 9, fontWeight: 700, letterSpacing: '0.05em',
-                      textTransform: 'uppercase',
-                      color: isAbnormal ? '#dc2626' : 'var(--muted)',
-                    }}>
-                      {label}
-                    </span>
-                    <WheelPicker
-                      value={val}
-                      onChange={v => updateVital(key, v)}
-                      min={min} max={max} step={step}
-                      decimals={decimals}
-                      defaultVal={defaultVal}
-                      normalRange={normalRange}
-                    />
-                    <input
-                      inputMode="decimal"
-                      value={val}
-                      onChange={e => updateVital(key, e.target.value)}
-                      placeholder={placeholder}
-                      style={{
-                        width: 46, fontSize: 11, padding: '3px 4px', textAlign: 'center',
-                        borderRadius: 6, border: `1.5px solid ${isAbnormal ? '#fca5a5' : '#d1d5db'}`,
-                        background: isAbnormal ? '#fff5f5' : 'var(--bg)',
-                        color: isAbnormal ? '#dc2626' : 'var(--ink)', outline: 'none',
-                      }}
-                    />
-                    <span style={{ fontSize: 9, color: isAbnormal ? '#dc2626' : 'var(--muted)', fontWeight: isAbnormal ? 700 : 400 }}>
-                      {isAbnormal ? '⚠ ' : ''}{unit}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Separator */}
-            <div style={{ width: 1, background: '#e2e8f0', margin: '0 10px', flexShrink: 0 }} />
-
-            {/* Anthropometrics */}
-            <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
-              {[
-                { label: 'Wt',    unit: 'kg', value: weightKg, onChange: setWeightKg, min: 20,  max: 300, step: 0.5, decimals: 1, defaultVal: 70  },
-                { label: 'Ht',    unit: 'cm', value: heightCm, onChange: setHeightCm, min: 50,  max: 220, step: 1,   decimals: 0, defaultVal: 165 },
-                { label: 'Waist', unit: 'cm', value: waistCm,  onChange: setWaistCm,  min: 40,  max: 200, step: 0.5, decimals: 1, defaultVal: 88  },
-                { label: 'Hip',   unit: 'cm', value: hipCm,    onChange: setHipCm,    min: 40,  max: 200, step: 0.5, decimals: 1, defaultVal: 100 },
-                { label: 'MUAC',  unit: 'cm', value: muacCm,   onChange: setMuacCm,   min: 10,  max: 60,  step: 0.5, decimals: 1, defaultVal: 28  },
-              ].map(f => (
-                <div key={f.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: 52 }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--muted)' }}>
-                    {f.label}
-                  </span>
-                  <WheelPicker
-                    value={f.value}
-                    onChange={f.onChange}
-                    min={f.min} max={f.max} step={f.step}
-                    decimals={f.decimals} defaultVal={f.defaultVal}
-                    normalRange={[f.min, f.max]}
-                  />
-                  <input
-                    inputMode="decimal"
-                    value={f.value}
-                    onChange={e => f.onChange(e.target.value)}
-                    placeholder={f.unit}
-                    style={{
-                      width: 46, fontSize: 11, padding: '3px 4px', textAlign: 'center',
-                      borderRadius: 6, border: '1.5px solid #d1d5db',
-                      background: 'var(--bg)', color: 'var(--ink)', outline: 'none',
-                    }}
-                  />
-                  <span style={{ fontSize: 9, color: 'var(--muted)' }}>{f.unit}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        {triageResult.vitalRedFlags.length > 0 && (
-          <div className="vital-flags" style={{ marginTop: 8 }}>
-            {triageResult.vitalRedFlags.map(f => (
-              <span key={f.label} className={`vflag ${f.severity}`}>{f.label}: {f.value}</span>
-            ))}
-          </div>
-        )}
-        {calcBmi() && (() => {
-          const b = calcBmi()!;
-          return (
-            <div style={{ marginTop: 8, padding: '8px 12px', borderRadius: 8, background: `${b.color}15`, border: `1px solid ${b.color}40`, display: 'flex', gap: 12, alignItems: 'center' }}>
-              <span style={{ fontWeight: 700, fontSize: 15, color: b.color }}>BMI {b.bmi.toFixed(1)}</span>
-              <span style={{ fontWeight: 600, color: b.color, fontSize: 13 }}>{b.class}</span>
-              <span style={{ color: '#6b7280', fontSize: 12, flex: 1 }}>{b.rec}</span>
-            </div>
-          );
-        })()}
-        {(() => {
-          const w = parseFloat(waistCm), h = parseFloat(hipCm), muac = parseFloat(muacCm);
-          const items: React.ReactNode[] = [];
-          if (w && h && h > 0) {
-            const ratio = w / h;
-            const sex_ = sex === 'female' ? 'female' : 'male';
-            const highRisk = sex_ === 'male' ? ratio > 0.9 : ratio > 0.85;
-            const color = highRisk ? '#dc2626' : '#16a34a';
-            items.push(
-              <span key="whr" style={{ fontWeight: 600, fontSize: 12, color }}>
-                WHR {ratio.toFixed(2)} — {highRisk ? '⚠ High cardiovascular risk' : 'Normal'}
-              </span>
-            );
-          }
-          if (w) {
-            const sex_ = sex === 'female' ? 'female' : 'male';
-            const highWaist = sex_ === 'male' ? w >= 94 : w >= 80;
-            const vHighWaist = sex_ === 'male' ? w >= 102 : w >= 88;
-            const wColor = vHighWaist ? '#dc2626' : highWaist ? '#ea580c' : '#16a34a';
-            items.push(
-              <span key="waist" style={{ fontWeight: 600, fontSize: 12, color: wColor }}>
-                Waist {w} cm — {vHighWaist ? '⚠ Very high metabolic risk' : highWaist ? 'Elevated metabolic risk' : 'Normal'}
-              </span>
-            );
-          }
-          if (muac) {
-            const malnutrition = muac < 23.5;
-            items.push(
-              <span key="muac" style={{ fontWeight: 600, fontSize: 12, color: malnutrition ? '#dc2626' : '#374151' }}>
-                MUAC {muac} cm{malnutrition ? ' — ⚠ Nutritional risk (pre-op assessment recommended)' : ''}
-              </span>
-            );
-          }
-          if (!items.length) return null;
-          return (
-            <div style={{ marginTop: 6, padding: '7px 12px', borderRadius: 8, background: '#f8fafc', border: '1px solid #e2e8f0', display: 'flex', flexWrap: 'wrap', gap: '4px 16px' }}>
-              {items}
-            </div>
-          );
-        })()}
-      </CollapsibleCard>
-      </div>{/* end vitals wrapper */}
 
       {/* ── ABCDE Quick Primary Survey — major_emergency encounters only ─────── */}
       {encounterType === 'major_emergency' && (
