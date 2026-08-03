@@ -178,7 +178,17 @@ export default function VoiceDictation({ visitType, onClose }: Props) {
       const ab = get('exam_abdomen', ex.abdomen); if (ab) ctx.setExamAbdomen(ab);
     }
 
-    const assessment = get('assessment', soap.assessment);
+    const assessment = (() => {
+      const raw = get('assessment', soap.assessment);
+      if (!raw) return raw;
+      // Strip history preamble — assessment must never start with patient history sections
+      if (/^(Presenting History|Past Medical History|Surgical History|Medications?|Allergies?|History)\s*:/i.test(raw.trim())) {
+        const wdIdx = raw.search(/Working Diagnosis:|Clinical Impression:|Impression:|Assessment\s*:/i);
+        return wdIdx > 0 ? raw.slice(wdIdx).trim() : '';
+      }
+      const wdIdx = raw.search(/Working Diagnosis:|Clinical Impression:|Impression:|Assessment\s*:/i);
+      return wdIdx > 10 ? raw.slice(wdIdx).trim() : raw;
+    })();
     if (assessment) ctx.setAssessment(ctx.assessment ? ctx.assessment + '\n\n' + assessment : assessment);
 
     const plan = get('plan', soap.plan);

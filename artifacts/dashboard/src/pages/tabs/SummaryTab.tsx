@@ -549,7 +549,22 @@ ${ctx.differentials ? `<div class="diff-block">
 <div class="diff-lbl">Ranked Differential Diagnoses</div>
 ${escHtml(ctx.differentials).split('\n').filter(l => l.trim()).map(l => `<div class="diff-item">${l}</div>`).join('')}
 </div>` : ''}
-${ctx.assessment ? `<div style="white-space:pre-wrap;line-height:1.8;font-size:12.5px${ctx.icdCodes.length || ctx.differentials ? ';margin-top:10px' : ''}">${escHtml(ctx.assessment)}</div>` : ''}
+${(() => {
+  if (!ctx.assessment) return '';
+  // Strip any history preamble — assessment must start at a clinical marker
+  let body = ctx.assessment.trim();
+  if (/^(Presenting History|Past Medical History|Surgical History|Medications?|Allergies?|History)\s*:/i.test(body)) {
+    const wdIdx = body.search(/Working Diagnosis:|Clinical Impression:|Impression:|Assessment\s*:/i);
+    body = wdIdx > 0 ? body.slice(wdIdx).trim() : '';
+  } else {
+    const wdIdx = body.search(/Working Diagnosis:|Clinical Impression:|Impression:|Assessment\s*:/i);
+    if (wdIdx > 10) body = body.slice(wdIdx).trim();
+  }
+  // Also strip any trailing ranked differentials block (they have their own section)
+  const diffIdx = body.search(/\n*Ranked differentials?:/i);
+  if (diffIdx > 0) body = body.slice(0, diffIdx).trimEnd();
+  return body ? `<div style="white-space:pre-wrap;line-height:1.8;font-size:12.5px${ctx.icdCodes.length || ctx.differentials ? ';margin-top:10px' : ''}">${escHtml(body)}</div>` : '';
+})()}
 </div></div>` : ''}
 
 ${ctx.plan ? `<div class="section">
