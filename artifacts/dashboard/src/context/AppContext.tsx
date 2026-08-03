@@ -17,7 +17,7 @@ export type Section =
   | 'prescriptions' | 'ai_consultant' | 'tasks'
   | 'referring_providers' | 'encounter_history'
   | 'who_checklist' | 'consent' | 'letters' | 'patient_education' | 'periop' | 'dosing' | 'fluid_nutrition' | 'blood_gas' | 'wounds'
-  | 'brief';
+  | 'brief' | 'sphere';
 
 /**
  * Encounter complexity tier. Controls which consultation sections are
