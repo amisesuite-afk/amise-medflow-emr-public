@@ -9,13 +9,14 @@
 // facts are added or verified.
 
 import { useMemo, useState } from 'react';
-import { K83_1 } from '@workspace/patient-state';
+import { K83_1, K81_0 } from '@workspace/patient-state';
 import { usePatientState } from '@/context/PatientStateContext';
 import { ClinicalIntelligenceSphere } from '@/components/sphere';
 
-// Registry of all available profiles
+// Registry — add new profiles here as they are built
 const PROFILE_REGISTRY = [
-  { key: 'K83.1', label: 'K83.1 — Obstructive Jaundice', profile: K83_1 },
+  { key: 'K83.1', label: 'K83.1 — Obstructive Jaundice',  profile: K83_1 },
+  { key: 'K81.0', label: 'K81.0 — Acute Cholecystitis',   profile: K81_0 },
 ];
 
 export default function PathologySphereTab() {

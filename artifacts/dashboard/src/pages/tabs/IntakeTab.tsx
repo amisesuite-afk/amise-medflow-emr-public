@@ -900,16 +900,14 @@ export default function IntakeTab() {
         </div>
       )}
 
-      {/* ── 2. CHIEF COMPLAINT / REASON FOR VISIT ───────────────────────────── */}
+      {/* ── 2. PRESENTING COMPLAINT / NOTES ─────────────────────────────────── */}
+      {/* Symptom selection happens in the Consultation › CC strip. This card    */}
+      {/* captures context notes, duration, and pain score at intake only.       */}
       <div style={{ order: cardOrder('cc') }}>
       <CollapsibleCard
-        title="Chief complaint / reason for visit"
-        badge={symptoms.length > 0 ? `${symptoms.length} symptom${symptoms.length !== 1 ? 's' : ''}` : undefined}
-        badgeVariant={symptoms.length > 0 ? 'default' : undefined}
+        title="Presenting complaint"
       >
-        <SmartSymptomPicker />
-
-        <div className="form-grid cols-2" style={{ marginTop: 12 }}>
+        <div className="form-grid cols-2" style={{ marginTop: 0 }}>
           <div className="fld">
             <label>Duration of symptoms (days)</label>
             <input type="number" inputMode="numeric" min={0} step={1} value={durationDays} onChange={e => setDurationDays(e.target.value.replace(/[^0-9]/g, ''))} placeholder="e.g. 3" />
@@ -941,11 +939,11 @@ export default function IntakeTab() {
         </div>
 
         <div className="fld" style={{ marginTop: 10 }}>
-          <label>Patient message / additional notes</label>
+          <label>Patient message / referral notes</label>
           <textarea
             value={freeText}
             onChange={e => setFreeText(e.target.value)}
-            placeholder="Paste patient email or WhatsApp message here, or add presenting history notes…"
+            placeholder="Paste patient WhatsApp message, email, or referral letter here — will populate the consultation CC and HPI…"
             style={{ minHeight: 80 }}
           />
         </div>
