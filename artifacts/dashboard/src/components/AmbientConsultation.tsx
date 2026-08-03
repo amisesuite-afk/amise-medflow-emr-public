@@ -1056,8 +1056,15 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     if (!proto) return '';
     const IMAGING_KW = ['uss', 'ct ', 'mri', 'mrcp', 'pet', 'cxr', 'x-ray', 'xr ', 'ultrasound', 'scan', 'echo', 'angio', 'radiograph', 'chest x', 'ercp'];
     const isImaging  = (label: string) => IMAGING_KW.some(k => label.toLowerCase().includes(k));
-    const labInvx    = proto.investigations.filter(i => !isImaging(i.label));
-    const imagingInvx= proto.investigations.filter(i =>  isImaging(i.label));
+
+    // Sex-based investigation filtering (e.g. βhCG not applicable for confirmed males)
+    const isMale = ctx.sex === 'male';
+    const invxFiltered = proto.investigations.filter(i =>
+      !(isMale && /β.*hcg|b.*hcg|beta.*hcg/i.test(i.label)),
+    );
+
+    const labInvx    = invxFiltered.filter(i => !isImaging(i.label));
+    const imagingInvx= invxFiltered.filter(i =>  isImaging(i.label));
     const labLines   = labInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
     const imgLines   = imagingInvx.map(i => `   [${i.urgency.toUpperCase()}] ${i.label}`).join('\n');
     const immediate  = proto.management.filter(m => m.phase === 'immediate').map(m => `   • ${m.step}`).join('\n');
@@ -1073,11 +1080,55 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       cholecystitis:     'Tokyo Guidelines TG18 — document grade before initiating management:\n   □ Grade I   — mild (no organ dysfunction, responds to initial treatment)\n   □ Grade II  — moderate (local complications or systemic features without organ dysfunction)\n   □ Grade III — severe (organ dysfunction: cardiovascular / neurological / respiratory / renal / hepatic / haematological)',
       cholangitis:       'Tokyo Guidelines TG18:\n   □ Grade I   — mild (responds to initial antibiotics within 24 h)\n   □ Grade II  — moderate (no organ dysfunction, does not respond within 24 h)\n   □ Grade III — severe (organ dysfunction present — emergency biliary decompression)',
       pancreatitis:      'Severity at 48 h — complete at least one system:\n   BISAP: ___ / 5    Modified Glasgow: ___ / 8    Ranson: ___ / 11\n   □ Mild  (BISAP 0–1 / Glasgow ≤1 / Ranson <3 — general ward)\n   □ Moderately severe  (BISAP 2 / local complications / no persistent organ failure — close monitoring)\n   □ Severe  (BISAP ≥3 / Glasgow ≥3 / SIRS criteria met — HDU/ICU)',
-      appendicitis:      'Alvarado score: ___ / 10\n   □ ≤4   — low probability (observe or CT before theatre)\n   □ 5–6  — intermediate (CT abdomen/pelvis or diagnostic laparoscopy)\n   □ 7–8  — high probability (proceed to laparoscopic appendicectomy)\n   □ ≥9   — diagnostic certainty (immediate appendicectomy without delay)',
       diverticulitis:    'Hinchey Classification:\n   □ Stage I  — pericolic or mesenteric abscess (IV antibiotics ± CT-guided drain)\n   □ Stage II — pelvic or remote abscess (CT-guided percutaneous drainage)\n   □ Stage III — generalised purulent peritonitis (emergency surgery)\n   □ Stage IV — generalised faeculent peritonitis (emergency Hartmann\'s)',
       bowel_obstruction: 'CT Classification:\n   □ Closed-loop obstruction (high ischaemia risk — urgent OR)\n   □ Single-point adhesive SBO without ischaemia (conservative 48-h trial)\n   □ Large bowel obstruction — cause: _______________',
     };
-    const severityPrompt = SEVERITY_PROMPTS[dxId];
+
+    // Auto-calculate Alvarado score from available patient data
+    let severityPrompt = SEVERITY_PROMPTS[dxId];
+    if (dxId === 'appendicitis') {
+      const syms  = ctx.symptoms.map(s => s.toLowerCase());
+      const hpi   = ctx.hpiNotes.toLowerCase();
+      const exam  = ctx.examAbdomen.toLowerCase();
+      const temp  = parseFloat(ctx.vitals.temperatureC);
+      const wbc   = ctx.extractedLabs.wbc ?? null;
+
+      const migr    = syms.some(s => s.includes('migrat') || s.includes('rlq') || s.includes('appendix')) ||
+                      hpi.includes('migrat') || hpi.includes('right iliac') || hpi.includes('rlq');
+      const anorex  = syms.some(s => s.includes('anorex') || s.includes('appetite')) ||
+                      hpi.includes('anorex') || hpi.includes('loss of appetite');
+      const nausea  = syms.some(s => s.includes('nausea') || s.includes('vomit')) ||
+                      hpi.includes('nausea') || hpi.includes('vomit');
+      const tender  = exam.includes('right iliac') || exam.includes('rlq') || exam.includes('mcburney') ||
+                      (exam.includes('tender') && (exam.includes('right') || exam.includes('rlq')));
+      const rebound = exam.includes('rebound');
+      const fever   = Number.isFinite(temp) && temp > 37.3;
+      const leuco   = wbc !== null && wbc > 10;
+
+      const score = (migr ? 1 : 0) + (anorex ? 1 : 0) + (nausea ? 1 : 0) +
+                    (tender ? 2 : 0) + (rebound ? 1 : 0) + (fever ? 1 : 0) + (leuco ? 2 : 0);
+      const hasAnyData = migr || anorex || nausea || tender || rebound || fever || leuco;
+      const scoreStr = hasAnyData ? `${score} / 10` : '___ / 10';
+
+      const cats = [
+        '□ ≤4   — low probability (observe or CT before theatre)',
+        '□ 5–6  — intermediate (CT abdomen/pelvis or diagnostic laparoscopy)',
+        '□ 7–8  — high probability (proceed to laparoscopic appendicectomy)',
+        '□ ≥9   — diagnostic certainty (immediate appendicectomy without delay)',
+      ];
+      if (hasAnyData) {
+        const catIdx = score <= 4 ? 0 : score <= 6 ? 1 : score <= 8 ? 2 : 3;
+        cats[catIdx] = cats[catIdx].replace('□', '■');
+      }
+      severityPrompt = `Alvarado score: ${scoreStr}\n${cats.map(c => `   ${c}`).join('\n')}`;
+    }
+
+    // Allergy flagging for protocol medications
+    const allergenList = ctx.allergies.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+    const isAllergic = (drugName: string) => allergenList.some(a => {
+      const d = drugName.toLowerCase();
+      return d.includes(a) || a.includes(d.split(' ')[0]);
+    });
 
     // Structured medications — replaces ambiguous prose in management steps
     let medsBlock = '';
@@ -1085,7 +1136,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
       const medLines = proto.medications.map(m => {
         const header = `${m.drugName}  ${m.dose}  ${m.route}  ${m.frequency}${m.duration ? `  × ${m.duration}` : ''}`;
         const altNote = m.alternativeTo ? `  [alternative to ${m.alternativeTo}]` : '';
-        return `   • ${header}${altNote}\n     → ${m.indication}`;
+        const allergyFlag = isAllergic(m.drugName) ? '  ⚠ ALLERGY — verify before prescribing' : '';
+        return `   • ${header}${altNote}${allergyFlag}\n     → ${m.indication}`;
       });
       medsBlock = medLines.join('\n');
     }

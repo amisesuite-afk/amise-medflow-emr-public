@@ -244,8 +244,10 @@ function sharedHead(title: string): string {
   .pl-title{font-size:13px;font-weight:700;color:#0B2545;margin-bottom:4px}
   .pl-icd{font-size:10px;color:#94a3b8;margin-bottom:8px;font-style:italic}
   .pl-section-box{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#b91c1c;border:1px solid #fca5a5;background:#fef2f2;padding:4px 10px;border-radius:4px;margin:10px 0 6px}
-  .pl-checkbox{font-size:12px;padding-left:20px;position:relative;margin-bottom:4px;color:#334155}
+  .pl-checkbox{font-size:12px;padding-left:20px;position:relative;margin-bottom:4px;color:#334155;cursor:pointer;user-select:none}
   .pl-checkbox::before{content:"☐";position:absolute;left:3px;font-size:11px;color:#1a3a5c}
+  .pl-checked{color:#15803d;font-weight:600}
+  .pl-checked::before{content:"■";color:#15803d}
   .pl-warn{font-size:12px;padding-left:18px;position:relative;color:#b91c1c;font-weight:600;margin-bottom:4px}
   .pl-warn::before{content:"⚠";position:absolute;left:1px;font-size:11px}
   .pl-note{font-size:11px;color:#64748b;font-style:italic;padding-left:14px;margin-bottom:3px}
@@ -336,9 +338,11 @@ function planTextToHtml(plan: string): string {
       continue;
     }
 
-    // □ checkbox items
-    if (ts.startsWith('□ ')) {
-      out.push(`<div class="pl-checkbox">${escHtml(ts.slice(2))}</div>`);
+    // □/■ checkbox items — interactive (click toggles via postMessage to parent)
+    if (ts.startsWith('□ ') || ts.startsWith('■ ')) {
+      const checked = ts.startsWith('■ ');
+      const cls = checked ? 'pl-checkbox pl-checked' : 'pl-checkbox';
+      out.push(`<div class="${cls}" data-idx="${i}" onclick="parent.postMessage({type:'PLAN_CB',idx:${i}},'*')">${escHtml(ts.slice(2))}</div>`);
       continue;
     }
 
@@ -753,6 +757,30 @@ const DISPOSITION_OPTIONS = [
 
 function DirectExportPanel() {
   const ctx = useAppContext();
+  const ctxRef = useRef(ctx);
+  ctxRef.current = ctx;
+
+  // Listen for checkbox toggle messages from the plan iframe
+  useEffect(() => {
+    function onMsg(ev: MessageEvent) {
+      if (typeof ev.data !== 'object' || ev.data?.type !== 'PLAN_CB') return;
+      const idx = ev.data.idx as number;
+      const lines = ctxRef.current.plan.split('\n');
+      if (idx < 0 || idx >= lines.length) return;
+      const line = lines[idx];
+      const leading = /^(\s*)/.exec(line)?.[1] ?? '';
+      const trimmed = line.trimStart();
+      if (trimmed.startsWith('□ ')) {
+        lines[idx] = leading + '■ ' + trimmed.slice(2);
+      } else if (trimmed.startsWith('■ ')) {
+        lines[idx] = leading + '□ ' + trimmed.slice(2);
+      }
+      ctxRef.current.setPlan(lines.join('\n'));
+    }
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
   const [docType, setDocType] = useState<'clinical' | 'referral' | 'discharge'>('clinical');
   const [referTo, setReferTo] = useState('');
   const [referNotes, setReferNotes] = useState('');
@@ -962,7 +990,7 @@ function DirectExportPanel() {
               srcDoc={getHtml()}
               title="Document preview"
               style={{ display: 'block', width: '96%', maxWidth: 720, margin: '0 auto', minHeight: 640, border: 'none', background: '#fff', borderRadius: 4, boxShadow: '0 1px 6px rgba(0,0,0,0.12)' }}
-              sandbox="allow-same-origin"
+              sandbox="allow-same-origin allow-scripts"
             />
           </div>
         </div>
