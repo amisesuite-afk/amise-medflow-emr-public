@@ -857,30 +857,48 @@ function DirectExportPanel() {
       const leading = /^(\s*)/.exec(line)?.[1] ?? '';
       const trimmed = line.trimStart();
 
-      if (trimmed.startsWith('□ ')) {
-        // Radio behavior: selecting one removes the other □ options in the same severity block
+      if (trimmed.startsWith('□ ') || trimmed.startsWith('■ ')) {
+        // Check if this is inside a ━━━ severity/scoring block
         const newLines = [...lines];
-        newLines[idx] = leading + '■ ' + trimmed.slice(2);
-        // Find block start (the ━━━ header above)
         let blockStart = idx - 1;
         while (blockStart >= 0 && !newLines[blockStart].trim().startsWith('━━━')) blockStart--;
-        // Find block end (next ━━━, next numbered section, or empty line)
-        let blockEnd = idx + 1;
-        while (blockEnd < newLines.length) {
-          const bl = newLines[blockEnd].trim();
-          if (!bl || bl.startsWith('━━━') || /^\d+\./.test(bl)) break;
-          blockEnd++;
+        const inSeverityBlock = blockStart >= 0;
+
+        if (inSeverityBlock) {
+          // Radio behaviour: select this grade, erase all other □/■ options in the block
+          // (If already ■ and it's the only one, clicking again deselects to □)
+          const isOnlySelected = trimmed.startsWith('■ ') &&
+            newLines.slice(blockStart + 1, idx).concat(newLines.slice(idx + 1)).every(
+              l => !l.trimStart().startsWith('■ ')
+            );
+          if (isOnlySelected) {
+            // Deselect — just toggle back to □
+            newLines[idx] = leading + '□ ' + trimmed.slice(2);
+            ctxRef.current.setPlan(newLines.join('\n'));
+          } else {
+            // Select this one, remove all other □ and ■ in the block
+            newLines[idx] = leading + '■ ' + trimmed.slice(2);
+            let blockEnd = idx + 1;
+            while (blockEnd < newLines.length) {
+              const bl = newLines[blockEnd].trim();
+              if (!bl || bl.startsWith('━━━') || /^\d+\./.test(bl)) break;
+              blockEnd++;
+            }
+            const filtered = newLines.filter((l, i) => {
+              if (i <= blockStart || i >= blockEnd) return true;
+              if (i === idx) return true;
+              const ts2 = l.trimStart();
+              return !ts2.startsWith('□ ') && !ts2.startsWith('■ ');
+            });
+            ctxRef.current.setPlan(filtered.join('\n'));
+          }
+        } else {
+          // Outside a severity block — plain toggle
+          newLines[idx] = trimmed.startsWith('■ ')
+            ? leading + '□ ' + trimmed.slice(2)
+            : leading + '■ ' + trimmed.slice(2);
+          ctxRef.current.setPlan(newLines.join('\n'));
         }
-        // Remove all other □ lines within the block
-        const filtered = newLines.filter((l, i) => {
-          if (i <= blockStart || i >= blockEnd) return true;
-          if (i === idx) return true;
-          return !l.trimStart().startsWith('□ ');
-        });
-        ctxRef.current.setPlan(filtered.join('\n'));
-      } else if (trimmed.startsWith('■ ')) {
-        lines[idx] = leading + '□ ' + trimmed.slice(2);
-        ctxRef.current.setPlan(lines.join('\n'));
       } else if (trimmed.startsWith('✗ ')) {
         lines[idx] = leading + trimmed.slice(2);
         ctxRef.current.setPlan(lines.join('\n'));
