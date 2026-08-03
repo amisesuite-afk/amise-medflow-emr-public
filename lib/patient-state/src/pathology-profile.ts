@@ -11,7 +11,14 @@
 // that places each hexagon cell on the honeycomb; the vector is the resulting
 // pattern of dots.
 
-import type { FactType } from './types.js';
+import type { ClinicalFact, FactType } from './types.js';
+
+// ─── Scorer function type ─────────────────────────────────────────────────────
+//
+// Each profile supplies 13 of these — one per axis, index-matched to profile.axes.
+// AxisScorer calls them against the live fact array and stamps the axisId.
+
+export type AxisScorerFn = (facts: ClinicalFact[]) => Omit<AxisScore, 'axisId'>;
 
 // ─── Axes ────────────────────────────────────────────────────────────────────
 
@@ -146,4 +153,8 @@ export interface PathologyProfile {
 
   // Clinical pearls
   clinicalPearls: string[];
+
+  // Per-profile axis scoring functions (index-matched to axes[]).
+  // If omitted, AxisScorer falls back to K83.1-default scoring logic.
+  scorerFns?: AxisScorerFn[];
 }

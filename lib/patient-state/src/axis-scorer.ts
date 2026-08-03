@@ -11,11 +11,11 @@
 // the vector is the resulting pattern of dots on the radar sphere.
 
 import type { ClinicalFact, LabResultValue, VitalValue, DiagnosisValue } from './types.js';
-import type { PathologyProfile, AxisScore, PatientStateVector } from './pathology-profile.js';
+import type { AxisScorerFn, PathologyProfile, AxisScore, PatientStateVector } from './pathology-profile.js';
 
-// ─── Internal helpers ─────────────────────────────────────────────────────────
+// ─── Exported helpers — available to profile files ───────────────────────────
 
-function latestLab(facts: ClinicalFact[], name: string): { value: number; label: string } | null {
+export function latestLab(facts: ClinicalFact[], name: string): { value: number; label: string } | null {
   const hits = facts
     .filter(f => f.factType === 'lab_result' && f.status !== 'refuted')
     .filter(f => {
@@ -29,7 +29,7 @@ function latestLab(facts: ClinicalFact[], name: string): { value: number; label:
   return { value: num, label: `${v.testName} ${num} ${v.unit ?? ''}`.trim() };
 }
 
-function latestVital(facts: ClinicalFact[], param: string): { value: number; label: string } | null {
+export function latestVital(facts: ClinicalFact[], param: string): { value: number; label: string } | null {
   const hit = facts
     .filter(f => f.factType === 'vital' && f.status !== 'refuted')
     .filter(f => (f.value as VitalValue).parameter === param)
@@ -39,11 +39,11 @@ function latestVital(facts: ClinicalFact[], param: string): { value: number; lab
   return { value: v.numericValue, label: `${v.parameter} ${v.numericValue} ${v.unit ?? ''}`.trim() };
 }
 
-function clamp(v: number, lo = 0, hi = 100): number {
+export function clamp(v: number, lo = 0, hi = 100): number {
   return Math.max(lo, Math.min(hi, v));
 }
 
-function scoreLabel(score: number): string {
+export function scoreLabel(score: number): string {
   if (score < 20) return 'None';
   if (score < 40) return 'Mild';
   if (score < 60) return 'Moderate';
@@ -477,31 +477,37 @@ function scoreAxis13_Uncertainty(facts: ClinicalFact[]): Omit<AxisScore, 'axisId
   return { score: clamp(score), target: 0, riskThreshold: 40, label: scoreLabel(score), evidence };
 }
 
+// ─── K83.1 default scorers (used when profile.scorerFns is absent) ────────────
+
+const K83_1_SCORERS: AxisScorerFn[] = [
+  scoreAxis1_Anatomy,
+  scoreAxis2_Etiology,
+  scoreAxis3_Pathophysiology,
+  scoreAxis4_ClinicalActivity,
+  scoreAxis5_Obstruction,
+  scoreAxis6_SystemicImpact,
+  scoreAxis7_Temporal,
+  scoreAxis8_Response,
+  scoreAxis9_Risk,
+  scoreAxis10_Diagnostic,
+  scoreAxis11_Prognostic,
+  scoreAxis12_Therapeutic,
+  scoreAxis13_Uncertainty,
+];
+
 // ─── AxisScorer ───────────────────────────────────────────────────────────────
 
 export class AxisScorer {
   constructor(private readonly profile: PathologyProfile) {}
 
   score(facts: ClinicalFact[]): PatientStateVector {
-    const scorers = [
-      scoreAxis1_Anatomy,
-      scoreAxis2_Etiology,
-      scoreAxis3_Pathophysiology,
-      scoreAxis4_ClinicalActivity,
-      scoreAxis5_Obstruction,
-      scoreAxis6_SystemicImpact,
-      scoreAxis7_Temporal,
-      scoreAxis8_Response,
-      scoreAxis9_Risk,
-      scoreAxis10_Diagnostic,
-      scoreAxis11_Prognostic,
-      scoreAxis12_Therapeutic,
-      scoreAxis13_Uncertainty,
-    ];
+    const scorers = this.profile.scorerFns ?? K83_1_SCORERS;
 
     return this.profile.axes.map((axis, i) => {
       const fn = scorers[i];
-      const partial = fn ? fn(facts) : { score: 0, target: 0, riskThreshold: 50, label: 'None', evidence: [] };
+      const partial = fn
+        ? fn(facts)
+        : { score: 0, target: 0, riskThreshold: 50, label: 'None', evidence: [] };
       return { axisId: axis.id, ...partial } as AxisScore;
     });
   }
