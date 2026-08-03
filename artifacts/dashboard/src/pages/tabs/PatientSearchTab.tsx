@@ -442,6 +442,27 @@ export default function PatientSearchTab() {
     setPendingConfirmId(null);
   }
 
+  function handleMergeDuplicates() {
+    // Group by name, keep only the newest record per name, rewrite localStorage
+    const stored = loadDemoPatients();
+    const byName = new Map<string, DemoPatient>();
+    for (const p of stored) {
+      const key = (p.full_name ?? '').toLowerCase().trim();
+      if (!key) continue;
+      const existing = byName.get(key);
+      if (!existing) { byName.set(key, p); continue; }
+      // keep whichever was saved most recently
+      const existingDate = existing.savedAt ? new Date(existing.savedAt).getTime() : 0;
+      const pDate        = p.savedAt        ? new Date(p.savedAt).getTime()        : 0;
+      if (pDate > existingDate) byName.set(key, p);
+    }
+    const merged = Array.from(byName.values());
+    saveDemoPatients(merged);
+    setAllPatients(sortByAcuity(merged).map(demoToRow));
+    setHiddenIds(() => new Set()); // clear hidden IDs too — clean slate
+    setPendingConfirmId(null);
+  }
+
   function handleRowClick(p: PatientListRowEx) {
     if (isDuplicateName(p)) {
       // First click sets pending; second click (confirm) proceeds
@@ -585,13 +606,24 @@ export default function PatientSearchTab() {
       {duplicateNames.size > 0 && (
         <div style={{
           background: '#fffbeb', border: '1px solid #f59e0b', borderRadius: 8,
-          padding: '7px 12px', fontSize: 12, color: '#92400e', display: 'flex', alignItems: 'center', gap: 6,
+          padding: '7px 12px', fontSize: 12, color: '#92400e',
+          display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
         }}>
           <span style={{ fontSize: 14 }}>⚠</span>
-          <span>
-            <strong>Duplicate names detected</strong> — verify date of birth and record ID before starting an encounter.
-            Tap the correct record once to confirm, then again to load.
+          <span style={{ flex: 1 }}>
+            <strong>{duplicateNames.size} duplicate name{duplicateNames.size !== 1 ? 's' : ''}</strong> — older records shown with amber border.
           </span>
+          <button
+            type="button"
+            onClick={handleMergeDuplicates}
+            style={{
+              fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 6,
+              border: '1.5px solid #d97706', background: '#d97706', color: '#fff',
+              cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+            }}
+          >
+            Keep newest ✓
+          </button>
         </div>
       )}
 
