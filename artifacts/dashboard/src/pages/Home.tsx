@@ -123,6 +123,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'examination',       label: 'Full Exam'     },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
+    { id: 'sphere',            label: '360°'          },
     { id: 'prescriptions',     label: 'RX'            },
     { id: 'progress',          label: 'Notes'         },
     { id: 'monitoring',        label: 'Vitals'        },
@@ -149,6 +150,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'procedures',        label: 'ERCP'          },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
+    { id: 'sphere',            label: '360°'          },
     { id: 'progress',          label: 'Notes'         },
     { id: 'letters',           label: 'Letters'       },
   ],
@@ -163,6 +165,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'procedures',        label: 'OGD'           },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
+    { id: 'sphere',            label: '360°'          },
     { id: 'progress',          label: 'Notes'         },
     { id: 'letters',           label: 'Letters'       },
   ],
@@ -177,6 +180,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'procedures',        label: 'Colonoscopy'   },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
+    { id: 'sphere',            label: '360°'          },
     { id: 'progress',          label: 'Notes'         },
     { id: 'letters',           label: 'Letters'       },
   ],
@@ -189,6 +193,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'attachments',       label: 'Reports'       },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
+    { id: 'sphere',            label: '360°'          },
     { id: 'referring_providers', label: 'Referrals'  },
     { id: 'tasks',             label: 'Tasks'         },
     { id: 'letters',           label: 'Letters'       },
@@ -209,6 +214,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'investigations',    label: 'Labs'          },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
+    { id: 'sphere',            label: '360°'          },
     { id: 'prescriptions',     label: 'RX'            },
     { id: 'referring_providers', label: 'Referrals'  },
     { id: 'progress',          label: 'Notes'         },
@@ -351,6 +357,7 @@ export default function HomePage() {
 
   const [collapsed, setCollapsed] = useState(false);
   const [zenMode, setZenMode] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
   const [criticalResultCount, setCriticalResultCount] = useState(0);
   const [showAiPanel, setShowAiPanel] = useState(false);
@@ -371,6 +378,13 @@ export default function HomePage() {
   const prevPatientIdRef = useRef<string | null>(null);
   const acuityRef = useRef<HTMLDivElement>(null);
   const contextPanelRef = useRef<HTMLDivElement>(null);
+
+  // Collapse sidebar on narrow viewports (tablets/phones)
+  useEffect(() => {
+    const handler = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
 
   // Close acuity breakdown on outside click
   useEffect(() => {
@@ -695,7 +709,7 @@ export default function HomePage() {
   const ccLabel = activeCcKey ? (getMatrix(activeCcKey)?.name ?? null)
     : (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
 
-  const sidebarWidth = zenMode ? 0 : consultAmbient ? 52 : (collapsed || topSection === 'consultation') ? 52 : 182;
+  const sidebarWidth = zenMode ? 0 : windowWidth < 900 ? 52 : consultAmbient ? 52 : (collapsed || topSection === 'consultation') ? 52 : 182;
 
   if (userRole === 'nurse') return <Suspense fallback={null}><ErrorBoundary><NursePreVisitView /></ErrorBoundary></Suspense>;
 
