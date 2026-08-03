@@ -147,7 +147,23 @@ export default function PatientSearchTab() {
     setQuery('');
     setPendingConfirmId(null);
 
-    const all = loadDemoPatients();
+    const raw = loadDemoPatients();
+
+    // Auto-deduplicate silently on every load: keep newest per name
+    const byName = new Map<string, DemoPatient>();
+    const unnamed: DemoPatient[] = [];
+    for (const p of raw) {
+      const key = (p.full_name ?? '').toLowerCase().trim();
+      if (!key) { unnamed.push(p); continue; }
+      const existing = byName.get(key);
+      if (!existing) { byName.set(key, p); continue; }
+      const existingDate = existing.savedAt ? new Date(existing.savedAt).getTime() : 0;
+      const pDate = p.savedAt ? new Date(p.savedAt).getTime() : 0;
+      if (pDate >= existingDate) byName.set(key, p);
+    }
+    const all = [...Array.from(byName.values()), ...unnamed];
+    if (all.length < raw.length) saveDemoPatients(all);
+
     const filtered = siteFilter === 'all'
       ? all
       : all.filter(p => p.site === siteFilter);
