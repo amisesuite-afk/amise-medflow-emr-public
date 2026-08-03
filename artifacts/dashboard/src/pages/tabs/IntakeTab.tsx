@@ -94,22 +94,23 @@ export default function IntakeTab() {
   // Visit-type context flags — drive card ordering and conditional sections
   const isEmergency = visitType === 'urgent' || encounterType === 'major_emergency';
   const isErcp = visitType === 'ercp';
+  const hasVisitChecklist = !!visitType && visitType !== 'ercp';
 
   // Card visual order — CSS flex `order` property.
   // Emergency: triage banner → vitals → CC → identity → referral
   // ERCP:      referral → ERCP checklist → vitals → CC → identity
   // Default:   identity → referral → CC → vitals → scores → triage
-  type CardKey = 'triage' | 'abcde' | 'identity' | 'referral' | 'ercp_checklist';
+  type CardKey = 'triage' | 'abcde' | 'identity' | 'referral' | 'ercp_checklist' | 'visit_checklist';
   function cardOrder(k: CardKey): number {
     if (isEmergency) {
-      const map: Record<CardKey, number> = { triage: 0, abcde: 1, identity: 2, referral: 3, ercp_checklist: 10 };
+      const map: Record<CardKey, number> = { triage: 0, abcde: 1, identity: 2, referral: 3, visit_checklist: 4, ercp_checklist: 10 };
       return map[k];
     }
     if (isErcp) {
-      const map: Record<CardKey, number> = { referral: 1, ercp_checklist: 2, identity: 3, triage: 8, abcde: 9 };
+      const map: Record<CardKey, number> = { referral: 1, ercp_checklist: 2, identity: 3, triage: 8, abcde: 9, visit_checklist: 10 };
       return map[k];
     }
-    const map: Record<CardKey, number> = { identity: 1, referral: 2, triage: 3, ercp_checklist: 10, abcde: 11 };
+    const map: Record<CardKey, number> = { identity: 1, referral: 2, visit_checklist: 3, triage: 7, ercp_checklist: 10, abcde: 11 };
     return map[k];
   }
 
@@ -845,6 +846,17 @@ export default function IntakeTab() {
         </div>
       )}
 
+      {/* ── Visit-type-specific intake questionnaire — all non-ERCP types ── */}
+      {hasVisitChecklist && (
+        <div style={{ order: cardOrder('visit_checklist') }}>
+          <VisitChecklist
+            visitType={visitType!}
+            data={(procedureData[`${visitType!}_checklist`] as Record<string, unknown> | undefined) ?? {}}
+            onChange={d => setProcedureData({ ...procedureData, [`${visitType!}_checklist`]: d })}
+          />
+        </div>
+      )}
+
       {/* ── Patient message — pre-populates Consultation CC and HPI ── */}
       {/* CC selection, duration, pain score, vitals → Consultation tabs  */}
       <CollapsibleCard title="Patient message / notes" defaultOpen={!!freeText}>
@@ -1378,4 +1390,801 @@ function ErpcChecklist({
       </div>
     </CollapsibleCard>
   );
+}
+
+// ─── Visit-type-specific intake checklists ────────────────────────────────────
+
+// ── New Consult ───────────────────────────────────────────────────────────────
+interface NewConsultData {
+  referralUrgency: string;
+  indication: string;
+  referralQuestion: string;
+  prevDocumentsReviewed: boolean;
+  prevInvestigationsReviewed: boolean;
+  insuranceVerified: boolean;
+  insuranceDetails: string;
+  notes: string;
+}
+function defaultNewConsult(): NewConsultData {
+  return { referralUrgency: '', indication: '', referralQuestion: '', prevDocumentsReviewed: false, prevInvestigationsReviewed: false, insuranceVerified: false, insuranceDetails: '', notes: '' };
+}
+function NewConsultChecklist({ data: raw, onChange }: { data: unknown; onChange: (d: unknown) => void }) {
+  const d: NewConsultData = { ...defaultNewConsult(), ...(raw as Partial<NewConsultData> ?? {}) };
+  function set<K extends keyof NewConsultData>(k: K, v: NewConsultData[K]) { onChange({ ...d, [k]: v }); }
+  const missing = [!d.referralUrgency, !d.indication].filter(Boolean).length;
+  return (
+    <CollapsibleCard title="First consult — intake questionnaire" badge={missing > 0 ? `${missing} required` : 'Ready'} badgeVariant={missing > 0 ? 'warn' : 'default'} defaultOpen>
+      <div className="fld">
+        <label>Referral urgency</label>
+        <select value={d.referralUrgency} onChange={e => set('referralUrgency', e.target.value)}>
+          <option value="">— Select —</option>
+          {['Routine', '2-week wait (cancer pathway)', 'Urgent (within 2 weeks)', 'Same day / Emergency'].map(o => <option key={o} value={o}>{o}</option>)}
+        </select>
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Indication / referring diagnosis</label>
+        <input value={d.indication} onChange={e => set('indication', e.target.value)} placeholder="e.g. Right inguinal hernia, query appendicitis, new breast lump…" />
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Specific question from referrer</label>
+        <input value={d.referralQuestion} onChange={e => set('referralQuestion', e.target.value)} placeholder="e.g. Please assess and advise on operative management…" />
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          Pre-consultation preparation
+        </div>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.prevDocumentsReviewed} onChange={e => set('prevDocumentsReviewed', e.target.checked)} />Prior letters / documents reviewed</label>
+          <label><input type="checkbox" checked={d.prevInvestigationsReviewed} onChange={e => set('prevInvestigationsReviewed', e.target.checked)} />Prior investigations reviewed</label>
+          <label><input type="checkbox" checked={d.insuranceVerified} onChange={e => set('insuranceVerified', e.target.checked)} />Insurance / funding verified</label>
+        </div>
+        {d.insuranceVerified && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Insurance / authorisation details</label>
+            <input value={d.insuranceDetails} onChange={e => set('insuranceDetails', e.target.value)} placeholder="e.g. CLICO auth #12345, pre-approved for consultation" />
+          </div>
+        )}
+      </div>
+      <div className="fld" style={{ marginTop: 10 }}>
+        <label>Admin notes</label>
+        <textarea value={d.notes} onChange={e => set('notes', e.target.value)} placeholder="Any other admin or clinical context relevant to this referral…" style={{ minHeight: 60 }} />
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+// ── Follow-up ─────────────────────────────────────────────────────────────────
+interface FollowUpData {
+  lastVisitDate: string;
+  lastVisitOutcome: string;
+  pendingResults: string;
+  changesSinceLastVisit: string;
+  patientConcerns: string;
+  notes: string;
+}
+function defaultFollowUp(): FollowUpData {
+  return { lastVisitDate: '', lastVisitOutcome: '', pendingResults: '', changesSinceLastVisit: '', patientConcerns: '', notes: '' };
+}
+function FollowUpChecklist({ data: raw, onChange }: { data: unknown; onChange: (d: unknown) => void }) {
+  const d: FollowUpData = { ...defaultFollowUp(), ...(raw as Partial<FollowUpData> ?? {}) };
+  function set<K extends keyof FollowUpData>(k: K, v: FollowUpData[K]) { onChange({ ...d, [k]: v }); }
+  return (
+    <CollapsibleCard title="Follow-up — intake questionnaire" defaultOpen>
+      <div className="form-grid cols-2">
+        <div className="fld">
+          <label>Last visit date</label>
+          <input type="date" value={d.lastVisitDate} onChange={e => set('lastVisitDate', e.target.value)} />
+        </div>
+        <div className="fld">
+          <label>Last visit outcome / plan</label>
+          <input value={d.lastVisitOutcome} onChange={e => set('lastVisitOutcome', e.target.value)} placeholder="e.g. Watchful waiting, repeat USS in 3 months" />
+        </div>
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Pending results (labs / imaging not yet reviewed)</label>
+        <input value={d.pendingResults} onChange={e => set('pendingResults', e.target.value)} placeholder="e.g. CT abdomen ordered, histology from 28 June biopsy" />
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Changes / new symptoms since last visit</label>
+        <textarea value={d.changesSinceLastVisit} onChange={e => set('changesSinceLastVisit', e.target.value)} placeholder="Any new or worsening symptoms since the last appointment…" style={{ minHeight: 60 }} />
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Patient concerns for today's visit</label>
+        <input value={d.patientConcerns} onChange={e => set('patientConcerns', e.target.value)} placeholder="e.g. Worried about pathology result, pain not improving" />
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Admin notes</label>
+        <textarea value={d.notes} onChange={e => set('notes', e.target.value)} placeholder="Scheduling notes, insurance, transport requirements…" style={{ minHeight: 40 }} />
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+// ── Post-op Review ────────────────────────────────────────────────────────────
+interface PostOpData {
+  procedurePerformed: string;
+  procedureDate: string;
+  woundStatus: string;
+  drainPresent: boolean;
+  drainOutput: string;
+  bowelFunctionRestored: boolean;
+  histoResultAvailable: boolean;
+  histoResult: string;
+  notes: string;
+}
+function defaultPostOp(): PostOpData {
+  return { procedurePerformed: '', procedureDate: '', woundStatus: '', drainPresent: false, drainOutput: '', bowelFunctionRestored: false, histoResultAvailable: false, histoResult: '', notes: '' };
+}
+function PostOpChecklist({ data: raw, onChange }: { data: unknown; onChange: (d: unknown) => void }) {
+  const d: PostOpData = { ...defaultPostOp(), ...(raw as Partial<PostOpData> ?? {}) };
+  function set<K extends keyof PostOpData>(k: K, v: PostOpData[K]) { onChange({ ...d, [k]: v }); }
+  const missing = [!d.procedurePerformed, !d.procedureDate, !d.woundStatus].filter(Boolean).length;
+  const daysPostOp = d.procedureDate
+    ? Math.max(0, Math.floor((new Date().setHours(0,0,0,0) - new Date(d.procedureDate).setHours(0,0,0,0)) / 86_400_000))
+    : null;
+  return (
+    <CollapsibleCard title="Post-op review — intake questionnaire" badge={missing > 0 ? `${missing} required` : 'Ready'} badgeVariant={missing > 0 ? 'warn' : 'default'} defaultOpen>
+      <div className="form-grid cols-2">
+        <div className="fld">
+          <label>Procedure performed</label>
+          <input value={d.procedurePerformed} onChange={e => set('procedurePerformed', e.target.value)} placeholder="e.g. Laparoscopic cholecystectomy" />
+        </div>
+        <div className="fld">
+          <label>Date of surgery</label>
+          <input type="date" value={d.procedureDate} onChange={e => set('procedureDate', e.target.value)} />
+          {daysPostOp !== null && (
+            <span style={{ fontSize: 11, color: '#6b7280', marginTop: 2, display: 'block' }}>
+              Day {daysPostOp} post-operative
+            </span>
+          )}
+        </div>
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Wound status</label>
+        <select value={d.woundStatus} onChange={e => set('woundStatus', e.target.value)}>
+          <option value="">— Select —</option>
+          {['Healing well', 'Seroma', 'Superficial wound infection', 'Deep surgical site infection', 'Wound dehiscence', 'Wound open / packing', 'Not yet assessed'].map(o => <option key={o} value={o}>{o}</option>)}
+        </select>
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          Recovery status
+        </div>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.bowelFunctionRestored} onChange={e => set('bowelFunctionRestored', e.target.checked)} />Bowel function restored</label>
+          <label><input type="checkbox" checked={d.drainPresent} onChange={e => set('drainPresent', e.target.checked)} />Surgical drain in situ</label>
+          <label><input type="checkbox" checked={d.histoResultAvailable} onChange={e => set('histoResultAvailable', e.target.checked)} />Histology result available</label>
+        </div>
+        {d.drainPresent && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Drain output (volume / character)</label>
+            <input value={d.drainOutput} onChange={e => set('drainOutput', e.target.value)} placeholder="e.g. 30 mL/day, serous" />
+          </div>
+        )}
+        {d.histoResultAvailable && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Histology result summary</label>
+            <textarea value={d.histoResult} onChange={e => set('histoResult', e.target.value)} placeholder="e.g. Chronic cholecystitis with cholesterol polyps — no malignancy" style={{ minHeight: 50 }} />
+          </div>
+        )}
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Admin / clinical notes</label>
+        <textarea value={d.notes} onChange={e => set('notes', e.target.value)} placeholder="Suture removal, district nurse, GP notification, outstanding results…" style={{ minHeight: 50 }} />
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+// ── OGD ───────────────────────────────────────────────────────────────────────
+const OGD_INDICATIONS = [
+  'Dyspepsia unresponsive to treatment', 'Dysphagia / odynophagia', 'Upper GI bleed / haematemesis',
+  'Iron-deficiency anaemia', 'Unexplained weight loss', 'Reflux — further assessment',
+  "Barrett's surveillance", 'Coeliac screen / duodenal biopsy',
+  'Gastric ulcer — surveillance', 'H. pylori CLO test', 'Other',
+];
+interface OgdData {
+  indication: string;
+  fastingHours: string;
+  fastingCompliant: boolean;
+  ivAccessInserted: boolean;
+  anticoagulantReviewed: boolean;
+  anticoagulantDetails: string;
+  allergyReviewed: boolean;
+  consentSigned: boolean;
+  consentDate: string;
+  sedationType: string;
+  cSprayGiven: boolean;
+  scopeAvailable: boolean;
+  biopsyForcepsAvailable: boolean;
+  notes: string;
+}
+function defaultOgd(): OgdData {
+  return { indication: '', fastingHours: '', fastingCompliant: false, ivAccessInserted: false, anticoagulantReviewed: false, anticoagulantDetails: '', allergyReviewed: false, consentSigned: false, consentDate: '', sedationType: 'throat_spray', cSprayGiven: false, scopeAvailable: false, biopsyForcepsAvailable: false, notes: '' };
+}
+function OgdChecklist({ data: raw, onChange }: { data: unknown; onChange: (d: unknown) => void }) {
+  const d: OgdData = { ...defaultOgd(), ...(raw as Partial<OgdData> ?? {}) };
+  function set<K extends keyof OgdData>(k: K, v: OgdData[K]) { onChange({ ...d, [k]: v }); }
+  const missing = [!d.indication, !d.fastingHours, !d.consentSigned, !d.allergyReviewed, !d.scopeAvailable].filter(Boolean).length;
+  return (
+    <CollapsibleCard title="OGD — pre-procedure checklist" badge={missing > 0 ? `${missing} incomplete` : 'Ready'} badgeVariant={missing > 0 ? 'warn' : 'default'} defaultOpen>
+      <div className="fld">
+        <label>Indication</label>
+        <select value={d.indication} onChange={e => set('indication', e.target.value)}>
+          <option value="">— Select —</option>
+          {OGD_INDICATIONS.map(i => <option key={i} value={i}>{i}</option>)}
+        </select>
+      </div>
+      <div className="form-grid cols-2" style={{ marginTop: 8 }}>
+        <div className="fld">
+          <label>Fasting duration (hours)</label>
+          <input type="number" inputMode="numeric" min={0} max={24} value={d.fastingHours} onChange={e => set('fastingHours', e.target.value)} placeholder="e.g. 6" />
+          {d.fastingHours && parseFloat(d.fastingHours) < 6 && (
+            <span style={{ fontSize: 11, color: '#dc2626', marginTop: 2, display: 'block' }}>⚠ Minimum 6 h solids / 2 h clear fluids</span>
+          )}
+        </div>
+        <div className="fld">
+          <label>Sedation / anaesthesia</label>
+          <select value={d.sedationType} onChange={e => set('sedationType', e.target.value)}>
+            <option value="throat_spray">Throat spray only</option>
+            <option value="sedation">Conscious sedation (midazolam)</option>
+            <option value="mac">MAC / deep sedation</option>
+            <option value="ga">General anaesthesia</option>
+          </select>
+        </div>
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>
+          Pre-procedure checks
+        </div>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.consentSigned} onChange={e => set('consentSigned', e.target.checked)} />Signed consent obtained</label>
+          <label><input type="checkbox" checked={d.allergyReviewed} onChange={e => set('allergyReviewed', e.target.checked)} />Allergy status reviewed</label>
+          <label><input type="checkbox" checked={d.anticoagulantReviewed} onChange={e => set('anticoagulantReviewed', e.target.checked)} />Anticoagulants reviewed</label>
+          <label><input type="checkbox" checked={d.fastingCompliant} onChange={e => set('fastingCompliant', e.target.checked)} />Fasting confirmed by patient</label>
+          <label><input type="checkbox" checked={d.ivAccessInserted} onChange={e => set('ivAccessInserted', e.target.checked)} />IV access in situ</label>
+          <label><input type="checkbox" checked={d.cSprayGiven} onChange={e => set('cSprayGiven', e.target.checked)} />Throat spray given</label>
+          <label><input type="checkbox" checked={d.scopeAvailable} onChange={e => set('scopeAvailable', e.target.checked)} />Gastroscope available &amp; checked</label>
+          <label><input type="checkbox" checked={d.biopsyForcepsAvailable} onChange={e => set('biopsyForcepsAvailable', e.target.checked)} />Biopsy forceps available</label>
+        </div>
+        {d.anticoagulantReviewed && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Anticoagulant details (if any)</label>
+            <input value={d.anticoagulantDetails} onChange={e => set('anticoagulantDetails', e.target.value)} placeholder="e.g. Warfarin held ×5 days, INR 1.2 — or — Not on anticoagulants" />
+          </div>
+        )}
+        {d.consentSigned && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Consent date</label>
+            <input type="date" value={d.consentDate} onChange={e => set('consentDate', e.target.value)} />
+          </div>
+        )}
+      </div>
+      <div className="fld" style={{ marginTop: 10 }}>
+        <label>Pre-procedure notes</label>
+        <textarea value={d.notes} onChange={e => set('notes', e.target.value)} placeholder="Additional notes or concerns…" style={{ minHeight: 50 }} />
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+// ── Colonoscopy ───────────────────────────────────────────────────────────────
+const COL_INDICATIONS = [
+  'Colorectal cancer screening', 'Polyp surveillance', 'Change in bowel habit', 'Rectal bleeding',
+  'Iron-deficiency anaemia', 'IBD — assessment', 'IBD — surveillance',
+  'Diverticular disease', 'Lower GI bleed', 'Incomplete colonoscopy follow-up', 'Other',
+];
+const PREP_AGENTS = ['Moviprep (PEG)', 'Klean-Prep (PEG)', 'Picolax / Picoprep', 'Fleet Phospho-Soda', 'Dulcolax + low-residue diet', 'Other'];
+interface ColonoscopyData {
+  indication: string;
+  prepAgent: string;
+  prepCompleted: boolean;
+  prepQuality: string;
+  lowResidueDiet: boolean;
+  fastingHours: string;
+  fastingCompliant: boolean;
+  ivAccessInserted: boolean;
+  anticoagulantReviewed: boolean;
+  anticoagulantDetails: string;
+  consentSigned: boolean;
+  consentDate: string;
+  sedationType: string;
+  diathermyAvailable: boolean;
+  notes: string;
+}
+function defaultColonoscopy(): ColonoscopyData {
+  return { indication: '', prepAgent: '', prepCompleted: false, prepQuality: '', lowResidueDiet: false, fastingHours: '', fastingCompliant: false, ivAccessInserted: false, anticoagulantReviewed: false, anticoagulantDetails: '', consentSigned: false, consentDate: '', sedationType: 'sedation', diathermyAvailable: false, notes: '' };
+}
+function ColonoscopyChecklist({ data: raw, onChange }: { data: unknown; onChange: (d: unknown) => void }) {
+  const d: ColonoscopyData = { ...defaultColonoscopy(), ...(raw as Partial<ColonoscopyData> ?? {}) };
+  function set<K extends keyof ColonoscopyData>(k: K, v: ColonoscopyData[K]) { onChange({ ...d, [k]: v }); }
+  const missing = [!d.indication, !d.prepAgent, !d.consentSigned, !d.fastingHours].filter(Boolean).length;
+  return (
+    <CollapsibleCard title="Colonoscopy — pre-procedure checklist" badge={missing > 0 ? `${missing} incomplete` : 'Ready'} badgeVariant={missing > 0 ? 'warn' : 'default'} defaultOpen>
+      <div className="fld">
+        <label>Indication</label>
+        <select value={d.indication} onChange={e => set('indication', e.target.value)}>
+          <option value="">— Select —</option>
+          {COL_INDICATIONS.map(i => <option key={i} value={i}>{i}</option>)}
+        </select>
+      </div>
+      <div className="form-grid cols-2" style={{ marginTop: 8 }}>
+        <div className="fld">
+          <label>Bowel prep agent</label>
+          <select value={d.prepAgent} onChange={e => set('prepAgent', e.target.value)}>
+            <option value="">— Select —</option>
+            {PREP_AGENTS.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+        </div>
+        <div className="fld">
+          <label>Patient-reported prep quality</label>
+          <select value={d.prepQuality} onChange={e => set('prepQuality', e.target.value)}>
+            <option value="">— Unknown —</option>
+            {['Excellent (clear yellow fluid)', 'Good (only clear fluid)', 'Fair (some solid visible)', 'Poor (significant solid/brown)', 'Not yet completed'].map(q => <option key={q} value={q}>{q}</option>)}
+          </select>
+        </div>
+        <div className="fld">
+          <label>Fasting duration (hours)</label>
+          <input type="number" inputMode="numeric" min={0} max={24} value={d.fastingHours} onChange={e => set('fastingHours', e.target.value)} placeholder="e.g. 4" />
+        </div>
+        <div className="fld">
+          <label>Sedation / anaesthesia</label>
+          <select value={d.sedationType} onChange={e => set('sedationType', e.target.value)}>
+            <option value="sedation">Conscious sedation</option>
+            <option value="mac">MAC / deep sedation</option>
+            <option value="ga">General anaesthesia</option>
+          </select>
+        </div>
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>Pre-procedure checks</div>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.prepCompleted} onChange={e => set('prepCompleted', e.target.checked)} />Bowel prep completed</label>
+          <label><input type="checkbox" checked={d.lowResidueDiet} onChange={e => set('lowResidueDiet', e.target.checked)} />Low-residue diet followed (day before)</label>
+          <label><input type="checkbox" checked={d.fastingCompliant} onChange={e => set('fastingCompliant', e.target.checked)} />Fasting confirmed by patient</label>
+          <label><input type="checkbox" checked={d.consentSigned} onChange={e => set('consentSigned', e.target.checked)} />Signed consent obtained</label>
+          <label><input type="checkbox" checked={d.anticoagulantReviewed} onChange={e => set('anticoagulantReviewed', e.target.checked)} />Anticoagulants reviewed</label>
+          <label><input type="checkbox" checked={d.ivAccessInserted} onChange={e => set('ivAccessInserted', e.target.checked)} />IV access in situ</label>
+          <label><input type="checkbox" checked={d.diathermyAvailable} onChange={e => set('diathermyAvailable', e.target.checked)} />Diathermy / polypectomy kit available</label>
+        </div>
+        {d.anticoagulantReviewed && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Anticoagulant details (if any)</label>
+            <input value={d.anticoagulantDetails} onChange={e => set('anticoagulantDetails', e.target.value)} placeholder="e.g. Apixaban held ×48 h — or — Not on anticoagulants" />
+          </div>
+        )}
+        {d.consentSigned && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Consent date</label>
+            <input type="date" value={d.consentDate} onChange={e => set('consentDate', e.target.value)} />
+          </div>
+        )}
+      </div>
+      <div className="fld" style={{ marginTop: 10 }}>
+        <label>Pre-procedure notes</label>
+        <textarea value={d.notes} onChange={e => set('notes', e.target.value)} placeholder="Additional prep notes, patient concerns, theatre requests…" style={{ minHeight: 50 }} />
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+// ── Breast Clinic ─────────────────────────────────────────────────────────────
+interface BreastData {
+  presentingFeature: string;
+  side: string;
+  durationWeeks: string;
+  mammogramDone: boolean;
+  mammogramDate: string;
+  mammogramResult: string;
+  ussDone: boolean;
+  ussResult: string;
+  familyHistoryBC: boolean;
+  brcaKnown: boolean;
+  brcaType: string;
+  hrtOcp: boolean;
+  priorBiopsy: boolean;
+  priorBiopsyResult: string;
+  tripleAssessmentComplete: boolean;
+  notes: string;
+}
+function defaultBreast(): BreastData {
+  return { presentingFeature: '', side: '', durationWeeks: '', mammogramDone: false, mammogramDate: '', mammogramResult: '', ussDone: false, ussResult: '', familyHistoryBC: false, brcaKnown: false, brcaType: '', hrtOcp: false, priorBiopsy: false, priorBiopsyResult: '', tripleAssessmentComplete: false, notes: '' };
+}
+function BreastChecklist({ data: raw, onChange }: { data: unknown; onChange: (d: unknown) => void }) {
+  const d: BreastData = { ...defaultBreast(), ...(raw as Partial<BreastData> ?? {}) };
+  function set<K extends keyof BreastData>(k: K, v: BreastData[K]) { onChange({ ...d, [k]: v }); }
+  const missing = [!d.presentingFeature, !d.side].filter(Boolean).length;
+  return (
+    <CollapsibleCard title="Breast clinic — intake questionnaire" badge={missing > 0 ? `${missing} required` : 'Ready'} badgeVariant={missing > 0 ? 'warn' : 'default'} defaultOpen>
+      <div className="form-grid cols-2">
+        <div className="fld">
+          <label>Presenting feature</label>
+          <select value={d.presentingFeature} onChange={e => set('presentingFeature', e.target.value)}>
+            <option value="">— Select —</option>
+            {['Lump / mass', 'Breast pain', 'Nipple discharge', 'Skin change / dimpling', 'Nipple retraction / inversion', 'Screen-detected / incidental', 'Follow-up / surveillance'].map(f => <option key={f} value={f}>{f}</option>)}
+          </select>
+        </div>
+        <div className="fld">
+          <label>Side</label>
+          <select value={d.side} onChange={e => set('side', e.target.value)}>
+            <option value="">— Select —</option>
+            {['Left', 'Right', 'Both', 'N/A (systemic / screen)'].map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div className="fld">
+          <label>Duration (weeks)</label>
+          <input type="number" inputMode="numeric" min={0} value={d.durationWeeks} onChange={e => set('durationWeeks', e.target.value)} placeholder="e.g. 6" />
+        </div>
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>Imaging</div>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.mammogramDone} onChange={e => set('mammogramDone', e.target.checked)} />Mammogram performed</label>
+          <label><input type="checkbox" checked={d.ussDone} onChange={e => set('ussDone', e.target.checked)} />USS breast performed</label>
+          <label><input type="checkbox" checked={d.tripleAssessmentComplete} onChange={e => set('tripleAssessmentComplete', e.target.checked)} />Triple assessment complete</label>
+        </div>
+        {d.mammogramDone && (
+          <div className="form-grid cols-2" style={{ marginTop: 6 }}>
+            <div className="fld">
+              <label>Mammogram date</label>
+              <input type="date" value={d.mammogramDate} onChange={e => set('mammogramDate', e.target.value)} />
+            </div>
+            <div className="fld">
+              <label>Mammogram result / BI-RADS</label>
+              <input value={d.mammogramResult} onChange={e => set('mammogramResult', e.target.value)} placeholder="e.g. BI-RADS 4 — suspicious calcifications" />
+            </div>
+          </div>
+        )}
+        {d.ussDone && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>USS result</label>
+            <input value={d.ussResult} onChange={e => set('ussResult', e.target.value)} placeholder="e.g. 18 mm hypoechoic lesion, irregular margins, left UOQ" />
+          </div>
+        )}
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>Risk factors</div>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.familyHistoryBC} onChange={e => set('familyHistoryBC', e.target.checked)} />1st-degree family history of breast cancer</label>
+          <label><input type="checkbox" checked={d.brcaKnown} onChange={e => set('brcaKnown', e.target.checked)} />Known BRCA mutation</label>
+          <label><input type="checkbox" checked={d.hrtOcp} onChange={e => set('hrtOcp', e.target.checked)} />Current / recent HRT or OCP</label>
+          <label><input type="checkbox" checked={d.priorBiopsy} onChange={e => set('priorBiopsy', e.target.checked)} />Prior breast biopsy</label>
+        </div>
+        {d.brcaKnown && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>BRCA type</label>
+            <select value={d.brcaType} onChange={e => set('brcaType', e.target.value)}>
+              <option value="">— Unknown —</option>
+              {['BRCA1', 'BRCA2', 'Other (PALB2 / CHEK2 / ATM)', 'Awaiting result'].map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+          </div>
+        )}
+        {d.priorBiopsy && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Prior biopsy result</label>
+            <input value={d.priorBiopsyResult} onChange={e => set('priorBiopsyResult', e.target.value)} placeholder="e.g. Fibroadenoma, ADH, LCIS" />
+          </div>
+        )}
+      </div>
+      <div className="fld" style={{ marginTop: 10 }}>
+        <label>Additional notes</label>
+        <textarea value={d.notes} onChange={e => set('notes', e.target.value)} placeholder="Cosmetic concerns, family support, transport, language needs…" style={{ minHeight: 50 }} />
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+// ── Telephone ─────────────────────────────────────────────────────────────────
+interface TelephoneData {
+  callReason: string;
+  urgency: string;
+  outcome: string;
+  outcomeDetails: string;
+  callbackRequired: boolean;
+  callbackDate: string;
+  notes: string;
+}
+function defaultTelephone(): TelephoneData {
+  return { callReason: '', urgency: '', outcome: '', outcomeDetails: '', callbackRequired: false, callbackDate: '', notes: '' };
+}
+function TelephoneChecklist({ data: raw, onChange }: { data: unknown; onChange: (d: unknown) => void }) {
+  const d: TelephoneData = { ...defaultTelephone(), ...(raw as Partial<TelephoneData> ?? {}) };
+  function set<K extends keyof TelephoneData>(k: K, v: TelephoneData[K]) { onChange({ ...d, [k]: v }); }
+  const missing = [!d.callReason, !d.outcome].filter(Boolean).length;
+  return (
+    <CollapsibleCard title="Telephone consultation — intake record" badge={missing > 0 ? `${missing} required` : 'Ready'} badgeVariant={missing > 0 ? 'warn' : 'default'} defaultOpen>
+      <div className="fld">
+        <label>Reason for call</label>
+        <textarea value={d.callReason} onChange={e => set('callReason', e.target.value)} placeholder="Brief description of why the patient / referrer is calling…" style={{ minHeight: 60 }} />
+      </div>
+      <div className="form-grid cols-2" style={{ marginTop: 8 }}>
+        <div className="fld">
+          <label>Urgency</label>
+          <select value={d.urgency} onChange={e => set('urgency', e.target.value)}>
+            <option value="">— Select —</option>
+            {['Routine — non-urgent query', 'Moderately urgent — review within 24–48 h', 'Urgent — same-day review required', 'Emergency — referred to ER'].map(u => <option key={u} value={u}>{u}</option>)}
+          </select>
+        </div>
+        <div className="fld">
+          <label>Outcome / action taken</label>
+          <select value={d.outcome} onChange={e => set('outcome', e.target.value)}>
+            <option value="">— Select —</option>
+            {['Advice given — no further action', 'Follow-up appointment booked', 'Referred to ER / Emergency services', 'Prescription issued', 'Investigation ordered', 'Callback needed — await further info', 'Escalated to Dr Kabiye'].map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Outcome details</label>
+        <textarea value={d.outcomeDetails} onChange={e => set('outcomeDetails', e.target.value)} placeholder="Summary of advice given, appointment arranged, or actions taken…" style={{ minHeight: 50 }} />
+      </div>
+      <div style={{ marginTop: 8 }}>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.callbackRequired} onChange={e => set('callbackRequired', e.target.checked)} />Callback required</label>
+        </div>
+        {d.callbackRequired && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Callback by (date)</label>
+            <input type="date" value={d.callbackDate} onChange={e => set('callbackDate', e.target.value)} />
+          </div>
+        )}
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Additional notes</label>
+        <textarea value={d.notes} onChange={e => set('notes', e.target.value)} placeholder="Any further context or follow-up instructions…" style={{ minHeight: 40 }} />
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+// ── Diabetic Foot ─────────────────────────────────────────────────────────────
+const WAGNER_GRADES = [
+  '0 — No open lesion; pre/post-ulcerative',
+  '1 — Superficial ulcer (skin / subcutaneous)',
+  '2 — Deep ulcer (tendon, capsule, or bone)',
+  '3 — Ulcer with osteomyelitis or abscess',
+  '4 — Forefoot / partial foot gangrene',
+  '5 — Whole foot / extensive gangrene',
+];
+interface DiabeticFootData {
+  woundSite: string;
+  wagnerGrade: string;
+  woundSizeCm: string;
+  infectionPresent: boolean;
+  infectionSeverity: string;
+  abpiDone: boolean;
+  abpiValue: string;
+  pulsesPalpable: boolean;
+  vascularReferralNeeded: boolean;
+  neuropathyAssessed: boolean;
+  monofilamentLoss: boolean;
+  offloadingDevice: string;
+  boneInvolvementSuspected: boolean;
+  xrayOrdered: boolean;
+  mriOrdered: boolean;
+  hba1c: string;
+  crp: string;
+  wcc: string;
+  notes: string;
+}
+function defaultDiabeticFoot(): DiabeticFootData {
+  return { woundSite: '', wagnerGrade: '', woundSizeCm: '', infectionPresent: false, infectionSeverity: '', abpiDone: false, abpiValue: '', pulsesPalpable: false, vascularReferralNeeded: false, neuropathyAssessed: false, monofilamentLoss: false, offloadingDevice: '', boneInvolvementSuspected: false, xrayOrdered: false, mriOrdered: false, hba1c: '', crp: '', wcc: '', notes: '' };
+}
+function DiabeticFootChecklist({ data: raw, onChange }: { data: unknown; onChange: (d: unknown) => void }) {
+  const d: DiabeticFootData = { ...defaultDiabeticFoot(), ...(raw as Partial<DiabeticFootData> ?? {}) };
+  function set<K extends keyof DiabeticFootData>(k: K, v: DiabeticFootData[K]) { onChange({ ...d, [k]: v }); }
+  const missing = [!d.woundSite, !d.wagnerGrade].filter(Boolean).length;
+  return (
+    <CollapsibleCard title="Diabetic foot — intake assessment" badge={missing > 0 ? `${missing} required` : 'Ready'} badgeVariant={missing > 0 ? 'warn' : 'default'} defaultOpen>
+      <div className="form-grid cols-2">
+        <div className="fld">
+          <label>Wound site</label>
+          <select value={d.woundSite} onChange={e => set('woundSite', e.target.value)}>
+            <option value="">— Select —</option>
+            {['Toe / digit', 'Forefoot / metatarsal heads', 'Heel', 'Dorsum of foot', 'Plantar / sole', 'Multiple sites', 'Whole foot'].map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div className="fld">
+          <label>Wagner grade</label>
+          <select value={d.wagnerGrade} onChange={e => set('wagnerGrade', e.target.value)}>
+            <option value="">— Select —</option>
+            {WAGNER_GRADES.map(g => <option key={g} value={g}>{g}</option>)}
+          </select>
+        </div>
+        <div className="fld">
+          <label>Wound dimensions</label>
+          <input value={d.woundSizeCm} onChange={e => set('woundSizeCm', e.target.value)} placeholder="e.g. 3 × 2 cm, depth 0.5 cm" />
+        </div>
+        <div className="fld">
+          <label>Offloading device</label>
+          <select value={d.offloadingDevice} onChange={e => set('offloadingDevice', e.target.value)}>
+            <option value="">— Select —</option>
+            {['None', 'Total contact cast (TCC)', 'Removable CAM walker', 'Half-shoe / heel relief shoe', 'Custom insole / footwear', 'Wheelchair / non-weight-bearing', 'Bed rest'].map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>Infection</div>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.infectionPresent} onChange={e => set('infectionPresent', e.target.checked)} />Infection present</label>
+        </div>
+        {d.infectionPresent && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>Infection severity (IDSA / IWGDF)</label>
+            <select value={d.infectionSeverity} onChange={e => set('infectionSeverity', e.target.value)}>
+              <option value="">— Select —</option>
+              {['Mild (local, ≤ 2 cm, no systemic signs)', 'Moderate (> 2 cm / deep, no systemic signs)', 'Severe (systemic inflammatory response present)'].map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+        )}
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>Vascular assessment</div>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.pulsesPalpable} onChange={e => set('pulsesPalpable', e.target.checked)} />Pedal pulses palpable (DP + PT)</label>
+          <label><input type="checkbox" checked={d.abpiDone} onChange={e => set('abpiDone', e.target.checked)} />ABPI measured</label>
+          <label><input type="checkbox" checked={d.vascularReferralNeeded} onChange={e => set('vascularReferralNeeded', e.target.checked)} />Vascular referral required</label>
+        </div>
+        {d.abpiDone && (
+          <div className="fld" style={{ marginTop: 6 }}>
+            <label>ABPI value</label>
+            <input type="number" inputMode="decimal" step={0.01} min={0} max={2} value={d.abpiValue} onChange={e => set('abpiValue', e.target.value)} placeholder="e.g. 0.85"
+              className={d.abpiValue && parseFloat(d.abpiValue) < 0.5 ? 'danger' : d.abpiValue && parseFloat(d.abpiValue) < 0.8 ? 'warn' : ''} />
+            {d.abpiValue && parseFloat(d.abpiValue) < 0.5 && <span style={{ fontSize: 11, color: '#dc2626', marginTop: 2, display: 'block' }}>⚠ Critical ischaemia — urgent vascular review</span>}
+          </div>
+        )}
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>Neuropathy &amp; imaging</div>
+        <div className="check-row">
+          <label><input type="checkbox" checked={d.neuropathyAssessed} onChange={e => set('neuropathyAssessed', e.target.checked)} />Neuropathy assessed</label>
+          <label><input type="checkbox" checked={d.monofilamentLoss} onChange={e => set('monofilamentLoss', e.target.checked)} />10 g monofilament sensation lost</label>
+          <label><input type="checkbox" checked={d.boneInvolvementSuspected} onChange={e => set('boneInvolvementSuspected', e.target.checked)} />Bone involvement suspected (probe-to-bone +ve)</label>
+          <label><input type="checkbox" checked={d.xrayOrdered} onChange={e => set('xrayOrdered', e.target.checked)} />X-ray of foot ordered</label>
+          <label><input type="checkbox" checked={d.mriOrdered} onChange={e => set('mriOrdered', e.target.checked)} />MRI foot ordered</label>
+        </div>
+      </div>
+      <div style={{ marginTop: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>Bloods</div>
+        <div className="form-grid cols-2">
+          <div className="fld">
+            <label>HbA1c (%)</label>
+            <input type="number" inputMode="decimal" step={0.1} value={d.hba1c} onChange={e => set('hba1c', e.target.value)} placeholder="e.g. 9.2"
+              className={d.hba1c && parseFloat(d.hba1c) > 10 ? 'danger' : d.hba1c && parseFloat(d.hba1c) > 8 ? 'warn' : ''} />
+          </div>
+          <div className="fld">
+            <label>CRP (mg/L)</label>
+            <input type="number" inputMode="decimal" step={1} value={d.crp} onChange={e => set('crp', e.target.value)} placeholder="e.g. 48"
+              className={d.crp && parseFloat(d.crp) > 100 ? 'danger' : d.crp && parseFloat(d.crp) > 20 ? 'warn' : ''} />
+          </div>
+          <div className="fld">
+            <label>WCC (×10⁹/L)</label>
+            <input type="number" inputMode="decimal" step={0.1} value={d.wcc} onChange={e => set('wcc', e.target.value)} placeholder="e.g. 14.2"
+              className={d.wcc && parseFloat(d.wcc) > 20 ? 'danger' : d.wcc && parseFloat(d.wcc) > 11 ? 'warn' : ''} />
+          </div>
+        </div>
+      </div>
+      <div className="fld" style={{ marginTop: 10 }}>
+        <label>Additional notes</label>
+        <textarea value={d.notes} onChange={e => set('notes', e.target.value)} placeholder="MDT referrals, diabetes team, podiatry, tissue viability nurse, social needs…" style={{ minHeight: 50 }} />
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+// ── Urgent Referral ───────────────────────────────────────────────────────────
+const URGENT_RED_FLAGS = [
+  'Unintentional weight loss',
+  'Progressive dysphagia',
+  'Haematemesis / melaena',
+  'Iron-deficiency anaemia (new)',
+  'New-onset rectal bleeding (age > 40)',
+  'Change in bowel habit (> 6 weeks)',
+  'Palpable abdominal mass',
+  'New painless jaundice',
+  'Unexplained abdominal pain (age > 55)',
+  'Haematuria (unexplained)',
+  'Rapidly expanding lump / lymphadenopathy',
+  'Suspected testicular / ovarian torsion',
+];
+interface UrgentData {
+  redFlags: string[];
+  timeToSymptoms: string;
+  referralSource: string;
+  referralUrgency: string;
+  workingDx: string;
+  investigationsDone: string;
+  recommendedAction: string;
+  notes: string;
+}
+function defaultUrgent(): UrgentData {
+  return { redFlags: [], timeToSymptoms: '', referralSource: '', referralUrgency: '', workingDx: '', investigationsDone: '', recommendedAction: '', notes: '' };
+}
+function UrgentChecklist({ data: raw, onChange }: { data: unknown; onChange: (d: unknown) => void }) {
+  const rawTyped = raw as Partial<UrgentData> | null | undefined;
+  const d: UrgentData = { ...defaultUrgent(), ...rawTyped, redFlags: rawTyped?.redFlags ?? [] };
+  function set<K extends keyof UrgentData>(k: K, v: UrgentData[K]) { onChange({ ...d, [k]: v }); }
+  function toggleFlag(flag: string) {
+    const next = d.redFlags.includes(flag) ? d.redFlags.filter(f => f !== flag) : [...d.redFlags, flag];
+    set('redFlags', next);
+  }
+  const missing = [!d.referralSource, !d.referralUrgency, !d.recommendedAction].filter(Boolean).length;
+  return (
+    <CollapsibleCard title="Urgent referral — intake checklist" badge={missing > 0 ? `${missing} required` : 'Ready'} badgeVariant={missing > 0 ? 'warn' : 'default'} defaultOpen>
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 6 }}>Red flag symptoms present</div>
+        <div className="check-row" style={{ flexWrap: 'wrap' }}>
+          {URGENT_RED_FLAGS.map(flag => (
+            <label key={flag}>
+              <input type="checkbox" checked={d.redFlags.includes(flag)} onChange={() => toggleFlag(flag)} />
+              {flag}
+            </label>
+          ))}
+        </div>
+        {d.redFlags.length > 0 && (
+          <div style={{ marginTop: 8, padding: '6px 10px', borderRadius: 7, background: '#fff1f2', border: '1px solid #fecdd3', fontSize: 11, color: '#7f1d1d', fontWeight: 600 }}>
+            ⚠ {d.redFlags.length} red flag{d.redFlags.length !== 1 ? 's' : ''} identified — expedited review required
+          </div>
+        )}
+      </div>
+      <div className="form-grid cols-2">
+        <div className="fld">
+          <label>Referral source</label>
+          <select value={d.referralSource} onChange={e => set('referralSource', e.target.value)}>
+            <option value="">— Select —</option>
+            {['Emergency Department', 'GP / Family physician', 'Self-referral', 'Other specialist', 'Inter-hospital transfer', 'Community health centre'].map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
+        </div>
+        <div className="fld">
+          <label>Referral urgency required</label>
+          <select value={d.referralUrgency} onChange={e => set('referralUrgency', e.target.value)}>
+            <option value="">— Select —</option>
+            {['Same day / Emergency', '24 hours', '48 hours', '2-week wait (cancer pathway)', '4 weeks'].map(u => <option key={u} value={u}>{u}</option>)}
+          </select>
+        </div>
+        <div className="fld">
+          <label>Duration of symptoms</label>
+          <input value={d.timeToSymptoms} onChange={e => set('timeToSymptoms', e.target.value)} placeholder="e.g. 3 weeks, 5 months" />
+        </div>
+        <div className="fld">
+          <label>Working diagnosis / query</label>
+          <input value={d.workingDx} onChange={e => set('workingDx', e.target.value)} placeholder="e.g. ? colorectal cancer, ? acute cholecystitis" />
+        </div>
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Investigations already performed</label>
+        <input value={d.investigationsDone} onChange={e => set('investigationsDone', e.target.value)} placeholder="e.g. FBC — Hb 8.4, USS abdomen — gallstones, CEA 12" />
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Recommended action</label>
+        <select value={d.recommendedAction} onChange={e => set('recommendedAction', e.target.value)}>
+          <option value="">— Select —</option>
+          {['Book urgent outpatient clinic', 'Direct to Emergency Room', 'Admit under surgical team', 'Phone triage by Dr Kabiye', 'Await further investigations', 'Refer to another speciality'].map(a => <option key={a} value={a}>{a}</option>)}
+        </select>
+      </div>
+      <div className="fld" style={{ marginTop: 8 }}>
+        <label>Additional notes</label>
+        <textarea value={d.notes} onChange={e => set('notes', e.target.value)} placeholder="Any other relevant clinical or social context…" style={{ minHeight: 50 }} />
+      </div>
+    </CollapsibleCard>
+  );
+}
+
+// ── Visit checklist dispatcher ────────────────────────────────────────────────
+function VisitChecklist({ visitType, data, onChange }: {
+  visitType: string;
+  data: unknown;
+  onChange: (d: unknown) => void;
+}) {
+  switch (visitType) {
+    case 'new_consult':    return <NewConsultChecklist data={data} onChange={onChange} />;
+    case 'follow_up':     return <FollowUpChecklist data={data} onChange={onChange} />;
+    case 'post_op':       return <PostOpChecklist data={data} onChange={onChange} />;
+    case 'endoscopy_ogd': return <OgdChecklist data={data} onChange={onChange} />;
+    case 'endoscopy_col': return <ColonoscopyChecklist data={data} onChange={onChange} />;
+    case 'breast':        return <BreastChecklist data={data} onChange={onChange} />;
+    case 'telephone':     return <TelephoneChecklist data={data} onChange={onChange} />;
+    case 'diabetic_foot': return <DiabeticFootChecklist data={data} onChange={onChange} />;
+    case 'urgent':        return <UrgentChecklist data={data} onChange={onChange} />;
+    default: return null;
+  }
 }
