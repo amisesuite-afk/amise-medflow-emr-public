@@ -7,6 +7,21 @@ import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
+// Maps triage branch question labels → SOCRATES answer keys (same as HpiTab)
+const BRANCH_KEY: Record<string, string> = {
+  'Location': 'site',       'Site': 'site',           'Site / radiation': 'site',
+  'Character': 'character', 'Type': 'character',       'Colour': 'character',
+  'Associated': 'assoc',    'Associated features': 'assoc', 'Associated symptoms': 'assoc',
+  'Features': 'assoc',
+  'Onset': 'onset',         'Onset / duration': 'onset',   'History': 'onset',
+  'Radiation': 'radiation', 'Spread': 'radiation',
+  'Severity': 'severity',   'Amount': 'severity',
+  'Timing': 'timing',       'Pattern': 'timing',       'Frequency': 'timing',
+  'Triggers': 'triggers',   'Exacerbating factors': 'triggers',
+  'Relief': 'relief',
+  'Timeframe': 'duration',  'Duration': 'duration',
+};
+
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const CAT_ICONS: Record<CCCategory, string> = {
@@ -170,15 +185,11 @@ export default function ChiefComplaintStrip() {
         for (const branch of branches) {
           const selected = branch.options.filter(opt => details.includes(opt));
           if (selected.length === 0) continue;
-          // Match branch question label to the closest cc-matrix prompt key
-          const qLower = branch.question.toLowerCase();
-          const prompt = matrix.prompts.find(p =>
-            p.label.toLowerCase().includes(qLower) ||
-            qLower.includes(p.key.toLowerCase()) ||
-            p.key.toLowerCase() === qLower
-          );
-          const key = prompt ? prompt.key : qLower.replace(/\s+/g, '_');
-          answers[key] = selected.join(', ');
+          // Use same BRANCH_KEY table as HpiTab so answers land on the right SOCRATES keys
+          const key = BRANCH_KEY[branch.question]
+            ?? branch.question.toLowerCase().replace(/\W+/g, '_');
+          const prev = answers[key];
+          answers[key] = prev ? `${prev}, ${selected.join(', ')}` : selected.join(', ');
         }
       }
 
