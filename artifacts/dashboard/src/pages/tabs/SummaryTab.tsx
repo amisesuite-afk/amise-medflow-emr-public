@@ -528,7 +528,7 @@ ${ctx.allergies ? `<div class="section">
 <div class="sec-hdr">Physical Examination</div>
 <div class="sec-body">${examLines.length
   ? examLines.map(l => `<div class="item">${escHtml(l)}</div>`).join('')
-  : '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not yet documented — <span style="cursor:pointer;color:#0d9488;text-decoration:underline" onclick="parent.postMessage({type:\'NAV\',target:\'examination\'},\'*\')">complete in examination phase →</span></div>'
+  : '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not yet documented — return to consultation to complete examination</div>'
 }</div>
 </div>
 
@@ -1128,6 +1128,20 @@ function DirectExportPanel() {
       <div style={{ fontSize: 11, color: '#9ca3af' }}>
         Generated directly from entered data — no AI required. Review before printing.
       </div>
+
+      {/* ── Examination incomplete notice ── */}
+      {docType === 'clinical' && !(ctx.examGeneral || ctx.examCardio || ctx.examResp || ctx.examAbdomen || ctx.examNeuro || ctx.examExtremities || ctx.examBreast || ctx.examWound) && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: '#fef9c3', border: '1px solid #fde047', borderRadius: 6, padding: '7px 12px', fontSize: 12 }}>
+          <span style={{ color: '#92400e' }}>🩺 Physical examination not yet documented</span>
+          <button
+            type="button"
+            onClick={() => ctx.setActiveSection('examination')}
+            style={{ marginLeft: 'auto', padding: '4px 12px', borderRadius: 5, border: 'none', background: '#0d9488', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+          >
+            Go to Exam →
+          </button>
+        </div>
+      )}
 
       {/* ── Plan section inline editor ── */}
       {sectionEdit && (

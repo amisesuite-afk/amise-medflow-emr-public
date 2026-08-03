@@ -19,7 +19,7 @@ export const generalSurgeryProtocols: ManagementProtocol[] = [
       { label: 'FBC + differential (WBC, neutrophilia)', urgency: 'urgent' },
       { label: 'CRP', urgency: 'urgent' },
       { label: 'USS abdomen ± CT abdomen/pelvis with IV contrast', urgency: 'urgent' },
-      { label: 'Urine dipstick / βhCG (all females of reproductive age)', urgency: 'urgent' },
+      { label: 'Urine dipstick / βhCG — exclude ectopic pregnancy (females of reproductive age)', urgency: 'urgent' },
       { label: 'Group & save', urgency: 'urgent' },
       { label: 'U&E, LFTs, amylase (exclude differentials)', urgency: 'urgent' },
     ],
