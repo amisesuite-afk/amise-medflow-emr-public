@@ -486,47 +486,69 @@ ${sharedHeader(site, consultDate)}
 ${sharedPatient(ctx)}
 <div class="title">CLINICAL NOTE</div>
 
-${ctx.symptoms.length || ctx.freeText || ctx.hpiNotes ? `<div class="section">
+${ctx.symptoms.length || ctx.freeText ? `<div class="section">
 <div class="sec-hdr">Presenting Complaint</div>
 <div class="sec-body">
 ${items(ctx.symptoms)}
 ${ctx.freeText ? `<div style="margin-top:4px;white-space:pre-wrap">${escHtml(ctx.freeText)}</div>` : ''}
 ${ctx.durationDays ? `<div style="margin-top:6px"><span class="lbl">Duration:</span> ${escHtml(ctx.durationDays)} days</div>` : ''}
 ${ctx.painScore ? `<div><span class="lbl">Pain score:</span> ${escHtml(ctx.painScore)}/10</div>` : ''}
-${ctx.hpiNotes ? `<div class="sub-lbl" style="margin-top:${ctx.symptoms.length || ctx.freeText ? '12' : '0'}px">History of Presenting Illness</div>
-<div style="white-space:pre-wrap;line-height:1.75;font-size:12.5px;margin-top:4px">${escHtml(ctx.hpiNotes)}</div>` : ''}
 </div></div>` : ''}
+
+<div class="section">
+<div class="sec-hdr">History of Presenting Illness</div>
+<div class="sec-body" style="white-space:pre-wrap;line-height:1.75">${ctx.hpiNotes ? escHtml(ctx.hpiNotes) : '<span style="color:#94a3b8;font-size:12px;font-style:italic">Not yet documented</span>'}</div>
+</div>
+
+<div class="section">
+<div class="sec-hdr">Past Medical History</div>
+<div class="sec-body">
+${ctx.comorbidities.length ? items(ctx.comorbidities) : '<div style="color:#94a3b8;font-size:12px;font-style:italic">None reported</div>'}
+${ctx.pmhNotes ? `<div style="margin-top:4px">${escHtml(ctx.pmhNotes)}</div>` : ''}
+</div></div>
+
+<div class="section">
+<div class="sec-hdr">Surgical History</div>
+<div class="sec-body">
+${ctx.surgicalHistory.length ? items(ctx.surgicalHistory) : '<div style="color:#94a3b8;font-size:12px;font-style:italic">None reported</div>'}
+${ctx.surgicalNotes ? `<div style="margin-top:4px">${escHtml(ctx.surgicalNotes)}</div>` : ''}
+</div></div>
+
+<div class="section">
+<div class="sec-hdr sec-hdr--warn">Allergies</div>
+<div class="sec-body" style="font-weight:700;color:#b91c1c">${ctx.allergies ? escHtml(ctx.allergies) : '<span style="color:#94a3b8;font-weight:400;font-style:italic;font-size:12px">No known drug allergies (NKDA)</span>'}</div>
+</div>
+
+<div class="section">
+<div class="sec-hdr">Current Medications</div>
+<div class="sec-body">
+${ctx.medications.length ? items(ctx.medications) : ''}
+${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}
+${!ctx.medications.length && !ctx.medicationsText ? '<div style="color:#94a3b8;font-size:12px;font-style:italic">None</div>' : ''}
+</div></div>
+
+${ctx.symptoms.length ? `<div class="section">
+<div class="sec-hdr">Review of Systems</div>
+<div class="sec-body">
+<div class="sub-lbl">Positive findings</div>
+${items(ctx.symptoms)}
+</div></div>` : ''}
+
+<div class="section">
+<div class="sec-hdr">Family &amp; Social History</div>
+<div class="sec-body">
+${ctx.familyHistory && ctx.familyHistory.length ? `<div style="margin-bottom:6px"><div class="sub-lbl">Family History</div>${items(ctx.familyHistory)}</div>` : '<div style="margin-bottom:6px"><div class="sub-lbl">Family History</div><div style="color:#94a3b8;font-size:12px;font-style:italic">Not reported</div></div>'}
+${ctx.familyHistoryNotes ? `<div style="margin-bottom:6px">${escHtml(ctx.familyHistoryNotes)}</div>` : ''}
+${ctx.toxicHabits && ctx.toxicHabits.length ? `<div style="margin-bottom:6px"><div class="sub-lbl">Social / Habits</div>${items(ctx.toxicHabits)}</div>` : ''}
+${ctx.occupation ? `<div><span class="lbl">Occupation:</span> ${escHtml(ctx.occupation)}</div>` : ''}
+${(!ctx.familyHistory?.length && !ctx.familyHistoryNotes && !ctx.toxicHabits?.length && !ctx.occupation) ? '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not reported</div>' : ''}
+</div></div>
 
 ${vitalsArr.length ? `<div class="section">
 <div class="sec-hdr">Vital Signs</div>
 <div class="sec-body"><div style="display:flex;flex-wrap:wrap;gap:4px 22px;font-variant-numeric:tabular-nums">
 ${vitalsArr.map(v => `<span>${escHtml(v)}</span>`).join('')}
 </div></div></div>` : ''}
-
-${hasPmhSurgHx ? `<div class="section">
-<div class="sec-hdr">Medical &amp; Surgical History</div>
-<div class="sec-body">
-${ctx.comorbidities.length || ctx.pmhNotes ? `<div style="margin-bottom:8px">
-<div class="sub-lbl">Past Medical</div>
-${items(ctx.comorbidities)}
-${ctx.pmhNotes ? `<div>${escHtml(ctx.pmhNotes)}</div>` : ''}
-</div>` : ''}
-${ctx.surgicalHistory.length || ctx.surgicalNotes ? `<div>
-<div class="sub-lbl">Surgical</div>
-${items(ctx.surgicalHistory)}
-${ctx.surgicalNotes ? `<div>${escHtml(ctx.surgicalNotes)}</div>` : ''}
-</div>` : ''}
-</div></div>` : ''}
-
-${ctx.medications.length || ctx.medicationsText ? `<div class="section">
-<div class="sec-hdr">Current Medications</div>
-<div class="sec-body">${items(ctx.medications)}${ctx.medicationsText ? `<div>${escHtml(ctx.medicationsText)}</div>` : ''}</div>
-</div>` : ''}
-
-${ctx.allergies ? `<div class="section">
-<div class="sec-hdr sec-hdr--warn">Allergies</div>
-<div class="sec-body" style="font-weight:700;color:#b91c1c">${escHtml(ctx.allergies)}</div>
-</div>` : ''}
 
 <div class="section">
 <div class="sec-hdr">Physical Examination</div>
