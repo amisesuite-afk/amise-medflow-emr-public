@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import type { Section } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import CollapsibleCard from '@/components/CollapsibleCard';
@@ -265,6 +266,8 @@ function sharedHead(title: string): string {
   .pl-routine{background:#dbeafe;color:#1d4ed8}
   .pl-gap{height:5px}
   .pl-line{font-size:12px;color:#334155;margin-bottom:3px}
+  .pl-edit-btn{display:inline-block;margin-left:6px;padding:1px 5px;background:none;border:1px solid #1a3a5c33;border-radius:3px;cursor:pointer;font-size:10px;color:#64748b;vertical-align:middle;opacity:0;transition:opacity .15s;line-height:1.4}
+  .pl-num-row:hover .pl-edit-btn{opacity:1}
   @page{margin:16mm 18mm;size:A4}
   @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;max-width:100%;padding:0}}
 </style>
@@ -315,7 +318,7 @@ function planTextToHtml(plan: string): string {
     const ts  = t.trim();
 
     if (!ts) {
-      if (inNumbered) { out.push('</div>'); inNumbered = false; }
+      if (inNumbered) { out.push('</div></div>'); inNumbered = false; }
       out.push('<div class="pl-gap"></div>');
       continue;
     }
@@ -334,7 +337,7 @@ function planTextToHtml(plan: string): string {
 
     // ━━━ SECTION BOX ━━━
     if (ts.startsWith('━━━')) {
-      if (inNumbered) { out.push('</div>'); inNumbered = false; }
+      if (inNumbered) { out.push('</div></div>'); inNumbered = false; }
       const label = ts.replace(/━/g, '').trim();
       out.push(`<div class="pl-section-box">${escHtml(label)}</div>`);
       continue;
@@ -375,13 +378,13 @@ function planTextToHtml(plan: string): string {
     // Numbered section: "1. Label:" or "1. Label"
     const numMatch = ts.match(/^(\d+)\.\s+(.+)$/);
     if (numMatch) {
-      if (inNumbered) out.push('</div>');
+      if (inNumbered) out.push('</div></div>');
       const [, num, label] = numMatch;
       const labelInner = escHtml(label)
         .replace(/\[URGENT\]/g, '<span class="pl-badge pl-urgent">URGENT</span>')
         .replace(/\[STAT\]/g,   '<span class="pl-badge pl-stat">STAT</span>')
         .replace(/\[ROUTINE\]/g,'<span class="pl-badge pl-routine">ROUTINE</span>');
-      out.push(`<div class="pl-num-row"><span class="pl-num">${escHtml(num)}</span><div class="pl-num-body"><div class="pl-num-label">${labelInner}</div>`);
+      out.push(`<div class="pl-num-row"><span class="pl-num">${escHtml(num)}</span><div class="pl-num-body"><div class="pl-num-label">${labelInner}<button class="pl-edit-btn" onclick="parent.postMessage({type:'PLAN_SECTION_EDIT',lineStart:${i}},'*')">✎</button></div>`);
       inNumbered = true;
       continue;
     }
@@ -525,7 +528,7 @@ ${ctx.allergies ? `<div class="section">
 <div class="sec-hdr">Physical Examination</div>
 <div class="sec-body">${examLines.length
   ? examLines.map(l => `<div class="item">${escHtml(l)}</div>`).join('')
-  : '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not yet documented — complete in examination phase</div>'
+  : '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not yet documented — <span style="cursor:pointer;color:#0d9488;text-decoration:underline" onclick="parent.postMessage({type:\'NAV\',target:\'examination\'},\'*\')">complete in examination phase →</span></div>'
 }</div>
 </div>
 
@@ -571,7 +574,7 @@ ${(() => {
   // Also strip any trailing ranked differentials block (they have their own section)
   const diffIdx = body.search(/\n*Ranked differentials?:/i);
   if (diffIdx > 0) body = body.slice(0, diffIdx).trimEnd();
-  return body ? `<div style="white-space:pre-wrap;line-height:1.8;font-size:12.5px${ctx.icdCodes.length || ctx.differentials ? ';margin-top:10px' : ''}">${escHtml(body)}</div>` : '';
+  return body ? `<div contenteditable="true" id="edit-assess" spellcheck="false" onfocus="this.style.outline='1.5px solid #0d9488';parent.postMessage({type:'EDIT_START'},'*')" onblur="this.style.outline='none';parent.postMessage({type:'EDIT_ASSESSMENT',content:this.innerText},'*');parent.postMessage({type:'EDIT_END'},'*')" style="white-space:pre-wrap;line-height:1.8;font-size:12.5px${ctx.icdCodes.length || ctx.differentials ? ';margin-top:10px' : ''};outline:none;border-radius:3px;cursor:text;padding:2px 4px;transition:outline .15s">${escHtml(body)}</div>` : '';
 })()}
 </div></div>` : ''}
 
@@ -584,7 +587,10 @@ ${ctx.plan ? `<div class="section">
   if (wdLabel) {
     planBody = planBody.replace(/^(Management Plan\s*(?:—|-)\s*)[^\n]*/m, `$1${wdLabel}`);
   }
-  return planTextToHtml(planBody);
+  const dedupNote = hasInvestigations
+    ? '<div style="font-size:11px;color:#0d9488;background:#f0fdfa;border:1px solid #99f6e4;border-radius:4px;padding:5px 10px;margin-bottom:10px">↑ Investigations already ordered above — plan sections 1–2 may overlap</div>'
+    : '';
+  return dedupNote + planTextToHtml(planBody);
 })()}</div>
 </div>` : ''}
 
@@ -791,26 +797,97 @@ function DirectExportPanel() {
   const ctxRef = useRef(ctx);
   ctxRef.current = ctx;
 
-  // Listen for checkbox toggle messages from the plan iframe
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const editingRef = useRef(false);
+  const lastHtmlRef = useRef('');
+  const [refreshTick, setRefreshTick] = useState(0); // eslint-disable-line -- triggers re-render after inline edit ends
+  const [sectionEdit, setSectionEdit] = useState<{lineStart: number; lineEnd: number; title: string; text: string} | null>(null);
+
+  // Listen for messages from the preview iframe
   useEffect(() => {
     function onMsg(ev: MessageEvent) {
-      if (typeof ev.data !== 'object' || ev.data?.type !== 'PLAN_CB') return;
-      const idx = ev.data.idx as number;
+      if (typeof ev.data !== 'object' || ev.data === null) return;
+      const msg = ev.data as Record<string, unknown>;
+
+      // ── Inline assessment editing ─────────────────────────────────────
+      if (msg.type === 'EDIT_START') {
+        editingRef.current = true;
+        return;
+      }
+      if (msg.type === 'EDIT_END') {
+        editingRef.current = false;
+        setRefreshTick(t => t + 1);
+        return;
+      }
+      if (msg.type === 'EDIT_ASSESSMENT') {
+        ctxRef.current.setAssessment((msg.content as string ?? '').trim());
+        return;
+      }
+
+      // ── Navigation to consultation phase ─────────────────────────────
+      if (msg.type === 'NAV') {
+        ctxRef.current.setActiveSection(msg.target as Section);
+        return;
+      }
+
+      // ── Plan section block edit ───────────────────────────────────────
+      if (msg.type === 'PLAN_SECTION_EDIT') {
+        const lineStart = msg.lineStart as number;
+        const lines = ctxRef.current.plan.split('\n');
+        let lineEnd = lineStart + 1;
+        while (lineEnd < lines.length) {
+          const bl = lines[lineEnd].trim();
+          if (!bl || bl.startsWith('━━━') || /^\d+\./.test(bl)) break;
+          lineEnd++;
+        }
+        const title = lines[lineStart] ?? '';
+        const sectionLines = lines.slice(lineStart + 1, lineEnd)
+          .map(l => l.replace(/^ {0,2}/, ''))
+          .filter(l => l.trim());
+        setSectionEdit({ lineStart, lineEnd, title, text: sectionLines.join('\n') });
+        return;
+      }
+
+      // ── Checkbox / bullet toggle ──────────────────────────────────────
+      if (msg.type !== 'PLAN_CB') return;
+      const idx = msg.idx as number;
       const lines = ctxRef.current.plan.split('\n');
       if (idx < 0 || idx >= lines.length) return;
       const line = lines[idx];
       const leading = /^(\s*)/.exec(line)?.[1] ?? '';
       const trimmed = line.trimStart();
+
       if (trimmed.startsWith('□ ')) {
-        lines[idx] = leading + '■ ' + trimmed.slice(2);
+        // Radio behavior: selecting one removes the other □ options in the same severity block
+        const newLines = [...lines];
+        newLines[idx] = leading + '■ ' + trimmed.slice(2);
+        // Find block start (the ━━━ header above)
+        let blockStart = idx - 1;
+        while (blockStart >= 0 && !newLines[blockStart].trim().startsWith('━━━')) blockStart--;
+        // Find block end (next ━━━, next numbered section, or empty line)
+        let blockEnd = idx + 1;
+        while (blockEnd < newLines.length) {
+          const bl = newLines[blockEnd].trim();
+          if (!bl || bl.startsWith('━━━') || /^\d+\./.test(bl)) break;
+          blockEnd++;
+        }
+        // Remove all other □ lines within the block
+        const filtered = newLines.filter((l, i) => {
+          if (i <= blockStart || i >= blockEnd) return true;
+          if (i === idx) return true;
+          return !l.trimStart().startsWith('□ ');
+        });
+        ctxRef.current.setPlan(filtered.join('\n'));
       } else if (trimmed.startsWith('■ ')) {
         lines[idx] = leading + '□ ' + trimmed.slice(2);
+        ctxRef.current.setPlan(lines.join('\n'));
       } else if (trimmed.startsWith('✗ ')) {
-        lines[idx] = leading + trimmed.slice(2); // restore original prefix
+        lines[idx] = leading + trimmed.slice(2);
+        ctxRef.current.setPlan(lines.join('\n'));
       } else if (trimmed.startsWith('• ') || /^\[(?:URGENT|STAT|ROUTINE)\]/.test(trimmed)) {
-        lines[idx] = leading + '✗ ' + trimmed; // cross out
+        lines[idx] = leading + '✗ ' + trimmed;
+        ctxRef.current.setPlan(lines.join('\n'));
       }
-      ctxRef.current.setPlan(lines.join('\n'));
     }
     window.addEventListener('message', onMsg);
     return () => window.removeEventListener('message', onMsg);
@@ -826,6 +903,32 @@ function DirectExportPanel() {
   const [aiFilling, setAiFilling] = useState(false);
   const [aiError, setAiError] = useState('');
   const [showPreview, setShowPreview] = useState(true);
+
+  // Ref-based iframe refresh — skips updates while user is inline-editing the preview
+  useEffect(() => {
+    if (editingRef.current) return;
+    const frame = iframeRef.current;
+    if (!frame) return;
+    const html = getHtml();
+    if (html === lastHtmlRef.current) return;
+    lastHtmlRef.current = html;
+    frame.setAttribute('srcdoc', html);
+  });
+
+  // Suppress the refreshTick warning — it exists only to force a re-render after editing ends
+  void refreshTick;
+
+  function saveSectionEdit() {
+    if (!sectionEdit) return;
+    const lines = ctxRef.current.plan.split('\n');
+    const newSectionLines = sectionEdit.text
+      .split('\n')
+      .map(l => l.trim() ? '  ' + l.replace(/^\s+/, '') : '')
+      .filter(Boolean);
+    lines.splice(sectionEdit.lineStart + 1, sectionEdit.lineEnd - sectionEdit.lineStart - 1, ...newSectionLines);
+    ctx.setPlan(lines.join('\n'));
+    setSectionEdit(null);
+  }
 
   async function handleAiFill() {
     setAiFilling(true);
@@ -1008,6 +1111,36 @@ function DirectExportPanel() {
         Generated directly from entered data — no AI required. Review before printing.
       </div>
 
+      {/* ── Plan section inline editor ── */}
+      {sectionEdit && (
+        <div style={{ border: '1.5px solid #0d9488', borderRadius: 8, padding: 12, background: '#f0fdfa' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Editing: {sectionEdit.title.replace(/^\d+\.\s*/, '')}
+            </span>
+            <button type="button" onClick={() => setSectionEdit(null)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#94a3b8', lineHeight: 1 }}>✕</button>
+          </div>
+          <textarea
+            value={sectionEdit.text}
+            onChange={e => setSectionEdit({ ...sectionEdit, text: e.target.value })}
+            style={{ width: '100%', fontSize: 12, fontFamily: 'monospace', minHeight: 100, borderRadius: 4, border: '1px solid #d1d5db', padding: '6px 8px', resize: 'vertical' }}
+            placeholder="• item one&#10;• item two&#10;→ indication or note"
+            autoFocus
+          />
+          <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+            <button type="button" onClick={saveSectionEdit}
+              style={{ padding: '5px 16px', borderRadius: 6, border: 'none', background: '#0d9488', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+              Save
+            </button>
+            <button type="button" onClick={() => setSectionEdit(null)}
+              style={{ padding: '5px 14px', borderRadius: 6, border: '1px solid #d1d5db', background: '#f9fafb', color: '#374151', fontSize: 12, cursor: 'pointer' }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* ── Inline document preview ── */}
       {showPreview && (
         <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid #e2e8f0', boxShadow: '0 2px 12px rgba(0,0,0,0.07)' }}>
@@ -1018,11 +1151,11 @@ function DirectExportPanel() {
             <span style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Document Preview
             </span>
-            <span style={{ fontSize: 11, color: '#94a3b8' }}>Review before printing · updates live</span>
+            <span style={{ fontSize: 11, color: '#94a3b8' }}>Click assessment text to edit · hover plan sections for ✎ · updates live</span>
           </div>
           <div style={{ background: '#e5e7eb', padding: '16px 0', overflowY: 'auto', maxHeight: 740 }}>
             <iframe
-              srcDoc={getHtml()}
+              ref={iframeRef}
               title="Document preview"
               style={{ display: 'block', width: '96%', maxWidth: 720, margin: '0 auto', minHeight: 640, border: 'none', background: '#fff', borderRadius: 4, boxShadow: '0 1px 6px rgba(0,0,0,0.12)' }}
               sandbox="allow-same-origin allow-scripts"
