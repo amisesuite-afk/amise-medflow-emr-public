@@ -8,7 +8,7 @@ import ConsultationRequestsView from './ConsultationRequestsView';
 import { errMsg } from '@/lib/err';
 import { fmtPhone } from '@/lib/fmt';
 import { supabase } from '@/lib/supabase';
-import { loadPMH, loadEncounterData, getLatestOpenEncounter, getLatestClosedEncounter } from '@/lib/db';
+import { loadPMH, loadEncounterData, getLatestOpenEncounter, getLatestClosedEncounter, getQuestionnaireIntake } from '@/lib/db';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -258,6 +258,7 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
     setEncounterId, setVisitType,
     setPriorEncounterSummary,
     setClinicalScores, setExtractedLabs,
+    setHpiNotes, setFreeText, toggleSymptom,
   } = useAppContext();
   const narrow = useNarrow();
 
@@ -519,6 +520,14 @@ export default function BookingInboxTab({ filterStatus }: BookingInboxTabProps =
         setVisitType(mapApptTypeToVisitType(apptType));
         void loadPMH(d.patientId).then(r => {
           if (!r.error && r.conditions.length > 0) setComorbidities(r.conditions);
+        });
+        void getQuestionnaireIntake(d.patientId).then(q => {
+          if (!q) return;
+          if (q.aiSummary) setHpiNotes(q.aiSummary);
+          else if (q.chiefComplaint) setFreeText(q.chiefComplaint);
+          for (const s of q.symptoms) toggleSymptom(s);
+          if (q.medications.length) setMedications(q.medications);
+          if (q.allergies.length) setAllergies(q.allergies.join(', '));
         });
       }
       setTopSection('consultation');

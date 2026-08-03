@@ -366,6 +366,8 @@ export default function PatientSearchTab() {
       setToxicHabits([...toxicHabits, ...q.socialHabits.filter(h => !toxicHabits.includes(h))]);
     }
 
+    if (q.aiSummary) setHpiNotes(q.aiSummary);
+
     setQPopulated(true);
     showToast('Questionnaire data populated — please confirm with patient.', 'success');
   }
