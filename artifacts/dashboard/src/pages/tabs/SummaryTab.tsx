@@ -318,7 +318,7 @@ function planTextToHtml(plan: string): string {
     const ts  = t.trim();
 
     if (!ts) {
-      if (inNumbered) { out.push('</div>'); inNumbered = false; }
+      if (inNumbered) { out.push('</div></div>'); inNumbered = false; }
       out.push('<div class="pl-gap"></div>');
       continue;
     }
@@ -337,7 +337,7 @@ function planTextToHtml(plan: string): string {
 
     // ━━━ SECTION BOX ━━━
     if (ts.startsWith('━━━')) {
-      if (inNumbered) { out.push('</div>'); inNumbered = false; }
+      if (inNumbered) { out.push('</div></div>'); inNumbered = false; }
       const label = ts.replace(/━/g, '').trim();
       out.push(`<div class="pl-section-box">${escHtml(label)}</div>`);
       continue;
@@ -378,7 +378,7 @@ function planTextToHtml(plan: string): string {
     // Numbered section: "1. Label:" or "1. Label"
     const numMatch = ts.match(/^(\d+)\.\s+(.+)$/);
     if (numMatch) {
-      if (inNumbered) out.push('</div>');
+      if (inNumbered) out.push('</div></div>');
       const [, num, label] = numMatch;
       const labelInner = escHtml(label)
         .replace(/\[URGENT\]/g, '<span class="pl-badge pl-urgent">URGENT</span>')
