@@ -577,7 +577,15 @@ ${(() => {
 
 ${ctx.plan ? `<div class="section">
 <div class="sec-hdr">Management Plan</div>
-<div class="sec-body" style="line-height:1.75">${planTextToHtml(ctx.plan)}</div>
+<div class="sec-body" style="line-height:1.75">${(() => {
+  let planBody = ctx.plan;
+  // Sync plan title with working diagnosis from assessment so they always match
+  const wdLabel = ctx.assessment?.match(/Working Diagnosis:\s*([^⚠\n]+)/i)?.[1]?.trim();
+  if (wdLabel) {
+    planBody = planBody.replace(/^(Management Plan\s*(?:—|-)\s*)[^\n]*/m, `$1${wdLabel}`);
+  }
+  return planTextToHtml(planBody);
+})()}</div>
 </div>` : ''}
 
 ${medTableHtml ? `<div class="section">
