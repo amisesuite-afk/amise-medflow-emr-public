@@ -81,6 +81,7 @@
   },
   "dependencies": {
     "@sentry/react": "^10.58.0",
+    "@workspace/patient-state": "workspace:*",
     "@workspace/triage-engine": "workspace:*",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1"
