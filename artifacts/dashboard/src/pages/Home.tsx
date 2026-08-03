@@ -73,6 +73,7 @@ const PatientTasksTab            = lazy(() => import('./tabs/PatientTasksTab'));
 const FollowUpTrackerTab         = lazy(() => import('./tabs/FollowUpTrackerTab'));
 const PatientsHubTab             = lazy(() => import('./tabs/PatientsHubTab'));
 const InsightsHubTab             = lazy(() => import('./tabs/InsightsHubTab'));
+const PathologySphereTab         = lazy(() => import('./tabs/PathologySphereTab'));
 const CheckInTab                 = lazy(() => import('./tabs/CheckInTab'));
 const PatientAccountsTab         = lazy(() => import('./tabs/PatientAccountsTab'));
 const BriefTab                   = lazy(() => import('./tabs/BriefTab'));
@@ -107,6 +108,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'examination',       label: 'Full Exam'     },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
+    { id: 'sphere',            label: '360°'          },
     { id: 'prescriptions',     label: 'RX'            },
     { id: 'progress',          label: 'Notes'         },
     { id: 'monitoring',        label: 'Monitor'       },
@@ -224,6 +226,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'investigations',    label: 'Labs'          },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
+    { id: 'sphere',            label: '360°'          },
     { id: 'progress',          label: 'Notes'         },
     { id: 'letters',           label: 'Letters'       },
   ],
@@ -1647,6 +1650,7 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'encounter_history'   && hasRole(userRole, 'doctor') && <EncounterTimelineTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'sphere'        && hasRole(userRole, 'doctor') && <PathologySphereTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'apcq'            && <APCQTab compact />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'tasks'          && <PatientTasksTab />}

@@ -2,6 +2,7 @@ import React from 'react';
 import * as Sentry from '@sentry/react';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { AppProvider } from '@/context/AppContext';
+import { PatientStateProvider } from '@/context/PatientStateContext';
 import { ToastProvider } from '@/components/ToastProvider';
 import HomePage from '@/pages/Home';
 import LoginPage from '@/components/LoginPage';
@@ -108,9 +109,11 @@ function AuthGuard() {
       </a>
       <IdleLock />
       <AppProvider>
-        <ToastProvider>
-          <HomePage />
-        </ToastProvider>
+        <PatientStateProvider>
+          <ToastProvider>
+            <HomePage />
+          </ToastProvider>
+        </PatientStateProvider>
       </AppProvider>
     </>
   );
