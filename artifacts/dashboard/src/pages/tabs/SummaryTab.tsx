@@ -475,7 +475,9 @@ ${ctx.pendingPrescriptions.map(m => `<tr>
 
   const hasPmhSurgHx = ctx.comorbidities.length || ctx.pmhNotes || ctx.surgicalHistory.length || ctx.surgicalNotes;
   const hasInvestigations = ctx.orderedInvestigations.length || (ctx.radiologyRequests && ctx.radiologyRequests.length);
-  const hasAssessment = ctx.assessment || ctx.icdCodes.length || ctx.differentials;
+  // Authoritative diagnosis = selected protocol plan title; takes priority over AI assessment suggestion
+  const protocolDx = ctx.plan?.match(/^Management Plan\s*[—\-]\s*(.+)$/m)?.[1]?.trim() ?? null;
+  const hasAssessment = ctx.assessment || ctx.icdCodes.length || ctx.differentials || protocolDx;
 
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 ${sharedHead(`Clinical Note — ${ctx.patientName || 'Patient'}`)}
@@ -484,13 +486,15 @@ ${sharedHeader(site, consultDate)}
 ${sharedPatient(ctx)}
 <div class="title">CLINICAL NOTE</div>
 
-${ctx.symptoms.length || ctx.freeText ? `<div class="section">
+${ctx.symptoms.length || ctx.freeText || ctx.hpiNotes ? `<div class="section">
 <div class="sec-hdr">Presenting Complaint</div>
 <div class="sec-body">
 ${items(ctx.symptoms)}
 ${ctx.freeText ? `<div style="margin-top:4px;white-space:pre-wrap">${escHtml(ctx.freeText)}</div>` : ''}
 ${ctx.durationDays ? `<div style="margin-top:6px"><span class="lbl">Duration:</span> ${escHtml(ctx.durationDays)} days</div>` : ''}
 ${ctx.painScore ? `<div><span class="lbl">Pain score:</span> ${escHtml(ctx.painScore)}/10</div>` : ''}
+${ctx.hpiNotes ? `<div class="sub-lbl" style="margin-top:${ctx.symptoms.length || ctx.freeText ? '12' : '0'}px">History of Presenting Illness</div>
+<div style="white-space:pre-wrap;line-height:1.75;font-size:12.5px;margin-top:4px">${escHtml(ctx.hpiNotes)}</div>` : ''}
 </div></div>` : ''}
 
 ${vitalsArr.length ? `<div class="section">
@@ -555,6 +559,9 @@ ${hasAssessment ? `<div class="section">
 ${ctx.icdCodes.length ? `<div class="dx-field">
 <div class="dx-label">Working Diagnosis</div>
 <div class="dx-name">${escHtml(ctx.icdCodes.join('  ·  '))}</div>
+</div>` : protocolDx ? `<div class="dx-field">
+<div class="dx-label">Working Diagnosis</div>
+<div class="dx-name">${escHtml(protocolDx)}</div>
 </div>` : ''}
 ${ctx.differentials ? `<div class="diff-block">
 <div class="diff-lbl">Ranked Differential Diagnoses</div>
@@ -574,6 +581,10 @@ ${(() => {
   // Also strip any trailing ranked differentials block (they have their own section)
   const diffIdx = body.search(/\n*Ranked differentials?:/i);
   if (diffIdx > 0) body = body.slice(0, diffIdx).trimEnd();
+  // Replace AI's Working Diagnosis line with the confirmed protocol selection
+  if (protocolDx) {
+    body = body.replace(/^Working Diagnosis:\s*[^\n]+/m, `Working Diagnosis: ${protocolDx}`);
+  }
   return body ? `<div contenteditable="true" id="edit-assess" spellcheck="false" onfocus="this.style.outline='1.5px solid #0d9488';parent.postMessage({type:'EDIT_START'},'*')" onblur="this.style.outline='none';parent.postMessage({type:'EDIT_ASSESSMENT',content:this.innerText},'*');parent.postMessage({type:'EDIT_END'},'*')" style="white-space:pre-wrap;line-height:1.8;font-size:12.5px${ctx.icdCodes.length || ctx.differentials ? ';margin-top:10px' : ''};outline:none;border-radius:3px;cursor:text;padding:2px 4px;transition:outline .15s">${escHtml(body)}</div>` : '';
 })()}
 </div></div>` : ''}
@@ -581,12 +592,7 @@ ${(() => {
 ${ctx.plan ? `<div class="section">
 <div class="sec-hdr">Management Plan</div>
 <div class="sec-body" style="line-height:1.75">${(() => {
-  let planBody = ctx.plan;
-  // Sync plan title with working diagnosis from assessment so they always match
-  const wdLabel = ctx.assessment?.match(/Working Diagnosis:\s*([^⚠\n]+)/i)?.[1]?.trim();
-  if (wdLabel) {
-    planBody = planBody.replace(/^(Management Plan\s*(?:—|-)\s*)[^\n]*/m, `$1${wdLabel}`);
-  }
+  const planBody = ctx.plan;
   const dedupNote = hasInvestigations
     ? '<div style="font-size:11px;color:#0d9488;background:#f0fdfa;border:1px solid #99f6e4;border-radius:4px;padding:5px 10px;margin-bottom:10px">↑ Investigations already ordered above — plan sections 1–2 may overlap</div>'
     : '';
