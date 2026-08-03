@@ -1116,10 +1116,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         '□ 7–8  — high probability (proceed to laparoscopic appendicectomy)',
         '□ ≥9   — diagnostic certainty (immediate appendicectomy without delay)',
       ];
-      if (hasAnyData) {
-        const catIdx = score <= 4 ? 0 : score <= 6 ? 1 : score <= 8 ? 2 : 3;
-        cats[catIdx] = cats[catIdx].replace('□', '■');
-      }
+      // Default to ≤4 category; auto-advance based on calculated score when data present
+      const catIdx = hasAnyData ? (score <= 4 ? 0 : score <= 6 ? 1 : score <= 8 ? 2 : 3) : 0;
+      cats[catIdx] = cats[catIdx].replace('□', '■');
       severityPrompt = `Alvarado score: ${scoreStr}\n${cats.map(c => `   ${c}`).join('\n')}`;
     }
 

@@ -251,8 +251,10 @@ function sharedHead(title: string): string {
   .pl-warn{font-size:12px;padding-left:18px;position:relative;color:#b91c1c;font-weight:600;margin-bottom:4px}
   .pl-warn::before{content:"⚠";position:absolute;left:1px;font-size:11px}
   .pl-note{font-size:11px;color:#64748b;font-style:italic;padding-left:14px;margin-bottom:3px}
-  .pl-bullet{font-size:12px;padding-left:18px;position:relative;margin-bottom:4px;color:#1e293b}
+  .pl-bullet{font-size:12px;padding-left:18px;position:relative;margin-bottom:4px;color:#1e293b;cursor:pointer;user-select:none}
   .pl-bullet::before{content:"•";position:absolute;left:5px;color:#1a3a5c}
+  .pl-crossed{opacity:0.38;text-decoration:line-through;color:#64748b}
+  .pl-crossed::before{content:"✗";color:#94a3b8}
   .pl-num-row{display:flex;gap:10px;margin:8px 0 4px;align-items:flex-start}
   .pl-num{min-width:20px;height:20px;background:#0B2545;color:#fff;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
   .pl-num-body{flex:1}
@@ -358,14 +360,15 @@ function planTextToHtml(plan: string): string {
       continue;
     }
 
-    // • bullet
-    if (/^[•\-]\s/.test(ts)) {
-      // replace [URGENT]/[STAT]/[ROUTINE] badges inline
-      const inner = escHtml(ts.replace(/^[•\-]\s*/, ''))
+    // • bullet or ✗ crossed-out item — both clickable
+    if (/^[•\-✗]\s/.test(ts)) {
+      const crossed = ts.startsWith('✗ ');
+      const cls = crossed ? 'pl-bullet pl-crossed' : 'pl-bullet';
+      const inner = escHtml(ts.replace(/^[•\-✗]\s*/, ''))
         .replace(/\[URGENT\]/g, '<span class="pl-badge pl-urgent">URGENT</span>')
         .replace(/\[STAT\]/g,   '<span class="pl-badge pl-stat">STAT</span>')
         .replace(/\[ROUTINE\]/g,'<span class="pl-badge pl-routine">ROUTINE</span>');
-      out.push(`<div class="pl-bullet">${inner}</div>`);
+      out.push(`<div class="${cls}" data-idx="${i}" onclick="parent.postMessage({type:'PLAN_CB',idx:${i}},'*')">${inner}</div>`);
       continue;
     }
 
@@ -393,13 +396,15 @@ function planTextToHtml(plan: string): string {
       continue;
     }
 
-    // Indented lines (2+ spaces or tab) inside numbered section
+    // Indented lines (2+ spaces or tab) inside numbered section — clickable
     if (inNumbered && /^\s{2,}/.test(raw)) {
-      const inner = escHtml(ts.replace(/^[•\-]\s*/, ''))
+      const crossed = ts.startsWith('✗ ');
+      const cls = crossed ? 'pl-bullet pl-crossed' : 'pl-bullet';
+      const inner = escHtml(ts.replace(/^[•\-✗]\s*/, ''))
         .replace(/\[URGENT\]/g, '<span class="pl-badge pl-urgent">URGENT</span>')
         .replace(/\[STAT\]/g,   '<span class="pl-badge pl-stat">STAT</span>')
         .replace(/\[ROUTINE\]/g,'<span class="pl-badge pl-routine">ROUTINE</span>');
-      out.push(`<div class="pl-bullet">${inner}</div>`);
+      out.push(`<div class="${cls}" data-idx="${i}" onclick="parent.postMessage({type:'PLAN_CB',idx:${i}},'*')">${inner}</div>`);
       continue;
     }
 
@@ -516,10 +521,13 @@ ${ctx.allergies ? `<div class="section">
 <div class="sec-body" style="font-weight:700;color:#b91c1c">${escHtml(ctx.allergies)}</div>
 </div>` : ''}
 
-${examLines.length ? `<div class="section">
+<div class="section">
 <div class="sec-hdr">Physical Examination</div>
-<div class="sec-body">${examLines.map(l => `<div class="item">${escHtml(l)}</div>`).join('')}</div>
-</div>` : ''}
+<div class="sec-body">${examLines.length
+  ? examLines.map(l => `<div class="item">${escHtml(l)}</div>`).join('')
+  : '<div style="color:#94a3b8;font-size:12px;font-style:italic">Not yet documented — complete in examination phase</div>'
+}</div>
+</div>
 
 ${hasInvestigations ? `<div class="section">
 <div class="sec-hdr">Investigations Ordered</div>
@@ -789,6 +797,10 @@ function DirectExportPanel() {
         lines[idx] = leading + '■ ' + trimmed.slice(2);
       } else if (trimmed.startsWith('■ ')) {
         lines[idx] = leading + '□ ' + trimmed.slice(2);
+      } else if (trimmed.startsWith('✗ ')) {
+        lines[idx] = leading + trimmed.slice(2); // restore original prefix
+      } else if (trimmed.startsWith('• ') || /^\[(?:URGENT|STAT|ROUTINE)\]/.test(trimmed)) {
+        lines[idx] = leading + '✗ ' + trimmed; // cross out
       }
       ctxRef.current.setPlan(lines.join('\n'));
     }
