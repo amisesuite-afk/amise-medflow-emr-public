@@ -690,7 +690,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.examExtremities === 'string') setExamExtremities(d.examExtremities);
       if (typeof d.examBreast === 'string') setExamBreast(d.examBreast);
       if (typeof d.examWound === 'string') setExamWound(d.examWound);
-      if (typeof d.assessment === 'string') setAssessment(d.assessment);
+      if (typeof d.assessment === 'string') {
+        // Strip history preamble that may have been stored by older code versions
+        const raw = d.assessment;
+        let cleaned = raw;
+        if (/^(Presenting History|Past Medical History|Surgical History|Medications?|Allergies?|History)\s*:/i.test(raw.trim())) {
+          const wdIdx = raw.search(/Working Diagnosis:|Clinical Impression:|Impression:|Assessment\s*:/i);
+          cleaned = wdIdx > 0 ? raw.slice(wdIdx).trim() : '';
+        } else {
+          const wdIdx = raw.search(/Working Diagnosis:|Clinical Impression:|Impression:|Assessment\s*:/i);
+          if (wdIdx > 10) cleaned = raw.slice(wdIdx).trim();
+        }
+        setAssessment(cleaned);
+      }
       if (typeof d.differentials === 'string') setDifferentials(d.differentials);
       if (typeof d.plan === 'string') setPlan(d.plan);
       if (typeof d.followUpNotes === 'string') setFollowUpNotes(d.followUpNotes);
