@@ -272,10 +272,16 @@ function buildDocument(ctx: Ctx): string {
     });
   }
 
-  // Plan
+  // Plan — keep the header diagnosis consistent with the assessment's working diagnosis.
   lines.push(sec('MANAGEMENT PLAN'));
   if (ctx.plan) {
-    lines.push(ctx.plan);
+    let planBody = ctx.plan;
+    // Extract working diagnosis label (strip the ⚠ AI suggestion suffix if present).
+    const wdLabel = ctx.assessment?.match(/Working Diagnosis:\s*([^⚠\n]+)/i)?.[1]?.trim();
+    if (wdLabel) {
+      planBody = planBody.replace(/^(Management Plan\s*(?:—|-)\s*)[^\n]*/m, `$1${wdLabel}`);
+    }
+    lines.push(planBody);
   } else {
     lines.push(hint('enter numbered management steps'));
     lines.push(hint('e.g. 1. IV access + fluids  2. Analgesia  3. Imaging  4. Consult  5. Admit / Discharge'));
