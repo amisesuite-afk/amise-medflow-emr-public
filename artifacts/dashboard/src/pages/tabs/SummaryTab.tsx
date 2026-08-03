@@ -475,7 +475,9 @@ ${ctx.pendingPrescriptions.map(m => `<tr>
 
   const hasPmhSurgHx = ctx.comorbidities.length || ctx.pmhNotes || ctx.surgicalHistory.length || ctx.surgicalNotes;
   const hasInvestigations = ctx.orderedInvestigations.length || (ctx.radiologyRequests && ctx.radiologyRequests.length);
-  const hasAssessment = ctx.assessment || ctx.icdCodes.length || ctx.differentials;
+  // Authoritative diagnosis = selected protocol plan title; takes priority over AI assessment suggestion
+  const protocolDx = ctx.plan?.match(/^Management Plan\s*[—\-]\s*(.+)$/m)?.[1]?.trim() ?? null;
+  const hasAssessment = ctx.assessment || ctx.icdCodes.length || ctx.differentials || protocolDx;
 
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 ${sharedHead(`Clinical Note — ${ctx.patientName || 'Patient'}`)}
@@ -557,6 +559,9 @@ ${hasAssessment ? `<div class="section">
 ${ctx.icdCodes.length ? `<div class="dx-field">
 <div class="dx-label">Working Diagnosis</div>
 <div class="dx-name">${escHtml(ctx.icdCodes.join('  ·  '))}</div>
+</div>` : protocolDx ? `<div class="dx-field">
+<div class="dx-label">Working Diagnosis</div>
+<div class="dx-name">${escHtml(protocolDx)}</div>
 </div>` : ''}
 ${ctx.differentials ? `<div class="diff-block">
 <div class="diff-lbl">Ranked Differential Diagnoses</div>
@@ -576,6 +581,10 @@ ${(() => {
   // Also strip any trailing ranked differentials block (they have their own section)
   const diffIdx = body.search(/\n*Ranked differentials?:/i);
   if (diffIdx > 0) body = body.slice(0, diffIdx).trimEnd();
+  // Replace AI's Working Diagnosis line with the confirmed protocol selection
+  if (protocolDx) {
+    body = body.replace(/^Working Diagnosis:\s*[^\n]+/m, `Working Diagnosis: ${protocolDx}`);
+  }
   return body ? `<div contenteditable="true" id="edit-assess" spellcheck="false" onfocus="this.style.outline='1.5px solid #0d9488';parent.postMessage({type:'EDIT_START'},'*')" onblur="this.style.outline='none';parent.postMessage({type:'EDIT_ASSESSMENT',content:this.innerText},'*');parent.postMessage({type:'EDIT_END'},'*')" style="white-space:pre-wrap;line-height:1.8;font-size:12.5px${ctx.icdCodes.length || ctx.differentials ? ';margin-top:10px' : ''};outline:none;border-radius:3px;cursor:text;padding:2px 4px;transition:outline .15s">${escHtml(body)}</div>` : '';
 })()}
 </div></div>` : ''}
