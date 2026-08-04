@@ -1559,10 +1559,14 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         };
 
         const handleSetAllNormal = () => {
-          ccPlan.forEach(sys => {
+          // Fill ALL displayed systems — orderedSystems (std) + ccExtras (specialty)
+          orderedSystems.forEach(sys => {
             const text = EXAM_NORMALS[sys] ?? `${sys}: Normal.`;
-            if (stdExamFields[sys]) stdExamFields[sys][1](text);
-            else setExtraExams(prev => ({ ...prev, [sys]: text }));
+            stdExamFields[sys][1](text);
+          });
+          ccExtras.forEach(sys => {
+            const text = EXAM_NORMALS[sys] ?? `${sys}: Normal.`;
+            setExtraExams(prev => ({ ...prev, [sys]: text }));
           });
           setOpenExamSys(null);
         };
@@ -1771,10 +1775,11 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             <PriorVisitStrip summary={ctx.priorEncounterSummary} />
           )}
 
-          {/* ── Clinical history — compact dropdown rows ── */}
+          {/* ── Clinical history — compact dropdown rows (hidden while exam drawer is open) ── */}
           <div style={{
             borderRadius: 10, border: '1px solid var(--line)',
             background: 'var(--card)', overflow: 'hidden',
+            display: activeDrawer === 'examination' ? 'none' : undefined,
           }}>
             {/* Chief Complaint */}
             <HistoryFieldRow
