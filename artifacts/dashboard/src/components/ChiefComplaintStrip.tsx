@@ -62,7 +62,7 @@ function chipLabel(opt: string): string {
 }
 
 // Multi-select fields — comma-accumulate; others replace
-const MULTI_KEYS = new Set(['assoc', 'symptoms', 'sympt', 'systemic', 'risk', 'riskfactors', 'alarm', 'meds', 'prev_surg', 'concerns']);
+const MULTI_KEYS = new Set(['assoc', 'associated', 'associated_symptoms', 'associated_features', 'features', 'symptoms', 'sympt', 'systemic', 'risk', 'riskfactors', 'alarm', 'meds', 'prev_surg', 'concerns']);
 
 function toggleChip(current: string, opt: string, multi: boolean): string {
   const label = chipLabel(opt);
