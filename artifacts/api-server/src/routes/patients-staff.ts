@@ -7,6 +7,41 @@ const router = Router();
 const VALID_SITES = ['rodney_bay', 'castries', 'tapion'];
 const VALID_SEX   = ['male', 'female', 'other', 'unknown'];
 
+interface EncSummary {
+  patient_id: string;
+  status: string;
+  encounter_type: string;
+  site: string | null;
+  encounter_date: string;
+}
+
+/** Attach latest-encounter status and type to each patient row (single extra query). */
+async function enrichWithEncounters(
+  supa: ReturnType<typeof import('../lib/supabase.js').getSupabaseAdmin>,
+  patients: Array<Record<string, unknown>>,
+): Promise<Array<Record<string, unknown>>> {
+  if (!patients.length) return patients;
+  const ids = patients.map(p => p.id as string);
+  const { data: encs } = await supa
+    .from('encounters')
+    .select('patient_id, status, encounter_type, site, encounter_date')
+    .in('patient_id', ids)
+    .order('encounter_date', { ascending: false });
+
+  // Latest encounter per patient (first row wins because ordered DESC)
+  const latest = new Map<string, EncSummary>();
+  for (const e of (encs ?? []) as EncSummary[]) {
+    if (!latest.has(e.patient_id)) latest.set(e.patient_id, e);
+  }
+
+  return patients.map(p => {
+    const enc = latest.get(p.id as string);
+    return enc
+      ? { ...p, latest_encounter_status: enc.status, latest_encounter_type: enc.encounter_type, latest_encounter_site: enc.site, latest_encounter_date: enc.encounter_date }
+      : { ...p, latest_encounter_status: null, latest_encounter_type: null, latest_encounter_site: null, latest_encounter_date: null };
+  });
+}
+
 // GET /api/patients -- list or search
 router.get('/api/patients', async (req, res) => {
   if (!(await requireStaffAuth(req, res))) return;
@@ -37,7 +72,7 @@ router.get('/api/patients', async (req, res) => {
 
       const { data, error } = await pQuery;
       if (error) throw error;
-      res.json({ patients: data ?? [] });
+      res.json({ patients: await enrichWithEncounters(supa, data ?? []) });
       return;
     }
 
@@ -53,7 +88,7 @@ router.get('/api/patients', async (req, res) => {
         : query.ilike('full_name', `%${q.trim()}%`);
       const { data, error } = await query;
       if (error) throw error;
-      res.json({ patients: data ?? [] });
+      res.json({ patients: await enrichWithEncounters(supa, data ?? []) });
       return;
     }
 
@@ -63,7 +98,7 @@ router.get('/api/patients', async (req, res) => {
       .order('created_at', { ascending: false })
       .limit(limit);
     if (error) throw error;
-    res.json({ patients: data ?? [] });
+    res.json({ patients: await enrichWithEncounters(supa, data ?? []) });
   } catch (err) {
     logger.error({ err }, '[patients-staff/list] error');
     res.status(502).json({ error: errStr(err) });
