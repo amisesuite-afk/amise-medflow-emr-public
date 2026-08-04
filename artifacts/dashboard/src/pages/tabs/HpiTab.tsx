@@ -49,7 +49,11 @@ const BRANCH_KEY: Record<string, string> = {
   'Relief': 'relief',
   'Timeframe': 'duration',  'Duration': 'duration',
 };
-const MULTI_KEYS = new Set(['assoc', 'symptoms', 'sympt', 'systemic', 'risk', 'alarm']);
+const MULTI_KEYS = new Set([
+  'assoc', 'associated', 'symptoms', 'sympt', 'systemic', 'risk', 'alarm',
+  'aggravating', 'aggravating_factors', 'relieving', 'relieving_factors',
+  'triggers', 'relief', 'timing', 'radiation', 'spread',
+]);
 
 // ── Field type ────────────────────────────────────────────────────────────────
 

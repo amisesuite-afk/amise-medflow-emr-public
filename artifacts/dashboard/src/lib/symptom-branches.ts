@@ -6,8 +6,14 @@ export interface SymptomBranch {
 export const SYMPTOM_BRANCHES: Record<string, SymptomBranch[]> = {
   'abdominal pain': [
     { question: 'Location', options: ['RUQ', 'RLQ', 'LUQ', 'LLQ', 'Epigastric', 'Periumbilical', 'Diffuse', 'Suprapubic'] },
+    { question: 'Onset / duration', options: ['Sudden', 'Gradual', '< 6 hours', '6–24 hours', '1–3 days', '> 3 days', 'Episodic'] },
     { question: 'Character', options: ['Colicky', 'Constant', 'Sharp', 'Dull', 'Burning', 'Cramping'] },
-    { question: 'Associated', options: ['Vomiting', 'Fever', 'Diarrhoea', 'Constipation', 'Anorexia', 'Radiation to back', 'Radiation to shoulder tip'] },
+    { question: 'Radiation', options: ['Back', 'Shoulder tip', 'Groin', 'Loin', 'Chest', 'No radiation'] },
+    { question: 'Severity', options: ['Mild (1–3)', 'Moderate (4–6)', 'Severe (7–9)', 'Worst ever (10)'] },
+    { question: 'Associated', options: ['Nausea', 'Vomiting', 'Fever', 'Diarrhoea', 'Constipation', 'Anorexia', 'PR bleeding', 'Distension', 'Jaundice', 'Rigors'] },
+    { question: 'Timing', options: ['Continuous', 'Intermittent / colicky', 'Post-meal', 'Nocturnal', 'Worsening over time', 'Improving'] },
+    { question: 'Triggers', options: ['Movement', 'Eating / drinking', 'Deep breathing', 'Coughing', 'Lying flat', 'Fatty meal'] },
+    { question: 'Relief', options: ['Analgesia', 'Rest', 'Nil by mouth', 'Antacids', 'Fetal position', 'Leaning forward', 'Vomiting', 'Nothing helps'] },
   ],
   'jaundice': [
     { question: 'Features', options: ['Fever', 'Rigors', 'Dark urine', 'Pale stool', 'Pruritus', 'Abdominal pain', 'Weight loss'] },
