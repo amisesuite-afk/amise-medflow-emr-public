@@ -103,27 +103,20 @@ const API_ORIGIN = getApiOrigin();
 // Narrower lists = less noise; renamed labels = more signal.
 const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
   new_consult: [
-    { id: 'brief',             label: 'Brief'         },
+    { id: 'hpi',               label: 'CC / HPI'      },
     { id: 'pmh',               label: 'PMH'           },
-    { id: 'allergies',         label: 'Allergies'     },
+    { id: 'surgical',          label: 'Surgery'       },
+    { id: 'allergies',         label: 'Allergy'       },
     { id: 'medications',       label: 'Meds'          },
-    { id: 'surgical',          label: 'Surgical'      },
     { id: 'family_hx',         label: 'Family Hx'    },
     { id: 'toxic',             label: 'Social'        },
-    { id: 'hpi',               label: 'HPI'           },
     { id: 'ros',               label: 'ROS'           },
     { id: 'examination',       label: 'Exam'          },
     { id: 'investigations',    label: 'Labs'          },
     { id: 'radiology',         label: 'Imaging'       },
-    { id: 'attachments',       label: 'Reports'       },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
-    { id: 'sphere',            label: '360°'          },
-    { id: 'prescriptions',     label: 'RX'            },
-    { id: 'referring_providers', label: 'Referrals'  },
-    { id: 'tasks',             label: 'Tasks'         },
-    { id: 'progress',          label: 'Notes'         },
-    { id: 'letters',           label: 'Letters'       },
+    { id: 'brief',             label: 'Overview'      },
   ],
   follow_up: [
     { id: 'brief',             label: 'Brief'         },
@@ -286,6 +279,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
 
 // Where to land the cursor the instant the visit type panel completes
 const VISIT_TYPE_START: Partial<Record<string, Section>> = {
+  new_consult:     'hpi',
   follow_up:       'brief',
   post_op:         'brief',
   day_of_surgery:  'who_checklist',
