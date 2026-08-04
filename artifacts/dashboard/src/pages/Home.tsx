@@ -413,7 +413,7 @@ export default function HomePage() {
   const [wizardSkipped, setWizardSkipped] = useState(false);
   const [vtGateCleared, setVtGateCleared] = useState(false);
   const [guidedMode, setGuidedMode] = useState(false);
-  const [ambientMode, setAmbientMode] = useState(true);
+  const [ambientMode, setAmbientMode] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [contextOpen, setContextOpen] = useState(false);
   const [notifyOpen, setNotifyOpen] = useState(false);
@@ -460,7 +460,7 @@ export default function HomePage() {
   useEffect(() => {
     if (patientId !== prevPatientIdRef.current) {
       prevPatientIdRef.current = patientId;
-      if (patientId) { setWizardSkipped(true); setGuidedMode(false); setAmbientMode(true); setVtGateCleared(true); }
+      if (patientId) { setWizardSkipped(true); setGuidedMode(false); setVtGateCleared(true); }
     }
   }, [patientId]);
 
