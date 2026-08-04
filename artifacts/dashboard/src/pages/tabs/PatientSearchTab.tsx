@@ -190,7 +190,20 @@ export default function PatientSearchTab() {
         showToast(`Could not load patient list: ${result.error}`, 'error');
         console.error('[PatientSearchTab] list:', result.error);
       } else {
-        setAllPatients((result.patients ?? []) as PatientListRowEx[]);
+        const patients = (result.patients ?? []) as PatientListRowEx[];
+        // Display-level dedup: keep newest per normalised name (records remain in DB)
+        const byName = new Map<string, PatientListRowEx>();
+        const unnamed: PatientListRowEx[] = [];
+        for (const p of patients) {
+          const key = (p.full_name ?? '').toLowerCase().trim();
+          if (!key) { unnamed.push(p); continue; }
+          const existing = byName.get(key);
+          if (!existing) { byName.set(key, p); continue; }
+          const existingDate = existing.created_at ? new Date(existing.created_at).getTime() : 0;
+          const pDate = p.created_at ? new Date(p.created_at).getTime() : 0;
+          if (pDate >= existingDate) byName.set(key, p);
+        }
+        setAllPatients([...Array.from(byName.values()), ...unnamed]);
       }
       setLoadingAll(false);
     })();
