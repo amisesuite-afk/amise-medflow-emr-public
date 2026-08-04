@@ -2300,6 +2300,9 @@ export interface EncounterSummary {
   site: string | null;
   diagnosis: string | null;
   icd10Code: string | null;
+  planDescription: string | null;
+  followUpDate: string | null;
+  followUpNotes: string | null;
 }
 
 export async function listPatientEncounters(patientId: string): Promise<EncounterSummary[]> {

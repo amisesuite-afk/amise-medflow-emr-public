@@ -13,6 +13,7 @@ import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getSuggestedPhrases } from '@/data/dot-phrases';
 import { getMatrixByName } from '@/lib/cc-matrices';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
+import type { EncounterSummary } from '@/lib/db';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -388,6 +389,188 @@ function composeHpiNarrative(
   return paragraphs.filter(Boolean).join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
+// ── Date helpers ──────────────────────────────────────────────────────────────
+
+const TZ = 'America/St_Lucia';
+
+function fmtEncDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString('en-LC', {
+      timeZone: TZ, day: 'numeric', month: 'short', year: 'numeric',
+    });
+  } catch { return iso; }
+}
+
+function daysSince(iso: string): number {
+  return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+}
+
+// ── PriorEncounterCard ────────────────────────────────────────────────────────
+
+function PriorEncounterCard({
+  enc, onPullHistory,
+}: {
+  enc: EncounterSummary;
+  onPullHistory: (enc: EncounterSummary) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const days = daysSince(enc.createdAt);
+  const daysLabel = days === 0 ? 'Today' : days === 1 ? '1 day ago' : `${days} days ago`;
+
+  return (
+    <div style={{
+      border: '1px solid #1e293b', borderRadius: 8, overflow: 'hidden', background: '#0a1628',
+    }}>
+      {/* Header row */}
+      <button
+        type="button"
+        onClick={() => setOpen(p => !p)}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer',
+          textAlign: 'left',
+        }}
+      >
+        <span style={{ fontSize: 10, color: open ? '▾' : '▸' }}>{open ? '▾' : '▸'}</span>
+        <span style={{ fontSize: 11, color: '#94a3b8', minWidth: 68 }}>{fmtEncDate(enc.createdAt)}</span>
+        <span style={{
+          fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
+          background: '#1e3a5f', color: '#60a5fa', letterSpacing: '0.04em',
+        }}>
+          {enc.encounterType.replace('_', ' ').toUpperCase()}
+        </span>
+        <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {enc.chiefComplaint ?? '—'}
+        </span>
+        <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap' }}>{daysLabel}</span>
+      </button>
+
+      {open && (
+        <div style={{ padding: '0 12px 10px', borderTop: '1px solid #1e293b' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 8 }}>
+
+            {(enc.diagnosis || enc.icd10Code) && (
+              <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', minWidth: 52 }}>Dx</span>
+                <span style={{ fontSize: 12, color: '#e2e8f0' }}>
+                  {enc.diagnosis ?? ''}
+                  {enc.icd10Code ? <span style={{ color: '#64748b', marginLeft: 5 }}>({enc.icd10Code})</span> : null}
+                </span>
+              </div>
+            )}
+
+            {enc.planDescription && (
+              <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', minWidth: 52 }}>Plan</span>
+                <span style={{ fontSize: 12, color: '#cbd5e1', lineHeight: 1.4 }}>
+                  {enc.planDescription.length > 180
+                    ? enc.planDescription.slice(0, 178) + '…'
+                    : enc.planDescription}
+                </span>
+              </div>
+            )}
+
+            {enc.followUpDate && (
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#f59e0b', minWidth: 52 }}>F/U</span>
+                <span style={{ fontSize: 12, color: '#fcd34d' }}>{fmtEncDate(enc.followUpDate)}</span>
+                {enc.followUpNotes && (
+                  <span style={{ fontSize: 11, color: '#94a3b8' }}>— {enc.followUpNotes}</span>
+                )}
+              </div>
+            )}
+
+            {!enc.diagnosis && !enc.planDescription && !enc.followUpDate && (
+              <div style={{ fontSize: 12, color: '#475569', fontStyle: 'italic' }}>No assessment or plan recorded.</div>
+            )}
+
+            <div style={{ marginTop: 6 }}>
+              <button
+                type="button"
+                onClick={() => onPullHistory(enc)}
+                style={{
+                  fontSize: 11, padding: '4px 12px', borderRadius: 5,
+                  border: '1px solid #0d9488', background: 'transparent',
+                  color: '#0d9488', fontWeight: 700, cursor: 'pointer',
+                }}
+              >
+                ↑ Pull interval history into HPI
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── ContinuityBanner ──────────────────────────────────────────────────────────
+
+function ContinuityBanner({
+  enc, onContinue, onDismiss,
+}: {
+  enc: EncounterSummary;
+  onContinue: () => void;
+  onDismiss: () => void;
+}) {
+  const days = daysSince(enc.createdAt);
+  return (
+    <div style={{
+      borderRadius: 8, border: '1px solid #f59e0b',
+      background: 'rgba(245,158,11,0.07)', padding: '10px 14px',
+      display: 'flex', flexDirection: 'column', gap: 6,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        <span style={{ fontSize: 16 }}>🔄</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#fcd34d', marginBottom: 2 }}>
+            Returning patient — last seen {days === 1 ? '1 day ago' : `${days} days ago`}
+          </div>
+          <div style={{ fontSize: 12, color: '#e2e8f0', lineHeight: 1.4 }}>
+            {enc.chiefComplaint && (
+              <span>For: <strong>{enc.chiefComplaint}</strong>{enc.diagnosis ? `. Dx: ${enc.diagnosis}` : ''}. </span>
+            )}
+            Is this a follow-up to that episode?
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onDismiss}
+          style={{
+            fontSize: 14, lineHeight: 1, background: 'none', border: 'none',
+            color: '#64748b', cursor: 'pointer', padding: '0 2px',
+          }}
+          title="Dismiss"
+        >×</button>
+      </div>
+      <div style={{ display: 'flex', gap: 8, paddingLeft: 24 }}>
+        <button
+          type="button"
+          onClick={onContinue}
+          style={{
+            fontSize: 11, padding: '4px 12px', borderRadius: 5,
+            background: '#0d9488', border: 'none', color: '#fff',
+            fontWeight: 700, cursor: 'pointer',
+          }}
+        >
+          Continue episode
+        </button>
+        <button
+          type="button"
+          onClick={onDismiss}
+          style={{
+            fontSize: 11, padding: '4px 12px', borderRadius: 5,
+            border: '1px solid #334155', background: 'transparent',
+            color: '#94a3b8', cursor: 'pointer',
+          }}
+        >
+          New problem
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function HpiTab() {
@@ -402,12 +585,61 @@ export default function HpiTab() {
     pregnancyPossible, setPregnancyPossible,
     age, sex, patientName,
     procedureData, setProcedureData,
+    patientId, encounterId,
+    recentEncounters,
   } = useAppContext();
 
   const entries = useMemo(
     () => (procedureData['cc'] as CCEntry[] | undefined) ?? [],
     [procedureData],
   );
+
+  // ── Prior encounters (Phase 1 + 2) ──────────────────────────────────────────
+  // Filter out the current encounter; show up to 3 most recent
+  const priorEncounters = useMemo(
+    () => recentEncounters.filter(e => e.id !== encounterId).slice(0, 3),
+    [recentEncounters, encounterId],
+  );
+
+  // Phase 2: detect returning patient within 180 days
+  const mostRecent = priorEncounters[0] ?? null;
+  const withinSixMonths = mostRecent ? daysSince(mostRecent.createdAt) <= 180 : false;
+
+  const [continuityDismissed, setContinuityDismissed] = useState(false);
+  const [continuityEncId, setContinuityEncId] = useState<string | null>(null);
+
+  // Reset banner when patient changes
+  useEffect(() => {
+    setContinuityDismissed(false);
+    setContinuityEncId(null);
+  }, [patientId]);
+
+  const showContinuityBanner =
+    !continuityDismissed &&
+    withinSixMonths &&
+    mostRecent != null &&
+    // Don't show if HPI already has significant content
+    hpiNotes.trim().length < 30;
+
+  function handleContinueEpisode() {
+    if (!mostRecent) return;
+    setContinuityEncId(mostRecent.id);
+    setContinuityDismissed(true);
+    // Pre-populate HPI with interval history prompt
+    const dateFmt = fmtEncDate(mostRecent.createdAt);
+    const days = daysSince(mostRecent.createdAt);
+    const dxClause = mostRecent.diagnosis ? ` with ${mostRecent.diagnosis}` : '';
+    const priorCC = mostRecent.chiefComplaint ?? 'presenting complaint';
+    const intervalDraft =
+      `Interval history — follow-up ${days} days since last review (${dateFmt}).\n` +
+      `Patient was previously seen for ${priorCC}${dxClause}.\n` +
+      (mostRecent.planDescription ? `Prior plan: ${mostRecent.planDescription}\n` : '') +
+      `\nInterval: [Document changes since last visit, response to treatment, new symptoms, compliance with plan]`;
+    setHpiNotes(intervalDraft);
+    prevLiveRef.current = '';
+  }
+
+  void continuityEncId; // referenced above; used to highlight linked prior encounter
 
   const ageNum = age ? Number(age) : null;
   const ranked = useMemo(
@@ -467,6 +699,44 @@ export default function HpiTab() {
 
       {/* ── CC strip — add / edit complaints ── */}
       <ChiefComplaintStrip />
+
+      {/* ── Phase 2: Continuity banner (returning patient within 6 months) ── */}
+      {showContinuityBanner && mostRecent && (
+        <ContinuityBanner
+          enc={mostRecent}
+          onContinue={handleContinueEpisode}
+          onDismiss={() => setContinuityDismissed(true)}
+        />
+      )}
+
+      {/* ── Phase 1: Prior encounters context panel ── */}
+      {patientId && priorEncounters.length > 0 && (
+        <CollapsibleCard
+          title={`Prior encounters (${priorEncounters.length})`}
+          defaultOpen={false}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {priorEncounters.map(enc => (
+              <PriorEncounterCard
+                key={enc.id}
+                enc={enc}
+                onPullHistory={prior => {
+                  const dateFmt = fmtEncDate(prior.createdAt);
+                  const days = daysSince(prior.createdAt);
+                  const dxClause = prior.diagnosis ? ` Dx: ${prior.diagnosis}.` : '';
+                  const planClause = prior.planDescription ? ` Plan: ${prior.planDescription}.` : '';
+                  const intervalText =
+                    `\n\n[Interval history — ${days} days since ${dateFmt}]${dxClause}${planClause}\n` +
+                    `Interval: `;
+                  const sep = hpiNotes && !hpiNotes.endsWith('\n') ? '' : '';
+                  setHpiNotes(hpiNotes + sep + intervalText);
+                  prevLiveRef.current = '';
+                }}
+              />
+            ))}
+          </div>
+        </CollapsibleCard>
+      )}
 
       {/* ── Context: duration, pain, flags ── */}
       <CollapsibleCard title="Context" defaultOpen={!!(durationDays || painScore || freeText)}>
