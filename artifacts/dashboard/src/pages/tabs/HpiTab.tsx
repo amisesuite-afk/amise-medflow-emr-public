@@ -13,6 +13,7 @@ import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getSuggestedPhrases } from '@/data/dot-phrases';
 import { getMatrixByName } from '@/lib/cc-matrices';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
+import type { EncounterSummary } from '@/lib/db';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -48,7 +49,11 @@ const BRANCH_KEY: Record<string, string> = {
   'Relief': 'relief',
   'Timeframe': 'duration',  'Duration': 'duration',
 };
-const MULTI_KEYS = new Set(['assoc', 'symptoms', 'sympt', 'systemic', 'risk', 'alarm']);
+const MULTI_KEYS = new Set([
+  'assoc', 'associated', 'symptoms', 'sympt', 'systemic', 'risk', 'alarm',
+  'aggravating', 'aggravating_factors', 'relieving', 'relieving_factors',
+  'triggers', 'relief', 'timing', 'radiation', 'spread',
+]);
 
 // ── Field type ────────────────────────────────────────────────────────────────
 
@@ -271,8 +276,23 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
 
 // ── prose utilities ───────────────────────────────────────────────────────────
 
-function lc(s: string) { return s.charAt(0).toLowerCase() + s.slice(1).trimEnd(); }
+function lc(s: string): string {
+  if (!s) return s;
+  // Preserve all-caps anatomical abbreviations: RUQ, RIF, LIF, LUQ, RLQ, etc.
+  if (s.length >= 2 && /^[A-Z]{2}/.test(s)) return s.trimEnd();
+  return s.charAt(0).toLowerCase() + s.slice(1).trimEnd();
+}
 function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// Lowercase every comma-separated item in a list (handles "Nausea, Vomiting, Fever" → "nausea, vomiting, fever")
+function lcList(s: string): string {
+  return s.split(',').map(item => {
+    const t = item.trim();
+    if (!t) return t;
+    if (t.length >= 2 && /^[A-Z]{2}/.test(t)) return t; // preserve abbreviations
+    return t.charAt(0).toLowerCase() + t.slice(1);
+  }).join(', ');
+}
 
 function primaryNoun(cc: string): string {
   if (/pain/.test(cc))                  return 'pain';
@@ -329,25 +349,31 @@ function composeHpiNarrative(
     const ans  = entry.answers;
     const noun = primaryNoun(entry.complaint.toLowerCase());
 
-    const onset      = get(ans, 'onset', 'duration', 'presentation');
-    const site       = get(ans, 'site');
-    const character  = get(ans, 'character');
-    const radiation  = get(ans, 'radiation', 'direction');
-    const timing     = get(ans, 'timing');
-    const assoc      = get(ans, 'assoc', 'symptoms', 'sympt', 'systemic');
-    const severity   = get(ans, 'severity', 'qol');
-    const exac       = get(ans, 'triggers', 'exac');
-    const relief     = get(ans, 'response', 'relief');
-    const prev       = get(ans, 'prev', 'prevep', 'previous', 'history');
-    const fever      = get(ans, 'fever');
-    const vomiting   = get(ans, 'vomiting');
-    const bleeding   = get(ans, 'bleeding', 'bleed');
-    const weightloss = get(ans, 'weight', 'weightloss');
-    const jaundice   = get(ans, 'jaundice');
-    const meds       = get(ans, 'meds', 'therapy');
+    const ccDuration  = get(ans, 'duration');
+    const onset       = get(ans, 'onset', 'presentation');
+    const site        = get(ans, 'site');
+    const character   = get(ans, 'character');
+    const radiation   = get(ans, 'radiation', 'direction');
+    const timing      = get(ans, 'timing');
+    const assoc       = get(ans, 'assoc', 'symptoms', 'sympt', 'systemic');
+    const severity    = get(ans, 'severity', 'qol');
+    const exac        = get(ans, 'triggers', 'exac');
+    const relief      = get(ans, 'response', 'relief');
+    const prev        = get(ans, 'prev', 'prevep', 'previous', 'history');
+    const fever       = get(ans, 'fever');
+    const vomiting    = get(ans, 'vomiting');
+    const bleeding    = get(ans, 'bleeding', 'bleed');
+    const weightloss  = get(ans, 'weight', 'weightloss');
+    const jaundice    = get(ans, 'jaundice');
+    const meds        = get(ans, 'meds', 'therapy');
+
+    // Per-entry duration: CC chip "duration" key beats the context durationDays field
+    const entryDurClause = ccDuration
+      ? formatCcDur(ccDuration)
+      : durClause;
 
     let open = idx === 0
-      ? `${cap(subject)} presents with ${durClause} ${lc(entry.complaint)}`
+      ? `${cap(subject)} presents with ${entryDurClause} ${lc(entry.complaint)}`
       : `Additionally, ${lc(entry.complaint)}`;
     if (onset && onset.length <= 100) open += `, ${lc(onset)}`;
     paragraphs.push(open + '.');
@@ -360,7 +386,7 @@ function composeHpiNarrative(
     if (locParts.length) paragraphs.push(`The ${noun} is ${locParts.join(', ')}.`);
 
     const assocItems: string[] = [];
-    if (assoc)      assocItems.push(lc(assoc));
+    if (assoc)      assocItems.push(lcList(assoc));
     if (fever)      assocItems.push(`fever — ${lc(fever)}`);
     if (vomiting)   assocItems.push(`vomiting — ${lc(vomiting)}`);
     if (bleeding)   assocItems.push(`bleeding — ${lc(bleeding)}`);
@@ -369,10 +395,14 @@ function composeHpiNarrative(
     if (assocItems.length) paragraphs.push(`Associated features include ${assocItems.join('; ')}.`);
 
     const modParts: string[] = [];
-    if (severity)  modParts.push(cap(lc(severity)));
-    if (painScore && idx === 0) modParts.push(`Pain is rated ${painScore}/10`);
-    if (exac)      modParts.push(cap(lc(exac)));
-    if (relief)    modParts.push(cap(lc(relief)));
+    // Numeric severity from CC matrix chips and free-text pain score both become "Pain rated X/10"
+    const severityNum = severity ? parseInt(severity.trim(), 10) : NaN;
+    const effectiveScore = !isNaN(severityNum) ? String(severityNum) : (painScore && idx === 0 ? painScore : '');
+    if (effectiveScore) modParts.push(`Pain is rated ${effectiveScore}/10`);
+    // Non-numeric severity text (e.g. "Moderate", "Worst of life") rendered as-is
+    if (severity && isNaN(severityNum)) modParts.push(cap(lc(severity)));
+    if (exac)  modParts.push(`Aggravated by ${lcList(exac)}`);
+    if (relief) modParts.push(`Relieved by ${lcList(relief)}`);
     if (modParts.length) paragraphs.push(modParts.join('. ') + '.');
 
     const histParts: string[] = [];
@@ -388,6 +418,354 @@ function composeHpiNarrative(
   return paragraphs.filter(Boolean).join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
+// ── Medical Background Strip ──────────────────────────────────────────────────
+
+function MedBgChips({ label, items, color }: { label: string; items: string[]; color: string }) {
+  if (!items.length) return null;
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, flexWrap: 'wrap' }}>
+      <span style={{ fontSize: 9, fontWeight: 800, color, textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>
+        {label}
+      </span>
+      {items.slice(0, 5).map(item => (
+        <span key={item} style={{
+          fontSize: 11, padding: '1px 7px', borderRadius: 10,
+          background: `${color}18`, color, border: `1px solid ${color}44`,
+        }}>{item}</span>
+      ))}
+      {items.length > 5 && (
+        <span style={{ fontSize: 10, color: '#64748b' }}>+{items.length - 5} more</span>
+      )}
+    </div>
+  );
+}
+
+function MedicalBackgroundStrip({ comorbidities, allergies, medications, surgicalHistory }: {
+  comorbidities: string[];
+  allergies: string;
+  medications: string[];
+  surgicalHistory: string[];
+}) {
+  const allergyItems = allergies.split(',').map(s => s.trim()).filter(Boolean);
+  const hasAny = comorbidities.length || allergyItems.length || medications.length || surgicalHistory.length;
+  if (!hasAny) return null;
+
+  const nkda = allergyItems.length === 1 && /nkda|no known/i.test(allergyItems[0]);
+
+  return (
+    <div style={{
+      borderRadius: 8, border: '1px solid #1e293b',
+      background: '#080f1e', padding: '8px 12px',
+      display: 'flex', flexDirection: 'column', gap: 5,
+    }}>
+      <div style={{ fontSize: 9, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 1 }}>
+        Patient background
+      </div>
+      <MedBgChips label="PMH" items={comorbidities} color="#f59e0b" />
+      {allergyItems.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, color: nkda ? '#22c55e' : '#ef4444', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+            Allergies
+          </span>
+          {nkda
+            ? <span style={{ fontSize: 11, color: '#22c55e', fontWeight: 700 }}>NKDA</span>
+            : allergyItems.slice(0, 5).map(a => (
+                <span key={a} style={{
+                  fontSize: 11, padding: '1px 7px', borderRadius: 10,
+                  background: '#ef444418', color: '#ef4444', border: '1px solid #ef444444',
+                  fontWeight: 700,
+                }}>{a}</span>
+              ))
+          }
+          {allergyItems.length > 5 && <span style={{ fontSize: 10, color: '#64748b' }}>+{allergyItems.length - 5}</span>}
+        </div>
+      )}
+      <MedBgChips label="Meds" items={medications} color="#3b82f6" />
+      <MedBgChips label="Surgical Hx" items={surgicalHistory} color="#8b5cf6" />
+    </div>
+  );
+}
+
+// ── formatCcDur — CC duration chip → prose phrase ────────────────────────────
+
+function formatCcDur(d: string): string {
+  const t = d.trim();
+  if (!t) return '';
+  if (/episodic|recurrent/i.test(t)) return 'an episodic history of';
+  const adj = t
+    .replace(/^<\s*/, 'less than ')
+    .replace(/^>\s*/, 'more than ')
+    .replace(/–/g, '–') // keep en-dash
+    .replace(/\s+days?\b/gi, '-day')
+    .replace(/\s+hours?\b/gi, '-hour')
+    .replace(/\s+weeks?\b/gi, '-week')
+    .replace(/\s*\/\s*(recurrent|ongoing|episodic)/i, '')
+    .trim();
+  return `a ${adj} history of`;
+}
+
+// ── AgeGenderGate — required before HPI content ───────────────────────────────
+
+function AgeGenderGate({ age, setAge, sex, setSex }: {
+  age: string;
+  setAge: (v: string) => void;
+  sex: string;
+  setSex: (v: string) => void;
+}) {
+  const ageMissing = !age.trim();
+  const sexMissing = !sex || sex === 'unknown';
+  if (!ageMissing && !sexMissing) return null;
+
+  return (
+    <div style={{
+      borderRadius: 8, border: '2px solid #f59e0b',
+      background: 'rgba(245,158,11,0.08)', padding: '12px 14px',
+      display: 'flex', flexDirection: 'column', gap: 10,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+        <span style={{ fontSize: 16 }}>⚠️</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#fcd34d' }}>
+          Age and sex required to generate HPI prose
+        </span>
+      </div>
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        {ageMissing && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Age (years)
+            </span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={120}
+              step={1}
+              value={age}
+              onChange={e => setAge(e.target.value.replace(/[^0-9]/g, ''))}
+              placeholder="e.g. 45"
+              autoFocus
+              style={{
+                width: 90, padding: '6px 10px', borderRadius: 6, fontSize: 14,
+                border: '2px solid #f59e0b', background: '#070d1a', color: '#f1f5f9',
+                outline: 'none', fontWeight: 600,
+              }}
+            />
+          </div>
+        )}
+        {sexMissing && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Sex
+            </span>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {(['male', 'female', 'other'] as const).map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSex(s)}
+                  style={{
+                    padding: '5px 13px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+                    cursor: 'pointer',
+                    border: `2px solid ${sex === s ? '#f59e0b' : '#334155'}`,
+                    background: sex === s ? '#f59e0b' : '#1e293b',
+                    color: sex === s ? '#000' : '#94a3b8',
+                    transition: 'all 0.1s',
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Date helpers ──────────────────────────────────────────────────────────────
+
+const TZ = 'America/St_Lucia';
+
+function fmtEncDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString('en-LC', {
+      timeZone: TZ, day: 'numeric', month: 'short', year: 'numeric',
+    });
+  } catch { return iso; }
+}
+
+function daysSince(iso: string): number {
+  return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+}
+
+// ── PriorEncounterCard ────────────────────────────────────────────────────────
+
+function PriorEncounterCard({
+  enc, onPullHistory,
+}: {
+  enc: EncounterSummary;
+  onPullHistory: (enc: EncounterSummary) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const days = daysSince(enc.createdAt);
+  const daysLabel = days === 0 ? 'Today' : days === 1 ? '1 day ago' : `${days} days ago`;
+
+  return (
+    <div style={{
+      border: '1px solid #1e293b', borderRadius: 8, overflow: 'hidden', background: '#0a1628',
+    }}>
+      {/* Header row */}
+      <button
+        type="button"
+        onClick={() => setOpen(p => !p)}
+        style={{
+          width: '100%', display: 'flex', alignItems: 'center', gap: 8,
+          padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer',
+          textAlign: 'left',
+        }}
+      >
+        <span style={{ fontSize: 10, color: open ? '▾' : '▸' }}>{open ? '▾' : '▸'}</span>
+        <span style={{ fontSize: 11, color: '#94a3b8', minWidth: 68 }}>{fmtEncDate(enc.createdAt)}</span>
+        <span style={{
+          fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 3,
+          background: '#1e3a5f', color: '#60a5fa', letterSpacing: '0.04em',
+        }}>
+          {enc.encounterType.replace('_', ' ').toUpperCase()}
+        </span>
+        <span style={{ flex: 1, fontSize: 12, fontWeight: 600, color: '#e2e8f0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {enc.chiefComplaint ?? '—'}
+        </span>
+        <span style={{ fontSize: 10, color: '#64748b', whiteSpace: 'nowrap' }}>{daysLabel}</span>
+      </button>
+
+      {open && (
+        <div style={{ padding: '0 12px 10px', borderTop: '1px solid #1e293b' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5, marginTop: 8 }}>
+
+            {(enc.diagnosis || enc.icd10Code) && (
+              <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#0d9488', minWidth: 52 }}>Dx</span>
+                <span style={{ fontSize: 12, color: '#e2e8f0' }}>
+                  {enc.diagnosis ?? ''}
+                  {enc.icd10Code ? <span style={{ color: '#64748b', marginLeft: 5 }}>({enc.icd10Code})</span> : null}
+                </span>
+              </div>
+            )}
+
+            {enc.planDescription && (
+              <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#3b82f6', minWidth: 52 }}>Plan</span>
+                <span style={{ fontSize: 12, color: '#cbd5e1', lineHeight: 1.4 }}>
+                  {enc.planDescription.length > 180
+                    ? enc.planDescription.slice(0, 178) + '…'
+                    : enc.planDescription}
+                </span>
+              </div>
+            )}
+
+            {enc.followUpDate && (
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                <span style={{ fontSize: 10, fontWeight: 700, color: '#f59e0b', minWidth: 52 }}>F/U</span>
+                <span style={{ fontSize: 12, color: '#fcd34d' }}>{fmtEncDate(enc.followUpDate)}</span>
+                {enc.followUpNotes && (
+                  <span style={{ fontSize: 11, color: '#94a3b8' }}>— {enc.followUpNotes}</span>
+                )}
+              </div>
+            )}
+
+            {!enc.diagnosis && !enc.planDescription && !enc.followUpDate && (
+              <div style={{ fontSize: 12, color: '#475569', fontStyle: 'italic' }}>No assessment or plan recorded.</div>
+            )}
+
+            <div style={{ marginTop: 6 }}>
+              <button
+                type="button"
+                onClick={() => onPullHistory(enc)}
+                style={{
+                  fontSize: 11, padding: '4px 12px', borderRadius: 5,
+                  border: '1px solid #0d9488', background: 'transparent',
+                  color: '#0d9488', fontWeight: 700, cursor: 'pointer',
+                }}
+              >
+                ↑ Pull interval history into HPI
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── ContinuityBanner ──────────────────────────────────────────────────────────
+
+function ContinuityBanner({
+  enc, onContinue, onDismiss,
+}: {
+  enc: EncounterSummary;
+  onContinue: () => void;
+  onDismiss: () => void;
+}) {
+  const days = daysSince(enc.createdAt);
+  return (
+    <div style={{
+      borderRadius: 8, border: '1px solid #f59e0b',
+      background: 'rgba(245,158,11,0.07)', padding: '10px 14px',
+      display: 'flex', flexDirection: 'column', gap: 6,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+        <span style={{ fontSize: 16 }}>🔄</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#fcd34d', marginBottom: 2 }}>
+            Returning patient — last seen {days === 1 ? '1 day ago' : `${days} days ago`}
+          </div>
+          <div style={{ fontSize: 12, color: '#e2e8f0', lineHeight: 1.4 }}>
+            {enc.chiefComplaint && (
+              <span>For: <strong>{enc.chiefComplaint}</strong>{enc.diagnosis ? `. Dx: ${enc.diagnosis}` : ''}. </span>
+            )}
+            Is this a follow-up to that episode?
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onDismiss}
+          style={{
+            fontSize: 14, lineHeight: 1, background: 'none', border: 'none',
+            color: '#64748b', cursor: 'pointer', padding: '0 2px',
+          }}
+          title="Dismiss"
+        >×</button>
+      </div>
+      <div style={{ display: 'flex', gap: 8, paddingLeft: 24 }}>
+        <button
+          type="button"
+          onClick={onContinue}
+          style={{
+            fontSize: 11, padding: '4px 12px', borderRadius: 5,
+            background: '#0d9488', border: 'none', color: '#fff',
+            fontWeight: 700, cursor: 'pointer',
+          }}
+        >
+          Continue episode
+        </button>
+        <button
+          type="button"
+          onClick={onDismiss}
+          style={{
+            fontSize: 11, padding: '4px 12px', borderRadius: 5,
+            border: '1px solid #334155', background: 'transparent',
+            color: '#94a3b8', cursor: 'pointer',
+          }}
+        >
+          New problem
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function HpiTab() {
@@ -400,14 +778,64 @@ export default function HpiTab() {
     isPostOp, setIsPostOp,
     postOpDays, setPostOpDays,
     pregnancyPossible, setPregnancyPossible,
-    age, sex, patientName,
+    age, setAge, sex, setSex, patientName,
     procedureData, setProcedureData,
+    patientId, encounterId,
+    recentEncounters,
+    comorbidities, allergies, medications, surgicalHistory,
   } = useAppContext();
 
   const entries = useMemo(
     () => (procedureData['cc'] as CCEntry[] | undefined) ?? [],
     [procedureData],
   );
+
+  // ── Prior encounters (Phase 1 + 2) ──────────────────────────────────────────
+  // Filter out the current encounter; show up to 3 most recent
+  const priorEncounters = useMemo(
+    () => recentEncounters.filter(e => e.id !== encounterId).slice(0, 3),
+    [recentEncounters, encounterId],
+  );
+
+  // Phase 2: detect returning patient within 180 days
+  const mostRecent = priorEncounters[0] ?? null;
+  const withinSixMonths = mostRecent ? daysSince(mostRecent.createdAt) <= 180 : false;
+
+  const [continuityDismissed, setContinuityDismissed] = useState(false);
+  const [continuityEncId, setContinuityEncId] = useState<string | null>(null);
+
+  // Reset banner when patient changes
+  useEffect(() => {
+    setContinuityDismissed(false);
+    setContinuityEncId(null);
+  }, [patientId]);
+
+  const showContinuityBanner =
+    !continuityDismissed &&
+    withinSixMonths &&
+    mostRecent != null &&
+    // Don't show if HPI already has significant content
+    hpiNotes.trim().length < 30;
+
+  function handleContinueEpisode() {
+    if (!mostRecent) return;
+    setContinuityEncId(mostRecent.id);
+    setContinuityDismissed(true);
+    // Pre-populate HPI with interval history prompt
+    const dateFmt = fmtEncDate(mostRecent.createdAt);
+    const days = daysSince(mostRecent.createdAt);
+    const dxClause = mostRecent.diagnosis ? ` with ${mostRecent.diagnosis}` : '';
+    const priorCC = mostRecent.chiefComplaint ?? 'presenting complaint';
+    const intervalDraft =
+      `Interval history — follow-up ${days} days since last review (${dateFmt}).\n` +
+      `Patient was previously seen for ${priorCC}${dxClause}.\n` +
+      (mostRecent.planDescription ? `Prior plan: ${mostRecent.planDescription}\n` : '') +
+      `\nInterval: [Document changes since last visit, response to treatment, new symptoms, compliance with plan]`;
+    setHpiNotes(intervalDraft);
+    prevLiveRef.current = '';
+  }
+
+  void continuityEncId; // referenced above; used to highlight linked prior encounter
 
   const ageNum = age ? Number(age) : null;
   const ranked = useMemo(
@@ -465,8 +893,57 @@ export default function HpiTab() {
   return (
     <div className="gap-y">
 
+      {/* ── Age / sex gate — must complete before HPI prose generates ── */}
+      <AgeGenderGate age={age} setAge={setAge} sex={sex} setSex={v => setSex(v as 'male' | 'female' | 'other' | 'unknown')} />
+
+      {/* ── Medical background — PMH, Allergies, Meds, Surgical at a glance ── */}
+      <MedicalBackgroundStrip
+        comorbidities={comorbidities}
+        allergies={allergies}
+        medications={medications}
+        surgicalHistory={surgicalHistory}
+      />
+
       {/* ── CC strip — add / edit complaints ── */}
       <ChiefComplaintStrip />
+
+      {/* ── Phase 2: Continuity banner (returning patient within 6 months) ── */}
+      {showContinuityBanner && mostRecent && (
+        <ContinuityBanner
+          enc={mostRecent}
+          onContinue={handleContinueEpisode}
+          onDismiss={() => setContinuityDismissed(true)}
+        />
+      )}
+
+      {/* ── Phase 1: Prior encounters context panel ── */}
+      {patientId && priorEncounters.length > 0 && (
+        <CollapsibleCard
+          title={`Prior encounters (${priorEncounters.length})`}
+          defaultOpen={false}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {priorEncounters.map(enc => (
+              <PriorEncounterCard
+                key={enc.id}
+                enc={enc}
+                onPullHistory={prior => {
+                  const dateFmt = fmtEncDate(prior.createdAt);
+                  const days = daysSince(prior.createdAt);
+                  const dxClause = prior.diagnosis ? ` Dx: ${prior.diagnosis}.` : '';
+                  const planClause = prior.planDescription ? ` Plan: ${prior.planDescription}.` : '';
+                  const intervalText =
+                    `\n\n[Interval history — ${days} days since ${dateFmt}]${dxClause}${planClause}\n` +
+                    `Interval: `;
+                  const sep = hpiNotes && !hpiNotes.endsWith('\n') ? '' : '';
+                  setHpiNotes(hpiNotes + sep + intervalText);
+                  prevLiveRef.current = '';
+                }}
+              />
+            ))}
+          </div>
+        </CollapsibleCard>
+      )}
 
       {/* ── Context: duration, pain, flags ── */}
       <CollapsibleCard title="Context" defaultOpen={!!(durationDays || painScore || freeText)}>

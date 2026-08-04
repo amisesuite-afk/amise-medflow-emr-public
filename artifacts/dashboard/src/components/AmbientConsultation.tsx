@@ -16,7 +16,6 @@ import { DISEASES, getDiseaseSpecialty, initPaneState, updatePosterior, topDiagn
 import { extractFeaturesFromTranscript, detectPathognomonic, type PathognomicMatch } from '@/lib/transcript-dx-mapper';
 import { computeReminders } from '@/lib/safety-engine';
 import type { RadiologyRequest } from '@/pages/tabs/RadiologyTab';
-
 // ── Web Speech API ─────────────────────────────────────────────────────────────
 const SR_CLASS = (typeof window !== 'undefined')
   ? (window.SpeechRecognition ?? window.webkitSpeechRecognition)
@@ -1559,10 +1558,14 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
         };
 
         const handleSetAllNormal = () => {
-          ccPlan.forEach(sys => {
+          // Fill ALL displayed systems — orderedSystems (std) + ccExtras (specialty)
+          orderedSystems.forEach(sys => {
             const text = EXAM_NORMALS[sys] ?? `${sys}: Normal.`;
-            if (stdExamFields[sys]) stdExamFields[sys][1](text);
-            else setExtraExams(prev => ({ ...prev, [sys]: text }));
+            stdExamFields[sys][1](text);
+          });
+          ccExtras.forEach(sys => {
+            const text = EXAM_NORMALS[sys] ?? `${sys}: Normal.`;
+            setExtraExams(prev => ({ ...prev, [sys]: text }));
           });
           setOpenExamSys(null);
         };
@@ -1771,50 +1774,12 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             <PriorVisitStrip summary={ctx.priorEncounterSummary} />
           )}
 
-          {/* ── Clinical history — compact dropdown rows ── */}
+          {/* ── Clinical history — compact dropdown rows (hidden while exam drawer is open) ── */}
           <div style={{
             borderRadius: 10, border: '1px solid var(--line)',
             background: 'var(--card)', overflow: 'hidden',
+            display: activeDrawer === 'examination' ? 'none' : undefined,
           }}>
-            {/* Chief Complaint */}
-            <HistoryFieldRow
-              icon="🩺" label="Chief Complaint"
-              isOpen={openSec === 'cc'} onToggle={() => toggleSec('cc')}
-              hasData={!!activeCcKey}
-              summaryText={(() => {
-                const allSelected = [activeCcKey, ...extraCcKeys].filter(Boolean) as string[];
-                if (allSelected.length === 0) return 'Tap to select';
-                return allSelected.map(k => CC_ITEMS.find(c => c.id === k)?.label ?? k).join(', ');
-              })()}
-            >
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {CC_ITEMS.map(cc => {
-                  const isPrimary = activeCcKey === cc.id;
-                  const isExtra   = extraCcKeys.includes(cc.id);
-                  const on = isPrimary || isExtra;
-                  return (
-                    <button key={cc.id} type="button" style={chipBtn(on)} onClick={() => {
-                      if (isPrimary) {
-                        // Deselect primary — promote first extra to primary if any
-                        const [next, ...rest] = extraCcKeys;
-                        setActiveCcKey(next ?? null);
-                        setExtraCcKeys(rest);
-                      } else if (isExtra) {
-                        setExtraCcKeys(extraCcKeys.filter(k => k !== cc.id));
-                      } else if (!activeCcKey) {
-                        // No primary yet — set as primary and auto-advance
-                        setActiveCcKey(cc.id);
-                        if (!hpiNotes.trim()) setHpiNotes(cc.label + ' — ');
-                        advanceSec('cc');
-                      } else {
-                        // Primary already set — add as extra, stay open for more
-                        setExtraCcKeys([...extraCcKeys, cc.id]);
-                      }
-                    }}>{cc.label}</button>
-                  );
-                })}
-              </div>
-            </HistoryFieldRow>
 
             {/* Past Medical History */}
             <HistoryFieldRow
@@ -2021,172 +1986,6 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 style={{ ...drawerTextarea, resize: undefined }}
               />
             </HistoryFieldRow>
-          </div>
-
-          {/* ── Presenting History ── */}
-          <div style={{
-            borderRadius: 10,
-            border: `1px solid ${hpiNotes.trim() ? 'rgba(0,180,160,0.4)' : 'var(--line)'}`,
-            background: 'var(--card)', overflow: 'hidden',
-          }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '10px 14px',
-              borderBottom: '1px solid var(--line)',
-            }}>
-              <span style={{ fontSize: 13 }}>📝</span>
-              <span style={{ ...sectionLabel, color: hpiNotes.trim() ? 'var(--accent)' : 'var(--muted)' }}>
-                {ccLabel ? `${ccLabel} — History` : 'Presenting History'}
-              </span>
-              <div style={{ flex: 1 }} />
-              <button
-                type="button"
-                onClick={handleDictateClick}
-                disabled={!SPEECH_SUPPORTED && !micOpen}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 5,
-                  padding: '4px 10px', borderRadius: 7, border: 'none',
-                  cursor: 'pointer', fontSize: 11, fontWeight: 700,
-                  background: recording ? '#dc2626' : micOpen ? 'var(--accent)' : 'rgba(0,180,160,0.1)',
-                  color: recording ? '#fff' : micOpen ? '#fff' : 'var(--accent)',
-                  transition: 'all 0.15s',
-                }}
-                title={recording ? 'Stop & analyse' : micOpen ? 'Close mic' : 'Dictate HPI'}
-              >
-                <span style={{
-                  display: 'inline-block', width: 6, height: 6,
-                  borderRadius: '50%', flexShrink: 0,
-                  background: recording ? '#fff' : 'currentColor',
-                  animation: recording ? 'ambPulse 1s ease-in-out infinite' : 'none',
-                }} />
-                {recording ? 'Stop' : segmenting ? 'Analysing…' : accepted ? '✓ Loaded' : '🎙 Dictate'}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setActiveSection('hpi'); onDetailedMode(); }}
-                style={{
-                  padding: '3px 8px', borderRadius: 6, fontSize: 10, fontWeight: 600,
-                  border: '1px solid var(--line)', background: 'transparent',
-                  color: 'var(--muted)', cursor: 'pointer',
-                }}
-              >Full HPI ↗</button>
-            </div>
-            <textarea
-              value={hpiNotes}
-              onChange={e => setHpiNotes(e.target.value)}
-              placeholder={
-                ccLabel
-                  ? `Presenting history of ${ccLabel}. Dictate or type directly.`
-                  : 'Presenting history — tap 🎙 Dictate to start, or type directly.'
-              }
-              style={{
-                display: 'block', width: '100%', minHeight: 140,
-                padding: '10px 14px', border: 'none', resize: 'vertical' as const,
-                background: 'transparent', color: 'var(--ink)',
-                fontSize: 15, lineHeight: 1.75, fontFamily: 'Georgia, serif',
-                outline: 'none', boxSizing: 'border-box' as const,
-              }}
-            />
-            {micOpen && (
-              <div style={{
-                borderTop: `1px solid ${recording ? 'rgba(220,38,38,0.3)' : 'var(--line)'}`,
-                padding: '10px 14px',
-                background: recording ? 'rgba(220,38,38,0.03)' : 'rgba(0,180,160,0.03)',
-              }}>
-                {(fullTranscript || recording) && (
-                  <div style={{
-                    fontSize: 13, lineHeight: 1.6, color: 'var(--muted)',
-                    fontFamily: 'Georgia, serif', maxHeight: 80, overflowY: 'auto',
-                    marginBottom: pendingSoap ? 10 : 0,
-                  }}>
-                    {transcript}
-                    {interim && <span style={{ color: 'var(--ink)', opacity: 0.5 }}>{interim}</span>}
-                    {recording && !fullTranscript && <span style={{ fontStyle: 'italic' }}>Listening…</span>}
-                  </div>
-                )}
-                {pendingSoap && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    <div style={{ fontSize: 10, fontWeight: 800, color: '#d97706', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      PREVIEW — review then accept
-                      {segmentSource && (
-                        <span style={{
-                          fontSize: 9, padding: '1px 6px', borderRadius: 8,
-                          background: segmentSource === 'cloud' ? 'rgba(59,130,246,.15)' : 'rgba(16,185,129,.15)',
-                          color: segmentSource === 'cloud' ? '#2563eb' : '#059669',
-                        }}>
-                          {segmentSource === 'local' ? '⚡ Local' : segmentSource === 'ollama' ? '🟢 Ollama' : '🤖 Cloud'}
-                        </span>
-                      )}
-                    </div>
-                    {([
-                      ['HPI', pendingSoap.hpi],
-                      ['Assessment', pendingSoap.assessment],
-                      ['Plan', pendingSoap.plan],
-                      ...Object.entries(pendingSoap.examination ?? {}).filter(([, v]) => v?.trim()).map(([k, v]) => [`Exam — ${k}`, v]),
-                    ] as [string, string | undefined][]).filter(([, v]) => v?.trim()).map(([label, text]) => (
-                      <div key={label} style={{
-                        background: 'var(--bg)', borderRadius: 7, padding: '8px 11px',
-                        border: '1px solid var(--line)',
-                      }}>
-                        <div style={{ ...sectionLabel, marginBottom: 3 }}>{label}</div>
-                        <div style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink)', fontFamily: 'Georgia, serif' }}>{text}</div>
-                      </div>
-                    ))}
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <button type="button" onClick={acceptSoap}
-                        style={{ flex: 1, padding: '8px', borderRadius: 7, border: 'none',
-                          background: 'var(--accent)', color: '#fff', fontSize: 12, fontWeight: 800, cursor: 'pointer' }}>
-                        ↓ Accept
-                      </button>
-                      <button type="button" onClick={() => { setPendingSoap(null); setTranscript(''); }}
-                        style={{ padding: '8px 14px', borderRadius: 7, border: '1px solid var(--line)',
-                          background: 'transparent', color: 'var(--muted)', fontSize: 12, cursor: 'pointer' }}>
-                        Discard
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {!pendingSoap && (
-                  <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
-                    {!recording && transcript && !segmenting && (
-                      <button type="button" onClick={() => void handleSegment()}
-                        style={{ padding: '5px 14px', borderRadius: 6, border: 'none',
-                          background: 'var(--accent)', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}>
-                        Analyse transcript →
-                      </button>
-                    )}
-                    {!recording && (
-                      <button type="button" onClick={() => { setTranscript(''); setVoiceError(null); setMicOpen(false); }}
-                        style={{ padding: '5px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600,
-                          border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)', cursor: 'pointer' }}>
-                        Close
-                      </button>
-                    )}
-                    {segmenting && <span style={{ fontSize: 11, color: '#d97706' }}>Analysing…</span>}
-                  </div>
-                )}
-                {voiceError && (
-                  <div style={{
-                    marginTop: 6, padding: '8px 10px', borderRadius: 6,
-                    background: '#fef2f2', border: '1px solid #fca5a5',
-                    display: 'flex', alignItems: 'flex-start', gap: 8,
-                  }}>
-                    <span style={{ flex: 1, fontSize: 11, color: '#b91c1c', lineHeight: 1.5 }}>{voiceError}</span>
-                    <button
-                      type="button"
-                      onClick={() => { setVoiceError(null); void startRecording(); }}
-                      style={{
-                        flexShrink: 0, padding: '3px 10px', borderRadius: 5,
-                        border: '1px solid #fca5a5', background: '#fff',
-                        color: '#dc2626', fontSize: 11, fontWeight: 700, cursor: 'pointer',
-                      }}
-                    >
-                      Retry
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
           {/* ── AI quiet prompt — one at a time ── */}

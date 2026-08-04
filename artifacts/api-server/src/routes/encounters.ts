@@ -98,17 +98,39 @@ router.get('/api/encounters/patient/:patientId', async (req, res) => {
       }
     }
 
+    // Also join plans for summary context
+    const { data: pData } = await supa
+      .from('plans')
+      .select('encounter_id, description, follow_up_date, follow_up_notes')
+      .in('encounter_id', ids);
+
+    const pMap = new Map<string, { description: string; follow_up_date: string; follow_up_notes: string }>();
+    for (const p of ((pData ?? []) as Array<Record<string, unknown>>)) {
+      const eid = p.encounter_id as string;
+      if (!pMap.has(eid)) {
+        pMap.set(eid, {
+          description:      (p.description as string) ?? '',
+          follow_up_date:   (p.follow_up_date as string) ?? '',
+          follow_up_notes:  (p.follow_up_notes as string) ?? '',
+        });
+      }
+    }
+
     const encounters = (rows as Array<Record<string, unknown>>).map(r => {
       const a = aMap.get(r.id as string);
+      const p = pMap.get(r.id as string);
       return {
-        id:             r.id,
-        createdAt:      r.created_at,
-        status:         r.status ?? 'open',
-        encounterType:  r.encounter_type ?? 'outpatient',
-        chiefComplaint: r.chief_complaint ?? null,
-        site:           r.site ?? null,
-        diagnosis:      a?.diagnosis ?? null,
-        icd10Code:      a?.icd10_code ?? null,
+        id:               r.id,
+        createdAt:        r.created_at,
+        status:           r.status ?? 'open',
+        encounterType:    r.encounter_type ?? 'outpatient',
+        chiefComplaint:   r.chief_complaint ?? null,
+        site:             r.site ?? null,
+        diagnosis:        a?.diagnosis ?? null,
+        icd10Code:        a?.icd10_code ?? null,
+        planDescription:  p?.description ?? null,
+        followUpDate:     p?.follow_up_date ?? null,
+        followUpNotes:    p?.follow_up_notes ?? null,
       };
     });
 

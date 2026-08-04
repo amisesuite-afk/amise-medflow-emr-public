@@ -143,7 +143,7 @@ export default function PatientSearchTab() {
     setAssessment, setDifferentials, setIcdCodes, setPlan,
     setAllergies, setMedications, setPatientPhoto,
     setSurgicalHistory, setSurgicalNotes, setToxicHabits,
-    setRosFindings, setProcedureData, setTraumaData,
+    setRosFindings, setProcedureData, procedureData, setTraumaData,
     setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
     setExamFindings, setExamNotes,
     setTopSection, setActiveSection,
@@ -403,8 +403,16 @@ export default function PatientSearchTab() {
     const q = questionnaireData;
 
     if (q.chiefComplaint) {
+      const ccText = q.chiefComplaint.trim();
       const existing = freeText ?? '';
-      setFreeText(existing ? `${existing}\n\n[From questionnaire] ${q.chiefComplaint}` : q.chiefComplaint);
+      setFreeText(existing ? `${existing}\n\n[From questionnaire] ${ccText}` : ccText);
+
+      // Migrate CC into procedureData['cc'] so the HPI builder activates with SOCRATES questions
+      const existingCCs = (procedureData['cc'] as Array<{ complaint: string; answers: Record<string, string> }> | undefined) ?? [];
+      const alreadyAdded = existingCCs.some(e => e.complaint.toLowerCase().trim() === ccText.toLowerCase());
+      if (!alreadyAdded) {
+        setProcedureData({ ...procedureData, cc: [...existingCCs, { complaint: ccText, answers: {} }] });
+      }
     }
 
     for (const s of q.symptoms) {
@@ -431,7 +439,11 @@ export default function PatientSearchTab() {
       setToxicHabits([...toxicHabits, ...q.socialHabits.filter(h => !toxicHabits.includes(h))]);
     }
 
-    if (q.aiSummary) setHpiNotes(q.aiSummary);
+    // Only use aiSummary if it's substantially more than the bare CC — otherwise
+    // let the HPI builder auto-generate prose from the CC entry created above.
+    const bareCC = (q.chiefComplaint ?? '').trim();
+    const summaryIsTrivial = !q.aiSummary || q.aiSummary.trim().length <= bareCC.length + 4;
+    if (q.aiSummary && !summaryIsTrivial) setHpiNotes(q.aiSummary);
 
     setQPopulated(true);
     showToast('Questionnaire data populated — please confirm with patient.', 'success');
