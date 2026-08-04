@@ -104,6 +104,10 @@ export interface PatientListRow {
   phone: string | null;
   date_of_birth: string | null;
   created_at: string | null;
+  latest_encounter_status?: string | null;
+  latest_encounter_type?: string | null;
+  latest_encounter_site?: string | null;
+  latest_encounter_date?: string | null;
 }
 
 // ─── savePatientFull ──────────────────────────────────────────────────────────

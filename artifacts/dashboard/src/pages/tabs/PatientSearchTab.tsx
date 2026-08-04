@@ -60,6 +60,25 @@ function saveDemoPatients(patients: DemoPatient[]): void {
   } catch { /* ignore */ }
 }
 
+/** Visit type icon + color lookup */
+const ENC_TYPE_CHIP: Record<string, { icon: string; label: string; color: string }> = {
+  outpatient:       { icon: '🩺', label: 'Outpatient',    color: '#0ea5e9' },
+  inpatient:        { icon: '🛏',  label: 'Inpatient',     color: '#6366f1' },
+  endoscopy:        { icon: '🔬', label: 'Endoscopy',     color: '#8b5cf6' },
+  quick_consult:    { icon: '⚡',  label: 'Quick Consult', color: '#f97316' },
+  surgical_consult: { icon: '✂️', label: 'Surgical',      color: '#ef4444' },
+  major_emergency:  { icon: '🚨', label: 'Emergency',     color: '#dc2626' },
+};
+
+function encStatusStyle(status: string | null | undefined): React.CSSProperties {
+  if (!status) return {};
+  if (status === 'open' || status === 'in_progress')
+    return { background: '#fef3c7', color: '#b45309', border: '1px solid #fcd34d' };
+  if (status === 'complete' || status === 'closed')
+    return { background: '#dcfce7', color: '#166534', border: '1px solid #86efac' };
+  return { background: '#f1f5f9', color: '#475569', border: '1px solid #cbd5e1' };
+}
+
 /** Extended row that carries acuity/score for demo patients */
 interface PatientListRowEx extends PatientListRow {
   acuity?: string;
@@ -703,6 +722,31 @@ export default function PatientSearchTab() {
                         padding: '1px 6px', marginLeft: 6, textTransform: 'uppercase', letterSpacing: 0.4,
                       }}>
                         {p.acuity}{p.score !== undefined ? ` · ${p.score}` : ''}
+                      </span>
+                    )}
+                    {/* Visit type + encounter status chips */}
+                    {p.latest_encounter_type && (() => {
+                      const chip = ENC_TYPE_CHIP[p.latest_encounter_type];
+                      if (!chip) return null;
+                      return (
+                        <span style={{
+                          fontSize: 9, fontWeight: 700, borderRadius: 4, padding: '1px 5px',
+                          background: `${chip.color}15`, color: chip.color, border: `1px solid ${chip.color}33`,
+                          marginLeft: 5, letterSpacing: 0.3,
+                        }}>
+                          {chip.icon} {chip.label}
+                        </span>
+                      );
+                    })()}
+                    {p.latest_encounter_status && (
+                      <span style={{
+                        ...encStatusStyle(p.latest_encounter_status),
+                        fontSize: 9, fontWeight: 700, borderRadius: 4, padding: '1px 5px',
+                        marginLeft: 4, textTransform: 'uppercase', letterSpacing: 0.3,
+                        display: 'inline-block',
+                      }}>
+                        {p.latest_encounter_status === 'open' || p.latest_encounter_status === 'in_progress' ? '⏳' : '✓'}{' '}
+                        {p.latest_encounter_status}
                       </span>
                     )}
                     <span className="psearch-row-meta">
