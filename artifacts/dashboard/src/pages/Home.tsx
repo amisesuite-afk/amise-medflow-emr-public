@@ -88,7 +88,6 @@ import CriticalResultAlert from '@/components/CriticalResultAlert';
 import EncounterContextPicker from '@/components/EncounterContextPicker';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
 import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
-import ConsultContextBanner from '@/components/ConsultContextBanner';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
 import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import OpenTasksBanner from '@/components/OpenTasksBanner';
@@ -380,7 +379,6 @@ export default function HomePage() {
   const [guidedMode, setGuidedMode] = useState(false);
   const [ambientMode, setAmbientMode] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
-  const [contextOpen, setContextOpen] = useState(false);
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [notifyTemplate, setNotifyTemplate] = useState<'appointment_reminder' | 'result_ready' | 'postop_checkin' | 'general'>('result_ready');
   const [notifyData, setNotifyData] = useState({ day: '', date: '', time: '', location: 'Rodney Bay', message: '' });
@@ -388,7 +386,6 @@ export default function HomePage() {
   const [notifyStatus, setNotifyStatus] = useState<{ ok: boolean; msg: string } | null>(null);
   const prevPatientIdRef = useRef<string | null>(null);
   const acuityRef = useRef<HTMLDivElement>(null);
-  const contextPanelRef = useRef<HTMLDivElement>(null);
 
   // Collapse sidebar on narrow viewports (tablets/phones)
   useEffect(() => {
@@ -409,17 +406,6 @@ export default function HomePage() {
     return () => document.removeEventListener('mousedown', handle);
   }, [showAcuityBreakdown]);
 
-  // Close context popover on outside click
-  useEffect(() => {
-    if (!contextOpen) return;
-    function handle(e: MouseEvent) {
-      if (contextPanelRef.current && !contextPanelRef.current.contains(e.target as Node)) {
-        setContextOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handle);
-    return () => document.removeEventListener('mousedown', handle);
-  }, [contextOpen]);
 
   // Go directly to AmbientConsultation on patient load — no blocking gate or wizard
   useEffect(() => {
@@ -1299,136 +1285,6 @@ export default function HomePage() {
           />
         )}
 
-        {/* Compact context bar — single 40 px strip showing key at-a-glance info;
-             full detail panels drop down on demand via "Context ▼" button */}
-        {topSection === 'consultation' && !ambientMode && !guidedMode && (() => {
-          const allergyList = allergies.split(',').map(a => a.trim()).filter(Boolean);
-          const vtMatch = ctxVisitType
-            ? VISIT_TYPES.find(v => v.id === ctxVisitType) : null;
-          const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
-          const ccLabel = ccMatrix?.name ?? (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
-
-          return (
-            <div ref={contextPanelRef} style={{ position: 'relative' }}>
-              {/* ── Compact info bar ── */}
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'nowrap',
-                padding: '0 14px', height: 42,
-                background: 'var(--card)', border: '1px solid var(--line)',
-                borderRadius: 10, overflow: 'hidden',
-              }}>
-                {/* Visit type badge */}
-                {vtMatch && (
-                  <span style={{
-                    fontSize: 11, fontWeight: 700, letterSpacing: '.03em',
-                    color: vtMatch.color, background: `${vtMatch.color}18`,
-                    border: `1px solid ${vtMatch.color}44`,
-                    borderRadius: 5, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0,
-                  }}>
-                    {vtMatch.icon} {vtMatch.label}
-                  </span>
-                )}
-
-                {/* Chief complaint / symptoms */}
-                {ccLabel && (
-                  <>
-                    {vtMatch && <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>}
-                    <span style={{
-                      fontSize: 12, fontWeight: 600, color: 'var(--ink)',
-                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 220,
-                    }}>
-                      {ccLabel}
-                    </span>
-                  </>
-                )}
-
-                <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>
-
-                {/* Allergies */}
-                {allergyList.length > 0 ? (
-                  <span style={{
-                    fontSize: 11, fontWeight: 700, color: '#b45309',
-                    background: '#fffbeb', border: '1px solid #fcd34d',
-                    borderRadius: 4, padding: '2px 7px', whiteSpace: 'nowrap', flexShrink: 0,
-                  }}>
-                    ⚠ {allergyList.slice(0, 2).join(', ')}{allergyList.length > 2 ? ` +${allergyList.length - 2}` : ''}
-                  </span>
-                ) : (
-                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
-                )}
-
-                {/* PMH count */}
-                {comorbidities.length > 0 && (
-                  <>
-                    <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                      {comorbidities.length} PMH
-                    </span>
-                  </>
-                )}
-
-                {/* Last encounter chip */}
-                {(() => {
-                  const last = recentEncounters.find(e => e.id !== encounterId);
-                  if (!last) return null;
-                  const d = new Date(last.createdAt);
-                  const label = d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-                  const type = last.encounterType === 'outpatient' ? '' : ` · ${last.encounterType}`;
-                  const dx = last.diagnosis ? ` — ${last.diagnosis.slice(0, 28)}${last.diagnosis.length > 28 ? '…' : ''}` : '';
-                  return (
-                    <>
-                      <span style={{ color: 'var(--line)', flexShrink: 0 }}>·</span>
-                      <span style={{
-                        fontSize: 11, color: 'var(--muted)', whiteSpace: 'nowrap', flexShrink: 0,
-                        overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 200,
-                      }}>
-                        Last: <b style={{ color: 'var(--ink)' }}>{label}</b>{type}{dx}
-                      </span>
-                    </>
-                  );
-                })()}
-
-                <span style={{ flex: 1, minWidth: 0 }} />
-
-                {/* Context toggle */}
-                <button
-                  type="button"
-                  onClick={() => setContextOpen(o => !o)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 4,
-                    padding: '4px 11px', borderRadius: 6, cursor: 'pointer',
-                    border: `1px solid ${contextOpen ? 'var(--accent)' : 'var(--line)'}`,
-                    background: contextOpen ? 'var(--accent)' : 'transparent',
-                    color: contextOpen ? '#fff' : 'var(--muted)',
-                    fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', flexShrink: 0,
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  Context <span style={{ fontSize: 8, marginLeft: 2 }}>{contextOpen ? '▲' : '▼'}</span>
-                </button>
-              </div>
-
-              {/* ── Full context popover ── */}
-              {contextOpen && (
-                <div style={{
-                  position: 'absolute', top: 'calc(100% + 5px)', left: 0, right: 0,
-                  zIndex: 200, background: 'var(--card)',
-                  border: '1px solid var(--line)', borderRadius: 12,
-                  boxShadow: '0 8px 32px rgba(0,0,0,.14)',
-                  display: 'flex', flexDirection: 'column',
-                  maxHeight: '70vh', overflowY: 'auto',
-                }}>
-                  <EncounterContextPicker />
-                  {!!patientId && <PreviousVisitStrip />}
-                  <OpenTasksBanner patientId={patientId} encounterId={encounterId} />
-                  <ProblemListStrip />
-                  <ClinicalPromptsStrip />
-                  <FollowUpQueueStrip />
-                </div>
-              )}
-            </div>
-          );
-        })()}
 
 
         {/* Consultation navigation — guided (one step at a time) or full tab strip */}
@@ -1641,7 +1497,6 @@ export default function HomePage() {
 
         {/* Algorithm workflow guide — always visible when CC is active */}
         {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ClinicalWorkflowBar />}
-        {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ConsultContextBanner />}
 
         {/* Clinical sections */}
         {topSection === 'intake'        && vtGateCleared && <IntakeTab />}

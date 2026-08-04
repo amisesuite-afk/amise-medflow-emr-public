@@ -1344,6 +1344,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               <button
                 key={section}
                 type="button"
+                title={label}
                 onClick={() => {
                   if (isHistSec && consultPhase === 'history') {
                     toggleSec(section);
@@ -1353,38 +1354,41 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                   }
                 }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
-                  padding: '6px 12px', borderRadius: 18, cursor: 'pointer',
-                  fontSize: 12, fontWeight: 600, minHeight: 36, position: 'relative',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  width: 36, height: 36, borderRadius: '50%', cursor: 'pointer',
+                  padding: 0, position: 'relative',
                   border: `1.5px solid ${isActive ? 'var(--accent)' : done ? 'var(--accent)' : 'var(--line)'}`,
                   background: isActive ? 'var(--accent)' : done ? 'rgba(0,180,160,0.08)' : 'var(--card)',
                   color: isActive ? '#fff' : done ? 'var(--accent)' : 'var(--ink)',
-                  transition: 'all 0.15s', whiteSpace: 'nowrap',
+                  transition: 'all 0.15s',
                 }}
               >
                 {done && !isActive && (
-                  <span style={{ position: 'absolute', top: 4, right: 4, width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)' }} />
+                  <span style={{ position: 'absolute', top: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: 'var(--accent)', border: '1.5px solid var(--bg)' }} />
                 )}
-                <span style={{ fontSize: 14 }}>{icon}</span>
-                {label}
+                <span style={{ fontSize: 16 }}>{icon}</span>
               </button>
             );
           })}
           <button
             type="button"
+            title={ctx.examPhotos.length > 0 ? `Photos (${ctx.examPhotos.length})` : 'Photos'}
             onClick={() => setActiveDrawer(d => d === 'attachments' ? null : 'attachments')}
             style={{
-              display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0,
-              padding: '6px 12px', borderRadius: 18, cursor: 'pointer',
-              fontSize: 12, fontWeight: 600, minHeight: 36, whiteSpace: 'nowrap',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              width: 36, height: 36, borderRadius: '50%', cursor: 'pointer', padding: 0, position: 'relative',
               border: `1.5px solid ${activeDrawer === 'attachments' ? '#0d9488' : ctx.examPhotos.length > 0 ? '#0d9488' : 'var(--line)'}`,
               background: activeDrawer === 'attachments' ? '#0d9488' : ctx.examPhotos.length > 0 ? 'rgba(13,148,136,0.08)' : 'var(--card)',
               color: activeDrawer === 'attachments' ? '#fff' : ctx.examPhotos.length > 0 ? '#0d9488' : 'var(--ink)',
               transition: 'all 0.15s',
             }}
           >
-            <span style={{ fontSize: 14 }}>📷</span>
-            Photos{ctx.examPhotos.length > 0 ? ` (${ctx.examPhotos.length})` : ''}
+            {ctx.examPhotos.length > 0 && (
+              <span style={{ position: 'absolute', top: -2, right: -2, width: 7, height: 7, borderRadius: '50%', background: '#0d9488', border: '1.5px solid var(--bg)', fontSize: 8, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {ctx.examPhotos.length}
+              </span>
+            )}
+            <span style={{ fontSize: 16 }}>📷</span>
           </button>
         </div>
       </div>
@@ -1774,218 +1778,250 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             <PriorVisitStrip summary={ctx.priorEncounterSummary} />
           )}
 
-          {/* ── Clinical history — compact dropdown rows (hidden while exam drawer is open) ── */}
+          {/* ── Clinical history — compact 1-row strip (tap a section to expand) ── */}
           <div style={{
             borderRadius: 10, border: '1px solid var(--line)',
             background: 'var(--card)', overflow: 'hidden',
             display: activeDrawer === 'examination' ? 'none' : undefined,
           }}>
+            {/* Summary strip — 4 tap targets in one row */}
+            <div style={{ display: 'flex', alignItems: 'stretch' }}>
+              {[
+                {
+                  id: 'pmh',
+                  icon: '📋',
+                  label: 'PMH',
+                  summary: pmhNotes.includes('NKPMH') ? 'No PMH'
+                    : comorbidities.length > 0 ? comorbidities.slice(0, 2).join(', ') + (comorbidities.length > 2 ? ` +${comorbidities.length - 2}` : '') : 'None',
+                  hasData: comorbidities.length > 0 || pmhNotes.includes('NKPMH'),
+                  isAlert: false,
+                },
+                {
+                  id: 'surgical',
+                  icon: '🔪',
+                  label: 'Surg',
+                  summary: surgicalHistory.includes('No prior surgery') ? 'None'
+                    : surgicalHistory.length > 0 ? surgicalHistory.slice(0, 2).join(', ') + (surgicalHistory.length > 2 ? ` +${surgicalHistory.length - 2}` : '') : 'None',
+                  hasData: surgicalHistory.length > 0,
+                  isAlert: false,
+                },
+                {
+                  id: 'medications',
+                  icon: '💊',
+                  label: 'Meds',
+                  summary: medications.includes('None') ? 'None'
+                    : medications.length > 0 ? medications.slice(0, 2).join(', ') + (medications.length > 2 ? ` +${medications.length - 2}` : '') : 'None',
+                  hasData: medications.length > 0 || !!medicationsText.trim(),
+                  isAlert: false,
+                },
+                {
+                  id: 'allergies',
+                  icon: '⚠️',
+                  label: 'Allergy',
+                  summary: allergyText || 'NKDA',
+                  hasData: !!allergyText.trim(),
+                  isAlert: !!(allergyText.trim() && allergyText !== 'NKDA'),
+                },
+              ].map((sec, i, arr) => {
+                const isActive = openSec === sec.id;
+                return (
+                  <button
+                    key={sec.id}
+                    type="button"
+                    onClick={() => toggleSec(sec.id)}
+                    style={{
+                      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start',
+                      gap: 2, padding: '7px 10px', cursor: 'pointer', textAlign: 'left' as const,
+                      border: 'none', minWidth: 0,
+                      borderRight: i < arr.length - 1 ? '1px solid var(--line)' : 'none',
+                      background: isActive ? 'rgba(0,180,160,0.06)' : 'transparent',
+                      transition: 'background 0.12s',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                      <span style={{ fontSize: 12, lineHeight: 1 }}>{sec.icon}</span>
+                      <span style={{
+                        fontSize: 9, fontWeight: 800, letterSpacing: '.05em',
+                        textTransform: 'uppercase' as const,
+                        color: isActive ? 'var(--accent)' : sec.hasData ? 'var(--accent)' : 'var(--muted)',
+                      }}>{sec.label}</span>
+                    </div>
+                    <div style={{
+                      fontSize: 10.5, fontWeight: 600, lineHeight: 1.3,
+                      color: sec.isAlert ? '#b45309' : sec.hasData ? 'var(--ink)' : 'var(--faint)',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%',
+                    }}>
+                      {sec.summary}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
 
-            {/* Past Medical History */}
-            <HistoryFieldRow
-              icon="📋" label="PMH"
-              isOpen={openSec === 'pmh'} onToggle={() => toggleSec('pmh')}
-              hasData={comorbidities.length > 0 || pmhNotes.includes('NKPMH')}
-              summaryText={
-                pmhNotes.includes('NKPMH') ? 'No PMH'
-                : comorbidities.length > 0
-                  ? comorbidities.slice(0, 4).join(', ') + (comorbidities.length > 4 ? ` +${comorbidities.length - 4}` : '')
-                  : 'No PMH'
-              }
-              noneLabel="No PMH"
-              onNone={() => { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); }}
-              onAdvance={() => advanceSec('pmh')}
-            >
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                <button type="button"
-                  style={{ ...chipBtn(pmhNotes.includes('NKPMH')), fontSize: 11, padding: '3px 9px' }}
-                  onClick={() => {
-                    if (pmhNotes.includes('NKPMH')) { setPmhNotes(''); }
-                    else { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); advanceSec('pmh'); }
-                  }}>
-                  No PMH
-                </button>
-                {!pmhNotes.includes('NKPMH') && COMMON_CONDITIONS.map(cond => {
-                  const on = comorbidities.includes(cond);
-                  return (
-                    <button key={cond} type="button" style={chipBtn(on)}
-                      onClick={() => setComorbidities(on ? comorbidities.filter(c => c !== cond) : [...comorbidities, cond])}>
-                      {on ? '✓ ' : ''}{cond}
-                    </button>
-                  );
-                })}
-              </div>
-              <textarea value={pmhNotes.includes('NKPMH') ? '' : pmhNotes} onChange={e => setPmhNotes(e.target.value)}
-                placeholder="Additional detail…"
-                style={drawerTextarea} rows={2} />
-            </HistoryFieldRow>
-
-            {/* Surgical History */}
-            <HistoryFieldRow
-              icon="🔪" label="Surgical Hx"
-              isOpen={openSec === 'surgical'} onToggle={() => toggleSec('surgical')}
-              hasData={surgicalHistory.length > 0}
-              summaryText={
-                surgicalHistory.includes('No prior surgery') ? 'No prior surgery'
-                : surgicalHistory.length > 0
-                  ? surgicalHistory.slice(0, 3).join(', ') + (surgicalHistory.length > 3 ? ` +${surgicalHistory.length - 3}` : '')
-                  : 'None'
-              }
-              noneLabel="No surgery"
-              onNone={() => setSurgicalHistory(['No prior surgery'])}
-              onAdvance={() => advanceSec('surgical')}
-            >
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                {['No prior surgery', ...COMMON_SURGERY].map(s => {
-                  const on = surgicalHistory.includes(s);
-                  return (
-                    <button key={s} type="button"
-                      onClick={() => {
-                        setSurgicalHistory(on ? surgicalHistory.filter(x => x !== s) : [...surgicalHistory, s]);
-                        if (s === 'No prior surgery' && !on) advanceSec('surgical');
-                      }}
-                      style={chipBtn(on)}>
-                      {on ? '✓ ' : ''}{s}
-                    </button>
-                  );
-                })}
-              </div>
-              <textarea value={surgicalNotes} onChange={e => setSurgicalNotes(e.target.value)}
-                placeholder="Procedures, dates, complications…"
-                style={drawerTextarea} rows={2} />
-            </HistoryFieldRow>
-
-            {/* Medications */}
-            <HistoryFieldRow
-              icon="💊" label="Medications"
-              isOpen={openSec === 'medications'} onToggle={() => toggleSec('medications')}
-              hasData={medications.length > 0 || !!medicationsText.trim()}
-              summaryText={
-                medications.includes('None') ? 'None'
-                : medications.length > 0
-                  ? medications.slice(0, 3).join(', ') + (medications.length > 3 ? ` +${medications.length - 3}` : '')
-                  : 'None'
-              }
-              noneLabel="None"
-              onNone={() => { setMedications(['None']); setMedicationsText(''); }}
-              onAdvance={() => advanceSec('medications')}
-            >
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
-                <button type="button"
-                  onClick={() => {
-                    if (medications.includes('None')) { setMedications([]); }
-                    else { setMedications(['None']); setMedicationsText(''); setPendingMed(null); advanceSec('medications'); }
-                  }}
-                  style={chipBtn(medications.includes('None'))}>
-                  {medications.includes('None') ? '✓ ' : ''}None
-                </button>
-                {!medications.includes('None') && COMMON_MEDICATIONS.map(med => {
-                  const on = medicationsText.split('\n').some(l => l.trim().toLowerCase().startsWith(med.toLowerCase()));
-                  return (
-                    <button key={med} type="button"
-                      onClick={() => {
-                        if (on) {
+            {/* Expanded section content */}
+            {openSec && ['pmh', 'surgical', 'medications', 'allergies'].includes(openSec) && (
+              <div style={{ borderTop: '1px solid var(--line)', padding: '10px 14px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {openSec === 'pmh' && (
+                  <>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                      <button type="button"
+                        style={{ ...chipBtn(pmhNotes.includes('NKPMH')), fontSize: 11, padding: '3px 9px' }}
+                        onClick={() => {
+                          if (pmhNotes.includes('NKPMH')) { setPmhNotes(''); }
+                          else { setPmhNotes('No known past medical history (NKPMH)'); setComorbidities([]); advanceSec('pmh'); }
+                        }}>
+                        No PMH
+                      </button>
+                      {!pmhNotes.includes('NKPMH') && COMMON_CONDITIONS.map(cond => {
+                        const on = comorbidities.includes(cond);
+                        return (
+                          <button key={cond} type="button" style={chipBtn(on)}
+                            onClick={() => setComorbidities(on ? comorbidities.filter(c => c !== cond) : [...comorbidities, cond])}>
+                            {on ? '✓ ' : ''}{cond}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <textarea value={pmhNotes.includes('NKPMH') ? '' : pmhNotes} onChange={e => setPmhNotes(e.target.value)}
+                      placeholder="Additional detail…"
+                      style={drawerTextarea} rows={2} />
+                  </>
+                )}
+                {openSec === 'surgical' && (
+                  <>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                      {['No prior surgery', ...COMMON_SURGERY].map(s => {
+                        const on = surgicalHistory.includes(s);
+                        return (
+                          <button key={s} type="button"
+                            onClick={() => {
+                              setSurgicalHistory(on ? surgicalHistory.filter(x => x !== s) : [...surgicalHistory, s]);
+                              if (s === 'No prior surgery' && !on) advanceSec('surgical');
+                            }}
+                            style={chipBtn(on)}>
+                            {on ? '✓ ' : ''}{s}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <textarea value={surgicalNotes} onChange={e => setSurgicalNotes(e.target.value)}
+                      placeholder="Procedures, dates, complications…"
+                      style={drawerTextarea} rows={2} />
+                  </>
+                )}
+                {openSec === 'medications' && (
+                  <>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
+                      <button type="button"
+                        onClick={() => {
+                          if (medications.includes('None')) { setMedications([]); }
+                          else { setMedications(['None']); setMedicationsText(''); setPendingMed(null); advanceSec('medications'); }
+                        }}
+                        style={chipBtn(medications.includes('None'))}>
+                        {medications.includes('None') ? '✓ ' : ''}None
+                      </button>
+                      {!medications.includes('None') && COMMON_MEDICATIONS.map(med => {
+                        const on = medicationsText.split('\n').some(l => l.trim().toLowerCase().startsWith(med.toLowerCase()));
+                        return (
+                          <button key={med} type="button"
+                            onClick={() => {
+                              if (on) {
+                                const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
+                                const newLines = lines.filter(l => !l.toLowerCase().startsWith(med.toLowerCase()));
+                                setMedicationsText(newLines.join('\n'));
+                                setMedications(newLines);
+                                if (pendingMed?.name === med) setPendingMed(null);
+                              } else {
+                                setPendingMed({ name: med, dose: MED_INFO[med]?.default ?? '' });
+                              }
+                            }}
+                            style={pendingMed?.name === med ? { ...chipBtn(false), border: '2px solid var(--accent)', background: 'rgba(0,180,160,0.08)' } : chipBtn(on)}>
+                            {on ? '✓ ' : ''}{med}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {pendingMed && (
+                      <div style={{ borderRadius: 8, border: '1px solid rgba(0,180,160,0.35)', background: 'rgba(0,180,160,0.04)', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--accent)' }}>{pendingMed.name}</span>
+                          <button type="button" onClick={() => setPendingMed(null)} style={{ fontSize: 12, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                          {(MED_INFO[pendingMed.name]?.options ?? []).map(opt => (
+                            <button key={opt} type="button" onClick={() => setPendingMed(p => p ? { ...p, dose: opt } : null)}
+                              style={{ fontSize: 11, padding: '3px 9px', borderRadius: 8, cursor: 'pointer', fontWeight: 600,
+                                border: pendingMed.dose === opt ? '1px solid var(--accent)' : '1px solid var(--line)',
+                                background: pendingMed.dose === opt ? 'rgba(0,180,160,0.12)' : 'transparent',
+                                color: pendingMed.dose === opt ? 'var(--accent)' : 'var(--muted)',
+                              }}>{opt}</button>
+                          ))}
+                        </div>
+                        <input value={pendingMed.dose}
+                          onChange={e => setPendingMed(p => p ? { ...p, dose: e.target.value } : null)}
+                          placeholder="Custom dose / frequency…"
+                          style={{ padding: '5px 8px', fontSize: 12, borderRadius: 6, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--ink)', width: '100%', boxSizing: 'border-box' as const }} />
+                        {MED_INFO[pendingMed.name]?.note && (
+                          <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.4 }}>⚠ {MED_INFO[pendingMed.name].note}</div>
+                        )}
+                        <button type="button" onClick={() => {
+                          const line = pendingMed.dose.trim() ? `${pendingMed.name} ${pendingMed.dose.trim()}` : pendingMed.name;
                           const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
-                          const newLines = lines.filter(l => !l.toLowerCase().startsWith(med.toLowerCase()));
+                          const newLines = [...lines, line];
                           setMedicationsText(newLines.join('\n'));
                           setMedications(newLines);
-                          if (pendingMed?.name === med) setPendingMed(null);
-                        } else {
-                          setPendingMed({ name: med, dose: MED_INFO[med]?.default ?? '' });
-                        }
+                          setPendingMed(null);
+                        }} style={{ alignSelf: 'flex-end', fontSize: 12, fontWeight: 700, padding: '5px 16px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
+                          + Add
+                        </button>
+                      </div>
+                    )}
+                    <textarea
+                      value={medicationsText}
+                      onChange={e => {
+                        setMedicationsText(e.target.value);
+                        setMedications(e.target.value ? e.target.value.split('\n').map(s => s.trim()).filter(Boolean) : []);
                       }}
-                      style={pendingMed?.name === med ? { ...chipBtn(false), border: '2px solid var(--accent)', background: 'rgba(0,180,160,0.08)' } : chipBtn(on)}>
-                      {on ? '✓ ' : ''}{med}
-                    </button>
-                  );
-                })}
+                      placeholder={'One per line:\nAmlodipine 5 mg OD\nMetformin 500 mg BD'}
+                      style={drawerTextarea} rows={4} />
+                  </>
+                )}
+                {openSec === 'allergies' && (
+                  <>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
+                      <button type="button"
+                        onClick={() => {
+                          if (allergyText === 'NKDA') { setAllergies(''); }
+                          else { setAllergies('NKDA'); setOpenSec(null); }
+                        }}
+                        style={chipBtn(allergyText === 'NKDA')}>
+                        {allergyText === 'NKDA' ? '✓ ' : ''}NKDA
+                      </button>
+                      {COMMON_ALLERGENS.map(a => {
+                        const on = allergyText.includes(a);
+                        return (
+                          <button key={a} type="button"
+                            onClick={() => {
+                              if (allergyText === 'NKDA') { setAllergies(a); return; }
+                              const curr = allergyText.split(',').map(s => s.trim()).filter(Boolean);
+                              setAllergies(on ? curr.filter(x => x !== a).join(', ') : [...curr, a].join(', '));
+                            }}
+                            style={chipBtn(on)}>
+                            {on ? '✓ ' : ''}{a}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <input
+                      value={allergyText === 'NKDA' ? '' : allergyText}
+                      onChange={e => setAllergies(e.target.value)}
+                      placeholder="Other allergen / reaction…"
+                      style={{ ...drawerTextarea, resize: undefined }}
+                    />
+                  </>
+                )}
               </div>
-              {pendingMed && (
-                <div style={{ borderRadius: 8, border: '1px solid rgba(0,180,160,0.35)', background: 'rgba(0,180,160,0.04)', padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 700, fontSize: 13, color: 'var(--accent)' }}>{pendingMed.name}</span>
-                    <button type="button" onClick={() => setPendingMed(null)} style={{ fontSize: 12, color: 'var(--muted)', background: 'none', border: 'none', cursor: 'pointer' }}>✕</button>
-                  </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                    {(MED_INFO[pendingMed.name]?.options ?? []).map(opt => (
-                      <button key={opt} type="button" onClick={() => setPendingMed(p => p ? { ...p, dose: opt } : null)}
-                        style={{ fontSize: 11, padding: '3px 9px', borderRadius: 8, cursor: 'pointer', fontWeight: 600,
-                          border: pendingMed.dose === opt ? '1px solid var(--accent)' : '1px solid var(--line)',
-                          background: pendingMed.dose === opt ? 'rgba(0,180,160,0.12)' : 'transparent',
-                          color: pendingMed.dose === opt ? 'var(--accent)' : 'var(--muted)',
-                        }}>{opt}</button>
-                    ))}
-                  </div>
-                  <input value={pendingMed.dose}
-                    onChange={e => setPendingMed(p => p ? { ...p, dose: e.target.value } : null)}
-                    placeholder="Custom dose / frequency…"
-                    style={{ padding: '5px 8px', fontSize: 12, borderRadius: 6, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--ink)', width: '100%', boxSizing: 'border-box' as const }} />
-                  {MED_INFO[pendingMed.name]?.note && (
-                    <div style={{ fontSize: 11, color: 'var(--coral)', lineHeight: 1.4 }}>⚠ {MED_INFO[pendingMed.name].note}</div>
-                  )}
-                  <button type="button" onClick={() => {
-                    const line = pendingMed.dose.trim() ? `${pendingMed.name} ${pendingMed.dose.trim()}` : pendingMed.name;
-                    const lines = medicationsText.split('\n').map(s => s.trim()).filter(Boolean);
-                    const newLines = [...lines, line];
-                    setMedicationsText(newLines.join('\n'));
-                    setMedications(newLines);
-                    setPendingMed(null);
-                  }} style={{ alignSelf: 'flex-end', fontSize: 12, fontWeight: 700, padding: '5px 16px', borderRadius: 8, border: 'none', background: 'var(--accent)', color: '#fff', cursor: 'pointer' }}>
-                    + Add
-                  </button>
-                </div>
-              )}
-              <textarea
-                value={medicationsText}
-                onChange={e => {
-                  setMedicationsText(e.target.value);
-                  setMedications(e.target.value ? e.target.value.split('\n').map(s => s.trim()).filter(Boolean) : []);
-                }}
-                placeholder={'One per line:\nAmlodipine 5 mg OD\nMetformin 500 mg BD'}
-                style={drawerTextarea} rows={4} />
-            </HistoryFieldRow>
-
-            {/* Allergies */}
-            <HistoryFieldRow
-              icon="⚠️" label="Allergies"
-              isOpen={openSec === 'allergies'} onToggle={() => toggleSec('allergies')}
-              hasData={!!allergyText.trim()}
-              summaryText={allergyText || 'NKDA'}
-              noneLabel="NKDA"
-              onNone={() => { setAllergies('NKDA'); setOpenSec(null); }}
-              isLast
-            >
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 2 }}>
-                <button type="button"
-                  onClick={() => {
-                    if (allergyText === 'NKDA') { setAllergies(''); }
-                    else { setAllergies('NKDA'); setOpenSec(null); }
-                  }}
-                  style={chipBtn(allergyText === 'NKDA')}>
-                  {allergyText === 'NKDA' ? '✓ ' : ''}NKDA
-                </button>
-                {COMMON_ALLERGENS.map(a => {
-                  const on = allergyText.includes(a);
-                  return (
-                    <button key={a} type="button"
-                      onClick={() => {
-                        if (allergyText === 'NKDA') { setAllergies(a); return; }
-                        const curr = allergyText.split(',').map(s => s.trim()).filter(Boolean);
-                        setAllergies(on ? curr.filter(x => x !== a).join(', ') : [...curr, a].join(', '));
-                      }}
-                      style={chipBtn(on)}>
-                      {on ? '✓ ' : ''}{a}
-                    </button>
-                  );
-                })}
-              </div>
-              <input
-                value={allergyText === 'NKDA' ? '' : allergyText}
-                onChange={e => setAllergies(e.target.value)}
-                placeholder="Other allergen / reaction…"
-                style={{ ...drawerTextarea, resize: undefined }}
-              />
-            </HistoryFieldRow>
+            )}
           </div>
 
           {/* ── AI quiet prompt — one at a time ── */}
