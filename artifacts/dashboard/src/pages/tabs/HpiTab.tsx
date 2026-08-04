@@ -276,8 +276,23 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
 
 // ── prose utilities ───────────────────────────────────────────────────────────
 
-function lc(s: string) { return s.charAt(0).toLowerCase() + s.slice(1).trimEnd(); }
+function lc(s: string): string {
+  if (!s) return s;
+  // Preserve all-caps anatomical abbreviations: RUQ, RIF, LIF, LUQ, RLQ, etc.
+  if (s.length >= 2 && /^[A-Z]{2}/.test(s)) return s.trimEnd();
+  return s.charAt(0).toLowerCase() + s.slice(1).trimEnd();
+}
 function cap(s: string) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// Lowercase every comma-separated item in a list (handles "Nausea, Vomiting, Fever" → "nausea, vomiting, fever")
+function lcList(s: string): string {
+  return s.split(',').map(item => {
+    const t = item.trim();
+    if (!t) return t;
+    if (t.length >= 2 && /^[A-Z]{2}/.test(t)) return t; // preserve abbreviations
+    return t.charAt(0).toLowerCase() + t.slice(1);
+  }).join(', ');
+}
 
 function primaryNoun(cc: string): string {
   if (/pain/.test(cc))                  return 'pain';
@@ -365,7 +380,7 @@ function composeHpiNarrative(
     if (locParts.length) paragraphs.push(`The ${noun} is ${locParts.join(', ')}.`);
 
     const assocItems: string[] = [];
-    if (assoc)      assocItems.push(lc(assoc));
+    if (assoc)      assocItems.push(lcList(assoc));
     if (fever)      assocItems.push(`fever — ${lc(fever)}`);
     if (vomiting)   assocItems.push(`vomiting — ${lc(vomiting)}`);
     if (bleeding)   assocItems.push(`bleeding — ${lc(bleeding)}`);
@@ -374,10 +389,14 @@ function composeHpiNarrative(
     if (assocItems.length) paragraphs.push(`Associated features include ${assocItems.join('; ')}.`);
 
     const modParts: string[] = [];
-    if (severity)  modParts.push(cap(lc(severity)));
-    if (painScore && idx === 0) modParts.push(`Pain is rated ${painScore}/10`);
-    if (exac)      modParts.push(cap(lc(exac)));
-    if (relief)    modParts.push(cap(lc(relief)));
+    // Numeric severity from CC matrix chips and free-text pain score both become "Pain rated X/10"
+    const severityNum = severity ? parseInt(severity.trim(), 10) : NaN;
+    const effectiveScore = !isNaN(severityNum) ? String(severityNum) : (painScore && idx === 0 ? painScore : '');
+    if (effectiveScore) modParts.push(`Pain is rated ${effectiveScore}/10`);
+    // Non-numeric severity text (e.g. "Moderate", "Worst of life") rendered as-is
+    if (severity && isNaN(severityNum)) modParts.push(cap(lc(severity)));
+    if (exac)  modParts.push(`Aggravated by ${lcList(exac)}`);
+    if (relief) modParts.push(`Relieved by ${lcList(relief)}`);
     if (modParts.length) paragraphs.push(modParts.join('. ') + '.');
 
     const histParts: string[] = [];

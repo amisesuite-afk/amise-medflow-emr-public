@@ -2023,7 +2023,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             </HistoryFieldRow>
           </div>
 
-          {/* ── Presenting History ── */}
+          {/* ── HPI link row (replaces the duplicate PRESENTING HISTORY textarea) ── */}
           <div style={{
             borderRadius: 10,
             border: `1px solid ${hpiNotes.trim() ? 'rgba(0,180,160,0.4)' : 'var(--line)'}`,
@@ -2032,13 +2032,13 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '10px 14px',
-              borderBottom: '1px solid var(--line)',
             }}>
               <span style={{ fontSize: 13 }}>📝</span>
-              <span style={{ ...sectionLabel, color: hpiNotes.trim() ? 'var(--accent)' : 'var(--muted)' }}>
-                {ccLabel ? `${ccLabel} — History` : 'Presenting History'}
+              <span style={{ ...sectionLabel, color: hpiNotes.trim() ? 'var(--accent)' : 'var(--muted)', flex: 1 }}>
+                {hpiNotes.trim()
+                  ? (hpiNotes.length > 80 ? hpiNotes.slice(0, 78) + '…' : hpiNotes)
+                  : (ccLabel ? `${ccLabel} — HPI not yet documented` : 'HPI not yet documented')}
               </span>
-              <div style={{ flex: 1 }} />
               <button
                 type="button"
                 onClick={handleDictateClick}
@@ -2071,22 +2071,6 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 }}
               >Full HPI ↗</button>
             </div>
-            <textarea
-              value={hpiNotes}
-              onChange={e => setHpiNotes(e.target.value)}
-              placeholder={
-                ccLabel
-                  ? `Presenting history of ${ccLabel}. Dictate or type directly.`
-                  : 'Presenting history — tap 🎙 Dictate to start, or type directly.'
-              }
-              style={{
-                display: 'block', width: '100%', minHeight: 140,
-                padding: '10px 14px', border: 'none', resize: 'vertical' as const,
-                background: 'transparent', color: 'var(--ink)',
-                fontSize: 15, lineHeight: 1.75, fontFamily: 'Georgia, serif',
-                outline: 'none', boxSizing: 'border-box' as const,
-              }}
-            />
             {micOpen && (
               <div style={{
                 borderTop: `1px solid ${recording ? 'rgba(220,38,38,0.3)' : 'var(--line)'}`,
