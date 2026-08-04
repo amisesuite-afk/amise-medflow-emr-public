@@ -16,6 +16,7 @@ import { DISEASES, getDiseaseSpecialty, initPaneState, updatePosterior, topDiagn
 import { extractFeaturesFromTranscript, detectPathognomonic, type PathognomicMatch } from '@/lib/transcript-dx-mapper';
 import { computeReminders } from '@/lib/safety-engine';
 import type { RadiologyRequest } from '@/pages/tabs/RadiologyTab';
+import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 
 // ── Web Speech API ─────────────────────────────────────────────────────────────
 const SR_CLASS = (typeof window !== 'undefined')
@@ -1775,6 +1776,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             <PriorVisitStrip summary={ctx.priorEncounterSummary} />
           )}
 
+          {/* ── CC strip — smart triage data migrated from intake ── */}
+          <ChiefComplaintStrip />
+
           {/* ── Clinical history — compact dropdown rows (hidden while exam drawer is open) ── */}
           <div style={{
             borderRadius: 10, border: '1px solid var(--line)',
@@ -1989,6 +1993,38 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             </HistoryFieldRow>
           </div>
 
+          {/* ── HPI preview — live auto-generated narrative from CC/HPI tab ── */}
+          <div style={{
+            borderRadius: 10,
+            border: `1px solid ${hpiNotes.trim() ? 'rgba(0,180,160,0.4)' : 'var(--line)'}`,
+            background: 'var(--card)',
+            padding: '10px 14px',
+            display: 'flex', alignItems: 'flex-start', gap: 10,
+          }}>
+            <span style={{ fontSize: 15, flexShrink: 0, marginTop: 1 }}>📝</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ ...sectionLabel, marginBottom: 3 }}>Presenting History</div>
+              <div style={{
+                fontSize: 13, lineHeight: 1.55,
+                color: hpiNotes.trim() ? 'var(--ink)' : 'var(--muted)',
+                fontFamily: hpiNotes.trim() ? 'Georgia, serif' : 'inherit',
+                fontStyle: hpiNotes.trim() ? 'normal' : 'italic',
+                overflow: 'hidden',
+                display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+              }}>
+                {hpiNotes.trim() || 'No CC selected — go to CC / HPI tab to document the presenting illness'}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setActiveSection('hpi'); onDetailedMode(); }}
+              style={{
+                flexShrink: 0, padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                border: '1px solid rgba(0,180,160,0.4)', background: 'rgba(0,180,160,0.06)',
+                color: 'var(--accent)', cursor: 'pointer', whiteSpace: 'nowrap',
+              }}
+            >CC / HPI ↗</button>
+          </div>
 
           {/* ── AI quiet prompt — one at a time ── */}
           {activeReminder && (
