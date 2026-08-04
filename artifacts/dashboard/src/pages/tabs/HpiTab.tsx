@@ -349,25 +349,31 @@ function composeHpiNarrative(
     const ans  = entry.answers;
     const noun = primaryNoun(entry.complaint.toLowerCase());
 
-    const onset      = get(ans, 'onset', 'duration', 'presentation');
-    const site       = get(ans, 'site');
-    const character  = get(ans, 'character');
-    const radiation  = get(ans, 'radiation', 'direction');
-    const timing     = get(ans, 'timing');
-    const assoc      = get(ans, 'assoc', 'symptoms', 'sympt', 'systemic');
-    const severity   = get(ans, 'severity', 'qol');
-    const exac       = get(ans, 'triggers', 'exac');
-    const relief     = get(ans, 'response', 'relief');
-    const prev       = get(ans, 'prev', 'prevep', 'previous', 'history');
-    const fever      = get(ans, 'fever');
-    const vomiting   = get(ans, 'vomiting');
-    const bleeding   = get(ans, 'bleeding', 'bleed');
-    const weightloss = get(ans, 'weight', 'weightloss');
-    const jaundice   = get(ans, 'jaundice');
-    const meds       = get(ans, 'meds', 'therapy');
+    const ccDuration  = get(ans, 'duration');
+    const onset       = get(ans, 'onset', 'presentation');
+    const site        = get(ans, 'site');
+    const character   = get(ans, 'character');
+    const radiation   = get(ans, 'radiation', 'direction');
+    const timing      = get(ans, 'timing');
+    const assoc       = get(ans, 'assoc', 'symptoms', 'sympt', 'systemic');
+    const severity    = get(ans, 'severity', 'qol');
+    const exac        = get(ans, 'triggers', 'exac');
+    const relief      = get(ans, 'response', 'relief');
+    const prev        = get(ans, 'prev', 'prevep', 'previous', 'history');
+    const fever       = get(ans, 'fever');
+    const vomiting    = get(ans, 'vomiting');
+    const bleeding    = get(ans, 'bleeding', 'bleed');
+    const weightloss  = get(ans, 'weight', 'weightloss');
+    const jaundice    = get(ans, 'jaundice');
+    const meds        = get(ans, 'meds', 'therapy');
+
+    // Per-entry duration: CC chip "duration" key beats the context durationDays field
+    const entryDurClause = ccDuration
+      ? formatCcDur(ccDuration)
+      : durClause;
 
     let open = idx === 0
-      ? `${cap(subject)} presents with ${durClause} ${lc(entry.complaint)}`
+      ? `${cap(subject)} presents with ${entryDurClause} ${lc(entry.complaint)}`
       : `Additionally, ${lc(entry.complaint)}`;
     if (onset && onset.length <= 100) open += `, ${lc(onset)}`;
     paragraphs.push(open + '.');
@@ -476,6 +482,104 @@ function MedicalBackgroundStrip({ comorbidities, allergies, medications, surgica
       )}
       <MedBgChips label="Meds" items={medications} color="#3b82f6" />
       <MedBgChips label="Surgical Hx" items={surgicalHistory} color="#8b5cf6" />
+    </div>
+  );
+}
+
+// ── formatCcDur — CC duration chip → prose phrase ────────────────────────────
+
+function formatCcDur(d: string): string {
+  const t = d.trim();
+  if (!t) return '';
+  if (/episodic|recurrent/i.test(t)) return 'an episodic history of';
+  const adj = t
+    .replace(/^<\s*/, 'less than ')
+    .replace(/^>\s*/, 'more than ')
+    .replace(/–/g, '–') // keep en-dash
+    .replace(/\s+days?\b/gi, '-day')
+    .replace(/\s+hours?\b/gi, '-hour')
+    .replace(/\s+weeks?\b/gi, '-week')
+    .replace(/\s*\/\s*(recurrent|ongoing|episodic)/i, '')
+    .trim();
+  return `a ${adj} history of`;
+}
+
+// ── AgeGenderGate — required before HPI content ───────────────────────────────
+
+function AgeGenderGate({ age, setAge, sex, setSex }: {
+  age: string;
+  setAge: (v: string) => void;
+  sex: string;
+  setSex: (v: string) => void;
+}) {
+  const ageMissing = !age.trim();
+  const sexMissing = !sex || sex === 'unknown';
+  if (!ageMissing && !sexMissing) return null;
+
+  return (
+    <div style={{
+      borderRadius: 8, border: '2px solid #f59e0b',
+      background: 'rgba(245,158,11,0.08)', padding: '12px 14px',
+      display: 'flex', flexDirection: 'column', gap: 10,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+        <span style={{ fontSize: 16 }}>⚠️</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: '#fcd34d' }}>
+          Age and sex required to generate HPI prose
+        </span>
+      </div>
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        {ageMissing && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Age (years)
+            </span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              max={120}
+              step={1}
+              value={age}
+              onChange={e => setAge(e.target.value.replace(/[^0-9]/g, ''))}
+              placeholder="e.g. 45"
+              autoFocus
+              style={{
+                width: 90, padding: '6px 10px', borderRadius: 6, fontSize: 14,
+                border: '2px solid #f59e0b', background: '#070d1a', color: '#f1f5f9',
+                outline: 'none', fontWeight: 600,
+              }}
+            />
+          </div>
+        )}
+        {sexMissing && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Sex
+            </span>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {(['male', 'female', 'other'] as const).map(s => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSex(s)}
+                  style={{
+                    padding: '5px 13px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+                    cursor: 'pointer',
+                    border: `2px solid ${sex === s ? '#f59e0b' : '#334155'}`,
+                    background: sex === s ? '#f59e0b' : '#1e293b',
+                    color: sex === s ? '#000' : '#94a3b8',
+                    transition: 'all 0.1s',
+                    textTransform: 'capitalize',
+                  }}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -674,7 +778,7 @@ export default function HpiTab() {
     isPostOp, setIsPostOp,
     postOpDays, setPostOpDays,
     pregnancyPossible, setPregnancyPossible,
-    age, sex, patientName,
+    age, setAge, sex, setSex, patientName,
     procedureData, setProcedureData,
     patientId, encounterId,
     recentEncounters,
@@ -788,6 +892,9 @@ export default function HpiTab() {
 
   return (
     <div className="gap-y">
+
+      {/* ── Age / sex gate — must complete before HPI prose generates ── */}
+      <AgeGenderGate age={age} setAge={setAge} sex={sex} setSex={v => setSex(v as 'male' | 'female' | 'other' | 'unknown')} />
 
       {/* ── Medical background — PMH, Allergies, Meds, Surgical at a glance ── */}
       <MedicalBackgroundStrip
