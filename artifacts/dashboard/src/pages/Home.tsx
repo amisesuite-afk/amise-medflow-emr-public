@@ -104,13 +104,13 @@ const API_ORIGIN = getApiOrigin();
 const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
   new_consult: [
     { id: 'brief',             label: 'Brief'         },
-    { id: 'hpi',               label: 'HPI'           },
     { id: 'pmh',               label: 'PMH'           },
-    { id: 'surgical',          label: 'Surgical'      },
-    { id: 'medications',       label: 'Meds'          },
     { id: 'allergies',         label: 'Allergies'     },
+    { id: 'medications',       label: 'Meds'          },
+    { id: 'surgical',          label: 'Surgical'      },
     { id: 'family_hx',         label: 'Family Hx'    },
     { id: 'toxic',             label: 'Social'        },
+    { id: 'hpi',               label: 'HPI'           },
     { id: 'ros',               label: 'ROS'           },
     { id: 'examination',       label: 'Exam'          },
     { id: 'investigations',    label: 'Labs'          },

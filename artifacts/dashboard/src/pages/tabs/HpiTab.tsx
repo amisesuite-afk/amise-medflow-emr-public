@@ -389,6 +389,74 @@ function composeHpiNarrative(
   return paragraphs.filter(Boolean).join('\n\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
+// ── Medical Background Strip ──────────────────────────────────────────────────
+
+function MedBgChips({ label, items, color }: { label: string; items: string[]; color: string }) {
+  if (!items.length) return null;
+  return (
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, flexWrap: 'wrap' }}>
+      <span style={{ fontSize: 9, fontWeight: 800, color, textTransform: 'uppercase', letterSpacing: '0.07em', whiteSpace: 'nowrap' }}>
+        {label}
+      </span>
+      {items.slice(0, 5).map(item => (
+        <span key={item} style={{
+          fontSize: 11, padding: '1px 7px', borderRadius: 10,
+          background: `${color}18`, color, border: `1px solid ${color}44`,
+        }}>{item}</span>
+      ))}
+      {items.length > 5 && (
+        <span style={{ fontSize: 10, color: '#64748b' }}>+{items.length - 5} more</span>
+      )}
+    </div>
+  );
+}
+
+function MedicalBackgroundStrip({ comorbidities, allergies, medications, surgicalHistory }: {
+  comorbidities: string[];
+  allergies: string;
+  medications: string[];
+  surgicalHistory: string[];
+}) {
+  const allergyItems = allergies.split(',').map(s => s.trim()).filter(Boolean);
+  const hasAny = comorbidities.length || allergyItems.length || medications.length || surgicalHistory.length;
+  if (!hasAny) return null;
+
+  const nkda = allergyItems.length === 1 && /nkda|no known/i.test(allergyItems[0]);
+
+  return (
+    <div style={{
+      borderRadius: 8, border: '1px solid #1e293b',
+      background: '#080f1e', padding: '8px 12px',
+      display: 'flex', flexDirection: 'column', gap: 5,
+    }}>
+      <div style={{ fontSize: 9, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 1 }}>
+        Patient background
+      </div>
+      <MedBgChips label="PMH" items={comorbidities} color="#f59e0b" />
+      {allergyItems.length > 0 && (
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+          <span style={{ fontSize: 9, fontWeight: 800, color: nkda ? '#22c55e' : '#ef4444', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+            Allergies
+          </span>
+          {nkda
+            ? <span style={{ fontSize: 11, color: '#22c55e', fontWeight: 700 }}>NKDA</span>
+            : allergyItems.slice(0, 5).map(a => (
+                <span key={a} style={{
+                  fontSize: 11, padding: '1px 7px', borderRadius: 10,
+                  background: '#ef444418', color: '#ef4444', border: '1px solid #ef444444',
+                  fontWeight: 700,
+                }}>{a}</span>
+              ))
+          }
+          {allergyItems.length > 5 && <span style={{ fontSize: 10, color: '#64748b' }}>+{allergyItems.length - 5}</span>}
+        </div>
+      )}
+      <MedBgChips label="Meds" items={medications} color="#3b82f6" />
+      <MedBgChips label="Surgical Hx" items={surgicalHistory} color="#8b5cf6" />
+    </div>
+  );
+}
+
 // ── Date helpers ──────────────────────────────────────────────────────────────
 
 const TZ = 'America/St_Lucia';
@@ -587,6 +655,7 @@ export default function HpiTab() {
     procedureData, setProcedureData,
     patientId, encounterId,
     recentEncounters,
+    comorbidities, allergies, medications, surgicalHistory,
   } = useAppContext();
 
   const entries = useMemo(
@@ -696,6 +765,14 @@ export default function HpiTab() {
 
   return (
     <div className="gap-y">
+
+      {/* ── Medical background — PMH, Allergies, Meds, Surgical at a glance ── */}
+      <MedicalBackgroundStrip
+        comorbidities={comorbidities}
+        allergies={allergies}
+        medications={medications}
+        surgicalHistory={surgicalHistory}
+      />
 
       {/* ── CC strip — add / edit complaints ── */}
       <ChiefComplaintStrip />
