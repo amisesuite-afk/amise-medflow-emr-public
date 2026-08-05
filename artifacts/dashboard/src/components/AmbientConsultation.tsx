@@ -1278,7 +1278,11 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
       {/* ── Phase breadcrumb ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 0,
+        background: 'var(--bg)', border: '1px solid var(--line)',
+        borderRadius: 8, padding: '2px 6px',
+      }}>
         {phases.map((p, i) => {
           const done = i < phaseIdx;
           const active = i === phaseIdx;
@@ -1295,17 +1299,17 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
                 display: 'flex', alignItems: 'center', gap: 4,
                 padding: '5px 12px', border: 'none', cursor: done ? 'pointer' : 'default',
                 fontSize: 11, fontWeight: active ? 800 : done ? 600 : 500,
-                background: 'transparent',
-                color: active ? '#0d9488' : done ? 'var(--ink)' : 'var(--muted)',
-                opacity: i > phaseIdx ? 0.45 : 1,
+                background: active ? 'var(--accent)' : 'transparent',
+                color: active ? '#fff' : done ? 'var(--ink)' : 'var(--muted)',
+                borderRadius: 6,
+                opacity: i > phaseIdx ? 0.65 : 1,
                 transition: 'all 0.12s',
               }}
             >
               {done && <span style={{ fontSize: 10, color: '#0d9488' }}>✓</span>}
-              {active && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0d9488', display: 'inline-block', flexShrink: 0 }} />}
               {p.label}
               {i < phases.length - 1 && (
-                <span style={{ marginLeft: 6, color: 'var(--muted)', opacity: 0.4 }}>›</span>
+                <span style={{ marginLeft: 6, color: 'var(--muted)', opacity: 0.5 }}>›</span>
               )}
             </button>
           );
