@@ -751,19 +751,22 @@ export default function HomePage() {
       className="app"
       style={{
         gridTemplateColumns: `${sidebarWidth}px 1fr`,
-        gridTemplateRows: consultAmbient ? '48px 1fr' : 'var(--header-h) 1fr',
+        gridTemplateRows: apiDown
+          ? `34px ${consultAmbient ? '48px' : 'var(--header-h)'} 1fr`
+          : `${consultAmbient ? '48px' : 'var(--header-h)'} 1fr`,
         transition: 'grid-template-columns 200ms ease, grid-template-rows 200ms ease',
       }}
     >
       {apiDown && (
         <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
+          gridColumn: '1 / -1',
           background: '#92400e', color: '#fef3c7',
-          padding: '6px 16px', fontSize: 12, fontWeight: 600,
+          padding: '0 16px', fontSize: 12, fontWeight: 600,
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 12, zIndex: 30,
         }}>
-          <span>⚠ API server unreachable — booking confirmations and write actions are unavailable. Read-only mode.</span>
-          <button onClick={() => setApiDown(false)} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1 }}>✕</button>
+          <span>⚠ API server unreachable — write actions unavailable. Read-only mode.</span>
+          <button onClick={() => setApiDown(false)} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
         </div>
       )}
       {/* ── Sticky header ── */}
