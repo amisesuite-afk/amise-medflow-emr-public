@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS public.prescriptions (
   deleted_at       timestamptz
 );
 
+-- Table may already exist without deleted_at — add if missing
+ALTER TABLE public.prescriptions
+  ADD COLUMN IF NOT EXISTS deleted_at timestamptz;
+
 -- Index for patient history queries
 CREATE INDEX IF NOT EXISTS prescriptions_patient_idx
   ON public.prescriptions(patient_id, created_at DESC)
