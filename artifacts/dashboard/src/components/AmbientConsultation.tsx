@@ -1278,11 +1278,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
       {/* ── Phase breadcrumb ── */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 0,
-        background: 'var(--bg)', border: '1px solid var(--line)',
-        borderRadius: 8, padding: '2px 6px',
-      }}>
+      <div className="phase-nav">
         {phases.map((p, i) => {
           const done = i < phaseIdx;
           const active = i === phaseIdx;
@@ -1295,21 +1291,13 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               }}
               disabled={i > phaseIdx}
               title={done ? `Return to ${p.label}` : active ? `Current phase: ${p.label}` : undefined}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                padding: '5px 12px', border: 'none', cursor: done ? 'pointer' : 'default',
-                fontSize: 11, fontWeight: active ? 800 : done ? 600 : 500,
-                background: active ? 'var(--accent)' : 'transparent',
-                color: active ? '#fff' : done ? 'var(--ink)' : 'var(--muted)',
-                borderRadius: 6,
-                opacity: i > phaseIdx ? 0.65 : 1,
-                transition: 'all 0.12s',
-              }}
+              className={`phase-nav__btn${active ? ' phase-nav__btn--active' : done ? ' phase-nav__btn--done' : ''}`}
+              style={{ opacity: i > phaseIdx ? 0.65 : 1 }}
             >
-              {done && <span style={{ fontSize: 10, color: '#0d9488' }}>✓</span>}
+              {done && <span className="phase-nav__check">✓</span>}
               {p.label}
               {i < phases.length - 1 && (
-                <span style={{ marginLeft: 6, color: 'var(--muted)', opacity: 0.5 }}>›</span>
+                <span className="phase-nav__sep">›</span>
               )}
             </button>
           );
