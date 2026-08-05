@@ -459,15 +459,16 @@ export default function HomePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }), []);
 
-  /* ── Section icon map for encounter progress rail ── */
+  /* ── Section icon map for tab chips + encounter progress rail ── */
   const SECTION_ICONS: Partial<Record<Section, string>> = {
-    brief: '📋', triage: '⚡', hpi: '📝', pmh: '🏥', surgical: '⚕️',
-    medications: '💊', allergies: '⚠', family_hx: '👨‍👩‍👧', toxic: '🚬',
-    ros: '📋', examination: '🩺', wounds: '🩹',
-    investigations: '🧪', blood_gas: '💨', radiology: '📡', attachments: '📎',
-    assessment: '🎯', plan: '📄', procedures: '⚕️',
+    brief: '📄', triage: '⚡', hpi: '💬', pmh: '📋', surgical: '🔪',
+    medications: '💊', allergies: '⚠️', family_hx: '🧬', toxic: '🚬',
+    ros: '🔍', examination: '🩺', wounds: '🩹',
+    investigations: '🧪', blood_gas: '💨', radiology: '🩻', attachments: '📎',
+    assessment: '🎯', plan: '📌', procedures: '🔬',
+    who_checklist: '✅', periop: '🏥', consent: '✍️',
     prescriptions: '💊', dosing: '💉', fluid_nutrition: '💧',
-    referring_providers: '↗', encounter_history: '📅',
+    referring_providers: '↗️', encounter_history: '📅',
     progress: '📝', monitoring: '📊', tasks: '✓',
   };
 
@@ -1301,7 +1302,7 @@ export default function HomePage() {
                 {prevTab ? (
                   <button type="button" onClick={() => setActiveSection(prevTab.id)}
                     style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)' }}>
-                    ← {prevTab.label}
+                    ← {SECTION_ICONS[prevTab.id] ?? ''} {prevTab.label}
                   </button>
                 ) : <span />}
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -1325,7 +1326,7 @@ export default function HomePage() {
                   {nextTab && (
                     <button type="button" onClick={() => setActiveSection(nextTab.id)}
                       style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#0d9488', color: '#fff' }}>
-                      {nextTab.label} →
+                      {SECTION_ICONS[nextTab.id] ?? ''} {nextTab.label} →
                     </button>
                   )}
                   <button type="button" onClick={() => setTopSection('finaldoc')}
@@ -1405,13 +1406,13 @@ export default function HomePage() {
                   {prevTab ? (
                     <button type="button" onClick={() => setActiveSection(prevTab.id)}
                       style={{ padding: '9px 20px', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer', border: '1px solid #d1d5db', background: '#f9fafb', color: '#374151' }}>
-                      ← {prevTab.label}
+                      ← {SECTION_ICONS[prevTab.id] ?? ''} {prevTab.label}
                     </button>
                   ) : <span />}
                   {nextTab ? (
                     <button type="button" onClick={() => setActiveSection(nextTab.id)}
                       style={{ padding: '11px 28px', borderRadius: 8, fontSize: 14, fontWeight: 800, cursor: 'pointer', border: 'none', background: '#0d9488', color: '#fff', boxShadow: '0 2px 10px rgba(13,148,136,0.25)' }}>
-                      {nextTab.label} →
+                      {SECTION_ICONS[nextTab.id] ?? ''} {nextTab.label} →
                     </button>
                   ) : (
                     <button type="button" onClick={() => setTopSection('finaldoc')}
@@ -1439,7 +1440,7 @@ export default function HomePage() {
                     className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
                     onClick={() => setActiveSection(tab.id)}
                   >
-                    {tab.label}
+                    {SECTION_ICONS[tab.id] && <span style={{ marginRight: 3, fontSize: 11, lineHeight: 1 }}>{SECTION_ICONS[tab.id]}</span>}{tab.label}
                   </button>
                 ))}
               </div>
@@ -1447,7 +1448,7 @@ export default function HomePage() {
                 {prevTab ? (
                   <button type="button" onClick={() => setActiveSection(prevTab.id)}
                     style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: '1px solid var(--line)', background: 'transparent', color: 'var(--muted)' }}>
-                    ← {prevTab.label}
+                    ← {SECTION_ICONS[prevTab.id] ?? ''} {prevTab.label}
                   </button>
                 ) : <span />}
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -1471,7 +1472,7 @@ export default function HomePage() {
                   {nextTab && (
                     <button type="button" onClick={() => setActiveSection(nextTab.id)}
                       style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11, fontWeight: 700, cursor: 'pointer', border: 'none', background: '#1F7A8C', color: '#fff' }}>
-                      {nextTab.label} →
+                      {SECTION_ICONS[nextTab.id] ?? ''} {nextTab.label} →
                     </button>
                   )}
                   <button type="button" onClick={() => setTopSection('finaldoc')}
