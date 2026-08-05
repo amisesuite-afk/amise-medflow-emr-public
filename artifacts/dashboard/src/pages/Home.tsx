@@ -392,14 +392,18 @@ export default function HomePage() {
 
   useEffect(() => {
     let cancelled = false;
+    let failures = 0;
     async function check() {
       try {
-        // no-cors: opaque response is fine — any reply means the server is alive.
-        // CORS-blocked requests would throw, not return opaque, which is what we want.
-        await fetch(`${API_ORIGIN}/api/healthz`, { method: 'GET', mode: 'no-cors', signal: AbortSignal.timeout(5000) });
+        // no-cors: opaque response means server is alive; a throw means it's down.
+        await fetch(`${API_ORIGIN}/api/healthz`, { method: 'GET', mode: 'no-cors', signal: AbortSignal.timeout(8000) });
+        failures = 0;
         if (!cancelled) setApiDown(false);
       } catch {
-        if (!cancelled) setApiDown(true);
+        failures += 1;
+        // Require 2 consecutive failures before showing the banner — avoids
+        // false positives during Render deploys (30–60 s restart window).
+        if (!cancelled && failures >= 2) setApiDown(true);
       }
     }
     check();
