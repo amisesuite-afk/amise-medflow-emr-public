@@ -2,16 +2,29 @@ name: Keep API Server Warm
 
 on:
   schedule:
-    # Every 10 minutes — Render free tier spins down after ~15 minutes idle.
-    - cron: '*/10 * * * *'
+    # GitHub throttles low-activity repos to ~once/90 min regardless of cron expr.
+    # Multiple entries at different offsets improves the chance of on-time firing.
+    - cron: '0 * * * *'
+    - cron: '15 * * * *'
+    - cron: '30 * * * *'
+    - cron: '45 * * * *'
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
+    # Loop 7 times × 13-minute sleep = ~91 min coverage per trigger.
+    # Overlapping runs guarantee the API stays warm even when GitHub throttles.
+    timeout-minutes: 110
     steps:
-      - name: Ping health endpoint
+      - name: Ping every 13 minutes (7 rounds)
         run: |
-          curl -sf -o /dev/null -w "amise-medflow-api: HTTP %{http_code} in %{time_total}s\n" \
-            --max-time 90 \
-            https://amise-medflow-api.onrender.com/api/healthz
+          for i in 1 2 3 4 5 6 7; do
+            echo "=== Round $i/7 — $(date -u '+%H:%M:%S UTC') ==="
+            curl -sf -o /dev/null \
+              -w "amise-medflow-api: HTTP %{http_code} in %{time_total}s\n" \
+              --max-time 90 \
+              https://amise-medflow-api.onrender.com/api/healthz \
+              || echo "WARN: ping failed (cold-start in progress)"
+            [ $i -lt 7 ] && sleep 780
+          done
