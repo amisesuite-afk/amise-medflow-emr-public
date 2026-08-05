@@ -388,6 +388,24 @@ export default function HomePage() {
   const acuityRef = useRef<HTMLDivElement>(null);
 
   const [completing, setCompleting] = useState(false);
+  const [apiDown, setApiDown] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function check() {
+      try {
+        // no-cors: opaque response is fine — any reply means the server is alive.
+        // CORS-blocked requests would throw, not return opaque, which is what we want.
+        await fetch(`${API_ORIGIN}/api/healthz`, { method: 'GET', mode: 'no-cors', signal: AbortSignal.timeout(5000) });
+        if (!cancelled) setApiDown(false);
+      } catch {
+        if (!cancelled) setApiDown(true);
+      }
+    }
+    check();
+    const id = setInterval(check, 30_000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
 
   const completeEncounter = useCallback(async () => {
     if (!encounterId) { setTopSection('finaldoc'); return; }
@@ -737,6 +755,17 @@ export default function HomePage() {
         transition: 'grid-template-columns 200ms ease, grid-template-rows 200ms ease',
       }}
     >
+      {apiDown && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
+          background: '#92400e', color: '#fef3c7',
+          padding: '6px 16px', fontSize: 12, fontWeight: 600,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <span>⚠ API server unreachable — booking confirmations and write actions are unavailable. Read-only mode.</span>
+          <button onClick={() => setApiDown(false)} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1 }}>✕</button>
+        </div>
+      )}
       {/* ── Sticky header ── */}
       <header className="app-header" style={consultAmbient ? { padding: '0 12px', gap: 10 } : {}}>
 
