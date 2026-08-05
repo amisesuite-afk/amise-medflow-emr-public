@@ -2025,8 +2025,8 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   overflow-x: auto;
   padding: 4px 6px;
   margin: 0 0 8px;
-  background: var(--bg);
-  border: 1px solid var(--line);
+  background: var(--accent-lt);
+  border: 1.5px solid rgba(0,180,160,0.35);
   border-radius: 10px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -2065,8 +2065,8 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   display: flex;
   align-items: center;
   gap: 0;
-  background: var(--bg);
-  border: 1px solid var(--line);
+  background: var(--accent-lt);
+  border: 1.5px solid rgba(0,180,160,0.35);
   border-radius: 8px;
   padding: 2px 6px;
 }
