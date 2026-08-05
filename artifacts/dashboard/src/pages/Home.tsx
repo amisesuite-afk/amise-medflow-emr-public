@@ -394,8 +394,10 @@ export default function HomePage() {
     let cancelled = false;
     async function check() {
       try {
-        const r = await fetch(`${API_ORIGIN}/api/healthz`, { method: 'GET', signal: AbortSignal.timeout(5000) });
-        if (!cancelled) setApiDown(!r.ok);
+        // no-cors: opaque response is fine — any reply means the server is alive.
+        // CORS-blocked requests would throw, not return opaque, which is what we want.
+        await fetch(`${API_ORIGIN}/api/healthz`, { method: 'GET', mode: 'no-cors', signal: AbortSignal.timeout(5000) });
+        if (!cancelled) setApiDown(false);
       } catch {
         if (!cancelled) setApiDown(true);
       }
