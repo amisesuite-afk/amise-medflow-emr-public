@@ -752,23 +752,11 @@ export default function HomePage() {
       style={{
         gridTemplateColumns: `${sidebarWidth}px 1fr`,
         gridTemplateRows: apiDown
-          ? `34px ${consultAmbient ? '48px' : 'var(--header-h)'} 1fr`
+          ? `${consultAmbient ? '48px' : 'var(--header-h)'} 34px 1fr`
           : `${consultAmbient ? '48px' : 'var(--header-h)'} 1fr`,
         transition: 'grid-template-columns 200ms ease, grid-template-rows 200ms ease',
       }}
     >
-      {apiDown && (
-        <div style={{
-          gridColumn: '1 / -1',
-          background: '#92400e', color: '#fef3c7',
-          padding: '0 16px', fontSize: 12, fontWeight: 600,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: 12, zIndex: 30,
-        }}>
-          <span>⚠ API server unreachable — write actions unavailable. Read-only mode.</span>
-          <button onClick={() => setApiDown(false)} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
-        </div>
-      )}
       {/* ── Sticky header ── */}
       <header className="app-header" style={consultAmbient ? { padding: '0 12px', gap: 10 } : {}}>
 
@@ -1082,6 +1070,20 @@ export default function HomePage() {
         </div>
         )}
       </header>
+
+      {/* ── API-down banner — row 2 when visible, below header so iOS Safari keeps the dark chrome ── */}
+      {apiDown && (
+        <div style={{
+          gridColumn: '1 / -1',
+          background: '#92400e', color: '#fef3c7',
+          padding: '0 16px', fontSize: 12, fontWeight: 600,
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 12, zIndex: 30,
+        }}>
+          <span>⚠ API server unreachable — write actions unavailable. Read-only mode.</span>
+          <button onClick={() => setApiDown(false)} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
+        </div>
+      )}
 
       {/* ── Collapsible sidebar — auto-collapsed (icon-only) during active consultation ── */}
       <NavSidebar
