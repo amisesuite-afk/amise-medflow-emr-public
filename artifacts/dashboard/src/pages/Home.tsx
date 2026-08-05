@@ -387,6 +387,23 @@ export default function HomePage() {
   const prevPatientIdRef = useRef<string | null>(null);
   const acuityRef = useRef<HTMLDivElement>(null);
 
+  const [completing, setCompleting] = useState(false);
+
+  const completeEncounter = useCallback(async () => {
+    if (!encounterId) { setTopSection('finaldoc'); return; }
+    setCompleting(true);
+    try {
+      const authHeaders = await staffAuthHeaders();
+      await fetch(`${API_ORIGIN}/api/visit/complete/${encounterId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeaders as Record<string, string> },
+        body: JSON.stringify({ description: plan ?? undefined }),
+      });
+    } catch { /* non-blocking — navigate regardless */ }
+    setCompleting(false);
+    setTopSection('finaldoc');
+  }, [encounterId, plan]);
+
   // Collapse sidebar on narrow viewports (tablets/phones)
   useEffect(() => {
     const handler = () => setWindowWidth(window.innerWidth);
@@ -774,12 +791,13 @@ export default function HomePage() {
                 type="button"
                 onClick={() => {
                   if (window.confirm('Mark this encounter as complete and close it?')) {
-                    setTopSection('finaldoc');
+                    completeEncounter();
                   }
                 }}
-                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, border: '1px solid rgba(220,38,38,0.4)', background: 'rgba(220,38,38,0.1)', color: '#fca5a5', fontSize: 10, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
+                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '3px 8px', borderRadius: 5, border: '1px solid rgba(220,38,38,0.4)', background: completing ? 'rgba(220,38,38,0.2)' : 'rgba(220,38,38,0.1)', color: '#fca5a5', fontSize: 10, fontWeight: 700, cursor: completing ? 'wait' : 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }}
                 title="Close this encounter"
-              >● In progress — Close</button>
+                disabled={completing}
+              >{completing ? '⏳ Closing…' : '● In progress — Close'}</button>
             ) : null}
             {/* AI Consultant */}
             {hasRole(userRole, 'doctor') && (
@@ -1282,7 +1300,7 @@ export default function HomePage() {
           <AmbientConsultation
             visitType={ctxVisitType ?? headerVisitMode}
             onDetailedMode={() => { setAmbientMode(false); setGuidedMode(true); }}
-            onFinalise={() => setTopSection('finaldoc')}
+            onFinalise={completeEncounter}
           />
         )}
 
@@ -1415,9 +1433,9 @@ export default function HomePage() {
                       {SECTION_ICONS[nextTab.id] ?? ''} {nextTab.label} →
                     </button>
                   ) : (
-                    <button type="button" onClick={() => setTopSection('finaldoc')}
-                      style={{ padding: '11px 22px', borderRadius: 8, fontSize: 13, fontWeight: 800, cursor: 'pointer', border: '2px solid #0d9488', background: '#f0fdfa', color: '#0d9488' }}>
-                      ✓ Finish &amp; Summary
+                    <button type="button" onClick={completeEncounter} disabled={completing}
+                      style={{ padding: '11px 22px', borderRadius: 8, fontSize: 13, fontWeight: 800, cursor: completing ? 'wait' : 'pointer', border: '2px solid #0d9488', background: '#f0fdfa', color: '#0d9488', opacity: completing ? 0.7 : 1 }}>
+                      {completing ? '⏳ Closing…' : '✓ Finish & Summary'}
                     </button>
                   )}
                 </div>
