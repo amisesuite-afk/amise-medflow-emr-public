@@ -742,13 +742,6 @@ export default function HomePage() {
   // wizardSkipped / ambientMode no longer gate this — the wizard and visit-type
   // gate are gone; patient loaded + consultation section = ambient mode, always.
   const consultAmbient = topSection === 'consultation' && (!!patientId || !!patientName);
-
-  // Keep ambientMode in sync with consultAmbient: when a patient loads we enter
-  // ambient mode; when they're unloaded (or section changes) we reset so the tab
-  // strip appears correctly for the next patient.
-  useEffect(() => {
-    setAmbientMode(consultAmbient);
-  }, [consultAmbient]);
   const allergyList = allergies.split(',').map((a: string) => a.trim()).filter(Boolean);
   const ccLabel = activeCcKey ? (getMatrix(activeCcKey)?.name ?? null)
     : (symptoms.length > 0 ? symptoms.slice(0, 2).join(', ') : null);
@@ -1346,6 +1339,7 @@ export default function HomePage() {
             visitType={ctxVisitType ?? headerVisitMode}
             onDetailedMode={() => { setAmbientMode(false); setGuidedMode(true); }}
             onFinalise={completeEncounter}
+            compact={!ambientMode}
           />
         )}
 

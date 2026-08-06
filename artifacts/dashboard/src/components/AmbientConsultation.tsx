@@ -553,10 +553,11 @@ interface Props {
   visitType?: string;
   onDetailedMode: () => void;
   onFinalise: () => void;
+  compact?: boolean;
 }
 
 // ── Component ──────────────────────────────────────────────────────────────────
-export default function AmbientConsultation({ visitType, onDetailedMode, onFinalise }: Props) {
+export default function AmbientConsultation({ visitType, onDetailedMode, onFinalise, compact = false }: Props) {
   const ctx = useAppContext();
   const {
     activeCcKey, setActiveCcKey, symptoms, hpiNotes, setHpiNotes,
@@ -1275,7 +1276,7 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const phaseIdx = phases.findIndex(p => p.key === consultPhase);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 0 : 12 }}>
 
       {/* ── Phase breadcrumb ── */}
       <div className="phase-nav">
@@ -1303,6 +1304,9 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           );
         })}
       </div>
+      {/* ── Full canvas: hidden when compact (tab strip is also showing) ── */}
+      {!compact && <>
+
       {/* ── Abnormal vitals alert ── */}
       {vitalFlags.length > 0 && (
         <div style={{
@@ -2012,6 +2016,8 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           </div>
         </>
       )}
+
+      </>}
 
       <style>{`
         @keyframes ambPulse {

@@ -327,8 +327,8 @@ export default function NavSidebar({
                 title={label}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  width: '100%', height: 48, border: 'none', cursor: 'pointer',
-                  position: 'relative', borderRadius: 6, margin: '0 4px', width: 'calc(100% - 8px)',
+                  width: 'calc(100% - 8px)', height: 48, border: 'none', cursor: 'pointer',
+                  position: 'relative', borderRadius: 6, margin: '0 4px',
                   background: isCurrent ? 'rgba(13,148,136,0.25)' : 'transparent',
                   color: isCurrent ? '#40e0d0' : allDone ? '#6ab8ae' : 'rgba(255,255,255,0.75)',
                   transition: 'background 0.15s, color 0.15s',
