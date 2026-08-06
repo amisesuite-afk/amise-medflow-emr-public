@@ -2019,12 +2019,16 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
 }
 
 /* ── Consultation horizontal tab strip ───────────────────────────── */
-/* Sticky wrapper that carries the tab strip and its scroll-arrow overlays. */
+/* Sticky wrapper that carries the tab strip and its scroll-arrow overlays.
+   flex-shrink: 0 is load-bearing: .main-content is a flex column, and
+   Safari crushes this wrapper to its padding height without it. */
 .consult-tabstrip-wrap {
   position: sticky;
   top: 44px;
   z-index: 10;
   margin: 0 0 8px;
+  flex-shrink: 0;
+  min-height: fit-content;
 }
 .consult-tabstrip {
   display: flex;
