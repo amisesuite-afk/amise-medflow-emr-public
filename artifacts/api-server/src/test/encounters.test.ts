@@ -111,7 +111,8 @@ describe('GET /api/encounters/patient/:patientId', () => {
     const asmRows = [{ encounter_id: 'enc-1', diagnosis: 'Appendicitis', icd10_code: 'K37' }];
     mockFrom
       .mockReturnValueOnce(mkChain(ok(encRows)))
-      .mockReturnValueOnce(mkChain(ok(asmRows)));
+      .mockReturnValueOnce(mkChain(ok(asmRows)))
+      .mockReturnValueOnce(mkChain(ok([]))); // plans join
     const res = await request(app).get('/api/encounters/patient/pat-1');
     expect(res.status).toBe(200);
     expect(res.body.encounters).toHaveLength(1);

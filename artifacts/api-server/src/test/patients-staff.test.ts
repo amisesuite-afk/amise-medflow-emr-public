@@ -60,7 +60,9 @@ describe('GET /api/patients', () => {
       { id: 'pat-1', full_name: 'Jane Doe', sex: 'female', phone: '+17584001234',
         date_of_birth: '1980-05-10', created_at: '2026-07-31T10:00:00Z' },
     ];
-    mockFrom.mockReturnValueOnce(mkChain(ok(patients)));
+    mockFrom
+      .mockReturnValueOnce(mkChain(ok(patients)))
+      .mockReturnValueOnce(mkChain(ok([]))); // enrichWithEncounters join
     const res = await request(app).get('/api/patients');
     expect(res.status).toBe(200);
     expect(res.body.patients).toHaveLength(1);
@@ -85,8 +87,9 @@ describe('GET /api/patients', () => {
 
   it('filters by site when site param is valid', async () => {
     mockFrom
-      .mockReturnValueOnce(mkChain(ok([{ patient_id: 'pat-1' }]))) // encounters query
-      .mockReturnValueOnce(mkChain(ok([{ id: 'pat-1', full_name: 'John' }]))); // patients query
+      .mockReturnValueOnce(mkChain(ok([{ patient_id: 'pat-1' }]))) // encounters query (site filter)
+      .mockReturnValueOnce(mkChain(ok([{ id: 'pat-1', full_name: 'John' }]))) // patients query
+      .mockReturnValueOnce(mkChain(ok([]))); // enrichWithEncounters join
     const res = await request(app).get('/api/patients?site=tapion');
     expect(res.status).toBe(200);
     expect(res.body.patients).toHaveLength(1);
