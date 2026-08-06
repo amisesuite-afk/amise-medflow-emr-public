@@ -2030,6 +2030,11 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   border-radius: 10px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  /* Stick to top of the scroll pane so tabs are always reachable.
+     top: 44px places it just below the compact phase-nav sticky strip. */
+  position: sticky;
+  top: 44px;
+  z-index: 10;
 }
 .consult-tabstrip::-webkit-scrollbar { display: none; }
 .ct-tab {
