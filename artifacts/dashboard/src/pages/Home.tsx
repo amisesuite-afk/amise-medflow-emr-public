@@ -389,6 +389,8 @@ export default function HomePage() {
 
   const [completing, setCompleting] = useState(false);
   const [apiDown, setApiDown] = useState(false);
+  // Timestamp until which the banner is suppressed after the user dismisses it.
+  const apiDownSuppressedUntil = useRef(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -401,9 +403,12 @@ export default function HomePage() {
         if (!cancelled) setApiDown(false);
       } catch {
         failures += 1;
-        // Require 2 consecutive failures before showing the banner — avoids
-        // false positives during Render deploys (30–60 s restart window).
-        if (!cancelled && failures >= 2) setApiDown(true);
+        // Require 3 consecutive failures (≥90 s) before showing the banner.
+        // Render Standard plan deploys take ~60–90 s, so this avoids false
+        // positives during a normal redeploy. Also respect the dismiss suppress window.
+        if (!cancelled && failures >= 3 && Date.now() > apiDownSuppressedUntil.current) {
+          setApiDown(true);
+        }
       }
     }
     check();
@@ -1085,7 +1090,7 @@ export default function HomePage() {
           gap: 12, zIndex: 30,
         }}>
           <span>⚠ API server unreachable — write actions unavailable. Read-only mode.</span>
-          <button onClick={() => setApiDown(false)} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
+          <button onClick={() => { apiDownSuppressedUntil.current = Date.now() + 5 * 60_000; setApiDown(false); }} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
         </div>
       )}
 
