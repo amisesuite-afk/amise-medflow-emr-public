@@ -1182,8 +1182,11 @@ export default function HomePage() {
             onClick={() => setZenMode(false)}
             title="Show navigation"
             style={{
-              position: 'fixed', bottom: 20, left: 16, zIndex: 200,
-              display: 'flex', alignItems: 'center', gap: 6,
+              // width/alignSelf pinned explicitly: iOS Safari stretches fixed-position
+              // flex children to full width without them (renders as a full-width bar).
+              position: 'fixed', bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))', left: 16, zIndex: 200,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              width: 'fit-content', maxWidth: 120, alignSelf: 'flex-start',
               padding: '7px 14px', borderRadius: 20,
               background: '#1e293b', color: '#94a3b8',
               border: '1px solid #334155', cursor: 'pointer',
