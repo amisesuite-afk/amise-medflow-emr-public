@@ -1276,7 +1276,14 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
   const phaseIdx = phases.findIndex(p => p.key === consultPhase);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 0 : 12 }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column', gap: compact ? 0 : 12,
+      // In compact mode (tab strip is also showing) the phase nav sticks to the
+      // top of the scroll pane so it stays visible when the user scrolls into
+      // the section content. The tab strip (.consult-tabstrip) then sticks just
+      // below it at top: 44px.
+      ...(compact ? { position: 'sticky', top: 0, zIndex: 11, background: 'var(--bg)' } : {}),
+    }}>
 
       {/* ── Phase breadcrumb ── */}
       <div className="phase-nav">
