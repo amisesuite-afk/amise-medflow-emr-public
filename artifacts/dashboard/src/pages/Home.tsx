@@ -1105,6 +1105,7 @@ export default function HomePage() {
         activeSection={activeSection}
         onSection={handleSectionSelect}
         userRole={userRole}
+        authLoading={authLoading}
         hasUrgentRedFlag={hasUrgentRedFlag}
         urgentCount={urgentCount}
         acuity={triageResult.acuity}
@@ -1607,38 +1608,38 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'consent'        && <SurgicalConsentTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'letters'        && <LetterGeneratorTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'patient_education' && <PatientEducationTab />}
-        {topSection === 'procedures'    && hasRole(userRole, 'doctor')        && <ProceduresTab />}
+        {topSection === 'procedures'    && (authLoading || hasRole(userRole, 'doctor'))        && <ProceduresTab />}
         {topSection === 'summary'        && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'outpatient' && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'inpatient'  && <InpatientTab />}
-        {topSection === 'billing'       && activeSection === 'billing'   && roleIn(userRole, 'front_desk', 'admin') && <BillingTab />}
-        {topSection === 'billing'       && activeSection === 'documents' && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
+        {topSection === 'billing'       && activeSection === 'billing'   && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <BillingTab />}
+        {topSection === 'billing'       && activeSection === 'documents' && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <DocumentsTab />}
 
         {/* Previously-stub sections */}
         {topSection === 'dashboard'  && <DashboardTab />}
         {topSection === 'patients'   && <PatientsHubTab />}
         {topSection === 'scheduling' && <SchedulingTab />}
-        {topSection === 'analytics'   && hasRole(userRole, 'doctor') && <InsightsHubTab />}
-        {topSection === 'quality'       && hasRole(userRole, 'doctor') && <InsightsHubTab defaultTab="qi" />}
-        {topSection === 'results_inbox' && hasRole(userRole, 'nurse')  && <ResultsInboxTab />}
-        {topSection === 'settings'   && hasRole(userRole, 'admin')  && <SettingsTab />}
-        {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
-        {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
-        {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
-        {topSection === 'questionnaire'  && (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor'))  && <NurseAPCQTab />}
+        {topSection === 'analytics'   && (authLoading || hasRole(userRole, 'doctor')) && <InsightsHubTab />}
+        {topSection === 'quality'       && (authLoading || hasRole(userRole, 'doctor')) && <InsightsHubTab defaultTab="qi" />}
+        {topSection === 'results_inbox' && (authLoading || hasRole(userRole, 'nurse'))  && <ResultsInboxTab />}
+        {topSection === 'settings'   && (authLoading || hasRole(userRole, 'admin'))  && <SettingsTab />}
+        {topSection === 'trauma'         && (authLoading || hasRole(userRole, 'nurse'))  && <TraumaTab />}
+        {topSection === 'vademecum'      && (authLoading || hasRole(userRole, 'nurse'))  && <DictionaryTab />}
+        {topSection === 'questionnaire'  && !authLoading && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
+        {topSection === 'questionnaire'  && (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor'))  && <NurseAPCQTab />}
         {topSection === 'checkin'                                              && <CheckInTab />}
-        {topSection === 'doc_scan'   && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
-        {topSection === 'booking_inbox'  && roleIn(userRole, 'front_desk', 'admin') && <BookingInboxTab />}
-        {topSection === 'calls_queue'    && roleIn(userRole, 'front_desk', 'admin') && <CallsQueueTab />}
+        {topSection === 'doc_scan'   && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <DocumentsTab />}
+        {topSection === 'booking_inbox'  && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <BookingInboxTab />}
+        {topSection === 'calls_queue'    && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <CallsQueueTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
         {topSection === 'visit_lifecycle'                                        && <PatientsHubTab defaultTab="visits" />}
-        {topSection === 'prescriptions'     && hasRole(userRole, 'doctor')     && <PrescriptionsTab />}
-        {topSection === 'ai_consultant'     && hasRole(userRole, 'doctor')     && <AiConsultantTab />}
+        {topSection === 'prescriptions'     && (authLoading || hasRole(userRole, 'doctor'))     && <PrescriptionsTab />}
+        {topSection === 'ai_consultant'     && (authLoading || hasRole(userRole, 'doctor'))     && <AiConsultantTab />}
         {topSection === 'tasks'                                                && <PatientTasksTab />}
-        {topSection === 'followup_tracker' && roleIn(userRole, 'front_desk')     && <FollowUpTrackerTab />}
-        {topSection === 'followup_tracker' && !roleIn(userRole, 'front_desk')   && <PatientsHubTab defaultTab="followup" />}
-        {topSection === 'patient_accounts' && roleIn(userRole, 'front_desk', 'admin') && <PatientAccountsTab />}
+        {topSection === 'followup_tracker' && !authLoading && roleIn(userRole, 'front_desk')     && <FollowUpTrackerTab />}
+        {topSection === 'followup_tracker' && (authLoading || !roleIn(userRole, 'front_desk'))   && <PatientsHubTab defaultTab="followup" />}
+        {topSection === 'patient_accounts' && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <PatientAccountsTab />}
         </ErrorBoundary>
         </Suspense>
       </main>
