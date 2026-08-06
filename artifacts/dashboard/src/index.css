@@ -2019,23 +2019,51 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
 }
 
 /* ── Consultation horizontal tab strip ───────────────────────────── */
+/* Sticky wrapper that carries the tab strip and its scroll-arrow overlays. */
+.consult-tabstrip-wrap {
+  position: sticky;
+  top: 44px;
+  z-index: 10;
+  margin: 0 0 8px;
+}
 .consult-tabstrip {
   display: flex;
   gap: 2px;
   overflow-x: auto;
   padding: 5px 8px;
-  margin: 0 0 8px;
   background: var(--accent-lt);
   border: 1.5px solid rgba(0,180,160,0.35);
   border-radius: 10px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  /* Stick to top of the scroll pane so tabs are always reachable.
-     top: 44px places it just below the compact phase-nav sticky strip. */
-  position: sticky;
-  top: 44px;
-  z-index: 10;
 }
+/* Gradient fades that signal hidden tabs at each edge. */
+.ts-fade {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  z-index: 2;
+}
+.ts-fade--left  { left: 0;  background: linear-gradient(to right, var(--accent-lt) 30%, transparent); border-radius: 10px 0 0 10px; }
+.ts-fade--right { right: 0; background: linear-gradient(to left,  var(--accent-lt) 30%, transparent); border-radius: 0 10px 10px 0; }
+/* Arrow buttons at the strip edges. */
+.ts-scroll-btn {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  z-index: 3;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px solid rgba(0,180,160,0.55);
+  background: var(--bg);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 15px; line-height: 1; padding: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+.ts-scroll-btn--left  { left: 3px; }
+.ts-scroll-btn--right { right: 3px; }
 .consult-tabstrip::-webkit-scrollbar { display: none; }
 .ct-tab {
   flex-shrink: 0;
@@ -2062,7 +2090,8 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
 }
 @media (max-width: 768px) {
   /* phase-nav__btn grows to ~50px on mobile (font 15px + padding 9px×2 + border 1.5px×2 + container 3px×2) */
-  .consult-tabstrip { gap: 1px; padding: 4px 6px; top: 50px; }
+  .consult-tabstrip-wrap { top: 50px; }
+  .consult-tabstrip { gap: 1px; padding: 4px 6px; }
   .ct-tab { font-size: 15px; font-weight: 700; padding: 9px 14px; }
 }
 

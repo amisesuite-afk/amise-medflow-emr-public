@@ -367,6 +367,9 @@ export default function HomePage() {
 
   const [collapsed, setCollapsed] = useState(false);
   const [zenMode, setZenMode] = useState(false);
+  const tabStripRef = useRef<HTMLDivElement>(null);
+  const [tsCanLeft, setTsCanLeft]   = useState(false);
+  const [tsCanRight, setTsCanRight] = useState(true);
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
   const [criticalResultCount, setCriticalResultCount] = useState(0);
@@ -401,7 +404,12 @@ export default function HomePage() {
         // no-cors: opaque response means server is alive; a throw means it's down.
         await fetch(`${API_ORIGIN}/api/healthz`, { method: 'GET', mode: 'no-cors', signal: AbortSignal.timeout(8000) });
         failures = 0;
-        if (!cancelled) setApiDown(false);
+        if (!cancelled) {
+          setApiDown(false);
+          // Reset suppression so a future outage shows the banner fresh.
+          apiDownSuppressedUntil.current = 0;
+          sessionStorage.removeItem('apiDownSuppressed');
+        }
       } catch {
         failures += 1;
         // Require 3 consecutive failures (≥90 s) before showing the banner.
@@ -704,18 +712,36 @@ export default function HomePage() {
   // so we manipulate scrollLeft on the strip element directly.
   useEffect(() => {
     if (topSection !== 'consultation') return;
-    const el = document.getElementById(`tab-${activeSection}`);
-    if (!el) return;
-    const strip = el.closest<HTMLElement>('.consult-tabstrip');
+    const strip = tabStripRef.current;
     if (!strip) return;
+    const el = strip.querySelector<HTMLElement>(`#tab-${activeSection}`);
+    if (!el) return;
     const elLeft = el.offsetLeft;
     const elRight = elLeft + el.offsetWidth;
-    if (elLeft < strip.scrollLeft) {
-      strip.scrollLeft = elLeft - 8;
-    } else if (elRight > strip.scrollLeft + strip.clientWidth) {
-      strip.scrollLeft = elRight - strip.clientWidth + 8;
-    }
+    // Centre the active tab in the visible strip window.
+    const targetLeft = elLeft - (strip.clientWidth - el.offsetWidth) / 2;
+    strip.scrollLeft = Math.max(0, Math.min(targetLeft, strip.scrollWidth - strip.clientWidth));
+    // Update arrow visibility immediately after the scroll.
+    setTsCanLeft(strip.scrollLeft > 1);
+    setTsCanRight(strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 1);
+    void elLeft; void elRight; // used above for centre calc
   }, [activeSection, topSection]);
+
+  // Keep arrow visibility in sync with manual strip scrolling.
+  useEffect(() => {
+    const strip = tabStripRef.current;
+    if (!strip) return;
+    function sync() {
+      if (!strip) return;
+      setTsCanLeft(strip.scrollLeft > 1);
+      setTsCanRight(strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 1);
+    }
+    sync();
+    strip.addEventListener('scroll', sync, { passive: true });
+    const ro = new ResizeObserver(sync);
+    ro.observe(strip);
+    return () => { strip.removeEventListener('scroll', sync); ro.disconnect(); };
+  }, [consultTabs]);
 
   // Reset to new consultation when patient or CC changes
   useEffect(() => { setHeaderVisitMode('new'); }, [patientId, activeCcKey]);
@@ -1117,7 +1143,7 @@ export default function HomePage() {
           gap: 12, zIndex: 30,
         }}>
           <span>⚠ API server unreachable — write actions unavailable. Read-only mode.</span>
-          <button onClick={() => { const until = Date.now() + 5 * 60_000; apiDownSuppressedUntil.current = until; sessionStorage.setItem('apiDownSuppressed', String(until)); setApiDown(false); }} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
+          <button onClick={() => { const until = Date.now() + 24 * 60 * 60_000; apiDownSuppressedUntil.current = until; sessionStorage.setItem('apiDownSuppressed', String(until)); setApiDown(false); }} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
         </div>
       )}
 
@@ -1518,21 +1544,33 @@ export default function HomePage() {
           // Full tab strip
           return (
             <>
-              <div className="consult-tabstrip" role="tablist" aria-label="Consultation sections">
-                {consultTabs.map(tab => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeSection === tab.id}
-                    aria-controls={`tabpanel-${tab.id}`}
-                    id={`tab-${tab.id}`}
-                    className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
-                    onClick={() => setActiveSection(tab.id)}
-                  >
-                    {SECTION_ICONS[tab.id] && <span style={{ marginRight: 3, fontSize: 11, lineHeight: 1 }}>{SECTION_ICONS[tab.id]}</span>}{tab.label}
-                  </button>
-                ))}
+              <div className="consult-tabstrip-wrap">
+                {tsCanLeft && <div className="ts-fade ts-fade--left" />}
+                {tsCanLeft && (
+                  <button className="ts-scroll-btn ts-scroll-btn--left" aria-label="Scroll tabs left"
+                    onClick={() => { const s = tabStripRef.current; if (s) s.scrollLeft -= 160; }}>‹</button>
+                )}
+                <div ref={tabStripRef} className="consult-tabstrip" role="tablist" aria-label="Consultation sections">
+                  {consultTabs.map(tab => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeSection === tab.id}
+                      aria-controls={`tabpanel-${tab.id}`}
+                      id={`tab-${tab.id}`}
+                      className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
+                      onClick={() => setActiveSection(tab.id)}
+                    >
+                      {SECTION_ICONS[tab.id] && <span style={{ marginRight: 3, fontSize: 11, lineHeight: 1 }}>{SECTION_ICONS[tab.id]}</span>}{tab.label}
+                    </button>
+                  ))}
+                </div>
+                {tsCanRight && <div className="ts-fade ts-fade--right" />}
+                {tsCanRight && (
+                  <button className="ts-scroll-btn ts-scroll-btn--right" aria-label="Scroll tabs right"
+                    onClick={() => { const s = tabStripRef.current; if (s) s.scrollLeft += 160; }}>›</button>
+                )}
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0 8px', gap: 8, alignItems: 'center' }}>
                 {prevTab ? (
