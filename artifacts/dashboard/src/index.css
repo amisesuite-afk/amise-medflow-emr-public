@@ -2061,7 +2061,8 @@ ul.qlist li::before { content: '→'; color: var(--accent); flex-shrink: 0; font
   color: #fff;
 }
 @media (max-width: 768px) {
-  .consult-tabstrip { gap: 1px; padding: 4px 6px; }
+  /* phase-nav__btn grows to ~50px on mobile (font 15px + padding 9px×2 + border 1.5px×2 + container 3px×2) */
+  .consult-tabstrip { gap: 1px; padding: 4px 6px; top: 50px; }
   .ct-tab { font-size: 15px; font-weight: 700; padding: 9px 14px; }
 }
 

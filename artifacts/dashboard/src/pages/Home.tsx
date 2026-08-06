@@ -1626,8 +1626,8 @@ export default function HomePage() {
         {topSection === 'summary'        && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'outpatient' && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'inpatient'  && <InpatientTab />}
-        {topSection === 'billing'       && activeSection === 'billing'   && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <BillingTab />}
-        {topSection === 'billing'       && activeSection === 'documents' && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <DocumentsTab />}
+        {topSection === 'billing'       && activeSection === 'billing'   && roleIn(userRole, 'front_desk', 'admin') && <BillingTab />}
+        {topSection === 'billing'       && activeSection === 'documents' && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
 
         {/* Previously-stub sections */}
         {topSection === 'dashboard'  && <DashboardTab />}
@@ -1642,9 +1642,9 @@ export default function HomePage() {
         {topSection === 'questionnaire'  && !authLoading && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
         {topSection === 'questionnaire'  && (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor'))  && <NurseAPCQTab />}
         {topSection === 'checkin'                                              && <CheckInTab />}
-        {topSection === 'doc_scan'   && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <DocumentsTab />}
-        {topSection === 'booking_inbox'  && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <BookingInboxTab />}
-        {topSection === 'calls_queue'    && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <CallsQueueTab />}
+        {topSection === 'doc_scan'   && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
+        {topSection === 'booking_inbox'  && roleIn(userRole, 'front_desk', 'admin') && <BookingInboxTab />}
+        {topSection === 'calls_queue'    && roleIn(userRole, 'front_desk', 'admin') && <CallsQueueTab />}
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
         {topSection === 'visit_lifecycle'                                        && <PatientsHubTab defaultTab="visits" />}
@@ -1653,7 +1653,7 @@ export default function HomePage() {
         {topSection === 'tasks'                                                && <PatientTasksTab />}
         {topSection === 'followup_tracker' && !authLoading && roleIn(userRole, 'front_desk')     && <FollowUpTrackerTab />}
         {topSection === 'followup_tracker' && (authLoading || !roleIn(userRole, 'front_desk'))   && <PatientsHubTab defaultTab="followup" />}
-        {topSection === 'patient_accounts' && (!authLoading && roleIn(userRole, 'front_desk', 'admin')) && <PatientAccountsTab />}
+        {topSection === 'patient_accounts' && roleIn(userRole, 'front_desk', 'admin') && <PatientAccountsTab />}
         </ErrorBoundary>
         </Suspense>
       </main>
