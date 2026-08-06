@@ -322,7 +322,7 @@ function acuityClass(a: string) {
 }
 
 export default function HomePage() {
-  const { profile, signOut } = useAuth();
+  const { profile, loading: authLoading, signOut } = useAuth();
   const {
     activeSection, setActiveSection,
     topSection, setTopSection,
@@ -529,11 +529,11 @@ export default function HomePage() {
         const doctorExamTypes = new Set(['breast','diabetic_foot','follow_up','post_op','urgent']);
         const nurseOnly = new Set<Section>(['investigations','blood_gas','radiology','attachments']);
         return vtTabs.filter(t => {
-          if (doctorOnly.has(t.id)) return hasRole(userRole, 'doctor');
+          if (doctorOnly.has(t.id)) return authLoading || hasRole(userRole, 'doctor');
           if (t.id === 'examination' || t.id === 'wounds') {
-            return hasRole(userRole, 'nurse') || (hasRole(userRole, 'doctor') && doctorExamTypes.has(ctxVisitType));
+            return authLoading || hasRole(userRole, 'nurse') || (hasRole(userRole, 'doctor') && doctorExamTypes.has(ctxVisitType));
           }
-          if (nurseOnly.has(t.id)) return hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor');
+          if (nurseOnly.has(t.id)) return authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor');
           return true;
         });
       }
@@ -557,7 +557,7 @@ export default function HomePage() {
       { id: 'ros', label: 'ROS' },
       { id: 'examination' as Section, label: 'Exam' },
       { id: 'wounds' as Section, label: 'Wounds' },
-      ...(hasRole(userRole, 'doctor') ? [
+      ...(authLoading || hasRole(userRole, 'doctor') ? [
         { id: 'investigations' as Section, label: 'Labs' },
         { id: 'blood_gas' as Section, label: 'ABG' },
         { id: 'radiology' as Section, label: 'Imaging' },
@@ -582,7 +582,7 @@ export default function HomePage() {
       { id: 'tasks', label: 'Tasks' },
     ];
     return all.filter(t => allowed.has(t.id));
-  }, [userRole, encounterType, ctxVisitType, activeCcKey, ENCOUNTER_TAB_SETS]);
+  }, [authLoading, userRole, encounterType, ctxVisitType, activeCcKey, ENCOUNTER_TAB_SETS]);
 
   /* ── Swipe navigation for consultation tabs (iPad / mobile) ── */
   const swipeRef = useSwipeNavigation<HTMLElement>({
@@ -1576,25 +1576,25 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'scales'      && <ScalesTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'ros'         && <RosTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'examination' &&
-          (userRole === undefined || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) &&
+          (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) &&
           <ExaminationTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications' && (userRole === undefined || hasRole(userRole, 'nurse')) && <SurgicalClassificationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications' && (authLoading || hasRole(userRole, 'nurse')) && <SurgicalClassificationsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'investigations' &&
-          (userRole === undefined || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <InvestigationsTab />}
+          (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <InvestigationsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'radiology' &&
-          (userRole === undefined || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <RadiologyTab />}
+          (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <RadiologyTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'attachments' &&
-          (userRole === undefined || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <AttachmentsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && (userRole === undefined || hasRole(userRole, 'doctor')) && <AssessmentTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && (userRole === undefined || hasRole(userRole, 'doctor')) && <PlanTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && (userRole === undefined || hasRole(userRole, 'doctor')) && <ProceduresTab />}
+          (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <AttachmentsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && (authLoading || hasRole(userRole, 'doctor')) && <AssessmentTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && (authLoading || hasRole(userRole, 'doctor')) && <PlanTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && (authLoading || hasRole(userRole, 'doctor')) && <ProceduresTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'progress'    && <ProgressNotesTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'prescriptions' && (userRole === undefined || hasRole(userRole, 'doctor')) && <PrescriptionsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'referring_providers' && (userRole === undefined || hasRole(userRole, 'doctor')) && <ReferringProvidersTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'encounter_history'   && (userRole === undefined || hasRole(userRole, 'doctor')) && <EncounterTimelineTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'ai_consultant' && (userRole === undefined || hasRole(userRole, 'doctor')) && <AiConsultantTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'sphere'        && (userRole === undefined || hasRole(userRole, 'doctor')) && <PathologySphereTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'prescriptions' && (authLoading || hasRole(userRole, 'doctor')) && <PrescriptionsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'referring_providers' && (authLoading || hasRole(userRole, 'doctor')) && <ReferringProvidersTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'encounter_history'   && (authLoading || hasRole(userRole, 'doctor')) && <EncounterTimelineTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'ai_consultant' && (authLoading || hasRole(userRole, 'doctor')) && <AiConsultantTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'sphere'        && (authLoading || hasRole(userRole, 'doctor')) && <PathologySphereTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'apcq'            && <APCQTab compact />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'tasks'          && <PatientTasksTab />}
