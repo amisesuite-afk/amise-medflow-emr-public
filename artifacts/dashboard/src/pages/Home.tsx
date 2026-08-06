@@ -551,14 +551,9 @@ export default function HomePage() {
       { id: 'ros', label: 'ROS' },
       { id: 'examination' as Section, label: 'Exam' },
       { id: 'wounds' as Section, label: 'Wounds' },
-      ...(hasRole(userRole, 'nurse') ? [
-        { id: 'investigations' as Section, label: 'Labs' },
-        { id: 'blood_gas' as Section, label: 'ABG' },
-        { id: 'radiology' as Section, label: 'Radiology' },
-        { id: 'attachments' as Section, label: 'Attach' },
-      ] : []),
       ...(hasRole(userRole, 'doctor') ? [
         { id: 'investigations' as Section, label: 'Labs' },
+        { id: 'blood_gas' as Section, label: 'ABG' },
         { id: 'radiology' as Section, label: 'Imaging' },
         { id: 'attachments' as Section, label: 'Reports' },
         { id: 'assessment' as Section, label: 'Assess' },
@@ -570,6 +565,11 @@ export default function HomePage() {
         { id: 'referring_providers' as Section, label: 'Referrals' },
         { id: 'encounter_history' as Section, label: 'History' },
         { id: 'letters' as Section, label: 'Letters' },
+      ] : hasRole(userRole, 'nurse') ? [
+        { id: 'investigations' as Section, label: 'Labs' },
+        { id: 'blood_gas' as Section, label: 'ABG' },
+        { id: 'radiology' as Section, label: 'Radiology' },
+        { id: 'attachments' as Section, label: 'Attach' },
       ] : []),
       { id: 'progress', label: 'Notes' },
       { id: 'monitoring', label: 'Monitor' },
