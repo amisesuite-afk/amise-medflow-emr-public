@@ -699,10 +699,22 @@ export default function HomePage() {
     setActiveSection('brief');
   }, [consultTabs, topSection, activeSection, setActiveSection]);
 
-  // Scroll the active tab chip into view when the section changes (mobile / narrow viewport).
+  // Scroll the active tab chip into view when the section changes.
+  // scrollIntoView() is unreliable for overflow-x containers on iOS Safari,
+  // so we manipulate scrollLeft on the strip element directly.
   useEffect(() => {
     if (topSection !== 'consultation') return;
-    document.getElementById(`tab-${activeSection}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    const el = document.getElementById(`tab-${activeSection}`);
+    if (!el) return;
+    const strip = el.closest<HTMLElement>('.consult-tabstrip');
+    if (!strip) return;
+    const elLeft = el.offsetLeft;
+    const elRight = elLeft + el.offsetWidth;
+    if (elLeft < strip.scrollLeft) {
+      strip.scrollLeft = elLeft - 8;
+    } else if (elRight > strip.scrollLeft + strip.clientWidth) {
+      strip.scrollLeft = elRight - strip.clientWidth + 8;
+    }
   }, [activeSection, topSection]);
 
   // Reset to new consultation when patient or CC changes
