@@ -327,16 +327,16 @@ export default function NavSidebar({
                 title={label}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  width: '100%', height: 44, border: 'none', cursor: 'pointer',
-                  position: 'relative', borderRadius: 0,
-                  background: isCurrent ? 'rgba(13,148,136,0.2)' : 'transparent',
-                  color: isCurrent ? '#0d9488' : allDone ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.55)',
+                  width: 'calc(100% - 8px)', height: 48, border: 'none', cursor: 'pointer',
+                  position: 'relative', borderRadius: 6, margin: '0 4px',
+                  background: isCurrent ? 'rgba(13,148,136,0.25)' : 'transparent',
+                  color: isCurrent ? '#40e0d0' : allDone ? '#6ab8ae' : 'rgba(255,255,255,0.75)',
                   transition: 'background 0.15s, color 0.15s',
                 }}
               >
-                <Icon size={17} strokeWidth={isCurrent ? 2.5 : 1.8} />
+                <Icon size={18} strokeWidth={isCurrent ? 2.5 : 2} />
                 {allDone && !isCurrent && (
-                  <span style={{ position: 'absolute', top: 8, right: 10, width: 7, height: 7, borderRadius: '50%', background: '#0d9488' }} />
+                  <span style={{ position: 'absolute', top: 8, right: 8, width: 6, height: 6, borderRadius: '50%', background: '#34d399' }} />
                 )}
                 {isCurrent && (
                   <span style={{ position: 'absolute', left: 0, top: 10, bottom: 10, width: 3, borderRadius: '0 2px 2px 0', background: '#0d9488' }} />
@@ -349,7 +349,7 @@ export default function NavSidebar({
           className="nsb-toggle"
           onClick={onToggle}
           title="Exit consultation focus"
-          style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10 }}
+          style={{ color: 'rgba(255,255,255,0.55)', fontSize: 10 }}
         >
           <PanelLeftOpen size={14} strokeWidth={2} />
         </button>

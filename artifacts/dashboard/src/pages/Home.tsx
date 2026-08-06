@@ -1339,6 +1339,7 @@ export default function HomePage() {
             visitType={ctxVisitType ?? headerVisitMode}
             onDetailedMode={() => { setAmbientMode(false); setGuidedMode(true); }}
             onFinalise={completeEncounter}
+            compact={!ambientMode}
           />
         )}
 
