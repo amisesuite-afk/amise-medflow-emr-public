@@ -691,6 +691,20 @@ export default function HomePage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topSection]);
 
+  // When the tab list changes (e.g. auth resolves and role-gated tabs appear/disappear),
+  // reset to Brief if the current section is no longer in the list.
+  useEffect(() => {
+    if (topSection !== 'consultation') return;
+    if (consultTabs.some(t => t.id === activeSection)) return;
+    setActiveSection('brief');
+  }, [consultTabs, topSection, activeSection, setActiveSection]);
+
+  // Scroll the active tab chip into view when the section changes (mobile / narrow viewport).
+  useEffect(() => {
+    if (topSection !== 'consultation') return;
+    document.getElementById(`tab-${activeSection}`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+  }, [activeSection, topSection]);
+
   // Reset to new consultation when patient or CC changes
   useEffect(() => { setHeaderVisitMode('new'); }, [patientId, activeCcKey]);
 
