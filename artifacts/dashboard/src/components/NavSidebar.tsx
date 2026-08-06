@@ -28,6 +28,7 @@ interface NavSidebarProps {
   activeSection: Section;
   onSection: (s: Section) => void;
   userRole: UserRole;
+  authLoading?: boolean;
   hasUrgentRedFlag: boolean;
   urgentCount: number;
   acuity: string;
@@ -201,7 +202,7 @@ export default function NavSidebar({
   collapsed, consultAmbient = false, onToggle,
   topSection, onTopSection,
   activeSection, onSection,
-  userRole, hasUrgentRedFlag, urgentCount, acuity,
+  userRole, authLoading = false, hasUrgentRedFlag, urgentCount, acuity,
   pmhCount = 0,
   encounterMode = 'outpatient',
   encounterType = 'surgical_consult',
@@ -213,8 +214,11 @@ export default function NavSidebar({
   // Admin users can toggle between clinical and admin views
   const [adminView, setAdminView] = useState<'clinical' | 'admin'>('clinical');
 
-  const isFrontDesk = userRole === 'front_desk';
-  const isAdmin = userRole === 'admin';
+  // During auth loading userRole defaults to 'front_desk' even for doctors.
+  // Treat loading as clinical (doctor-level) so the sidebar doesn't flash
+  // front-desk navigation and then jump to clinical nav once the profile arrives.
+  const isFrontDesk = !authLoading && userRole === 'front_desk';
+  const isAdmin     = !authLoading && userRole === 'admin';
 
   // Choose nav list based on role / admin view toggle
   const navList = isFrontDesk
@@ -223,7 +227,9 @@ export default function NavSidebar({
       ? FD_NAV_ITEMS
       : DR_NAV_ITEMS;
 
-  const visibleItems = navList.filter(item => item.roles.includes(userRole));
+  const visibleItems = authLoading
+    ? navList  // show all items while we don't yet know the real role
+    : navList.filter(item => item.roles.includes(userRole));
 
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
@@ -246,9 +252,9 @@ export default function NavSidebar({
   const allowedPhases = ENCOUNTER_PHASE_VISIBILITY[encounterType];
   const visiblePhases = CLINICAL_PHASES
     .filter(phase => allowedPhases.has(phase.key))
-    .filter(phase => !phase.minRole || hasRole(userRole, phase.minRole))
+    .filter(phase => authLoading || !phase.minRole || hasRole(userRole, phase.minRole))
     .map(phase => {
-      const items = phase.items.filter(s => !s.minRole || hasRole(userRole, s.minRole));
+      const items = phase.items.filter(s => authLoading || !s.minRole || hasRole(userRole, s.minRole));
       if (items.length === 0) return null;
       const doneCount = items.filter(s => sectionCompletion[s.id]).length;
       const hasActive = items.some(s => subActive(s.id));

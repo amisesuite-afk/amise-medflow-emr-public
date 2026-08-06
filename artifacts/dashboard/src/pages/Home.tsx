@@ -322,7 +322,7 @@ function acuityClass(a: string) {
 }
 
 export default function HomePage() {
-  const { profile, signOut } = useAuth();
+  const { profile, loading: authLoading, signOut } = useAuth();
   const {
     activeSection, setActiveSection,
     topSection, setTopSection,
@@ -367,6 +367,9 @@ export default function HomePage() {
 
   const [collapsed, setCollapsed] = useState(false);
   const [zenMode, setZenMode] = useState(false);
+  const tabStripRef = useRef<HTMLDivElement>(null);
+  const [tsCanLeft, setTsCanLeft]   = useState(false);
+  const [tsCanRight, setTsCanRight] = useState(true);
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
   const [criticalResultCount, setCriticalResultCount] = useState(0);
@@ -390,17 +393,27 @@ export default function HomePage() {
   const [completing, setCompleting] = useState(false);
   const [apiDown, setApiDown] = useState(false);
   // Timestamp until which the banner is suppressed after the user dismisses it.
-  const apiDownSuppressedUntil = useRef(0);
+  // Seeded from sessionStorage so a page refresh within the 5-min window keeps it hidden.
+  const apiDownSuppressedUntil = useRef(Number(sessionStorage.getItem('apiDownSuppressed') ?? '0'));
 
   useEffect(() => {
     let cancelled = false;
     let failures = 0;
     async function check() {
       try {
-        // no-cors: opaque response means server is alive; a throw means it's down.
-        await fetch(`${API_ORIGIN}/api/healthz`, { method: 'GET', mode: 'no-cors', signal: AbortSignal.timeout(8000) });
+        // The Vercel rewrite proxies /api/* to the Render server, so this is a
+        // same-origin fetch in production — no CORS, no opaque response.
+        // We can now inspect resp.ok: a Vercel 502/504 (Render unreachable) or
+        // a non-2xx from the server both count as failures.
+        const resp = await fetch(`${API_ORIGIN}/api/healthz`, { signal: AbortSignal.timeout(8000) });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         failures = 0;
-        if (!cancelled) setApiDown(false);
+        if (!cancelled) {
+          setApiDown(false);
+          // Reset suppression so a future outage shows the banner fresh.
+          apiDownSuppressedUntil.current = 0;
+          sessionStorage.removeItem('apiDownSuppressed');
+        }
       } catch {
         failures += 1;
         // Require 3 consecutive failures (≥90 s) before showing the banner.
@@ -528,11 +541,11 @@ export default function HomePage() {
         const doctorExamTypes = new Set(['breast','diabetic_foot','follow_up','post_op','urgent']);
         const nurseOnly = new Set<Section>(['investigations','blood_gas','radiology','attachments']);
         return vtTabs.filter(t => {
-          if (doctorOnly.has(t.id)) return hasRole(userRole, 'doctor');
+          if (doctorOnly.has(t.id)) return authLoading || hasRole(userRole, 'doctor');
           if (t.id === 'examination' || t.id === 'wounds') {
-            return hasRole(userRole, 'nurse') || (hasRole(userRole, 'doctor') && doctorExamTypes.has(ctxVisitType));
+            return authLoading || hasRole(userRole, 'nurse') || (hasRole(userRole, 'doctor') && doctorExamTypes.has(ctxVisitType));
           }
-          if (nurseOnly.has(t.id)) return hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor');
+          if (nurseOnly.has(t.id)) return authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor');
           return true;
         });
       }
@@ -556,7 +569,7 @@ export default function HomePage() {
       { id: 'ros', label: 'ROS' },
       { id: 'examination' as Section, label: 'Exam' },
       { id: 'wounds' as Section, label: 'Wounds' },
-      ...(hasRole(userRole, 'doctor') ? [
+      ...(authLoading || hasRole(userRole, 'doctor') ? [
         { id: 'investigations' as Section, label: 'Labs' },
         { id: 'blood_gas' as Section, label: 'ABG' },
         { id: 'radiology' as Section, label: 'Imaging' },
@@ -581,7 +594,7 @@ export default function HomePage() {
       { id: 'tasks', label: 'Tasks' },
     ];
     return all.filter(t => allowed.has(t.id));
-  }, [userRole, encounterType, ctxVisitType, activeCcKey, ENCOUNTER_TAB_SETS]);
+  }, [authLoading, userRole, encounterType, ctxVisitType, activeCcKey, ENCOUNTER_TAB_SETS]);
 
   /* ── Swipe navigation for consultation tabs (iPad / mobile) ── */
   const swipeRef = useSwipeNavigation<HTMLElement>({
@@ -689,6 +702,50 @@ export default function HomePage() {
     if (activeSection === 'intake') setActiveSection('brief');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topSection]);
+
+  // When the tab list changes (e.g. auth resolves and role-gated tabs appear/disappear),
+  // reset to Brief if the current section is no longer in the list.
+  useEffect(() => {
+    if (topSection !== 'consultation') return;
+    if (consultTabs.some(t => t.id === activeSection)) return;
+    setActiveSection('brief');
+  }, [consultTabs, topSection, activeSection, setActiveSection]);
+
+  // Scroll the active tab chip into view when the section changes.
+  // scrollIntoView() is unreliable for overflow-x containers on iOS Safari,
+  // so we manipulate scrollLeft on the strip element directly.
+  useEffect(() => {
+    if (topSection !== 'consultation') return;
+    const strip = tabStripRef.current;
+    if (!strip) return;
+    const el = strip.querySelector<HTMLElement>(`#tab-${activeSection}`);
+    if (!el) return;
+    const elLeft = el.offsetLeft;
+    const elRight = elLeft + el.offsetWidth;
+    // Centre the active tab in the visible strip window.
+    const targetLeft = elLeft - (strip.clientWidth - el.offsetWidth) / 2;
+    strip.scrollLeft = Math.max(0, Math.min(targetLeft, strip.scrollWidth - strip.clientWidth));
+    // Update arrow visibility immediately after the scroll.
+    setTsCanLeft(strip.scrollLeft > 1);
+    setTsCanRight(strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 1);
+    void elLeft; void elRight; // used above for centre calc
+  }, [activeSection, topSection]);
+
+  // Keep arrow visibility in sync with manual strip scrolling.
+  useEffect(() => {
+    const strip = tabStripRef.current;
+    if (!strip) return;
+    function sync() {
+      if (!strip) return;
+      setTsCanLeft(strip.scrollLeft > 1);
+      setTsCanRight(strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 1);
+    }
+    sync();
+    strip.addEventListener('scroll', sync, { passive: true });
+    const ro = new ResizeObserver(sync);
+    ro.observe(strip);
+    return () => { strip.removeEventListener('scroll', sync); ro.disconnect(); };
+  }, [consultTabs]);
 
   // Reset to new consultation when patient or CC changes
   useEffect(() => { setHeaderVisitMode('new'); }, [patientId, activeCcKey]);
@@ -1090,7 +1147,7 @@ export default function HomePage() {
           gap: 12, zIndex: 30,
         }}>
           <span>⚠ API server unreachable — write actions unavailable. Read-only mode.</span>
-          <button onClick={() => { apiDownSuppressedUntil.current = Date.now() + 5 * 60_000; setApiDown(false); }} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
+          <button onClick={() => { const until = Date.now() + 24 * 60 * 60_000; apiDownSuppressedUntil.current = until; sessionStorage.setItem('apiDownSuppressed', String(until)); setApiDown(false); }} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
         </div>
       )}
 
@@ -1104,6 +1161,7 @@ export default function HomePage() {
         activeSection={activeSection}
         onSection={handleSectionSelect}
         userRole={userRole}
+        authLoading={authLoading}
         hasUrgentRedFlag={hasUrgentRedFlag}
         urgentCount={urgentCount}
         acuity={triageResult.acuity}
@@ -1124,8 +1182,11 @@ export default function HomePage() {
             onClick={() => setZenMode(false)}
             title="Show navigation"
             style={{
-              position: 'fixed', bottom: 20, left: 16, zIndex: 200,
-              display: 'flex', alignItems: 'center', gap: 6,
+              // width/alignSelf pinned explicitly: iOS Safari stretches fixed-position
+              // flex children to full width without them (renders as a full-width bar).
+              position: 'fixed', bottom: 'calc(20px + env(safe-area-inset-bottom, 0px))', left: 16, zIndex: 200,
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              width: 'fit-content', maxWidth: 120, alignSelf: 'flex-start',
               padding: '7px 14px', borderRadius: 20,
               background: '#1e293b', color: '#94a3b8',
               border: '1px solid #334155', cursor: 'pointer',
@@ -1490,21 +1551,33 @@ export default function HomePage() {
           // Full tab strip
           return (
             <>
-              <div className="consult-tabstrip" role="tablist" aria-label="Consultation sections">
-                {consultTabs.map(tab => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeSection === tab.id}
-                    aria-controls={`tabpanel-${tab.id}`}
-                    id={`tab-${tab.id}`}
-                    className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
-                    onClick={() => setActiveSection(tab.id)}
-                  >
-                    {SECTION_ICONS[tab.id] && <span style={{ marginRight: 3, fontSize: 11, lineHeight: 1 }}>{SECTION_ICONS[tab.id]}</span>}{tab.label}
-                  </button>
-                ))}
+              <div className="consult-tabstrip-wrap">
+                {tsCanLeft && <div className="ts-fade ts-fade--left" />}
+                {tsCanLeft && (
+                  <button className="ts-scroll-btn ts-scroll-btn--left" aria-label="Scroll tabs left"
+                    onClick={() => { const s = tabStripRef.current; if (s) s.scrollLeft -= 160; }}>‹</button>
+                )}
+                <div ref={tabStripRef} className="consult-tabstrip" role="tablist" aria-label="Consultation sections">
+                  {consultTabs.map(tab => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeSection === tab.id}
+                      aria-controls={`tabpanel-${tab.id}`}
+                      id={`tab-${tab.id}`}
+                      className={`ct-tab${activeSection === tab.id ? ' ct-tab--active' : ''}`}
+                      onClick={() => setActiveSection(tab.id)}
+                    >
+                      {SECTION_ICONS[tab.id] && <span style={{ marginRight: 3, fontSize: 11, lineHeight: 1 }}>{SECTION_ICONS[tab.id]}</span>}{tab.label}
+                    </button>
+                  ))}
+                </div>
+                {tsCanRight && <div className="ts-fade ts-fade--right" />}
+                {tsCanRight && (
+                  <button className="ts-scroll-btn ts-scroll-btn--right" aria-label="Scroll tabs right"
+                    onClick={() => { const s = tabStripRef.current; if (s) s.scrollLeft += 160; }}>›</button>
+                )}
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0 8px', gap: 8, alignItems: 'center' }}>
                 {prevTab ? (
@@ -1575,25 +1648,25 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'scales'      && <ScalesTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'ros'         && <RosTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'examination' &&
-          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) &&
+          (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) &&
           <ExaminationTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications' && hasRole(userRole, 'nurse') && <SurgicalClassificationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications' && (authLoading || hasRole(userRole, 'nurse')) && <SurgicalClassificationsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'investigations' &&
-          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <InvestigationsTab />}
+          (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <InvestigationsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'radiology' &&
-          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <RadiologyTab />}
+          (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <RadiologyTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'attachments' &&
-          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <AttachmentsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && hasRole(userRole, 'doctor') && <ProceduresTab />}
+          (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <AttachmentsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && (authLoading || hasRole(userRole, 'doctor')) && <AssessmentTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && (authLoading || hasRole(userRole, 'doctor')) && <PlanTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && (authLoading || hasRole(userRole, 'doctor')) && <ProceduresTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'progress'    && <ProgressNotesTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'encounter_history'   && hasRole(userRole, 'doctor') && <EncounterTimelineTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'sphere'        && hasRole(userRole, 'doctor') && <PathologySphereTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'prescriptions' && (authLoading || hasRole(userRole, 'doctor')) && <PrescriptionsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'referring_providers' && (authLoading || hasRole(userRole, 'doctor')) && <ReferringProvidersTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'encounter_history'   && (authLoading || hasRole(userRole, 'doctor')) && <EncounterTimelineTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'ai_consultant' && (authLoading || hasRole(userRole, 'doctor')) && <AiConsultantTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'sphere'        && (authLoading || hasRole(userRole, 'doctor')) && <PathologySphereTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'apcq'            && <APCQTab compact />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'tasks'          && <PatientTasksTab />}
@@ -1606,7 +1679,7 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'consent'        && <SurgicalConsentTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'letters'        && <LetterGeneratorTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'patient_education' && <PatientEducationTab />}
-        {topSection === 'procedures'    && hasRole(userRole, 'doctor')        && <ProceduresTab />}
+        {topSection === 'procedures'    && (authLoading || hasRole(userRole, 'doctor'))        && <ProceduresTab />}
         {topSection === 'summary'        && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'outpatient' && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'inpatient'  && <InpatientTab />}
@@ -1617,14 +1690,14 @@ export default function HomePage() {
         {topSection === 'dashboard'  && <DashboardTab />}
         {topSection === 'patients'   && <PatientsHubTab />}
         {topSection === 'scheduling' && <SchedulingTab />}
-        {topSection === 'analytics'   && hasRole(userRole, 'doctor') && <InsightsHubTab />}
-        {topSection === 'quality'       && hasRole(userRole, 'doctor') && <InsightsHubTab defaultTab="qi" />}
-        {topSection === 'results_inbox' && hasRole(userRole, 'nurse')  && <ResultsInboxTab />}
-        {topSection === 'settings'   && hasRole(userRole, 'admin')  && <SettingsTab />}
-        {topSection === 'trauma'         && hasRole(userRole, 'nurse')  && <TraumaTab />}
-        {topSection === 'vademecum'      && hasRole(userRole, 'nurse')  && <DictionaryTab />}
-        {topSection === 'questionnaire'  && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
-        {topSection === 'questionnaire'  && (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor'))  && <NurseAPCQTab />}
+        {topSection === 'analytics'   && (authLoading || hasRole(userRole, 'doctor')) && <InsightsHubTab />}
+        {topSection === 'quality'       && (authLoading || hasRole(userRole, 'doctor')) && <InsightsHubTab defaultTab="qi" />}
+        {topSection === 'results_inbox' && (authLoading || hasRole(userRole, 'nurse'))  && <ResultsInboxTab />}
+        {topSection === 'settings'   && (authLoading || hasRole(userRole, 'admin'))  && <SettingsTab />}
+        {topSection === 'trauma'         && (authLoading || hasRole(userRole, 'nurse'))  && <TraumaTab />}
+        {topSection === 'vademecum'      && (authLoading || hasRole(userRole, 'nurse'))  && <DictionaryTab />}
+        {topSection === 'questionnaire'  && !authLoading && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
+        {topSection === 'questionnaire'  && (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor'))  && <NurseAPCQTab />}
         {topSection === 'checkin'                                              && <CheckInTab />}
         {topSection === 'doc_scan'   && roleIn(userRole, 'front_desk', 'admin') && <DocumentsTab />}
         {topSection === 'booking_inbox'  && roleIn(userRole, 'front_desk', 'admin') && <BookingInboxTab />}
@@ -1632,11 +1705,11 @@ export default function HomePage() {
         {topSection === 'portal_intake'                                         && <PortalIntakeTab />}
         {topSection === 'referring_providers'                                   && <ReferringProvidersTab />}
         {topSection === 'visit_lifecycle'                                        && <PatientsHubTab defaultTab="visits" />}
-        {topSection === 'prescriptions'     && hasRole(userRole, 'doctor')     && <PrescriptionsTab />}
-        {topSection === 'ai_consultant'     && hasRole(userRole, 'doctor')     && <AiConsultantTab />}
+        {topSection === 'prescriptions'     && (authLoading || hasRole(userRole, 'doctor'))     && <PrescriptionsTab />}
+        {topSection === 'ai_consultant'     && (authLoading || hasRole(userRole, 'doctor'))     && <AiConsultantTab />}
         {topSection === 'tasks'                                                && <PatientTasksTab />}
-        {topSection === 'followup_tracker' && roleIn(userRole, 'front_desk')     && <FollowUpTrackerTab />}
-        {topSection === 'followup_tracker' && !roleIn(userRole, 'front_desk')   && <PatientsHubTab defaultTab="followup" />}
+        {topSection === 'followup_tracker' && !authLoading && roleIn(userRole, 'front_desk')     && <FollowUpTrackerTab />}
+        {topSection === 'followup_tracker' && (authLoading || !roleIn(userRole, 'front_desk'))   && <PatientsHubTab defaultTab="followup" />}
         {topSection === 'patient_accounts' && roleIn(userRole, 'front_desk', 'admin') && <PatientAccountsTab />}
         </ErrorBoundary>
         </Suspense>
