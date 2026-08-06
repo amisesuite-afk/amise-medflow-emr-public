@@ -390,7 +390,8 @@ export default function HomePage() {
   const [completing, setCompleting] = useState(false);
   const [apiDown, setApiDown] = useState(false);
   // Timestamp until which the banner is suppressed after the user dismisses it.
-  const apiDownSuppressedUntil = useRef(0);
+  // Seeded from sessionStorage so a page refresh within the 5-min window keeps it hidden.
+  const apiDownSuppressedUntil = useRef(Number(sessionStorage.getItem('apiDownSuppressed') ?? '0'));
 
   useEffect(() => {
     let cancelled = false;
@@ -1090,7 +1091,7 @@ export default function HomePage() {
           gap: 12, zIndex: 30,
         }}>
           <span>⚠ API server unreachable — write actions unavailable. Read-only mode.</span>
-          <button onClick={() => { apiDownSuppressedUntil.current = Date.now() + 5 * 60_000; setApiDown(false); }} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
+          <button onClick={() => { const until = Date.now() + 5 * 60_000; apiDownSuppressedUntil.current = until; sessionStorage.setItem('apiDownSuppressed', String(until)); setApiDown(false); }} style={{ background: 'none', border: 'none', color: '#fef3c7', cursor: 'pointer', fontSize: 14, lineHeight: 1, flexShrink: 0 }}>✕</button>
         </div>
       )}
 
@@ -1575,25 +1576,25 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'scales'      && <ScalesTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'ros'         && <RosTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'examination' &&
-          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) &&
+          (userRole === undefined || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) &&
           <ExaminationTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications' && hasRole(userRole, 'nurse') && <SurgicalClassificationsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications' && (userRole === undefined || hasRole(userRole, 'nurse')) && <SurgicalClassificationsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'investigations' &&
-          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <InvestigationsTab />}
+          (userRole === undefined || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <InvestigationsTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'radiology' &&
-          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <RadiologyTab />}
+          (userRole === undefined || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <RadiologyTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'attachments' &&
-          (hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <AttachmentsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && hasRole(userRole, 'doctor') && <AssessmentTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && hasRole(userRole, 'doctor') && <PlanTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && hasRole(userRole, 'doctor') && <ProceduresTab />}
+          (userRole === undefined || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <AttachmentsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && (userRole === undefined || hasRole(userRole, 'doctor')) && <AssessmentTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && (userRole === undefined || hasRole(userRole, 'doctor')) && <PlanTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && (userRole === undefined || hasRole(userRole, 'doctor')) && <ProceduresTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'progress'    && <ProgressNotesTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'prescriptions' && hasRole(userRole, 'doctor') && <PrescriptionsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'referring_providers' && hasRole(userRole, 'doctor') && <ReferringProvidersTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'encounter_history'   && hasRole(userRole, 'doctor') && <EncounterTimelineTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'ai_consultant' && hasRole(userRole, 'doctor') && <AiConsultantTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'sphere'        && hasRole(userRole, 'doctor') && <PathologySphereTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'prescriptions' && (userRole === undefined || hasRole(userRole, 'doctor')) && <PrescriptionsTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'referring_providers' && (userRole === undefined || hasRole(userRole, 'doctor')) && <ReferringProvidersTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'encounter_history'   && (userRole === undefined || hasRole(userRole, 'doctor')) && <EncounterTimelineTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'ai_consultant' && (userRole === undefined || hasRole(userRole, 'doctor')) && <AiConsultantTab />}
+        {topSection === 'consultation' && !ambientMode && activeSection === 'sphere'        && (userRole === undefined || hasRole(userRole, 'doctor')) && <PathologySphereTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'apcq'            && <APCQTab compact />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'tasks'          && <PatientTasksTab />}
