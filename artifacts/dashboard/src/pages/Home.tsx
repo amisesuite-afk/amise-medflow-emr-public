@@ -401,8 +401,12 @@ export default function HomePage() {
     let failures = 0;
     async function check() {
       try {
-        // no-cors: opaque response means server is alive; a throw means it's down.
-        await fetch(`${API_ORIGIN}/api/healthz`, { method: 'GET', mode: 'no-cors', signal: AbortSignal.timeout(8000) });
+        // The Vercel rewrite proxies /api/* to the Render server, so this is a
+        // same-origin fetch in production — no CORS, no opaque response.
+        // We can now inspect resp.ok: a Vercel 502/504 (Render unreachable) or
+        // a non-2xx from the server both count as failures.
+        const resp = await fetch(`${API_ORIGIN}/api/healthz`, { signal: AbortSignal.timeout(8000) });
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         failures = 0;
         if (!cancelled) {
           setApiDown(false);

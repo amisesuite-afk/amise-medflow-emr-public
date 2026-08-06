@@ -81,6 +81,10 @@ app.use(cors({
     if (/^https:\/\/[\w-]+-amisesuite-afks-projects\.vercel\.app$/.test(origin)) return cb(null, true);
     // Any amise-* Vercel deployment (patient app, dashboard aliases, etc.).
     if (/^https:\/\/amise[\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
+    // Dashboard production/preview deployments (e.g. rd-lemon-gamma-44.vercel.app
+    // and any branch previews of the same Vercel project).
+    if (/^https:\/\/[\w-]+-lemon-gamma-44\.vercel\.app$/.test(origin)) return cb(null, true);
+    if (origin === 'https://lemon-gamma-44.vercel.app') return cb(null, true);
     cb(new Error(`CORS: origin ${origin} not allowed`));
   },
   credentials: true,
