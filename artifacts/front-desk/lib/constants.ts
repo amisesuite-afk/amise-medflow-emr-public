@@ -1,5 +1,23 @@
+/**
+ * API base URL, split by execution context:
+ *
+ * - Browser: same-origin ('') so /api/* requests go through the Next.js
+ *   rewrite (next.config.ts) and are proxied server-side to Render. Client
+ *   networks that blocklist *.onrender.com (some ISP/DNS filters do — the
+ *   domain is widely abused for phishing) never see that hostname.
+ * - Server (API routes / SSR): absolute Render URL — server-to-server calls
+ *   are unaffected by client-side blocklists, and Node's fetch() requires an
+ *   absolute URL anyway.
+ *
+ * NEXT_PUBLIC_API_URL still overrides the browser value for non-Vercel
+ * deployments; API_SERVER_URL overrides the server value.
+ */
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? 'https://amise-medflow-api.onrender.com';
+  typeof window === 'undefined'
+    ? process.env.API_SERVER_URL ??
+      process.env.NEXT_PUBLIC_API_URL ??
+      'https://amise-medflow-api.onrender.com'
+    : process.env.NEXT_PUBLIC_API_URL ?? '';
 
 export const SITE_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
