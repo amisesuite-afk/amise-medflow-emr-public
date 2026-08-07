@@ -56,7 +56,7 @@ export interface CCTemplate {
 // ── Reusable section sets ─────────────────────────────────────────────────────
 
 const S_EMERGENCY: Section[] = [
-  'triage', 'pmh', 'medications', 'allergies',
+  'triage', 'hpi', 'pmh', 'medications', 'allergies',
   'examination', 'wounds',
   'investigations', 'blood_gas', 'radiology', 'attachments',
   'assessment', 'plan', 'dosing', 'fluid_nutrition',
@@ -92,7 +92,7 @@ const S_MALIGNANCY: Section[] = [
 ];
 
 const S_URGENT_SURGICAL: Section[] = [
-  'triage', 'pmh', 'surgical', 'medications', 'allergies',
+  'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
   'examination', 'investigations', 'radiology',
   'assessment', 'plan', 'dosing',
   'prescriptions', 'referring_providers', 'progress', 'monitoring',
