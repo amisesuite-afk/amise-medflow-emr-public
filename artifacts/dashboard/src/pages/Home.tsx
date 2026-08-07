@@ -731,6 +731,13 @@ export default function HomePage() {
     void elLeft; void elRight; // used above for centre calc
   }, [activeSection, topSection]);
 
+  // Reset main-content scroll to top when switching consultation sections so the
+  // incoming section always starts at the top of the viewport, not mid-page.
+  useEffect(() => {
+    if (topSection !== 'consultation') return;
+    if (swipeRef.current) swipeRef.current.scrollTop = 0;
+  }, [activeSection, topSection]);
+
   // Keep arrow visibility in sync with manual strip scrolling.
   useEffect(() => {
     const strip = tabStripRef.current;
