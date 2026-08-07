@@ -25,6 +25,11 @@ export const SYMPTOM_BRANCHES: Record<string, SymptomBranch[]> = {
   'pale stool': [
     { question: 'Associated', options: ['Jaundice', 'Dark urine', 'Pruritus', 'Abdominal pain', 'Weight loss'] },
   ],
+  'nausea': [
+    { question: 'Severity', options: ['Mild', 'Moderate', 'Severe — unable to eat', 'Constant'] },
+    { question: 'Associated', options: ['Vomiting', 'Abdominal pain', 'Fever', 'Diarrhoea', 'Headache', 'Dizziness', 'Weight loss'] },
+    { question: 'Timing', options: ['Post-meal', 'Morning (pregnancy?)', 'Continuous', 'Episodic', 'Related to medications', 'After movement'] },
+  ],
   'vomiting': [
     { question: 'Content', options: ['Food', 'Bile', 'Blood', 'Coffee grounds', 'Faeculent'] },
     { question: 'Pattern', options: ['Projectile', 'After meals', 'Continuous', 'Associated with pain', 'Multiple episodes daily'] },

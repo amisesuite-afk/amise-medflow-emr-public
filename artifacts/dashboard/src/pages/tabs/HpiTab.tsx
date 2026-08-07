@@ -12,7 +12,7 @@ import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getSuggestedPhrases } from '@/data/dot-phrases';
 import { getMatrixByName } from '@/lib/cc-matrices';
-import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
+import { SYMPTOM_BRANCHES, type SymptomBranch } from '@/lib/symptom-branches';
 import type { EncounterSummary } from '@/lib/db';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
@@ -59,11 +59,42 @@ const MULTI_KEYS = new Set([
 
 interface HpiField { key: string; label: string; chips: string[]; multi: boolean; triage: boolean }
 
+// Prefixes that qualify a complaint name but don't identify the symptom branch
+const LEADING_ADJ = /^(acute|chronic|upper|lower|left|right|bilateral|recurrent|unexplained|suspected|possible|mild|moderate|severe|strangulated|irreducible|obstructive|perforated|anastomotic)\s+/;
+
+function findBranches(complaint: string): SymptomBranch[] {
+  // Strip parenthetical qualifiers e.g. "(haematemesis / melaena)"
+  const clean = complaint.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim();
+
+  if (SYMPTOM_BRANCHES[clean]) return SYMPTOM_BRANCHES[clean];
+
+  // Try each slash-separated segment with and without a leading adjective
+  // e.g. 'Nausea / vomiting' → 'nausea' (miss) → 'vomiting' (hit)
+  for (const seg of clean.split(/\s*\/\s*/)) {
+    const s = seg.trim();
+    if (!s) continue;
+    if (SYMPTOM_BRANCHES[s]) return SYMPTOM_BRANCHES[s];
+    const st = s.replace(LEADING_ADJ, '');
+    if (st !== s && SYMPTOM_BRANCHES[st]) return SYMPTOM_BRANCHES[st];
+  }
+
+  // Strip leading adjective from the full name
+  // e.g. 'Acute abdominal pain' → 'abdominal pain'; 'Obstructive jaundice' → 'jaundice'
+  const stripped = clean.replace(LEADING_ADJ, '');
+  if (stripped !== clean && SYMPTOM_BRANCHES[stripped]) return SYMPTOM_BRANCHES[stripped];
+
+  // Trailing n-gram (n = 3 → 1): 'inguinal / groin hernia' → 'hernia'
+  const words = clean.replace(/[^a-z\s]/g, '').trim().split(/\s+/).filter(Boolean);
+  for (let n = Math.min(words.length - 1, 3); n >= 1; n--) {
+    const phrase = words.slice(-n).join(' ');
+    if (SYMPTOM_BRANCHES[phrase]) return SYMPTOM_BRANCHES[phrase];
+  }
+
+  return [];
+}
+
 function buildFields(complaint: string): HpiField[] {
-  const lower = complaint.toLowerCase();
-  const branches = SYMPTOM_BRANCHES[lower]
-    ?? SYMPTOM_BRANCHES[lower.split(' ').slice(0, 2).join(' ')]
-    ?? [];
+  const branches = findBranches(complaint);
   const matrix = getMatrixByName(complaint);
 
   const seen = new Set<string>();
