@@ -12,7 +12,7 @@ import ChiefComplaintStrip from '@/components/ChiefComplaintStrip';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getSuggestedPhrases } from '@/data/dot-phrases';
 import { getMatrixByName } from '@/lib/cc-matrices';
-import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
+import { SYMPTOM_BRANCHES, type SymptomBranch } from '@/lib/symptom-branches';
 import type { EncounterSummary } from '@/lib/db';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
@@ -59,11 +59,42 @@ const MULTI_KEYS = new Set([
 
 interface HpiField { key: string; label: string; chips: string[]; multi: boolean; triage: boolean }
 
+// Prefixes that qualify a complaint name but don't identify the symptom branch
+const LEADING_ADJ = /^(acute|chronic|upper|lower|left|right|bilateral|recurrent|unexplained|suspected|possible|mild|moderate|severe|strangulated|irreducible|obstructive|perforated|anastomotic)\s+/;
+
+function findBranches(complaint: string): SymptomBranch[] {
+  // Strip parenthetical qualifiers e.g. "(haematemesis / melaena)"
+  const clean = complaint.toLowerCase().replace(/\s*\([^)]*\)/g, '').trim();
+
+  if (SYMPTOM_BRANCHES[clean]) return SYMPTOM_BRANCHES[clean];
+
+  // Try each slash-separated segment with and without a leading adjective
+  // e.g. 'Nausea / vomiting' → 'nausea' (miss) → 'vomiting' (hit)
+  for (const seg of clean.split(/\s*\/\s*/)) {
+    const s = seg.trim();
+    if (!s) continue;
+    if (SYMPTOM_BRANCHES[s]) return SYMPTOM_BRANCHES[s];
+    const st = s.replace(LEADING_ADJ, '');
+    if (st !== s && SYMPTOM_BRANCHES[st]) return SYMPTOM_BRANCHES[st];
+  }
+
+  // Strip leading adjective from the full name
+  // e.g. 'Acute abdominal pain' → 'abdominal pain'; 'Obstructive jaundice' → 'jaundice'
+  const stripped = clean.replace(LEADING_ADJ, '');
+  if (stripped !== clean && SYMPTOM_BRANCHES[stripped]) return SYMPTOM_BRANCHES[stripped];
+
+  // Trailing n-gram (n = 3 → 1): 'inguinal / groin hernia' → 'hernia'
+  const words = clean.replace(/[^a-z\s]/g, '').trim().split(/\s+/).filter(Boolean);
+  for (let n = Math.min(words.length - 1, 3); n >= 1; n--) {
+    const phrase = words.slice(-n).join(' ');
+    if (SYMPTOM_BRANCHES[phrase]) return SYMPTOM_BRANCHES[phrase];
+  }
+
+  return [];
+}
+
 function buildFields(complaint: string): HpiField[] {
-  const lower = complaint.toLowerCase();
-  const branches = SYMPTOM_BRANCHES[lower]
-    ?? SYMPTOM_BRANCHES[lower.split(' ').slice(0, 2).join(' ')]
-    ?? [];
+  const branches = findBranches(complaint);
   const matrix = getMatrixByName(complaint);
 
   const seen = new Set<string>();
@@ -164,13 +195,11 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
   onAnswerChange: (key: string, value: string) => void;
   onReset: () => void;
 }) {
-  const fields        = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
-  const triageFields  = fields.filter(f => f.triage);
-  const socratesFields = fields.filter(f => !f.triage);
-  const [showSocrates, setShowSocrates] = useState(false);
-  const filledTriage  = triageFields.filter(f => entry.answers[f.key]?.trim()).length;
-  const filledSocrates = socratesFields.filter(f => entry.answers[f.key]?.trim()).length;
-  const matrix = getMatrixByName(entry.complaint);
+  const fields       = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
+  const triageFields = fields.filter(f => f.triage);
+  const filled       = fields.filter(f => entry.answers[f.key]?.trim()).length;
+  const filledTriage = triageFields.filter(f => entry.answers[f.key]?.trim()).length;
+  const matrix       = getMatrixByName(entry.complaint);
 
   return (
     <div style={{ background: '#0f172a', borderRadius: 10, border: '1px solid #1e293b', overflow: 'hidden', marginBottom: 10 }}>
@@ -182,12 +211,12 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
       }}>
         <span style={{ fontSize: 12 }}>{matrix.icon ?? '📋'}</span>
         <span style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9' }}>{entry.complaint}</span>
-        {(filledTriage + filledSocrates) > 0 && (
+        {filled > 0 && (
           <span style={{
             fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10,
             background: '#064e3b', color: '#34d399',
           }}>
-            {filledTriage + filledSocrates} filled
+            {filled}/{fields.length} filled
           </span>
         )}
         <button
@@ -204,65 +233,29 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
 
       <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-        {/* ── Triage key questions ── */}
+        {/* Triage section label — only when urgent triage questions exist */}
         {triageFields.length > 0 && (
-          <div>
-            <div style={{
-              fontSize: 9, fontWeight: 800, color: '#0d9488',
-              textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8,
-              display: 'flex', alignItems: 'center', gap: 6,
-            }}>
-              ⚡ Triage key questions
-              {filledTriage > 0 && (
-                <span style={{ fontWeight: 400, color: '#34d399' }}>· {filledTriage}/{triageFields.length} answered</span>
-              )}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {triageFields.map(f => (
-                <HpiFieldRow
-                  key={f.key}
-                  field={f}
-                  value={entry.answers[f.key] ?? ''}
-                  onChange={v => onAnswerChange(f.key, v)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ── SOCRATES detail (expandable) ── */}
-        {socratesFields.length > 0 && (
-          <div>
-            <button
-              type="button"
-              onClick={() => setShowSocrates(p => !p)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                fontSize: 11, color: '#64748b', background: 'none',
-                border: 'none', cursor: 'pointer', padding: 0,
-              }}
-            >
-              <span style={{ fontSize: 10 }}>{showSocrates ? '▾' : '▸'}</span>
-              <span>SOCRATES detail</span>
-              {filledSocrates > 0 && (
-                <span style={{ color: '#3b82f6', fontWeight: 700 }}>· {filledSocrates}/{socratesFields.length} filled</span>
-              )}
-            </button>
-
-            {showSocrates && (
-              <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {socratesFields.map(f => (
-                  <HpiFieldRow
-                    key={f.key}
-                    field={f}
-                    value={entry.answers[f.key] ?? ''}
-                    onChange={v => onAnswerChange(f.key, v)}
-                  />
-                ))}
-              </div>
+          <div style={{
+            fontSize: 9, fontWeight: 800, color: '#0d9488',
+            textTransform: 'uppercase', letterSpacing: '0.1em',
+            display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            ⚡ Key questions
+            {filledTriage > 0 && (
+              <span style={{ fontWeight: 400, color: '#34d399' }}>· {filledTriage}/{triageFields.length} answered</span>
             )}
           </div>
         )}
+
+        {/* All fields in a single flow — triage first (marked ⚡), then SOCRATES detail */}
+        {fields.map(f => (
+          <HpiFieldRow
+            key={f.key}
+            field={f}
+            value={entry.answers[f.key] ?? ''}
+            onChange={v => onAnswerChange(f.key, v)}
+          />
+        ))}
 
         {fields.length === 0 && (
           <div style={{ fontSize: 13, color: '#475569', fontStyle: 'italic' }}>
@@ -874,6 +867,11 @@ export default function HpiTab() {
   function resetEntry(entryIdx: number) {
     const updated = entries.map((e, i) => i === entryIdx ? { ...e, answers: {} } : e);
     setProcedureData({ ...procedureData, cc: updated });
+    // Force the narrative effect to regenerate from the cleared answers.
+    // Without this, a manually-edited (or previously auto-generated) hpiNotes
+    // would not update because prevLiveRef.current still matched the old draft.
+    prevLiveRef.current = '';
+    setHpiNotes('');
   }
 
   function insertPhrase(text: string) {

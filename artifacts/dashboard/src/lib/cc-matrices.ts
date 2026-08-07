@@ -56,7 +56,7 @@ export interface CCTemplate {
 // ── Reusable section sets ─────────────────────────────────────────────────────
 
 const S_EMERGENCY: Section[] = [
-  'triage', 'pmh', 'medications', 'allergies',
+  'triage', 'hpi', 'pmh', 'medications', 'allergies',
   'examination', 'wounds',
   'investigations', 'blood_gas', 'radiology', 'attachments',
   'assessment', 'plan', 'dosing', 'fluid_nutrition',
@@ -92,7 +92,7 @@ const S_MALIGNANCY: Section[] = [
 ];
 
 const S_URGENT_SURGICAL: Section[] = [
-  'triage', 'pmh', 'surgical', 'medications', 'allergies',
+  'triage', 'hpi', 'pmh', 'surgical', 'medications', 'allergies',
   'examination', 'investigations', 'radiology',
   'assessment', 'plan', 'dosing',
   'prescriptions', 'referring_providers', 'progress', 'monitoring',
@@ -1197,10 +1197,15 @@ export const CC_TEMPLATES: CCTemplate[] = [
     urgency: 'routine',
     encounterType: 'quick_consult',
     prompts: [
-      { key: 'onset',     label: 'Onset',     hint: 'When · How started' },
-      { key: 'character', label: 'Character', hint: 'Nature of problem' },
-      { key: 'assoc',     label: 'Associated', hint: 'Other symptoms' },
-      { key: 'severity',  label: 'Severity',  hint: '0–10' },
+      { key: 'site',      label: 'Site',             hint: 'Central abdomen · RUQ · RIF · LIF · Epigastric · Back · Chest · Groin · Limb · Head · Other' },
+      { key: 'onset',     label: 'Onset',            hint: 'Sudden · Gradual · < 24 hours · 1–7 days · > 1 week · Episodic / recurrent' },
+      { key: 'character', label: 'Character',        hint: 'Constant · Intermittent · Sharp · Dull ache · Burning · Cramping · Pressure · Throbbing' },
+      { key: 'radiation', label: 'Radiation',        hint: 'No radiation · Back · Right shoulder tip · Left arm · Groin · Down leg · Generalised' },
+      { key: 'assoc',     label: 'Associated',       hint: 'Nausea · Vomiting · Fever · Diarrhoea · Constipation · Weight loss · Fatigue · Sweating · Bleeding' },
+      { key: 'timing',    label: 'Timing / pattern', hint: 'Continuous · Episodic · Post-meal · Nocturnal · Worsening over time · Improving' },
+      { key: 'triggers',  label: 'Aggravating',      hint: 'Movement · Eating · Deep breathing · Lying flat · Stress · Palpation' },
+      { key: 'relief',    label: 'Relieving',        hint: 'Analgesia · Rest · Heat · Antacids · Fetal position · Nothing helps' },
+      { key: 'severity',  label: 'Severity (0–10)',  hint: '1 · 2 · 3 · 4 · 5 · 6 · 7 · 8 · 9 · 10' },
     ],
     sections: S_SURGICAL,
     ddx: [],
