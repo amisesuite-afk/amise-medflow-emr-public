@@ -4,6 +4,21 @@ const config: NextConfig = {
   transpilePackages: ['@workspace/triage-engine'],
   serverExternalPackages: ['@supabase/supabase-js'],
   eslint: { ignoreDuringBuilds: true },
+  async rewrites() {
+    // afterFiles: the app's own /app/api/* routes always win; anything else
+    // under /api/* is proxied server-side to the Render API. Keeps the
+    // onrender.com hostname out of browser traffic (see lib/constants.ts).
+    return {
+      beforeFiles: [],
+      afterFiles: [
+        {
+          source: '/api/:path*',
+          destination: 'https://amise-medflow-api.onrender.com/api/:path*',
+        },
+      ],
+      fallback: [],
+    };
+  },
   async headers() {
     return [
       {
