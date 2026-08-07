@@ -167,7 +167,9 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
   const fields        = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
   const triageFields  = fields.filter(f => f.triage);
   const socratesFields = fields.filter(f => !f.triage);
-  const [showSocrates, setShowSocrates] = useState(false);
+  // Auto-expand SOCRATES when there are no triage fields — otherwise the card
+  // appears completely empty and the user has no visual cue that fields exist.
+  const [showSocrates, setShowSocrates] = useState(() => triageFields.length === 0);
   const filledTriage  = triageFields.filter(f => entry.answers[f.key]?.trim()).length;
   const filledSocrates = socratesFields.filter(f => entry.answers[f.key]?.trim()).length;
   const matrix = getMatrixByName(entry.complaint);
@@ -874,6 +876,11 @@ export default function HpiTab() {
   function resetEntry(entryIdx: number) {
     const updated = entries.map((e, i) => i === entryIdx ? { ...e, answers: {} } : e);
     setProcedureData({ ...procedureData, cc: updated });
+    // Force the narrative effect to regenerate from the cleared answers.
+    // Without this, a manually-edited (or previously auto-generated) hpiNotes
+    // would not update because prevLiveRef.current still matched the old draft.
+    prevLiveRef.current = '';
+    setHpiNotes('');
   }
 
   function insertPhrase(text: string) {
