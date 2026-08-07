@@ -155,7 +155,7 @@ function PromptField({
 export default function ChiefComplaintStrip() {
   const {
     symptoms, symptomDetails, procedureData, setProcedureData,
-    setEncounterType, setActiveCcKey, setActiveSection, freeText,
+    setEncounterType, activeCcKey, setActiveCcKey, setActiveSection, freeText,
   } = useAppContext();
 
   const [expanded, setExpanded]       = useState<number | null>(null);
@@ -165,6 +165,17 @@ export default function ChiefComplaintStrip() {
   const [searchQ, setSearchQ]         = useState('');
 
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
+
+  // Restore activeCcKey when entries already exist but key was cleared (e.g. patient reload)
+  useEffect(() => {
+    if (activeCcKey !== null) return;
+    const first = entries[0];
+    if (!first) return;
+    const matrix = getMatrixByName(first.complaint);
+    setActiveCcKey(matrix.id);
+    setEncounterType(matrix.encounterType);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entries.length]);
 
   // Auto-populate CC entries from intake symptoms or freeText the first time
   // consultation opens. Also translates symptomDetails into structured SOCRATES
@@ -253,11 +264,13 @@ export default function ChiefComplaintStrip() {
   const intakeSuggestions = symptoms.filter(s => !entries.some(e => e.complaint === s));
   const categories = Object.keys(CC_BY_CATEGORY) as CCCategory[];
 
-  const filteredTemplates: CCTemplate[] = CC_TEMPLATES.filter(t => {
+  const matchesCriteria = (t: CCTemplate) => {
     const matchCat = !catFilter || t.category === catFilter;
     const matchQ   = !searchQ || t.name.toLowerCase().includes(searchQ.toLowerCase());
-    return matchCat && matchQ && !entries.some(e => e.complaint === t.name);
-  });
+    return matchCat && matchQ;
+  };
+  const newTemplates:   CCTemplate[] = CC_TEMPLATES.filter(t => matchesCriteria(t) && !entries.some(e => e.complaint === t.name));
+  const alreadyAdded:  CCTemplate[] = CC_TEMPLATES.filter(t => matchesCriteria(t) &&  entries.some(e => e.complaint === t.name));
 
   // Progress for each entry
   function progress(entry: CCEntry): { answered: number; total: number } {
@@ -544,7 +557,7 @@ export default function ChiefComplaintStrip() {
             display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
             gap: 5, maxHeight: 320, overflowY: 'auto',
           }}>
-            {filteredTemplates.map(t => {
+            {newTemplates.map(t => {
               const ub = URGENCY_BADGE[t.urgency];
               return (
                 <button key={t.id} type="button" onClick={() => addComplaint(t.name)}
@@ -570,9 +583,32 @@ export default function ChiefComplaintStrip() {
                 </button>
               );
             })}
+
+            {/* Already-added matches — shown greyed so the user sees them, but not re-clickable */}
+            {alreadyAdded.map(t => (
+              <div key={t.id}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2,
+                  padding: '9px 12px', borderRadius: 8, border: '1px solid #1e293b',
+                  background: '#0f172a', color: '#334155', textAlign: 'left', opacity: 0.7,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%' }}>
+                  <span style={{ fontSize: 15, filter: 'grayscale(1)' }}>{t.icon}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>{t.name}</span>
+                  <span style={{ fontSize: 10, color: '#0d9488', fontWeight: 700 }}>✓ added</span>
+                </div>
+                <div style={{ fontSize: 10, color: '#334155' }}>{t.category}</div>
+              </div>
+            ))}
           </div>
 
-          {filteredTemplates.length === 0 && (
+          {newTemplates.length === 0 && alreadyAdded.length > 0 && (
+            <div style={{ fontSize: 12, color: '#0d9488', textAlign: 'center', padding: '10px 0 4px' }}>
+              All matching complaints are already in your list ↑
+            </div>
+          )}
+          {newTemplates.length === 0 && alreadyAdded.length === 0 && (
             <div style={{ fontSize: 12, color: '#475569', textAlign: 'center', padding: '16px 0' }}>
               No matches — type in the custom field and press Enter.
             </div>
