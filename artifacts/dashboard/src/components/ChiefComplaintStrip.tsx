@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CCTemplate } from '@/lib/cc-matrices';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
+import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
+import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, topDiagnoses, isConverged } from '@workspace/pane-engine';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -156,6 +158,7 @@ export default function ChiefComplaintStrip() {
   const {
     symptoms, symptomDetails, procedureData, setProcedureData,
     setEncounterType, activeCcKey, setActiveCcKey, setActiveSection, freeText,
+    age, sex, setPaneState,
   } = useAppContext();
 
   const [expanded, setExpanded]       = useState<number | null>(null);
@@ -166,6 +169,21 @@ export default function ChiefComplaintStrip() {
   const [searchQ, setSearchQ]         = useState('');
 
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
+
+  // Seed the PANE Bayesian engine from SOCRATES answers when HPI is complete.
+  function seedPane(complaint: string, answers: Record<string, string>) {
+    const parsedAge = parseInt(age, 10) || null;
+    const diseases  = applyModifiers(DISEASES, parsedAge, sex);
+    let   state     = initPaneState(diseases);
+    const features  = extractFeaturesFromSocrates(complaint, answers);
+    for (const [featureId, present] of Object.entries(features)) {
+      // Only update if this feature exists in FEATURES (avoid no-op updates for unknown IDs)
+      if (FEATURES.some(f => f.id === featureId)) {
+        state = updatePosterior(state, diseases, featureId, present);
+      }
+    }
+    setPaneState(state);
+  }
 
   // Restore activeCcKey when entries already exist but key was cleared (e.g. patient reload)
   useEffect(() => {
@@ -590,7 +608,11 @@ export default function ChiefComplaintStrip() {
                       ) : (
                         <button
                           type="button"
-                          onClick={() => { setExpanded(null); setActiveSection('hpi'); }}
+                          onClick={() => {
+                            seedPane(entry.complaint, entry.answers);
+                            setExpanded(null);
+                            setActiveSection('hpi');
+                          }}
                           style={{
                             padding: '5px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700,
                             border: 'none', background: '#0d9488',
@@ -642,7 +664,11 @@ export default function ChiefComplaintStrip() {
               )}
               <button
                 type="button"
-                onClick={() => { setExpanded(null); setActiveSection('hpi'); }}
+                onClick={() => {
+                  if (allDone) seedPane(entry.complaint, entry.answers);
+                  setExpanded(null);
+                  setActiveSection('hpi');
+                }}
                 style={{
                   padding: '7px 18px', borderRadius: 7, cursor: 'pointer',
                   fontWeight: 700, fontSize: 12,

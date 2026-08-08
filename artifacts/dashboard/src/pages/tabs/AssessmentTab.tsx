@@ -11,6 +11,7 @@ import ClinicalAlgorithmPanel from '@/components/ClinicalAlgorithmPanel';
 import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
+import { getProtocol } from '@workspace/pane-engine';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -527,6 +528,7 @@ export default function AssessmentTab() {
     confirmedDiagnoses, setConfirmedDiagnoses,
     examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
     hpiNotes,
+    orderedInvestigations, setOrderedInvestigations,
   } = useAppContext();
 
   const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
@@ -542,6 +544,28 @@ export default function AssessmentTab() {
     ? paneTop[0].disease.id
     : null;
   const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? null;
+
+  // Auto-populate ordered investigations from protocol when PANE converges.
+  // Capture current orderedInvestigations in a ref so the effect isn't re-triggered by array changes.
+  const invRef = useRef(orderedInvestigations);
+  useEffect(() => { invRef.current = orderedInvestigations; });
+
+  useEffect(() => {
+    if (!activeDiseaseId) return;
+    const protocol = getProtocol(activeDiseaseId);
+    if (!protocol?.investigations.length) return;
+    const urgencyRank = { stat: 0, urgent: 1, routine: 2 } as const;
+    const sorted = [...protocol.investigations].sort(
+      (a, b) => urgencyRank[a.urgency] - urgencyRank[b.urgency],
+    );
+    const current = invRef.current;
+    const existing = new Set(current.map((s: string) => s.toLowerCase().trim()));
+    const toAdd = sorted
+      .map(inv => inv.label)
+      .filter(label => !existing.has(label.toLowerCase().trim()));
+    if (toAdd.length) setOrderedInvestigations([...toAdd, ...current]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDiseaseId]);
 
   const apptType = triageResult.appointmentType;
   const ddxOptions: DiffOption[] = DIFFERENTIAL_PROMPTS[apptType] ?? DIFFERENTIAL_PROMPTS['new_consult'];
