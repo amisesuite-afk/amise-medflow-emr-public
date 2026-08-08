@@ -243,8 +243,12 @@ export function computeClinicalPrompts(input: InferenceInput): ClinicalPrompt[] 
   }
 
   // McBurney's / Rebound / Rovsing → Appendicitis
+  // Gate generic guarding/rebound on appendicitis-specific diagnosis or CC to avoid
+  // triggering Alvarado score for cholecystitis, pancreatitis, etc.
+  const assessmentHasAppend = lo(assessment ?? '').includes('append');
+  const ccIsAppend = hasCc(ccEntries, 'append', 'right iliac', 'rlq');
   if (exam(examAbdomen, 'mcburney', 'rovsing', 'psoas sign', 'obturator sign')
-    || (exam(examAbdomen, 'rebound', 'guarding') && hasAbdominalCc)) {
+    || (exam(examAbdomen, 'rebound', 'guarding') && hasAbdominalCc && (assessmentHasAppend || ccIsAppend))) {
     add({
       id: 'appendicitis_signs',
       type: 'safety',

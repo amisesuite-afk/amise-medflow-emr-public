@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CCTemplate } from '@/lib/cc-matrices';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
+import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
+import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, topDiagnoses, isConverged } from '@workspace/pane-engine';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -156,15 +158,32 @@ export default function ChiefComplaintStrip() {
   const {
     symptoms, symptomDetails, procedureData, setProcedureData,
     setEncounterType, activeCcKey, setActiveCcKey, setActiveSection, freeText,
+    age, sex, setPaneState,
   } = useAppContext();
 
   const [expanded, setExpanded]       = useState<number | null>(null);
+  const [openFieldIdx, setOpenFieldIdx] = useState(0);
   const [showPicker, setShowPicker]   = useState(false);
   const [customInput, setCustomInput] = useState('');
   const [catFilter, setCatFilter]     = useState<CCCategory | ''>('');
   const [searchQ, setSearchQ]         = useState('');
 
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
+
+  // Seed the PANE Bayesian engine from SOCRATES answers when HPI is complete.
+  function seedPane(complaint: string, answers: Record<string, string>) {
+    const parsedAge = parseInt(age, 10) || null;
+    const diseases  = applyModifiers(DISEASES, parsedAge, sex);
+    let   state     = initPaneState(diseases);
+    const features  = extractFeaturesFromSocrates(complaint, answers);
+    for (const [featureId, present] of Object.entries(features)) {
+      // Only update if this feature exists in FEATURES (avoid no-op updates for unknown IDs)
+      if (FEATURES.some(f => f.id === featureId)) {
+        state = updatePosterior(state, diseases, featureId, present);
+      }
+    }
+    setPaneState(state);
+  }
 
   // Restore activeCcKey when entries already exist but key was cleared (e.g. patient reload)
   useEffect(() => {
@@ -223,6 +242,17 @@ export default function ChiefComplaintStrip() {
     setExpanded(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // When a CC card expands, jump to first unanswered field
+  useEffect(() => {
+    if (expanded === null) return;
+    const entry = entries[expanded];
+    if (!entry) return;
+    const tpl = getMatrixByName(entry.complaint);
+    const first = tpl.prompts.findIndex(p => !entry.answers[p.key]?.trim());
+    setOpenFieldIdx(first >= 0 ? first : tpl.prompts.length);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expanded]);
 
   function activateMatrix(complaint: string) {
     const matrix = getMatrixByName(complaint);
@@ -414,17 +444,188 @@ export default function ChiefComplaintStrip() {
               </div>
             )}
 
-            {/* Prompt fields */}
-            <div style={{ padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
-              {tpl.prompts.map(p => (
-                <PromptField
-                  key={p.key}
-                  label={p.label}
-                  hint={p.hint ?? ''}
-                  value={entry.answers[p.key] ?? ''}
-                  onChange={v => setAnswer(expanded, p.key, v)}
-                />
-              ))}
+            {/* Answered summary strip — scrollable horizontal chips, tap any to jump back */}
+            {prog.answered > 0 && (
+              <div style={{
+                display: 'flex', gap: 5, overflowX: 'auto', padding: '7px 14px',
+                borderBottom: '1px solid #1e293b', scrollbarWidth: 'none',
+              }}>
+                {tpl.prompts.map((p, idx) => {
+                  const v = entry.answers[p.key] ?? '';
+                  if (!v.trim()) return null;
+                  return (
+                    <button
+                      key={p.key}
+                      type="button"
+                      onClick={() => setOpenFieldIdx(idx)}
+                      title={`Edit ${p.label}`}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4, flexShrink: 0,
+                        padding: '3px 9px', borderRadius: 20, cursor: 'pointer',
+                        border: '1px solid rgba(13,148,136,0.4)', background: 'rgba(13,148,136,0.1)',
+                        color: '#2dd4bf', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <span style={{ color: '#475569', fontWeight: 700, fontSize: 9, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        {p.label.split(' ')[0]}:
+                      </span>
+                      {v.length > 24 ? v.slice(0, 22) + '…' : v}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Progress dots */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '7px 14px 4px' }}>
+              {tpl.prompts.map((p, idx) => {
+                const v = entry.answers[p.key] ?? '';
+                const answered = v.trim().length > 0;
+                const isCurrent = idx === openFieldIdx;
+                return (
+                  <button
+                    key={p.key}
+                    type="button"
+                    onClick={() => setOpenFieldIdx(idx)}
+                    title={p.label}
+                    style={{
+                      width: isCurrent ? 20 : 8, height: 8, borderRadius: 4, border: 'none', cursor: 'pointer',
+                      background: answered ? '#0d9488' : isCurrent ? '#2dd4bf' : '#1e293b',
+                      transition: 'all 0.18s', padding: 0, flexShrink: 0,
+                    }}
+                  />
+                );
+              })}
+              <span style={{ fontSize: 10, color: '#475569', marginLeft: 6 }}>
+                {prog.answered}/{prog.total}
+              </span>
+            </div>
+
+            {/* Single active question card */}
+            <div style={{ padding: '8px 14px 10px' }}>
+              {(() => {
+                const p = tpl.prompts[openFieldIdx];
+                if (!p) return null;
+                const value   = entry.answers[p.key] ?? '';
+                const isMulti = MULTI_KEYS.has(p.key.toLowerCase().replace(/\s+/g, '_'));
+                const options = parseChipOptions(p.hint ?? '');
+                const isLast  = openFieldIdx === tpl.prompts.length - 1;
+                return (
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', gap: 8,
+                    padding: '11px 13px', borderRadius: 10,
+                    border: '1.5px solid rgba(13,148,136,0.55)', background: '#070d1a',
+                  }}>
+                    {/* Question label */}
+                    <div style={{ fontSize: 11, fontWeight: 800, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                      {p.label}
+                      {BRANCH_KEY[p.label] !== undefined && (
+                        <span style={{
+                          marginLeft: 6, fontSize: 9, fontWeight: 700, padding: '1px 6px', borderRadius: 10,
+                          background: 'rgba(220,38,38,0.15)', color: '#f87171', letterSpacing: '0.05em',
+                        }}>TRIAGE</span>
+                      )}
+                    </div>
+
+                    {/* Chip options */}
+                    {options.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                        {options.map(opt => {
+                          const active = isChipActive(value, opt);
+                          return (
+                            <button
+                              key={opt}
+                              type="button"
+                              onClick={() => {
+                                const newVal = toggleChip(value, chipLabel(opt), isMulti);
+                                setAnswer(expanded!, p.key, newVal);
+                                if (!isMulti && newVal.trim()) {
+                                  setTimeout(() => setOpenFieldIdx(openFieldIdx + 1), 300);
+                                }
+                              }}
+                              style={{
+                                padding: '5px 13px', borderRadius: 20, fontSize: 12,
+                                fontWeight: active ? 700 : 400, cursor: 'pointer',
+                                border: `1px solid ${active ? '#0d9488' : '#334155'}`,
+                                background: active ? '#0d9488' : '#1e293b',
+                                color: active ? '#fff' : '#94a3b8',
+                                transition: 'all 0.12s',
+                              }}
+                            >
+                              {chipLabel(opt)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Free-text input */}
+                    <input
+                      type="text"
+                      value={value}
+                      onChange={e => setAnswer(expanded!, p.key, e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter' && !isLast) setOpenFieldIdx(openFieldIdx + 1); }}
+                      placeholder={options.length > 0 ? 'Add detail or type custom answer…' : (p.hint ?? p.label + '…')}
+                      style={{
+                        width: '100%', boxSizing: 'border-box',
+                        padding: '6px 10px', borderRadius: 6, fontSize: 12, outline: 'none',
+                        border: `1px solid ${value ? '#0d9488' : '#1e293b'}`,
+                        background: '#0a0f1e', color: '#e2e8f0',
+                        transition: 'border-color 0.1s',
+                      }}
+                      onFocus={e => (e.currentTarget.style.borderColor = '#0d9488')}
+                      onBlur={e => (e.currentTarget.style.borderColor = value ? '#0d9488' : '#1e293b')}
+                      autoFocus
+                    />
+
+                    {/* Back / Next navigation */}
+                    <div style={{ display: 'flex', gap: 6, justifyContent: 'space-between', alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        disabled={openFieldIdx === 0}
+                        onClick={() => setOpenFieldIdx(openFieldIdx - 1)}
+                        style={{
+                          padding: '5px 13px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                          border: '1px solid #334155', background: 'transparent',
+                          color: openFieldIdx === 0 ? '#1e293b' : '#64748b',
+                          cursor: openFieldIdx === 0 ? 'default' : 'pointer',
+                        }}
+                      >
+                        ← Back
+                      </button>
+                      {!isLast ? (
+                        <button
+                          type="button"
+                          onClick={() => setOpenFieldIdx(openFieldIdx + 1)}
+                          style={{
+                            padding: '5px 13px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                            border: '1px solid #0d9488', background: 'transparent',
+                            color: '#0d9488', cursor: 'pointer',
+                          }}
+                        >
+                          Next →
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            seedPane(entry.complaint, entry.answers);
+                            setExpanded(null);
+                            setActiveSection('hpi');
+                          }}
+                          style={{
+                            padding: '5px 14px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                            border: 'none', background: '#0d9488',
+                            color: '#fff', cursor: 'pointer',
+                          }}
+                        >
+                          Done ✓
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
 
             {/* Investigation hints */}
@@ -463,7 +664,11 @@ export default function ChiefComplaintStrip() {
               )}
               <button
                 type="button"
-                onClick={() => { setExpanded(null); setActiveSection('hpi'); }}
+                onClick={() => {
+                  if (allDone) seedPane(entry.complaint, entry.answers);
+                  setExpanded(null);
+                  setActiveSection('hpi');
+                }}
                 style={{
                   padding: '7px 18px', borderRadius: 7, cursor: 'pointer',
                   fontWeight: 700, fontSize: 12,

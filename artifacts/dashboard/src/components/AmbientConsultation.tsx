@@ -238,6 +238,16 @@ const EXAM_NORMALS: Record<string, string> = {
   Skin:        "Skin intact. No rashes, lesions, ulceration, or hyperpigmentation. No jaundice, cyanosis, or pallor. No spider naevi or caput medusae.",
 };
 
+// ── Quick Exam chip options per system ───────────────────────────────────────
+const QUICK_EXAM_CHIPS: Record<string, string[]> = {
+  General:     ['Well-nourished', 'Cachectic', 'Pale', 'Jaundiced', 'Cyanosed', 'Oedematous', 'Diaphoretic', 'In distress', 'Alert and oriented', 'GCS < 15'],
+  Abdomen:     ['Soft', 'Distended', 'Tender RUQ', 'Tender RLQ', 'Tender LUQ', 'Tender LLQ', 'Epigastric tenderness', 'Diffuse tenderness', 'Guarding', 'Rigidity', 'Rebound tenderness', "Murphy's sign +", "Rovsing's sign +", 'Bowel sounds absent', 'Bowel sounds hyperactive', 'Hepatomegaly', 'Splenomegaly', 'Mass palpable', 'Hernia present', 'PR: blood'],
+  CVS:         ['S1+S2 normal', 'Murmur present', 'Tachycardia', 'Bradycardia', 'Irregular rhythm', 'JVP elevated', 'Peripheral oedema', 'Peripheral pulses absent', 'Capillary refill > 2s'],
+  Resp:        ['Clear to auscultation', 'Crackles (L)', 'Crackles (R)', 'Wheeze', 'Reduced breath sounds (L)', 'Reduced breath sounds (R)', 'Dull to percussion', 'Pleural rub', 'Trachea deviated'],
+  Extremities: ['Pulses present', 'DP absent', 'PT absent', 'Femoral reduced', 'Varicose veins', 'DVT signs', 'Oedema present', 'Wound present', 'Healthy skin'],
+  Wound:       ['Granulating', 'Sloughy', 'Necrotic', 'Dry gangrene', 'Wet gangrene', 'Cellulitis', 'Abscess', 'Osteomyelitis suspected', 'Exposed tendon', 'Exposed bone', 'Malodorous'],
+};
+
 // ── CC → recommended exam systems ─────────────────────────────────────────────
 const CC_EXAM_MAP: Record<string, string[]> = {
   abd_pain:     ['General', 'Abdomen', 'CVS', 'Resp'],
@@ -1564,27 +1574,101 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
               </div>
             )}
 
-            {/* Exam region textareas */}
-            <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {/* Quick exam — chip tiles per system */}
+            <div style={{ padding: '10px 12px 14px', display: 'flex', flexDirection: 'column', gap: 5 }}>
               {([
-                ['General', examGeneral, setExamGeneral],
-                ['Abdomen', examAbdomen, setExamAbdomen],
-                ['CVS', examCardio, setExamCardio],
-                ['Respiratory', examResp, setExamResp],
-                ['Extremities', examExtremities, setExamExtremities],
-                ['Wound', examWound, setExamWound],
-              ] as [string, string, (v: string) => void][]).map(([label, value, setter]) => (
-                <div key={label}>
-                  <div style={{ ...sectionLabel, marginBottom: 4 }}>{label}</div>
-                  <textarea
-                    value={value}
-                    onChange={e => setter(e.target.value)}
-                    placeholder={label === 'General' ? 'e.g. Alert and oriented, comfortable at rest, no pallor…' : `${label}…`}
-                    rows={2}
-                    style={drawerTextarea}
-                  />
-                </div>
-              ))}
+                { label: 'General',     icon: '👤', val: examGeneral,    set: setExamGeneral },
+                { label: 'Abdomen',     icon: '🔵', val: examAbdomen,    set: setExamAbdomen },
+                { label: 'CVS',         icon: '❤️', val: examCardio,     set: setExamCardio },
+                { label: 'Resp',        icon: '🫁', val: examResp,       set: setExamResp },
+                { label: 'Extremities', icon: '🦵', val: examExtremities, set: setExamExtremities },
+                { label: 'Wound',       icon: '🩹', val: examWound,      set: setExamWound },
+              ] as { label: string; icon: string; val: string; set: (v: string) => void }[]).map(sys => {
+                const isOpen = openExamSys === sys.label;
+                const chips = QUICK_EXAM_CHIPS[sys.label] ?? [];
+                const hasContent = sys.val.trim().length > 0;
+                const isDefaultNormal = sys.val.trim() === (EXAM_NORMALS[sys.label] ?? '').trim();
+                return (
+                  <div key={sys.label} style={{
+                    borderRadius: 8,
+                    border: `1px solid ${isOpen ? 'rgba(13,148,136,0.45)' : 'var(--line)'}`,
+                    background: isOpen ? 'rgba(13,148,136,0.03)' : 'transparent',
+                    overflow: 'hidden',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px' }}>
+                      <button type="button"
+                        onClick={() => setOpenExamSys(isOpen ? null : sys.label)}
+                        style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6,
+                          border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left', padding: 0 }}>
+                        <span style={{ fontSize: 13 }}>{sys.icon}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ink)' }}>{sys.label}</span>
+                        {hasContent && !isDefaultNormal && (
+                          <span style={{ fontSize: 10, color: '#34d399' }}>✎</span>
+                        )}
+                        {hasContent && isDefaultNormal && (
+                          <span style={{ fontSize: 10, color: 'var(--muted)' }}>◎ normal</span>
+                        )}
+                      </button>
+                      <button type="button"
+                        onClick={() => { sys.set(EXAM_NORMALS[sys.label] ?? ''); setOpenExamSys(null); }}
+                        title="Mark normal"
+                        style={{ fontSize: 10, padding: '2px 7px', borderRadius: 4,
+                          border: '1px solid var(--line)', background: 'none',
+                          color: isDefaultNormal ? '#0d9488' : 'var(--muted)',
+                          cursor: 'pointer', fontWeight: 600, flexShrink: 0 }}>
+                        ◎ Nml
+                      </button>
+                      <button type="button" onClick={() => setOpenExamSys(isOpen ? null : sys.label)}
+                        style={{ border: 'none', background: 'none', cursor: 'pointer',
+                          color: 'var(--muted)', fontSize: 11, padding: '0 2px', flexShrink: 0 }}>
+                        {isOpen ? '▲' : '▼'}
+                      </button>
+                    </div>
+                    {!isOpen && hasContent && (
+                      <div style={{ padding: '0 10px 6px', fontSize: 11, color: 'var(--muted)',
+                        lineHeight: 1.4, fontFamily: 'Georgia, serif', whiteSpace: 'nowrap',
+                        overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {sys.val}
+                      </div>
+                    )}
+                    {isOpen && (
+                      <div style={{ borderTop: '1px solid var(--line)', padding: '8px 10px 10px' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
+                          {chips.map(chip => {
+                            const active = sys.val.toLowerCase().includes(chip.toLowerCase());
+                            return (
+                              <button type="button" key={chip}
+                                onClick={() => {
+                                  if (active) {
+                                    const escaped = chip.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                                    const cleaned = sys.val
+                                      .replace(new RegExp('[.\\s]*' + escaped + '[.\\s]*', 'gi'), ' ')
+                                      .replace(/\s{2,}/g, ' ').trim();
+                                    sys.set(cleaned);
+                                  } else {
+                                    const base = sys.val.trimEnd().replace(/\.+$/, '');
+                                    sys.set(base ? `${base}. ${chip}.` : `${chip}.`);
+                                  }
+                                }}
+                                style={{
+                                  fontSize: 11, padding: '3px 9px', borderRadius: 12,
+                                  border: `1px solid ${active ? '#34d399' : 'var(--line)'}`,
+                                  background: active ? 'rgba(52,211,153,0.12)' : 'transparent',
+                                  color: active ? '#34d399' : 'var(--muted)',
+                                  cursor: 'pointer', fontWeight: active ? 700 : 400,
+                                }}>
+                                {chip}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <textarea value={sys.val} onChange={e => sys.set(e.target.value)}
+                          rows={2} style={drawerTextarea} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 

@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { useAppContext } from '@/context/AppContext';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useAppContext, type ActiveDiagnosis } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
 import { ManagementPanel } from '@/components/ManagementPanel';
@@ -10,6 +10,8 @@ import { useSpeechInput } from '@/hooks/useSpeechInput';
 import ClinicalAlgorithmPanel from '@/components/ClinicalAlgorithmPanel';
 import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
+import { computeRankedDifferentials } from '@/lib/symptom-inference';
+import { getProtocol } from '@workspace/pane-engine';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -523,6 +525,10 @@ export default function AssessmentTab() {
     symptoms, examFindings, vitals, investigationResults,
     comorbidities, age, sex, isPostOp, procedureData, rosFindings,
     paneTop, paneConverged, icdCodes, activeCcKey,
+    confirmedDiagnoses, setConfirmedDiagnoses,
+    examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
+    hpiNotes,
+    orderedInvestigations, setOrderedInvestigations,
   } = useAppContext();
 
   const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
@@ -539,10 +545,33 @@ export default function AssessmentTab() {
     : null;
   const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? null;
 
+  // Auto-populate ordered investigations from protocol when PANE converges.
+  // Capture current orderedInvestigations in a ref so the effect isn't re-triggered by array changes.
+  const invRef = useRef(orderedInvestigations);
+  useEffect(() => { invRef.current = orderedInvestigations; });
+
+  useEffect(() => {
+    if (!activeDiseaseId) return;
+    const protocol = getProtocol(activeDiseaseId);
+    if (!protocol?.investigations.length) return;
+    const urgencyRank = { stat: 0, urgent: 1, routine: 2 } as const;
+    const sorted = [...protocol.investigations].sort(
+      (a, b) => urgencyRank[a.urgency] - urgencyRank[b.urgency],
+    );
+    const current = invRef.current;
+    const existing = new Set(current.map((s: string) => s.toLowerCase().trim()));
+    const toAdd = sorted
+      .map(inv => inv.label)
+      .filter(label => !existing.has(label.toLowerCase().trim()));
+    if (toAdd.length) setOrderedInvestigations([...toAdd, ...current]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDiseaseId]);
+
   const apptType = triageResult.appointmentType;
   const ddxOptions: DiffOption[] = DIFFERENTIAL_PROMPTS[apptType] ?? DIFFERENTIAL_PROMPTS['new_consult'];
 
   const [requestedTool, setRequestedTool] = useState<string | null>(null);
+  const [showAllDdx, setShowAllDdx] = useState(false);
 
   const requestTool = useCallback((scaleKey: string) => {
     setRequestedTool(null);
@@ -562,8 +591,152 @@ export default function AssessmentTab() {
     setDifferentials(line);
   }
 
+  // Combined clinical text used to check if a diagnosis still has supporting evidence
+  const clinicalText = useMemo(() => [
+    ...symptoms,
+    examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
+    hpiNotes, assessment,
+    ...Object.values(examFindings).flat(),
+  ].join(' ').toLowerCase(), [
+    symptoms, examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
+    hpiNotes, assessment, examFindings,
+  ]);
+
+  // Passive inference: rank diseases from current exam + symptoms (no Q&A required)
+  const passiveRanked = useMemo(() => computeRankedDifferentials({
+    symptoms,
+    symptomDetails: {},
+    examText: [examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound, hpiNotes].join(' '),
+  }), [symptoms, examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound, hpiNotes]);
+
+  // Build a name→rank map for sorting the differential card grid
+  const passiveRankMap = useMemo(() => {
+    const map = new Map<string, number>();
+    passiveRanked.forEach((r, i) => map.set(r.name.toLowerCase(), i));
+    return map;
+  }, [passiveRanked]);
+
+  // Top result and whether a pathognomonic sign is matched
+  const topPassive = passiveRanked[0];
+  const topConfidence = (symptoms.length > 0 || examAbdomen || examGeneral) ? (topPassive?.confidence ?? 0) : 0;
+  const pathognomicAlert = passiveRanked.find(r => r.pathognomicMatchSign);
+
+  // Focus mode drives progressive narrowing
+  const focusMode: 'broad' | 'narrowing' | 'focused' =
+    pathognomicAlert || topConfidence >= 65 ? 'focused' :
+    topConfidence >= 35 ? 'narrowing' : 'broad';
+
+  // Sort the differential card grid so highest-ranked diseases float to top
+  const sortedDdxOptions = useMemo(() => [...ddxOptions].sort((a, b) => {
+    const getRank = (name: string) => {
+      const lower = name.toLowerCase();
+      // Direct name match
+      let rank = passiveRankMap.get(lower);
+      if (rank !== undefined) return rank;
+      // Fuzzy: find the ranked entry whose name overlaps most
+      for (const [rname, ridx] of passiveRankMap) {
+        if (rname.includes(lower) || lower.includes(rname.split(' ').slice(0, 2).join(' '))) return ridx;
+      }
+      return 999;
+    };
+    return getRank(a.name) - getRank(b.name);
+  }), [ddxOptions, passiveRankMap]);
+
+  function isDxSupported(dx: ActiveDiagnosis): boolean {
+    return dx.signs.some(s => clinicalText.includes(s.toLowerCase()));
+  }
+
+  function matchedSigns(dx: ActiveDiagnosis): string[] {
+    return dx.signs.filter(s => clinicalText.includes(s.toLowerCase()));
+  }
+
+  function confirmDiagnosis(d: DiffOption) {
+    if (!confirmedDiagnoses.some(c => c.name === d.name)) {
+      setConfirmedDiagnoses([...confirmedDiagnoses, {
+        id: `${Date.now()}-${d.name}`,
+        name: d.name,
+        signs: d.signs,
+      }]);
+    }
+    addDiff(d.name);
+  }
+
+  function removeDiagnosis(id: string) {
+    setConfirmedDiagnoses(confirmedDiagnoses.filter(c => c.id !== id));
+  }
+
   return (
     <div className="gap-y">
+
+      {/* ── Active Diagnoses ─────────────────────────────────────────────────── */}
+      {confirmedDiagnoses.length > 0 && (
+        <div style={{
+          borderRadius: 10, border: '1px solid rgba(99,102,241,0.25)',
+          background: 'rgba(99,102,241,0.04)', padding: '10px 14px',
+        }}>
+          <div style={{
+            fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
+            textTransform: 'uppercase', color: '#818cf8', marginBottom: 8,
+          }}>
+            Active Diagnoses
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {confirmedDiagnoses.map(dx => {
+              const supported = isDxSupported(dx);
+              const hits = matchedSigns(dx);
+              return (
+                <div key={dx.id} style={{
+                  borderRadius: 8,
+                  border: `1px solid ${supported ? 'rgba(52,211,153,0.35)' : 'rgba(251,191,36,0.35)'}`,
+                  background: supported ? 'rgba(52,211,153,0.05)' : 'rgba(251,191,36,0.05)',
+                  padding: '8px 12px',
+                  display: 'flex', alignItems: 'flex-start', gap: 10,
+                }}>
+                  <span style={{ fontSize: 16, lineHeight: 1, flexShrink: 0, marginTop: 1 }}>
+                    {supported ? '✓' : '⚠'}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: supported ? 'var(--ink)' : '#d97706' }}>
+                      {dx.name}
+                    </div>
+                    <div style={{ fontSize: 10, marginTop: 2, color: supported ? '#34d399' : '#f59e0b' }}>
+                      {supported
+                        ? `Supported · ${hits.join(' · ')}`
+                        : 'Unsupported — findings that drove this diagnosis have been removed or not yet documented'}
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 5 }}>
+                      {dx.signs.map(sign => {
+                        const active = clinicalText.includes(sign.toLowerCase());
+                        return (
+                          <span key={sign} style={{
+                            fontSize: 10, padding: '2px 7px', borderRadius: 10,
+                            background: active ? 'rgba(52,211,153,0.15)' : 'rgba(156,163,175,0.12)',
+                            color: active ? '#34d399' : '#9ca3af',
+                            border: `1px solid ${active ? 'rgba(52,211,153,0.3)' : 'rgba(156,163,175,0.25)'}`,
+                            fontWeight: active ? 700 : 400,
+                          }}>
+                            {sign}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <button type="button"
+                    onClick={() => removeDiagnosis(dx.id)}
+                    title="Remove diagnosis"
+                    style={{
+                      border: 'none', background: 'none', cursor: 'pointer',
+                      color: '#9ca3af', fontSize: 16, padding: '0 4px', flexShrink: 0,
+                      lineHeight: 1,
+                    }}>
+                    ×
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* CDS suggestions */}
       {cdsSuggestions.length > 0 && (
@@ -735,43 +908,108 @@ export default function AssessmentTab() {
             — brackets show shared features
           </span>
         </div>
+
+        {/* Pathognomonic alert banner */}
+        {pathognomicAlert && (
+          <div style={{
+            padding: '8px 12px', borderRadius: 8,
+            background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.4)',
+            marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8,
+          }}>
+            <span style={{ fontSize: 16 }}>🎯</span>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#34d399' }}>
+                Pathognomonic sign detected
+              </div>
+              <div style={{ fontSize: 11, color: '#6b7280' }}>
+                <strong>{pathognomicAlert.pathognomicMatchSign}</strong> → {pathognomicAlert.name}
+              </div>
+            </div>
+          </div>
+        )}
+        {focusMode !== 'broad' && !pathognomicAlert && topPassive && (
+          <div style={{
+            padding: '6px 12px', borderRadius: 8,
+            background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.2)',
+            marginBottom: 8, fontSize: 11, color: '#818cf8',
+          }}>
+            🔍 Narrowing — <strong>{topPassive.name}</strong> leading ({topConfidence}%)
+            {focusMode === 'focused' && ' · Less likely diagnoses dimmed'}
+          </div>
+        )}
+
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
-          {ddxOptions.map(d => (
-            <button
-              key={d.name}
-              type="button"
-              onClick={() => addDiff(d.name)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '7px 12px',
-                borderRadius: 8,
-                border: '1px solid #e5e7eb',
-                background: '#f9fafb',
-                cursor: 'pointer',
-                textAlign: 'left',
-                gap: 3,
-                transition: 'background .12s, border-color .12s',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = '#eff6ff';
-                (e.currentTarget as HTMLButtonElement).style.borderColor = '#bfdbfe';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = '#f9fafb';
-                (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb';
-              }}
-            >
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>
-                + {d.name}
-              </span>
-              <span style={{ fontSize: 10.5, color: '#6b7280', fontStyle: 'italic' }}>
-                [{d.signs.join(' · ')}]
-              </span>
-            </button>
-          ))}
+          {(focusMode === 'focused' && !showAllDdx ? sortedDdxOptions.slice(0, 8) : sortedDdxOptions).map((d, sortIdx) => {
+            const confirmed = confirmedDiagnoses.some(c => c.name === d.name);
+            const dxRank = passiveRankMap.get(d.name.toLowerCase()) ??
+              [...passiveRankMap.entries()].find(([k]) => k.includes(d.name.toLowerCase().split(' ').slice(0,2).join(' ')))?.[1];
+            const dxConfidence = dxRank !== undefined ? (passiveRanked[dxRank]?.confidence ?? 0) : 0;
+            const isLeading = focusMode !== 'broad' && sortIdx === 0 && dxConfidence > 0;
+            const isPathognomonic = passiveRanked[dxRank ?? 999]?.pathognomicMatchSign != null;
+            const isDimmed = focusMode === 'focused' && sortIdx > 2 && !confirmed;
+            return (
+              <button
+                key={d.name}
+                type="button"
+                onClick={() => confirmDiagnosis(d)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  padding: '7px 12px',
+                  borderRadius: 8,
+                  border: isPathognomonic ? '1px solid rgba(52,211,153,0.6)' :
+                          isLeading ? '1px solid rgba(99,102,241,0.5)' :
+                          confirmed ? '1px solid rgba(52,211,153,0.4)' : '1px solid #e5e7eb',
+                  background: isPathognomonic ? 'rgba(52,211,153,0.08)' :
+                              isLeading ? 'rgba(99,102,241,0.06)' :
+                              confirmed ? 'rgba(52,211,153,0.06)' : '#f9fafb',
+                  opacity: isDimmed ? 0.45 : 1,
+                  order: isDimmed ? 1 : 0,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  gap: 3,
+                  transition: 'background .12s, border-color .12s',
+                }}
+                onMouseEnter={e => {
+                  if (!confirmed) {
+                    (e.currentTarget as HTMLButtonElement).style.background = '#eff6ff';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#bfdbfe';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!confirmed) {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      isPathognomonic ? 'rgba(52,211,153,0.08)' :
+                      isLeading ? 'rgba(99,102,241,0.06)' : '#f9fafb';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor =
+                      isPathognomonic ? 'rgba(52,211,153,0.6)' :
+                      isLeading ? 'rgba(99,102,241,0.5)' : '#e5e7eb';
+                  }
+                }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 600, color: confirmed ? '#34d399' : '#111827' }}>
+                  {confirmed ? '✓ ' : '+ '}{d.name}
+                </span>
+                <span style={{ fontSize: 10.5, color: '#6b7280', fontStyle: 'italic' }}>
+                  [{d.signs.join(' · ')}]
+                </span>
+                {dxConfidence > 5 && (
+                  <span style={{ fontSize: 9, color: isPathognomonic ? '#34d399' : '#9ca3af', marginTop: 2 }}>
+                    {isPathognomonic ? `🎯 ${passiveRanked[dxRank!]?.pathognomicMatchSign}` : `${dxConfidence}% match`}
+                  </span>
+                )}
+              </button>
+            );
+          })}
         </div>
+
+        {focusMode === 'focused' && (
+          <button type="button" onClick={() => setShowAllDdx(s => !s)}
+            style={{ fontSize: 11, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer', marginTop: 4 }}>
+            {showAllDdx ? '▲ Show less' : `▼ Show all ${sortedDdxOptions.length} differentials`}
+          </button>
+        )}
       </CollapsibleCard>
 
       <ClinicalAlgorithmPanel requestedTool={requestedTool} />

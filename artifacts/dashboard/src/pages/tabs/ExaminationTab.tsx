@@ -332,6 +332,7 @@ export default function ExaminationTab() {
   const [reportCopied, setReportCopied] = useState(false);
   const [showAllSystems, setShowAllSystems] = useState(false);
   const [editVitals, setEditVitals] = useState(false);
+  const [quickMode, setQuickMode]   = useState(true);
 
   const ageNum = age ? Number(age) : null;
 
@@ -429,6 +430,25 @@ export default function ExaminationTab() {
     setExamFindings({ ...examFindings, [system.key]: [] });
     setExamOmit({ ...examOmit, [system.key]: false });
     syncLegacy(system.key, [], system.normalProse);
+  }
+
+  function applyAllNormal() {
+    const pendingNotes: Record<string, string> = { ...examNotes };
+    const pendingFindings: Record<string, string[]> = { ...examFindings };
+    for (const system of EXAM_SYSTEMS) {
+      if (examOmit[system.key]) continue;
+      const shown = showAllSystems ||
+        visibleSystemKeys.has(system.key) ||
+        (examFindings[system.key]?.length ?? 0) > 0 ||
+        !!examNotes[system.key]?.trim();
+      if (!shown) continue;
+      pendingNotes[system.key] = system.normalProse;
+      pendingFindings[system.key] = [];
+      const setter = legacySetterMap[system.key];
+      if (setter) setter(system.normalProse);
+    }
+    setExamNotes(pendingNotes);
+    setExamFindings(pendingFindings);
   }
 
   function toggleOmit(systemKey: string) {
@@ -690,6 +710,46 @@ export default function ExaminationTab() {
           );
         })()}
 
+        {/* Mode toggle + All Normal */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <div style={{ display: 'flex', border: '1px solid #374151', borderRadius: 6, overflow: 'hidden' }}>
+            <button
+              type="button"
+              onClick={() => setQuickMode(true)}
+              style={{
+                padding: '5px 14px', border: 'none', cursor: 'pointer',
+                fontSize: 12, fontWeight: 700,
+                background: quickMode ? '#0d9488' : 'var(--surface, #1e2330)',
+                color: quickMode ? '#fff' : '#94a3b8',
+              }}
+            >
+              ⚡ Quick
+            </button>
+            <button
+              type="button"
+              onClick={() => setQuickMode(false)}
+              style={{
+                padding: '5px 14px', border: 'none', borderLeft: '1px solid #374151',
+                cursor: 'pointer', fontSize: 12, fontWeight: 700,
+                background: !quickMode ? '#0d9488' : 'var(--surface, #1e2330)',
+                color: !quickMode ? '#fff' : '#94a3b8',
+              }}
+            >
+              Full
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={applyAllNormal}
+            style={{
+              padding: '5px 14px', borderRadius: 6, border: '1.5px solid #0d9488',
+              background: '#f0fdfa', color: '#0d9488', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+            }}
+          >
+            ◎ All Normal
+          </button>
+        </div>
+
         {/* Hidden-systems summary + toggle */}
         {(() => {
           const hiddenSystems = EXAM_SYSTEMS.filter(s =>
@@ -738,81 +798,63 @@ export default function ExaminationTab() {
             </button>
           </div>
         )}
-        <div className="exam-grid">
-          {EXAM_SYSTEMS.filter(system => {
-            if (showAllSystems) return true;
-            const hasData = (examFindings[system.key]?.length ?? 0) > 0 || !!examNotes[system.key]?.trim();
-            return visibleSystemKeys.has(system.key) || hasData || examOmit[system.key];
-          }).map(system => {
-            const selected = examFindings[system.key] ?? [];
-            const note = examNotes[system.key] ?? '';
-            const focusChips = focusMap[system.key] ?? [];
-            const isFocused = focusChips.length > 0;
-            const isOmitted = examOmit[system.key] ?? false;
-            const hasContent = selected.length > 0 || note.trim().length > 0;
 
-            return (
-              <div
-                key={system.key}
-                className="exam-field"
-                style={{
-                  ...(isFocused && !isOmitted ? { borderLeft: '3px solid #f59e0b', paddingLeft: 8, background: '#fffbeb' } : {}),
-                  ...(isOmitted ? { opacity: 0.4, pointerEvents: 'none' } : {}),
-                }}
-              >
-                {/* System header with Normal / Omit controls */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 13, color: '#111827' }}>
-                    {system.icon} {system.label}
-                    {isFocused && leadingDxName && (
-                      <span style={{ fontSize: 10, fontWeight: 600, color: '#92400e', background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 4, padding: '0px 5px' }}>
-                        Key for {leadingDxName}
-                      </span>
-                    )}
-                    {hasContent && !isOmitted && (
-                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#0d9488', display: 'inline-block', flexShrink: 0 }} />
-                    )}
-                  </label>
-                  <div style={{ display: 'flex', gap: 5, pointerEvents: isOmitted ? 'auto' : 'auto' }}>
-                    {/* ◎ Normal button */}
-                    {!isOmitted && (
-                      <button
-                        type="button"
-                        onClick={() => applyNormal(system)}
-                        title={`Fill with standard normal prose for ${system.label}`}
-                        style={{
-                          padding: '3px 9px', borderRadius: 6, border: '1.5px solid #0d9488',
-                          background: '#f0fdfa', color: '#0d9488', fontSize: 11, fontWeight: 700,
-                          cursor: 'pointer', whiteSpace: 'nowrap',
-                        }}
-                      >
-                        ◎ Normal
-                      </button>
-                    )}
-                    {/* Not examined toggle — excluded from final report when active */}
+        {/* Quick mode: compact chip grid — all systems visible at a glance */}
+        {quickMode && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 8 }}>
+            {EXAM_SYSTEMS.filter(system => {
+              if (showAllSystems) return true;
+              const hasData = (examFindings[system.key]?.length ?? 0) > 0 || !!examNotes[system.key]?.trim();
+              return visibleSystemKeys.has(system.key) || hasData || examOmit[system.key];
+            }).map(system => {
+              const selected    = examFindings[system.key] ?? [];
+              const focusChips  = focusMap[system.key] ?? [];
+              const isFocused   = focusChips.length > 0;
+              const isOmitted   = examOmit[system.key] ?? false;
+              const hasNote     = !!examNotes[system.key]?.trim();
+              const isNormal    = selected.length === 0 && hasNote;
+
+              return (
+                <div
+                  key={system.key}
+                  style={{
+                    border: `1px solid ${isFocused && !isOmitted ? '#f59e0b' : '#2d3748'}`,
+                    borderRadius: 8,
+                    padding: '8px 10px',
+                    background: isFocused && !isOmitted ? 'rgba(255,251,235,0.08)' : '#0f172a',
+                    opacity: isOmitted ? 0.45 : 1,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{
+                      fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4,
+                      color: isFocused && !isOmitted ? '#92400e' : '#e2e8f0',
+                    }}>
+                      {system.icon} {system.label}
+                      {selected.length > 0 && (
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0d9488', display: 'inline-block', flexShrink: 0 }} />
+                      )}
+                    </span>
                     <button
                       type="button"
-                      onClick={() => toggleOmit(system.key)}
-                      title={isOmitted ? 'Mark as examined' : 'Not examined — will be excluded from the clinical report'}
+                      onClick={() => applyNormal(system)}
+                      disabled={isOmitted}
+                      title="Mark all normal"
                       style={{
-                        padding: '3px 9px', borderRadius: 6,
-                        border: isOmitted ? '1.5px solid #9ca3af' : '1.5px solid #e5e7eb',
-                        background: isOmitted ? '#e5e7eb' : '#f9fafb',
-                        color: isOmitted ? '#374151' : '#9ca3af',
-                        fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
+                        padding: '2px 8px', borderRadius: 5, cursor: 'pointer',
+                        border: `1px solid ${isNormal ? '#0d9488' : '#374151'}`,
+                        background: isNormal ? '#0d9488' : 'transparent',
+                        color: isNormal ? '#fff' : '#0d9488',
+                        fontSize: 10, fontWeight: 700,
                       }}
                     >
-                      {isOmitted ? '↩ Restore' : 'Not examined'}
+                      ◎
                     </button>
                   </div>
-                </div>
-
-                {!isOmitted && (
-                  <>
-                    {/* Chip row */}
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                  {!isOmitted && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                       {system.chips.map(chip => {
-                        const isOn = selected.includes(chip);
+                        const isOn        = selected.includes(chip);
                         const isFocusChip = focusChips.includes(chip);
                         return (
                           <button
@@ -820,19 +862,14 @@ export default function ExaminationTab() {
                             type="button"
                             onClick={() => toggleChip(system.key, chip)}
                             style={{
-                              padding: '3px 10px',
-                              borderRadius: 14,
+                              padding: '2px 8px', borderRadius: 12, fontSize: 11, cursor: 'pointer',
                               border: isOn
                                 ? '1px solid #0d9488'
-                                : isFocusChip
-                                  ? '1.5px solid #f59e0b'
-                                  : '1px solid #d1d5db',
-                              background: isOn ? '#0d9488' : isFocusChip ? '#fffbeb' : '#f9fafb',
-                              color: isOn ? '#fff' : isFocusChip ? '#92400e' : '#374151',
-                              fontSize: 12,
-                              cursor: 'pointer',
+                                : isFocusChip ? '1.5px solid #f59e0b' : '1px solid #374151',
+                              background: isOn ? '#0d9488' : isFocusChip ? '#fffbeb' : '#1e293b',
+                              color: isOn ? '#fff' : isFocusChip ? '#92400e' : '#94a3b8',
                               fontWeight: isOn || isFocusChip ? 600 : 400,
-                              transition: 'all 0.12s',
+                              transition: 'all 0.1s',
                             }}
                           >
                             {chip}
@@ -841,20 +878,123 @@ export default function ExaminationTab() {
                         );
                       })}
                     </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
-                    {/* Free text — prose input with voice support */}
-                    <SmartTextarea
-                      value={note}
-                      onChange={v => updateNote(system.key, v)}
-                      placeholder={`${system.label} findings in clinical prose — or use ◎ Normal above`}
-                      style={{ fontSize: 13, minHeight: 48, fontFamily: 'Georgia, serif' }}
-                    />
-                  </>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        {/* Full mode: per-system cards with prose textareas */}
+        {!quickMode && (
+          <div className="exam-grid">
+            {EXAM_SYSTEMS.filter(system => {
+              if (showAllSystems) return true;
+              const hasData = (examFindings[system.key]?.length ?? 0) > 0 || !!examNotes[system.key]?.trim();
+              return visibleSystemKeys.has(system.key) || hasData || examOmit[system.key];
+            }).map(system => {
+              const selected   = examFindings[system.key] ?? [];
+              const note       = examNotes[system.key] ?? '';
+              const focusChips = focusMap[system.key] ?? [];
+              const isFocused  = focusChips.length > 0;
+              const isOmitted  = examOmit[system.key] ?? false;
+              const hasContent = selected.length > 0 || note.trim().length > 0;
+
+              return (
+                <div
+                  key={system.key}
+                  className="exam-field"
+                  style={{
+                    ...(isFocused && !isOmitted ? { borderLeft: '3px solid #f59e0b', paddingLeft: 8, background: '#fffbeb' } : {}),
+                    ...(isOmitted ? { opacity: 0.4, pointerEvents: 'none' } : {}),
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600, fontSize: 13, color: '#111827' }}>
+                      {system.icon} {system.label}
+                      {isFocused && leadingDxName && (
+                        <span style={{ fontSize: 10, fontWeight: 600, color: '#92400e', background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 4, padding: '0px 5px' }}>
+                          Key for {leadingDxName}
+                        </span>
+                      )}
+                      {hasContent && !isOmitted && (
+                        <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#0d9488', display: 'inline-block', flexShrink: 0 }} />
+                      )}
+                    </label>
+                    <div style={{ display: 'flex', gap: 5 }}>
+                      {!isOmitted && (
+                        <button
+                          type="button"
+                          onClick={() => applyNormal(system)}
+                          title={`Fill with standard normal prose for ${system.label}`}
+                          style={{
+                            padding: '3px 9px', borderRadius: 6, border: '1.5px solid #0d9488',
+                            background: '#f0fdfa', color: '#0d9488', fontSize: 11, fontWeight: 700,
+                            cursor: 'pointer', whiteSpace: 'nowrap',
+                          }}
+                        >
+                          ◎ Normal
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => toggleOmit(system.key)}
+                        title={isOmitted ? 'Mark as examined' : 'Not examined — will be excluded from the clinical report'}
+                        style={{
+                          padding: '3px 9px', borderRadius: 6,
+                          border: isOmitted ? '1.5px solid #9ca3af' : '1.5px solid #e5e7eb',
+                          background: isOmitted ? '#e5e7eb' : '#f9fafb',
+                          color: isOmitted ? '#374151' : '#9ca3af',
+                          fontSize: 11, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {isOmitted ? '↩ Restore' : 'Not examined'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {!isOmitted && (
+                    <>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                        {system.chips.map(chip => {
+                          const isOn        = selected.includes(chip);
+                          const isFocusChip = focusChips.includes(chip);
+                          return (
+                            <button
+                              key={chip}
+                              type="button"
+                              onClick={() => toggleChip(system.key, chip)}
+                              style={{
+                                padding: '3px 10px', borderRadius: 14,
+                                border: isOn
+                                  ? '1px solid #0d9488'
+                                  : isFocusChip ? '1.5px solid #f59e0b' : '1px solid #d1d5db',
+                                background: isOn ? '#0d9488' : isFocusChip ? '#fffbeb' : '#f9fafb',
+                                color: isOn ? '#fff' : isFocusChip ? '#92400e' : '#374151',
+                                fontSize: 12, cursor: 'pointer',
+                                fontWeight: isOn || isFocusChip ? 600 : 400,
+                                transition: 'all 0.12s',
+                              }}
+                            >
+                              {chip}
+                              {isFocusChip && !isOn && <span style={{ marginLeft: 3, fontSize: 9, opacity: 0.7 }}>●</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <SmartTextarea
+                        value={note}
+                        onChange={v => updateNote(system.key, v)}
+                        placeholder={`${system.label} findings in clinical prose — or use ◎ Normal above`}
+                        style={{ fontSize: 13, minHeight: 48, fontFamily: 'Georgia, serif' }}
+                      />
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </CollapsibleCard>
 
       <WoundAssessmentCard />

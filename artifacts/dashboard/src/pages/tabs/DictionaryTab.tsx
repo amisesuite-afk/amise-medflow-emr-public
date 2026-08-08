@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { DISEASES, getDiseaseSpecialty, getProtocol } from '@workspace/pane-engine';
+import { DISEASES, getDiseaseSpecialty, getProtocol, applyModifiers, initPaneState, type PaneState } from '@workspace/pane-engine';
 import IcdCodeBadge from '@/components/IcdCode';
 import { ManagementPanel } from '@/components/ManagementPanel';
 import { useAppContext } from '@/context/AppContext';
@@ -23,16 +23,59 @@ const SPECIALTIES = Array.from(
 ).sort();
 
 export default function DictionaryTab() {
-  const { setActiveCcKey, setEncounterType, setProcedureData, procedureData, setTopSection, setActiveSection } = useAppContext();
+  const {
+    setActiveCcKey, setEncounterType, setProcedureData, procedureData,
+    setTopSection, setActiveSection, age, sex,
+    setPaneState, setIcdCodes, orderedInvestigations, setOrderedInvestigations,
+  } = useAppContext();
   const [query, setQuery]       = useState('');
   const [specialty, setSpecialty] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  function launchMatrix(diseaseLabel: string) {
+  function launchMatrix(diseaseLabel: string, diseaseId?: string, icd10?: string) {
     const matrix = getMatrixByName(diseaseLabel);
     setActiveCcKey(matrix.id);
     setEncounterType(matrix.encounterType);
     setProcedureData({ ...procedureData, cc: [{ complaint: diseaseLabel, answers: {} }] });
+
+    // Seed PANE to ≥85% for this disease so Assessment tab shows protocol immediately.
+    if (diseaseId) {
+      const parsedAge = parseInt(age, 10) || null;
+      const diseases  = applyModifiers(DISEASES, parsedAge, sex);
+      const fresh     = initPaneState(diseases);
+      const n         = Object.keys(fresh.posteriors).length;
+      const TARGET    = 0.90;
+      const REST      = (1 - TARGET) / Math.max(n - 1, 1);
+      const posteriors: Record<string, number> = {};
+      for (const id in fresh.posteriors) {
+        posteriors[id] = id === diseaseId ? TARGET : REST;
+      }
+      // Set iteration to MAX_QUESTIONS (8) so isConverged() returns true immediately.
+      const seeded: PaneState = { posteriors, answered: {}, iteration: 8 };
+      setPaneState(seeded);
+    }
+
+    // Set ICD code on the chart so CptPicker suggestions kick in.
+    if (icd10) {
+      setIcdCodes([icd10]);
+    }
+
+    // Pre-populate investigations from protocol (stat first, then urgent, then routine).
+    if (diseaseId) {
+      const protocol = getProtocol(diseaseId);
+      if (protocol?.investigations.length) {
+        const urgencyRank = { stat: 0, urgent: 1, routine: 2 } as const;
+        const sorted = [...protocol.investigations].sort(
+          (a, b) => urgencyRank[a.urgency] - urgencyRank[b.urgency],
+        );
+        const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
+        const toAdd = sorted
+          .map(inv => inv.label)
+          .filter(label => !existing.has(label.toLowerCase().trim()));
+        if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
+      }
+    }
+
     setTopSection('consultation');
     setActiveSection(matrix.sections[0] ?? 'pmh');
   }
@@ -135,7 +178,7 @@ export default function DictionaryTab() {
                     <td style={{ padding: '6px 10px', textAlign: 'center' }}>
                       <button
                         type="button"
-                        onClick={e => { e.stopPropagation(); launchMatrix(d.label); }}
+                        onClick={e => { e.stopPropagation(); launchMatrix(d.label, d.id, d.icd10); }}
                         style={{
                           padding: '3px 10px', borderRadius: 6, border: 'none',
                           background: '#0d9488', color: '#fff', fontSize: 11,

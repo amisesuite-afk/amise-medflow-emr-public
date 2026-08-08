@@ -35,6 +35,10 @@ export interface DifferentialEntry {
    */
   ageModifier?: { gt?: number; lt?: number; add: number };
   sexModifier?: { sex: string; add: number };
+  /** Signs whose presence alone is near-diagnostic — checked against combined exam text */
+  pathognomonic?: string[];
+  /** Signs whose presence strongly argues AGAINST this diagnosis */
+  exclusionSigns?: string[];
 }
 
 export interface RankedDifferential {
@@ -44,6 +48,7 @@ export interface RankedDifferential {
   urgency: DxUrgency;
   rawScore: number;
   confidence: number; // 0–100
+  pathognomicMatchSign?: string; // which pathognomonic sign matched, if any
 }
 
 export type SymptomTier = 1 | 2 | 3;
@@ -4048,6 +4053,8 @@ export interface InferenceInput {
   symptomDetails: Record<string, string[]>;
   age?: number | null;
   sex?: string;
+  /** Combined examination text (examAbdomen + examGeneral + etc.) for pathognomonic matching */
+  examText?: string;
 }
 
 // ─── Dual-marker system ───────────────────────────────────────────────────────
@@ -4111,6 +4118,39 @@ const CATEGORY_REGION: Record<string, string> = {
   'Psychiatric': 'Systemic',
   'Oncology': 'Systemic',
   'Tropical': 'Systemic',
+};
+
+// ─── Pathognomonic & exclusion signs by disease ID ───────────────────────────
+// Checked case-insensitively against combined clinical text (symptoms + examText).
+// Pathognomonic: single sign drives score +150 (essentially confirms).
+// Exclusion: presence multiplies score × 0.05 (near-rules-out).
+const PATHOGNOMONIC_SIGNS: Record<string, string[]> = {
+  acute_cholecystitis:    ["murphy's sign", "murphy sign"],
+  acute_cholangitis:      ["charcot's triad", "reynolds' pentad", "reynolds pentad"],
+  cbd_obstruction:        ["courvoisier's sign", "courvoisier sign", "painless palpable gallbladder"],
+  acute_appendicitis:     ["rovsing's sign", "psoas sign", "obturator sign", "mcburney's sign", "mcburney's point"],
+  perforated_peptic_ulcer:["pneumoperitoneum", "board-like rigidity", "boardlike rigidity"],
+  aaa_symptomatic:        ["pulsatile expansile mass", "expansile pulsatile", "pulsatile mass"],
+  aortic_dissection:      ["blood pressure differential", "bp differential arm", "pulse differential arm"],
+  mesenteric_ischaemia:   ["pain out of proportion to signs", "severe pain minimal signs"],
+  cardiac_tamponade:      ["beck's triad", "pulsus paradoxus"],
+  tension_pneumothorax:   ["tracheal deviation", "absent breath sounds unilateral"],
+  stemi:                  ["st elevation", "tombstone t waves", "new lbbb"],
+  necrotising_fasciitis:  ["crepitus skin", "gas tracking fascia", "skin necrosis tracking"],
+  fournier_gangrene:      ["crepitus perineum", "gas perineum", "necrotic perineum", "necrotic scrotum"],
+  paed_intussusception:   ["redcurrant jelly stool", "red currant jelly", "sausage mass rlq", "dance sign"],
+  sigmoid_volvulus:       ["coffee bean sign", "bent inner tube sign", "coffee-bean xray"],
+  portal_hypertension:    ["caput medusae"],
+  testicular_epididymis:  ["cremasteric reflex absent", "horizontal lie testis", "high-riding testis"],
+  pneumothorax:           ["absent breath sounds", "hyper-resonance unilateral"],
+  epiglottitis:           ["thumb sign epiglottis", "tripod position", "drooling stridor"],
+  large_bowel_obstruction:["caecal volvulus", "sigmoid volvulus pattern"],
+  hepatocellular_carcinoma:["bruit hepatic", "arterial bruit liver"],
+};
+
+const EXCLUSION_SIGNS: Record<string, string[]> = {
+  acute_appendicitis:   ["murphy's sign", "murphy sign"],
+  acute_cholecystitis:  ["rovsing's sign", "psoas sign", "mcburney's sign"],
 };
 
 export function computeDxMarkers(
@@ -4204,8 +4244,17 @@ export function computeDxMarkers(
 
 function computeRawScore(
   dx: DifferentialEntry,
-  { symptoms, symptomDetails, age, sex }: InferenceInput,
+  { symptoms, symptomDetails, age, sex, examText }: InferenceInput,
 ): number {
+  // ── Pathognomonic check: single sign drives score +150 ────────────────────
+  const fullClinicalText = [...symptoms, examText ?? ''].join(' ').toLowerCase();
+  const pathoSigns = PATHOGNOMONIC_SIGNS[dx.id];
+  const matchedSign = pathoSigns?.find(s => fullClinicalText.includes(s.toLowerCase()));
+
+  const exclusionSigns = EXCLUSION_SIGNS[dx.id] ?? dx.exclusionSigns;
+  const isExcluded = exclusionSigns?.some(s => fullClinicalText.includes(s.toLowerCase()));
+  if (isExcluded) return 0;
+
   let score = dx.basePrior;
   let symptomHit = false;
 
@@ -4241,6 +4290,7 @@ function computeRawScore(
   // (e.g. acute cholecystitis must not rank #1 when the only symptom is facial weakness)
   if (symptoms.length > 0 && !symptomHit) score *= 0.15;
 
+  if (matchedSign) score += 150;
   return Math.max(0, score);
 }
 
@@ -4249,6 +4299,7 @@ function computeRawScore(
  * values add to ≤ 100 (softmax-like).
  */
 export function computeRankedDifferentials(input: InferenceInput): RankedDifferential[] {
+  const fullClinicalText = [...input.symptoms, input.examText ?? ''].join(' ').toLowerCase();
   const scored = DIFFERENTIALS.map(dx => ({
     ...dx,
     rawScore: computeRawScore(dx, input),
@@ -4256,14 +4307,19 @@ export function computeRankedDifferentials(input: InferenceInput): RankedDiffere
 
   const total = scored.reduce((sum, d) => sum + d.rawScore, 0);
   const ranked = scored
-    .map(d => ({
-      id: d.id,
-      name: d.name,
-      category: d.category,
-      urgency: d.urgency,
-      rawScore: d.rawScore,
-      confidence: total > 0 ? Math.round((d.rawScore / total) * 100) : 0,
-    }))
+    .map(d => {
+      const pathoSigns = PATHOGNOMONIC_SIGNS[d.id];
+      const matchedSign = pathoSigns?.find(s => fullClinicalText.includes(s.toLowerCase()));
+      return {
+        id: d.id,
+        name: d.name,
+        category: d.category,
+        urgency: d.urgency,
+        rawScore: d.rawScore,
+        confidence: total > 0 ? Math.round((d.rawScore / total) * 100) : 0,
+        pathognomicMatchSign: matchedSign,
+      };
+    })
     .sort((a, b) => b.rawScore - a.rawScore);
 
   return ranked;
