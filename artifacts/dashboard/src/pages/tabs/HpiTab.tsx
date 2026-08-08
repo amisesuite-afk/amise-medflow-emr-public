@@ -124,8 +124,16 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
   onAnswerChange: (key: string, value: string) => void;
   onReset: () => void;
 }) {
-  const fields  = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
-  const matrix  = getMatrixByName(entry.complaint);
+  const rawFields = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
+  const matrix    = getMatrixByName(entry.complaint);
+  const { age, sex } = useAppContext();
+  const ageNum = parseInt(age, 10) || null;
+  // Filter out fields that don't apply to this patient's sex or age.
+  // LMP is only relevant for females of potentially fertile age (≥10 y).
+  const fields = useMemo(() => rawFields.filter(f => {
+    if (f.key === 'lmp') return sex === 'female' && (ageNum === null || ageNum >= 10);
+    return true;
+  }), [rawFields, sex, ageNum]);
   const filled  = fields.filter(f => entry.answers[f.key]?.trim()).length;
 
   // openIdx: which field is currently expanded for input.
