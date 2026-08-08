@@ -159,6 +159,7 @@ export default function ChiefComplaintStrip() {
   } = useAppContext();
 
   const [expanded, setExpanded]       = useState<number | null>(null);
+  const [openFieldIdx, setOpenFieldIdx] = useState(0);
   const [showPicker, setShowPicker]   = useState(false);
   const [customInput, setCustomInput] = useState('');
   const [catFilter, setCatFilter]     = useState<CCCategory | ''>('');
@@ -223,6 +224,17 @@ export default function ChiefComplaintStrip() {
     setExpanded(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // When a CC card expands, jump to first unanswered field
+  useEffect(() => {
+    if (expanded === null) return;
+    const entry = entries[expanded];
+    if (!entry) return;
+    const tpl = getMatrixByName(entry.complaint);
+    const first = tpl.prompts.findIndex(p => !entry.answers[p.key]?.trim());
+    setOpenFieldIdx(first >= 0 ? first : tpl.prompts.length);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expanded]);
 
   function activateMatrix(complaint: string) {
     const matrix = getMatrixByName(complaint);
@@ -414,17 +426,127 @@ export default function ChiefComplaintStrip() {
               </div>
             )}
 
-            {/* Prompt fields */}
-            <div style={{ padding: '14px 16px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 14 }}>
-              {tpl.prompts.map(p => (
-                <PromptField
-                  key={p.key}
-                  label={p.label}
-                  hint={p.hint ?? ''}
-                  value={entry.answers[p.key] ?? ''}
-                  onChange={v => setAnswer(expanded, p.key, v)}
-                />
-              ))}
+            {/* Prompt fields — sequential one-at-a-time */}
+            <div style={{ padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 5 }}>
+              {tpl.prompts.map((p, idx) => {
+                const value    = entry.answers[p.key] ?? '';
+                const answered = value.trim().length > 0;
+                const isOpen   = idx === openFieldIdx;
+
+                if (!answered && !isOpen) return null;
+
+                const isMulti = MULTI_KEYS.has(p.key.toLowerCase().replace(/\s+/g, '_'));
+                const options = parseChipOptions(p.hint ?? '');
+                const isLast  = idx === tpl.prompts.length - 1;
+
+                // Compact answered summary row
+                if (answered && !isOpen) {
+                  return (
+                    <button
+                      key={p.key}
+                      type="button"
+                      onClick={() => setOpenFieldIdx(idx)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        padding: '6px 10px', borderRadius: 8,
+                        border: '1px solid rgba(13,148,136,0.3)', background: 'rgba(13,148,136,0.06)',
+                        cursor: 'pointer', textAlign: 'left', width: '100%',
+                      }}
+                    >
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 80, flexShrink: 0 }}>
+                        {p.label}
+                      </span>
+                      <span style={{ fontSize: 12, color: '#2dd4bf', fontWeight: 600, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>
+                        {value.length > 52 ? value.slice(0, 50) + '…' : value}
+                      </span>
+                      <span style={{ fontSize: 10, color: '#0d9488', flexShrink: 0 }}>✎</span>
+                    </button>
+                  );
+                }
+
+                // Expanded current field
+                return (
+                  <div
+                    key={p.key}
+                    style={{
+                      display: 'flex', flexDirection: 'column', gap: 7,
+                      padding: '10px 12px', borderRadius: 9,
+                      border: '1.5px solid rgba(13,148,136,0.55)', background: '#070d1a',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#0d9488', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        {p.label}
+                      </span>
+                      <span style={{ marginLeft: 'auto', fontSize: 10, color: '#334155' }}>
+                        {idx + 1} / {tpl.prompts.length}
+                      </span>
+                    </div>
+
+                    {options.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                        {options.map(opt => {
+                          const active = isChipActive(value, opt);
+                          return (
+                            <button
+                              key={opt}
+                              type="button"
+                              onClick={() => {
+                                const newVal = toggleChip(value, chipLabel(opt), isMulti);
+                                setAnswer(expanded!, p.key, newVal);
+                                if (!isMulti && newVal.trim()) {
+                                  setTimeout(() => setOpenFieldIdx(idx + 1), 300);
+                                }
+                              }}
+                              style={{
+                                padding: '5px 13px', borderRadius: 20, fontSize: 12,
+                                fontWeight: active ? 700 : 400, cursor: 'pointer',
+                                border: `1px solid ${active ? '#0d9488' : '#334155'}`,
+                                background: active ? '#0d9488' : '#1e293b',
+                                color: active ? '#fff' : '#94a3b8',
+                                transition: 'all 0.12s',
+                              }}
+                            >
+                              {chipLabel(opt)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <input
+                        type="text"
+                        value={value}
+                        onChange={e => setAnswer(expanded!, p.key, e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter' && !isLast) setOpenFieldIdx(idx + 1); }}
+                        placeholder={options.length > 0 ? 'Add detail or type custom answer…' : (p.hint ?? p.label + '…')}
+                        style={{
+                          flex: 1, padding: '6px 10px', borderRadius: 6, fontSize: 12, outline: 'none',
+                          border: `1px solid ${value ? '#0d9488' : '#1e293b'}`,
+                          background: '#0a0f1e', color: '#e2e8f0',
+                          transition: 'border-color 0.1s',
+                        }}
+                        onFocus={e => (e.currentTarget.style.borderColor = '#0d9488')}
+                        onBlur={e => (e.currentTarget.style.borderColor = value ? '#0d9488' : '#1e293b')}
+                      />
+                      {!isLast && (
+                        <button
+                          type="button"
+                          onClick={() => setOpenFieldIdx(idx + 1)}
+                          style={{
+                            padding: '6px 13px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                            border: '1px solid #0d9488', background: 'transparent',
+                            color: '#0d9488', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                          }}
+                        >
+                          Next →
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Investigation hints */}
