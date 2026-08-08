@@ -545,27 +545,37 @@ export default function AssessmentTab() {
     : null;
   const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? null;
 
-  // Auto-populate ordered investigations from protocol when PANE converges.
-  // Capture current orderedInvestigations in a ref so the effect isn't re-triggered by array changes.
+  // Auto-populate ordered investigations from all plausible differentials.
+  // ≥0.85 converged: single locked protocol. ≥0.10: merge top-3 to narrow Dx.
+  // When the same test appears in multiple protocols the highest urgency wins.
   const invRef = useRef(orderedInvestigations);
   useEffect(() => { invRef.current = orderedInvestigations; });
 
   useEffect(() => {
-    if (!activeDiseaseId) return;
-    const protocol = getProtocol(activeDiseaseId);
-    if (!protocol?.investigations.length) return;
-    const urgencyRank = { stat: 0, urgent: 1, routine: 2 } as const;
-    const sorted = [...protocol.investigations].sort(
-      (a, b) => urgencyRank[a.urgency] - urgencyRank[b.urgency],
+    const relevant = paneTop.filter(r => r.probability >= 0.10);
+    if (!relevant.length) return;
+    const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
+    const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
+    for (const { disease } of relevant) {
+      const protocol = getProtocol(disease.id);
+      if (!protocol?.investigations.length) continue;
+      for (const inv of protocol.investigations) {
+        const key = inv.label.toLowerCase().trim();
+        const cur = byLabel.get(key);
+        if (!cur || (urgencyRank[inv.urgency] ?? 2) < (urgencyRank[cur.urgency] ?? 2)) {
+          byLabel.set(key, inv);
+        }
+      }
+    }
+    const sorted = [...byLabel.values()].sort(
+      (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
     );
     const current = invRef.current;
     const existing = new Set(current.map((s: string) => s.toLowerCase().trim()));
-    const toAdd = sorted
-      .map(inv => inv.label)
-      .filter(label => !existing.has(label.toLowerCase().trim()));
+    const toAdd = sorted.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
     if (toAdd.length) setOrderedInvestigations([...toAdd, ...current]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeDiseaseId]);
+  }, [paneTop.map(r => `${r.disease.id}:${r.probability.toFixed(2)}`).join(',')]);
 
   const apptType = triageResult.appointmentType;
   const ddxOptions: DiffOption[] = DIFFERENTIAL_PROMPTS[apptType] ?? DIFFERENTIAL_PROMPTS['new_consult'];

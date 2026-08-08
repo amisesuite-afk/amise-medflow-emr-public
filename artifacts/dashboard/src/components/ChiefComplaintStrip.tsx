@@ -185,22 +185,31 @@ export default function ChiefComplaintStrip() {
     }
     setPaneState(state);
 
-    // Pre-fill investigations from the leading differential's protocol
-    const top = topDiagnoses(state, diseases, 1);
-    const leading = top[0];
-    if (leading) {
-      const protocol = getProtocol(leading.disease.id);
-      if (protocol?.investigations.length) {
-        const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
-        const sorted = [...protocol.investigations].sort(
-          (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
-        );
-        const existing = new Set(orderedInvestigations.map(s => s.toLowerCase().trim()));
-        const toAdd = sorted.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
-        if (toAdd.length) {
-          setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
+    // Pre-fill investigations from all plausible differentials (≥5% probability) so
+    // the Labs tab is immediately populated with tests that help narrow the Dx.
+    // When the same test appears in multiple protocols, the highest urgency wins.
+    const top = topDiagnoses(state, diseases, 3);
+    const relevant = top.filter(r => r.probability >= 0.05);
+    if (relevant.length) {
+      const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
+      const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
+      for (const { disease } of relevant) {
+        const protocol = getProtocol(disease.id);
+        if (!protocol?.investigations.length) continue;
+        for (const inv of protocol.investigations) {
+          const key = inv.label.toLowerCase().trim();
+          const cur = byLabel.get(key);
+          if (!cur || (urgencyRank[inv.urgency] ?? 2) < (urgencyRank[cur.urgency] ?? 2)) {
+            byLabel.set(key, inv);
+          }
         }
       }
+      const sorted = [...byLabel.values()].sort(
+        (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
+      );
+      const existing = new Set(orderedInvestigations.map(s => s.toLowerCase().trim()));
+      const toAdd = sorted.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
+      if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
     }
   }
 
