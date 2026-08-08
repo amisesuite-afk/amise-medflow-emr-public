@@ -3,7 +3,7 @@ import { useAppContext } from '@/context/AppContext';
 import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CCTemplate } from '@/lib/cc-matrices';
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
-import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, topDiagnoses, isConverged } from '@workspace/pane-engine';
+import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, topDiagnoses, isConverged, getProtocol } from '@workspace/pane-engine';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -159,6 +159,7 @@ export default function ChiefComplaintStrip() {
     symptoms, symptomDetails, procedureData, setProcedureData,
     setEncounterType, activeCcKey, setActiveCcKey, setActiveSection, freeText,
     age, sex, setPaneState,
+    orderedInvestigations, setOrderedInvestigations,
   } = useAppContext();
 
   const [expanded, setExpanded]       = useState<number | null>(null);
@@ -171,18 +172,36 @@ export default function ChiefComplaintStrip() {
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
 
   // Seed the PANE Bayesian engine from SOCRATES answers when HPI is complete.
+  // Also pre-populates the investigations list from the top differential's protocol.
   function seedPane(complaint: string, answers: Record<string, string>) {
     const parsedAge = parseInt(age, 10) || null;
     const diseases  = applyModifiers(DISEASES, parsedAge, sex);
     let   state     = initPaneState(diseases);
     const features  = extractFeaturesFromSocrates(complaint, answers);
     for (const [featureId, present] of Object.entries(features)) {
-      // Only update if this feature exists in FEATURES (avoid no-op updates for unknown IDs)
       if (FEATURES.some(f => f.id === featureId)) {
         state = updatePosterior(state, diseases, featureId, present);
       }
     }
     setPaneState(state);
+
+    // Pre-fill investigations from the leading differential's protocol
+    const top = topDiagnoses(state, diseases, 1);
+    const leading = top[0];
+    if (leading) {
+      const protocol = getProtocol(leading.disease.id);
+      if (protocol?.investigations.length) {
+        const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
+        const sorted = [...protocol.investigations].sort(
+          (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
+        );
+        const existing = new Set(orderedInvestigations.map(s => s.toLowerCase().trim()));
+        const toAdd = sorted.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
+        if (toAdd.length) {
+          setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
+        }
+      }
+    }
   }
 
   // Restore activeCcKey when entries already exist but key was cleared (e.g. patient reload)
