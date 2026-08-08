@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { useAppContext } from '@/context/AppContext';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useAppContext, type ActiveDiagnosis } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
 import { ManagementPanel } from '@/components/ManagementPanel';
@@ -523,6 +523,9 @@ export default function AssessmentTab() {
     symptoms, examFindings, vitals, investigationResults,
     comorbidities, age, sex, isPostOp, procedureData, rosFindings,
     paneTop, paneConverged, icdCodes, activeCcKey,
+    confirmedDiagnoses, setConfirmedDiagnoses,
+    examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
+    hpiNotes,
   } = useAppContext();
 
   const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
@@ -562,8 +565,112 @@ export default function AssessmentTab() {
     setDifferentials(line);
   }
 
+  // Combined clinical text used to check if a diagnosis still has supporting evidence
+  const clinicalText = useMemo(() => [
+    ...symptoms,
+    examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
+    hpiNotes, assessment,
+    ...Object.values(examFindings).flat(),
+  ].join(' ').toLowerCase(), [
+    symptoms, examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
+    hpiNotes, assessment, examFindings,
+  ]);
+
+  function isDxSupported(dx: ActiveDiagnosis): boolean {
+    return dx.signs.some(s => clinicalText.includes(s.toLowerCase()));
+  }
+
+  function matchedSigns(dx: ActiveDiagnosis): string[] {
+    return dx.signs.filter(s => clinicalText.includes(s.toLowerCase()));
+  }
+
+  function confirmDiagnosis(d: DiffOption) {
+    if (!confirmedDiagnoses.some(c => c.name === d.name)) {
+      setConfirmedDiagnoses([...confirmedDiagnoses, {
+        id: `${Date.now()}-${d.name}`,
+        name: d.name,
+        signs: d.signs,
+      }]);
+    }
+    addDiff(d.name);
+  }
+
+  function removeDiagnosis(id: string) {
+    setConfirmedDiagnoses(confirmedDiagnoses.filter(c => c.id !== id));
+  }
+
   return (
     <div className="gap-y">
+
+      {/* ── Active Diagnoses ─────────────────────────────────────────────────── */}
+      {confirmedDiagnoses.length > 0 && (
+        <div style={{
+          borderRadius: 10, border: '1px solid rgba(99,102,241,0.25)',
+          background: 'rgba(99,102,241,0.04)', padding: '10px 14px',
+        }}>
+          <div style={{
+            fontSize: 10, fontWeight: 800, letterSpacing: '0.08em',
+            textTransform: 'uppercase', color: '#818cf8', marginBottom: 8,
+          }}>
+            Active Diagnoses
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {confirmedDiagnoses.map(dx => {
+              const supported = isDxSupported(dx);
+              const hits = matchedSigns(dx);
+              return (
+                <div key={dx.id} style={{
+                  borderRadius: 8,
+                  border: `1px solid ${supported ? 'rgba(52,211,153,0.35)' : 'rgba(251,191,36,0.35)'}`,
+                  background: supported ? 'rgba(52,211,153,0.05)' : 'rgba(251,191,36,0.05)',
+                  padding: '8px 12px',
+                  display: 'flex', alignItems: 'flex-start', gap: 10,
+                }}>
+                  <span style={{ fontSize: 16, lineHeight: 1, flexShrink: 0, marginTop: 1 }}>
+                    {supported ? '✓' : '⚠'}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: supported ? 'var(--ink)' : '#d97706' }}>
+                      {dx.name}
+                    </div>
+                    <div style={{ fontSize: 10, marginTop: 2, color: supported ? '#34d399' : '#f59e0b' }}>
+                      {supported
+                        ? `Supported · ${hits.join(' · ')}`
+                        : 'Unsupported — findings that drove this diagnosis have been removed or not yet documented'}
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginTop: 5 }}>
+                      {dx.signs.map(sign => {
+                        const active = clinicalText.includes(sign.toLowerCase());
+                        return (
+                          <span key={sign} style={{
+                            fontSize: 10, padding: '2px 7px', borderRadius: 10,
+                            background: active ? 'rgba(52,211,153,0.15)' : 'rgba(156,163,175,0.12)',
+                            color: active ? '#34d399' : '#9ca3af',
+                            border: `1px solid ${active ? 'rgba(52,211,153,0.3)' : 'rgba(156,163,175,0.25)'}`,
+                            fontWeight: active ? 700 : 400,
+                          }}>
+                            {sign}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <button type="button"
+                    onClick={() => removeDiagnosis(dx.id)}
+                    title="Remove diagnosis"
+                    style={{
+                      border: 'none', background: 'none', cursor: 'pointer',
+                      color: '#9ca3af', fontSize: 16, padding: '0 4px', flexShrink: 0,
+                      lineHeight: 1,
+                    }}>
+                    ×
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* CDS suggestions */}
       {cdsSuggestions.length > 0 && (
@@ -736,41 +843,48 @@ export default function AssessmentTab() {
           </span>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
-          {ddxOptions.map(d => (
-            <button
-              key={d.name}
-              type="button"
-              onClick={() => addDiff(d.name)}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '7px 12px',
-                borderRadius: 8,
-                border: '1px solid #e5e7eb',
-                background: '#f9fafb',
-                cursor: 'pointer',
-                textAlign: 'left',
-                gap: 3,
-                transition: 'background .12s, border-color .12s',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = '#eff6ff';
-                (e.currentTarget as HTMLButtonElement).style.borderColor = '#bfdbfe';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = '#f9fafb';
-                (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb';
-              }}
-            >
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#111827' }}>
-                + {d.name}
-              </span>
-              <span style={{ fontSize: 10.5, color: '#6b7280', fontStyle: 'italic' }}>
-                [{d.signs.join(' · ')}]
-              </span>
-            </button>
-          ))}
+          {ddxOptions.map(d => {
+            const confirmed = confirmedDiagnoses.some(c => c.name === d.name);
+            return (
+              <button
+                key={d.name}
+                type="button"
+                onClick={() => confirmDiagnosis(d)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  padding: '7px 12px',
+                  borderRadius: 8,
+                  border: confirmed ? '1px solid rgba(52,211,153,0.4)' : '1px solid #e5e7eb',
+                  background: confirmed ? 'rgba(52,211,153,0.06)' : '#f9fafb',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  gap: 3,
+                  transition: 'background .12s, border-color .12s',
+                }}
+                onMouseEnter={e => {
+                  if (!confirmed) {
+                    (e.currentTarget as HTMLButtonElement).style.background = '#eff6ff';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#bfdbfe';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!confirmed) {
+                    (e.currentTarget as HTMLButtonElement).style.background = '#f9fafb';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb';
+                  }
+                }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 600, color: confirmed ? '#34d399' : '#111827' }}>
+                  {confirmed ? '✓ ' : '+ '}{d.name}
+                </span>
+                <span style={{ fontSize: 10.5, color: '#6b7280', fontStyle: 'italic' }}>
+                  [{d.signs.join(' · ')}]
+                </span>
+              </button>
+            );
+          })}
         </div>
       </CollapsibleCard>
 

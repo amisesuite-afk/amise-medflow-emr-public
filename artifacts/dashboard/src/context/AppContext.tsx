@@ -79,6 +79,13 @@ export interface LabRecord {
   tests: Array<{ name: string; value: string; unit: string; refRange: string; flag: '' | 'H' | 'L' | 'C' }>;
 }
 
+/** A diagnosis the clinician has confirmed, carrying the signs that support it. */
+export interface ActiveDiagnosis {
+  id: string;
+  name: string;
+  signs: string[]; // diagnostic criteria from the differential card
+}
+
 export type TopSection =
   | 'dashboard' | 'patients' | 'checkin' | 'doc_scan' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
@@ -279,6 +286,7 @@ interface CtxValue {
   investigationResults: Record<string, string>; setInvestigationResults(v: Record<string, string>): void;
   icdCodes: string[]; setIcdCodes(v: string[]): void;
   cptCodes: string[]; setCptCodes(v: string[]): void;
+  confirmedDiagnoses: ActiveDiagnosis[]; setConfirmedDiagnoses(v: ActiveDiagnosis[]): void;
 
   weightKg: string; setWeightKg(v: string): void;
   heightCm: string; setHeightCm(v: string): void;
@@ -546,6 +554,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [investigationResults, setInvestigationResults] = useState<Record<string, string>>({});
   const [icdCodes, setIcdCodes] = useState<string[]>([]);
   const [cptCodes, setCptCodes] = useState<string[]>([]);
+  const [confirmedDiagnoses, setConfirmedDiagnoses] = useState<ActiveDiagnosis[]>([]);
 
   const [weightKg, setWeightKg] = useState('');
   const [heightCm, setHeightCm] = useState('');
@@ -921,6 +930,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
     setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1);
     setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
+    setConfirmedDiagnoses([]);
     setProcedures(''); setBilling(''); setDocuments(''); setSurgicalClassifications({});
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
@@ -1376,6 +1386,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     investigationResults, setInvestigationResults,
     icdCodes, setIcdCodes,
     cptCodes, setCptCodes,
+    confirmedDiagnoses, setConfirmedDiagnoses,
     assessment, setAssessment,
     differentials, setDifferentials,
     plan, setPlan,
