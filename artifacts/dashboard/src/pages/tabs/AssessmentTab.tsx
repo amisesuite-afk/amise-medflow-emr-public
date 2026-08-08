@@ -10,6 +10,7 @@ import { useSpeechInput } from '@/hooks/useSpeechInput';
 import ClinicalAlgorithmPanel from '@/components/ClinicalAlgorithmPanel';
 import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
+import { computeRankedDifferentials } from '@/lib/symptom-inference';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -546,6 +547,7 @@ export default function AssessmentTab() {
   const ddxOptions: DiffOption[] = DIFFERENTIAL_PROMPTS[apptType] ?? DIFFERENTIAL_PROMPTS['new_consult'];
 
   const [requestedTool, setRequestedTool] = useState<string | null>(null);
+  const [showAllDdx, setShowAllDdx] = useState(false);
 
   const requestTool = useCallback((scaleKey: string) => {
     setRequestedTool(null);
@@ -575,6 +577,46 @@ export default function AssessmentTab() {
     symptoms, examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
     hpiNotes, assessment, examFindings,
   ]);
+
+  // Passive inference: rank diseases from current exam + symptoms (no Q&A required)
+  const passiveRanked = useMemo(() => computeRankedDifferentials({
+    symptoms,
+    symptomDetails: {},
+    examText: [examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound, hpiNotes].join(' '),
+  }), [symptoms, examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound, hpiNotes]);
+
+  // Build a name→rank map for sorting the differential card grid
+  const passiveRankMap = useMemo(() => {
+    const map = new Map<string, number>();
+    passiveRanked.forEach((r, i) => map.set(r.name.toLowerCase(), i));
+    return map;
+  }, [passiveRanked]);
+
+  // Top result and whether a pathognomonic sign is matched
+  const topPassive = passiveRanked[0];
+  const topConfidence = (symptoms.length > 0 || examAbdomen || examGeneral) ? (topPassive?.confidence ?? 0) : 0;
+  const pathognomicAlert = passiveRanked.find(r => r.pathognomicMatchSign);
+
+  // Focus mode drives progressive narrowing
+  const focusMode: 'broad' | 'narrowing' | 'focused' =
+    pathognomicAlert || topConfidence >= 65 ? 'focused' :
+    topConfidence >= 35 ? 'narrowing' : 'broad';
+
+  // Sort the differential card grid so highest-ranked diseases float to top
+  const sortedDdxOptions = useMemo(() => [...ddxOptions].sort((a, b) => {
+    const getRank = (name: string) => {
+      const lower = name.toLowerCase();
+      // Direct name match
+      let rank = passiveRankMap.get(lower);
+      if (rank !== undefined) return rank;
+      // Fuzzy: find the ranked entry whose name overlaps most
+      for (const [rname, ridx] of passiveRankMap) {
+        if (rname.includes(lower) || lower.includes(rname.split(' ').slice(0, 2).join(' '))) return ridx;
+      }
+      return 999;
+    };
+    return getRank(a.name) - getRank(b.name);
+  }), [ddxOptions, passiveRankMap]);
 
   function isDxSupported(dx: ActiveDiagnosis): boolean {
     return dx.signs.some(s => clinicalText.includes(s.toLowerCase()));
@@ -842,9 +884,45 @@ export default function AssessmentTab() {
             — brackets show shared features
           </span>
         </div>
+
+        {/* Pathognomonic alert banner */}
+        {pathognomicAlert && (
+          <div style={{
+            padding: '8px 12px', borderRadius: 8,
+            background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.4)',
+            marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8,
+          }}>
+            <span style={{ fontSize: 16 }}>🎯</span>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#34d399' }}>
+                Pathognomonic sign detected
+              </div>
+              <div style={{ fontSize: 11, color: '#6b7280' }}>
+                <strong>{pathognomicAlert.pathognomicMatchSign}</strong> → {pathognomicAlert.name}
+              </div>
+            </div>
+          </div>
+        )}
+        {focusMode !== 'broad' && !pathognomicAlert && topPassive && (
+          <div style={{
+            padding: '6px 12px', borderRadius: 8,
+            background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.2)',
+            marginBottom: 8, fontSize: 11, color: '#818cf8',
+          }}>
+            🔍 Narrowing — <strong>{topPassive.name}</strong> leading ({topConfidence}%)
+            {focusMode === 'focused' && ' · Less likely diagnoses dimmed'}
+          </div>
+        )}
+
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
-          {ddxOptions.map(d => {
+          {(focusMode === 'focused' && !showAllDdx ? sortedDdxOptions.slice(0, 8) : sortedDdxOptions).map((d, sortIdx) => {
             const confirmed = confirmedDiagnoses.some(c => c.name === d.name);
+            const dxRank = passiveRankMap.get(d.name.toLowerCase()) ??
+              [...passiveRankMap.entries()].find(([k]) => k.includes(d.name.toLowerCase().split(' ').slice(0,2).join(' ')))?.[1];
+            const dxConfidence = dxRank !== undefined ? (passiveRanked[dxRank]?.confidence ?? 0) : 0;
+            const isLeading = focusMode !== 'broad' && sortIdx === 0 && dxConfidence > 0;
+            const isPathognomonic = passiveRanked[dxRank ?? 999]?.pathognomicMatchSign != null;
+            const isDimmed = focusMode === 'focused' && sortIdx > 2 && !confirmed;
             return (
               <button
                 key={d.name}
@@ -856,8 +934,14 @@ export default function AssessmentTab() {
                   alignItems: 'flex-start',
                   padding: '7px 12px',
                   borderRadius: 8,
-                  border: confirmed ? '1px solid rgba(52,211,153,0.4)' : '1px solid #e5e7eb',
-                  background: confirmed ? 'rgba(52,211,153,0.06)' : '#f9fafb',
+                  border: isPathognomonic ? '1px solid rgba(52,211,153,0.6)' :
+                          isLeading ? '1px solid rgba(99,102,241,0.5)' :
+                          confirmed ? '1px solid rgba(52,211,153,0.4)' : '1px solid #e5e7eb',
+                  background: isPathognomonic ? 'rgba(52,211,153,0.08)' :
+                              isLeading ? 'rgba(99,102,241,0.06)' :
+                              confirmed ? 'rgba(52,211,153,0.06)' : '#f9fafb',
+                  opacity: isDimmed ? 0.45 : 1,
+                  order: isDimmed ? 1 : 0,
                   cursor: 'pointer',
                   textAlign: 'left',
                   gap: 3,
@@ -871,8 +955,12 @@ export default function AssessmentTab() {
                 }}
                 onMouseLeave={e => {
                   if (!confirmed) {
-                    (e.currentTarget as HTMLButtonElement).style.background = '#f9fafb';
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#e5e7eb';
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      isPathognomonic ? 'rgba(52,211,153,0.08)' :
+                      isLeading ? 'rgba(99,102,241,0.06)' : '#f9fafb';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor =
+                      isPathognomonic ? 'rgba(52,211,153,0.6)' :
+                      isLeading ? 'rgba(99,102,241,0.5)' : '#e5e7eb';
                   }
                 }}
               >
@@ -882,10 +970,22 @@ export default function AssessmentTab() {
                 <span style={{ fontSize: 10.5, color: '#6b7280', fontStyle: 'italic' }}>
                   [{d.signs.join(' · ')}]
                 </span>
+                {dxConfidence > 5 && (
+                  <span style={{ fontSize: 9, color: isPathognomonic ? '#34d399' : '#9ca3af', marginTop: 2 }}>
+                    {isPathognomonic ? `🎯 ${passiveRanked[dxRank!]?.pathognomicMatchSign}` : `${dxConfidence}% match`}
+                  </span>
+                )}
               </button>
             );
           })}
         </div>
+
+        {focusMode === 'focused' && (
+          <button type="button" onClick={() => setShowAllDdx(s => !s)}
+            style={{ fontSize: 11, color: '#9ca3af', background: 'none', border: 'none', cursor: 'pointer', marginTop: 4 }}>
+            {showAllDdx ? '▲ Show less' : `▼ Show all ${sortedDdxOptions.length} differentials`}
+          </button>
+        )}
       </CollapsibleCard>
 
       <ClinicalAlgorithmPanel requestedTool={requestedTool} />
