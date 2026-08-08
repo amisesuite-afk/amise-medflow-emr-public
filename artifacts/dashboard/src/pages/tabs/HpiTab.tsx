@@ -117,89 +117,48 @@ function buildFields(complaint: string): HpiField[] {
   return fields;
 }
 
-// ── HpiFieldRow ───────────────────────────────────────────────────────────────
-
-function HpiFieldRow({ field, value, onChange }: {
-  field: HpiField; value: string; onChange: (v: string) => void;
-}) {
-  const accent = field.triage ? '#0d9488' : '#3b82f6';
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{
-          fontSize: 10, fontWeight: 800, color: field.triage ? '#0d9488' : '#64748b',
-          textTransform: 'uppercase', letterSpacing: '0.06em',
-        }}>
-          {field.label}
-        </span>
-        {field.triage && (
-          <span style={{
-            fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4,
-            border: '1px solid #0d9488', color: '#0d9488', letterSpacing: '0.04em',
-          }}>TRIAGE</span>
-        )}
-        {value && (
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: '#34d399', fontWeight: 600 }}>
-            {value.length > 32 ? value.slice(0, 30) + '…' : value}
-          </span>
-        )}
-      </div>
-
-      {field.chips.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-          {field.chips.map(chip => {
-            const active = isActive(value, chip);
-            return (
-              <button
-                key={chip}
-                type="button"
-                onClick={() => onChange(toggleChip(value, strip(chip), field.multi))}
-                style={{
-                  padding: '4px 11px', borderRadius: 20, fontSize: 11,
-                  fontWeight: active ? 700 : 400, cursor: 'pointer',
-                  border: `1px solid ${active ? accent : '#334155'}`,
-                  background: active ? accent : '#1e293b',
-                  color: active ? '#fff' : '#94a3b8',
-                  transition: 'all 0.1s',
-                }}
-              >
-                {strip(chip)}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      <input
-        type="text"
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={field.chips.length > 0 ? 'Add detail or type custom answer…' : `${field.label}…`}
-        style={{
-          padding: '6px 10px', borderRadius: 6, fontSize: 12, outline: 'none',
-          border: `1px solid ${value ? accent : '#1e293b'}`,
-          background: '#070d1a', color: '#e2e8f0',
-          transition: 'border-color 0.1s',
-        }}
-        onFocus={e => (e.currentTarget.style.borderColor = accent)}
-        onBlur={e => (e.currentTarget.style.borderColor = value ? accent : '#1e293b')}
-      />
-    </div>
-  );
-}
-
-// ── HpiBuilderCard — one per CC entry ─────────────────────────────────────────
+// ── HpiBuilderCard — sequential one-question-at-a-time SOCRATES interview ─────
 
 function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
   entry: CCEntry;
   onAnswerChange: (key: string, value: string) => void;
   onReset: () => void;
 }) {
-  const fields       = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
-  const triageFields = fields.filter(f => f.triage);
-  const filled       = fields.filter(f => entry.answers[f.key]?.trim()).length;
-  const filledTriage = triageFields.filter(f => entry.answers[f.key]?.trim()).length;
-  const matrix       = getMatrixByName(entry.complaint);
+  const fields  = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
+  const matrix  = getMatrixByName(entry.complaint);
+  const filled  = fields.filter(f => entry.answers[f.key]?.trim()).length;
+
+  // openIdx: which field is currently expanded for input.
+  // fields.length = all answered, no field open.
+  const [openIdx, setOpenIdx] = useState(() => {
+    const first = fields.findIndex(f => !entry.answers[f.key]?.trim());
+    return first >= 0 ? first : fields.length;
+  });
+
+  // Reset to first unanswered when complaint changes
+  useEffect(() => {
+    const first = fields.findIndex(f => !entry.answers[f.key]?.trim());
+    setOpenIdx(first >= 0 ? first : fields.length);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entry.complaint]);
+
+  // Return to field 0 after ↺ Clear (all answers wiped)
+  useEffect(() => {
+    if (filled === 0) setOpenIdx(0);
+  }, [filled]);
+
+  function advance(fromIdx: number) {
+    setOpenIdx(fromIdx + 1); // may become fields.length (= all done, no open field)
+  }
+
+  function handleChip(idx: number, field: HpiField, chip: string) {
+    const val = toggleChip(entry.answers[field.key] ?? '', strip(chip), field.multi);
+    onAnswerChange(field.key, val);
+    // Auto-advance after single-select chip selection
+    if (!field.multi && val.trim()) {
+      setTimeout(() => advance(idx), 300);
+    }
+  }
 
   return (
     <div style={{ background: '#0f172a', borderRadius: 10, border: '1px solid #1e293b', overflow: 'hidden', marginBottom: 10 }}>
@@ -212,50 +171,140 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
         <span style={{ fontSize: 12 }}>{matrix.icon ?? '📋'}</span>
         <span style={{ fontSize: 13, fontWeight: 700, color: '#f1f5f9' }}>{entry.complaint}</span>
         {filled > 0 && (
-          <span style={{
-            fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10,
-            background: '#064e3b', color: '#34d399',
-          }}>
-            {filled}/{fields.length} filled
+          <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 10, background: '#064e3b', color: '#34d399' }}>
+            {filled}/{fields.length} answered
           </span>
         )}
         <button
           type="button"
           onClick={onReset}
-          style={{
-            marginLeft: 'auto', fontSize: 11, padding: '3px 9px', borderRadius: 5,
-            border: '1px solid #334155', background: 'transparent', color: '#64748b', cursor: 'pointer',
-          }}
+          style={{ marginLeft: 'auto', fontSize: 11, padding: '3px 9px', borderRadius: 5, border: '1px solid #334155', background: 'transparent', color: '#64748b', cursor: 'pointer' }}
         >
           ↺ Clear
         </button>
       </div>
 
-      <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 5 }}>
 
-        {/* Triage section label — only when urgent triage questions exist */}
-        {triageFields.length > 0 && (
-          <div style={{
-            fontSize: 9, fontWeight: 800, color: '#0d9488',
-            textTransform: 'uppercase', letterSpacing: '0.1em',
-            display: 'flex', alignItems: 'center', gap: 6,
-          }}>
-            ⚡ Key questions
-            {filledTriage > 0 && (
-              <span style={{ fontWeight: 400, color: '#34d399' }}>· {filledTriage}/{triageFields.length} answered</span>
-            )}
-          </div>
-        )}
+        {fields.map((field, idx) => {
+          const value    = entry.answers[field.key] ?? '';
+          const isOpen   = idx === openIdx;
+          const answered = value.trim().length > 0;
 
-        {/* All fields in a single flow — triage first (marked ⚡), then SOCRATES detail */}
-        {fields.map(f => (
-          <HpiFieldRow
-            key={f.key}
-            field={f}
-            value={entry.answers[f.key] ?? ''}
-            onChange={v => onAnswerChange(f.key, v)}
-          />
-        ))}
+          // Hide fields not yet reached (unanswered and beyond current question)
+          if (!answered && !isOpen) return null;
+
+          const accent = field.triage ? '#0d9488' : '#3b82f6';
+
+          // ── Compact answered row ──
+          if (answered && !isOpen) {
+            return (
+              <button
+                key={field.key}
+                type="button"
+                onClick={() => setOpenIdx(idx)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '6px 10px', borderRadius: 8,
+                  border: `1px solid ${accent}30`, background: `${accent}0a`,
+                  cursor: 'pointer', textAlign: 'left', width: '100%',
+                }}
+              >
+                <span style={{ fontSize: 10, fontWeight: 800, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 70, flexShrink: 0 }}>
+                  {field.label}
+                </span>
+                <span style={{ fontSize: 12, color: '#34d399', fontWeight: 600, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>
+                  {value.length > 52 ? value.slice(0, 50) + '…' : value}
+                </span>
+                <span style={{ fontSize: 10, color: accent, flexShrink: 0 }}>✎</span>
+              </button>
+            );
+          }
+
+          // ── Expanded (active) field ──
+          const isLast = idx === fields.length - 1;
+          return (
+            <div key={field.key} style={{
+              display: 'flex', flexDirection: 'column', gap: 7,
+              padding: '10px 12px', borderRadius: 9,
+              border: `1.5px solid ${accent}55`, background: '#070d1a',
+              marginTop: idx > 0 && fields[idx - 1] && (entry.answers[fields[idx - 1].key] ?? '').trim() ? 4 : 0,
+            }}>
+              {/* Label + counter */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: 10, fontWeight: 800, color: accent, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  {field.label}
+                </span>
+                {field.triage && (
+                  <span style={{ fontSize: 9, fontWeight: 700, padding: '1px 5px', borderRadius: 4, border: `1px solid ${accent}`, color: accent }}>
+                    TRIAGE
+                  </span>
+                )}
+                <span style={{ marginLeft: 'auto', fontSize: 10, color: '#334155' }}>
+                  {idx + 1} / {fields.length}
+                </span>
+              </div>
+
+              {/* Chips */}
+              {field.chips.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                  {field.chips.map(chip => {
+                    const active = isActive(value, chip);
+                    return (
+                      <button
+                        key={chip}
+                        type="button"
+                        onClick={() => handleChip(idx, field, chip)}
+                        style={{
+                          padding: '5px 13px', borderRadius: 20, fontSize: 12,
+                          fontWeight: active ? 700 : 400, cursor: 'pointer',
+                          border: `1px solid ${active ? accent : '#334155'}`,
+                          background: active ? accent : '#1e293b',
+                          color: active ? '#fff' : '#94a3b8',
+                          transition: 'all 0.12s',
+                        }}
+                      >
+                        {strip(chip)}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Text input + Next button */}
+              <div style={{ display: 'flex', gap: 6 }}>
+                <input
+                  type="text"
+                  value={value}
+                  onChange={e => onAnswerChange(field.key, e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !isLast) advance(idx); }}
+                  placeholder={field.chips.length > 0 ? 'Add detail or type custom answer…' : `${field.label}…`}
+                  style={{
+                    flex: 1, padding: '6px 10px', borderRadius: 6, fontSize: 12, outline: 'none',
+                    border: `1px solid ${value ? accent : '#1e293b'}`,
+                    background: '#0a0f1e', color: '#e2e8f0',
+                    transition: 'border-color 0.1s',
+                  }}
+                  onFocus={e => (e.currentTarget.style.borderColor = accent)}
+                  onBlur={e => (e.currentTarget.style.borderColor = value ? accent : '#1e293b')}
+                />
+                {!isLast && (
+                  <button
+                    type="button"
+                    onClick={() => advance(idx)}
+                    style={{
+                      padding: '6px 13px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                      border: `1px solid ${accent}`, background: 'transparent',
+                      color: accent, cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
+                    }}
+                  >
+                    Next →
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
 
         {fields.length === 0 && (
           <div style={{ fontSize: 13, color: '#475569', fontStyle: 'italic' }}>
