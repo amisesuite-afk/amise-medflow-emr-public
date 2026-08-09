@@ -5,6 +5,7 @@ import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, type EncounterSummary } from '@/lib/db';
 import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
+import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
@@ -746,7 +747,32 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.examPhotos)) setExamPhotos(d.examPhotos as ExamPhoto[]);
       if (d.examFindings && typeof d.examFindings === 'object') setExamFindings(d.examFindings as Record<string, string[]>);
       if (d.examNotes && typeof d.examNotes === 'object') setExamNotes(d.examNotes as Record<string, string>);
-      if (Array.isArray(d.orderedInvestigations)) setOrderedInvestigations(d.orderedInvestigations as string[]);
+      // Load orderedInvestigations + radiologyRequests together so any imaging items
+      // that were stored in orderedInvestigations (from sessions before the routing split)
+      // are immediately migrated to radiologyRequests at load time.
+      {
+        const savedOrdered = Array.isArray(d.orderedInvestigations) && (d.orderedInvestigations as unknown[]).length > 0
+          ? (d.orderedInvestigations as string[])
+          : null;
+        const savedRadiology: RadiologyRequest[] = Array.isArray(d.radiologyRequests)
+          ? (d.radiologyRequests as RadiologyRequest[])
+          : [];
+        if (savedOrdered) {
+          const imagingInLabs = savedOrdered.filter(t => isImagingInvestigation(t));
+          const labsOnly      = savedOrdered.filter(t => !isImagingInvestigation(t));
+          if (labsOnly.length > 0) setOrderedInvestigations(labsOnly);
+          if (imagingInLabs.length > 0) {
+            const migrated = imagingInLabs
+              .map(label => parseImagingToRequest(label, 'routine') as unknown as RadiologyRequest)
+              .filter(req => !imagingAlreadyRequested(savedRadiology, req));
+            setRadiologyRequests([...migrated, ...savedRadiology]);
+          } else if (savedRadiology.length > 0) {
+            setRadiologyRequests(savedRadiology);
+          }
+        } else if (savedRadiology.length > 0) {
+          setRadiologyRequests(savedRadiology);
+        }
+      }
       if (d.investigationResults && typeof d.investigationResults === 'object') setInvestigationResults(d.investigationResults as Record<string, string>);
       if (Array.isArray(d.icdCodes)) setIcdCodes(d.icdCodes as string[]);
       if (Array.isArray(d.cptCodes)) setCptCodes(d.cptCodes as string[]);
@@ -759,7 +785,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (d.rosFindings && typeof d.rosFindings === 'object') setRosFindings(d.rosFindings as Record<string, RosFinding>);
       if (d.procedureData && typeof d.procedureData === 'object') setProcedureData(d.procedureData as Record<string, unknown>);
       if (d.preVisitStatus === 'registered' || d.preVisitStatus === 'vitals_done') setPreVisitStatus(d.preVisitStatus);
-      if (Array.isArray(d.radiologyRequests)) setRadiologyRequests(d.radiologyRequests as RadiologyRequest[]);
+      // radiologyRequests is loaded inside the orderedInvestigations migration block above
       if (typeof d.finalDocument === 'string') setFinalDocument(d.finalDocument);
       if (Array.isArray(d.progressNotes)) setProgressNotes(d.progressNotes as ProgressNote[]);
       if (Array.isArray(d.vitalRecords)) setVitalRecords(d.vitalRecords as VitalRecord[]);
