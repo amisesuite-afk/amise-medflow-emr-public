@@ -2,50 +2,102 @@ import { useState } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 
+interface CCEntry { complaint: string; [k: string]: unknown; }
+
 // ── Print radiology request popup ─────────────────────────────────────────────
 
 interface PatientInfo { name: string; age: string; dob: string; sex: string; mrNumber: string; }
 
-function printRadiologyRequest(req: RadiologyRequest, pat: PatientInfo) {
-  const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+
+function printRequests(reqs: RadiologyRequest[], pat: PatientInfo, clinicalContext: string) {
+  if (!reqs.length) return;
+  const today   = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeNow = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-  const modLabel = { MRI: 'MRI', CT: 'CT', Ultrasound: 'Ultrasound', XRay: 'X-Ray', Scope: 'Scope', Functional: 'Functional', Other: 'Other' }[req.modality];
-  const regionLabel = [
-    req.modality === 'Other' ? req.otherDescription : req.anatomicalRegion,
-    req.laterality ? req.laterality.charAt(0).toUpperCase() + req.laterality.slice(1) : '',
-  ].filter(Boolean).join(' · ');
-  const urgencyBg: Record<string, string> = { routine: '#f3f4f6', urgent: '#fef3c7', emergency: '#fee2e2' };
-  const urgencyColor: Record<string, string> = { routine: '#374151', urgent: '#92400e', emergency: '#991b1b' };
+  const modOrder: RadiologyRequest['modality'][] = ['XRay', 'Ultrasound', 'CT', 'MRI', 'Scope', 'Functional', 'Other'];
+  const modLabels: Record<string, string> = {
+    XRay: 'Plain Radiograph (X-Ray)', Ultrasound: 'Ultrasound', CT: 'CT Scan',
+    MRI: 'MRI', Scope: 'Endoscopy / Scope', Functional: 'Functional Study', Other: 'Other',
+  };
+  const modColours: Record<string, { bg: string; color: string }> = {
+    XRay:       { bg: '#f3f4f6', color: '#374151' },
+    Ultrasound: { bg: '#ccfbf1', color: '#0f766e' },
+    CT:         { bg: '#fef3c7', color: '#92400e' },
+    MRI:        { bg: '#dbeafe', color: '#1d4ed8' },
+    Scope:      { bg: '#f3e8ff', color: '#7c3aed' },
+    Functional: { bg: '#e0e7ff', color: '#3730a3' },
+    Other:      { bg: '#f9fafb', color: '#6b7280' },
+  };
+  const urgBg:  Record<string, string> = { routine: '#f3f4f6', urgent: '#fef3c7', emergency: '#fee2e2' };
+  const urgClr: Record<string, string> = { routine: '#374151', urgent: '#92400e', emergency: '#991b1b' };
 
-  const detailRows: string[] = [];
-  if (req.modality === 'MRI' && req.mriProtocol) detailRows.push(`Protocol: ${req.mriProtocol}${req.mriSequences ? ` · ${req.mriSequences}` : ''}`);
-  if (req.modality === 'CT' && req.ctContrast && req.ctContrast !== 'none') {
-    detailRows.push(`Contrast: ${req.ctContrast.toUpperCase()}${req.ctContrastType ? ` (${req.ctContrastType})` : ''}${req.ctEgfr ? ` · eGFR: ${req.ctEgfr}` : ''}`);
+  // Group by modality
+  const groups = new Map<string, RadiologyRequest[]>();
+  for (const m of modOrder) {
+    const items = reqs.filter(r => r.modality === m);
+    if (items.length) groups.set(m, items);
   }
-  if (req.modality === 'Scope' && req.scopeType) detailRows.push(`Scope type: ${req.scopeType}`);
-  if (req.modality === 'Functional' && req.functionalType) detailRows.push(`Test: ${req.functionalType}`);
+
+  function detailNote(r: RadiologyRequest): string {
+    const parts: string[] = [];
+    if (r.modality === 'CT' && r.ctContrast && r.ctContrast !== 'none') {
+      parts.push(`Contrast: ${r.ctContrast.toUpperCase()}${r.ctContrastType ? ` (${r.ctContrastType})` : ''}${r.ctEgfr ? ` · eGFR: ${r.ctEgfr}` : ''}`);
+    }
+    if (r.modality === 'MRI' && r.mriProtocol) parts.push(r.mriProtocol);
+    if (r.modality === 'Scope' && r.scopeType) parts.push(r.scopeType);
+    if (r.modality === 'Functional' && r.functionalType) parts.push(r.functionalType);
+    return parts.join(' · ');
+  }
+
+  const sectionsHtml = [...groups.entries()].map(([mod, items]) => {
+    const col = modColours[mod] ?? modColours.Other;
+    const rows = items.map(r => {
+      const regionLabel = [
+        r.modality === 'Other' ? r.otherDescription : r.anatomicalRegion,
+        r.laterality ? r.laterality.charAt(0).toUpperCase() + r.laterality.slice(1) : '',
+      ].filter(Boolean).join(' · ');
+      const note = detailNote(r);
+      const urgencyBadge = `<span style="display:inline-block;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;background:${urgBg[r.urgency]};color:${urgClr[r.urgency]};text-transform:capitalize;margin-left:6px">${r.urgency}</span>`;
+      const clinQ = r.clinicalQuestion && r.clinicalQuestion !== r.indication
+        ? `<div style="font-size:11px;color:#6b7280;margin-top:2px">${r.clinicalQuestion}</div>`
+        : '';
+      return `<tr>
+        <td style="width:20px;padding:8px 6px 8px 10px;vertical-align:top"><input type="checkbox" style="width:14px;height:14px"></td>
+        <td style="padding:8px 8px 8px 0;vertical-align:top">
+          <div style="font-size:13px;font-weight:600;color:#111">${regionLabel || r.clinicalQuestion || '—'}${urgencyBadge}</div>
+          ${note ? `<div style="font-size:11px;color:#6b7280;font-style:italic;margin-top:2px">${note}</div>` : ''}
+          ${clinQ}
+        </td>
+      </tr>`;
+    }).join('');
+
+    return `
+<div class="section">
+  <div class="section-title" style="background:${col.bg};color:${col.color}">${modLabels[mod] ?? mod}</div>
+  <table style="width:100%;border-collapse:collapse">${rows}</table>
+</div>`;
+  }).join('');
 
   const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<title>Imaging Request — ${pat.name || 'Patient'}</title><style>
+<title>Imaging Requests — ${pat.name || 'Patient'}</title><style>
 *{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;background:#fff}
-.page{max-width:210mm;margin:0 auto;padding:15mm 14mm}
-.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:9px;border-bottom:2.5px solid #1a3a5c;margin-bottom:12px}
-.pname{font-size:16px;font-weight:800;color:#1a3a5c}.psub{font-size:10px;color:#555;margin-top:2px}
-.form-title{font-size:14px;font-weight:800;text-align:center;text-transform:uppercase;letter-spacing:.12em;color:#1a3a5c;margin-bottom:11px}
-.patient-box{border:1.5px solid #1a3a5c;border-radius:5px;padding:9px 12px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.page{max-width:210mm;margin:0 auto;padding:14mm 13mm}
+.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;border-bottom:2.5px solid #1a3a5c;margin-bottom:11px}
+.pname{font-size:15px;font-weight:800;color:#1a3a5c}.psub{font-size:10px;color:#555;margin-top:2px}
+.form-title{font-size:13px;font-weight:800;text-align:center;text-transform:uppercase;letter-spacing:.12em;color:#1a3a5c;margin-bottom:10px}
+.patient-box{border:1.5px solid #1a3a5c;border-radius:5px;padding:8px 12px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;margin-bottom:9px}
 .pf label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;display:block;margin-bottom:2px}.pf span{font-size:12px;font-weight:600}
-.request-box{border:1.5px solid #e5e7eb;border-radius:6px;padding:12px 14px;margin-bottom:10px}
-.req-row{display:flex;gap:14px;align-items:center;margin-bottom:8px}
-.req-row label{font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;margin-right:4px}
-.mod-badge{display:inline-block;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:700}
-.urg-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;background:${urgencyBg[req.urgency]};color:${urgencyColor[req.urgency]}}
-.field-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin-bottom:3px}
-.field-value{font-size:12px;margin-bottom:8px}
-.sign-row{display:flex;justify-content:space-between;margin-top:20px;padding-top:11px;border-top:1px solid #e5e7eb}
+.indication-row{display:flex;align-items:baseline;gap:10px;border:1px solid #e5e7eb;border-radius:5px;padding:7px 10px;margin-bottom:11px;font-size:11px}
+.indication-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;white-space:nowrap}
+.indication-text{font-size:11px;color:#111;line-height:1.5}
+.section{margin-bottom:8px;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden}
+.section-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:5px 10px}
+.section table tr{border-bottom:1px solid #f3f4f6}.section table tr:last-child{border-bottom:none}
+.sign-row{display:flex;justify-content:space-between;margin-top:18px;padding-top:10px;border-top:1px solid #e5e7eb}
 .sign-block{min-width:190px}.sign-line{border-bottom:1.5px solid #111;height:18px;margin-bottom:3px}
 .sign-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em}.sign-name{font-size:11px;font-weight:700;margin-top:2px}
-.footer{margin-top:14px;text-align:center;font-size:9px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:7px}
+.footer{margin-top:12px;text-align:center;font-size:9px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:6px}
 @media print{@page{margin:10mm}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 </style></head><body><div class="page">
 <div class="header">
@@ -58,19 +110,11 @@ function printRadiologyRequest(req: RadiologyRequest, pat: PatientInfo) {
 <div class="patient-box">
   <div class="pf"><label>Patient name</label><span>${pat.name || '—'}</span></div>
   <div class="pf"><label>Date of birth</label><span>${pat.dob || '—'}</span></div>
-  <div class="pf"><label>Age / Sex</label><span>${pat.age ? `${pat.age}y` : '—'} · ${pat.sex !== 'unknown' ? pat.sex.charAt(0).toUpperCase() + pat.sex.slice(1) : '—'}</span></div>
+  <div class="pf"><label>Age / Sex</label><span>${pat.age ? `${pat.age}y` : '—'} · ${pat.sex && pat.sex !== 'unknown' ? pat.sex.charAt(0).toUpperCase() + pat.sex.slice(1) : '—'}</span></div>
   <div class="pf"><label>MRN</label><span>${pat.mrNumber || '—'}</span></div>
 </div>
-<div class="request-box">
-  <div class="req-row">
-    <div><label>Modality</label><span class="mod-badge" style="background:#e0e7ff;color:#3730a3">${modLabel}</span></div>
-    <div><label>Urgency</label><span class="urg-badge">${req.urgency.charAt(0).toUpperCase() + req.urgency.slice(1)}</span></div>
-    ${regionLabel ? `<div style="flex:1"><label>Region / Study</label><span style="font-size:13px;font-weight:700">${regionLabel}</span></div>` : ''}
-  </div>
-  ${detailRows.map(d => `<div class="field-value" style="color:#555;font-style:italic">${d}</div>`).join('')}
-  ${req.indication ? `<div class="field-label">Clinical indication</div><div class="field-value">${req.indication}</div>` : ''}
-  ${req.clinicalQuestion ? `<div class="field-label">Clinical question</div><div class="field-value">${req.clinicalQuestion}</div>` : ''}
-</div>
+${clinicalContext ? `<div class="indication-row"><span class="indication-label">Clinical Indication</span><span class="indication-text">${clinicalContext}</span></div>` : ''}
+${sectionsHtml}
 <div class="sign-row">
   <div class="sign-block"><div class="sign-line"></div><div class="sign-label">Requesting Clinician Signature</div><div class="sign-name">Dr Dawit Daniel Kabiye MD, DM</div></div>
   <div class="sign-block" style="text-align:right"><div class="sign-line"></div><div class="sign-label">Date &amp; Time</div><div class="sign-name">${today}</div></div>
@@ -572,12 +616,15 @@ function AddRadiologyForm({ onAdd }: { onAdd: (r: RadiologyRequest) => void }) {
 // ── Request item card ─────────────────────────────────────────────────────────
 
 function RequestCard({
-  req, onChange, onRemove, patient,
+  req, onChange, onRemove, patient, selected, onToggleSelect, clinicalContext,
 }: {
   req: RadiologyRequest;
   onChange: (r: RadiologyRequest) => void;
   onRemove: () => void;
   patient: PatientInfo;
+  selected: boolean;
+  onToggleSelect: () => void;
+  clinicalContext: string;
 }) {
   const modCol = MODALITY_COLOURS[req.modality];
   const urgCol = URGENCY_COLOURS[req.urgency];
@@ -621,8 +668,17 @@ function RequestCard({
         gap: 6,
       }}
     >
-      {/* Top row: badges + remove */}
+      {/* Top row: select checkbox + badges + actions */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap' }}>
+        {/* Selection checkbox */}
+        <input
+          type="checkbox"
+          checked={selected}
+          onChange={onToggleSelect}
+          title="Select for printing"
+          style={{ width: 15, height: 15, cursor: 'pointer', flexShrink: 0 }}
+        />
+
         {/* Modality badge */}
         <span style={{
           padding: '2px 9px', borderRadius: 999, fontSize: 11, fontWeight: 700,
@@ -645,17 +701,17 @@ function RequestCard({
           {req.urgency}
         </span>
 
-        {/* Print */}
+        {/* Print this one */}
         <button
           type="button"
-          onClick={() => printRadiologyRequest(req, patient)}
-          title="Print / PDF"
+          onClick={() => printRequests([req], patient, clinicalContext)}
+          title="Print / PDF this request"
           style={{
             background: 'none', border: '1px solid #d1d5db', borderRadius: 6, color: '#374151',
             cursor: 'pointer', fontSize: 12, padding: '2px 8px', fontWeight: 500,
           }}
         >
-          🖨 Print
+          🖨
         </button>
 
         {/* Remove */}
@@ -747,12 +803,36 @@ export default function RadiologyTab() {
     radiologyRequests: RadiologyRequest[];
     setRadiologyRequests: (v: RadiologyRequest[]) => void;
   };
-  const { patientName, age, dob, sex, mrNumber } = appCtx as ReturnType<typeof useAppContext> & {
+  const { patientName, age, dob, sex, mrNumber, hpiNotes, procedureData } = appCtx as ReturnType<typeof useAppContext> & {
     patientName: string; age: string; dob: string; sex: string; mrNumber: string;
+    hpiNotes: string; procedureData: Record<string, unknown>;
   };
+
   const patient: PatientInfo = { name: patientName ?? '', age: age ?? '', dob: dob ?? '', sex: sex ?? 'unknown', mrNumber: mrNumber ?? '' };
 
+  // Build clinical context from CC names + brief HPI — used as indication on print forms
+  const ccEntries = (procedureData?.['cc'] as CCEntry[] | undefined) ?? [];
+  const ccNames = ccEntries.map(e => e.complaint).filter(Boolean).join(', ');
+  const ageStr = age ? `${age}y` : '';
+  const sexStr = sex && sex !== 'unknown' ? sex.charAt(0).toUpperCase() + sex.slice(1) : '';
+  const patientContext = [ageStr, sexStr].filter(Boolean).join(' ');
+  const hpiSnippet = hpiNotes ? hpiNotes.slice(0, 250) : '';
+  const clinicalContext = [
+    ccNames ? `${ccNames}${patientContext ? ` — ${patientContext}` : ''}` : patientContext,
+    hpiSnippet,
+  ].filter(Boolean).join('. ');
+
   const requests: RadiologyRequest[] = radiologyRequests ?? [];
+
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
 
   function addRequest(r: RadiologyRequest) {
     setRadiologyRequests([...requests, r]);
@@ -763,10 +843,12 @@ export default function RadiologyTab() {
   }
 
   function removeRequest(id: string) {
+    setSelectedIds(prev => { const n = new Set(prev); n.delete(id); return n; });
     setRadiologyRequests(requests.filter(x => x.id !== id));
   }
 
   const resultCount = requests.filter(r => r.resultReceived).length;
+  const selectedRequests = requests.filter(r => selectedIds.has(r.id));
 
   const badgeText = requests.length > 0
     ? `${requests.length} request${requests.length !== 1 ? 's' : ''} · ${resultCount} result${resultCount !== 1 ? 's' : ''} received`
@@ -787,17 +869,58 @@ export default function RadiologyTab() {
         )}
 
         {requests.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-            {requests.map(req => (
-              <RequestCard
-                key={req.id}
-                req={req}
-                onChange={updateRequest}
-                onRemove={() => removeRequest(req.id)}
-                patient={patient}
-              />
-            ))}
-          </div>
+          <>
+            {/* Print toolbar */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                onClick={() => setSelectedIds(new Set(requests.map(r => r.id)))}
+                style={{ fontSize: 12, padding: '4px 10px', borderRadius: 6, border: '1px solid #d1d5db', background: '#f9fafb', cursor: 'pointer' }}
+              >
+                Select All
+              </button>
+              {selectedIds.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedIds(new Set())}
+                  style={{ fontSize: 12, padding: '4px 10px', borderRadius: 6, border: '1px solid #d1d5db', background: '#f9fafb', cursor: 'pointer' }}
+                >
+                  Clear
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => printRequests(requests, patient, clinicalContext)}
+                style={{ fontSize: 12, padding: '4px 12px', borderRadius: 6, border: '1px solid #0d9488', background: '#f0fdfa', color: '#0f766e', cursor: 'pointer', fontWeight: 600 }}
+              >
+                🖨 Print All ({requests.length})
+              </button>
+              {selectedIds.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => printRequests(selectedRequests, patient, clinicalContext)}
+                  style={{ fontSize: 12, padding: '4px 12px', borderRadius: 6, border: '1px solid #1d4ed8', background: '#eff6ff', color: '#1d4ed8', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  🖨 Print Selected ({selectedIds.size})
+                </button>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+              {requests.map(req => (
+                <RequestCard
+                  key={req.id}
+                  req={req}
+                  onChange={updateRequest}
+                  onRemove={() => removeRequest(req.id)}
+                  patient={patient}
+                  selected={selectedIds.has(req.id)}
+                  onToggleSelect={() => toggleSelect(req.id)}
+                  clinicalContext={clinicalContext}
+                />
+              ))}
+            </div>
+          </>
         )}
 
         {/* Add form */}
