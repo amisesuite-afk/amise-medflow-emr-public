@@ -552,7 +552,9 @@ export default function AssessmentTab() {
   useEffect(() => { invRef.current = orderedInvestigations; });
 
   useEffect(() => {
-    const relevant = paneTop.filter(r => r.probability >= 0.10);
+    // No probability floor — with 136 diseases the normalized priors can be <3%.
+    // Always pull from whatever the top-3 differentials are.
+    const relevant = paneTop.slice(0, 3);
     if (!relevant.length) return;
     const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
     const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
