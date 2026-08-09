@@ -601,29 +601,28 @@ function AgeGenderGate({ age, setAge, sex, setSex }: {
         </span>
       </div>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-        {ageMissing && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-              Age (years)
-            </span>
-            <input
-              type="number"
-              inputMode="numeric"
-              min={0}
-              max={120}
-              step={1}
-              value={age}
-              onChange={e => setAge(e.target.value.replace(/[^0-9]/g, ''))}
-              placeholder="e.g. 45"
-              autoFocus
-              style={{
-                width: 90, padding: '6px 10px', borderRadius: 6, fontSize: 14,
-                border: '2px solid #f59e0b', background: '#070d1a', color: '#f1f5f9',
-                outline: 'none', fontWeight: 600,
-              }}
-            />
-          </div>
-        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            Age (years)
+          </span>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            max={120}
+            step={1}
+            value={age}
+            onChange={e => setAge(e.target.value.replace(/[^0-9]/g, ''))}
+            placeholder="e.g. 45"
+            autoFocus={ageMissing}
+            style={{
+              width: 90, padding: '6px 10px', borderRadius: 6, fontSize: 14,
+              border: `2px solid ${ageMissing ? '#f59e0b' : '#334155'}`,
+              background: '#070d1a', color: '#f1f5f9',
+              outline: 'none', fontWeight: 600,
+            }}
+          />
+        </div>
         {sexMissing && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
