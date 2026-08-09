@@ -8,113 +8,119 @@ interface CCEntry { complaint: string; [k: string]: unknown; }
 
 interface PatientInfo { name: string; age: string; dob: string; sex: string; mrNumber: string; }
 
-const MODALITY_BADGE_COLOURS: Record<string, { bg: string; color: string }> = {
-  MRI:        { bg: '#dbeafe', color: '#1d4ed8' },
-  CT:         { bg: '#fef3c7', color: '#92400e' },
-  Ultrasound: { bg: '#ccfbf1', color: '#0f766e' },
-  XRay:       { bg: '#f3f4f6', color: '#374151' },
-  Scope:      { bg: '#f3e8ff', color: '#7c3aed' },
-  Functional: { bg: '#e0e7ff', color: '#3730a3' },
-  Other:      { bg: '#f9fafb', color: '#6b7280' },
-};
 
-function buildRequestBlock(req: RadiologyRequest, clinicalContext: string): string {
-  const modLabel = { MRI: 'MRI', CT: 'CT', Ultrasound: 'Ultrasound', XRay: 'X-Ray', Scope: 'Scope', Functional: 'Functional', Other: 'Other' }[req.modality] ?? req.modality;
-  const col = MODALITY_BADGE_COLOURS[req.modality] ?? MODALITY_BADGE_COLOURS.Other;
-  const urgencyBg: Record<string, string>    = { routine: '#f3f4f6', urgent: '#fef3c7', emergency: '#fee2e2' };
-  const urgencyColor: Record<string, string> = { routine: '#374151', urgent: '#92400e', emergency: '#991b1b' };
-
-  const regionLabel = [
-    req.modality === 'Other' ? req.otherDescription : req.anatomicalRegion,
-    req.laterality ? req.laterality.charAt(0).toUpperCase() + req.laterality.slice(1) : '',
-  ].filter(Boolean).join(' · ');
-
-  const detailRows: string[] = [];
-  if (req.modality === 'MRI' && req.mriProtocol) detailRows.push(`Protocol: ${req.mriProtocol}${req.mriSequences ? ` · ${req.mriSequences}` : ''}`);
-  if (req.modality === 'CT' && req.ctContrast && req.ctContrast !== 'none') {
-    detailRows.push(`Contrast: ${req.ctContrast.toUpperCase()}${req.ctContrastType ? ` (${req.ctContrastType})` : ''}${req.ctEgfr ? ` · eGFR: ${req.ctEgfr}` : ''}`);
-  }
-  if (req.modality === 'Scope' && req.scopeType) detailRows.push(`Scope type: ${req.scopeType}`);
-  if (req.modality === 'Functional' && req.functionalType) detailRows.push(`Test: ${req.functionalType}`);
-
-  // Use clinical context as the primary indication; fall back to stored indication
-  const indicationText = clinicalContext || req.indication || '';
-  // Clinical question from stored value; skip if it just duplicates the label
-  const questionText = req.clinicalQuestion && req.clinicalQuestion !== req.indication ? req.clinicalQuestion : '';
-
-  return `
-<div class="request-box">
-  <div class="req-row">
-    <div><label>Modality</label><span class="mod-badge" style="background:${col.bg};color:${col.color}">${modLabel}</span></div>
-    <div><label>Urgency</label><span class="urg-badge" style="background:${urgencyBg[req.urgency]};color:${urgencyColor[req.urgency]}">${req.urgency.charAt(0).toUpperCase() + req.urgency.slice(1)}</span></div>
-    ${regionLabel ? `<div style="flex:1"><label>Region / Study</label><span style="font-size:13px;font-weight:700">${regionLabel}</span></div>` : ''}
-  </div>
-  ${detailRows.map(d => `<div class="field-value" style="color:#555;font-style:italic">${d}</div>`).join('')}
-  ${indicationText ? `<div class="field-label">Clinical Indication</div><div class="field-value">${indicationText}</div>` : ''}
-  ${questionText ? `<div class="field-label">Clinical Question</div><div class="field-value">${questionText}</div>` : ''}
-</div>`;
-}
 
 function printRequests(reqs: RadiologyRequest[], pat: PatientInfo, clinicalContext: string) {
   if (!reqs.length) return;
   const today   = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeNow = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
-  const patientBox = `
+  const modOrder: RadiologyRequest['modality'][] = ['XRay', 'Ultrasound', 'CT', 'MRI', 'Scope', 'Functional', 'Other'];
+  const modLabels: Record<string, string> = {
+    XRay: 'Plain Radiograph (X-Ray)', Ultrasound: 'Ultrasound', CT: 'CT Scan',
+    MRI: 'MRI', Scope: 'Endoscopy / Scope', Functional: 'Functional Study', Other: 'Other',
+  };
+  const modColours: Record<string, { bg: string; color: string }> = {
+    XRay:       { bg: '#f3f4f6', color: '#374151' },
+    Ultrasound: { bg: '#ccfbf1', color: '#0f766e' },
+    CT:         { bg: '#fef3c7', color: '#92400e' },
+    MRI:        { bg: '#dbeafe', color: '#1d4ed8' },
+    Scope:      { bg: '#f3e8ff', color: '#7c3aed' },
+    Functional: { bg: '#e0e7ff', color: '#3730a3' },
+    Other:      { bg: '#f9fafb', color: '#6b7280' },
+  };
+  const urgBg:  Record<string, string> = { routine: '#f3f4f6', urgent: '#fef3c7', emergency: '#fee2e2' };
+  const urgClr: Record<string, string> = { routine: '#374151', urgent: '#92400e', emergency: '#991b1b' };
+
+  // Group by modality
+  const groups = new Map<string, RadiologyRequest[]>();
+  for (const m of modOrder) {
+    const items = reqs.filter(r => r.modality === m);
+    if (items.length) groups.set(m, items);
+  }
+
+  function detailNote(r: RadiologyRequest): string {
+    const parts: string[] = [];
+    if (r.modality === 'CT' && r.ctContrast && r.ctContrast !== 'none') {
+      parts.push(`Contrast: ${r.ctContrast.toUpperCase()}${r.ctContrastType ? ` (${r.ctContrastType})` : ''}${r.ctEgfr ? ` · eGFR: ${r.ctEgfr}` : ''}`);
+    }
+    if (r.modality === 'MRI' && r.mriProtocol) parts.push(r.mriProtocol);
+    if (r.modality === 'Scope' && r.scopeType) parts.push(r.scopeType);
+    if (r.modality === 'Functional' && r.functionalType) parts.push(r.functionalType);
+    return parts.join(' · ');
+  }
+
+  const sectionsHtml = [...groups.entries()].map(([mod, items]) => {
+    const col = modColours[mod] ?? modColours.Other;
+    const rows = items.map(r => {
+      const regionLabel = [
+        r.modality === 'Other' ? r.otherDescription : r.anatomicalRegion,
+        r.laterality ? r.laterality.charAt(0).toUpperCase() + r.laterality.slice(1) : '',
+      ].filter(Boolean).join(' · ');
+      const note = detailNote(r);
+      const urgencyBadge = `<span style="display:inline-block;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;background:${urgBg[r.urgency]};color:${urgClr[r.urgency]};text-transform:capitalize;margin-left:6px">${r.urgency}</span>`;
+      const clinQ = r.clinicalQuestion && r.clinicalQuestion !== r.indication
+        ? `<div style="font-size:11px;color:#6b7280;margin-top:2px">${r.clinicalQuestion}</div>`
+        : '';
+      return `<tr>
+        <td style="width:20px;padding:8px 6px 8px 10px;vertical-align:top"><input type="checkbox" style="width:14px;height:14px"></td>
+        <td style="padding:8px 8px 8px 0;vertical-align:top">
+          <div style="font-size:13px;font-weight:600;color:#111">${regionLabel || r.clinicalQuestion || '—'}${urgencyBadge}</div>
+          ${note ? `<div style="font-size:11px;color:#6b7280;font-style:italic;margin-top:2px">${note}</div>` : ''}
+          ${clinQ}
+        </td>
+      </tr>`;
+    }).join('');
+
+    return `
+<div class="section">
+  <div class="section-title" style="background:${col.bg};color:${col.color}">${modLabels[mod] ?? mod}</div>
+  <table style="width:100%;border-collapse:collapse">${rows}</table>
+</div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<title>Imaging Requests — ${pat.name || 'Patient'}</title><style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;background:#fff}
+.page{max-width:210mm;margin:0 auto;padding:14mm 13mm}
+.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:8px;border-bottom:2.5px solid #1a3a5c;margin-bottom:11px}
+.pname{font-size:15px;font-weight:800;color:#1a3a5c}.psub{font-size:10px;color:#555;margin-top:2px}
+.form-title{font-size:13px;font-weight:800;text-align:center;text-transform:uppercase;letter-spacing:.12em;color:#1a3a5c;margin-bottom:10px}
+.patient-box{border:1.5px solid #1a3a5c;border-radius:5px;padding:8px 12px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;margin-bottom:9px}
+.pf label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;display:block;margin-bottom:2px}.pf span{font-size:12px;font-weight:600}
+.indication-row{display:flex;align-items:baseline;gap:10px;border:1px solid #e5e7eb;border-radius:5px;padding:7px 10px;margin-bottom:11px;font-size:11px}
+.indication-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;white-space:nowrap}
+.indication-text{font-size:11px;color:#111;line-height:1.5}
+.section{margin-bottom:8px;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden}
+.section-title{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;padding:5px 10px}
+.section table tr{border-bottom:1px solid #f3f4f6}.section table tr:last-child{border-bottom:none}
+.sign-row{display:flex;justify-content:space-between;margin-top:18px;padding-top:10px;border-top:1px solid #e5e7eb}
+.sign-block{min-width:190px}.sign-line{border-bottom:1.5px solid #111;height:18px;margin-bottom:3px}
+.sign-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em}.sign-name{font-size:11px;font-weight:700;margin-top:2px}
+.footer{margin-top:12px;text-align:center;font-size:9px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:6px}
+@media print{@page{margin:10mm}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head><body><div class="page">
+<div class="header">
+  <div><div class="pname">Amise Medical Services</div>
+  <div class="psub">Dr Dawit Daniel Kabiye MD, DM · General &amp; Endoscopic Surgery</div>
+  <div class="psub">Rodney Bay Medical Centre, Saint Lucia · Tel: +1 (758) 284-0557</div></div>
+  <div style="text-align:right"><div class="psub" style="font-weight:700">Date: ${today} · ${timeNow}</div></div>
+</div>
+<div class="form-title">Radiology / Imaging Request</div>
 <div class="patient-box">
   <div class="pf"><label>Patient name</label><span>${pat.name || '—'}</span></div>
   <div class="pf"><label>Date of birth</label><span>${pat.dob || '—'}</span></div>
   <div class="pf"><label>Age / Sex</label><span>${pat.age ? `${pat.age}y` : '—'} · ${pat.sex && pat.sex !== 'unknown' ? pat.sex.charAt(0).toUpperCase() + pat.sex.slice(1) : '—'}</span></div>
   <div class="pf"><label>MRN</label><span>${pat.mrNumber || '—'}</span></div>
-</div>`;
-
-  const signRow = `
+</div>
+${clinicalContext ? `<div class="indication-row"><span class="indication-label">Clinical Indication</span><span class="indication-text">${clinicalContext}</span></div>` : ''}
+${sectionsHtml}
 <div class="sign-row">
   <div class="sign-block"><div class="sign-line"></div><div class="sign-label">Requesting Clinician Signature</div><div class="sign-name">Dr Dawit Daniel Kabiye MD, DM</div></div>
   <div class="sign-block" style="text-align:right"><div class="sign-line"></div><div class="sign-label">Date &amp; Time</div><div class="sign-name">${today}</div></div>
-</div>`;
-
-  const footer = `<div class="footer">Amise Medical Services · Confidential Patient Information · Retain for radiology records${pat.mrNumber ? ` · MRN: ${pat.mrNumber}` : ''}</div>`;
-
-  // Each request prints on its own page
-  const pages = reqs.map(req => `
-<div class="page">
-  <div class="header">
-    <div><div class="pname">Amise Medical Services</div>
-    <div class="psub">Dr Dawit Daniel Kabiye MD, DM · General &amp; Endoscopic Surgery</div>
-    <div class="psub">Rodney Bay Medical Centre, Saint Lucia · Tel: +1 (758) 284-0557</div></div>
-    <div style="text-align:right"><div class="psub" style="font-weight:700">Date: ${today} · ${timeNow}</div></div>
-  </div>
-  <div class="form-title">Radiology / Imaging Request</div>
-  ${patientBox}
-  ${buildRequestBlock(req, clinicalContext)}
-  ${signRow}
-  ${footer}
-</div>`).join('\n');
-
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<title>Imaging Requests — ${pat.name || 'Patient'}</title><style>
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#111;background:#fff}
-.page{max-width:210mm;margin:0 auto;padding:15mm 14mm;page-break-after:always}
-.page:last-child{page-break-after:avoid}
-.header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:9px;border-bottom:2.5px solid #1a3a5c;margin-bottom:12px}
-.pname{font-size:16px;font-weight:800;color:#1a3a5c}.psub{font-size:10px;color:#555;margin-top:2px}
-.form-title{font-size:14px;font-weight:800;text-align:center;text-transform:uppercase;letter-spacing:.12em;color:#1a3a5c;margin-bottom:11px}
-.patient-box{border:1.5px solid #1a3a5c;border-radius:5px;padding:9px 12px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.pf label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;display:block;margin-bottom:2px}.pf span{font-size:12px;font-weight:600}
-.request-box{border:1.5px solid #e5e7eb;border-radius:6px;padding:12px 14px;margin-bottom:10px}
-.req-row{display:flex;gap:14px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
-.req-row label{font-size:9px;font-weight:700;text-transform:uppercase;color:#6b7280;margin-right:4px;display:block}
-.mod-badge{display:inline-block;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:700}
-.urg-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700}
-.field-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;margin-bottom:3px;margin-top:6px}
-.field-value{font-size:12px;margin-bottom:6px}
-.sign-row{display:flex;justify-content:space-between;margin-top:20px;padding-top:11px;border-top:1px solid #e5e7eb}
-.sign-block{min-width:190px}.sign-line{border-bottom:1.5px solid #111;height:18px;margin-bottom:3px}
-.sign-label{font-size:9px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em}.sign-name{font-size:11px;font-weight:700;margin-top:2px}
-.footer{margin-top:14px;text-align:center;font-size:9px;color:#9ca3af;border-top:1px solid #f3f4f6;padding-top:7px}
-@media print{@page{margin:10mm}body{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
-</style></head><body>${pages}</body></html>`;
+</div>
+<div class="footer">Amise Medical Services · Confidential Patient Information · Retain for radiology records${pat.mrNumber ? ` · MRN: ${pat.mrNumber}` : ''}</div>
+</div></body></html>`;
 
   const popup = window.open('', '_blank', 'width=860,height=1100,menubar=yes');
   if (!popup) { alert('Pop-up blocked — please allow pop-ups to print.'); return; }
