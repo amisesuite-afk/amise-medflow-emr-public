@@ -171,8 +171,18 @@ export default function ChiefComplaintStrip() {
 
   const entries: CCEntry[] = (procedureData['cc'] as CCEntry[] | undefined) ?? [];
 
+  // Pre-fill investigations from a CC template's curated labs + imaging list.
+  function prefillFromMatrix(complaintName: string) {
+    const tpl = getMatrixByName(complaintName);
+    const candidates = [...tpl.labs, ...tpl.imaging].map((s: string) => s.trim()).filter(Boolean);
+    if (!candidates.length) return;
+    const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
+    const fresh = candidates.filter((l: string) => !existing.has(l.toLowerCase().trim()));
+    if (fresh.length) setOrderedInvestigations([...fresh, ...orderedInvestigations]);
+  }
+
   // Seed the PANE Bayesian engine from SOCRATES answers when HPI is complete.
-  // Also pre-populates the investigations list from the top differential's protocol.
+  // Augments the investigation list with protocol tests from top-3 differentials.
   function seedPane(complaint: string, answers: Record<string, string>) {
     const parsedAge = parseInt(age, 10) || null;
     const diseases  = applyModifiers(DISEASES, parsedAge, sex);
@@ -185,15 +195,14 @@ export default function ChiefComplaintStrip() {
     }
     setPaneState(state);
 
-    // Pre-fill investigations from all plausible differentials (≥5% probability) so
-    // the Labs tab is immediately populated with tests that help narrow the Dx.
-    // When the same test appears in multiple protocols, the highest urgency wins.
+    // Augment with protocol investigations from the top-3 differentials
+    // (no probability threshold — with 136 diseases the normalized priors are small).
+    // When the same test appears in multiple protocols, highest urgency wins.
     const top = topDiagnoses(state, diseases, 3);
-    const relevant = top.filter(r => r.probability >= 0.05);
-    if (relevant.length) {
+    if (top.length) {
       const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
       const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
-      for (const { disease } of relevant) {
+      for (const { disease } of top) {
         const protocol = getProtocol(disease.id);
         if (!protocol?.investigations.length) continue;
         for (const inv of protocol.investigations) {
@@ -207,8 +216,8 @@ export default function ChiefComplaintStrip() {
       const sorted = [...byLabel.values()].sort(
         (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
       );
-      const existing = new Set(orderedInvestigations.map(s => s.toLowerCase().trim()));
-      const toAdd = sorted.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
+      const existing2 = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
+      const toAdd = sorted.map(inv => inv.label).filter(l => !existing2.has(l.toLowerCase().trim()));
       if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
     }
   }
@@ -266,6 +275,7 @@ export default function ChiefComplaintStrip() {
       const matrix = getMatrixByName(first.complaint);
       setActiveCcKey(matrix.id);
       setEncounterType(matrix.encounterType);
+      prefillFromMatrix(first.complaint);
     }
     setExpanded(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -299,6 +309,7 @@ export default function ChiefComplaintStrip() {
     if (!trimmed || entries.length >= 3 || entries.some(e => e.complaint === trimmed)) return;
     const next = [...entries, { complaint: trimmed, answers: {} }];
     setEntries(next);
+    prefillFromMatrix(trimmed);
     setExpanded(next.length - 1);
     setShowPicker(false);
     setCustomInput('');
