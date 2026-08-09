@@ -746,7 +746,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.examPhotos)) setExamPhotos(d.examPhotos as ExamPhoto[]);
       if (d.examFindings && typeof d.examFindings === 'object') setExamFindings(d.examFindings as Record<string, string[]>);
       if (d.examNotes && typeof d.examNotes === 'object') setExamNotes(d.examNotes as Record<string, string>);
-      if (Array.isArray(d.orderedInvestigations)) setOrderedInvestigations(d.orderedInvestigations as string[]);
+      if (Array.isArray(d.orderedInvestigations) && (d.orderedInvestigations as unknown[]).length > 0) setOrderedInvestigations(d.orderedInvestigations as string[]);
       if (d.investigationResults && typeof d.investigationResults === 'object') setInvestigationResults(d.investigationResults as Record<string, string>);
       if (Array.isArray(d.icdCodes)) setIcdCodes(d.icdCodes as string[]);
       if (Array.isArray(d.cptCodes)) setCptCodes(d.cptCodes as string[]);
