@@ -97,16 +97,24 @@ function buildDocument(ctx: Ctx): string {
 
   // Presenting complaint
   lines.push(sec('PRESENTING COMPLAINT'));
-  if (ctx.symptoms.length > 0) {
-    lines.push(`CC:       ${ctx.symptoms.join(', ')}`);
+  // Prefer structured CC entries from SOCRATES wizard; fall back to intake symptoms
+  const ccEntries = (ctx.procedureData['cc'] as Array<{ complaint: string; answers: Record<string, string> }> | undefined) ?? [];
+  const ccNames = ccEntries.length > 0
+    ? ccEntries.map(e => e.complaint)
+    : ctx.symptoms;
+  if (ccNames.length > 0) {
+    lines.push(`CC:       ${ccNames.join(' / ')}`);
   } else {
     lines.push(hint('enter presenting symptoms / chief complaint'));
   }
   lines.push(`Duration: ${ctx.durationDays ? ctx.durationDays + ' days' : hint('specify duration')}`);
   if (ctx.painScore) lines.push(`Pain:     ${ctx.painScore}/10`);
-  if (ctx.freeText) {
+
+  // HPI narrative — prefer the live SOCRATES-generated prose from HpiTab
+  const hpi = ctx.hpiNotes?.trim() || ctx.freeText?.trim();
+  if (hpi) {
     lines.push('');
-    lines.push(ctx.freeText);
+    lines.push(hpi);
   } else {
     lines.push(hint('add HPI — onset, character, radiation, aggravating/relieving factors, associated symptoms'));
   }
