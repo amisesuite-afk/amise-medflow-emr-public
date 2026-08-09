@@ -405,12 +405,15 @@ function buildReferralHtml(ctx: Ctx, referTo: string, referNotes: string): strin
     { label: 'Date',      value: now },
   ]);
 
+  const ccEntriesRef = (ctx.procedureData['cc'] as Array<{ complaint: string }> | undefined) ?? [];
+  const ccNamesRef = ccEntriesRef.length > 0 ? ccEntriesRef.map(e => e.complaint) : ctx.symptoms;
+  const hpiRef = ctx.hpiNotes?.trim() || ctx.freeText?.trim();
   let sectHtml = '';
-  if (ctx.symptoms.length || ctx.freeText) {
+  if (ccNamesRef.length || hpiRef) {
     const parts: string[] = [];
-    if (ctx.symptoms.length) parts.push(`<p>Presenting complaint: ${escH(ctx.symptoms.join(', '))}</p>`);
+    if (ccNamesRef.length) parts.push(`<p>Presenting complaint: ${escH(ccNamesRef.join(' / '))}</p>`);
     if (ctx.durationDays) parts.push(`<p>Duration: ${escH(ctx.durationDays)} days</p>`);
-    if (ctx.freeText) parts.push(`<div style="margin-top:4px">${inlineText(ctx.freeText)}</div>`);
+    if (hpiRef) parts.push(`<div style="margin-top:4px">${inlineText(hpiRef)}</div>`);
     sectHtml += docSec('Presenting history', parts.join(''));
   }
   if (ctx.comorbidities.length || ctx.pmhNotes) {
@@ -571,10 +574,13 @@ function buildReferralWordBody(ctx: Ctx, referTo: string, referNotes: string): s
 ${wordMeta([['Patient', patLine], ['Address', ctx.address || ''], ['Referring to', referTo || 'Specialist Colleague'], ['Date', now]])}
 <p style="margin:8pt 0 4pt;font-size:10.5pt">Dear Colleague${referTo ? ` / ${h(referTo)}` : ''},</p>
 <p style="margin:0 0 8pt;font-size:10.5pt">I am grateful for your review of <strong>${h(ctx.patientName || 'this patient')}</strong>${ageLine ? `, ${h(ageLine)},` : ''} who attended ${h(site.name)} on ${h(now)}.</p>`;
-  if (ctx.symptoms.length || ctx.freeText) {
+  const ccEntriesWord = (ctx.procedureData['cc'] as Array<{ complaint: string }> | undefined) ?? [];
+  const ccNamesWord = ccEntriesWord.length > 0 ? ccEntriesWord.map(e => e.complaint) : ctx.symptoms;
+  const hpiWord = ctx.hpiNotes?.trim() || ctx.freeText?.trim();
+  if (ccNamesWord.length || hpiWord) {
     body += wordHdr('Presenting History');
-    if (ctx.symptoms.length) body += `<p style="font-size:10.5pt;margin:2pt 0">CC: ${h(ctx.symptoms.join(', '))}${ctx.durationDays ? ` (${ctx.durationDays} days)` : ''}</p>`;
-    if (ctx.freeText) body += `<p style="font-size:10.5pt;margin:4pt 0;white-space:pre-wrap">${h(ctx.freeText)}</p>`;
+    if (ccNamesWord.length) body += `<p style="font-size:10.5pt;margin:2pt 0">CC: ${h(ccNamesWord.join(' / '))}${ctx.durationDays ? ` (${ctx.durationDays} days)` : ''}</p>`;
+    if (hpiWord) body += `<p style="font-size:10.5pt;margin:4pt 0;white-space:pre-wrap">${h(hpiWord)}</p>`;
   }
   if (ctx.comorbidities.length || ctx.pmhNotes) {
     body += wordHdr('Past Medical History');
