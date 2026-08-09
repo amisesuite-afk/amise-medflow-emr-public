@@ -20,6 +20,7 @@ import {
 } from '@workspace/pane-engine';
 import type { Feature } from '@workspace/pane-engine';
 import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
+import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -856,6 +857,7 @@ export default function HpiTab() {
     comorbidities, allergies, medications, surgicalHistory,
     paneState, setPaneState,
     orderedInvestigations, setOrderedInvestigations,
+    radiologyRequests, setRadiologyRequests,
   } = useAppContext();
 
   const entries = useMemo(
@@ -978,9 +980,22 @@ export default function HpiTab() {
     const sorted = [...byLabel.values()].sort(
       (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
     );
+
+    // Route: lab items → orderedInvestigations, imaging items → radiologyRequests
+    const labItems     = sorted.filter(inv => !isImagingInvestigation(inv.label));
+    const imagingItems = sorted.filter(inv => isImagingInvestigation(inv.label));
+
     const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
-    const toAdd = sorted.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
+    const toAdd = labItems.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
     if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
+
+    const newImaging = imagingItems
+      .map(inv => parseImagingToRequest(inv.label, inv.urgency))
+      .filter(req => !imagingAlreadyRequested(
+        (radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[]),
+        req,
+      ));
+    if (newImaging.length) setRadiologyRequests([...newImaging, ...radiologyRequests]);
   }
 
   // Returns SOCRATES fields for an entry filtered by patient sex/age — same as HpiBuilderCard.

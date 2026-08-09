@@ -4,6 +4,7 @@ import { CC_TEMPLATES, CC_BY_CATEGORY, getMatrixByName, type CCCategory, type CC
 import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
 import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, topDiagnoses, isConverged, getProtocol } from '@workspace/pane-engine';
+import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -160,6 +161,7 @@ export default function ChiefComplaintStrip() {
     setEncounterType, activeCcKey, setActiveCcKey, setActiveSection, freeText,
     age, sex, setPaneState,
     orderedInvestigations, setOrderedInvestigations,
+    radiologyRequests, setRadiologyRequests,
   } = useAppContext();
 
   const [expanded, setExpanded]       = useState<number | null>(null);
@@ -174,11 +176,25 @@ export default function ChiefComplaintStrip() {
   // Pre-fill investigations from a CC template's curated labs + imaging list.
   function prefillFromMatrix(complaintName: string) {
     const tpl = getMatrixByName(complaintName);
-    const candidates = [...tpl.labs, ...tpl.imaging].map((s: string) => s.trim()).filter(Boolean);
-    if (!candidates.length) return;
-    const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
-    const fresh = candidates.filter((l: string) => !existing.has(l.toLowerCase().trim()));
-    if (fresh.length) setOrderedInvestigations([...fresh, ...orderedInvestigations]);
+
+    // Route labs → orderedInvestigations, imaging → radiologyRequests
+    const labItems = tpl.labs.map((s: string) => s.trim()).filter(Boolean);
+    const imagingItems = tpl.imaging.map((s: string) => s.trim()).filter(Boolean);
+
+    // Labs
+    if (labItems.length) {
+      const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
+      const freshLabs = labItems.filter((l: string) => !existing.has(l.toLowerCase().trim()));
+      if (freshLabs.length) setOrderedInvestigations([...freshLabs, ...orderedInvestigations]);
+    }
+
+    // Imaging → RadiologyTab
+    if (imagingItems.length) {
+      const newRequests = imagingItems
+        .map(label => parseImagingToRequest(label, 'routine', complaintName))
+        .filter(req => !imagingAlreadyRequested(radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[], req));
+      if (newRequests.length) setRadiologyRequests([...newRequests, ...radiologyRequests]);
+    }
   }
 
   // Seed the PANE Bayesian engine from SOCRATES answers when HPI is complete.
@@ -216,9 +232,19 @@ export default function ChiefComplaintStrip() {
       const sorted = [...byLabel.values()].sort(
         (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
       );
+
+      // Route: lab items → orderedInvestigations, imaging items → radiologyRequests
+      const labItems  = sorted.filter(inv => !isImagingInvestigation(inv.label));
+      const imagingItems = sorted.filter(inv => isImagingInvestigation(inv.label));
+
       const existing2 = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
-      const toAdd = sorted.map(inv => inv.label).filter(l => !existing2.has(l.toLowerCase().trim()));
+      const toAdd = labItems.map(inv => inv.label).filter(l => !existing2.has(l.toLowerCase().trim()));
       if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
+
+      const newImaging = imagingItems
+        .map(inv => parseImagingToRequest(inv.label, inv.urgency))
+        .filter(req => !imagingAlreadyRequested(radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[], req));
+      if (newImaging.length) setRadiologyRequests([...newImaging, ...radiologyRequests]);
     }
   }
 
