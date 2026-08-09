@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { getActivePathways } from '@/lib/clinical-pathways';
@@ -8,6 +8,7 @@ import ResultsTrackerCard from '@/components/ResultsTrackerCard';
 import LabInterpretationPanel from '@/components/LabInterpretationPanel';
 import { useToast } from '@/components/ToastProvider';
 import DocumentCapture from '@/components/DocumentCapture';
+import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
 
 function filterBySex(lab: string, sex: string): boolean {
   if (lab.includes('(M)') && sex === 'female') return false;
@@ -64,11 +65,25 @@ function printLabRequest(p: {
   const today = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   const timeNow = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
+  // Exclude imaging studies — they live in the Radiology/Imaging tab, not the lab form
+  const labOnly = p.orderedInvestigations.filter(t => !isImagingInvestigation(t));
+
   const categorised: Record<string, string[]> = {};
-  for (const test of p.orderedInvestigations) {
+  for (const test of labOnly) {
+    const tLower = test.toLowerCase().trim();
     let found = false;
     for (const group of LSL_CATALOGUE) {
-      if (group.tests.some(t => cleanLabel(t).toLowerCase() === test.toLowerCase())) {
+      const matched = group.tests.some(t => {
+        const cleaned = cleanLabel(t).toLowerCase();
+        if (cleaned === tLower) return true;
+        // Match abbreviation in parentheses e.g. "Full Blood Count (FBC)" → "fbc"
+        const abbrev = t.match(/\(([^)]+)\)/)?.[1]?.toLowerCase();
+        if (abbrev && abbrev === tLower) return true;
+        // Broad substring: test name appears in catalogue name or vice-versa
+        if (cleaned.includes(tLower) || tLower.includes(cleaned)) return true;
+        return false;
+      });
+      if (matched) {
         (categorised[group.category] ??= []).push(test);
         found = true;
         break;
@@ -266,10 +281,38 @@ export default function InvestigationsTab() {
   const {
     orderedInvestigations, setOrderedInvestigations,
     investigationResults, setInvestigationResults,
+    radiologyRequests, setRadiologyRequests,
     symptoms, symptomDetails, sex,
     patientName, age, dob, hpiNotes, mrNumber,
   } = useAppContext();
   const { showToast } = useToast();
+
+  // One-time migration: move any imaging items that ended up in orderedInvestigations
+  // (from old sessions saved before the imaging-routing split) to radiologyRequests.
+  const migratedRef = useRef(false);
+  useEffect(() => {
+    if (migratedRef.current) return;
+    migratedRef.current = true;
+    const imagingInLabs = orderedInvestigations.filter(t => isImagingInvestigation(t));
+    if (!imagingInLabs.length) return;
+
+    const newRequests = imagingInLabs
+      .map(label => parseImagingToRequest(label, 'routine'))
+      .filter(req => !imagingAlreadyRequested(
+        (radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[]),
+        req,
+      ));
+
+    if (newRequests.length) setRadiologyRequests([...newRequests, ...radiologyRequests]);
+    setOrderedInvestigations(orderedInvestigations.filter(t => !isImagingInvestigation(t)));
+    // Also clean up any result entries for the migrated imaging items
+    const imagingSet = new Set(imagingInLabs.map(t => t.toLowerCase().trim()));
+    const nextResults = Object.fromEntries(
+      Object.entries(investigationResults).filter(([k]) => !imagingSet.has(k.toLowerCase().trim())),
+    );
+    setInvestigationResults(nextResults as Record<string, string>);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [manualInput, setManualInput] = useState('');
 
@@ -544,8 +587,8 @@ export default function InvestigationsTab() {
       </CollapsibleCard>
 
       {/* ── Lab request form — print / email ─────────────────────────────── */}
-      {orderedInvestigations.length > 0 && (
-        <CollapsibleCard title="Lab request form" badge={`${orderedInvestigations.length} test${orderedInvestigations.length !== 1 ? 's' : ''}`}>
+      {orderedInvestigations.filter(t => !isImagingInvestigation(t)).length > 0 && (
+        <CollapsibleCard title="Lab request form" badge={`${orderedInvestigations.filter(t => !isImagingInvestigation(t)).length} test${orderedInvestigations.filter(t => !isImagingInvestigation(t)).length !== 1 ? 's' : ''}`}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div className="form-grid cols-2">
               <div className="fld">
