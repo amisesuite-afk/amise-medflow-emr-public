@@ -983,6 +983,15 @@ export default function HpiTab() {
     if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
   }
 
+  // Returns SOCRATES fields for an entry filtered by patient sex/age — same as HpiBuilderCard.
+  function entryFields(entry: CCEntry): HpiField[] {
+    const parsedAge = parseInt(age, 10) || null;
+    return buildFields(entry.complaint).filter(f => {
+      if (f.key === 'lmp') return sex === 'female' && (parsedAge === null || parsedAge >= 10);
+      return true;
+    });
+  }
+
   function updateAnswer(entryIdx: number, key: string, value: string) {
     const updated = entries.map((e, i) =>
       i === entryIdx ? { ...e, answers: { ...e.answers, [key]: value } } : e,
@@ -992,12 +1001,31 @@ export default function HpiTab() {
     // Real-time PANE re-seed: updates differential posteriors as chips are tapped
     const newState = reseedPane(updated);
 
-    // Seed investigation list once the updated entry has all its fields filled
+    // Seed investigation list once the updated entry has all its sex/age-filtered fields filled
     const updatedEntry = updated[entryIdx]!;
-    const fields = buildFields(updatedEntry.complaint);
+    const fields = entryFields(updatedEntry);
     const allFilled = fields.length > 0 && fields.every(f => updatedEntry.answers[f.key]?.trim());
     if (allFilled) seedInvestigationsFromPane(newState);
   }
+
+  // On mount — re-seed PANE and populate investigations from pre-existing SOCRATES answers.
+  // Handles pre-loaded patients whose CC was completed before real-time seeding was introduced.
+  const mountSeededRef = useRef(false);
+  useEffect(() => {
+    if (mountSeededRef.current) return;
+    mountSeededRef.current = true;
+    if (entries.length === 0) return;
+    const hasAnswers = entries.some(e => Object.values(e.answers).some(v => v?.trim()));
+    if (!hasAnswers) return;
+    const state = reseedPane(entries);
+    for (const entry of entries) {
+      const fields = entryFields(entry);
+      if (fields.length > 0 && fields.every(f => entry.answers[f.key]?.trim())) {
+        seedInvestigationsFromPane(state);
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function resetEntry(entryIdx: number) {
     const updated = entries.map((e, i) => i === entryIdx ? { ...e, answers: {} } : e);
