@@ -540,8 +540,11 @@ export default function AssessmentTab() {
     pearl: ccMatrix.pearl,
   } : null;
 
-  const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
-    ? paneTop[0].disease.id
+  // Show ManagementPanel when PANE top disease exceeds 20% posterior probability.
+  // 0.85 convergence threshold was never met with 136 diseases (max prior ~3.6%).
+  // After SOCRATES seeding a clear leader typically rises to 30–60%.
+  const activeDiseaseId = (paneTop[0]?.probability ?? 0) >= 0.20
+    ? paneTop[0]!.disease.id
     : null;
   const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? null;
 

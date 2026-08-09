@@ -14,6 +14,12 @@ import { getSuggestedPhrases } from '@/data/dot-phrases';
 import { getMatrixByName } from '@/lib/cc-matrices';
 import { SYMPTOM_BRANCHES, type SymptomBranch } from '@/lib/symptom-branches';
 import type { EncounterSummary } from '@/lib/db';
+import {
+  DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior,
+  topDiagnoses, getProtocol, nextBestQuestion,
+} from '@workspace/pane-engine';
+import type { Feature } from '@workspace/pane-engine';
+import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -119,10 +125,11 @@ function buildFields(complaint: string): HpiField[] {
 
 // ── HpiBuilderCard — sequential one-question-at-a-time SOCRATES interview ─────
 
-function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
+function HpiBuilderCard({ entry, onAnswerChange, onReset, paneNextQuestion }: {
   entry: CCEntry;
   onAnswerChange: (key: string, value: string) => void;
   onReset: () => void;
+  paneNextQuestion?: Feature | null;
 }) {
   const rawFields = useMemo(() => buildFields(entry.complaint), [entry.complaint]);
   const matrix    = getMatrixByName(entry.complaint);
@@ -252,6 +259,20 @@ function HpiBuilderCard({ entry, onAnswerChange, onReset }: {
                   {idx + 1} / {fields.length}
                 </span>
               </div>
+
+              {/* PANE next-best-question hint — shown only on the active field */}
+              {paneNextQuestion && (
+                <div style={{
+                  fontSize: 10, color: '#0d9488',
+                  background: 'rgba(13,148,136,0.08)',
+                  border: '1px solid rgba(13,148,136,0.2)',
+                  padding: '3px 8px', borderRadius: 5,
+                  display: 'inline-flex', alignItems: 'center', gap: 4, alignSelf: 'flex-start',
+                }}>
+                  <span>🎯</span>
+                  <span>Most discriminating: <strong>{paneNextQuestion.label}</strong></span>
+                </div>
+              )}
 
               {/* Chips */}
               {field.chips.length > 0 && (
@@ -833,6 +854,8 @@ export default function HpiTab() {
     patientId, encounterId,
     recentEncounters,
     comorbidities, allergies, medications, surgicalHistory,
+    paneState, setPaneState,
+    orderedInvestigations, setOrderedInvestigations,
   } = useAppContext();
 
   const entries = useMemo(
@@ -914,11 +937,66 @@ export default function HpiTab() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liveProse]);
 
+  // Re-seed PANE from scratch using all current CC entries' SOCRATES answers.
+  // Called on every chip tap so the differential updates in real-time.
+  function reseedPane(updatedEntries: CCEntry[]) {
+    const parsedAge = parseInt(age, 10) || null;
+    const diseases  = applyModifiers(DISEASES, parsedAge, sex);
+    let   state     = initPaneState(diseases);
+    for (const entry of updatedEntries) {
+      const features = extractFeaturesFromSocrates(entry.complaint, entry.answers);
+      for (const [featureId, present] of Object.entries(features)) {
+        if (FEATURES.some(f => f.id === featureId)) {
+          state = updatePosterior(state, diseases, featureId, present as boolean);
+        }
+      }
+    }
+    setPaneState(state);
+    return state;
+  }
+
+  // Seed ordered investigations from top-3 PANE differentials.
+  // Only called when an HpiBuilderCard entry has all fields answered.
+  function seedInvestigationsFromPane(state: ReturnType<typeof initPaneState>) {
+    const parsedAge = parseInt(age, 10) || null;
+    const diseases  = applyModifiers(DISEASES, parsedAge, sex);
+    const top = topDiagnoses(state, diseases, 3);
+    if (!top.length) return;
+    const urgencyRank: Record<string, number> = { stat: 0, urgent: 1, routine: 2 };
+    const byLabel = new Map<string, { label: string; urgency: 'stat' | 'urgent' | 'routine' }>();
+    for (const { disease } of top) {
+      const protocol = getProtocol(disease.id);
+      if (!protocol?.investigations.length) continue;
+      for (const inv of protocol.investigations) {
+        const k = inv.label.toLowerCase().trim();
+        const cur = byLabel.get(k);
+        if (!cur || (urgencyRank[inv.urgency] ?? 2) < (urgencyRank[cur.urgency] ?? 2)) {
+          byLabel.set(k, inv);
+        }
+      }
+    }
+    const sorted = [...byLabel.values()].sort(
+      (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
+    );
+    const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
+    const toAdd = sorted.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
+    if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
+  }
+
   function updateAnswer(entryIdx: number, key: string, value: string) {
     const updated = entries.map((e, i) =>
       i === entryIdx ? { ...e, answers: { ...e.answers, [key]: value } } : e,
     );
     setProcedureData({ ...procedureData, cc: updated });
+
+    // Real-time PANE re-seed: updates differential posteriors as chips are tapped
+    const newState = reseedPane(updated);
+
+    // Seed investigation list once the updated entry has all its fields filled
+    const updatedEntry = updated[entryIdx]!;
+    const fields = buildFields(updatedEntry.complaint);
+    const allFilled = fields.length > 0 && fields.every(f => updatedEntry.answers[f.key]?.trim());
+    if (allFilled) seedInvestigationsFromPane(newState);
   }
 
   function resetEntry(entryIdx: number) {
@@ -941,6 +1019,15 @@ export default function HpiTab() {
     setHpiNotes(liveProse);
     prevLiveRef.current = liveProse;
   }
+
+  // Derive the most discriminating PANE question from the current posterior state.
+  // Shown as a hint in the active HpiBuilderCard field so the clinician knows what to probe next.
+  const paneNextQuestion = useMemo<Feature | null>(() => {
+    if (!paneState) return null;
+    const parsedAge = parseInt(age, 10) || null;
+    const diseases = applyModifiers(DISEASES, parsedAge, sex);
+    return nextBestQuestion(paneState, diseases, FEATURES);
+  }, [paneState, age, sex]);
 
   const hasSourceData = entries.length > 0 || symptoms.length > 0 || freeText.trim().length > 0;
   const narrativeEdited = hpiNotes !== liveProse && hpiNotes.trim().length > 0;
@@ -1083,6 +1170,7 @@ export default function HpiTab() {
               entry={entry}
               onAnswerChange={(key, value) => updateAnswer(idx, key, value)}
               onReset={() => resetEntry(idx)}
+              paneNextQuestion={paneNextQuestion}
             />
           ))}
         </>
