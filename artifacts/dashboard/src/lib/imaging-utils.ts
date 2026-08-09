@@ -106,6 +106,39 @@ function detectUrgency(urgency?: string): string {
   return 'routine';
 }
 
+function buildClinicalQuestion(modality: string, region: string, label: string): string {
+  const r = region.toLowerCase();
+  const l = label.toLowerCase();
+  if (modality === 'XRay') {
+    if (/erect|cxr|chest/.test(l)) return 'Query free air under diaphragm. Exclude pulmonary pathology / pneumonia.';
+    if (/axr|abdomen/.test(l)) return 'Query bowel obstruction, perforation, toxic megacolon, abdominal calcification.';
+    return `Query bony or soft tissue pathology — ${region || label}.`;
+  }
+  if (modality === 'Ultrasound') {
+    if (/abdomen.*pelvis|pelvis.*abdomen|tap/.test(r || l)) return 'Query intra-abdominal / pelvic pathology — free fluid, solid organ abnormality.';
+    if (/abdomen|abdominal/.test(r || l)) return 'Query cholelithiasis, biliary dilatation, free fluid, solid organ pathology.';
+    if (/pelvis|pelvic/.test(r)) return 'Query pelvic pathology, free fluid, adnexal mass.';
+    if (/liver|hepat/.test(r || l)) return 'Query hepatic lesion, biliary obstruction, portal hypertension.';
+    if (/renal|kidney/.test(r || l)) return 'Query renal calculi, hydronephrosis, renal mass.';
+    if (/thyroid/.test(r)) return 'Query thyroid nodule, goitre, malignancy.';
+    return `Query ${region || label} pathology on ultrasound.`;
+  }
+  if (modality === 'CT') {
+    if (/abdomen.*pelvis|pelvis.*abdomen|tap/.test(r || l)) return 'Query intra-abdominal / pelvic pathology — nature, extent, and cause.';
+    if (/chest|thorac/.test(r)) return 'Query thoracic pathology — pulmonary, mediastinal, pleural, vascular.';
+    if (/brain|head/.test(r)) return 'Query intracranial pathology — haemorrhage, mass, infarct.';
+    if (/abdomen/.test(r)) return 'Query intra-abdominal pathology — nature and extent.';
+    return `Query ${region || label} pathology on CT — nature and extent.`;
+  }
+  if (modality === 'MRI') {
+    if (/mrcp/.test(l)) return 'Query biliary / pancreatic ductal pathology — obstruction, stones, stricture, malignancy.';
+    if (/liver/.test(r)) return 'Query hepatic lesion — characterisation and staging.';
+    if (/spine/.test(r)) return 'Query spinal pathology — disc herniation, canal stenosis, cord signal.';
+    return `Query ${region || label} pathology on MRI.`;
+  }
+  return label;
+}
+
 /**
  * Convert an investigation label string (from a CC matrix or PANE protocol)
  * into a RadiologyRequest-shaped object ready to store in AppContext.
@@ -116,6 +149,7 @@ export function parseImagingToRequest(
   indication?: string,
 ): ParsedRadiologyRequest {
   const modality = detectModality(label);
+  const region   = detectRegion(label);
   const ctContrast = modality === 'CT' ? detectContrast(label) : 'none';
   const mriProtocol = /mrcp/.test(label.toLowerCase())
     ? 'MRCP (magnetic cholangiopancreatography)'
@@ -124,11 +158,11 @@ export function parseImagingToRequest(
   return {
     id: crypto.randomUUID(),
     modality,
-    anatomicalRegion: detectRegion(label),
+    anatomicalRegion: region,
     laterality: '',
     urgency: detectUrgency(urgency),
     indication: indication ?? label,
-    clinicalQuestion: label,
+    clinicalQuestion: buildClinicalQuestion(modality, region, label),
     ctContrast,
     ctContrastType: '',
     ctEgfr: '',
