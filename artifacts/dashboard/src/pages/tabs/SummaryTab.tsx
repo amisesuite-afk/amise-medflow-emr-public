@@ -245,6 +245,8 @@ function sharedHead(title: string): string {
   .pl-title{font-size:13px;font-weight:700;color:#0B2545;margin-bottom:4px}
   .pl-icd{font-size:10px;color:#94a3b8;margin-bottom:8px;font-style:italic}
   .pl-section-box{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#b91c1c;border:1px solid #fca5a5;background:#fef2f2;padding:4px 10px;border-radius:4px;margin:10px 0 6px}
+  .pl-h2{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#1a3a5c;border-bottom:1px solid #cbd5e1;padding-bottom:3px;margin:10px 0 5px}
+  .pl-h3{font-size:10px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin:8px 0 4px}
   .pl-checkbox{font-size:12px;padding-left:20px;position:relative;margin-bottom:4px;color:#334155;cursor:pointer;user-select:none}
   .pl-checkbox::before{content:"☐";position:absolute;left:3px;font-size:11px;color:#1a3a5c}
   .pl-checked{color:#15803d;font-weight:600}
@@ -340,6 +342,23 @@ function planTextToHtml(plan: string): string {
       if (inNumbered) { out.push('</div></div>'); inNumbered = false; }
       const label = ts.replace(/━/g, '').trim();
       out.push(`<div class="pl-section-box">${escHtml(label)}</div>`);
+      continue;
+    }
+
+    // ## / # markdown headings
+    if (ts.startsWith('### ')) {
+      if (inNumbered) { out.push('</div></div>'); inNumbered = false; }
+      out.push(`<div class="pl-h3">${escHtml(ts.slice(4))}</div>`);
+      continue;
+    }
+    if (ts.startsWith('## ')) {
+      if (inNumbered) { out.push('</div></div>'); inNumbered = false; }
+      out.push(`<div class="pl-h2">${escHtml(ts.slice(3))}</div>`);
+      continue;
+    }
+    if (ts.startsWith('# ') && i > 0) {
+      if (inNumbered) { out.push('</div></div>'); inNumbered = false; }
+      out.push(`<div class="pl-title">${escHtml(ts.slice(2))}</div>`);
       continue;
     }
 
