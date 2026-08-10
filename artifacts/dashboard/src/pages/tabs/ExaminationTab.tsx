@@ -333,6 +333,7 @@ export default function ExaminationTab() {
   const [showAllSystems, setShowAllSystems] = useState(false);
   const [editVitals, setEditVitals] = useState(false);
   const [quickMode, setQuickMode]   = useState(true);
+  const [allNormalApplied, setAllNormalApplied] = useState(false);
 
   const ageNum = age ? Number(age) : null;
 
@@ -449,6 +450,8 @@ export default function ExaminationTab() {
     }
     setExamNotes(pendingNotes);
     setExamFindings(pendingFindings);
+    setAllNormalApplied(true);
+    setTimeout(() => setAllNormalApplied(false), 2000);
   }
 
   function toggleOmit(systemKey: string) {
@@ -628,17 +631,23 @@ export default function ExaminationTab() {
                   const num = parseFloat(vitals[v.key]);
                   const bad = Number.isFinite(num) && v.danger(num);
                   return (
-                    <div key={v.key} style={{
-                      display: 'flex', flexDirection: 'column', alignItems: 'center',
-                      padding: '3px 9px', borderRadius: 6,
-                      background: bad ? '#fef2f2' : '#fff',
-                      border: `1px solid ${bad ? '#fca5a5' : '#d1fae5'}`,
-                      minWidth: 44,
-                    }}>
+                    <button
+                      key={v.key}
+                      type="button"
+                      onClick={() => setEditVitals(true)}
+                      title="Tap to edit vitals"
+                      style={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'center',
+                        padding: '3px 9px', borderRadius: 6,
+                        background: bad ? '#fef2f2' : '#fff',
+                        border: `1px solid ${bad ? '#fca5a5' : '#d1fae5'}`,
+                        minWidth: 44, cursor: 'pointer',
+                      }}
+                    >
                       <span style={{ fontSize: 9, color: '#6b7280', fontWeight: 600, letterSpacing: '0.05em' }}>{v.label}</span>
                       <span style={{ fontSize: 13, fontWeight: 700, color: bad ? '#dc2626' : '#166534', fontVariantNumeric: 'tabular-nums' }}>{vitals[v.key]}</span>
                       <span style={{ fontSize: 9, color: '#9ca3af' }}>{v.unit}</span>
-                    </div>
+                    </button>
                   );
                 })}
                 <button
@@ -742,11 +751,16 @@ export default function ExaminationTab() {
             type="button"
             onClick={applyAllNormal}
             style={{
-              padding: '5px 14px', borderRadius: 6, border: '1.5px solid #0d9488',
-              background: '#f0fdfa', color: '#0d9488', fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              padding: '7px 16px', borderRadius: 6,
+              border: `1.5px solid ${allNormalApplied ? '#166534' : '#0d9488'}`,
+              background: allNormalApplied ? '#16a34a' : '#f0fdfa',
+              color: allNormalApplied ? '#fff' : '#0d9488',
+              fontSize: 12, fontWeight: 700, cursor: 'pointer',
+              transition: 'all 0.2s',
+              minHeight: 36,
             }}
           >
-            ◎ All Normal
+            {allNormalApplied ? '✓ All systems — Normal' : '◎ All Normal'}
           </button>
         </div>
 
@@ -839,20 +853,31 @@ export default function ExaminationTab() {
                       type="button"
                       onClick={() => applyNormal(system)}
                       disabled={isOmitted}
-                      title="Mark all normal"
+                      title="Mark as normal"
                       style={{
-                        padding: '2px 8px', borderRadius: 5, cursor: 'pointer',
-                        border: `1px solid ${isNormal ? '#0d9488' : '#374151'}`,
+                        padding: '5px 10px', borderRadius: 5, cursor: isOmitted ? 'not-allowed' : 'pointer',
+                        border: `1px solid ${isNormal ? '#0d9488' : '#475569'}`,
                         background: isNormal ? '#0d9488' : 'transparent',
                         color: isNormal ? '#fff' : '#0d9488',
-                        fontSize: 10, fontWeight: 700,
+                        fontSize: 11, fontWeight: 700,
+                        minHeight: 30, minWidth: 60,
                       }}
                     >
-                      ◎
+                      {isNormal ? '✓ Nml' : '◎ Nml'}
                     </button>
                   </div>
                   {!isOmitted && (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {isNormal && (
+                        <span style={{
+                          fontSize: 11, fontWeight: 700, color: '#0d9488',
+                          padding: '2px 8px', borderRadius: 10,
+                          border: '1px solid #0d9488', background: 'rgba(13,148,136,0.12)',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          ✓ Normal
+                        </span>
+                      )}
                       {system.chips.map(chip => {
                         const isOn        = selected.includes(chip);
                         const isFocusChip = focusChips.includes(chip);
@@ -862,7 +887,7 @@ export default function ExaminationTab() {
                             type="button"
                             onClick={() => toggleChip(system.key, chip)}
                             style={{
-                              padding: '2px 8px', borderRadius: 12, fontSize: 11, cursor: 'pointer',
+                              padding: '3px 9px', borderRadius: 12, fontSize: 11, cursor: 'pointer',
                               border: isOn
                                 ? '1px solid #0d9488'
                                 : isFocusChip ? '1.5px solid #f59e0b' : '1px solid #374151',
@@ -870,6 +895,7 @@ export default function ExaminationTab() {
                               color: isOn ? '#fff' : isFocusChip ? '#92400e' : '#94a3b8',
                               fontWeight: isOn || isFocusChip ? 600 : 400,
                               transition: 'all 0.1s',
+                              minHeight: 28,
                             }}
                           >
                             {chip}
