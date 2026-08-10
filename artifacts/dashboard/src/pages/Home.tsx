@@ -327,6 +327,7 @@ export default function HomePage() {
     activeSection, setActiveSection,
     topSection, setTopSection,
     patientName, setPatientName, phone, age, setAge: ctxSetAge, sex, setSex: ctxSetSex,
+    setDob: ctxSetDob,
     comorbidities,
     triageResult,
     currentSite, setCurrentSite,
@@ -370,6 +371,7 @@ export default function HomePage() {
   const [qsName, setQsName] = useState('');
   const [qsAge, setQsAge]   = useState('');
   const [qsSex, setQsSex]   = useState('');
+  const [qsDob, setQsDob]   = useState('');
   const tabStripRef = useRef<HTMLDivElement>(null);
   const [tsCanLeft, setTsCanLeft]   = useState(false);
   const [tsCanRight, setTsCanRight] = useState(true);
@@ -1412,9 +1414,13 @@ export default function HomePage() {
                 e.preventDefault();
                 if (!qsName.trim()) return;
                 setPatientName(qsName.trim());
-                if (qsAge) ctxSetAge(qsAge);
+                const resolvedAge = qsAge || (qsDob
+                  ? String(Math.floor((Date.now() - new Date(qsDob).getTime()) / (365.25 * 24 * 3600 * 1000)))
+                  : '');
+                if (resolvedAge) ctxSetAge(resolvedAge);
+                if (qsDob) ctxSetDob(qsDob);
                 if (qsSex && qsSex !== 'unknown') ctxSetSex(qsSex as 'male' | 'female' | 'other' | 'unknown');
-                setQsName(''); setQsAge(''); setQsSex('');
+                setQsName(''); setQsAge(''); setQsSex(''); setQsDob('');
               }}
               style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'flex-end' }}
             >
@@ -1429,15 +1435,30 @@ export default function HomePage() {
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <label style={{ fontSize: 10, fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Age</label>
+                <label style={{ fontSize: 10, fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Date of birth</label>
+                <input
+                  type="date"
+                  value={qsDob}
+                  onChange={e => {
+                    setQsDob(e.target.value);
+                    if (e.target.value) {
+                      const yrs = Math.floor((Date.now() - new Date(e.target.value).getTime()) / (365.25 * 24 * 3600 * 1000));
+                      if (yrs >= 0) setQsAge(String(yrs));
+                    }
+                  }}
+                  style={{ padding: '7px 10px', borderRadius: 7, border: '1.5px solid #f59e0b', fontSize: 13, background: '#fff', color: '#0f172a', outline: 'none' }}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <label style={{ fontSize: 10, fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Age (yrs)</label>
                 <input
                   type="number"
                   inputMode="numeric"
                   min={0} max={130}
                   value={qsAge}
-                  onChange={e => setQsAge(e.target.value.replace(/[^0-9]/g, ''))}
+                  onChange={e => { setQsAge(e.target.value.replace(/[^0-9]/g, '')); setQsDob(''); }}
                   placeholder="e.g. 45"
-                  style={{ padding: '7px 10px', borderRadius: 7, border: '1.5px solid #f59e0b', fontSize: 13, background: '#fff', color: '#0f172a', width: 80, outline: 'none' }}
+                  style={{ padding: '7px 10px', borderRadius: 7, border: '1.5px solid #f59e0b', fontSize: 13, background: '#fff', color: '#0f172a', width: 72, outline: 'none' }}
                 />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
