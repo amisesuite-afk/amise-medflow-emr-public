@@ -865,14 +865,55 @@ export default function HomePage() {
             ) : patientName ? (
               <span style={{ fontSize: 10, color: '#475569', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
             ) : null}
-            {/* Visit type pill */}
-            {ctxVisitType && (() => {
+            {/* Visit type — inline select in consultation header */}
+            {(() => {
               const vt = VISIT_TYPES.find(v => v.id === ctxVisitType);
-              return vt ? (
-                <span style={{ fontSize: 10, fontWeight: 700, color: vt.color, background: `${vt.color}22`, border: `1px solid ${vt.color}44`, borderRadius: 4, padding: '1px 6px', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                  {vt.icon} {vt.label}
-                </span>
-              ) : null;
+              return (
+                <select
+                  value={ctxVisitType ?? ''}
+                  onChange={e => {
+                    const id = e.target.value;
+                    if (!id) return;
+                    ctxSetVisitType(id);
+                    setIsPostOp(id === 'post_op');
+                    setPostOpDays('');
+                    if (id === 'trauma' || id === 'burns') {
+                      setTopSection('trauma');
+                    } else if (id === 'ercp' || id === 'endoscopy_ogd' || id === 'endoscopy_col') {
+                      setEncounterType('endoscopy');
+                      setTopSection('consultation');
+                    } else if (id === 'urgent') {
+                      setEncounterType('major_emergency');
+                      setTopSection('consultation');
+                    } else if (id === 'post_op' || id === 'follow_up') {
+                      setEncounterType('quick_consult');
+                      setTopSection('consultation');
+                    } else {
+                      setEncounterType('surgical_consult');
+                      setTopSection('consultation');
+                    }
+                    setVtGateCleared(true);
+                  }}
+                  aria-label="Visit type"
+                  style={{
+                    fontSize: 10, fontWeight: 700,
+                    color: vt?.color ?? '#fff',
+                    background: vt ? `${vt.color}22` : 'rgba(255,255,255,0.12)',
+                    border: `1.5px solid ${vt ? `${vt.color}44` : 'rgba(255,255,255,0.25)'}`,
+                    borderRadius: 6, padding: '2px 22px 2px 7px', cursor: 'pointer',
+                    appearance: 'none', flexShrink: 0,
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23fff'/%3E%3C/svg%3E")`,
+                    backgroundRepeat: 'no-repeat', backgroundPosition: 'right 6px center',
+                  }}
+                >
+                  <option value="" style={{ color: '#374151', background: '#fff' }}>— Visit type —</option>
+                  {VISIT_TYPES.map(v => (
+                    <option key={v.id} value={v.id} style={{ color: '#374151', background: '#fff' }}>
+                      {v.icon} {v.label}
+                    </option>
+                  ))}
+                </select>
+              );
             })()}
             {/* CC label */}
             {ccLabel && (

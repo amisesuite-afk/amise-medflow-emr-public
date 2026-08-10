@@ -320,7 +320,25 @@ export default function NavSidebar({
     ];
     return (
       <nav className="nav-sidebar nav-sidebar--collapsed" aria-label="Consultation phases" style={{ overflowY: 'hidden' }}>
-        <div className="nav-sidebar__body" style={{ paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div className="nav-sidebar__body" style={{ paddingTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {/* Patient list — always accessible during consultation */}
+          <button
+            onClick={() => onTopSection('patients')}
+            title="Patient list"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 'calc(100% - 8px)', height: 40, border: 'none', cursor: 'pointer',
+              position: 'relative', borderRadius: 6, margin: '0 4px',
+              background: 'transparent',
+              color: 'rgba(255,255,255,0.45)',
+              transition: 'background 0.15s, color 0.15s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.8)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.45)'; }}
+          >
+            <Users size={16} strokeWidth={1.8} />
+          </button>
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '0 10px 4px' }} />
           {AMBIENT_RAIL.map(({ label, Icon, sections }) => {
             const isCurrent = sections.includes(activeSection);
             const doneCount = sections.filter(s => !!sectionCompletion[s]).length;
