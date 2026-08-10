@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
 import { printDoc } from './lib/pdfExport';
@@ -87,8 +87,35 @@ const LABEL: React.CSSProperties = {
 
 export default function WhoChecklistTab() {
   const ctx = useAppContext();
-  const [proc, setProc] = useState<ProcedureDetails>(emptyProcedure);
   const [state, setState] = useState<ChecklistState>(emptyChecklist);
+
+  // Derive procedure name from visitType or procedures text
+  const VISIT_TYPE_LABELS: Record<string, string> = {
+    ercp:           'ERCP',
+    endoscopy_ogd:  'OGD',
+    endoscopy_col:  'Colonoscopy',
+    day_of_surgery: '',
+  };
+  const todayEct = new Date().toLocaleDateString('en-CA', { timeZone: 'America/St_Lucia' }); // YYYY-MM-DD
+
+  // Auto-populate whoProc on first render or when key fields are empty
+  const proc = ctx.whoProc;
+  function setProc(updater: (p: typeof ctx.whoProc) => typeof ctx.whoProc) {
+    ctx.setWhoProc(updater);
+  }
+
+  // Auto-fill empty fields from context
+  React.useEffect(() => {
+    ctx.setWhoProc(p => {
+      const autoName = p.procedureName || ctx.procedures?.split('\n')[0]?.trim() || (ctx.visitType ? (VISIT_TYPE_LABELS[ctx.visitType] || '') : '');
+      const autoDate = p.procedureDate || todayEct;
+      if (p.procedureName !== autoName || p.procedureDate !== autoDate) {
+        return { ...p, procedureName: autoName, procedureDate: autoDate };
+      }
+      return p;
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctx.visitType, ctx.procedures]);
   const [activePhase, setActivePhase] = useState<Phase>('signin');
   const [signerInputs, setSignerInputs] = useState<Record<Phase, string>>({ signin: '', timeout: '', signout: '' });
 
