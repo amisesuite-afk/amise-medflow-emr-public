@@ -411,11 +411,20 @@ export default function ExaminationTab() {
 
   function toggleChip(systemKey: string, chip: string) {
     const current = examFindings[systemKey] ?? [];
-    const next = current.includes(chip)
-      ? current.filter(c => c !== chip)
-      : [...current, chip];
+    const isAdding = !current.includes(chip);
+    const next = isAdding
+      ? [...current, chip]
+      : current.filter(c => c !== chip);
     setExamFindings({ ...examFindings, [systemKey]: next });
-    syncLegacy(systemKey, next, examNotes[systemKey] ?? '');
+    const currentNote = examNotes[systemKey]?.trim() ?? '';
+    const system = EXAM_SYSTEMS.find(s => s.key === systemKey);
+    const isNormalProse = !!system && currentNote === system.normalProse.trim();
+    if (isAdding && isNormalProse) {
+      setExamNotes({ ...examNotes, [systemKey]: '' });
+      syncLegacy(systemKey, next, '');
+    } else {
+      syncLegacy(systemKey, next, currentNote);
+    }
   }
 
   function updateNote(systemKey: string, note: string) {
