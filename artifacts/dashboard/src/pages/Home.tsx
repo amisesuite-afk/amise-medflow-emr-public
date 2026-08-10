@@ -1029,14 +1029,20 @@ export default function HomePage() {
                 ctxSetVisitType(id);
                 setIsPostOp(id === 'post_op');
                 setPostOpDays('');
-                if (id === 'ercp' || id === 'endoscopy_ogd' || id === 'endoscopy_col') {
+                if (id === 'trauma' || id === 'burns') {
+                  setTopSection('trauma');
+                } else if (id === 'ercp' || id === 'endoscopy_ogd' || id === 'endoscopy_col') {
                   setEncounterType('endoscopy');
+                  setTopSection('consultation');
                 } else if (id === 'urgent') {
                   setEncounterType('major_emergency');
+                  setTopSection('consultation');
                 } else if (id === 'post_op' || id === 'follow_up') {
                   setEncounterType('quick_consult');
+                  setTopSection('consultation');
                 } else {
                   setEncounterType('surgical_consult');
+                  setTopSection('consultation');
                 }
                 setVtGateCleared(true);
               }}
