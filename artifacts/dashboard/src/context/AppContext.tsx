@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { updateDefaultSite, saveAssessment, savePlan, syncAllergyList, syncMedicationList, saveExamFindings, syncSurgicalHistory, syncToxicHabits, syncRosFindings, syncProcedureData, syncTraumaRecord, loadPatientProblems, savePatientProblem, updatePatientProblemStatus, removePatientProblem, type PatientProblem, loadWoundAssessments, saveWoundAssessment, deleteWoundAssessment, emptyWound, type WoundAssessment, savePmhNotes, saveHpiNote, clearHpiNote, syncInvestigationOrders, updateEncounterType, toDbEncounterType, saveInpatientDetails, saveClinicalScores, listPatientEncounters, type EncounterSummary } from '@/lib/db';
 import type { PaneState, RankedDiagnosis, ProtocolMedication } from '@workspace/pane-engine';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
+import { scoreDiagnosis } from '@/lib/diagnosis-proc-mapper';
 
 export { type SiteCode } from '@/lib/supabase';
 export type Section =
@@ -1363,6 +1364,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [hasPendingTimers]);
+
+  // ── Bayesian diagnosis-to-procedure autofill ──────────────────────────────
+  // Refs let the effect read latest values without adding them as dependencies
+  // (prevents infinite loops when the effect itself writes those values).
+  const _visitTypeRef = useRef(visitType);
+  _visitTypeRef.current = visitType;
+  const _periopProcIdRef = useRef(periopProcId);
+  _periopProcIdRef.current = periopProcId;
+  const _whoProcRef = useRef(whoProc);
+  _whoProcRef.current = whoProc;
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const sug = scoreDiagnosis(assessment);
+      if (!sug) return;
+      if (!_periopProcIdRef.current) setPeriopProcId(sug.procId);
+      if (!_whoProcRef.current.procedureName) setWhoProc(prev => ({ ...prev, procedureName: sug.procedureName }));
+      if (!_visitTypeRef.current) {
+        setVisitType(sug.visitTypeId);
+        setEncounterType(sug.encounterType);
+      }
+    }, 700);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assessment]);
 
   const value: CtxValue = {
     activeSection, setActiveSection,
