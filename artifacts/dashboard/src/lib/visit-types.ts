@@ -11,6 +11,8 @@ export const VISIT_TYPES = [
   { id: 'telephone',        label: 'Telephone',          icon: '📞', color: '#d97706', desc: 'Remote / telephone consultation' },
   { id: 'diabetic_foot',    label: 'Diabetic Foot',      icon: '🦶', color: '#dc2626', desc: 'Foot wound / vascular assessment' },
   { id: 'urgent',           label: 'Urgent Referral',    icon: '🚨', color: '#dc2626', desc: 'Urgent / emergency triage required' },
+  { id: 'trauma',           label: 'Trauma',             icon: '⚡', color: '#b91c1c', desc: 'Major trauma — ATLS primary and secondary survey (ABCDE)' },
+  { id: 'burns',            label: 'Burns',              icon: '🔥', color: '#ea580c', desc: 'Burns assessment — Lund-Browder TBSA, Parkland formula, Baux score' },
 ] as const;
 
 export type VisitTypeId = typeof VISIT_TYPES[number]['id'];

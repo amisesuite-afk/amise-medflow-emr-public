@@ -4,7 +4,7 @@ import {
   PanelLeftClose, PanelLeftOpen, FileText,
   Pill, ShieldAlert, Cigarette, ClipboardCheck, FileEdit,
   FolderOpen, ChevronDown, ChevronRight as ChevronRightIcon, FlaskConical, ListChecks,
-  ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Zap, Inbox,
+  ScanLine, Paperclip, FileCheck2, Activity, BookOpen, Inbox,
   Contact, HeartPulse, FileSignature, BrainCircuit, CircleCheckBig, Check,
   MessageSquare, Tags, ClipboardMinus, ScrollText, MailOpen, GraduationCap, ShieldCheck,
   Calculator, Droplets, Bandage, UserCheck, ArrowLeftRight, PhoneIncoming,
@@ -167,7 +167,6 @@ const DR_NAV_ITEMS: TopItem[] = [
   { id: 'intake',          icon: ClipboardList,   label: 'Intake',          roles: ['nurse', 'admin'], group: 'Clinical' },
   { id: 'consultation',    icon: Stethoscope,     label: 'Consultation',    roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
   { id: 'procedures',      icon: Scissors,        label: 'Procedures',      roles: ['doctor', 'admin'],          group: 'Clinical' },
-  { id: 'trauma',          icon: Zap,             label: 'Trauma',          roles: ['nurse', 'doctor', 'admin'], group: 'Clinical' },
   // Results & Summary
   { id: 'results_inbox',    icon: ClipboardMinus,  label: 'Results Inbox',    roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
   { id: 'finaldoc',         icon: FileCheck2,      label: 'Summary',          roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
