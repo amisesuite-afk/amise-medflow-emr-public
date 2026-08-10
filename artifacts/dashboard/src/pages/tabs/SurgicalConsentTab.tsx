@@ -1,10 +1,11 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import SmartTextarea from '@/components/SmartTextarea';
 import { downloadAsWord } from './lib/pdfExport';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import { parseDrugs, classifyMed, ACTION_META, ACTION_ORDER } from '@/lib/periop-meds';
 
 /* ── Canvas signature pad ───────────────────────────────────────────────── */
 interface SigPadProps { label: string; value: string; onChange: (v: string) => void; }
@@ -447,7 +448,7 @@ ${p.morning.length > 0 ? `<h2>On the day of your procedure</h2><ul>${p.morning.m
 
 export default function SurgicalConsentTab() {
   const ctx = useAppContext();
-  const { patientName, age, sex, dob, nhiNumber, plan, assessment, visitType, email } = ctx;
+  const { patientName, age, sex, dob, nhiNumber, plan, assessment, visitType, email, medications, medicationsText } = ctx;
   const [procedure, setProcedure] = useState('');
   const [anaesthesia, setAnaesthesia] = useState('General anaesthesia');
   const [alternatives, setAlternatives] = useState('');
@@ -463,6 +464,15 @@ export default function SurgicalConsentTab() {
   const [clinicianName, setClinicianName] = useState('Dr Dawit Daniel Kabiye, MD, DM');
   const [signed, setSigned] = useState(false);
   const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const allDrugs = useMemo(() => parseDrugs(medications, medicationsText), [medications, medicationsText]);
+  const classifiedMeds = useMemo(() => allDrugs.map(classifyMed), [allDrugs]);
+  const medsByAction = useMemo(() => {
+    const map: Record<string, typeof classifiedMeds> = {};
+    for (const m of classifiedMeds) { (map[m.action] ??= []).push(m); }
+    return map;
+  }, [classifiedMeds]);
+
+
   const seededRef = useRef(false);
 
   // Auto-seed from visitType first, then fall back to plan/assessment text
@@ -635,6 +645,34 @@ export default function SurgicalConsentTab() {
               <div style={{ fontSize: 10, fontWeight: 700, color: '#1d4ed8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>Recovery timeline</div>
               <div style={{ fontSize: 13, color: '#1e293b', lineHeight: 1.6 }}>{matchedTemplate.prep.recovery}</div>
             </div>
+
+            {classifiedMeds.length > 0 && (
+              <div>
+                <div style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                  Patient medications — perioperative management
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {ACTION_ORDER.filter(a => (medsByAction[a]?.length ?? 0) > 0).map(action => {
+                    const meds = medsByAction[action]!;
+                    const meta = ACTION_META[action];
+                    return (
+                      <div key={action} style={{ borderRadius: 7, border: `1px solid ${meta.border}`, overflow: 'hidden' }}>
+                        <div style={{ padding: '5px 10px', background: meta.bg, fontSize: 10, fontWeight: 700, color: meta.color, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          {meta.label}
+                        </div>
+                        {meds.map((m, idx) => (
+                          <div key={idx} style={{ padding: '7px 10px', background: meta.bg, borderTop: idx > 0 ? `1px solid ${meta.border}` : undefined }}>
+                            <div style={{ fontWeight: 600, fontSize: 12, color: '#1e293b' }}>{m.raw}</div>
+                            <div style={{ fontSize: 11, color: meta.color, fontStyle: 'italic', marginTop: 1 }}>{m.drugClass}</div>
+                            <div style={{ fontSize: 11.5, color: '#374151', marginTop: 3, lineHeight: 1.5 }}>{m.instruction}</div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </CollapsibleCard>
       )}
