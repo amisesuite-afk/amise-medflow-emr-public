@@ -305,6 +305,8 @@ interface CtxValue {
   visitType: string; setVisitType(v: string): void;
   postOpDate: string; setPostOpDate(v: string): void;
   postOpReviewNum: number; setPostOpReviewNum(v: number): void;
+  periopProcId: string; setPeriopProcId(v: string): void;
+  whoProc: { procedureName: string; procedureDate: string; procedureTime: string; theatre: string; site: string; surgeon: string; anaesthetist: string; scrubNurse: string; circulatingNurse: string }; setWhoProc(v: (prev: { procedureName: string; procedureDate: string; procedureTime: string; theatre: string; site: string; surgeon: string; anaesthetist: string; scrubNurse: string; circulatingNurse: string }) => { procedureName: string; procedureDate: string; procedureTime: string; theatre: string; site: string; surgeon: string; anaesthetist: string; scrubNurse: string; circulatingNurse: string }): void;
 
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
@@ -569,6 +571,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [visitType, setVisitType] = useState('');
   const [postOpDate, setPostOpDate] = useState('');
   const [postOpReviewNum, setPostOpReviewNum] = useState(1);
+  const [periopProcId, setPeriopProcId] = useState('');
+  const [whoProc, setWhoProc] = useState({ procedureName: '', procedureDate: '', procedureTime: '', theatre: '', site: '', surgeon: 'Dr Dawit Daniel Kabiye', anaesthetist: '', scrubNurse: '', circulatingNurse: '' });
 
   const [assessment, setAssessment] = useState('');
   const [differentials, setDifferentials] = useState('');
@@ -955,6 +959,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setWeightKg(''); setHeightCm(''); setWaistCm(''); setHipCm(''); setMuacCm(''); setAnatomicalFindings([]);
     setRosFindings({}); setProcedureData({}); setPreVisitStatus('new');
     setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1);
+    setPeriopProcId(''); setWhoProc({ procedureName: '', procedureDate: '', procedureTime: '', theatre: '', site: '', surgeon: 'Dr Dawit Daniel Kabiye', anaesthetist: '', scrubNurse: '', circulatingNurse: '' });
     setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
     setConfirmedDiagnoses([]);
     setProcedures(''); setBilling(''); setDocuments(''); setSurgicalClassifications({});
@@ -1438,6 +1443,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     visitType, setVisitType,
     postOpDate, setPostOpDate,
     postOpReviewNum, setPostOpReviewNum,
+    periopProcId, setPeriopProcId,
+    whoProc, setWhoProc,
     triageResult,
     attachments, setAttachments,
     radiologyRequests, setRadiologyRequests,

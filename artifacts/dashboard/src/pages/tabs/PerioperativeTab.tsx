@@ -320,8 +320,17 @@ const ACTION_ORDER: PeriOpAction[] = ['continue', 'hold_day', 'hold_before', 'br
 export default function PerioperativeTab() {
   const ctx = useAppContext();
 
-  // ── Section 1: Antibiotic prophylaxis
-  const [selectedProc, setSelectedProc] = useState('');
+  // ── Section 1: Antibiotic prophylaxis — shared via context, auto-derived from visit type
+  const VISIT_TYPE_TO_PROC: Record<string, string> = {
+    ercp:           'ercp_therapeutic',
+    endoscopy_ogd:  'ogd',
+    endoscopy_col:  'colonoscopy',
+    day_of_surgery: '',
+  };
+
+  const derivedProcId = ctx.visitType ? (VISIT_TYPE_TO_PROC[ctx.visitType] ?? '') : '';
+  const selectedProc = ctx.periopProcId || derivedProcId;
+  const setSelectedProc = (id: string) => ctx.setPeriopProcId(id);
   const proc = PROCEDURES.find(p => p.id === selectedProc);
   const penAllergy = hasPenAllergyFlag(ctx.allergies);
   const noAbxProc = proc && proc.rec.firstChoice.agent.startsWith('No routine');
