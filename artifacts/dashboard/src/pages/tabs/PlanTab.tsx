@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
+import { detectDxVariants } from '@/lib/dx-variants';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { errMsg } from '@/lib/err';
 import CptPicker from '@/components/CptPicker';
@@ -70,8 +71,14 @@ function buildPlanText(
   protocol: NonNullable<ReturnType<typeof getProtocol>>,
   isInpatient: boolean,
   surgeon: string,
+  allowedPhases?: string[],
+  planPrefix?: string,
 ): string {
   const lines: string[] = [];
+
+  if (planPrefix) {
+    lines.push(planPrefix, '');
+  }
 
   if (isInpatient) {
     lines.push(
@@ -84,9 +91,10 @@ function buildPlanText(
     );
   }
 
-  // Group management steps by phase
+  // Group management steps by phase, filtered by allowedPhases when set
   const byPhase = new Map<string, string[]>();
   for (const step of protocol.management) {
+    if (allowedPhases && !allowedPhases.includes(step.phase)) continue;
     if (!byPhase.has(step.phase)) byPhase.set(step.phase, []);
     byPhase.get(step.phase)!.push(step.step);
   }
@@ -160,6 +168,7 @@ export default function PlanTab() {
     patientId, patientName, phone, currentSite,
     activeCcKey,
     admittingSurgeon,
+    assessment,
   } = useAppContext();
 
   const ccMatrix = activeCcKey ? getMatrix(activeCcKey) : null;
@@ -173,6 +182,9 @@ export default function PlanTab() {
 
   const acuity = triageResult.acuity;
   const bmiData = calcBmiClass(weightKg, heightCm);
+
+  // Sub-diagnosis variant detection state (hook must be declared before any early return)
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
 
   // Review / follow-up scheduling
   const [reviewIn, setReviewIn] = useState('');
@@ -272,13 +284,35 @@ export default function PlanTab() {
       ? getProtocolByIcd(activeIcdCode)
       : null;
 
+  // Detect sub-diagnosis variants from assessment text
+  const variantMatch = useMemo(
+    () => detectDxVariants(assessment, activeIcdCode ?? undefined, activeDiseaseId ?? undefined),
+    [assessment, activeIcdCode, activeDiseaseId],
+  );
+  // Auto-select detected variant; reset when diagnosis group changes
+  useEffect(() => {
+    if (variantMatch?.detectedVariant) {
+      setSelectedVariantId(variantMatch.detectedVariant.id);
+    } else {
+      setSelectedVariantId(null);
+    }
+  }, [variantMatch]);
+
+  const selectedVariant = variantMatch?.group.variants.find(v => v.id === selectedVariantId) ?? null;
+
   const isInpatient = encounterMode === 'inpatient';
   const isPreOp  = symptoms.some(s => s === 'Pre-operative visit');
   const isPostOp = symptoms.some(s => s === 'Post-operative review');
 
   function handleGeneratePlan() {
     if (!protocol) return;
-    setPlan(buildPlanText(protocol, isInpatient, admittingSurgeon));
+    setPlan(buildPlanText(
+      protocol,
+      isInpatient,
+      admittingSurgeon,
+      selectedVariant?.allowedPhases,
+      selectedVariant?.planPrefix,
+    ));
   }
 
   function handleGenerateNursing() {
@@ -319,6 +353,7 @@ export default function PlanTab() {
             border: '1px solid #0d9488',
             borderRadius: 8,
           }}>
+            {/* Header row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <span style={{ fontSize: 12, color: '#5eead4', fontWeight: 600 }}>
                 Protocol matched: {protocol.label}
@@ -329,7 +364,7 @@ export default function PlanTab() {
                 onClick={handleGeneratePlan}
                 style={{ background: '#0d9488', color: '#fff', borderColor: '#0d9488' }}
               >
-                Generate plan from {protocol.label}
+                Generate plan{selectedVariant ? ` — ${selectedVariant.label}` : ` from ${protocol.label}`}
               </button>
               {isInpatient && (
                 <button
@@ -342,6 +377,75 @@ export default function PlanTab() {
                 </button>
               )}
             </div>
+
+            {/* Sub-diagnosis variant selector */}
+            {variantMatch && (
+              <div style={{ marginTop: 10 }}>
+                <div style={{ fontSize: 10, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 6 }}>
+                  {variantMatch.group.differentiatorQuery}
+                </div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {variantMatch.group.variants.map(v => {
+                    const isSelected = v.id === selectedVariantId;
+                    return (
+                      <button
+                        key={v.id}
+                        type="button"
+                        className="chip"
+                        onClick={() => setSelectedVariantId(v.id)}
+                        title={v.description}
+                        style={isSelected ? {
+                          background: '#0f766e',
+                          color: '#fff',
+                          borderColor: '#0d9488',
+                          fontWeight: 700,
+                        } : {
+                          background: '#1e3a4a',
+                          color: '#7dd3d0',
+                          borderColor: '#2d6a70',
+                        }}
+                      >
+                        {v.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Urgency note for selected variant */}
+                {selectedVariant?.urgencyNote && (
+                  <div style={{
+                    marginTop: 8,
+                    padding: '6px 10px',
+                    background: '#7c1d1d22',
+                    border: '1px solid #ef444444',
+                    borderRadius: 6,
+                    fontSize: 11.5,
+                    color: '#fca5a5',
+                    lineHeight: 1.5,
+                  }}>
+                    ⚠ {selectedVariant.urgencyNote}
+                  </div>
+                )}
+
+                {/* Examination queries when variant not confirmed */}
+                {selectedVariant?.examQueries && selectedVariant.examQueries.length > 0 && (
+                  <div style={{ marginTop: 8 }}>
+                    <div style={{ fontSize: 10, color: '#fbbf24', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>
+                      Examination / imaging — confirm sub-diagnosis
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      {selectedVariant.examQueries.map((q, i) => (
+                        <div key={i} style={{ fontSize: 11.5, color: '#fde68a', paddingLeft: 10, lineHeight: 1.5 }}>
+                          • {q}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Red flags */}
             {protocol.redFlags.length > 0 && (
               <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {protocol.redFlags.slice(0, 3).map((rf, i) => (
