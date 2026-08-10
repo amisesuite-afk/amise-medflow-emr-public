@@ -54,6 +54,8 @@ Thumbs.db
 !.env.example
 !.env.*.example
 
-# Claude Code settings
+# Claude Code settings (skills are tracked; settings/session data are not)
 .claude/
+!.claude/skills/
+!.claude/skills/**
 artifacts/front-desk/.next/
