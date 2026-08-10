@@ -472,6 +472,7 @@ export default function SurgicalConsentTab() {
     return map;
   }, [classifiedMeds]);
 
+
   const seededRef = useRef(false);
 
   // Auto-seed from visitType first, then fall back to plan/assessment text
