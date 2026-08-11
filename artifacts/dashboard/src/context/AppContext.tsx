@@ -753,6 +753,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.medications)) setMedications(d.medications as string[]);
       if (typeof d.medicationsText === 'string') setMedicationsText(d.medicationsText);
       if (typeof d.allergies === 'string') setAllergies(d.allergies);
+      if (Array.isArray(d.pendingPrescriptions)) setPendingPrescriptions(d.pendingPrescriptions as ProtocolMedication[]);
       if (Array.isArray(d.familyHistory)) setFamilyHistory(d.familyHistory as string[]);
       if (typeof d.familyHistoryNotes === 'string') setFamilyHistoryNotes(d.familyHistoryNotes as string);
       if (Array.isArray(d.toxicHabits)) setToxicHabits(d.toxicHabits as string[]);
@@ -763,11 +764,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.sex === 'string') setSex(d.sex as Sex);
       if (typeof d.dob === 'string') setDob(d.dob);
       if (typeof d.phone === 'string') setPhone(d.phone);
+      if (typeof d.email === 'string') setEmail(d.email);
       if (typeof d.address === 'string') setAddress(d.address);
       if (typeof d.quarter === 'string') setQuarter(d.quarter);
       if (typeof d.referredBy === 'string') setReferredBy(d.referredBy);
-      if (typeof d.patientPhoto === 'string') setPatientPhoto(d.patientPhoto);
-      if (Array.isArray(d.examPhotos)) setExamPhotos(d.examPhotos as ExamPhoto[]);
       if (d.examFindings && typeof d.examFindings === 'object') setExamFindings(d.examFindings as Record<string, string[]>);
       if (d.examNotes && typeof d.examNotes === 'object') setExamNotes(d.examNotes as Record<string, string>);
       // Load orderedInvestigations + radiologyRequests together so any imaging items
@@ -799,6 +799,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (d.investigationResults && typeof d.investigationResults === 'object') setInvestigationResults(d.investigationResults as Record<string, string>);
       if (Array.isArray(d.icdCodes)) setIcdCodes(d.icdCodes as string[]);
       if (Array.isArray(d.cptCodes)) setCptCodes(d.cptCodes as string[]);
+      if (d.surgicalClassifications && typeof d.surgicalClassifications === 'object') setSurgicalClassifications(d.surgicalClassifications as Record<string, string>);
       if (typeof d.weightKg === 'string') setWeightKg(d.weightKg);
       if (typeof d.heightCm === 'string') setHeightCm(d.heightCm);
       if (typeof d.waistCm === 'string') setWaistCm(d.waistCm);
@@ -813,6 +814,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(d.progressNotes)) setProgressNotes(d.progressNotes as ProgressNote[]);
       if (Array.isArray(d.vitalRecords)) setVitalRecords(d.vitalRecords as VitalRecord[]);
       if (Array.isArray(d.labRecords)) setLabRecords(d.labRecords as LabRecord[]);
+      if (d.extractedLabs && typeof d.extractedLabs === 'object') setExtractedLabs(d.extractedLabs as Record<string, number | null>);
+      if (d.clinicalScores && typeof d.clinicalScores === 'object') setClinicalScores(d.clinicalScores as Record<string, unknown>);
       if (d.encounterMode === 'inpatient') setEncounterMode('inpatient');
       if (d.encounterType === 'quick_consult' || d.encounterType === 'endoscopy' || d.encounterType === 'office_procedure' || d.encounterType === 'major_emergency') setEncounterType(d.encounterType as EncounterType);
       if (typeof d.mrNumber === 'string') setMrNumber(d.mrNumber);
@@ -879,12 +882,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       isPostOp, postOpDays, pregnancyPossible,
       examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
       examFindings, examNotes,
-      assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents,
+      assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents, surgicalClassifications,
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
       comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
       medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
+      pendingPrescriptions,
       patientId, encounterId,
-      patientName, age, sex, dob, phone, address, quarter, referredBy,
+      patientName, age, sex, dob, phone, email, address, quarter, referredBy,
       orderedInvestigations, investigationResults, icdCodes, cptCodes,
       weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
       radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords,
@@ -892,6 +896,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
       workingDiagnosis, confirmedDiagnoses,
       paneState, traumaData,
+      extractedLabs, clinicalScores,
     });
     // Large blobs saved separately — avoids 5 MB localStorage limit on the main key
     try { localStorage.setItem('amise-attachments-v1', JSON.stringify(attachments)); } catch { _setSaveStatus('error'); _setLastSaveError('Storage quota exceeded — clear browser data'); }
@@ -902,18 +907,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isPostOp, postOpDays, pregnancyPossible,
     examGeneral, examCardio, examResp, examAbdomen, examNeuro, examExtremities, examBreast, examWound,
     examFindings, examNotes,
-    assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents,
+    assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents, surgicalClassifications,
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
     comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
     medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
+    pendingPrescriptions,
     patientId, encounterId,
-    patientName, age, sex, dob, phone, address, quarter, referredBy,
+    patientName, age, sex, dob, phone, email, address, quarter, referredBy,
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
     weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
     radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
     encounterMode, encounterType, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
     nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData,
     workingDiagnosis, confirmedDiagnoses,
+    extractedLabs, clinicalScores,
     patientPhoto, examPhotos]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }

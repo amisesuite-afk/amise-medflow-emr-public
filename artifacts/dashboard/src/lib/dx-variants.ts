@@ -279,6 +279,20 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
           'Primary anastomosis if healthy bowel ends and no contamination. ICU/HDU post-op.\n\n',
       },
       {
+        id: 'lbo_volvulus',
+        label: 'Volvulus (Sigmoid / Caecal)',
+        description: 'Colonic volvulus — sigmoid (endoscopic decompression) or caecal (urgent surgery); AXR coffee-bean sign, CT confirmation',
+        detectKeywords: [
+          'sigmoid volvulus', 'caecal volvulus', 'cecal volvulus',
+          'volvulus of sigmoid', 'volvulus of caecum', 'coffee bean sign',
+          'volvulus lbo', 'colonic volvulus',
+        ],
+        allowedPhases: ['immediate', 'conservative', 'surgical'],
+        examQueries: ['Abdominal distension', 'Tympanic percussion', 'Absent bowel sounds'],
+        urgencyNote: 'Sigmoid/caecal volvulus — endoscopic decompression (sigmoid) or urgent surgery (caecal); confirm with AXR/CT',
+        planPrefix: 'Sigmoid/Caecal Volvulus — Management:\n',
+      },
+      {
         id: 'lbo_malignant',
         label: 'Large bowel obstruction — malignant',
         description: 'CT-confirmed LBO from colonic tumour, no free perforation',

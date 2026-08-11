@@ -298,6 +298,10 @@ export default function PatientSearchTab() {
   async function loadPatient(p: PatientListRowEx) {
     setSelected(p.id);
     clearPatient();
+    // Reset questionnaire state immediately so the stale banner disappears
+    // as soon as a new patient is selected (before async awaits resolve).
+    setQuestionnaireData(null);
+    setQPopulated(false);
 
     if (p.full_name) setPatientName(p.full_name);
     if (p.date_of_birth) {
@@ -394,9 +398,7 @@ export default function PatientSearchTab() {
       if (patientId === encPatientId) setPriorEncounterSummary(data);
     });
 
-    // Check for questionnaire intake data
-    setQuestionnaireData(null);
-    setQPopulated(false);
+    // Check for questionnaire intake data (state already reset above, before async)
     const qData = await getQuestionnaireIntake(p.id);
     if (qData && qData.responses.length > 0) {
       setQuestionnaireData(qData);

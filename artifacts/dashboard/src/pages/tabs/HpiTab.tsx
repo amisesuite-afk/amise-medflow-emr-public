@@ -888,6 +888,10 @@ export default function HpiTab() {
     !continuityDismissed &&
     withinSixMonths &&
     mostRecent != null &&
+    // Don't prompt for acute/emergency prior encounters — continuity only makes sense for outpatient follow-up
+    mostRecent.encounterType !== 'emergency' &&
+    mostRecent.encounterType !== 'major_emergency' &&
+    mostRecent.encounterType !== 'trauma' &&
     // Don't show if HPI already has significant content
     hpiNotes.trim().length < 30;
 
