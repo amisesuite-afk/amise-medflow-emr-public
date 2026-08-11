@@ -530,6 +530,12 @@ export default function InvestigationsTab() {
         </div>
       )}
 
+      {!protocol && workingDiagnosis?.locked && (
+        <div style={{ padding: '8px 14px', background: '#1e293b', borderRadius: 8, marginBottom: 4, fontSize: 12, color: '#94a3b8' }}>
+          No protocol matched — select investigations manually below.
+        </div>
+      )}
+
       <CollapsibleCard
         title="Ordered investigations"
         badge={orderedInvestigations.length > 0

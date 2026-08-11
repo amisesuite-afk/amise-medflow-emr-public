@@ -489,9 +489,9 @@ export default function PlanTab() {
           </div>
         )}
 
-        {!protocol && acuity === 'urgent' && (
-          <div style={{ marginBottom: 10, padding: '8px 12px', background: '#7f1d1d22', border: '1px solid #ef444455', borderRadius: 6, fontSize: 12, color: '#fca5a5' }}>
-            Urgent acuity — no matched protocol. Use emergency template below or enter plan manually.
+        {!protocol && workingDiagnosis?.locked && (
+          <div style={{ marginBottom: 10, padding: '8px 12px', background: '#1e293b', border: '1px solid #475569', borderRadius: 6, fontSize: 12, color: '#94a3b8' }}>
+            No protocol matched for this diagnosis — complete the plan manually.
           </div>
         )}
 
