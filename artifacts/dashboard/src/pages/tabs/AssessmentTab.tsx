@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { useAppContext, type ActiveDiagnosis } from '@/context/AppContext';
+import { useAppContext, type ActiveDiagnosis, type WorkingDiagnosis } from '@/context/AppContext';
+import { detectPathognomonic } from '@/lib/transcript-dx-mapper';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import PaneDifferential from '@/components/PaneDifferential';
 import { ManagementPanel } from '@/components/ManagementPanel';
@@ -524,8 +525,9 @@ export default function AssessmentTab() {
     triageResult,
     symptoms, examFindings, vitals, investigationResults,
     comorbidities, age, sex, isPostOp, procedureData, rosFindings,
-    paneTop, paneConverged, icdCodes, activeCcKey,
+    paneTop, paneConverged, icdCodes, setIcdCodes, activeCcKey,
     confirmedDiagnoses, setConfirmedDiagnoses,
+    workingDiagnosis, setWorkingDiagnosis,
     examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
     hpiNotes,
     orderedInvestigations, setOrderedInvestigations,
@@ -599,6 +601,7 @@ export default function AssessmentTab() {
   const cdsSuggestions = getCdsSuggestions({
     symptoms, examFindings, vitals, investigationResults,
     comorbidities, assessment, rosFindings, age, sex, isPostOp, procedureData,
+    workingDiagnosis: workingDiagnosis ?? undefined,
   });
 
   function addDiff(name: string) {
@@ -616,6 +619,44 @@ export default function AssessmentTab() {
     symptoms, examAbdomen, examGeneral, examCardio, examResp, examExtremities, examWound,
     hpiNotes, assessment, examFindings,
   ]);
+
+  // Free-text pathognomonic detection — reads assessment + all exam fields directly.
+  // This fires even before symptom chips are added, giving earlier signal.
+  const pathognomicMatchesFromText = useMemo(() => {
+    const combined = [assessment, hpiNotes, examAbdomen, examGeneral, examCardio, examResp].join(' ');
+    return detectPathognomonic(combined);
+  }, [assessment, hpiNotes, examAbdomen, examGeneral, examCardio, examResp]);
+  const primaryTextMatch = pathognomicMatchesFromText[0] ?? null;
+
+  // Write to the central WorkingDiagnosis signal bus whenever a pathognomonic sign
+  // is found in free text. This propagates to PANE display, CDS filtering, and Plan tab.
+  useEffect(() => {
+    if (!primaryTextMatch) {
+      // Only clear if it was set by pathognomonic detection (not manual ICD)
+      if (workingDiagnosis?.source === 'pathognomonic') setWorkingDiagnosis(null);
+      return;
+    }
+    // Don't downgrade a manual ICD selection
+    if (workingDiagnosis?.source === 'manual_icd') return;
+    setWorkingDiagnosis({
+      diseaseId: primaryTextMatch.diseaseId,
+      icdCode: primaryTextMatch.icd10,
+      confidence: primaryTextMatch.specificity === 'definitive' ? 0.97 : 0.88,
+      source: 'pathognomonic',
+      locked: true,
+      signText: primaryTextMatch.finding,
+      diseaseLabel: primaryTextMatch.diseaseLabel,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [primaryTextMatch?.diseaseId, primaryTextMatch?.finding]);
+
+  // Auto-populate ICD code from pathognomonic match when no code is selected yet
+  useEffect(() => {
+    if (primaryTextMatch?.icd10 && icdCodes.length === 0) {
+      setIcdCodes([`${primaryTextMatch.icd10} — ${primaryTextMatch.diseaseLabel}`]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [primaryTextMatch?.icd10, icdCodes.length]);
 
   // Passive inference: rank diseases from current exam + symptoms (no Q&A required)
   const passiveRanked = useMemo(() => computeRankedDifferentials({

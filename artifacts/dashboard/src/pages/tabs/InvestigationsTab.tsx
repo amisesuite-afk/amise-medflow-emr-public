@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { getActivePathways } from '@/lib/clinical-pathways';
 import { getApiOrigin } from '@/lib/api-origin';
@@ -284,7 +285,23 @@ export default function InvestigationsTab() {
     radiologyRequests, setRadiologyRequests,
     symptoms, symptomDetails, sex,
     patientName, age, dob, hpiNotes, mrNumber,
+    workingDiagnosis, icdCodes, paneTop, paneConverged,
   } = useAppContext();
+
+  // Derive protocol from working diagnosis or ICD code (mirrors PlanTab logic)
+  const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
+    ? paneTop[0].disease.id
+    : null;
+  const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? workingDiagnosis?.icdCode ?? null;
+  const protocol = useMemo(
+    () => activeDiseaseId
+      ? getProtocol(activeDiseaseId)
+      : activeIcdCode
+        ? getProtocolByIcd(activeIcdCode)
+        : null,
+    [activeDiseaseId, activeIcdCode],
+  );
+  const protocolInvestigations = protocol?.investigations ?? [];
   const { showToast } = useToast();
 
   // One-time migration: move any imaging items that ended up in orderedInvestigations
@@ -462,6 +479,57 @@ export default function InvestigationsTab() {
 
   return (
     <div className="gap-y">
+      {/* Protocol-specific suggested investigations — shown when working diagnosis is set */}
+      {protocol && protocolInvestigations.length > 0 && (
+        <div style={{
+          padding: '10px 14px',
+          background: '#0c2233',
+          border: '1px solid #0d9488',
+          borderRadius: 8,
+          marginBottom: 4,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <span style={{ fontSize: 12, color: '#5eead4', fontWeight: 600 }}>
+              Protocol: {protocol.label}
+            </span>
+            <span style={{ fontSize: 11, color: '#94a3b8' }}>
+              Suggested investigations
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {protocolInvestigations.map(inv => {
+              const alreadyOrdered = orderedInvestigations.includes(inv.label);
+              return (
+                <button
+                  key={inv.label}
+                  type="button"
+                  onClick={() => {
+                    if (!alreadyOrdered) setOrderedInvestigations([...orderedInvestigations, inv.label]);
+                  }}
+                  disabled={alreadyOrdered}
+                  title={alreadyOrdered ? 'Already ordered' : `Order: ${inv.label} (${inv.urgency})`}
+                  style={{
+                    padding: '3px 10px',
+                    borderRadius: 999,
+                    border: '1px solid',
+                    fontSize: 11.5,
+                    cursor: alreadyOrdered ? 'default' : 'pointer',
+                    background: alreadyOrdered ? '#1e3a2a' : inv.urgency === 'stat' ? '#4a1c1c' : '#1a2f3e',
+                    color: alreadyOrdered ? '#4ade80' : inv.urgency === 'stat' ? '#fca5a5' : '#7dd3d0',
+                    borderColor: alreadyOrdered ? '#4ade8044' : inv.urgency === 'stat' ? '#ef444444' : '#2d6a7044',
+                  }}
+                >
+                  {alreadyOrdered ? '✓ ' : '+ '}{inv.label}
+                  {!alreadyOrdered && (
+                    <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 4 }}>({inv.urgency})</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <CollapsibleCard
         title="Ordered investigations"
         badge={orderedInvestigations.length > 0

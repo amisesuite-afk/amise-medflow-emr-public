@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "agent",
+            "prompt": "You are a pre-commit gate for the Amise MedFlow EMR.\n\nThe Bash tool is about to run. Read the tool input from context to determine what command is being executed.\n\nIf the command is NOT a `git commit` (e.g. git status, git add, npm, pnpm, typecheck, build, etc.), immediately return {\"continue\": true} — do not run any review.\n\nIf it IS a `git commit` command:\n1. Run `git diff --cached` to get all staged changes\n2. For any changed file that is one of: NavSidebar.tsx, Home.tsx, dx-variants.ts, PlanTab.tsx, AssessmentTab.tsx — read that file in full (diffs truncate context)\n3. Apply the two EMR review categories:\n   CATEGORY 1 — Navigation regressions: look for {!consultAmbient && ...}, {topSection !== 'consultation' && ...}, {!ambientMode && ...}, {zenMode ? ... : ...} hiding interactive controls with no fallback path\n   CATEGORY 2 — Clinical accuracy: check dx-variants.ts allowedPhases match evidence-based guidelines (WSES 2020 for appendicitis/hernia/bowel obstruction, TG18 for cholecystitis/cholangitis, Atlanta 2012 for pancreatitis, BSG/ESGE for GI bleed). A phlegmon variant with 'surgical' in allowedPhases is a patient-safety error.\n4. Also verify DEMO_MODE in AuthContext.tsx is `false` (never `true`) in any staged changes.\n5. If BLOCKING issues exist (navigation lockout OR clinical phases error OR DEMO_MODE = true), return:\n   {\"continue\": false, \"stopReason\": \"emr-review BLOCKED: <one-line summary>. Fix before committing.\"}\n6. If clean, return:\n   {\"continue\": true, \"systemMessage\": \"emr-review passed — no navigation regressions or clinical accuracy issues found.\"}"
+          }
+        ]
+      }
+    ]
+  }
+}

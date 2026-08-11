@@ -33,6 +33,7 @@ export interface CdsContext {
   sex: string;
   isPostOp: boolean;
   procedureData: Record<string, unknown>;
+  workingDiagnosis?: { diseaseId: string; source: string; locked?: boolean };
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -772,5 +773,15 @@ export function getCdsSuggestions(ctx: CdsContext): CdsSuggestion[] {
     return aReady - bReady;
   });
 
+  // Suppress irrelevant mental-health screens when a surgical emergency is locked
+  const SURGICAL_EMERGENCY_IDS = new Set([
+    'appendicitis', 'pancreatitis', 'cholangitis', 'cholecystitis',
+    'bowel_obstruction', 'gi_bleed',
+  ]);
+  if (ctx.workingDiagnosis?.locked && SURGICAL_EMERGENCY_IDS.has(ctx.workingDiagnosis.diseaseId)) {
+    return suggestions.filter(s => s.categoryTag !== 'Mental Health');
+  }
+
   return suggestions;
 }
+
