@@ -94,7 +94,7 @@ export interface ActiveDiagnosis {
  * to form a coherent downstream signal chain.
  */
 export interface WorkingDiagnosis {
-  diseaseId: string;       // matches dx-variants group ID (e.g. 'appendicitis')
+  diseaseId: string | null; // matches dx-variants group ID (e.g. 'appendicitis'), or null for manual ICD picks
   icdCode: string | null;  // ICD-10 code for getProtocolByIcd() lookup
   confidence: number;      // 0–1 posterior probability
   source: 'pathognomonic' | 'pane_converged' | 'manual_icd' | 'pane_high';
@@ -754,6 +754,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.medicationsText === 'string') setMedicationsText(d.medicationsText);
       if (typeof d.allergies === 'string') setAllergies(d.allergies);
       if (Array.isArray(d.familyHistory)) setFamilyHistory(d.familyHistory as string[]);
+      if (typeof d.familyHistoryNotes === 'string') setFamilyHistoryNotes(d.familyHistoryNotes as string);
       if (Array.isArray(d.toxicHabits)) setToxicHabits(d.toxicHabits as string[]);
       if (typeof d.occupation === 'string') setOccupation(d.occupation);
       if (typeof d.hpiNotes === 'string') setHpiNotes(d.hpiNotes);
@@ -910,7 +911,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     orderedInvestigations, investigationResults, icdCodes, cptCodes,
     weightKg, heightCm, waistCm, hipCm, muacCm, anatomicalFindings, rosFindings, procedureData, preVisitStatus,
     radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
-    encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
+    encounterMode, encounterType, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
     nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData,
     workingDiagnosis, confirmedDiagnoses,
     patientPhoto, examPhotos]);

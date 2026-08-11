@@ -238,7 +238,7 @@ function splitLabel(label: string): { code: string; desc: string } {
 }
 
 function DiagnosisPicker() {
-  const { icdCodes, setIcdCodes, assessment, setAssessment } = useAppContext();
+  const { icdCodes, setIcdCodes, assessment, setAssessment, setWorkingDiagnosis } = useAppContext();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -262,6 +262,9 @@ function DiagnosisPicker() {
     if (!icdCodes.includes(label)) {
       setIcdCodes([...icdCodes, label]);
       if (!assessment.trim()) setAssessment(code.description);
+      // Lock working diagnosis to the manually selected ICD code so PlanTab
+      // auto-generation fires even for diagnoses without pathognomonic signs.
+      setWorkingDiagnosis({ diseaseId: null, icdCode: code.code, confidence: 1.0, source: 'manual_icd', locked: true });
     }
     setQuery('');
     setOpen(false);
@@ -269,7 +272,10 @@ function DiagnosisPicker() {
   }
 
   function remove(label: string) {
-    setIcdCodes(icdCodes.filter(c => c !== label));
+    const next = icdCodes.filter(c => c !== label);
+    setIcdCodes(next);
+    // Clear the manual-ICD working diagnosis when all codes are removed
+    if (next.length === 0) setWorkingDiagnosis(null);
   }
 
   useEffect(() => {

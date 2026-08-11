@@ -1443,6 +1443,13 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
             display: 'flex', gap: 8, justifyContent: 'flex-end',
             paddingTop: 6, borderTop: '1px solid var(--line)',
           }}>
+            <button
+              type="button"
+              onClick={() => { onDetailedMode?.(); }}
+              style={{ fontSize: 11, color: '#94a3b8', background: 'transparent', border: '1px solid #334155', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', marginRight: 'auto' }}
+            >
+              ☰ Detailed view
+            </button>
             <button type="button" onClick={enterExam}
               style={{
                 padding: '10px 18px', borderRadius: 8,
@@ -1674,6 +1681,13 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
 
           {/* Phase nav */}
           <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              type="button"
+              onClick={() => { onDetailedMode?.(); }}
+              style={{ fontSize: 11, color: '#94a3b8', background: 'transparent', border: '1px solid #334155', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', marginRight: 'auto' }}
+            >
+              ☰ Detailed view
+            </button>
             <button type="button" onClick={() => changePhase('history')}
               style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)',
                 background: 'var(--card)', color: 'var(--muted)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
@@ -2039,6 +2053,13 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           </div>
 
           <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              type="button"
+              onClick={() => { onDetailedMode?.(); }}
+              style={{ fontSize: 11, color: '#94a3b8', background: 'transparent', border: '1px solid #334155', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', marginRight: 'auto' }}
+            >
+              ☰ Detailed view
+            </button>
             <button type="button" onClick={() => changePhase('exam')}
               style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)',
                 background: 'var(--card)', color: 'var(--muted)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
@@ -2094,6 +2115,13 @@ export default function AmbientConsultation({ visitType, onDetailedMode, onFinal
           </div>
 
           <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              type="button"
+              onClick={() => { onDetailedMode?.(); }}
+              style={{ fontSize: 11, color: '#94a3b8', background: 'transparent', border: '1px solid #334155', borderRadius: 6, padding: '4px 10px', cursor: 'pointer', marginRight: 'auto' }}
+            >
+              ☰ Detailed view
+            </button>
             <button type="button" onClick={() => changePhase('assessment')}
               style={{ padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)',
                 background: 'var(--card)', color: 'var(--muted)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
