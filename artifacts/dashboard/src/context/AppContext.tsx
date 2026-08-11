@@ -826,6 +826,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.referringPhysician === 'string') setReferringPhysician(d.referringPhysician);
       if (d.paneState && typeof d.paneState === 'object') setPaneState(d.paneState as PaneState);
       if (d.traumaData && typeof d.traumaData === 'object') setTraumaData(d.traumaData as TraumaData);
+      if (d.workingDiagnosis && typeof d.workingDiagnosis === 'object') setWorkingDiagnosis(d.workingDiagnosis as WorkingDiagnosis);
+      if (Array.isArray(d.confirmedDiagnoses)) setConfirmedDiagnoses(d.confirmedDiagnoses as ActiveDiagnosis[]);
       // Restore patient/encounter IDs so autosave hooks can re-connect to Supabase
       if (typeof d.patientId === 'string') {
         setPatientId(d.patientId);
@@ -887,6 +889,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords,
       encounterMode, encounterType, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
       nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
+      workingDiagnosis, confirmedDiagnoses,
       paneState, traumaData,
     });
     // Large blobs saved separately — avoids 5 MB localStorage limit on the main key
@@ -909,6 +912,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     radiologyRequests, finalDocument, progressNotes, vitalRecords, labRecords, attachments,
     encounterMode, mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
     nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician, paneState, traumaData,
+    workingDiagnosis, confirmedDiagnoses,
     patientPhoto, examPhotos]);
 
   function toggleSymptom(v: string) { setSymptoms(c => toggleList(c, v)); }
