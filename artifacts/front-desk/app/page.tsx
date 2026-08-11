@@ -334,8 +334,8 @@ function FeatureTiles() {
             ringColor="#0d9488"
             title="Endoscopy"
             body="Gastroscopy (OGD), colonoscopy, flexible sigmoidoscopy, polypectomy."
-            cta="Book Endoscopy →"
-            ctaHref="/book"
+            cta="Learn More →"
+            ctaHref="/services/endoscopy"
             ctaColor="#0d9488"
           />
 
@@ -352,8 +352,8 @@ function FeatureTiles() {
             ringColor="#0d9488"
             title="ERCP / Biliary"
             body="Advanced biliary and pancreatic procedures. Stenting, stone extraction, sphincterotomy."
-            cta="ERCP Work-up →"
-            ctaHref="/book"
+            cta="Learn More →"
+            ctaHref="/services/ercp"
             ctaColor="#0d9488"
           />
 
@@ -367,8 +367,8 @@ function FeatureTiles() {
             ringColor="#0d9488"
             title="Breast Clinic"
             body="Breast lump assessment, mammogram review, biopsy, surgical planning."
-            cta="Book Breast Clinic →"
-            ctaHref="/book"
+            cta="Learn More →"
+            ctaHref="/services/breast-clinic"
             ctaColor="#0d9488"
           />
 
@@ -401,8 +401,8 @@ function FeatureTiles() {
             ringColor="#0d9488"
             title="Diabetic Foot"
             body="Wound assessment, debridement, vascular review, amputations."
-            cta="Book Foot Clinic →"
-            ctaHref="/book"
+            cta="Learn More →"
+            ctaHref="/services/diabetic-foot"
             ctaColor="#0d9488"
           />
 
@@ -690,12 +690,12 @@ function About() {
           }}>
             <div style={{
               width: 88, height: 88, borderRadius: '50%',
-              background: '#0d9488', margin: '0 auto 18px',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 24, fontWeight: 800, color: '#fff',
-              letterSpacing: '-0.02em',
+              overflow: 'hidden', margin: '0 auto 18px',
+              border: '3px solid #0d9488',
+              boxShadow: '0 4px 16px rgba(13,149,136,0.25)',
             }}>
-              DDK
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/locations/doctor-kabiye.jpg" alt="Dr Dawit Daniel Kabiye, MD, DM" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center' }} />
             </div>
             <div style={{ fontSize: 17, fontWeight: 800, color: '#0f172a', marginBottom: 4 }}>
               Dr Dawit Daniel Kabiye
