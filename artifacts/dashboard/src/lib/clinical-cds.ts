@@ -784,3 +784,4 @@ export function getCdsSuggestions(ctx: CdsContext): CdsSuggestion[] {
 
   return suggestions;
 }
+
