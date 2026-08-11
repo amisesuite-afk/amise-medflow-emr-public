@@ -452,7 +452,7 @@ const PATHOGNOMONIC_PATTERNS: Array<{
   icd10: string;
   specificity: 'high' | 'definitive';
 }> = [
-  { regex: /murphy'?s sign\s+positive/i, diseaseId: 'cholecystitis', diseaseLabel: 'Acute Cholecystitis', icd10: 'K81.0', specificity: 'high' },
+  { regex: /murphy'?s\s+(?:sign|test)\s+(?:is\s+)?(?:positive|\+)/i, diseaseId: 'cholecystitis', diseaseLabel: 'Acute Cholecystitis', icd10: 'K81.0', specificity: 'high' },
   { regex: /charcot'?s triad/i, diseaseId: 'cholangitis', diseaseLabel: 'Acute Cholangitis', icd10: 'K83.0', specificity: 'definitive' },
   { regex: /cullen'?s sign/i, diseaseId: 'pancreatitis', diseaseLabel: 'Haemorrhagic Pancreatitis', icd10: 'K85.1', specificity: 'high' },
   { regex: /grey turner'?s?/i, diseaseId: 'pancreatitis', diseaseLabel: 'Haemorrhagic Pancreatitis', icd10: 'K85.1', specificity: 'high' },

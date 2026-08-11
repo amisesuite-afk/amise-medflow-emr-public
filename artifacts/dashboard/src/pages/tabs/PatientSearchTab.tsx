@@ -155,6 +155,7 @@ export default function PatientSearchTab() {
     setReferringPhysician, setNokName, setNokRelation, setNokTel,
     setBloodGroup, setMrNumber,
     setClinicalScores, setExtractedLabs,
+    patientId,
   } = useAppContext();
   const { showToast } = useToast();
 
@@ -384,9 +385,13 @@ export default function PatientSearchTab() {
       }
     }
 
-    // Non-blocking: load most recent closed encounter for follow-up baseline strip
+    // Non-blocking: load most recent closed encounter for follow-up baseline strip.
+    // Capture the patient ID at call time so we can guard against a race where
+    // the user switches patients before this promise resolves.
+    const encPatientId = p.id;
     void getLatestClosedEncounter(p.id).then(({ data }) => {
-      setPriorEncounterSummary(data);
+      // Only apply if the user hasn't switched to a different patient in the meantime
+      if (patientId === encPatientId) setPriorEncounterSummary(data);
     });
 
     // Check for questionnaire intake data

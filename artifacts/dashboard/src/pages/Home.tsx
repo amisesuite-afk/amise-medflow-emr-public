@@ -713,7 +713,7 @@ export default function HomePage() {
   useEffect(() => {
     if (topSection !== 'consultation') return;
     if (consultTabs.some(t => t.id === activeSection)) return;
-    setActiveSection('brief');
+    setActiveSection(consultTabs[0]?.id ?? 'brief');
   }, [consultTabs, topSection, activeSection, setActiveSection]);
 
   // Scroll the active tab chip into view when the section changes.
@@ -1850,6 +1850,22 @@ export default function HomePage() {
         {topSection === 'quality'       && (authLoading || hasRole(userRole, 'doctor')) && <InsightsHubTab defaultTab="qi" />}
         {topSection === 'results_inbox' && (authLoading || hasRole(userRole, 'nurse'))  && <ResultsInboxTab />}
         {topSection === 'settings'   && (authLoading || hasRole(userRole, 'admin'))  && <SettingsTab />}
+        {topSection === 'trauma' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px 2px' }}>
+            <button
+              type="button"
+              onClick={() => setTopSection('consultation')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '4px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600,
+                cursor: 'pointer', border: '1px solid #334155',
+                background: 'transparent', color: '#94a3b8',
+              }}
+            >
+              ← Back to consultation
+            </button>
+          </div>
+        )}
         {topSection === 'trauma'         && (authLoading || hasRole(userRole, 'nurse'))  && <TraumaTab />}
         {topSection === 'vademecum'      && (authLoading || hasRole(userRole, 'nurse'))  && <DictionaryTab />}
         {topSection === 'questionnaire'  && !authLoading && roleIn(userRole, 'front_desk')   && <QuestionnaireManagerTab />}
