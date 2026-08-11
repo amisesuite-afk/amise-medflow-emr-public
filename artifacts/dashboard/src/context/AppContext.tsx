@@ -88,6 +88,21 @@ export interface ActiveDiagnosis {
   signs: string[]; // diagnostic criteria from the differential card
 }
 
+/**
+ * Central working diagnosis — written by pathognomonic sign detection, PANE
+ * convergence, or manual ICD selection. Read by CDS, Plan tab, and PANE display
+ * to form a coherent downstream signal chain.
+ */
+export interface WorkingDiagnosis {
+  diseaseId: string;       // matches dx-variants group ID (e.g. 'appendicitis')
+  icdCode: string | null;  // ICD-10 code for getProtocolByIcd() lookup
+  confidence: number;      // 0–1 posterior probability
+  source: 'pathognomonic' | 'pane_converged' | 'manual_icd' | 'pane_high';
+  locked: boolean;         // true = pathognomonic or manual override
+  signText?: string;       // e.g. "Rovsing's sign"
+  diseaseLabel?: string;   // human-readable label
+}
+
 export type TopSection =
   | 'dashboard' | 'patients' | 'checkin' | 'doc_scan' | 'intake' | 'consultation'
   | 'procedures' | 'scheduling' | 'billing' | 'analytics' | 'settings' | 'summary' | 'finaldoc' | 'inpatient'
@@ -289,6 +304,7 @@ interface CtxValue {
   icdCodes: string[]; setIcdCodes(v: string[]): void;
   cptCodes: string[]; setCptCodes(v: string[]): void;
   confirmedDiagnoses: ActiveDiagnosis[]; setConfirmedDiagnoses(v: ActiveDiagnosis[]): void;
+  workingDiagnosis: WorkingDiagnosis | null; setWorkingDiagnosis(v: WorkingDiagnosis | null): void;
 
   weightKg: string; setWeightKg(v: string): void;
   heightCm: string; setHeightCm(v: string): void;
@@ -559,6 +575,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [icdCodes, setIcdCodes] = useState<string[]>([]);
   const [cptCodes, setCptCodes] = useState<string[]>([]);
   const [confirmedDiagnoses, setConfirmedDiagnoses] = useState<ActiveDiagnosis[]>([]);
+  const [workingDiagnosis, setWorkingDiagnosis] = useState<WorkingDiagnosis | null>(null);
 
   const [weightKg, setWeightKg] = useState('');
   const [heightCm, setHeightCm] = useState('');
@@ -963,6 +980,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPeriopProcId(''); setWhoProc({ procedureName: '', procedureDate: '', procedureTime: '', theatre: '', site: '', surgeon: 'Dr Dawit Daniel Kabiye', anaesthetist: '', scrubNurse: '', circulatingNurse: '' });
     setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
     setConfirmedDiagnoses([]);
+    setWorkingDiagnosis(null);
     setProcedures(''); setBilling(''); setDocuments(''); setSurgicalClassifications({});
     setInsuranceProvider(''); setPolicyNumber(''); setNhiNumber(''); setPreAuthStatus('');
     setAttachments([]); setRadiologyRequests([]); setFinalDocument('');
@@ -1444,6 +1462,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     icdCodes, setIcdCodes,
     cptCodes, setCptCodes,
     confirmedDiagnoses, setConfirmedDiagnoses,
+    workingDiagnosis, setWorkingDiagnosis,
     assessment, setAssessment,
     differentials, setDifferentials,
     plan, setPlan,

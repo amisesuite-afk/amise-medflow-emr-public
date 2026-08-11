@@ -27,7 +27,8 @@ function ProbBar({ value }: { value: number }) {
 }
 
 export default function PaneDifferential({ onAddDifferential, onExportDifferential }: Props) {
-  const { age, sex, encounterId, patientId } = useAppContext();
+  const { age, sex, encounterId, patientId, workingDiagnosis } = useAppContext();
+  const isLocked = workingDiagnosis?.locked === true;
   const parsedAge = parseInt(age, 10) || null;
   const { nextQuestion, top, converged, answer, reset, state, exportDifferential } = usePane({
     age: parsedAge,
@@ -36,14 +37,20 @@ export default function PaneDifferential({ onAddDifferential, onExportDifferenti
     patientId,
   });
 
-  const titleSuffix = converged
-    ? ' — converged'
-    : state.iteration > 0
-      ? ` — Q${state.iteration + 1}`
-      : '';
+  const titleSuffix = isLocked
+    ? ' — Locked'
+    : converged
+      ? ' — converged'
+      : state.iteration > 0
+        ? ` — Q${state.iteration + 1}`
+        : '';
+
+  const cardTitle = isLocked
+    ? `Supporting Evidence (PANE)${titleSuffix}`
+    : `Probabilistic Differential (PANE)${titleSuffix}`;
 
   return (
-    <CollapsibleCard title={`Probabilistic Differential (PANE)${titleSuffix}`}>
+    <CollapsibleCard title={cardTitle}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
         {/* ── Disclaimer ── */}
@@ -51,12 +58,31 @@ export default function PaneDifferential({ onAddDifferential, onExportDifferenti
           Bayesian decision support only — not a diagnosis. Clinical judgement overrides all suggestions.
         </p>
 
+        {/* ── Locked notice (pathognomonic or manual ICD) ── */}
+        {isLocked && workingDiagnosis && (
+          <div style={{
+            padding: '8px 12px', borderRadius: 8,
+            background: 'rgba(52,211,153,0.08)', border: '1px solid rgba(52,211,153,0.3)',
+            fontSize: 11, color: '#34d399', marginBottom: 2,
+          }}>
+            🎯 Diagnosis locked — <strong>{workingDiagnosis.diseaseLabel ?? workingDiagnosis.diseaseId}</strong>
+            {workingDiagnosis.source === 'pathognomonic' && workingDiagnosis.signText && (
+              <> via <em>{workingDiagnosis.signText}</em></>
+            )}
+            {' '}· PANE shows supporting evidence only
+          </div>
+        )}
+
         {/* ── Ranked differentials ── */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {top.map((r, i) => {
             const pct = Math.round(r.probability * 100);
+            const isDimmed = isLocked && pct < 10 && r.disease.id !== workingDiagnosis?.diseaseId;
             return (
-              <div key={r.disease.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div key={r.disease.id} style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                opacity: isDimmed ? 0.4 : 1, transition: 'opacity 0.2s',
+              }}>
                 <span style={{
                   flexShrink: 0, fontSize: 10, fontWeight: 800, textTransform: 'uppercase',
                   letterSpacing: '0.06em', color: '#5a706c', width: 16, textAlign: 'right',
@@ -83,8 +109,16 @@ export default function PaneDifferential({ onAddDifferential, onExportDifferenti
           })}
         </div>
 
-        {/* ── Next question or convergence notice ── */}
-        {!converged && nextQuestion ? (
+        {/* ── Next question or convergence notice (suppressed when diagnosis locked) ── */}
+        {isLocked ? (
+          <div style={{
+            borderLeft: '3px solid #34d399', paddingLeft: 10,
+            background: 'rgba(52,211,153,0.04)', borderRadius: '0 6px 6px 0', padding: '8px 12px',
+            marginTop: 4, fontSize: 11, color: '#6b7280',
+          }}>
+            Q&amp;A paused — pathognomonic diagnosis locked. Clear the assessment text to resume.
+          </div>
+        ) : !converged && nextQuestion ? (
           <div style={{
             borderLeft: '3px solid #0b8278', paddingLeft: 10,
             background: '#f0f6f4', borderRadius: '0 6px 6px 0', padding: '10px 12px 10px 12px',

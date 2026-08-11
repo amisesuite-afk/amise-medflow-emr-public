@@ -163,6 +163,7 @@ export default function PlanTab() {
     weightKg, heightCm,
     paneTop, paneConverged,
     icdCodes,
+    workingDiagnosis,
     encounterMode,
     symptoms,
     patientId, patientName, phone, currentSite,
@@ -276,7 +277,9 @@ export default function PlanTab() {
   const activeDiseaseId = (paneConverged && paneTop[0]?.probability >= 0.85)
     ? paneTop[0].disease.id
     : null;
-  const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? null;
+  // WorkingDiagnosis provides ICD and diseaseId fallback when PANE hasn't converged
+  // and no code has been manually selected — auto-activates the protocol.
+  const activeIcdCode = icdCodes[0]?.split(' — ')[0]?.trim() ?? workingDiagnosis?.icdCode ?? null;
 
   const protocol = activeDiseaseId
     ? getProtocol(activeDiseaseId)
@@ -286,8 +289,12 @@ export default function PlanTab() {
 
   // Detect sub-diagnosis variants from assessment text
   const variantMatch = useMemo(
-    () => detectDxVariants(assessment, activeIcdCode ?? undefined, activeDiseaseId ?? undefined),
-    [assessment, activeIcdCode, activeDiseaseId],
+    () => detectDxVariants(
+      assessment,
+      activeIcdCode ?? undefined,
+      activeDiseaseId ?? workingDiagnosis?.diseaseId ?? undefined,
+    ),
+    [assessment, activeIcdCode, activeDiseaseId, workingDiagnosis?.diseaseId],
   );
   // Auto-select detected variant; reset when diagnosis group changes
   useEffect(() => {
