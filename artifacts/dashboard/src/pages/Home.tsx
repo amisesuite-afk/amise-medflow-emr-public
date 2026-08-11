@@ -1820,6 +1820,22 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'letters'        && <LetterGeneratorTab />}
         {topSection === 'consultation' && !ambientMode && activeSection === 'patient_education' && <PatientEducationTab />}
         {topSection === 'procedures'    && (authLoading || hasRole(userRole, 'doctor'))        && <ProceduresTab />}
+        {(topSection === 'summary' || topSection === 'finaldoc') && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px 2px' }}>
+            <button
+              type="button"
+              onClick={() => setTopSection('consultation')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '4px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600,
+                cursor: 'pointer', border: '1px solid #334155',
+                background: 'transparent', color: '#94a3b8',
+              }}
+            >
+              ← Edit encounter
+            </button>
+          </div>
+        )}
         {topSection === 'summary'        && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'outpatient' && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'inpatient'  && <InpatientTab />}
