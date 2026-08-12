@@ -325,9 +325,10 @@ function planTextToHtml(plan: string): string {
       continue;
     }
 
-    // First line: plan title (may contain ⚠)
+    // First line: plan title (may contain ⚠ or ## prefix from auto-generated text)
     if (i === 0) {
-      out.push(`<div class="pl-title">${escHtml(ts)}</div>`);
+      const titleText = ts.replace(/^#{1,3}\s+/, '').trim();
+      out.push(`<div class="pl-title">${escHtml(titleText || ts)}</div>`);
       continue;
     }
 

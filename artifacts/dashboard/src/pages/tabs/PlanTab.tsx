@@ -82,7 +82,7 @@ function buildPlanText(
 
   if (isInpatient) {
     lines.push(
-      '## Admission orders',
+      'Admission orders',
       `- Admit under ${surgeon} — General / Endoscopic Surgery`,
       '- Monitoring: VS q4h, I&O charting, daily weights',
       '- DVT prophylaxis: LMWH (if not contraindicated)',
@@ -100,13 +100,13 @@ function buildPlanText(
   }
 
   for (const [phase, steps] of byPhase) {
-    lines.push(`## ${protocol.label} — ${PHASE_LABELS[phase] ?? phase.toUpperCase()}`);
+    lines.push(`${protocol.label} — ${PHASE_LABELS[phase] ?? phase.toUpperCase()}`);
     steps.forEach((s, i) => lines.push(`${i + 1}. ${s}`));
     lines.push('');
   }
 
   if (protocol.investigations.length > 0) {
-    lines.push('## Investigations');
+    lines.push('Investigations');
     for (const inv of protocol.investigations) {
       lines.push(`- ${inv.label} (${inv.urgency})`);
     }
@@ -114,7 +114,7 @@ function buildPlanText(
   }
 
   if (protocol.referral) {
-    lines.push('## Referral');
+    lines.push('Referral');
     lines.push(protocol.referral);
     lines.push('');
   }
@@ -123,7 +123,7 @@ function buildPlanText(
 }
 
 function buildNursingOrders(isPreOp: boolean, isPostOp: boolean): string {
-  const lines: string[] = ['## Nursing Directives'];
+  const lines: string[] = ['Nursing Directives'];
 
   if (isPreOp) {
     lines.push(

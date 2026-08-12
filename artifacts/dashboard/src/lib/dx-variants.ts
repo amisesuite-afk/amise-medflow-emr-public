@@ -67,7 +67,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Mass palpable in RIF?', 'USS/CT confirms phlegmon?', 'Symptoms >72 h?', 'No free perforation on CT?'],
         urgencyNote: 'Non-operative management — IV antibiotics + close observation. Avoid early surgery through inflamed mass. Interval appendicectomy 6–8 weeks after resolution.',
         planPrefix:
-          '## Appendicular Phlegmon — Non-Operative Management\n\n' +
+          'Appendicular Phlegmon — Non-Operative Management\n\n' +
           'Indication: phlegmon / inflammatory mass (>72 h), no free perforation or generalised peritonitis.\n' +
           'IV antibiotics + close serial clinical review. Interval appendicectomy planned at 6–8 weeks.\n' +
           'If deterioration / abscess develops: CT-guided drainage or operative intervention.\n\n',
@@ -81,7 +81,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Abscess confirmed on CT?', 'Abscess >4 cm?', 'Interventional radiology available?'],
         urgencyNote: 'CT-guided percutaneous drainage (IR referral) for accessible abscess ≥4 cm. IV antibiotics. Interval appendicectomy 6–8 weeks. Colonoscopy if age >40.',
         planPrefix:
-          '## Appendicular Abscess — Source Control + Interval Surgery\n\n' +
+          'Appendicular Abscess — Source Control + Interval Surgery\n\n' +
           'CT-guided percutaneous drainage (if abscess ≥4 cm and accessible). IV antibiotics 7–10 days.\n' +
           'Plan interval laparoscopic appendicectomy at 6–8 weeks after resolution.\n' +
           'If drainage not possible or patient deteriorates: operative drainage + appendicectomy.\n\n',
@@ -95,7 +95,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Peritonism localised to RIF only?', 'No generalised guarding?'],
         urgencyNote: 'Perforated appendicitis with localised peritonitis — laparoscopic appendicectomy ± peritoneal washout. Drain only if localised collection.',
         planPrefix:
-          '## Perforated Appendicitis — Localised Peritonitis (K35.30)\n\n' +
+          'Perforated Appendicitis — Localised Peritonitis (K35.30)\n\n' +
           'Laparoscopic appendicectomy + peritoneal washout. Drain only if localised pus collection.\n' +
           'IV antibiotics post-op 3–5 days, then oral to complete 7 days.\n\n',
       },
@@ -108,7 +108,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Peritonism generalised (not just RIF)?', 'Free gas on CT/X-ray?', 'Haemodynamic instability?'],
         urgencyNote: '⚠ EMERGENCY — generalised peritonitis. Mark emergency list immediately. Aggressive resuscitation. ICU/HDU post-op.',
         planPrefix:
-          '## EMERGENCY — Perforated Appendicitis with Generalised Peritonitis (K35.20)\n\n' +
+          'EMERGENCY — Perforated Appendicitis with Generalised Peritonitis (K35.20)\n\n' +
           'Emergency laparoscopic appendicectomy + peritoneal washout.\n' +
           'Convert to open midline laparotomy if haemodynamically unstable or dense adhesions.\n' +
           'Post-op IV antibiotics × 5–7 days. ICU/HDU level care.\n\n',
@@ -150,7 +150,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Septic shock?', 'Renal impairment?', 'Altered consciousness?', 'Respiratory failure?'],
         urgencyNote: 'Tokyo Grade III — ICU resuscitation first. Percutaneous cholecystostomy for source control. Delayed laparoscopic cholecystectomy when systemically stable.',
         planPrefix:
-          '## Severe Cholecystitis — Tokyo Grade III — Source Control First\n\n' +
+          'Severe Cholecystitis — Tokyo Grade III — Source Control First\n\n' +
           'ICU-level resuscitation (sepsis-6 protocol). Percutaneous cholecystostomy (IR referral) for biliary decompression.\n' +
           'Delayed laparoscopic cholecystectomy when organ dysfunction resolved and patient fit.\n\n',
       },
@@ -191,7 +191,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Hypotension / shock?', 'Altered consciousness?', 'Renal failure?'],
         urgencyNote: '⚠ EMERGENCY — Tokyo Grade III. Immediate ICU resuscitation. Urgent ERCP (within hours) for biliary decompression. Anaesthetic review.',
         planPrefix:
-          '## EMERGENCY — Severe Cholangitis (Tokyo Grade III)\n\n' +
+          'EMERGENCY — Severe Cholangitis (Tokyo Grade III)\n\n' +
           'Immediate ICU transfer. Sepsis-6 protocol. Urgent ERCP for biliary drainage (within hours, not days).\n' +
           'Endoscopic sphincterotomy ± stone extraction ± biliary stent.\n' +
           'Anaesthetic and GI/endoscopy teams alerted immediately.\n\n',
@@ -215,7 +215,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Hernia reduces fully?', 'No signs of obstruction?', 'Systemically well?'],
         urgencyNote: 'Elective laparoscopic (TEP/TAPP) or open (Lichtenstein) repair. Pre-operative assessment and consent.',
         planPrefix:
-          '## Elective Hernia Repair\n\n' +
+          'Elective Hernia Repair\n\n' +
           'Pre-operative assessment and consent. Day-case laparoscopic repair preferred. Antibiotic prophylaxis at induction (cefazolin 1–2 g IV).\n\n',
       },
       {
@@ -236,7 +236,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Tense, non-reducible, tender hernia?', 'Peritonism?', 'Pyrexia / high WBC?'],
         urgencyNote: '⚠ EMERGENCY — strangulated hernia. Emergency surgical repair. Bowel resection if necrosis confirmed intraoperatively.',
         planPrefix:
-          '## EMERGENCY — Strangulated Hernia\n\n' +
+          'EMERGENCY — Strangulated Hernia\n\n' +
           'Emergency laparoscopic/open hernia repair. Assess bowel viability — resect if necrotic (primary anastomosis vs stoma based on contamination).\n' +
           'Do NOT delay for imaging if clinical peritonism is present.\n\n',
       },
@@ -259,7 +259,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Prior abdominal surgery?', 'No peritonism?', 'No closed-loop on CT?', 'Proximal obstruction?'],
         urgencyNote: '72-hour trial of non-operative management (NGT + IV fluids + NBM). Re-assess at 24-48 h: failure to improve = operate.',
         planPrefix:
-          '## Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)\n\n' +
+          'Small Bowel Obstruction — Non-Operative Trial (Drip and Suck)\n\n' +
           'NGT on free drainage. IV fluid resuscitation. NBM. Serial clinical assessment every 4–6 h.\n' +
           'CT abdomen/pelvis to exclude closed-loop, ischaemia, or hernia.\n' +
           'Failure criteria at 48–72 h: no resolution, worsening pain, peritonism, fever, rising lactate → operate.\n\n',
@@ -273,7 +273,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Peritonism?', 'Fever + high WBC?', 'Closed-loop on CT?', 'Rising lactate?'],
         urgencyNote: '⚠ EMERGENCY — strangulated SBO. Emergency laparotomy/laparoscopy. Bowel resection if ischaemia confirmed.',
         planPrefix:
-          '## EMERGENCY — Strangulated Small Bowel Obstruction\n\n' +
+          'EMERGENCY — Strangulated Small Bowel Obstruction\n\n' +
           'Do NOT delay for further imaging if peritonism is present.\n' +
           'Emergency exploratory laparotomy/laparoscopy. Assess bowel viability — resect non-viable segment.\n' +
           'Primary anastomosis if healthy bowel ends and no contamination. ICU/HDU post-op.\n\n',
@@ -301,7 +301,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['CT confirms colonic malignancy?', 'Caecal distension ≥12 cm?', 'Free perforation?'],
         urgencyNote: 'SEMS (stent) as bridge to elective surgery if available. If unavailable or perforated: emergency Hartmann\'s procedure. Oncology/surgical MDT.',
         planPrefix:
-          '## Large Bowel Obstruction — Malignant\n\n' +
+          'Large Bowel Obstruction — Malignant\n\n' +
           'CT staging. Colorectal/Oncology MDT referral.\n' +
           'Options: (1) SEMS bridge to elective resection, (2) Emergency Hartmann\'s, (3) Defunctioning colostomy.\n' +
           'Decision based on: perforation risk, patient fitness, tumour stage, institutional expertise.\n\n',
@@ -325,7 +325,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['No peritonism?', 'Tolerating oral fluids?', 'CT confirms no abscess / perforation?'],
         urgencyNote: 'Oral antibiotics × 7 days. Low-residue diet. Colonoscopy 6–8 weeks post-resolution to exclude malignancy.',
         planPrefix:
-          '## Uncomplicated Acute Diverticulitis\n\n' +
+          'Uncomplicated Acute Diverticulitis\n\n' +
           'Oral antibiotics: co-amoxiclav 625 mg TDS × 7 days (or ciprofloxacin 500 mg BD + metronidazole 400 mg TDS if penicillin allergy).\n' +
           'Low-residue diet. Adequate analgesia (avoid NSAIDs).\n' +
           'Colonoscopy 6–8 weeks after resolution to exclude underlying colonic neoplasia.\n\n',
@@ -339,7 +339,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['CT confirms abscess?', 'Abscess ≥4 cm (consider drainage)?', 'Not responding to antibiotics?'],
         urgencyNote: 'IV antibiotics + CT-guided drainage if abscess ≥4 cm. Interval sigmoid colectomy 6–8 weeks after resolution.',
         planPrefix:
-          '## Complicated Diverticulitis — Abscess (Hinchey I/II)\n\n' +
+          'Complicated Diverticulitis — Abscess (Hinchey I/II)\n\n' +
           'IV antibiotics: piperacillin-tazobactam 4.5 g TDS. CT-guided percutaneous drainage if abscess ≥4 cm (IR referral).\n' +
           'Interval laparoscopic sigmoid colectomy 6–8 weeks after resolution.\n' +
           'Colonoscopy 6–8 weeks post-resolution to exclude underlying malignancy.\n\n',
@@ -353,7 +353,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Generalised peritonism?', 'Free gas on CT?', 'Haemodynamic instability?'],
         urgencyNote: '⚠ EMERGENCY — perforated diverticulitis. Emergency Hartmann\'s procedure (sigmoid colectomy + end colostomy). Peritoneal washout. ICU post-op.',
         planPrefix:
-          '## EMERGENCY — Perforated Diverticulitis (Hinchey III/IV)\n\n' +
+          'EMERGENCY — Perforated Diverticulitis (Hinchey III/IV)\n\n' +
           'Emergency laparoscopic or open Hartmann\'s procedure: sigmoid resection + end colostomy.\n' +
           'Copious peritoneal washout with warm saline. Post-op IV antibiotics × 5–7 days.\n' +
           'ICU/HDU post-op care. Reversal of Hartmann\'s (if appropriate) at 12 months.\n\n',
@@ -377,7 +377,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['No organ dysfunction?', 'Tolerating oral fluids within 24 h?', 'BISAP score ≤1?'],
         urgencyNote: 'Supportive management. Oral diet as tolerated. Identify and address aetiology (gallstones → cholecystectomy same admission if mild).',
         planPrefix:
-          '## Mild Acute Pancreatitis — Supportive Management\n\n' +
+          'Mild Acute Pancreatitis — Supportive Management\n\n' +
           'IV fluid resuscitation (Hartmann\'s). Pain control. Oral diet when clinically tolerated (early oral feeding improves outcomes).\n' +
           'Address aetiology: USS (gallstones → laparoscopic cholecystectomy same admission if mild pancreatitis).\n\n',
       },
@@ -399,7 +399,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Persistent organ failure >48 h?', 'Necrosis ≥30% on CT?', 'Infected necrosis (gas on CT / clinical sepsis)?'],
         urgencyNote: '⚠ CRITICAL — severe pancreatitis. ICU admission. HDU monitoring. Antibiotics ONLY if infected necrosis confirmed. Endoscopic/surgical necrosectomy if infected.',
         planPrefix:
-          '## Severe Acute Pancreatitis — ICU Level Care\n\n' +
+          'Severe Acute Pancreatitis — ICU Level Care\n\n' +
           'ICU admission. Aggressive resuscitation. Enteral feeding via NGT/NJT within 24–48 h (superior to TPN).\n' +
           'Carbapenem antibiotics (meropenem) ONLY if infected necrosis suspected (fever + gas in necrotic area on CT).\n' +
           'Necrosectomy: step-up approach (endoscopic > percutaneous > surgical) — delayed ≥4 weeks until walled-off.\n\n',
@@ -423,7 +423,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Haemodynamically stable?', 'Cirrhosis / portal hypertension?', 'Blatchford score ≥6?'],
         urgencyNote: 'PPI IV infusion. OGD within 24 h (same admission). Endoscopic haemostasis if active bleeding / high-risk stigmata.',
         planPrefix:
-          '## Non-Variceal Upper GI Bleed\n\n' +
+          'Non-Variceal Upper GI Bleed\n\n' +
           'PPI: esomeprazole 80 mg IV bolus then 8 mg/h infusion × 72 h (post-endoscopy high-risk lesion).\n' +
           'OGD within 24 h — endoscopic haemostasis (adrenaline injection + clip/bipolar coagulation) for active bleed or visible vessel.\n' +
           'H. pylori testing at endoscopy — eradication therapy if positive.\n\n',
@@ -437,7 +437,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         examQueries: ['Known cirrhosis / portal hypertension?', 'Splenomegaly?', 'Haemodynamically unstable?'],
         urgencyNote: '⚠ EMERGENCY — variceal haemorrhage. Terlipressin immediately. Urgent OGD (within 12 h) + endoscopic variceal ligation. Antibiotic prophylaxis (ceftriaxone).',
         planPrefix:
-          '## EMERGENCY — Variceal Upper GI Bleed\n\n' +
+          'EMERGENCY — Variceal Upper GI Bleed\n\n' +
           'Terlipressin 2 mg IV QDS (or octreotide). Ceftriaxone 1 g IV OD prophylaxis × 7 days.\n' +
           'Urgent OGD within 12 h: endoscopic variceal ligation (EVL) or glue injection (gastric varices).\n' +
           'If uncontrolled: Sengstaken-Blakemore tube as bridge, then TIPS (transjugular intrahepatic portosystemic shunt).\n\n',
@@ -468,7 +468,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         allowedPhases: ['immediate', 'surgical', 'followup'],
         urgencyNote: 'WLE + sentinel lymph node biopsy. Post-op adjuvant radiotherapy (mandatory after BCS). Oncology MDT plan.',
         planPrefix:
-          '## Breast Conservation — Wide Local Excision + SLNB\n\n' +
+          'Breast Conservation — Wide Local Excision + SLNB\n\n' +
           'WLE with oncoplastic reconstruction if needed. Sentinel lymph node biopsy (blue dye ± radioisotope).\n' +
           'Post-op adjuvant radiotherapy mandatory. Oncology MDT for systemic therapy plan.\n\n',
       },
@@ -480,7 +480,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         allowedPhases: ['immediate', 'surgical', 'followup'],
         urgencyNote: 'Mastectomy ± immediate reconstruction. Sentinel/axillary node staging. Oncology MDT referral.',
         planPrefix:
-          '## Mastectomy\n\n' +
+          'Mastectomy\n\n' +
           'Mastectomy (simple / modified radical) ± immediate reconstruction (implant / pedicled flap / free flap).\n' +
           'Sentinel lymph node biopsy (or ALND if nodes positive).\n' +
           'Oncology MDT for systemic therapy, radiotherapy, and hormonal therapy planning.\n\n',
@@ -503,7 +503,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         allowedPhases: ['immediate', 'surgical', 'followup'],
         urgencyNote: 'Hemithyroidectomy (lobectomy ± isthmus). Intraoperative RLN monitoring. Completion thyroidectomy if malignancy confirmed on histology.',
         planPrefix:
-          '## Hemithyroidectomy\n\n' +
+          'Hemithyroidectomy\n\n' +
           'Hemithyroidectomy (ipsilateral lobe + isthmus). Intraoperative recurrent laryngeal nerve neuromonitoring.\n' +
           'Pre-op laryngoscopy if hoarse. Post-op: monitor for haematoma (early complication), hypocalcaemia, RLN injury.\n\n',
       },
@@ -515,7 +515,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         allowedPhases: ['immediate', 'surgical', 'followup'],
         urgencyNote: 'Total thyroidectomy ± central compartment node dissection. Lifelong levothyroxine post-op. Monitor calcium closely (parathyroid at risk).',
         planPrefix:
-          '## Total Thyroidectomy\n\n' +
+          'Total Thyroidectomy\n\n' +
           'Total thyroidectomy ± central compartment neck dissection (level VI) for confirmed malignancy.\n' +
           'Intraoperative RLN monitoring. Post-op: levothyroxine replacement (lifelong). Monitor calcium × 24 h — oral calcium if symptomatic hypocalcaemia.\n\n',
       },

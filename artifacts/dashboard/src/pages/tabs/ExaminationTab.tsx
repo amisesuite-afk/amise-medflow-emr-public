@@ -46,7 +46,6 @@ function computeVisibleSystems(
   ) visible.add('breast');
 
   if (
-    hasSurgHx ||
     matchesAny(pmh, ['diabetes', 'diabetic', 'ulcer', 'wound', 'gangrene', 'pressure sore']) ||
     matchesAny(sx, ['wound', 'ulcer', 'sore'])
   ) visible.add('wound');
