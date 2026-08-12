@@ -513,30 +513,48 @@ export default function InvestigationsTab() {
                   </div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     {tierItems.map(inv => {
-                      const alreadyOrdered = orderedInvestigations.includes(inv.label);
+                      // Imaging items (USS/CT/MRI/XR) go straight to radiologyRequests —
+                      // never via orderedInvestigations — so we check the right list.
+                      const isImg = isImagingInvestigation(inv.label);
+                      const parsedImg = isImg ? parseImagingToRequest(inv.label, inv.urgency) : null;
+                      const alreadyDone = isImg
+                        ? imagingAlreadyRequested(
+                            radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[],
+                            parsedImg!,
+                          )
+                        : orderedInvestigations.includes(inv.label);
                       return (
                         <div key={inv.label} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                           <button
                             type="button"
                             onClick={() => {
-                              if (!alreadyOrdered) setOrderedInvestigations([...orderedInvestigations, inv.label]);
+                              if (alreadyDone) return;
+                              if (isImg && parsedImg) {
+                                setRadiologyRequests([...radiologyRequests, parsedImg]);
+                              } else {
+                                setOrderedInvestigations([...orderedInvestigations, inv.label]);
+                              }
                             }}
-                            disabled={alreadyOrdered}
-                            title={alreadyOrdered ? 'Already ordered' : inv.conditional ? inv.conditional : `Order: ${inv.label}`}
+                            disabled={alreadyDone}
+                            title={
+                              alreadyDone
+                                ? isImg ? 'Already in imaging requests' : 'Already ordered'
+                                : inv.conditional ?? (isImg ? `Send to imaging: ${inv.label}` : `Order: ${inv.label}`)
+                            }
                             style={{
                               padding: '3px 10px',
                               borderRadius: 999,
                               border: '1px solid',
                               fontSize: 11.5,
-                              cursor: alreadyOrdered ? 'default' : 'pointer',
-                              background: alreadyOrdered ? '#1e3a2a' : inv.urgency === 'stat' ? '#4a1c1c' : '#1a2f3e',
-                              color: alreadyOrdered ? '#4ade80' : inv.urgency === 'stat' ? '#fca5a5' : '#7dd3d0',
-                              borderColor: alreadyOrdered ? '#4ade8044' : inv.urgency === 'stat' ? '#ef444444' : '#2d6a7044',
+                              cursor: alreadyDone ? 'default' : 'pointer',
+                              background: alreadyDone ? '#1e3a2a' : inv.urgency === 'stat' ? '#4a1c1c' : '#1a2f3e',
+                              color: alreadyDone ? '#4ade80' : inv.urgency === 'stat' ? '#fca5a5' : '#7dd3d0',
+                              borderColor: alreadyDone ? '#4ade8044' : inv.urgency === 'stat' ? '#ef444444' : '#2d6a7044',
                               display: 'flex', alignItems: 'center', gap: 4,
                             }}
                           >
-                            {alreadyOrdered ? '✓ ' : '+ '}{inv.label}
-                            {!alreadyOrdered && inv.lrPos != null && (
+                            {alreadyDone ? '✓ ' : isImg ? '→ ' : '+ '}{inv.label}
+                            {!alreadyDone && inv.lrPos != null && (
                               <span style={{
                                 fontSize: 9.5, background: '#0f2d1c', color: '#4ade80',
                                 borderRadius: 6, padding: '1px 5px', marginLeft: 2, fontWeight: 700,
@@ -544,11 +562,11 @@ export default function InvestigationsTab() {
                                 LR+ {inv.lrPos}
                               </span>
                             )}
-                            {!alreadyOrdered && (
+                            {!alreadyDone && (
                               <span style={{ fontSize: 10, opacity: 0.6, marginLeft: 2 }}>({inv.urgency})</span>
                             )}
                           </button>
-                          {!alreadyOrdered && inv.conditional && (
+                          {!alreadyDone && inv.conditional && (
                             <span style={{ fontSize: 10, color: '#94a3b8', fontStyle: 'italic', paddingLeft: 10 }}>
                               {inv.conditional}
                             </span>
@@ -564,29 +582,43 @@ export default function InvestigationsTab() {
             // Flat fallback for any legacy protocols without tier info
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {protocolInvestigations.map(inv => {
-                const alreadyOrdered = orderedInvestigations.includes(inv.label);
+                const isImg = isImagingInvestigation(inv.label);
+                const parsedImg = isImg ? parseImagingToRequest(inv.label, inv.urgency) : null;
+                const alreadyDone = isImg
+                  ? imagingAlreadyRequested(
+                      radiologyRequests as { modality: string; anatomicalRegion: string; clinicalQuestion?: string }[],
+                      parsedImg!,
+                    )
+                  : orderedInvestigations.includes(inv.label);
                 return (
                   <button
                     key={inv.label}
                     type="button"
                     onClick={() => {
-                      if (!alreadyOrdered) setOrderedInvestigations([...orderedInvestigations, inv.label]);
+                      if (alreadyDone) return;
+                      if (isImg && parsedImg) {
+                        setRadiologyRequests([...radiologyRequests, parsedImg]);
+                      } else {
+                        setOrderedInvestigations([...orderedInvestigations, inv.label]);
+                      }
                     }}
-                    disabled={alreadyOrdered}
-                    title={alreadyOrdered ? 'Already ordered' : `Order: ${inv.label} (${inv.urgency})`}
+                    disabled={alreadyDone}
+                    title={alreadyDone
+                      ? isImg ? 'Already in imaging requests' : 'Already ordered'
+                      : `${isImg ? 'Send to imaging' : 'Order'}: ${inv.label} (${inv.urgency})`}
                     style={{
                       padding: '3px 10px',
                       borderRadius: 999,
                       border: '1px solid',
                       fontSize: 11.5,
-                      cursor: alreadyOrdered ? 'default' : 'pointer',
-                      background: alreadyOrdered ? '#1e3a2a' : inv.urgency === 'stat' ? '#4a1c1c' : '#1a2f3e',
-                      color: alreadyOrdered ? '#4ade80' : inv.urgency === 'stat' ? '#fca5a5' : '#7dd3d0',
-                      borderColor: alreadyOrdered ? '#4ade8044' : inv.urgency === 'stat' ? '#ef444444' : '#2d6a7044',
+                      cursor: alreadyDone ? 'default' : 'pointer',
+                      background: alreadyDone ? '#1e3a2a' : inv.urgency === 'stat' ? '#4a1c1c' : '#1a2f3e',
+                      color: alreadyDone ? '#4ade80' : inv.urgency === 'stat' ? '#fca5a5' : '#7dd3d0',
+                      borderColor: alreadyDone ? '#4ade8044' : inv.urgency === 'stat' ? '#ef444444' : '#2d6a7044',
                     }}
                   >
-                    {alreadyOrdered ? '✓ ' : '+ '}{inv.label}
-                    {!alreadyOrdered && (
+                    {alreadyDone ? '✓ ' : isImg ? '→ ' : '+ '}{inv.label}
+                    {!alreadyDone && (
                       <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 4 }}>({inv.urgency})</span>
                     )}
                   </button>
