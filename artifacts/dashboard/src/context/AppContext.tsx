@@ -279,6 +279,7 @@ interface CtxValue {
   familyHistoryNotes: string; setFamilyHistoryNotes(v: string): void;
   surgicalHistory: string[]; setSurgicalHistory(v: string[]): void; toggleSurgical(v: string): void;
   surgicalNotes: string; setSurgicalNotes(v: string): void;
+  recentSurgeryDate: string; setRecentSurgeryDate(v: string): void;
   medications: string[]; toggleMedication(v: string): void; setMedications(v: string[]): void;
   medicationsText: string; setMedicationsText(v: string): void;
   allergies: string; setAllergies(v: string): void;
@@ -552,6 +553,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [familyHistoryNotes, setFamilyHistoryNotes] = useState('');
   const [surgicalHistory, setSurgicalHistory] = useState<string[]>([]);
   const [surgicalNotes, setSurgicalNotes] = useState('');
+  const [recentSurgeryDate, setRecentSurgeryDate] = useState('');
   const [medications, setMedications] = useState<string[]>([]);
   const [medicationsText, setMedicationsText] = useState('');
   const [allergies, setAllergies] = useState('');
@@ -750,6 +752,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (typeof d.pmhNotes === 'string') setPmhNotes(d.pmhNotes);
       if (Array.isArray(d.surgicalHistory)) setSurgicalHistory(d.surgicalHistory as string[]);
       if (typeof d.surgicalNotes === 'string') setSurgicalNotes(d.surgicalNotes);
+      if (typeof d.recentSurgeryDate === 'string') setRecentSurgeryDate(d.recentSurgeryDate);
       if (Array.isArray(d.medications)) setMedications(d.medications as string[]);
       if (typeof d.medicationsText === 'string') setMedicationsText(d.medicationsText);
       if (typeof d.allergies === 'string') setAllergies(d.allergies);
@@ -884,7 +887,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       examFindings, examNotes,
       assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents, surgicalClassifications,
       insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
-      comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
+      comorbidities, pmhNotes, surgicalHistory, surgicalNotes, recentSurgeryDate,
       medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
       pendingPrescriptions,
       patientId, encounterId,
@@ -909,7 +912,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     examFindings, examNotes,
     assessment, differentials, plan, followUpNotes, referralNotes, procedures, billing, documents, surgicalClassifications,
     insuranceProvider, policyNumber, nhiNumber, preAuthStatus,
-    comorbidities, pmhNotes, surgicalHistory, surgicalNotes,
+    comorbidities, pmhNotes, surgicalHistory, surgicalNotes, recentSurgeryDate,
     medications, medicationsText, allergies, familyHistory, familyHistoryNotes, toxicHabits, occupation, hpiNotes,
     pendingPrescriptions,
     patientId, encounterId,
@@ -979,7 +982,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
     setVitals({ systolicBp: '', diastolicBp: '', heartRate: '', temperatureC: '', respiratoryRate: '', spo2: '', glucoseMmol: '' });
     setComorbidities([]); setPmhNotes(''); setFamilyHistory([]); setFamilyHistoryNotes('');
-    setSurgicalHistory([]); setSurgicalNotes(''); setMedications([]); setMedicationsText('');
+    setSurgicalHistory([]); setSurgicalNotes(''); setRecentSurgeryDate(''); setMedications([]); setMedicationsText('');
     setAllergies(''); setToxicHabits([]); setOccupation(''); setHpiNotes('');
     setExamGeneral(''); setExamCardio(''); setExamResp(''); setExamAbdomen('');
     setExamNeuro(''); setExamExtremities(''); setExamBreast(''); setExamWound('');
@@ -1116,11 +1119,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId) return;
     if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current);
     surgicalTimerRef.current = setTimeout(() => {
-      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes));
+      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes, recentSurgeryDate));
     }, 3000);
     return () => { if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patientId, surgicalHistory, surgicalNotes]);
+  }, [patientId, surgicalHistory, surgicalNotes, recentSurgeryDate]);
 
   // ── Autosave toxic habits (patient-level, debounced 3 s) ───────────────────
   useEffect(() => {
@@ -1291,7 +1294,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (surgicalTimerRef.current && patientId) {
       clearTimeout(surgicalTimerRef.current);
       surgicalTimerRef.current = null;
-      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes));
+      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes, recentSurgeryDate));
     }
     if (toxicTimerRef.current && patientId) {
       clearTimeout(toxicTimerRef.current);
@@ -1452,6 +1455,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     familyHistoryNotes, setFamilyHistoryNotes,
     surgicalHistory, setSurgicalHistory, toggleSurgical,
     surgicalNotes, setSurgicalNotes,
+    recentSurgeryDate, setRecentSurgeryDate,
     medications, toggleMedication, setMedications,
     medicationsText, setMedicationsText,
     allergies, setAllergies,

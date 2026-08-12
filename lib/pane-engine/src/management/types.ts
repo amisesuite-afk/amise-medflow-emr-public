@@ -1,7 +1,25 @@
+export type InvCategory =
+  | 'bloods'
+  | 'bedside'
+  | 'imaging-uss'
+  | 'imaging-xr'
+  | 'imaging-ct'
+  | 'imaging-mri'
+  | 'endoscopy'
+  | 'microbiology'
+  | 'other';
+
 export interface InvestigationItem {
   label: string;
   urgency: 'stat' | 'urgent' | 'routine';
   rationale?: string;
+  /** Tier 1 = bloods / bedside; Tier 2 = USS / plain XR; Tier 3 = CT / MRI / endoscopy */
+  tier?: 1 | 2 | 3;
+  category?: InvCategory;
+  /** Approximate Bayesian positive likelihood ratio for primary diagnostic question */
+  lrPos?: number;
+  /** Clinical condition under which this investigation should be ordered */
+  conditional?: string;
 }
 
 export interface ManagementStep {
