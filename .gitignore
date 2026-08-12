@@ -60,3 +60,4 @@ Thumbs.db
 !.claude/skills/**
 !.claude/settings.json
 artifacts/front-desk/.next/
+e2e/shots/

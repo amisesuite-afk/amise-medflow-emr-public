@@ -1521,6 +1521,7 @@ export interface EncounterData {
   medications: string[];
   surgicalHistory: string[];
   surgicalNotes: string;
+  recentSurgeryDate: string;
   toxicHabits: string[];
   rosFindings: Record<string, { status: string; details: string[]; notes: string }>;
   procedureData: Record<string, unknown>;
@@ -1661,8 +1662,9 @@ export async function loadEncounterData(
       plan:          planRow?.description ?? '',
       allergens:     allergyRows.map(r => r.allergen),
       medications:   medRows.map(r => r.drug_name),
-      surgicalHistory: surgRes.procedures,
-      surgicalNotes:   surgRes.notes,
+      surgicalHistory:    surgRes.procedures,
+      surgicalNotes:      surgRes.notes,
+      recentSurgeryDate:  surgRes.recentSurgeryDate,
       toxicHabits:     toxicRes,
       rosFindings:     rosRes,
       procedureData:   procRes,
@@ -1751,9 +1753,10 @@ export async function syncSurgicalHistory(
   patientId: string,
   procedures: string[],
   notes: string,
+  recentSurgeryDate: string = '',
 ): Promise<void> {
   if (!supabase) return;
-  if (!procedures.length && !notes.trim()) return;
+  if (!procedures.length && !notes.trim() && !recentSurgeryDate.trim()) return;
 
   await supabase.from('surgical_history').delete().eq('patient_id', patientId);
 
@@ -1766,6 +1769,10 @@ export async function syncSurgicalHistory(
     rows.push({ patient_id: patientId, procedure_name: '[notes]', notes: notes.trim() });
   }
 
+  if (recentSurgeryDate.trim()) {
+    rows.push({ patient_id: patientId, procedure_name: '[recentSurgeryDate]', notes: recentSurgeryDate.trim() });
+  }
+
   if (rows.length) {
     const { error } = await supabase.from('surgical_history').insert(rows);
     if (error) console.error('[db] syncSurgicalHistory:', error);
@@ -1774,8 +1781,8 @@ export async function syncSurgicalHistory(
 
 export async function loadSurgicalHistory(
   patientId: string,
-): Promise<{ procedures: string[]; notes: string }> {
-  if (!supabase) return { procedures: [], notes: '' };
+): Promise<{ procedures: string[]; notes: string; recentSurgeryDate: string }> {
+  if (!supabase) return { procedures: [], notes: '', recentSurgeryDate: '' };
 
   const { data, error } = await supabase
     .from('surgical_history')
@@ -1783,16 +1790,19 @@ export async function loadSurgicalHistory(
     .eq('patient_id', patientId);
 
   if (error) {
-    if ((error as { code?: string }).code === '42P01') return { procedures: [], notes: '' };
+    if ((error as { code?: string }).code === '42P01') return { procedures: [], notes: '', recentSurgeryDate: '' };
     console.error('[db] loadSurgicalHistory:', error);
-    return { procedures: [], notes: '' };
+    return { procedures: [], notes: '', recentSurgeryDate: '' };
   }
 
+  const SENTINEL_KEYS = new Set(['[notes]', '[recentSurgeryDate]']);
   const rows = (data ?? []) as Array<{ procedure_name: string; notes: string | null }>;
   const noteRow = rows.find(r => r.procedure_name === '[notes]');
+  const dateRow = rows.find(r => r.procedure_name === '[recentSurgeryDate]');
   return {
-    procedures: rows.filter(r => r.procedure_name !== '[notes]').map(r => r.procedure_name),
+    procedures: rows.filter(r => !SENTINEL_KEYS.has(r.procedure_name)).map(r => r.procedure_name),
     notes: noteRow?.notes ?? '',
+    recentSurgeryDate: dateRow?.notes ?? '',
   };
 }
 

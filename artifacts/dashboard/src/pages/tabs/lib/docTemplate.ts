@@ -164,6 +164,8 @@ export function inlineText(text: string): string {
     if (!trimmed) return '<p style="margin:2px 0">&nbsp;</p>';
     if (/^[•·\-]\s/.test(trimmed))
       return `<div class="bul-item"><span class="bul-dot">•</span><span class="bul-text">${escH(trimmed.replace(/^[•·\-]\s*/,''))}</span></div>`;
+    if (/^#{1,3}\s/.test(trimmed))
+      return `<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#1a3a5c;border-bottom:1px solid #d1d5db;padding-bottom:2px;margin:12px 0 4px">${escH(trimmed.replace(/^#{1,3}\s+/, ''))}</div>`;
     return `<p style="font-size:10.5px;color:${T.ink};line-height:1.25;margin:2px 0">${escH(trimmed)}</p>`;
   }).join('');
 }

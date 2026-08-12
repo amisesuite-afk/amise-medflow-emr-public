@@ -24,11 +24,13 @@ function computeVisibleSystems(
   surgicalHistory: string[],
   symptoms: string[],
   leadingDxId: string | null,
+  recentSurgeryDate: string,
 ): Set<string> {
   const visible = new Set<string>(CORE_SYSTEM_KEYS);
   const pmh = [...comorbidities, pmhNotes].join(' ').toLowerCase();
   const sx = symptoms.join(' ').toLowerCase();
   const hasSurgHx = surgicalHistory.length > 0;
+  void hasSurgHx;
 
   if (
     matchesAny(pmh, ['hypertension', 'cardiac', 'heart', 'atrial', 'angina', 'coronary', 'ihd', 'pacemaker', 'valve', 'cardiomyopathy']) ||
@@ -46,10 +48,18 @@ function computeVisibleSystems(
   ) visible.add('breast');
 
   if (
-    hasSurgHx ||
     matchesAny(pmh, ['diabetes', 'diabetic', 'ulcer', 'wound', 'gangrene', 'pressure sore']) ||
     matchesAny(sx, ['wound', 'ulcer', 'sore'])
   ) visible.add('wound');
+
+  // Auto-show wound exam within the 6-week uncomplicated post-operative window
+  if (recentSurgeryDate) {
+    const surgDate = new Date(recentSurgeryDate);
+    if (!isNaN(surgDate.getTime())) {
+      const msIn6Weeks = 42 * 24 * 60 * 60 * 1000;
+      if (Date.now() - surgDate.getTime() < msIn6Weeks) visible.add('wound');
+    }
+  }
 
   if (
     matchesAny(pmh, ['stroke', 'tia', 'epilepsy', 'seizure', 'neuropathy', 'parkinson', 'dementia', 'multiple sclerosis', 'migraine']) ||
@@ -322,6 +332,7 @@ export default function ExaminationTab() {
   const ctx = useAppContext();
   const { examFindings, setExamFindings, examNotes, setExamNotes, anatomicalFindings, examPhotos,
           symptoms, symptomDetails, age, sex, comorbidities, pmhNotes, surgicalHistory,
+          recentSurgeryDate,
           vitals, updateVital,
           weightKg, setWeightKg, heightCm, setHeightCm,
           waistCm, setWaistCm, hipCm, setHipCm, muacCm, setMuacCm } = ctx;
@@ -331,6 +342,7 @@ export default function ExaminationTab() {
   const [reportVisible, setReportVisible] = useState(false);
   const [reportCopied, setReportCopied] = useState(false);
   const [showAllSystems, setShowAllSystems] = useState(false);
+  const [forceWound, setForceWound] = useState(false);
   const [editVitals, setEditVitals] = useState(false);
   const [quickMode, setQuickMode]   = useState(true);
   const [allNormalApplied, setAllNormalApplied] = useState(false);
@@ -359,10 +371,11 @@ export default function ExaminationTab() {
     return map;
   }, [leadingDxId]);
 
-  const visibleSystemKeys = useMemo(
-    () => computeVisibleSystems(comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId),
-    [comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId],
-  );
+  const visibleSystemKeys = useMemo(() => {
+    const keys = computeVisibleSystems(comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId, recentSurgeryDate);
+    if (forceWound) keys.add('wound');
+    return keys;
+  }, [comorbidities, pmhNotes, surgicalHistory, symptoms, leadingDxId, recentSurgeryDate, forceWound]);
 
   const legacySetterMap: Record<string, (v: string) => void> = {
     general: ctx.setExamGeneral,
@@ -781,29 +794,45 @@ export default function ExaminationTab() {
             !examNotes[s.key]?.trim() &&
             !examOmit[s.key]
           );
+          const woundHidden = hiddenSystems.some(s => s.key === 'wound');
           if (hiddenSystems.length === 0 || showAllSystems) return null;
           return (
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8,
-              padding: '8px 12px', marginBottom: 10, gap: 10,
+              padding: '8px 12px', marginBottom: 10, gap: 10, flexWrap: 'wrap',
             }}>
               <span style={{ fontSize: 12, color: '#64748b' }}>
                 <strong>{hiddenSystems.length}</strong> system{hiddenSystems.length !== 1 ? 's' : ''} hidden —{' '}
                 {hiddenSystems.map(s => s.label).join(', ')}
                 {' '}(no relevant history)
               </span>
-              <button
-                type="button"
-                onClick={() => setShowAllSystems(true)}
-                style={{
-                  padding: '4px 12px', borderRadius: 6, border: '1px solid #94a3b8',
-                  background: '#fff', color: '#475569', fontSize: 12, fontWeight: 600,
-                  cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-                }}
-              >
-                Show all systems
-              </button>
+              <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                {woundHidden && (
+                  <button
+                    type="button"
+                    onClick={() => setForceWound(true)}
+                    style={{
+                      padding: '4px 12px', borderRadius: 6, border: '1px solid #d97706',
+                      background: '#fffbeb', color: '#b45309', fontSize: 12, fontWeight: 600,
+                      cursor: 'pointer', whiteSpace: 'nowrap',
+                    }}
+                  >
+                    🩹 Add wound exam
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowAllSystems(true)}
+                  style={{
+                    padding: '4px 12px', borderRadius: 6, border: '1px solid #94a3b8',
+                    background: '#fff', color: '#475569', fontSize: 12, fontWeight: 600,
+                    cursor: 'pointer', whiteSpace: 'nowrap',
+                  }}
+                >
+                  Show all systems
+                </button>
+              </div>
             </div>
           );
         })()}
