@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
 import { useAppContext } from '@/context/AppContext';
-import { closeEncounter } from '@/lib/db';
+import { closeEncounter, saveDischargeNotes, loadDischargeNotes } from '@/lib/db';
 import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, inlineText, callout, footer, signoff, escH, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
@@ -872,6 +872,61 @@ export default function FinalDocTab() {
   const [closing, setClosing] = useState(false);
   const [closeMsg, setCloseMsg] = useState('');
 
+  // ── Discharge summary autosave ──────────────────────────────────────────────
+  // These fields previously lived only in this component's local state with no
+  // persistence at all — a page refresh or navigation away silently discarded
+  // them. saveDischargeNotes/loadDischargeNotes already existed in lib/db.ts
+  // for this exact purpose but were never wired up here.
+  const [dischargeSaveStatus, setDischargeSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const dischargeSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dischargeHydratedFor = useRef<string | null>(null);
+
+  useEffect(() => {
+    const encId = ctx.encounterId;
+    if (!encId || dischargeHydratedFor.current === encId) return;
+    dischargeHydratedFor.current = encId;
+    void loadDischargeNotes(encId).then(({ data }) => {
+      if (!data) return;
+      if (typeof data.condition === 'string') setDischargeCondition(data.condition);
+      if (Array.isArray(data.meds)) setDischargeMeds(data.meds as DischargeMed[]);
+      if (typeof data.wound === 'string') setDischargeWound(data.wound);
+      if (Array.isArray(data.diet)) setDischargeDiet(data.diet as string[]);
+      if (typeof data.dietNotes === 'string') setDischargeDietNotes(data.dietNotes);
+      if (Array.isArray(data.activity)) setDischargeActivity(data.activity as string[]);
+      if (typeof data.activityNotes === 'string') setDischargeActivityNotes(data.activityNotes);
+      if (typeof data.followup === 'string') setDischargeFollowup(data.followup);
+      if (Array.isArray(data.redFlags)) setDischargeRedFlags(data.redFlags as string[]);
+      if (typeof data.warnings === 'string') setDischargeWarnings(data.warnings);
+      if (typeof data.draft === 'string') setDischargeDraft(data.draft);
+    });
+  }, [ctx.encounterId]);
+
+  useEffect(() => {
+    const encId = ctx.encounterId;
+    const patId = ctx.patientId;
+    if (!encId || !patId || dischargeHydratedFor.current !== encId) return;
+    const hasContent = dischargeMeds.length > 0 || !!dischargeWound || dischargeDiet.length > 0
+      || !!dischargeDietNotes || dischargeActivity.length > 0 || !!dischargeActivityNotes
+      || !!dischargeFollowup || dischargeRedFlags.length > 0 || !!dischargeWarnings || !!dischargeDraft
+      || dischargeCondition !== 'Good';
+    if (!hasContent) return;
+    if (dischargeSaveTimer.current) clearTimeout(dischargeSaveTimer.current);
+    dischargeSaveTimer.current = setTimeout(() => {
+      setDischargeSaveStatus('saving');
+      void saveDischargeNotes(encId, patId, {
+        condition: dischargeCondition, meds: dischargeMeds, wound: dischargeWound,
+        diet: dischargeDiet, dietNotes: dischargeDietNotes,
+        activity: dischargeActivity, activityNotes: dischargeActivityNotes,
+        followup: dischargeFollowup, redFlags: dischargeRedFlags,
+        warnings: dischargeWarnings, draft: dischargeDraft,
+      }).then(({ error }) => setDischargeSaveStatus(error ? 'error' : 'saved'));
+    }, 1500);
+    return () => { if (dischargeSaveTimer.current) clearTimeout(dischargeSaveTimer.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctx.encounterId, ctx.patientId, dischargeCondition, dischargeMeds, dischargeWound,
+    dischargeDiet, dischargeDietNotes, dischargeActivity, dischargeActivityNotes,
+    dischargeFollowup, dischargeRedFlags, dischargeWarnings, dischargeDraft]);
+
   async function handleCloseEncounter() {
     if (!ctx.encounterId) return;
     if (!window.confirm(
@@ -1131,7 +1186,12 @@ export default function FinalDocTab() {
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: '#075985' }}>📄 Discharge / Clinic Summary</div>
-            <button type="button" style={{ ...BTN_GHOST, fontSize: 11 }} onClick={() => setShowDischarge(false)}>× Close</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {dischargeSaveStatus === 'saving' && <span style={{ fontSize: 10.5, color: '#0369a1' }}>Saving…</span>}
+              {dischargeSaveStatus === 'saved' && <span style={{ fontSize: 10.5, color: '#0d9488' }}>✓ Saved</span>}
+              {dischargeSaveStatus === 'error' && <span style={{ fontSize: 10.5, color: '#dc2626', fontWeight: 700 }}>⚠ Save failed — check connection</span>}
+              <button type="button" style={{ ...BTN_GHOST, fontSize: 11 }} onClick={() => setShowDischarge(false)}>× Close</button>
+            </div>
           </div>
 
           {/* Condition on discharge */}
