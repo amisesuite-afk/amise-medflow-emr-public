@@ -1484,6 +1484,29 @@ export async function signEncounterNotes(
   }
 }
 
+// ─── reopenEncounter ────────────────────────────────────────────────────────────
+
+/** Reopens a closed encounter for correction via the API server. Safe to call
+ *  unconditionally — it's a no-op success if the encounter isn't closed. The
+ *  server enforces the doctor-only + grace-period rules; a rejection (wrong
+ *  role, grace period expired) comes back as an error string. */
+export async function reopenEncounter(
+  encounterId: string,
+): Promise<{ status: string | null; reopened: boolean; error: string | null }> {
+  const base = getApiOrigin();
+  try {
+    const res = await fetch(`${base}/api/visit/reopen/${encounterId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+    });
+    const data = await res.json().catch(() => ({})) as { status?: string; reopened?: boolean; error?: string };
+    if (!res.ok) return { status: null, reopened: false, error: data.error ?? `HTTP ${res.status}` };
+    return { status: data.status ?? null, reopened: !!data.reopened, error: null };
+  } catch (e) {
+    return { status: null, reopened: false, error: e instanceof Error ? e.message : 'Reopen request failed' };
+  }
+}
+
 // ─── closeEncounter ───────────────────────────────────────────────────────────
 
 /** Signs all draft notes and marks the encounter closed.

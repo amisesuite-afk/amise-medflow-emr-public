@@ -178,3 +178,77 @@ describe('POST /api/visit/complete/:encounterId', () => {
     expect(insertCalls.length).toBeGreaterThanOrEqual(1);
   });
 });
+
+// ── POST /api/visit/reopen/:encounterId ────────────────────────────────────────
+
+describe('POST /api/visit/reopen/:encounterId', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('reopens a closed encounter within the grace window for a doctor', async () => {
+    const closedAt = new Date(Date.now() - 2 * 86_400_000).toISOString(); // 2 days ago
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ id: 'enc-1', patient_id: 'pat-1', status: 'closed', closed_at: closedAt })));
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ role: 'doctor' })));
+    mockFrom.mockReturnValueOnce(makeQuery(empty())); // update
+    mockFrom.mockReturnValue(makeQuery(empty()));      // audit_log
+
+    const res = await request(app)
+      .post('/api/visit/reopen/enc-1')
+      .set(AUTH)
+      .send({});
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ encounterId: 'enc-1', status: 'in_progress', reopened: true });
+  });
+
+  it('is a no-op success when the encounter is not closed', async () => {
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ id: 'enc-1', patient_id: 'pat-1', status: 'in_progress', closed_at: null })));
+
+    const res = await request(app)
+      .post('/api/visit/reopen/enc-1')
+      .set(AUTH)
+      .send({});
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ encounterId: 'enc-1', status: 'in_progress', reopened: false });
+  });
+
+  it('returns 404 when the encounter does not exist', async () => {
+    mockFrom.mockReturnValueOnce(makeQuery(notFound()));
+
+    const res = await request(app)
+      .post('/api/visit/reopen/enc-gone')
+      .set(AUTH)
+      .send({});
+
+    expect(res.status).toBe(404);
+  });
+
+  it('rejects reopening past the grace window', async () => {
+    const closedAt = new Date(Date.now() - 9 * 86_400_000).toISOString(); // 9 days ago
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ id: 'enc-1', patient_id: 'pat-1', status: 'closed', closed_at: closedAt })));
+
+    const res = await request(app)
+      .post('/api/visit/reopen/enc-1')
+      .set(AUTH)
+      .send({});
+
+    expect(res.status).toBe(403);
+    expect(res.body.error).toMatch(/permanently locked/i);
+  });
+
+  it('rejects a non-doctor role even within the grace window', async () => {
+    const closedAt = new Date(Date.now() - 1 * 86_400_000).toISOString(); // 1 day ago
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ id: 'enc-1', patient_id: 'pat-1', status: 'closed', closed_at: closedAt })));
+    mockFrom.mockReturnValueOnce(makeQuery(ok({ role: 'nurse' })));
+
+    const res = await request(app)
+      .post('/api/visit/reopen/enc-1')
+      .set(AUTH)
+      .send({});
+
+    expect(res.status).toBe(403);
+    expect(res.body.error).toMatch(/treating doctor/i);
+  });
+});

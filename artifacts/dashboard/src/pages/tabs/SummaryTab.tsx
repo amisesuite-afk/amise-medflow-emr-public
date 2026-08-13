@@ -3,6 +3,10 @@ import { useAppContext } from '@/context/AppContext';
 import type { Section } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import { supabase } from '@/lib/supabase';
+import { saveDischargeNotes, loadDischargeNotes } from '@/lib/db';
+import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
+import type { ManagementProtocol } from '@workspace/pane-engine';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { AMISE_LOGO_SVG } from './lib/docTemplate';
 import { saveBlobAsPDF } from './lib/pdfExport';
@@ -969,6 +973,76 @@ function DirectExportPanel() {
   const [aiFilling, setAiFilling] = useState(false);
   const [aiError, setAiError] = useState('');
   const [showPreview, setShowPreview] = useState(true);
+  const [protocolFillMsg, setProtocolFillMsg] = useState('');
+
+  const locked = ctx.encounterStatus === 'closed';
+
+  // ── Discharge summary autosave ────────────────────────────────────────────
+  // dischargeNotes/followUp/warningSign/disposition previously lived only in
+  // this component's local state with no persistence — a refresh or
+  // navigation away silently discarded whatever the doctor had entered.
+  const [dischargeSaveStatus, setDischargeSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const dischargeSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dischargeHydratedFor = useRef<string | null>(null);
+
+  useEffect(() => {
+    const encId = ctx.encounterId;
+    if (!encId || dischargeHydratedFor.current === encId) return;
+    dischargeHydratedFor.current = encId;
+    void loadDischargeNotes(encId).then(({ data }) => {
+      if (!data) return;
+      if (typeof data.dischargeNotes === 'string') setDischargeNotes(data.dischargeNotes);
+      if (typeof data.followUp === 'string') setFollowUp(data.followUp);
+      if (typeof data.warningSign === 'string') setWarningSign(data.warningSign);
+      if (typeof data.disposition === 'string') setDisposition(data.disposition);
+    });
+  }, [ctx.encounterId]);
+
+  useEffect(() => {
+    const encId = ctx.encounterId;
+    const patId = ctx.patientId;
+    if (!encId || !patId || locked || dischargeHydratedFor.current !== encId) return;
+    if (!dischargeNotes && !followUp && !warningSign && !disposition) return;
+    if (dischargeSaveTimer.current) clearTimeout(dischargeSaveTimer.current);
+    dischargeSaveTimer.current = setTimeout(() => {
+      setDischargeSaveStatus('saving');
+      void saveDischargeNotes(encId, patId, { dischargeNotes, followUp, warningSign, disposition })
+        .then(({ error }) => setDischargeSaveStatus(error ? 'error' : 'saved'));
+    }, 1500);
+    return () => { if (dischargeSaveTimer.current) clearTimeout(dischargeSaveTimer.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctx.encounterId, ctx.patientId, locked, dischargeNotes, followUp, warningSign, disposition]);
+
+  // ── Bayesian / protocol auto-fill ─────────────────────────────────────────
+  // Deterministic alternative to the LLM-based "AI Fill" — pulls straight from
+  // the same clinical protocol data (lib/pane-engine) that drives the working
+  // diagnosis's posterior probability and the Management panel, so it never
+  // needs a network round-trip and always matches the protocol on file.
+  function handleProtocolFill() {
+    setProtocolFillMsg('');
+    const protocol: ManagementProtocol | null =
+      (ctx.workingDiagnosis?.diseaseId ? getProtocol(ctx.workingDiagnosis.diseaseId) : null) ??
+      (ctx.workingDiagnosis?.icdCode ? getProtocolByIcd(ctx.workingDiagnosis.icdCode) : null) ??
+      (ctx.icdCodes[0] ? getProtocolByIcd(ctx.icdCodes[0]) : null);
+
+    if (!protocol) {
+      setProtocolFillMsg('No protocol match for the current working diagnosis — set an ICD code or confirm a diagnosis first.');
+      return;
+    }
+
+    if (protocol.redFlags.length) setWarningSign(protocol.redFlags.join('\n'));
+
+    const followUpSteps = protocol.management.filter(s => s.phase === 'followup').map(s => s.step);
+    const followUpText = [...followUpSteps, protocol.referral ? `Referral: ${protocol.referral}` : null].filter(Boolean).join('\n');
+    if (followUpText) setFollowUp(followUpText);
+
+    const dischargeMeds = (protocol.medications ?? []).filter(m => m.phase === 'discharge')
+      .map(m => `${m.drugName} ${m.dose} ${m.route}, ${m.frequency}${m.duration ? ` for ${m.duration}` : ''} — ${m.indication}`);
+    const instructionLines = [...dischargeMeds, ...protocol.keyPoints];
+    if (instructionLines.length) setDischargeNotes(instructionLines.join('\n'));
+
+    setProtocolFillMsg(`Filled from protocol: ${protocol.label}`);
+  }
 
   // Ref-based iframe refresh — skips updates while user is inline-editing the preview
   useEffect(() => {
@@ -1112,38 +1186,56 @@ function DirectExportPanel() {
       {/* Discharge extras */}
       {docType === 'discharge' && (
         <div style={{ display: 'grid', gap: 8 }}>
+          {locked && (
+            <div style={{ fontSize: 11.5, color: '#92400e', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 6, padding: '5px 10px' }}>
+              🔒 This encounter is closed and read-only. Use ← Edit encounter above to reopen it (available for a limited window after closing).
+            </div>
+          )}
           {/* Disposition + AI fill row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Disposition</span>
             <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
               {DISPOSITION_OPTIONS.map(d => (
-                <button key={d.id} type="button" onClick={() => setDisposition(d.id === disposition ? '' : d.id)} style={{
-                  padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                <button key={d.id} type="button" disabled={locked} onClick={() => setDisposition(d.id === disposition ? '' : d.id)} style={{
+                  padding: '3px 10px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: locked ? 'not-allowed' : 'pointer',
                   border: disposition === d.id ? '1.5px solid #0d9488' : '1px solid #d1d5db',
                   background: disposition === d.id ? '#0d9488' : '#f9fafb',
-                  color: disposition === d.id ? '#fff' : '#374151',
+                  color: disposition === d.id ? '#fff' : '#374151', opacity: locked ? 0.6 : 1,
                 }}>{d.label}</button>
               ))}
             </div>
-            <button type="button" onClick={() => void handleAiFill()} disabled={aiFilling}
-              style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px', borderRadius: 7, border: 'none', background: '#7c3aed', color: '#fff', fontSize: 12, fontWeight: 700, cursor: aiFilling ? 'wait' : 'pointer', opacity: aiFilling ? 0.7 : 1 }}>
-              {aiFilling ? '⏳ Filling…' : '✨ AI Fill'}
-            </button>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+              <button type="button" onClick={handleProtocolFill} disabled={locked}
+                title="Deterministic fill from the clinical protocol matched to the working diagnosis — no AI, no network call"
+                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px', borderRadius: 7, border: '1px solid #0d9488', background: '#fff', color: '#0d9488', fontSize: 12, fontWeight: 700, cursor: locked ? 'not-allowed' : 'pointer', opacity: locked ? 0.6 : 1 }}>
+                🧮 Protocol Fill
+              </button>
+              <button type="button" onClick={() => void handleAiFill()} disabled={aiFilling || locked}
+                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px', borderRadius: 7, border: 'none', background: '#7c3aed', color: '#fff', fontSize: 12, fontWeight: 700, cursor: (aiFilling || locked) ? 'wait' : 'pointer', opacity: (aiFilling || locked) ? 0.7 : 1 }}>
+                {aiFilling ? '⏳ Filling…' : '✨ AI Fill'}
+              </button>
+            </div>
           </div>
           {aiError && <div style={{ fontSize: 11, color: '#dc2626' }}>{aiError}</div>}
+          {protocolFillMsg && <div style={{ fontSize: 11, color: protocolFillMsg.startsWith('No protocol') ? '#dc2626' : '#0d9488' }}>{protocolFillMsg}</div>}
           <div className="fld">
-            <label style={{ fontSize: 12 }}>Discharge instructions</label>
-            <textarea value={dischargeNotes} onChange={e => setDischargeNotes(e.target.value)}
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+              <label style={{ fontSize: 12 }}>Discharge instructions</label>
+              {dischargeSaveStatus === 'saving' && <span style={{ fontSize: 10, color: '#0369a1' }}>Saving…</span>}
+              {dischargeSaveStatus === 'saved' && <span style={{ fontSize: 10, color: '#0d9488' }}>✓ Saved</span>}
+              {dischargeSaveStatus === 'error' && <span style={{ fontSize: 10, color: '#dc2626', fontWeight: 700 }}>⚠ Save failed</span>}
+            </div>
+            <textarea value={dischargeNotes} onChange={e => setDischargeNotes(e.target.value)} readOnly={locked}
               placeholder="Diet, activity restrictions, wound care, medications, dressing changes…" style={{ fontSize: 12, minHeight: 70 }} />
           </div>
           <div className="fld">
             <label style={{ fontSize: 12 }}>Warning signs — return if…</label>
-            <textarea value={warningSign} onChange={e => setWarningSign(e.target.value)}
+            <textarea value={warningSign} onChange={e => setWarningSign(e.target.value)} readOnly={locked}
               placeholder="Fever >38.5°C, increasing pain, redness/swelling, inability to tolerate fluids…" style={{ fontSize: 12, minHeight: 50 }} />
           </div>
           <div className="fld">
             <label style={{ fontSize: 12 }}>Follow-up plan</label>
-            <textarea value={followUp} onChange={e => setFollowUp(e.target.value)}
+            <textarea value={followUp} onChange={e => setFollowUp(e.target.value)} readOnly={locked}
               placeholder="e.g. Review in 2 weeks at Rodney Bay. Histopathology results to be discussed at follow-up." style={{ fontSize: 12, minHeight: 50 }} />
           </div>
         </div>
@@ -1254,6 +1346,22 @@ export default function SummaryTab() {
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const textRef = useRef<HTMLTextAreaElement>(null);
+
+  // Refresh the encounter's server-side lock status whenever this screen is
+  // reached, regardless of how the doctor got here (fresh close vs. returning
+  // to a chart closed in a previous session) — the "Edit encounter" reopen
+  // affordance depends on knowing the real status, not a stale local guess.
+  useEffect(() => {
+    const encId = ctx.encounterId;
+    if (!encId || !supabase) return;
+    void supabase.from('encounters').select('status, closed_at').eq('id', encId).maybeSingle()
+      .then(({ data }) => {
+        if (!data) return;
+        ctx.setEncounterStatus(data.status as string ?? null);
+        ctx.setEncounterClosedAt(data.closed_at as string ?? null);
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ctx.encounterId]);
 
   // Auto-generate when navigating to this tab if the consultation has enough content
   useEffect(() => {

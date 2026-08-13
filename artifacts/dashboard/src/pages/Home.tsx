@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } fro
 import { useAppContext, Section, TopSection, type EncounterType, type VitalsState } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import { reopenEncounter } from '@/lib/db';
 import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { supabase, ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
@@ -342,6 +343,8 @@ export default function HomePage() {
     patientPhoto,
     patientId,
     encounterId,
+    encounterStatus, setEncounterStatus,
+    encounterClosedAt, setEncounterClosedAt,
     saveStatus,
     lastSaveError,
     syncStatus,
@@ -439,15 +442,34 @@ export default function HomePage() {
     setCompleting(true);
     try {
       const authHeaders = await staffAuthHeaders();
-      await fetch(`${API_ORIGIN}/api/visit/complete/${encounterId}`, {
+      const res = await fetch(`${API_ORIGIN}/api/visit/complete/${encounterId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders as Record<string, string> },
         body: JSON.stringify({ description: plan ?? undefined }),
       });
+      if (res.ok) {
+        setEncounterStatus('closed');
+        setEncounterClosedAt(new Date().toISOString());
+      }
     } catch { /* non-blocking — navigate regardless */ }
     setCompleting(false);
     setTopSection('finaldoc');
-  }, [encounterId, plan]);
+  }, [encounterId, plan, setEncounterStatus, setEncounterClosedAt, setTopSection]);
+
+  const [reopening, setReopening] = useState(false);
+  const [reopenError, setReopenError] = useState('');
+
+  const editEncounter = useCallback(async () => {
+    if (!encounterId || encounterStatus !== 'closed') { setTopSection('consultation'); return; }
+    setReopening(true);
+    setReopenError('');
+    const { status, error } = await reopenEncounter(encounterId);
+    setReopening(false);
+    if (error) { setReopenError(error); return; }
+    setEncounterStatus(status);
+    setEncounterClosedAt(null);
+    setTopSection('consultation');
+  }, [encounterId, encounterStatus, setEncounterStatus, setEncounterClosedAt, setTopSection]);
 
   // Collapse sidebar on narrow viewports (tablets/phones)
   useEffect(() => {
@@ -1821,19 +1843,28 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'patient_education' && <PatientEducationTab />}
         {topSection === 'procedures'    && (authLoading || hasRole(userRole, 'doctor'))        && <ProceduresTab />}
         {(topSection === 'summary' || topSection === 'finaldoc') && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px 2px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 14px 2px', flexWrap: 'wrap' }}>
             <button
               type="button"
-              onClick={() => setTopSection('consultation')}
+              onClick={() => void editEncounter()}
+              disabled={reopening}
               style={{
                 display: 'flex', alignItems: 'center', gap: 5,
                 padding: '4px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-                cursor: 'pointer', border: '1px solid #334155',
-                background: 'transparent', color: '#94a3b8',
+                cursor: reopening ? 'wait' : 'pointer', border: '1px solid #334155',
+                background: 'transparent', color: '#94a3b8', opacity: reopening ? 0.6 : 1,
               }}
             >
-              ← Edit encounter
+              {reopening ? '⏳ Reopening…' : '← Edit encounter'}
             </button>
+            {encounterStatus === 'closed' && (
+              <span style={{ fontSize: 11, color: '#64748b' }}>
+                🔒 Closed{encounterClosedAt ? ` ${Math.max(0, Math.floor((Date.now() - new Date(encounterClosedAt).getTime()) / 86_400_000))}d ago — editable for ${Math.max(0, 7 - Math.floor((Date.now() - new Date(encounterClosedAt).getTime()) / 86_400_000))} more day(s)` : ''}
+              </span>
+            )}
+            {reopenError && (
+              <span style={{ fontSize: 11, color: '#f87171', fontWeight: 600 }}>⚠ {reopenError}</span>
+            )}
           </div>
         )}
         {topSection === 'summary'        && <SummaryTab />}
