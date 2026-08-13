@@ -1811,7 +1811,8 @@ export async function syncSurgicalHistory(
   if (!supabase) return;
   if (!procedures.length && !notes.trim() && !recentSurgeryDate.trim()) return;
 
-  await supabase.from('surgical_history').delete().eq('patient_id', patientId);
+  const { error: delErr } = await supabase.from('surgical_history').delete().eq('patient_id', patientId);
+  if (delErr) { console.error('[db] syncSurgicalHistory delete:', delErr); throw new Error(delErr.message); }
 
   const rows: Array<Record<string, unknown>> = procedures.map(p => ({
     patient_id: patientId,
@@ -1828,7 +1829,7 @@ export async function syncSurgicalHistory(
 
   if (rows.length) {
     const { error } = await supabase.from('surgical_history').insert(rows);
-    if (error) console.error('[db] syncSurgicalHistory:', error);
+    if (error) { console.error('[db] syncSurgicalHistory:', error); throw new Error(error.message); }
   }
 }
 
@@ -1867,7 +1868,8 @@ export async function syncToxicHabits(
 ): Promise<void> {
   if (!supabase) return;
 
-  await supabase.from('toxic_habits').delete().eq('patient_id', patientId);
+  const { error: delErr } = await supabase.from('toxic_habits').delete().eq('patient_id', patientId);
+  if (delErr) { console.error('[db] syncToxicHabits delete:', delErr); throw new Error(delErr.message); }
 
   if (!habits.length) return;
 
@@ -1879,7 +1881,7 @@ export async function syncToxicHabits(
   }));
 
   const { error } = await supabase.from('toxic_habits').insert(rows);
-  if (error) console.error('[db] syncToxicHabits:', error);
+  if (error) { console.error('[db] syncToxicHabits:', error); throw new Error(error.message); }
 }
 
 export async function loadToxicHabits(
@@ -1928,7 +1930,7 @@ export async function syncRosFindings(
     .from('ros_findings')
     .upsert(rows, { onConflict: 'encounter_id,system_name' });
 
-  if (error) console.error('[db] syncRosFindings:', error);
+  if (error) { console.error('[db] syncRosFindings:', error); throw new Error(error.message); }
 }
 
 export async function loadRosFindings(
@@ -1979,7 +1981,8 @@ export async function syncProcedureData(
 ): Promise<void> {
   if (!supabase) return;
 
-  await supabase.from('operative_notes').delete().eq('encounter_id', encounterId);
+  const { error: delErr } = await supabase.from('operative_notes').delete().eq('encounter_id', encounterId);
+  if (delErr) { console.error('[db] syncProcedureData delete:', delErr); throw new Error(delErr.message); }
 
   const entries = Object.entries(procedureData).filter(([, v]) =>
     v && typeof v === 'object' && Object.keys(v as object).length > 0
@@ -1996,7 +1999,7 @@ export async function syncProcedureData(
   }));
 
   const { error } = await supabase.from('operative_notes').insert(rows);
-  if (error) console.error('[db] syncProcedureData:', error);
+  if (error) { console.error('[db] syncProcedureData:', error); throw new Error(error.message); }
 }
 
 export async function loadProcedureData(
@@ -2084,7 +2087,7 @@ export async function syncTraumaRecord(
     .from('trauma_records')
     .upsert(row, { onConflict: 'encounter_id' });
 
-  if (error) console.error('[db] syncTraumaRecord:', error);
+  if (error) { console.error('[db] syncTraumaRecord:', error); throw new Error(error.message); }
 }
 
 export async function loadTraumaRecord(

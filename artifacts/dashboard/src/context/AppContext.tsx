@@ -663,6 +663,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     _setSaveStatus('saving');
     try {
       const result = await fn();
+      // Many save helpers resolve normally with an { error } field instead of
+      // throwing — without this check a failed write (bad grant, missing
+      // table, RLS denial) would still report "saved" here.
+      if (result && typeof result === 'object' && 'error' in result && (result as { error: unknown }).error) {
+        throw new Error(String((result as { error: unknown }).error));
+      }
       if (saveEpoch.current !== epoch) return undefined;
       pendingSaves.current--;
       if (pendingSaves.current === 0) {
