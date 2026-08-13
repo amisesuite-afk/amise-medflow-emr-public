@@ -1843,29 +1843,57 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'patient_education' && <PatientEducationTab />}
         {topSection === 'procedures'    && (authLoading || hasRole(userRole, 'doctor'))        && <ProceduresTab />}
         {(topSection === 'summary' || topSection === 'finaldoc') && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 14px 2px', flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={() => void editEncounter()}
-              disabled={reopening}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                padding: '4px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-                cursor: reopening ? 'wait' : 'pointer', border: '1px solid #334155',
-                background: 'transparent', color: '#94a3b8', opacity: reopening ? 0.6 : 1,
-              }}
-            >
-              {reopening ? '⏳ Reopening…' : '← Edit encounter'}
-            </button>
-            {encounterStatus === 'closed' && (
-              <span style={{ fontSize: 11, color: '#64748b' }}>
-                🔒 Closed{encounterClosedAt ? ` ${Math.max(0, Math.floor((Date.now() - new Date(encounterClosedAt).getTime()) / 86_400_000))}d ago — editable for ${Math.max(0, 7 - Math.floor((Date.now() - new Date(encounterClosedAt).getTime()) / 86_400_000))} more day(s)` : ''}
-              </span>
-            )}
-            {reopenError && (
-              <span style={{ fontSize: 11, color: '#f87171', fontWeight: 600 }}>⚠ {reopenError}</span>
-            )}
-          </div>
+          encounterStatus === 'closed' ? (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
+              margin: '8px 14px', padding: '12px 16px', borderRadius: 10,
+              background: '#422006', border: '2px solid #b45309',
+            }}>
+              <span style={{ fontSize: 20 }}>🔒</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: '#fbbf24' }}>This encounter is CLOSED — read-only</span>
+                <span style={{ fontSize: 12, color: '#fcd34d' }}>
+                  {encounterClosedAt
+                    ? `Closed ${Math.max(0, Math.floor((Date.now() - new Date(encounterClosedAt).getTime()) / 86_400_000))} day(s) ago — reopen within ${Math.max(0, 7 - Math.floor((Date.now() - new Date(encounterClosedAt).getTime()) / 86_400_000))} more day(s) to correct it`
+                    : 'Reopen to make corrections'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => void editEncounter()}
+                disabled={reopening}
+                style={{
+                  marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '9px 20px', borderRadius: 8, fontSize: 13, fontWeight: 800,
+                  cursor: reopening ? 'wait' : 'pointer', border: 'none',
+                  background: reopening ? '#78350f' : '#f59e0b', color: '#1c1917',
+                  opacity: reopening ? 0.7 : 1,
+                }}
+              >
+                {reopening ? '⏳ Reopening…' : '🔓 Reopen for Editing'}
+              </button>
+              {reopenError && (
+                <div style={{ flexBasis: '100%', fontSize: 12.5, color: '#fca5a5', fontWeight: 700, background: '#450a0a', border: '1px solid #7f1d1d', borderRadius: 6, padding: '6px 10px' }}>
+                  ⚠ {reopenError}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 14px 2px' }}>
+              <button
+                type="button"
+                onClick={() => void editEncounter()}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '5px 16px', borderRadius: 6, fontSize: 12.5, fontWeight: 700,
+                  cursor: 'pointer', border: '1px solid #475569',
+                  background: '#1e293b', color: '#cbd5e1',
+                }}
+              >
+                ← Edit encounter
+              </button>
+            </div>
+          )
         )}
         {topSection === 'summary'        && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'outpatient' && <SummaryTab />}

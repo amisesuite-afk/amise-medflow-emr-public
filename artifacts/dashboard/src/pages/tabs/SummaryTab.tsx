@@ -861,6 +861,12 @@ function DirectExportPanel() {
       if (typeof ev.data !== 'object' || ev.data === null) return;
       const msg = ev.data as Record<string, unknown>;
 
+      // Closed encounters are read-only everywhere on this screen, not just
+      // in the Discharge tab — block every mutating message from the preview
+      // iframe (inline assessment edit, plan checkbox toggles, section edit).
+      const MUTATING_TYPES = new Set(['EDIT_START', 'EDIT_ASSESSMENT', 'PLAN_SECTION_EDIT', 'PLAN_CB']);
+      if (ctxRef.current.encounterStatus === 'closed' && MUTATING_TYPES.has(msg.type as string)) return;
+
       // ── Inline assessment editing ─────────────────────────────────────
       if (msg.type === 'EDIT_START') {
         editingRef.current = true;
@@ -1163,21 +1169,26 @@ function DirectExportPanel() {
       {/* Referral extras */}
       {docType === 'referral' && (
         <div style={{ display: 'grid', gap: 8 }}>
+          {locked && (
+            <div style={{ fontSize: 11.5, color: '#92400e', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: 6, padding: '5px 10px' }}>
+              🔒 This encounter is closed and read-only. Use ← Edit encounter above to reopen it.
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <button type="button" onClick={() => void handleAiFill()} disabled={aiFilling}
-              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px', borderRadius: 7, border: 'none', background: '#7c3aed', color: '#fff', fontSize: 12, fontWeight: 700, cursor: aiFilling ? 'wait' : 'pointer', opacity: aiFilling ? 0.7 : 1 }}>
+            <button type="button" onClick={() => void handleAiFill()} disabled={aiFilling || locked}
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px', borderRadius: 7, border: 'none', background: '#7c3aed', color: '#fff', fontSize: 12, fontWeight: 700, cursor: (aiFilling || locked) ? 'wait' : 'pointer', opacity: (aiFilling || locked) ? 0.7 : 1 }}>
               {aiFilling ? '⏳ Filling…' : '✨ AI Fill reason'}
             </button>
           </div>
           {aiError && <div style={{ fontSize: 11, color: '#dc2626' }}>{aiError}</div>}
           <div className="fld">
             <label style={{ fontSize: 12 }}>Refer to (name / department)</label>
-            <input type="text" value={referTo} onChange={e => setReferTo(e.target.value)}
+            <input type="text" value={referTo} onChange={e => setReferTo(e.target.value)} readOnly={locked}
               placeholder="e.g. Dr Smith, Gastroenterology, OKEU" style={{ fontSize: 12 }} />
           </div>
           <div className="fld">
             <label style={{ fontSize: 12 }}>Reason for referral / clinical question</label>
-            <textarea value={referNotes} onChange={e => setReferNotes(e.target.value)}
+            <textarea value={referNotes} onChange={e => setReferNotes(e.target.value)} readOnly={locked}
               placeholder="e.g. For further evaluation and management of suspected…" style={{ fontSize: 12, minHeight: 70 }} />
           </div>
         </div>
