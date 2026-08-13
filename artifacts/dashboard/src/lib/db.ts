@@ -726,6 +726,36 @@ export async function getLatestOpenEncounter(
   return { encounterId: (data as { id: string } | null)?.id ?? null, error: null };
 }
 
+// ─── getLatestEncounter ────────────────────────────────────────────────────────
+
+/** Most recent encounter for a patient regardless of status (open, in_progress,
+ *  or closed) — unlike getLatestOpenEncounter, this is what patient re-selection
+ *  should use so a closed-but-recent encounter is resumed/viewed instead of
+ *  silently orphaned (encounterId left null → every autosave effect becomes a
+ *  no-op and further documentation looks like it "didn't save"). */
+export async function getLatestEncounter(
+  patient_id: string,
+): Promise<{ encounterId: string | null; status: string | null; closedAt: string | null; error: string | null }> {
+  if (!supabase) return { encounterId: null, status: null, closedAt: null, error: notConfigured('getLatestEncounter') };
+
+  const { data, error } = await supabase
+    .from('encounters')
+    .select('id, status, closed_at')
+    .eq('patient_id', patient_id)
+    .in('status', ['open', 'in_progress', 'closed'])
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[db] getLatestEncounter:', error);
+    return { encounterId: null, status: null, closedAt: null, error: error.message };
+  }
+
+  const row = data as { id: string; status: string; closed_at: string | null } | null;
+  return { encounterId: row?.id ?? null, status: row?.status ?? null, closedAt: row?.closed_at ?? null, error: null };
+}
+
 // ─── getLatestClosedEncounter ─────────────────────────────────────────────────
 
 export interface VitalSnapshot {

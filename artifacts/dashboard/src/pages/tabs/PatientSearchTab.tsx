@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useToast } from '@/components/ToastProvider';
-import { listPatients, listPatientsBySite, getLatestOpenEncounter, getLatestAppointmentType, getLatestClosedEncounter, loadPMH, loadEncounterData, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
+import { listPatients, listPatientsBySite, getLatestEncounter, getLatestAppointmentType, getLatestClosedEncounter, loadPMH, loadEncounterData, getQuestionnaireIntake, type PatientListRow, type QuestionnaireIntakeData } from '@/lib/db';
 import { SITE_LABELS, type SiteCode } from '@/lib/supabase';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
@@ -139,7 +139,7 @@ export default function PatientSearchTab() {
 
   const {
     setPatientName, setAge, setSex, setDob, setPhone,
-    setPatientId, setEncounterId, setComorbidities, clearPatient,
+    setPatientId, setEncounterId, setEncounterStatus, setEncounterClosedAt, setComorbidities, clearPatient,
     setAssessment, setDifferentials, setIcdCodes, setPlan,
     setAllergies, setMedications, setPatientPhoto,
     setSurgicalHistory, setSurgicalNotes, setToxicHabits,
@@ -324,7 +324,7 @@ export default function PatientSearchTab() {
 
     const [pmhResult, encResult] = await Promise.all([
       loadPMH(p.id),
-      getLatestOpenEncounter(p.id),
+      getLatestEncounter(p.id),
     ]);
 
     if (pmhResult.error) {
@@ -336,8 +336,12 @@ export default function PatientSearchTab() {
     if (encResult.error) {
       showToast(`Loaded patient, but could not fetch encounter: ${encResult.error}`, 'error');
       setEncounterId(null);
+      setEncounterStatus(null);
+      setEncounterClosedAt(null);
     } else {
       setEncounterId(encResult.encounterId);
+      setEncounterStatus(encResult.status);
+      setEncounterClosedAt(encResult.closedAt);
       const pmhSuffix = pmhResult.conditions.length > 0
         ? ` · ${pmhResult.conditions.length} PMH condition${pmhResult.conditions.length !== 1 ? 's' : ''} loaded`
         : '';
@@ -379,9 +383,16 @@ export default function PatientSearchTab() {
             if (typeof ip.mrNumber === 'string') setMrNumber(ip.mrNumber);
           }
         }
-        showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
-        const apptType = await getLatestAppointmentType(p.id);
-        routeByAppointmentType(apptType);
+        if (encResult.status === 'closed') {
+          // Land on the summary screen so the reopen banner is immediately visible,
+          // rather than dropping into a blank triage view with the data invisible.
+          showToast(`Loaded: ${p.full_name ?? 'patient'} — last encounter is closed${pmhSuffix}. Reopen to edit.`, 'info');
+          setTopSection('finaldoc');
+        } else {
+          showToast(`Loaded: ${p.full_name ?? 'patient'} — encounter open${pmhSuffix}.`, 'success');
+          const apptType = await getLatestAppointmentType(p.id);
+          routeByAppointmentType(apptType);
+        }
       } else {
         showToast(`Loaded: ${p.full_name ?? 'patient'} — no open encounter${pmhSuffix}.`, 'info');
         const apptType = await getLatestAppointmentType(p.id);
