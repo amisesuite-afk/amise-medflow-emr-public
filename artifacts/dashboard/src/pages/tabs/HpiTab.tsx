@@ -21,6 +21,7 @@ import {
 import type { Feature } from '@workspace/pane-engine';
 import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
+import { filterNewInvestigations } from '@/lib/investigation-merge';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -988,8 +989,7 @@ export default function HpiTab() {
     const labItems     = sorted.filter(inv => !isImagingInvestigation(inv.label));
     const imagingItems = sorted.filter(inv => isImagingInvestigation(inv.label));
 
-    const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
-    const toAdd = labItems.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
+    const toAdd = filterNewInvestigations(labItems.map(inv => inv.label), orderedInvestigations);
     if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
 
     const newImaging = imagingItems

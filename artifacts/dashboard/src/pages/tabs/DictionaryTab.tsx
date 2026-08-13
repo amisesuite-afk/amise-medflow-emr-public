@@ -4,6 +4,7 @@ import IcdCodeBadge from '@/components/IcdCode';
 import { ManagementPanel } from '@/components/ManagementPanel';
 import { useAppContext } from '@/context/AppContext';
 import { getMatrixByName } from '@/lib/cc-matrices';
+import { filterNewInvestigations } from '@/lib/investigation-merge';
 
 const SPECIALTY_LABELS: Record<string, string> = {
   general_surgery: 'General Surgery',
@@ -68,10 +69,7 @@ export default function DictionaryTab() {
         const sorted = [...protocol.investigations].sort(
           (a, b) => urgencyRank[a.urgency] - urgencyRank[b.urgency],
         );
-        const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
-        const toAdd = sorted
-          .map(inv => inv.label)
-          .filter(label => !existing.has(label.toLowerCase().trim()));
+        const toAdd = filterNewInvestigations(sorted.map(inv => inv.label), orderedInvestigations);
         if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
       }
     }

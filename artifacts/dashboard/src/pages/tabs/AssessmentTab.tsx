@@ -13,6 +13,7 @@ import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getProtocol } from '@workspace/pane-engine';
+import { filterNewInvestigations } from '@/lib/investigation-merge';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -584,8 +585,7 @@ export default function AssessmentTab() {
       (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
     );
     const current = invRef.current;
-    const existing = new Set(current.map((s: string) => s.toLowerCase().trim()));
-    const toAdd = sorted.map(inv => inv.label).filter(l => !existing.has(l.toLowerCase().trim()));
+    const toAdd = filterNewInvestigations(sorted.map(inv => inv.label), current);
     if (toAdd.length) setOrderedInvestigations([...toAdd, ...current]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paneTop.map(r => `${r.disease.id}:${r.probability.toFixed(2)}`).join(',')]);

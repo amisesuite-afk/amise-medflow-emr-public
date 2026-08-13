@@ -5,6 +5,7 @@ import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
 import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, topDiagnoses, isConverged, getProtocol } from '@workspace/pane-engine';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
+import { filterNewInvestigations } from '@/lib/investigation-merge';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -237,8 +238,7 @@ export default function ChiefComplaintStrip() {
       const labItems  = sorted.filter(inv => !isImagingInvestigation(inv.label));
       const imagingItems = sorted.filter(inv => isImagingInvestigation(inv.label));
 
-      const existing2 = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
-      const toAdd = labItems.map(inv => inv.label).filter(l => !existing2.has(l.toLowerCase().trim()));
+      const toAdd = filterNewInvestigations(labItems.map(inv => inv.label), orderedInvestigations);
       if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
 
       const newImaging = imagingItems
