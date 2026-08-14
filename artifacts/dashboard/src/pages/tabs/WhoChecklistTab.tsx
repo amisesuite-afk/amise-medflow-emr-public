@@ -96,6 +96,14 @@ export default function WhoChecklistTab() {
     endoscopy_col:  'Colonoscopy',
     day_of_surgery: '',
   };
+  // Working diagnosis → procedure name, for unambiguous cases only — same set
+  // and same names as SurgicalConsentTab's PROCEDURE_TEMPLATES, kept in sync
+  // so the two documents don't disagree on what the operation is called.
+  const DISEASE_ID_TO_PROC_NAME: Record<string, string> = {
+    cholecystitis:   'Laparoscopic cholecystectomy',
+    appendicitis:    'Appendicectomy (laparoscopic)',
+    inguinal_hernia: 'Inguinal hernia repair',
+  };
   const todayEct = new Date().toLocaleDateString('en-CA', { timeZone: 'America/St_Lucia' }); // YYYY-MM-DD
 
   // Auto-populate whoProc on first render or when key fields are empty
@@ -107,7 +115,8 @@ export default function WhoChecklistTab() {
   // Auto-fill empty fields from context
   React.useEffect(() => {
     ctx.setWhoProc(p => {
-      const autoName = p.procedureName || ctx.procedures?.split('\n')[0]?.trim() || (ctx.visitType ? (VISIT_TYPE_LABELS[ctx.visitType] || '') : '');
+      const dxName = ctx.workingDiagnosis?.diseaseId ? DISEASE_ID_TO_PROC_NAME[ctx.workingDiagnosis.diseaseId] : undefined;
+      const autoName = p.procedureName || ctx.procedures?.split('\n')[0]?.trim() || dxName || (ctx.visitType ? (VISIT_TYPE_LABELS[ctx.visitType] || '') : '');
       const autoDate = p.procedureDate || todayEct;
       if (p.procedureName !== autoName || p.procedureDate !== autoDate) {
         return { ...p, procedureName: autoName, procedureDate: autoDate };
@@ -115,7 +124,7 @@ export default function WhoChecklistTab() {
       return p;
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ctx.visitType, ctx.procedures]);
+  }, [ctx.visitType, ctx.procedures, ctx.workingDiagnosis?.diseaseId]);
   const [activePhase, setActivePhase] = useState<Phase>('signin');
   const [signerInputs, setSignerInputs] = useState<Record<Phase, string>>({ signin: '', timeout: '', signout: '' });
 

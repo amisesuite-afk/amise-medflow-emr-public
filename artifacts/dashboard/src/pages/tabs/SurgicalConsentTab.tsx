@@ -279,6 +279,16 @@ const VISIT_TYPE_TO_TEMPLATE: Record<string, string> = {
   breast:         'mastectomy',
 };
 
+// Working diagnosis → consent template, for the cases where the diagnosis
+// unambiguously implies one procedure. Diagnoses whose management genuinely
+// branches (e.g. diverticulitis — usually conservative, only Hinchey III/IV
+// needs resection) are deliberately left out rather than guessed at.
+const DISEASE_ID_TO_TEMPLATE: Record<string, string> = {
+  cholecystitis:   'lap_chole',
+  appendicitis:    'appendicectomy',
+  inguinal_hernia: 'hernia_repair',
+};
+
 function procedureRisks(procedure: string): string[] {
   const p = procedure.toLowerCase();
   for (const t of PROCEDURE_TEMPLATES) {
@@ -475,11 +485,17 @@ export default function SurgicalConsentTab() {
 
   const seededRef = useRef(false);
 
-  // Auto-seed from visitType first, then fall back to plan/assessment text
+  // Auto-seed from the working diagnosis first (most specific signal — reflects
+  // what's actually been confirmed, not just the visit-type label set at
+  // triage), then visitType, then fall back to plan/assessment text.
   useEffect(() => {
     if (seededRef.current || procedure) return;
+    const dxTemplateId = ctx.workingDiagnosis?.diseaseId
+      ? DISEASE_ID_TO_TEMPLATE[ctx.workingDiagnosis.diseaseId]
+      : undefined;
     const vtTemplateId = VISIT_TYPE_TO_TEMPLATE[visitType ?? ''];
-    const tmpl = PROCEDURE_TEMPLATES.find(t => t.id === vtTemplateId);
+    const tmpl = PROCEDURE_TEMPLATES.find(t => t.id === dxTemplateId) ??
+      PROCEDURE_TEMPLATES.find(t => t.id === vtTemplateId);
     if (tmpl) {
       seededRef.current = true;
       setProcedure(tmpl.procedure);
@@ -492,7 +508,7 @@ export default function SurgicalConsentTab() {
     const src = plan || assessment || '';
     const m = src.match(/(?:plan(?:ned)?(?:\s+(?:procedure|operation|surgery))?|for|procedure)[:\s–-]+([^\n.;,]{6,80})/i);
     if (m) { seededRef.current = true; setProcedure(m[1].trim()); }
-  }, [visitType, plan, assessment, procedure]);
+  }, [ctx.workingDiagnosis?.diseaseId, visitType, plan, assessment, procedure]);
 
   function applyTemplate(t: ProcedureTemplate) {
     setProcedure(t.procedure); setAnaesthesia(t.anaesthesia); setAlternatives(t.alternatives);

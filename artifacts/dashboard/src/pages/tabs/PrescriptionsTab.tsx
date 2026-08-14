@@ -137,7 +137,7 @@ function ectDate(): string {
   return new Date().toLocaleDateString('en-GB', { timeZone: 'America/St_Lucia', day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-// ── Button styles (match FinalDocTab) ────────────────────────────────────────
+// ── Button styles ──────────────────────────────────────────────────────────
 
 const BTN: React.CSSProperties = {
   padding: '6px 13px', borderRadius: 7, fontSize: 12, fontWeight: 600,

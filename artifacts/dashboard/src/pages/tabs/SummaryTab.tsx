@@ -1024,12 +1024,15 @@ function DirectExportPanel() {
   // the same clinical protocol data (lib/pane-engine) that drives the working
   // diagnosis's posterior probability and the Management panel, so it never
   // needs a network round-trip and always matches the protocol on file.
-  function handleProtocolFill() {
-    setProtocolFillMsg('');
-    const protocol: ManagementProtocol | null =
-      (ctx.workingDiagnosis?.diseaseId ? getProtocol(ctx.workingDiagnosis.diseaseId) : null) ??
+  function resolveProtocol(): ManagementProtocol | null {
+    return (ctx.workingDiagnosis?.diseaseId ? getProtocol(ctx.workingDiagnosis.diseaseId) : null) ??
       (ctx.workingDiagnosis?.icdCode ? getProtocolByIcd(ctx.workingDiagnosis.icdCode) : null) ??
       (ctx.icdCodes[0] ? getProtocolByIcd(ctx.icdCodes[0]) : null);
+  }
+
+  function handleProtocolFill() {
+    setProtocolFillMsg('');
+    const protocol = resolveProtocol();
 
     if (!protocol) {
       setProtocolFillMsg('No protocol match for the current working diagnosis — set an ICD code or confirm a diagnosis first.');
@@ -1046,6 +1049,29 @@ function DirectExportPanel() {
       .map(m => `${m.drugName} ${m.dose} ${m.route}, ${m.frequency}${m.duration ? ` for ${m.duration}` : ''} — ${m.indication}`);
     const instructionLines = [...dischargeMeds, ...protocol.keyPoints];
     if (instructionLines.length) setDischargeNotes(instructionLines.join('\n'));
+
+    setProtocolFillMsg(`Filled from protocol: ${protocol.label}`);
+  }
+
+  // protocol.referral (e.g. "Surgical team — same day admission.") previously
+  // only reached the discharge tab's follow-up text via handleProtocolFill —
+  // it never populated the actual referral fields this doc type is for.
+  function handleReferralProtocolFill() {
+    setProtocolFillMsg('');
+    const protocol = resolveProtocol();
+
+    if (!protocol) {
+      setProtocolFillMsg('No protocol match for the current working diagnosis — set an ICD code or confirm a diagnosis first.');
+      return;
+    }
+
+    if (protocol.referral) setReferTo(protocol.referral);
+
+    const justification = [
+      `Working diagnosis: ${protocol.label}${ctx.icdCodes[0] ? ` (${ctx.icdCodes[0]})` : ''}`,
+      ...protocol.redFlags,
+    ].join('\n');
+    setReferNotes(justification);
 
     setProtocolFillMsg(`Filled from protocol: ${protocol.label}`);
   }
@@ -1174,13 +1200,19 @@ function DirectExportPanel() {
               🔒 This encounter is closed and read-only. Use ← Edit encounter above to reopen it.
             </div>
           )}
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
+            <button type="button" onClick={handleReferralProtocolFill} disabled={locked}
+              title="Deterministic fill from the clinical protocol matched to the working diagnosis — no AI, no network call"
+              style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px', borderRadius: 7, border: '1px solid #0d9488', background: '#fff', color: '#0d9488', fontSize: 12, fontWeight: 700, cursor: locked ? 'not-allowed' : 'pointer', opacity: locked ? 0.6 : 1 }}>
+              🧮 Protocol Fill
+            </button>
             <button type="button" onClick={() => void handleAiFill()} disabled={aiFilling || locked}
               style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px', borderRadius: 7, border: 'none', background: '#7c3aed', color: '#fff', fontSize: 12, fontWeight: 700, cursor: (aiFilling || locked) ? 'wait' : 'pointer', opacity: (aiFilling || locked) ? 0.7 : 1 }}>
               {aiFilling ? '⏳ Filling…' : '✨ AI Fill reason'}
             </button>
           </div>
           {aiError && <div style={{ fontSize: 11, color: '#dc2626' }}>{aiError}</div>}
+          {protocolFillMsg && <div style={{ fontSize: 11, color: protocolFillMsg.startsWith('No protocol') ? '#dc2626' : '#0d9488' }}>{protocolFillMsg}</div>}
           <div className="fld">
             <label style={{ fontSize: 12 }}>Refer to (name / department)</label>
             <input type="text" value={referTo} onChange={e => setReferTo(e.target.value)} readOnly={locked}

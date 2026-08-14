@@ -222,15 +222,23 @@ const PREP_GROUPS = [...new Set(PREP_ITEMS.map(i => i.group))];
 export default function PerioperativeTab() {
   const ctx = useAppContext();
 
-  // ── Section 1: Antibiotic prophylaxis — shared via context, auto-derived from visit type
+  // ── Section 1: Antibiotic prophylaxis — shared via context, auto-derived from
+  // the working diagnosis first (reflects what's actually confirmed), then
+  // visit type as a fallback for cases the diagnosis doesn't map cleanly to.
   const VISIT_TYPE_TO_PROC: Record<string, string> = {
     ercp:           'ercp_therapeutic',
     endoscopy_ogd:  'ogd',
     endoscopy_col:  'colonoscopy',
     day_of_surgery: '',
   };
+  const DISEASE_ID_TO_PROC: Record<string, string> = {
+    cholecystitis:   'lap_chole',
+    appendicitis:    'appendicectomy',
+    inguinal_hernia: 'hernia_inguinal',
+  };
 
-  const derivedProcId = ctx.visitType ? (VISIT_TYPE_TO_PROC[ctx.visitType] ?? '') : '';
+  const dxProcId = ctx.workingDiagnosis?.diseaseId ? DISEASE_ID_TO_PROC[ctx.workingDiagnosis.diseaseId] : undefined;
+  const derivedProcId = dxProcId ?? (ctx.visitType ? (VISIT_TYPE_TO_PROC[ctx.visitType] ?? '') : '');
   const selectedProc = ctx.periopProcId || derivedProcId;
   const setSelectedProc = (id: string) => ctx.setPeriopProcId(id);
   const proc = PROCEDURES.find(p => p.id === selectedProc);

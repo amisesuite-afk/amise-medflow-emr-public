@@ -239,11 +239,39 @@ function splitLabel(label: string): { code: string; desc: string } {
 }
 
 function DiagnosisPicker() {
-  const { icdCodes, setIcdCodes, assessment, setAssessment, setWorkingDiagnosis } = useAppContext();
+  const { icdCodes, setIcdCodes, assessment, setAssessment, setWorkingDiagnosis, paneTop } = useAppContext();
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
+  const [dismissedDrift, setDismissedDrift] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // The ICD code only ever gets set once (pathognomonic match, or manually here)
+  // and then never re-checked — if the differential moves on afterward, CPT
+  // suggestions and protocol lookups silently keep using the stale code. This
+  // never changes the code on its own; it only offers to, on an explicit click.
+  const driftCandidate = useMemo(() => {
+    if (!icdCodes.length) return null;
+    const leader = paneTop[0];
+    if (!leader || leader.probability < 0.4) return null;
+    const protocol = getProtocol(leader.disease.id);
+    if (!protocol?.icd10Prefixes.length) return null;
+    const currentCode = splitLabel(icdCodes[0]).code.trim();
+    const stillMatches = protocol.icd10Prefixes.some(prefix => currentCode.startsWith(prefix));
+    if (stillMatches) return null;
+    return { diseaseId: leader.disease.id, label: protocol.label, icdCode: protocol.icd10Prefixes[0] };
+  }, [icdCodes, paneTop]);
+
+  function acceptDrift() {
+    if (!driftCandidate) return;
+    setIcdCodes([`${driftCandidate.icdCode} — ${driftCandidate.label}`, ...icdCodes.slice(1)]);
+    setWorkingDiagnosis({
+      diseaseId: driftCandidate.diseaseId, icdCode: driftCandidate.icdCode,
+      confidence: paneTop[0]?.probability ?? 1, source: 'manual_icd', locked: true,
+      diseaseLabel: driftCandidate.label,
+    });
+    setDismissedDrift(null);
+  }
 
   const filtered: IcdCode[] = query.trim().length < 2 ? [] :
     ICD_CODES.filter(c =>
@@ -289,6 +317,28 @@ function DiagnosisPicker() {
 
   return (
     <div ref={containerRef} style={{ position: 'relative' }}>
+
+      {/* ── Working diagnosis drift prompt ── */}
+      {driftCandidate && dismissedDrift !== driftCandidate.diseaseId && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+          padding: '8px 12px', marginBottom: 10, borderRadius: 8,
+          background: '#fef3c7', border: '1px solid #fde68a',
+        }}>
+          <span style={{ fontSize: 12, color: '#92400e', flex: 1, minWidth: 200 }}>
+            ⚠ The differential has shifted toward <strong>{driftCandidate.label}</strong>, which doesn't
+            match the recorded ICD code. Update it?
+          </span>
+          <button type="button" onClick={acceptDrift}
+            style={{ padding: '4px 12px', borderRadius: 6, fontSize: 11.5, fontWeight: 700, border: 'none', background: '#b45309', color: '#fff', cursor: 'pointer' }}>
+            Update to {driftCandidate.icdCode}
+          </button>
+          <button type="button" onClick={() => setDismissedDrift(driftCandidate.diseaseId)}
+            style={{ padding: '4px 10px', borderRadius: 6, fontSize: 11.5, fontWeight: 600, border: '1px solid #d97706', background: 'transparent', color: '#92400e', cursor: 'pointer' }}>
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {/* ── Selected diagnoses ── */}
       {icdCodes.length > 0 && (
