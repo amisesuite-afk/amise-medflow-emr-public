@@ -13,7 +13,7 @@ import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
 import { computeRankedDifferentials } from '@/lib/symptom-inference';
 import { getProtocol } from '@workspace/pane-engine';
-import { filterNewInvestigations } from '@/lib/investigation-merge';
+import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
 
 // ── Differential prompts with common signs ────────────────────────────────────
 
@@ -581,11 +581,13 @@ export default function AssessmentTab() {
         }
       }
     }
-    const sorted = [...byLabel.values()].sort(
-      (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
-    );
+    // Only auto-populate essential (stat/urgent) tests — routine ones are
+    // surfaced as tap-to-add suggestions in InvestigationsTab instead, so the
+    // ordered list doesn't accumulate every tier from every differential in play.
+    const { essential } = splitEssentialSecondary([...byLabel.values()]);
+    essential.sort((a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2));
     const current = invRef.current;
-    const toAdd = filterNewInvestigations(sorted.map(inv => inv.label), current);
+    const toAdd = filterNewInvestigations(essential.map(inv => inv.label), current);
     if (toAdd.length) setOrderedInvestigations([...toAdd, ...current]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paneTop.map(r => `${r.disease.id}:${r.probability.toFixed(2)}`).join(',')]);

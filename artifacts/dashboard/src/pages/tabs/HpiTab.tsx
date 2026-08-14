@@ -21,7 +21,7 @@ import {
 import type { Feature } from '@workspace/pane-engine';
 import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
-import { filterNewInvestigations } from '@/lib/investigation-merge';
+import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
 
 interface CCEntry { complaint: string; answers: Record<string, string> }
 
@@ -981,7 +981,10 @@ export default function HpiTab() {
         }
       }
     }
-    const sorted = [...byLabel.values()].sort(
+    // Only auto-populate essential (stat/urgent) tests — routine ones would
+    // otherwise pile up as the differential shifts across an HPI build.
+    const { essential } = splitEssentialSecondary([...byLabel.values()]);
+    const sorted = essential.sort(
       (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
     );
 

@@ -5,7 +5,7 @@ import { SYMPTOM_BRANCHES } from '@/lib/symptom-branches';
 import { extractFeaturesFromSocrates } from '@/lib/socrates-to-features';
 import { DISEASES, FEATURES, applyModifiers, initPaneState, updatePosterior, topDiagnoses, isConverged, getProtocol } from '@workspace/pane-engine';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
-import { filterNewInvestigations } from '@/lib/investigation-merge';
+import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -230,7 +230,10 @@ export default function ChiefComplaintStrip() {
           }
         }
       }
-      const sorted = [...byLabel.values()].sort(
+      // Only auto-populate essential (stat/urgent) tests — routine ones would
+      // otherwise pile up as the differential shifts through SOCRATES answers.
+      const { essential } = splitEssentialSecondary([...byLabel.values()]);
+      const sorted = essential.sort(
         (a, b) => (urgencyRank[a.urgency] ?? 2) - (urgencyRank[b.urgency] ?? 2),
       );
 

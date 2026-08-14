@@ -8,7 +8,7 @@ import CptPicker from '@/components/CptPicker';
 import { getApiOrigin } from '@/lib/api-origin';
 import NarrativeInput from '@/components/NarrativeInput';
 import { getMatrix } from '@/lib/cc-matrices';
-import { filterNewInvestigations } from '@/lib/investigation-merge';
+import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
 import type { ManagementProtocol } from '@workspace/pane-engine';
 
 const BMI_NOTES: Record<string, string> = {
@@ -323,8 +323,11 @@ export default function PlanTab() {
 
   function seedInvestigationsFromProtocol(proto: ManagementProtocol) {
     if (!proto.investigations.length) return;
+    // Essential (stat/urgent) only — routine tests are tap-to-add suggestions
+    // in InvestigationsTab, kept out of the auto-populated list everywhere.
+    const { essential } = splitEssentialSecondary(proto.investigations);
     const current = invRef.current;
-    const toAdd = filterNewInvestigations(proto.investigations.map(i => i.label), current);
+    const toAdd = filterNewInvestigations(essential.map(i => i.label), current);
     if (toAdd.length) setOrderedInvestigations([...toAdd, ...current]);
   }
 

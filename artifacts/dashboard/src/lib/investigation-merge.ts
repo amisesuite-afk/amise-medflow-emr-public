@@ -45,3 +45,23 @@ export function filterNewInvestigations(candidates: string[], existing: string[]
   }
   return result;
 }
+
+/**
+ * Splits protocol-suggested investigations into what should auto-populate the
+ * ordered list ('stat'/'urgent' — essential, time-critical regardless of
+ * which candidate diagnosis turns out to be right) vs what should only be
+ * offered as a one-tap suggestion ('routine' — secondary, doesn't need to
+ * land in the record until a clinician actually wants it). Auto-adding every
+ * tier for every differential in play is what turns the ordered list into
+ * noise as the differential shifts during a consultation.
+ */
+export function splitEssentialSecondary<T extends { label: string; urgency: 'stat' | 'urgent' | 'routine' }>(
+  items: T[],
+): { essential: T[]; secondary: T[] } {
+  const essential: T[] = [];
+  const secondary: T[] = [];
+  for (const item of items) {
+    (item.urgency === 'routine' ? secondary : essential).push(item);
+  }
+  return { essential, secondary };
+}
