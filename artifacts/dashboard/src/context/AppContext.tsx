@@ -250,6 +250,10 @@ interface CtxValue {
   patientId: string | null; setPatientId(v: string | null): void;
   /** UUID of the current open encounter, null if none. */
   encounterId: string | null; setEncounterId(v: string | null): void;
+  /** Server-side lifecycle status of the current encounter ('open' | 'in_progress' | 'closed' | 'cancelled' | null if unknown). */
+  encounterStatus: string | null; setEncounterStatus(v: string | null): void;
+  /** When the encounter was closed — drives the reopen-for-edit grace period. Null when open. */
+  encounterClosedAt: string | null; setEncounterClosedAt(v: string | null): void;
 
   patientName: string; setPatientName(v: string): void;
   age: string; setAge(v: string): void;
@@ -522,6 +526,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [patientId, setPatientId] = useState<string | null>(null);
   const [encounterId, setEncounterId] = useState<string | null>(null);
+  const [encounterStatus, setEncounterStatus] = useState<string | null>(null);
+  const [encounterClosedAt, setEncounterClosedAt] = useState<string | null>(null);
 
   const [patientName, setPatientName] = useState('');
   const [age, setAge] = useState('');
@@ -657,6 +663,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     _setSaveStatus('saving');
     try {
       const result = await fn();
+      // Many save helpers resolve normally with an { error } field instead of
+      // throwing — without this check a failed write (bad grant, missing
+      // table, RLS denial) would still report "saved" here.
+      if (result && typeof result === 'object' && 'error' in result && (result as { error: unknown }).error) {
+        throw new Error(String((result as { error: unknown }).error));
+      }
       if (saveEpoch.current !== epoch) return undefined;
       pendingSaves.current--;
       if (pendingSaves.current === 0) {
@@ -976,7 +988,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (encounterTypeTimerRef.current) { clearTimeout(encounterTypeTimerRef.current); encounterTypeTimerRef.current = null; }
     if (inpatientTimerRef.current) { clearTimeout(inpatientTimerRef.current); inpatientTimerRef.current = null; }
     if (clinicalScoresTimerRef.current) { clearTimeout(clinicalScoresTimerRef.current); clinicalScoresTimerRef.current = null; }
-    setPatientId(null); setEncounterId(null);
+    setPatientId(null); setEncounterId(null); setEncounterStatus(null); setEncounterClosedAt(null);
     setPatientName(''); setAge(''); setSex('unknown'); setDob(''); setPhone(''); setEmail(''); setPatientPhoto(''); setExamPhotos([]);
     setDurationDays(''); setPainScore(''); setSymptoms([]); setSymptomDetails({});
     setFreeText(''); setIsPostOp(false); setPostOpDays(''); setPregnancyPossible(false);
@@ -1429,6 +1441,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     currentSite, setCurrentSite,
     patientId, setPatientId,
     encounterId, setEncounterId,
+    encounterStatus, setEncounterStatus,
+    encounterClosedAt, setEncounterClosedAt,
     patientName, setPatientName,
     age, setAge,
     sex, setSex,

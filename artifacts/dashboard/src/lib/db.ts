@@ -579,44 +579,75 @@ export async function savePmhNotes(
   return { error: null };
 }
 
+// ─── upsertDraftNote ────────────────────────────────────────────────────────
+
+/**
+ * Updates the current DRAFT clinical_notes row for this encounter+prefix in
+ * place, or inserts a new one if none exists. Never touches a SIGNED row —
+ * once an encounter closes, its notes are signed by /api/visit/complete and
+ * become permanent history; reopening and editing again (see the reopen-
+ * for-edit grace-period flow) starts a fresh draft that supersedes the
+ * signed version on the next close, rather than the previous delete-then-
+ * insert pattern silently erasing it.
+ */
+async function upsertDraftNote(
+  encounterId: string, patientId: string, noteType: string,
+  prefixLike: string, content: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('upsertDraftNote') };
+
+  const { data: existing, error: findErr } = await supabase
+    .from('clinical_notes')
+    .select('id')
+    .eq('encounter_id', encounterId)
+    .eq('status', 'draft')
+    .like('content', prefixLike)
+    .maybeSingle();
+  if (findErr) { console.error('[db] upsertDraftNote find:', findErr); return { error: findErr.message }; }
+
+  if (existing) {
+    const { error } = await supabase.from('clinical_notes')
+      .update({ content, updated_at: new Date().toISOString() })
+      .eq('id', (existing as { id: string }).id);
+    if (error) { console.error('[db] upsertDraftNote update:', error); return { error: error.message }; }
+    return { error: null };
+  }
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId, patient_id: patientId,
+    note_type: noteType, status: 'draft', content, ai_assisted: false,
+  });
+  if (error) { console.error('[db] upsertDraftNote insert:', error); return { error: error.message }; }
+  return { error: null };
+}
+
 // ─── saveHpiNote ──────────────────────────────────────────────────────────────
 
-/** Removes the HPI row for an encounter (called when the clinician clears all HPI text). */
+/** Clears the current DRAFT HPI text (called when the clinician empties the HPI
+ *  field). Only ever removes a draft row — a signed HPI from a prior, closed
+ *  version of this encounter is permanent history and is never deleted. */
 export async function clearHpiNote(encounterId: string): Promise<{ error: string | null }> {
   if (!supabase) return { error: notConfigured('clearHpiNote') };
   const { error } = await supabase.from('clinical_notes')
     .delete()
     .eq('encounter_id', encounterId)
+    .eq('status', 'draft')
     .like('content', '[HPI]%');
   if (error) { console.error('[db] clearHpiNote:', error); return { error: error.message }; }
   return { error: null };
 }
 
-/** Saves the HPI narrative for an encounter. Delete-then-insert pattern. */
+/** Saves the HPI narrative for an encounter. Updates the current draft in
+ *  place; a signed HPI from before the encounter was closed is left alone. */
 export async function saveHpiNote(
   encounterId: string,
   patientId: string,
   hpiNotes: string,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('saveHpiNote') };
   if (!hpiNotes.trim()) return { error: null };
 
-  const { error: delErr } = await supabase.from('clinical_notes')
-    .delete()
-    .eq('encounter_id', encounterId)
-    .like('content', '[HPI]%');
-  if (delErr) { console.error('[db] saveHpiNote delete:', delErr); return { error: delErr.message }; }
-
-  const { error } = await supabase.from('clinical_notes').insert({
-    encounter_id: encounterId,
-    patient_id:   patientId,
-    note_type:    'consultation',
-    status:       'draft',
-    content:      '[HPI]\n' + hpiNotes,
-    ai_assisted:  false,
-  });
-
-  if (error) { console.error('[db] saveHpiNote:', error); return { error: error.message }; }
+  const { error } = await upsertDraftNote(encounterId, patientId, 'consultation', '[HPI]%', '[HPI]\n' + hpiNotes);
+  if (error) return { error };
   logClinicalSave('autosave_hpi', 'clinical_notes', encounterId, { chars: hpiNotes.length });
   return { error: null };
 }
@@ -724,6 +755,36 @@ export async function getLatestOpenEncounter(
   }
 
   return { encounterId: (data as { id: string } | null)?.id ?? null, error: null };
+}
+
+// ─── getLatestEncounter ────────────────────────────────────────────────────────
+
+/** Most recent encounter for a patient regardless of status (open, in_progress,
+ *  or closed) — unlike getLatestOpenEncounter, this is what patient re-selection
+ *  should use so a closed-but-recent encounter is resumed/viewed instead of
+ *  silently orphaned (encounterId left null → every autosave effect becomes a
+ *  no-op and further documentation looks like it "didn't save"). */
+export async function getLatestEncounter(
+  patient_id: string,
+): Promise<{ encounterId: string | null; status: string | null; closedAt: string | null; error: string | null }> {
+  if (!supabase) return { encounterId: null, status: null, closedAt: null, error: notConfigured('getLatestEncounter') };
+
+  const { data, error } = await supabase
+    .from('encounters')
+    .select('id, status, closed_at')
+    .eq('patient_id', patient_id)
+    .in('status', ['open', 'in_progress', 'closed'])
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[db] getLatestEncounter:', error);
+    return { encounterId: null, status: null, closedAt: null, error: error.message };
+  }
+
+  const row = data as { id: string; status: string; closed_at: string | null } | null;
+  return { encounterId: row?.id ?? null, status: row?.status ?? null, closedAt: row?.closed_at ?? null, error: null };
 }
 
 // ─── getLatestClosedEncounter ─────────────────────────────────────────────────
@@ -1276,17 +1337,15 @@ const EXAM_SYSTEM_LABELS: Record<string, string> = {
 };
 const EXAM_SYSTEM_ORDER = Object.keys(EXAM_SYSTEM_LABELS);
 
-/** Replaces the 'consultation' examination snapshot for this encounter.
- *  Deletes any existing consultation note tagged with the sentinel prefix,
- *  then inserts a fresh serialisation of the chip + free-text findings. */
+/** Saves the examination findings for an encounter. Updates the current draft
+ *  in place; a signed examination from before the encounter was closed is
+ *  left alone. */
 export async function saveExamFindings(
   examFindings: Record<string, string[]>,
   examNotes: Record<string, string>,
   patientId: string,
   encounterId: string,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('saveExamFindings') };
-
   const hasContent =
     Object.values(examFindings).some(arr => arr.length > 0) ||
     Object.values(examNotes).some(s => s.trim());
@@ -1304,22 +1363,8 @@ export async function saveExamFindings(
   }
   const content = '[EXAMINATION_JSON]\n' + JSON.stringify({ examFindings, examNotes });
 
-  // Delete the previous examination snapshot for this encounter (both old text format and JSON format)
-  await supabase.from('clinical_notes')
-    .delete()
-    .eq('encounter_id', encounterId)
-    .like('content', '[EXAMINATION%');
-
-  const { error } = await supabase.from('clinical_notes').insert({
-    encounter_id: encounterId,
-    patient_id:   patientId,
-    note_type:    'consultation',
-    status:       'draft',
-    content,
-    ai_assisted:  false,
-  });
-
-  if (error) { console.error('[db] saveExamFindings:', error); return { error: error.message }; }
+  const { error } = await upsertDraftNote(encounterId, patientId, 'consultation', '[EXAMINATION%', content);
+  if (error) return { error };
   logClinicalSave('autosave_exam', 'clinical_notes', encounterId, { systems: Object.keys(examFindings).filter(k => examFindings[k].length > 0) });
   return { error: null };
 }
@@ -1328,34 +1373,19 @@ export async function saveExamFindings(
 
 const DISCHARGE_PREFIX = '[DISCHARGE_NOTES]';
 
-/** Persists the inpatient discharge note state as a JSON blob in clinical_notes. */
+/** Persists the discharge note state as a JSON blob in clinical_notes. Updates
+ *  the current draft in place; a signed discharge note from before the
+ *  encounter was closed is left alone. */
 export async function saveDischargeNotes(
   encounterId: string,
   patientId: string,
   data: Record<string, unknown>,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('saveDischargeNotes') };
-
-  const { error: delErr } = await supabase.from('clinical_notes')
-    .delete()
-    .eq('encounter_id', encounterId)
-    .like('content', `${DISCHARGE_PREFIX}%`);
-  if (delErr) { console.error('[db] saveDischargeNotes delete:', delErr); return { error: delErr.message }; }
-
-  const { error } = await supabase.from('clinical_notes').insert({
-    encounter_id: encounterId,
-    patient_id:   patientId,
-    note_type:    'discharge',
-    status:       'draft',
-    content:      `${DISCHARGE_PREFIX}\n${JSON.stringify(data)}`,
-    ai_assisted:  false,
-  });
-
-  if (error) { console.error('[db] saveDischargeNotes:', error); return { error: error.message }; }
-  return { error: null };
+  return upsertDraftNote(encounterId, patientId, 'discharge', `${DISCHARGE_PREFIX}%`, `${DISCHARGE_PREFIX}\n${JSON.stringify(data)}`);
 }
 
-/** Loads the discharge note JSON blob for an encounter. */
+/** Loads the most recent discharge note JSON blob for an encounter — the
+ *  current draft if one is being edited, otherwise the latest signed version. */
 export async function loadDischargeNotes(
   encounterId: string,
 ): Promise<{ data: Record<string, unknown> | null; error: string | null }> {
@@ -1366,6 +1396,8 @@ export async function loadDischargeNotes(
     .select('content')
     .eq('encounter_id', encounterId)
     .like('content', `${DISCHARGE_PREFIX}%`)
+    .order('created_at', { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (error) { console.error('[db] loadDischargeNotes:', error); return { data: null, error: error.message }; }
@@ -1484,6 +1516,29 @@ export async function signEncounterNotes(
   }
 }
 
+// ─── reopenEncounter ────────────────────────────────────────────────────────────
+
+/** Reopens a closed encounter for correction via the API server. Safe to call
+ *  unconditionally — it's a no-op success if the encounter isn't closed. The
+ *  server enforces the doctor-only + grace-period rules; a rejection (wrong
+ *  role, grace period expired) comes back as an error string. */
+export async function reopenEncounter(
+  encounterId: string,
+): Promise<{ status: string | null; reopened: boolean; error: string | null }> {
+  const base = getApiOrigin();
+  try {
+    const res = await fetch(`${base}/api/visit/reopen/${encounterId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
+    });
+    const data = await res.json().catch(() => ({})) as { status?: string; reopened?: boolean; error?: string };
+    if (!res.ok) return { status: null, reopened: false, error: data.error ?? `HTTP ${res.status}` };
+    return { status: data.status ?? null, reopened: !!data.reopened, error: null };
+  } catch (e) {
+    return { status: null, reopened: false, error: e instanceof Error ? e.message : 'Reopen request failed' };
+  }
+}
+
 // ─── closeEncounter ───────────────────────────────────────────────────────────
 
 /** Signs all draft notes and marks the encounter closed.
@@ -1585,6 +1640,8 @@ export async function loadEncounterData(
       .select('content')
       .eq('encounter_id', encounterId)
       .like('content', '[HPI]%')
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle(),
     supabase.from('patients')
       .select('pmh_notes, family_history_notes')
@@ -1598,6 +1655,8 @@ export async function loadEncounterData(
       .select('content')
       .eq('encounter_id', encounterId)
       .like('content', '[EXAMINATION_JSON]%')
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle(),
     supabase.from('encounters')
       .select('clinical_scores, extracted_labs')
@@ -1758,7 +1817,8 @@ export async function syncSurgicalHistory(
   if (!supabase) return;
   if (!procedures.length && !notes.trim() && !recentSurgeryDate.trim()) return;
 
-  await supabase.from('surgical_history').delete().eq('patient_id', patientId);
+  const { error: delErr } = await supabase.from('surgical_history').delete().eq('patient_id', patientId);
+  if (delErr) { console.error('[db] syncSurgicalHistory delete:', delErr); throw new Error(delErr.message); }
 
   const rows: Array<Record<string, unknown>> = procedures.map(p => ({
     patient_id: patientId,
@@ -1775,7 +1835,7 @@ export async function syncSurgicalHistory(
 
   if (rows.length) {
     const { error } = await supabase.from('surgical_history').insert(rows);
-    if (error) console.error('[db] syncSurgicalHistory:', error);
+    if (error) { console.error('[db] syncSurgicalHistory:', error); throw new Error(error.message); }
   }
 }
 
@@ -1814,7 +1874,8 @@ export async function syncToxicHabits(
 ): Promise<void> {
   if (!supabase) return;
 
-  await supabase.from('toxic_habits').delete().eq('patient_id', patientId);
+  const { error: delErr } = await supabase.from('toxic_habits').delete().eq('patient_id', patientId);
+  if (delErr) { console.error('[db] syncToxicHabits delete:', delErr); throw new Error(delErr.message); }
 
   if (!habits.length) return;
 
@@ -1826,7 +1887,7 @@ export async function syncToxicHabits(
   }));
 
   const { error } = await supabase.from('toxic_habits').insert(rows);
-  if (error) console.error('[db] syncToxicHabits:', error);
+  if (error) { console.error('[db] syncToxicHabits:', error); throw new Error(error.message); }
 }
 
 export async function loadToxicHabits(
@@ -1875,7 +1936,7 @@ export async function syncRosFindings(
     .from('ros_findings')
     .upsert(rows, { onConflict: 'encounter_id,system_name' });
 
-  if (error) console.error('[db] syncRosFindings:', error);
+  if (error) { console.error('[db] syncRosFindings:', error); throw new Error(error.message); }
 }
 
 export async function loadRosFindings(
@@ -1926,7 +1987,8 @@ export async function syncProcedureData(
 ): Promise<void> {
   if (!supabase) return;
 
-  await supabase.from('operative_notes').delete().eq('encounter_id', encounterId);
+  const { error: delErr } = await supabase.from('operative_notes').delete().eq('encounter_id', encounterId);
+  if (delErr) { console.error('[db] syncProcedureData delete:', delErr); throw new Error(delErr.message); }
 
   const entries = Object.entries(procedureData).filter(([, v]) =>
     v && typeof v === 'object' && Object.keys(v as object).length > 0
@@ -1943,7 +2005,7 @@ export async function syncProcedureData(
   }));
 
   const { error } = await supabase.from('operative_notes').insert(rows);
-  if (error) console.error('[db] syncProcedureData:', error);
+  if (error) { console.error('[db] syncProcedureData:', error); throw new Error(error.message); }
 }
 
 export async function loadProcedureData(
@@ -2031,7 +2093,7 @@ export async function syncTraumaRecord(
     .from('trauma_records')
     .upsert(row, { onConflict: 'encounter_id' });
 
-  if (error) console.error('[db] syncTraumaRecord:', error);
+  if (error) { console.error('[db] syncTraumaRecord:', error); throw new Error(error.message); }
 }
 
 export async function loadTraumaRecord(

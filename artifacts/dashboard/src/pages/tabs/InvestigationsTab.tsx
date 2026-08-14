@@ -10,6 +10,7 @@ import LabInterpretationPanel from '@/components/LabInterpretationPanel';
 import { useToast } from '@/components/ToastProvider';
 import DocumentCapture from '@/components/DocumentCapture';
 import { isImagingInvestigation, parseImagingToRequest, imagingAlreadyRequested } from '@/lib/imaging-utils';
+import { splitEssentialSecondary, isAlreadyOrdered } from '@/lib/investigation-merge';
 
 function filterBySex(lab: string, sex: string): boolean {
   if (lab.includes('(M)') && sex === 'female') return false;
@@ -1005,6 +1006,48 @@ export default function InvestigationsTab() {
                   </button>
                 );
               })}
+            </div>
+          </CollapsibleCard>
+        );
+      })()}
+
+      {/* Routine-tier protocol suggestions — essential (stat/urgent) tests from
+          the matched protocol auto-populate the ordered list; routine ones are
+          offered here instead of being added automatically, so the ordered
+          list doesn't accumulate every tier of every protocol in play. */}
+      {protocol && (() => {
+        const { secondary } = splitEssentialSecondary(protocolInvestigations);
+        const available = secondary.filter(inv => !isAlreadyOrdered(inv.label, orderedInvestigations));
+        if (!available.length) return null;
+        return (
+          <CollapsibleCard title={`Suggested (routine) — ${protocol.label} — ${available.length} available`}>
+            <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>
+              Lower-urgency tests from the matched protocol. Tap to add — not ordered automatically.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {available.map(inv => (
+                <button
+                  key={inv.label}
+                  type="button"
+                  onClick={() => {
+                    if (!orderedInvestigations.includes(inv.label)) {
+                      setOrderedInvestigations([...orderedInvestigations, inv.label]);
+                    }
+                  }}
+                  style={{
+                    padding: '5px 11px',
+                    borderRadius: 999,
+                    border: '1px solid #d1d5db',
+                    background: '#f9fafb',
+                    color: '#374151',
+                    fontSize: 12,
+                    cursor: 'pointer',
+                    fontWeight: 500,
+                  }}
+                >
+                  + {inv.label}
+                </button>
+              ))}
             </div>
           </CollapsibleCard>
         );

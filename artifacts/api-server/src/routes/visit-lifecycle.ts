@@ -192,7 +192,7 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
     // Close encounter
     const { error: closeErr } = await supa
       .from('encounters')
-      .update({ status: 'closed', updated_at: new Date().toISOString() })
+      .update({ status: 'closed', closed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
       .eq('id', encounterId);
 
     if (closeErr) throw closeErr;
@@ -214,6 +214,81 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
     res.json({ encounterId, status: 'closed', planType: resolvedPlanType });
   } catch (err) {
     logger.error({ err }, '[visit/complete] error');
+    res.status(502).json({ error: errStr(err) });
+  }
+});
+
+// POST /api/visit/reopen/:encounterId -- doctor reopens a closed encounter for
+// correction, within a grace window measured from closed_at (default 7 days).
+// A no-op success is returned for encounters that aren't closed — the button
+// that drives this can be clicked unconditionally.
+router.post('/api/visit/reopen/:encounterId', async (req, res) => {
+  if (!(await requireStaffAuth(req, res))) return;
+  const { encounterId } = req.params;
+
+  try {
+    const supa = getSupabaseAdmin();
+
+    const { data: encounter, error: fetchErr } = await supa
+      .from('encounters')
+      .select('id, patient_id, status, closed_at')
+      .eq('id', encounterId)
+      .maybeSingle();
+
+    if (fetchErr || !encounter) {
+      res.status(404).json({ error: 'Encounter not found' });
+      return;
+    }
+
+    if (encounter.status !== 'closed') {
+      res.json({ encounterId, status: encounter.status, reopened: false });
+      return;
+    }
+
+    const graceDays = Number(process.env.ENCOUNTER_REOPEN_GRACE_DAYS ?? 7);
+    if (encounter.closed_at) {
+      const daysSinceClose = (Date.now() - new Date(encounter.closed_at).getTime()) / 86_400_000;
+      if (daysSinceClose > graceDays) {
+        res.status(403).json({
+          error: `This encounter was closed ${Math.floor(daysSinceClose)} days ago and is now permanently locked — the ${graceDays}-day correction window has passed.`,
+        });
+        return;
+      }
+    }
+
+    const userId = await getStaffUserId(req);
+    const { data: profile, error: profileErr } = await supa
+      .from('user_profiles')
+      .select('role')
+      .eq('id', userId ?? '')
+      .maybeSingle();
+
+    if (profileErr || profile?.role !== 'doctor') {
+      res.status(403).json({ error: 'Only the treating doctor can reopen a closed encounter.' });
+      return;
+    }
+
+    const { error: reopenErr } = await supa
+      .from('encounters')
+      .update({ status: 'in_progress', closed_at: null, updated_at: new Date().toISOString() })
+      .eq('id', encounterId);
+
+    if (reopenErr) throw reopenErr;
+
+    await audit({
+      action: 'amend',
+      entityType: 'encounter',
+      entityId: encounterId,
+      payload: { status: 'in_progress', reopened_from: 'closed' },
+    });
+    void logAudit(req, 'amend', 'encounter', encounterId, encounter.patient_id ?? undefined, {
+      action: 'reopen',
+    });
+
+    logger.info({ encounterId }, '[visit/reopen] encounter reopened for correction');
+    res.json({ encounterId, status: 'in_progress', reopened: true });
+  } catch (err) {
+    logger.error({ err }, '[visit/reopen] error');
     res.status(502).json({ error: errStr(err) });
   }
 });

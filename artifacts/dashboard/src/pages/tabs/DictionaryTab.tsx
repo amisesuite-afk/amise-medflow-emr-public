@@ -4,6 +4,7 @@ import IcdCodeBadge from '@/components/IcdCode';
 import { ManagementPanel } from '@/components/ManagementPanel';
 import { useAppContext } from '@/context/AppContext';
 import { getMatrixByName } from '@/lib/cc-matrices';
+import { filterNewInvestigations, splitEssentialSecondary } from '@/lib/investigation-merge';
 
 const SPECIALTY_LABELS: Record<string, string> = {
   general_surgery: 'General Surgery',
@@ -60,18 +61,17 @@ export default function DictionaryTab() {
       setIcdCodes([icd10]);
     }
 
-    // Pre-populate investigations from protocol (stat first, then urgent, then routine).
+    // Pre-populate essential (stat/urgent) investigations from protocol; routine
+    // ones are left as tap-to-add suggestions in InvestigationsTab.
     if (diseaseId) {
       const protocol = getProtocol(diseaseId);
       if (protocol?.investigations.length) {
         const urgencyRank = { stat: 0, urgent: 1, routine: 2 } as const;
-        const sorted = [...protocol.investigations].sort(
+        const { essential } = splitEssentialSecondary(protocol.investigations);
+        const sorted = essential.sort(
           (a, b) => urgencyRank[a.urgency] - urgencyRank[b.urgency],
         );
-        const existing = new Set(orderedInvestigations.map((s: string) => s.toLowerCase().trim()));
-        const toAdd = sorted
-          .map(inv => inv.label)
-          .filter(label => !existing.has(label.toLowerCase().trim()));
+        const toAdd = filterNewInvestigations(sorted.map(inv => inv.label), orderedInvestigations);
         if (toAdd.length) setOrderedInvestigations([...toAdd, ...orderedInvestigations]);
       }
     }

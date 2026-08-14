@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } fro
 import { useAppContext, Section, TopSection, type EncounterType, type VitalsState } from '@/context/AppContext';
 import { getApiOrigin } from '@/lib/api-origin';
 import { staffAuthHeaders } from '@/lib/staff-auth';
+import { reopenEncounter } from '@/lib/db';
 import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { supabase, ROLE_LABELS, SITE_LABELS, SITE_CODES } from '@/lib/supabase';
@@ -337,11 +338,14 @@ export default function HomePage() {
     encounterMode, setEncounterMode,
     encounterType, setEncounterType,
     activeCcKey,
+    workingDiagnosis,
     visitType: ctxVisitType, setVisitType: ctxSetVisitType,
     setIsPostOp, setPostOpDays,
     patientPhoto,
     patientId,
     encounterId,
+    encounterStatus, setEncounterStatus,
+    encounterClosedAt, setEncounterClosedAt,
     saveStatus,
     lastSaveError,
     syncStatus,
@@ -439,15 +443,34 @@ export default function HomePage() {
     setCompleting(true);
     try {
       const authHeaders = await staffAuthHeaders();
-      await fetch(`${API_ORIGIN}/api/visit/complete/${encounterId}`, {
+      const res = await fetch(`${API_ORIGIN}/api/visit/complete/${encounterId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders as Record<string, string> },
         body: JSON.stringify({ description: plan ?? undefined }),
       });
+      if (res.ok) {
+        setEncounterStatus('closed');
+        setEncounterClosedAt(new Date().toISOString());
+      }
     } catch { /* non-blocking — navigate regardless */ }
     setCompleting(false);
     setTopSection('finaldoc');
-  }, [encounterId, plan]);
+  }, [encounterId, plan, setEncounterStatus, setEncounterClosedAt, setTopSection]);
+
+  const [reopening, setReopening] = useState(false);
+  const [reopenError, setReopenError] = useState('');
+
+  const editEncounter = useCallback(async () => {
+    if (!encounterId || encounterStatus !== 'closed') { setTopSection('consultation'); return; }
+    setReopening(true);
+    setReopenError('');
+    const { status, error } = await reopenEncounter(encounterId);
+    setReopening(false);
+    if (error) { setReopenError(error); return; }
+    setEncounterStatus(status);
+    setEncounterClosedAt(null);
+    setTopSection('consultation');
+  }, [encounterId, encounterStatus, setEncounterStatus, setEncounterClosedAt, setTopSection]);
 
   // Collapse sidebar on narrow viewports (tablets/phones)
   useEffect(() => {
@@ -920,6 +943,27 @@ export default function HomePage() {
               <span style={{ fontSize: 10, color: '#cbd5e1', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 7px', whiteSpace: 'nowrap', flexShrink: 0, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {ccLabel}
               </span>
+            )}
+            {/* Working diagnosis — persistent across every consultation tab, not just
+                Assessment/Plan, so it isn't lost while navigating Prescriptions, CPT,
+                Consent, etc. Click jumps back to Assessment to review/change it. */}
+            {workingDiagnosis && (
+              <button
+                type="button"
+                onClick={() => setActiveSection('assessment')}
+                title={`${workingDiagnosis.locked ? 'Confirmed' : 'Provisional'} working diagnosis — click to review in Assessment`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  fontSize: 10, fontWeight: 700, cursor: 'pointer',
+                  color: workingDiagnosis.locked ? '#5eead4' : '#94a3b8',
+                  background: workingDiagnosis.locked ? 'rgba(13,148,136,0.18)' : 'rgba(255,255,255,0.06)',
+                  border: `1px solid ${workingDiagnosis.locked ? 'rgba(13,148,136,0.45)' : 'rgba(255,255,255,0.15)'}`,
+                  borderRadius: 4, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0, maxWidth: 210,
+                  overflow: 'hidden', textOverflow: 'ellipsis',
+                }}
+              >
+                {workingDiagnosis.locked ? '🎯' : '~'} {workingDiagnosis.diseaseLabel || workingDiagnosis.icdCode || 'Working diagnosis'}
+              </button>
             )}
             <span style={{ flex: 1 }} />
             {/* Sync status indicator */}
@@ -1821,20 +1865,57 @@ export default function HomePage() {
         {topSection === 'consultation' && !ambientMode && activeSection === 'patient_education' && <PatientEducationTab />}
         {topSection === 'procedures'    && (authLoading || hasRole(userRole, 'doctor'))        && <ProceduresTab />}
         {(topSection === 'summary' || topSection === 'finaldoc') && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 14px 2px' }}>
-            <button
-              type="button"
-              onClick={() => setTopSection('consultation')}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                padding: '4px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-                cursor: 'pointer', border: '1px solid #334155',
-                background: 'transparent', color: '#94a3b8',
-              }}
-            >
-              ← Edit encounter
-            </button>
-          </div>
+          encounterStatus === 'closed' ? (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap',
+              margin: '8px 14px', padding: '12px 16px', borderRadius: 10,
+              background: '#422006', border: '2px solid #b45309',
+            }}>
+              <span style={{ fontSize: 20 }}>🔒</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{ fontSize: 14, fontWeight: 800, color: '#fbbf24' }}>This encounter is CLOSED — read-only</span>
+                <span style={{ fontSize: 12, color: '#fcd34d' }}>
+                  {encounterClosedAt
+                    ? `Closed ${Math.max(0, Math.floor((Date.now() - new Date(encounterClosedAt).getTime()) / 86_400_000))} day(s) ago — reopen within ${Math.max(0, 7 - Math.floor((Date.now() - new Date(encounterClosedAt).getTime()) / 86_400_000))} more day(s) to correct it`
+                    : 'Reopen to make corrections'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => void editEncounter()}
+                disabled={reopening}
+                style={{
+                  marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6,
+                  padding: '9px 20px', borderRadius: 8, fontSize: 13, fontWeight: 800,
+                  cursor: reopening ? 'wait' : 'pointer', border: 'none',
+                  background: reopening ? '#78350f' : '#f59e0b', color: '#1c1917',
+                  opacity: reopening ? 0.7 : 1,
+                }}
+              >
+                {reopening ? '⏳ Reopening…' : '🔓 Reopen for Editing'}
+              </button>
+              {reopenError && (
+                <div style={{ flexBasis: '100%', fontSize: 12.5, color: '#fca5a5', fontWeight: 700, background: '#450a0a', border: '1px solid #7f1d1d', borderRadius: 6, padding: '6px 10px' }}>
+                  ⚠ {reopenError}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 14px 2px' }}>
+              <button
+                type="button"
+                onClick={() => void editEncounter()}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '5px 16px', borderRadius: 6, fontSize: 12.5, fontWeight: 700,
+                  cursor: 'pointer', border: '1px solid #475569',
+                  background: '#1e293b', color: '#cbd5e1',
+                }}
+              >
+                ← Edit encounter
+              </button>
+            </div>
+          )
         )}
         {topSection === 'summary'        && <SummaryTab />}
         {topSection === 'finaldoc'       && encounterMode === 'outpatient' && <SummaryTab />}

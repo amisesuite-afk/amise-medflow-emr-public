@@ -288,13 +288,18 @@ on `preVisitStatus` + the live `adaptiveTriage()` result. Tabs:
   (doctor+), Progress Notes, Monitoring.
 - **Procedures** (doctor/admin only), **Analytics** (doctor/admin).
 - **Summary** → `SummaryTab.tsx`.
-- **Final Doc / Inpatient** — printable SOAP note (letterhead, patient strip,
-  signature block, print/PDF export, "AI refine") or, in inpatient mode, the
-  `InpatientTab`. Finalizing calls `closeEncounter(encounterId)`.
+- **Final Doc / Inpatient** — outpatient renders the same `SummaryTab.tsx`
+  (printable SOAP note / referral / discharge note, letterhead, patient strip,
+  signature block, print/PDF export, "AI refine" and deterministic "Protocol
+  Fill"); inpatient renders `InpatientTab` instead. Finalizing (the "In
+  progress — Close" header button, `Home.tsx`'s `completeEncounter`) calls
+  `POST /api/visit/complete/:encounterId`.
+  `FinalDocTab.tsx` (referenced in earlier drafts of this manual) was
+  dead code — never imported anywhere — and was removed.
 - **Billing** (front_desk/admin) — Billing + Documents sub-tabs.
 
 **Inpatient toggle**: header pill switches `currentSite='tapion'` and
-`topSection='finaldoc'` → renders `InpatientTab` instead of `FinalDocTab`.
+`topSection='finaldoc'` → renders `InpatientTab` instead of `SummaryTab`.
 
 ### 6.4 Shared Session State (`AppContext.tsx`)
 
@@ -334,10 +339,12 @@ the Final Doc record.
   specialty/institution — same `referredBy` field, two different pickers.
 - `savePatientFull` doesn't persist `quarter` to `patients`.
 - `StubPanel` placeholders remain for other "future" sections beyond Documents.
-- `FinalDocTab`'s "AI refine" (`callAiRefine`) appears to use a **frontend
-  `VITE_ANTHROPIC_API_KEY`** — worth checking against the `MODE`-gate /
-  backend-proxy pattern used everywhere else.
-- `InpatientTab` discharge/close-encounter parity with `FinalDocTab` not
+- ~~`FinalDocTab`'s "AI refine" appears to use a frontend `VITE_ANTHROPIC_API_KEY`~~ —
+  `FinalDocTab.tsx` was dead code (never imported) and has been removed. The
+  live "AI refine" (`SummaryTab.tsx`'s `handleAiRefine`) correctly proxies
+  through the backend (`POST /api/ai/refine`), not a frontend key.
+- `InpatientTab` discharge/close-encounter parity with `SummaryTab`'s outpatient
+  path (`completeEncounter` → `POST /api/visit/complete/:encounterId`) not
   fully verified.
 
 ---
@@ -538,10 +545,11 @@ already depends on all of them.
 - [ ] Unify the two "Referred by" pickers (`ReceptionistView` plain datalist
   vs `IntakeTab` rich dropdown) for consistent UX.
 - [ ] Persist `quarter` from check-in into `patients`.
-- [ ] Audit `FinalDocTab`'s "AI refine" — confirm it doesn't use a
-  client-exposed Anthropic key outside the `MODE`-gated backend pattern.
-- [ ] Confirm `InpatientTab` has discharge/`closeEncounter` parity with
-  `FinalDocTab`.
+- [x] ~~Audit `FinalDocTab`'s "AI refine" for a client-exposed Anthropic key~~ —
+  `FinalDocTab.tsx` was dead code, removed; the live `SummaryTab.tsx` AI
+  refine already proxies through the backend.
+- [ ] Confirm `InpatientTab` has discharge/close-encounter parity with
+  `SummaryTab`'s outpatient `completeEncounter` path.
 
 **Referring doctors directory** (recently added)
 - [x] Seed migration applied (~42 doctors, `provider_type='referring_doctor'`).

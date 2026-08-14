@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { searchMedications } from '@workspace/triage-engine';
+import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import {
   wrapDoc, masthead, metaGrid, sec as docSec, kvTable, bulList, footer, signoff, escH, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
@@ -136,7 +137,7 @@ function ectDate(): string {
   return new Date().toLocaleDateString('en-GB', { timeZone: 'America/St_Lucia', day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-// ── Button styles (match FinalDocTab) ────────────────────────────────────────
+// ── Button styles ──────────────────────────────────────────────────────────
 
 const BTN: React.CSSProperties = {
   padding: '6px 13px', borderRadius: 7, fontSize: 12, fontWeight: 600,
@@ -256,6 +257,24 @@ export default function PrescriptionsTab() {
   const ctx = useAppContext();
   const { profile } = useAuth();
   const { showToast } = useToast();
+
+  // Matched protocol for the working diagnosis (mirrors InvestigationsTab/PlanTab)
+  // — gives the doctor a route to protocol medications without needing Ambient
+  // Consultation, which was previously the only path in.
+  const activeDiseaseId = (ctx.paneConverged && ctx.paneTop[0]?.probability >= 0.85)
+    ? ctx.paneTop[0].disease.id
+    : ctx.workingDiagnosis?.diseaseId ?? null;
+  const activeIcdCode = ctx.icdCodes[0]?.split(' — ')[0]?.trim() ?? ctx.workingDiagnosis?.icdCode ?? null;
+  const protocol = useMemo(
+    () => activeDiseaseId
+      ? getProtocol(activeDiseaseId)
+      : activeIcdCode
+        ? getProtocolByIcd(activeIcdCode)
+        : null,
+    [activeDiseaseId, activeIcdCode],
+  );
+  // Discharge-phase drugs belong on the discharge summary, not the active Rx queue.
+  const protocolMeds = (protocol?.medications ?? []).filter(m => m.phase !== 'discharge');
 
   // Current prescription form
   const [currentItem, setCurrentItem] = useState<PrescriptionItem>(emptyItem());
@@ -637,6 +656,49 @@ export default function PrescriptionsTab() {
           </div>
         </CollapsibleCard>
       )}
+
+      {/* ── Suggested from protocol ── */}
+      {/* Same tap-to-queue pattern the Ambient Consultation panel already has,
+          surfaced here directly so a doctor working the standard tabs — not
+          the ambient/voice flow — still has a route to protocol medications. */}
+      {protocol && protocolMeds.length > 0 && (() => {
+        const queuedNames = new Set(ctx.pendingPrescriptions.map(m => m.drugName.toLowerCase()));
+        const inRxNames = new Set(rxItems.map(r => r.drugName.toLowerCase()));
+        const available = protocolMeds.filter(m => !queuedNames.has(m.drugName.toLowerCase()) && !inRxNames.has(m.drugName.toLowerCase()));
+        if (!available.length) return null;
+        return (
+          <CollapsibleCard title={`Suggested — ${protocol.label}`} badge={available.length} defaultOpen={true}>
+            <p style={{ fontSize: 11, color: '#6B7280', marginBottom: 8 }}>
+              From the matched protocol. Tap to queue for review below — nothing is prescribed until you import it.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {available.map((med, i) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 10, padding: '8px 10px',
+                  background: '#f9fafb', borderRadius: 8, border: '1px solid #e5e7eb',
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{med.drugName}</div>
+                    <div style={{ fontSize: 11, color: '#6B7280', marginTop: 1 }}>
+                      {[med.dose, med.frequency, med.route, med.duration].filter(Boolean).join(' · ')}
+                    </div>
+                    {med.indication && (
+                      <div style={{ fontSize: 10, color: '#9CA3AF', marginTop: 1 }}>Indication: {med.indication}</div>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => ctx.setPendingPrescriptions([...ctx.pendingPrescriptions, med])}
+                    style={{ ...BTN_GHOST, padding: '3px 10px', fontSize: 11 }}
+                  >
+                    + Queue
+                  </button>
+                </div>
+              ))}
+            </div>
+          </CollapsibleCard>
+        );
+      })()}
 
       {/* ── Protocol medications queue ── */}
       {ctx.pendingPrescriptions.length > 0 && (
