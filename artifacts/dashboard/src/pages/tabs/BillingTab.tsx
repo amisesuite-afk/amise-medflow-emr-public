@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import { useAppContext } from '@/context/AppContext';
 import CodingAssistant from '@/components/CodingAssistant';
@@ -90,6 +90,24 @@ const FEE_SCHEDULE: { group: string; items: FeeItem[] }[] = [
     ],
   },
 ];
+
+// Working-diagnosis → fee-schedule item. Only diseases with an unambiguous,
+// evidence-graded procedure match (Tokyo/WSES) are mapped — no guessing at a
+// fee code for diagnoses the schedule doesn't clearly cover.
+const DISEASE_ID_TO_FEE_CODE: Record<string, string> = {
+  cholecystitis: 'S01',    // Laparoscopic cholecystectomy
+  appendicitis: 'S03',     // Laparoscopic appendicectomy
+  inguinal_hernia: 'H01',  // Inguinal hernia repair — laparoscopic (TEP/TAPP)
+  cholangitis: 'E05',      // ERCP + sphincterotomy (urgent biliary drainage)
+};
+
+function findFeeItem(code: string): { group: string; item: FeeItem } | undefined {
+  for (const g of FEE_SCHEDULE) {
+    const item = g.items.find(i => i.code === code);
+    if (item) return { group: g.group, item };
+  }
+  return undefined;
+}
 
 const APPT_LABELS: Record<string, string> = {
   new_consult: 'New Consultation', follow_up: 'Follow-up Consultation',
@@ -273,6 +291,23 @@ export default function BillingTab() {
   const [discount, setDiscount] = useState('');
   const [insurerPct, setInsurerPct] = useState('80');
   const [selectedGroup, setSelectedGroup] = useState(FEE_SCHEDULE[0].group);
+  const userBrowsedGroupRef = useRef(false);
+
+  // ── Working-diagnosis → suggested fee item ──────────────────────────────
+  const suggestedFeeCode = ctx.workingDiagnosis?.diseaseId
+    ? DISEASE_ID_TO_FEE_CODE[ctx.workingDiagnosis.diseaseId]
+    : undefined;
+  const suggestedFee = suggestedFeeCode ? findFeeItem(suggestedFeeCode) : undefined;
+
+  // Auto-navigate to the diagnosis-relevant fee group, same reactive pattern
+  // as CptPicker's category tabs — never auto-adds a billable line, only
+  // saves the clinician a search once the diagnosis is confirmed.
+  useEffect(() => {
+    if (suggestedFee && !userBrowsedGroupRef.current) {
+      setSelectedGroup(suggestedFee.group);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suggestedFeeCode]);
 
   // Save-to-record state
   const [savingBill, setSavingBill]       = useState(false);
@@ -465,12 +500,39 @@ export default function BillingTab() {
 
       {/* Fee schedule picker */}
       <CollapsibleCard title="Fee schedule — EC$" defaultOpen>
+        {suggestedFee && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap',
+            padding: '9px 12px', marginBottom: 12,
+            background: '#faf5ff', border: '1.5px solid #e9d5ff', borderRadius: 8,
+          }}>
+            <span style={{ fontSize: 10, fontWeight: 800, color: '#7c3aed', textTransform: 'uppercase', letterSpacing: '.06em' }}>
+              Suggested for {ctx.workingDiagnosis?.diseaseLabel ?? 'working diagnosis'}
+            </span>
+            <span style={{ flex: 1, fontSize: 12, color: '#374151' }}>
+              {suggestedFee.item.code} — {suggestedFee.item.description}
+            </span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#7c3aed' }}>{fmt(suggestedFee.item.fee)}</span>
+            {lines.some(l => l.code === suggestedFee.item.code) ? (
+              <span style={{ fontSize: 10, fontWeight: 800, padding: '3px 8px', borderRadius: 4, background: '#7c3aed', color: '#fff' }}>✓ Added</span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => addItem(suggestedFee.item)}
+                style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: '#7c3aed', color: '#fff', fontSize: 11, fontWeight: 700, cursor: 'pointer' }}
+              >
+                + Add
+              </button>
+            )}
+          </div>
+        )}
+
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
           {FEE_SCHEDULE.map(g => (
             <button
               key={g.group}
               type="button"
-              onClick={() => setSelectedGroup(g.group)}
+              onClick={() => { setSelectedGroup(g.group); userBrowsedGroupRef.current = true; }}
               style={{
                 padding: '5px 12px', borderRadius: 6, fontSize: 11, fontWeight: 700,
                 border: '1px solid',
