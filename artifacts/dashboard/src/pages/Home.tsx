@@ -338,6 +338,7 @@ export default function HomePage() {
     encounterMode, setEncounterMode,
     encounterType, setEncounterType,
     activeCcKey,
+    workingDiagnosis,
     visitType: ctxVisitType, setVisitType: ctxSetVisitType,
     setIsPostOp, setPostOpDays,
     patientPhoto,
@@ -942,6 +943,27 @@ export default function HomePage() {
               <span style={{ fontSize: 10, color: '#cbd5e1', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, padding: '1px 7px', whiteSpace: 'nowrap', flexShrink: 0, maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {ccLabel}
               </span>
+            )}
+            {/* Working diagnosis — persistent across every consultation tab, not just
+                Assessment/Plan, so it isn't lost while navigating Prescriptions, CPT,
+                Consent, etc. Click jumps back to Assessment to review/change it. */}
+            {workingDiagnosis && (
+              <button
+                type="button"
+                onClick={() => setActiveSection('assessment')}
+                title={`${workingDiagnosis.locked ? 'Confirmed' : 'Provisional'} working diagnosis — click to review in Assessment`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  fontSize: 10, fontWeight: 700, cursor: 'pointer',
+                  color: workingDiagnosis.locked ? '#5eead4' : '#94a3b8',
+                  background: workingDiagnosis.locked ? 'rgba(13,148,136,0.18)' : 'rgba(255,255,255,0.06)',
+                  border: `1px solid ${workingDiagnosis.locked ? 'rgba(13,148,136,0.45)' : 'rgba(255,255,255,0.15)'}`,
+                  borderRadius: 4, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0, maxWidth: 210,
+                  overflow: 'hidden', textOverflow: 'ellipsis',
+                }}
+              >
+                {workingDiagnosis.locked ? '🎯' : '~'} {workingDiagnosis.diseaseLabel || workingDiagnosis.icdCode || 'Working diagnosis'}
+              </button>
             )}
             <span style={{ flex: 1 }} />
             {/* Sync status indicator */}
