@@ -3,6 +3,8 @@ import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
+import AllergyMedAlert from '@/components/AllergyMedAlert';
+import DrugInteractionAlert from '@/components/DrugInteractionAlert';
 import { searchMedications } from '@workspace/triage-engine';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import {
@@ -505,10 +507,24 @@ export default function PrescriptionsTab() {
     setCurrentItem(prev => ({ ...prev, [key]: value }));
   }
 
+  // Deterministic baseline safety net — new items being prescribed here plus
+  // the patient's existing home medication list, so a single new drug against
+  // a documented allergy or an existing home medication is never silently
+  // missed. Runs alongside (not instead of) the AI check below, which only
+  // compares new items against each other and needs two or more to fire.
+  const rxDrugNames = useMemo(() => rxItems.map(it => it.drugName), [rxItems]);
+  const allMedsForSafetyCheck = useMemo(
+    () => [...ctx.medications, ...rxDrugNames],
+    [ctx.medications, rxDrugNames],
+  );
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="gap-y">
+
+      <AllergyMedAlert allergies={ctx.allergies} medications={allMedsForSafetyCheck} medicationsText={ctx.medicationsText} />
+      <DrugInteractionAlert medications={allMedsForSafetyCheck} medicationsText={ctx.medicationsText} />
 
       {/* ── Prescribe New ── */}
       <CollapsibleCard title="Prescribe new medication" badge={rxItems.length || undefined}>
