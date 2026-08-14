@@ -579,44 +579,75 @@ export async function savePmhNotes(
   return { error: null };
 }
 
+// ─── upsertDraftNote ────────────────────────────────────────────────────────
+
+/**
+ * Updates the current DRAFT clinical_notes row for this encounter+prefix in
+ * place, or inserts a new one if none exists. Never touches a SIGNED row —
+ * once an encounter closes, its notes are signed by /api/visit/complete and
+ * become permanent history; reopening and editing again (see the reopen-
+ * for-edit grace-period flow) starts a fresh draft that supersedes the
+ * signed version on the next close, rather than the previous delete-then-
+ * insert pattern silently erasing it.
+ */
+async function upsertDraftNote(
+  encounterId: string, patientId: string, noteType: string,
+  prefixLike: string, content: string,
+): Promise<{ error: string | null }> {
+  if (!supabase) return { error: notConfigured('upsertDraftNote') };
+
+  const { data: existing, error: findErr } = await supabase
+    .from('clinical_notes')
+    .select('id')
+    .eq('encounter_id', encounterId)
+    .eq('status', 'draft')
+    .like('content', prefixLike)
+    .maybeSingle();
+  if (findErr) { console.error('[db] upsertDraftNote find:', findErr); return { error: findErr.message }; }
+
+  if (existing) {
+    const { error } = await supabase.from('clinical_notes')
+      .update({ content, updated_at: new Date().toISOString() })
+      .eq('id', (existing as { id: string }).id);
+    if (error) { console.error('[db] upsertDraftNote update:', error); return { error: error.message }; }
+    return { error: null };
+  }
+
+  const { error } = await supabase.from('clinical_notes').insert({
+    encounter_id: encounterId, patient_id: patientId,
+    note_type: noteType, status: 'draft', content, ai_assisted: false,
+  });
+  if (error) { console.error('[db] upsertDraftNote insert:', error); return { error: error.message }; }
+  return { error: null };
+}
+
 // ─── saveHpiNote ──────────────────────────────────────────────────────────────
 
-/** Removes the HPI row for an encounter (called when the clinician clears all HPI text). */
+/** Clears the current DRAFT HPI text (called when the clinician empties the HPI
+ *  field). Only ever removes a draft row — a signed HPI from a prior, closed
+ *  version of this encounter is permanent history and is never deleted. */
 export async function clearHpiNote(encounterId: string): Promise<{ error: string | null }> {
   if (!supabase) return { error: notConfigured('clearHpiNote') };
   const { error } = await supabase.from('clinical_notes')
     .delete()
     .eq('encounter_id', encounterId)
+    .eq('status', 'draft')
     .like('content', '[HPI]%');
   if (error) { console.error('[db] clearHpiNote:', error); return { error: error.message }; }
   return { error: null };
 }
 
-/** Saves the HPI narrative for an encounter. Delete-then-insert pattern. */
+/** Saves the HPI narrative for an encounter. Updates the current draft in
+ *  place; a signed HPI from before the encounter was closed is left alone. */
 export async function saveHpiNote(
   encounterId: string,
   patientId: string,
   hpiNotes: string,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('saveHpiNote') };
   if (!hpiNotes.trim()) return { error: null };
 
-  const { error: delErr } = await supabase.from('clinical_notes')
-    .delete()
-    .eq('encounter_id', encounterId)
-    .like('content', '[HPI]%');
-  if (delErr) { console.error('[db] saveHpiNote delete:', delErr); return { error: delErr.message }; }
-
-  const { error } = await supabase.from('clinical_notes').insert({
-    encounter_id: encounterId,
-    patient_id:   patientId,
-    note_type:    'consultation',
-    status:       'draft',
-    content:      '[HPI]\n' + hpiNotes,
-    ai_assisted:  false,
-  });
-
-  if (error) { console.error('[db] saveHpiNote:', error); return { error: error.message }; }
+  const { error } = await upsertDraftNote(encounterId, patientId, 'consultation', '[HPI]%', '[HPI]\n' + hpiNotes);
+  if (error) return { error };
   logClinicalSave('autosave_hpi', 'clinical_notes', encounterId, { chars: hpiNotes.length });
   return { error: null };
 }
@@ -1306,17 +1337,15 @@ const EXAM_SYSTEM_LABELS: Record<string, string> = {
 };
 const EXAM_SYSTEM_ORDER = Object.keys(EXAM_SYSTEM_LABELS);
 
-/** Replaces the 'consultation' examination snapshot for this encounter.
- *  Deletes any existing consultation note tagged with the sentinel prefix,
- *  then inserts a fresh serialisation of the chip + free-text findings. */
+/** Saves the examination findings for an encounter. Updates the current draft
+ *  in place; a signed examination from before the encounter was closed is
+ *  left alone. */
 export async function saveExamFindings(
   examFindings: Record<string, string[]>,
   examNotes: Record<string, string>,
   patientId: string,
   encounterId: string,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('saveExamFindings') };
-
   const hasContent =
     Object.values(examFindings).some(arr => arr.length > 0) ||
     Object.values(examNotes).some(s => s.trim());
@@ -1334,22 +1363,8 @@ export async function saveExamFindings(
   }
   const content = '[EXAMINATION_JSON]\n' + JSON.stringify({ examFindings, examNotes });
 
-  // Delete the previous examination snapshot for this encounter (both old text format and JSON format)
-  await supabase.from('clinical_notes')
-    .delete()
-    .eq('encounter_id', encounterId)
-    .like('content', '[EXAMINATION%');
-
-  const { error } = await supabase.from('clinical_notes').insert({
-    encounter_id: encounterId,
-    patient_id:   patientId,
-    note_type:    'consultation',
-    status:       'draft',
-    content,
-    ai_assisted:  false,
-  });
-
-  if (error) { console.error('[db] saveExamFindings:', error); return { error: error.message }; }
+  const { error } = await upsertDraftNote(encounterId, patientId, 'consultation', '[EXAMINATION%', content);
+  if (error) return { error };
   logClinicalSave('autosave_exam', 'clinical_notes', encounterId, { systems: Object.keys(examFindings).filter(k => examFindings[k].length > 0) });
   return { error: null };
 }
@@ -1358,34 +1373,19 @@ export async function saveExamFindings(
 
 const DISCHARGE_PREFIX = '[DISCHARGE_NOTES]';
 
-/** Persists the inpatient discharge note state as a JSON blob in clinical_notes. */
+/** Persists the discharge note state as a JSON blob in clinical_notes. Updates
+ *  the current draft in place; a signed discharge note from before the
+ *  encounter was closed is left alone. */
 export async function saveDischargeNotes(
   encounterId: string,
   patientId: string,
   data: Record<string, unknown>,
 ): Promise<{ error: string | null }> {
-  if (!supabase) return { error: notConfigured('saveDischargeNotes') };
-
-  const { error: delErr } = await supabase.from('clinical_notes')
-    .delete()
-    .eq('encounter_id', encounterId)
-    .like('content', `${DISCHARGE_PREFIX}%`);
-  if (delErr) { console.error('[db] saveDischargeNotes delete:', delErr); return { error: delErr.message }; }
-
-  const { error } = await supabase.from('clinical_notes').insert({
-    encounter_id: encounterId,
-    patient_id:   patientId,
-    note_type:    'discharge',
-    status:       'draft',
-    content:      `${DISCHARGE_PREFIX}\n${JSON.stringify(data)}`,
-    ai_assisted:  false,
-  });
-
-  if (error) { console.error('[db] saveDischargeNotes:', error); return { error: error.message }; }
-  return { error: null };
+  return upsertDraftNote(encounterId, patientId, 'discharge', `${DISCHARGE_PREFIX}%`, `${DISCHARGE_PREFIX}\n${JSON.stringify(data)}`);
 }
 
-/** Loads the discharge note JSON blob for an encounter. */
+/** Loads the most recent discharge note JSON blob for an encounter — the
+ *  current draft if one is being edited, otherwise the latest signed version. */
 export async function loadDischargeNotes(
   encounterId: string,
 ): Promise<{ data: Record<string, unknown> | null; error: string | null }> {
@@ -1396,6 +1396,8 @@ export async function loadDischargeNotes(
     .select('content')
     .eq('encounter_id', encounterId)
     .like('content', `${DISCHARGE_PREFIX}%`)
+    .order('created_at', { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (error) { console.error('[db] loadDischargeNotes:', error); return { data: null, error: error.message }; }
@@ -1638,6 +1640,8 @@ export async function loadEncounterData(
       .select('content')
       .eq('encounter_id', encounterId)
       .like('content', '[HPI]%')
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle(),
     supabase.from('patients')
       .select('pmh_notes, family_history_notes')
@@ -1651,6 +1655,8 @@ export async function loadEncounterData(
       .select('content')
       .eq('encounter_id', encounterId)
       .like('content', '[EXAMINATION_JSON]%')
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle(),
     supabase.from('encounters')
       .select('clinical_scores, extracted_labs')
