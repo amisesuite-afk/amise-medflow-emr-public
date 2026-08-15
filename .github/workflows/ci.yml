@@ -72,3 +72,63 @@ jobs:
 
       - name: Run tests
         run: pnpm -r --if-present run test
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run EMR walkthrough
+        env:
+          # Must be a well-formed 3-segment JWT shape — the dashboard's own
+          # config validation (artifacts/dashboard/src/lib/supabase.ts)
+          # rejects a 2-segment placeholder and never constructs a Supabase
+          # client, which silently blanks the app to the login page. The
+          # build job's placeholder doesn't hit this because `vite build`
+          # never executes that validation in a real browser — this job does.
+          VITE_SUPABASE_URL: https://placeholder.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder-payload-not-a-real-anon-key.placeholder-signature-not-a-real-anon-key
+        run: |
+          pnpm --filter @workspace/dashboard run dev &
+          DEV_PID=$!
+          READY=0
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:3000 -o /dev/null; then
+              echo "Dashboard ready after ${i}s"
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            echo "Dashboard dev server did not become ready in time" >&2
+            kill "$DEV_PID" 2>/dev/null || true
+            exit 1
+          fi
+          node e2e/emr-walkthrough.mjs
+          E2E_EXIT=$?
+          kill "$DEV_PID" 2>/dev/null || true
+          exit $E2E_EXIT
+
+      - name: Upload E2E screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots
+          path: e2e/shots/
+          retention-days: 7

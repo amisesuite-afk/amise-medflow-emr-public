@@ -10,16 +10,28 @@
  *   node e2e/emr-walkthrough.mjs
  *
  * Requires the dashboard dev server on http://localhost:3000.
- * Uses the globally-installed Playwright (/opt/node22/lib/node_modules/playwright)
- * and the pre-installed Chromium at /opt/pw-browsers/chromium.
+ *
+ * Browser resolution: prefers the globally pre-installed Playwright/Chromium
+ * in this sandbox (/opt/node22/lib/node_modules/playwright,
+ * /opt/pw-browsers/chromium) when present, so interactive/agent runs are
+ * unchanged. Falls back to the `playwright` package installed via pnpm
+ * (root devDependency) with its own managed browser — this is the path
+ * GitHub Actions CI uses, after `playwright install --with-deps chromium`.
  *
  * Screenshots land in e2e/shots/ (gitignored).
  */
 
-import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+
+const SANDBOX_PLAYWRIGHT = '/opt/node22/lib/node_modules/playwright/index.mjs';
+const SANDBOX_CHROMIUM   = '/opt/pw-browsers/chromium';
+const useSandboxBrowser  = existsSync(SANDBOX_PLAYWRIGHT);
+
+const { chromium } = useSandboxBrowser
+  ? await import(SANDBOX_PLAYWRIGHT)
+  : await import('playwright');
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BASE = 'http://localhost:3000';
@@ -75,7 +87,7 @@ const MOCK_ENCOUNTER = {
 
 (async () => {
   const browser = await chromium.launch({
-    executablePath: '/opt/pw-browsers/chromium',
+    ...(useSandboxBrowser && existsSync(SANDBOX_CHROMIUM) ? { executablePath: SANDBOX_CHROMIUM } : {}),
     args: ['--no-sandbox', '--disable-dev-shm-usage'],
     headless: true,
   });
