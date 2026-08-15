@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history — needed to diff against origin/main below
 
       - uses: pnpm/action-setup@v4
         with:
@@ -33,6 +35,12 @@ jobs:
 
       - name: Lint migration service_role grants
         run: pnpm --filter @workspace/scripts run lint:grants
+
+      - name: Lint dx-variant clinical phases
+        run: pnpm --filter @workspace/scripts run lint:dx-phases
+
+      - name: Scan for navigation-lockout patterns (advisory)
+        run: pnpm --filter @workspace/scripts run scan:nav-lockout
 
       - name: Build all packages
         env:

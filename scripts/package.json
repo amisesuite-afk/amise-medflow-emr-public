@@ -6,6 +6,8 @@
   "scripts": {
     "hello": "tsx ./src/hello.ts",
     "lint:grants": "tsx ./src/lint-migration-grants.ts",
+    "lint:dx-phases": "tsx ./src/lint-dx-variant-phases.ts",
+    "scan:nav-lockout": "tsx ./src/scan-nav-lockout-patterns.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
