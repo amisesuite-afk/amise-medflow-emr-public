@@ -222,3 +222,10 @@ Engineering audit completed 2026-06-23. Deliverables in repo root:
 - `AMISE-MedFlow-EMR-Audit-2026-06-23.pdf` — full findings report
 - `AMISE-MedFlow-EMR-Flowcharts.html` — interactive Mermaid diagrams
 - `supabase-web-intake-delivery-method-migration.sql` — pending migration
+
+## Incident response
+
+See `docs/INCIDENT-RUNBOOK.md` for where to look first during an incident (health/readyz
+endpoints, Render logs, Sentry) and how to roll back each part of the stack (Vercel frontends,
+the Render-hosted API server, a bad migration, a bad cron run) — none of this was written down
+before this file existed.
