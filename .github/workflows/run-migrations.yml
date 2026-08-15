@@ -305,5 +305,237 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"query\": $QUERY}" | jq .
 
+      - name: "Migration 36: Phase 2 schema fixes"
+        run: |
+          QUERY=$(jq -Rs . < supabase-phase2-schema-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 37: Phase 4 follow-up loop (referrals, orders, results)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-phase4-followup-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 38: Phase 6 patient identity & entry pipeline hardening"
+        run: |
+          QUERY=$(jq -Rs . < supabase-phase6-identity-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 39: Phase 8 calendar event cache"
+        run: |
+          QUERY=$(jq -Rs . < supabase-phase8-calendar-cache-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 40: Call logs"
+        run: |
+          QUERY=$(jq -Rs . < supabase-call-logs-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 41: Call logs — missing columns used by the API server"
+        run: |
+          QUERY=$(jq -Rs . < supabase-call-logs-columns-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 42: Call logs — practice_line & patient auto-MRN"
+        run: |
+          QUERY=$(jq -Rs . < supabase-call-logs-add-practice-line.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 43: Call logs — voicemail & callback queue"
+        run: |
+          QUERY=$(jq -Rs . < supabase-calls-voicemail-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 44: Call recordings storage bucket"
+        run: |
+          QUERY=$(jq -Rs . < supabase-call-recordings-storage.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 45: Seam fixes"
+        run: |
+          QUERY=$(jq -Rs . < supabase-seam-fixes-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 46: Patient token blacklist"
+        run: |
+          QUERY=$(jq -Rs . < supabase-patient-token-blacklist-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 47: Patients full fields + photo storage bucket"
+        run: |
+          QUERY=$(jq -Rs . < supabase-patients-full-fields-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 48: Patient photo_url column"
+        run: |
+          QUERY=$(jq -Rs . < supabase-add-photo-url.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 49: Clinical scores (Tokyo/Ranson/BISAP/ASA/POSSUM/Child-Pugh/MELD/NEWS2)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-clinical-scores-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 50: Dual-confirmation booking gate"
+        run: |
+          QUERY=$(jq -Rs . < supabase-dual-confirmation-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 51: Local folder document source"
+        run: |
+          QUERY=$(jq -Rs . < supabase-local-folder-source-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 52: Results inbox fix"
+        run: |
+          QUERY=$(jq -Rs . < supabase-results-inbox-fix-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 53: Revoke anon access to appointment_requests"
+        run: |
+          QUERY=$(jq -Rs . < supabase-revoke-anon-appointment-requests-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 54: Slice A — AI proposals + note versioning"
+        run: |
+          QUERY=$(jq -Rs . < supabase-slice-a-ai-proposals-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 55: Slice B — workflow tasks"
+        run: |
+          QUERY=$(jq -Rs . < supabase-slice-b-workflow-tasks-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 56: Slice C — clinical state engine"
+        run: |
+          QUERY=$(jq -Rs . < supabase-slice-c-clinical-states-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 57: Slice F — loop closure"
+        run: |
+          QUERY=$(jq -Rs . < supabase-slice-f-loop-closure-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 58: Slice H — referral lifecycle"
+        run: |
+          QUERY=$(jq -Rs . < supabase-slice-h-referral-lifecycle-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 59: Slices L/M/N/O — encounter, notes, search, billing APIs"
+        run: |
+          QUERY=$(jq -Rs . < supabase-slice-lmno-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 60: Slices P/Q/R/S — API routes only (no schema changes)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-slice-pqrs-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 61: Staff scheduling module"
+        run: |
+          QUERY=$(jq -Rs . < supabase-staff-scheduling-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 62: Tax planner state"
+        run: |
+          QUERY=$(jq -Rs . < supabase-tax-planner-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 63: Theatre sessions + cases"
+        run: |
+          QUERY=$(jq -Rs . < supabase-theatre-sessions-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
+      - name: "Migration 64: Encounters closed_at (reopen-for-edit grace period)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-encounters-closed-at-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
       - name: Done
-        run: echo "All 35 migrations completed successfully."
+        run: echo "All 64 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
