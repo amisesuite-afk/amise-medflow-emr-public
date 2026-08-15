@@ -512,16 +512,17 @@ router.post('/api/patients/:targetId/merge', async (req, res) => {
     return;
   }
 
-  // Audit trail
-  await sb().from('audit_logs').insert({
-    action: 'patient_merge',
-    table_name: 'patients',
-    record_id: targetId,
-    new_values: {
+  await audit({
+    action: 'change_request',
+    entityType: 'patient',
+    entityId: targetId,
+    payload: {
+      action: 'patient_merge',
       target_id: targetId, target_name: target.full_name,
       source_id: sourceId, source_name: source.full_name,
+      warnings: errors.length > 0 ? errors : undefined,
     },
-  }).then(r => { if (r.error) log.warn(r.error, '[merge] audit log failed'); });
+  });
 
   log.info({ targetId, sourceId }, '[merge] patient merge complete');
   res.json({

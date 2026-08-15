@@ -223,6 +223,12 @@ Engineering audit completed 2026-06-23. Deliverables in repo root:
 - `AMISE-MedFlow-EMR-Flowcharts.html` — interactive Mermaid diagrams
 - `supabase-web-intake-delivery-method-migration.sql` — pending migration
 
+See `docs/AUDIT-TRAIL-COVERAGE.md` for the audit-log coverage sweep across every mutating API
+route: what was fixed (a patient-merge audit bug writing to the wrong table, five AI
+document-generation routes with zero coverage), what's confirmed still missing (19
+administrative/scheduling route files), and the two parallel audit-logging helpers
+(`logAudit()` vs `audit()`) that both exist in this codebase.
+
 ## Incident response
 
 See `docs/INCIDENT-RUNBOOK.md` for where to look first during an incident (health/readyz

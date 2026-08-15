@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
-import { requireStaffAuth } from '../lib/supabase.js';
+import { requireStaffAuth, audit } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
@@ -131,6 +131,12 @@ ${plan || 'Not documented'}
       }
     }
     res.end();
+
+    void audit({
+      action: 'draft',
+      entityType: 'letter',
+      payload: { route: 'generate-letter', type, patientName: (patient as Record<string, string>).name },
+    });
   } catch (err) {
     log.error({ err }, 'generate-letter error');
     if (!res.headersSent) res.status(500).json({ error: 'Letter generation failed' });
