@@ -229,6 +229,11 @@ document-generation routes with zero coverage), what's confirmed still missing (
 administrative/scheduling route files), and the two parallel audit-logging helpers
 (`logAudit()` vs `audit()`) that both exist in this codebase.
 
+See `docs/SECRETS-HYGIENE.md` for the current secrets audit (no real secrets committed — only
+the public Supabase anon key is hardcoded in deploy workflows, which is standard practice),
+rotation cadence for the highest-blast-radius credentials, and why GitHub secret scanning isn't
+enabled on this repo yet (needs a repo admin, not something fixable from inside the codebase).
+
 ## Incident response
 
 See `docs/INCIDENT-RUNBOOK.md` for where to look first during an incident (health/readyz
