@@ -182,6 +182,8 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.<table> TO service_role;
 
 Missing any of these produces: 42501 (missing grant) → HTTP 502, silent CHECK rejections, or broken RLS. Use `supabase-seam-fixes-migration.sql` as a reference for the canonical pattern.
 
+**Item 3 (service_role grant) is enforced in CI, not just convention.** `pnpm --filter @workspace/scripts run lint:grants` (`scripts/src/lint-migration-grants.ts`) scans every `supabase*.sql` file at the repo root and fails the build if any table is created without a `grant ... to service_role` somewhere in the tree — the grant doesn't have to be in the same file (some tables in this repo's history were granted retroactively in a separate fix migration, which is fine), it just has to exist. Genuine exceptions can be marked with a trailing `-- lint:allow-missing-service-role-grant` comment on the `CREATE TABLE` line.
+
 ## Tone
 
 British-Caribbean professional tone in all patient-facing copy. Never include clinical advice, fees, diagnoses, medication dosages, or results in any automated message.
