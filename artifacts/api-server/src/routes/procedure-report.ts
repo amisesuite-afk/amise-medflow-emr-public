@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
-import { requireStaffAuth } from '../lib/supabase.js';
+import { requireStaffAuth, audit } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
@@ -281,6 +281,12 @@ PLAN AND RECOMMENDATIONS
       .trim();
 
     res.json({ success: true, report });
+
+    void audit({
+      action: 'draft',
+      entityType: 'clinical_note',
+      payload: { route: 'procedure-report', type, patientName },
+    });
 
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Report generation failed';

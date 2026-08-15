@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
-import { requireStaffAuth } from '../lib/supabase.js';
+import { requireStaffAuth, audit } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 
 const router = Router();
@@ -101,6 +101,12 @@ ${fieldLines || '  (No structured data provided — generate based on procedure 
       }
     }
     res.end();
+
+    void audit({
+      action: 'draft',
+      entityType: 'clinical_note',
+      payload: { route: 'generate-endoscopy-report', procedureType, patientName: patient.name },
+    });
   } catch (err) {
     log.error({ err }, 'generate-endoscopy-report error');
     if (!res.headersSent) res.status(500).json({ error: 'Endoscopy report generation failed' });
