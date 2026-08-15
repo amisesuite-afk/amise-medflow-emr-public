@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ToastProvider';
 import CollapsibleCard from '@/components/CollapsibleCard';
 import AllergyMedAlert from '@/components/AllergyMedAlert';
 import DrugInteractionAlert from '@/components/DrugInteractionAlert';
+import AiInteractionCheck from '@/components/AiInteractionCheck';
 import { searchMedications } from '@workspace/triage-engine';
 import { getProtocol, getProtocolByIcd } from '@workspace/pane-engine';
 import {
@@ -292,13 +293,6 @@ export default function PrescriptionsTab() {
   const [history, setHistory] = useState<PrescriptionRecord[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  // Drug interactions
-  const [interactions, setInteractions] = useState<DrugInteraction[]>([]);
-  const [interactionsLoading, setInteractionsLoading] = useState(false);
-  const [interactionsChecked, setInteractionsChecked] = useState(false);
-  const [interactionsPanelOpen, setInteractionsPanelOpen] = useState(true);
-  const interactionDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const prescriberName = profile?.full_name || 'Dr Dawit Daniel Kabiye, MD, DM';
   const patSlug = (ctx.patientName || 'patient').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   const dateStr = new Date().toISOString().slice(0, 10);
@@ -325,58 +319,6 @@ export default function PrescriptionsTab() {
   }, [ctx.patientId]);
 
   useEffect(() => { void loadHistory(); }, [loadHistory]);
-
-  // ── Drug interaction checking ──────────────────────────────────────────────
-
-  useEffect(() => {
-    if (interactionDebounceRef.current) {
-      clearTimeout(interactionDebounceRef.current);
-    }
-
-    if (rxItems.length < 2) {
-      setInteractions([]);
-      setInteractionsChecked(false);
-      setInteractionsLoading(false);
-      return;
-    }
-
-    setInteractionsLoading(true);
-    interactionDebounceRef.current = setTimeout(async () => {
-      try {
-        const payload = {
-          drugs: rxItems.map(it => ({
-            drugName: it.drugName,
-            dose: it.dose,
-            frequency: it.frequency,
-          })),
-        };
-        const resp = await fetch('/api/ai/drug-interactions', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...(await staffAuthHeaders()) },
-          body: JSON.stringify(payload),
-        });
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const data = await resp.json() as { interactions: DrugInteraction[] };
-        setInteractions(data.interactions ?? []);
-        setInteractionsChecked(true);
-        if ((data.interactions ?? []).length > 0) {
-          setInteractionsPanelOpen(true);
-        }
-      } catch (err) {
-        console.error('[PrescriptionsTab] drug interaction check failed:', err);
-        setInteractions([]);
-        setInteractionsChecked(false);
-      } finally {
-        setInteractionsLoading(false);
-      }
-    }, 800);
-
-    return () => {
-      if (interactionDebounceRef.current) {
-        clearTimeout(interactionDebounceRef.current);
-      }
-    };
-  }, [rxItems]);
 
   // ── Drug selection from formulary ──────────────────────────────────────────
 
@@ -802,104 +744,8 @@ export default function PrescriptionsTab() {
         </CollapsibleCard>
       )}
 
-      {/* ── Interaction warnings ── */}
-      {rxItems.length >= 2 && (
-        <div style={{
-          borderRadius: 10,
-          border: interactionsLoading
-            ? '1px solid #d1d5db'
-            : interactions.length > 0
-              ? `1px solid ${interactions.some(i => i.severity === 'major') ? '#fca5a5' : interactions.some(i => i.severity === 'moderate') ? '#fdba74' : '#fde68a'}`
-              : '1px solid #bbf7d0',
-          background: interactionsLoading
-            ? '#f9fafb'
-            : interactions.length > 0
-              ? interactions.some(i => i.severity === 'major') ? '#fff5f5' : interactions.some(i => i.severity === 'moderate') ? '#fff7ed' : '#fefce8'
-              : '#f0fdf4',
-          overflow: 'hidden',
-        }}>
-          {/* Panel header */}
-          <button
-            type="button"
-            onClick={() => setInteractionsPanelOpen(o => !o)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-              padding: '10px 14px', border: 'none', background: 'none',
-              cursor: 'pointer', textAlign: 'left',
-            }}
-          >
-            {interactionsLoading ? (
-              <span style={{ fontSize: 14 }}>&#8987;</span>
-            ) : interactions.length > 0 ? (
-              <span style={{ fontSize: 14 }}>&#9888;</span>
-            ) : interactionsChecked ? (
-              <span style={{ fontSize: 14 }}>&#10003;</span>
-            ) : null}
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#1a1a1a', flex: 1 }}>
-              {interactionsLoading
-                ? 'Checking interactions…'
-                : interactions.length > 0
-                  ? `Interaction warnings (${interactions.length})`
-                  : interactionsChecked
-                    ? 'No known interactions'
-                    : 'Interaction warnings'}
-            </span>
-            {interactions.length > 0 && (
-              <span style={{ fontSize: 11, color: '#6B7280' }}>
-                {interactionsPanelOpen ? 'Hide' : 'Show'}
-              </span>
-            )}
-          </button>
-
-          {/* Panel body */}
-          {interactionsPanelOpen && !interactionsLoading && (
-            <div style={{ padding: '0 14px 12px' }}>
-              {interactions.length === 0 && interactionsChecked && (
-                <p style={{ fontSize: 12, color: '#15803d', margin: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span>&#10003;</span> No clinically significant interactions detected between the prescribed medications.
-                </p>
-              )}
-              {interactions.map((ix, idx) => {
-                const severityColor =
-                  ix.severity === 'major' ? { bg: '#fee2e2', badge: '#dc2626', border: '#fca5a5', label: 'MAJOR' }
-                  : ix.severity === 'moderate' ? { bg: '#ffedd5', badge: '#ea580c', border: '#fdba74', label: 'MODERATE' }
-                  : { bg: '#fef9c3', badge: '#ca8a04', border: '#fde68a', label: 'MINOR' };
-                return (
-                  <div
-                    key={idx}
-                    style={{
-                      marginBottom: idx < interactions.length - 1 ? 8 : 0,
-                      padding: '8px 10px',
-                      borderRadius: 7,
-                      border: `1px solid ${severityColor.border}`,
-                      background: severityColor.bg,
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{
-                        padding: '1px 7px', borderRadius: 999, fontSize: 9, fontWeight: 800,
-                        background: severityColor.badge, color: '#fff', letterSpacing: '0.06em',
-                        textTransform: 'uppercase',
-                      }}>
-                        {severityColor.label}
-                      </span>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: '#1a1a1a' }}>
-                        {ix.drug1} + {ix.drug2}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: 11, color: '#374151', margin: '0 0 3px' }}>{ix.description}</p>
-                    {ix.mechanism && (
-                      <p style={{ fontSize: 10, color: '#6B7280', margin: 0, fontStyle: 'italic' }}>
-                        Mechanism: {ix.mechanism}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
+      {/* ── AI interaction check ── */}
+      <AiInteractionCheck drugs={rxItems.map(it => ({ drugName: it.drugName, dose: it.dose, frequency: it.frequency }))} />
 
       {/* ── Current prescription list ── */}
       <CollapsibleCard title="Current prescription" badge={rxItems.length || undefined}>
