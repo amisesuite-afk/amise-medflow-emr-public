@@ -36,6 +36,9 @@ jobs:
       - name: Lint migration service_role grants
         run: pnpm --filter @workspace/scripts run lint:grants
 
+      - name: Lint RLS policy presence
+        run: pnpm --filter @workspace/scripts run lint:rls-policies
+
       - name: Lint dx-variant clinical phases
         run: pnpm --filter @workspace/scripts run lint:dx-phases
 
