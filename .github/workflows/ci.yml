@@ -31,6 +31,9 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+      - name: Lint migration service_role grants
+        run: pnpm --filter @workspace/scripts run lint:grants
+
       - name: Build all packages
         env:
           VITE_SUPABASE_URL: https://placeholder.supabase.co
