@@ -94,7 +94,7 @@ pnpm run build                                 # Typecheck + build all packages
 
 - **Client-side triage**: Scoring runs entirely in the browser — no API round-trip for acuity calculation.
 - **Shared lib**: `lib/triage-engine` is consumed by both dashboard (Vite) and API server (esbuild).
-- **Mode gate**: All outbound actions (email, SMS, calendar writes) are gated by `MODE` env var — always start with `dry_run`.
+- **Mode gate**: All outbound actions (email, SMS, calendar writes) are gated by `MODE` env var — always start with `dry_run`. Booting with `MODE=auto` requires `CONFIRM_AUTO_MODE=true` or the api-server refuses to start (CI-independent, enforced at boot in `artifacts/api-server/src/index.ts`) — the active mode is also logged as a loud banner on every boot.
 - **Safety layer**: Every Claude-drafted reply is scanned against `FORBIDDEN_PATTERNS` before sending. Forbidden content (fees, diagnoses, drug doses, results) is quarantined for human review.
 - **Auth flow**: Staff log in via Supabase email/password. `AuthGuard` blocks access until a valid session exists.
 - **Vite proxy**: In dev, Supabase requests go through `/sb-proxy` to avoid CORS. Production uses the Supabase URL directly.
@@ -126,6 +126,7 @@ pnpm run build                                 # Typecheck + build all packages
 | `TWILIO_FROM_NUMBER` | Twilio sender number |
 | `SESSION_SECRET` | Express session secret |
 | `MODE` | `dry_run` (default) / `supervised` / `auto` |
+| `CONFIRM_AUTO_MODE` | Must be `true` for the api-server to boot when `MODE=auto` — a bare `MODE=auto` refuses to start. Prevents a misconfigured environment from going live into unsupervised outbound messaging silently. |
 | `CRON_SECRET` | Shared secret for cron endpoint auth |
 | `DOCTOR_NOTIFY_EMAIL` | Email for escalations and daily summary |
 | `STAFF_NOTIFY_EMAIL` | Email for staff booking alerts (falls back to `DOCTOR_NOTIFY_EMAIL`) |

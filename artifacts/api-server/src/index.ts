@@ -4,10 +4,14 @@ import { logger } from "./lib/logger";
 import { loadRevokedJtis } from "./lib/patient-auth";
 import { sb } from "./lib/supabase";
 
+// MODE gates all outbound actions (email, SMS, calendar writes) — always
+// start with dry_run.
+const mode = process.env.MODE || 'dry_run';
+
 if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    environment: process.env.MODE || 'dry_run',
+    environment: mode,
     tracesSampleRate: 0.2,
   });
 }
@@ -23,6 +27,18 @@ if (missing.length) {
   logger.fatal({ missing }, 'Missing required env vars');
   process.exit(1);
 }
+
+// auto means fully unsupervised outbound messaging, so booting into it
+// requires a second, explicit opt-in to prevent a misconfigured environment
+// (e.g. a copy-pasted .env) from going live silently.
+if (mode === 'auto' && process.env.CONFIRM_AUTO_MODE !== 'true') {
+  logger.fatal(
+    { mode },
+    'Refusing to boot with MODE=auto — set CONFIRM_AUTO_MODE=true to confirm unsupervised outbound messaging is intended',
+  );
+  process.exit(1);
+}
+logger.info(`\n${'='.repeat(60)}\n  MODE = ${mode.toUpperCase()}${mode === 'auto' ? '  (⚠ UNSUPERVISED OUTBOUND MESSAGING IS LIVE)' : ''}\n${'='.repeat(60)}`);
 
 // Warn for optional integrations — the server can start without them but
 // the corresponding features will be degraded.
