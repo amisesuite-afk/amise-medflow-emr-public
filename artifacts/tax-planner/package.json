@@ -11,8 +11,8 @@
     "start": "node server/index.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.100.1",
-    "@supabase/supabase-js": "^2.49.4",
+    "@anthropic-ai/sdk": "^0.116.0",
+    "@supabase/supabase-js": "^2.112.3",
     "@vitejs/plugin-react": "catalog:",
     "concurrently": "^9.1.0",
     "cors": "^2.8.6",
