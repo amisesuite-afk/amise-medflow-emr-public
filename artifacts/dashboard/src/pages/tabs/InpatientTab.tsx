@@ -4,6 +4,8 @@ import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import IcdPicker from '@/components/IcdPicker';
 import AllergyMedAlert from '@/components/AllergyMedAlert';
 import DrugInteractionAlert from '@/components/DrugInteractionAlert';
+import AiInteractionCheck from '@/components/AiInteractionCheck';
+import { searchFormulary, type FormularyDrug } from '@/lib/prescription-formulary';
 import {
   wrapDoc, masthead, metaGrid, sec, kvTable, bulList, inlineText, callout, footer, signoff, escH as escHDoc, T, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
@@ -396,16 +398,66 @@ function EditList({
 }
 
 // ── Medication row editor ─────────────────────────────────────────────────────
+//
+// Live drafting: typing in a row's drug-name field searches the practice
+// formulary as-you-type; picking a result fills dose/route/frequency
+// defaults for that row, same pattern as PrescriptionsTab's drug search.
+// Nothing is prescribed here — this is the discharge summary's med list.
 
 function MedTable({ rows, onChange }: { rows: MedRow[]; onChange: (r: MedRow[]) => void }) {
+  const [activeRow, setActiveRow] = useState<number | null>(null);
+
   function setRow(i: number, patch: Partial<MedRow>) {
     onChange(rows.map((r, idx) => idx === i ? { ...r, ...patch } : r));
   }
+
+  function selectDrug(i: number, drug: FormularyDrug) {
+    setRow(i, { name: drug.drugName, dose: drug.defaultDose, route: drug.defaultRoute, frequency: drug.defaultFrequency });
+    setActiveRow(null);
+  }
+
+  const results = activeRow !== null && rows[activeRow]?.name.trim().length >= 2
+    ? searchFormulary(rows[activeRow].name).slice(0, 8)
+    : [];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {rows.map((row, i) => (
         <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 80px 1fr auto', gap: 6, alignItems: 'center' }}>
-          <input type="text" value={row.name} onChange={e => setRow(i, { name: e.target.value })} placeholder="Drug name" style={{ ...INP, fontSize: 12 }} />
+          <div style={{ position: 'relative' }}>
+            <input
+              type="text" value={row.name}
+              onChange={e => { setRow(i, { name: e.target.value }); setActiveRow(i); }}
+              onFocus={() => setActiveRow(i)}
+              onBlur={() => setTimeout(() => setActiveRow(prev => (prev === i ? null : prev)), 150)}
+              placeholder="Drug name — search formulary"
+              style={{ ...INP, fontSize: 12 }}
+            />
+            {activeRow === i && results.length > 0 && (
+              <div style={{
+                position: 'absolute', top: 'calc(100% + 2px)', left: 0, right: 0, zIndex: 40,
+                background: '#fff', border: '1.5px solid #d6cfc8', borderRadius: 8,
+                boxShadow: '0 8px 24px rgba(0,0,0,0.12)', maxHeight: 260, overflowY: 'auto',
+              }}>
+                {results.map(drug => (
+                  <button
+                    key={drug.drugName}
+                    type="button"
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={() => selectDrug(i, drug)}
+                    style={{
+                      display: 'flex', flexDirection: 'column', gap: 1, width: '100%',
+                      padding: '7px 10px', border: 'none', borderBottom: '1.5px solid #d6cfc8',
+                      background: 'none', cursor: 'pointer', textAlign: 'left',
+                    }}
+                  >
+                    <span style={{ fontSize: 12, fontWeight: 700, color: '#1a1a1a' }}>{drug.drugName}</span>
+                    <span style={{ fontSize: 10.5, color: C.muted }}>{drug.defaultDose} · {drug.defaultFrequency} · {drug.defaultRoute}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <input type="text" value={row.dose} onChange={e => setRow(i, { dose: e.target.value })} placeholder="Dose" style={{ ...INP, fontSize: 12 }} />
           <input type="text" value={row.route} onChange={e => setRow(i, { route: e.target.value })} placeholder="Route" style={{ ...INP, fontSize: 12 }} />
           <input type="text" value={row.frequency} onChange={e => setRow(i, { frequency: e.target.value })} placeholder="Frequency" style={{ ...INP, fontSize: 12 }} />
@@ -1034,6 +1086,12 @@ export default function InpatientTab() {
           <DrugInteractionAlert
             medications={[...ctx.medications, ...medications.map(m => m.name).filter(Boolean)]}
             medicationsText={ctx.medicationsText}
+          />
+          <AiInteractionCheck
+            drugs={[
+              ...ctx.medications.map(m => ({ drugName: m })),
+              ...medications.filter(m => m.name.trim()).map(m => ({ drugName: m.name, dose: m.dose, frequency: m.frequency })),
+            ]}
           />
           <MedTable rows={medications} onChange={setMedications} />
         </div>
