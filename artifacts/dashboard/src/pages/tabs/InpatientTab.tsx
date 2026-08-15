@@ -2,6 +2,8 @@ import { useState, useId, useEffect, useRef } from 'react';
 import { saveDischargeNotes, loadDischargeNotes } from '@/lib/db';
 import { useAppContext, type ProgressNote } from '@/context/AppContext';
 import IcdPicker from '@/components/IcdPicker';
+import AllergyMedAlert from '@/components/AllergyMedAlert';
+import DrugInteractionAlert from '@/components/DrugInteractionAlert';
 import {
   wrapDoc, masthead, metaGrid, sec, kvTable, bulList, inlineText, callout, footer, signoff, escH as escHDoc, T, AMISE_LOGO_SVG,
 } from './lib/docTemplate';
@@ -1021,6 +1023,18 @@ export default function InpatientTab() {
         </div>
         <div style={{ marginBottom: 10 }}>
           <div style={{ ...LBL, marginBottom: 6 }}>Medications on Discharge</div>
+          {/* Deterministic baseline — discharge meds plus pre-admission home
+              meds, checked against allergies and each other. Same components
+              used in MedicationsTab / PrescriptionsTab. */}
+          <AllergyMedAlert
+            allergies={ctx.allergies}
+            medications={[...ctx.medications, ...medications.map(m => m.name).filter(Boolean)]}
+            medicationsText={ctx.medicationsText}
+          />
+          <DrugInteractionAlert
+            medications={[...ctx.medications, ...medications.map(m => m.name).filter(Boolean)]}
+            medicationsText={ctx.medicationsText}
+          />
           <MedTable rows={medications} onChange={setMedications} />
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px 16px' }}>
