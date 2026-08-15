@@ -146,7 +146,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
         label: 'Severe — Tokyo Grade III (organ dysfunction)',
         description: 'Cardiovascular / neurological / respiratory / renal / hepatic / haematological dysfunction',
         detectKeywords: ['severe cholecystitis', 'grade iii', 'grade 3', 'tokyo grade iii', 'tokyo grade 3', 'organ dysfunction', 'empyema', 'gangrenous cholecystitis', 'emphysematous cholecystitis'],
-        allowedPhases: ['immediate', 'conservative', 'followup'],
+        allowedPhases: ['immediate', 'conservative', 'surgical', 'followup'],
         examQueries: ['Septic shock?', 'Renal impairment?', 'Altered consciousness?', 'Respiratory failure?'],
         urgencyNote: 'Tokyo Grade III — ICU resuscitation first. Percutaneous cholecystostomy for source control. Delayed laparoscopic cholecystectomy when systemically stable.',
         planPrefix:
