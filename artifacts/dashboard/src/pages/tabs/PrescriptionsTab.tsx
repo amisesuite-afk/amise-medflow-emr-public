@@ -54,6 +54,14 @@ interface PrescriptionRecord {
   updated_at: string;
 }
 
+interface DrugInteraction {
+  drug1: string;
+  drug2: string;
+  severity: 'major' | 'moderate' | 'minor';
+  description: string;
+  mechanism: string;
+}
+
 // ── Constants ────────────────────────────────────────────────────────────────
 
 const ROUTES = [
