@@ -70,10 +70,82 @@ const COMMON_RISKS = [
   'Chronic pain at incision site', 'Death (rare)',
 ];
 
+// Standard consent practice discloses complications by likelihood, not just
+// by whether they're generic-to-surgery or procedure-specific — a common,
+// usually-minor event (wound infection) reads very differently from a rare
+// but serious one (bile duct injury), and both belong on the form. Every
+// risk string used anywhere below must have an entry here; unclassified
+// risks default to 'serious' in printConsentPdf so nothing silently drops.
+type RiskTier = 'frequent' | 'serious';
+const RISK_FREQUENCY: Record<string, RiskTier> = {
+  // Generic / anaesthetic
+  'Bleeding requiring transfusion': 'serious',
+  'Infection / wound infection': 'frequent',
+  'Deep vein thrombosis (DVT)': 'serious',
+  'Pulmonary embolism (PE)': 'serious',
+  'Anaesthetic complications': 'frequent',
+  'Damage to surrounding structures': 'serious',
+  'Conversion to open surgery': 'frequent',
+  'Hernia at port / incision site': 'serious',
+  'Recurrence of condition': 'serious',
+  'Chronic pain at incision site': 'serious',
+  'Death (rare)': 'serious',
+  // Laparoscopic cholecystectomy
+  'Bile duct injury': 'serious',
+  'Bile leak': 'serious',
+  'Retained stone in CBD': 'frequent',
+  'Port site hernia': 'serious',
+  'Bowel injury': 'serious',
+  // Appendicectomy
+  'Intra-abdominal collection': 'frequent',
+  'Stump leak': 'serious',
+  'Bowel obstruction': 'serious',
+  // Hernia repair
+  'Mesh infection': 'serious',
+  'Chronic groin pain': 'frequent',
+  'Testicular atrophy (inguinal)': 'serious',
+  'Recurrence': 'serious',
+  // Colonoscopy
+  'Perforation': 'serious',
+  'Bleeding post-polypectomy': 'frequent',
+  'Incomplete examination': 'frequent',
+  // ERCP
+  'Pancreatitis': 'serious',
+  'Cholangitis': 'serious',
+  'Bleeding': 'serious',
+  'Incomplete duct clearance': 'frequent',
+  // OGD
+  'Bleeding post-biopsy': 'frequent',
+  'Aspiration': 'serious',
+  'Missed lesion': 'frequent',
+  // Thyroidectomy
+  'Recurrent laryngeal nerve injury (hoarseness)': 'serious',
+  'Hypocalcaemia (low calcium)': 'frequent',
+  'Hypothyroidism requiring lifelong thyroxine': 'frequent',
+  'Haematoma requiring return to theatre': 'serious',
+  // Mastectomy
+  'Lymphoedema': 'serious',
+  'Seroma (fluid collection)': 'frequent',
+  'Shoulder stiffness': 'frequent',
+  'Altered sensation or body image': 'frequent',
+  'Flap necrosis (if reconstruction)': 'serious',
+  // Wide local excision
+  'Incomplete excision requiring re-excision': 'frequent',
+  'Scar / keloid formation': 'frequent',
+  'Altered sensation around scar': 'frequent',
+  // Anterior resection
+  'Anastomotic leak (bowel join failure)': 'serious',
+  'Temporary protecting stoma': 'frequent',
+  'Bladder / sexual dysfunction': 'serious',
+  'Ileus (bowel not working)': 'frequent',
+  'Permanent stoma (if leak occurs)': 'serious',
+};
+
 interface ProcedureTemplate {
   id: string;
   procedure: string;
   anaesthesia: string;
+  benefits: string[];
   alternatives: string;
   generalRisks: string[];
   specificRisks: string[];
@@ -94,6 +166,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'lap_chole',
     procedure: 'Laparoscopic cholecystectomy',
     anaesthesia: 'General anaesthesia',
+    benefits: [
+      'Removes the diseased gallbladder, resolving gallstone attacks and biliary colic',
+      'Prevents further episodes of cholecystitis, jaundice, or gallstone pancreatitis',
+      'Keyhole approach reduces post-operative pain and speeds recovery compared with open surgery',
+    ],
     alternatives: 'Open cholecystectomy; conservative management with dietary modification',
     generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Pulmonary embolism (PE)', 'Anaesthetic complications', 'Conversion to open surgery'],
     specificRisks: ['Bile duct injury', 'Bile leak', 'Retained stone in CBD', 'Port site hernia', 'Bowel injury'],
@@ -112,6 +189,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'appendicectomy',
     procedure: 'Appendicectomy (laparoscopic)',
     anaesthesia: 'General anaesthesia',
+    benefits: [
+      'Removes the infected appendix, treating the source of infection',
+      'Prevents progression to perforation, peritonitis, or abscess formation',
+      'Definitive treatment — resolves symptoms and prevents recurrence',
+    ],
     alternatives: 'Open appendicectomy; non-operative antibiotic management (selected cases)',
     generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Anaesthetic complications', 'Conversion to open surgery'],
     specificRisks: ['Intra-abdominal collection', 'Stump leak', 'Bowel obstruction'],
@@ -130,6 +212,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'hernia_repair',
     procedure: 'Inguinal hernia repair (laparoscopic, mesh)',
     anaesthesia: 'General anaesthesia',
+    benefits: [
+      'Repairs the defect, relieving discomfort and bulging',
+      'Prevents incarceration or strangulation of bowel — a surgical emergency',
+      'Mesh reinforcement gives a durable, low-recurrence repair',
+    ],
     alternatives: 'Open tension-free mesh repair; watchful waiting for asymptomatic hernias',
     generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Anaesthetic complications', 'Hernia at port / incision site'],
     specificRisks: ['Mesh infection', 'Chronic groin pain', 'Testicular atrophy (inguinal)', 'Recurrence'],
@@ -148,6 +235,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'colonoscopy',
     procedure: 'Colonoscopy ± polypectomy',
     anaesthesia: 'Sedation',
+    benefits: [
+      'Direct visualisation of the entire colon to identify the cause of symptoms',
+      'Detects and removes polyps before they progress to cancer',
+      'Confirms or excludes serious bowel pathology, providing reassurance or early diagnosis',
+    ],
     alternatives: 'CT colonography; flexible sigmoidoscopy (limited); watchful waiting',
     generalRisks: ['Anaesthetic complications'],
     specificRisks: ['Perforation', 'Bleeding post-polypectomy', 'Incomplete examination'],
@@ -166,6 +258,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'ercp',
     procedure: 'ERCP ± sphincterotomy / stone extraction',
     anaesthesia: 'Sedation',
+    benefits: [
+      'Clears bile duct stones and relieves obstruction without open surgery',
+      'Treats jaundice and prevents recurrent cholangitis',
+      'Avoids the larger incision and longer recovery of open bile duct exploration',
+    ],
     alternatives: 'Laparoscopic bile duct exploration; percutaneous transhepatic cholangiography (PTC)',
     generalRisks: ['Anaesthetic complications', 'Bleeding requiring transfusion'],
     specificRisks: ['Pancreatitis', 'Cholangitis', 'Perforation', 'Bleeding', 'Incomplete duct clearance'],
@@ -184,6 +281,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'ogd',
     procedure: 'OGD (upper GI endoscopy)',
     anaesthesia: 'Sedation',
+    benefits: [
+      'Direct visualisation of the oesophagus, stomach, and duodenum to identify the cause of symptoms',
+      'Allows biopsy of any abnormal areas for diagnosis',
+      'Can treat some conditions (e.g. bleeding, strictures) at the same sitting',
+    ],
     alternatives: 'Barium swallow (limited); capsule endoscopy',
     generalRisks: ['Anaesthetic complications'],
     specificRisks: ['Perforation', 'Bleeding post-biopsy', 'Aspiration', 'Missed lesion'],
@@ -202,6 +304,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'thyroidectomy',
     procedure: 'Thyroidectomy (total / hemithyroidectomy)',
     anaesthesia: 'General anaesthesia',
+    benefits: [
+      'Removes the diseased or enlarged thyroid tissue',
+      'Resolves compressive symptoms (difficulty swallowing/breathing) from an enlarged gland',
+      'Removes or reduces cancer risk where malignancy is suspected or confirmed',
+    ],
     alternatives: 'Radioactive iodine therapy; anti-thyroid medication; surveillance',
     generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Anaesthetic complications'],
     specificRisks: ['Recurrent laryngeal nerve injury (hoarseness)', 'Hypocalcaemia (low calcium)', 'Hypothyroidism requiring lifelong thyroxine', 'Haematoma requiring return to theatre'],
@@ -220,6 +327,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'mastectomy',
     procedure: 'Mastectomy ± sentinel lymph node biopsy',
     anaesthesia: 'General anaesthesia',
+    benefits: [
+      'Removes the cancerous or high-risk breast tissue',
+      'Sentinel node biopsy provides accurate staging to guide further treatment',
+      'A key step in achieving cancer control and long-term survival',
+    ],
     alternatives: 'Wide local excision (breast conservation); neoadjuvant chemotherapy then reassess',
     generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Anaesthetic complications'],
     specificRisks: ['Lymphoedema', 'Seroma (fluid collection)', 'Shoulder stiffness', 'Altered sensation or body image', 'Flap necrosis (if reconstruction)'],
@@ -238,6 +350,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'wle',
     procedure: 'Wide local excision (skin lesion / melanoma)',
     anaesthesia: 'Local anaesthesia',
+    benefits: [
+      'Removes the lesion completely with a margin of normal tissue',
+      'Provides a definitive tissue diagnosis',
+      'Reduces the risk of local recurrence or progression (for pre-malignant/malignant lesions)',
+    ],
     alternatives: 'Surveillance with repeat biopsy (benign lesions only)',
     generalRisks: ['Bleeding', 'Infection / wound infection'],
     specificRisks: ['Incomplete excision requiring re-excision', 'Scar / keloid formation', 'Altered sensation around scar'],
@@ -256,6 +373,11 @@ const PROCEDURE_TEMPLATES: ProcedureTemplate[] = [
     id: 'anterior_resection',
     procedure: 'Anterior resection (laparoscopic)',
     anaesthesia: 'General anaesthesia',
+    benefits: [
+      'Removes the diseased segment of bowel, treating cancer or severe diverticular disease',
+      'Restores bowel continuity where possible, avoiding a permanent stoma in most cases',
+      'Enhanced recovery protocol aims to minimise hospital stay and speed return to normal function',
+    ],
     alternatives: 'Hartmann\'s procedure; palliative stoma alone; neoadjuvant radiotherapy',
     generalRisks: ['Bleeding requiring transfusion', 'Infection / wound infection', 'Deep vein thrombosis (DVT)', 'Pulmonary embolism (PE)', 'Anaesthetic complications', 'Conversion to open surgery'],
     specificRisks: ['Anastomotic leak (bowel join failure)', 'Temporary protecting stoma', 'Bladder / sexual dysfunction', 'Ileus (bowel not working)', 'Permanent stoma (if leak occurs)'],
@@ -297,6 +419,14 @@ function procedureRisks(procedure: string): string[] {
   return [];
 }
 
+function procedureBenefits(procedure: string): string[] {
+  const p = procedure.toLowerCase();
+  for (const t of PROCEDURE_TEMPLATES) {
+    if (p.includes(t.procedure.split('(')[0].toLowerCase().trim())) return t.benefits;
+  }
+  return [];
+}
+
 function ectDateStr() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/St_Lucia' });
 }
@@ -305,7 +435,7 @@ function ectDateStr() {
 
 function printConsentPdf(opts: {
   patientName: string; age: string; sex: string; dob?: string; nhiNumber?: string;
-  procedure: string; anaesthesia: string; alternatives: string;
+  procedure: string; anaesthesia: string; benefits: string[]; alternatives: string;
   generalRisks: string[]; specificRisks: string[];
   capacity: boolean; interpreterUsed: boolean;
   patientQuestions: string; notes: string;
@@ -313,6 +443,11 @@ function printConsentPdf(opts: {
   patientSig: string; clinicianSig: string;
 }) {
   const allRisks = [...opts.generalRisks, ...opts.specificRisks];
+  // Standard consent practice discloses complications by likelihood, not just
+  // by generic-vs-procedure-specific — group into frequent/common vs serious/rare
+  // regardless of which picker a risk came from.
+  const frequentRisks = allRisks.filter(r => (RISK_FREQUENCY[r] ?? 'serious') === 'frequent');
+  const seriousRisks = allRisks.filter(r => (RISK_FREQUENCY[r] ?? 'serious') === 'serious');
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
 <title>Surgical Consent — ${opts.patientName}</title>
 <style>
@@ -324,8 +459,14 @@ function printConsentPdf(opts: {
   .section-title { font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.06em; color: #1e3a5f; border-bottom: 1px solid #c7d2fe; padding-bottom: 3px; margin-bottom: 8px; }
   .field { margin-bottom: 6px; }
   .field label { font-weight: bold; }
-  .risks { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
-  .risk-chip { background: #eff6ff; border: 1px solid #93c5fd; border-radius: 12px; padding: 2px 9px; font-size: 11px; }
+  ul.benefits { margin: 4px 0 0 18px; }
+  ul.benefits li { margin-bottom: 3px; line-height: 1.5; }
+  .risk-group { margin-bottom: 8px; }
+  .risk-group-label { font-size: 10px; font-weight: bold; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .risks { display: flex; flex-wrap: wrap; gap: 5px; }
+  .risk-chip { border-radius: 12px; padding: 2px 9px; font-size: 11px; }
+  .risk-chip.frequent { background: #eff6ff; border: 1px solid #93c5fd; }
+  .risk-chip.serious { background: #fef2f2; border: 1px solid #fca5a5; }
   .sig-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
   .sig-box { border-top: 1px solid #aaa; padding-top: 6px; }
   .sig-box label { font-size: 10px; text-transform: uppercase; color: #666; }
@@ -355,9 +496,20 @@ function printConsentPdf(opts: {
   <div class="field"><label>Anaesthesia:</label> ${opts.anaesthesia}</div>
   ${opts.alternatives ? `<div class="field"><label>Alternatives discussed:</label> ${opts.alternatives}</div>` : ''}
 </div>
+${opts.benefits.length > 0 ? `<div class="section">
+  <div class="section-title">Intended benefits</div>
+  <ul class="benefits">${opts.benefits.map(b => `<li>${b}</li>`).join('')}</ul>
+</div>` : ''}
 ${allRisks.length > 0 ? `<div class="section">
-  <div class="section-title">Risks discussed with patient</div>
-  <div class="risks">${allRisks.map(r => `<span class="risk-chip">${r}</span>`).join('')}</div>
+  <div class="section-title">Risks and complications discussed with patient</div>
+  ${frequentRisks.length > 0 ? `<div class="risk-group">
+    <div class="risk-group-label">Frequently reported / usually minor</div>
+    <div class="risks">${frequentRisks.map(r => `<span class="risk-chip frequent">${r}</span>`).join('')}</div>
+  </div>` : ''}
+  ${seriousRisks.length > 0 ? `<div class="risk-group">
+    <div class="risk-group-label">Serious or rare, but disclosed given potential severity</div>
+    <div class="risks">${seriousRisks.map(r => `<span class="risk-chip serious">${r}</span>`).join('')}</div>
+  </div>` : ''}
 </div>` : ''}
 <div class="section">
   <div class="section-title">Capacity and consent</div>
@@ -369,7 +521,7 @@ ${allRisks.length > 0 ? `<div class="section">
 <div class="section">
   <div class="section-title">Declaration</div>
   <p style="font-size:12px;line-height:1.7;color:#334155">
-    I confirm that I have been given information about the nature, purpose, intended benefits, and material risks of the above procedure, including the risks of not having treatment. I have had the opportunity to ask questions and have had them answered to my satisfaction. I understand that I may withdraw my consent at any time before the procedure begins.
+    I confirm that I have been given information about the nature, purpose, intended benefits, and material risks of the above procedure, including the risks of not having treatment. I have had the opportunity to ask questions and have had them answered to my satisfaction. I understand that no guarantee has been given that the procedure will be performed by a specific individual, and that no outcome can be guaranteed. I understand that I may withdraw my consent at any time before the procedure begins.
   </p>
 </div>
 <div class="sig-row">
@@ -396,6 +548,7 @@ ${allRisks.length > 0 ? `<div class="section">
 
 function printPatientLeaflet(opts: {
   patientName: string; procedure: string; consentDate: string;
+  benefits: string[];
   prep: ProcedureTemplate['prep'] | null;
 }) {
   if (!opts.prep) return;
@@ -426,6 +579,7 @@ function printPatientLeaflet(opts: {
 
 <h2>About this procedure</h2>
 <p>${opts.prep.patientLeaflet}</p>
+${opts.benefits.length > 0 ? `<h2>Why this procedure is recommended</h2><ul>${opts.benefits.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
 
 <h2>Preparation before your procedure</h2>
 ${p.fastingFrom ? `<p><strong>Fasting:</strong> ${p.fastingFrom}</p>` : ''}
@@ -462,6 +616,7 @@ export default function SurgicalConsentTab() {
   const [procedure, setProcedure] = useState('');
   const [anaesthesia, setAnaesthesia] = useState('General anaesthesia');
   const [alternatives, setAlternatives] = useState('');
+  const [benefits, setBenefits] = useState<string[]>([]);
   const [specificRisks, setSpecificRisks] = useState<string[]>([]);
   const [generalRisks, setGeneralRisks] = useState<string[]>([]);
   const [capacity, setCapacity] = useState(true);
@@ -501,6 +656,7 @@ export default function SurgicalConsentTab() {
       setProcedure(tmpl.procedure);
       setAnaesthesia(tmpl.anaesthesia);
       setAlternatives(tmpl.alternatives);
+      setBenefits(tmpl.benefits);
       setGeneralRisks(tmpl.generalRisks);
       setSpecificRisks(tmpl.specificRisks);
       return;
@@ -512,6 +668,7 @@ export default function SurgicalConsentTab() {
 
   function applyTemplate(t: ProcedureTemplate) {
     setProcedure(t.procedure); setAnaesthesia(t.anaesthesia); setAlternatives(t.alternatives);
+    setBenefits(t.benefits);
     setGeneralRisks(t.generalRisks); setSpecificRisks(t.specificRisks);
     setSigned(false);
   }
@@ -521,8 +678,11 @@ export default function SurgicalConsentTab() {
   ) ?? null;
 
   const procedureSpecific = procedureRisks(procedure);
+  const suggestedBenefits = procedureBenefits(procedure);
   const toggleRisk = (arr: string[], setArr: (v: string[]) => void, v: string) =>
     arr.includes(v) ? setArr(arr.filter(r => r !== v)) : setArr([...arr, v]);
+  const toggleBenefit = (v: string) =>
+    setBenefits(benefits.includes(v) ? benefits.filter(b => b !== v) : [...benefits, v]);
 
   const inp: React.CSSProperties = { fontSize: 13, padding: '6px 10px', border: '1px solid #d1d5db', borderRadius: 6, outline: 'none', width: '100%', background: 'var(--bg)', color: 'var(--ink)' };
 
@@ -609,12 +769,51 @@ export default function SurgicalConsentTab() {
         </div>
       </CollapsibleCard>
 
+      <CollapsibleCard title="Benefits of this procedure" defaultOpen>
+        {suggestedBenefits.length > 0 ? (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {suggestedBenefits.map(b => (
+              <button key={b} type="button" onClick={() => toggleBenefit(b)}
+                style={{ fontSize: 12, padding: '4px 10px', borderRadius: 20, textAlign: 'left', border: `1px solid ${benefits.includes(b) ? '#15803d' : '#d1d5db'}`, background: benefits.includes(b) ? '#f0fdf4' : 'var(--bg)', color: benefits.includes(b) ? '#166534' : '#475569', cursor: 'pointer', fontWeight: benefits.includes(b) ? 600 : 400 }}>
+                {b}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p style={{ fontSize: 12, color: '#94a3b8' }}>Select a procedure template above to see suggested benefits, or add your own below.</p>
+        )}
+        <div style={{ marginTop: 10 }}>
+          <label style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted)', display: 'block', marginBottom: 3 }}>ADDITIONAL / CUSTOM BENEFIT</label>
+          <input
+            style={inp} placeholder="Type a benefit and press Enter to add"
+            onKeyDown={e => {
+              const v = (e.target as HTMLInputElement).value.trim();
+              if (e.key === 'Enter' && v) { e.preventDefault(); if (!benefits.includes(v)) setBenefits([...benefits, v]); (e.target as HTMLInputElement).value = ''; }
+            }}
+          />
+        </div>
+        {benefits.filter(b => !suggestedBenefits.includes(b)).length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+            {benefits.filter(b => !suggestedBenefits.includes(b)).map(b => (
+              <button key={b} type="button" onClick={() => toggleBenefit(b)}
+                style={{ fontSize: 12, padding: '4px 10px', borderRadius: 20, border: '1px solid #15803d', background: '#f0fdf4', color: '#166534', cursor: 'pointer', fontWeight: 600 }}>
+                {b} ×
+              </button>
+            ))}
+          </div>
+        )}
+      </CollapsibleCard>
+
       <CollapsibleCard title="General risks discussed">
+        <p style={{ fontSize: 11, color: '#94a3b8', marginBottom: 8 }}>
+          <span style={{ color: '#1d4ed8' }}>●</span> frequently reported, usually minor &nbsp;·&nbsp;
+          <span style={{ color: '#b91c1c' }}>●</span> serious or rare — disclosed given potential severity
+        </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
           {COMMON_RISKS.map(r => (
             <button key={r} type="button" onClick={() => toggleRisk(generalRisks, setGeneralRisks, r)}
               style={{ fontSize: 12, padding: '4px 10px', borderRadius: 20, border: `1px solid ${generalRisks.includes(r) ? '#3b82f6' : '#d1d5db'}`, background: generalRisks.includes(r) ? '#eff6ff' : 'var(--bg)', color: generalRisks.includes(r) ? '#1d4ed8' : '#475569', cursor: 'pointer', fontWeight: generalRisks.includes(r) ? 600 : 400 }}>
-              {r}
+              <span style={{ color: RISK_FREQUENCY[r] === 'serious' ? '#b91c1c' : '#1d4ed8' }}>●</span> {r}
             </button>
           ))}
         </div>
@@ -626,7 +825,7 @@ export default function SurgicalConsentTab() {
             {procedureSpecific.map(r => (
               <button key={r} type="button" onClick={() => toggleRisk(specificRisks, setSpecificRisks, r)}
                 style={{ fontSize: 12, padding: '4px 10px', borderRadius: 20, border: `1px solid ${specificRisks.includes(r) ? '#7c3aed' : '#d1d5db'}`, background: specificRisks.includes(r) ? '#f5f3ff' : 'var(--bg)', color: specificRisks.includes(r) ? '#5b21b6' : '#475569', cursor: 'pointer', fontWeight: specificRisks.includes(r) ? 600 : 400 }}>
-                {r}
+                <span style={{ color: RISK_FREQUENCY[r] === 'serious' ? '#b91c1c' : '#1d4ed8' }}>●</span> {r}
               </button>
             ))}
           </div>
@@ -740,6 +939,7 @@ export default function SurgicalConsentTab() {
           <div style={{ fontSize: 13, color: '#166534', marginBottom: 10 }}>
             <b>Procedure:</b> {procedure}<br />
             <b>Anaesthesia:</b> {anaesthesia}<br />
+            {benefits.length > 0 && <><b>Benefits discussed:</b> {benefits.join(', ')}<br /></>}
             {[...generalRisks, ...specificRisks].length > 0 && <><b>Risks discussed:</b> {[...generalRisks, ...specificRisks].join(', ')}<br /></>}
             {alternatives && <><b>Alternatives:</b> {alternatives}<br /></>}
             {interpreterUsed && <><b>Interpreter used</b><br /></>}
@@ -757,13 +957,13 @@ export default function SurgicalConsentTab() {
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             <button type="button"
-              onClick={() => printConsentPdf({ patientName, age, sex, dob, nhiNumber, procedure, anaesthesia, alternatives, generalRisks, specificRisks, capacity, interpreterUsed, patientQuestions, notes, clinicianName, consentDate, patientSig, clinicianSig })}
+              onClick={() => printConsentPdf({ patientName, age, sex, dob, nhiNumber, procedure, anaesthesia, benefits, alternatives, generalRisks, specificRisks, capacity, interpreterUsed, patientQuestions, notes, clinicianName, consentDate, patientSig, clinicianSig })}
               style={{ flex: 1, minWidth: 120, padding: '8px', borderRadius: 7, border: '1.5px solid #1e3a5f', background: '#fff', color: '#1e3a5f', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
               🖨 Consent PDF
             </button>
             {matchedTemplate && (
               <button type="button"
-                onClick={() => printPatientLeaflet({ patientName, procedure, consentDate, prep: matchedTemplate.prep })}
+                onClick={() => printPatientLeaflet({ patientName, procedure, consentDate, benefits, prep: matchedTemplate.prep })}
                 style={{ flex: 1, minWidth: 120, padding: '8px', borderRadius: 7, border: '1.5px solid #0891b2', background: '#f0f9ff', color: '#0369a1', fontWeight: 700, fontSize: 12, cursor: 'pointer' }}>
                 📄 Patient Info Leaflet
               </button>
@@ -771,12 +971,16 @@ export default function SurgicalConsentTab() {
             <button type="button"
               onClick={() => {
                 const allRisks = [...generalRisks, ...specificRisks];
+                const freqRisks = allRisks.filter(r => (RISK_FREQUENCY[r] ?? 'serious') === 'frequent');
+                const seriousRisksW = allRisks.filter(r => (RISK_FREQUENCY[r] ?? 'serious') === 'serious');
                 const body = `<div style="border-bottom:2pt solid #C8A24B;margin-bottom:12px;padding-bottom:8px"><div style="font-size:15pt;font-weight:700;color:#0B2545">AMISE MEDICAL SERVICES</div><div style="font-size:9pt;color:#6B7280">Dr Dawit Daniel Kabiye, MD, DM — General &amp; Endoscopic Surgery — Saint Lucia</div></div>
                   <h1>Surgical Consent Form</h1>
                   <h2>${patientName || 'Patient'}${dob ? ` · DOB: ${dob}` : ''}${nhiNumber ? ` · NHI: ${nhiNumber}` : ''} | ${consentDate}</h2>
                   <h3>Procedure</h3>
                   <table><tr><td class="lbl">Operation:</td><td>${procedure}</td></tr><tr><td class="lbl">Anaesthesia:</td><td>${anaesthesia}</td></tr>${alternatives ? `<tr><td class="lbl">Alternatives discussed:</td><td>${alternatives}</td></tr>` : ''}</table>
-                  ${allRisks.length > 0 ? `<h3>Risks discussed</h3><p>${allRisks.join(' · ')}</p>` : ''}
+                  ${benefits.length > 0 ? `<h3>Intended benefits</h3><p>${benefits.join(' · ')}</p>` : ''}
+                  ${freqRisks.length > 0 ? `<h3>Frequently reported / usually minor complications</h3><p>${freqRisks.join(' · ')}</p>` : ''}
+                  ${seriousRisksW.length > 0 ? `<h3>Serious or rare complications (disclosed given potential severity)</h3><p>${seriousRisksW.join(' · ')}</p>` : ''}
                   <h3>Capacity &amp; Consent</h3>
                   <p>${capacity ? '✓ Patient has capacity to consent' : '⚠ Capacity assessment required'}</p>
                   ${interpreterUsed ? '<p>✓ Interpreter used</p>' : ''}
