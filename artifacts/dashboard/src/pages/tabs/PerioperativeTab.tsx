@@ -231,6 +231,13 @@ export default function PerioperativeTab() {
     endoscopy_col:  'colonoscopy',
     day_of_surgery: '',
   };
+  // This tab's proc ids (e.g. 'hernia_inguinal') are a separate namespace
+  // from SurgicalConsentTab's DISEASE_ID_TO_TEMPLATE ids (e.g. 'hernia_repair')
+  // for the same diagnosis — intentional (perioperative checklists vs. consent
+  // templates are different catalogs), bridged explicitly by
+  // diagnosis-proc-mapper.ts's { procId, consentId } pairs. If you add a new
+  // diagnosis entry here, check whether SurgicalConsentTab and
+  // diagnosis-proc-mapper.ts need the matching addition too.
   const DISEASE_ID_TO_PROC: Record<string, string> = {
     cholecystitis:   'lap_chole',
     appendicitis:    'appendicectomy',

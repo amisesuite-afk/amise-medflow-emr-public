@@ -405,6 +405,14 @@ const VISIT_TYPE_TO_TEMPLATE: Record<string, string> = {
 // unambiguously implies one procedure. Diagnoses whose management genuinely
 // branches (e.g. diverticulitis — usually conservative, only Hinchey III/IV
 // needs resection) are deliberately left out rather than guessed at.
+//
+// This tab's template ids (e.g. 'hernia_repair') are a separate namespace
+// from PerioperativeTab's DISEASE_ID_TO_PROC ids (e.g. 'hernia_inguinal')
+// for the same diagnosis — intentional (consent templates vs. perioperative
+// checklists are different catalogs), bridged explicitly by
+// diagnosis-proc-mapper.ts's { procId, consentId } pairs. If you add a new
+// diagnosis entry here, check whether PerioperativeTab and
+// diagnosis-proc-mapper.ts need the matching addition too.
 const DISEASE_ID_TO_TEMPLATE: Record<string, string> = {
   cholecystitis:   'lap_chole',
   appendicitis:    'appendicectomy',
