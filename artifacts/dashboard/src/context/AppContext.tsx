@@ -639,16 +639,30 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [encounterMode, setEncounterMode] = useState<'outpatient' | 'inpatient'>('outpatient');
   const [encounterType, setEncounterType] = useState<EncounterType>('surgical_consult');
-  const [mrNumber, setMrNumber] = useState('');
-  const [ward, setWard] = useState('');
-  const [dateAdmission, setDateAdmission] = useState('');
-  const [dateDischarge, setDateDischarge] = useState('');
-  const [bloodGroup, setBloodGroup] = useState('');
-  const [nokName, setNokName] = useState('');
-  const [nokRelation, setNokRelation] = useState('');
-  const [nokTel, setNokTel] = useState('');
-  const [admittingSurgeon, setAdmittingSurgeon] = useState('Dr Dawit Daniel Kabiye, MD, DM');
-  const [referringPhysician, setReferringPhysician] = useState('');
+  // Inpatient/ward-admin facet — see anthropometrics facet above for the
+  // pattern rationale (grouped in memory only; localStorage wire format,
+  // the debounced saveInpatientDetails() autosave effect, and the
+  // page-hide flush effect all read these via the same destructured
+  // names below, so none of them need to change).
+  const [inpatientAdmin, setInpatientAdmin] = useState({
+    mrNumber: '', ward: '', dateAdmission: '', dateDischarge: '', bloodGroup: '',
+    nokName: '', nokRelation: '', nokTel: '',
+    admittingSurgeon: 'Dr Dawit Daniel Kabiye, MD, DM', referringPhysician: '',
+  });
+  const {
+    mrNumber, ward, dateAdmission, dateDischarge, bloodGroup,
+    nokName, nokRelation, nokTel, admittingSurgeon, referringPhysician,
+  } = inpatientAdmin;
+  const setMrNumber            = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, mrNumber: v })), []);
+  const setWard                = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, ward: v })), []);
+  const setDateAdmission       = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, dateAdmission: v })), []);
+  const setDateDischarge       = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, dateDischarge: v })), []);
+  const setBloodGroup          = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, bloodGroup: v })), []);
+  const setNokName             = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, nokName: v })), []);
+  const setNokRelation         = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, nokRelation: v })), []);
+  const setNokTel              = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, nokTel: v })), []);
+  const setAdmittingSurgeon    = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, admittingSurgeon: v })), []);
+  const setReferringPhysician  = useCallback((v: string) => setInpatientAdmin(prev => ({ ...prev, referringPhysician: v })), []);
 
   const [paneState, setPaneState] = useState<PaneState | null>(null);
   const [paneTop, setPaneTop] = useState<RankedDiagnosis[]>([]);
