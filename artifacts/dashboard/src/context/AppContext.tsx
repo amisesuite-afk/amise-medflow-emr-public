@@ -568,14 +568,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [occupation, setOccupation] = useState('');
   const [hpiNotes, setHpiNotes] = useState('');
 
-  const [examGeneral, setExamGeneral] = useState('');
-  const [examCardio, setExamCardio] = useState('');
-  const [examResp, setExamResp] = useState('');
-  const [examAbdomen, setExamAbdomen] = useState('');
-  const [examNeuro, setExamNeuro] = useState('');
-  const [examExtremities, setExamExtremities] = useState('');
-  const [examBreast, setExamBreast] = useState('');
-  const [examWound, setExamWound] = useState('');
+  // Examination-findings facet — see anthropometrics facet above for the
+  // pattern rationale. Free-text findings per system; examFindings/examNotes
+  // (structured records just below) are a separate, already-cohesive pair
+  // left untouched.
+  const [examFacet, setExamFacet] = useState({
+    examGeneral: '', examCardio: '', examResp: '', examAbdomen: '',
+    examNeuro: '', examExtremities: '', examBreast: '', examWound: '',
+  });
+  const {
+    examGeneral, examCardio, examResp, examAbdomen,
+    examNeuro, examExtremities, examBreast, examWound,
+  } = examFacet;
+  const setExamGeneral     = useCallback((v: string) => setExamFacet(prev => ({ ...prev, examGeneral: v })), []);
+  const setExamCardio      = useCallback((v: string) => setExamFacet(prev => ({ ...prev, examCardio: v })), []);
+  const setExamResp        = useCallback((v: string) => setExamFacet(prev => ({ ...prev, examResp: v })), []);
+  const setExamAbdomen     = useCallback((v: string) => setExamFacet(prev => ({ ...prev, examAbdomen: v })), []);
+  const setExamNeuro       = useCallback((v: string) => setExamFacet(prev => ({ ...prev, examNeuro: v })), []);
+  const setExamExtremities = useCallback((v: string) => setExamFacet(prev => ({ ...prev, examExtremities: v })), []);
+  const setExamBreast      = useCallback((v: string) => setExamFacet(prev => ({ ...prev, examBreast: v })), []);
+  const setExamWound       = useCallback((v: string) => setExamFacet(prev => ({ ...prev, examWound: v })), []);
   const [examFindings, setExamFindings] = useState<Record<string, string[]>>({});
   const [examNotes, setExamNotes] = useState<Record<string, string>>({});
 
