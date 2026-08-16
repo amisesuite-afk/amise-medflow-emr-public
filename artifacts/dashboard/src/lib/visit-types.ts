@@ -1,3 +1,5 @@
+import type { EncounterType } from '@/context/AppContext';
+
 export const VISIT_TYPES = [
   { id: 'new_consult',      label: 'First Consult',      icon: '🩺', color: '#0d9488', desc: 'New patient or new problem — full history' },
   { id: 'follow_up',        label: 'Follow-up',          icon: '🔄', color: '#2563eb', desc: 'Interval review — SOAP: Subjective → Objective → Assessment → Plan' },
@@ -16,3 +18,35 @@ export const VISIT_TYPES = [
 ] as const;
 
 export type VisitTypeId = typeof VISIT_TYPES[number]['id'];
+
+/**
+ * Single source of truth for what picking a visit type implies — encounter
+ * complexity tier (drives NavSidebar phase visibility) and which top-level
+ * page it opens. Previously duplicated verbatim in two places in Home.tsx
+ * (ambient and non-ambient header), which let them silently drift.
+ *
+ * `day_of_surgery` maps to 'office_procedure', not 'surgical_consult' —
+ * its own description ("WHO checklist, anaesthetic, op note, specimen")
+ * needs the 'operative' nav phase, which surgical_consult's phase set
+ * doesn't include.
+ */
+export function resolveEncounterContext(
+  visitTypeId: string
+): { encounterType: EncounterType | null; topSection: 'trauma' | 'consultation' } {
+  if (visitTypeId === 'trauma' || visitTypeId === 'burns') {
+    return { encounterType: null, topSection: 'trauma' };
+  }
+  if (visitTypeId === 'ercp' || visitTypeId === 'endoscopy_ogd' || visitTypeId === 'endoscopy_col') {
+    return { encounterType: 'endoscopy', topSection: 'consultation' };
+  }
+  if (visitTypeId === 'urgent') {
+    return { encounterType: 'major_emergency', topSection: 'consultation' };
+  }
+  if (visitTypeId === 'post_op' || visitTypeId === 'follow_up') {
+    return { encounterType: 'quick_consult', topSection: 'consultation' };
+  }
+  if (visitTypeId === 'day_of_surgery') {
+    return { encounterType: 'office_procedure', topSection: 'consultation' };
+  }
+  return { encounterType: 'surgical_consult', topSection: 'consultation' };
+}
