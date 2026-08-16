@@ -1468,6 +1468,11 @@ export default function HomePage() {
         {/* Critical result alerts — vitals / investigation thresholds */}
         {topSection === 'consultation' && <CriticalResultAlert />}
 
+        {/* Previous visit disclosure — brief of prior encounters (date, type, CC, diagnosis)
+            for continuity of care. Self-hides for a genuinely new patient (no history) and
+            never modifies the current encounter — reference only. */}
+        {topSection === 'consultation' && <PreviousVisitStrip />}
+
         {/* No-patient quickstart — inline name/age/sex entry */}
         {topSection === 'consultation' && !patientId && !patientName && (
           <div style={{ background: '#fef9c3', border: '1.5px solid #fbbf24', borderRadius: 10, padding: '14px 18px', color: '#92400e' }}>
