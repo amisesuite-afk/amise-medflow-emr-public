@@ -617,10 +617,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [billing, setBilling] = useState('');
   const [documents, setDocuments] = useState('');
   const [surgicalClassifications, setSurgicalClassifications] = useState<Record<string, string>>({});
-  const [insuranceProvider, setInsuranceProvider] = useState('');
-  const [policyNumber, setPolicyNumber] = useState('');
-  const [nhiNumber, setNhiNumber] = useState('');
-  const [preAuthStatus, setPreAuthStatus] = useState('');
+  // Insurance/billing-admin facet — see anthropometrics facet above for the
+  // pattern rationale (grouped in memory only; localStorage wire format and
+  // external CtxValue shape both untouched).
+  const [insuranceAdmin, setInsuranceAdmin] = useState({
+    insuranceProvider: '', policyNumber: '', nhiNumber: '', preAuthStatus: '',
+  });
+  const { insuranceProvider, policyNumber, nhiNumber, preAuthStatus } = insuranceAdmin;
+  const setInsuranceProvider = useCallback((v: string) => setInsuranceAdmin(prev => ({ ...prev, insuranceProvider: v })), []);
+  const setPolicyNumber      = useCallback((v: string) => setInsuranceAdmin(prev => ({ ...prev, policyNumber: v })), []);
+  const setNhiNumber         = useCallback((v: string) => setInsuranceAdmin(prev => ({ ...prev, nhiNumber: v })), []);
+  const setPreAuthStatus     = useCallback((v: string) => setInsuranceAdmin(prev => ({ ...prev, preAuthStatus: v })), []);
 
   const [attachments, setAttachments] = useState<ClinicalAttachment[]>([]);
   const [radiologyRequests, setRadiologyRequests] = useState<RadiologyRequest[]>([]);
