@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { enqueue, flush, type SyncStatus } from '@/lib/sync-outbox';
+import '@/lib/sync-executors'; // registers outbox executors — side-effect import, must run before any save can fail
 import { adaptiveTriage, AdaptiveTriageInput, AdaptiveTriageResult, Sex, VitalSigns } from '@workspace/triage-engine';
 import { type SiteCode, supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
@@ -657,7 +658,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Sync status from the IndexedDB outbox (surfaced to the sync indicator)
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced');
 
-  const trackedSave = useCallback(async <T,>(fn: () => Promise<T>): Promise<T | undefined> => {
+  const trackedSave = useCallback(async <T,>(
+    fn: () => Promise<T>,
+    /**
+     * Serializable descriptor for this save. When provided, a failure
+     * enqueues the payload to the IndexedDB outbox (sync-outbox.ts) so it
+     * survives a page reload or browser close, not just a same-session
+     * retry — the matching executor in sync-executors.ts replays it when
+     * the outbox flushes on reconnect. Closures (fn) can't be serialized,
+     * which is why this is a separate plain-object parameter rather than
+     * derived from fn itself.
+     */
+    descriptor?: { entityType: string; entityId: string; payload: Record<string, unknown> },
+  ): Promise<T | undefined> => {
     const epoch = saveEpoch.current;
     pendingSaves.current++;
     _setSaveStatus('saving');
@@ -683,14 +696,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const msg = err instanceof Error ? err.message : 'Save failed';
       _setLastSaveError(msg);
       console.error('[autosave] error:', err);
-      if (!navigator.onLine) {
-        // Serialize the failed save to IndexedDB so it survives a page reload.
-        // We store a generic 'autosave' entry — the executor registered under
-        // 'autosave' will re-run the closure when the outbox is flushed.
-        // NOTE: closures are not serializable; we store a noop descriptor here
-        // so the outbox tracks the count for the sync indicator, and the
-        // window-online handler below calls the original closure directly.
+      // Queue on any failure, not just navigator.onLine === false —
+      // navigator.onLine only reflects whether a network interface is up,
+      // not whether the backend is actually reachable (e.g. a captive
+      // portal or DNS failure still reports online), so gating on it missed
+      // the most common real-world offline failure mode.
+      if (descriptor) {
         setSyncStatus('pending');
+        void enqueue(descriptor.entityType, descriptor.entityId, descriptor.payload)
+          .catch(e => console.error('[autosave] enqueue failed:', e));
       }
       return undefined;
     }
@@ -1095,9 +1109,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         cptCodes,
         acuity:        triageResult.acuity,
         triageScore:   triageResult.score,
-      }));
-      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }));
-      void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText));
+      }), { entityType: 'assessment', entityId: encounterId, payload: {
+        encounter_id: encounterId, patient_id: patientId, diagnosis: assessment,
+        differentials, icdCodes, cptCodes,
+        acuity: triageResult.acuity, triageScore: triageResult.score,
+      } });
+      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }),
+        { entityType: 'plan', entityId: encounterId, payload: { encounter_id: encounterId, patient_id: patientId, description: plan } });
+      void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText),
+        { entityType: 'medications', entityId: encounterId, payload: { patientId, encounterId, chipMeds: medications, freeText: medicationsText } });
     }, 2000);
     return () => { if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1109,7 +1129,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current);
     allergyTimerRef.current = setTimeout(() => {
       const allergenList = allergies.split(',').map(s => s.trim()).filter(Boolean);
-      if (allergenList.length) void trackedSave(() => syncAllergyList(patientId, allergenList));
+      if (allergenList.length) void trackedSave(() => syncAllergyList(patientId, allergenList),
+        { entityType: 'allergies', entityId: patientId, payload: { patientId, allergens: allergenList } });
     }, 3000);
     return () => { if (allergyTimerRef.current) clearTimeout(allergyTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1120,7 +1141,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId || !encounterId) return;
     if (examTimerRef.current) clearTimeout(examTimerRef.current);
     examTimerRef.current = setTimeout(() => {
-      void trackedSave(() => saveExamFindings(examFindings, examNotes, patientId, encounterId));
+      void trackedSave(() => saveExamFindings(examFindings, examNotes, patientId, encounterId),
+        { entityType: 'exam_findings', entityId: encounterId, payload: { examFindings, examNotes, patientId, encounterId } });
     }, 3000);
     return () => { if (examTimerRef.current) clearTimeout(examTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1131,7 +1153,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId) return;
     if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current);
     surgicalTimerRef.current = setTimeout(() => {
-      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes, recentSurgeryDate));
+      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes, recentSurgeryDate),
+        { entityType: 'surgical_history', entityId: patientId, payload: { patientId, procedures: surgicalHistory, notes: surgicalNotes, recentSurgeryDate } });
     }, 3000);
     return () => { if (surgicalTimerRef.current) clearTimeout(surgicalTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1142,7 +1165,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId || !toxicHabits.length) return;
     if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current);
     toxicTimerRef.current = setTimeout(() => {
-      void trackedSave(() => syncToxicHabits(patientId, toxicHabits));
+      void trackedSave(() => syncToxicHabits(patientId, toxicHabits),
+        { entityType: 'toxic_habits', entityId: patientId, payload: { patientId, habits: toxicHabits } });
     }, 3000);
     return () => { if (toxicTimerRef.current) clearTimeout(toxicTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1155,7 +1179,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!hasFinding) return;
     if (rosTimerRef.current) clearTimeout(rosTimerRef.current);
     rosTimerRef.current = setTimeout(() => {
-      void trackedSave(() => syncRosFindings(patientId, encounterId, rosFindings));
+      void trackedSave(() => syncRosFindings(patientId, encounterId, rosFindings),
+        { entityType: 'ros_findings', entityId: encounterId, payload: { patientId, encounterId, rosFindings } });
     }, 3000);
     return () => { if (rosTimerRef.current) clearTimeout(rosTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1168,7 +1193,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!hasData) return;
     if (procedureTimerRef.current) clearTimeout(procedureTimerRef.current);
     procedureTimerRef.current = setTimeout(() => {
-      void trackedSave(() => syncProcedureData(patientId, encounterId, procedureData));
+      void trackedSave(() => syncProcedureData(patientId, encounterId, procedureData),
+        { entityType: 'procedure_data', entityId: encounterId, payload: { patientId, encounterId, procedureData } });
     }, 3000);
     return () => { if (procedureTimerRef.current) clearTimeout(procedureTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1179,7 +1205,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!patientId || !encounterId) return;
     if (traumaTimerRef.current) clearTimeout(traumaTimerRef.current);
     traumaTimerRef.current = setTimeout(() => {
-      void trackedSave(() => syncTraumaRecord(patientId, encounterId, traumaData));
+      void trackedSave(() => syncTraumaRecord(patientId, encounterId, traumaData),
+        { entityType: 'trauma_record', entityId: encounterId, payload: { patientId, encounterId, traumaData } });
     }, 3000);
     return () => { if (traumaTimerRef.current) clearTimeout(traumaTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1198,13 +1225,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       hpiTimerRef.current = setTimeout(() => {
         hpiTimerRef.current = null;
         hpiSavedRef.current = false;
-        void trackedSave(() => clearHpiNote(encounterId));
+        void trackedSave(() => clearHpiNote(encounterId),
+          { entityType: 'hpi_note_clear', entityId: encounterId, payload: { encounterId } });
       }, 3000);
     } else {
       hpiTimerRef.current = setTimeout(() => {
         hpiTimerRef.current = null;
         hpiSavedRef.current = true;
-        void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes));
+        void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes),
+          { entityType: 'hpi_note', entityId: encounterId, payload: { encounterId, patientId, hpiNotes } });
       }, 3000);
     }
     return () => { if (hpiTimerRef.current) clearTimeout(hpiTimerRef.current); };
@@ -1217,7 +1246,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (pmhTimerRef.current) clearTimeout(pmhTimerRef.current);
     pmhTimerRef.current = setTimeout(() => {
       pmhTimerRef.current = null;
-      void trackedSave(() => savePmhNotes(patientId, pmhNotes, familyHistoryNotes));
+      void trackedSave(() => savePmhNotes(patientId, pmhNotes, familyHistoryNotes),
+        { entityType: 'pmh_notes', entityId: patientId, payload: { patientId, pmhNotes, familyHistoryNotes } });
     }, 3000);
     return () => { if (pmhTimerRef.current) clearTimeout(pmhTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1229,7 +1259,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (investigationTimerRef.current) clearTimeout(investigationTimerRef.current);
     investigationTimerRef.current = setTimeout(() => {
       investigationTimerRef.current = null;
-      void trackedSave(() => syncInvestigationOrders(encounterId, patientId, orderedInvestigations));
+      void trackedSave(() => syncInvestigationOrders(encounterId, patientId, orderedInvestigations),
+        { entityType: 'investigation_orders', entityId: encounterId, payload: { encounterId, patientId, orderedInvestigations } });
     }, 3000);
     return () => { if (investigationTimerRef.current) clearTimeout(investigationTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1241,7 +1272,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (encounterTypeTimerRef.current) clearTimeout(encounterTypeTimerRef.current);
     encounterTypeTimerRef.current = setTimeout(() => {
       encounterTypeTimerRef.current = null;
-      void trackedSave(() => updateEncounterType(encounterId, toDbEncounterType(encounterType, encounterMode)));
+      void trackedSave(() => updateEncounterType(encounterId, toDbEncounterType(encounterType, encounterMode)),
+        { entityType: 'encounter_type', entityId: encounterId, payload: { encounterId, dbType: toDbEncounterType(encounterType, encounterMode) } });
     }, 2000);
     return () => { if (encounterTypeTimerRef.current) clearTimeout(encounterTypeTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1257,7 +1289,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       void trackedSave(() => saveInpatientDetails(encounterId, patientId, {
         ward, dateAdmission, dateDischarge, admittingSurgeon,
         referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber,
-      }));
+      }), { entityType: 'inpatient_details', entityId: encounterId, payload: { encounterId, patientId, data: {
+        ward, dateAdmission, dateDischarge, admittingSurgeon,
+        referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber,
+      } } });
     }, 3000);
     return () => { if (inpatientTimerRef.current) clearTimeout(inpatientTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1273,7 +1308,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (clinicalScoresTimerRef.current) clearTimeout(clinicalScoresTimerRef.current);
     clinicalScoresTimerRef.current = setTimeout(() => {
       clinicalScoresTimerRef.current = null;
-      void trackedSave(() => saveClinicalScores(encounterId, clinicalScores, extractedLabs));
+      void trackedSave(() => saveClinicalScores(encounterId, clinicalScores, extractedLabs),
+        { entityType: 'clinical_scores', entityId: encounterId, payload: { encounterId, clinicalScores, extractedLabs } });
     }, 3000);
     return () => { if (clinicalScoresTimerRef.current) clearTimeout(clinicalScoresTimerRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1288,65 +1324,82 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         encounter_id: encounterId, patient_id: patientId,
         diagnosis: assessment, differentials, icdCodes, cptCodes,
         acuity: triageResult.acuity, triageScore: triageResult.score,
-      }));
-      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }));
-      void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText));
+      }), { entityType: 'assessment', entityId: encounterId, payload: {
+        encounter_id: encounterId, patient_id: patientId, diagnosis: assessment,
+        differentials, icdCodes, cptCodes,
+        acuity: triageResult.acuity, triageScore: triageResult.score,
+      } });
+      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }),
+        { entityType: 'plan', entityId: encounterId, payload: { encounter_id: encounterId, patient_id: patientId, description: plan } });
+      void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText),
+        { entityType: 'medications', entityId: encounterId, payload: { patientId, encounterId, chipMeds: medications, freeText: medicationsText } });
     }
     if (allergyTimerRef.current && patientId) {
       clearTimeout(allergyTimerRef.current);
       allergyTimerRef.current = null;
       const allergenList = allergies.split(',').map(s => s.trim()).filter(Boolean);
-      if (allergenList.length) void trackedSave(() => syncAllergyList(patientId, allergenList));
+      if (allergenList.length) void trackedSave(() => syncAllergyList(patientId, allergenList),
+        { entityType: 'allergies', entityId: patientId, payload: { patientId, allergens: allergenList } });
     }
     if (examTimerRef.current && patientId && encounterId) {
       clearTimeout(examTimerRef.current);
       examTimerRef.current = null;
-      void trackedSave(() => saveExamFindings(examFindings, examNotes, patientId, encounterId));
+      void trackedSave(() => saveExamFindings(examFindings, examNotes, patientId, encounterId),
+        { entityType: 'exam_findings', entityId: encounterId, payload: { examFindings, examNotes, patientId, encounterId } });
     }
     if (surgicalTimerRef.current && patientId) {
       clearTimeout(surgicalTimerRef.current);
       surgicalTimerRef.current = null;
-      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes, recentSurgeryDate));
+      void trackedSave(() => syncSurgicalHistory(patientId, surgicalHistory, surgicalNotes, recentSurgeryDate),
+        { entityType: 'surgical_history', entityId: patientId, payload: { patientId, procedures: surgicalHistory, notes: surgicalNotes, recentSurgeryDate } });
     }
     if (toxicTimerRef.current && patientId) {
       clearTimeout(toxicTimerRef.current);
       toxicTimerRef.current = null;
-      void trackedSave(() => syncToxicHabits(patientId, toxicHabits));
+      void trackedSave(() => syncToxicHabits(patientId, toxicHabits),
+        { entityType: 'toxic_habits', entityId: patientId, payload: { patientId, habits: toxicHabits } });
     }
     if (rosTimerRef.current && patientId && encounterId) {
       clearTimeout(rosTimerRef.current);
       rosTimerRef.current = null;
-      void trackedSave(() => syncRosFindings(patientId, encounterId, rosFindings));
+      void trackedSave(() => syncRosFindings(patientId, encounterId, rosFindings),
+        { entityType: 'ros_findings', entityId: encounterId, payload: { patientId, encounterId, rosFindings } });
     }
     if (procedureTimerRef.current && patientId && encounterId) {
       clearTimeout(procedureTimerRef.current);
       procedureTimerRef.current = null;
-      void trackedSave(() => syncProcedureData(patientId, encounterId, procedureData));
+      void trackedSave(() => syncProcedureData(patientId, encounterId, procedureData),
+        { entityType: 'procedure_data', entityId: encounterId, payload: { patientId, encounterId, procedureData } });
     }
     if (traumaTimerRef.current && patientId && encounterId) {
       clearTimeout(traumaTimerRef.current);
       traumaTimerRef.current = null;
-      void trackedSave(() => syncTraumaRecord(patientId, encounterId, traumaData));
+      void trackedSave(() => syncTraumaRecord(patientId, encounterId, traumaData),
+        { entityType: 'trauma_record', entityId: encounterId, payload: { patientId, encounterId, traumaData } });
     }
     if (hpiTimerRef.current && patientId && encounterId) {
       clearTimeout(hpiTimerRef.current);
       hpiTimerRef.current = null;
-      void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes));
+      void trackedSave(() => saveHpiNote(encounterId, patientId, hpiNotes),
+        { entityType: 'hpi_note', entityId: encounterId, payload: { encounterId, patientId, hpiNotes } });
     }
     if (pmhTimerRef.current && patientId) {
       clearTimeout(pmhTimerRef.current);
       pmhTimerRef.current = null;
-      void trackedSave(() => savePmhNotes(patientId, pmhNotes, familyHistoryNotes));
+      void trackedSave(() => savePmhNotes(patientId, pmhNotes, familyHistoryNotes),
+        { entityType: 'pmh_notes', entityId: patientId, payload: { patientId, pmhNotes, familyHistoryNotes } });
     }
     if (investigationTimerRef.current && patientId && encounterId) {
       clearTimeout(investigationTimerRef.current);
       investigationTimerRef.current = null;
-      void trackedSave(() => syncInvestigationOrders(encounterId, patientId, orderedInvestigations));
+      void trackedSave(() => syncInvestigationOrders(encounterId, patientId, orderedInvestigations),
+        { entityType: 'investigation_orders', entityId: encounterId, payload: { encounterId, patientId, orderedInvestigations } });
     }
     if (encounterTypeTimerRef.current && encounterId) {
       clearTimeout(encounterTypeTimerRef.current);
       encounterTypeTimerRef.current = null;
-      void trackedSave(() => updateEncounterType(encounterId, toDbEncounterType(encounterType, encounterMode)));
+      void trackedSave(() => updateEncounterType(encounterId, toDbEncounterType(encounterType, encounterMode)),
+        { entityType: 'encounter_type', entityId: encounterId, payload: { encounterId, dbType: toDbEncounterType(encounterType, encounterMode) } });
     }
     if (inpatientTimerRef.current && patientId && encounterId) {
       clearTimeout(inpatientTimerRef.current);
@@ -1354,12 +1407,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       void trackedSave(() => saveInpatientDetails(encounterId, patientId, {
         ward, dateAdmission, dateDischarge, admittingSurgeon,
         referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber,
-      }));
+      }), { entityType: 'inpatient_details', entityId: encounterId, payload: { encounterId, patientId, data: {
+        ward, dateAdmission, dateDischarge, admittingSurgeon,
+        referringPhysician, nokName, nokRelation, nokTel, bloodGroup, mrNumber,
+      } } });
     }
     if (clinicalScoresTimerRef.current && encounterId) {
       clearTimeout(clinicalScoresTimerRef.current);
       clinicalScoresTimerRef.current = null;
-      void trackedSave(() => saveClinicalScores(encounterId, clinicalScores, extractedLabs));
+      void trackedSave(() => saveClinicalScores(encounterId, clinicalScores, extractedLabs),
+        { entityType: 'clinical_scores', entityId: encounterId, payload: { encounterId, clinicalScores, extractedLabs } });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan,
