@@ -620,11 +620,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [periopProcId, setPeriopProcId] = useState('');
   const [whoProc, setWhoProc] = useState({ procedureName: '', procedureDate: '', procedureTime: '', theatre: '', site: '', surgeon: 'Dr Dawit Daniel Kabiye', anaesthetist: '', scrubNurse: '', circulatingNurse: '' });
 
-  const [assessment, setAssessment] = useState('');
-  const [differentials, setDifferentials] = useState('');
-  const [plan, setPlan] = useState('');
-  const [followUpNotes, setFollowUpNotes] = useState('');
-  const [referralNotes, setReferralNotes] = useState('');
+  // Assessment/plan facet — see anthropometrics facet above for the pattern
+  // rationale. More entangled than the earlier facets: assessment/differentials/
+  // plan feed two real Supabase autosave effects (saveAssessment/savePlan,
+  // both the debounced effect and the page-hide flush effect) and a separate
+  // 700ms-debounced scoreDiagnosis(assessment) effect -- all three read these
+  // via the same destructured const names below, verified before editing.
+  // The restore block's history-preamble-stripping logic for `assessment`
+  // (a few lines above/below this) is also untouched -- it still calls
+  // setAssessment(cleaned) through the wrapper unchanged.
+  const [assessmentPlan, setAssessmentPlan] = useState({
+    assessment: '', differentials: '', plan: '', followUpNotes: '', referralNotes: '',
+  });
+  const { assessment, differentials, plan, followUpNotes, referralNotes } = assessmentPlan;
+  const setAssessment    = useCallback((v: string) => setAssessmentPlan(prev => ({ ...prev, assessment: v })), []);
+  const setDifferentials = useCallback((v: string) => setAssessmentPlan(prev => ({ ...prev, differentials: v })), []);
+  const setPlan          = useCallback((v: string) => setAssessmentPlan(prev => ({ ...prev, plan: v })), []);
+  const setFollowUpNotes = useCallback((v: string) => setAssessmentPlan(prev => ({ ...prev, followUpNotes: v })), []);
+  const setReferralNotes = useCallback((v: string) => setAssessmentPlan(prev => ({ ...prev, referralNotes: v })), []);
   const [procedures, setProcedures] = useState('');
   const [billing, setBilling] = useState('');
   const [documents, setDocuments] = useState('');
