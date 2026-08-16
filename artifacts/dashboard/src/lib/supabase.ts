@@ -128,14 +128,15 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   admin: 'Admin',
 };
 
-export type SiteCode = 'rodney_bay' | 'tapion';
+export type SiteCode = 'rodney_bay' | 'tapion' | 'castries';
 
 export const SITE_LABELS: Record<SiteCode, string> = {
   rodney_bay: 'Rodney Bay',
   tapion: 'Tapion',
+  castries: 'Castries',
 };
 
-export const SITE_CODES: SiteCode[] = ['rodney_bay', 'tapion'];
+export const SITE_CODES: SiteCode[] = ['rodney_bay', 'tapion', 'castries'];
 
 export interface UserProfile {
   id: string;
