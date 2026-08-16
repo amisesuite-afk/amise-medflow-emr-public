@@ -586,11 +586,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [confirmedDiagnoses, setConfirmedDiagnoses] = useState<ActiveDiagnosis[]>([]);
   const [workingDiagnosis, setWorkingDiagnosis] = useState<WorkingDiagnosis | null>(null);
 
-  const [weightKg, setWeightKg] = useState('');
-  const [heightCm, setHeightCm] = useState('');
-  const [waistCm, setWaistCm] = useState('');
-  const [hipCm, setHipCm] = useState('');
-  const [muacCm, setMuacCm] = useState('');
+  // Anthropometrics facet — grouped in memory as one cohesive object rather than
+  // five independent primitives; localStorage wire format is untouched (still
+  // flat top-level keys via `data` below), so old saved sessions restore unchanged.
+  const [anthropometrics, setAnthropometrics] = useState({
+    weightKg: '', heightCm: '', waistCm: '', hipCm: '', muacCm: '',
+  });
+  const { weightKg, heightCm, waistCm, hipCm, muacCm } = anthropometrics;
+  const setWeightKg = useCallback((v: string) => setAnthropometrics(prev => ({ ...prev, weightKg: v })), []);
+  const setHeightCm = useCallback((v: string) => setAnthropometrics(prev => ({ ...prev, heightCm: v })), []);
+  const setWaistCm  = useCallback((v: string) => setAnthropometrics(prev => ({ ...prev, waistCm: v })), []);
+  const setHipCm    = useCallback((v: string) => setAnthropometrics(prev => ({ ...prev, hipCm: v })), []);
+  const setMuacCm   = useCallback((v: string) => setAnthropometrics(prev => ({ ...prev, muacCm: v })), []);
   const [anatomicalFindings, setAnatomicalFindings] = useState<AnatomicalFinding[]>([]);
   const [rosFindings, setRosFindings] = useState<Record<string, RosFinding>>({});
   const [procedureData, setProcedureData] = useState<Record<string, unknown>>({});
