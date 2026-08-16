@@ -1624,6 +1624,7 @@ export default function ScalesTab() {
     sex: ctx.sex,
     isPostOp: !!(ctx.procedureData as Record<string, unknown>)?.postOp,
     procedureData: ctx.procedureData as Record<string, unknown>,
+    workingDiagnosis: ctx.workingDiagnosis ?? undefined,
   }), [ctx]);
 
   const suggestions = useMemo(() => getCdsSuggestions(cdsCtx), [cdsCtx]);
