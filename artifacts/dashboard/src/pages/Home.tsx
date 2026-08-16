@@ -10,7 +10,7 @@ import { hasRole, roleIn } from '@/lib/roles';
 import { usePathway } from '@/lib/usePathway';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import NavSidebar, { type SectionCompletion } from '@/components/NavSidebar';
-import { VISIT_TYPES } from '@/lib/visit-types';
+import { VISIT_TYPES, resolveEncounterContext } from '@/lib/visit-types';
 
 // ── Lazy-loaded pages and tabs ──────────────────────────────────────────────
 // Code-split so only the active panel is downloaded on first render.
@@ -899,21 +899,9 @@ export default function HomePage() {
                     ctxSetVisitType(id);
                     setIsPostOp(id === 'post_op');
                     setPostOpDays('');
-                    if (id === 'trauma' || id === 'burns') {
-                      setTopSection('trauma');
-                    } else if (id === 'ercp' || id === 'endoscopy_ogd' || id === 'endoscopy_col') {
-                      setEncounterType('endoscopy');
-                      setTopSection('consultation');
-                    } else if (id === 'urgent') {
-                      setEncounterType('major_emergency');
-                      setTopSection('consultation');
-                    } else if (id === 'post_op' || id === 'follow_up') {
-                      setEncounterType('quick_consult');
-                      setTopSection('consultation');
-                    } else {
-                      setEncounterType('surgical_consult');
-                      setTopSection('consultation');
-                    }
+                    const { encounterType: nextEncounterType, topSection: nextTopSection } = resolveEncounterContext(id);
+                    if (nextEncounterType) setEncounterType(nextEncounterType);
+                    setTopSection(nextTopSection);
                     setVtGateCleared(true);
                   }}
                   aria-label="Visit type"
@@ -1113,21 +1101,9 @@ export default function HomePage() {
                 ctxSetVisitType(id);
                 setIsPostOp(id === 'post_op');
                 setPostOpDays('');
-                if (id === 'trauma' || id === 'burns') {
-                  setTopSection('trauma');
-                } else if (id === 'ercp' || id === 'endoscopy_ogd' || id === 'endoscopy_col') {
-                  setEncounterType('endoscopy');
-                  setTopSection('consultation');
-                } else if (id === 'urgent') {
-                  setEncounterType('major_emergency');
-                  setTopSection('consultation');
-                } else if (id === 'post_op' || id === 'follow_up') {
-                  setEncounterType('quick_consult');
-                  setTopSection('consultation');
-                } else {
-                  setEncounterType('surgical_consult');
-                  setTopSection('consultation');
-                }
+                const { encounterType: nextEncounterType, topSection: nextTopSection } = resolveEncounterContext(id);
+                if (nextEncounterType) setEncounterType(nextEncounterType);
+                setTopSection(nextTopSection);
                 setVtGateCleared(true);
               }}
               aria-label="Visit type"
