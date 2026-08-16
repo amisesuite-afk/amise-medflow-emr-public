@@ -16,8 +16,8 @@
     "pnpm": ">=10"
   },
   "devDependencies": {
-    "playwright": "1.56.1",
-    "prettier": "^3.8.3",
+    "playwright": "1.62.1",
+    "prettier": "^3.9.6",
     "typescript": "~5.9.3"
   }
 }
