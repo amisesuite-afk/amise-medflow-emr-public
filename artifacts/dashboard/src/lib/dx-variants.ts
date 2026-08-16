@@ -33,7 +33,14 @@ export interface DxVariantGroup {
   baseDiagnosis: string;
   /** ICD-10 code prefixes that match this group. */
   icdPrefixes: string[];
-  /** pane-engine disease IDs that match this group. */
+  /**
+   * pane-engine disease IDs that match this group — checked via
+   * `diseaseId.startsWith(id)` in detectDxVariants(), before the icdPrefixes
+   * fallback. Must be verified against the real ids in
+   * lib/pane-engine/src/vademecum/specialties/*.ts, not guessed — an entry
+   * that doesn't match any real diseaseId silently falls through to the ICD
+   * check instead of erroring, so a wrong value here is easy to miss.
+   */
   diseaseIds: string[];
   /** The key clinical question that differentiates the variants. */
   differentiatorQuery: string;
@@ -46,7 +53,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   {
     baseDiagnosis: 'Acute Appendicitis',
     icdPrefixes: ['K35'],
-    diseaseIds: ['appendicitis', 'appendicitis_acute', 'appendicitis_perforated'],
+    diseaseIds: ['appendicitis', 'appendix_mass'],
     differentiatorQuery: 'Is there an appendix mass / phlegmon, or signs of perforation / peritonitis?',
     variants: [
       {
@@ -120,7 +127,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   {
     baseDiagnosis: 'Acute Cholecystitis',
     icdPrefixes: ['K81'],
-    diseaseIds: ['cholecystitis', 'cholecystitis_acute'],
+    diseaseIds: ['cholecystitis'],
     differentiatorQuery: 'Tokyo Guidelines severity grade — I (mild), II (moderate), or III (severe with organ dysfunction)?',
     variants: [
       {
@@ -203,7 +210,11 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   {
     baseDiagnosis: 'Hernia',
     icdPrefixes: ['K40', 'K41', 'K42', 'K43', 'K44', 'K45', 'K46'],
-    diseaseIds: ['hernia_inguinal', 'hernia_ventral', 'hernia_umbilical', 'hernia'],
+    diseaseIds: [
+      'inguinal_hernia', 'femoral_hernia', 'umbilical_hernia', 'incisional_hernia',
+      'incisional_hernia_early', 'epigastric_hernia', 'spigelian_hernia',
+      'parastomal_hernia', 'sportsmans_hernia', 'obturator_hernia',
+    ],
     differentiatorQuery: 'Is the hernia reducible, irreducible (incarcerated), or strangulated?',
     variants: [
       {
@@ -247,7 +258,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   {
     baseDiagnosis: 'Bowel Obstruction',
     icdPrefixes: ['K56'],
-    diseaseIds: ['bowel_obstruction', 'sbo', 'lbo', 'adhesional_obstruction'],
+    diseaseIds: ['bowel_obstruction', 'adhesion_obstruction', 'internal_hernia'],
     differentiatorQuery: 'Small vs large bowel? Any strangulation / ischaemia on CT?',
     variants: [
       {
@@ -365,7 +376,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   {
     baseDiagnosis: 'Pancreatitis',
     icdPrefixes: ['K85'],
-    diseaseIds: ['pancreatitis', 'acute_pancreatitis'],
+    diseaseIds: ['pancreatitis'],
     differentiatorQuery: 'Atlanta severity — mild, moderately severe, or severe?',
     variants: [
       {
@@ -411,7 +422,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   {
     baseDiagnosis: 'Upper GI Bleed',
     icdPrefixes: ['K25', 'K26', 'K27', 'K28', 'I85', 'K92'],
-    diseaseIds: ['ugib', 'upper_gi_bleed', 'peptic_ulcer'],
+    diseaseIds: ['upper_gi_bleed', 'peptic_ulcer'],
     differentiatorQuery: 'Variceal vs non-variceal? Haemodynamically stable?',
     variants: [
       {
@@ -449,7 +460,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   {
     baseDiagnosis: 'Breast',
     icdPrefixes: ['C50', 'D05', 'N60', 'N61', 'N62', 'N63'],
-    diseaseIds: ['breast_cancer', 'breast_lump', 'breast'],
+    diseaseIds: ['invasive_ductal_carcinoma', 'dcis'],
     differentiatorQuery: 'Benign vs malignant? Biopsy result? Planned procedure?',
     variants: [
       {
@@ -492,7 +503,7 @@ export const DX_VARIANT_GROUPS: DxVariantGroup[] = [
   {
     baseDiagnosis: 'Thyroid',
     icdPrefixes: ['C73', 'D34', 'D44', 'E04', 'E05'],
-    diseaseIds: ['thyroid_cancer', 'thyroid_nodule', 'thyroid'],
+    diseaseIds: ['thyroid_carcinoma', 'thyroid_nodule_benign', 'hyperthyroidism'],
     differentiatorQuery: 'Malignant vs benign? Bethesda category? Planned extent of resection?',
     variants: [
       {

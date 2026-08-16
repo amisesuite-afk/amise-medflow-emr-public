@@ -12,12 +12,23 @@
  * out of scope (no citation to check against yet, e.g. breast/thyroid) and
  * are reported as unaudited, not failed.
  *
+ * Also checks each DxVariantGroup's `diseaseIds` against pane-engine's real
+ * disease registry. detectDxVariants() matches diseaseId.startsWith(id) as
+ * its first, fastest signal, before falling back to icdPrefixes — an entry
+ * that doesn't match any real diseaseId doesn't error, it just silently never
+ * fires and falls through to the ICD check. This exact bug shipped
+ * undetected: the Hernia group's diseaseIds were all reversed-word-order
+ * typos ('hernia_inguinal' vs the real 'inguinal_hernia'), so the fast path
+ * never matched anything and every hernia diagnosis fell through to ICD
+ * matching alone, only working when the ICD code happened to already be set.
+ *
  * Runs only against the shipped state of dx-variants.ts (not a PR diff) --
  * same as the migration-grant lint, it's a standing invariant check, not a
  * diff-only check.
  */
 
 import { DX_VARIANT_GROUPS } from '../../artifacts/dashboard/src/lib/dx-variants';
+import { DISEASES } from '../../lib/pane-engine/src/vademecum/index';
 
 const REFERENCE_PHASES: Record<string, string[]> = {
   appendicitis_uncomplicated: ['immediate', 'surgical', 'followup'],
@@ -60,7 +71,7 @@ function sameSet(a: string[], b: string[]): boolean {
   return a.every(x => setB.has(x));
 }
 
-function main() {
+function checkPhases(): boolean {
   const allVariants = DX_VARIANT_GROUPS.flatMap(g => g.variants.map(v => ({ group: g, variant: v })));
   const covered = allVariants.filter(({ variant }) => variant.id in REFERENCE_PHASES);
   const unaudited = allVariants.filter(({ variant }) => !(variant.id in REFERENCE_PHASES));
@@ -76,7 +87,7 @@ function main() {
 
   if (mismatches.length === 0) {
     console.log('✓ Every audited variant\'s allowedPhases matches the reference table.');
-    return;
+    return true;
   }
 
   console.error(`\n✗ ${mismatches.length} variant(s) have allowedPhases that don't match the reference table:\n`);
@@ -90,7 +101,49 @@ function main() {
     'If the code is actually correct and the reference table is stale, update both ' +
     'SKILL.md and scripts/src/lint-dx-variant-phases.ts together — never just silence this check.',
   );
-  process.exit(1);
+  return false;
+}
+
+function checkDiseaseIds(): boolean {
+  const realIds = new Set(DISEASES.map(d => d.id));
+
+  const failures: { group: string; entry: string }[] = [];
+  for (const g of DX_VARIANT_GROUPS) {
+    for (const entry of g.diseaseIds) {
+      // Mirrors detectDxVariants()'s own match: diseaseId.startsWith(entry).
+      // An entry only needs to be a valid prefix of at least one real id.
+      const matches = [...realIds].some(id => id.startsWith(entry));
+      if (!matches) failures.push({ group: g.baseDiagnosis, entry });
+    }
+  }
+
+  console.log(
+    `Checked ${DX_VARIANT_GROUPS.reduce((n, g) => n + g.diseaseIds.length, 0)} diseaseIds entr(y/ies) ` +
+    `across ${DX_VARIANT_GROUPS.length} group(s) against ${realIds.size} real pane-engine disease id(s).`,
+  );
+
+  if (failures.length === 0) {
+    console.log('✓ Every diseaseIds entry matches at least one real pane-engine disease id.');
+    return true;
+  }
+
+  console.error(`\n✗ ${failures.length} diseaseIds entr(y/ies) don't match any real pane-engine disease id:\n`);
+  for (const { group, entry } of failures) {
+    console.error(`  - "${entry}"  (${group} group)`);
+  }
+  console.error(
+    '\nThese entries never fire in detectDxVariants() — they silently fall through to the ' +
+    'icdPrefixes check instead of erroring, so this class of bug ships unnoticed. Fix the id ' +
+    'to match the real disease id in lib/pane-engine/src/vademecum/specialties/*.ts.',
+  );
+  return false;
+}
+
+function main() {
+  const phasesOk = checkPhases();
+  console.log('');
+  const diseaseIdsOk = checkDiseaseIds();
+  if (!phasesOk || !diseaseIdsOk) process.exit(1);
 }
 
 main();

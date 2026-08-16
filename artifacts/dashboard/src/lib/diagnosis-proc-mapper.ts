@@ -217,6 +217,11 @@ export const PROC_MAPPINGS: ProcMapping[] = [
   },
 
   // ── Hernia ───────────────────────────────────────────────────────────────
+  // procId matches PerioperativeTab's DISEASE_ID_TO_PROC catalog; consentId
+  // matches SurgicalConsentTab's DISEASE_ID_TO_TEMPLATE catalog — this entry
+  // is the explicit bridge between those two independently-named catalogs.
+  // If you add a new diagnosis mapping in either tab, add the matching entry
+  // here too.
   {
     procId: 'hernia_inguinal',
     consentId: 'hernia_repair',
