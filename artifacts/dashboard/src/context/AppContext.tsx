@@ -530,15 +530,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [encounterStatus, setEncounterStatus] = useState<string | null>(null);
   const [encounterClosedAt, setEncounterClosedAt] = useState<string | null>(null);
 
-  const [patientName, setPatientName] = useState('');
-  const [age, setAge] = useState('');
-  const [sex, setSex] = useState<Sex>('unknown');
-  const [dob, setDob] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [address, setAddress] = useState('');
-  const [quarter, setQuarter] = useState('');
-  const [referredBy, setReferredBy] = useState('');
+  // Patient-demographics facet — see anthropometrics facet above for the
+  // pattern rationale. age/sex also feed the triageInput useMemo below via
+  // the same destructured const names, and clearPatient() calls each
+  // wrapper setter individually (across two non-adjacent lines) -- both
+  // verified unaffected since every wrapper does a functional prev=>
+  // update, so multiple calls in the same tick still compose correctly.
+  const [demographics, setDemographics] = useState({
+    patientName: '', age: '', sex: 'unknown' as Sex, dob: '', phone: '', email: '',
+    address: '', quarter: '', referredBy: '',
+  });
+  const { patientName, age, sex, dob, phone, email, address, quarter, referredBy } = demographics;
+  const setPatientName = useCallback((v: string) => setDemographics(prev => ({ ...prev, patientName: v })), []);
+  const setAge         = useCallback((v: string) => setDemographics(prev => ({ ...prev, age: v })), []);
+  const setSex         = useCallback((v: Sex) => setDemographics(prev => ({ ...prev, sex: v })), []);
+  const setDob         = useCallback((v: string) => setDemographics(prev => ({ ...prev, dob: v })), []);
+  const setPhone       = useCallback((v: string) => setDemographics(prev => ({ ...prev, phone: v })), []);
+  const setEmail       = useCallback((v: string) => setDemographics(prev => ({ ...prev, email: v })), []);
+  const setAddress     = useCallback((v: string) => setDemographics(prev => ({ ...prev, address: v })), []);
+  const setQuarter     = useCallback((v: string) => setDemographics(prev => ({ ...prev, quarter: v })), []);
+  const setReferredBy  = useCallback((v: string) => setDemographics(prev => ({ ...prev, referredBy: v })), []);
   const [patientPhoto, setPatientPhoto] = useState('');
   const [examPhotos, setExamPhotos] = useState<ExamPhoto[]>([]);
 
