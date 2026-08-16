@@ -102,8 +102,39 @@ SMS blast, wrong recipients) is **not** fixed by a code rollback — the fix is:
 
 ## Database point-in-time recovery
 
-Confirm PITR is enabled on the production Supabase project (Settings → Database → Backups) and
-note the retention window here once confirmed — this is the one recovery path that can't be
-reconstructed after the fact if it turns out to be off. See backlog item 10 in the priority
-audit; as of this runbook's creation this had not yet been manually verified in the Supabase
-dashboard.
+**Verified 2026-08-16: PITR is disabled** on the production Supabase project (Database →
+Backups → Point in time). Current recovery posture without it is the daily scheduled backup
+only — up to ~24h of data loss (RPO) on a bad migration, accidental delete, or corruption, and
+no ability to restore to an arbitrary point within that window.
+
+Enabling it requires two purchases, confirmed live in the dashboard:
+- **Compute size bump** to at least Small (from the current Nano) — Project Settings →
+  Infrastructure. Marginal cost is small: Small is $0.0206/hr vs Nano's $0.01344/hr, ≈ $5/month
+  extra.
+- **The PITR add-on itself** (Project Settings → Add-ons → Point in Time Recovery) — priced by
+  retention window: **$100/month (7 days)**, **$200/month (14 days)**, **$400/month (28 days)**.
+  Billed prorated to the hour, no upfront charge.
+
+**Decision (2026-08-16): held off on the paid add-on for now.** Interim mitigation in place
+instead — local `pg_dump` backups, since `scripts/export-backup.sh`/`.ps1` (source code only)
+never covered patient data:
+
+- `scripts/export-db-backup.sh` (macOS/Linux) and `scripts/export-db-backup.ps1` (Windows) each
+  produce a timestamped custom-format `pg_dump` to a local directory (`~/Desktop/Amise-DB-Backup`
+  by default), pruning to the 14 most recent dumps. Both require `SUPABASE_DB_URL` (or
+  `$env:SUPABASE_DB_URL` on Windows) set in the operator's own shell/environment — the connection
+  string is in Supabase dashboard → Project Settings → Database, and must never be hardcoded into
+  either script or committed to the repo.
+- Run manually until a recurring schedule is set up locally (cron on macOS/Linux, Task Scheduler
+  on Windows) — e.g. daily, on a machine that has network access to Supabase.
+- **This is a materially weaker safety net than PITR**: RPO is bounded by how often the script
+  actually runs (hours-to-a-day, operator-dependent), not near-real-time WAL streaming, and
+  restoring means `pg_restore` from a flat file rather than a dashboard-driven point-in-time
+  restore. Treat it as a bridge, not a replacement — revisit enabling the paid add-on
+  (particularly the 7-day/$100 tier) once cloud budget allows.
+- Dumps contain real patient data. Store them encrypted at rest; never commit one to git or sync
+  it to an unencrypted cloud folder.
+
+Re-run the verification above (Database → Backups → Point in time) periodically, since this
+status can only be confirmed by checking the live dashboard — it isn't something the repo can
+assert on its own.
