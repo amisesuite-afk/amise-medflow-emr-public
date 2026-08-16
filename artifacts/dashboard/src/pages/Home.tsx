@@ -86,7 +86,6 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import CommandPalette from '@/components/CommandPalette';
 import ProblemListStrip from '@/components/ProblemListStrip';
 import CriticalResultAlert from '@/components/CriticalResultAlert';
-import EncounterContextPicker from '@/components/EncounterContextPicker';
 import PreviousVisitStrip from '@/components/PreviousVisitStrip';
 import ClinicalWorkflowBar from '@/components/ClinicalWorkflowBar';
 import ClinicalPromptsStrip from '@/components/ClinicalPromptsStrip';
