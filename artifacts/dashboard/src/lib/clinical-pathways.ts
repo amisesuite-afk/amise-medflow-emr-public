@@ -1,3 +1,13 @@
+/**
+ * Symptom-triggered decision-support pathways (differentials, red flags,
+ * suggested labs/imaging, referral routing) for PathwaySuggestions and
+ * InvestigationsTab — deliberately separate from @workspace/triage-engine's
+ * CLINICAL_PATHWAYS (EMR-section-completion guidance keyed off APCQ symptom
+ * codes, consumed via usePathway()). Both were previously named
+ * `CLINICAL_PATHWAYS`, which risked a future import grabbing the wrong one —
+ * renamed to make the split unambiguous. They are genuinely different
+ * registries for different purposes, not a copy of the same data.
+ */
 export interface ClinicalPathway {
   id: string;
   title: string;
@@ -10,7 +20,7 @@ export interface ClinicalPathway {
   note?: string;
 }
 
-export const CLINICAL_PATHWAYS: ClinicalPathway[] = [
+export const DECISION_SUPPORT_PATHWAYS: ClinicalPathway[] = [
   {
     id: 'cholangitis',
     title: 'Acute cholangitis (Charcot\'s triad)',
@@ -207,5 +217,5 @@ export function getActivePathways(
   symptoms: string[],
   symptomDetails: Record<string, string[]>,
 ): ClinicalPathway[] {
-  return CLINICAL_PATHWAYS.filter(p => p.trigger(symptoms, symptomDetails));
+  return DECISION_SUPPORT_PATHWAYS.filter(p => p.trigger(symptoms, symptomDetails));
 }

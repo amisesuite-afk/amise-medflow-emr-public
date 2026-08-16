@@ -1,11 +1,24 @@
 /**
- * Surgical practice drug formulary for Amise Medical Services.
+ * Inpatient/discharge drug formulary for Amise Medical Services — a smaller,
+ * dosing-focused curated list (default dose/frequency/route only) for
+ * InpatientTab's medication ordering, deliberately separate from
+ * @workspace/triage-engine's FORMULARY (the richer, PrescriptionsTab-facing
+ * catalog with drug codes, contraindications, and interaction data).
  *
- * Categories cover the most commonly prescribed medications in a
- * general and endoscopic surgery outpatient practice.  Default doses
- * are standard adult doses — prescribers must adjust for renal/hepatic
- * impairment, weight, allergies, and clinical context.
+ * These two lists were previously both named `FORMULARY`, which risked a
+ * future import grabbing the wrong one — renamed to make the split
+ * unambiguous. They are NOT required to contain identical data: this one is
+ * an inpatient-specific subset with a simpler shape suited to quick order
+ * entry, not a copy of the outpatient formulary that drifted out of sync.
+ * See CLAUDE.md's "Central diagnosis radiation" section for the fuller
+ * investigation — the two formularies overlap on ~28 drug names; spot-checked
+ * doses were consistent, and the interaction-checking safety net
+ * (`drug-interactions.ts` / `DrugInteractionAlert.tsx`) is shared across both
+ * this list and the outpatient one, so a discrepancy here affects dosing
+ * *suggestions* only, not interaction safety checks.
  *
+ * Default doses are standard adult doses — prescribers must adjust for
+ * renal/hepatic impairment, weight, allergies, and clinical context.
  * This file is an administrative reference for the prescribing UI.
  * It does NOT constitute medical advice.
  */
@@ -19,7 +32,7 @@ export interface FormularyDrug {
   commonIndications: string[];
 }
 
-export const FORMULARY: FormularyDrug[] = [
+export const INPATIENT_FORMULARY: FormularyDrug[] = [
   // ──────────────────────────────────────────────
   // 1. Analgesics
   // ──────────────────────────────────────────────
@@ -581,7 +594,7 @@ export const FORMULARY: FormularyDrug[] = [
 ];
 
 /** Unique category names in formulary order. */
-export const FORMULARY_CATEGORIES = [...new Set(FORMULARY.map(d => d.category))];
+export const INPATIENT_FORMULARY_CATEGORIES = [...new Set(INPATIENT_FORMULARY.map(d => d.category))];
 
 /**
  * Free-text search across drug name, category, and indications.
@@ -589,7 +602,7 @@ export const FORMULARY_CATEGORIES = [...new Set(FORMULARY.map(d => d.category))]
  */
 export function searchFormulary(query: string): FormularyDrug[] {
   const q = query.toLowerCase();
-  return FORMULARY.filter(
+  return INPATIENT_FORMULARY.filter(
     d =>
       d.drugName.toLowerCase().includes(q) ||
       d.category.toLowerCase().includes(q) ||
@@ -602,5 +615,5 @@ export function searchFormulary(query: string): FormularyDrug[] {
  */
 export function getByCategory(category: string): FormularyDrug[] {
   const c = category.toLowerCase();
-  return FORMULARY.filter(d => d.category.toLowerCase() === c);
+  return INPATIENT_FORMULARY.filter(d => d.category.toLowerCase() === c);
 }
