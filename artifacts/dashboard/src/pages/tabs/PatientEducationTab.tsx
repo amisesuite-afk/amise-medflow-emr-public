@@ -220,6 +220,18 @@ BLOOD CLOT SIGNS (go to ER)
   },
 ];
 
+// Working diagnosis → handout sheet, for the diagnoses (not procedures) that
+// unambiguously imply one sheet. Mirrors SurgicalConsentTab's
+// DISEASE_ID_TO_TEMPLATE — same three diagnoses, same caution about only
+// including unambiguous cases. The colonoscopy/OGD/ERCP/bronchoscopy sheets
+// are procedure-driven, not diagnosis-driven, so they're deliberately left
+// out of this map.
+const DISEASE_ID_TO_SHEET: Record<string, string> = {
+  cholecystitis:   'lap_chole',
+  appendicitis:    'appendicectomy',
+  inguinal_hernia: 'hernia_repair',
+};
+
 function printSheet(sheet: Sheet, patient: { name: string; dob: string; nhi: string }) {
   const issued = new Date().toLocaleDateString('en-LC', { timeZone: 'America/St_Lucia', dateStyle: 'long' });
   const safeContent = sheet.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -267,13 +279,14 @@ function wordExportSheet(sheet: Sheet, patient: { name: string; dob: string; nhi
 }
 
 export default function PatientEducationTab() {
-  const { patientName, dob, nhiNumber, assessment, plan, symptoms } = useAppContext();
+  const { patientName, dob, nhiNumber, assessment, plan, symptoms, workingDiagnosis } = useAppContext();
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Sheet | null>(null);
   const [copied, setCopied] = useState(false);
 
   const patient = { name: patientName ?? '', dob: dob ?? '', nhi: nhiNumber ?? '' };
   const allText = [assessment, plan, ...symptoms].join(' ').toLowerCase();
+  const suggestedSheetId = workingDiagnosis?.diseaseId ? DISEASE_ID_TO_SHEET[workingDiagnosis.diseaseId] : undefined;
 
   const scored = SHEETS.map(s => {
     let score = 0;
@@ -282,6 +295,7 @@ export default function PatientEducationTab() {
       if (search && s.title.toLowerCase().includes(search.toLowerCase())) score += 3;
       if (search && tag.includes(search.toLowerCase())) score += 2;
     }
+    if (s.id === suggestedSheetId) score += 10;
     return { ...s, score };
   }).sort((a, b) => b.score - a.score);
 
@@ -314,7 +328,14 @@ export default function PatientEducationTab() {
                 background: selected?.id === s.id ? '#eff6ff' : '#fff',
                 cursor: 'pointer',
               }}>
-              <div style={{ fontWeight: 600, fontSize: 13, color: '#0f172a' }}>{s.title}</div>
+              <div style={{ fontWeight: 600, fontSize: 13, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}>
+                {s.title}
+                {s.id === suggestedSheetId && (
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#0369a1', background: '#e0f2fe', borderRadius: 4, padding: '1px 6px' }}>
+                    Suggested for {workingDiagnosis?.diseaseId?.replace(/_/g, ' ')}
+                  </span>
+                )}
+              </div>
               <div style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>{s.tags.join(' · ')}</div>
             </button>
           ))}

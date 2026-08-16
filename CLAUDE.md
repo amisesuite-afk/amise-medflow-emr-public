@@ -216,6 +216,25 @@ The three apps (front-desk, API server, dashboard) share a Supabase backend. Key
 - **`source` column**: Always set `source: 'web'` on `appointment_requests` created via web intake so the dashboard can distinguish intake sources.
 - **`service_role` grants**: Every new table needs `GRANT ... TO service_role` — the API server connects as `service_role` and RLS bypass doesn't skip table-level GRANTs.
 
+## Central diagnosis radiation
+
+`workingDiagnosis` (the confirmed diagnosis from `lib/pane-engine`) radiates out to several tabs
+as a weak, reactive suggestion — never an auto-applied clinical action. Established pattern:
+compute a match against the diagnosis, surface it as a dismissible "Suggested for X" badge or
+sort boost, and require an explicit clinician tap before anything is added/printed/billed. See
+`BillingTab.tsx` (fee-code suggestion), `SurgicalConsentTab.tsx`/`PerioperativeTab.tsx`
+(one-shot text-field seeding, only if still empty), `ScalesTab.tsx` (`CdsContext.workingDiagnosis`
+feeds scale suggestions, never scale input values), and `PatientEducationTab.tsx` (handout sheet
+sort boost + badge, mirrors `SurgicalConsentTab`'s `DISEASE_ID_TO_TEMPLATE` map for the same
+three diagnoses).
+
+Deliberately **not** wired to `workingDiagnosis`: `QualityImprovementTab.tsx` (M&M case logging
+is often retrospective and for a different encounter than the one currently active in context —
+pre-filling from the *active* chart's diagnosis risks silently mislabelling a case logged for a
+different patient) and `DosingTab.tsx` (medication-adjacent — same caution that kept prescription
+auto-fill "on-demand, not auto-firing" elsewhere in this codebase; don't let a diagnosis
+pre-select which drugs appear).
+
 ## Audit trail
 
 Engineering audit completed 2026-06-23. Deliverables in repo root:
