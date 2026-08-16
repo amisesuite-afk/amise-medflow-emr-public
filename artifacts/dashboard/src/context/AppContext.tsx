@@ -602,7 +602,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [examFindings, setExamFindings] = useState<Record<string, string[]>>({});
   const [examNotes, setExamNotes] = useState<Record<string, string>>({});
 
-  const [orderedInvestigations, setOrderedInvestigations] = useState<string[]>([]);
+  // Investigations/results facet -- see anthropometrics facet above for the
+  // pattern rationale. orderedInvestigations and radiologyRequests (the
+  // latter previously declared far below, near unrelated fields -- moved
+  // here since they must live in the same state object) are migration-
+  // coupled at restore time: old sessions stored imaging test names inside
+  // orderedInvestigations before the routing split, so the restore block
+  // filters them out and converts them into radiologyRequests entries.
+  // That migration logic (a few hundred lines below) calls setOrderedInvestigations
+  // and setRadiologyRequests conditionally, sometimes both in the same tick --
+  // verified safe since both wrappers use a functional prev=> update.
+  // investigationResults (lab result values) is NOT part of this migration
+  // and is left as its own independent field.
+  const [investigationsFacet, setInvestigationsFacet] = useState<{
+    orderedInvestigations: string[]; radiologyRequests: RadiologyRequest[];
+  }>({ orderedInvestigations: [], radiologyRequests: [] });
+  const { orderedInvestigations, radiologyRequests } = investigationsFacet;
+  const setOrderedInvestigations = useCallback((v: string[]) => setInvestigationsFacet(prev => ({ ...prev, orderedInvestigations: v })), []);
+  const setRadiologyRequests     = useCallback((v: RadiologyRequest[]) => setInvestigationsFacet(prev => ({ ...prev, radiologyRequests: v })), []);
   const [investigationResults, setInvestigationResults] = useState<Record<string, string>>({});
   const [icdCodes, setIcdCodes] = useState<string[]>([]);
   const [cptCodes, setCptCodes] = useState<string[]>([]);
@@ -666,7 +683,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const setPreAuthStatus     = useCallback((v: string) => setInsuranceAdmin(prev => ({ ...prev, preAuthStatus: v })), []);
 
   const [attachments, setAttachments] = useState<ClinicalAttachment[]>([]);
-  const [radiologyRequests, setRadiologyRequests] = useState<RadiologyRequest[]>([]);
   const [pendingPrescriptions, setPendingPrescriptions] = useState<ProtocolMedication[]>([]);
   const [finalDocument, setFinalDocument] = useState('');
   const [progressNotes, setProgressNotes] = useState<ProgressNote[]>([]);
