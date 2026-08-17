@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- artifacts/patient-app tsconfig.base.json pnpm-lock.yaml pnpm-workspace.yaml package.json",
   "buildCommand": "pnpm --filter @workspace/patient-app run build",
   "outputDirectory": "artifacts/patient-app/dist",
   "installCommand": "pnpm install --frozen-lockfile",
