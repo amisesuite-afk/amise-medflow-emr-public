@@ -222,6 +222,22 @@ const MOCK_ENCOUNTER = {
     console.log('   No create button — checking for consultation tabs');
   }
 
+  // ── Select visit type ─────────────────────────────────────────────────────────
+  // Required precondition as of the visit-type gate: clinical tabs stay locked
+  // behind a "Visit type required" panel until this is set (front desk is the
+  // primary enforcement point in real usage; the walkthrough plays that role here).
+  {
+    const visitTypeSelect = page.locator('select[aria-label="Visit type"]').first();
+    if (await visitTypeSelect.count()) {
+      await visitTypeSelect.selectOption('new_consult');
+      await page.waitForTimeout(500);
+      pass('Selected visit type');
+      await shot(page, '02c-visit-type-selected');
+    } else {
+      fail('Visit type selector', 'Not found — clinical tabs will stay gated');
+    }
+  }
+
   // ── Navigate to Assessment tab ────────────────────────────────────────────────
   // Tab bar label is "🎯Assess"; phase-nav "Assessment›" is disabled — exclude it.
   await page.waitForTimeout(500);

@@ -908,7 +908,7 @@ export default function HomePage() {
                   style={{
                     fontSize: 10, fontWeight: 700,
                     color: vt?.color ?? '#fff',
-                    background: vt ? `${vt.color}22` : 'rgba(255,255,255,0.12)',
+                    backgroundColor: vt ? `${vt.color}22` : 'rgba(255,255,255,0.12)',
                     border: `1.5px solid ${vt ? `${vt.color}44` : 'rgba(255,255,255,0.25)'}`,
                     borderRadius: 6, padding: '2px 22px 2px 7px', cursor: 'pointer',
                     appearance: 'none', flexShrink: 0,
