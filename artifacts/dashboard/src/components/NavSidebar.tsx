@@ -180,13 +180,10 @@ const DR_NAV_ITEMS: TopItem[] = [
 
 // ── Front Desk / Admin navigation — administrative workflow order ─────────────
 const FD_NAV_ITEMS: TopItem[] = [
-  // Check-In
-  { id: 'checkin',         icon: UserCheck,       label: 'Check-In',         roles: ['front_desk', 'admin'], group: 'Check-In' },
-  { id: 'doc_scan',        icon: ScanLine,        label: 'Scan Document',    roles: ['front_desk', 'admin'], group: 'Check-In' },
-  { id: 'booking_inbox',    icon: Inbox,           label: 'Booking Inbox',    roles: ['front_desk', 'admin'], group: 'Check-In' },
-  { id: 'calls_queue',      icon: PhoneIncoming,   label: 'Call Queue',       roles: ['front_desk', 'admin'], group: 'Check-In' },
-  { id: 'followup_tracker', icon: CalendarClock,   label: 'Follow-up Tracker',roles: ['front_desk', 'admin'], group: 'Check-In' },
-  { id: 'intake',           icon: ClipboardList,   label: 'Intake',           roles: ['front_desk', 'admin'], group: 'Check-In' },
+  // Check-In collapses into a sub-nav (see CHECKIN_SUB) instead of 6 flat items —
+  // group left blank since a "Check-In" group header above a "Check-In" button
+  // would just repeat itself now that it's the sole flat entry.
+  { id: 'checkin',         icon: UserCheck,       label: 'Check-In',         roles: ['front_desk', 'admin'], group: '' },
   // Administrative
   { id: 'scheduling',      icon: CalendarDays,    label: 'Scheduling',       roles: ['front_desk', 'admin'], group: 'Admin' },
   { id: 'patients',        icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'admin'], group: 'Admin' },
@@ -196,6 +193,26 @@ const FD_NAV_ITEMS: TopItem[] = [
   { id: 'analytics',        icon: BarChart2,       label: 'Analytics',        roles: ['admin'],               group: 'Admin' },
   { id: 'settings',         icon: Settings,        label: 'Settings',         roles: ['admin'],               group: 'Admin' },
 ];
+
+interface CheckinSubItem {
+  id: TopSection;
+  icon: React.FC<{ size?: number; strokeWidth?: number }>;
+  label: string;
+}
+
+// Sub-nav for the Check-In parent item. Unlike CLINICAL_PHASES/BILLING_SUB (which
+// switch Section within one already-active TopSection), each of these targets its
+// own distinct TopSection — they're genuinely separate front-desk pages, grouped
+// here purely to cut nav-rail density, not because they share one page.
+const CHECKIN_SUB: CheckinSubItem[] = [
+  { id: 'doc_scan',         icon: ScanLine,      label: 'Scan Document' },
+  { id: 'booking_inbox',    icon: Inbox,         label: 'Booking Inbox' },
+  { id: 'calls_queue',      icon: PhoneIncoming, label: 'Call Queue' },
+  { id: 'followup_tracker', icon: CalendarClock, label: 'Follow-up Tracker' },
+  { id: 'intake',           icon: ClipboardList, label: 'Intake' },
+];
+
+const CHECKIN_GROUP: ReadonlySet<TopSection> = new Set<TopSection>(['checkin', ...CHECKIN_SUB.map(s => s.id)]);
 
 export default function NavSidebar({
   collapsed, consultAmbient = false, onToggle,
@@ -232,6 +249,7 @@ export default function NavSidebar({
 
   const consultOpen = topSection === 'consultation';
   const billingOpen = topSection === 'billing';
+  const checkinOpen = CHECKIN_GROUP.has(topSection);
 
   function handleTop(item: TopItem) {
     onTopSection(item.id);
@@ -246,6 +264,13 @@ export default function NavSidebar({
   }
   function billingSubActive(id: Section) {
     return topSection === 'billing' && activeSection === id;
+  }
+  function checkinSubActive(id: TopSection) {
+    return topSection === id;
+  }
+  function handleCheckinSub(id: TopSection) {
+    onTopSection(id);
+    if (id === 'intake') onSection('intake');
   }
 
   const allowedPhases = ENCOUNTER_PHASE_VISIBILITY[encounterType];
@@ -411,12 +436,13 @@ export default function NavSidebar({
         )}
 
         {visibleItems.map(item => {
-          const isActive = topSection === item.id;
+          const isActive = item.id === 'checkin' ? checkinOpen : topSection === item.id;
           const Icon = item.icon;
           const isTriage = item.id === 'consultation' && hasUrgentRedFlag;
           const showConsultSub = item.id === 'consultation' && consultOpen && !collapsed;
           const showBillingSub = item.id === 'billing' && billingOpen && !collapsed;
-          const hasChevron = (item.id === 'consultation' || item.id === 'billing') && !collapsed;
+          const showCheckinSub = item.id === 'checkin' && checkinOpen && !collapsed;
+          const hasChevron = (item.id === 'consultation' || item.id === 'billing' || item.id === 'checkin') && !collapsed;
 
           const showGroupHeader = !collapsed && item.group !== lastGroup;
           if (item.group !== lastGroup) lastGroup = item.group;
@@ -434,7 +460,7 @@ export default function NavSidebar({
                 <span className="nsb-icon">
                   <Icon size={16} strokeWidth={2} />
                   {isTriage && <span className="nsb-dot" />}
-                  {item.id === 'booking_inbox' && pendingBookingCount > 0 && <span className="nsb-dot" />}
+                  {item.id === 'checkin' && pendingBookingCount > 0 && <span className="nsb-dot" />}
                   {item.id === 'results_inbox' && criticalResultCount > 0 && <span className="nsb-dot" />}
                 </span>
                 {!collapsed && (
@@ -454,7 +480,7 @@ export default function NavSidebar({
                     {urgentCount}
                   </span>
                 )}
-                {!collapsed && item.id === 'booking_inbox' && pendingBookingCount > 0 && (
+                {!collapsed && item.id === 'checkin' && pendingBookingCount > 0 && (
                   <span className="nsb-badge nsb-badge--warn">{pendingBookingCount}</span>
                 )}
                 {!collapsed && item.id === 'results_inbox' && criticalResultCount > 0 && (
@@ -536,6 +562,30 @@ export default function NavSidebar({
                       >
                         <SubIcon size={13} strokeWidth={2} />
                         <span>{sub.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Check-In sub-items — each navigates its own TopSection directly,
+                  unlike the phased/billing sub-nav which switches Section within
+                  one already-active page */}
+              {showCheckinSub && (
+                <div className="nsb-sub">
+                  {CHECKIN_SUB.map(sub => {
+                    const SubIcon = sub.icon;
+                    return (
+                      <button
+                        key={sub.id}
+                        className={`nsb-subitem${checkinSubActive(sub.id) ? ' nsb-subitem--active' : ''}`}
+                        onClick={() => handleCheckinSub(sub.id)}
+                      >
+                        <SubIcon size={13} strokeWidth={2} />
+                        <span>{sub.label}</span>
+                        {sub.id === 'booking_inbox' && pendingBookingCount > 0 && (
+                          <span className="nsb-badge nsb-badge--warn" style={{ marginLeft: 'auto' }}>{pendingBookingCount}</span>
+                        )}
                       </button>
                     );
                   })}
