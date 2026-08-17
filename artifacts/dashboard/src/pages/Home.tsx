@@ -7,10 +7,8 @@ import { useAuth } from '@/context/AuthContext';
 import { DEMO_MODE } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { hasRole, roleIn } from '@/lib/roles';
-import { usePathway } from '@/lib/usePathway';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import NavSidebar, { type SectionCompletion } from '@/components/NavSidebar';
-import { VISIT_TYPES } from '@/lib/visit-types';
 
 // ── Lazy-loaded pages and tabs ──────────────────────────────────────────────
 // Code-split so only the active panel is downloaded on first render.
@@ -92,6 +90,12 @@ import FollowUpQueueStrip from '@/components/FollowUpQueueStrip';
 import OpenTasksBanner from '@/components/OpenTasksBanner';
 import VoiceDictation from '@/components/VoiceDictation';
 import AppHeader from '@/components/AppHeader';
+import PreVisitStatusBanner from '@/components/PreVisitStatusBanner';
+import PathwayConfidenceBanner from '@/components/PathwayConfidenceBanner';
+import AdmissionEscalationBanner from '@/components/AdmissionEscalationBanner';
+import PatientContextBanner from '@/components/PatientContextBanner';
+import NoPatientQuickstart from '@/components/NoPatientQuickstart';
+import PatientNotifyModal from '@/components/PatientNotifyModal';
 import AmbientConsultation from '@/components/AmbientConsultation';
 import { getMatrix } from '@/lib/cc-matrices';
 
@@ -265,57 +269,6 @@ function apiUrl(path: string) {
   return `${(import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')}${path}`;
 }
 
-function getAdaptivePath(
-  symptoms: string[],
-  vitals: VitalsState,
-): { topSection: TopSection; section: Section; label: string; hint: string } | null {
-  const sbp  = parseFloat(vitals.systolicBp);
-  const spo2 = parseFloat(vitals.spo2);
-  const hr   = parseFloat(vitals.heartRate);
-  const temp = parseFloat(vitals.temperatureC);
-
-  // Red-flag vitals override complaint-based routing
-  if (
-    (Number.isFinite(sbp)  && sbp  < 90)  ||
-    (Number.isFinite(spo2) && spo2 < 92)  ||
-    (Number.isFinite(hr)   && hr   > 140) ||
-    (Number.isFinite(temp) && temp > 38.5 && Number.isFinite(hr) && hr > 100)
-  ) {
-    return { topSection: 'consultation', section: 'triage', label: 'Triage', hint: 'Abnormal vital signs — begin with acuity scoring and red-flag assessment.' };
-  }
-
-  const TRAUMA_KEYWORDS = ['Major trauma', 'RTA / MVA', 'Stab / penetrating wound', 'Fall from height', 'Assault', 'Burns'];
-  if (symptoms.some(s => TRAUMA_KEYWORDS.includes(s))) {
-    return { topSection: 'trauma', section: 'examination', label: 'ATLS Survey', hint: 'Trauma patient — proceed directly to ATLS primary survey (ABCDE).' };
-  }
-
-  if (symptoms.some(s => s === 'Pre-operative visit')) {
-    return { topSection: 'procedures', section: 'procedures', label: 'Pre-Op', hint: 'Pre-operative workup — verify investigations, consent, and anaesthetic review.' };
-  }
-  if (symptoms.some(s => s === 'Post-operative review')) {
-    return { topSection: 'procedures', section: 'procedures', label: 'Post-Op', hint: 'Post-operative review — assess wound, drain output, and analgesic ladder.' };
-  }
-  if (symptoms.includes('Breast lump')) {
-    return { topSection: 'consultation', section: 'examination', label: 'Breast Exam', hint: 'Breast lump — targeted breast examination: quadrant, size, mobility, lymph nodes.' };
-  }
-  if (symptoms.includes('Wound concern')) {
-    return { topSection: 'consultation', section: 'examination', label: 'Wound Exam', hint: 'Wound concern — assess for dehiscence, infection, or seroma.' };
-  }
-  if (symptoms.includes('Follow-up')) {
-    return { topSection: 'consultation', section: 'assessment', label: 'Assessment', hint: 'Follow-up — review previous plan, update problem list, and adjust management.' };
-  }
-  if (symptoms.some(s => ['Chest pain', 'Shortness of breath'].includes(s))) {
-    return { topSection: 'consultation', section: 'triage', label: 'Triage', hint: 'Cardiorespiratory complaint — acuity first, then ROS and examination.' };
-  }
-  if (symptoms.some(s => ['Jaundice', 'Abdominal pain', 'Rectal bleeding', 'Nausea / vomiting'].includes(s))) {
-    return { topSection: 'consultation', section: 'triage', label: 'Triage', hint: 'GI complaint — start with pain characterisation and triage scoring.' };
-  }
-  if (symptoms.length > 0) {
-    return { topSection: 'consultation', section: 'triage', label: 'Triage', hint: `${symptoms.join(', ')} — begin with history and acuity scoring.` };
-  }
-  return null;
-}
-
 /** Shared "visit type required" gate panel — see resolveEncounterContext / the
  * consultation and intake gates in HomePage for why this exists: visit type is
  * a required precondition, not an optional field clinical/intake tabs can skip. */
@@ -341,12 +294,10 @@ export default function HomePage() {
   const {
     activeSection, setActiveSection,
     topSection, setTopSection,
-    patientName, setPatientName, phone, age, setAge: ctxSetAge, sex, setSex: ctxSetSex,
-    setDob: ctxSetDob,
+    patientName,
     comorbidities,
     triageResult,
     currentSite, setCurrentSite,
-    preVisitStatus,
     symptoms,
     vitals,
     encounterMode, setEncounterMode,
@@ -386,10 +337,6 @@ export default function HomePage() {
 
   const [collapsed, setCollapsed] = useState(false);
   const [zenMode, setZenMode] = useState(false);
-  const [qsName, setQsName] = useState('');
-  const [qsAge, setQsAge]   = useState('');
-  const [qsSex, setQsSex]   = useState('');
-  const [qsDob, setQsDob]   = useState('');
   const tabStripRef = useRef<HTMLDivElement>(null);
   const [tsCanLeft, setTsCanLeft]   = useState(false);
   const [tsCanRight, setTsCanRight] = useState(true);
@@ -397,16 +344,12 @@ export default function HomePage() {
   const [pendingBookingCount, setPendingBookingCount] = useState(0);
   const [criticalResultCount, setCriticalResultCount] = useState(0);
   const [showAiPanel, setShowAiPanel] = useState(false);
-  const [admissionDismissed, setAdmissionDismissed] = useState(false);
   const [headerVisitMode, setHeaderVisitMode] = useState<'new' | 'followup'>('new');
   const [wizardSkipped, setWizardSkipped] = useState(false);
   const [guidedMode, setGuidedMode] = useState(false);
   const [ambientMode, setAmbientMode] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [notifyOpen, setNotifyOpen] = useState(false);
-  const [notifyTemplate, setNotifyTemplate] = useState<'appointment_reminder' | 'result_ready' | 'postop_checkin' | 'general'>('result_ready');
-  const [notifyData, setNotifyData] = useState({ day: '', date: '', time: '', location: 'Rodney Bay', message: '' });
-  const [notifyBusy, setNotifyBusy] = useState(false);
   const [notifyStatus, setNotifyStatus] = useState<{ ok: boolean; msg: string } | null>(null);
   const prevPatientIdRef = useRef<string | null>(null);
 
@@ -501,9 +444,6 @@ export default function HomePage() {
 
 
   const userRole = profile?.role ?? 'front_desk';
-  const { activePathway, matchedPathways } = usePathway();
-  const topMatchScore = matchedPathways[0]?.score ?? 0;
-  const highConfidence = topMatchScore >= 15 && activePathway !== null;
 
   /* ── Sections shown per encounter type — accordion effect ── */
   const ENCOUNTER_TAB_SETS: Record<EncounterType, ReadonlySet<Section>> = useMemo(() => ({
@@ -812,35 +752,6 @@ export default function HomePage() {
     if (topSection === 'consultation') setZenMode(true);
   }, [topSection, setActiveSection]);
 
-  async function sendPatientNotification() {
-    if (!patientId || notifyBusy) return;
-    setNotifyBusy(true);
-    setNotifyStatus(null);
-    try {
-      const headers = await staffAuthHeaders();
-      const body: Record<string, unknown> = { template: notifyTemplate };
-      if (notifyTemplate === 'appointment_reminder') {
-        body.data = { day: notifyData.day, date: notifyData.date, time: notifyData.time, location: notifyData.location };
-      } else if (notifyTemplate === 'general') {
-        body.data = { message: notifyData.message };
-      }
-      const res = await fetch(`${API_ORIGIN}/api/notify/${patientId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify(body),
-      });
-      const json = await res.json() as { action?: string; error?: string };
-      if (!res.ok) throw new Error(json.error ?? `HTTP ${res.status}`);
-      const label = json.action === 'skipped' ? 'Message queued (dry-run mode)' : 'Message sent';
-      setNotifyStatus({ ok: true, msg: label });
-      setTimeout(() => { setNotifyOpen(false); setNotifyStatus(null); }, 1800);
-    } catch (e) {
-      setNotifyStatus({ ok: false, msg: e instanceof Error ? e.message : 'Send failed' });
-    } finally {
-      setNotifyBusy(false);
-    }
-  }
-
   // Ambient consultation = any active consultation with a patient loaded.
   // wizardSkipped / ambientMode no longer gate this — the wizard and visit-type
   // gate are gone; patient loaded + consultation section = ambient mode, always.
@@ -933,190 +844,21 @@ export default function HomePage() {
         <Suspense fallback={<div style={{ padding: 24, color: 'var(--muted)', fontSize: 13 }}>Loading…</div>}>
         <ErrorBoundary resetKeys={[topSection, activeSection]}>
         {/* Pre-visit status banner for doctor/admin */}
-        {preVisitStatus === 'registered' && (
-          <div style={{ margin: '0 0 12px', padding: '10px 16px', borderRadius: 8, background: '#fffbeb', border: '1px solid #fcd34d', color: '#92400e', fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 16 }}>⏳</span>
-            Patient registered — awaiting nurse vitals
-          </div>
-        )}
-        {preVisitStatus === 'vitals_done' && (() => {
-          const path = getAdaptivePath(symptoms, vitals);
-          return (
-            <div style={{ margin: '0 0 12px', padding: '12px 16px', borderRadius: 8, background: '#f0fdf4', border: '1px solid #86efac', display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-              <span style={{ fontSize: 16 }}>✓</span>
-              <div style={{ flex: 1, minWidth: 180 }}>
-                <div style={{ color: '#166534', fontWeight: 700, fontSize: 13 }}>
-                  Vitals recorded — patient ready for consultation
-                </div>
-                {path && (
-                  <div style={{ color: '#166534', fontSize: 12, marginTop: 2, opacity: 0.85 }}>
-                    {path.hint}
-                  </div>
-                )}
-              </div>
-              {path && (
-                <button
-                  type="button"
-                  onClick={() => { setTopSection(path.topSection); setActiveSection(path.section); }}
-                  style={{
-                    padding: '7px 16px', borderRadius: 6, border: 'none',
-                    background: '#166534', color: '#fff',
-                    fontWeight: 700, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap',
-                  }}
-                >
-                  Go to {path.label} →
-                </button>
-              )}
-            </div>
-          );
-        })()}
+        <PreVisitStatusBanner />
 
         {/* Fix 3: Pathway confidence → auto-surface suggested investigations */}
-        {highConfidence && activePathway!.suggestedInvestigations.length > 0 && topSection === 'consultation' && (
-          <div style={{ margin: '0 0 12px', padding: '12px 16px', borderRadius: 8, background: '#eef2ff', border: '1px solid #c7d2fe', display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-            <span style={{ fontSize: 16 }}>⚑</span>
-            <div style={{ flex: 1, minWidth: 180 }}>
-              <div style={{ color: '#312e81', fontWeight: 700, fontSize: 13 }}>
-                Pathway match: {activePathway!.name}
-              </div>
-              <div style={{ color: '#3730a3', fontSize: 12, marginTop: 2 }}>
-                Suggested: {activePathway!.suggestedInvestigations.slice(0, 6).join(', ')}
-                {activePathway!.suggestedInvestigations.length > 6 ? ` (+${activePathway!.suggestedInvestigations.length - 6} more)` : ''}
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setActiveSection('investigations')}
-              style={{ padding: '7px 16px', borderRadius: 6, border: 'none', background: '#312e81', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >
-              Go to Labs →
-            </button>
-          </div>
-        )}
+        <PathwayConfidenceBanner />
 
         {/* Fix 4: Admission escalation prompt */}
-        {!admissionDismissed && encounterMode === 'outpatient' && triageResult.acuity === 'urgent' && highConfidence && (
-          <div style={{ margin: '0 0 12px', padding: '12px 16px', borderRadius: 8, background: '#fef2f2', border: '1px solid #fca5a5', display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
-            <span style={{ fontSize: 16 }}>🏥</span>
-            <div style={{ flex: 1, minWidth: 180 }}>
-              <div style={{ color: '#991b1b', fontWeight: 700, fontSize: 13 }}>
-                Admission criteria may be met
-              </div>
-              <div style={{ color: '#b91c1c', fontSize: 12, marginTop: 2 }}>
-                Urgent acuity + {activePathway!.name} — consider switching to inpatient encounter.
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => { setEncounterMode('inpatient'); setAdmissionDismissed(true); }}
-              style={{ padding: '7px 16px', borderRadius: 6, border: 'none', background: '#991b1b', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer', whiteSpace: 'nowrap' }}
-            >
-              Switch to Inpatient
-            </button>
-            <button
-              type="button"
-              onClick={() => setAdmissionDismissed(true)}
-              style={{ padding: '7px 12px', borderRadius: 6, border: '1px solid #fca5a5', background: '#fff', color: '#991b1b', fontWeight: 600, fontSize: 12, cursor: 'pointer' }}
-            >
-              Dismiss
-            </button>
-          </div>
-        )}
+        <AdmissionEscalationBanner />
 
         {/* Patient context banner — sticky at top of consultation (hidden in ambient mode — slim header covers it) */}
-        {topSection === 'consultation' && !consultAmbient && (() => {
-          const allergyList = allergies.split(',').map(a => a.trim()).filter(Boolean);
-          const acuityColors: Record<string, { bg: string; text: string }> = {
-            urgent:   { bg: '#7f1d1d', text: '#fca5a5' },
-            priority: { bg: '#431407', text: '#fb923c' },
-            review:   { bg: '#422006', text: '#fbbf24' },
-            routine:  { bg: '#052e16', text: '#86efac' },
-          };
-          const ac = acuityColors[triageResult.acuity] ?? { bg: '#1e293b', text: '#94a3b8' };
-          return (
-            <div style={{
-              position: 'sticky', top: 0, zIndex: 50, marginBottom: 8,
-              background: '#0f172a', borderBottom: '1px solid #1e293b',
-              display: 'flex', alignItems: 'center', gap: 12,
-              padding: '0 14px', height: 36, flexWrap: 'nowrap', overflow: 'hidden',
-            }}>
-              <span style={{ fontWeight: 700, fontSize: 13, color: '#f1f5f9', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                {patientName.trim() || '—'}
-              </span>
-              {mrNumber && (
-                <span style={{ fontSize: 10, color: '#0d9488', background: '#0d948818', borderRadius: 4, padding: '1px 6px', fontWeight: 700, letterSpacing: '0.05em', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                  {mrNumber}
-                </span>
-              )}
-              {(age || (sex && sex !== 'unknown')) && (
-                <span style={{ fontSize: 12, color: '#64748b', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                  {[age && `${age}y`, sex !== 'unknown' && sex].filter(Boolean).join(' · ')}
-                </span>
-              )}
-              {allergyList.length > 0 && (
-                <span style={{ fontSize: 11, color: '#fbbf24', background: '#422006', border: '1px solid #78350f', borderRadius: 4, padding: '1px 7px', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                  ⚠ {allergyList.slice(0, 2).join(', ')}{allergyList.length > 2 ? ` +${allergyList.length - 2}` : ''}
-                </span>
-              )}
-              {allergyList.length === 0 && (
-                <span style={{ fontSize: 11, color: '#334155', whiteSpace: 'nowrap', flexShrink: 0 }}>NKDA</span>
-              )}
-              {/* Visit type badge — persistent context during encounter */}
-              {ctxVisitType && (() => {
-                const vt = VISIT_TYPES.find(v => v.id === ctxVisitType);
-                return vt ? (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
-                    color: vt.color, background: `${vt.color}22`,
-                    border: `1px solid ${vt.color}55`,
-                    borderRadius: 4, padding: '1px 7px', whiteSpace: 'nowrap', flexShrink: 0,
-                  }}>
-                    {vt.icon} {vt.label}
-                  </span>
-                ) : null;
-              })()}
-
-              {/* Notify patient button */}
-              {patientId && phone && (
-                <button
-                  type="button"
-                  onClick={() => { setNotifyOpen(true); setNotifyStatus(null); }}
-                  title="Send patient notification (SMS/WhatsApp)"
-                  style={{
-                    marginLeft: 'auto', padding: '2px 10px', borderRadius: 5, border: 'none',
-                    cursor: 'pointer', fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
-                    flexShrink: 0, whiteSpace: 'nowrap',
-                    background: '#0f3460', color: '#93c5fd',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  ✉ Notify
-                </button>
-              )}
-
-              {/* Guided mode toggle */}
-              <button
-                type="button"
-                onClick={() => setGuidedMode(g => !g)}
-                title={guidedMode ? 'Exit guided mode — show all sections' : 'Enter guided mode — one step at a time'}
-                style={{
-                  marginLeft: patientId && phone ? undefined : 'auto',
-                  padding: '2px 10px', borderRadius: 5, border: 'none',
-                  cursor: 'pointer', fontSize: 10, fontWeight: 700, letterSpacing: '0.05em',
-                  flexShrink: 0, whiteSpace: 'nowrap',
-                  background: guidedMode ? '#0d9488' : '#1e293b',
-                  color: guidedMode ? '#fff' : '#475569',
-                  transition: 'all 0.15s',
-                }}
-              >
-                {guidedMode ? '✦ GUIDED' : '✦ GUIDE'}
-              </button>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: ac.text, background: ac.bg, borderRadius: 4, padding: '2px 8px', whiteSpace: 'nowrap', flexShrink: 0 }}>
-                {triageResult.acuity}
-              </span>
-            </div>
-          );
-        })()}
+        <PatientContextBanner
+          guidedMode={guidedMode}
+          setGuidedMode={setGuidedMode}
+          setNotifyOpen={setNotifyOpen}
+          setNotifyStatus={setNotifyStatus}
+        />
 
         {/* Critical result alerts — vitals / investigation thresholds */}
         {topSection === 'consultation' && <CriticalResultAlert />}
@@ -1127,93 +869,7 @@ export default function HomePage() {
         {topSection === 'consultation' && <PreviousVisitStrip />}
 
         {/* No-patient quickstart — inline name/age/sex entry */}
-        {topSection === 'consultation' && !patientId && !patientName && (
-          <div style={{ background: '#fef9c3', border: '1.5px solid #fbbf24', borderRadius: 10, padding: '14px 18px', color: '#92400e' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 18 }}>👤</span>
-              <span style={{ fontSize: 13, fontWeight: 700 }}>No patient loaded — enter details to begin</span>
-            </div>
-            <form
-              onSubmit={e => {
-                e.preventDefault();
-                if (!qsName.trim()) return;
-                setPatientName(qsName.trim());
-                const resolvedAge = qsAge || (qsDob
-                  ? String(Math.floor((Date.now() - new Date(qsDob).getTime()) / (365.25 * 24 * 3600 * 1000)))
-                  : '');
-                if (resolvedAge) ctxSetAge(resolvedAge);
-                if (qsDob) ctxSetDob(qsDob);
-                if (qsSex && qsSex !== 'unknown') ctxSetSex(qsSex as 'male' | 'female' | 'other' | 'unknown');
-                setQsName(''); setQsAge(''); setQsSex(''); setQsDob('');
-              }}
-              style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'flex-end' }}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, flex: '2 1 160px' }}>
-                <label style={{ fontSize: 10, fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Patient name *</label>
-                <input
-                  autoFocus
-                  value={qsName}
-                  onChange={e => setQsName(e.target.value)}
-                  placeholder="e.g. Marie Joseph"
-                  style={{ padding: '7px 10px', borderRadius: 7, border: '1.5px solid #f59e0b', fontSize: 13, background: '#fff', color: '#0f172a', outline: 'none' }}
-                />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <label style={{ fontSize: 10, fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Date of birth</label>
-                <input
-                  type="date"
-                  value={qsDob}
-                  onChange={e => {
-                    setQsDob(e.target.value);
-                    if (e.target.value) {
-                      const yrs = Math.floor((Date.now() - new Date(e.target.value).getTime()) / (365.25 * 24 * 3600 * 1000));
-                      if (yrs >= 0) setQsAge(String(yrs));
-                    }
-                  }}
-                  style={{ padding: '7px 10px', borderRadius: 7, border: '1.5px solid #f59e0b', fontSize: 13, background: '#fff', color: '#0f172a', outline: 'none' }}
-                />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <label style={{ fontSize: 10, fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Age (yrs)</label>
-                <input
-                  type="number"
-                  inputMode="numeric"
-                  min={0} max={130}
-                  value={qsAge}
-                  onChange={e => { setQsAge(e.target.value.replace(/[^0-9]/g, '')); setQsDob(''); }}
-                  placeholder="e.g. 45"
-                  style={{ padding: '7px 10px', borderRadius: 7, border: '1.5px solid #f59e0b', fontSize: 13, background: '#fff', color: '#0f172a', width: 72, outline: 'none' }}
-                />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <label style={{ fontSize: 10, fontWeight: 700, color: '#92400e', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Sex</label>
-                <select
-                  value={qsSex}
-                  onChange={e => setQsSex(e.target.value)}
-                  style={{ padding: '7px 8px', borderRadius: 7, border: '1.5px solid #f59e0b', fontSize: 13, background: '#fff', color: '#0f172a', outline: 'none' }}
-                >
-                  <option value="">—</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <button
-                type="submit"
-                disabled={!qsName.trim()}
-                style={{
-                  padding: '7px 18px', borderRadius: 7, border: 'none',
-                  background: qsName.trim() ? '#d97706' : '#94a3b8',
-                  color: '#fff', fontSize: 13, fontWeight: 700,
-                  cursor: qsName.trim() ? 'pointer' : 'not-allowed',
-                  flexShrink: 0,
-                }}
-              >
-                → Start
-              </button>
-            </form>
-          </div>
-        )}
+        <NoPatientQuickstart />
 
 
         {/* Ambient consultation — renders whenever a patient is loaded in consultation */}
@@ -1640,143 +1296,12 @@ export default function HomePage() {
       )}
 
       {/* ── Patient notify modal ─────────────────────────────────────────────── */}
-      {notifyOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Send patient notification"
-          style={{
-            position: 'fixed', inset: 0, zIndex: 2000,
-            background: 'rgba(0,0,0,0.55)', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', padding: 16,
-          }}
-          onClick={e => { if (e.target === e.currentTarget) setNotifyOpen(false); }}
-        >
-          <div style={{
-            background: 'var(--bg, #0f172a)', border: '1px solid var(--line, #1e293b)',
-            borderRadius: 12, padding: '20px 22px', width: '100%', maxWidth: 440,
-            boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
-          }}>
-            {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <span style={{ fontWeight: 800, fontSize: 14, color: 'var(--ink, #f1f5f9)' }}>
-                ✉ Notify {patientName ? patientName.split(' ')[0] : 'Patient'}
-              </span>
-              <button
-                type="button"
-                onClick={() => setNotifyOpen(false)}
-                style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: 16, color: '#64748b', lineHeight: 1 }}
-              >✕</button>
-            </div>
-
-            {/* Template picker */}
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
-              {([
-                { id: 'result_ready',        label: 'Result ready' },
-                { id: 'postop_checkin',      label: 'Post-op check-in' },
-                { id: 'appointment_reminder',label: 'Appointment reminder' },
-                { id: 'general',             label: 'Custom message' },
-              ] as const).map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setNotifyTemplate(t.id)}
-                  style={{
-                    padding: '4px 11px', borderRadius: 20, fontSize: 11, fontWeight: 700,
-                    border: `1px solid ${notifyTemplate === t.id ? '#3b82f6' : '#334155'}`,
-                    background: notifyTemplate === t.id ? '#1d4ed8' : 'transparent',
-                    color: notifyTemplate === t.id ? '#fff' : '#94a3b8',
-                    cursor: 'pointer', transition: 'all 0.12s',
-                  }}
-                >{t.label}</button>
-              ))}
-            </div>
-
-            {/* Conditional fields */}
-            {notifyTemplate === 'appointment_reminder' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-                {(['day', 'date', 'time', 'location'] as const).map(field => (
-                  <label key={field} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{field}</span>
-                    <input
-                      type="text"
-                      value={notifyData[field]}
-                      placeholder={field === 'day' ? 'e.g. Tuesday' : field === 'date' ? 'e.g. 5 Aug 2026' : field === 'time' ? 'e.g. 10:00 AM' : 'e.g. Rodney Bay'}
-                      onChange={e => setNotifyData(d => ({ ...d, [field]: e.target.value }))}
-                      style={{
-                        padding: '6px 8px', borderRadius: 6, fontSize: 12,
-                        border: '1px solid #334155', background: '#1e293b', color: '#f1f5f9',
-                        outline: 'none',
-                      }}
-                    />
-                  </label>
-                ))}
-              </div>
-            )}
-
-            {notifyTemplate === 'general' && (
-              <div style={{ marginBottom: 12 }}>
-                <label style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Message</span>
-                  <textarea
-                    value={notifyData.message}
-                    onChange={e => setNotifyData(d => ({ ...d, message: e.target.value }))}
-                    rows={3}
-                    placeholder="Type the message to send to the patient…"
-                    style={{
-                      padding: '6px 8px', borderRadius: 6, fontSize: 12, resize: 'vertical',
-                      border: '1px solid #334155', background: '#1e293b', color: '#f1f5f9',
-                      outline: 'none', fontFamily: 'inherit',
-                    }}
-                  />
-                </label>
-              </div>
-            )}
-
-            {(notifyTemplate === 'result_ready' || notifyTemplate === 'postop_checkin') && (
-              <p style={{ fontSize: 12, color: '#64748b', marginBottom: 12, lineHeight: 1.5 }}>
-                A pre-written message will be sent to the patient's phone on file.
-              </p>
-            )}
-
-            {/* Status feedback */}
-            {notifyStatus && (
-              <div style={{
-                padding: '7px 11px', borderRadius: 6, fontSize: 12, fontWeight: 600,
-                marginBottom: 12,
-                background: notifyStatus.ok ? '#052e16' : '#450a0a',
-                color: notifyStatus.ok ? '#4ade80' : '#f87171',
-                border: `1px solid ${notifyStatus.ok ? '#166534' : '#991b1b'}`,
-              }}>
-                {notifyStatus.ok ? '✓ ' : '✕ '}{notifyStatus.msg}
-              </div>
-            )}
-
-            {/* Actions */}
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                onClick={() => setNotifyOpen(false)}
-                style={{
-                  padding: '7px 16px', borderRadius: 7, fontSize: 12, fontWeight: 700,
-                  border: '1px solid #334155', background: 'transparent', color: '#94a3b8', cursor: 'pointer',
-                }}
-              >Cancel</button>
-              <button
-                type="button"
-                onClick={sendPatientNotification}
-                disabled={notifyBusy}
-                style={{
-                  padding: '7px 16px', borderRadius: 7, fontSize: 12, fontWeight: 700,
-                  border: 'none', background: notifyBusy ? '#1e3a8a' : '#1d4ed8',
-                  color: notifyBusy ? '#93c5fd' : '#fff', cursor: notifyBusy ? 'default' : 'pointer',
-                  transition: 'all 0.15s',
-                }}
-              >{notifyBusy ? 'Sending…' : 'Send SMS'}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <PatientNotifyModal
+        open={notifyOpen}
+        onClose={() => setNotifyOpen(false)}
+        status={notifyStatus}
+        setStatus={setNotifyStatus}
+      />
 
       <CommandPalette
         onSection={handleSectionSelect}
