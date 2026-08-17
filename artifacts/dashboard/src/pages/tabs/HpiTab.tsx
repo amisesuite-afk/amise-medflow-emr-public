@@ -61,6 +61,14 @@ const MULTI_KEYS = new Set([
   'assoc', 'associated', 'symptoms', 'sympt', 'systemic', 'risk', 'alarm',
   'aggravating', 'aggravating_factors', 'relieving', 'relieving_factors',
   'triggers', 'relief', 'timing', 'radiation', 'spread',
+  // Checklist-style fields where multiple simultaneous findings are the clinical
+  // norm, not the exception (verified against each field's own hint text in
+  // cc-matrices.ts, which lists discrete co-occurring items). Previously missing
+  // from this set, so selecting a second chip silently erased the first
+  // (e.g. "Fever" replacing "Tachycardia" instead of both being recorded) --
+  // a real clinical-documentation data-loss bug, not just a UX nitpick.
+  'sepsis', 'signs', 'infection', 'alvarado', 'blatchford', 'ranson',
+  'reynolds', 'chronic', 'staging', 'compressive', 'gi', 'haemodynamic',
 ]);
 
 // ── Field type ────────────────────────────────────────────────────────────────
