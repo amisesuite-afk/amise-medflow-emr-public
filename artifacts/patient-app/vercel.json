@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "cd ../.. && git diff --quiet HEAD^ HEAD -- artifacts/patient-app tsconfig.base.json pnpm-lock.yaml pnpm-workspace.yaml package.json",
   "rewrites": [
     {
       "source": "/api/:path*",

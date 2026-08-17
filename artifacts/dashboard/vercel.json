@@ -1,5 +1,6 @@
 {
   "framework": null,
+  "ignoreCommand": "cd ../.. && git diff --quiet HEAD^ HEAD -- artifacts/dashboard lib/api-client-react lib/pane-engine lib/patient-state lib/triage-engine tsconfig.base.json pnpm-lock.yaml pnpm-workspace.yaml package.json",
   "installCommand": "npm install -g pnpm@10 && cd ../.. && pnpm install --frozen-lockfile",
   "buildCommand": "cd ../.. && pnpm --filter @workspace/dashboard run build",
   "outputDirectory": "dist/public",
