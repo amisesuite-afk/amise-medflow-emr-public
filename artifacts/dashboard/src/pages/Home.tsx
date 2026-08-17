@@ -321,6 +321,26 @@ function acuityClass(a: string) {
   return a === 'urgent' ? 'urgent' : a === 'priority' ? 'priority' : a === 'review' ? 'review' : '';
 }
 
+/** Shared "visit type required" gate panel — see resolveEncounterContext / the
+ * consultation and intake gates in HomePage for why this exists: visit type is
+ * a required precondition, not an optional field clinical/intake tabs can skip. */
+function VisitTypeRequiredGate({ context }: { context: string }) {
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      gap: 10, padding: '48px 24px', textAlign: 'center',
+      background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: 12,
+    }}>
+      <span style={{ fontSize: 28 }}>⚠️</span>
+      <div style={{ fontSize: 15, fontWeight: 800, color: '#92400e' }}>Visit type required</div>
+      <div style={{ fontSize: 13, color: '#78350f', maxWidth: 420 }}>
+        Select a visit type from the header above before {context} — it determines which
+        clinical sections and documentation this encounter needs.
+      </div>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const { profile, loading: authLoading, signOut } = useAuth();
   const {
@@ -386,7 +406,6 @@ export default function HomePage() {
   const [admissionDismissed, setAdmissionDismissed] = useState(false);
   const [headerVisitMode, setHeaderVisitMode] = useState<'new' | 'followup'>('new');
   const [wizardSkipped, setWizardSkipped] = useState(false);
-  const [vtGateCleared, setVtGateCleared] = useState(false);
   const [guidedMode, setGuidedMode] = useState(false);
   const [ambientMode, setAmbientMode] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
@@ -495,7 +514,7 @@ export default function HomePage() {
   useEffect(() => {
     if (patientId !== prevPatientIdRef.current) {
       prevPatientIdRef.current = patientId;
-      if (patientId) { setWizardSkipped(true); setGuidedMode(false); setVtGateCleared(true); }
+      if (patientId) { setWizardSkipped(true); setGuidedMode(false); }
     }
   }, [patientId]);
 
@@ -902,7 +921,6 @@ export default function HomePage() {
                     const { encounterType: nextEncounterType, topSection: nextTopSection } = resolveEncounterContext(id);
                     if (nextEncounterType) setEncounterType(nextEncounterType);
                     setTopSection(nextTopSection);
-                    setVtGateCleared(true);
                   }}
                   aria-label="Visit type"
                   style={{
@@ -1104,7 +1122,6 @@ export default function HomePage() {
                 const { encounterType: nextEncounterType, topSection: nextTopSection } = resolveEncounterContext(id);
                 if (nextEncounterType) setEncounterType(nextEncounterType);
                 setTopSection(nextTopSection);
-                setVtGateCleared(true);
               }}
               aria-label="Visit type"
               style={{
@@ -1802,22 +1819,19 @@ export default function HomePage() {
             type during check-in/triage; if that was skipped for any reason, the clinical
             tabs stay locked here rather than silently opening with no visit type set. */}
         {topSection === 'consultation' && !ambientMode && (!!patientId || !!patientName) && !ctxVisitType && (
-          <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            gap: 10, padding: '48px 24px', textAlign: 'center',
-            background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: 12,
-          }}>
-            <span style={{ fontSize: 28 }}>⚠️</span>
-            <div style={{ fontSize: 15, fontWeight: 800, color: '#92400e' }}>Visit type required</div>
-            <div style={{ fontSize: 13, color: '#78350f', maxWidth: 420 }}>
-              Select a visit type from the header above before continuing — it determines which
-              clinical sections and documentation this encounter needs.
-            </div>
-          </div>
+          <VisitTypeRequiredGate context="continuing" />
+        )}
+
+        {/* Intake gate — same requirement as consultation. Previously gated by a
+            local vtGateCleared flag that was force-set true on every patient load
+            regardless of visit type (see the patientId-change effect above, now
+            removed) — meaning intake was never actually gated in practice. */}
+        {topSection === 'intake' && (!!patientId || !!patientName) && !ctxVisitType && (
+          <VisitTypeRequiredGate context="starting intake" />
         )}
 
         {/* Clinical sections */}
-        {topSection === 'intake'        && vtGateCleared && <IntakeTab />}
+        {topSection === 'intake'        && !!ctxVisitType && <IntakeTab />}
         {topSection === 'consultation' && !ambientMode && !!ctxVisitType && (<>
         {activeSection === 'brief'        && <BriefTab />}
         {activeSection === 'hpi'         && <HpiTab />}
