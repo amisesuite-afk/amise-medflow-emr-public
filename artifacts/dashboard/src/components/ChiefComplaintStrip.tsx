@@ -72,6 +72,11 @@ const MULTI_KEYS = new Set([
   'aggravating', 'aggravating_factors', 'relieving', 'relieving_factors',
   'triggers', 'relief', 'timing', 'timing_&_pattern',
   'radiation', 'spread',
+  // Checklist-style fields where multiple simultaneous findings are the clinical
+  // norm (verified against each field's own hint text in cc-matrices.ts). Kept in
+  // sync with the same set in HpiTab.tsx -- see that file for the full rationale.
+  'sepsis', 'signs', 'infection', 'alvarado', 'blatchford', 'ranson',
+  'reynolds', 'chronic', 'staging', 'compressive', 'gi', 'haemodynamic',
 ]);
 
 function toggleChip(current: string, opt: string, multi: boolean): string {
