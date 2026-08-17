@@ -578,8 +578,20 @@ export default function HomePage() {
   /* ── Consultation tab list (role-aware + CC matrix or visit-type / encounter-type filtered) ── */
   const consultTabs = useMemo<{ id: Section; label: string }[]>(() => {
     // Visit-type-specific tabs: narrowed list, visit-aware labels, clinically ordered.
-    // Only bypassed when a CC matrix is active (matrix takes precedence).
-    if (ctxVisitType && !activeCcKey) {
+    // For fresh-presentation visit types (new_consult, pre_op, breast, diabetic_foot,
+    // urgent), an active CC matrix still takes precedence -- it adds real complaint-
+    // specific detail on top of a workup that's appropriate to run in full anyway.
+    // For return/procedural visit types, the tight visit-type list always wins even
+    // with a CC attached, since the CC there is the *original* diagnosis being
+    // followed up or operated on, not something needing a fresh full workup --
+    // letting the CC matrix override left every follow-up/post-op/ERCP/OGD/
+    // colonoscopy/day-of-surgery/telephone encounter running the full new-complaint
+    // flow instead of its own SOAP/procedure-specific tab set, since a CC is
+    // realistically always still attached from the original visit.
+    const ccMatrixYieldsToVisitType = new Set([
+      'follow_up', 'post_op', 'day_of_surgery', 'ercp', 'endoscopy_ogd', 'endoscopy_col', 'telephone',
+    ]);
+    if (ctxVisitType && (!activeCcKey || ccMatrixYieldsToVisitType.has(ctxVisitType))) {
       const vtTabs = VISIT_TYPE_TABS[ctxVisitType];
       if (vtTabs) {
         const doctorOnly = new Set<Section>(['assessment','plan','procedures','prescriptions','dosing','fluid_nutrition','referring_providers','encounter_history']);
