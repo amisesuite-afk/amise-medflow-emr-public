@@ -1798,51 +1798,71 @@ export default function HomePage() {
         {/* Algorithm workflow guide — always visible when CC is active */}
         {topSection === 'consultation' && !ambientMode && !!activeCcKey && <ClinicalWorkflowBar />}
 
+        {/* Visit-type gate — physician fail-safe. Front desk is meant to capture visit
+            type during check-in/triage; if that was skipped for any reason, the clinical
+            tabs stay locked here rather than silently opening with no visit type set. */}
+        {topSection === 'consultation' && !ambientMode && (!!patientId || !!patientName) && !ctxVisitType && (
+          <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: 10, padding: '48px 24px', textAlign: 'center',
+            background: '#fffbeb', border: '1.5px solid #fcd34d', borderRadius: 12,
+          }}>
+            <span style={{ fontSize: 28 }}>⚠️</span>
+            <div style={{ fontSize: 15, fontWeight: 800, color: '#92400e' }}>Visit type required</div>
+            <div style={{ fontSize: 13, color: '#78350f', maxWidth: 420 }}>
+              Select a visit type from the header above before continuing — it determines which
+              clinical sections and documentation this encounter needs.
+            </div>
+          </div>
+        )}
+
         {/* Clinical sections */}
         {topSection === 'intake'        && vtGateCleared && <IntakeTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'brief'        && <BriefTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'hpi'         && <HpiTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'triage'      && <TriageTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'pmh'         && <PmhTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'surgical'    && <SurgicalHistoryTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'medications' && <MedicationsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'allergies'   && <AllergiesTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'family_hx'   && <FamilyHistoryTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'toxic'       && <ToxicHabitsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'scales'      && <ScalesTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'ros'         && <RosTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'examination' &&
+        {topSection === 'consultation' && !ambientMode && !!ctxVisitType && (<>
+        {activeSection === 'brief'        && <BriefTab />}
+        {activeSection === 'hpi'         && <HpiTab />}
+        {activeSection === 'triage'      && <TriageTab />}
+        {activeSection === 'pmh'         && <PmhTab />}
+        {activeSection === 'surgical'    && <SurgicalHistoryTab />}
+        {activeSection === 'medications' && <MedicationsTab />}
+        {activeSection === 'allergies'   && <AllergiesTab />}
+        {activeSection === 'family_hx'   && <FamilyHistoryTab />}
+        {activeSection === 'toxic'       && <ToxicHabitsTab />}
+        {activeSection === 'scales'      && <ScalesTab />}
+        {activeSection === 'ros'         && <RosTab />}
+        {activeSection === 'examination' &&
           (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) &&
           <ExaminationTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'classifications' && (authLoading || hasRole(userRole, 'nurse')) && <SurgicalClassificationsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'investigations' &&
+        {activeSection === 'classifications' && (authLoading || hasRole(userRole, 'nurse')) && <SurgicalClassificationsTab />}
+        {activeSection === 'investigations' &&
           (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <InvestigationsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'radiology' &&
+        {activeSection === 'radiology' &&
           (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <RadiologyTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'attachments' &&
+        {activeSection === 'attachments' &&
           (authLoading || hasRole(userRole, 'nurse') || hasRole(userRole, 'doctor')) && <AttachmentsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'assessment'     && (authLoading || hasRole(userRole, 'doctor')) && <AssessmentTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'plan'        && (authLoading || hasRole(userRole, 'doctor')) && <PlanTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'procedures' && (authLoading || hasRole(userRole, 'doctor')) && <ProceduresTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'progress'    && <ProgressNotesTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'monitoring'  && <VitalsMonitoringTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'prescriptions' && (authLoading || hasRole(userRole, 'doctor')) && <PrescriptionsTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'referring_providers' && (authLoading || hasRole(userRole, 'doctor')) && <ReferringProvidersTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'encounter_history'   && (authLoading || hasRole(userRole, 'doctor')) && <EncounterTimelineTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'ai_consultant' && (authLoading || hasRole(userRole, 'doctor')) && <AiConsultantTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'sphere'        && (authLoading || hasRole(userRole, 'doctor')) && <PathologySphereTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'apcq'            && <APCQTab compact />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'tasks'          && <PatientTasksTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'periop'         && <PerioperativeTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'dosing'         && <DosingTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'fluid_nutrition' && <FluidNutritionTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'blood_gas'       && <BloodGasTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'wounds'          && <WoundTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'who_checklist'  && <WhoChecklistTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'consent'        && <SurgicalConsentTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'letters'        && <LetterGeneratorTab />}
-        {topSection === 'consultation' && !ambientMode && activeSection === 'patient_education' && <PatientEducationTab />}
+        {activeSection === 'assessment'     && (authLoading || hasRole(userRole, 'doctor')) && <AssessmentTab />}
+        {activeSection === 'plan'        && (authLoading || hasRole(userRole, 'doctor')) && <PlanTab />}
+        {activeSection === 'procedures' && (authLoading || hasRole(userRole, 'doctor')) && <ProceduresTab />}
+        {activeSection === 'progress'    && <ProgressNotesTab />}
+        {activeSection === 'monitoring'  && <VitalsMonitoringTab />}
+        {activeSection === 'prescriptions' && (authLoading || hasRole(userRole, 'doctor')) && <PrescriptionsTab />}
+        {activeSection === 'referring_providers' && (authLoading || hasRole(userRole, 'doctor')) && <ReferringProvidersTab />}
+        {activeSection === 'encounter_history'   && (authLoading || hasRole(userRole, 'doctor')) && <EncounterTimelineTab />}
+        {activeSection === 'ai_consultant' && (authLoading || hasRole(userRole, 'doctor')) && <AiConsultantTab />}
+        {activeSection === 'sphere'        && (authLoading || hasRole(userRole, 'doctor')) && <PathologySphereTab />}
+        {activeSection === 'nurse_apcq'      && <NurseAPCQTab />}
+        {activeSection === 'apcq'            && <APCQTab compact />}
+        {activeSection === 'tasks'          && <PatientTasksTab />}
+        {activeSection === 'periop'         && <PerioperativeTab />}
+        {activeSection === 'dosing'         && <DosingTab />}
+        {activeSection === 'fluid_nutrition' && <FluidNutritionTab />}
+        {activeSection === 'blood_gas'       && <BloodGasTab />}
+        {activeSection === 'wounds'          && <WoundTab />}
+        {activeSection === 'who_checklist'  && <WhoChecklistTab />}
+        {activeSection === 'consent'        && <SurgicalConsentTab />}
+        {activeSection === 'letters'        && <LetterGeneratorTab />}
+        {activeSection === 'patient_education' && <PatientEducationTab />}
+        </>)}
         {topSection === 'procedures'    && (authLoading || hasRole(userRole, 'doctor'))        && <ProceduresTab />}
         {(topSection === 'summary' || topSection === 'finaldoc') && (
           encounterStatus === 'closed' ? (

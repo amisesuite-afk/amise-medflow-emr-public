@@ -187,6 +187,10 @@ export default function CheckInTab() {
   const [duplicateCandidates, setDuplicateCandidates] = useState<PatientListRow[] | null>(null);
   const [bypassDuplicate, setBypassDuplicate] = useState(false);
   const [openSec, setOpenSec] = useState({ cc: true, vitals: true, medical: false, social: false });
+  // Visit-type is a required precondition to start the consultation — front desk is the
+  // primary enforcement point (physician view has its own fail-safe gate if this is skipped).
+  const [visitTypeMissing, setVisitTypeMissing] = useState(false);
+  const visitTypeRef = useRef<HTMLSelectElement | null>(null);
 
   // Load referring providers
   useEffect(() => {
@@ -722,10 +726,12 @@ export default function CheckInTab() {
                 Visit type
               </label>
               <select
+                ref={visitTypeRef}
                 value={visitType ?? ''}
                 onChange={e => {
                   const id = e.target.value;
                   setVisitType(id);
+                  setVisitTypeMissing(false);
                   setIsPostOp(id === 'post_op');
                   if (id === 'ercp' || id === 'endoscopy_ogd' || id === 'endoscopy_col') {
                     setEncounterType('endoscopy');
@@ -737,7 +743,11 @@ export default function CheckInTab() {
                     setEncounterType('surgical_consult');
                   }
                 }}
-                style={{ flex: 1, padding: '7px 10px', borderRadius: 8, border: '1.5px solid #0d9488', fontSize: 13, fontWeight: 600, background: '#f0fdfa', color: '#0f766e', cursor: 'pointer' }}
+                style={{
+                  flex: 1, padding: '7px 10px', borderRadius: 8, fontSize: 13, fontWeight: 600,
+                  background: '#f0fdfa', color: '#0f766e', cursor: 'pointer',
+                  border: visitTypeMissing ? '1.5px solid #dc2626' : '1.5px solid #0d9488',
+                }}
               >
                 <option value="">— Select visit type —</option>
                 {VISIT_TYPES.map(vt => (
@@ -745,6 +755,11 @@ export default function CheckInTab() {
                 ))}
               </select>
             </div>
+            {visitTypeMissing && (
+              <div style={{ marginTop: 6, fontSize: 11, fontWeight: 700, color: '#dc2626' }}>
+                Select a visit type before starting the consultation.
+              </div>
+            )}
 
             {/* Post-op date + review number */}
             {visitType === 'post_op' && (
@@ -983,8 +998,19 @@ export default function CheckInTab() {
             )}
           </div>
 
-          {/* Primary CTA — go straight to consultation */}
-          <button type="button" onClick={() => setTopSection('consultation')}
+          {/* Primary CTA — go straight to consultation. Visit type is required: without
+              it, keep returning the user to the selector instead of navigating. */}
+          <button
+            type="button"
+            onClick={() => {
+              if (!visitType) {
+                setVisitTypeMissing(true);
+                visitTypeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                visitTypeRef.current?.focus();
+                return;
+              }
+              setTopSection('consultation');
+            }}
             style={{ width: '100%', padding: '14px 20px', borderRadius: 10, border: 'none', background: '#0d9488', color: '#fff', fontWeight: 800, fontSize: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
             {visitType && visitType !== 'new_consult'
               ? `${VISIT_TYPES.find(v => v.id === visitType)?.icon} Start ${VISIT_TYPES.find(v => v.id === visitType)?.label} →`
