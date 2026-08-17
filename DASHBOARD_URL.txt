@@ -1,2 +1,2 @@
-Error:Resourceislimited-tryagainin24hours(morethan100,code:"api-deployments-free-per-day").
+https://dashboard-lemon-gamma-44.vercel.app
 Login: /login  Dashboard: /  Booking Inbox: /?top=booking_inbox
