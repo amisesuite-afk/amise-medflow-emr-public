@@ -70,7 +70,6 @@ const isDev = process.env.NODE_ENV !== 'production';
 const allowedOrigins = [
   process.env.PORTAL_URL,
   process.env.DASHBOARD_URL,
-  process.env.PATIENT_APP_URL,
   ...(isDev ? ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'] : []),
 ].filter(Boolean) as string[];
 
@@ -79,7 +78,7 @@ app.use(cors({
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
     // Vercel preview URLs scoped tightly to this project's team slug.
     if (/^https:\/\/[\w-]+-amisesuite-afks-projects\.vercel\.app$/.test(origin)) return cb(null, true);
-    // Any amise-* Vercel deployment (patient app, dashboard aliases, etc.).
+    // Any amise-* Vercel deployment (dashboard aliases, etc.).
     if (/^https:\/\/amise[\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
     // Dashboard production/preview deployments (e.g. rd-lemon-gamma-44.vercel.app
     // and any branch previews of the same Vercel project).

@@ -38,7 +38,7 @@ next process restart, so this is not instant:
 
 ## Rolling back a bad frontend deploy (Vercel)
 
-Five projects deploy independently, each via its own GitHub Actions workflow running
+Four projects deploy independently, each via its own GitHub Actions workflow running
 `npx vercel deploy --prod` from the runner (not Vercel's native git integration — there is no
 separate auto-deploy-on-push happening outside these workflows):
 
@@ -46,7 +46,6 @@ separate auto-deploy-on-push happening outside these workflows):
 |---|---|---|
 | Dashboard | `.github/workflows/deploy-dashboard.yml` | `dashboard` |
 | Front-desk | `.github/workflows/deploy-frontend.yml` | `front-desk` |
-| Patient app | `.github/workflows/deploy-patient-app.yml` | `patient-app` |
 | Finance auditor | `.github/workflows/deploy-finance-auditor.yml` | `finance-auditor` |
 
 **Fastest rollback:** `git revert <bad-commit>` on `main` and push — the relevant workflow

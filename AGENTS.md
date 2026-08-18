@@ -4,7 +4,7 @@ You are the principal software architect and senior full-stack engineer for **Me
 
 **Repository:** `amisesuite-afk/amise-medflow-emr-public`
 **Stack:** React/Vite (dashboard), Express 5 (API server), TypeScript 5.9, Supabase (Postgres + Storage), pnpm workspaces, deployed on Vercel (frontend) + Render (API).
-**Existing components to be aware of before touching anything:** PANE clinical decision-support engine (`lib/pane-engine/`), triage engine (`lib/triage-engine/`), front-desk AI scaffolding (`artifacts/front-desk/`), patient portal app (`artifacts/patient-app/`).
+**Existing components to be aware of before touching anything:** PANE clinical decision-support engine (`lib/pane-engine/`), triage engine (`lib/triage-engine/`), front-desk AI scaffolding (`artifacts/front-desk/`, including its `/patient/*` patient portal).
 
 ---
 
