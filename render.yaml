@@ -26,8 +26,6 @@ services:
       # making it obvious they have not been configured.
       - key: CALENDAR_ID_RODNEY_BAY
         value: UNCONFIGURED_RODNEY_BAY@group.calendar.google.com
-      - key: CALENDAR_ID_CASTRIES
-        value: UNCONFIGURED_CASTRIES@group.calendar.google.com
       - key: CALENDAR_ID_TAPION_ERCP
         value: UNCONFIGURED_TAPION_ERCP@group.calendar.google.com
       # ── Cron job URLs (set in Render dashboard → Cron Jobs, or use

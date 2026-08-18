@@ -8,7 +8,7 @@ create table public.user_profiles (
   id          uuid primary key references auth.users(id),
   full_name   text not null,
   role        text not null check (role in ('surgeon','nurse','front_desk','billing','admin')),
-  site        text,                        -- rodney_bay | castries | tapion
+  site        text,                        -- rodney_bay | tapion
   phone       text,
   created_at  timestamptz default now(),
   updated_at  timestamptz default now()

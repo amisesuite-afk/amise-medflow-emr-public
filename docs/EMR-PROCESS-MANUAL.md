@@ -75,7 +75,8 @@ flowchart TD
    `TRACK_CONFIG` but has no UI — only reachable via referral/FHIR paths).
 2. **Appointment type**: grouped by Consultations / Endoscopy & Procedures /
    Specialist Clinics / Surgery & Post-Op — each maps to a default site
-   (Rodney Bay / Castries / Tapion / remote).
+   (Rodney Bay / Tapion / remote), per `APPOINTMENT_TYPES` in
+   `front-desk/lib/scheduling.ts`.
 3. **Patient details**: name, WhatsApp/mobile (required), email (optional),
    DOB, reason. Referral track also requires referring doctor + practice.
 4. **Slot picker**: `GET /api/booking/slots` reads the relevant Google
@@ -171,9 +172,10 @@ stateDiagram-v2
 | `POST /api/booking/lapse` | `routes/booking.ts` | `staff_confirmed` → `lapsed` if unconfirmed near slot time (cron-secret gated) |
 | `GET /api/booking/requests` | `routes/booking.ts` | List for Booking Inbox tab |
 
-**Multi-site routing**: Rodney Bay (`new_consult`, `breast`, `diabetic_foot`,
-`pre_op`), Castries (`follow_up`, `post_op`), Tapion/ERCP (`ogd`,
-`colonoscopy`, `flexi_sig`, `ercp_workup`), Remote (`telephone`).
+**Multi-site routing**: Rodney Bay (`new_consult`, `follow_up`, `breast`,
+`diabetic_foot`, `pre_op`, ...), Tapion/ERCP (`ogd`, `colonoscopy`,
+`flexi_sig`, `ercp_workup`, `post_op`, ...), Remote (`telephone`) — full
+per-type mapping in `APPOINTMENT_TYPES`, `front-desk/lib/scheduling.ts`.
 
 **Urgent "squeeze slot"**: `findUrgentSlot()` first tries normal 48h-window
 slots, then inserts a slot after the day's last booking (≤19:00) or a

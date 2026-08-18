@@ -77,7 +77,6 @@ An adaptive triage and scheduling assistant for Amise Medical Services (Saint Lu
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Full JSON of the Google service account |
 | `GMAIL_USER` | Gmail address to act as (service account subject) |
 | `CALENDAR_ID_RODNEY_BAY` | Google Calendar ID for Rodney Bay |
-| `CALENDAR_ID_CASTRIES` | Google Calendar ID for Castries |
 | `CALENDAR_ID_TAPION_ERCP` | Google Calendar ID for Tapion/ERCP |
 | `TWILIO_ACCOUNT_SID` | Twilio account SID |
 | `TWILIO_AUTH_TOKEN` | Twilio auth token |

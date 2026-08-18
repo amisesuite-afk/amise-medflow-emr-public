@@ -121,7 +121,6 @@ pnpm run test:e2e                              # Playwright walkthrough — requ
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Full JSON of the Google service account |
 | `GMAIL_USER` | Gmail address for service account impersonation |
 | `CALENDAR_ID_RODNEY_BAY` | Google Calendar ID — Rodney Bay |
-| `CALENDAR_ID_CASTRIES` | Google Calendar ID — Castries |
 | `CALENDAR_ID_TAPION_ERCP` | Google Calendar ID — Tapion/ERCP |
 | `TWILIO_ACCOUNT_SID` | Twilio account SID |
 | `TWILIO_AUTH_TOKEN` | Twilio auth token |
