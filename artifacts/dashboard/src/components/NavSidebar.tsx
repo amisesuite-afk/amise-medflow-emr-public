@@ -170,8 +170,10 @@ const DR_NAV_ITEMS: TopItem[] = [
   // Results & Summary
   { id: 'results_inbox',    icon: ClipboardMinus,  label: 'Results Inbox',    roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
   { id: 'finaldoc',         icon: FileCheck2,      label: 'Summary',          roles: ['nurse', 'doctor', 'admin'], group: 'Results' },
-  // Patients — List · Visits · Follow-up combined hub
-  { id: 'patients',        icon: Users,           label: 'Patients',        roles: ['nurse', 'doctor', 'admin'], group: 'Patients' },
+  // Patients — List · Visits · Follow-up combined hub. Group left blank for
+  // the same reason as Check-In's below: a "Patients" header directly above
+  // a "Patients" button repeats itself when it's the sole item in the group.
+  { id: 'patients',        icon: Users,           label: 'Patients',        roles: ['nurse', 'doctor', 'admin'], group: '' },
   // Reference
   { id: 'analytics',       icon: BarChart2,       label: 'Analytics & QI',  roles: ['doctor', 'admin'],          group: 'Reference' },
   { id: 'vademecum',       icon: BookOpen,        label: 'Disease Dict.',   roles: ['nurse', 'doctor', 'admin'], group: 'Reference' },
@@ -184,14 +186,16 @@ const FD_NAV_ITEMS: TopItem[] = [
   // group left blank since a "Check-In" group header above a "Check-In" button
   // would just repeat itself now that it's the sole flat entry.
   { id: 'checkin',         icon: UserCheck,       label: 'Check-In',         roles: ['front_desk', 'admin'], group: '' },
-  // Administrative
-  { id: 'scheduling',      icon: CalendarDays,    label: 'Scheduling',       roles: ['front_desk', 'admin'], group: 'Admin' },
-  { id: 'patients',        icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'admin'], group: 'Admin' },
-  { id: 'billing',         icon: Receipt,         label: 'Billing',          roles: ['front_desk', 'admin'], group: 'Admin' },
-  { id: 'dashboard',       icon: LayoutDashboard, label: 'Dashboard',        roles: ['front_desk', 'admin'], group: 'Admin' },
-  { id: 'patient_accounts', icon: Link2,           label: 'Portal Accounts',  roles: ['front_desk', 'admin'], group: 'Admin' },
-  { id: 'analytics',        icon: BarChart2,       label: 'Analytics',        roles: ['admin'],               group: 'Admin' },
-  { id: 'settings',         icon: Settings,        label: 'Settings',         roles: ['admin'],               group: 'Admin' },
+  // Scheduling & Patients — day-to-day front-desk operations
+  { id: 'scheduling',      icon: CalendarDays,    label: 'Scheduling',       roles: ['front_desk', 'admin'], group: 'Scheduling & Patients' },
+  { id: 'patients',        icon: Users,           label: 'Patient Registry', roles: ['front_desk', 'admin'], group: 'Scheduling & Patients' },
+  // Billing & Portal — money and patient-facing accounts
+  { id: 'billing',         icon: Receipt,         label: 'Billing',          roles: ['front_desk', 'admin'], group: 'Billing & Portal' },
+  { id: 'patient_accounts', icon: Link2,           label: 'Portal Accounts',  roles: ['front_desk', 'admin'], group: 'Billing & Portal' },
+  // Reports & Settings — oversight and configuration
+  { id: 'dashboard',       icon: LayoutDashboard, label: 'Dashboard',        roles: ['front_desk', 'admin'], group: 'Reports & Settings' },
+  { id: 'analytics',        icon: BarChart2,       label: 'Analytics',        roles: ['admin'],               group: 'Reports & Settings' },
+  { id: 'settings',         icon: Settings,        label: 'Settings',         roles: ['admin'],               group: 'Reports & Settings' },
 ];
 
 interface CheckinSubItem {
@@ -444,7 +448,7 @@ export default function NavSidebar({
           const showCheckinSub = item.id === 'checkin' && checkinOpen && !collapsed;
           const hasChevron = (item.id === 'consultation' || item.id === 'billing' || item.id === 'checkin') && !collapsed;
 
-          const showGroupHeader = !collapsed && item.group !== lastGroup;
+          const showGroupHeader = !collapsed && item.group !== '' && item.group !== lastGroup;
           if (item.group !== lastGroup) lastGroup = item.group;
 
           return (
