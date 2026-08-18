@@ -4,7 +4,7 @@ import { logger, errStr } from '../lib/logger.js';
 
 const router = Router();
 
-const VALID_SITES = ['rodney_bay', 'castries', 'tapion'];
+const VALID_SITES = ['rodney_bay', 'tapion'];
 const VALID_SEX   = ['male', 'female', 'other', 'unknown'];
 
 interface EncSummary {

@@ -52,13 +52,11 @@ function apiUrl(path: string) {
 const SITE_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
   tapion: 'Tapion',
-  castries: 'Castries',
 };
 
 const SITE_ICON: Record<string, string> = {
   rodney_bay: '🏢',
   tapion: '🏥',
-  castries: '🏢',
 };
 
 /** Map encounter_type (care setting) to icon + label */

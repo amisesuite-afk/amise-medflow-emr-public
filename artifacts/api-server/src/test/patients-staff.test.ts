@@ -97,7 +97,7 @@ describe('GET /api/patients', () => {
 
   it('returns empty array when site filter yields no encounter patients', async () => {
     mockFrom.mockReturnValueOnce(mkChain(ok([])));
-    const res = await request(app).get('/api/patients?site=castries');
+    const res = await request(app).get('/api/patients?site=rodney_bay');
     expect(res.status).toBe(200);
     expect(res.body.patients).toEqual([]);
   });
