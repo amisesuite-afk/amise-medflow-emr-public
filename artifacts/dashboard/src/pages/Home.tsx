@@ -93,6 +93,7 @@ import PreVisitStatusBanner from '@/components/PreVisitStatusBanner';
 import PathwayConfidenceBanner from '@/components/PathwayConfidenceBanner';
 import AdmissionEscalationBanner from '@/components/AdmissionEscalationBanner';
 import PatientContextBanner from '@/components/PatientContextBanner';
+import EncounterPresenceBanner from '@/components/EncounterPresenceBanner';
 import NoPatientQuickstart from '@/components/NoPatientQuickstart';
 import PatientNotifyModal from '@/components/PatientNotifyModal';
 import ConsultationNav from '@/components/ConsultationNav';
@@ -806,6 +807,9 @@ export default function HomePage() {
           setNotifyOpen={setNotifyOpen}
           setNotifyStatus={setNotifyStatus}
         />
+
+        {/* Concurrent-editing awareness — who else has this encounter open right now */}
+        <EncounterPresenceBanner />
 
         {/* Critical result alerts — vitals / investigation thresholds */}
         {topSection === 'consultation' && <CriticalResultAlert />}
