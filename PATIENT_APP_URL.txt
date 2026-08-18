@@ -1,2 +1,0 @@
-https://patient-app-sand-six.vercel.app
-Screens: Passport · Pre-Visit · Monitoring · Upload · Messages

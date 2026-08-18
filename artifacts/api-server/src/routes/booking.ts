@@ -7,20 +7,6 @@ import { sendSms, smsBodyBookingAck, smsBodyStaffNewBooking, getPrepInstructions
 import { sendOrDraft } from '../lib/gmail.js';
 import { google } from 'googleapis';
 import { logger, errStr } from '../lib/logger.js';
-import { signPatientJwt } from '../lib/patient-auth.js';
-
-const PATIENT_APP_URL = process.env.PATIENT_APP_URL ?? process.env.PORTAL_URL ?? 'https://patient.amise.lc';
-
-// Auto-invite to the patient-app portal on booking confirmation — DORMANT.
-// This used to fire unconditionally on every confirmed booking with an email,
-// in parallel with the front-desk portal's own separate invite paths
-// (portal.ts's /api/patient/invite and the consultation-request auto-invite),
-// which meant a patient could silently receive two different portal logins
-// for what they'd assume was one system. Disabled for now so the front-desk
-// "Invite to Portal" button (staff-initiated, paired with a WhatsApp message
-// or phone call) is the only active invite path while the two-app situation
-// gets sorted out. Flip to true to re-enable.
-const AUTO_INVITE_ON_CONFIRM = false;
 
 const router = Router();
 
@@ -234,66 +220,6 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
     await audit({ action: 'book', entityType: 'appointment_request', entityId: id, payload: { status: 'staff_confirmed', confirmed_slot } });
     logger.info({ id, confirmed_slot }, '[booking/staff-confirm] confirmed');
     res.json({ id, status: 'staff_confirmed', confirmed_slot, confirmation_token: confirmationToken });
-
-    if (!AUTO_INVITE_ON_CONFIRM) return;
-    // Fire-and-forget: send patient a magic link to the pre-visit app
-    void (async () => {
-      try {
-        const { data: appt } = await supa
-          .from('appointment_requests')
-          .select('email, patient_id, first_name')
-          .eq('id', id)
-          .maybeSingle();
-
-        if (!appt?.email) return;
-
-        const email = (appt.email as string).toLowerCase();
-        const patientId = appt.patient_id as string | null;
-        const firstName = appt.first_name as string | null;
-
-        // Find or create patient_account
-        const { data: existing } = await supa
-          .from('patient_accounts')
-          .select('id, patient_id')
-          .eq('email', email)
-          .maybeSingle();
-
-        let accountId: string;
-        let resolvedPatientId = patientId;
-
-        if (existing) {
-          accountId = existing.id as string;
-          resolvedPatientId = (existing.patient_id as string | null) ?? patientId;
-        } else {
-          const { data: created, error: createErr } = await supa
-            .from('patient_accounts')
-            .insert({ email, patient_id: patientId ?? null })
-            .select('id')
-            .single();
-          if (createErr || !created) return;
-          accountId = created.id as string;
-        }
-
-        const magicToken = signPatientJwt(
-          { sub: accountId, patientId: resolvedPatientId ?? '', email, purpose: 'magic' },
-          7,
-        );
-        const magicUrl = `${PATIENT_APP_URL}?token=${encodeURIComponent(magicToken)}`;
-        const greet = firstName ? `Dear ${firstName},\n\n` : '';
-
-        await sendOrDraft(
-          {
-            to: email,
-            subject: 'Your appointment is confirmed — please complete your pre-visit form',
-            body: `${greet}Your appointment has been confirmed at Amise Medical Services.\n\nPlease complete your pre-visit questionnaire at your earliest convenience:\n${magicUrl}\n\nThis link is valid for 7 days.\n\nAmise Medical Services\n+1 (758) 284-0557`,
-          },
-          'auto',
-        );
-        logger.info({ id, email }, '[booking/staff-confirm] pre-visit magic link sent');
-      } catch (mlErr) {
-        logger.warn({ err: mlErr }, '[booking/staff-confirm] magic link send failed (non-fatal)');
-      }
-    })();
   } catch (err) {
     logger.error({ err }, '[booking/staff-confirm] error');
     res.status(502).json({ error: errStr(err) });

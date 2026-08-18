@@ -160,6 +160,11 @@ function statusChip(status: SessionStatus): { bg: string; text: string; label: s
   }
 }
 
+// Despite the env var's name, this links into front-desk's /questionnaire/[token]
+// route (the adaptive intake questionnaire), not the now-retired patient-app —
+// kept as VITE_PATIENT_APP_URL rather than renamed since that's the actual
+// deployed Vercel env var name; renaming here without updating it there would
+// silently break the link.
 function buildPatientUrl(token: string): string {
   const raw = (import.meta.env.VITE_PATIENT_APP_URL as string | undefined) ?? '';
   const base = raw.trim().replace(/^['"]|['"]$/g, '').replace(/\/+$/, '')

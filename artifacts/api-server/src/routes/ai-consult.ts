@@ -89,8 +89,7 @@ router.post('/api/ai-consult', async (req, res) => {
     }
 
     // Server-side context augmentation — fills gaps in client-sent context with
-    // DB-fetched medications, allergies, problem list, recent results, and
-    // patient-app passport data.
+    // DB-fetched medications, allergies, problem list, and recent results.
     let serverContextBlock = '';
     if (patientId) {
       try {
