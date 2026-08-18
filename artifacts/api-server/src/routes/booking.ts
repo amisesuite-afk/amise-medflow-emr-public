@@ -11,6 +11,17 @@ import { signPatientJwt } from '../lib/patient-auth.js';
 
 const PATIENT_APP_URL = process.env.PATIENT_APP_URL ?? process.env.PORTAL_URL ?? 'https://patient.amise.lc';
 
+// Auto-invite to the patient-app portal on booking confirmation — DORMANT.
+// This used to fire unconditionally on every confirmed booking with an email,
+// in parallel with the front-desk portal's own separate invite paths
+// (portal.ts's /api/patient/invite and the consultation-request auto-invite),
+// which meant a patient could silently receive two different portal logins
+// for what they'd assume was one system. Disabled for now so the front-desk
+// "Invite to Portal" button (staff-initiated, paired with a WhatsApp message
+// or phone call) is the only active invite path while the two-app situation
+// gets sorted out. Flip to true to re-enable.
+const AUTO_INVITE_ON_CONFIRM = false;
+
 const router = Router();
 
 const bookingRateLimit = rateLimit({
@@ -224,6 +235,7 @@ router.post('/api/booking/staff-confirm/:id', async (req, res) => {
     logger.info({ id, confirmed_slot }, '[booking/staff-confirm] confirmed');
     res.json({ id, status: 'staff_confirmed', confirmed_slot, confirmation_token: confirmationToken });
 
+    if (!AUTO_INVITE_ON_CONFIRM) return;
     // Fire-and-forget: send patient a magic link to the pre-visit app
     void (async () => {
       try {

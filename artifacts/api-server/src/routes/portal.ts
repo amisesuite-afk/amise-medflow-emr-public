@@ -10,6 +10,18 @@ const router = Router();
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
 
+// Auto-invite to the front-desk portal when a consultation request is marked
+// "registered" — DORMANT. This ran in parallel with patient-app's own separate
+// auto-invite on booking confirmation (booking.ts), which meant a patient could
+// silently end up with two different portal logins for what they'd assume was
+// one system. Disabled for now so the front-desk "Invite to Portal" button
+// (staff-initiated, paired with a WhatsApp message or phone call — see
+// /api/patient/invite below, which is unaffected by this flag) is the only
+// active invite path while the two-app situation gets sorted out. The patient
+// record is still created/found on "registered" either way — only the
+// automatic portal invite is skipped. Flip to true to re-enable.
+const AUTO_INVITE_ON_REGISTER = false;
+
 // ── Auth helpers ──────────────────────────────────────────────────────────────
 
 async function getPatientId(authHeader: string | undefined): Promise<string | null> {
@@ -930,7 +942,7 @@ router.patch('/api/patient/consultation-requests/:id', async (req, res) => {
         patientId = created?.id ?? null;
       }
 
-      if (patientId && !existing?.portal_enabled) {
+      if (AUTO_INVITE_ON_REGISTER && patientId && !existing?.portal_enabled) {
         await sendPortalInvite(patientId, normalEmail);
         invited = true;
       }
