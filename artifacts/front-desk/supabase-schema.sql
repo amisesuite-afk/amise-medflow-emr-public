@@ -11,7 +11,7 @@ create table if not exists conversation_threads (
   messages          jsonb not null default '[]',
   draft_reply       text,
   intake_complete   boolean not null default false,
-  site              text not null default 'rodney_bay' check (site in ('rodney_bay','tapion','castries')),
+  site              text not null default 'rodney_bay' check (site in ('rodney_bay','tapion')),
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now()
 );

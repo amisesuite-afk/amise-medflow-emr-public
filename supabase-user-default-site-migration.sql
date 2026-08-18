@@ -4,7 +4,7 @@
 
 alter table user_profiles
   add column if not exists default_site text
-    check (default_site in ('rodney_bay', 'tapion', 'castries'));
+    check (default_site in ('rodney_bay', 'tapion'));
 
 grant select, update on user_profiles to authenticated;
 grant select, update on user_profiles to service_role;

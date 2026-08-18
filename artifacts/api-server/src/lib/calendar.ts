@@ -293,7 +293,6 @@ export async function fetchAllEventsForDate(dateStr: string): Promise<CalendarEv
   const cal = getCalendar();
   const calIds = [
     process.env.CALENDAR_ID_RODNEY_BAY,
-    process.env.CALENDAR_ID_CASTRIES,
     process.env.CALENDAR_ID_TAPION_ERCP,
   ].filter(Boolean) as string[];
 

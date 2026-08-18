@@ -66,7 +66,7 @@ create table if not exists encounters (
   chief_complaint text,
   status          text not null default 'open'
                     check (status in ('open', 'in_progress', 'closed', 'cancelled')),
-  site            text check (site in ('rodney_bay', 'castries', 'tapion')),
+  site            text check (site in ('rodney_bay', 'tapion')),
   created_by      uuid references auth.users(id),
   updated_by      uuid references auth.users(id),
   created_at      timestamptz not null default now(),
@@ -194,7 +194,7 @@ create table if not exists procedures (
   encounter_id    uuid references encounters(id),
   procedure_name  text not null,
   cpt_code        text,
-  site            text check (site in ('rodney_bay', 'castries', 'tapion')),
+  site            text check (site in ('rodney_bay', 'tapion')),
   scheduled_date  date,
   performed_date  date,
   status          text not null default 'scheduled'
@@ -235,7 +235,7 @@ create table if not exists appointments (
   patient_id            uuid not null references patients(id),
   appointment_datetime  timestamptz,
   appointment_type      text,
-  site                  text check (site in ('rodney_bay', 'castries', 'tapion')),
+  site                  text check (site in ('rodney_bay', 'tapion')),
   calendar_event_id     text,
   status                text not null default 'scheduled'
                           check (status in ('scheduled', 'confirmed', 'attended', 'cancelled', 'no_show')),
