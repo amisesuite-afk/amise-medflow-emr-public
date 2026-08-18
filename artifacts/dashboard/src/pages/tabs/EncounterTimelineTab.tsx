@@ -17,7 +17,6 @@ function loadDemoPatients(): DemoPatient[] {
 
 const SITE_LABEL: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
-  castries:   'Castries',
   tapion:     'Tapion',
 };
 

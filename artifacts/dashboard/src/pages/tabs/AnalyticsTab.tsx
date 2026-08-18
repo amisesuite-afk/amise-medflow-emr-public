@@ -46,7 +46,6 @@ const ACUITY_COLORS: Record<string, string> = {
 const SITE_LABELS: Record<string, string> = {
   rodney_bay: 'Rodney Bay',
   tapion:     'Tapion / ERCP',
-  castries:   'Castries',
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -130,7 +129,7 @@ const RANGE_OPTIONS = [
 ];
 
 const SITE_LABEL: Record<string, string> = {
-  rodney_bay: 'Rodney Bay', tapion: 'Tapion / ERCP', castries: 'Castries',
+  rodney_bay: 'Rodney Bay', tapion: 'Tapion / ERCP',
 };
 const OUTCOME_LABEL: Record<string, string> = {
   management: 'Management plan', discharge: 'Discharge', follow_up: 'Follow-up',

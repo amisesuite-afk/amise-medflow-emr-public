@@ -233,7 +233,7 @@ router.get('/api/analytics/audit/export', async (req, res) => {
     }
 
     const now = new Date();
-    const SITE_LABELS: Record<string, string> = { rodney_bay: 'Rodney Bay', tapion: 'Tapion/ERCP', castries: 'Castries' };
+    const SITE_LABELS: Record<string, string> = { rodney_bay: 'Rodney Bay', tapion: 'Tapion/ERCP' };
 
     const rows = (encounters ?? []).map(e => {
       const p = patientMap.get(e.patient_id as string);

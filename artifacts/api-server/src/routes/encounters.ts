@@ -6,7 +6,7 @@ const router = Router();
 
 const VALID_STATUS = ['open', 'in_progress', 'closed', 'cancelled'];
 const VALID_TYPES  = ['outpatient', 'inpatient', 'emergency', 'procedure', 'telehealth'];
-const VALID_SITES  = ['rodney_bay', 'castries', 'tapion'];
+const VALID_SITES  = ['rodney_bay', 'tapion'];
 const UUID_RE      = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // POST /api/encounters

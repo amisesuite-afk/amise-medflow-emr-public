@@ -351,7 +351,6 @@ export default function BillingTab() {
   const SITE_LABELS: Record<string, string> = {
     rodney_bay: 'Rodney Bay Medical Centre',
     tapion:     'Tapion Hospital',
-    castries:   'Castries',
   };
 
   async function saveAndInvoice() {
