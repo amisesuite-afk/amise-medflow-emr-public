@@ -29,15 +29,22 @@ function payloadOf<T>(entry: OutboxEntry): T {
 }
 
 registerExecutor('assessment', async (entry) => {
-  const p = payloadOf<Parameters<typeof saveAssessment>[0]>(entry);
-  const { error } = await saveAssessment(p);
+  const p = payloadOf<Parameters<typeof saveAssessment>[0] & { expectedUpdatedAt: string | null }>(entry);
+  const { error, conflict } = await saveAssessment(p, p.expectedUpdatedAt);
   if (error) throw new Error(error);
+  // A conflict on replay means the row changed while this entry sat queued
+  // offline — treat it as still-unresolved rather than a successful sync
+  // (which would silently drop these edits from the outbox). It stays
+  // queued/pending; there's no in-context UI to offer the "keep mine / load
+  // theirs" choice from here the way there is for a live online save.
+  if (conflict) throw new Error(`${p.encounter_id}: assessment changed on the server while offline — resolve by reopening this encounter`);
 });
 
 registerExecutor('plan', async (entry) => {
-  const p = payloadOf<Parameters<typeof savePlan>[0]>(entry);
-  const { error } = await savePlan(p);
+  const p = payloadOf<Parameters<typeof savePlan>[0] & { expectedUpdatedAt: string | null }>(entry);
+  const { error, conflict } = await savePlan(p, p.expectedUpdatedAt);
   if (error) throw new Error(error);
+  if (conflict) throw new Error(`${p.encounter_id}: plan changed on the server while offline — resolve by reopening this encounter`);
 });
 
 registerExecutor('medications', async (entry) => {

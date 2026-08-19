@@ -35,6 +35,7 @@ export default function EncounterTimelineTab() {
   const {
     patientId, encounterId,
     setAssessment, setDifferentials, setIcdCodes, setPlan,
+    setAssessmentUpdatedAt, setPlanUpdatedAt,
     setMedications, setMedicationsText, setAllergies,
     setSurgicalHistory, setSurgicalNotes,
     setToxicHabits, setHpiNotes, setPmhNotes, setFamilyHistoryNotes, setOrderedInvestigations,
@@ -158,6 +159,8 @@ export default function EncounterTimelineTab() {
     setDifferentials(d.differentials ?? '');
     setIcdCodes(d.icdCodes ?? []);
     setPlan(d.plan ?? '');
+    setAssessmentUpdatedAt(d.assessmentUpdatedAt ?? null);
+    setPlanUpdatedAt(d.planUpdatedAt ?? null);
     setMedications(d.medications ?? []);
     setMedicationsText('');
     setAllergies(d.allergens?.join(', ') ?? '');

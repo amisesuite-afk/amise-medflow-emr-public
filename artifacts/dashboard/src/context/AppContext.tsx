@@ -196,6 +196,12 @@ export interface RosFinding {
   notes: string;
 }
 
+// Surfaced by EncounterConflictBanner when saveAssessment/savePlan detect
+// that the row changed under us since we last loaded/saved it.
+export type SaveConflict =
+  | { field: 'assessment'; latestUpdatedAt: string; latestDiagnosis: string | null; latestDifferentials: string | null }
+  | { field: 'plan'; latestUpdatedAt: string; latestDescription: string | null };
+
 export interface ClinicalAttachment {
   id: string;
   name: string;
@@ -334,6 +340,11 @@ interface CtxValue {
   assessment: string; setAssessment(v: string): void;
   differentials: string; setDifferentials(v: string): void;
   plan: string; setPlan(v: string): void;
+  assessmentUpdatedAt: string | null; setAssessmentUpdatedAt(v: string | null): void;
+  planUpdatedAt: string | null; setPlanUpdatedAt(v: string | null): void;
+  saveConflict: SaveConflict | null;
+  keepMySaveConflict(): void;
+  loadLatestSaveConflict(): void;
   followUpNotes: string; setFollowUpNotes(v: string): void;
   referralNotes: string; setReferralNotes(v: string): void;
   procedures: string; setProcedures(v: string): void;
@@ -666,6 +677,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const setPlan          = useCallback((v: string) => setAssessmentPlan(prev => ({ ...prev, plan: v })), []);
   const setFollowUpNotes = useCallback((v: string) => setAssessmentPlan(prev => ({ ...prev, followUpNotes: v })), []);
   const setReferralNotes = useCallback((v: string) => setAssessmentPlan(prev => ({ ...prev, referralNotes: v })), []);
+
+  // Optimistic-locking pilot for assessment/plan (the two highest-contention,
+  // doctor-editable clinical fields) — see saveAssessment/savePlan in db.ts.
+  // assessmentUpdatedAt/planUpdatedAt track the version this session last
+  // saw; a save only applies if the row's current updated_at still matches.
+  // null means "no row yet" (a genuinely new encounter) or "haven't loaded
+  // one" — either way, nothing to conflict with, or everything to conflict
+  // with, and saveAssessment/savePlan treat both correctly.
+  const [assessmentUpdatedAt, setAssessmentUpdatedAt] = useState<string | null>(null);
+  const [planUpdatedAt, setPlanUpdatedAt] = useState<string | null>(null);
+  const [saveConflict, setSaveConflict] = useState<SaveConflict | null>(null);
   const [procedures, setProcedures] = useState('');
   const [billing, setBilling] = useState('');
   const [documents, setDocuments] = useState('');
@@ -1100,6 +1122,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setVisitType(''); setPostOpDate(''); setPostOpReviewNum(1);
     setPeriopProcId(''); setWhoProc({ procedureName: '', procedureDate: '', procedureTime: '', theatre: '', site: '', surgeon: 'Dr Dawit Daniel Kabiye', anaesthetist: '', scrubNurse: '', circulatingNurse: '' });
     setAssessment(''); setDifferentials(''); setPlan(''); setFollowUpNotes(''); setReferralNotes('');
+    setAssessmentUpdatedAt(null); setPlanUpdatedAt(null); setSaveConflict(null);
     setConfirmedDiagnoses([]);
     setWorkingDiagnosis(null);
     setProcedures(''); setBilling(''); setDocuments(''); setSurgicalClassifications({});
@@ -1175,27 +1198,82 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     void loadWoundAssessments(patientId, encounterId).then(setWounds);
   }, [patientId, encounterId]);
 
+  // Shared by the debounced autosave effect and the page-hide flush path
+  // below — one place to apply an optimistic-locked save result, since both
+  // need identical conflict-detection handling. If both assessment and plan
+  // conflict in the same cycle, the banner shows whichever ran last (a
+  // pilot-scope simplification — extending it to a list of simultaneous
+  // conflicts is straightforward if this needs it later).
+  async function runAssessmentSave(patientIdVal: string, encounterIdVal: string) {
+    const result = await trackedSave(() => saveAssessment({
+      encounter_id: encounterIdVal, patient_id: patientIdVal, diagnosis: assessment,
+      differentials, icdCodes, cptCodes, acuity: triageResult.acuity, triageScore: triageResult.score,
+    }, assessmentUpdatedAt), { entityType: 'assessment', entityId: encounterIdVal, payload: {
+      encounter_id: encounterIdVal, patient_id: patientIdVal, diagnosis: assessment,
+      differentials, icdCodes, cptCodes, acuity: triageResult.acuity, triageScore: triageResult.score,
+      expectedUpdatedAt: assessmentUpdatedAt,
+    } });
+    if (!result) return;
+    if (result.conflict) {
+      setSaveConflict({
+        field: 'assessment',
+        latestUpdatedAt: result.conflict.latestUpdatedAt,
+        latestDiagnosis: result.conflict.latestDiagnosis,
+        latestDifferentials: result.conflict.latestDifferentials,
+      });
+    } else if (result.updatedAt) {
+      setAssessmentUpdatedAt(result.updatedAt);
+    }
+  }
+
+  async function runPlanSave(patientIdVal: string, encounterIdVal: string) {
+    const result = await trackedSave(
+      () => savePlan({ encounter_id: encounterIdVal, patient_id: patientIdVal, description: plan }, planUpdatedAt),
+      { entityType: 'plan', entityId: encounterIdVal, payload: {
+        encounter_id: encounterIdVal, patient_id: patientIdVal, description: plan, expectedUpdatedAt: planUpdatedAt,
+      } },
+    );
+    if (!result) return;
+    if (result.conflict) {
+      setSaveConflict({ field: 'plan', latestUpdatedAt: result.conflict.latestUpdatedAt, latestDescription: result.conflict.latestDescription });
+    } else if (result.updatedAt) {
+      setPlanUpdatedAt(result.updatedAt);
+    }
+  }
+
+  // Conflict resolution — two explicit choices, neither silent. "Keep mine"
+  // adopts the other save's timestamp as the new base without touching local
+  // content, so the next autosave cycle applies cleanly on top of it (the
+  // doctor's in-progress text is never discarded). "Load latest" does the
+  // opposite: replaces local content with what's actually on the server,
+  // discarding any local edits made since the conflicting save.
+  function keepMySaveConflict() {
+    if (!saveConflict) return;
+    if (saveConflict.field === 'assessment') setAssessmentUpdatedAt(saveConflict.latestUpdatedAt);
+    else setPlanUpdatedAt(saveConflict.latestUpdatedAt);
+    setSaveConflict(null);
+  }
+
+  function loadLatestSaveConflict() {
+    if (!saveConflict) return;
+    if (saveConflict.field === 'assessment') {
+      setAssessment(saveConflict.latestDiagnosis ?? '');
+      setDifferentials(saveConflict.latestDifferentials ?? '');
+      setAssessmentUpdatedAt(saveConflict.latestUpdatedAt);
+    } else {
+      setPlan(saveConflict.latestDescription ?? '');
+      setPlanUpdatedAt(saveConflict.latestUpdatedAt);
+    }
+    setSaveConflict(null);
+  }
+
   // ── Autosave doctor clinical data to Supabase (debounced 2 s) ────────────
   useEffect(() => {
     if (!patientId || !encounterId) return;
     if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
     autoSaveTimerRef.current = setTimeout(() => {
-      void trackedSave(() => saveAssessment({
-        encounter_id:  encounterId,
-        patient_id:    patientId,
-        diagnosis:     assessment,
-        differentials,
-        icdCodes,
-        cptCodes,
-        acuity:        triageResult.acuity,
-        triageScore:   triageResult.score,
-      }), { entityType: 'assessment', entityId: encounterId, payload: {
-        encounter_id: encounterId, patient_id: patientId, diagnosis: assessment,
-        differentials, icdCodes, cptCodes,
-        acuity: triageResult.acuity, triageScore: triageResult.score,
-      } });
-      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }),
-        { entityType: 'plan', entityId: encounterId, payload: { encounter_id: encounterId, patient_id: patientId, description: plan } });
+      void runAssessmentSave(patientId, encounterId);
+      void runPlanSave(patientId, encounterId);
       void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText),
         { entityType: 'medications', entityId: encounterId, payload: { patientId, encounterId, chipMeds: medications, freeText: medicationsText } });
     }, 2000);
@@ -1400,17 +1478,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (autoSaveTimerRef.current && patientId && encounterId) {
       clearTimeout(autoSaveTimerRef.current);
       autoSaveTimerRef.current = null;
-      void trackedSave(() => saveAssessment({
-        encounter_id: encounterId, patient_id: patientId,
-        diagnosis: assessment, differentials, icdCodes, cptCodes,
-        acuity: triageResult.acuity, triageScore: triageResult.score,
-      }), { entityType: 'assessment', entityId: encounterId, payload: {
-        encounter_id: encounterId, patient_id: patientId, diagnosis: assessment,
-        differentials, icdCodes, cptCodes,
-        acuity: triageResult.acuity, triageScore: triageResult.score,
-      } });
-      void trackedSave(() => savePlan({ encounter_id: encounterId, patient_id: patientId, description: plan }),
-        { entityType: 'plan', entityId: encounterId, payload: { encounter_id: encounterId, patient_id: patientId, description: plan } });
+      void runAssessmentSave(patientId, encounterId);
+      void runPlanSave(patientId, encounterId);
       void trackedSave(() => syncMedicationList(patientId, encounterId, medications, medicationsText),
         { entityType: 'medications', entityId: encounterId, payload: { patientId, encounterId, chipMeds: medications, freeText: medicationsText } });
     }
@@ -1500,6 +1569,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, encounterId, assessment, differentials, icdCodes, cptCodes, plan,
+    assessmentUpdatedAt, planUpdatedAt,
     triageResult.acuity, triageResult.score, medications, medicationsText,
     allergies, examFindings, examNotes, surgicalHistory, surgicalNotes,
     toxicHabits, rosFindings, procedureData, traumaData,
@@ -1633,6 +1703,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     assessment, setAssessment,
     differentials, setDifferentials,
     plan, setPlan,
+    assessmentUpdatedAt, setAssessmentUpdatedAt,
+    planUpdatedAt, setPlanUpdatedAt,
+    saveConflict, keepMySaveConflict, loadLatestSaveConflict,
     followUpNotes, setFollowUpNotes,
     referralNotes, setReferralNotes,
     procedures, setProcedures,

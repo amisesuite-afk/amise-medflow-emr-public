@@ -141,6 +141,7 @@ export default function PatientSearchTab() {
     setPatientName, setAge, setSex, setDob, setPhone,
     setPatientId, setEncounterId, setEncounterStatus, setEncounterClosedAt, setComorbidities, clearPatient,
     setAssessment, setDifferentials, setIcdCodes, setPlan,
+    setAssessmentUpdatedAt, setPlanUpdatedAt,
     setAllergies, setMedications, setPatientPhoto,
     setSurgicalHistory, setSurgicalNotes, setRecentSurgeryDate, setToxicHabits,
     setRosFindings, setProcedureData, procedureData, setTraumaData,
@@ -359,6 +360,12 @@ export default function PatientSearchTab() {
         if (d.differentials) setDifferentials(d.differentials);
         if (d.icdCodes.length) setIcdCodes(d.icdCodes);
         if (d.plan)          setPlan(d.plan);
+        // Unconditional (unlike the fields above) — null is a meaningful
+        // value here: it means no assessments/plans row exists yet for this
+        // encounter, which saveAssessment/savePlan's conflict check needs to
+        // know explicitly, not just inherit a stale value from a prior patient.
+        setAssessmentUpdatedAt(d.assessmentUpdatedAt);
+        setPlanUpdatedAt(d.planUpdatedAt);
         if (d.allergens.length) setAllergies(d.allergens.join(', '));
         if (d.medications.length) setMedications(d.medications);
         if (d.surgicalHistory.length) setSurgicalHistory(d.surgicalHistory);
