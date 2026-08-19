@@ -112,8 +112,8 @@ router.post('/api/previsit/create', async (req, res) => {
       submissionId = created.id as string;
     }
 
-    const patientAppUrl = process.env.PATIENT_APP_URL ?? process.env.PORTAL_URL ?? 'https://patient.amise.lc';
-    const link = `${patientAppUrl}?token=${token}`;
+    const portalUrl = process.env.PORTAL_URL ?? 'https://front-desk-amisesuite-afks-projects.vercel.app';
+    const link = `${portalUrl}/previsit/${token}`;
 
     // Send SMS if requested
     let smsSent = false;
@@ -137,6 +137,69 @@ router.post('/api/previsit/create', async (req, res) => {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Failed to create pre-visit';
     log.error({ err }, 'previsit create error');
+    res.status(500).json({ error: message });
+  }
+});
+
+// GET /api/previsit/prefill/:token — public, token-authenticated (no staff/patient
+// login). Lets the pre-visit form pre-populate known allergies/medications/PMH so
+// the patient reviews and updates rather than starting from a blank form.
+router.get('/api/previsit/prefill/:token', async (req, res) => {
+  const { token } = req.params;
+  if (!token) {
+    res.status(400).json({ error: 'token is required' });
+    return;
+  }
+
+  try {
+    const { data: submission, error: findErr } = await sb()
+      .from('previsit_submissions')
+      .select('patient_id')
+      .eq('patient_token', token)
+      .maybeSingle();
+
+    if (findErr) {
+      log.error({ err: findErr }, 'previsit prefill token lookup error');
+      res.status(500).json({ error: findErr.message });
+      return;
+    }
+
+    if (!submission) {
+      res.status(404).json({ error: 'Invalid or expired link' });
+      return;
+    }
+
+    const patientId = submission.patient_id as string | null;
+    if (!patientId) {
+      res.json({ allergies: '', medications: [], pmh: [] });
+      return;
+    }
+
+    const [pmhRes, allergyRes, medRes] = await Promise.all([
+      sb().from('pmh_items').select('condition').eq('patient_id', patientId).eq('status', 'active'),
+      sb().from('allergies').select('allergen, reaction, severity').eq('patient_id', patientId).eq('status', 'active'),
+      sb().from('medications').select('drug_name, dose, frequency').eq('patient_id', patientId).eq('status', 'active'),
+    ]);
+
+    const allergyLines = (allergyRes.data ?? []).map((a: Record<string, unknown>) => {
+      const parts = [a.allergen as string];
+      if (a.reaction) parts.push(`— ${a.reaction as string}`);
+      if (a.severity) parts.push(`(${a.severity as string})`);
+      return parts.join(' ');
+    }).join('\n');
+
+    res.json({
+      allergies: allergyLines,
+      medications: (medRes.data ?? []).map((m: Record<string, unknown>) => ({
+        name: (m.drug_name as string) ?? '',
+        dose: (m.dose as string) ?? '',
+        frequency: (m.frequency as string) ?? '',
+      })),
+      pmh: (pmhRes.data ?? []).map((p: Record<string, unknown>) => p.condition as string),
+    });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Failed to fetch pre-fill data';
+    log.error({ err }, 'previsit prefill error');
     res.status(500).json({ error: message });
   }
 });
