@@ -317,6 +317,10 @@ export default function IntakePage() {
   const [questionNumber, setQuestionNumber] = useState(1);
   const [history, setHistory] = useState<Array<{ state: SessionState; value: string | string[] }>>([]);
   const [hasRedFlag, setHasRedFlag] = useState(false);
+  // Gates the emergency_redirect screen's "Continue questionnaire" button —
+  // without this, a patient could click straight past the 911 warning with
+  // the same single tap used to go "back" anywhere else in the flow.
+  const [emergencyAck, setEmergencyAck] = useState(false);
 
   // Validation
   const [phoneError, setPhoneError] = useState('');
@@ -443,6 +447,7 @@ export default function IntakePage() {
       );
       if (hasEmergency) {
         setApcqState(newState);
+        setEmergencyAck(false);
         setScreen('emergency_redirect');
         return;
       }
@@ -974,9 +979,45 @@ export default function IntakePage() {
                 the questionnaire or contact us on WhatsApp.
               </p>
 
-              <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-                <button type="button" onClick={() => { setScreen('questions'); setQuestionValue(null); }}
-                  style={{ ...S.secondaryBtn, flex: 1, borderColor: '#fca5a5', color: '#fca5a5' }}>
+              <button
+                type="button"
+                role="checkbox"
+                aria-checked={emergencyAck}
+                onClick={() => setEmergencyAck(a => !a)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+                  marginTop: 20, padding: '0.75rem 1rem', borderRadius: 8,
+                  background: emergencyAck ? '#991b1b' : 'transparent',
+                  border: `1.5px solid ${emergencyAck ? '#fca5a5' : '#dc2626'}`,
+                  color: '#fef2f2', textAlign: 'left', cursor: 'pointer',
+                }}
+              >
+                <span aria-hidden="true" style={{
+                  flexShrink: 0, width: 20, height: 20, borderRadius: 4,
+                  border: '1.5px solid #fca5a5', display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', fontSize: 13, fontWeight: 700,
+                  background: emergencyAck ? '#fca5a5' : 'transparent',
+                  color: '#7f1d1d',
+                }}>
+                  {emergencyAck ? '✓' : ''}
+                </span>
+                <span style={{ fontSize: '0.8125rem', lineHeight: 1.5 }}>
+                  I understand this may be a medical emergency, and I am choosing not to call 911
+                  or go to the emergency department right now.
+                </span>
+              </button>
+
+              <div style={{ display: 'flex', gap: 10, marginTop: 12 }}>
+                <button
+                  type="button"
+                  disabled={!emergencyAck}
+                  onClick={() => { setScreen('questions'); setQuestionValue(null); }}
+                  style={{
+                    ...S.secondaryBtn, flex: 1, borderColor: '#fca5a5', color: '#fca5a5',
+                    opacity: emergencyAck ? 1 : 0.4,
+                    cursor: emergencyAck ? 'pointer' : 'not-allowed',
+                  }}
+                >
                   ← Continue questionnaire
                 </button>
                 <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
