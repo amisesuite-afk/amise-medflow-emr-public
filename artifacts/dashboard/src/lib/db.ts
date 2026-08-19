@@ -271,9 +271,29 @@ export async function saveAllergyFreeText(
 
 // ─── saveAssessment ───────────────────────────────────────────────────────────
 
+// Optimistic-locking result shape shared by saveAssessment/savePlan (the
+// pilot tables for real conflict detection — see db.ts's module comment
+// near syncMedicationList etc. for the other write functions still on plain
+// last-write-wins). `conflict` is populated when the row was changed by
+// someone else since the caller's `expectedUpdatedAt` was captured — the
+// caller's write was NOT applied in that case. `updatedAt` on success is the
+// new version the caller should remember for its next save.
+export interface AssessmentSaveResult {
+  error: string | null;
+  updatedAt?: string;
+  conflict?: { latestUpdatedAt: string; latestDiagnosis: string | null; latestDifferentials: string | null };
+}
+
+export interface PlanSaveResult {
+  error: string | null;
+  updatedAt?: string;
+  conflict?: { latestUpdatedAt: string; latestDescription: string | null };
+}
+
 export async function saveAssessment(
   input: AssessmentInput,
-): Promise<{ error: string | null }> {
+  expectedUpdatedAt: string | null,
+): Promise<AssessmentSaveResult> {
   if (!supabase) return { error: notConfigured('saveAssessment') };
 
   const row: Record<string, unknown> = {
@@ -287,35 +307,122 @@ export async function saveAssessment(
     notes:         input.cptCodes.length ? 'CPT: ' + input.cptCodes.join(', ') : null,
   };
 
-  const { error } = await supabase
+  const { data: existing, error: findErr } = await supabase
     .from('assessments')
-    .upsert(row, { onConflict: 'encounter_id' })
-    .select();
+    .select('id, updated_at, diagnosis, differentials')
+    .eq('encounter_id', input.encounter_id)
+    .maybeSingle();
 
-  if (error) { console.error('[db] saveAssessment:', error); return { error: error.message }; }
+  if (findErr) { console.error('[db] saveAssessment (find):', findErr); return { error: findErr.message }; }
+
+  if (!existing) {
+    const { data: inserted, error } = await supabase.from('assessments').insert(row).select('updated_at').single();
+    if (error) { console.error('[db] saveAssessment (insert):', error); return { error: error.message }; }
+    logClinicalSave('autosave_assessment', 'assessments', input.encounter_id, { icd10: input.icdCodes.join(', ') || null });
+    return { error: null, updatedAt: (inserted as { updated_at: string }).updated_at };
+  }
+
+  if (expectedUpdatedAt === null || expectedUpdatedAt !== existing.updated_at) {
+    return {
+      error: null,
+      conflict: {
+        latestUpdatedAt: existing.updated_at as string,
+        latestDiagnosis: existing.diagnosis as string | null,
+        latestDifferentials: existing.differentials as string | null,
+      },
+    };
+  }
+
+  const { data: updatedRows, error: updateErr } = await supabase
+    .from('assessments')
+    .update(row)
+    .eq('id', existing.id)
+    .eq('updated_at', existing.updated_at)
+    .select('updated_at');
+
+  if (updateErr) { console.error('[db] saveAssessment (update):', updateErr); return { error: updateErr.message }; }
+
+  if (!updatedRows || updatedRows.length === 0) {
+    // Someone else's update landed between our SELECT and this UPDATE.
+    const { data: latest } = await supabase
+      .from('assessments').select('updated_at, diagnosis, differentials').eq('id', existing.id).maybeSingle();
+    return {
+      error: null,
+      conflict: {
+        latestUpdatedAt: (latest?.updated_at as string | undefined) ?? (existing.updated_at as string),
+        latestDiagnosis: (latest?.diagnosis as string | null | undefined) ?? (existing.diagnosis as string | null),
+        latestDifferentials: (latest?.differentials as string | null | undefined) ?? (existing.differentials as string | null),
+      },
+    };
+  }
+
   logClinicalSave('autosave_assessment', 'assessments', input.encounter_id, { icd10: input.icdCodes.join(', ') || null });
-  return { error: null };
+  return { error: null, updatedAt: (updatedRows[0] as { updated_at: string }).updated_at };
 }
 
 // ─── savePlan ─────────────────────────────────────────────────────────────────
 
 export async function savePlan(
   input: PlanInput,
-): Promise<{ error: string | null }> {
+  expectedUpdatedAt: string | null,
+): Promise<PlanSaveResult> {
   if (!supabase) return { error: notConfigured('savePlan') };
 
-  const { error } = await supabase
+  const { data: existing, error: findErr } = await supabase
     .from('plans')
-    .upsert({
-      encounter_id: input.encounter_id,
-      patient_id:   input.patient_id,
-      plan_type:    'management',
-      description:  input.description || null,
-    }, { onConflict: 'encounter_id' });
+    .select('id, updated_at, description')
+    .eq('encounter_id', input.encounter_id)
+    .eq('plan_type', 'management')
+    .maybeSingle();
 
-  if (error) { console.error('[db] savePlan:', error); return { error: error.message }; }
+  if (findErr) { console.error('[db] savePlan (find):', findErr); return { error: findErr.message }; }
+
+  const row = {
+    encounter_id: input.encounter_id,
+    patient_id:   input.patient_id,
+    plan_type:    'management',
+    description:  input.description || null,
+  };
+
+  if (!existing) {
+    const { data: inserted, error } = await supabase.from('plans').insert(row).select('updated_at').single();
+    if (error) { console.error('[db] savePlan (insert):', error); return { error: error.message }; }
+    logClinicalSave('autosave_plan', 'plans', input.encounter_id, { chars: input.description?.length ?? 0 });
+    return { error: null, updatedAt: (inserted as { updated_at: string }).updated_at };
+  }
+
+  if (expectedUpdatedAt === null || expectedUpdatedAt !== existing.updated_at) {
+    return {
+      error: null,
+      conflict: {
+        latestUpdatedAt: existing.updated_at as string,
+        latestDescription: existing.description as string | null,
+      },
+    };
+  }
+
+  const { data: updatedRows, error: updateErr } = await supabase
+    .from('plans')
+    .update(row)
+    .eq('id', existing.id)
+    .eq('updated_at', existing.updated_at)
+    .select('updated_at');
+
+  if (updateErr) { console.error('[db] savePlan (update):', updateErr); return { error: updateErr.message }; }
+
+  if (!updatedRows || updatedRows.length === 0) {
+    const { data: latest } = await supabase.from('plans').select('updated_at, description').eq('id', existing.id).maybeSingle();
+    return {
+      error: null,
+      conflict: {
+        latestUpdatedAt: (latest?.updated_at as string | undefined) ?? (existing.updated_at as string),
+        latestDescription: (latest?.description as string | null | undefined) ?? (existing.description as string | null),
+      },
+    };
+  }
+
   logClinicalSave('autosave_plan', 'plans', input.encounter_id, { chars: input.description?.length ?? 0 });
-  return { error: null };
+  return { error: null, updatedAt: (updatedRows[0] as { updated_at: string }).updated_at };
 }
 
 // ─── saveNewPatient ───────────────────────────────────────────────────────────
@@ -1293,37 +1400,21 @@ export async function syncMedicationList(
 ): Promise<{ error: string | null }> {
   if (!supabase) return { error: notConfigured('syncMedicationList') };
 
-  const { error: delErr } = await supabase
-    .from('medications')
-    .delete()
-    .eq('patient_id', patientId)
-    .eq('encounter_id', encounterId)
-    .eq('indication', 'consultation-list');
-  if (delErr) { console.error('[db] syncMedicationList delete:', delErr); return { error: delErr.message }; }
-
-  const rows: Array<Record<string, unknown>> = chipMeds.map(d => ({
-    patient_id:   patientId,
-    encounter_id: encounterId,
-    drug_name:    d,
-    status:       'active',
-    indication:   'consultation-list',
-  }));
+  const rows: Array<{ drug_name: string; dose?: string }> = chipMeds.map(d => ({ drug_name: d }));
 
   if (freeText.trim()) {
-    rows.push({
-      patient_id:   patientId,
-      encounter_id: encounterId,
-      drug_name:    freeText.trim().slice(0, 255),
-      status:       'active',
-      indication:   'consultation-list',
-      dose:         '(see notes)',
-    });
+    rows.push({ drug_name: freeText.trim().slice(0, 255), dose: '(see notes)' });
   }
 
-  if (!rows.length) return { error: null };
-
-  const { error: insErr } = await supabase.from('medications').insert(rows);
-  if (insErr) { console.error('[db] syncMedicationList insert:', insErr); return { error: insErr.message }; }
+  // Atomic RPC (supabase-atomic-replace-all-sync-migration.sql) — a plain
+  // delete-then-insert here would race two concurrent saves into duplicate
+  // or dropped rows, since it was two separate transactions before.
+  const { error } = await supabase.rpc('sync_medications_list', {
+    p_patient_id: patientId,
+    p_encounter_id: encounterId,
+    p_rows: rows,
+  });
+  if (error) { console.error('[db] syncMedicationList:', error); return { error: error.message }; }
   logClinicalSave('autosave_medications', 'medications', encounterId, { count: rows.length });
   return { error: null };
 }
@@ -1571,7 +1662,13 @@ export interface EncounterData {
   assessment: string;
   differentials: string;
   icdCodes: string[];
+  // Present whenever an assessments/plans row already exists for this
+  // encounter — the pilot for optimistic-locked saves (saveAssessment/
+  // savePlan) uses these as the "expected" version to guard against
+  // overwriting a change made by someone else since this load.
+  assessmentUpdatedAt: string | null;
   plan: string;
+  planUpdatedAt: string | null;
   allergens: string[];
   medications: string[];
   surgicalHistory: string[];
@@ -1618,11 +1715,11 @@ export async function loadEncounterData(
 
   const [assessRes, planRes, allergyRes, medRes, hpiRes, patRes, investRes, examRes, encScoresRes] = await Promise.all([
     supabase.from('assessments')
-      .select('diagnosis, differentials, icd10_code')
+      .select('diagnosis, differentials, icd10_code, updated_at')
       .eq('encounter_id', encounterId)
       .maybeSingle(),
     supabase.from('plans')
-      .select('description')
+      .select('description, updated_at')
       .eq('encounter_id', encounterId)
       .eq('plan_type', 'management')
       .maybeSingle(),
@@ -1680,8 +1777,8 @@ export async function loadEncounterData(
     if (err) console.error(`[db] loadEncounterData ${String(table)}:`, err);
   });
 
-  const assessRow = assessRes.data as { diagnosis: string | null; differentials: string | null; icd10_code: string | null } | null;
-  const planRow   = planRes.data   as { description: string | null } | null;
+  const assessRow = assessRes.data as { diagnosis: string | null; differentials: string | null; icd10_code: string | null; updated_at: string | null } | null;
+  const planRow   = planRes.data   as { description: string | null; updated_at: string | null } | null;
   const allergyRows = (allergyRes.data ?? []) as { allergen: string }[];
   const medRows     = (medRes.data   ?? []) as { drug_name: string }[];
   const hpiContent  = (hpiRes.data   as { content: string } | null)?.content ?? '';
@@ -1718,7 +1815,9 @@ export async function loadEncounterData(
       icdCodes:      assessRow?.icd10_code
         ? assessRow.icd10_code.split(',').map(s => s.trim()).filter(Boolean)
         : [],
+      assessmentUpdatedAt: assessRow?.updated_at ?? null,
       plan:          planRow?.description ?? '',
+      planUpdatedAt: planRow?.updated_at ?? null,
       allergens:     allergyRows.map(r => r.allergen),
       medications:   medRows.map(r => r.drug_name),
       surgicalHistory:    surgRes.procedures,
@@ -1751,39 +1850,66 @@ export interface PaneSessionLog {
   converged: boolean;
 }
 
+// Writes to the canonical `audit_log` (singular) table — the same one the
+// api-server's logAudit()/audit() helpers write to. These two functions used
+// to write to `audit_logs` (plural), a dead table nothing else reads from
+// (confirmed by docs/AUDIT-TRAIL-COVERAGE.md's patient-merge finding) — every
+// call site below was silently a no-op audit trail. A DB trigger
+// (supabase-clinical-audit-trigger-migration.sql) now also captures every
+// raw row-level change to these tables regardless of call site; these two
+// functions stay because they carry semantic context — the action label, and
+// for logPaneSession, an AI-reasoning snapshot — that a generic trigger
+// can't infer from a column diff alone.
+async function writeAuditLog(entry: {
+  action: string;
+  resourceType: string;
+  resourceId?: string | null;
+  patientId?: string | null;
+  details?: Record<string, unknown> | null;
+  mode: string;
+}): Promise<void> {
+  if (!supabase) return;
+  const { data: { session } } = await supabase.auth.getSession();
+  const { error } = await supabase.from('audit_log').insert({
+    user_id:       session?.user?.id ?? null,
+    user_email:    session?.user?.email ?? null,
+    action:        entry.action,
+    resource_type: entry.resourceType,
+    resource_id:   entry.resourceId ?? null,
+    patient_id:    entry.patientId ?? null,
+    details:       entry.details ?? null,
+    mode:          entry.mode,
+  });
+  if (error) console.warn('[db] audit:', error.message);
+}
+
 /**
- * Fire-and-forget: write a PANE session snapshot to audit_logs.
+ * Fire-and-forget: write a PANE session snapshot to audit_log.
  * Safe to call without awaiting — errors are logged to console only.
  */
 export function logPaneSession(input: PaneSessionLog): void {
-  if (!supabase) return;
-  void supabase.from('audit_logs').insert({
-    action:     'pane_session',
-    table_name: 'encounters',
-    record_id:  input.encounter_id ?? undefined,
-    new_values: {
-      patient_id:    input.patient_id,
+  void writeAuditLog({
+    action:       'pane_session',
+    resourceType: 'encounters',
+    resourceId:   input.encounter_id,
+    patientId:    input.patient_id,
+    details: {
       answered:      input.answered,
       top_diagnoses: input.top_diagnoses,
       iteration:     input.iteration,
       converged:     input.converged,
     },
     mode: 'cds',
-  }).then(({ error }) => {
-    if (error) console.warn('[db] logPaneSession:', error.message);
   });
 }
 
 function logClinicalSave(action: string, tableName: string, recordId: string, summary?: Record<string, unknown>): void {
-  if (!supabase) return;
-  void supabase.from('audit_logs').insert({
+  void writeAuditLog({
     action,
-    table_name: tableName,
-    record_id:  recordId,
-    new_values: summary ?? null,
-    mode:       'autosave',
-  }).then(({ error }) => {
-    if (error) console.warn('[db] audit:', error.message);
+    resourceType: tableName,
+    resourceId:   recordId,
+    details:      summary ?? null,
+    mode:         'autosave',
   });
 }
 
@@ -1817,26 +1943,14 @@ export async function syncSurgicalHistory(
   if (!supabase) return;
   if (!procedures.length && !notes.trim() && !recentSurgeryDate.trim()) return;
 
-  const { error: delErr } = await supabase.from('surgical_history').delete().eq('patient_id', patientId);
-  if (delErr) { console.error('[db] syncSurgicalHistory delete:', delErr); throw new Error(delErr.message); }
+  const rows: Array<{ procedure_name: string; notes?: string }> = procedures.map(p => ({ procedure_name: p }));
 
-  const rows: Array<Record<string, unknown>> = procedures.map(p => ({
-    patient_id: patientId,
-    procedure_name: p,
-  }));
+  if (notes.trim()) rows.push({ procedure_name: '[notes]', notes: notes.trim() });
+  if (recentSurgeryDate.trim()) rows.push({ procedure_name: '[recentSurgeryDate]', notes: recentSurgeryDate.trim() });
 
-  if (notes.trim()) {
-    rows.push({ patient_id: patientId, procedure_name: '[notes]', notes: notes.trim() });
-  }
-
-  if (recentSurgeryDate.trim()) {
-    rows.push({ patient_id: patientId, procedure_name: '[recentSurgeryDate]', notes: recentSurgeryDate.trim() });
-  }
-
-  if (rows.length) {
-    const { error } = await supabase.from('surgical_history').insert(rows);
-    if (error) { console.error('[db] syncSurgicalHistory:', error); throw new Error(error.message); }
-  }
+  // Atomic RPC — see syncMedicationList's comment for why (same race class).
+  const { error } = await supabase.rpc('sync_surgical_history', { p_patient_id: patientId, p_rows: rows });
+  if (error) { console.error('[db] syncSurgicalHistory:', error); throw new Error(error.message); }
 }
 
 export async function loadSurgicalHistory(
@@ -1874,19 +1988,15 @@ export async function syncToxicHabits(
 ): Promise<void> {
   if (!supabase) return;
 
-  const { error: delErr } = await supabase.from('toxic_habits').delete().eq('patient_id', patientId);
-  if (delErr) { console.error('[db] syncToxicHabits delete:', delErr); throw new Error(delErr.message); }
-
-  if (!habits.length) return;
-
-  const rows = habits.map(h => ({
-    patient_id: patientId,
-    habit_type: 'other' as const,
-    status: 'current' as const,
-    details: h,
-  }));
-
-  const { error } = await supabase.from('toxic_habits').insert(rows);
+  // Atomic RPC — see syncMedicationList's comment for why (same race class).
+  // Unlike the pre-RPC version, an empty habits[] still runs this (correctly
+  // clearing existing rows) rather than short-circuiting, since delete and
+  // insert-nothing now happen in the one atomic call rather than as two
+  // separately-guarded steps.
+  const { error } = await supabase.rpc('sync_toxic_habits', {
+    p_patient_id: patientId,
+    p_rows: habits.map(h => ({ details: h })),
+  });
   if (error) { console.error('[db] syncToxicHabits:', error); throw new Error(error.message); }
 }
 
@@ -1987,24 +2097,21 @@ export async function syncProcedureData(
 ): Promise<void> {
   if (!supabase) return;
 
-  const { error: delErr } = await supabase.from('operative_notes').delete().eq('encounter_id', encounterId);
-  if (delErr) { console.error('[db] syncProcedureData delete:', delErr); throw new Error(delErr.message); }
-
   const entries = Object.entries(procedureData).filter(([, v]) =>
     v && typeof v === 'object' && Object.keys(v as object).length > 0
   );
 
-  if (!entries.length) return;
-
   const rows = entries.map(([key, value]) => ({
-    patient_id: patientId,
-    encounter_id: encounterId,
     procedure_name: PROC_LABELS[key] ?? key,
     findings: JSON.stringify(value),
-    status: 'draft',
   }));
 
-  const { error } = await supabase.from('operative_notes').insert(rows);
+  // Atomic RPC — see syncMedicationList's comment for why (same race class).
+  const { error } = await supabase.rpc('sync_operative_notes', {
+    p_patient_id: patientId,
+    p_encounter_id: encounterId,
+    p_rows: rows,
+  });
   if (error) { console.error('[db] syncProcedureData:', error); throw new Error(error.message); }
 }
 

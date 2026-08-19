@@ -94,6 +94,7 @@ import PathwayConfidenceBanner from '@/components/PathwayConfidenceBanner';
 import AdmissionEscalationBanner from '@/components/AdmissionEscalationBanner';
 import PatientContextBanner from '@/components/PatientContextBanner';
 import EncounterPresenceBanner from '@/components/EncounterPresenceBanner';
+import SaveConflictBanner from '@/components/SaveConflictBanner';
 import NoPatientQuickstart from '@/components/NoPatientQuickstart';
 import PatientNotifyModal from '@/components/PatientNotifyModal';
 import ConsultationNav from '@/components/ConsultationNav';
@@ -810,6 +811,9 @@ export default function HomePage() {
 
         {/* Concurrent-editing awareness — who else has this encounter open right now */}
         <EncounterPresenceBanner />
+
+        {/* Concurrent-edit conflict — assessment/plan actually collided with another save */}
+        <SaveConflictBanner />
 
         {/* Critical result alerts — vitals / investigation thresholds */}
         {topSection === 'consultation' && <CriticalResultAlert />}
