@@ -39,9 +39,20 @@ export function middleware(req: NextRequest): NextResponse {
     return NextResponse.next();
   }
 
+  // ── Staff API routes ─────────────────────────────────────────────────────────
+  // /api/staff/* routes use getServiceClient() (no per-request auth).
+  // Gate them at the middleware layer so they can't be reached without a
+  // valid staff session cookie — same check as the /staff/* page routes.
+  if (pathname.startsWith('/api/staff/')) {
+    if (!hasSessionCookie(req, 'amise-staff-session')) {
+      return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
+    }
+    return NextResponse.next();
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/patient/:path*', '/staff/:path*'],
+  matcher: ['/patient/:path*', '/staff/:path*', '/api/staff/:path*'],
 };
