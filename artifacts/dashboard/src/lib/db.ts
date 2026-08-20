@@ -1713,52 +1713,61 @@ export async function loadEncounterData(
 ): Promise<{ data: EncounterData; error: null } | { data: null; error: string }> {
   if (!supabase) return { data: null, error: notConfigured('loadEncounterData') };
 
+  // Converts a Supabase query (PromiseLike<{data,error}>) to a plain Promise that
+  // never rejects — network-level throws become { data: null, error } so one flaky
+  // table can't blank the entire encounter load.
+  const sq = <T>(q: PromiseLike<{ data: T | null; error: unknown }>, label: string): Promise<{ data: T | null; error: unknown }> =>
+    Promise.resolve(q).catch((err): { data: T | null; error: unknown } => {
+      console.error(`[db] loadEncounterData ${label} (network reject):`, err);
+      return { data: null, error: err };
+    });
+
   const [assessRes, planRes, allergyRes, medRes, hpiRes, patRes, investRes, examRes, encScoresRes] = await Promise.all([
-    supabase.from('assessments')
+    sq(supabase.from('assessments')
       .select('diagnosis, differentials, icd10_code, updated_at')
       .eq('encounter_id', encounterId)
-      .maybeSingle(),
-    supabase.from('plans')
+      .maybeSingle(), 'assessments'),
+    sq(supabase.from('plans')
       .select('description, updated_at')
       .eq('encounter_id', encounterId)
       .eq('plan_type', 'management')
-      .maybeSingle(),
-    supabase.from('allergies')
+      .maybeSingle(), 'plans'),
+    sq(supabase.from('allergies')
       .select('allergen')
       .eq('patient_id', patientId)
-      .eq('status', 'active'),
-    supabase.from('medications')
+      .eq('status', 'active'), 'allergies'),
+    sq(supabase.from('medications')
       .select('drug_name')
       .eq('patient_id', patientId)
       .eq('encounter_id', encounterId)
       .eq('indication', 'consultation-list')
-      .eq('status', 'active'),
-    supabase.from('clinical_notes')
+      .eq('status', 'active'), 'medications'),
+    sq(supabase.from('clinical_notes')
       .select('content')
       .eq('encounter_id', encounterId)
       .like('content', '[HPI]%')
       .order('created_at', { ascending: false })
       .limit(1)
-      .maybeSingle(),
-    supabase.from('patients')
+      .maybeSingle(), 'clinical_notes/hpi'),
+    sq(supabase.from('patients')
       .select('pmh_notes, family_history_notes')
       .eq('id', patientId)
-      .maybeSingle(),
-    supabase.from('investigation_results')
+      .maybeSingle(), 'patients'),
+    sq(supabase.from('investigation_results')
       .select('test_name')
       .eq('encounter_id', encounterId)
-      .eq('status', 'ordered'),
-    supabase.from('clinical_notes')
+      .eq('status', 'ordered'), 'investigation_results'),
+    sq(supabase.from('clinical_notes')
       .select('content')
       .eq('encounter_id', encounterId)
       .like('content', '[EXAMINATION_JSON]%')
       .order('created_at', { ascending: false })
       .limit(1)
-      .maybeSingle(),
-    supabase.from('encounters')
+      .maybeSingle(), 'clinical_notes/exam'),
+    sq(supabase.from('encounters')
       .select('clinical_scores, extracted_labs')
       .eq('id', encounterId)
-      .maybeSingle(),
+      .maybeSingle(), 'encounters/scores'),
   ]);
 
   // Log individual query failures but continue with whatever data is available.
@@ -1800,12 +1809,30 @@ export async function loadEncounterData(
   }
 
   const [surgRes, toxicRes, rosRes, procRes, traumaRes, inpatientRes] = await Promise.all([
-    loadSurgicalHistory(patientId),
-    loadToxicHabits(patientId),
-    loadRosFindings(encounterId),
-    loadProcedureData(encounterId),
-    loadTraumaRecord(encounterId),
-    loadInpatientDetails(encounterId),
+    loadSurgicalHistory(patientId).catch(err => {
+      console.error('[db] loadEncounterData surgical_history (rejected):', err);
+      return { procedures: [] as string[], notes: '', recentSurgeryDate: '' };
+    }),
+    loadToxicHabits(patientId).catch(err => {
+      console.error('[db] loadEncounterData toxic_habits (rejected):', err);
+      return [] as string[];
+    }),
+    loadRosFindings(encounterId).catch(err => {
+      console.error('[db] loadEncounterData ros_findings (rejected):', err);
+      return {} as Record<string, { status: string; details: string[]; notes: string }>;
+    }),
+    loadProcedureData(encounterId).catch(err => {
+      console.error('[db] loadEncounterData procedure_data (rejected):', err);
+      return {} as Record<string, unknown>;
+    }),
+    loadTraumaRecord(encounterId).catch(err => {
+      console.error('[db] loadEncounterData trauma_record (rejected):', err);
+      return null;
+    }),
+    loadInpatientDetails(encounterId).catch(err => {
+      console.error('[db] loadEncounterData inpatient_details (rejected):', err);
+      return { data: null, error: null };
+    }),
   ]);
 
   return {
