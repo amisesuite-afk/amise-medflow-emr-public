@@ -1634,11 +1634,28 @@ export async function reopenEncounter(
 
 /** Signs all draft notes and marks the encounter closed.
  *  Note signing is best-effort — a signing failure is logged but does not
- *  block closure, because the clinician's intent to close must be honoured. */
+ *  block closure, because the clinician's intent to close must be honoured.
+ *  Closure is blocked when neither an assessment diagnosis nor at least one
+ *  ICD-10 code has been saved — defence-in-depth behind the UI gate in
+ *  FloatingActions.tsx which checks the same fields from local state. */
 export async function closeEncounter(
   encounterId: string,
 ): Promise<{ error: string | null }> {
   if (!supabase) return { error: notConfigured('closeEncounter') };
+
+  // Completeness preflight — must have a saved assessment + ICD code
+  const { data: assessRow, error: assessErr } = await supabase
+    .from('assessments')
+    .select('diagnosis, icd10_code')
+    .eq('encounter_id', encounterId)
+    .maybeSingle();
+  if (assessErr) return { error: 'Could not verify assessment before closing: ' + assessErr.message };
+  if (!assessRow?.diagnosis?.trim()) {
+    return { error: 'Please document an assessment before closing this encounter.' };
+  }
+  if (!assessRow?.icd10_code?.trim()) {
+    return { error: 'Please add at least one ICD-10 code before closing this encounter.' };
+  }
 
   // Sign notes first (best-effort — don't block closure on a sign failure)
   const { error: signErr } = await signEncounterNotes(encounterId);
