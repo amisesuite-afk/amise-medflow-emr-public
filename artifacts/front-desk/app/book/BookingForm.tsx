@@ -351,13 +351,21 @@ export default function BookingForm() {
   const phoneDigits = patientPhone.replace(/\D/g, '');
   const phoneValid =
     patientPhone.trim() === '' ||
-    (phoneDigits.length >= 7 && phoneDigits.length <= 15);
+    (phoneDigits.length >= 10 && phoneDigits.length <= 15);
+
+  // DOB: optional but if provided must not be in the future or before 1900.
+  // String comparison works correctly for ISO YYYY-MM-DD.
+  const today = new Date().toISOString().split('T')[0];
+  const dobValid =
+    !patientDob ||
+    (patientDob >= '1900-01-01' && patientDob <= today);
 
   const canAdvanceDetails =
     patientName.trim().length >= 2 &&
-    phoneDigits.length >= 7 &&
+    phoneDigits.length >= 10 &&
     phoneValid &&
     emailValid &&
+    dobValid &&
     (track !== 'referral' || referralDoctor.trim().length >= 2);
 
   // Build optgroups for the appointment type selector
@@ -673,7 +681,7 @@ export default function BookingForm() {
                   />
                   {patientPhone.trim() !== '' && !phoneValid ? (
                     <div style={{ fontSize: 11, color: '#ef4444', marginTop: 5 }} role="alert">
-                      Please enter a valid phone number (e.g. +1 758 284-0557).
+                      Please enter a valid phone number with at least 10 digits (e.g. +1 758 284-0557).
                     </div>
                   ) : (
                     <div style={{ fontSize: 11, color: '#6b7280', marginTop: 5 }}>
@@ -716,8 +724,19 @@ export default function BookingForm() {
                     value={patientDob}
                     onChange={e => setDob(e.target.value)}
                     autoComplete="bday"
-                    style={inputStyle}
+                    max={today}
+                    min="1900-01-01"
+                    aria-invalid={patientDob && !dobValid ? true : undefined}
+                    style={{
+                      ...inputStyle,
+                      ...(patientDob && !dobValid ? { borderColor: '#ef4444' } : {}),
+                    }}
                   />
+                  {patientDob && !dobValid && (
+                    <div style={{ fontSize: 11, color: '#ef4444', marginTop: 5 }} role="alert">
+                      Please enter a valid date of birth (cannot be in the future or before 1900).
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ marginBottom: 16 }}>
