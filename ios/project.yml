@@ -1,0 +1,48 @@
+name: AmiseMedFlow
+
+options:
+  bundleIdPrefix: com.amise
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16"
+  defaultConfig: Debug
+
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: 2.5.1
+
+targets:
+  AmiseMedFlow:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+
+    sources:
+      - path: AmiseMedFlow
+        excludes:
+          - "**/.DS_Store"
+
+    resources:
+      - path: AmiseMedFlow/Assets.xcassets
+
+    info:
+      path: AmiseMedFlow/Info.plist
+
+    settings:
+      configFiles:
+        Debug: Configuration.xcconfig
+        Release: Configuration.xcconfig
+      base:
+        PRODUCT_NAME: AmiseMedFlow
+        PRODUCT_BUNDLE_IDENTIFIER: com.amise.medflow
+        SWIFT_VERSION: "5.0"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: ""                # fill in your Apple Team ID
+        SWIFT_EMIT_LOC_STRINGS: YES
+        ENABLE_PREVIEWS: YES
+
+    dependencies:
+      - package: Supabase
+        product: Supabase
