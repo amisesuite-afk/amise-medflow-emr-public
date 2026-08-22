@@ -7,31 +7,40 @@ struct AddPatientView: View {
 
     var initialSetting: ClinicalSetting
 
+    // Identity
     @State private var fullName = ""
     @State private var sex: Sex = .unspecified
     @State private var hasDOB = false
     @State private var dateOfBirth = Date()
     @State private var phone = ""
+    @State private var email = ""
+    @State private var mrn = ""
+
+    // Clinical
     @State private var setting: ClinicalSetting
     @State private var location: ClinicalLocation = .rodney_bay
     @State private var acuity: Acuity = .routine
     @State private var chiefComplaint = ""
     @State private var appointmentType = ""
+
+    // Admission
     @State private var ward = ""
     @State private var bedNumber = ""
+
+    // Extended
+    @State private var nokName = ""
+    @State private var nokRelation = ""
+    @State private var nokPhone = ""
+    @State private var pmhNotes = ""
 
     init(initialSetting: ClinicalSetting = .outpatient) {
         self.initialSetting = initialSetting
         _setting = State(initialValue: initialSetting)
     }
 
-    private var showAdmission: Bool {
-        setting == .inpatient || setting == .emergency
-    }
-
-    private var showProcedure: Bool {
-        setting == .theatre || setting == .endoscopy
-    }
+    private var showAdmission: Bool { setting == .inpatient || setting == .emergency }
+    private var showProcedure: Bool { setting == .theatre || setting == .endoscopy }
+    private var nameValid: Bool { !fullName.trimmingCharacters(in: .whitespaces).isEmpty }
 
     var body: some View {
         NavigationStack {
@@ -46,8 +55,11 @@ struct AddPatientView: View {
                         DatePicker("", selection: $dateOfBirth, displayedComponents: .date)
                             .labelsHidden()
                     }
-                    TextField("Phone", text: $phone)
-                        .keyboardType(.phonePad)
+                    TextField("Phone", text: $phone).keyboardType(.phonePad)
+                    TextField("Email", text: $email)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                    TextField("MRN (optional)", text: $mrn)
                 }
 
                 Section("Clinical") {
@@ -70,6 +82,9 @@ struct AddPatientView: View {
                         }
                     }
                     TextField("Chief complaint", text: $chiefComplaint)
+                    if showProcedure {
+                        TextField("Procedure / appointment type", text: $appointmentType)
+                    }
                 }
 
                 if showAdmission {
@@ -79,10 +94,24 @@ struct AddPatientView: View {
                     }
                 }
 
-                if showProcedure {
-                    Section("Procedure") {
-                        TextField("Appointment / procedure type", text: $appointmentType)
-                    }
+                Section("Next of Kin") {
+                    TextField("Name", text: $nokName)
+                    TextField("Relationship", text: $nokRelation)
+                    TextField("Phone", text: $nokPhone).keyboardType(.phonePad)
+                }
+
+                Section("Medical History") {
+                    TextEditor(text: $pmhNotes)
+                        .frame(minHeight: 60)
+                        .overlay(alignment: .topLeading) {
+                            if pmhNotes.isEmpty {
+                                Text("Past medical / surgical history")
+                                    .foregroundStyle(.tertiary)
+                                    .padding(.top, 8)
+                                    .padding(.leading, 4)
+                                    .allowsHitTesting(false)
+                            }
+                        }
                 }
             }
             .navigationTitle("New Patient")
@@ -92,8 +121,7 @@ struct AddPatientView: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add") { save() }
-                        .disabled(fullName.trimmingCharacters(in: .whitespaces).isEmpty)
+                    Button("Add") { save() }.disabled(!nameValid)
                 }
             }
         }
@@ -107,12 +135,18 @@ struct AddPatientView: View {
             location: location,
             acuity: acuity
         )
-        if hasDOB { p.dateOfBirth = dateOfBirth }
-        if !phone.isEmpty { p.phone = phone }
-        if !chiefComplaint.isEmpty { p.chiefComplaint = chiefComplaint }
+        if hasDOB          { p.dateOfBirth = dateOfBirth }
+        if !phone.isEmpty  { p.phone = phone }
+        if !email.isEmpty  { p.email = email }
+        if !mrn.isEmpty    { p.mrn = mrn }
+        if !chiefComplaint.isEmpty  { p.chiefComplaint = chiefComplaint }
         if !appointmentType.isEmpty { p.appointmentType = appointmentType }
+        if !nokName.isEmpty    { p.nokName = nokName }
+        if !nokRelation.isEmpty { p.nokRelation = nokRelation }
+        if !nokPhone.isEmpty   { p.nokPhone = nokPhone }
+        if !pmhNotes.isEmpty   { p.pmhNotes = pmhNotes }
         if showAdmission {
-            if !ward.isEmpty { p.ward = ward }
+            if !ward.isEmpty      { p.ward = ward }
             if !bedNumber.isEmpty { p.bedNumber = bedNumber }
             p.admittedAt = .now
         }

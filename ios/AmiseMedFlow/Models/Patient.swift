@@ -32,6 +32,23 @@ final class Patient {
     var syncedAt: Date?
     var pendingSync: Bool
 
+    // MARK: - Relationships
+    @Relationship(deleteRule: .cascade, inverse: \ClinicalNote.patient)
+    var clinicalNotes: [ClinicalNote] = []
+
+    @Relationship(deleteRule: .cascade, inverse: \VitalsEntry.patient)
+    var vitalsEntries: [VitalsEntry] = []
+
+    // MARK: - Extended demographics (synced to Supabase)
+    var mrn: String?
+    var nokName: String?
+    var nokRelation: String?
+    var nokPhone: String?
+    var pmhNotes: String?
+    var familyHistoryNotes: String?
+    var insuranceProvider: String?
+    var policyNumber: String?
+
     init(
         fullName: String,
         sex: Sex = .unspecified,
