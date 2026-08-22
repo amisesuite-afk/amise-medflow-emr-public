@@ -34,7 +34,7 @@ struct AcuityPip: View {
 
 // MARK: - Detail view (tabbed)
 
-enum PatientTab { case overview, assessment, notes, prescriptions, vitals, demographics }
+enum PatientTab { case overview, assessment, notes, prescriptions, vitals, billing, theatre, demographics }
 
 struct PatientDetailView: View {
     @Bindable var patient: Patient
@@ -80,6 +80,20 @@ struct PatientDetailView: View {
                 }
                 .tag(PatientTab.vitals)
                 .tabItem { Label("Vitals", systemImage: "waveform.path.ecg") }
+
+                // MARK: Billing
+                NavigationStack {
+                    BillingView(patient: patient)
+                }
+                .tag(PatientTab.billing)
+                .tabItem { Label("Billing", systemImage: "dollarsign.circle") }
+
+                // MARK: Theatre / Operative Plan
+                NavigationStack {
+                    OperativePlanView(patient: patient)
+                }
+                .tag(PatientTab.theatre)
+                .tabItem { Label("Theatre", systemImage: "scissors") }
 
                 // MARK: Demographics
                 Form {

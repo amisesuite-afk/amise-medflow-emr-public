@@ -118,8 +118,26 @@ struct DocumentsView: View {
                 patient.updatedAt = .now
                 patient.pendingSync = true
             }
+            // Best-effort upload to Supabase Storage
+            await uploadToStorage(doc: doc, data: data)
         }
         pickerItems = []
+    }
+
+    private func uploadToStorage(doc: PatientDocument, data: Data) async {
+        guard let remotePatientId = patient.remoteId else { return }
+        let path = "\(remotePatientId)/\(doc.fileName)"
+        do {
+            try await SupabaseConfig.client.storage
+                .from(AppConfig.supabaseStorageBucket)
+                .upload(path, data: data, options: .init(contentType: doc.mimeType, upsert: true))
+            let url = try SupabaseConfig.client.storage
+                .from(AppConfig.supabaseStorageBucket)
+                .getPublicURL(path: path)
+            doc.storageUrl = url.absoluteString
+        } catch {
+            // Non-fatal: doc is saved locally regardless
+        }
     }
 
     private func summarise(_ doc: PatientDocument) async {
