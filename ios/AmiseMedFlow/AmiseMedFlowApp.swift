@@ -1,0 +1,31 @@
+import SwiftUI
+import SwiftData
+
+@main
+struct AmiseMedFlowApp: App {
+    @StateObject private var sync = SyncService()
+
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema([Patient.self])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        do {
+            return try ModelContainer(for: schema, configurations: [config])
+        } catch {
+            // Schema changed — wipe old store and start fresh
+            try? FileManager.default.removeItem(at: config.url)
+            do {
+                return try ModelContainer(for: schema, configurations: [config])
+            } catch {
+                fatalError("ModelContainer init failed: \(error)")
+            }
+        }
+    }()
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environmentObject(sync)
+        }
+        .modelContainer(sharedModelContainer)
+    }
+}
