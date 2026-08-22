@@ -207,7 +207,7 @@ struct PatientDetailView: View {
             Picker("Sex", selection: $patient.sex) {
                 ForEach(Sex.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }
-            if let dob = patient.dateOfBirth {
+            if patient.dateOfBirth != nil {
                 LabeledContent("Age") { Text("\(patient.ageYears) y") }
             }
             if let mrn = patient.mrn { LabeledContent("MRN", value: mrn) }
@@ -243,13 +243,13 @@ struct PatientDetailView: View {
                 ForEach(ClinicalLocation.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }
             Picker("Acuity", selection: $patient.acuity) {
-                ForEach(Acuity.allCases, id: \.self) {
+                ForEach(Acuity.allCases, id: \.self) { acuity in
                     HStack {
-                        AcuityPip(acuity: $0)
-                        Text($0.rawValue == 0 ? "Emergency" :
-                             $0.rawValue == 1 ? "Urgent" :
-                             $0.rawValue == 2 ? "Priority" : "Routine")
-                    }.tag($0)
+                        AcuityPip(acuity: acuity)
+                        Text(acuity.rawValue == 0 ? "Emergency" :
+                             acuity.rawValue == 1 ? "Urgent" :
+                             acuity.rawValue == 2 ? "Priority" : "Routine")
+                    }.tag(acuity)
                 }
             }
             TextField("Chief complaint", text: Binding(
