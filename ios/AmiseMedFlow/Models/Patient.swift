@@ -45,6 +45,12 @@ final class Patient {
     @Relationship(deleteRule: .cascade, inverse: \PatientDocument.patient)
     var documents: [PatientDocument] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \OperativePlan.patient)
+    var operativePlans: [OperativePlan] = []
+
+    @Relationship(deleteRule: .cascade, inverse: \BillingLineItem.patient)
+    var billingItems: [BillingLineItem] = []
+
     // MARK: - Clinical intelligence fields
     var workingDiagnosis: String?
     var workingDiagnosisICD: String?

@@ -32,9 +32,40 @@ struct AcuityPip: View {
     }
 }
 
-// MARK: - Detail view (tabbed)
+// MARK: - Clinical hub (5 tabs → Assessment / Rx / Billing / Theatre / Documents)
 
-enum PatientTab { case overview, assessment, notes, prescriptions, vitals, billing, theatre, demographics }
+struct ClinicalHubView: View {
+    @Bindable var patient: Patient
+    var body: some View {
+        List {
+            NavigationLink { AssessmentView(patient: patient) } label: {
+                Label("Assessment", systemImage: "stethoscope")
+            }
+            NavigationLink { PrescriptionView(patient: patient) } label: {
+                Label("Prescriptions (\(patient.prescriptions.count))", systemImage: "pills")
+            }
+            NavigationLink { BillingView(patient: patient) } label: {
+                Label("Billing (\(patient.billingItems.count) codes)", systemImage: "dollarsign.circle")
+            }
+            NavigationLink { OperativePlanView(patient: patient) } label: {
+                let plan = patient.operativePlans.sorted { $0.updatedAt > $1.updatedAt }.first
+                Label(
+                    plan == nil ? "Operative Plan" : "Operative Plan (\(plan!.whoCompletedCount)/\(plan!.whoTotalCount))",
+                    systemImage: "scissors"
+                )
+            }
+            NavigationLink { DocumentsView(patient: patient) } label: {
+                Label("Documents (\(patient.documents.count))", systemImage: "doc.badge.plus")
+            }
+        }
+        .navigationTitle("Clinical")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - Detail view (5 tabs — within iOS limit)
+
+enum PatientTab { case overview, clinical, notes, vitals, demographics }
 
 struct PatientDetailView: View {
     @Bindable var patient: Patient
@@ -47,53 +78,24 @@ struct PatientDetailView: View {
         NavigationStack {
             TabView(selection: $selectedTab) {
                 // MARK: Overview
-                List {
-                    overviewSection
-                }
-                .tag(PatientTab.overview)
-                .tabItem { Label("Overview", systemImage: "person.text.rectangle") }
+                List { overviewSection }
+                    .tag(PatientTab.overview)
+                    .tabItem { Label("Overview", systemImage: "person.text.rectangle") }
 
-                // MARK: Assessment
-                NavigationStack {
-                    AssessmentView(patient: patient)
-                }
-                .tag(PatientTab.assessment)
-                .tabItem { Label("Assess", systemImage: "stethoscope") }
+                // MARK: Clinical hub
+                NavigationStack { ClinicalHubView(patient: patient) }
+                    .tag(PatientTab.clinical)
+                    .tabItem { Label("Clinical", systemImage: "stethoscope") }
 
                 // MARK: Notes
-                List {
-                    NoteListView(patient: patient)
-                }
-                .tag(PatientTab.notes)
-                .tabItem { Label("Notes", systemImage: "note.text") }
-
-                // MARK: Prescriptions
-                NavigationStack {
-                    PrescriptionView(patient: patient)
-                }
-                .tag(PatientTab.prescriptions)
-                .tabItem { Label("Rx", systemImage: "pills") }
+                List { NoteListView(patient: patient) }
+                    .tag(PatientTab.notes)
+                    .tabItem { Label("Notes", systemImage: "note.text") }
 
                 // MARK: Vitals
-                List {
-                    VitalsHistoryView(patient: patient)
-                }
-                .tag(PatientTab.vitals)
-                .tabItem { Label("Vitals", systemImage: "waveform.path.ecg") }
-
-                // MARK: Billing
-                NavigationStack {
-                    BillingView(patient: patient)
-                }
-                .tag(PatientTab.billing)
-                .tabItem { Label("Billing", systemImage: "dollarsign.circle") }
-
-                // MARK: Theatre / Operative Plan
-                NavigationStack {
-                    OperativePlanView(patient: patient)
-                }
-                .tag(PatientTab.theatre)
-                .tabItem { Label("Theatre", systemImage: "scissors") }
+                List { VitalsHistoryView(patient: patient) }
+                    .tag(PatientTab.vitals)
+                    .tabItem { Label("Vitals", systemImage: "waveform.path.ecg") }
 
                 // MARK: Demographics
                 Form {
@@ -116,13 +118,6 @@ struct PatientDetailView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
-                }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    NavigationLink {
-                        DocumentsView(patient: patient)
-                    } label: {
-                        Label("Docs", systemImage: "doc.badge.plus")
-                    }
                 }
             }
         }

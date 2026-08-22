@@ -131,13 +131,18 @@ struct DocumentsView: View {
             try await SupabaseConfig.client.storage
                 .from(AppConfig.supabaseStorageBucket)
                 .upload(path, data: data, options: .init(contentType: doc.mimeType, upsert: true))
-            let url = try SupabaseConfig.client.storage
-                .from(AppConfig.supabaseStorageBucket)
-                .getPublicURL(path: path)
-            doc.storageUrl = url.absoluteString
+            // Store the storage path — never a public URL (PHI must stay access-controlled)
+            doc.storageUrl = path
         } catch {
             // Non-fatal: doc is saved locally regardless
         }
+    }
+
+    // Fetch a short-lived signed URL on demand (600 s = 10 min) — never store the result
+    static func signedURL(forPath path: String) async -> URL? {
+        return try? await SupabaseConfig.client.storage
+            .from(AppConfig.supabaseStorageBucket)
+            .createSignedURL(path: path, expiresIn: 600)
     }
 
     private func summarise(_ doc: PatientDocument) async {
