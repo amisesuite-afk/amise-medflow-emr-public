@@ -45,74 +45,11 @@ struct AddPatientView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Patient") {
-                    TextField("Full name *", text: $fullName)
-                    Picker("Sex", selection: $sex) {
-                        ForEach(Sex.allCases, id: \.self) { Text($0.rawValue).tag($0) }
-                    }
-                    Toggle("Date of birth", isOn: $hasDOB)
-                    if hasDOB {
-                        DatePicker("", selection: $dateOfBirth, displayedComponents: .date)
-                            .labelsHidden()
-                    }
-                    TextField("Phone", text: $phone).keyboardType(.phonePad)
-                    TextField("Email", text: $email)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                    TextField("MRN (optional)", text: $mrn)
-                }
-
-                Section("Clinical") {
-                    Picker("Setting", selection: $setting) {
-                        ForEach(ClinicalSetting.allCases, id: \.self) {
-                            Label($0.rawValue, systemImage: $0.icon).tag($0)
-                        }
-                    }
-                    Picker("Location", selection: $location) {
-                        ForEach(ClinicalLocation.allCases, id: \.self) { Text($0.rawValue).tag($0) }
-                    }
-                    Picker("Acuity", selection: $acuity) {
-                        ForEach(Acuity.allCases, id: \.self) {
-                            HStack {
-                                AcuityPip(acuity: $0)
-                                Text($0.rawValue == 0 ? "Emergency" :
-                                     $0.rawValue == 1 ? "Urgent" :
-                                     $0.rawValue == 2 ? "Priority" : "Routine")
-                            }.tag($0)
-                        }
-                    }
-                    TextField("Chief complaint", text: $chiefComplaint)
-                    if showProcedure {
-                        TextField("Procedure / appointment type", text: $appointmentType)
-                    }
-                }
-
-                if showAdmission {
-                    Section("Admission") {
-                        TextField("Ward", text: $ward)
-                        TextField("Bed number", text: $bedNumber)
-                    }
-                }
-
-                Section("Next of Kin") {
-                    TextField("Name", text: $nokName)
-                    TextField("Relationship", text: $nokRelation)
-                    TextField("Phone", text: $nokPhone).keyboardType(.phonePad)
-                }
-
-                Section("Medical History") {
-                    TextEditor(text: $pmhNotes)
-                        .frame(minHeight: 60)
-                        .overlay(alignment: .topLeading) {
-                            if pmhNotes.isEmpty {
-                                Text("Past medical / surgical history")
-                                    .foregroundStyle(.tertiary)
-                                    .padding(.top, 8)
-                                    .padding(.leading, 4)
-                                    .allowsHitTesting(false)
-                            }
-                        }
-                }
+                patientSection
+                clinicalSection
+                if showAdmission { admissionSection }
+                nokSection
+                historySection
             }
             .navigationTitle("New Patient")
             .navigationBarTitleDisplayMode(.inline)
@@ -127,6 +64,90 @@ struct AddPatientView: View {
         }
     }
 
+    @ViewBuilder
+    private var patientSection: some View {
+        Section("Patient") {
+            TextField("Full name *", text: $fullName)
+            Picker("Sex", selection: $sex) {
+                ForEach(Sex.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            }
+            Toggle("Date of birth", isOn: $hasDOB)
+            if hasDOB {
+                DatePicker("", selection: $dateOfBirth, displayedComponents: .date)
+                    .labelsHidden()
+            }
+            TextField("Phone", text: $phone).keyboardType(.phonePad)
+            TextField("Email", text: $email)
+                .keyboardType(.emailAddress)
+                .autocapitalization(.none)
+            TextField("MRN (optional)", text: $mrn)
+        }
+    }
+
+    @ViewBuilder
+    private var clinicalSection: some View {
+        Section("Clinical") {
+            Picker("Setting", selection: $setting) {
+                ForEach(ClinicalSetting.allCases, id: \.self) { s in
+                    Label(s.rawValue, systemImage: s.icon).tag(s)
+                }
+            }
+            Picker("Location", selection: $location) {
+                ForEach(ClinicalLocation.allCases, id: \.self) { loc in
+                    Text(loc.rawValue).tag(loc)
+                }
+            }
+            Picker("Acuity", selection: $acuity) {
+                ForEach(Acuity.allCases, id: \.self) { a in
+                    HStack {
+                        AcuityPip(acuity: a)
+                        Text(a.rawValue == 0 ? "Emergency" :
+                             a.rawValue == 1 ? "Urgent" :
+                             a.rawValue == 2 ? "Priority" : "Routine")
+                    }.tag(a)
+                }
+            }
+            TextField("Chief complaint", text: $chiefComplaint)
+            if showProcedure {
+                TextField("Procedure / appointment type", text: $appointmentType)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var admissionSection: some View {
+        Section("Admission") {
+            TextField("Ward", text: $ward)
+            TextField("Bed number", text: $bedNumber)
+        }
+    }
+
+    @ViewBuilder
+    private var nokSection: some View {
+        Section("Next of Kin") {
+            TextField("Name", text: $nokName)
+            TextField("Relationship", text: $nokRelation)
+            TextField("Phone", text: $nokPhone).keyboardType(.phonePad)
+        }
+    }
+
+    @ViewBuilder
+    private var historySection: some View {
+        Section("Medical History") {
+            TextEditor(text: $pmhNotes)
+                .frame(minHeight: 60)
+                .overlay(alignment: .topLeading) {
+                    if pmhNotes.isEmpty {
+                        Text("Past medical / surgical history")
+                            .foregroundStyle(.tertiary)
+                            .padding(.top, 8)
+                            .padding(.leading, 4)
+                            .allowsHitTesting(false)
+                    }
+                }
+        }
+    }
+
     private func save() {
         let p = Patient(
             fullName: fullName.trimmingCharacters(in: .whitespaces),
@@ -135,16 +156,16 @@ struct AddPatientView: View {
             location: location,
             acuity: acuity
         )
-        if hasDOB          { p.dateOfBirth = dateOfBirth }
-        if !phone.isEmpty  { p.phone = phone }
-        if !email.isEmpty  { p.email = email }
-        if !mrn.isEmpty    { p.mrn = mrn }
-        if !chiefComplaint.isEmpty  { p.chiefComplaint = chiefComplaint }
-        if !appointmentType.isEmpty { p.appointmentType = appointmentType }
-        if !nokName.isEmpty    { p.nokName = nokName }
+        if hasDOB               { p.dateOfBirth = dateOfBirth }
+        if !phone.isEmpty       { p.phone = phone }
+        if !email.isEmpty       { p.email = email }
+        if !mrn.isEmpty         { p.mrn = mrn }
+        if !chiefComplaint.isEmpty   { p.chiefComplaint = chiefComplaint }
+        if !appointmentType.isEmpty  { p.appointmentType = appointmentType }
+        if !nokName.isEmpty     { p.nokName = nokName }
         if !nokRelation.isEmpty { p.nokRelation = nokRelation }
-        if !nokPhone.isEmpty   { p.nokPhone = nokPhone }
-        if !pmhNotes.isEmpty   { p.pmhNotes = pmhNotes }
+        if !nokPhone.isEmpty    { p.nokPhone = nokPhone }
+        if !pmhNotes.isEmpty    { p.pmhNotes = pmhNotes }
         if showAdmission {
             if !ward.isEmpty      { p.ward = ward }
             if !bedNumber.isEmpty { p.bedNumber = bedNumber }
