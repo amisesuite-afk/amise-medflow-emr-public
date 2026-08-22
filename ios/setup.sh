@@ -28,23 +28,21 @@ else
     echo "✓ XcodeGen found ($(xcodegen --version))"
 fi
 
-# ── 3. Configuration.xcconfig (Supabase secrets) ─────────────────────────────
+# ── 3. Configuration.xcconfig (Supabase credentials) ────────────────────────
+# The anon key is a public read-only key already committed in deploy-dashboard.yml.
 if [ ! -f "Configuration.xcconfig" ]; then
-    echo ""
-    echo "→ Creating Configuration.xcconfig from example…"
-    cp Configuration.xcconfig.example Configuration.xcconfig
-    echo ""
-    echo "  ╔═══════════════════════════════════════════════════════════════╗"
-    echo "  ║  ACTION REQUIRED: fill in your Supabase URL and anon key     ║"
-    echo "  ║                                                               ║"
-    echo "  ║  Open:  ios/Configuration.xcconfig                           ║"
-    echo "  ║  Set:   SUPABASE_URL  = https://xxxx.supabase.co             ║"
-    echo "  ║         SUPABASE_ANON_KEY = eyJ…                             ║"
-    echo "  ║                                                               ║"
-    echo "  ║  (Find these in Supabase dashboard → Project Settings → API) ║"
-    echo "  ╚═══════════════════════════════════════════════════════════════╝"
-    echo ""
-    read -rp "  Press Enter when you have saved Configuration.xcconfig… "
+    echo "→ Writing Configuration.xcconfig…"
+    cat > Configuration.xcconfig << 'XCCONFIG'
+// AmiseMedFlow — Supabase configuration
+// This file is gitignored. Regenerated automatically by setup.sh.
+
+SUPABASE_URL = https://nornhfzfrlmfzaqmrzzp.supabase.co
+SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcm5oZnpmcmxtZnphcW1yenpwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5OTU5NjcsImV4cCI6MjA5NDU3MTk2N30.IQqwEuwp4_CYRj5r6H-83vjXKeob-N8z5TBwLk-rXLc
+
+// Optional: uncomment and set your 10-character Apple Developer Team ID
+// DEVELOPMENT_TEAM = XXXXXXXXXX
+XCCONFIG
+    echo "✓ Configuration.xcconfig written"
 else
     echo "✓ Configuration.xcconfig exists"
 fi
