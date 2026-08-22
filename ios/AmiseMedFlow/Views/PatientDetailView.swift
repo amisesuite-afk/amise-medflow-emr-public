@@ -34,7 +34,7 @@ struct AcuityPip: View {
 
 // MARK: - Detail view (tabbed)
 
-enum PatientTab { case overview, notes, vitals, demographics }
+enum PatientTab { case overview, assessment, notes, prescriptions, vitals, demographics }
 
 struct PatientDetailView: View {
     @Bindable var patient: Patient
@@ -53,12 +53,26 @@ struct PatientDetailView: View {
                 .tag(PatientTab.overview)
                 .tabItem { Label("Overview", systemImage: "person.text.rectangle") }
 
+                // MARK: Assessment
+                NavigationStack {
+                    AssessmentView(patient: patient)
+                }
+                .tag(PatientTab.assessment)
+                .tabItem { Label("Assess", systemImage: "stethoscope") }
+
                 // MARK: Notes
                 List {
                     NoteListView(patient: patient)
                 }
                 .tag(PatientTab.notes)
                 .tabItem { Label("Notes", systemImage: "note.text") }
+
+                // MARK: Prescriptions
+                NavigationStack {
+                    PrescriptionView(patient: patient)
+                }
+                .tag(PatientTab.prescriptions)
+                .tabItem { Label("Rx", systemImage: "pills") }
 
                 // MARK: Vitals
                 List {
@@ -88,6 +102,13 @@ struct PatientDetailView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink {
+                        DocumentsView(patient: patient)
+                    } label: {
+                        Label("Docs", systemImage: "doc.badge.plus")
+                    }
                 }
             }
         }
@@ -131,6 +152,20 @@ struct PatientDetailView: View {
         if let cc = patient.chiefComplaint {
             Section("Chief Complaint") {
                 Text(cc)
+            }
+        }
+
+        if let dx = patient.workingDiagnosis {
+            Section("Working Diagnosis") {
+                HStack(spacing: 8) {
+                    Image(systemName: "stethoscope").foregroundStyle(.teal)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(dx).font(.subheadline.weight(.medium))
+                        if let icd = patient.workingDiagnosisICD {
+                            Text(icd).font(.caption.monospaced()).foregroundStyle(.secondary)
+                        }
+                    }
+                }
             }
         }
 

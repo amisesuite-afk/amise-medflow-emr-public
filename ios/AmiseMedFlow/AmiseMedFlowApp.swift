@@ -6,7 +6,7 @@ struct AmiseMedFlowApp: App {
     @StateObject private var sync = SyncService()
 
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([Patient.self, ClinicalNote.self, VitalsEntry.self])
+        let schema = Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
             return try ModelContainer(for: schema, configurations: [config])

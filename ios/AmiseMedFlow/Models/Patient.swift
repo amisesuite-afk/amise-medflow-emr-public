@@ -39,6 +39,17 @@ final class Patient {
     @Relationship(deleteRule: .cascade, inverse: \VitalsEntry.patient)
     var vitalsEntries: [VitalsEntry] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \Prescription.patient)
+    var prescriptions: [Prescription] = []
+
+    @Relationship(deleteRule: .cascade, inverse: \PatientDocument.patient)
+    var documents: [PatientDocument] = []
+
+    // MARK: - Clinical intelligence fields
+    var workingDiagnosis: String?
+    var workingDiagnosisICD: String?
+    var assessmentText: String?
+
     // MARK: - Extended demographics (synced to Supabase)
     var mrn: String?
     var nokName: String?

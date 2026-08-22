@@ -4,6 +4,11 @@ import SwiftData
 struct NoteEditorView: View {
     @Bindable var note: ClinicalNote
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var ai = AIService()
+
+    @State private var showAIOptions = false
+    @State private var aiError: String?
+    @State private var showError = false
 
     private let soapPlaceholders = (
         s: "What the patient reports — symptoms, history, concerns",
@@ -38,8 +43,33 @@ struct NoteEditorView: View {
                     HStack {
                         statusPicker
                         Spacer()
+                        Button {
+                            showAIOptions = true
+                        } label: {
+                            HStack(spacing: 4) {
+                                if ai.isGenerating { ProgressView().scaleEffect(0.7) }
+                                Label("AI Draft", systemImage: "sparkles")
+                                    .font(.caption)
+                            }
+                        }
+                        .disabled(ai.isGenerating || note.patient == nil)
+                        .foregroundStyle(.purple)
                     }
                 }
+            }
+            .confirmationDialog("AI Draft — \(note.noteType.label)", isPresented: $showAIOptions, titleVisibility: .visible) {
+                if note.noteType.isStructured, let patient = note.patient {
+                    Button("Generate SOAP draft") { Task { await generateSOAP(patient: patient) } }
+                }
+                if let patient = note.patient {
+                    Button("Generate full draft") { Task { await generateFreeText(patient: patient) } }
+                }
+                Button("Cancel", role: .cancel) {}
+            }
+            .alert("AI Error", isPresented: $showError) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(aiError ?? "Unknown error")
             }
         }
     }
@@ -156,6 +186,35 @@ struct NoteEditorView: View {
         }
         .pickerStyle(.segmented)
         .fixedSize()
+    }
+
+    // MARK: - AI generation
+
+    private func generateSOAP(patient: Patient) async {
+        do {
+            let draft = try await ai.generateSOAP(patient: patient, noteType: note.noteType)
+            note.subjective  = draft.s
+            note.objective   = draft.o
+            note.assessment  = draft.a
+            note.plan        = draft.p
+            note.updatedAt   = .now
+            note.pendingSync = true
+        } catch {
+            aiError = error.localizedDescription
+            showError = true
+        }
+    }
+
+    private func generateFreeText(patient: Patient) async {
+        do {
+            let text = try await ai.generateFreeText(patient: patient, noteType: note.noteType)
+            note.freeText    = text
+            note.updatedAt   = .now
+            note.pendingSync = true
+        } catch {
+            aiError = error.localizedDescription
+            showError = true
+        }
     }
 
     // MARK: - Templates

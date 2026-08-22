@@ -75,7 +75,9 @@ final class SyncService: ObservableObject {
         do {
             try await pullPatients(context: context)
             try await pushPendingPatients(context: context)
+            try await pushPatientEdits(context: context)
             try await pushPendingNotes(context: context)
+            try await pullNotes(context: context)
             lastSyncedAt = .now
             recountPending(context: context)
         } catch {
@@ -184,6 +186,46 @@ final class SyncService: ObservableObject {
         try context.save()
     }
 
+    // MARK: - Push edits to existing synced patients
+
+    private func pushPatientEdits(context: ModelContext) async throws {
+        let dirty = try context.fetch(FetchDescriptor<Patient>())
+            .filter { $0.pendingSync && $0.remoteId != nil }
+        guard !dirty.isEmpty else { return }
+
+        for patient in dirty {
+            guard let remoteId = patient.remoteId else { continue }
+            struct UpdateRow: Encodable {
+                let full_name: String
+                let sex: String
+                let phone: String?
+                let email: String?
+                let address: String?
+                let pmh_notes: String?
+                let working_diagnosis: String?
+                let working_diagnosis_icd: String?
+            }
+            let row = UpdateRow(
+                full_name: patient.fullName,
+                sex: patient.sex.rawValue.lowercased(),
+                phone: patient.phone,
+                email: patient.email,
+                address: patient.address,
+                pmh_notes: patient.pmhNotes,
+                working_diagnosis: patient.workingDiagnosis,
+                working_diagnosis_icd: patient.workingDiagnosisICD
+            )
+            try await SupabaseConfig.client
+                .from("patients")
+                .update(row)
+                .eq("id", value: remoteId)
+                .execute()
+            patient.pendingSync = false
+            patient.syncedAt = .now
+        }
+        try context.save()
+    }
+
     // MARK: - Note sync
 
     private func pushPendingNotes(context: ModelContext) async throws {
@@ -221,6 +263,53 @@ final class SyncService: ObservableObject {
                 note.syncedAt = .now
             }
         }
+        try context.save()
+    }
+
+    // MARK: - Pull clinical notes from remote
+
+    private struct RemoteNote: Decodable {
+        let id: String
+        let patient_id: String
+        let note_type: String
+        let status: String
+        let content: String?
+        let created_at: String
+    }
+
+    private func pullNotes(context: ModelContext) async throws {
+        let rows: [RemoteNote] = try await SupabaseConfig.client
+            .from("clinical_notes")
+            .select("id, patient_id, note_type, status, content, created_at")
+            .order("created_at", ascending: false)
+            .limit(200)
+            .execute()
+            .value
+
+        let allLocalNotes  = try context.fetch(FetchDescriptor<ClinicalNote>())
+        let allLocalPatients = try context.fetch(FetchDescriptor<Patient>())
+
+        for row in rows {
+            let patient = allLocalPatients.first { $0.remoteId == row.patient_id }
+            guard let patient else { continue }
+
+            let existing = allLocalNotes.first { $0.remoteId == row.id }
+            let note: ClinicalNote
+            if let e = existing {
+                note = e
+            } else {
+                let noteType = NoteType(rawValue: row.note_type) ?? .other
+                note = ClinicalNote(noteType: noteType, patient: patient)
+                context.insert(note)
+            }
+
+            note.remoteId = row.id
+            note.status = NoteStatus(rawValue: row.status) ?? .draft
+            note.freeText = row.content
+            note.syncedAt = .now
+            note.pendingSync = false
+        }
+
         try context.save()
     }
 
