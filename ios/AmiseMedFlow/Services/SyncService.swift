@@ -115,14 +115,11 @@ final class SyncService: ObservableObject {
 
         let iso = ISO8601DateFormatter()
 
-        for row in rows {
-            // Find existing local patient with this remoteId, or create new
-            var desc = FetchDescriptor<Patient>(
-                predicate: #Predicate { $0.remoteId == row.id }
-            )
-            desc.fetchLimit = 1
+        // Load all local patients once, then match in Swift (avoids #Predicate capture issues)
+        let allLocal = try context.fetch(FetchDescriptor<Patient>())
 
-            let existing = try context.fetch(desc).first
+        for row in rows {
+            let existing = allLocal.first { $0.remoteId == row.id }
             let patient = existing ?? {
                 let p = Patient(fullName: row.full_name)
                 context.insert(p)
@@ -152,10 +149,8 @@ final class SyncService: ObservableObject {
     }
 
     private func pushPendingPatients(context: ModelContext) async throws {
-        let desc = FetchDescriptor<Patient>(
-            predicate: #Predicate { $0.pendingSync == true && $0.remoteId == nil }
-        )
-        let pending = try context.fetch(desc)
+        let pending = try context.fetch(FetchDescriptor<Patient>())
+            .filter { $0.pendingSync && $0.remoteId == nil }
         guard !pending.isEmpty else { return }
 
         for patient in pending {
@@ -192,10 +187,8 @@ final class SyncService: ObservableObject {
     // MARK: - Note sync
 
     private func pushPendingNotes(context: ModelContext) async throws {
-        let desc = FetchDescriptor<ClinicalNote>(
-            predicate: #Predicate { $0.pendingSync == true && $0.remoteId == nil }
-        )
-        let pending = try context.fetch(desc)
+        let pending = try context.fetch(FetchDescriptor<ClinicalNote>())
+            .filter { $0.pendingSync && $0.remoteId == nil }
         guard !pending.isEmpty else { return }
 
         for note in pending {
@@ -234,12 +227,8 @@ final class SyncService: ObservableObject {
     // MARK: - Pending count
 
     private func recountPending(context: ModelContext) {
-        let pCount = (try? context.fetchCount(
-            FetchDescriptor<Patient>(predicate: #Predicate { $0.pendingSync == true })
-        )) ?? 0
-        let nCount = (try? context.fetchCount(
-            FetchDescriptor<ClinicalNote>(predicate: #Predicate { $0.pendingSync == true })
-        )) ?? 0
+        let pCount = (try? context.fetch(FetchDescriptor<Patient>()))?.filter { $0.pendingSync }.count ?? 0
+        let nCount = (try? context.fetch(FetchDescriptor<ClinicalNote>()))?.filter { $0.pendingSync }.count ?? 0
         pendingCount = pCount + nCount
     }
 
