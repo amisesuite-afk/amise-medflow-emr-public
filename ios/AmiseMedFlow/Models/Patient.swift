@@ -56,6 +56,20 @@ final class Patient {
     var workingDiagnosisICD: String?
     var assessmentText: String?
 
+    // MARK: - Consultation form fields
+    var hpi: String?
+    var surgicalHistory: String?
+    var allergiesJson: String?      // JSON: [AllergyEntry]
+    var examGeneral: String?
+    var examCVS: String?
+    var examResp: String?
+    var examAbdo: String?
+    var examNeuro: String?
+    var examMSK: String?
+    var examSkin: String?
+    var examOther: String?
+    var managementPlan: String?
+
     // MARK: - Extended demographics (synced to Supabase)
     var mrn: String?
     var nokName: String?

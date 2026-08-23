@@ -569,5 +569,13 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"query\": $QUERY}" | jq .
 
+      - name: "Migration 69: iOS Consultation form — HPI, surgical hx, allergies, per-system exam, management plan columns on patients"
+        run: |
+          QUERY=$(jq -Rs . < supabase-ios-consultation-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq .
+
       - name: Done
-        run: echo "All 68 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
+        run: echo "All 69 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."

@@ -38,8 +38,8 @@ struct ClinicalHubView: View {
     @Bindable var patient: Patient
     var body: some View {
         List {
-            NavigationLink { AssessmentView(patient: patient) } label: {
-                Label("Assessment", systemImage: "stethoscope")
+            NavigationLink { ConsultationView(patient: patient) } label: {
+                Label("Consultation", systemImage: "stethoscope")
             }
             NavigationLink { PrescriptionView(patient: patient) } label: {
                 Label("Prescriptions (\(patient.prescriptions.count))", systemImage: "pills")
