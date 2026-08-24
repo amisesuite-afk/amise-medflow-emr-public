@@ -148,9 +148,7 @@ struct ClinicalReasoningView: View {
     private var acuityBadge: some View {
         VStack(spacing: 2) {
             Circle().fill(Color(hex: patient.acuity.color)).frame(width: 10, height: 10)
-            Text(patient.acuity == .emergency ? "EMERG" :
-                 patient.acuity == .urgent    ? "Urgent" :
-                 patient.acuity == .priority  ? "Priority" : "Routine")
+            Text(patient.acuity.label.uppercased())
                 .font(.system(size: 9, weight: .heavy))
                 .foregroundStyle(Color(hex: patient.acuity.color))
                 .textCase(.uppercase)

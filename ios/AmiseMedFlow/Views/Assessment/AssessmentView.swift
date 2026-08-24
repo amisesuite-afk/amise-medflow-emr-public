@@ -150,7 +150,7 @@ struct AssessmentView: View {
         Section("Pathway Result — \(result.pathway)") {
             HStack {
                 AcuityPip(acuity: result.suggestedAcuity)
-                Text(acuityLabel(result.suggestedAcuity))
+                Text(result.suggestedAcuity.label)
                     .font(.subheadline.weight(.semibold))
                 Spacer()
                 Text("Confidence \(result.confidencePercent)%")
@@ -237,12 +237,4 @@ struct AssessmentView: View {
         }
     }
 
-    private func acuityLabel(_ a: Acuity) -> String {
-        switch a {
-        case .emergency: return "Emergency"
-        case .urgent:    return "Urgent"
-        case .priority:  return "Priority"
-        case .routine:   return "Routine"
-        }
-    }
 }

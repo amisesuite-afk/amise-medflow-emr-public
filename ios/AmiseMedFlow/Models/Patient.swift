@@ -182,6 +182,15 @@ enum Acuity: Int, Codable, CaseIterable, Comparable {
 
     static func < (lhs: Acuity, rhs: Acuity) -> Bool { lhs.rawValue < rhs.rawValue }
 
+    var label: String {
+        switch self {
+        case .emergency: return "Emergency"
+        case .urgent:    return "Urgent"
+        case .priority:  return "Priority"
+        case .routine:   return "Routine"
+        }
+    }
+
     var color: String {
         switch self {
         case .emergency: return "#DC2626"

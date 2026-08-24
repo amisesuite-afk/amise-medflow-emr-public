@@ -73,7 +73,7 @@ struct TriageDashboardView: View {
                         } header: {
                             HStack(spacing: 6) {
                                 Circle().fill(Color(hex: acuity.color)).frame(width: 8, height: 8)
-                                Text(acuityLabel(acuity))
+                                Text(acuity.label)
                                     .font(.system(size: 11, weight: .heavy))
                                     .textCase(.uppercase).tracking(0.5)
                                 Text("(\(patients.count))")
@@ -161,14 +161,6 @@ struct TriageDashboardView: View {
         .background(.regularMaterial, in: Capsule())
     }
 
-    private func acuityLabel(_ acuity: Acuity) -> String {
-        switch acuity {
-        case .emergency: return "Emergency"
-        case .urgent:    return "Urgent"
-        case .priority:  return "Priority"
-        case .routine:   return "Routine"
-        }
-    }
 }
 
 // MARK: - Triage patient row

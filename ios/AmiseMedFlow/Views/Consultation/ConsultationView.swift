@@ -1518,7 +1518,7 @@ struct ConsultationView: View {
         Section {
             HStack {
                 AcuityPip(acuity: result.suggestedAcuity)
-                Text(acuityLabel(result.suggestedAcuity)).font(.subheadline.weight(.semibold))
+                Text(result.suggestedAcuity.label).font(.subheadline.weight(.semibold))
                 Spacer()
                 Text("Confidence \(result.confidencePercent)%").font(.caption).foregroundStyle(.secondary)
             }
@@ -1655,14 +1655,6 @@ struct ConsultationView: View {
         }
     }
 
-    private func acuityLabel(_ a: Acuity) -> String {
-        switch a {
-        case .emergency: return "Emergency"
-        case .urgent:    return "Urgent"
-        case .priority:  return "Priority"
-        case .routine:   return "Routine"
-        }
-    }
 
     private func markAllNormal() {
         if (patient.examGeneral ?? "").isEmpty { patient.examGeneral = "Alert and oriented. No acute distress." }

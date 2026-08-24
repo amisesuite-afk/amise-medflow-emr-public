@@ -606,9 +606,7 @@ struct PatientDemographicsForm: View {
                 ForEach(Acuity.allCases, id: \.self) { acuity in
                     HStack {
                         AcuityPip(acuity: acuity)
-                        Text(acuity.rawValue == 0 ? "Emergency" :
-                             acuity.rawValue == 1 ? "Urgent" :
-                             acuity.rawValue == 2 ? "Priority" : "Routine")
+                        Text(acuity.label)
                     }.tag(acuity)
                 }
             }
