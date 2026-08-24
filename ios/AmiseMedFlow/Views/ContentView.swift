@@ -43,22 +43,115 @@ struct ClinicalHubView: View {
         return "Operative Plan (\(plan.whoCompletedCount)/\(plan.whoTotalCount))"
     }
 
+    private var unsignedDraftCount: Int {
+        patient.clinicalNotes.filter { $0.status == .draft && !$0.isEmpty }.count
+    }
+
+    private var pendingInvCount: Int {
+        patient.investigations.filter { $0.status == .ordered || $0.status == .pending }.count
+    }
+
     var body: some View {
         List {
-            NavigationLink { ConsultationView(patient: patient) } label: {
-                Label("Consultation", systemImage: "stethoscope")
+            Section("Assess") {
+                NavigationLink { AssessmentView(patient: patient) } label: {
+                    HStack {
+                        Label("Assessment", systemImage: "stethoscope")
+                        Spacer()
+                        if let dx = patient.workingDiagnosis {
+                            Text(dx)
+                                .font(.caption2)
+                                .foregroundStyle(.teal)
+                                .lineLimit(1)
+                        }
+                    }
+                }
+                NavigationLink { ConsultationView(patient: patient) } label: {
+                    HStack {
+                        Label("Consultation", systemImage: "cross.case")
+                        Spacer()
+                        let (filled, total) = patient.consultationCompleteness
+                        if filled < total {
+                            Text("\(filled)/\(total)")
+                                .font(.caption2)
+                                .foregroundStyle(.orange)
+                        }
+                    }
+                }
             }
-            NavigationLink { PrescriptionView(patient: patient) } label: {
-                Label("Prescriptions (\(patient.prescriptions.count))", systemImage: "pills")
+
+            Section("Manage") {
+                NavigationLink { PrescriptionView(patient: patient) } label: {
+                    HStack {
+                        Label("Prescriptions", systemImage: "pills")
+                        Spacer()
+                        if patient.prescriptions.count > 0 {
+                            Text("\(patient.prescriptions.count)")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                NavigationLink { BillingView(patient: patient) } label: {
+                    HStack {
+                        Label("Billing", systemImage: "dollarsign.circle")
+                        Spacer()
+                        if patient.billingItems.count > 0 {
+                            Text("\(patient.billingItems.count) codes")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                if patient.setting == .theatre || patient.setting == .endoscopy || !patient.operativePlans.isEmpty {
+                    NavigationLink { OperativePlanView(patient: patient) } label: {
+                        HStack {
+                            Label("Operative Plan", systemImage: "scissors")
+                            Spacer()
+                            let plan = patient.operativePlans.sorted { $0.updatedAt > $1.updatedAt }.first
+                            if let p = plan {
+                                Text("\(p.whoCompletedCount)/\(p.whoTotalCount)")
+                                    .font(.caption2)
+                                    .foregroundStyle(p.whoCompletedCount == p.whoTotalCount ? .green : .orange)
+                            }
+                        }
+                    }
+                }
+                NavigationLink { DocumentsView(patient: patient) } label: {
+                    HStack {
+                        Label("Documents", systemImage: "doc.badge.plus")
+                        Spacer()
+                        if patient.documents.count > 0 {
+                            Text("\(patient.documents.count)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
             }
-            NavigationLink { BillingView(patient: patient) } label: {
-                Label("Billing (\(patient.billingItems.count) codes)", systemImage: "dollarsign.circle")
+
+            if unsignedDraftCount > 0 {
+                Section {
+                    HStack(spacing: 8) {
+                        Image(systemName: "pencil.circle.fill")
+                            .foregroundStyle(.orange)
+                        Text("\(unsignedDraftCount) unsigned draft\(unsignedDraftCount == 1 ? "" : "s") — go to Notes tab to sign")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
             }
-            NavigationLink { OperativePlanView(patient: patient) } label: {
-                Label(operativePlanLabel, systemImage: "scissors")
-            }
-            NavigationLink { DocumentsView(patient: patient) } label: {
-                Label("Documents (\(patient.documents.count))", systemImage: "doc.badge.plus")
+
+            if pendingInvCount > 0 {
+                Section {
+                    HStack(spacing: 8) {
+                        Image(systemName: "clock.badge.exclamationmark")
+                            .foregroundStyle(.orange)
+                        Text("\(pendingInvCount) investigation\(pendingInvCount == 1 ? "" : "s") awaiting results")
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
             }
         }
         .navigationTitle("Clinical")
@@ -134,11 +227,9 @@ private struct CompactRootView: View {
     var body: some View {
         TabView {
             WardRoundView()
-                .tabItem { Label("Ward Rounds", systemImage: "bed.double") }
-            TheatreListView()
-                .tabItem { Label("Theatre", systemImage: "scissors") }
-            EndoscopyListView()
-                .tabItem { Label("Endoscopy", systemImage: "circle.dotted") }
+                .tabItem { Label("Ward", systemImage: "bed.double") }
+            ScheduleView()
+                .tabItem { Label("Schedule", systemImage: "calendar") }
             PatientListView()
                 .tabItem { Label("Patients", systemImage: "person.crop.circle") }
             SettingsView()

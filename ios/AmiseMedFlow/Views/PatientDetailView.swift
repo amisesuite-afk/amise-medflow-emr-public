@@ -645,6 +645,25 @@ struct PatientDemographicsForm: View {
                 let los = max(0, Calendar.current.dateComponents([.day], from: admitted, to: .now).day ?? 0)
                 LabeledContent("Length of stay") { Text("Day \(los + 1)") }
             }
+            Toggle("Expected discharge date", isOn: Binding(
+                get: { patient.expectedDischarge != nil },
+                set: { on in
+                    patient.expectedDischarge = on
+                        ? (patient.expectedDischarge ?? Calendar.current.date(byAdding: .day, value: 3, to: .now) ?? .now)
+                        : nil
+                    touch()
+                }
+            ))
+            if patient.expectedDischarge != nil {
+                DatePicker(
+                    "Expected d/c",
+                    selection: Binding(
+                        get: { patient.expectedDischarge ?? .now },
+                        set: { patient.expectedDischarge = $0; touch() }
+                    ),
+                    displayedComponents: .date
+                )
+            }
         }
     }
 
