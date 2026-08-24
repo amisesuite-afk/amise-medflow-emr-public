@@ -22,7 +22,8 @@ struct AmiseMedFlowApp: App {
             }
         }
         do {
-            return (try? makeContainer(cloudKit: true)) ?? (try makeContainer(cloudKit: false))
+            if let container = try? makeContainer(cloudKit: true) { return container }
+            return try makeContainer(cloudKit: false)
         } catch {
             fatalError("ModelContainer init failed: \(error)")
         }
