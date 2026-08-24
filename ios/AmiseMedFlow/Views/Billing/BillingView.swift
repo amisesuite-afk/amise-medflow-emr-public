@@ -228,14 +228,20 @@ struct BillingView: View {
 
     private func buildSheet() -> String {
         let today = Date.now.formatted(date: .abbreviated, time: .omitted)
-        var parts: [String] = [
-            "BILLING SHEET",
-            "Patient:  \(patient.fullName)  ·  \(patient.sex.rawValue.prefix(1)), \(patient.ageYears)y",
-            "Date:     \(today)",
-        ]
+        var parts: [String] = ["BILLING SHEET — \(today)"]
+        parts.append("Patient:   \(patient.fullName)  ·  \(patient.sex.rawValue.prefix(1)), \(patient.ageYears)y")
+        if let mrn = patient.mrn, !mrn.isEmpty { parts.append("MRN:       \(mrn)") }
+        if let ins = patient.insuranceProvider, !ins.isEmpty {
+            var insLine = "Insurance: \(ins)"
+            if let pol = patient.policyNumber, !pol.isEmpty { insLine += "  ·  Policy: \(pol)" }
+            parts.append(insLine)
+        }
         if let dx = patient.workingDiagnosis {
             let icd = patient.workingDiagnosisICD.map { " (\($0))" } ?? ""
             parts.append("Diagnosis: \(dx)\(icd)")
+        }
+        if let dob = patient.dateOfBirth {
+            parts.append("DOB:       \(DateFormatter.localizedString(from: dob, dateStyle: .medium, timeStyle: .none))")
         }
         parts.append("")
         parts.append(String(repeating: "-", count: 64))
