@@ -346,6 +346,9 @@ struct PatientOverviewContent: View {
 
 struct PatientDemographicsForm: View {
     @Bindable var patient: Patient
+    @Environment(\.modelContext) private var context
+
+    @State private var hasDOB: Bool = false
 
     var body: some View {
         Form {
@@ -360,6 +363,13 @@ struct PatientDemographicsForm: View {
             extendedSection
             notesSection
         }
+        .onAppear { hasDOB = patient.dateOfBirth != nil }
+    }
+
+    private func touch() {
+        patient.updatedAt = .now
+        patient.pendingSync = true
+        try? context.save()
     }
 
     // MARK: Identity
@@ -368,13 +378,31 @@ struct PatientDemographicsForm: View {
     private var demographicsSection: some View {
         Section("Identity") {
             TextField("Full name", text: $patient.fullName)
+                .onChange(of: patient.fullName) { _, _ in touch() }
             Picker("Sex", selection: $patient.sex) {
                 ForEach(Sex.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }
-            if patient.dateOfBirth != nil {
+            .onChange(of: patient.sex) { _, _ in touch() }
+            Toggle("Date of birth", isOn: $hasDOB)
+                .onChange(of: hasDOB) { _, on in
+                    if !on { patient.dateOfBirth = nil; touch() }
+                    else if patient.dateOfBirth == nil {
+                        patient.dateOfBirth = Calendar.current.date(byAdding: .year, value: -40, to: .now)
+                        touch()
+                    }
+                }
+            if hasDOB {
+                DatePicker("", selection: Binding(
+                    get: { patient.dateOfBirth ?? .now },
+                    set: { patient.dateOfBirth = $0; touch() }
+                ), displayedComponents: .date)
+                .labelsHidden()
                 LabeledContent("Age") { Text("\(patient.ageYears) y") }
             }
-            if let mrn = patient.mrn { LabeledContent("MRN", value: mrn) }
+            TextField("MRN (optional)", text: Binding(
+                get: { patient.mrn ?? "" },
+                set: { patient.mrn = $0.isEmpty ? nil : $0; touch() }
+            ))
         }
         Section("Contact") {
             TextField("Phone", text: Binding(
@@ -402,9 +430,11 @@ struct PatientDemographicsForm: View {
                     Label($0.rawValue, systemImage: $0.icon).tag($0)
                 }
             }
+            .onChange(of: patient.setting) { _, _ in touch() }
             Picker("Location", selection: $patient.location) {
                 ForEach(ClinicalLocation.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }
+            .onChange(of: patient.location) { _, _ in touch() }
             Picker("Acuity", selection: $patient.acuity) {
                 ForEach(Acuity.allCases, id: \.self) { acuity in
                     HStack {
@@ -415,9 +445,18 @@ struct PatientDemographicsForm: View {
                     }.tag(acuity)
                 }
             }
+            .onChange(of: patient.acuity) { _, _ in touch() }
+            Picker("Visit Type", selection: Binding(
+                get: { patient.visitType ?? .newConsult },
+                set: { patient.visitType = $0; touch() }
+            )) {
+                ForEach(VisitType.allCases, id: \.self) { vt in
+                    Label(vt.rawValue, systemImage: vt.icon).tag(vt)
+                }
+            }
             TextField("Chief complaint", text: Binding(
                 get: { patient.chiefComplaint ?? "" },
-                set: { patient.chiefComplaint = $0.isEmpty ? nil : $0 }
+                set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; touch() }
             ))
         }
     }
@@ -429,11 +468,11 @@ struct PatientDemographicsForm: View {
         Section("Admission") {
             TextField("Ward", text: Binding(
                 get: { patient.ward ?? "" },
-                set: { patient.ward = $0.isEmpty ? nil : $0 }
+                set: { patient.ward = $0.isEmpty ? nil : $0; touch() }
             ))
             TextField("Bed", text: Binding(
                 get: { patient.bedNumber ?? "" },
-                set: { patient.bedNumber = $0.isEmpty ? nil : $0 }
+                set: { patient.bedNumber = $0.isEmpty ? nil : $0; touch() }
             ))
         }
     }
@@ -445,13 +484,16 @@ struct PatientDemographicsForm: View {
         Section("Procedure") {
             TextField("Appointment / procedure type", text: Binding(
                 get: { patient.appointmentType ?? "" },
-                set: { patient.appointmentType = $0.isEmpty ? nil : $0 }
+                set: { patient.appointmentType = $0.isEmpty ? nil : $0; touch() }
             ))
-            if let opDate = patient.operationDate {
-                LabeledContent("Operation date") { Text(opDate, style: .date) }
-                if let days = patient.postOpDays {
-                    LabeledContent("Post-op day", value: "POD \(days)")
-                }
+            DatePicker("Operation date",
+                       selection: Binding(
+                           get: { patient.operationDate ?? .now },
+                           set: { patient.operationDate = $0; touch() }
+                       ),
+                       displayedComponents: .date)
+            if let days = patient.postOpDays {
+                LabeledContent("Post-op day", value: "POD \(days)")
             }
         }
     }
@@ -463,35 +505,35 @@ struct PatientDemographicsForm: View {
         Section("Medical History") {
             TextField("Past medical history", text: Binding(
                 get: { patient.pmhNotes ?? "" },
-                set: { patient.pmhNotes = $0.isEmpty ? nil : $0 }
+                set: { patient.pmhNotes = $0.isEmpty ? nil : $0; touch() }
             ), axis: .vertical).lineLimit(3...)
             TextField("Family history", text: Binding(
                 get: { patient.familyHistoryNotes ?? "" },
-                set: { patient.familyHistoryNotes = $0.isEmpty ? nil : $0 }
+                set: { patient.familyHistoryNotes = $0.isEmpty ? nil : $0; touch() }
             ), axis: .vertical).lineLimit(2...)
         }
         Section("Next of Kin") {
             TextField("Name", text: Binding(
                 get: { patient.nokName ?? "" },
-                set: { patient.nokName = $0.isEmpty ? nil : $0 }
+                set: { patient.nokName = $0.isEmpty ? nil : $0; touch() }
             ))
             TextField("Relationship", text: Binding(
                 get: { patient.nokRelation ?? "" },
-                set: { patient.nokRelation = $0.isEmpty ? nil : $0 }
+                set: { patient.nokRelation = $0.isEmpty ? nil : $0; touch() }
             ))
             TextField("Phone", text: Binding(
                 get: { patient.nokPhone ?? "" },
-                set: { patient.nokPhone = $0.isEmpty ? nil : $0 }
+                set: { patient.nokPhone = $0.isEmpty ? nil : $0; touch() }
             )).keyboardType(.phonePad)
         }
         Section("Insurance") {
             TextField("Provider", text: Binding(
                 get: { patient.insuranceProvider ?? "" },
-                set: { patient.insuranceProvider = $0.isEmpty ? nil : $0 }
+                set: { patient.insuranceProvider = $0.isEmpty ? nil : $0; touch() }
             ))
             TextField("Policy number", text: Binding(
                 get: { patient.policyNumber ?? "" },
-                set: { patient.policyNumber = $0.isEmpty ? nil : $0 }
+                set: { patient.policyNumber = $0.isEmpty ? nil : $0; touch() }
             ))
         }
     }
@@ -500,10 +542,10 @@ struct PatientDemographicsForm: View {
 
     @ViewBuilder
     private var notesSection: some View {
-        Section("Clinical Notes (free text)") {
+        Section("General Notes") {
             TextEditor(text: Binding(
                 get: { patient.notes ?? "" },
-                set: { patient.notes = $0.isEmpty ? nil : $0 }
+                set: { patient.notes = $0.isEmpty ? nil : $0; touch() }
             ))
             .frame(minHeight: 80)
         }
@@ -517,8 +559,10 @@ enum PatientTab { case overview, clinical, notes, vitals, demographics }
 struct PatientDetailView: View {
     @Bindable var patient: Patient
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
 
     @State private var selectedTab: PatientTab = .overview
+    @State private var showDeleteConfirm = false
 
     var body: some View {
         NavigationStack {
@@ -549,9 +593,26 @@ struct PatientDetailView: View {
             .navigationTitle(patient.fullName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(role: .destructive) { showDeleteConfirm = true } label: {
+                        Image(systemName: "trash")
+                    }
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
                 }
+            }
+            .confirmationDialog("Delete \(patient.fullName)?",
+                                isPresented: $showDeleteConfirm,
+                                titleVisibility: .visible) {
+                Button("Delete Patient", role: .destructive) {
+                    context.delete(patient)
+                    try? context.save()
+                    dismiss()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This will permanently remove all clinical records for this patient.")
             }
         }
     }
