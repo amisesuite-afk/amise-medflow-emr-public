@@ -5,17 +5,17 @@ import SwiftData
 
 @Model
 final class Patient {
-    var id: UUID
+    var id: UUID = UUID()
     var remoteId: String?
-    var fullName: String
+    var fullName: String = ""
     var dateOfBirth: Date?
-    var sex: Sex
+    var sex: Sex = .unspecified
     var phone: String?
     var email: String?
     var address: String?
-    var setting: ClinicalSetting
-    var location: ClinicalLocation
-    var acuity: Acuity
+    var setting: ClinicalSetting = .outpatient
+    var location: ClinicalLocation = .rodney_bay
+    var acuity: Acuity = .routine
     var chiefComplaint: String?
     var referralSource: ReferralSource?
     var referringDoctor: String?
@@ -27,10 +27,10 @@ final class Patient {
     var admittedAt: Date?
     var expectedDischarge: Date?
     var operationDate: Date?
-    var createdAt: Date
-    var updatedAt: Date
+    var createdAt: Date = .now
+    var updatedAt: Date = .now
     var syncedAt: Date?
-    var pendingSync: Bool
+    var pendingSync: Bool = true
 
     // MARK: - Relationships
     @Relationship(deleteRule: .cascade, inverse: \ClinicalNote.patient)

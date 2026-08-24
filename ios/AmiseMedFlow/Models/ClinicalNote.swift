@@ -53,14 +53,14 @@ enum NoteStatus: String, Codable, CaseIterable {
 
 @Model
 final class ClinicalNote {
-    var id: UUID
+    var id: UUID = UUID()
     var remoteId: String?
-    var noteType: NoteType
-    var status: NoteStatus
-    var createdAt: Date
-    var updatedAt: Date
+    var noteType: NoteType = .soap
+    var status: NoteStatus = .draft
+    var createdAt: Date = .now
+    var updatedAt: Date = .now
     var syncedAt: Date?
-    var pendingSync: Bool
+    var pendingSync: Bool = true
 
     // SOAP / Progress fields
     var subjective: String?

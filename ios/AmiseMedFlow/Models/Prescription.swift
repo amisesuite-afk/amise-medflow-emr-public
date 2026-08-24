@@ -3,16 +3,16 @@ import SwiftData
 
 @Model
 final class Prescription {
-    var id: UUID
-    var drug: String
-    var dose: String
-    var route: String
-    var frequency: String
-    var duration: String
-    var indication: String
+    var id: UUID = UUID()
+    var drug: String = ""
+    var dose: String = ""
+    var route: String = "Oral"
+    var frequency: String = ""
+    var duration: String = ""
+    var indication: String = ""
     var instructions: String?
-    var prescribedAt: Date
-    var pendingSync: Bool
+    var prescribedAt: Date = .now
+    var pendingSync: Bool = true
     var remoteId: String?
     var patient: Patient?
 
