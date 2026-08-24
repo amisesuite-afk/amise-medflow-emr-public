@@ -6,6 +6,7 @@ import SwiftUI
 
 struct ConsultationWorkflowView: View {
     @Bindable var patient: Patient
+    var onNavigate: ((PatientDetailSection) -> Void)? = nil
 
     private enum Stage: Int, CaseIterable {
         case intake, history, examination, investigations, assessment, plan
@@ -40,6 +41,17 @@ struct ConsultationWorkflowView: View {
             case .investigations: return "Ordered tests and awaited results"
             case .assessment:     return "Working diagnosis and ICD code"
             case .plan:           return "Management plan and signed note"
+            }
+        }
+
+        var destination: PatientDetailSection {
+            switch self {
+            case .intake:         return .intake
+            case .history:        return .consultation
+            case .examination:    return .consultation
+            case .investigations: return .consultation
+            case .assessment:     return .clinicalReasoning
+            case .plan:           return .notes
             }
         }
     }
@@ -107,7 +119,7 @@ struct ConsultationWorkflowView: View {
     @ViewBuilder
     private func stageRow(_ stage: Stage) -> some View {
         let done = isComplete(stage)
-        HStack(spacing: 14) {
+        let content = HStack(spacing: 14) {
             ZStack {
                 Circle()
                     .fill(done ? Color.green.opacity(0.15) : Color.secondary.opacity(0.1))
@@ -120,7 +132,6 @@ struct ConsultationWorkflowView: View {
                 HStack(spacing: 6) {
                     Text(stage.title)
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(done ? .primary : .primary)
                     if done {
                         Text("Done")
                             .font(.system(size: 10, weight: .bold))
@@ -138,9 +149,22 @@ struct ConsultationWorkflowView: View {
                 Text(stage.detail)
                     .font(.system(size: 12)).foregroundStyle(.secondary)
             }
+            Spacer()
+            if onNavigate != nil {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.tertiary)
+            }
         }
         .padding(.vertical, 4)
         .opacity(done ? 1.0 : 0.85)
+
+        if let navigate = onNavigate {
+            Button { navigate(stage.destination) } label: { content }
+                .buttonStyle(.plain)
+        } else {
+            content
+        }
     }
 
     private var nextIncompleteStage: Stage? {

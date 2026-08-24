@@ -5,6 +5,7 @@ import SwiftData
 
 enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case overview         = "Overview"
+    case workflow         = "Consultation Workflow"
     case consultation     = "Consultation"
     case clinicalReasoning = "Clinical Reasoning"
     case notes            = "Notes"
@@ -21,6 +22,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     var icon: String {
         switch self {
         case .overview:          "person.text.rectangle"
+        case .workflow:          "list.bullet.clipboard"
         case .consultation:      "stethoscope"
         case .clinicalReasoning: "brain.head.profile"
         case .notes:             "note.text"
@@ -154,6 +156,8 @@ struct PatientDetailPadView: View {
                     .padding(20)
             }
             .background(AMColor.bg)
+        case .workflow:
+            ConsultationWorkflowView(patient: patient, onNavigate: { selectedSection = $0 })
         case .consultation:
             ConsultationView(patient: patient)
         case .clinicalReasoning:
