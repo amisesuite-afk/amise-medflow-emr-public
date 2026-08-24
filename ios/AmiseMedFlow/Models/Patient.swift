@@ -85,6 +85,7 @@ final class Patient {
     var policyNumber: String?
     var investigationsJson: String?  // JSON: [InvestigationEntry]
     var heightCm: Double?
+    var aiClinicalReasoning: String?   // Persisted AI reasoning summary
 
     init(
         fullName: String,

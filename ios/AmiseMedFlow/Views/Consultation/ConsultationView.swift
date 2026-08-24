@@ -1312,23 +1312,97 @@ struct ConsultationView: View {
 
     private var socialTab: some View {
         List {
+            // Smoking status
+            Section {
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(["Non-smoker", "Ex-smoker", "Light smoker (<10/day)",
+                             "Moderate smoker (10–20/day)", "Heavy smoker (>20/day)"], id: \.self) { chip in
+                        Button {
+                            appendSocialChip("Smoking: \(chip)")
+                        } label: {
+                            Text(chip)
+                                .font(.system(size: 12))
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(AMColor.accent)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+            } header: {
+                Label("Smoking", systemImage: "smoke")
+            }
+
+            // Alcohol
+            Section {
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(["Non-drinker", "Social drinker (<14 units/wk)",
+                             "Moderate (14–21 units/wk)", "Heavy (>21 units/wk)"], id: \.self) { chip in
+                        Button {
+                            appendSocialChip("Alcohol: \(chip)")
+                        } label: {
+                            Text(chip)
+                                .font(.system(size: 12))
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(AMColor.accent)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+            } header: {
+                Label("Alcohol", systemImage: "wineglass")
+            }
+
+            // Occupation & lifestyle
+            Section {
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(["Lives alone", "Lives with partner", "Lives with family", "Care home resident",
+                             "Retired", "Sedentary / desk work", "Manual labour", "Healthcare worker",
+                             "Physically active (>150 min/wk)", "Sedentary lifestyle"], id: \.self) { chip in
+                        Button {
+                            appendSocialChip(chip)
+                        } label: {
+                            Text(chip)
+                                .font(.system(size: 12))
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(AMColor.accent)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+            } header: {
+                Label("Occupation & Lifestyle", systemImage: "figure.walk")
+            }
+
+            // Free text notes
             Section {
                 ZStack(alignment: .topLeading) {
                     TextEditor(text: Binding(get: { patient.socialHistory ?? "" },
                                             set: { patient.socialHistory = $0.isEmpty ? nil : $0; touch() }))
-                        .frame(minHeight: 220)
+                        .frame(minHeight: 120)
                     if (patient.socialHistory ?? "").isEmpty {
-                        Text("Occupation · Smoking · Alcohol · Recreational drugs · Living situation · Exercise · Diet · Travel · Functional status")
+                        Text("Additional notes — travel, diet, recreational drugs, functional status…")
                             .foregroundStyle(.tertiary).font(.caption)
                             .padding(.top, 8).padding(.leading, 4)
                             .allowsHitTesting(false)
                     }
                 }
             } header: {
-                sectionHeader("Social History", icon: "person.2.circle",
+                sectionHeader("Social History Notes", icon: "person.2.circle",
                               filled: !(patient.socialHistory ?? "").isEmpty)
             }
         }
+    }
+
+    private func appendSocialChip(_ item: String) {
+        let existing = (patient.socialHistory ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        patient.socialHistory = existing.isEmpty ? "· \(item)" : existing + "\n· \(item)"
+        touch()
     }
 
     // MARK: - Exam tab

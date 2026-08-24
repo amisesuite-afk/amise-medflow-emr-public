@@ -4,7 +4,6 @@ import SwiftData
 struct ClinicalReasoningView: View {
     @Bindable var patient: Patient
     @StateObject private var ai = AIService()
-    @State private var aiReasoning: String?
     @State private var aiError: String?
     @State private var showError = false
 
@@ -246,17 +245,23 @@ struct ClinicalReasoningView: View {
 
     private var aiSection: some View {
         Section {
-            if let reasoning = aiReasoning {
+            if let reasoning = patient.aiClinicalReasoning {
                 Text(reasoning)
                     .font(.system(size: 13))
                     .foregroundStyle(.primary)
+                Button("Clear Summary") {
+                    patient.aiClinicalReasoning = nil
+                    patient.updatedAt = .now
+                    patient.pendingSync = true
+                }
+                .font(.caption).foregroundStyle(.secondary)
             }
             Button {
                 Task { await generateReasoning() }
             } label: {
                 HStack(spacing: 8) {
                     if ai.isGenerating { ProgressView().scaleEffect(0.8) }
-                    Label(aiReasoning == nil ? "Generate AI Clinical Summary" : "Regenerate Summary",
+                    Label(patient.aiClinicalReasoning == nil ? "Generate AI Clinical Summary" : "Regenerate Summary",
                           systemImage: "sparkles")
                         .foregroundStyle(.purple)
                 }
@@ -276,7 +281,9 @@ struct ClinicalReasoningView: View {
     private func generateReasoning() async {
         do {
             let text = try await ai.generateClinicalReasoning(patient: patient)
-            aiReasoning = text
+            patient.aiClinicalReasoning = text
+            patient.updatedAt = .now
+            patient.pendingSync = true
         } catch {
             aiError = error.localizedDescription
             showError = true
