@@ -11,6 +11,7 @@ struct DocumentsView: View {
     @State private var selectedDocForSummary: PatientDocument?
     @State private var summaryText = ""
     @State private var showSummarySheet = false
+    @State private var previewDoc: PatientDocument?
     @State private var aiError: String?
     @State private var showError = false
 
@@ -41,6 +42,9 @@ struct DocumentsView: View {
                 DocumentSummarySheet(document: doc, summary: summaryText)
             }
         }
+        .sheet(item: $previewDoc) { doc in
+            ImagePreviewSheet(document: doc)
+        }
     }
 
     // MARK: - Upload
@@ -68,11 +72,29 @@ struct DocumentsView: View {
         Section("Imported Documents (\(patient.documents.count))") {
             ForEach(patient.documents.sorted { $0.uploadedAt > $1.uploadedAt }) { doc in
                 VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Image(systemName: doc.fileIcon)
-                            .foregroundStyle(.teal)
+                    HStack(spacing: 10) {
+                        // Thumbnail for image docs
+                        if doc.mimeType.contains("image"), let data = doc.localData,
+                           let uiImg = UIImage(data: data) {
+                            Button { previewDoc = doc } label: {
+                                Image(uiImage: uiImg)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 56, height: 56)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.25), lineWidth: 0.5))
+                            }
+                            .buttonStyle(.plain)
+                        } else {
+                            Image(systemName: doc.fileIcon)
+                                .font(.title2)
+                                .foregroundStyle(.teal)
+                                .frame(width: 56, height: 56)
+                                .background(Color.teal.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+                        }
+
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(doc.fileName).font(.subheadline.weight(.medium))
+                            Text(doc.fileName).font(.subheadline.weight(.medium)).lineLimit(2)
                             Text(doc.uploadedAt, style: .relative).font(.caption).foregroundStyle(.secondary)
                         }
                         Spacer()
@@ -162,6 +184,48 @@ struct DocumentsView: View {
         } catch {
             aiError = error.localizedDescription
             showError = true
+        }
+    }
+}
+
+// MARK: - Image preview sheet
+
+struct ImagePreviewSheet: View {
+    let document: PatientDocument
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if let data = document.localData, let uiImg = UIImage(data: data) {
+                    ScrollView([.horizontal, .vertical]) {
+                        Image(uiImage: uiImg)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: .infinity)
+                    }
+                } else {
+                    ContentUnavailableView(
+                        "Image unavailable",
+                        systemImage: "photo",
+                        description: Text("The image data could not be loaded.")
+                    )
+                }
+            }
+            .navigationTitle(document.fileName)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+                if let data = document.localData, let uiImg = UIImage(data: data) {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        ShareLink(item: Image(uiImage: uiImg), preview: SharePreview(document.fileName, image: Image(uiImage: uiImg))) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -112,6 +112,19 @@ struct NoteEditorView: View {
                             .allowsHitTesting(false)
                     }
                 }
+                if let patient = note.patient,
+                   let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+                   v.hasAnyValue {
+                    Button {
+                        let existing = (note.objective ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                        let vitalsText = vitalsString(from: v)
+                        note.objective = existing.isEmpty ? vitalsText : existing + "\n\n" + vitalsText
+                    } label: {
+                        Label("Insert latest vitals", systemImage: "waveform.path.ecg")
+                            .font(.caption)
+                    }
+                    .foregroundStyle(.teal)
+                }
             } header: {
                 Label("Objective", systemImage: "stethoscope")
             }
@@ -215,6 +228,20 @@ struct NoteEditorView: View {
             aiError = error.localizedDescription
             showError = true
         }
+    }
+
+    // MARK: - Vitals insert helper
+
+    private func vitalsString(from v: VitalsEntry) -> String {
+        let ts = v.recordedAt.formatted(date: .abbreviated, time: .shortened)
+        var parts: [String] = ["Vitals (\(ts)):"]
+        if let bp = v.bpString          { parts.append("BP \(bp) mmHg") }
+        if let hr = v.heartRate          { parts.append("HR \(hr) bpm") }
+        if let rr = v.respiratoryRate    { parts.append("RR \(rr) /min") }
+        if let t  = v.temperatureCelsius { parts.append("Temp \(String(format: "%.1f", t))°C") }
+        if let sp = v.spo2               { parts.append("SpO₂ \(sp)%") }
+        if let wt = v.weightKg           { parts.append("Wt \(String(format: "%.1f", wt)) kg") }
+        return parts.joined(separator: "  ·  ")
     }
 
     // MARK: - Templates

@@ -676,12 +676,12 @@ struct PatientDemographicsForm: View {
                 get: { patient.appointmentType ?? "" },
                 set: { patient.appointmentType = $0.isEmpty ? nil : $0; touch() }
             ))
-            DatePicker("Operation date",
+            DatePicker("Date & time",
                        selection: Binding(
                            get: { patient.operationDate ?? .now },
                            set: { patient.operationDate = $0; touch() }
                        ),
-                       displayedComponents: .date)
+                       displayedComponents: [.date, .hourAndMinute])
             if let days = patient.postOpDays {
                 LabeledContent("Post-op day", value: "POD \(days)")
             }

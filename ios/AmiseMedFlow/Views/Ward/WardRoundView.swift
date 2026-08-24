@@ -49,6 +49,29 @@ struct WardRoundView: View {
                     )
                 } else {
                     List {
+                        if !reviewedIDs.isEmpty {
+                            Section {
+                                HStack(spacing: 10) {
+                                    let done = reviewedIDs.filter { id in inpatients.contains { $0.id == id } }.count
+                                    let total = inpatients.count
+                                    let complete = done == total
+                                    Image(systemName: complete ? "checkmark.circle.fill" : "clock.badge.checkmark")
+                                        .foregroundStyle(complete ? .green : .orange)
+                                    Text("\(done) / \(total) reviewed this session")
+                                        .font(.subheadline)
+                                    Spacer()
+                                    if complete {
+                                        Text("Round complete")
+                                            .font(.caption.weight(.semibold))
+                                            .foregroundStyle(.green)
+                                    } else {
+                                        Text("\(total - done) remaining")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                        }
                         ForEach(grouped, id: \.0) { loc, patients in
                             Section(loc.rawValue) {
                                 ForEach(patients) { patient in
