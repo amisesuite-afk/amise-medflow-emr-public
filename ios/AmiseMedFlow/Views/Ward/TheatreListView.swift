@@ -26,7 +26,7 @@ struct TheatreListView: View {
                     List {
                         ForEach(theatrePatients) { patient in
                             Button { selectedPatient = patient } label: {
-                                TheatreRow(patient: patient)
+                                PatientRow(patient: patient)
                             }
                             .buttonStyle(.plain)
                         }
@@ -54,41 +54,3 @@ struct TheatreListView: View {
     }
 }
 
-// MARK: - Theatre row
-
-struct TheatreRow: View {
-    let patient: Patient
-
-    var body: some View {
-        HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(Color(hex: patient.setting.accentHex).opacity(0.15))
-                    .frame(width: 40, height: 40)
-                Image(systemName: patient.setting.icon)
-                    .foregroundStyle(Color(hex: patient.setting.accentHex))
-            }
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(patient.fullName).font(.body.weight(.medium))
-                HStack(spacing: 8) {
-                    if let type = patient.appointmentType {
-                        Text(type).font(.caption).foregroundStyle(.secondary)
-                    }
-                    if let op = patient.operationDate {
-                        Text(op, style: .date).font(.caption).foregroundStyle(.secondary)
-                    }
-                }
-                if let days = patient.postOpDays {
-                    Text("POD \(days)")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(Color(hex: patient.setting.accentHex))
-                }
-            }
-
-            Spacer()
-            AcuityPip(acuity: patient.acuity)
-        }
-        .padding(.vertical, 3)
-    }
-}

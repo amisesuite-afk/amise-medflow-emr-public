@@ -44,7 +44,7 @@ struct WardRoundView: View {
                             Section(loc.rawValue) {
                                 ForEach(patients) { patient in
                                     Button { selectedPatient = patient } label: {
-                                        WardPatientRow(patient: patient)
+                                        PatientRow(patient: patient)
                                     }
                                     .buttonStyle(.plain)
                                 }
@@ -90,61 +90,4 @@ struct WardRoundView: View {
     }
 }
 
-// MARK: - Ward row
-
-struct WardPatientRow: View {
-    let patient: Patient
-
-    private var latestVitals: VitalsEntry? {
-        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
-    }
-
-    var body: some View {
-        HStack(spacing: 12) {
-            AcuityPip(acuity: patient.acuity)
-
-            VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Text(patient.fullName).font(.body.weight(.medium))
-                    Spacer()
-                    if let bed = patient.bedNumber {
-                        Text("Bed \(bed)")
-                            .font(.caption.weight(.semibold))
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.secondary.opacity(0.12), in: Capsule())
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                HStack(spacing: 8) {
-                    Text("\(patient.sex.rawValue[patient.sex.rawValue.startIndex].uppercased()), \(patient.ageYears)y")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    if let cc = patient.chiefComplaint {
-                        Text("· \(cc)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-                }
-                HStack(spacing: 8) {
-                    if let days = patient.postOpDays {
-                        Text("POD \(days)")
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(AMColor.accent)
-                    }
-                    if let v = latestVitals, v.hasAnyValue {
-                        Text("NEWS2 \(v.news2Score)")
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(Color(hex: v.news2Color))
-                        Text(v.news2Risk)
-                            .font(.caption2)
-                            .foregroundStyle(Color(hex: v.news2Color).opacity(0.8))
-                    }
-                }
-            }
-        }
-        .padding(.vertical, 3)
-    }
-}
 

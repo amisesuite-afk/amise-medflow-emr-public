@@ -315,12 +315,7 @@ struct SectionPatientListView: View {
 
     @ViewBuilder
     private func sectionRow(_ patient: Patient) -> some View {
-        switch section {
-        case .wardRounds:  WardPatientRow(patient: patient)
-        case .theatre:     TheatreRow(patient: patient)
-        case .endoscopy:   EndoscopyRow(patient: patient)
-        case .outpatients: PatientRow(patient: patient)
-        }
+        PatientRow(patient: patient)
     }
 
     private func delete(at offsets: IndexSet) {
