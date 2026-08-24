@@ -487,6 +487,16 @@ struct PatientOverviewContent: View {
                     if let spo = v.spo2 {
                         LabeledContent("SpO₂", value: "\(spo)%")
                     }
+                    if let wt = v.weightKg {
+                        if let bmi = patient.latestBMI(), let cat = patient.bmiCategory {
+                            LabeledContent("Weight / BMI") {
+                                Text(String(format: "%.1f kg · BMI %.1f (%@)", wt, bmi, cat))
+                                    .foregroundStyle(bmi < 18.5 || bmi >= 30 ? .orange : .primary)
+                            }
+                        } else {
+                            LabeledContent("Weight", value: String(format: "%.1f kg", wt))
+                        }
+                    }
                 }
             }
 
@@ -523,11 +533,13 @@ struct PatientDemographicsForm: View {
     @Environment(\.modelContext) private var context
 
     @State private var hasDOB: Bool = false
+    @State private var heightStr: String = ""
 
     var body: some View {
         Form {
             demographicsSection
             clinicalSection
+            anthropometricsSection
             if patient.setting == .inpatient || patient.setting == .emergency {
                 admissionSection
             }
@@ -537,7 +549,10 @@ struct PatientDemographicsForm: View {
             extendedSection
             notesSection
         }
-        .onAppear { hasDOB = patient.dateOfBirth != nil }
+        .onAppear {
+            hasDOB = patient.dateOfBirth != nil
+            heightStr = patient.heightCm.map { String(format: "%.0f", $0) } ?? ""
+        }
     }
 
     private func touch() {
@@ -630,6 +645,33 @@ struct PatientDemographicsForm: View {
                 get: { patient.chiefComplaint ?? "" },
                 set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; touch() }
             ))
+        }
+    }
+
+    // MARK: Anthropometrics
+
+    @ViewBuilder
+    private var anthropometricsSection: some View {
+        Section("Anthropometrics") {
+            HStack {
+                TextField("Height (cm)", text: $heightStr)
+                    .keyboardType(.decimalPad)
+                    .onChange(of: heightStr) { _, v in
+                        patient.heightCm = Double(v) ?? nil
+                        touch()
+                    }
+                Text("cm").foregroundStyle(.secondary)
+            }
+            if let bmi = patient.latestBMI(), let cat = patient.bmiCategory {
+                LabeledContent("BMI") {
+                    Text(String(format: "%.1f — %@", bmi, cat))
+                        .foregroundStyle(bmi < 18.5 || bmi >= 30 ? .orange : .secondary)
+                }
+            } else if patient.heightCm != nil {
+                Label("Record weight in Vitals to calculate BMI", systemImage: "scalemass")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 

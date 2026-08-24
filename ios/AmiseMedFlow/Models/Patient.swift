@@ -84,6 +84,7 @@ final class Patient {
     var insuranceProvider: String?
     var policyNumber: String?
     var investigationsJson: String?  // JSON: [InvestigationEntry]
+    var heightCm: Double?
 
     init(
         fullName: String,
@@ -117,6 +118,25 @@ final class Patient {
     var postOpDays: Int? {
         guard let op = operationDate, op < .now else { return nil }
         return Calendar.current.dateComponents([.day], from: op, to: .now).day
+    }
+
+    func latestBMI() -> Double? {
+        guard let h = heightCm, h > 0,
+              let w = vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt })
+                                   .first(where: { $0.weightKg != nil })?.weightKg
+        else { return nil }
+        let hm = h / 100.0
+        return w / (hm * hm)
+    }
+
+    var bmiCategory: String? {
+        guard let bmi = latestBMI() else { return nil }
+        switch bmi {
+        case ..<18.5: return "Underweight"
+        case 18.5..<25: return "Normal"
+        case 25..<30: return "Overweight"
+        default: return "Obese"
+        }
     }
 }
 
@@ -271,6 +291,15 @@ extension Patient {
             lines.append("HPI: \(hpi.prefix(200))\(hpi.count > 200 ? "…" : "")")
         }
         lines.append("")
+
+        // Anthropometrics
+        if let h = heightCm {
+            var anthropLine = String(format: "Height: %.0f cm", h)
+            if let bmi = latestBMI(), let cat = bmiCategory {
+                anthropLine += String(format: "  BMI: %.1f (%@)", bmi, cat)
+            }
+            lines.append(anthropLine)
+        }
 
         // Vitals
         if let v = vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {

@@ -111,9 +111,7 @@ struct AddPatientView: View {
                 ForEach(Acuity.allCases, id: \.self) { a in
                     HStack {
                         AcuityPip(acuity: a)
-                        Text(a.rawValue == 0 ? "Emergency" :
-                             a.rawValue == 1 ? "Urgent" :
-                             a.rawValue == 2 ? "Priority" : "Routine")
+                        Text(a.label)
                     }.tag(a)
                 }
             }
