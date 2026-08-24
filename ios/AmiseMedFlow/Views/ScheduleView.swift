@@ -50,7 +50,15 @@ struct ScheduleView: View {
             .navigationTitle("Schedule")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                    HStack {
+                        if !scheduledPatients.isEmpty {
+                            ShareLink(item: scheduleExportText,
+                                      subject: Text("Operating Schedule")) {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                        }
+                        Button { showAdd = true } label: { Image(systemName: "plus") }
+                    }
                 }
             }
             .sheet(isPresented: $showAdd) {
@@ -92,6 +100,55 @@ struct ScheduleView: View {
                 }
             }
         }
+    }
+
+    private var scheduleExportText: String {
+        let now = Date.now.formatted(date: .abbreviated, time: .shortened)
+        var lines: [String] = []
+        lines.append("OPERATING SCHEDULE — \(now)")
+        lines.append("Amise Medical Services · Dr Dawit Daniel Kabiye MD DM")
+        lines.append(String(repeating: "═", count: 48))
+
+        for group in groupedByDate {
+            let dateLabel: String
+            if calendar.isDateInToday(group.date) {
+                dateLabel = "TODAY — \(group.date.formatted(date: .abbreviated, time: .omitted))"
+            } else if calendar.isDateInTomorrow(group.date) {
+                dateLabel = "TOMORROW — \(group.date.formatted(date: .abbreviated, time: .omitted))"
+            } else {
+                let weekday = group.date.formatted(.dateTime.weekday(.wide)).uppercased()
+                dateLabel = "\(weekday) — \(group.date.formatted(date: .abbreviated, time: .omitted))"
+            }
+            lines.append("")
+            lines.append(dateLabel)
+            lines.append(String(repeating: "─", count: 48))
+
+            for (i, patient) in group.patients.enumerated() {
+                let setting = patient.setting == .endoscopy ? "ENDO" : "THTR"
+                let timeStr: String
+                if let op = patient.operationDate {
+                    let comps = Calendar.current.dateComponents([.hour, .minute], from: op)
+                    if let h = comps.hour, let m = comps.minute, !(h == 0 && m == 0) {
+                        timeStr = op.formatted(date: .omitted, time: .shortened)
+                    } else {
+                        timeStr = "TBC"
+                    }
+                } else {
+                    timeStr = "TBC"
+                }
+                let proc = patient.appointmentType ?? patient.workingDiagnosis ?? patient.chiefComplaint ?? "TBD"
+                lines.append("\(i + 1). [\(setting)] \(timeStr) — \(patient.fullName), \(patient.sex.rawValue.prefix(1)) \(patient.ageYears)y")
+                lines.append("   \(proc)")
+                let allergies = patient.allergies
+                lines.append("   Allergies: \(allergies.isEmpty ? "NKDA" : allergies.map { $0.name }.joined(separator: ", "))")
+            }
+        }
+
+        lines.append("")
+        lines.append(String(repeating: "═", count: 48))
+        lines.append("Total cases: \(scheduledPatients.count)")
+        lines.append("This schedule is a summary. Verify all details before proceeding.")
+        return lines.joined(separator: "\n")
     }
 
     private func sectionTitle(for date: Date) -> String {
