@@ -95,6 +95,10 @@ struct WardRoundView: View {
 struct WardPatientRow: View {
     let patient: Patient
 
+    private var latestVitals: VitalsEntry? {
+        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             AcuityPip(acuity: patient.acuity)
@@ -123,10 +127,20 @@ struct WardPatientRow: View {
                             .lineLimit(1)
                     }
                 }
-                if let days = patient.postOpDays {
-                    Text("POD \(days)")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(Color(hex: patient.setting.accentHex))
+                HStack(spacing: 8) {
+                    if let days = patient.postOpDays {
+                        Text("POD \(days)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(AMColor.accent)
+                    }
+                    if let v = latestVitals, v.hasAnyValue {
+                        Text("NEWS2 \(v.news2Score)")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(Color(hex: v.news2Color))
+                        Text(v.news2Risk)
+                            .font(.caption2)
+                            .foregroundStyle(Color(hex: v.news2Color).opacity(0.8))
+                    }
                 }
             }
         }
@@ -134,10 +148,3 @@ struct WardPatientRow: View {
     }
 }
 
-// MARK: - Convenience init for AddPatientView
-
-extension AddPatientView {
-    init(defaultSetting: ClinicalSetting) {
-        self.init(initialSetting: defaultSetting)
-    }
-}

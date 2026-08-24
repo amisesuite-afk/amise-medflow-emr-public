@@ -40,6 +40,61 @@ final class AIService: ObservableObject {
         return decoded.content.first?.text ?? ""
     }
 
+    // MARK: - Clinical context builder
+
+    private func clinicalContext(_ patient: Patient) -> String {
+        var lines: [String] = []
+        lines.append("Patient: \(patient.fullName), \(patient.ageYears)y, \(patient.sex.rawValue)")
+        lines.append("Setting: \(patient.setting.rawValue) — \(patient.location.rawValue)")
+        if let cc = patient.chiefComplaint { lines.append("Chief complaint: \(cc)") }
+        if let dx = patient.workingDiagnosis {
+            lines.append("Working diagnosis: \(dx)\(patient.workingDiagnosisICD.map { " (\($0))" } ?? "")")
+        }
+        if let hpi = patient.hpi, !hpi.isEmpty { lines.append("HPI: \(hpi)") }
+        if let pmh = patient.pmhNotes, !pmh.isEmpty { lines.append("Past medical history: \(pmh)") }
+        if let sx = patient.surgicalHistory, !sx.isEmpty { lines.append("Surgical history: \(sx)") }
+
+        let allergies = patient.allergies
+        if allergies.isEmpty {
+            lines.append("Allergies: None documented")
+        } else {
+            let list = allergies.map { "\($0.name) (\($0.reaction), \($0.severity))" }.joined(separator: "; ")
+            lines.append("ALLERGIES: \(list)")
+        }
+
+        let rxs = patient.prescriptions
+        if !rxs.isEmpty {
+            lines.append("Active medications: \(rxs.map { $0.displayLine }.joined(separator: ", "))")
+        }
+
+        if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
+            var vLine = "Latest vitals: NEWS2 \(v.news2Score) (\(v.news2Risk))"
+            if let bp = v.bpString { vLine += ", BP \(bp) mmHg" }
+            if let hr = v.heartRate { vLine += ", HR \(hr) bpm" }
+            if let temp = v.temperatureCelsius { vLine += String(format: ", Temp %.1f°C", temp) }
+            if let spo = v.spo2 { vLine += ", SpO₂ \(spo)%" }
+            lines.append(vLine)
+        }
+
+        let examParts: [(String, String?)] = [
+            ("General", patient.examGeneral), ("CVS", patient.examCVS),
+            ("Resp", patient.examResp), ("Abdomen", patient.examAbdo), ("Neuro", patient.examNeuro)
+        ]
+        let examFilled = examParts.compactMap { label, val -> String? in
+            guard let v = val, !v.isEmpty else { return nil }
+            return "\(label): \(v)"
+        }
+        if !examFilled.isEmpty {
+            lines.append("Examination: \(examFilled.joined(separator: "; "))")
+        }
+
+        if let plan = patient.managementPlan, !plan.isEmpty {
+            lines.append("Management plan: \(plan)")
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
     // MARK: - Clinical note generation
 
     func generateSOAP(patient: Patient, noteType: NoteType) async throws -> (s: String, o: String, a: String, p: String) {
@@ -52,19 +107,13 @@ final class AIService: ObservableObject {
         """
 
         let user = """
-        Generate a SOAP note for this patient:
-        Name: \(patient.fullName), Age: \(patient.ageYears)y, Sex: \(patient.sex.rawValue)
-        Setting: \(patient.setting.rawValue)
-        Chief complaint: \(patient.chiefComplaint ?? "Not specified")
-        Working diagnosis: \(patient.workingDiagnosis ?? "Under assessment")
-        Past medical history: \(patient.pmhNotes ?? "Not documented")
-        Note type: \(noteType.label)
+        Generate a SOAP note (\(noteType.label)) for this patient:
+        \(clinicalContext(patient))
 
         Return JSON: {"s":"...","o":"...","a":"...","p":"..."}
         """
 
         let raw = try await generate(systemPrompt: system, userMessage: user)
-        // Extract JSON from response
         if let start = raw.firstIndex(of: "{"), let end = raw.lastIndex(of: "}") {
             let jsonStr = String(raw[start...end])
             if let data = jsonStr.data(using: .utf8),
@@ -88,25 +137,21 @@ final class AIService: ObservableObject {
         """
 
         let templates: [NoteType: String] = [
-            .operative: "operative note",
-            .endoscopy: "endoscopy report",
-            .discharge: "discharge summary",
-            .consultation: "consultation letter",
-            .referralLetter: "referral letter to a colleague"
+            .operative:      "operative note",
+            .endoscopy:      "endoscopy report",
+            .discharge:      "discharge summary",
+            .consultation:   "consultation letter",
+            .referralLetter: "formal referral letter from Dr Dawit Daniel Kabiye MD DM to a specialist colleague"
         ]
         let docType = templates[noteType] ?? "clinical note"
 
         let user = """
-        Generate a \(docType) for:
-        Patient: \(patient.fullName), \(patient.ageYears)y \(patient.sex.rawValue)
-        Working diagnosis: \(patient.workingDiagnosis ?? "Under assessment") \(patient.workingDiagnosisICD.map { "(\($0))" } ?? "")
-        Chief complaint: \(patient.chiefComplaint ?? "Not specified")
-        PMH: \(patient.pmhNotes ?? "None documented")
-        Setting: \(patient.setting.rawValue)
-        \(noteType == .referralLetter ? "Format as a formal referral letter from Dr Dawit Daniel Kabiye MD DM." : "")
-        \(noteType == .discharge ? "Include discharge diagnosis, treatment, follow-up plan, red flag advice." : "")
-        \(noteType == .operative ? "Include: surgeon, procedure, anaesthesia, findings, technique, haemostasis, closure, estimated blood loss, complications." : "")
-        \(noteType == .endoscopy ? "Include: procedure, indication, preparation, scope used, findings by anatomic region, impression, plan." : "")
+        Generate a \(docType).
+        \(clinicalContext(patient))
+        \(noteType == .discharge ? "Include: admission reason, treatment given, discharge diagnosis, discharge condition, medications on discharge, follow-up plan, red flag advice to patient." : "")
+        \(noteType == .operative ? "Include: surgeon, procedure, anaesthesia type, patient position, findings, technique step-by-step, haemostasis, estimated blood loss, closure, drains, specimens, complications, post-operative instructions." : "")
+        \(noteType == .endoscopy ? "Include: procedure, indication, bowel preparation, scope used, insertion, findings by anatomic region (with distances), biopsies/interventions, impression, plan, patient tolerance." : "")
+        \(noteType == .referralLetter ? "Format as a formal letter. Include relevant history, examination findings, investigations, current medications, reason for referral, and what you are asking the colleague to do." : "")
         """
 
         return try await generate(systemPrompt: system, userMessage: user)
@@ -115,18 +160,14 @@ final class AIService: ObservableObject {
     func generateOpNote(patient: Patient, procedure: String, findings: String) async throws -> String {
         let system = """
         You are drafting an operative note for Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon.
-        Follow standard operative note format. British spelling. Mark as AI DRAFT.
+        Follow standard operative note format. British spelling. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
         """
         let user = """
-        Operative Note:
-        Surgeon: Dr Dawit Daniel Kabiye MD DM
-        Patient: \(patient.fullName), \(patient.ageYears)y \(patient.sex.rawValue)
-        Procedure: \(procedure)
-        Diagnosis: \(patient.workingDiagnosis ?? "As listed")
-        Operative findings: \(findings)
-        PMH: \(patient.pmhNotes ?? "None")
-
         Write a complete, structured operative note.
+        Surgeon: Dr Dawit Daniel Kabiye MD DM
+        Procedure: \(procedure)
+        Operative findings: \(findings)
+        \(clinicalContext(patient))
         """
         return try await generate(systemPrompt: system, userMessage: user)
     }
@@ -140,16 +181,16 @@ final class AIService: ObservableObject {
         Use British spelling. Be precise.
         """
         let user = """
-        Summarise this clinical document for patient \(patient.fullName) (\(patient.ageYears)y \(patient.sex.rawValue)):
+        Summarise this clinical document in the context of the patient below.
         Document: \(fileName)
-        Working diagnosis: \(patient.workingDiagnosis ?? "Under assessment")
+        \(clinicalContext(patient))
 
         Extracted text:
         \(extractedText.prefix(3000))
 
         Provide:
         1. Key findings (bullet points)
-        2. Abnormal / urgent results
+        2. Abnormal / urgent results (flag if critical)
         3. Recommended actions
         """
         return try await generate(systemPrompt: system, userMessage: user)
@@ -160,14 +201,14 @@ final class AIService: ObservableObject {
     func generateReferral(patient: Patient, toSpecialty: String, reason: String) async throws -> String {
         let system = """
         You are writing a formal medical referral letter on behalf of Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
-        Use professional British-Caribbean medical correspondence style.
+        Use professional British-Caribbean medical correspondence style. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
         """
         let user = """
         Write a referral letter to a \(toSpecialty) colleague.
-        Patient: \(patient.fullName), DOB: \(patient.dateOfBirth.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .none) } ?? "Not recorded")
-        Working diagnosis: \(patient.workingDiagnosis ?? "Under investigation")
         Reason for referral: \(reason)
-        PMH: \(patient.pmhNotes ?? "None documented")
+        \(clinicalContext(patient))
+        Patient DOB: \(patient.dateOfBirth.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .none) } ?? "Not recorded")
+        Format as a formal letter. Include relevant history, examination findings, investigations, current medications, and what you are asking the colleague to do.
         """
         return try await generate(systemPrompt: system, userMessage: user)
     }
@@ -177,16 +218,15 @@ final class AIService: ObservableObject {
     func generateDischargeSummary(patient: Patient, treatment: String, followUp: String) async throws -> String {
         let system = """
         You are writing a discharge summary for Dr Dawit Daniel Kabiye MD DM.
-        Use British spelling. Include all mandatory discharge summary components.
+        Use British spelling. Include all mandatory discharge summary components. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
         """
         let user = """
-        Discharge summary:
-        Patient: \(patient.fullName), \(patient.ageYears)y \(patient.sex.rawValue)
-        Diagnosis: \(patient.workingDiagnosis ?? "As documented")
+        Write a complete discharge summary.
         Treatment provided: \(treatment)
         Follow-up plan: \(followUp)
-        PMH: \(patient.pmhNotes ?? "None")
+        \(clinicalContext(patient))
         Ward: \(patient.ward ?? "Not specified")
+        Include: admission reason, treatment given, discharge diagnosis, discharge condition, medications on discharge, follow-up plan, red flag advice.
         """
         return try await generate(systemPrompt: system, userMessage: user)
     }
