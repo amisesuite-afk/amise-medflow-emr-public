@@ -125,6 +125,18 @@ struct NoteEditorView: View {
                     }
                     .foregroundStyle(.teal)
                 }
+                if let patient = note.patient, !patient.allergies.isEmpty {
+                    Button {
+                        let list = patient.allergies.map { "\($0.name) (\($0.reaction), \($0.severity))" }.joined(separator: "; ")
+                        let allergyLine = "Allergies: \(list)"
+                        let existing = (note.objective ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                        note.objective = existing.isEmpty ? allergyLine : existing + "\n" + allergyLine
+                    } label: {
+                        Label("Insert allergies", systemImage: "exclamationmark.shield")
+                            .font(.caption)
+                    }
+                    .foregroundStyle(.orange)
+                }
             } header: {
                 Label("Objective", systemImage: "stethoscope")
             }
@@ -356,14 +368,26 @@ struct NoteEditorView: View {
             let ptName   = patient.map { "\($0.fullName), \($0.sex.rawValue.prefix(1))\($0.ageYears > 0 ? ", \($0.ageYears)y" : "")" } ?? ""
             let dxLine   = patient?.workingDiagnosis ?? patient?.chiefComplaint ?? ""
             let reLine   = [ptName, dxLine].filter { !$0.isEmpty }.joined(separator: " — ")
+            let toLine: String
+            if let refDr = patient?.referringDoctor, !refDr.isEmpty {
+                let practice = patient?.referringPractice.map { " (\($0))" } ?? ""
+                toLine = "Dear Dr \(refDr)\(practice),"
+            } else {
+                toLine = "Dear Dr ,"
+            }
             let meds: String = {
                 guard let p = patient, !p.prescriptions.isEmpty else { return "Nil" }
                 return p.prescriptions.map { $0.displayLine }.joined(separator: "\n")
             }()
+            let allergiesLine: String = {
+                guard let p = patient else { return "NKDA" }
+                let list = p.allergies
+                return list.isEmpty ? "NKDA" : list.map { "\($0.name) (\($0.reaction))" }.joined(separator: "; ")
+            }()
             return """
             \(today)
 
-            Dear Dr ,
+            \(toLine)
 
             RE: \(reLine)
 
@@ -378,6 +402,8 @@ struct NoteEditorView: View {
 
             Current medications:
             \(meds)
+
+            Allergies: \(allergiesLine)
 
             I would appreciate your assessment and management.
 
