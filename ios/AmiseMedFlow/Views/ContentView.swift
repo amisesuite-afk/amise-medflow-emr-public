@@ -372,7 +372,10 @@ struct SectionPatientListView: View {
         let q = searchText.lowercased()
         return base.filter {
             $0.fullName.lowercased().contains(q) ||
-            ($0.chiefComplaint?.lowercased().contains(q) ?? false)
+            ($0.chiefComplaint?.lowercased().contains(q) ?? false) ||
+            ($0.workingDiagnosis?.lowercased().contains(q) ?? false) ||
+            ($0.mrn?.lowercased().contains(q) ?? false) ||
+            ($0.phone?.contains(q) ?? false)
         }
     }
 

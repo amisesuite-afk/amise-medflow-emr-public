@@ -566,15 +566,15 @@ struct PatientDemographicsForm: View {
         Section("Contact") {
             TextField("Phone", text: Binding(
                 get: { patient.phone ?? "" },
-                set: { patient.phone = $0.isEmpty ? nil : $0 }
+                set: { patient.phone = $0.isEmpty ? nil : $0; touch() }
             )).keyboardType(.phonePad)
             TextField("Email", text: Binding(
                 get: { patient.email ?? "" },
-                set: { patient.email = $0.isEmpty ? nil : $0 }
+                set: { patient.email = $0.isEmpty ? nil : $0; touch() }
             )).keyboardType(.emailAddress).autocapitalization(.none)
             TextField("Address", text: Binding(
                 get: { patient.address ?? "" },
-                set: { patient.address = $0.isEmpty ? nil : $0 }
+                set: { patient.address = $0.isEmpty ? nil : $0; touch() }
             ))
         }
     }
@@ -697,6 +697,10 @@ struct PatientDemographicsForm: View {
                 get: { patient.pmhNotes ?? "" },
                 set: { patient.pmhNotes = $0.isEmpty ? nil : $0; touch() }
             ), axis: .vertical).lineLimit(3...)
+            TextField("Surgical history", text: Binding(
+                get: { patient.surgicalHistory ?? "" },
+                set: { patient.surgicalHistory = $0.isEmpty ? nil : $0; touch() }
+            ), axis: .vertical).lineLimit(2...)
             TextField("Family history", text: Binding(
                 get: { patient.familyHistoryNotes ?? "" },
                 set: { patient.familyHistoryNotes = $0.isEmpty ? nil : $0; touch() }
@@ -724,6 +728,24 @@ struct PatientDemographicsForm: View {
             TextField("Policy number", text: Binding(
                 get: { patient.policyNumber ?? "" },
                 set: { patient.policyNumber = $0.isEmpty ? nil : $0; touch() }
+            ))
+        }
+        Section("Referral") {
+            Picker("Source", selection: Binding(
+                get: { patient.referralSource ?? .selfReferral },
+                set: { patient.referralSource = $0; touch() }
+            )) {
+                ForEach(ReferralSource.allCases, id: \.self) { src in
+                    Text(src.rawValue).tag(src)
+                }
+            }
+            TextField("Referring doctor", text: Binding(
+                get: { patient.referringDoctor ?? "" },
+                set: { patient.referringDoctor = $0.isEmpty ? nil : $0; touch() }
+            ))
+            TextField("Referring practice", text: Binding(
+                get: { patient.referringPractice ?? "" },
+                set: { patient.referringPractice = $0.isEmpty ? nil : $0; touch() }
             ))
         }
     }

@@ -175,7 +175,7 @@ struct NoteEditorView: View {
         Form {
             Section {
                 TextEditor(text: Binding(
-                    get: { note.freeText ?? templateFor(note.noteType) },
+                    get: { note.freeText ?? templateFor(note.noteType, patient: note.patient) },
                     set: { note.freeText = $0 }
                 ))
                 .frame(minHeight: 300)
@@ -246,7 +246,7 @@ struct NoteEditorView: View {
 
     // MARK: - Templates
 
-    private func templateFor(_ type: NoteType) -> String {
+    private func templateFor(_ type: NoteType, patient: Patient? = nil) -> String {
         let today = Date.now.formatted(date: .abbreviated, time: .omitted)
         switch type {
         case .operative:
@@ -328,12 +328,14 @@ struct NoteEditorView: View {
             """
 
         case .consultation:
+            let refDr = patient?.referringDoctor.map { "Dr \($0)" } ?? ""
+            let refCC = patient?.chiefComplaint ?? ""
             return """
             CONSULTATION NOTE  ·  \(today)
             Consultant: Dr Dawit Daniel Kabiye
 
-            Referring doctor:
-            Reason for referral:
+            Referring doctor: \(refDr)
+            Reason for referral: \(refCC)
 
             History:
 
@@ -351,12 +353,19 @@ struct NoteEditorView: View {
             """
 
         case .referralLetter:
+            let ptName   = patient.map { "\($0.fullName), \($0.sex.rawValue.prefix(1))\($0.ageYears > 0 ? ", \($0.ageYears)y" : "")" } ?? ""
+            let dxLine   = patient?.workingDiagnosis ?? patient?.chiefComplaint ?? ""
+            let reLine   = [ptName, dxLine].filter { !$0.isEmpty }.joined(separator: " — ")
+            let meds: String = {
+                guard let p = patient, !p.prescriptions.isEmpty else { return "Nil" }
+                return p.prescriptions.map { $0.displayLine }.joined(separator: "\n")
+            }()
             return """
             \(today)
 
             Dear Dr ,
 
-            RE:
+            RE: \(reLine)
 
             I am writing to refer this patient for your expert review regarding:
 
@@ -368,7 +377,7 @@ struct NoteEditorView: View {
 
 
             Current medications:
-
+            \(meds)
 
             I would appreciate your assessment and management.
 

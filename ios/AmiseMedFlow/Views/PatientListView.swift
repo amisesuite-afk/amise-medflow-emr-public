@@ -18,7 +18,10 @@ struct PatientListView: View {
         let q = searchText.lowercased()
         return outpatients.filter {
             $0.fullName.lowercased().contains(q) ||
-            ($0.chiefComplaint?.lowercased().contains(q) ?? false)
+            ($0.chiefComplaint?.lowercased().contains(q) ?? false) ||
+            ($0.workingDiagnosis?.lowercased().contains(q) ?? false) ||
+            ($0.mrn?.lowercased().contains(q) ?? false) ||
+            ($0.phone?.contains(q) ?? false)
         }
     }
 

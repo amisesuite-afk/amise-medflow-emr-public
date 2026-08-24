@@ -283,11 +283,19 @@ struct WardRoundView: View {
             pmhLine = "\nPMH: \(pmh)"
         }
 
+        let mrnLine = patient.mrn.map { "MRN: \($0)  " } ?? ""
+
+        var gpLine = ""
+        if let dr = patient.referringDoctor, !dr.isEmpty {
+            let practice = patient.referringPractice.map { " (\($0))" } ?? ""
+            gpLine = "\nGP / Referring: Dr \(dr)\(practice)"
+        }
+
         return """
         DISCHARGE SUMMARY  ·  \(today)
         Consultant: Dr Dawit Daniel Kabiye
         Patient: \(patient.fullName) · \(patient.sex.rawValue.prefix(1)), \(patient.ageYears > 0 ? "\(patient.ageYears)y" : "age unknown")
-        \([patient.ward.map { "Ward: \($0)" }, patient.bedNumber.map { "Bed: \($0)" }].compactMap { $0 }.joined(separator: "  "))
+        \(mrnLine)\([patient.ward.map { "Ward: \($0)" }, patient.bedNumber.map { "Bed: \($0)" }].compactMap { $0 }.joined(separator: "  "))\(gpLine)
 
         ADMISSION
         Admitted:  \(admissionLine)
