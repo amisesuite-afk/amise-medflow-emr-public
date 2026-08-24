@@ -197,6 +197,18 @@ struct PatientOverviewContent: View {
         patient.clinicalNotes.sorted { $0.createdAt > $1.createdAt }.first
     }
 
+    private var criticalAllergies: [AllergyEntry] {
+        patient.allergies.filter {
+            $0.severity.lowercased().contains("anaphylaxis") ||
+            $0.severity.lowercased().contains("severe")
+        }
+    }
+
+    private var news2AlertLevel: Int {
+        guard let v = latestVitals, v.hasAnyValue else { return 0 }
+        return v.news2Score
+    }
+
     private func notePreview(_ note: ClinicalNote) -> String? {
         if note.noteType.isStructured {
             return [note.assessment, note.plan]
@@ -244,6 +256,59 @@ struct PatientOverviewContent: View {
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(AMColor.accent.opacity(0.3), lineWidth: 1)
             )
+
+            // Safety banners
+            if news2AlertLevel >= 5 || !criticalAllergies.isEmpty {
+                VStack(spacing: 8) {
+                    if news2AlertLevel >= 5 {
+                        HStack(spacing: 8) {
+                            Image(systemName: news2AlertLevel >= 7
+                                  ? "exclamationmark.triangle.fill"
+                                  : "exclamationmark.triangle")
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(news2AlertLevel >= 7 ? "HIGH NEWS2 RISK" : "MEDIUM NEWS2 RISK")
+                                    .font(.system(size: 11, weight: .heavy))
+                                    .tracking(0.5)
+                                Text("Score \(news2AlertLevel) — \(latestVitals?.news2Risk ?? "")")
+                                    .font(.caption2)
+                            }
+                            Spacer()
+                        }
+                        .foregroundStyle(news2AlertLevel >= 7 ? Color.red : Color.orange)
+                        .padding(10)
+                        .background(
+                            (news2AlertLevel >= 7 ? Color.red : Color.orange).opacity(0.1),
+                            in: RoundedRectangle(cornerRadius: 10)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(news2AlertLevel >= 7 ? Color.red.opacity(0.4) : Color.orange.opacity(0.4), lineWidth: 1)
+                        )
+                    }
+
+                    if !criticalAllergies.isEmpty {
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "exclamationmark.shield.fill")
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("CRITICAL ALLERGY")
+                                    .font(.system(size: 11, weight: .heavy))
+                                    .tracking(0.5)
+                                Text(criticalAllergies.map { "\($0.name) (\($0.severity))" }.joined(separator: " · "))
+                                    .font(.caption2)
+                                    .lineLimit(2)
+                            }
+                            Spacer()
+                        }
+                        .foregroundStyle(Color.red)
+                        .padding(10)
+                        .background(Color.red.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color.red.opacity(0.35), lineWidth: 1)
+                        )
+                    }
+                }
+            }
 
             // Chief complaint
             if let cc = patient.chiefComplaint {
@@ -474,6 +539,18 @@ struct PatientDemographicsForm: View {
                 get: { patient.bedNumber ?? "" },
                 set: { patient.bedNumber = $0.isEmpty ? nil : $0; touch() }
             ))
+            DatePicker(
+                "Admitted",
+                selection: Binding(
+                    get: { patient.admittedAt ?? .now },
+                    set: { patient.admittedAt = $0; touch() }
+                ),
+                displayedComponents: [.date, .hourAndMinute]
+            )
+            if let admitted = patient.admittedAt {
+                let los = max(0, Calendar.current.dateComponents([.day], from: admitted, to: .now).day ?? 0)
+                LabeledContent("Length of stay") { Text("Day \(los + 1)") }
+            }
         }
     }
 

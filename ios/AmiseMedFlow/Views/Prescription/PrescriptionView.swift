@@ -128,11 +128,32 @@ struct AddPrescriptionSheet: View {
     @State private var indication = ""
     @State private var instructions = ""
 
+    private let freqChips   = ["OD", "BD", "TDS", "QDS", "PRN", "STAT", "Nocte", "Weekly"]
+    private let durationChips = ["3 days", "5 days", "7 days", "10 days", "14 days", "1 month", "Ongoing"]
+
     private var liveInteractions: [DrugInteractionAlert] {
         guard !drugQuery.isEmpty else { return [] }
         let existingDrugs = patient.prescriptions.map { $0.drug }
         return DrugInteractionService.check(drugs: existingDrugs + [drugQuery])
             .filter { $0.drugA == drugQuery || $0.drugB == drugQuery }
+    }
+
+    @ViewBuilder
+    private func quickChips(_ values: [String], current: String, onTap: @escaping (String) -> Void) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(values, id: \.self) { v in
+                    let sel = v == current
+                    Button(v) { onTap(v) }
+                        .font(.caption2.weight(sel ? .semibold : .regular))
+                        .padding(.horizontal, 8).padding(.vertical, 3)
+                        .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                        .foregroundStyle(sel ? Color.white : AMColor.accent)
+                        .buttonStyle(.plain)
+                }
+            }
+            .padding(.vertical, 2)
+        }
     }
 
     var body: some View {
@@ -209,8 +230,10 @@ struct AddPrescriptionSheet: View {
                             Text($0).tag($0)
                         }
                     }
-                    TextField("Frequency (e.g. BD, TDS, PRN)", text: $frequency)
-                    TextField("Duration (e.g. 5 days, 1/52)", text: $duration)
+                    TextField("Frequency", text: $frequency)
+                    quickChips(freqChips, current: frequency) { frequency = $0 }
+                    TextField("Duration", text: $duration)
+                    quickChips(durationChips, current: duration) { duration = $0 }
                 }
 
                 Section("Clinical") {
