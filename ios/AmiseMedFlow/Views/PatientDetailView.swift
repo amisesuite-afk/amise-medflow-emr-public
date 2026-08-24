@@ -1,145 +1,174 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - Shared colour helper
+// MARK: - Patient detail section enum (iPad/Mac sidebar)
 
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let r, g, b: Double
-        switch hex.count {
-        case 6:
-            (r, g, b) = (Double((int >> 16) & 0xFF) / 255,
-                         Double((int >> 8)  & 0xFF) / 255,
-                         Double( int        & 0xFF) / 255)
-        default:
-            (r, g, b) = (1, 1, 1)
+enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
+    case overview      = "Overview"
+    case consultation  = "Consultation"
+    case notes         = "Notes"
+    case vitals        = "Vitals"
+    case prescriptions = "Prescriptions"
+    case billing       = "Billing"
+    case operative     = "Operative Plan"
+    case documents     = "Documents"
+    case demographics  = "Demographics"
+
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .overview:      "person.text.rectangle"
+        case .consultation:  "stethoscope"
+        case .notes:         "note.text"
+        case .vitals:        "waveform.path.ecg"
+        case .prescriptions: "pills"
+        case .billing:       "dollarsign.circle"
+        case .operative:     "scissors"
+        case .documents:     "doc.badge.plus"
+        case .demographics:  "square.and.pencil"
         }
-        self.init(red: r, green: g, blue: b)
     }
 }
 
-// MARK: - Shared acuity indicator
+// MARK: - iPad/Mac: patient detail with sidebar
 
-struct AcuityPip: View {
-    let acuity: Acuity
-    var body: some View {
-        Circle()
-            .fill(Color(hex: acuity.color))
-            .frame(width: 10, height: 10)
-    }
-}
-
-// MARK: - Clinical hub (5 tabs → Assessment / Rx / Billing / Theatre / Documents)
-
-struct ClinicalHubView: View {
+struct PatientDetailPadView: View {
     @Bindable var patient: Patient
+    @State private var selectedSection: PatientDetailSection = .overview
+
     var body: some View {
-        List {
-            NavigationLink { ConsultationView(patient: patient) } label: {
-                Label("Consultation", systemImage: "stethoscope")
-            }
-            NavigationLink { PrescriptionView(patient: patient) } label: {
-                Label("Prescriptions (\(patient.prescriptions.count))", systemImage: "pills")
-            }
-            NavigationLink { BillingView(patient: patient) } label: {
-                Label("Billing (\(patient.billingItems.count) codes)", systemImage: "dollarsign.circle")
-            }
-            NavigationLink { OperativePlanView(patient: patient) } label: {
-                let plan = patient.operativePlans.sorted { $0.updatedAt > $1.updatedAt }.first
-                Label(
-                    plan == nil ? "Operative Plan" : "Operative Plan (\(plan!.whoCompletedCount)/\(plan!.whoTotalCount))",
-                    systemImage: "scissors"
-                )
-            }
-            NavigationLink { DocumentsView(patient: patient) } label: {
-                Label("Documents (\(patient.documents.count))", systemImage: "doc.badge.plus")
-            }
+        HStack(spacing: 0) {
+            patientSectionSidebar
+            Divider()
+            patientSectionContent
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .navigationTitle("Clinical")
+        .navigationTitle(patient.fullName)
         .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-// MARK: - Detail view (5 tabs — within iOS limit)
-
-enum PatientTab { case overview, clinical, notes, vitals, demographics }
-
-struct PatientDetailView: View {
-    @Bindable var patient: Patient
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var context
-
-    @State private var selectedTab: PatientTab = .overview
-
-    var body: some View {
-        NavigationStack {
-            TabView(selection: $selectedTab) {
-                // MARK: Overview
-                List { overviewSection }
-                    .tag(PatientTab.overview)
-                    .tabItem { Label("Overview", systemImage: "person.text.rectangle") }
-
-                // MARK: Clinical hub
-                NavigationStack { ClinicalHubView(patient: patient) }
-                    .tag(PatientTab.clinical)
-                    .tabItem { Label("Clinical", systemImage: "stethoscope") }
-
-                // MARK: Notes
-                List { NoteListView(patient: patient) }
-                    .tag(PatientTab.notes)
-                    .tabItem { Label("Notes", systemImage: "note.text") }
-
-                // MARK: Vitals
-                List { VitalsHistoryView(patient: patient) }
-                    .tag(PatientTab.vitals)
-                    .tabItem { Label("Vitals", systemImage: "waveform.path.ecg") }
-
-                // MARK: Demographics
-                Form {
-                    demographicsSection
-                    clinicalSection
-                    if patient.setting == .inpatient || patient.setting == .emergency {
-                        admissionSection
-                    }
-                    if patient.setting == .theatre || patient.setting == .endoscopy {
-                        procedureSection
-                    }
-                    extendedSection
-                    notesSection
-                }
-                .tag(PatientTab.demographics)
-                .tabItem { Label("Details", systemImage: "square.and.pencil") }
-            }
-            .navigationTitle(patient.fullName)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                VStack(spacing: 1) {
+                    Text(patient.fullName).font(.headline)
+                    Text("\(patient.sex.rawValue) · \(patient.ageYears)y · \(selectedSection.rawValue)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
     }
 
-    // MARK: - Overview section
+    // MARK: Section sidebar
+
+    private var patientSectionSidebar: some View {
+        List(selection: $selectedSection) {
+            ForEach(PatientDetailSection.allCases) { section in
+                Label(section.rawValue, systemImage: section.icon)
+                    .tag(section)
+            }
+        }
+        .listStyle(.sidebar)
+        .frame(width: 220)
+        .safeAreaInset(edge: .top, spacing: 0) {
+            patientIdentityCard
+        }
+    }
+
+    private var patientIdentityCard: some View {
+        HStack(spacing: 10) {
+            ZStack {
+                Circle()
+                    .fill(Color(hex: patient.setting.accentHex).opacity(0.15))
+                    .frame(width: 40, height: 40)
+                Text(patient.initials)
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Color(hex: patient.setting.accentHex))
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Label(patient.setting.rawValue, systemImage: patient.setting.icon)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color(hex: patient.setting.accentHex))
+                HStack(spacing: 4) {
+                    AcuityPip(acuity: patient.acuity)
+                    Text(patient.location.rawValue)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(hex: patient.setting.accentHex).opacity(0.05))
+        .overlay(alignment: .bottom) { Divider() }
+    }
+
+    // MARK: Section content
 
     @ViewBuilder
-    private var overviewSection: some View {
-        Section {
+    private var patientSectionContent: some View {
+        switch selectedSection {
+        case .overview:
+            ScrollView {
+                PatientOverviewContent(patient: patient)
+                    .padding()
+            }
+        case .consultation:
+            ConsultationView(patient: patient)
+        case .notes:
+            List { NoteListView(patient: patient) }
+        case .vitals:
+            List { VitalsHistoryView(patient: patient) }
+        case .prescriptions:
+            PrescriptionView(patient: patient)
+        case .billing:
+            BillingView(patient: patient)
+        case .operative:
+            OperativePlanView(patient: patient)
+        case .documents:
+            DocumentsView(patient: patient)
+        case .demographics:
+            PatientDemographicsForm(patient: patient)
+        }
+    }
+}
+
+// MARK: - Overview content (shared between iPhone overview tab and iPad panel)
+
+struct PatientOverviewContent: View {
+    @Bindable var patient: Patient
+
+    private var latestVitals: VitalsEntry? {
+        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+    }
+
+    private var latestNote: ClinicalNote? {
+        patient.clinicalNotes.sorted { $0.createdAt > $1.createdAt }.first
+    }
+
+    private func notePreview(_ note: ClinicalNote) -> String? {
+        if note.noteType.isStructured {
+            return [note.assessment, note.plan]
+                .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .first(where: { !$0.isEmpty })
+        }
+        return note.freeText.map { String($0.prefix(300)) }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
             // Header card
             HStack(spacing: 16) {
                 ZStack {
                     Circle()
                         .fill(Color(hex: patient.setting.accentHex).opacity(0.15))
-                        .frame(width: 60, height: 60)
+                        .frame(width: 64, height: 64)
                     Text(patient.initials)
-                        .font(.system(size: 22, weight: .semibold))
+                        .font(.system(size: 24, weight: .semibold))
                         .foregroundStyle(Color(hex: patient.setting.accentHex))
                 }
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(patient.fullName).font(.title3.weight(.semibold))
+                    Text(patient.fullName).font(.title2.weight(.semibold))
                     HStack(spacing: 6) {
                         Text("\(patient.sex.rawValue), \(patient.ageYears)y")
                         Text("·")
@@ -155,94 +184,134 @@ struct PatientDetailView: View {
                     }
                 }
             }
-            .padding(.vertical, 4)
-        }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(hex: patient.setting.accentHex).opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
 
-        if let cc = patient.chiefComplaint {
-            Section("Chief Complaint") {
-                Text(cc)
+            // Chief complaint
+            if let cc = patient.chiefComplaint {
+                overviewCard(title: "Chief Complaint") {
+                    Text(cc)
+                }
             }
-        }
 
-        if let dx = patient.workingDiagnosis {
-            Section("Working Diagnosis") {
-                HStack(spacing: 8) {
-                    Image(systemName: "stethoscope").foregroundStyle(.teal)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(dx).font(.subheadline.weight(.medium))
-                        if let icd = patient.workingDiagnosisICD {
-                            Text(icd).font(.caption.monospaced()).foregroundStyle(.secondary)
+            // Working diagnosis
+            if let dx = patient.workingDiagnosis {
+                overviewCard(title: "Working Diagnosis") {
+                    HStack(spacing: 8) {
+                        Image(systemName: "stethoscope").foregroundStyle(.teal)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(dx).font(.subheadline.weight(.medium))
+                            if let icd = patient.workingDiagnosisICD {
+                                Text(icd).font(.caption.monospaced()).foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }
             }
-        }
 
-        if let days = patient.postOpDays {
-            Section("Post-operative") {
-                LabeledContent("Post-op day", value: "POD \(days)")
-                if let op = patient.operationDate {
-                    LabeledContent("Operation date") { Text(op, style: .date) }
+            // Admission
+            if patient.setting == .inpatient || patient.setting == .emergency {
+                overviewCard(title: "Admission") {
+                    if let ward = patient.ward {
+                        LabeledContent("Ward", value: ward)
+                    }
+                    if let bed = patient.bedNumber {
+                        LabeledContent("Bed", value: bed)
+                    }
+                    if let admitted = patient.admittedAt {
+                        LabeledContent("Admitted") { Text(admitted, style: .date) }
+                    }
                 }
             }
-        }
 
-        if patient.setting == .inpatient || patient.setting == .emergency {
-            Section("Admission") {
-                if let ward = patient.ward { LabeledContent("Ward", value: ward) }
-                if let bed = patient.bedNumber { LabeledContent("Bed", value: bed) }
-                if let admitted = patient.admittedAt {
-                    LabeledContent("Admitted") { Text(admitted, style: .date) }
+            // Post-operative
+            if let days = patient.postOpDays {
+                overviewCard(title: "Post-operative") {
+                    LabeledContent("Post-op day", value: "POD \(days)")
+                    if let op = patient.operationDate {
+                        LabeledContent("Operation date") { Text(op, style: .date) }
+                    }
                 }
             }
-        }
 
-        // Latest vitals summary
-        if let latest = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first {
-            Section("Latest Vitals") {
-                HStack {
-                    Text(latest.recordedAt, style: .relative)
+            // Latest vitals
+            if let v = latestVitals {
+                overviewCard(title: "Latest Vitals — \(v.recordedAt.formatted(.relative(presentation: .named)))") {
+                    HStack {
+                        Spacer()
+                        Text("NEWS2 \(v.news2Score) — \(v.news2Risk)")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color(hex: v.news2Color))
+                    }
+                    if let bp = v.bpString {
+                        LabeledContent("BP", value: "\(bp) mmHg")
+                    }
+                    if let hr = v.heartRate {
+                        LabeledContent("HR", value: "\(hr) bpm")
+                    }
+                    if let temp = v.temperatureCelsius {
+                        LabeledContent("Temp", value: String(format: "%.1f °C", temp))
+                    }
+                    if let spo = v.spo2 {
+                        LabeledContent("SpO₂", value: "\(spo)%")
+                    }
+                }
+            }
+
+            // Latest note
+            if let note = latestNote {
+                overviewCard(title: "Latest Note — \(note.noteType.label)") {
+                    Text(note.createdAt, style: .relative)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    Spacer()
-                    Text("NEWS2 \(latest.news2Score) — \(latest.news2Risk)")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(Color(hex: latest.news2Color))
-                }
-                if let bp = latest.bpString {
-                    LabeledContent("BP", value: "\(bp) mmHg")
-                }
-                if let hr = latest.heartRate {
-                    LabeledContent("HR", value: "\(hr) bpm")
-                }
-                if let temp = latest.temperatureCelsius {
-                    LabeledContent("Temp", value: String(format: "%.1f °C", temp))
-                }
-                if let spo = latest.spo2 {
-                    LabeledContent("SpO₂", value: "\(spo)%")
-                }
-            }
-        }
-
-        // Latest note preview
-        if let latestNote = patient.clinicalNotes.sorted(by: { $0.createdAt > $1.createdAt }).first {
-            Section("Latest Note — \(latestNote.noteType.label)") {
-                Text(latestNote.createdAt, style: .relative)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                let preview = latestNote.noteType.isStructured
-                    ? [latestNote.assessment, latestNote.plan]
-                        .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
-                        .first(where: { !$0.isEmpty })
-                    : latestNote.freeText?.prefix(300).description
-                if let p = preview {
-                    Text(p).font(.callout).lineLimit(5)
+                    if let preview = notePreview(note) {
+                        Text(preview).font(.callout).lineLimit(6)
+                    }
                 }
             }
         }
     }
 
-    // MARK: - Demographics
+    @ViewBuilder
+    private func overviewCard<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+                .tracking(0.5)
+            VStack(alignment: .leading, spacing: 6) {
+                content()
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
+        }
+    }
+}
+
+// MARK: - Demographics form (shared between iPhone details tab and iPad panel)
+
+struct PatientDemographicsForm: View {
+    @Bindable var patient: Patient
+
+    var body: some View {
+        Form {
+            demographicsSection
+            clinicalSection
+            if patient.setting == .inpatient || patient.setting == .emergency {
+                admissionSection
+            }
+            if patient.setting == .theatre || patient.setting == .endoscopy {
+                procedureSection
+            }
+            extendedSection
+            notesSection
+        }
+    }
+
+    // MARK: Identity
 
     @ViewBuilder
     private var demographicsSection: some View {
@@ -256,7 +325,6 @@ struct PatientDetailView: View {
             }
             if let mrn = patient.mrn { LabeledContent("MRN", value: mrn) }
         }
-
         Section("Contact") {
             TextField("Phone", text: Binding(
                 get: { patient.phone ?? "" },
@@ -273,7 +341,7 @@ struct PatientDetailView: View {
         }
     }
 
-    // MARK: - Clinical settings
+    // MARK: Clinical
 
     @ViewBuilder
     private var clinicalSection: some View {
@@ -303,7 +371,7 @@ struct PatientDetailView: View {
         }
     }
 
-    // MARK: - Admission
+    // MARK: Admission
 
     @ViewBuilder
     private var admissionSection: some View {
@@ -319,7 +387,7 @@ struct PatientDetailView: View {
         }
     }
 
-    // MARK: - Procedure
+    // MARK: Procedure
 
     @ViewBuilder
     private var procedureSection: some View {
@@ -337,7 +405,7 @@ struct PatientDetailView: View {
         }
     }
 
-    // MARK: - Extended demographics
+    // MARK: Extended
 
     @ViewBuilder
     private var extendedSection: some View {
@@ -351,7 +419,6 @@ struct PatientDetailView: View {
                 set: { patient.familyHistoryNotes = $0.isEmpty ? nil : $0 }
             ), axis: .vertical).lineLimit(2...)
         }
-
         Section("Next of Kin") {
             TextField("Name", text: Binding(
                 get: { patient.nokName ?? "" },
@@ -366,7 +433,6 @@ struct PatientDetailView: View {
                 set: { patient.nokPhone = $0.isEmpty ? nil : $0 }
             )).keyboardType(.phonePad)
         }
-
         Section("Insurance") {
             TextField("Provider", text: Binding(
                 get: { patient.insuranceProvider ?? "" },
@@ -379,7 +445,7 @@ struct PatientDetailView: View {
         }
     }
 
-    // MARK: - Notes
+    // MARK: Notes
 
     @ViewBuilder
     private var notesSection: some View {
@@ -389,6 +455,53 @@ struct PatientDetailView: View {
                 set: { patient.notes = $0.isEmpty ? nil : $0 }
             ))
             .frame(minHeight: 80)
+        }
+    }
+}
+
+// MARK: - iPhone: 5-tab patient detail (sheet presentation)
+
+enum PatientTab { case overview, clinical, notes, vitals, demographics }
+
+struct PatientDetailView: View {
+    @Bindable var patient: Patient
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var selectedTab: PatientTab = .overview
+
+    var body: some View {
+        NavigationStack {
+            TabView(selection: $selectedTab) {
+                ScrollView {
+                    PatientOverviewContent(patient: patient)
+                        .padding()
+                }
+                .tag(PatientTab.overview)
+                .tabItem { Label("Overview", systemImage: "person.text.rectangle") }
+
+                NavigationStack { ClinicalHubView(patient: patient) }
+                    .tag(PatientTab.clinical)
+                    .tabItem { Label("Clinical", systemImage: "stethoscope") }
+
+                List { NoteListView(patient: patient) }
+                    .tag(PatientTab.notes)
+                    .tabItem { Label("Notes", systemImage: "note.text") }
+
+                List { VitalsHistoryView(patient: patient) }
+                    .tag(PatientTab.vitals)
+                    .tabItem { Label("Vitals", systemImage: "waveform.path.ecg") }
+
+                PatientDemographicsForm(patient: patient)
+                    .tag(PatientTab.demographics)
+                    .tabItem { Label("Details", systemImage: "square.and.pencil") }
+            }
+            .navigationTitle(patient.fullName)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
         }
     }
 }
