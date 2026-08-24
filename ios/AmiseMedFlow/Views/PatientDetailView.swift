@@ -67,16 +67,7 @@ struct PatientDetailPadView: View {
                     PatientSectionRow(section: section,
                                       isSelected: selectedSection == section)
                         .tag(section)
-                        .listRowBackground(
-                            selectedSection == section
-                                ? AMColor.accent.opacity(0.14)
-                                    .overlay(alignment: .leading) {
-                                        Rectangle()
-                                            .fill(AMColor.accent)
-                                            .frame(width: 3)
-                                    }
-                                : Color.clear
-                        )
+                        .listRowBackground(sectionBackground(section))
                         .listRowInsets(EdgeInsets())
                 }
             } header: {
@@ -93,6 +84,20 @@ struct PatientDetailPadView: View {
         .frame(width: 200)
         .safeAreaInset(edge: .top, spacing: 0) {
             patientIdentityCard
+        }
+    }
+
+    @ViewBuilder
+    private func sectionBackground(_ section: PatientDetailSection) -> some View {
+        if selectedSection == section {
+            AMColor.accent.opacity(0.14)
+                .overlay(alignment: .leading) {
+                    Rectangle()
+                        .fill(AMColor.accent)
+                        .frame(width: 3)
+                }
+        } else {
+            Color.clear
         }
     }
 
