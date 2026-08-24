@@ -150,7 +150,7 @@ private struct CompactRootView: View {
 // MARK: - iPad/Mac: 3-column NavigationSplitView
 
 private struct RegularRootView: View {
-    @State private var selectedSection: AppSection = .wardRounds
+    @State private var selectedSection: AppSection? = .wardRounds
     @State private var selectedPatient: Patient?
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
 
@@ -158,7 +158,7 @@ private struct RegularRootView: View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             sidebarColumn
         } content: {
-            SectionPatientListView(section: selectedSection,
+            SectionPatientListView(section: selectedSection ?? .wardRounds,
                                    selectedPatient: $selectedPatient)
         } detail: {
             if let patient = selectedPatient {
@@ -176,6 +176,20 @@ private struct RegularRootView: View {
 
     // MARK: Dark sidebar — mirrors web #071714 sidebar
 
+    @ViewBuilder
+    private func sectionBackground(_ section: AppSection) -> some View {
+        if selectedSection == section {
+            AMColor.accent.opacity(0.14)
+                .overlay(alignment: .leading) {
+                    Rectangle()
+                        .fill(AMColor.accent)
+                        .frame(width: 3)
+                }
+        } else {
+            Color.clear
+        }
+    }
+
     private var sidebarColumn: some View {
         List(selection: $selectedSection) {
             Section {
@@ -183,16 +197,7 @@ private struct RegularRootView: View {
                     AppSectionRow(section: section,
                                   isSelected: selectedSection == section)
                         .tag(section)
-                        .listRowBackground(
-                            selectedSection == section
-                                ? AMColor.accent.opacity(0.14)
-                                    .overlay(alignment: .leading) {
-                                        Rectangle()
-                                            .fill(AMColor.accent)
-                                            .frame(width: 3)
-                                    }
-                                : Color.clear
-                        )
+                        .listRowBackground(sectionBackground(section))
                         .listRowInsets(EdgeInsets())
                 }
             } header: {
