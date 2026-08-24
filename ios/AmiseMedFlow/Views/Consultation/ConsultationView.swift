@@ -327,17 +327,8 @@ struct ConsultationView: View {
     @ViewBuilder
     private var interactionAlertsSection: some View {
         Section {
-            ForEach(Array(interactions.enumerated()), id: \.offset) { _, alert in
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Image(systemName: alert.severity == "Contraindicated" ? "xmark.octagon.fill" : "exclamationmark.triangle.fill")
-                            .foregroundStyle(alert.severity == "Contraindicated" ? .red : .orange)
-                        Text("\(alert.drug1) + \(alert.drug2)")
-                            .font(.caption.weight(.semibold))
-                    }
-                    Text(alert.mechanism).font(.caption).foregroundStyle(.secondary)
-                    Text("→ \(alert.management)").font(.caption2).foregroundStyle(.orange)
-                }
+            ForEach(interactions) { alert in
+                InteractionAlertRow(alert: alert)
             }
         } header: {
             Label("Drug Interaction Alerts", systemImage: "exclamationmark.triangle")
@@ -782,6 +773,29 @@ struct ConsultationView: View {
          patient.examNeuro, patient.examMSK, patient.examSkin, patient.examOther]
             .compactMap { $0 }
             .joined(separator: "\n")
+    }
+}
+
+// MARK: - Drug interaction row (extracted to avoid type-checker timeout)
+
+private struct InteractionAlertRow: View {
+    let alert: DrugInteractionAlert
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 6) {
+                Image(systemName: alert.interaction.severity.icon)
+                    .foregroundStyle(alert.interaction.severity.color)
+                Text("\(alert.drugA) + \(alert.drugB)")
+                    .font(.caption.weight(.semibold))
+            }
+            Text(alert.interaction.mechanism)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text("→ \(alert.interaction.management)")
+                .font(.caption2)
+                .foregroundStyle(.orange)
+        }
     }
 }
 
