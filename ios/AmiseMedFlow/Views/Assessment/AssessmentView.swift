@@ -175,8 +175,8 @@ struct AssessmentView: View {
             if !result.differentials.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Differentials").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
-                    ForEach(result.differentials, id: \.self) { d in
-                        Text("• \(d)").font(.caption)
+                    ForEach(result.differentials, id: \.name) { d in
+                        Text("• \(d.name)").font(.caption)
                     }
                 }
             }

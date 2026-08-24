@@ -271,12 +271,17 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
 
 // MARK: - Bayesian Triage / Pathway Engine
 
+struct DifferentialDx {
+    let name: String
+    let probability: Int  // estimated pre-test probability (0–100), not summing to 100
+}
+
 struct TriageResult {
     let suggestedAcuity: Acuity
     let redFlags: [String]
     let pathway: String
     let confidencePercent: Int
-    let differentials: [String]
+    let differentials: [DifferentialDx]
 }
 
 enum ClinicalPathwayEngine {
@@ -288,7 +293,7 @@ enum ClinicalPathwayEngine {
         var suggestedAcuity: Acuity = .routine
         var pathway = "General Surgery Outpatient"
         var confidence = 60
-        var differentials: [String] = []
+        var differentials: [DifferentialDx] = []
 
         // --- Red flag detection ---
         let emergencyKeywords = ["rigidity", "peritonitis", "septic shock", "haemodynamic instability",
@@ -313,7 +318,10 @@ enum ClinicalPathwayEngine {
         // --- Pathway assignment ---
         if cc.contains("append") || cc.contains("right iliac fossa") || cc.contains("rif pain") {
             pathway = "Appendicitis Pathway"
-            differentials = ["Acute appendicitis", "Mesenteric adenitis", "Ovarian cyst/torsion", "Ectopic pregnancy"]
+            differentials = [.init(name: "Acute appendicitis", probability: 68),
+                             .init(name: "Mesenteric adenitis", probability: 45),
+                             .init(name: "Ovarian cyst / torsion", probability: 30),
+                             .init(name: "Ectopic pregnancy", probability: 22)]
             if suggestedAcuity == .routine { suggestedAcuity = .urgent }
             confidence = 72
             if cc.contains("peritonitis") || cc.contains("perforation") {
@@ -322,7 +330,10 @@ enum ClinicalPathwayEngine {
             }
         } else if cc.contains("gall") || cc.contains("biliary") || cc.contains("cholecyst") || cc.contains("ruc pain") || cc.contains("right upper") {
             pathway = "Biliary Pathway"
-            differentials = ["Acute cholecystitis", "Biliary colic", "Choledocholithiasis", "Cholangitis"]
+            differentials = [.init(name: "Biliary colic", probability: 65),
+                             .init(name: "Acute cholecystitis", probability: 55),
+                             .init(name: "Choledocholithiasis", probability: 38),
+                             .init(name: "Cholangitis", probability: 18)]
             confidence = 75
             if cc.contains("cholangitis") || cc.contains("jaundice") {
                 redFlags.append("⚠️ Possible Charcot's triad — exclude cholangitis")
@@ -330,7 +341,10 @@ enum ClinicalPathwayEngine {
             }
         } else if cc.contains("hernia") {
             pathway = "Hernia Pathway"
-            differentials = ["Inguinal hernia", "Femoral hernia", "Umbilical hernia", "Incisional hernia"]
+            differentials = [.init(name: "Inguinal hernia", probability: 72),
+                             .init(name: "Femoral hernia", probability: 38),
+                             .init(name: "Umbilical hernia", probability: 30),
+                             .init(name: "Incisional hernia", probability: 22)]
             confidence = 85
             if cc.contains("obstruct") || cc.contains("strangulat") || cc.contains("can't reduce") {
                 redFlags.append("⚠️ Possible strangulated/obstructed hernia")
@@ -338,7 +352,11 @@ enum ClinicalPathwayEngine {
             }
         } else if cc.contains("rectal bleed") || cc.contains("pr bleed") || cc.contains("melaena") || cc.contains("haematemesis") {
             pathway = "GI Haemorrhage Pathway"
-            differentials = ["Diverticular bleed", "Haemorrhoids", "Colorectal cancer", "Peptic ulcer disease", "Angiodysplasia"]
+            differentials = [.init(name: "Haemorrhoids", probability: 58),
+                             .init(name: "Diverticular bleed", probability: 42),
+                             .init(name: "Colorectal cancer", probability: 32),
+                             .init(name: "Peptic ulcer disease", probability: 28),
+                             .init(name: "Angiodysplasia", probability: 18)]
             confidence = 70
             if cc.contains("massive") || cc.contains("shocked") {
                 redFlags.append("⚠️ Massive GI haemorrhage — resuscitate urgently")
@@ -348,7 +366,11 @@ enum ClinicalPathwayEngine {
             }
         } else if cc.contains("obstruct") || cc.contains("distension") || cc.contains("vomiting") && cc.contains("not open bowels") {
             pathway = "Bowel Obstruction Pathway"
-            differentials = ["Adhesional obstruction", "Colorectal cancer", "Hernia", "Volvulus", "Diverticular disease"]
+            differentials = [.init(name: "Adhesional obstruction", probability: 55),
+                             .init(name: "Colorectal cancer", probability: 38),
+                             .init(name: "Hernia", probability: 30),
+                             .init(name: "Volvulus", probability: 22),
+                             .init(name: "Diverticular disease", probability: 18)]
             confidence = 65
             suggestedAcuity = .urgent
             if cc.contains("volvulus") || cc.contains("ischaemia") {
@@ -357,7 +379,11 @@ enum ClinicalPathwayEngine {
             }
         } else if cc.contains("breast") || cc.contains("lump") && (cc.contains("axilla") || cc.contains("nipple")) {
             pathway = "Breast Surgery Pathway"
-            differentials = ["Breast carcinoma", "Fibroadenoma", "Cyst", "Mastitis/abscess", "Gynaecomastia"]
+            differentials = [.init(name: "Fibroadenoma", probability: 45),
+                             .init(name: "Breast cyst", probability: 38),
+                             .init(name: "Breast carcinoma", probability: 30),
+                             .init(name: "Mastitis / abscess", probability: 22),
+                             .init(name: "Gynaecomastia", probability: 12)]
             confidence = 60
             if cc.contains("skin tether") || cc.contains("nipple retract") || cc.contains("peau d'orange") {
                 redFlags.append("⚠️ Signs suspicious for malignancy — urgent triple assessment")
@@ -365,7 +391,10 @@ enum ClinicalPathwayEngine {
             }
         } else if cc.contains("thyroid") || cc.contains("goitre") || cc.contains("neck swelling") {
             pathway = "Thyroid Pathway"
-            differentials = ["Multinodular goitre", "Solitary thyroid nodule", "Thyroid carcinoma", "Thyroiditis"]
+            differentials = [.init(name: "Multinodular goitre", probability: 55),
+                             .init(name: "Solitary thyroid nodule", probability: 45),
+                             .init(name: "Thyroid carcinoma", probability: 28),
+                             .init(name: "Thyroiditis", probability: 22)]
             confidence = 70
             if cc.contains("stridor") || cc.contains("dysphagia") || cc.contains("rapidly growing") {
                 redFlags.append("⚠️ Compressive/invasive — urgent assessment")
@@ -373,12 +402,19 @@ enum ClinicalPathwayEngine {
             }
         } else if cc.contains("pancreatit") || cc.contains("epigastric") && (cc.contains("severe") || cc.contains("radiating to back")) {
             pathway = "Pancreatitis Pathway"
-            differentials = ["Acute pancreatitis", "Peptic ulcer", "Aortic aneurysm", "Myocardial infarction"]
+            differentials = [.init(name: "Acute pancreatitis", probability: 65),
+                             .init(name: "Peptic ulcer disease", probability: 32),
+                             .init(name: "Aortic aneurysm", probability: 18),
+                             .init(name: "Myocardial infarction", probability: 14)]
             confidence = 68
             suggestedAcuity = .urgent
         } else if cc.contains("colorectal") || cc.contains("change in bowel habit") || cc.contains("rectal mass") || cc.contains("weight loss") {
             pathway = "Colorectal Screening Pathway"
-            differentials = ["Colorectal carcinoma", "Diverticular disease", "IBD", "IBS", "Polyps"]
+            differentials = [.init(name: "Diverticular disease", probability: 52),
+                             .init(name: "IBS", probability: 48),
+                             .init(name: "Colorectal carcinoma", probability: 38),
+                             .init(name: "Polyps", probability: 35),
+                             .init(name: "IBD", probability: 28)]
             confidence = 60
             if cc.contains("weight loss") || cc.contains("iron deficiency") {
                 redFlags.append("⚠️ Red flag symptoms — urgent colonoscopy")
@@ -386,7 +422,11 @@ enum ClinicalPathwayEngine {
             }
         } else if cc.contains("abscess") || cc.contains("perianal") || cc.contains("fistula") || cc.contains("fissure") {
             pathway = "Anorectal Pathway"
-            differentials = ["Perianal abscess", "Anal fistula", "Anal fissure", "Haemorrhoids", "Pilonidal disease"]
+            differentials = [.init(name: "Haemorrhoids", probability: 60),
+                             .init(name: "Anal fissure", probability: 50),
+                             .init(name: "Perianal abscess", probability: 42),
+                             .init(name: "Anal fistula", probability: 35),
+                             .init(name: "Pilonidal disease", probability: 28)]
             confidence = 78
             if cc.contains("sepsis") || cc.contains("necrotising") {
                 redFlags.append("⚠️ Possible necrotising infection — urgent surgical review")
@@ -394,13 +434,20 @@ enum ClinicalPathwayEngine {
             }
         } else if cc.contains("ercp") || cc.contains("common bile duct") || cc.contains("cbd stone") {
             pathway = "ERCP / Biliary Endoscopy Pathway"
-            differentials = ["Choledocholithiasis", "Biliary stricture", "Cholangiocarcinoma", "Post-ERCP pancreatitis"]
+            differentials = [.init(name: "Choledocholithiasis", probability: 72),
+                             .init(name: "Biliary stricture", probability: 38),
+                             .init(name: "Cholangiocarcinoma", probability: 22),
+                             .init(name: "Post-ERCP pancreatitis", probability: 15)]
             confidence = 80
         }
 
         // Undifferentiated abdominal pain default
         if differentials.isEmpty {
-            differentials = ["Appendicitis", "Biliary disease", "Diverticular disease", "IBD", "Gynaecological cause"]
+            differentials = [.init(name: "Biliary disease", probability: 38),
+                             .init(name: "Appendicitis", probability: 28),
+                             .init(name: "Diverticular disease", probability: 25),
+                             .init(name: "IBD", probability: 18),
+                             .init(name: "Gynaecological cause", probability: 15)]
             pathway = "Undifferentiated Abdominal Pain — Further Assessment Required"
             confidence = 40
         }

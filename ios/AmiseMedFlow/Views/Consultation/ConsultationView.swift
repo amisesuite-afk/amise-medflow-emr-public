@@ -1457,27 +1457,44 @@ struct ConsultationView: View {
             }
 
             if !result.differentials.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 8) {
                     Text("Differentials").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
-                    ForEach(Array(result.differentials.prefix(4).enumerated()), id: \.offset) { i, dx in
-                        HStack {
-                            Text(i == 0 ? "→" : "•").foregroundStyle(i == 0 ? AMColor.accent : .secondary)
-                            Text(dx).font(.caption)
-                                .foregroundStyle(i == 0 ? .primary : .secondary)
-                            Spacer()
-                            if i == 0 && patient.workingDiagnosis != dx {
-                                Button("Use") {
-                                    patient.workingDiagnosis = dx
-                                    patient.workingDiagnosisICD = nil
-                                    touch()
-                                    activeTab = .diagnosis
+                    ForEach(Array(result.differentials.prefix(5).enumerated()), id: \.offset) { i, dx in
+                        VStack(alignment: .leading, spacing: 3) {
+                            HStack(spacing: 6) {
+                                Text(dx.name)
+                                    .font(.caption.weight(i == 0 ? .semibold : .regular))
+                                    .foregroundStyle(i == 0 ? .primary : .secondary)
+                                Spacer()
+                                Text("\(dx.probability)%")
+                                    .font(.caption2.weight(.medium).monospacedDigit())
+                                    .foregroundStyle(i == 0 ? AMColor.accent : .secondary)
+                                if patient.workingDiagnosis != dx.name {
+                                    Button("Use") {
+                                        patient.workingDiagnosis = dx.name
+                                        patient.workingDiagnosisICD = nil
+                                        touch()
+                                        activeTab = .diagnosis
+                                    }
+                                    .font(.caption2.weight(.semibold))
+                                    .foregroundStyle(AMColor.accent)
+                                } else {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(.green).font(.caption2)
                                 }
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(AMColor.accent)
-                            } else if i == 0 && patient.workingDiagnosis == dx {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(.green).font(.caption)
                             }
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    Capsule()
+                                        .fill(.secondary.opacity(0.12))
+                                        .frame(height: 4)
+                                    Capsule()
+                                        .fill(i == 0 ? AMColor.accent : Color.secondary.opacity(0.35))
+                                        .frame(width: geo.size.width * CGFloat(dx.probability) / 100,
+                                               height: 4)
+                                }
+                            }
+                            .frame(height: 4)
                         }
                     }
                 }
