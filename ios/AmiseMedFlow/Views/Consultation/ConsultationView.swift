@@ -66,6 +66,17 @@ struct ConsultationView: View {
         patient.consultationCompleteness
     }
 
+    private var historyFilled: Bool {
+        !(patient.pmhNotes ?? "").isEmpty || !(patient.surgicalHistory ?? "").isEmpty
+    }
+
+    private var examFilled: Bool {
+        !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
+    }
+
+    private var completenessFilled: Int { completeness.filled }
+    private var completenessTotal: Int { completeness.total }
+
     var body: some View {
         List {
             // Allergy alert — always first if any exist
@@ -128,15 +139,14 @@ struct ConsultationView: View {
     @ViewBuilder
     private var completenessSection: some View {
         Section {
-            let (filled, total) = completeness
             VStack(spacing: 6) {
-                ProgressView(value: Double(filled), total: Double(total))
-                    .tint(filled == total ? .green : .teal)
+                ProgressView(value: Double(completenessFilled), total: Double(completenessTotal))
+                    .tint(completenessFilled == completenessTotal ? .green : .teal)
                 HStack {
-                    Text("\(filled) of \(total) sections complete")
+                    Text("\(completenessFilled) of \(completenessTotal) sections complete")
                         .font(.caption).foregroundStyle(.secondary)
                     Spacer()
-                    if filled == total {
+                    if completenessFilled == completenessTotal {
                         Label("Ready to save", systemImage: "checkmark.seal.fill")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.green)
@@ -213,8 +223,6 @@ struct ConsultationView: View {
 
     @ViewBuilder
     private var pmhSection: some View {
-        let historyFilled = !(patient.pmhNotes ?? "").isEmpty || !(patient.surgicalHistory ?? "").isEmpty
-
         Section {
             Group {
                 Text("Past Medical History").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
@@ -341,8 +349,6 @@ struct ConsultationView: View {
 
     @ViewBuilder
     private var examinationSection: some View {
-        let examFilled = !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
-
         Section {
             HStack {
                 Picker("Exam detail", selection: $examMode) {
@@ -745,8 +751,9 @@ struct ConsultationView: View {
             allergySummary(),
             medicationSummary(),
             examSummary(),
-            patient.workingDiagnosis.map { dx in
-                "Diagnosis: \(dx)\(patient.workingDiagnosisICD.map { " (\($0))" } ?? "")"
+            patient.workingDiagnosis.map { dx -> String in
+                let icdSuffix = patient.workingDiagnosisICD.map { " (\($0))" } ?? ""
+                return "Diagnosis: \(dx)\(icdSuffix)"
             },
             patient.managementPlan.map { "Plan:\n\($0)" },
         ].compactMap { $0 }
