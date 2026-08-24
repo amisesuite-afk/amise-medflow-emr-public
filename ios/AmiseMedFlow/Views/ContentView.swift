@@ -297,9 +297,11 @@ private struct RegularRootView: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             sidebarColumn
+                .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 240)
         } content: {
             SectionPatientListView(section: selectedSection ?? .wardRounds,
                                    selectedPatient: $selectedPatient)
+                .navigationSplitViewColumnWidth(min: 240, ideal: 280, max: 320)
         } detail: {
             if let patient = selectedPatient {
                 PatientDetailPadView(patient: patient)
