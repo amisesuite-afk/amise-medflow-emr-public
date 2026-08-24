@@ -209,6 +209,82 @@ struct PatientOverviewContent: View {
         return v.news2Score
     }
 
+    // MARK: - Clinical checklist
+
+    private struct CheckItem: Identifiable {
+        let id: String
+        let label: String
+        let icon: String
+        let done: Bool
+    }
+
+    private var checkItems: [CheckItem] {
+        var items: [CheckItem] = [
+            CheckItem(id: "complaint",     label: "Complaint",    icon: "text.bubble",        done: !(patient.chiefComplaint ?? "").isEmpty),
+            CheckItem(id: "diagnosis",     label: "Diagnosis",    icon: "stethoscope",         done: patient.workingDiagnosis != nil),
+            CheckItem(id: "allergies",     label: "Allergies",    icon: "exclamationmark.shield", done: !patient.allergies.isEmpty),
+            CheckItem(id: "vitals",        label: "Vitals",       icon: "waveform.path.ecg",   done: !patient.vitalsEntries.isEmpty),
+            CheckItem(id: "notes",         label: "Note",         icon: "note.text",           done: patient.clinicalNotes.contains { !$0.isEmpty }),
+            CheckItem(id: "signed",        label: "Signed",       icon: "checkmark.seal",      done: patient.clinicalNotes.contains { $0.status == .signed }),
+            CheckItem(id: "prescriptions", label: "Prescriptions",icon: "pills",               done: !patient.prescriptions.isEmpty),
+        ]
+        switch patient.setting {
+        case .inpatient, .emergency:
+            items.append(CheckItem(id: "admission", label: "Admitted", icon: "bed.double",  done: patient.admittedAt != nil))
+        case .theatre:
+            items.append(CheckItem(id: "opplan",  label: "Op Plan", icon: "scissors",       done: !patient.operativePlans.isEmpty))
+            items.append(CheckItem(id: "opdate",  label: "Op Date", icon: "calendar",       done: patient.operationDate != nil))
+        case .endoscopy:
+            items.append(CheckItem(id: "scopedate", label: "Scope Date", icon: "calendar",  done: patient.operationDate != nil))
+        default:
+            break
+        }
+        return items
+    }
+
+    @ViewBuilder
+    private var checklistRow: some View {
+        let pending = checkItems.filter { !$0.done }
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 5) {
+                Image(systemName: pending.isEmpty ? "checkmark.circle.fill" : "circle.dotted")
+                    .font(.system(size: 11))
+                    .foregroundStyle(pending.isEmpty ? .green : .orange)
+                Text(pending.isEmpty
+                     ? "Chart complete"
+                     : "\(pending.count) section\(pending.count == 1 ? "" : "s") pending")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(pending.isEmpty ? .green : .orange)
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(checkItems) { item in
+                        HStack(spacing: 3) {
+                            Image(systemName: item.done ? "checkmark" : "circle")
+                                .font(.system(size: 8, weight: .bold))
+                            Text(item.label)
+                                .font(.system(size: 10, weight: .semibold))
+                        }
+                        .foregroundStyle(item.done ? AMColor.accent : .orange)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            (item.done ? AMColor.accent : Color.orange).opacity(0.1),
+                            in: Capsule()
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke((item.done ? AMColor.accent : Color.orange).opacity(0.25), lineWidth: 0.5)
+                        )
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+        }
+        .padding(12)
+        .background(Color.secondary.opacity(0.05), in: RoundedRectangle(cornerRadius: 12))
+    }
+
     private func notePreview(_ note: ClinicalNote) -> String? {
         if note.noteType.isStructured {
             return [note.assessment, note.plan]
@@ -256,6 +332,9 @@ struct PatientOverviewContent: View {
                 RoundedRectangle(cornerRadius: 14)
                     .stroke(AMColor.accent.opacity(0.3), lineWidth: 1)
             )
+
+            // Clinical checklist
+            checklistRow
 
             // Safety banners
             if news2AlertLevel >= 5 || !criticalAllergies.isEmpty {
