@@ -172,6 +172,7 @@ struct AddPatientView: View {
             p.admittedAt = .now
         }
         context.insert(p)
+        try? context.save()
         dismiss()
     }
 }
