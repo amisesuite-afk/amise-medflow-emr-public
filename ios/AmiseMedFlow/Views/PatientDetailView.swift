@@ -85,7 +85,7 @@ struct PatientDetailPadView: View {
         .listStyle(.sidebar)
         .scrollContentBackground(.hidden)
         .background(AMColor.sidebarBg)
-        .frame(width: 200)
+        .frame(width: 180)
         .safeAreaInset(edge: .top, spacing: 0) {
             patientIdentityCard
         }
