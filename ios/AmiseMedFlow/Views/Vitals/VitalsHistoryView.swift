@@ -1,7 +1,9 @@
 import SwiftUI
+import SwiftData
 
 struct VitalsHistoryView: View {
     let patient: Patient
+    @Environment(\.modelContext) private var context
     @State private var showEntry = false
 
     private var sortedEntries: [VitalsEntry] {
@@ -22,7 +24,7 @@ struct VitalsHistoryView: View {
                     VitalsRow(entry: entry)
                         .swipeActions(edge: .trailing) {
                             Button(role: .destructive) {
-                                // context.delete(entry) — not accessible here; handled in parent
+                                context.delete(entry)
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }

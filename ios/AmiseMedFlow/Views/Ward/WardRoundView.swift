@@ -77,7 +77,7 @@ struct WardRoundView: View {
                 }
             }
             .sheet(isPresented: $showAdd) {
-                AddPatientView(defaultSetting: .inpatient)
+                AddPatientView(initialSetting: .inpatient)
             }
             .sheet(item: $selectedPatient) { p in
                 PatientDetailView(patient: p)
