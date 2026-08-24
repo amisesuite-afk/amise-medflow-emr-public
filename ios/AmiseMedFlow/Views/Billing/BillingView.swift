@@ -181,6 +181,10 @@ struct BillingView: View {
 
     // MARK: - Selected
 
+    private var totalXCD: Double {
+        items.reduce(0) { $0 + $1.amountXCD * Double($1.units) }
+    }
+
     @ViewBuilder
     private var selectedSection: some View {
         Section("Billing Sheet") {
@@ -190,15 +194,23 @@ struct BillingView: View {
             .onDelete { indexSet in
                 indexSet.forEach { context.delete(items[$0]) }
             }
+        }
 
+        Section {
             HStack {
-                Text("Total lines").font(.caption).foregroundStyle(.secondary)
+                Text("\(items.count) line\(items.count == 1 ? "" : "s")")
+                    .font(.caption).foregroundStyle(.secondary)
                 Spacer()
-                Text("\(items.count)").font(.caption.weight(.semibold))
+                if totalXCD > 0 {
+                    Text("XCD \(totalXCD, format: .number.precision(.fractionLength(2)))")
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .foregroundStyle(AMColor.accent)
+                }
             }
 
             ShareLink(item: buildSheet()) {
                 Label("Export Billing Sheet", systemImage: "square.and.arrow.up")
+                    .font(.subheadline.weight(.medium))
             }
         }
     }
@@ -215,14 +227,34 @@ struct BillingView: View {
     }
 
     private func buildSheet() -> String {
-        let header = "BILLING SHEET — \(patient.fullName) — \(Date.now.formatted(date: .abbreviated, time: .omitted))"
-        let dx = patient.workingDiagnosis.map {
-            "Diagnosis: \($0)" + (patient.workingDiagnosisICD.map { " (\($0))" } ?? "")
-        } ?? ""
-        let lines = items.map {
-            "\($0.cptCode)  ×\($0.units)  \($0.modifier.isEmpty ? "" : "Mod:\($0.modifier)  ")\($0.cptDescription)"
-        }.joined(separator: "\n")
-        return [header, dx, "", lines].joined(separator: "\n")
+        let today = Date.now.formatted(date: .abbreviated, time: .omitted)
+        var parts: [String] = [
+            "BILLING SHEET",
+            "Patient:  \(patient.fullName)  ·  \(patient.sex.rawValue.prefix(1)), \(patient.ageYears)y",
+            "Date:     \(today)",
+        ]
+        if let dx = patient.workingDiagnosis {
+            let icd = patient.workingDiagnosisICD.map { " (\($0))" } ?? ""
+            parts.append("Diagnosis: \(dx)\(icd)")
+        }
+        parts.append("")
+        parts.append(String(repeating: "-", count: 64))
+        parts.append("CPT      Qty  Mod   Fee (XCD)   Description")
+        parts.append(String(repeating: "-", count: 64))
+        for item in items {
+            let fee = item.amountXCD > 0 ? String(format: "%.2f", item.amountXCD * Double(item.units)) : "—"
+            let mod = item.modifier.isEmpty ? "    " : item.modifier.padding(toLength: 4, withPad: " ", startingAt: 0)
+            let feeCol = fee.padding(toLength: 11, withPad: " ", startingAt: 0)
+            parts.append("\(item.cptCode.padding(toLength: 8, withPad: " ", startingAt: 0))  ×\(item.units)   \(mod)  \(feeCol) \(item.cptDescription)")
+            if !item.note.isEmpty { parts.append("           Note: \(item.note)") }
+        }
+        parts.append(String(repeating: "-", count: 64))
+        if totalXCD > 0 {
+            parts.append("TOTAL                                    XCD \(String(format: "%.2f", totalXCD))")
+        }
+        parts.append("")
+        parts.append("Surgeon: Dr Dawit Daniel Kabiye · Amise Medical Services, Saint Lucia")
+        return parts.joined(separator: "\n")
     }
 }
 
@@ -230,6 +262,7 @@ struct BillingView: View {
 
 private struct BillingItemRow: View {
     @Bindable var item: BillingLineItem
+    @State private var amountText: String = ""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -242,10 +275,27 @@ private struct BillingItemRow: View {
             }
             Text(item.cptDescription).font(.caption).foregroundStyle(.secondary)
             HStack(spacing: 12) {
-                TextField("Modifier", text: $item.modifier).font(.caption).frame(width: 80)
+                TextField("Modifier", text: $item.modifier).font(.caption).frame(width: 72)
+
+                HStack(spacing: 3) {
+                    Text("XCD").font(.caption2).foregroundStyle(.tertiary)
+                    TextField("Fee", text: $amountText)
+                        .font(.caption.weight(.semibold))
+                        .keyboardType(.decimalPad)
+                        .frame(width: 64)
+                        .onChange(of: amountText) { _, v in
+                            item.amountXCD = Double(v) ?? 0
+                        }
+                }
+
                 TextField("Note", text: $item.note).font(.caption)
             }
         }
         .padding(.vertical, 2)
+        .onAppear {
+            if item.amountXCD > 0 {
+                amountText = String(format: "%.2f", item.amountXCD)
+            }
+        }
     }
 }
