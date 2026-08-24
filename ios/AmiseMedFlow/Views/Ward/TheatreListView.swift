@@ -60,7 +60,15 @@ struct TheatreListView: View {
             .navigationTitle("Theatre List")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                    HStack {
+                        if !theatrePatients.isEmpty {
+                            ShareLink(item: theatreListText,
+                                      subject: Text("Theatre List")) {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                        }
+                        Button { showAdd = true } label: { Image(systemName: "plus") }
+                    }
                 }
             }
             .sheet(isPresented: $showAdd) {
@@ -70,6 +78,59 @@ struct TheatreListView: View {
                 PatientDetailView(patient: p)
             }
         }
+    }
+
+    private var theatreListText: String {
+        let today = Date.now.formatted(date: .abbreviated, time: .shortened)
+        var lines: [String] = []
+        lines.append("THEATRE LIST — \(today)")
+        lines.append("Amise Medical Services · Dr Dawit Daniel Kabiye MD DM")
+        lines.append(String(repeating: "═", count: 48))
+        lines.append("")
+
+        for (i, patient) in theatrePatients.enumerated() {
+            let plan = patient.operativePlans.sorted { $0.updatedAt > $1.updatedAt }.first
+            let dateStr: String
+            if let op = patient.operationDate {
+                dateStr = op.formatted(.dateTime.month(.abbreviated).day().hour().minute())
+            } else {
+                dateStr = "Date TBD"
+            }
+            let proc: String
+            if let t = patient.appointmentType, !t.isEmpty { proc = t }
+            else if let dx = patient.workingDiagnosis { proc = "Surgery for \(dx)" }
+            else { proc = patient.chiefComplaint ?? "Procedure TBD" }
+
+            lines.append("Case \(i + 1) · \(dateStr)")
+            lines.append("\(patient.fullName) · \(patient.sex.rawValue.prefix(1)), \(patient.ageYears)y [\(patient.acuity.label.uppercased())]")
+            lines.append("Procedure: \(proc)")
+
+            if let anaes = plan?.anaesthesiaType, !anaes.isEmpty {
+                lines.append("Anaesthesia: \(anaes)")
+            }
+
+            if let p = plan {
+                let whoStr = p.whoCompletedCount == p.whoTotalCount
+                    ? "WHO checklist: ✓ Complete (\(p.whoTotalCount)/\(p.whoTotalCount))"
+                    : "WHO checklist: ⚠ \(p.whoCompletedCount)/\(p.whoTotalCount) items checked"
+                lines.append(whoStr)
+            }
+
+            let allergies = patient.allergies
+            if allergies.isEmpty {
+                lines.append("Allergies: NKDA")
+            } else {
+                lines.append("Allergies: " + allergies.map { "\($0.name) (\($0.severity))" }.joined(separator: ", "))
+            }
+
+            if let mrn = patient.mrn { lines.append("MRN: \(mrn)") }
+            lines.append(String(repeating: "─", count: 48))
+            lines.append("")
+        }
+
+        lines.append("Total cases: \(theatrePatients.count)")
+        lines.append("This list is a summary. Verify all details before proceeding.")
+        return lines.joined(separator: "\n")
     }
 
     private func markPostOp(_ patient: Patient) {
