@@ -20,6 +20,7 @@ struct AddPatientView: View {
     @State private var setting: ClinicalSetting
     @State private var location: ClinicalLocation = .rodney_bay
     @State private var acuity: Acuity = .routine
+    @State private var visitType: VisitType = .newConsult
     @State private var chiefComplaint = ""
     @State private var appointmentType = ""
 
@@ -107,10 +108,12 @@ struct AddPatientView: View {
                     }.tag(a)
                 }
             }
-            TextField("Chief complaint", text: $chiefComplaint)
-            if showProcedure {
-                TextField("Procedure / appointment type", text: $appointmentType)
+            Picker("Visit Type", selection: $visitType) {
+                ForEach(VisitType.allCases, id: \.self) { vt in
+                    Label(vt.rawValue, systemImage: vt.icon).tag(vt)
+                }
             }
+            TextField("Chief complaint", text: $chiefComplaint)
         }
     }
 
@@ -160,6 +163,7 @@ struct AddPatientView: View {
         if !phone.isEmpty       { p.phone = phone }
         if !email.isEmpty       { p.email = email }
         if !mrn.isEmpty         { p.mrn = mrn }
+        p.visitType = visitType
         if !chiefComplaint.isEmpty   { p.chiefComplaint = chiefComplaint }
         if !appointmentType.isEmpty  { p.appointmentType = appointmentType }
         if !nokName.isEmpty     { p.nokName = nokName }

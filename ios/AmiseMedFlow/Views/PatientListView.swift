@@ -74,8 +74,12 @@ struct PatientRow: View {
     private var accentColor: Color { Color(hex: patient.setting.accentHex) }
 
     private var subtitleLine: String? {
-        [patient.chiefComplaint, patient.workingDiagnosis, patient.appointmentType]
-            .compactMap { $0 }.first
+        let parts: [String?] = [
+            patient.visitType.map { "[\($0.rawValue)]" },
+            patient.chiefComplaint,
+            patient.workingDiagnosis
+        ]
+        return parts.compactMap { $0 }.first
     }
 
     var body: some View {

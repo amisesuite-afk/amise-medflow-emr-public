@@ -294,10 +294,17 @@ struct SectionPatientListView: View {
                     description: Text(section.emptyDescription)
                 )
             } else {
-                List(selection: $selectedPatient) {
+                List {
                     ForEach(patients) { patient in
-                        sectionRow(patient)
-                            .tag(patient)
+                        Button { selectedPatient = patient } label: {
+                            sectionRow(patient)
+                        }
+                        .buttonStyle(.plain)
+                        .listRowBackground(
+                            selectedPatient?.id == patient.id
+                                ? Color(hex: patient.setting.accentHex).opacity(0.12)
+                                : Color(.systemBackground)
+                        )
                     }
                     .onDelete(perform: delete)
                 }

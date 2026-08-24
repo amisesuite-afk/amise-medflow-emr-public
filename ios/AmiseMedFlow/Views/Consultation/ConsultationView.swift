@@ -66,6 +66,7 @@ struct ConsultationView: View {
     @State private var newAllergyReaction = ""
     @State private var triageResult: TriageResult?
     @State private var isAssessing = false
+    @State private var pathwayTask: Task<Void, Never>?
     @State private var icdQuery = ""
     @State private var icdSuggestions: [ICDCode] = []
     @State private var showAIError = false
@@ -87,6 +88,15 @@ struct ConsultationView: View {
         }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: patient.chiefComplaint) { _, newCC in
+            guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
+            pathwayTask?.cancel()
+            pathwayTask = Task {
+                try? await Task.sleep(nanoseconds: 800_000_000)
+                guard !Task.isCancelled else { return }
+                await MainActor.run { runPathway() }
+            }
+        }
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
         .sheet(isPresented: $showAddMedication) {
             AddMedicationSheet(patient: patient, context: context)
@@ -210,28 +220,30 @@ struct ConsultationView: View {
     private var ccTab: some View {
         List {
             Section {
+                if let vt = patient.visitType {
+                    HStack(spacing: 6) {
+                        Image(systemName: vt.icon).foregroundStyle(AMColor.accent)
+                        Text(vt.rawValue)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(AMColor.accent)
+                        Spacer()
+                        Text("Visit type").font(.caption2).foregroundStyle(.tertiary)
+                    }
+                }
                 TextField("e.g. Right upper quadrant pain for 3 days",
                           text: Binding(get: { patient.chiefComplaint ?? "" },
                                         set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; touch() }),
                           axis: .vertical)
                     .lineLimit(3...)
+                if isAssessing {
+                    HStack(spacing: 8) {
+                        ProgressView().scaleEffect(0.8)
+                        Text("Analysing pathway…").font(.caption).foregroundStyle(.secondary)
+                    }
+                }
             } header: {
                 sectionHeader("Chief Complaint", icon: "person.fill.questionmark",
                               filled: !(patient.chiefComplaint ?? "").isEmpty)
-            }
-
-            Section {
-                Button {
-                    runPathway()
-                } label: {
-                    HStack {
-                        Label("Run Pathway Assessment", systemImage: "waveform.path.ecg.rectangle")
-                        Spacer()
-                        if isAssessing { ProgressView() }
-                    }
-                }
-                .disabled(isAssessing || (patient.chiefComplaint ?? "").isEmpty)
-                .foregroundStyle(AMColor.accent)
             }
 
             if let result = triageResult { pathwayResult(result) }
@@ -594,17 +606,39 @@ struct ConsultationView: View {
                 Spacer()
                 Text("Confidence \(result.confidencePercent)%").font(.caption).foregroundStyle(.secondary)
             }
+
+            if !result.differentials.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Differentials").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    ForEach(Array(result.differentials.prefix(4).enumerated()), id: \.offset) { i, dx in
+                        HStack {
+                            Text(i == 0 ? "→" : "•").foregroundStyle(i == 0 ? AMColor.accent : .secondary)
+                            Text(dx).font(.caption)
+                                .foregroundStyle(i == 0 ? .primary : .secondary)
+                            Spacer()
+                            if i == 0 && patient.workingDiagnosis != dx {
+                                Button("Use") {
+                                    patient.workingDiagnosis = dx
+                                    patient.workingDiagnosisICD = nil
+                                    touch()
+                                    activeTab = .diagnosis
+                                }
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(AMColor.accent)
+                            } else if i == 0 && patient.workingDiagnosis == dx {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(.green).font(.caption)
+                            }
+                        }
+                    }
+                }
+            }
+
             if !result.redFlags.isEmpty {
                 VStack(alignment: .leading, spacing: 4) {
                     Label("Red Flags", systemImage: "exclamationmark.triangle.fill")
                         .font(.caption.weight(.semibold)).foregroundStyle(.red)
-                    ForEach(result.redFlags, id: \.self) { Text("• \($0)").font(.caption) }
-                }
-            }
-            if !result.differentials.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Differentials").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
-                    ForEach(result.differentials, id: \.self) { Text("• \($0)").font(.caption) }
+                    ForEach(result.redFlags, id: \.self) { Text("• \($0)").font(.caption).foregroundStyle(.red) }
                 }
             }
         } header: {

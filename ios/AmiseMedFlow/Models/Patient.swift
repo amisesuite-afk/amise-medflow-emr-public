@@ -56,6 +56,9 @@ final class Patient {
     var workingDiagnosisICD: String?
     var assessmentText: String?
 
+    // MARK: - Visit type (structured)
+    var visitType: VisitType?
+
     // MARK: - Consultation form fields
     var hpi: String?
     var surgicalHistory: String?
@@ -184,6 +187,32 @@ enum Acuity: Int, Codable, CaseIterable, Comparable {
         case .urgent:    return "#F97316"
         case .priority:  return "#EAB308"
         case .routine:   return "#22C55E"
+        }
+    }
+}
+
+enum VisitType: String, Codable, CaseIterable {
+    case newConsult    = "New Consult"
+    case followUp      = "Follow-up"
+    case postOp        = "Post-op Review"
+    case dayOfSurgery  = "Day of Surgery"
+    case ercp          = "ERCP"
+    case ogd           = "OGD / Gastroscopy"
+    case colonoscopy   = "Colonoscopy"
+    case urgentReview  = "Urgent Review"
+    case telephone     = "Telephone"
+
+    var icon: String {
+        switch self {
+        case .newConsult:   return "person.fill.questionmark"
+        case .followUp:     return "arrow.clockwise"
+        case .postOp:       return "bandage"
+        case .dayOfSurgery: return "scissors"
+        case .ercp:         return "circle.dotted"
+        case .ogd:          return "circle.dotted"
+        case .colonoscopy:  return "circle.dotted"
+        case .urgentReview: return "exclamationmark.circle"
+        case .telephone:    return "phone"
         }
     }
 }
