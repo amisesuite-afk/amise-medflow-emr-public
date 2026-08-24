@@ -77,6 +77,7 @@ final class Patient {
     var nokPhone: String?
     var pmhNotes: String?
     var familyHistoryNotes: String?
+    var socialHistory: String?
     var insuranceProvider: String?
     var policyNumber: String?
 
