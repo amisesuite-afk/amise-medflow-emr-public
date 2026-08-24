@@ -7,17 +7,24 @@ struct AmiseMedFlowApp: App {
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self, OperativePlan.self, BillingLineItem.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, cloudKitDatabase: .automatic)
-        do {
-            return try ModelContainer(for: schema, configurations: [config])
-        } catch {
-            // Schema changed — wipe old store and start fresh
-            try? FileManager.default.removeItem(at: config.url)
+        func makeContainer(cloudKit: Bool) throws -> ModelContainer {
+            let config = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: false,
+                cloudKitDatabase: cloudKit ? .automatic : .none
+            )
             do {
                 return try ModelContainer(for: schema, configurations: [config])
             } catch {
-                fatalError("ModelContainer init failed: \(error)")
+                // Schema mismatch — wipe local store and retry once
+                try? FileManager.default.removeItem(at: config.url)
+                return try ModelContainer(for: schema, configurations: [config])
             }
+        }
+        do {
+            return (try? makeContainer(cloudKit: true)) ?? (try makeContainer(cloudKit: false))
+        } catch {
+            fatalError("ModelContainer init failed: \(error)")
         }
     }()
 
