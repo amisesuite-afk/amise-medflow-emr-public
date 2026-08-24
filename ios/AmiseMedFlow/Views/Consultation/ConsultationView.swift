@@ -113,6 +113,26 @@ let ccSurgicalChips: [CCSurgicalChip] = [
     CCSurgicalChip(label: "Other",                 icon: "ellipsis.circle"),
 ]
 
+// MARK: - PMH & PSHx chip data
+
+let pmhChips: [String] = [
+    "Hypertension", "T2DM", "T1DM", "Ischaemic heart disease", "Atrial fibrillation",
+    "Heart failure", "Stroke / TIA", "CKD", "COPD", "Asthma",
+    "Liver disease / Cirrhosis", "Peptic ulcer disease", "GORD / Reflux", "IBD (Crohn's / UC)",
+    "Malignancy", "Thyroid disease", "OSA", "DVT / PE", "Anaemia", "Epilepsy",
+    "Depression / Anxiety", "Dementia", "Osteoporosis", "Rheumatoid arthritis", "Immunocompromised",
+]
+
+let pshxChips: [String] = [
+    "Cholecystectomy", "Appendicectomy", "Inguinal hernia repair", "Umbilical hernia repair",
+    "Bowel resection", "Anterior resection", "APR", "Hartmann's procedure",
+    "Gastric bypass / sleeve", "Fundoplication", "Whipple's procedure",
+    "Liver resection", "Splenectomy", "Thyroidectomy", "Parathyroidectomy",
+    "Mastectomy", "Sentinel node biopsy", "Laparotomy", "Diagnostic laparoscopy",
+    "ERCP", "OGD / Gastroscopy", "Colonoscopy", "Haemorrhoidectomy",
+    "Fistula / abscess repair", "Caesarean section", "Hysterectomy", "Other abdominal surgery",
+]
+
 // MARK: - SOCRATES HPI builder data
 
 struct SOCRATESDimension: Identifiable {
@@ -191,6 +211,10 @@ struct ConsultationView: View {
     @State private var showSavedConfirmation = false
     @State private var socratesSelections: [String: Set<String>] = [:]
     @State private var socratesExpandedDim: String? = "onset"
+    @State private var pmhChipSelections: Set<String> = []
+    @State private var pmhBypassConfirmed = false
+    @State private var pshxChipSelections: Set<String> = []
+    @State private var pshxBypassConfirmed = false
 
     enum ExamMode { case short, full }
 
@@ -652,12 +676,68 @@ struct ConsultationView: View {
     private var pmhTab: some View {
         List {
             Section {
+                // Bypass card — PMH already on record
+                if !(patient.pmhNotes ?? "").isEmpty && !pmhBypassConfirmed {
+                    historyBypassCard(
+                        title: "PMH already on record",
+                        subtitle: "Still accurate for this encounter?",
+                        onConfirm: { pmhBypassConfirmed = true }
+                    )
+                }
+
+                // NKPMH quick-set
+                Button {
+                    patient.pmhNotes = "No known past medical history (NKPMH)"
+                    pmhChipSelections = []
+                    pmhBypassConfirmed = true
+                    touch()
+                } label: {
+                    Label("No known PMH (NKPMH)", systemImage: "checkmark.shield")
+                        .font(.subheadline)
+                        .foregroundStyle(.green)
+                }
+                .buttonStyle(.plain)
+
+                // Condition chip grid
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(pmhChips, id: \.self) { chip in
+                        let sel = pmhChipSelections.contains(chip)
+                        Button { pmhChipSelections.formSymmetricDifference([chip]) } label: {
+                            Text(chip)
+                                .font(.system(size: 12, weight: sel ? .semibold : .regular))
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(sel ? Color.white : AMColor.accent)
+                                .animation(.easeInOut(duration: 0.12), value: sel)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+
+                // Apply button
+                if !pmhChipSelections.isEmpty {
+                    Button {
+                        appendHistory(existing: patient.pmhNotes, chips: pmhChipSelections) {
+                            patient.pmhNotes = $0
+                        }
+                        pmhChipSelections = []
+                        pmhBypassConfirmed = true
+                        touch()
+                    } label: {
+                        Label("Append \(pmhChipSelections.count) condition\(pmhChipSelections.count == 1 ? "" : "s") to PMH Notes",
+                              systemImage: "plus.circle.fill")
+                    }
+                    .foregroundStyle(AMColor.accent)
+                }
+
+                // Manual text editor
                 ZStack(alignment: .topLeading) {
                     TextEditor(text: Binding(get: { patient.pmhNotes ?? "" },
                                             set: { patient.pmhNotes = $0.isEmpty ? nil : $0; touch() }))
-                        .frame(minHeight: 140)
+                        .frame(minHeight: 100)
                     if (patient.pmhNotes ?? "").isEmpty {
-                        Text("Hypertension, Diabetes, Heart disease, Respiratory conditions, etc.")
+                        Text("Free-text PMH — or use chips above")
                             .foregroundStyle(.tertiary).font(.caption)
                             .padding(.top, 8).padding(.leading, 4)
                             .allowsHitTesting(false)
@@ -692,10 +772,66 @@ struct ConsultationView: View {
     private var pshxTab: some View {
         List {
             Section {
+                // Bypass card
+                if !(patient.surgicalHistory ?? "").isEmpty && !pshxBypassConfirmed {
+                    historyBypassCard(
+                        title: "Surgical history already on record",
+                        subtitle: "Still accurate for this encounter?",
+                        onConfirm: { pshxBypassConfirmed = true }
+                    )
+                }
+
+                // No prior surgery quick-set
+                Button {
+                    patient.surgicalHistory = "No previous surgical history"
+                    pshxChipSelections = []
+                    pshxBypassConfirmed = true
+                    touch()
+                } label: {
+                    Label("No previous surgical history", systemImage: "checkmark.shield")
+                        .font(.subheadline)
+                        .foregroundStyle(.green)
+                }
+                .buttonStyle(.plain)
+
+                // Procedure chip grid
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(pshxChips, id: \.self) { chip in
+                        let sel = pshxChipSelections.contains(chip)
+                        Button { pshxChipSelections.formSymmetricDifference([chip]) } label: {
+                            Text(chip)
+                                .font(.system(size: 12, weight: sel ? .semibold : .regular))
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(sel ? Color.white : AMColor.accent)
+                                .animation(.easeInOut(duration: 0.12), value: sel)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+
+                // Apply button
+                if !pshxChipSelections.isEmpty {
+                    Button {
+                        appendHistory(existing: patient.surgicalHistory, chips: pshxChipSelections) {
+                            patient.surgicalHistory = $0
+                        }
+                        pshxChipSelections = []
+                        pshxBypassConfirmed = true
+                        touch()
+                    } label: {
+                        Label("Append \(pshxChipSelections.count) procedure\(pshxChipSelections.count == 1 ? "" : "s") to Surgical History",
+                              systemImage: "plus.circle.fill")
+                    }
+                    .foregroundStyle(AMColor.accent)
+                }
+
+                // Manual text editor
                 ZStack(alignment: .topLeading) {
                     TextEditor(text: Binding(get: { patient.surgicalHistory ?? "" },
                                             set: { patient.surgicalHistory = $0.isEmpty ? nil : $0; touch() }))
-                        .frame(minHeight: 220)
+                        .frame(minHeight: 120)
                     if (patient.surgicalHistory ?? "").isEmpty {
                         Text("Previous operations, procedures, anaesthetic history, complications…")
                             .foregroundStyle(.tertiary).font(.caption)
@@ -708,6 +844,34 @@ struct ConsultationView: View {
                               filled: !(patient.surgicalHistory ?? "").isEmpty)
             }
         }
+    }
+
+    // MARK: - History bypass card
+
+    @ViewBuilder
+    private func historyBypassCard(title: String, subtitle: String, onConfirm: @escaping () -> Void) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.seal.fill")
+                .foregroundStyle(.green).font(.title3)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title).font(.subheadline.weight(.semibold))
+                Text(subtitle).font(.caption).foregroundStyle(.secondary)
+            }
+            Spacer()
+            Button("Confirm") { onConfirm() }
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(AMColor.accent)
+                .padding(.horizontal, 10).padding(.vertical, 5)
+                .background(AMColor.accentLt, in: Capsule())
+        }
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Append chip list to a history field
+
+    private func appendHistory(existing: String?, chips: Set<String>, write: (String) -> Void) {
+        let lines = chips.sorted().map { "· \($0)" }.joined(separator: "\n")
+        write((existing ?? "").isEmpty ? lines : (existing ?? "") + "\n" + lines)
     }
 
     // MARK: - Allergies tab
