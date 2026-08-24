@@ -73,14 +73,17 @@ struct VitalsRow: View {
                 GridItem(.flexible()),
                 GridItem(.flexible()),
             ], alignment: .leading, spacing: 4) {
-                if let bp = entry.bpString {
-                    VitalChip(label: "BP", value: bp, unit: "mmHg")
+                if let bp = entry.bpString, let sys = entry.bpSystolic {
+                    VitalChip(label: "BP", value: bp, unit: "mmHg",
+                              alert: sys > 180 || sys < 90)
                 }
                 if let hr = entry.heartRate {
-                    VitalChip(label: "HR", value: "\(hr)", unit: "bpm")
+                    VitalChip(label: "HR", value: "\(hr)", unit: "bpm",
+                              alert: hr > 130 || hr < 40)
                 }
                 if let rr = entry.respiratoryRate {
-                    VitalChip(label: "RR", value: "\(rr)", unit: "/min")
+                    VitalChip(label: "RR", value: "\(rr)", unit: "/min",
+                              alert: rr > 24 || rr <= 8)
                 }
                 if let temp = entry.temperatureCelsius {
                     VitalChip(label: "Temp", value: String(format: "%.1f", temp), unit: "°C",
