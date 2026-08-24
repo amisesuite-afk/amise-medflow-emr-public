@@ -83,6 +83,7 @@ final class Patient {
     var socialHistory: String?
     var insuranceProvider: String?
     var policyNumber: String?
+    var investigationsJson: String?  // JSON: [InvestigationEntry]
 
     init(
         fullName: String,

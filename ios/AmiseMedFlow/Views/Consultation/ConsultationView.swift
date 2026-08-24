@@ -36,6 +36,75 @@ extension Patient {
     }
 }
 
+// MARK: - Investigation model (JSON-encoded in Patient.investigationsJson)
+
+struct InvestigationEntry: Codable, Identifiable {
+    var id: UUID = UUID()
+    var name: String
+    var category: InvCategory
+    var status: InvStatus
+    var result: String = ""
+    var orderedAt: Date = Date()
+    var resultedAt: Date?
+    var suggestedFor: String = ""
+
+    enum InvCategory: String, Codable, CaseIterable {
+        case blood     = "Blood"
+        case imaging   = "Imaging"
+        case endoscopy = "Endoscopy"
+        case pathology = "Pathology"
+        case other     = "Other"
+
+        var icon: String {
+            switch self {
+            case .blood:      return "drop.fill"
+            case .imaging:    return "photo"
+            case .endoscopy:  return "circle.dotted"
+            case .pathology:  return "eyedropper.halffull"
+            case .other:      return "testtube.2"
+            }
+        }
+    }
+
+    enum InvStatus: String, Codable, CaseIterable {
+        case suggested = "Suggested"
+        case ordered   = "Ordered"
+        case pending   = "Pending"
+        case resulted  = "Resulted"
+        case cancelled = "Cancelled"
+
+        var next: InvStatus? {
+            switch self {
+            case .suggested: return .ordered
+            case .ordered:   return .pending
+            case .pending:   return .resulted
+            case .resulted, .cancelled: return nil
+            }
+        }
+
+        var nextLabel: String {
+            switch self {
+            case .suggested: return "Order"
+            case .ordered:   return "Pending"
+            case .pending:   return "Resulted"
+            case .resulted, .cancelled: return ""
+            }
+        }
+    }
+}
+
+extension Patient {
+    var investigations: [InvestigationEntry] {
+        get {
+            guard let json = investigationsJson, let data = json.data(using: .utf8) else { return [] }
+            return (try? JSONDecoder().decode([InvestigationEntry].self, from: data)) ?? []
+        }
+        set {
+            investigationsJson = (try? String(data: JSONEncoder().encode(newValue), encoding: .utf8)) ?? nil
+        }
+    }
+}
+
 // MARK: - Chip flow layout (wraps chips to next row automatically)
 
 struct ChipFlow: Layout {
@@ -133,6 +202,91 @@ let pshxChips: [String] = [
     "Fistula / abscess repair", "Caesarean section", "Hysterectomy", "Other abdominal surgery",
 ]
 
+// MARK: - CC → suggested investigations lookup
+
+private typealias CCInv = (name: String, category: InvestigationEntry.InvCategory)
+
+private let ccInvestigations: [String: [CCInv]] = [
+    "Abdominal pain": [
+        ("FBC", .blood), ("U&E", .blood), ("LFT", .blood), ("Lipase / Amylase", .blood),
+        ("CRP", .blood), ("Urinalysis", .blood), ("β-hCG (females)", .blood),
+        ("Abdominal USS", .imaging), ("CT abdomen/pelvis", .imaging),
+    ],
+    "Jaundice": [
+        ("FBC", .blood), ("LFT", .blood), ("GGT", .blood), ("ALP", .blood),
+        ("Bilirubin (direct/indirect)", .blood), ("INR / coagulation", .blood),
+        ("Hepatitis serology", .blood), ("Abdominal USS", .imaging),
+        ("CT abdomen/pelvis", .imaging), ("MRCP", .imaging), ("CA 19-9", .blood),
+    ],
+    "Dysphagia": [
+        ("FBC", .blood), ("U&E", .blood), ("LFT", .blood), ("Albumin", .blood),
+        ("OGD / Gastroscopy", .endoscopy), ("Barium swallow", .imaging),
+        ("CT thorax/abdomen", .imaging), ("pH manometry", .other),
+    ],
+    "Reflux / Heartburn": [
+        ("FBC", .blood), ("OGD / Gastroscopy", .endoscopy),
+        ("H. pylori breath test", .other), ("pH manometry", .other),
+    ],
+    "Rectal bleeding": [
+        ("FBC", .blood), ("LFT", .blood), ("Coagulation", .blood), ("CEA", .blood),
+        ("Colonoscopy", .endoscopy), ("Flexible sigmoidoscopy", .endoscopy),
+        ("CT colonography", .imaging),
+    ],
+    "Change in bowel habit": [
+        ("FBC", .blood), ("LFT", .blood), ("CEA", .blood), ("CRP", .blood),
+        ("Faecal calprotectin", .other), ("Colonoscopy", .endoscopy),
+        ("CT abdomen/pelvis", .imaging),
+    ],
+    "Weight loss": [
+        ("FBC", .blood), ("U&E", .blood), ("LFT", .blood), ("TFT", .blood),
+        ("CRP / ESR", .blood), ("CEA", .blood), ("CA 19-9", .blood), ("PSA (males)", .blood),
+        ("CT chest/abdomen/pelvis", .imaging), ("OGD / Gastroscopy", .endoscopy),
+        ("Colonoscopy", .endoscopy),
+    ],
+    "Hernia": [
+        ("FBC", .blood), ("U&E", .blood), ("ECG", .other),
+        ("Abdominal USS", .imaging), ("CT abdomen/pelvis", .imaging),
+    ],
+    "Breast lump": [
+        ("FBC", .blood), ("USS breast", .imaging), ("Mammogram", .imaging),
+        ("Core needle biopsy", .pathology), ("ER/PR/HER2 receptor status", .pathology),
+    ],
+    "Neck lump": [
+        ("FBC", .blood), ("TFT", .blood), ("LDH", .blood), ("EBV / CMV serology", .blood),
+        ("USS neck", .imaging), ("CT neck/thorax", .imaging), ("FNA", .pathology),
+    ],
+    "Skin lesion": [
+        ("Excision biopsy", .pathology), ("Punch biopsy", .pathology),
+        ("Wide local excision + SNB", .pathology),
+    ],
+    "Anal pain": [
+        ("FBC", .blood), ("CRP", .blood), ("Proctoscopy", .endoscopy),
+        ("MRI pelvis / fistula", .imaging), ("CT abdomen/pelvis", .imaging),
+    ],
+    "Bloating": [
+        ("FBC", .blood), ("LFT", .blood), ("TFT", .blood), ("Faecal calprotectin", .other),
+        ("Abdominal USS", .imaging), ("OGD / Gastroscopy", .endoscopy),
+        ("Colonoscopy", .endoscopy),
+    ],
+    "Nausea / Vomiting": [
+        ("FBC", .blood), ("U&E", .blood), ("LFT", .blood), ("Glucose", .blood),
+        ("AXR", .imaging), ("Abdominal USS", .imaging), ("CT abdomen/pelvis", .imaging),
+        ("OGD / Gastroscopy", .endoscopy),
+    ],
+    "Wound / Post-op": [
+        ("FBC", .blood), ("CRP", .blood), ("Wound swab M/C/S", .pathology),
+        ("USS wound", .imaging), ("CT abdomen/pelvis", .imaging),
+    ],
+    "ERCP / Biliary": [
+        ("FBC", .blood), ("LFT", .blood), ("INR", .blood), ("Lipase / Amylase", .blood),
+        ("Abdominal USS", .imaging), ("MRCP", .imaging), ("ERCP", .endoscopy),
+    ],
+    "Screening": [
+        ("Colonoscopy", .endoscopy), ("Faecal immunochemical test (FIT)", .other),
+        ("Mammogram", .imaging), ("USS abdomen", .imaging),
+    ],
+]
+
 // MARK: - SOCRATES HPI builder data
 
 struct SOCRATESDimension: Identifiable {
@@ -183,8 +337,9 @@ enum ConsultTab: String, CaseIterable {
     case pshx      = "PSHx"
     case allergies = "Allergies"
     case social    = "Social"
-    case exam      = "Exam"
-    case diagnosis = "Diagnosis"
+    case exam           = "Exam"
+    case investigations = "Ix"
+    case diagnosis      = "Diagnosis"
     case plan      = "Plan"
 }
 
@@ -215,6 +370,8 @@ struct ConsultationView: View {
     @State private var pmhBypassConfirmed = false
     @State private var pshxChipSelections: Set<String> = []
     @State private var pshxBypassConfirmed = false
+    @State private var newInvName = ""
+    @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
 
     enum ExamMode { case short, full }
 
@@ -336,8 +493,9 @@ struct ConsultationView: View {
         case .pshx:      return !(patient.surgicalHistory ?? "").isEmpty
         case .allergies: return !patient.allergies.isEmpty
         case .social:    return !(patient.socialHistory ?? "").isEmpty
-        case .exam:      return !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
-        case .diagnosis: return patient.workingDiagnosis != nil
+        case .exam:           return !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
+        case .investigations: return !patient.investigations.isEmpty
+        case .diagnosis:      return patient.workingDiagnosis != nil
         case .plan:      return !(patient.managementPlan ?? "").isEmpty
         }
     }
@@ -353,8 +511,9 @@ struct ConsultationView: View {
         case .pshx:      pshxTab
         case .allergies: allergiesTab
         case .social:    socialTab
-        case .exam:      examTab
-        case .diagnosis: diagnosisTab
+        case .exam:           examTab
+        case .investigations: investigationsTab
+        case .diagnosis:      diagnosisTab
         case .plan:      planTab
         }
     }
@@ -844,6 +1003,169 @@ struct ConsultationView: View {
                               filled: !(patient.surgicalHistory ?? "").isEmpty)
             }
         }
+    }
+
+    // MARK: - Investigations tab
+
+    private var investigationsTab: some View {
+        List {
+            // CC-matched suggestions
+            if let cc = patient.chiefComplaint,
+               let suggestions = ccInvestigations[cc], !suggestions.isEmpty {
+                let existing = Set(patient.investigations.map { $0.name })
+                let toShow = suggestions.filter { !existing.contains($0.name) }
+                if !toShow.isEmpty {
+                    Section {
+                        ChipFlow(hSpacing: 8, vSpacing: 8) {
+                            ForEach(toShow, id: \.name) { inv in
+                                Button { addInvestigation(name: inv.name, category: inv.category) } label: {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: inv.category.icon).font(.system(size: 10))
+                                        Text(inv.name).font(.system(size: 12))
+                                    }
+                                    .padding(.horizontal, 10).padding(.vertical, 5)
+                                    .background(AMColor.accentLt, in: Capsule())
+                                    .foregroundStyle(AMColor.accent)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    } header: {
+                        Label("Suggested for \(cc)", systemImage: "sparkles")
+                    }
+                }
+            }
+
+            // Ordered / pending / resulted list
+            let active = patient.investigations.filter { $0.status != .cancelled }
+            if !active.isEmpty {
+                Section {
+                    ForEach(active) { inv in invRow(inv) }
+                    .onDelete { idxSet in
+                        let toRemove = idxSet.map { active[$0].id }
+                        var list = patient.investigations
+                        list.removeAll { toRemove.contains($0.id) }
+                        patient.investigations = list; touch()
+                    }
+                } header: {
+                    sectionHeader("Ordered Investigations (\(active.count))", icon: "flask",
+                                  filled: !active.isEmpty)
+                }
+            }
+
+            // Manual add
+            Section {
+                HStack(spacing: 10) {
+                    TextField("Investigation name", text: $newInvName)
+                        .autocorrectionDisabled()
+                    Picker("", selection: $newInvCategory) {
+                        ForEach(InvestigationEntry.InvCategory.allCases, id: \.self) { cat in
+                            Label(cat.rawValue, systemImage: cat.icon).tag(cat)
+                        }
+                    }
+                    .labelsHidden()
+                    .frame(width: 90)
+                    Button {
+                        let trimmed = newInvName.trimmingCharacters(in: .whitespaces)
+                        guard !trimmed.isEmpty else { return }
+                        addInvestigation(name: trimmed, category: newInvCategory)
+                        newInvName = ""
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(newInvName.isEmpty ? .secondary : AMColor.accent)
+                            .font(.title3)
+                    }
+                    .disabled(newInvName.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .buttonStyle(.plain)
+                }
+            } header: {
+                Label("Add Manually", systemImage: "plus.circle")
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func invRow(_ inv: InvestigationEntry) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Image(systemName: inv.category.icon)
+                    .foregroundStyle(invStatusColor(inv.status))
+                    .frame(width: 20, alignment: .center)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text(inv.name).font(.subheadline.weight(.medium))
+                    Text(inv.category.rawValue).font(.caption2).foregroundStyle(.secondary)
+                }
+                Spacer()
+                // Tappable status badge — tap to advance ordered → pending → resulted
+                if inv.status.next != nil {
+                    Button { advanceInvStatus(inv) } label: {
+                        Text(inv.status.rawValue)
+                            .font(.caption.weight(.semibold))
+                            .padding(.horizontal, 8).padding(.vertical, 3)
+                            .background(invStatusColor(inv.status).opacity(0.15), in: Capsule())
+                            .foregroundStyle(invStatusColor(inv.status))
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    Text(inv.status.rawValue)
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 8).padding(.vertical, 3)
+                        .background(invStatusColor(inv.status).opacity(0.15), in: Capsule())
+                        .foregroundStyle(invStatusColor(inv.status))
+                }
+            }
+            if inv.status == .resulted || inv.status == .pending {
+                TextField("Result / notes…",
+                          text: Binding(
+                            get: { inv.result },
+                            set: { setInvResult(id: inv.id, result: $0) }
+                          ),
+                          axis: .vertical)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2...)
+                    .padding(.leading, 28)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func invStatusColor(_ status: InvestigationEntry.InvStatus) -> Color {
+        switch status {
+        case .suggested: return .secondary
+        case .ordered:   return .blue
+        case .pending:   return .orange
+        case .resulted:  return .green
+        case .cancelled: return .red
+        }
+    }
+
+    private func addInvestigation(name: String, category: InvestigationEntry.InvCategory) {
+        var list = patient.investigations
+        list.append(InvestigationEntry(
+            name: name, category: category, status: .ordered,
+            suggestedFor: patient.chiefComplaint ?? ""
+        ))
+        patient.investigations = list; touch()
+    }
+
+    private func advanceInvStatus(_ inv: InvestigationEntry) {
+        guard let next = inv.status.next else { return }
+        var list = patient.investigations
+        if let idx = list.firstIndex(where: { $0.id == inv.id }) {
+            list[idx].status = next
+            if next == .resulted { list[idx].resultedAt = Date() }
+        }
+        patient.investigations = list; touch()
+    }
+
+    private func setInvResult(id: UUID, result: String) {
+        var list = patient.investigations
+        if let idx = list.firstIndex(where: { $0.id == id }) {
+            list[idx].result = result
+        }
+        patient.investigations = list; touch()
     }
 
     // MARK: - History bypass card
