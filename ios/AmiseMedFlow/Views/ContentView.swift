@@ -78,6 +78,54 @@ struct ClinicalHubView: View {
                         }
                     }
                 }
+                NavigationLink { ClinicalReasoningView(patient: patient) } label: {
+                    HStack {
+                        Label("Clinical Reasoning", systemImage: "brain.head.profile")
+                        Spacer()
+                        if !patient.investigations.filter({ $0.status == .ordered || $0.status == .pending }).isEmpty {
+                            Image(systemName: "clock.badge.exclamationmark")
+                                .font(.caption2).foregroundStyle(.orange)
+                        }
+                    }
+                }
+            }
+
+            Section("Workflow") {
+                NavigationLink { ConsultationWorkflowView(patient: patient) } label: {
+                    HStack {
+                        Label("Consultation Progress", systemImage: "checklist")
+                        Spacer()
+                        let doneCount = [
+                            !(patient.chiefComplaint ?? "").isEmpty && patient.dateOfBirth != nil && !(patient.phone ?? "").isEmpty && !(patient.nokName ?? "").isEmpty,
+                            !(patient.hpi ?? "").isEmpty && !(patient.pmhNotes ?? "").isEmpty,
+                            [patient.examGeneral, patient.examCVS, patient.examResp, patient.examAbdo].compactMap({ $0 }).contains { !$0.isEmpty },
+                            !patient.investigations.isEmpty,
+                            patient.workingDiagnosis != nil,
+                            !(patient.managementPlan ?? "").isEmpty || patient.clinicalNotes.contains { $0.status == .signed && !$0.isEmpty }
+                        ].filter { $0 }.count
+                        Text("\(doneCount)/6")
+                            .font(.caption2)
+                            .foregroundStyle(doneCount == 6 ? .green : .orange)
+                    }
+                }
+                NavigationLink { IntakeTabView(patient: patient) } label: {
+                    HStack {
+                        Label("Intake Checklist", systemImage: "person.fill.badge.plus")
+                        Spacer()
+                        let missing = [patient.dateOfBirth == nil,
+                                       (patient.phone ?? "").isEmpty,
+                                       (patient.chiefComplaint ?? "").isEmpty,
+                                       (patient.pmhNotes ?? "").isEmpty,
+                                       (patient.nokName ?? "").isEmpty].filter { $0 }.count
+                        if missing > 0 {
+                            Text("\(missing) missing")
+                                .font(.caption2).foregroundStyle(.orange)
+                        } else {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.caption2).foregroundStyle(.green)
+                        }
+                    }
+                }
             }
 
             Section("Manage") {

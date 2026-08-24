@@ -223,6 +223,26 @@ final class AIService: ObservableObject {
         return try await generate(systemPrompt: system, userMessage: user)
     }
 
+    // MARK: - Clinical reasoning
+
+    func generateClinicalReasoning(patient: Patient) async throws -> String {
+        let system = """
+        You are a consultant surgical registrar supporting Dr Dawit Daniel Kabiye MD DM, general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+        Provide concise, evidence-based clinical reasoning. British spelling. Be precise.
+        Format your response as:
+        1. Clinical Summary (2-3 sentences)
+        2. Differential Diagnosis (ranked most to least likely, with brief rationale)
+        3. Recommended Investigations (if any gaps remain)
+        4. Management Priorities (immediate actions first)
+        Mark the response: [AI DRAFT — CLINICIAN REVIEW REQUIRED]
+        """
+        let user = """
+        Provide structured clinical reasoning for this patient:
+        \(clinicalContext(patient))
+        """
+        return try await generate(systemPrompt: system, userMessage: user)
+    }
+
     // MARK: - Discharge summary
 
     func generateDischargeSummary(patient: Patient, treatment: String, followUp: String) async throws -> String {

@@ -19,6 +19,7 @@ struct WardRoundView: View {
     @State private var reviewedIDs: Set<UUID> = []
     @State private var dischargeTarget: Patient? = nil
     @State private var dischargeContext: DischargeContext? = nil
+    @State private var showTriage = false
 
     private var inpatients: [Patient] {
         var results = allPatients.filter {
@@ -162,7 +163,12 @@ struct WardRoundView: View {
             .navigationTitle("Ward Rounds")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                    HStack {
+                        Button { showTriage = true } label: {
+                            Image(systemName: "chart.bar.xaxis.ascending")
+                        }
+                        Button { showAdd = true } label: { Image(systemName: "plus") }
+                    }
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Menu {
@@ -193,6 +199,9 @@ struct WardRoundView: View {
                     note: ctx.note,
                     onDischarge: { dischargePatient($0) }
                 )
+            }
+            .sheet(isPresented: $showTriage) {
+                TriageDashboardView()
             }
         }
     }

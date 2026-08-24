@@ -4,29 +4,33 @@ import SwiftData
 // MARK: - Patient detail section enum (iPad/Mac sidebar)
 
 enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
-    case overview      = "Overview"
-    case consultation  = "Consultation"
-    case notes         = "Notes"
-    case vitals        = "Vitals"
-    case prescriptions = "Prescriptions"
-    case billing       = "Billing"
-    case operative     = "Operative Plan"
-    case documents     = "Documents"
-    case demographics  = "Demographics"
+    case overview         = "Overview"
+    case consultation     = "Consultation"
+    case clinicalReasoning = "Clinical Reasoning"
+    case notes            = "Notes"
+    case vitals           = "Vitals"
+    case prescriptions    = "Prescriptions"
+    case billing          = "Billing"
+    case operative        = "Operative Plan"
+    case documents        = "Documents"
+    case intake           = "Intake Checklist"
+    case demographics     = "Demographics"
 
     var id: String { rawValue }
 
     var icon: String {
         switch self {
-        case .overview:      "person.text.rectangle"
-        case .consultation:  "stethoscope"
-        case .notes:         "note.text"
-        case .vitals:        "waveform.path.ecg"
-        case .prescriptions: "pills"
-        case .billing:       "dollarsign.circle"
-        case .operative:     "scissors"
-        case .documents:     "doc.badge.plus"
-        case .demographics:  "square.and.pencil"
+        case .overview:          "person.text.rectangle"
+        case .consultation:      "stethoscope"
+        case .clinicalReasoning: "brain.head.profile"
+        case .notes:             "note.text"
+        case .vitals:            "waveform.path.ecg"
+        case .prescriptions:     "pills"
+        case .billing:           "dollarsign.circle"
+        case .operative:         "scissors"
+        case .documents:         "doc.badge.plus"
+        case .intake:            "person.fill.badge.plus"
+        case .demographics:      "square.and.pencil"
         }
     }
 }
@@ -145,6 +149,8 @@ struct PatientDetailPadView: View {
             .background(AMColor.bg)
         case .consultation:
             ConsultationView(patient: patient)
+        case .clinicalReasoning:
+            ClinicalReasoningView(patient: patient)
         case .notes:
             List { NoteListView(patient: patient) }
         case .vitals:
@@ -157,6 +163,8 @@ struct PatientDetailPadView: View {
             OperativePlanView(patient: patient)
         case .documents:
             DocumentsView(patient: patient)
+        case .intake:
+            IntakeTabView(patient: patient)
         case .demographics:
             PatientDemographicsForm(patient: patient)
         }
