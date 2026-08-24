@@ -88,6 +88,16 @@ final class AIService: ObservableObject {
             lines.append("Examination: \(examFilled.joined(separator: "; "))")
         }
 
+        let invs = patient.investigations
+        if !invs.isEmpty {
+            let ordered  = invs.filter { $0.status == .ordered || $0.status == .pending }
+                               .map { $0.name }
+            let resulted = invs.filter { $0.status == .resulted }
+                               .map { "\($0.name): \($0.result.isEmpty ? "result pending" : $0.result)" }
+            if !ordered.isEmpty  { lines.append("Investigations ordered: \(ordered.joined(separator: ", "))") }
+            if !resulted.isEmpty { lines.append("Investigation results: \(resulted.joined(separator: "; "))") }
+        }
+
         if let plan = patient.managementPlan, !plan.isEmpty {
             lines.append("Management plan: \(plan)")
         }
