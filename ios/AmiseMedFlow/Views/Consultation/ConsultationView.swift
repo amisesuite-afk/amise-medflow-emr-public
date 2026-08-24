@@ -36,6 +36,83 @@ extension Patient {
     }
 }
 
+// MARK: - Chip flow layout (wraps chips to next row automatically)
+
+struct ChipFlow: Layout {
+    var hSpacing: CGFloat = 8
+    var vSpacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let rows = layout(proposal: proposal, subviews: subviews)
+        let h = rows.map(\.maxH).reduce(0, +) + CGFloat(max(0, rows.count - 1)) * vSpacing
+        return CGSize(width: proposal.width ?? 0, height: max(h, 0))
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        var y = bounds.minY
+        for row in layout(proposal: proposal, subviews: subviews) {
+            var x = bounds.minX
+            for item in row.items {
+                item.view.place(at: CGPoint(x: x, y: y), proposal: .unspecified)
+                x += item.w + hSpacing
+            }
+            y += row.maxH + vSpacing
+        }
+    }
+
+    private struct Row {
+        var items: [(view: LayoutSubviews.Element, w: CGFloat, h: CGFloat)] = []
+        var maxH: CGFloat { items.map(\.h).max() ?? 0 }
+    }
+
+    private func layout(proposal: ProposedViewSize, subviews: Subviews) -> [Row] {
+        let avail = proposal.width ?? 320
+        var rows: [Row] = []
+        var row = Row()
+        var x: CGFloat = 0
+        for view in subviews {
+            let s = view.sizeThatFits(.unspecified)
+            if !row.items.isEmpty && x + s.width > avail {
+                rows.append(row); row = Row(); x = 0
+            }
+            row.items.append((view, s.width, s.height))
+            x += s.width + hSpacing
+        }
+        if !row.items.isEmpty { rows.append(row) }
+        return rows
+    }
+}
+
+// MARK: - CC surgical chip data
+
+struct CCSurgicalChip: Identifiable {
+    let id = UUID()
+    let label: String
+    let icon: String
+}
+
+let ccSurgicalChips: [CCSurgicalChip] = [
+    CCSurgicalChip(label: "Abdominal pain",        icon: "waveform.path.ecg"),
+    CCSurgicalChip(label: "Hernia",                icon: "arrow.up.left.and.arrow.down.right"),
+    CCSurgicalChip(label: "Breast lump",           icon: "circle.circle"),
+    CCSurgicalChip(label: "Reflux / Heartburn",    icon: "flame"),
+    CCSurgicalChip(label: "Change in bowel habit", icon: "arrow.left.arrow.right"),
+    CCSurgicalChip(label: "Rectal bleeding",       icon: "drop.fill"),
+    CCSurgicalChip(label: "Weight loss",           icon: "arrow.down.circle"),
+    CCSurgicalChip(label: "Jaundice",              icon: "sun.max"),
+    CCSurgicalChip(label: "Dysphagia",             icon: "mouth"),
+    CCSurgicalChip(label: "Wound / Post-op",       icon: "bandage"),
+    CCSurgicalChip(label: "Neck lump",             icon: "person.bust"),
+    CCSurgicalChip(label: "Bloating",              icon: "bubble.left"),
+    CCSurgicalChip(label: "Skin lesion",           icon: "oval.lefthalf.filled"),
+    CCSurgicalChip(label: "Anal pain",             icon: "figure.walk"),
+    CCSurgicalChip(label: "Nausea / Vomiting",     icon: "arrow.up.circle"),
+    CCSurgicalChip(label: "Follow-up",             icon: "arrow.clockwise"),
+    CCSurgicalChip(label: "Screening",             icon: "magnifyingglass"),
+    CCSurgicalChip(label: "ERCP / Biliary",        icon: "circle.dotted"),
+    CCSurgicalChip(label: "Other",                 icon: "ellipsis.circle"),
+]
+
 // MARK: - Consultation sub-tab
 
 enum ConsultTab: String, CaseIterable {
@@ -217,6 +294,11 @@ struct ConsultationView: View {
 
     // MARK: - CC tab
 
+    private var selectedChipLabel: String? {
+        let cc = patient.chiefComplaint ?? ""
+        return ccSurgicalChips.first(where: { $0.label == cc })?.label
+    }
+
     private var ccTab: some View {
         List {
             Section {
@@ -230,11 +312,39 @@ struct ConsultationView: View {
                         Text("Visit type").font(.caption2).foregroundStyle(.tertiary)
                     }
                 }
-                TextField("e.g. Right upper quadrant pain for 3 days",
+
+                // Chip grid
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(ccSurgicalChips) { chip in
+                        let isSelected = selectedChipLabel == chip.label
+                        Button {
+                            patient.chiefComplaint = chip.label
+                            touch()
+                        } label: {
+                            Label(chip.label, systemImage: chip.icon)
+                                .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background(
+                                    isSelected ? AMColor.accent : AMColor.accentLt,
+                                    in: Capsule()
+                                )
+                                .foregroundStyle(isSelected ? Color.white : AMColor.accent)
+                                .animation(.easeInOut(duration: 0.15), value: isSelected)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+
+                // Free-text override
+                TextField("Or type a custom complaint…",
                           text: Binding(get: { patient.chiefComplaint ?? "" },
                                         set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; touch() }),
                           axis: .vertical)
+                    .font(.callout)
                     .lineLimit(3...)
+
                 if isAssessing {
                     HStack(spacing: 8) {
                         ProgressView().scaleEffect(0.8)
