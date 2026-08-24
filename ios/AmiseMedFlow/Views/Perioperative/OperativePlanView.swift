@@ -53,6 +53,33 @@ private struct PlanForm: View {
     @Binding var aiError: String?
     let context: ModelContext
 
+    private let antibioticChips = [
+        "Cefazolin 1g IV", "Cefazolin 2g IV", "Co-amoxiclav 1.2g IV",
+        "Metronidazole 500mg IV", "Gentamicin 5mg/kg IV", "Nil (NKDA)"
+    ]
+    private let vteChips = [
+        "Enoxaparin 40mg SC", "Enoxaparin 60mg SC", "Enoxaparin 20mg SC",
+        "TED stockings only", "Compression boots", "No prophylaxis"
+    ]
+
+    @ViewBuilder
+    private func quickChips(_ values: [String], current: String, onTap: @escaping (String) -> Void) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(values, id: \.self) { v in
+                    let sel = v == current
+                    Button(v) { onTap(v) }
+                        .font(.caption2.weight(sel ? .semibold : .regular))
+                        .padding(.horizontal, 8).padding(.vertical, 3)
+                        .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                        .foregroundStyle(sel ? Color.white : AMColor.accent)
+                        .buttonStyle(.plain)
+                }
+            }
+            .padding(.vertical, 2)
+        }
+    }
+
     var body: some View {
         List {
             consentSection
@@ -99,8 +126,14 @@ private struct PlanForm: View {
             .onChange(of: plan.positioning) { _, _ in touch() }
             TextField("Antibiotic prophylaxis", text: $plan.antibioticProphylaxis)
                 .onChange(of: plan.antibioticProphylaxis) { _, _ in touch() }
+            quickChips(antibioticChips, current: plan.antibioticProphylaxis) {
+                plan.antibioticProphylaxis = $0; touch()
+            }
             TextField("VTE prophylaxis", text: $plan.vteProphy)
                 .onChange(of: plan.vteProphy) { _, _ in touch() }
+            quickChips(vteChips, current: plan.vteProphy) {
+                plan.vteProphy = $0; touch()
+            }
             TextField("Special equipment / implants", text: $plan.specialEquipment, axis: .vertical)
                 .lineLimit(2...)
                 .onChange(of: plan.specialEquipment) { _, _ in touch() }
