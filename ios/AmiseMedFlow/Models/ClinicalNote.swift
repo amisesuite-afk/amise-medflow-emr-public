@@ -55,8 +55,8 @@ enum NoteStatus: String, Codable, CaseIterable {
 final class ClinicalNote {
     var id: UUID = UUID()
     var remoteId: String?
-    var noteType: NoteType = .soap
-    var status: NoteStatus = .draft
+    var noteType: NoteType = NoteType.soap
+    var status: NoteStatus = NoteStatus.draft
     var createdAt: Date = .now
     var updatedAt: Date = .now
     var syncedAt: Date?

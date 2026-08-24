@@ -9,13 +9,13 @@ final class Patient {
     var remoteId: String?
     var fullName: String = ""
     var dateOfBirth: Date?
-    var sex: Sex = .unspecified
+    var sex: Sex = Sex.unspecified
     var phone: String?
     var email: String?
     var address: String?
-    var setting: ClinicalSetting = .outpatient
-    var location: ClinicalLocation = .rodney_bay
-    var acuity: Acuity = .routine
+    var setting: ClinicalSetting = ClinicalSetting.outpatient
+    var location: ClinicalLocation = ClinicalLocation.rodney_bay
+    var acuity: Acuity = Acuity.routine
     var chiefComplaint: String?
     var referralSource: ReferralSource?
     var referringDoctor: String?
