@@ -153,6 +153,7 @@ private struct RegularRootView: View {
     @State private var selectedSection: AppSection? = .wardRounds
     @State private var selectedPatient: Patient?
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var showSettings = false
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -214,9 +215,10 @@ private struct RegularRootView: View {
         .navigationTitle("Amise MedFlow")
         .toolbarBackground(AMColor.sidebarHd, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
+        .sheet(isPresented: $showSettings) { SettingsView() }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             Divider().overlay(AMColor.sidebarGroup)
-            NavigationLink(destination: SettingsView()) {
+            Button { showSettings = true } label: {
                 Label("Settings", systemImage: "gearshape")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(AMColor.sidebarText)
