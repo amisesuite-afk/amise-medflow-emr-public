@@ -171,7 +171,7 @@ struct PatientDetailPadView: View {
         case .documents:
             DocumentsView(patient: patient)
         case .intake:
-            IntakeTabView(patient: patient)
+            IntakeTabView(patient: patient, onNavigate: { selectedSection = $0 })
         case .demographics:
             PatientDemographicsForm(patient: patient)
         }
