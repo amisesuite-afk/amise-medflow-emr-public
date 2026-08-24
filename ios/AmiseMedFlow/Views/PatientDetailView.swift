@@ -59,6 +59,13 @@ struct PatientDetailPadView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            ToolbarItem(placement: .primaryAction) {
+                ShareLink(item: patient.handoverText,
+                          subject: Text("Patient Handover — \(patient.fullName)"),
+                          message: Text(patient.handoverText)) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+            }
         }
     }
 
@@ -816,8 +823,15 @@ struct PatientDetailView: View {
                         Image(systemName: "trash")
                     }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                ToolbarItem(placement: .primaryAction) {
+                    HStack {
+                        ShareLink(item: patient.handoverText,
+                                  subject: Text("Patient Handover — \(patient.fullName)"),
+                                  message: Text(patient.handoverText)) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                        Button("Done") { dismiss() }
+                    }
                 }
             }
             .confirmationDialog("Delete \(patient.fullName)?",

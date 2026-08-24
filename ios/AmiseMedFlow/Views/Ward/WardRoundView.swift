@@ -167,6 +167,12 @@ struct WardRoundView: View {
                         Button { showTriage = true } label: {
                             Image(systemName: "chart.bar.xaxis.ascending")
                         }
+                        if !inpatients.isEmpty {
+                            ShareLink(item: wardHandoverText,
+                                      subject: Text("Ward Handover")) {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                        }
                         Button { showAdd = true } label: { Image(systemName: "plus") }
                     }
                 }
@@ -204,6 +210,55 @@ struct WardRoundView: View {
                 TriageDashboardView()
             }
         }
+    }
+
+    // MARK: - Ward handover export
+
+    private var wardHandoverText: String {
+        let today = Date.now.formatted(date: .abbreviated, time: .shortened)
+        var lines: [String] = []
+        lines.append("WARD ROUND HANDOVER — \(today)")
+        lines.append("Amise Medical Services · Dr Dawit Daniel Kabiye MD DM")
+        lines.append(String(repeating: "═", count: 48))
+
+        let locationGroups = grouped
+        for (loc, patients) in locationGroups {
+            lines.append("")
+            lines.append("  \(loc.rawValue.uppercased())")
+            lines.append(String(repeating: "─", count: 48))
+            for patient in patients {
+                let reviewed = reviewedIDs.contains(patient.id) ? " ✓" : ""
+                var header = "\(patient.fullName) · \(patient.sex.rawValue) · \(patient.ageYears)y"
+                if let bed = patient.bedNumber { header += " · Bed \(bed)" }
+                header += " [\(patient.acuity.label.uppercased())]"
+                lines.append(header + reviewed)
+                if let dx = patient.workingDiagnosis { lines.append("  Dx: \(dx)") }
+                else if let cc = patient.chiefComplaint { lines.append("  CC: \(cc)") }
+                if let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first, v.hasAnyValue {
+                    var vParts = ["NEWS2 \(v.news2Score) (\(v.news2Risk))"]
+                    if let bp = v.bpString { vParts.append("BP \(bp)") }
+                    if let hr = v.heartRate { vParts.append("HR \(hr)") }
+                    if let spo = v.spo2 { vParts.append("SpO₂ \(spo)%") }
+                    lines.append("  Vitals: \(vParts.joined(separator: " · "))")
+                }
+                let pending = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }
+                if !pending.isEmpty {
+                    lines.append("  Awaiting: \(pending.map { $0.name }.joined(separator: ", "))")
+                }
+                if let plan = patient.managementPlan, !plan.isEmpty {
+                    let planPreview = plan.components(separatedBy: .newlines).first(where: { !$0.isEmpty }) ?? plan.prefix(120).description
+                    lines.append("  Plan: \(planPreview)")
+                }
+                lines.append("")
+            }
+        }
+
+        lines.append(String(repeating: "═", count: 48))
+        let total = inpatients.count
+        let done = reviewedIDs.filter { id in inpatients.contains { $0.id == id } }.count
+        lines.append("Round progress: \(done)/\(total) reviewed")
+        lines.append("This handover is a summary. Verify all details in the full record.")
+        return lines.joined(separator: "\n")
     }
 
     // MARK: - Actions
