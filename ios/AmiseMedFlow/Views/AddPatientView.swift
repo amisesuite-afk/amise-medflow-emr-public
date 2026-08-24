@@ -39,6 +39,8 @@ struct AddPatientView: View {
     @State private var nokRelation = ""
     @State private var nokPhone = ""
     @State private var pmhNotes = ""
+    @State private var surgicalHistory = ""
+    @State private var familyHistoryNotes = ""
 
     init(initialSetting: ClinicalSetting = .outpatient) {
         self.initialSetting = initialSetting
@@ -171,7 +173,29 @@ struct AddPatientView: View {
                 .frame(minHeight: 60)
                 .overlay(alignment: .topLeading) {
                     if pmhNotes.isEmpty {
-                        Text("Past medical / surgical history")
+                        Text("Past medical history")
+                            .foregroundStyle(.tertiary)
+                            .padding(.top, 8)
+                            .padding(.leading, 4)
+                            .allowsHitTesting(false)
+                    }
+                }
+            TextEditor(text: $surgicalHistory)
+                .frame(minHeight: 40)
+                .overlay(alignment: .topLeading) {
+                    if surgicalHistory.isEmpty {
+                        Text("Surgical history")
+                            .foregroundStyle(.tertiary)
+                            .padding(.top, 8)
+                            .padding(.leading, 4)
+                            .allowsHitTesting(false)
+                    }
+                }
+            TextEditor(text: $familyHistoryNotes)
+                .frame(minHeight: 40)
+                .overlay(alignment: .topLeading) {
+                    if familyHistoryNotes.isEmpty {
+                        Text("Family history")
                             .foregroundStyle(.tertiary)
                             .padding(.top, 8)
                             .padding(.leading, 4)
@@ -200,6 +224,8 @@ struct AddPatientView: View {
         if !nokRelation.isEmpty { p.nokRelation = nokRelation }
         if !nokPhone.isEmpty    { p.nokPhone = nokPhone }
         if !pmhNotes.isEmpty    { p.pmhNotes = pmhNotes }
+        if !surgicalHistory.isEmpty    { p.surgicalHistory = surgicalHistory }
+        if !familyHistoryNotes.isEmpty { p.familyHistoryNotes = familyHistoryNotes }
         if showAdmission {
             if !ward.isEmpty      { p.ward = ward }
             if !bedNumber.isEmpty { p.bedNumber = bedNumber }
