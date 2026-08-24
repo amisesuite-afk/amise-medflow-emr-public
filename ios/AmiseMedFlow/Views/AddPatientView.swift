@@ -28,6 +28,10 @@ struct AddPatientView: View {
     @State private var ward = ""
     @State private var bedNumber = ""
 
+    // Procedure (theatre / endoscopy)
+    @State private var hasOperationDate = false
+    @State private var operationDate = Date()
+
     // Extended
     @State private var nokName = ""
     @State private var nokRelation = ""
@@ -48,7 +52,8 @@ struct AddPatientView: View {
             Form {
                 patientSection
                 clinicalSection
-                if showAdmission { admissionSection }
+                if showAdmission  { admissionSection }
+                if showProcedure  { procedureSection }
                 nokSection
                 historySection
             }
@@ -126,6 +131,24 @@ struct AddPatientView: View {
     }
 
     @ViewBuilder
+    private var procedureSection: some View {
+        Section(setting == .endoscopy ? "Endoscopy" : "Procedure") {
+            TextField(
+                setting == .endoscopy ? "Scope type (e.g. OGD, Colonoscopy, ERCP)" : "Procedure name",
+                text: $appointmentType
+            )
+            Toggle("Set date/time", isOn: $hasOperationDate)
+            if hasOperationDate {
+                DatePicker(
+                    "Date & time",
+                    selection: $operationDate,
+                    displayedComponents: [.date, .hourAndMinute]
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
     private var nokSection: some View {
         Section("Next of Kin") {
             TextField("Name", text: $nokName)
@@ -174,6 +197,9 @@ struct AddPatientView: View {
             if !ward.isEmpty      { p.ward = ward }
             if !bedNumber.isEmpty { p.bedNumber = bedNumber }
             p.admittedAt = .now
+        }
+        if showProcedure && hasOperationDate {
+            p.operationDate = operationDate
         }
         context.insert(p)
         try? context.save()

@@ -20,6 +20,12 @@ struct VitalsHistoryView: View {
                 )
                 .listRowBackground(Color.clear)
             } else {
+                if sortedEntries.filter({ $0.hasAnyValue }).count >= 2 {
+                    NEWS2Sparkline(entries: sortedEntries)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                }
+
                 ForEach(sortedEntries) { entry in
                     VitalsRow(entry: entry)
                         .swipeActions(edge: .trailing) {
@@ -132,5 +138,72 @@ struct VitalChip: View {
             RoundedRectangle(cornerRadius: 6)
                 .fill(alert ? Color.red.opacity(0.08) : Color.secondary.opacity(0.08))
         )
+    }
+}
+
+// MARK: - NEWS2 sparkline
+
+struct NEWS2Sparkline: View {
+    let entries: [VitalsEntry]
+
+    private var displayEntries: [VitalsEntry] {
+        Array(entries.filter { $0.hasAnyValue }.prefix(7).reversed())
+    }
+
+    private var scores: [Int] { displayEntries.map { $0.news2Score } }
+
+    private var trendColor: Color {
+        guard scores.count >= 2 else { return .secondary }
+        let delta = scores.last! - scores.first!
+        if delta < 0 { return .green }
+        if delta > 0 { return .red }
+        return .secondary
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("NEWS2 trend — last \(displayEntries.count) readings")
+                .font(.system(size: 10, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+                .kerning(0.3)
+
+            Canvas { ctx, size in
+                guard scores.count >= 2 else { return }
+                let maxScore = max(7, scores.max() ?? 7)
+                let minScore = min(0, scores.min() ?? 0)
+                let range = Double(maxScore - minScore) == 0 ? 1.0 : Double(maxScore - minScore)
+                let stepX = size.width / Double(scores.count - 1)
+
+                func pt(_ i: Int) -> CGPoint {
+                    let x = Double(i) * stepX
+                    let y = size.height * (1.0 - Double(scores[i] - minScore) / range)
+                    return CGPoint(x: x, y: y)
+                }
+
+                var fillPath = Path()
+                fillPath.move(to: CGPoint(x: 0, y: size.height))
+                for i in 0 ..< scores.count { fillPath.addLine(to: pt(i)) }
+                fillPath.addLine(to: CGPoint(x: size.width, y: size.height))
+                fillPath.closeSubpath()
+                ctx.fill(fillPath, with: .color(trendColor.opacity(0.08)))
+
+                var linePath = Path()
+                linePath.move(to: pt(0))
+                for i in 1 ..< scores.count { linePath.addLine(to: pt(i)) }
+                ctx.stroke(linePath, with: .color(trendColor), style: StrokeStyle(lineWidth: 2, lineJoin: .round))
+
+                for i in 0 ..< scores.count {
+                    let p = pt(i)
+                    let dot = CGRect(x: p.x - 3, y: p.y - 3, width: 6, height: 6)
+                    ctx.fill(Path(ellipseIn: dot), with: .color(trendColor))
+                    let inner = CGRect(x: p.x - 1.5, y: p.y - 1.5, width: 3, height: 3)
+                    ctx.fill(Path(ellipseIn: inner), with: .color(.white))
+                }
+            }
+            .frame(height: 44)
+        }
+        .padding(.horizontal, 2)
+        .padding(.vertical, 6)
     }
 }

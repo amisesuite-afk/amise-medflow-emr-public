@@ -67,8 +67,28 @@ struct PatientListView: View {
 struct PatientRow: View {
     let patient: Patient
 
-    private var latestVitals: VitalsEntry? {
-        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }.first
+    private var sortedVitals: [VitalsEntry] {
+        patient.vitalsEntries.sorted { $0.recordedAt > $1.recordedAt }
+    }
+
+    private var latestVitals: VitalsEntry? { sortedVitals.first }
+
+    private var news2Trend: String {
+        let scores = sortedVitals.prefix(3).filter { $0.hasAnyValue }.map { $0.news2Score }
+        guard scores.count >= 2 else { return "" }
+        let delta = scores[0] - scores[1]
+        if delta > 0 { return "↑" }
+        if delta < 0 { return "↓" }
+        return "→"
+    }
+
+    private var news2TrendColor: Color {
+        let scores = sortedVitals.prefix(3).filter { $0.hasAnyValue }.map { $0.news2Score }
+        guard scores.count >= 2 else { return .secondary }
+        let delta = scores[0] - scores[1]
+        if delta > 0 { return .red }
+        if delta < 0 { return .green }
+        return .secondary
     }
 
     private var accentColor: Color { Color(hex: patient.setting.accentHex) }
@@ -154,6 +174,11 @@ struct PatientRow: View {
                         Text("NEWS2 \(v.news2Score)")
                             .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(Color(hex: v.news2Color))
+                        if !news2Trend.isEmpty {
+                            Text(news2Trend)
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(news2TrendColor)
+                        }
                         Text(v.news2Risk)
                             .font(.system(size: 9))
                             .foregroundStyle(Color(hex: v.news2Color).opacity(0.8))
