@@ -333,6 +333,10 @@ struct PatientOverviewContent: View {
                         Text("\(patient.sex.rawValue), \(patient.ageYears)y")
                         Text("·")
                         Text(patient.location.rawValue)
+                        if let mrn = patient.mrn, !mrn.isEmpty {
+                            Text("·")
+                            Text("MRN \(mrn)")
+                        }
                     }
                     .font(.system(size: 13))
                     .foregroundStyle(AMColor.muted)
@@ -341,6 +345,26 @@ struct PatientOverviewContent: View {
                         Label(patient.setting.rawValue, systemImage: patient.setting.icon)
                             .font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(AMColor.accent)
+                    }
+                    // Contact quick-actions
+                    if let phone = patient.phone, !phone.isEmpty {
+                        let digits = phone.filter { $0.isNumber || $0 == "+" }
+                        if let tel = URL(string: "tel:\(digits)") {
+                            Link(destination: tel) {
+                                Label(phone, systemImage: "phone.fill")
+                                    .font(.system(size: 12))
+                                    .foregroundStyle(.green)
+                            }
+                        }
+                    }
+                    if let email = patient.email, !email.isEmpty,
+                       let mailto = URL(string: "mailto:\(email)") {
+                        Link(destination: mailto) {
+                            Label(email, systemImage: "envelope.fill")
+                                .font(.system(size: 12))
+                                .foregroundStyle(AMColor.accent)
+                                .lineLimit(1)
+                        }
                     }
                 }
             }
@@ -522,6 +546,38 @@ struct PatientOverviewContent: View {
                         .foregroundStyle(.secondary)
                     if let preview = notePreview(note) {
                         Text(preview).font(.callout).lineLimit(6)
+                    }
+                }
+            }
+
+            // Next of kin contact
+            if let nokName = patient.nokName, !nokName.isEmpty {
+                overviewCard(title: "Next of Kin") {
+                    HStack(spacing: 8) {
+                        Image(systemName: "person.2.fill")
+                            .foregroundStyle(.secondary)
+                            .font(.system(size: 13))
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack(spacing: 6) {
+                                Text(nokName)
+                                    .font(.system(size: 13, weight: .semibold))
+                                if let rel = patient.nokRelation, !rel.isEmpty {
+                                    Text("(\(rel))")
+                                        .font(.system(size: 12))
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            if let nokPhone = patient.nokPhone, !nokPhone.isEmpty {
+                                let digits = nokPhone.filter { $0.isNumber || $0 == "+" }
+                                if let tel = URL(string: "tel:\(digits)") {
+                                    Link(destination: tel) {
+                                        Label(nokPhone, systemImage: "phone.fill")
+                                            .font(.system(size: 12))
+                                            .foregroundStyle(.green)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
