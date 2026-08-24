@@ -2,18 +2,58 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
+// MARK: - Camera picker wrapper
+
+private struct CameraPickerView: UIViewControllerRepresentable {
+    var completion: (UIImage) -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = .camera
+        picker.allowsEditing = false
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: CameraPickerView
+        init(_ parent: CameraPickerView) { self.parent = parent }
+
+        func imagePickerController(_ picker: UIImagePickerController,
+                                   didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let img = info[.originalImage] as? UIImage { parent.completion(img) }
+            parent.dismiss()
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) { parent.dismiss() }
+    }
+}
+
 struct DocumentsView: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
     @StateObject private var ai = AIService()
 
     @State private var pickerItems: [PhotosPickerItem] = []
+    @State private var showCamera = false
+    @State private var pendingCameraImage: UIImage? = nil
+    @State private var showCategoryPicker = false
+    @State private var pendingCategory = "Imaging"
+    @State private var pendingFileName = ""
+
     @State private var selectedDocForSummary: PatientDocument?
     @State private var summaryText = ""
     @State private var showSummarySheet = false
     @State private var previewDoc: PatientDocument?
     @State private var aiError: String?
     @State private var showError = false
+
+    private let categories = ["Imaging", "Lab / Bloods", "Pathology", "Referral", "Consent", "Operative", "Other"]
 
     var body: some View {
         List {
@@ -23,7 +63,7 @@ struct DocumentsView: View {
                 ContentUnavailableView(
                     "No documents",
                     systemImage: "doc.badge.plus",
-                    description: Text("Import photos or scan documents using the button above")
+                    description: Text("Import photos or take a photo with the camera")
                 )
                 .listRowBackground(Color.clear)
             } else {
@@ -45,6 +85,66 @@ struct DocumentsView: View {
         .sheet(item: $previewDoc) { doc in
             ImagePreviewSheet(document: doc)
         }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraPickerView { image in
+                pendingCameraImage = image
+                pendingFileName = "Photo_\(Date.now.formatted(.dateTime.month().day().hour().minute()))"
+                pendingCategory = "Imaging"
+                showCategoryPicker = true
+            }
+            .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showCategoryPicker) {
+            cameraSaveSheet
+        }
+    }
+
+    // MARK: - Camera save sheet
+
+    private var cameraSaveSheet: some View {
+        NavigationStack {
+            Form {
+                Section("Document Name") {
+                    TextField("Name", text: $pendingFileName)
+                }
+                Section("Category") {
+                    Picker("Category", selection: $pendingCategory) {
+                        ForEach(categories, id: \.self) { Text($0).tag($0) }
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
+                }
+            }
+            .navigationTitle("Save Photo")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Discard") {
+                        pendingCameraImage = nil
+                        showCategoryPicker = false
+                    }
+                    .foregroundStyle(.red)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        if let img = pendingCameraImage,
+                           let data = img.jpegData(compressionQuality: 0.85) {
+                            let name = pendingFileName.trimmingCharacters(in: .whitespaces)
+                            let fileName = name.isEmpty ? "Photo.jpg" : "\(name).jpg"
+                            let doc = PatientDocument(fileName: fileName, mimeType: "image/jpeg", category: pendingCategory)
+                            doc.localData = data
+                            doc.patient = patient
+                            context.insert(doc)
+                            patient.updatedAt = .now
+                            patient.pendingSync = true
+                            Task { await uploadToStorage(doc: doc, data: data) }
+                        }
+                        pendingCameraImage = nil
+                        showCategoryPicker = false
+                    }
+                }
+            }
+        }
     }
 
     // MARK: - Upload
@@ -57,71 +157,46 @@ struct DocumentsView: View {
                 maxSelectionCount: 5,
                 matching: .any(of: [.images])
             ) {
-                Label("Import Photos / Scans", systemImage: "photo.badge.plus")
+                Label("Import from Photo Library", systemImage: "photo.badge.plus")
             }
             .onChange(of: pickerItems) { _, items in
                 Task { await handlePickedItems(items) }
             }
+
+            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                Button {
+                    showCamera = true
+                } label: {
+                    Label("Take Photo (Camera)", systemImage: "camera.fill")
+                }
+            }
         }
     }
 
-    // MARK: - Document list
+    // MARK: - Document list (grouped by category)
+
+    private var groupedDocuments: [(String, [PatientDocument])] {
+        let sorted = patient.documents.sorted { $0.uploadedAt > $1.uploadedAt }
+        let grouped = Dictionary(grouping: sorted) { $0.category ?? "Other" }
+        let order = categories
+        return order.compactMap { cat in
+            guard let docs = grouped[cat], !docs.isEmpty else { return nil }
+            return (cat, docs)
+        }
+    }
 
     @ViewBuilder
     private var documentsSection: some View {
-        Section("Imported Documents (\(patient.documents.count))") {
-            ForEach(patient.documents.sorted { $0.uploadedAt > $1.uploadedAt }) { doc in
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 10) {
-                        // Thumbnail for image docs
-                        if doc.mimeType.contains("image"), let data = doc.localData,
-                           let uiImg = UIImage(data: data) {
-                            Button { previewDoc = doc } label: {
-                                Image(uiImage: uiImg)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 56, height: 56)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.25), lineWidth: 0.5))
-                            }
-                            .buttonStyle(.plain)
-                        } else {
-                            Image(systemName: doc.fileIcon)
-                                .font(.title2)
-                                .foregroundStyle(.teal)
-                                .frame(width: 56, height: 56)
-                                .background(Color.teal.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
-                        }
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(doc.fileName).font(.subheadline.weight(.medium)).lineLimit(2)
-                            Text(doc.uploadedAt, style: .relative).font(.caption).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Button {
-                            Task { await summarise(doc) }
-                        } label: {
-                            Label("AI Read", systemImage: "sparkles")
-                                .font(.caption)
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(.purple)
-                        .disabled(ai.isGenerating)
-                    }
-
-                    if let summary = doc.aiSummary {
-                        Divider()
-                        Text(summary)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(4)
-                    }
+        ForEach(groupedDocuments, id: \.0) { category, docs in
+            Section(category) {
+                ForEach(docs) { doc in
+                    DocumentRow(doc: doc, ai: ai,
+                                onPreview: { previewDoc = doc },
+                                onSummarise: { Task { await summarise(doc) } })
                 }
-                .padding(.vertical, 2)
-            }
-            .onDelete { indexSet in
-                let sorted = patient.documents.sorted { $0.uploadedAt > $1.uploadedAt }
-                indexSet.forEach { context.delete(sorted[$0]) }
+                .onDelete { indexSet in
+                    indexSet.forEach { context.delete(docs[$0]) }
+                }
             }
         }
     }
@@ -129,10 +204,12 @@ struct DocumentsView: View {
     // MARK: - Handlers
 
     private func handlePickedItems(_ items: [PhotosPickerItem]) async {
-        for item in items {
+        let ts = Date.now.formatted(.dateTime.month(.abbreviated).day().hour().minute())
+        for (i, item) in items.enumerated() {
             guard let data = try? await item.loadTransferable(type: Data.self) else { continue }
-            let name = "Scan_\(Int(Date.now.timeIntervalSince1970)).jpg"
-            let doc = PatientDocument(fileName: name, mimeType: "image/jpeg")
+            let suffix = items.count > 1 ? "_\(i + 1)" : ""
+            let name = "Scan_\(ts)\(suffix).jpg"
+            let doc = PatientDocument(fileName: name, mimeType: "image/jpeg", category: "Imaging")
             doc.localData = data
             doc.patient = patient
             await MainActor.run {
@@ -140,7 +217,6 @@ struct DocumentsView: View {
                 patient.updatedAt = .now
                 patient.pendingSync = true
             }
-            // Best-effort upload to Supabase Storage
             await uploadToStorage(doc: doc, data: data)
         }
         pickerItems = []
@@ -185,6 +261,93 @@ struct DocumentsView: View {
             aiError = error.localizedDescription
             showError = true
         }
+    }
+}
+
+// MARK: - Document row
+
+private struct DocumentRow: View {
+    @Bindable var doc: PatientDocument
+    let ai: AIService
+    let onPreview: () -> Void
+    let onSummarise: () -> Void
+
+    @State private var isEditingName = false
+    @State private var editName = ""
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 10) {
+                // Thumbnail
+                if doc.mimeType.contains("image"), let data = doc.localData,
+                   let uiImg = UIImage(data: data) {
+                    Button(action: onPreview) {
+                        Image(uiImage: uiImg)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.secondary.opacity(0.25), lineWidth: 0.5))
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    Image(systemName: doc.fileIcon)
+                        .font(.title2)
+                        .foregroundStyle(.teal)
+                        .frame(width: 56, height: 56)
+                        .background(Color.teal.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    if isEditingName {
+                        HStack {
+                            TextField("Document name", text: $editName)
+                                .font(.subheadline.weight(.medium))
+                                .onSubmit {
+                                    let trimmed = editName.trimmingCharacters(in: .whitespaces)
+                                    if !trimmed.isEmpty { doc.fileName = trimmed }
+                                    isEditingName = false
+                                }
+                            Button { isEditingName = false } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    } else {
+                        Button {
+                            editName = doc.fileName
+                            isEditingName = true
+                        } label: {
+                            Text(doc.fileName)
+                                .font(.subheadline.weight(.medium))
+                                .lineLimit(2)
+                                .foregroundStyle(.primary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    Text(doc.uploadedAt, style: .relative)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button(action: onSummarise) {
+                    Label("AI Read", systemImage: "sparkles")
+                        .font(.caption)
+                }
+                .buttonStyle(.bordered)
+                .tint(.purple)
+                .disabled(ai.isGenerating)
+            }
+
+            if let summary = doc.aiSummary {
+                Divider()
+                Text(summary)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(4)
+            }
+        }
+        .padding(.vertical, 2)
     }
 }
 

@@ -34,13 +34,64 @@ struct PrescriptionView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button { showAddSheet = true }
-                    label: { Image(systemName: "plus") }
+                HStack {
+                    if !patient.prescriptions.isEmpty {
+                        ShareLink(item: medicationListText,
+                                  subject: Text("Medication List — \(patient.fullName)")) {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                    Button { showAddSheet = true }
+                        label: { Image(systemName: "plus") }
+                }
             }
         }
         .sheet(isPresented: $showAddSheet) {
             AddPrescriptionSheet(patient: patient)
         }
+    }
+
+    // MARK: - Medication list export
+
+    private var medicationListText: String {
+        let today = Date.now.formatted(date: .abbreviated, time: .shortened)
+        var lines: [String] = []
+        lines.append("MEDICATION LIST — \(today)")
+        lines.append("Patient: \(patient.fullName) · \(patient.sex.rawValue.prefix(1)), \(patient.ageYears)y")
+        if let mrn = patient.mrn, !mrn.isEmpty { lines.append("MRN: \(mrn)") }
+        if let dx = patient.workingDiagnosis {
+            let icd = patient.workingDiagnosisICD.map { " (\($0))" } ?? ""
+            lines.append("Diagnosis: \(dx)\(icd)")
+        }
+        lines.append("Prescribed by: Dr Dawit Daniel Kabiye")
+        lines.append(String(repeating: "─", count: 48))
+        lines.append("")
+
+        let sorted = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
+        for (i, rx) in sorted.enumerated() {
+            lines.append("\(i + 1). \(rx.drug)")
+            var detail: [String] = []
+            if !rx.dose.isEmpty { detail.append(rx.dose) }
+            if !rx.route.isEmpty { detail.append(rx.route) }
+            if !rx.frequency.isEmpty { detail.append(rx.frequency) }
+            if !detail.isEmpty { lines.append("   \(detail.joined(separator: " · "))") }
+            if !rx.duration.isEmpty { lines.append("   Duration: \(rx.duration)") }
+            if !rx.indication.isEmpty { lines.append("   For: \(rx.indication)") }
+            if let instr = rx.instructions, !instr.isEmpty { lines.append("   Note: \(instr)") }
+        }
+
+        lines.append("")
+        lines.append(String(repeating: "─", count: 48))
+        let allergyList = patient.allergies
+        if allergyList.isEmpty {
+            lines.append("Allergies: NKDA")
+        } else {
+            lines.append("Allergies: \(allergyList.map { "\($0.name) (\($0.reaction), \($0.severity))" }.joined(separator: "; "))")
+        }
+        lines.append("")
+        lines.append("Total: \(sorted.count) medication\(sorted.count == 1 ? "" : "s")")
+        lines.append("Verify all doses and indications before dispensing.")
+        return lines.joined(separator: "\n")
     }
 
     // MARK: - Interaction alerts
@@ -92,8 +143,18 @@ struct PrescriptionView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(rx.drug).font(.subheadline.weight(.semibold))
                         Text(rx.displayLine).font(.caption).foregroundStyle(.secondary)
-                        if !rx.indication.isEmpty {
-                            Text("For: \(rx.indication)").font(.caption2).foregroundStyle(.tertiary)
+                        HStack(spacing: 8) {
+                            if !rx.duration.isEmpty {
+                                Label(rx.duration, systemImage: "clock")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                            }
+                            if !rx.indication.isEmpty {
+                                Text("For: \(rx.indication)").font(.caption2).foregroundStyle(.tertiary)
+                            }
+                        }
+                        if let instr = rx.instructions, !instr.isEmpty {
+                            Text(instr).font(.caption2.italic()).foregroundStyle(.secondary)
                         }
                     }
                     .padding(.vertical, 2)

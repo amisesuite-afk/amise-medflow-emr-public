@@ -12,14 +12,16 @@ final class PatientDocument {
     var uploadedAt: Date
     var remoteId: String?
     var patient: Patient?
+    var category: String?   // "Imaging", "Lab", "Pathology", "Referral", "Consent", "Other"
 
     // Store image data locally (for photos taken in-app, pre-upload)
     var localData: Data?
 
-    init(fileName: String, mimeType: String = "image/jpeg") {
+    init(fileName: String, mimeType: String = "image/jpeg", category: String? = nil) {
         self.id = UUID()
         self.fileName = fileName
         self.mimeType = mimeType
+        self.category = category
         self.uploadedAt = .now
     }
 
