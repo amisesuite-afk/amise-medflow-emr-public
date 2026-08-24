@@ -53,6 +53,8 @@ final class AIService: ObservableObject {
         if let hpi = patient.hpi, !hpi.isEmpty { lines.append("HPI: \(hpi)") }
         if let pmh = patient.pmhNotes, !pmh.isEmpty { lines.append("Past medical history: \(pmh)") }
         if let sx = patient.surgicalHistory, !sx.isEmpty { lines.append("Surgical history: \(sx)") }
+        if let fh = patient.familyHistoryNotes, !fh.isEmpty { lines.append("Family history: \(fh)") }
+        if let social = patient.socialHistory, !social.isEmpty { lines.append("Social history: \(social)") }
 
         let allergies = patient.allergies
         if allergies.isEmpty {

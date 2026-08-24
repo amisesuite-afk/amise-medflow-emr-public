@@ -32,7 +32,7 @@ struct IntakeTabView: View {
             Field(id: "nokphone",   label: "Next of kin phone",    icon: "phone.badge.checkmark",    value: patient.nokPhone ?? "",                     required: true,  section: .demographics),
             Field(id: "insurance",  label: "Insurance provider",   icon: "creditcard",               value: patient.insuranceProvider ?? "",            required: false, section: .demographics),
             Field(id: "policy",     label: "Policy number",        icon: "doc.text",                 value: patient.policyNumber ?? "",                 required: false, section: .demographics),
-            Field(id: "social",     label: "Social history",       icon: "house",                    value: patient.socialHistory ?? "",                required: false, section: .demographics),
+            Field(id: "social",     label: "Social history",       icon: "figure.walk",              value: patient.socialHistory ?? "",                required: false, section: .consultation),
         ]
     }
 

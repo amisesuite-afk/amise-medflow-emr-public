@@ -202,6 +202,13 @@ let pshxChips: [String] = [
     "Fistula / abscess repair", "Caesarean section", "Hysterectomy", "Other abdominal surgery",
 ]
 
+let familyHistoryChips: [String] = [
+    "Colorectal cancer", "Breast cancer", "Ovarian cancer", "Gastric cancer",
+    "Pancreatic cancer", "Hepatocellular carcinoma", "Lynch syndrome",
+    "Ischaemic heart disease", "Stroke", "Hypertension", "T2DM",
+    "Familial hypercholesterolaemia", "AAA", "IBD", "BRCA1/BRCA2 mutation",
+]
+
 // MARK: - Common allergen quick-chip data
 
 struct AllergenChip {
@@ -388,6 +395,7 @@ struct ConsultationView: View {
     @State private var pmhBypassConfirmed = false
     @State private var pshxChipSelections: Set<String> = []
     @State private var pshxBypassConfirmed = false
+    @State private var fhChipSelections: Set<String> = []
     @State private var newInvName = ""
     @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
 
@@ -926,12 +934,42 @@ struct ConsultationView: View {
             }
 
             Section {
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(familyHistoryChips, id: \.self) { chip in
+                        let sel = fhChipSelections.contains(chip)
+                        Button { fhChipSelections.formSymmetricDifference([chip]) } label: {
+                            Text(chip)
+                                .font(.system(size: 12, weight: sel ? .semibold : .regular))
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(sel ? Color.white : AMColor.accent)
+                                .animation(.easeInOut(duration: 0.12), value: sel)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+
+                if !fhChipSelections.isEmpty {
+                    Button {
+                        appendHistory(existing: patient.familyHistoryNotes, chips: fhChipSelections) {
+                            patient.familyHistoryNotes = $0
+                        }
+                        fhChipSelections = []
+                        touch()
+                    } label: {
+                        Label("Append \(fhChipSelections.count) item\(fhChipSelections.count == 1 ? "" : "s") to Family History",
+                              systemImage: "plus.circle.fill")
+                    }
+                    .foregroundStyle(AMColor.accent)
+                }
+
                 ZStack(alignment: .topLeading) {
                     TextEditor(text: Binding(get: { patient.familyHistoryNotes ?? "" },
                                             set: { patient.familyHistoryNotes = $0.isEmpty ? nil : $0; touch() }))
                         .frame(minHeight: 80)
                     if (patient.familyHistoryNotes ?? "").isEmpty {
-                        Text("Colorectal cancer, breast cancer, cardiovascular disease, etc.")
+                        Text("Free-text — or use chips above")
                             .foregroundStyle(.tertiary).font(.caption)
                             .padding(.top, 8).padding(.leading, 4)
                             .allowsHitTesting(false)

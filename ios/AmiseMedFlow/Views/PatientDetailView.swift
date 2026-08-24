@@ -504,6 +504,16 @@ struct PatientOverviewContent: View {
                 }
             }
 
+            // Social history snapshot
+            if let social = patient.socialHistory, !social.isEmpty {
+                overviewCard(title: "Social History") {
+                    Text(social)
+                        .font(.system(size: 13))
+                        .lineLimit(6)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             // Latest note
             if let note = latestNote {
                 overviewCard(title: "Latest Note — \(note.noteType.label)") {
