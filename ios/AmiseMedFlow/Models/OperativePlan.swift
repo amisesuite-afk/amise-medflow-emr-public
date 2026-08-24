@@ -3,44 +3,44 @@ import SwiftData
 
 @Model
 final class OperativePlan {
-    var id: UUID = UUID()
-    var updatedAt: Date = .now
+    var id: UUID
+    var updatedAt: Date
     var patient: Patient?
 
     // Consent
-    var consentProcedure: String = ""
-    var consentSigned: Bool = false
+    var consentProcedure: String
+    var consentSigned: Bool
 
     // Anaesthesia & prep
-    var anaesthesiaType: String = "General"
-    var positioning: String = "Supine"
-    var antibioticProphylaxis: String = "Co-amoxiclav 1.2 g IV at induction"
-    var vteProphy: String = "TED stockings + LMWH"
-    var specialEquipment: String = ""
-    var surgicalTeamNote: String = ""
+    var anaesthesiaType: String
+    var positioning: String
+    var antibioticProphylaxis: String
+    var vteProphy: String
+    var specialEquipment: String
+    var surgicalTeamNote: String
 
     // WHO Sign In
-    var whoIdentityConfirmed: Bool = false
-    var whoSiteMarked: Bool = false
-    var whoAnaesthesiaCheckDone: Bool = false
-    var whoPulseOxOk: Bool = false
-    var whoAllergiesReviewed: Bool = false
-    var whoAspirationRisk: Bool = false
-    var whoAirwayRisk: Bool = false
+    var whoIdentityConfirmed: Bool
+    var whoSiteMarked: Bool
+    var whoAnaesthesiaCheckDone: Bool
+    var whoPulseOxOk: Bool
+    var whoAllergiesReviewed: Bool
+    var whoAspirationRisk: Bool
+    var whoAirwayRisk: Bool
 
     // WHO Time Out
-    var whoTeamIntroduced: Bool = false
-    var whoProcedureConfirmed: Bool = false
-    var whoAntibioticGiven: Bool = false
-    var whoCriticalStepsDiscussed: Bool = false
-    var whoImagingDisplayed: Bool = false
-    var whoSterilityConfirmed: Bool = false
+    var whoTeamIntroduced: Bool
+    var whoProcedureConfirmed: Bool
+    var whoAntibioticGiven: Bool
+    var whoCriticalStepsDiscussed: Bool
+    var whoImagingDisplayed: Bool
+    var whoSterilityConfirmed: Bool
 
     // WHO Sign Out
-    var whoSwabsCounted: Bool = false
-    var whoSpecimenLabelled: Bool = false
-    var whoEquipmentIssues: Bool = false
-    var whoRecoveryConcerns: Bool = false
+    var whoSwabsCounted: Bool
+    var whoSpecimenLabelled: Bool
+    var whoEquipmentIssues: Bool
+    var whoRecoveryConcerns: Bool
 
     init() {
         self.id = UUID()

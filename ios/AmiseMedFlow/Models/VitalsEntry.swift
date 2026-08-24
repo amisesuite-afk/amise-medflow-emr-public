@@ -3,8 +3,8 @@ import Foundation
 
 @Model
 final class VitalsEntry {
-    var id: UUID = UUID()
-    var recordedAt: Date = .now
+    var id: UUID
+    var recordedAt: Date
     var bpSystolic: Int?
     var bpDiastolic: Int?
     var heartRate: Int?

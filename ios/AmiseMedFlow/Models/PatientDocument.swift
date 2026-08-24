@@ -3,13 +3,13 @@ import SwiftData
 
 @Model
 final class PatientDocument {
-    var id: UUID = UUID()
-    var fileName: String = ""
-    var mimeType: String = "image/jpeg"
+    var id: UUID
+    var fileName: String
+    var mimeType: String
     var storageUrl: String?
     var aiSummary: String?
     var extractedText: String?
-    var uploadedAt: Date = .now
+    var uploadedAt: Date
     var remoteId: String?
     var patient: Patient?
 

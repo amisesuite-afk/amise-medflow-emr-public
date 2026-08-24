@@ -3,14 +3,14 @@ import SwiftData
 
 @Model
 final class BillingLineItem {
-    var id: UUID = UUID()
-    var cptCode: String = ""
-    var cptDescription: String = ""
-    var cptCategory: String = ""
-    var units: Int = 1
-    var modifier: String = ""
-    var note: String = ""
-    var addedAt: Date = .now
+    var id: UUID
+    var cptCode: String
+    var cptDescription: String
+    var cptCategory: String
+    var units: Int
+    var modifier: String
+    var note: String
+    var addedAt: Date
     var patient: Patient?
 
     init(code: String, description: String, category: String) {
