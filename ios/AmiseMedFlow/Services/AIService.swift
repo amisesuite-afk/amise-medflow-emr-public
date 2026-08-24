@@ -100,6 +100,9 @@ final class AIService: ObservableObject {
             if !resulted.isEmpty { lines.append("Investigation results: \(resulted.joined(separator: "; "))") }
         }
 
+        if let assessment = patient.assessmentText, !assessment.isEmpty {
+            lines.append("Assessment: \(assessment)")
+        }
         if let plan = patient.managementPlan, !plan.isEmpty {
             lines.append("Management plan: \(plan)")
         }
