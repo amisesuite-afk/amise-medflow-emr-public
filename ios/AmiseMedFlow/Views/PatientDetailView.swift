@@ -35,7 +35,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
 
 struct PatientDetailPadView: View {
     @Bindable var patient: Patient
-    @State private var selectedSection: PatientDetailSection = .overview
+    @State private var selectedSection: PatientDetailSection? = .overview
 
     var body: some View {
         HStack(spacing: 0) {
@@ -50,7 +50,7 @@ struct PatientDetailPadView: View {
             ToolbarItem(placement: .principal) {
                 VStack(spacing: 1) {
                     Text(patient.fullName).font(.headline)
-                    Text("\(patient.sex.rawValue) · \(patient.ageYears)y · \(selectedSection.rawValue)")
+                    Text("\(patient.sex.rawValue) · \(patient.ageYears)y · \((selectedSection ?? .overview).rawValue)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -136,7 +136,7 @@ struct PatientDetailPadView: View {
 
     @ViewBuilder
     private var patientSectionContent: some View {
-        switch selectedSection {
+        switch selectedSection ?? .overview {
         case .overview:
             ScrollView {
                 PatientOverviewContent(patient: patient)
