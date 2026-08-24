@@ -138,6 +138,15 @@ struct AddPrescriptionSheet: View {
             .filter { $0.drugA == drugQuery || $0.drugB == drugQuery }
     }
 
+    private var allergyMatches: [AllergyEntry] {
+        guard drugQuery.count >= 3 else { return [] }
+        let q = drugQuery.lowercased()
+        return patient.allergies.filter { entry in
+            let n = entry.name.lowercased()
+            return n.contains(q) || q.contains(n)
+        }
+    }
+
     @ViewBuilder
     private func quickChips(_ values: [String], current: String, onTap: @escaping (String) -> Void) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -204,6 +213,30 @@ struct AddPrescriptionSheet: View {
                             .font(.caption)
                             .buttonStyle(.bordered)
                             .tint(dose == drug.commonDoses ? .teal : .secondary)
+                    }
+                }
+
+                if !allergyMatches.isEmpty {
+                    Section {
+                        ForEach(allergyMatches) { entry in
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "exclamationmark.shield.fill")
+                                    .foregroundStyle(.red)
+                                    .font(.system(size: 14))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("ALLERGY: \(entry.name)")
+                                        .font(.subheadline.weight(.bold))
+                                        .foregroundStyle(.red)
+                                    Text("\(entry.reaction) — \(entry.severity)")
+                                        .font(.caption)
+                                        .foregroundStyle(.red.opacity(0.8))
+                                }
+                            }
+                            .padding(.vertical, 2)
+                        }
+                    } header: {
+                        Label("Allergy Alert", systemImage: "exclamationmark.shield.fill")
+                            .foregroundStyle(.red)
                     }
                 }
 

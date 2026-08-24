@@ -30,7 +30,7 @@ struct VitalsEntryView: View {
     var body: some View {
         NavigationStack {
             Form {
-                // One-tap normal fill
+                // One-tap normal fill + live NEWS2 preview
                 Section {
                     Button {
                         fillAllNormal()
@@ -40,6 +40,29 @@ struct VitalsEntryView: View {
                     }
                     .buttonStyle(.plain)
                     DatePicker("Recorded at", selection: $recordedAt)
+
+                    if hasScoreableValue {
+                        HStack(spacing: 8) {
+                            Image(systemName: liveNews2Score >= 7
+                                  ? "exclamationmark.triangle.fill"
+                                  : liveNews2Score >= 5
+                                      ? "exclamationmark.triangle"
+                                      : "checkmark.circle")
+                                .font(.system(size: 13))
+                                .foregroundStyle(liveNews2Color)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text("NEWS2: \(liveNews2Score) — \(liveNews2Risk)")
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(liveNews2Color)
+                                Text("Live score · updates as you type")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+                        .padding(.vertical, 2)
+                        .animation(.easeInOut(duration: 0.2), value: liveNews2Score)
+                    }
                 }
 
                 // BP
@@ -122,6 +145,41 @@ struct VitalsEntryView: View {
             }
             .padding(.vertical, 2)
         }
+    }
+
+    // MARK: - Live NEWS2 preview (mirrors VitalsEntry.news2Score)
+
+    private var liveNews2Score: Int {
+        var s = 0
+        if let rr = Int(respiratoryRate) {
+            s += rr <= 8 ? 3 : rr <= 11 ? 1 : rr <= 20 ? 0 : rr <= 24 ? 2 : 3
+        }
+        if let spo = Int(spo2) {
+            s += spo >= 96 ? 0 : spo >= 94 ? 1 : spo >= 92 ? 2 : 3
+        }
+        if let sys = Int(bpSystolic) {
+            s += sys <= 90 ? 3 : sys <= 100 ? 2 : sys <= 110 ? 1 : sys <= 219 ? 0 : 3
+        }
+        if let hr = Int(heartRate) {
+            s += hr <= 40 ? 3 : hr <= 50 ? 1 : hr <= 90 ? 0 : hr <= 110 ? 1 : hr <= 130 ? 2 : 3
+        }
+        if let t = Double(temperatureStr) {
+            s += t <= 35.0 ? 3 : t <= 36.0 ? 1 : t <= 38.0 ? 0 : t <= 39.0 ? 1 : 2
+        }
+        return s
+    }
+
+    private var liveNews2Risk: String {
+        liveNews2Score <= 4 ? "Low" : liveNews2Score <= 6 ? "Medium" : "High"
+    }
+
+    private var liveNews2Color: Color {
+        liveNews2Score <= 4 ? .green : liveNews2Score <= 6 ? .orange : .red
+    }
+
+    private var hasScoreableValue: Bool {
+        !bpSystolic.isEmpty || !heartRate.isEmpty || !respiratoryRate.isEmpty ||
+        !temperatureStr.isEmpty || !spo2.isEmpty
     }
 
     // MARK: - Helpers

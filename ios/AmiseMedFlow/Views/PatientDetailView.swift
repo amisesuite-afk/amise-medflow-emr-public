@@ -421,7 +421,22 @@ struct PatientOverviewContent: View {
                         LabeledContent("Bed", value: bed)
                     }
                     if let admitted = patient.admittedAt {
-                        LabeledContent("Admitted") { Text(admitted, style: .date) }
+                        let los = max(0, Calendar.current.dateComponents([.day], from: admitted, to: .now).day ?? 0)
+                        LabeledContent("Admitted") {
+                            Text(admitted, style: .date) +
+                            Text("  (Day \(los + 1))").foregroundColor(.secondary)
+                        }
+                    }
+                    if let exp = patient.expectedDischarge {
+                        let daysLeft = Calendar.current.dateComponents([.day], from: .now, to: exp).day ?? 0
+                        LabeledContent("Expected d/c") {
+                            HStack(spacing: 4) {
+                                Text(exp, style: .date)
+                                Text(daysLeft <= 1 ? "(today/tomorrow)" : "(\(daysLeft)d)")
+                                    .font(.caption2)
+                                    .foregroundStyle(daysLeft <= 1 ? .orange : .secondary)
+                            }
+                        }
                     }
                 }
             }

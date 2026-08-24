@@ -27,6 +27,8 @@ struct AddPatientView: View {
     // Admission
     @State private var ward = ""
     @State private var bedNumber = ""
+    @State private var hasExpectedDischarge = false
+    @State private var expectedDischarge = Date(timeIntervalSinceNow: 3 * 86400)
 
     // Procedure (theatre / endoscopy)
     @State private var hasOperationDate = false
@@ -127,6 +129,11 @@ struct AddPatientView: View {
         Section("Admission") {
             TextField("Ward", text: $ward)
             TextField("Bed number", text: $bedNumber)
+            Toggle("Expected discharge date", isOn: $hasExpectedDischarge)
+            if hasExpectedDischarge {
+                DatePicker("", selection: $expectedDischarge, displayedComponents: .date)
+                    .labelsHidden()
+            }
         }
     }
 
@@ -197,6 +204,7 @@ struct AddPatientView: View {
             if !ward.isEmpty      { p.ward = ward }
             if !bedNumber.isEmpty { p.bedNumber = bedNumber }
             p.admittedAt = .now
+            if hasExpectedDischarge { p.expectedDischarge = expectedDischarge }
         }
         if showProcedure && hasOperationDate {
             p.operationDate = operationDate
