@@ -202,6 +202,24 @@ let pshxChips: [String] = [
     "Fistula / abscess repair", "Caesarean section", "Hysterectomy", "Other abdominal surgery",
 ]
 
+// MARK: - Common allergen quick-chip data
+
+struct AllergenChip {
+    let name: String
+    let reaction: String
+}
+
+let commonAllergenChips: [AllergenChip] = [
+    .init(name: "Penicillin",     reaction: "Rash / urticaria"),
+    .init(name: "NSAIDs",         reaction: "GI upset / bronchospasm"),
+    .init(name: "Codeine",        reaction: "Nausea / vomiting"),
+    .init(name: "Sulfonamides",   reaction: "Rash"),
+    .init(name: "Latex",          reaction: "Contact reaction"),
+    .init(name: "Contrast dye",   reaction: "Anaphylaxis"),
+    .init(name: "Aspirin",        reaction: "Bronchospasm"),
+    .init(name: "Metronidazole",  reaction: "Nausea / metallic taste"),
+]
+
 // MARK: - CC → suggested investigations lookup
 
 private typealias CCInv = (name: String, category: InvestigationEntry.InvCategory)
@@ -1200,6 +1218,55 @@ struct ConsultationView: View {
 
     private var allergiesTab: some View {
         List {
+            // Quick-add common allergen chips
+            Section {
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(commonAllergenChips, id: \.name) { chip in
+                        let added = patient.allergies.contains(where: { $0.name == chip.name })
+                        Button {
+                            guard !added else { return }
+                            var list = patient.allergies
+                            list.append(AllergyEntry(name: chip.name, severity: "Moderate",
+                                                     reaction: chip.reaction))
+                            patient.allergies = list; touch()
+                        } label: {
+                            HStack(spacing: 4) {
+                                if added {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 9, weight: .bold))
+                                }
+                                Text(chip.name)
+                                    .font(.system(size: 12, weight: added ? .semibold : .regular))
+                            }
+                            .padding(.horizontal, 10).padding(.vertical, 5)
+                            .background(added ? Color.red.opacity(0.15) : Color.red.opacity(0.07),
+                                        in: Capsule())
+                            .foregroundStyle(added ? Color.red : Color.red.opacity(0.75))
+                            .overlay(Capsule()
+                                .stroke(added ? Color.red.opacity(0.35) : Color.clear, lineWidth: 1))
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(added)
+                    }
+                }
+                .padding(.vertical, 4)
+
+                Button {
+                    let nkda = AllergyEntry(name: "NKDA", severity: "Mild", reaction: "None")
+                    if !patient.allergies.contains(where: { $0.name == "NKDA" }) {
+                        var list = patient.allergies; list.insert(nkda, at: 0)
+                        patient.allergies = list; touch()
+                    }
+                } label: {
+                    Label("Mark NKDA (No Known Drug Allergies)", systemImage: "checkmark.shield")
+                        .font(.subheadline).foregroundStyle(.green)
+                }
+                .buttonStyle(.plain)
+                .disabled(patient.allergies.contains(where: { $0.name == "NKDA" }))
+            } header: {
+                Label("Common Allergens", systemImage: "bolt.heart")
+            }
+
             Section {
                 if patient.allergies.isEmpty {
                     HStack {
