@@ -25,7 +25,8 @@ struct VitalsEntryView: View {
     private let hrPresets   = ["55", "60", "70", "72", "80", "90", "100", "110", "120"]
     private let rrPresets   = ["12", "14", "16", "18", "20", "22", "24"]
     private let tempPresets = ["36.0", "36.5", "36.8", "37.0", "37.5", "38.0", "38.5", "39.0", "39.5"]
-    private let spo2Presets = ["88", "90", "92", "94", "95", "96", "97", "98", "99", "100"]
+    private let spo2Presets     = ["88", "90", "92", "94", "95", "96", "97", "98", "99", "100"]
+    private let glucosePresets  = ["3.5", "4.0", "5.0", "5.6", "6.0", "7.0", "8.0", "10.0", "12.0", "15.0", "20.0"]
 
     var body: some View {
         NavigationStack {
@@ -103,12 +104,32 @@ struct VitalsEntryView: View {
                     quickChips(spo2Presets, current: spo2) { spo2 = $0 }
                 } header: { Text("SpO₂ (%)") }
 
-                // Weight & glucose — no presets, too patient-specific
+                // Weight — live BMI preview if height is on record
                 Section("Weight (kg)") {
                     TextField("e.g. 75.0", text: $weightKg).keyboardType(.decimalPad)
+                    if let wt = Double(weightKg), wt > 0,
+                       let h = patient.heightCm, h > 0 {
+                        let hm = h / 100.0
+                        let bmi = wt / (hm * hm)
+                        let cat: String
+                        switch bmi {
+                        case ..<18.5: cat = "Underweight"
+                        case 18.5..<25: cat = "Normal"
+                        case 25..<30: cat = "Overweight"
+                        default: cat = "Obese"
+                        }
+                        LabeledContent("BMI") {
+                            Text(String(format: "%.1f — %@", bmi, cat))
+                                .foregroundStyle(bmi < 18.5 || bmi >= 30 ? .orange : .secondary)
+                        }
+                        .font(.caption)
+                        .animation(.easeInOut(duration: 0.15), value: weightKg)
+                    }
                 }
+                // Blood glucose — quick chips cover common clinical values
                 Section("Blood glucose (mmol/L)") {
                     TextField("e.g. 5.6", text: $glucoseMmol).keyboardType(.decimalPad)
+                    quickChips(glucosePresets, current: glucoseMmol) { glucoseMmol = $0 }
                 }
 
                 Section("Notes") {
@@ -194,7 +215,7 @@ struct VitalsEntryView: View {
 
     private var hasAnyValue: Bool {
         !bpSystolic.isEmpty || !heartRate.isEmpty || !respiratoryRate.isEmpty ||
-        !temperatureStr.isEmpty || !spo2.isEmpty || !weightKg.isEmpty
+        !temperatureStr.isEmpty || !spo2.isEmpty || !weightKg.isEmpty || !glucoseMmol.isEmpty
     }
 
     private func save() {
