@@ -162,13 +162,29 @@ final class SyncService: ObservableObject {
                 let phone: String?
                 let email: String?
                 let address: String?
+                let mrn: String?
+                let nok_name: String?
+                let nok_relation: String?
+                let nok_phone: String?
+                let insurance_provider: String?
+                let policy_number: String?
+                let pmh_notes: String?
+                let family_history_notes: String?
             }
             let row = InsertRow(
                 full_name: patient.fullName,
                 sex: patient.sex.rawValue.lowercased(),
                 phone: patient.phone,
                 email: patient.email,
-                address: patient.address
+                address: patient.address,
+                mrn: patient.mrn,
+                nok_name: patient.nokName,
+                nok_relation: patient.nokRelation,
+                nok_phone: patient.nokPhone,
+                insurance_provider: patient.insuranceProvider,
+                policy_number: patient.policyNumber,
+                pmh_notes: patient.pmhNotes,
+                family_history_notes: patient.familyHistoryNotes
             )
             struct InsertResponse: Decodable { let id: String }
             let response: [InsertResponse] = try await SupabaseConfig.client
@@ -201,7 +217,14 @@ final class SyncService: ObservableObject {
                 let phone: String?
                 let email: String?
                 let address: String?
+                let mrn: String?
+                let nok_name: String?
+                let nok_relation: String?
+                let nok_phone: String?
+                let insurance_provider: String?
+                let policy_number: String?
                 let pmh_notes: String?
+                let family_history_notes: String?
                 let working_diagnosis: String?
                 let working_diagnosis_icd: String?
             }
@@ -211,7 +234,14 @@ final class SyncService: ObservableObject {
                 phone: patient.phone,
                 email: patient.email,
                 address: patient.address,
+                mrn: patient.mrn,
+                nok_name: patient.nokName,
+                nok_relation: patient.nokRelation,
+                nok_phone: patient.nokPhone,
+                insurance_provider: patient.insuranceProvider,
+                policy_number: patient.policyNumber,
                 pmh_notes: patient.pmhNotes,
+                family_history_notes: patient.familyHistoryNotes,
                 working_diagnosis: patient.workingDiagnosis,
                 working_diagnosis_icd: patient.workingDiagnosisICD
             )
