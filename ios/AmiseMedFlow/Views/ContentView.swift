@@ -156,21 +156,7 @@ private struct RegularRootView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            List(AppSection.allCases, selection: $selectedSection) { section in
-                Label(section.rawValue, systemImage: section.icon)
-            }
-            .navigationTitle("Amise MedFlow")
-            .safeAreaInset(edge: .bottom) {
-                Divider()
-                NavigationLink(destination: SettingsView()) {
-                    Label("Settings", systemImage: "gearshape")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 10)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-            }
+            sidebarColumn
         } content: {
             SectionPatientListView(section: selectedSection,
                                    selectedPatient: $selectedPatient)
@@ -183,8 +169,80 @@ private struct RegularRootView: View {
                     systemImage: "person.text.rectangle",
                     description: Text("Choose a patient from the list to view their record.")
                 )
+                    .background(AMColor.bg)
             }
         }
+    }
+
+    // MARK: Dark sidebar — mirrors web #071714 sidebar
+
+    private var sidebarColumn: some View {
+        List(selection: $selectedSection) {
+            Section {
+                ForEach(AppSection.allCases) { section in
+                    AppSectionRow(section: section,
+                                  isSelected: selectedSection == section)
+                        .tag(section)
+                        .listRowBackground(
+                            selectedSection == section
+                                ? AMColor.accent.opacity(0.14)
+                                    .overlay(alignment: .leading) {
+                                        Rectangle()
+                                            .fill(AMColor.accent)
+                                            .frame(width: 3)
+                                    }
+                                : Color.clear
+                        )
+                        .listRowInsets(EdgeInsets())
+                }
+            } header: {
+                Text("Clinical Workflow")
+                    .font(.system(size: 10, weight: .heavy))
+                    .foregroundStyle(AMColor.sidebarGroup)
+                    .tracking(0.1 * 10)
+                    .padding(.top, 4)
+            }
+        }
+        .listStyle(.sidebar)
+        .scrollContentBackground(.hidden)
+        .background(AMColor.sidebarBg)
+        .navigationTitle("Amise MedFlow")
+        .toolbarBackground(AMColor.sidebarHd, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            Divider().overlay(AMColor.sidebarGroup)
+            NavigationLink(destination: SettingsView()) {
+                Label("Settings", systemImage: "gearshape")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(AMColor.sidebarText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 12)
+            }
+            .buttonStyle(.plain)
+            .background(AMColor.sidebarBg)
+        }
+    }
+}
+
+// MARK: - Sidebar section row
+
+private struct AppSectionRow: View {
+    let section: AppSection
+    let isSelected: Bool
+
+    var body: some View {
+        Label {
+            Text(section.rawValue)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(isSelected ? AMColor.sidebarActive : AMColor.sidebarText)
+        } icon: {
+            Image(systemName: section.icon)
+                .foregroundStyle(isSelected ? AMColor.sidebarActive : AMColor.sidebarText)
+        }
+        .padding(.vertical, 9)
+        .padding(.horizontal, 18)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

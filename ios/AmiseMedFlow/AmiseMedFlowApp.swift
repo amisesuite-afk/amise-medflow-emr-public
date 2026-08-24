@@ -25,6 +25,7 @@ struct AmiseMedFlowApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(sync)
+                .tint(AMColor.accent)
         }
         .modelContainer(sharedModelContainer)
     }

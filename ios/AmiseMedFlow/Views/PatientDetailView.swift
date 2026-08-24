@@ -40,9 +40,9 @@ struct PatientDetailPadView: View {
     var body: some View {
         HStack(spacing: 0) {
             patientSectionSidebar
-            Divider()
             patientSectionContent
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(AMColor.bg)
         }
         .navigationTitle(patient.fullName)
         .navigationBarTitleDisplayMode(.inline)
@@ -58,17 +58,39 @@ struct PatientDetailPadView: View {
         }
     }
 
-    // MARK: Section sidebar
+    // MARK: Section sidebar — dark, mirrors web sidebar
 
     private var patientSectionSidebar: some View {
         List(selection: $selectedSection) {
-            ForEach(PatientDetailSection.allCases) { section in
-                Label(section.rawValue, systemImage: section.icon)
-                    .tag(section)
+            Section {
+                ForEach(PatientDetailSection.allCases) { section in
+                    PatientSectionRow(section: section,
+                                      isSelected: selectedSection == section)
+                        .tag(section)
+                        .listRowBackground(
+                            selectedSection == section
+                                ? AMColor.accent.opacity(0.14)
+                                    .overlay(alignment: .leading) {
+                                        Rectangle()
+                                            .fill(AMColor.accent)
+                                            .frame(width: 3)
+                                    }
+                                : Color.clear
+                        )
+                        .listRowInsets(EdgeInsets())
+                }
+            } header: {
+                Text(patient.fullName)
+                    .font(.system(size: 10, weight: .heavy))
+                    .foregroundStyle(AMColor.sidebarGroup)
+                    .tracking(1)
+                    .lineLimit(1)
             }
         }
         .listStyle(.sidebar)
-        .frame(width: 220)
+        .scrollContentBackground(.hidden)
+        .background(AMColor.sidebarBg)
+        .frame(width: 200)
         .safeAreaInset(edge: .top, spacing: 0) {
             patientIdentityCard
         }
@@ -78,29 +100,31 @@ struct PatientDetailPadView: View {
         HStack(spacing: 10) {
             ZStack {
                 Circle()
-                    .fill(Color(hex: patient.setting.accentHex).opacity(0.15))
-                    .frame(width: 40, height: 40)
+                    .fill(AMColor.accent.opacity(0.2))
+                    .frame(width: 38, height: 38)
                 Text(patient.initials)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color(hex: patient.setting.accentHex))
+                    .font(.system(size: 14, weight: .heavy))
+                    .foregroundStyle(AMColor.sidebarActive)
             }
             VStack(alignment: .leading, spacing: 2) {
                 Label(patient.setting.rawValue, systemImage: patient.setting.icon)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(Color(hex: patient.setting.accentHex))
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(AMColor.sidebarActive)
                 HStack(spacing: 4) {
                     AcuityPip(acuity: patient.acuity)
-                    Text(patient.location.rawValue)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                    Text("\(patient.sex.rawValue) · \(patient.ageYears)y")
+                        .font(.system(size: 10))
+                        .foregroundStyle(AMColor.sidebarText)
                 }
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(hex: patient.setting.accentHex).opacity(0.05))
-        .overlay(alignment: .bottom) { Divider() }
+        .background(AMColor.sidebarHd)
+        .overlay(alignment: .bottom) {
+            Divider().overlay(AMColor.sidebarGroup)
+        }
     }
 
     // MARK: Section content
@@ -111,8 +135,9 @@ struct PatientDetailPadView: View {
         case .overview:
             ScrollView {
                 PatientOverviewContent(patient: patient)
-                    .padding()
+                    .padding(20)
             }
+            .background(AMColor.bg)
         case .consultation:
             ConsultationView(patient: patient)
         case .notes:
@@ -130,6 +155,27 @@ struct PatientDetailPadView: View {
         case .demographics:
             PatientDemographicsForm(patient: patient)
         }
+    }
+}
+
+// MARK: - Patient section row (dark sidebar)
+
+private struct PatientSectionRow: View {
+    let section: PatientDetailSection
+    let isSelected: Bool
+
+    var body: some View {
+        Label {
+            Text(section.rawValue)
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(isSelected ? AMColor.sidebarActive : AMColor.sidebarText)
+        } icon: {
+            Image(systemName: section.icon)
+                .foregroundStyle(isSelected ? AMColor.sidebarActive : AMColor.sidebarText)
+        }
+        .padding(.vertical, 9)
+        .padding(.horizontal, 14)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -157,36 +203,42 @@ struct PatientOverviewContent: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            // Header card
+            // Header card — web-style with accent teal
             HStack(spacing: 16) {
                 ZStack {
                     Circle()
-                        .fill(Color(hex: patient.setting.accentHex).opacity(0.15))
+                        .fill(AMColor.accent.opacity(0.15))
                         .frame(width: 64, height: 64)
                     Text(patient.initials)
-                        .font(.system(size: 24, weight: .semibold))
-                        .foregroundStyle(Color(hex: patient.setting.accentHex))
+                        .font(.system(size: 24, weight: .heavy))
+                        .foregroundStyle(AMColor.accentDk)
                 }
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(patient.fullName).font(.title2.weight(.semibold))
+                    Text(patient.fullName)
+                        .font(.system(size: 20, weight: .heavy))
+                        .foregroundStyle(AMColor.ink)
                     HStack(spacing: 6) {
                         Text("\(patient.sex.rawValue), \(patient.ageYears)y")
                         Text("·")
                         Text(patient.location.rawValue)
                     }
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 13))
+                    .foregroundStyle(AMColor.muted)
                     HStack(spacing: 6) {
                         AcuityPip(acuity: patient.acuity)
                         Label(patient.setting.rawValue, systemImage: patient.setting.icon)
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(Color(hex: patient.setting.accentHex))
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(AMColor.accent)
                     }
                 }
             }
-            .padding()
+            .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color(hex: patient.setting.accentHex).opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
+            .background(AMColor.accentLt.opacity(0.5), in: RoundedRectangle(cornerRadius: 14))
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(AMColor.accent.opacity(0.3), lineWidth: 1)
+            )
 
             // Chief complaint
             if let cc = patient.chiefComplaint {
@@ -275,18 +327,12 @@ struct PatientOverviewContent: View {
 
     @ViewBuilder
     private func overviewCard<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .textCase(.uppercase)
-                .tracking(0.5)
-            VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).amSectionLabel()
+            VStack(alignment: .leading, spacing: 8) {
                 content()
             }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
+            .amCard()
         }
     }
 }
