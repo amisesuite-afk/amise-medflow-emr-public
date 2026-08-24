@@ -20,6 +20,20 @@ extension Patient {
             allergiesJson = (try? String(data: JSONEncoder().encode(newValue), encoding: .utf8)) ?? nil
         }
     }
+
+    var consultationCompleteness: (filled: Int, total: Int) {
+        let checks: [Bool] = [
+            !(chiefComplaint ?? "").isEmpty,
+            !(hpi ?? "").isEmpty,
+            !(pmhNotes ?? "").isEmpty || !(surgicalHistory ?? "").isEmpty,
+            !allergies.isEmpty,
+            !prescriptions.isEmpty,
+            !(examGeneral ?? "").isEmpty || !(examAbdo ?? "").isEmpty,
+            workingDiagnosis != nil,
+            !(managementPlan ?? "").isEmpty
+        ]
+        return (checks.filter { $0 }.count, checks.count)
+    }
 }
 
 // MARK: - ConsultationView
@@ -40,16 +54,30 @@ struct ConsultationView: View {
     @State private var icdQuery = ""
     @State private var icdSuggestions: [ICDCode] = []
     @State private var showAIError = false
+    @State private var showSavedConfirmation = false
 
     enum ExamMode { case short, full }
 
+    private var interactions: [DrugInteractionAlert] {
+        DrugInteractionService.check(drugs: patient.prescriptions.map { $0.drug })
+    }
+
+    private var completeness: (filled: Int, total: Int) {
+        patient.consultationCompleteness
+    }
+
     var body: some View {
         List {
+            // Allergy alert — always first if any exist
+            if !patient.allergies.isEmpty { allergyAlertBanner }
+
+            completenessSection
             chiefComplaintSection
             hpiSection
             pmhSection
             allergiesSection
             medicationsSection
+            if !interactions.isEmpty { interactionAlertsSection }
             examinationSection
             workingDiagnosisSection
             if let result = triageResult { pathwaySection(result) }
@@ -66,6 +94,57 @@ struct ConsultationView: View {
         } message: {
             Text(ai.error ?? "Unknown error")
         }
+        .alert("SOAP Note Saved", isPresented: $showSavedConfirmation) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text("Consultation saved to Notes tab.")
+        }
+    }
+
+    // MARK: - Allergy Alert Banner
+
+    @ViewBuilder
+    private var allergyAlertBanner: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 6) {
+                Label("ALLERGY ALERT", systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.white)
+                ForEach(patient.allergies) { a in
+                    HStack(spacing: 6) {
+                        Circle().fill(.white.opacity(0.8)).frame(width: 6, height: 6)
+                        Text("\(a.name)  [\(a.severity)]  — \(a.reaction)")
+                            .font(.caption).foregroundStyle(.white)
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+            .listRowBackground(Color.red.opacity(0.85))
+        }
+    }
+
+    // MARK: - Completeness
+
+    @ViewBuilder
+    private var completenessSection: some View {
+        Section {
+            let (filled, total) = completeness
+            VStack(spacing: 6) {
+                ProgressView(value: Double(filled), total: Double(total))
+                    .tint(filled == total ? .green : .teal)
+                HStack {
+                    Text("\(filled) of \(total) sections complete")
+                        .font(.caption).foregroundStyle(.secondary)
+                    Spacer()
+                    if filled == total {
+                        Label("Ready to save", systemImage: "checkmark.seal.fill")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.green)
+                    }
+                }
+            }
+        }
+        .listRowBackground(Color.clear)
     }
 
     // MARK: - Chief Complaint
@@ -75,10 +154,7 @@ struct ConsultationView: View {
         Section {
             TextField("e.g. Right upper quadrant pain for 3 days", text: Binding(
                 get: { patient.chiefComplaint ?? "" },
-                set: {
-                    patient.chiefComplaint = $0.isEmpty ? nil : $0
-                    touch()
-                }
+                set: { patient.chiefComplaint = $0.isEmpty ? nil : $0; touch() }
             ), axis: .vertical).lineLimit(2...)
 
             Button {
@@ -93,7 +169,8 @@ struct ConsultationView: View {
             .disabled(isAssessing || (patient.chiefComplaint ?? "").isEmpty)
             .foregroundStyle(.teal)
         } header: {
-            Label("Chief Complaint", systemImage: "person.fill.questionmark")
+            sectionHeader("Chief Complaint", icon: "person.fill.questionmark",
+                          filled: !(patient.chiefComplaint ?? "").isEmpty)
         }
     }
 
@@ -107,10 +184,10 @@ struct ConsultationView: View {
                     get: { patient.hpi ?? "" },
                     set: { patient.hpi = $0.isEmpty ? nil : $0; touch() }
                 ))
-                .frame(minHeight: 100)
+                .frame(minHeight: 110)
                 if (patient.hpi ?? "").isEmpty {
-                    Text("Onset, duration, character, severity, radiation, associated symptoms, relieving/aggravating factors…")
-                        .foregroundStyle(.tertiary).font(.callout)
+                    Text("Site · Onset · Character · Radiation · Associations · Time course · Exacerbating / Relieving factors · Severity (SOCRATES)")
+                        .foregroundStyle(.tertiary).font(.caption)
                         .padding(.top, 8).padding(.leading, 4)
                         .allowsHitTesting(false)
                 }
@@ -127,7 +204,8 @@ struct ConsultationView: View {
             .disabled(ai.isGenerating || (patient.chiefComplaint ?? "").isEmpty)
             .foregroundStyle(.purple)
         } header: {
-            Label("History of Presenting Illness", systemImage: "text.bubble")
+            sectionHeader("History of Presenting Illness", icon: "text.bubble",
+                          filled: !(patient.hpi ?? "").isEmpty)
         }
     }
 
@@ -135,28 +213,33 @@ struct ConsultationView: View {
 
     @ViewBuilder
     private var pmhSection: some View {
-        Section("Past Medical History") {
-            TextEditor(text: Binding(
-                get: { patient.pmhNotes ?? "" },
-                set: { patient.pmhNotes = $0.isEmpty ? nil : $0; touch() }
-            ))
-            .frame(minHeight: 60)
-        }
+        let historyFilled = !(patient.pmhNotes ?? "").isEmpty || !(patient.surgicalHistory ?? "").isEmpty
 
-        Section("Past Surgical History") {
-            TextEditor(text: Binding(
-                get: { patient.surgicalHistory ?? "" },
-                set: { patient.surgicalHistory = $0.isEmpty ? nil : $0; touch() }
-            ))
-            .frame(minHeight: 60)
-        }
-
-        Section("Family History") {
-            TextEditor(text: Binding(
-                get: { patient.familyHistoryNotes ?? "" },
-                set: { patient.familyHistoryNotes = $0.isEmpty ? nil : $0; touch() }
-            ))
-            .frame(minHeight: 40)
+        Section {
+            Group {
+                Text("Past Medical History").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                TextEditor(text: Binding(
+                    get: { patient.pmhNotes ?? "" },
+                    set: { patient.pmhNotes = $0.isEmpty ? nil : $0; touch() }
+                )).frame(minHeight: 56)
+            }
+            Group {
+                Text("Past Surgical History").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                TextEditor(text: Binding(
+                    get: { patient.surgicalHistory ?? "" },
+                    set: { patient.surgicalHistory = $0.isEmpty ? nil : $0; touch() }
+                )).frame(minHeight: 40)
+            }
+            Group {
+                Text("Family History").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                TextEditor(text: Binding(
+                    get: { patient.familyHistoryNotes ?? "" },
+                    set: { patient.familyHistoryNotes = $0.isEmpty ? nil : $0; touch() }
+                )).frame(minHeight: 36)
+            }
+        } header: {
+            sectionHeader("Medical & Surgical History", icon: "clock.arrow.circlepath",
+                          filled: historyFilled)
         }
     }
 
@@ -166,16 +249,19 @@ struct ConsultationView: View {
     private var allergiesSection: some View {
         Section {
             if patient.allergies.isEmpty {
-                Text("No known drug allergies (NKDA)")
-                    .foregroundStyle(.secondary).font(.callout)
+                HStack {
+                    Image(systemName: "checkmark.shield").foregroundStyle(.green)
+                    Text("No known drug allergies (NKDA)")
+                        .foregroundStyle(.secondary).font(.callout)
+                }
             } else {
                 ForEach(patient.allergies) { allergy in
                     HStack(spacing: 10) {
                         Circle()
                             .fill(severityColor(allergy.severity))
-                            .frame(width: 8, height: 8)
+                            .frame(width: 9, height: 9)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(allergy.name).font(.subheadline.weight(.medium))
+                            Text(allergy.name).font(.subheadline.weight(.semibold))
                             Text("\(allergy.severity) — \(allergy.reaction)")
                                 .font(.caption).foregroundStyle(.secondary)
                         }
@@ -195,12 +281,12 @@ struct ConsultationView: View {
             }
             .foregroundStyle(.red)
         } header: {
-            Label("Allergies & Intolerances", systemImage: "exclamationmark.shield")
-                .foregroundStyle(.red)
+            sectionHeader("Allergies & Intolerances", icon: "exclamationmark.shield",
+                          filled: !patient.allergies.isEmpty, filledColor: .red)
         }
     }
 
-    // MARK: - Current Medications
+    // MARK: - Medications
 
     @ViewBuilder
     private var medicationsSection: some View {
@@ -223,7 +309,31 @@ struct ConsultationView: View {
             }
             .foregroundStyle(.teal)
         } header: {
-            Label("Current Medications", systemImage: "pills")
+            sectionHeader("Current Medications", icon: "pills",
+                          filled: !patient.prescriptions.isEmpty)
+        }
+    }
+
+    // MARK: - Drug interaction alerts
+
+    @ViewBuilder
+    private var interactionAlertsSection: some View {
+        Section {
+            ForEach(Array(interactions.enumerated()), id: \.offset) { _, alert in
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Image(systemName: alert.severity == "Contraindicated" ? "xmark.octagon.fill" : "exclamationmark.triangle.fill")
+                            .foregroundStyle(alert.severity == "Contraindicated" ? .red : .orange)
+                        Text("\(alert.drug1) + \(alert.drug2)")
+                            .font(.caption.weight(.semibold))
+                    }
+                    Text(alert.mechanism).font(.caption).foregroundStyle(.secondary)
+                    Text("→ \(alert.management)").font(.caption2).foregroundStyle(.orange)
+                }
+            }
+        } header: {
+            Label("Drug Interaction Alerts", systemImage: "exclamationmark.triangle")
+                .foregroundStyle(.orange)
         }
     }
 
@@ -231,25 +341,56 @@ struct ConsultationView: View {
 
     @ViewBuilder
     private var examinationSection: some View {
-        Section {
-            Picker("Exam detail", selection: $examMode) {
-                Text("Short").tag(ExamMode.short)
-                Text("Full Systems Review").tag(ExamMode.full)
-            }
-            .pickerStyle(.segmented)
+        let examFilled = !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
 
-            examField("General appearance", keyPath: \.examGeneral)
-            examField("Cardiovascular", keyPath: \.examCVS)
-            examField("Respiratory", keyPath: \.examResp)
-            examField("Abdomen", keyPath: \.examAbdo)
+        Section {
+            HStack {
+                Picker("Exam detail", selection: $examMode) {
+                    Text("Short").tag(ExamMode.short)
+                    Text("Full Systems Review").tag(ExamMode.full)
+                }
+                .pickerStyle(.segmented)
+                Spacer(minLength: 12)
+                Button("All Normal") { markAllNormal() }
+                    .font(.caption).foregroundStyle(.teal)
+            }
+
+            examField("General appearance", text: Binding(
+                get: { patient.examGeneral ?? "" },
+                set: { patient.examGeneral = $0.isEmpty ? nil : $0; touch() }
+            ))
+            examField("Cardiovascular", text: Binding(
+                get: { patient.examCVS ?? "" },
+                set: { patient.examCVS = $0.isEmpty ? nil : $0; touch() }
+            ))
+            examField("Respiratory", text: Binding(
+                get: { patient.examResp ?? "" },
+                set: { patient.examResp = $0.isEmpty ? nil : $0; touch() }
+            ))
+            examField("Abdomen", text: Binding(
+                get: { patient.examAbdo ?? "" },
+                set: { patient.examAbdo = $0.isEmpty ? nil : $0; touch() }
+            ))
 
             if examMode == .full {
-                examField("Neurological", keyPath: \.examNeuro)
-                examField("Musculoskeletal", keyPath: \.examMSK)
-                examField("Skin / Wound", keyPath: \.examSkin)
+                examField("Neurological", text: Binding(
+                    get: { patient.examNeuro ?? "" },
+                    set: { patient.examNeuro = $0.isEmpty ? nil : $0; touch() }
+                ))
+                examField("Musculoskeletal", text: Binding(
+                    get: { patient.examMSK ?? "" },
+                    set: { patient.examMSK = $0.isEmpty ? nil : $0; touch() }
+                ))
+                examField("Skin / Wound", text: Binding(
+                    get: { patient.examSkin ?? "" },
+                    set: { patient.examSkin = $0.isEmpty ? nil : $0; touch() }
+                ))
             }
 
-            examField("Other / Additional findings", keyPath: \.examOther)
+            examField("Other / Additional findings", text: Binding(
+                get: { patient.examOther ?? "" },
+                set: { patient.examOther = $0.isEmpty ? nil : $0; touch() }
+            ))
 
             Button {
                 Task { await draftExam() }
@@ -263,23 +404,17 @@ struct ConsultationView: View {
             .disabled(ai.isGenerating)
             .foregroundStyle(.purple)
         } header: {
-            Label("Physical Examination", systemImage: "stethoscope")
+            sectionHeader("Physical Examination", icon: "stethoscope", filled: examFilled)
         }
     }
 
     @ViewBuilder
-    private func examField(_ label: String, keyPath: ReferenceWritableKeyPath<Patient, String?>) -> some View {
+    private func examField(_ label: String, text: Binding<String>) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
-            TextField("Findings…", text: Binding(
-                get: { patient[keyPath: keyPath] ?? "" },
-                set: {
-                    patient[keyPath: keyPath] = $0.isEmpty ? nil : $0
-                    touch()
-                }
-            ), axis: .vertical)
-            .lineLimit(2...)
-            .font(.callout)
+            TextField("Findings…", text: text, axis: .vertical)
+                .lineLimit(2...)
+                .font(.callout)
         }
         .padding(.vertical, 2)
     }
@@ -336,15 +471,15 @@ struct ConsultationView: View {
                     Button("Clear") {
                         patient.workingDiagnosis = nil
                         patient.workingDiagnosisICD = nil
-                        touch()
-                        icdQuery = ""
+                        touch(); icdQuery = ""
                     }.font(.caption).foregroundStyle(.red)
                 }
                 Label("Radiates to: Notes · Prescriptions · Billing", systemImage: "arrow.triangle.branch")
                     .font(.caption).foregroundStyle(.teal)
             }
         } header: {
-            Label("Working Diagnosis", systemImage: "stethoscope")
+            sectionHeader("Working Diagnosis", icon: "stethoscope",
+                          filled: patient.workingDiagnosis != nil)
         }
     }
 
@@ -395,7 +530,7 @@ struct ConsultationView: View {
                 ))
                 .frame(minHeight: 120)
                 if (patient.managementPlan ?? "").isEmpty {
-                    Text("Investigations, referrals, prescriptions, follow-up plan…")
+                    Text("Investigations · Referrals · Prescriptions · Follow-up plan · Red flag advice…")
                         .foregroundStyle(.tertiary).font(.callout)
                         .padding(.top, 8).padding(.leading, 4)
                         .allowsHitTesting(false)
@@ -421,7 +556,8 @@ struct ConsultationView: View {
             }
             .foregroundStyle(.blue)
         } header: {
-            Label("Assessment & Management Plan", systemImage: "doc.text.magnifyingglass")
+            sectionHeader("Assessment & Management Plan", icon: "doc.text.magnifyingglass",
+                          filled: !(patient.managementPlan ?? "").isEmpty)
         }
     }
 
@@ -464,9 +600,29 @@ struct ConsultationView: View {
                         resetAllergyForm()
                         showAddAllergy = false
                     }
-                    .disabled(newAllergyName.trimmingCharacters(in: .whitespaces).isEmpty)
                     .bold()
+                    .disabled(newAllergyName.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
+            }
+        }
+    }
+
+    // MARK: - Shared section header builder
+
+    @ViewBuilder
+    private func sectionHeader(
+        _ title: String,
+        icon: String,
+        filled: Bool,
+        filledColor: Color = .teal
+    ) -> some View {
+        HStack(spacing: 6) {
+            Label(title, systemImage: icon)
+            Spacer()
+            if filled {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(filledColor)
+                    .font(.caption)
             }
         }
     }
@@ -501,6 +657,14 @@ struct ConsultationView: View {
         }
     }
 
+    private func markAllNormal() {
+        if (patient.examGeneral ?? "").isEmpty { patient.examGeneral = "Alert and oriented. No acute distress." }
+        if (patient.examCVS ?? "").isEmpty { patient.examCVS = "Regular rate and rhythm. No murmurs." }
+        if (patient.examResp ?? "").isEmpty { patient.examResp = "Clear to auscultation bilaterally." }
+        if (patient.examAbdo ?? "").isEmpty { patient.examAbdo = "Soft, non-tender, non-distended. No organomegaly." }
+        touch()
+    }
+
     private func runPathway() {
         isAssessing = true
         let result = ClinicalPathwayEngine.assess(
@@ -518,59 +682,50 @@ struct ConsultationView: View {
     private func draftHPI() async {
         let system = """
         You are a surgical registrar AI assistant to Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
-        Write concise, professional clinical documentation in British spelling.
+        Write concise professional clinical documentation. British spelling.
         Mark AI-generated content: [AI DRAFT — REVIEW BEFORE SIGNING].
         """
         let user = """
-        Write a concise HPI paragraph for a surgical outpatient consultation note.
+        Write a concise HPI paragraph (3-5 sentences) for a surgical outpatient consultation note using the SOCRATES framework.
         Patient: \(patient.fullName), \(patient.sex.rawValue), \(patient.ageYears)y
         Chief Complaint: \(patient.chiefComplaint ?? "Not specified")
         PMH: \(patient.pmhNotes ?? "None documented")
-
-        Cover: onset, duration, character, severity, location, radiation, associated symptoms,
-        aggravating/relieving factors, prior episodes, prior treatment.
-        One paragraph, 3-5 sentences. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
+        Surgical History: \(patient.surgicalHistory ?? "Nil")
+        Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
         """
         do {
             let draft = try await ai.generate(systemPrompt: system, userMessage: user)
             patient.hpi = draft
             touch()
-        } catch {
-            showAIError = true
-        }
+        } catch { showAIError = true }
     }
 
     private func draftExam() async {
         let system = """
-        You are a surgical registrar AI assistant. Write brief, realistic examination findings.
-        British spelling. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
+        You are a surgical registrar AI assistant. Write brief, realistic examination findings. British spelling.
         """
         let user = """
-        Write brief surgical examination findings for:
-        Patient: \(patient.fullName), \(patient.sex.rawValue), \(patient.ageYears)y
-        Presentation: \(patient.chiefComplaint ?? patient.workingDiagnosis ?? "Not specified")
-        Diagnosis: \(patient.workingDiagnosis ?? "Under assessment")
-
-        Return ONLY in this format, one line each, separated by newline:
+        Write brief surgical examination findings. Return ONLY in this exact format, one per line:
         General: [finding]
         CVS: [finding]
         Resp: [finding]
         Abdomen: [finding]
-        Mark each line as [AI DRAFT].
+
+        Patient: \(patient.fullName), \(patient.sex.rawValue), \(patient.ageYears)y
+        Presentation: \(patient.chiefComplaint ?? patient.workingDiagnosis ?? "Not specified")
+        Mark each as [AI DRAFT].
         """
         do {
             let draft = try await ai.generate(systemPrompt: system, userMessage: user)
             for line in draft.components(separatedBy: "\n") {
                 let l = line.trimmingCharacters(in: .whitespaces)
-                if l.lowercased().hasPrefix("general") { patient.examGeneral = l }
-                else if l.lowercased().hasPrefix("cvs") || l.lowercased().hasPrefix("cardio") { patient.examCVS = l }
-                else if l.lowercased().hasPrefix("resp") { patient.examResp = l }
-                else if l.lowercased().hasPrefix("abdo") || l.lowercased().hasPrefix("abdom") { patient.examAbdo = l }
+                if l.lowercased().hasPrefix("general:")     { patient.examGeneral = l }
+                else if l.lowercased().hasPrefix("cvs:")    { patient.examCVS = l }
+                else if l.lowercased().hasPrefix("resp:")   { patient.examResp = l }
+                else if l.lowercased().hasPrefix("abdo")    { patient.examAbdo = l }
             }
             touch()
-        } catch {
-            showAIError = true
-        }
+        } catch { showAIError = true }
     }
 
     private func draftPlan() async {
@@ -578,9 +733,7 @@ struct ConsultationView: View {
             let soap = try await ai.generateSOAP(patient: patient, noteType: .soap)
             patient.managementPlan = "Assessment: \(soap.a)\n\nPlan: \(soap.p)"
             touch()
-        } catch {
-            showAIError = true
-        }
+        } catch { showAIError = true }
     }
 
     private func saveSoapNote() async {
@@ -589,9 +742,9 @@ struct ConsultationView: View {
             patient.hpi.map { "HPI:\n\($0)" },
             patient.pmhNotes.map { "PMH: \($0)" },
             patient.surgicalHistory.map { "Past Surgical Hx: \($0)" },
-            allergySummary().isEmpty ? nil : allergySummary(),
-            medicationSummary().isEmpty ? nil : medicationSummary(),
-            examSummary().isEmpty ? nil : "Examination:\n\(examSummary())",
+            allergySummary(),
+            medicationSummary(),
+            examSummary(),
             patient.workingDiagnosis.map { dx in
                 "Diagnosis: \(dx)\(patient.workingDiagnosisICD.map { " (\($0))" } ?? "")"
             },
@@ -602,6 +755,7 @@ struct ConsultationView: View {
         note.freeText = parts.joined(separator: "\n\n")
         context.insert(note)
         touch()
+        showSavedConfirmation = true
     }
 
     private func allergySummary() -> String {
@@ -656,19 +810,17 @@ private struct AddMedicationSheet: View {
                                 label: { Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary) }
                         }
                     }
-                    if !suggestions.isEmpty {
-                        ForEach(suggestions.prefix(6)) { drug in
-                            Button {
-                                selectedDrug = drug
-                                drugQuery = drug.name
-                                dose = drug.commonDoses
-                                indication = patient.workingDiagnosis ?? ""
-                                suggestions = []
-                            } label: {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(drug.name).foregroundStyle(.primary).font(.subheadline)
-                                    Text(drug.commonDoses).font(.caption).foregroundStyle(.secondary)
-                                }
+                    ForEach(suggestions.prefix(6)) { drug in
+                        Button {
+                            selectedDrug = drug
+                            drugQuery = drug.name
+                            dose = drug.commonDoses
+                            indication = patient.workingDiagnosis ?? ""
+                            suggestions = []
+                        } label: {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(drug.name).foregroundStyle(.primary).font(.subheadline)
+                                Text(drug.commonDoses).font(.caption).foregroundStyle(.secondary)
                             }
                         }
                     }
@@ -680,9 +832,8 @@ private struct AddMedicationSheet: View {
                     Section("Dose & Route") {
                         TextField("Dose", text: $dose)
                         Picker("Route", selection: $route) {
-                            ForEach(["Oral", "IV", "IM", "SC", "Topical", "Inhaled", "PR", "SL"], id: \.self) {
-                                Text($0).tag($0)
-                            }
+                            ForEach(["Oral", "IV", "IM", "SC", "Topical", "Inhaled", "PR", "SL"],
+                                    id: \.self) { Text($0).tag($0) }
                         }
                         TextField("Frequency", text: $frequency)
                         TextField("Duration", text: $duration)
@@ -693,9 +844,7 @@ private struct AddMedicationSheet: View {
             .navigationTitle("Add Medication")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
+                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
                         guard let drug = selectedDrug else { return }
