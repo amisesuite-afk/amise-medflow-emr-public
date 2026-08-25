@@ -35,17 +35,34 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .demographics:      "square.and.pencil"
         }
     }
+
+    var shortLabel: String {
+        switch self {
+        case .overview:          "Overview"
+        case .workflow:          "Workflow"
+        case .consultation:      "Consult"
+        case .clinicalReasoning: "Reasoning"
+        case .notes:             "Notes"
+        case .vitals:            "Vitals"
+        case .prescriptions:     "Rx"
+        case .billing:           "Billing"
+        case .operative:         "Op Plan"
+        case .documents:         "Docs"
+        case .intake:            "Intake"
+        case .demographics:      "Details"
+        }
+    }
 }
 
-// MARK: - iPad/Mac: patient detail with sidebar
+// MARK: - iPad/Mac: patient detail with horizontal top nav bar
 
 struct PatientDetailPadView: View {
     @Bindable var patient: Patient
     @State private var selectedSection: PatientDetailSection? = .overview
 
     var body: some View {
-        HStack(spacing: 0) {
-            patientSectionSidebar
+        VStack(spacing: 0) {
+            horizontalSectionNav
             patientSectionContent
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(AMColor.bg)
@@ -56,9 +73,22 @@ struct PatientDetailPadView: View {
             ToolbarItem(placement: .principal) {
                 VStack(spacing: 1) {
                     Text(patient.fullName).font(.headline)
-                    Text("\(patient.sex.rawValue) · \(patient.ageYears)y · \((selectedSection ?? .overview).rawValue)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: 6) {
+                        AcuityPip(acuity: patient.acuity)
+                        Text("\(patient.sex.rawValue) · \(patient.ageYears)y · \(patient.setting.rawValue)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        if patient.hasCriticalAllergy {
+                            Image(systemName: "exclamationmark.shield.fill")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(.red)
+                        }
+                        if patient.hasAnticoagulation {
+                            Image(systemName: "drop.fill")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(.purple)
+                        }
+                    }
                 }
             }
             ToolbarItem(placement: .primaryAction) {
@@ -71,77 +101,41 @@ struct PatientDetailPadView: View {
         }
     }
 
-    // MARK: Section sidebar — dark, mirrors web sidebar
+    // MARK: Horizontal section nav — full width, scrollable, dark strip
 
-    private var patientSectionSidebar: some View {
-        List(selection: $selectedSection) {
-            Section {
+    private var horizontalSectionNav: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 0) {
                 ForEach(PatientDetailSection.allCases) { section in
-                    PatientSectionRow(section: section,
-                                      isSelected: selectedSection == section)
-                        .tag(section)
-                        .listRowBackground(sectionBackground(section))
-                        .listRowInsets(EdgeInsets())
+                    let sel = selectedSection == section
+                    Button { selectedSection = section } label: {
+                        VStack(spacing: 4) {
+                            Image(systemName: section.icon)
+                                .font(.system(size: 16, weight: sel ? .semibold : .regular))
+                            Text(section.shortLabel)
+                                .font(.system(size: 9, weight: sel ? .bold : .semibold))
+                                .lineLimit(1)
+                        }
+                        .foregroundStyle(sel ? AMColor.sidebarActive : AMColor.sidebarText)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .frame(minWidth: 68)
+                        .background(sel ? AMColor.accent.opacity(0.18) : Color.clear)
+                        .overlay(alignment: .bottom) {
+                            if sel {
+                                Rectangle()
+                                    .fill(AMColor.accent)
+                                    .frame(height: 2)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
                 }
-            } header: {
-                Text(patient.fullName)
-                    .font(.system(size: 10, weight: .heavy))
-                    .foregroundStyle(AMColor.sidebarGroup)
-                    .tracking(1)
-                    .lineLimit(1)
             }
         }
-        .listStyle(.sidebar)
-        .scrollContentBackground(.hidden)
         .background(AMColor.sidebarBg)
-        .frame(width: 180)
-        .safeAreaInset(edge: .top, spacing: 0) {
-            patientIdentityCard
-        }
-    }
-
-    @ViewBuilder
-    private func sectionBackground(_ section: PatientDetailSection) -> some View {
-        if selectedSection == section {
-            AMColor.accent.opacity(0.14)
-                .overlay(alignment: .leading) {
-                    Rectangle()
-                        .fill(AMColor.accent)
-                        .frame(width: 3)
-                }
-        } else {
-            Color.clear
-        }
-    }
-
-    private var patientIdentityCard: some View {
-        HStack(spacing: 10) {
-            ZStack {
-                Circle()
-                    .fill(AMColor.accent.opacity(0.2))
-                    .frame(width: 38, height: 38)
-                Text(patient.initials)
-                    .font(.system(size: 14, weight: .heavy))
-                    .foregroundStyle(AMColor.sidebarActive)
-            }
-            VStack(alignment: .leading, spacing: 2) {
-                Label(patient.setting.rawValue, systemImage: patient.setting.icon)
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(AMColor.sidebarActive)
-                HStack(spacing: 4) {
-                    AcuityPip(acuity: patient.acuity)
-                    Text("\(patient.sex.rawValue) · \(patient.ageYears)y")
-                        .font(.system(size: 10))
-                        .foregroundStyle(AMColor.sidebarText)
-                }
-            }
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(AMColor.sidebarHd)
         .overlay(alignment: .bottom) {
-            Divider().overlay(AMColor.sidebarGroup)
+            Divider().overlay(AMColor.sidebarGroup.opacity(0.5))
         }
     }
 
@@ -179,27 +173,6 @@ struct PatientDetailPadView: View {
         case .demographics:
             PatientDemographicsForm(patient: patient)
         }
-    }
-}
-
-// MARK: - Patient section row (dark sidebar)
-
-private struct PatientSectionRow: View {
-    let section: PatientDetailSection
-    let isSelected: Bool
-
-    var body: some View {
-        Label {
-            Text(section.rawValue)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(isSelected ? AMColor.sidebarActive : AMColor.sidebarText)
-        } icon: {
-            Image(systemName: section.icon)
-                .foregroundStyle(isSelected ? AMColor.sidebarActive : AMColor.sidebarText)
-        }
-        .padding(.vertical, 9)
-        .padding(.horizontal, 14)
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
