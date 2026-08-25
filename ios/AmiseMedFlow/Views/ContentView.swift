@@ -252,6 +252,15 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
         case .outpatients: "Add an outpatient to get started."
         }
     }
+
+    var shortLabel: String {
+        switch self {
+        case .wardRounds:  "Ward"
+        case .theatre:     "Theatre"
+        case .endoscopy:   "Scope"
+        case .outpatients: "OPD"
+        }
+    }
 }
 
 // MARK: - Root (adapts to size class)
@@ -286,23 +295,38 @@ private struct CompactRootView: View {
     }
 }
 
-// MARK: - iPad/Mac: 3-column NavigationSplitView
+// MARK: - iPad: custom 3-column HStack layout
 
 private struct RegularRootView: View {
-    @State private var selectedSection: AppSection? = .wardRounds
+    @State private var selectedSection: AppSection = .wardRounds
     @State private var selectedPatient: Patient?
-    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     @State private var showSettings = false
 
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            sidebarColumn
-                .navigationSplitViewColumnWidth(min: 180, ideal: 220, max: 240)
-        } content: {
-            SectionPatientListView(section: selectedSection ?? .wardRounds,
-                                   selectedPatient: $selectedPatient)
-                .navigationSplitViewColumnWidth(min: 240, ideal: 280, max: 320)
-        } detail: {
+        HStack(spacing: 0) {
+            // Column 1: Icon-only workflow nav
+            iconSidebar
+                .frame(width: 70)
+                .ignoresSafeArea(edges: .vertical)
+
+            Rectangle()
+                .fill(AMColor.sidebarGroup.opacity(0.4))
+                .frame(width: 0.5)
+                .ignoresSafeArea(edges: .vertical)
+
+            // Column 2: Compact patient list
+            NavigationStack {
+                SectionPatientListView(section: selectedSection,
+                                       selectedPatient: $selectedPatient)
+            }
+            .frame(width: 240)
+
+            Rectangle()
+                .fill(Color(.separator))
+                .frame(width: 0.5)
+                .ignoresSafeArea(edges: .vertical)
+
+            // Column 3: Clinical workspace — fills all remaining width
             if let patient = selectedPatient {
                 PatientDetailPadView(patient: patient)
             } else {
@@ -311,86 +335,91 @@ private struct RegularRootView: View {
                     systemImage: "person.text.rectangle",
                     description: Text("Choose a patient from the list to view their record.")
                 )
-                    .background(AMColor.bg)
+                .background(AMColor.bg)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-    }
-
-    // MARK: Dark sidebar — mirrors web #071714 sidebar
-
-    @ViewBuilder
-    private func sectionBackground(_ section: AppSection) -> some View {
-        if selectedSection == section {
-            AMColor.accent.opacity(0.14)
-                .overlay(alignment: .leading) {
-                    Rectangle()
-                        .fill(AMColor.accent)
-                        .frame(width: 3)
-                }
-        } else {
-            Color.clear
-        }
-    }
-
-    private var sidebarColumn: some View {
-        List(selection: $selectedSection) {
-            Section {
-                ForEach(AppSection.allCases) { section in
-                    AppSectionRow(section: section,
-                                  isSelected: selectedSection == section)
-                        .tag(section)
-                        .listRowBackground(sectionBackground(section))
-                        .listRowInsets(EdgeInsets())
-                }
-            } header: {
-                Text("Clinical Workflow")
-                    .font(.system(size: 10, weight: .heavy))
-                    .foregroundStyle(AMColor.sidebarGroup)
-                    .tracking(0.1 * 10)
-                    .padding(.top, 4)
-            }
-        }
-        .listStyle(.sidebar)
-        .scrollContentBackground(.hidden)
-        .background(AMColor.sidebarBg)
-        .navigationTitle("Amise MedFlow")
-        .toolbarBackground(AMColor.sidebarHd, for: .navigationBar)
-        .toolbarColorScheme(.dark, for: .navigationBar)
+        .ignoresSafeArea(.keyboard)
         .sheet(isPresented: $showSettings) { SettingsView() }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            Divider().overlay(AMColor.sidebarGroup)
-            Button { showSettings = true } label: {
-                Label("Settings", systemImage: "gearshape")
-                    .font(.system(size: 13, weight: .semibold))
+    }
+
+    // MARK: Icon-only sidebar
+
+    private var iconSidebar: some View {
+        VStack(spacing: 0) {
+            // Compact app mark
+            VStack(spacing: 3) {
+                Image(systemName: "cross.case.fill")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(AMColor.accent)
+                Text("AMF")
+                    .font(.system(size: 8, weight: .heavy))
                     .foregroundStyle(AMColor.sidebarText)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 12)
+                    .tracking(1)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 18)
+
+            Rectangle()
+                .fill(AMColor.sidebarGroup.opacity(0.4))
+                .frame(height: 0.5)
+
+            VStack(spacing: 2) {
+                ForEach(AppSection.allCases) { section in
+                    iconSidebarButton(section)
+                }
+            }
+            .padding(.vertical, 10)
+
+            Spacer()
+
+            Rectangle()
+                .fill(AMColor.sidebarGroup.opacity(0.4))
+                .frame(height: 0.5)
+
+            Button { showSettings = true } label: {
+                VStack(spacing: 3) {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 19))
+                    Text("Settings")
+                        .font(.system(size: 8, weight: .medium))
+                }
+                .foregroundStyle(AMColor.sidebarText)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
             }
             .buttonStyle(.plain)
-            .background(AMColor.sidebarBg)
         }
+        .background(AMColor.sidebarBg)
     }
-}
 
-// MARK: - Sidebar section row
-
-private struct AppSectionRow: View {
-    let section: AppSection
-    let isSelected: Bool
-
-    var body: some View {
-        Label {
-            Text(section.rawValue)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(isSelected ? AMColor.sidebarActive : AMColor.sidebarText)
-        } icon: {
-            Image(systemName: section.icon)
-                .foregroundStyle(isSelected ? AMColor.sidebarActive : AMColor.sidebarText)
+    @ViewBuilder
+    private func iconSidebarButton(_ section: AppSection) -> some View {
+        let isSel = selectedSection == section
+        Button { selectedSection = section } label: {
+            VStack(spacing: 4) {
+                Image(systemName: section.icon)
+                    .font(.system(size: 20, weight: isSel ? .semibold : .regular))
+                Text(section.shortLabel)
+                    .font(.system(size: 8, weight: .medium))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(isSel ? AMColor.sidebarActive : AMColor.sidebarText)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 11)
+            .background(isSel ? AMColor.accent.opacity(0.15) : Color.clear,
+                        in: RoundedRectangle(cornerRadius: 8))
+            .overlay(alignment: .leading) {
+                if isSel {
+                    Capsule()
+                        .fill(AMColor.accent)
+                        .frame(width: 3, height: 28)
+                }
+            }
         }
-        .padding(.vertical, 9)
-        .padding(.horizontal, 18)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .buttonStyle(.plain)
+        .animation(.easeInOut(duration: 0.12), value: isSel)
+        .padding(.horizontal, 6)
     }
 }
 
