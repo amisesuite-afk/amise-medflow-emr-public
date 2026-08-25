@@ -31,12 +31,7 @@ targets:
 
     entitlements:
       path: AmiseMedFlow/AmiseMedFlow.entitlements
-      properties:
-        com.apple.developer.icloud-container-identifiers:
-          - iCloud.com.amise.medflow
-        com.apple.developer.icloud-services:
-          - CloudKit
-        com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)com.amise.medflow
+      properties: {}
 
     settings:
       configFiles:
