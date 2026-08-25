@@ -267,6 +267,93 @@ final class AIService: ObservableObject {
     }
 }
 
+    // MARK: - Vision: analyse a photo of a lab/imaging result
+
+    func analyseResultImage(_ imageData: Data, patient: Patient) async throws -> String {
+        isGenerating = true
+        error = nil
+        defer { isGenerating = false }
+
+        let base64 = imageData.base64EncodedString()
+        let body: [String: Any] = [
+            "model": AppConfig.anthropicModel,
+            "max_tokens": 1200,
+            "system": """
+            You are a clinical assistant reviewing a photographed lab/imaging result for Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+            Extract all result values precisely. Flag any abnormal or critical values.
+            Use British spelling. Be concise and clinically accurate.
+            """,
+            "messages": [[
+                "role": "user",
+                "content": [
+                    [
+                        "type": "image",
+                        "source": [
+                            "type": "base64",
+                            "media_type": "image/jpeg",
+                            "data": base64
+                        ]
+                    ],
+                    [
+                        "type": "text",
+                        "text": """
+                        Patient: \(patient.fullName), \(patient.ageYears)y
+                        Working diagnosis: \(patient.workingDiagnosis ?? "Not yet set")
+
+                        Extract all result values from this lab/imaging report image.
+                        Return JSON:
+                        {
+                          "testName": "...",
+                          "category": "Blood|Imaging|Pathology|Other",
+                          "results": "complete extracted result text with values and reference ranges",
+                          "abnormal": ["list of abnormal values"],
+                          "urgent": true/false,
+                          "summary": "1-2 sentence clinical summary"
+                        }
+                        """
+                    ]
+                ]
+            ]]
+        ]
+
+        var request = URLRequest(url: endpoint)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(AppConfig.anthropicAPIKey, forHTTPHeaderField: "x-api-key")
+        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            let msg = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw AIError.apiError(msg)
+        }
+        let decoded = try JSONDecoder().decode(AnthropicResponse.self, from: data)
+        return decoded.content.first?.text ?? ""
+    }
+
+    // MARK: - Diagnosis-driven plan auto-draft
+
+    func draftDiagnosisPlan(patient: Patient) async throws -> String {
+        let system = """
+        You are a consultant surgical registrar supporting Dr Dawit Daniel Kabiye MD DM, general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+        Generate a structured management plan based on the confirmed working diagnosis.
+        Format: numbered action items grouped under:
+        1. Immediate actions
+        2. Investigations to order
+        3. Medications / prescriptions
+        4. Referrals
+        5. Follow-up plan
+        6. Red flag advice
+        British spelling. Evidence-based. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
+        """
+        let user = """
+        Generate a comprehensive management plan for this patient with confirmed diagnosis:
+        \(clinicalContext(patient))
+        """
+        return try await generate(systemPrompt: system, userMessage: user)
+    }
+
 // MARK: - Response types
 
 private struct AnthropicResponse: Decodable {

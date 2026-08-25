@@ -182,11 +182,22 @@ struct PatientDetailPadView: View {
     private var patientSectionContent: some View {
         switch selectedSection ?? .overview {
         case .overview:
-            ScrollView {
-                PatientOverviewContent(patient: patient)
-                    .padding(20)
+            HStack(spacing: 0) {
+                // Left: Diagnosis hub (command centre)
+                DiagnosisHubView(patient: patient,
+                                 onNavigate: { selectedSection = $0 })
+                    .frame(maxWidth: .infinity)
+
+                Divider()
+
+                // Right: Patient overview summary
+                ScrollView {
+                    PatientOverviewContent(patient: patient)
+                        .padding(20)
+                }
+                .background(AMColor.bg)
+                .frame(maxWidth: 320)
             }
-            .background(AMColor.bg)
         case .cc:
             ConsultationView(patient: patient, startingTab: .cc, embeddedInNav: true)
         case .hpi:
