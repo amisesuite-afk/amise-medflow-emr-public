@@ -267,14 +267,15 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
 
 struct ContentView: View {
     @EnvironmentObject private var sync: SyncService
-    @Environment(\.horizontalSizeClass) private var hSizeClass
+
+    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
     var body: some View {
         Group {
-            if hSizeClass == .compact {
-                CompactRootView()
-            } else {
+            if isPad {
                 RegularRootView()
+            } else {
+                CompactRootView()
             }
         }
         .fullScreenCover(isPresented: Binding(
@@ -315,7 +316,7 @@ private struct RegularRootView: View {
         HStack(spacing: 0) {
             // Column 1: Icon-only workflow nav
             iconSidebar
-                .frame(width: 70)
+                .frame(width: 76)
                 .ignoresSafeArea(edges: .vertical)
 
             Rectangle()
@@ -328,7 +329,7 @@ private struct RegularRootView: View {
                 SectionPatientListView(section: selectedSection,
                                        selectedPatient: $selectedPatient)
             }
-            .frame(width: 240)
+            .frame(width: 280)
 
             Rectangle()
                 .fill(Color(.separator))
