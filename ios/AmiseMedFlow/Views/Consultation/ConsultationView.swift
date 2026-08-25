@@ -448,6 +448,15 @@ struct ConsultationView: View {
     @State private var pshxChipSelections: Set<String> = []
     @State private var pshxBypassConfirmed = false
     @State private var fhChipSelections: Set<String> = []
+    // PMH — medication history
+    @State private var medQuery = ""
+    @State private var medSuggestions: [SurgicalDrug] = []
+    @State private var expandedMed: SurgicalDrug? = nil
+    @State private var medDose = ""
+    @State private var medRoute = "Oral"
+    @State private var medFreq = "OD"
+    @State private var isSuggestingMeds = false
+    @State private var aiMedSuggestions: [String] = []
     @State private var newInvName = ""
     @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
 
@@ -915,8 +924,199 @@ struct ConsultationView: View {
 
     // MARK: - PMH tab
 
+    // MARK: - PMH medications section
+
+    private var medicationsSection: some View {
+        Section {
+            // Drug search field
+            HStack(spacing: 8) {
+                Image(systemName: "pills").foregroundStyle(.secondary)
+                TextField("Search medication…", text: $medQuery)
+                    .autocorrectionDisabled()
+                    .onChange(of: medQuery) { _, q in
+                        medSuggestions = q.count >= 2 ? ClinicalSearchService.searchDrugs(q) : []
+                        if expandedMed != nil && expandedMed?.name.lowercased() != q.lowercased() {
+                            expandedMed = nil
+                        }
+                    }
+                if !medQuery.isEmpty {
+                    Button { medQuery = ""; medSuggestions = []; expandedMed = nil } label: {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+                    }.buttonStyle(.plain)
+                }
+            }
+
+            // Drug suggestion list
+            ForEach(medSuggestions.prefix(6)) { drug in
+                Button {
+                    medQuery  = drug.name
+                    expandedMed = drug
+                    medDose   = drug.commonDoses
+                    medRoute  = drug.route
+                    medFreq   = "OD"
+                    medSuggestions = []
+                } label: {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(drug.name).font(.subheadline).foregroundStyle(.primary)
+                            Text(drug.category).font(.caption).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Text(drug.commonDoses).font(.caption2).foregroundStyle(.tertiary)
+                    }
+                }.buttonStyle(.plain)
+            }
+
+            // Inline dose/route/frequency submenu
+            if let drug = expandedMed {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Label(drug.name, systemImage: "pill.fill")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(AMColor.accent)
+                        Spacer()
+                        Button { expandedMed = nil; medQuery = "" } label: {
+                            Image(systemName: "xmark").font(.caption)
+                        }.buttonStyle(.plain).foregroundStyle(.secondary)
+                    }
+
+                    // Dose
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("DOSE").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            TextField("e.g. 500 mg", text: $medDose)
+                                .font(.callout)
+                                .frame(maxWidth: .infinity)
+                            if !drug.commonDoses.isEmpty && medDose != drug.commonDoses {
+                                Button(drug.commonDoses) { medDose = drug.commonDoses }
+                                    .font(.caption2).buttonStyle(.bordered).tint(.teal)
+                            }
+                        }
+                    }
+
+                    // Route chips
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("ROUTE").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 6) {
+                                ForEach(["Oral","IV","IM","SC","Topical","Inhaled","PR","SL"], id: \.self) { r in
+                                    let sel = medRoute == r
+                                    Button(r) { medRoute = r }
+                                        .font(.caption2.weight(sel ? .semibold : .regular))
+                                        .padding(.horizontal, 8).padding(.vertical, 3)
+                                        .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                                        .foregroundStyle(sel ? .white : AMColor.accent)
+                                        .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                    }
+
+                    // Frequency chips
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("FREQUENCY").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 6) {
+                                ForEach(["OD","BD","TDS","QDS","PRN","STAT","Nocte","Weekly"], id: \.self) { f in
+                                    let sel = medFreq == f
+                                    Button(f) { medFreq = f }
+                                        .font(.caption2.weight(sel ? .semibold : .regular))
+                                        .padding(.horizontal, 8).padding(.vertical, 3)
+                                        .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                                        .foregroundStyle(sel ? .white : AMColor.accent)
+                                        .buttonStyle(.plain)
+                                }
+                            }
+                        }
+                    }
+
+                    if !drug.notes.isEmpty {
+                        Text(drug.notes).font(.caption.italic()).foregroundStyle(.secondary)
+                    }
+
+                    Button {
+                        addMedicationEntry(name: drug.name, dose: medDose, route: medRoute, freq: medFreq)
+                        expandedMed = nil; medQuery = ""; medDose = ""; medRoute = "Oral"; medFreq = "OD"
+                    } label: {
+                        Label("Add to current medications", systemImage: "plus.circle.fill")
+                            .font(.callout.weight(.semibold))
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(AMColor.accent)
+                }
+                .padding(.vertical, 4)
+            }
+
+            // AI suggestions
+            if !aiMedSuggestions.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("AI Suggestions — tap to add", systemImage: "brain")
+                        .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                    ForEach(aiMedSuggestions, id: \.self) { name in
+                        Button {
+                            let match = ClinicalSearchService.searchDrugs(name).first
+                            if let drug = match {
+                                medQuery = drug.name; expandedMed = drug
+                                medDose = drug.commonDoses; medRoute = drug.route; medFreq = "OD"
+                            } else {
+                                addMedicationEntry(name: name, dose: "", route: "Oral", freq: "OD")
+                            }
+                            aiMedSuggestions.removeAll { $0 == name }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "plus.circle").foregroundStyle(AMColor.accent)
+                                Text(name).font(.callout)
+                                Spacer()
+                            }
+                        }.buttonStyle(.plain)
+                    }
+                }
+            }
+
+            // AI auto-suggest trigger
+            Button {
+                Task { await suggestMedicationsForDiagnosis() }
+            } label: {
+                HStack(spacing: 6) {
+                    if isSuggestingMeds { ProgressView().scaleEffect(0.75) }
+                    else { Image(systemName: "brain") }
+                    Text(isSuggestingMeds ? "Suggesting…" : "AI Suggest Medications")
+                        .font(.callout)
+                }
+                .foregroundStyle(patient.workingDiagnosis == nil ? Color.secondary : AMColor.accent)
+            }
+            .buttonStyle(.plain)
+            .disabled(isSuggestingMeds || patient.workingDiagnosis == nil)
+
+            // Current medication list
+            if !patient.prescriptions.isEmpty {
+                Divider()
+                ForEach(patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }) { rx in
+                    HStack(spacing: 10) {
+                        Image(systemName: "pill")
+                            .font(.system(size: 11))
+                            .foregroundStyle(AMColor.accent)
+                            .frame(width: 16)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(rx.drug).font(.callout.weight(.semibold))
+                            if rx.displayLine != rx.drug {
+                                Text(rx.displayLine).font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                        Spacer()
+                    }
+                }
+            }
+        } header: {
+            sectionHeader("Medications", icon: "pills",
+                          filled: !patient.prescriptions.isEmpty)
+        }
+    }
+
     private var pmhTab: some View {
         List {
+            medicationsSection
+
             Section {
                 // Bypass card — PMH already on record
                 if !(patient.pmhNotes ?? "").isEmpty && !pmhBypassConfirmed {
@@ -1854,6 +2054,33 @@ struct ConsultationView: View {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(filledColor).font(.caption)
             }
+        }
+    }
+
+    // MARK: - Medication history helpers
+
+    private func addMedicationEntry(name: String, dose: String, route: String, freq: String) {
+        let rx = Prescription(drug: name, dose: dose, route: route, frequency: freq)
+        rx.patient = patient
+        context.insert(rx)
+        touch()
+    }
+
+    @MainActor
+    private func suggestMedicationsForDiagnosis() async {
+        guard let dx = patient.workingDiagnosis else { return }
+        isSuggestingMeds = true
+        defer { isSuggestingMeds = false }
+        do {
+            let system = "You are a surgical clinical assistant. List appropriate first-line medications for a surgical patient with the given diagnosis. Return ONLY a plain list, one drug name per line, no doses, no numbering, no extra text. Maximum 6 drugs."
+            let raw = try await ai.generate(systemPrompt: system,
+                                            userMessage: "Diagnosis: \(dx). Age: \(patient.ageYears)y. Setting: \(patient.setting.rawValue).")
+            aiMedSuggestions = raw
+                .components(separatedBy: .newlines)
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { !$0.isEmpty }
+        } catch {
+            showAIError = true
         }
     }
 
