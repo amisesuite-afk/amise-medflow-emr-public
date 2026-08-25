@@ -512,7 +512,8 @@ struct DiagnosisHubView: View {
         let category: InvestigationEntry.InvCategory = {
             switch parsed.category.lowercased() {
             case let s where s.contains("blood"): return .blood
-            case let s where s.contains("imaging"), let s2 where s2.contains("radiol"): return .imaging
+            case let s where s.contains("imaging"): return .imaging
+            case let s where s.contains("radiol"): return .imaging
             case let s where s.contains("pathol"): return .pathology
             case let s where s.contains("endosc"): return .endoscopy
             default: return .other
