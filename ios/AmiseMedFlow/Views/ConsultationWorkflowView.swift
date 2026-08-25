@@ -46,11 +46,11 @@ struct ConsultationWorkflowView: View {
 
         var destination: PatientDetailSection {
             switch self {
-            case .intake:         return .intake
-            case .history:        return .consultation
-            case .examination:    return .consultation
-            case .investigations: return .consultation
-            case .assessment:     return .clinicalReasoning
+            case .intake:         return .demographics
+            case .history:        return .hpi
+            case .examination:    return .exam
+            case .investigations: return .investigations
+            case .assessment:     return .assessment
             case .plan:           return .notes
             }
         }

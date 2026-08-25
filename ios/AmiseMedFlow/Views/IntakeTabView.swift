@@ -5,7 +5,7 @@ struct IntakeTabView: View {
     /// Called when the user taps a row — navigate to the relevant section.
     var onNavigate: ((PatientDetailSection) -> Void)? = nil
 
-    private struct Field: Identifiable {
+    struct Field: Identifiable {
         let id: String
         let label: String
         let icon: String
@@ -24,15 +24,15 @@ struct IntakeTabView: View {
             Field(id: "email",      label: "Email",                icon: "envelope",                 value: patient.email ?? "",                        required: false, section: .demographics),
             Field(id: "address",    label: "Address",              icon: "location",                 value: patient.address ?? "",                      required: false, section: .demographics),
             Field(id: "mrn",        label: "MRN",                  icon: "number.circle",            value: patient.mrn ?? "",                          required: false, section: .demographics),
-            Field(id: "cc",         label: "Chief complaint",      icon: "text.bubble",              value: patient.chiefComplaint ?? "",               required: true,  section: .consultation),
-            Field(id: "pmh",        label: "Past medical history", icon: "clock.arrow.circlepath",   value: patient.pmhNotes ?? "",                     required: true,  section: .consultation),
-            Field(id: "sx",         label: "Surgical history",     icon: "scissors",                 value: patient.surgicalHistory ?? "",              required: true,  section: .consultation),
-            Field(id: "allergies",  label: "Allergies",            icon: "exclamationmark.shield",   value: patient.allergiesJson ?? "",                required: true,  section: .consultation),
+            Field(id: "cc",         label: "Chief complaint",      icon: "text.bubble",              value: patient.chiefComplaint ?? "",               required: true,  section: .cc),
+            Field(id: "pmh",        label: "Past medical history", icon: "clock.arrow.circlepath",   value: patient.pmhNotes ?? "",                     required: true,  section: .pmh),
+            Field(id: "sx",         label: "Surgical history",     icon: "scissors",                 value: patient.surgicalHistory ?? "",              required: true,  section: .pshx),
+            Field(id: "allergies",  label: "Allergies",            icon: "exclamationmark.shield",   value: patient.allergiesJson ?? "",                required: true,  section: .allergies),
             Field(id: "nok",        label: "Next of kin name",     icon: "person.2",                 value: patient.nokName ?? "",                      required: true,  section: .demographics),
             Field(id: "nokphone",   label: "Next of kin phone",    icon: "phone.badge.checkmark",    value: patient.nokPhone ?? "",                     required: true,  section: .demographics),
             Field(id: "insurance",  label: "Insurance provider",   icon: "creditcard",               value: patient.insuranceProvider ?? "",            required: false, section: .demographics),
             Field(id: "policy",     label: "Policy number",        icon: "doc.text",                 value: patient.policyNumber ?? "",                 required: false, section: .demographics),
-            Field(id: "social",     label: "Social history",       icon: "figure.walk",              value: patient.socialHistory ?? "",                required: false, section: .consultation),
+            Field(id: "social",     label: "Social history",       icon: "figure.walk",              value: patient.socialHistory ?? "",                required: false, section: .social),
         ]
     }
 
