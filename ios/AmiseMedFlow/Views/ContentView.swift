@@ -270,10 +270,19 @@ struct ContentView: View {
     @Environment(\.horizontalSizeClass) private var hSizeClass
 
     var body: some View {
-        if hSizeClass == .compact {
-            CompactRootView()
-        } else {
-            RegularRootView()
+        Group {
+            if hSizeClass == .compact {
+                CompactRootView()
+            } else {
+                RegularRootView()
+            }
+        }
+        .fullScreenCover(isPresented: Binding(
+            get: { !sync.isSignedIn },
+            set: { _ in }
+        )) {
+            LoginView()
+                .environmentObject(sync)
         }
     }
 }

@@ -74,6 +74,7 @@ final class SyncService: ObservableObject {
 
         do {
             try await pullPatients(context: context)
+            try await pullConfirmedAppointments(context: context)
             try await pushPendingPatients(context: context)
             try await pushPatientEdits(context: context)
             try await pushPendingNotes(context: context)
@@ -198,6 +199,54 @@ final class SyncService: ObservableObject {
                 patient.pendingSync = false
                 patient.syncedAt = .now
             }
+        }
+        try context.save()
+    }
+
+    // MARK: - Pull confirmed appointments → auto-create patient records
+
+    private struct RemoteAppointment: Decodable {
+        let id: String
+        let patient_name: String?
+        let phone: String?
+        let email: String?
+        let reason_for_visit: String?
+        let preferred_date: String?
+        let status: String?
+        let created_at: String
+    }
+
+    private func pullConfirmedAppointments(context: ModelContext) async throws {
+        let oneWeekAgo = ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -7 * 86400))
+        let rows: [RemoteAppointment] = try await SupabaseConfig.client
+            .from("appointment_requests")
+            .select("id, patient_name, phone, email, reason_for_visit, preferred_date, status, created_at")
+            .in("status", values: ["confirmed", "approved"])
+            .gte("created_at", value: oneWeekAgo)
+            .order("created_at", ascending: false)
+            .limit(200)
+            .execute()
+            .value
+
+        let allLocal = try context.fetch(FetchDescriptor<Patient>())
+
+        for appt in rows {
+            guard let name = appt.patient_name, !name.isEmpty else { continue }
+            // Avoid duplicates: match by appointment_id stored in remoteId, or by name+phone
+            let existing = allLocal.first { p in
+                p.remoteId == "appt:\(appt.id)" ||
+                (p.fullName.lowercased() == name.lowercased() && p.phone == appt.phone)
+            }
+            guard existing == nil else { continue }
+
+            let p = Patient(fullName: name)
+            p.phone = appt.phone
+            p.email = appt.email
+            p.chiefComplaint = appt.reason_for_visit
+            p.remoteId = "appt:\(appt.id)"  // sentinel so we don't push this back
+            p.pendingSync = false
+            p.syncedAt = .now
+            context.insert(p)
         }
         try context.save()
     }

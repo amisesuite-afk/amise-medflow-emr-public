@@ -1,5 +1,21 @@
 import SwiftUI
 import SwiftData
+import UIKit
+
+// MARK: - PDF share helpers
+
+struct PDFDataWrapper: Identifiable {
+    let id = UUID()
+    let data: Data
+}
+
+struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
+}
 
 // MARK: - Patient detail section enum (iPad/Mac sidebar)
 
@@ -96,6 +112,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
 struct PatientDetailPadView: View {
     @Bindable var patient: Patient
     @State private var selectedSection: PatientDetailSection? = .overview
+    @State private var summaryPDFData: Data? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -129,12 +146,28 @@ struct PatientDetailPadView: View {
                 }
             }
             ToolbarItem(placement: .primaryAction) {
-                ShareLink(item: patient.handoverText,
-                          subject: Text("Patient Handover — \(patient.fullName)"),
-                          message: Text(patient.handoverText)) {
-                    Image(systemName: "square.and.arrow.up")
+                HStack(spacing: 12) {
+                    // Summary PDF export
+                    Button {
+                        summaryPDFData = PatientSummaryPDF.generate(for: patient)
+                    } label: {
+                        Image(systemName: "doc.text.fill")
+                    }
+                    // Handover text share
+                    ShareLink(item: patient.handoverText,
+                              subject: Text("Patient Handover — \(patient.fullName)"),
+                              message: Text(patient.handoverText)) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
                 }
             }
+        }
+        .sheet(item: Binding(
+            get: { summaryPDFData.map { PDFDataWrapper(data: $0) } },
+            set: { if $0 == nil { summaryPDFData = nil } }
+        )) { wrapper in
+            ShareSheet(items: [wrapper.data as Any])
+                .ignoresSafeArea()
         }
     }
 
