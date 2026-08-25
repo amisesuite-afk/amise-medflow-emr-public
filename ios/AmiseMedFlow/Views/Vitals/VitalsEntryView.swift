@@ -111,13 +111,10 @@ struct VitalsEntryView: View {
                        let h = patient.heightCm, h > 0 {
                         let hm = h / 100.0
                         let bmi = wt / (hm * hm)
-                        let cat: String
-                        switch bmi {
-                        case ..<18.5: cat = "Underweight"
-                        case 18.5..<25: cat = "Normal"
-                        case 25..<30: cat = "Overweight"
-                        default: cat = "Obese"
-                        }
+                        let cat: String = bmi < 18.5 ? "Underweight"
+                                        : bmi < 25   ? "Normal"
+                                        : bmi < 30   ? "Overweight"
+                                        :               "Obese"
                         LabeledContent("BMI") {
                             Text(String(format: "%.1f — %@", bmi, cat))
                                 .foregroundStyle(bmi < 18.5 || bmi >= 30 ? .orange : .secondary)
