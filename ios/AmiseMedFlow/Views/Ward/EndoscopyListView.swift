@@ -111,6 +111,21 @@ struct EndoscopyListView: View {
             }
 
             if let mrn = patient.mrn { lines.append("MRN: \(mrn)") }
+
+            if !patient.prescriptions.isEmpty {
+                let anticoags = patient.prescriptions.filter {
+                    let name = $0.drug.lowercased()
+                    return name.contains("warfarin") || name.contains("rivaroxaban") ||
+                           name.contains("apixaban") || name.contains("dabigatran") ||
+                           name.contains("aspirin") || name.contains("clopidogrel") ||
+                           name.contains("heparin") || name.contains("enoxaparin")
+                }
+                if !anticoags.isEmpty {
+                    lines.append("⚠ ANTICOAG/ANTIPLATELET: " + anticoags.map { $0.displayLine }.joined(separator: "; "))
+                }
+                lines.append("Medications: " + patient.prescriptions.map { $0.displayLine }.joined(separator: "; "))
+            }
+
             lines.append(String(repeating: "─", count: 48))
             lines.append("")
         }
@@ -187,6 +202,33 @@ struct EndoscopyRow: View {
                     if let dx = patient.workingDiagnosis {
                         Text("·").font(.caption2).foregroundStyle(.tertiary)
                         Text(dx).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
+                    }
+                    Spacer()
+                    if patient.allergies.contains(where: {
+                        $0.severity.lowercased().contains("anaphylaxis") || $0.severity.lowercased().contains("severe")
+                    }) {
+                        Label("Allergy", systemImage: "exclamationmark.shield.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.red)
+                            .labelStyle(.iconOnly)
+                    } else if !patient.allergies.isEmpty {
+                        Label("Allergy", systemImage: "exclamationmark.shield")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(.orange)
+                            .labelStyle(.iconOnly)
+                    }
+                    let anticoags = patient.prescriptions.filter {
+                        let name = $0.drug.lowercased()
+                        return name.contains("warfarin") || name.contains("rivaroxaban") ||
+                               name.contains("apixaban") || name.contains("dabigatran") ||
+                               name.contains("aspirin") || name.contains("clopidogrel") ||
+                               name.contains("heparin") || name.contains("enoxaparin")
+                    }
+                    if !anticoags.isEmpty {
+                        Label("Anticoag", systemImage: "drop.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.purple)
+                            .labelStyle(.iconOnly)
                     }
                 }
             }
