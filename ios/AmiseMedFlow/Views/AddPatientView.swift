@@ -121,6 +121,31 @@ struct AddPatientView: View {
                 }
             }
             TextField("Chief complaint", text: $chiefComplaint)
+
+            // Quick-tap surgical complaints
+            let quickComplaints: [String] = [
+                "Abdominal pain", "RUQ pain", "RLQ pain", "Epigastric pain",
+                "Rectal bleeding", "Change in bowel habit", "Dysphagia",
+                "Jaundice", "Hernia", "Breast lump", "Neck lump",
+                "Haematemesis", "Colonoscopy", "OGD / Gastroscopy", "ERCP",
+                "Haemorrhoids", "Anal pain / fissure", "Pilonidal sinus",
+                "Follow-up", "Post-op review", "Wound review",
+            ]
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(quickComplaints, id: \.self) { cc in
+                        let selected = chiefComplaint == cc
+                        Button(cc) { chiefComplaint = selected ? "" : cc }
+                            .font(.system(size: 11, weight: selected ? .semibold : .regular))
+                            .padding(.horizontal, 8).padding(.vertical, 4)
+                            .background(selected ? Color.teal : Color.teal.opacity(0.1), in: Capsule())
+                            .foregroundStyle(selected ? Color.white : Color.teal)
+                            .buttonStyle(.plain)
+                            .animation(.easeInOut(duration: 0.12), value: selected)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
         }
     }
 
@@ -144,6 +169,29 @@ struct AddPatientView: View {
                 setting == .endoscopy ? "Scope type (e.g. OGD, Colonoscopy, ERCP)" : "Procedure name",
                 text: $appointmentType
             )
+
+            let quickProcs: [String] = setting == .endoscopy
+                ? ["OGD / Gastroscopy", "Colonoscopy", "ERCP", "Flexible sigmoidoscopy", "Bronchoscopy", "OGD + Colonoscopy"]
+                : ["Laparoscopic cholecystectomy", "Laparoscopic appendicectomy", "Inguinal hernia repair",
+                   "Umbilical hernia repair", "Incisional hernia repair", "Haemorrhoidectomy",
+                   "Colectomy", "Laparotomy", "Thyroidectomy", "Mastectomy", "Breast lumpectomy",
+                   "Pilonidal sinus excision", "Anal fissure surgery", "I&D abscess"]
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(quickProcs, id: \.self) { proc in
+                        let selected = appointmentType == proc
+                        Button(proc) { appointmentType = selected ? "" : proc }
+                            .font(.system(size: 11, weight: selected ? .semibold : .regular))
+                            .padding(.horizontal, 8).padding(.vertical, 4)
+                            .background(selected ? Color.purple : Color.purple.opacity(0.1), in: Capsule())
+                            .foregroundStyle(selected ? Color.white : Color.purple)
+                            .buttonStyle(.plain)
+                            .animation(.easeInOut(duration: 0.12), value: selected)
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+
             Toggle("Set date/time", isOn: $hasOperationDate)
             if hasOperationDate {
                 DatePicker(
