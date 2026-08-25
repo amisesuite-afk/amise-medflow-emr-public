@@ -38,6 +38,15 @@ struct OperativePlanView: View {
         if p.consentProcedure.isEmpty, let dx = patient.workingDiagnosis {
             p.consentProcedure = "Surgery for \(dx)"
         }
+        // Safer antibiotic default when penicillin-allergic — clear the beta-lactam default
+        if patient.hasPenicillinAllergy {
+            p.antibioticProphylaxis = "PENICILLIN ALLERGY — use Clindamycin 600mg IV or discuss with anaesthetist"
+        }
+        // Note existing anticoagulation in VTE prophylaxis
+        if patient.hasAnticoagulation {
+            let drugs = patient.activeAnticoagulants.map { $0.drug }.joined(separator: ", ")
+            p.vteProphy = "On anticoagulation (\(drugs)) — review bridging protocol"
+        }
         context.insert(p)
         return p
     }

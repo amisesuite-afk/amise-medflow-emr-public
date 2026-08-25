@@ -91,11 +91,22 @@ struct TriageDashboardView: View {
                                 Image(systemName: "scissors").font(.caption).foregroundStyle(.purple)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(patient.fullName).font(.system(size: 13, weight: .semibold))
-                                    if let dx = patient.workingDiagnosis {
-                                        Text(dx).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                                    if let proc = patient.appointmentType ?? patient.workingDiagnosis {
+                                        Text(proc).font(.caption).foregroundStyle(.secondary).lineLimit(1)
                                     }
                                 }
                                 Spacer()
+                                if patient.hasCriticalAllergy {
+                                    Image(systemName: "exclamationmark.shield.fill")
+                                        .font(.system(size: 10, weight: .bold)).foregroundStyle(.red)
+                                } else if !patient.allergies.isEmpty {
+                                    Image(systemName: "exclamationmark.shield")
+                                        .font(.system(size: 10)).foregroundStyle(.orange)
+                                }
+                                if patient.hasAnticoagulation {
+                                    Image(systemName: "drop.fill")
+                                        .font(.system(size: 10, weight: .bold)).foregroundStyle(.purple)
+                                }
                                 if let op = patient.operationDate {
                                     Text(op, style: .time)
                                         .font(.caption.weight(.semibold))
@@ -115,11 +126,22 @@ struct TriageDashboardView: View {
                                 Image(systemName: "circle.dotted").font(.caption).foregroundStyle(.cyan)
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(patient.fullName).font(.system(size: 13, weight: .semibold))
-                                    if let dx = patient.workingDiagnosis {
-                                        Text(dx).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                                    if let scope = patient.appointmentType ?? patient.workingDiagnosis {
+                                        Text(scope).font(.caption).foregroundStyle(.secondary).lineLimit(1)
                                     }
                                 }
                                 Spacer()
+                                if patient.hasCriticalAllergy {
+                                    Image(systemName: "exclamationmark.shield.fill")
+                                        .font(.system(size: 10, weight: .bold)).foregroundStyle(.red)
+                                } else if !patient.allergies.isEmpty {
+                                    Image(systemName: "exclamationmark.shield")
+                                        .font(.system(size: 10)).foregroundStyle(.orange)
+                                }
+                                if patient.hasAnticoagulation {
+                                    Image(systemName: "drop.fill")
+                                        .font(.system(size: 10, weight: .bold)).foregroundStyle(.purple)
+                                }
                                 if let op = patient.operationDate {
                                     Text(op, style: .time)
                                         .font(.caption.weight(.semibold)).foregroundStyle(.cyan)
@@ -216,13 +238,38 @@ struct TriagePatientRow: View {
                             TriageVitalChip(text: "\(spo)", unit: "%", alert: spo < 94)
                         }
                         Spacer()
+                        if patient.hasCriticalAllergy {
+                            Image(systemName: "exclamationmark.shield.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
+                        } else if !patient.allergies.isEmpty {
+                            Image(systemName: "exclamationmark.shield")
+                                .font(.system(size: 9, weight: .semibold)).foregroundStyle(.orange)
+                        }
+                        if patient.hasAnticoagulation {
+                            Image(systemName: "drop.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.purple)
+                        }
                         Text("NEWS2 \(v.news2Score)")
                             .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(Color(hex: v.news2Color))
                     }
                 } else {
-                    Text("No vitals")
-                        .font(.caption).foregroundStyle(.tertiary)
+                    HStack(spacing: 6) {
+                        Text("No vitals")
+                            .font(.caption).foregroundStyle(.tertiary)
+                        Spacer()
+                        if patient.hasCriticalAllergy {
+                            Image(systemName: "exclamationmark.shield.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
+                        } else if !patient.allergies.isEmpty {
+                            Image(systemName: "exclamationmark.shield")
+                                .font(.system(size: 9, weight: .semibold)).foregroundStyle(.orange)
+                        }
+                        if patient.hasAnticoagulation {
+                            Image(systemName: "drop.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.purple)
+                        }
+                    }
                 }
             }
         }
