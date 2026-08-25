@@ -620,29 +620,31 @@ struct ConsultationView: View {
                     }
                 }
 
-                // Chip grid
-                ChipFlow(hSpacing: 8, vSpacing: 8) {
-                    ForEach(ccSurgicalChips) { chip in
-                        let isSelected = selectedChipLabel == chip.label
-                        Button {
-                            patient.chiefComplaint = chip.label
-                            touch()
-                        } label: {
-                            Label(chip.label, systemImage: chip.icon)
-                                .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(
-                                    isSelected ? AMColor.accent : AMColor.accentLt,
-                                    in: Capsule()
-                                )
-                                .foregroundStyle(isSelected ? Color.white : AMColor.accent)
-                                .animation(.easeInOut(duration: 0.15), value: isSelected)
+                // Complaint list
+                ForEach(ccSurgicalChips) { chip in
+                    let isSelected = selectedChipLabel == chip.label
+                    Button {
+                        patient.chiefComplaint = chip.label
+                        touch()
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: chip.icon)
+                                .font(.system(size: 11))
+                                .foregroundStyle(isSelected ? AMColor.accent : .secondary)
+                                .frame(width: 16)
+                            Text(chip.label)
+                                .font(.callout.weight(isSelected ? .semibold : .regular))
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            if isSelected {
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundStyle(AMColor.accent)
+                            }
                         }
-                        .buttonStyle(.plain)
                     }
+                    .buttonStyle(.plain)
                 }
-                .padding(.vertical, 4)
 
                 // Free-text override
                 TextField("Or type a custom complaint…",
