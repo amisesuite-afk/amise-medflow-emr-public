@@ -232,18 +232,58 @@ enum VisitType: String, Codable, CaseIterable {
     case colonoscopy   = "Colonoscopy"
     case urgentReview  = "Urgent Review"
     case telephone     = "Telephone"
+    case trauma        = "Trauma / Burns"
+    case surgeryElective  = "Elective Surgery"
+    case surgeryEmergency = "Emergency Surgery"
 
     var icon: String {
         switch self {
-        case .newConsult:   return "person.fill.questionmark"
-        case .followUp:     return "arrow.clockwise"
-        case .postOp:       return "bandage"
-        case .dayOfSurgery: return "scissors"
-        case .ercp:         return "circle.dotted"
-        case .ogd:          return "circle.dotted"
-        case .colonoscopy:  return "circle.dotted"
-        case .urgentReview: return "exclamationmark.circle"
-        case .telephone:    return "phone"
+        case .newConsult:       return "person.fill.questionmark"
+        case .followUp:         return "arrow.clockwise"
+        case .postOp:           return "bandage"
+        case .dayOfSurgery:     return "scissors"
+        case .ercp:             return "circle.dotted"
+        case .ogd:              return "circle.dotted"
+        case .colonoscopy:      return "circle.dotted"
+        case .urgentReview:     return "exclamationmark.circle"
+        case .telephone:        return "phone"
+        case .trauma:           return "cross.case.fill"
+        case .surgeryElective:  return "scissors"
+        case .surgeryEmergency: return "bolt.heart.fill"
+        }
+    }
+
+    var shortLabel: String {
+        switch self {
+        case .newConsult:       return "1st Visit"
+        case .followUp:         return "Follow-up"
+        case .postOp:           return "Post-op"
+        case .dayOfSurgery:     return "Day of Sx"
+        case .ercp:             return "ERCP"
+        case .ogd:              return "OGD"
+        case .colonoscopy:      return "Scope"
+        case .urgentReview:     return "Urgent"
+        case .telephone:        return "Tel"
+        case .trauma:           return "Trauma"
+        case .surgeryElective:  return "Elective Sx"
+        case .surgeryEmergency: return "Emerg Sx"
+        }
+    }
+
+    var accentHex: String {
+        switch self {
+        case .newConsult:       return "#0D9488"
+        case .followUp:         return "#2563EB"
+        case .postOp:           return "#7C3AED"
+        case .dayOfSurgery:     return "#7C3AED"
+        case .ercp:             return "#0891B2"
+        case .ogd:              return "#0891B2"
+        case .colonoscopy:      return "#0891B2"
+        case .urgentReview:     return "#F97316"
+        case .telephone:        return "#6B7280"
+        case .trauma:           return "#DC2626"
+        case .surgeryElective:  return "#7C3AED"
+        case .surgeryEmergency: return "#DC2626"
         }
     }
 }

@@ -96,13 +96,14 @@ struct PatientRow: View {
 
     private var accentColor: Color { Color(hex: patient.setting.accentHex) }
 
-    private var subtitleLine: String? {
-        let parts: [String?] = [
-            patient.visitType.map { "[\($0.rawValue)]" },
-            patient.chiefComplaint,
-            patient.workingDiagnosis
-        ]
-        return parts.compactMap { $0 }.first
+    private var locationColor: Color {
+        switch patient.location {
+        case .tapion:     return Color(hex: "#0891B2")
+        case .rodney_bay: return Color(hex: "#7C3AED")
+        case .okeu:       return Color(hex: "#DC2626")
+        case .victoria:   return Color(hex: "#2563EB")
+        case .other:      return Color.gray
+        }
     }
 
     var body: some View {
@@ -114,18 +115,21 @@ struct PatientRow: View {
                 .padding(.vertical, -8)
 
             VStack(alignment: .leading, spacing: 3) {
-                // Row 1: acuity pip · name · setting badge · bed badge
+                // Row 1: acuity pip · name · setting badge · visit type · bed
                 HStack(spacing: 5) {
                     AcuityPip(acuity: patient.acuity)
                     Text(patient.fullName)
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.primary)
                         .lineLimit(1)
-                    Text(patient.setting.rawValue.uppercased())
-                        .font(.system(size: 9, weight: .heavy))
-                        .foregroundStyle(accentColor)
-                        .padding(.horizontal, 5).padding(.vertical, 2)
-                        .background(accentColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 4))
+                    Spacer(minLength: 2)
+                    if let vt = patient.visitType {
+                        Text(vt.shortLabel)
+                            .font(.system(size: 9, weight: .heavy))
+                            .foregroundStyle(Color(hex: vt.accentHex))
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background(Color(hex: vt.accentHex).opacity(0.1), in: RoundedRectangle(cornerRadius: 4))
+                    }
                     if let bed = patient.bedNumber {
                         Text("Bed \(bed)")
                             .font(.system(size: 9, weight: .semibold))
@@ -135,7 +139,7 @@ struct PatientRow: View {
                     }
                 }
 
-                // Row 2: demographics · phone · location pill
+                // Row 2: demographics · location pill · time
                 HStack(spacing: 4) {
                     if patient.ageYears > 0 {
                         Text("\(patient.sex.rawValue.prefix(1).uppercased()), \(patient.ageYears)y")
@@ -144,25 +148,37 @@ struct PatientRow: View {
                         Text(patient.sex.rawValue.prefix(1).uppercased())
                             .font(.caption2).foregroundStyle(.secondary)
                     }
-                    if let phone = patient.phone, !phone.isEmpty {
-                        Text("·").font(.caption2).foregroundStyle(.tertiary)
-                        Text(phone).font(.caption2).foregroundStyle(.secondary)
-                    }
-                    Spacer()
-                    Text(patient.location.shortName)
+                    Text("·").font(.caption2).foregroundStyle(.tertiary)
+                    Text(patient.setting.rawValue)
                         .font(.system(size: 9, weight: .semibold))
                         .foregroundStyle(accentColor)
-                        .padding(.horizontal, 5).padding(.vertical, 2)
-                        .background(accentColor.opacity(0.08), in: Capsule())
+                    Spacer()
+                    // Location pill — prominent Tapion/RB
+                    Text(patient.location.shortName)
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(locationColor, in: Capsule())
                     Text(patient.createdAt, style: .relative)
                         .font(.caption2).foregroundStyle(.tertiary)
                 }
 
-                // Row 3: complaint / diagnosis
-                if let sub = subtitleLine {
-                    Text(sub)
-                        .font(.caption2).foregroundStyle(.secondary)
-                        .lineLimit(1)
+                // Row 3: chief complaint then working diagnosis
+                if let cc = patient.chiefComplaint, !cc.isEmpty {
+                    HStack(spacing: 4) {
+                        Image(systemName: "text.bubble").font(.system(size: 8)).foregroundStyle(.teal)
+                        Text(cc).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
+                        if let dx = patient.workingDiagnosis {
+                            Text("→").font(.caption2).foregroundStyle(.tertiary)
+                            Image(systemName: "stethoscope").font(.system(size: 8)).foregroundStyle(.teal)
+                            Text(dx).font(.caption2).foregroundStyle(.teal).lineLimit(1)
+                        }
+                    }
+                } else if let dx = patient.workingDiagnosis {
+                    HStack(spacing: 4) {
+                        Image(systemName: "stethoscope").font(.system(size: 8)).foregroundStyle(.teal)
+                        Text(dx).font(.caption2).foregroundStyle(.teal).lineLimit(1)
+                    }
                 }
 
                 // Row 4: NEWS2 + POD (ward patients) or allergy/anticoag badges (all settings)
