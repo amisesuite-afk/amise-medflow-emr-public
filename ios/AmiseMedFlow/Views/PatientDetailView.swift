@@ -454,6 +454,35 @@ struct PatientOverviewContent: View {
                 }
             }
 
+            // Pending investigations
+            let pendingInvs = patient.investigations.filter { $0.status == .ordered || $0.status == .pending }
+            if !pendingInvs.isEmpty {
+                overviewCard(title: "Pending Investigations (\(pendingInvs.count))") {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(pendingInvs.prefix(6), id: \.id) { inv in
+                            HStack(spacing: 6) {
+                                Image(systemName: inv.category.icon)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.secondary)
+                                    .frame(width: 14)
+                                Text(inv.name)
+                                    .font(.system(size: 13))
+                                Spacer()
+                                Text(inv.status == .ordered ? "Ordered" : "Pending")
+                                    .font(.system(size: 10, weight: .semibold))
+                                    .foregroundStyle(inv.status == .ordered ? .blue : .orange)
+                                    .padding(.horizontal, 6).padding(.vertical, 2)
+                                    .background((inv.status == .ordered ? Color.blue : Color.orange).opacity(0.1), in: Capsule())
+                            }
+                        }
+                        if pendingInvs.count > 6 {
+                            Text("+\(pendingInvs.count - 6) more")
+                                .font(.caption2).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+
             // Admission
             if patient.setting == .inpatient || patient.setting == .emergency {
                 overviewCard(title: "Admission") {
@@ -523,6 +552,28 @@ struct PatientOverviewContent: View {
                             }
                         } else {
                             LabeledContent("Weight", value: String(format: "%.1f kg", wt))
+                        }
+                    }
+                }
+            }
+
+            // Active medications
+            if !patient.prescriptions.isEmpty {
+                overviewCard(title: "Active Medications (\(patient.prescriptions.count))") {
+                    VStack(alignment: .leading, spacing: 4) {
+                        ForEach(patient.prescriptions.prefix(5), id: \.id) { rx in
+                            HStack(spacing: 6) {
+                                Image(systemName: "pills.fill")
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.purple)
+                                Text(rx.displayLine)
+                                    .font(.system(size: 13))
+                                    .lineLimit(1)
+                            }
+                        }
+                        if patient.prescriptions.count > 5 {
+                            Text("+\(patient.prescriptions.count - 5) more")
+                                .font(.caption2).foregroundStyle(.secondary)
                         }
                     }
                 }
