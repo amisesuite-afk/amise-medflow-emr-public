@@ -4,52 +4,89 @@ import SwiftData
 // MARK: - Patient detail section enum (iPad/Mac sidebar)
 
 enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
-    case overview         = "Overview"
-    case workflow         = "Consultation Workflow"
-    case consultation     = "Consultation"
-    case clinicalReasoning = "Clinical Reasoning"
-    case notes            = "Notes"
-    case vitals           = "Vitals"
-    case prescriptions    = "Prescriptions"
-    case billing          = "Billing"
-    case operative        = "Operative Plan"
-    case documents        = "Documents"
-    case intake           = "Intake Checklist"
-    case demographics     = "Demographics"
+    // Summary
+    case overview       = "Overview"
+    // Consultation sub-sections (map to ConsultTab)
+    case cc             = "Chief Complaint"
+    case hpi            = "History of Present Illness"
+    case pmh            = "Past Medical History"
+    case pshx           = "Surgical History"
+    case allergies      = "Allergies"
+    case social         = "Social History"
+    case exam           = "Examination"
+    case investigations = "Investigations"
+    case assessment     = "Assessment / Dx"
+    case plan           = "Management Plan"
+    // Clinical
+    case notes          = "Notes"
+    case vitals         = "Vitals"
+    case prescriptions  = "Prescriptions"
+    case billing        = "Billing"
+    case operative      = "Operative Plan"
+    case documents      = "Documents"
+    case demographics   = "Demographics"
 
     var id: String { rawValue }
 
     var icon: String {
         switch self {
-        case .overview:          "person.text.rectangle"
-        case .workflow:          "list.bullet.clipboard"
-        case .consultation:      "stethoscope"
-        case .clinicalReasoning: "brain.head.profile"
-        case .notes:             "note.text"
-        case .vitals:            "waveform.path.ecg"
-        case .prescriptions:     "pills"
-        case .billing:           "dollarsign.circle"
-        case .operative:         "scissors"
-        case .documents:         "doc.badge.plus"
-        case .intake:            "person.fill.badge.plus"
-        case .demographics:      "square.and.pencil"
+        case .overview:       "person.text.rectangle"
+        case .cc:             "text.bubble"
+        case .hpi:            "doc.text"
+        case .pmh:            "clock.arrow.circlepath"
+        case .pshx:           "bandage"
+        case .allergies:      "exclamationmark.shield"
+        case .social:         "person.2"
+        case .exam:           "stethoscope"
+        case .investigations: "testtube.2"
+        case .assessment:     "brain.head.profile"
+        case .plan:           "list.bullet.clipboard"
+        case .notes:          "note.text"
+        case .vitals:         "waveform.path.ecg"
+        case .prescriptions:  "pills"
+        case .billing:        "dollarsign.circle"
+        case .operative:      "scissors"
+        case .documents:      "doc.badge.plus"
+        case .demographics:   "square.and.pencil"
         }
     }
 
     var shortLabel: String {
         switch self {
-        case .overview:          "Overview"
-        case .workflow:          "Workflow"
-        case .consultation:      "Consult"
-        case .clinicalReasoning: "Reasoning"
-        case .notes:             "Notes"
-        case .vitals:            "Vitals"
-        case .prescriptions:     "Rx"
-        case .billing:           "Billing"
-        case .operative:         "Op Plan"
-        case .documents:         "Docs"
-        case .intake:            "Intake"
-        case .demographics:      "Details"
+        case .overview:       "Overview"
+        case .cc:             "CC"
+        case .hpi:            "HPI"
+        case .pmh:            "PMH"
+        case .pshx:           "PSHx"
+        case .allergies:      "Allergies"
+        case .social:         "Social"
+        case .exam:           "Exam"
+        case .investigations: "Ix"
+        case .assessment:     "Assess"
+        case .plan:           "Plan"
+        case .notes:          "Notes"
+        case .vitals:         "Vitals"
+        case .prescriptions:  "Rx"
+        case .billing:        "Billing"
+        case .operative:      "Op Plan"
+        case .documents:      "Docs"
+        case .demographics:   "Details"
+        }
+    }
+
+    var consultTab: ConsultTab? {
+        switch self {
+        case .cc:             .cc
+        case .hpi:            .hpi
+        case .pmh:            .pmh
+        case .pshx:           .pshx
+        case .allergies:      .allergies
+        case .social:         .social
+        case .exam:           .exam
+        case .investigations: .investigations
+        case .assessment:     .diagnosis
+        case .plan:           .plan
+        default:              nil
         }
     }
 }
@@ -150,12 +187,26 @@ struct PatientDetailPadView: View {
                     .padding(20)
             }
             .background(AMColor.bg)
-        case .workflow:
-            ConsultationWorkflowView(patient: patient, onNavigate: { selectedSection = $0 })
-        case .consultation:
-            ConsultationView(patient: patient)
-        case .clinicalReasoning:
-            ClinicalReasoningView(patient: patient)
+        case .cc:
+            ConsultationView(patient: patient, startingTab: .cc, embeddedInNav: true)
+        case .hpi:
+            ConsultationView(patient: patient, startingTab: .hpi, embeddedInNav: true)
+        case .pmh:
+            ConsultationView(patient: patient, startingTab: .pmh, embeddedInNav: true)
+        case .pshx:
+            ConsultationView(patient: patient, startingTab: .pshx, embeddedInNav: true)
+        case .allergies:
+            ConsultationView(patient: patient, startingTab: .allergies, embeddedInNav: true)
+        case .social:
+            ConsultationView(patient: patient, startingTab: .social, embeddedInNav: true)
+        case .exam:
+            ConsultationView(patient: patient, startingTab: .exam, embeddedInNav: true)
+        case .investigations:
+            ConsultationView(patient: patient, startingTab: .investigations, embeddedInNav: true)
+        case .assessment:
+            ConsultationView(patient: patient, startingTab: .diagnosis, embeddedInNav: true)
+        case .plan:
+            ConsultationView(patient: patient, startingTab: .plan, embeddedInNav: true)
         case .notes:
             List { NoteListView(patient: patient) }
         case .vitals:
@@ -168,8 +219,6 @@ struct PatientDetailPadView: View {
             OperativePlanView(patient: patient)
         case .documents:
             DocumentsView(patient: patient)
-        case .intake:
-            IntakeTabView(patient: patient, onNavigate: { selectedSection = $0 })
         case .demographics:
             PatientDemographicsForm(patient: patient)
         }

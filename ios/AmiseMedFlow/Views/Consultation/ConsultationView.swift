@@ -422,6 +422,8 @@ enum ConsultTab: String, CaseIterable {
 
 struct ConsultationView: View {
     @Bindable var patient: Patient
+    var startingTab: ConsultTab = .cc
+    var embeddedInNav: Bool = false
     @Environment(\.modelContext) private var context
     @StateObject private var ai = AIService()
 
@@ -458,11 +460,14 @@ struct ConsultationView: View {
     var body: some View {
         VStack(spacing: 0) {
             if !patient.allergies.isEmpty { allergyBanner }
-            completenessBar
-            tabBar
-            Divider()
+            if !embeddedInNav {
+                completenessBar
+                tabBar
+                Divider()
+            }
             tabContent
         }
+        .onAppear { activeTab = startingTab }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: patient.chiefComplaint) { _, newCC in
