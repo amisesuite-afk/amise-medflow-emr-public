@@ -137,6 +137,41 @@ struct NoteEditorView: View {
                     }
                     .foregroundStyle(.orange)
                 }
+                if let patient = note.patient {
+                    let examParts: [(String, String?)] = [
+                        ("General", patient.examGeneral), ("CVS", patient.examCVS),
+                        ("Resp", patient.examResp), ("Abdomen", patient.examAbdo),
+                        ("Neuro", patient.examNeuro), ("Other", patient.examOther),
+                    ]
+                    let examLines = examParts.compactMap { label, val -> String? in
+                        guard let v = val, !v.isEmpty else { return nil }
+                        return "\(label): \(v)"
+                    }
+                    if !examLines.isEmpty {
+                        Button {
+                            let examText = "Examination:\n" + examLines.joined(separator: "\n")
+                            let existing = (note.objective ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                            note.objective = existing.isEmpty ? examText : existing + "\n\n" + examText
+                        } label: {
+                            Label("Insert examination findings", systemImage: "stethoscope")
+                                .font(.caption)
+                        }
+                        .foregroundStyle(.teal)
+                    }
+                    let resulted = patient.investigations.filter { $0.status == .resulted }
+                    if !resulted.isEmpty {
+                        Button {
+                            let invLines = resulted.map { "\($0.name): \($0.result.isEmpty ? "result available" : $0.result)" }
+                            let invText = "Investigations:\n" + invLines.joined(separator: "\n")
+                            let existing = (note.objective ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                            note.objective = existing.isEmpty ? invText : existing + "\n\n" + invText
+                        } label: {
+                            Label("Insert investigation results (\(resulted.count))", systemImage: "flask")
+                                .font(.caption)
+                        }
+                        .foregroundStyle(.blue)
+                    }
+                }
             } header: {
                 Label("Objective", systemImage: "stethoscope")
             }
@@ -156,6 +191,29 @@ struct NoteEditorView: View {
                             .allowsHitTesting(false)
                     }
                 }
+                if let patient = note.patient,
+                   let aText = patient.assessmentText, !aText.isEmpty {
+                    Button {
+                        let existing = (note.assessment ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                        note.assessment = existing.isEmpty ? aText : existing + "\n\n" + aText
+                    } label: {
+                        Label("Insert from Assessment tab", systemImage: "doc.text.magnifyingglass")
+                            .font(.caption)
+                    }
+                    .foregroundStyle(.teal)
+                }
+                if let patient = note.patient,
+                   let dx = patient.workingDiagnosis, (note.assessment ?? "").isEmpty {
+                    Button {
+                        let icdSuffix = patient.workingDiagnosisICD.map { " [\($0)]" } ?? ""
+                        note.assessment = "Working diagnosis: \(dx)\(icdSuffix)"
+                    } label: {
+                        Label("Use working diagnosis: \(dx)", systemImage: "stethoscope")
+                            .font(.caption)
+                            .lineLimit(1)
+                    }
+                    .foregroundStyle(.secondary)
+                }
             } header: {
                 Label("Assessment", systemImage: "doc.text.magnifyingglass")
             }
@@ -174,6 +232,17 @@ struct NoteEditorView: View {
                             .padding(.leading, 4)
                             .allowsHitTesting(false)
                     }
+                }
+                if let patient = note.patient,
+                   let mgmt = patient.managementPlan, !mgmt.isEmpty,
+                   (note.plan ?? "").isEmpty {
+                    Button {
+                        note.plan = mgmt
+                    } label: {
+                        Label("Import management plan from Consultation", systemImage: "list.bullet.clipboard")
+                            .font(.caption)
+                    }
+                    .foregroundStyle(.teal)
                 }
             } header: {
                 Label("Plan", systemImage: "list.bullet.clipboard")
