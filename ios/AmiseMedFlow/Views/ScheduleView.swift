@@ -140,7 +140,10 @@ struct ScheduleView: View {
                 lines.append("\(i + 1). [\(setting)] \(timeStr) — \(patient.fullName), \(patient.sex.rawValue.prefix(1)) \(patient.ageYears)y")
                 lines.append("   \(proc)")
                 let allergies = patient.allergies
-                lines.append("   Allergies: \(allergies.isEmpty ? "NKDA" : allergies.map { $0.name }.joined(separator: ", "))")
+                lines.append("   Allergies: \(allergies.isEmpty ? "NKDA" : allergies.map { "\($0.name) (\($0.severity))" }.joined(separator: ", "))")
+                if patient.hasAnticoagulation {
+                    lines.append("   ⚠ Anticoag/Antiplatelet: \(patient.activeAnticoagulants.map { $0.drug }.joined(separator: ", "))")
+                }
             }
         }
 
@@ -219,7 +222,7 @@ private struct ScheduleRow: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
-                HStack(spacing: 8) {
+                HStack(spacing: 6) {
                     if patient.ageYears > 0 {
                         Text("\(patient.sex.rawValue.prefix(1)), \(patient.ageYears)y")
                             .font(.caption2)
@@ -237,6 +240,24 @@ private struct ScheduleRow: View {
                                 .font(.caption2)
                                 .foregroundStyle(.green)
                         }
+                    }
+                    Spacer()
+                    if patient.hasCriticalAllergy {
+                        Label("Allergy", systemImage: "exclamationmark.shield.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.red)
+                            .labelStyle(.iconOnly)
+                    } else if !patient.allergies.isEmpty {
+                        Label("Allergy", systemImage: "exclamationmark.shield")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(.orange)
+                            .labelStyle(.iconOnly)
+                    }
+                    if patient.hasAnticoagulation {
+                        Label("Anticoag", systemImage: "drop.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.purple)
+                            .labelStyle(.iconOnly)
                     }
                 }
             }

@@ -113,13 +113,7 @@ struct EndoscopyListView: View {
             if let mrn = patient.mrn { lines.append("MRN: \(mrn)") }
 
             if !patient.prescriptions.isEmpty {
-                let anticoags = patient.prescriptions.filter {
-                    let name = $0.drug.lowercased()
-                    return name.contains("warfarin") || name.contains("rivaroxaban") ||
-                           name.contains("apixaban") || name.contains("dabigatran") ||
-                           name.contains("aspirin") || name.contains("clopidogrel") ||
-                           name.contains("heparin") || name.contains("enoxaparin")
-                }
+                let anticoags = patient.activeAnticoagulants
                 if !anticoags.isEmpty {
                     lines.append("⚠ ANTICOAG/ANTIPLATELET: " + anticoags.map { $0.displayLine }.joined(separator: "; "))
                 }
@@ -204,9 +198,7 @@ struct EndoscopyRow: View {
                         Text(dx).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
                     }
                     Spacer()
-                    if patient.allergies.contains(where: {
-                        $0.severity.lowercased().contains("anaphylaxis") || $0.severity.lowercased().contains("severe")
-                    }) {
+                    if patient.hasCriticalAllergy {
                         Label("Allergy", systemImage: "exclamationmark.shield.fill")
                             .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(.red)
@@ -217,14 +209,7 @@ struct EndoscopyRow: View {
                             .foregroundStyle(.orange)
                             .labelStyle(.iconOnly)
                     }
-                    let anticoags = patient.prescriptions.filter {
-                        let name = $0.drug.lowercased()
-                        return name.contains("warfarin") || name.contains("rivaroxaban") ||
-                               name.contains("apixaban") || name.contains("dabigatran") ||
-                               name.contains("aspirin") || name.contains("clopidogrel") ||
-                               name.contains("heparin") || name.contains("enoxaparin")
-                    }
-                    if !anticoags.isEmpty {
+                    if patient.hasAnticoagulation {
                         Label("Anticoag", systemImage: "drop.fill")
                             .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(.purple)

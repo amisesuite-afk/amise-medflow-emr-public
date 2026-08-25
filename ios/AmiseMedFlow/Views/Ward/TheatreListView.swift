@@ -198,9 +198,7 @@ struct TheatreRow: View {
                         Text(anaes).font(.caption2).foregroundStyle(.secondary)
                     }
 
-                    if patient.allergies.contains(where: {
-                        $0.severity.lowercased().contains("anaphylaxis") || $0.severity.lowercased().contains("severe")
-                    }) {
+                    if patient.hasCriticalAllergy {
                         Label("Allergy", systemImage: "exclamationmark.shield.fill")
                             .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
                             .labelStyle(.iconOnly)
@@ -209,15 +207,7 @@ struct TheatreRow: View {
                             .font(.system(size: 9, weight: .semibold)).foregroundStyle(.orange)
                             .labelStyle(.iconOnly)
                     }
-
-                    let anticoags = patient.prescriptions.filter {
-                        let n = $0.drug.lowercased()
-                        return n.contains("warfarin") || n.contains("rivaroxaban") ||
-                               n.contains("apixaban") || n.contains("dabigatran") ||
-                               n.contains("aspirin") || n.contains("clopidogrel") ||
-                               n.contains("heparin") || n.contains("enoxaparin")
-                    }
-                    if !anticoags.isEmpty {
+                    if patient.hasAnticoagulation {
                         Label("Anticoag", systemImage: "drop.fill")
                             .font(.system(size: 9, weight: .bold)).foregroundStyle(.purple)
                             .labelStyle(.iconOnly)

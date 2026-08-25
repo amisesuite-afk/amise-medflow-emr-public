@@ -61,10 +61,7 @@ struct ClinicalReasoningView: View {
             }
         }
 
-        let criticalAllergies = patient.allergies.filter {
-            $0.severity.lowercased().contains("anaphylaxis") || $0.severity.lowercased().contains("severe")
-        }
-        for a in criticalAllergies {
+        for a in patient.criticalAllergies {
             flags.append(.init(text: "Anaphylaxis risk: \(a.name) — \(a.reaction)", severity: .critical))
         }
 
@@ -227,8 +224,8 @@ struct ClinicalReasoningView: View {
         Section {
             ForEach(patient.allergies, id: \.id) { a in
                 HStack(spacing: 8) {
-                    Image(systemName: "exclamationmark.shield")
-                        .foregroundStyle(a.severity.lowercased().contains("anaphylaxis") ? .red : .orange)
+                    Image(systemName: patient.hasCriticalAllergy && (a.severity.lowercased().contains("anaphylaxis") || a.severity.lowercased().contains("severe")) ? "exclamationmark.shield.fill" : "exclamationmark.shield")
+                        .foregroundStyle(a.severity.lowercased().contains("anaphylaxis") || a.severity.lowercased().contains("severe") ? .red : .orange)
                         .font(.caption)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(a.name).font(.system(size: 13, weight: .semibold))

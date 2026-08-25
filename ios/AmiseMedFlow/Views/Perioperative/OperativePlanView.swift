@@ -117,43 +117,27 @@ private struct PlanForm: View {
     private var anaesthesiaSection: some View {
         Section("Anaesthesia & Preparation") {
             // Safety alerts relevant to anaesthesia planning
-            let criticalAllergies = patient.allergies.filter {
-                $0.severity.lowercased().contains("anaphylaxis") || $0.severity.lowercased().contains("severe")
-            }
-            if !criticalAllergies.isEmpty {
+            if patient.hasCriticalAllergy {
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "exclamationmark.shield.fill").foregroundStyle(.red)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("CRITICAL ALLERGY").font(.system(size: 11, weight: .heavy)).foregroundStyle(.red)
-                        Text(criticalAllergies.map { "\($0.name) — \($0.reaction)" }.joined(separator: "\n"))
+                        Text(patient.criticalAllergies.map { "\($0.name) — \($0.reaction)" }.joined(separator: "\n"))
                             .font(.caption2).foregroundStyle(.secondary)
                     }
                 }
                 .padding(.vertical, 4)
             }
-            let penicillinAllergy = patient.allergies.first {
-                $0.name.lowercased().contains("penicillin") ||
-                $0.name.lowercased().contains("amoxicillin") ||
-                $0.name.lowercased().contains("amoxil") ||
-                $0.name.lowercased().contains("co-amoxiclav") ||
-                $0.name.lowercased().contains("augmentin")
-            }
-            if penicillinAllergy != nil {
+            if patient.hasPenicillinAllergy {
                 Label("Penicillin allergy — avoid beta-lactam antibiotics", systemImage: "exclamationmark.circle.fill")
                     .font(.caption).foregroundStyle(.orange)
             }
-            let anticoags = patient.prescriptions.filter {
-                let n = $0.drug.lowercased()
-                return n.contains("warfarin") || n.contains("rivaroxaban") ||
-                       n.contains("apixaban") || n.contains("dabigatran") ||
-                       n.contains("heparin") || n.contains("enoxaparin")
-            }
-            if !anticoags.isEmpty {
+            if patient.hasAnticoagulation {
                 HStack(spacing: 6) {
                     Image(systemName: "drop.fill").foregroundStyle(.purple).font(.caption)
                     VStack(alignment: .leading, spacing: 1) {
                         Text("Anticoagulant therapy").font(.caption.weight(.semibold)).foregroundStyle(.purple)
-                        Text(anticoags.map { $0.drug }.joined(separator: ", "))
+                        Text(patient.activeAnticoagulants.map { $0.drug }.joined(separator: ", "))
                             .font(.caption2).foregroundStyle(.secondary)
                     }
                 }

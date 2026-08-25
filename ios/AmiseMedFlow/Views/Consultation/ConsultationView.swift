@@ -34,6 +34,47 @@ extension Patient {
         ]
         return (checks.filter { $0 }.count, checks.count)
     }
+
+    // MARK: - Allergy helpers
+
+    var hasCriticalAllergy: Bool {
+        allergies.contains {
+            $0.severity.lowercased().contains("anaphylaxis") ||
+            $0.severity.lowercased().contains("severe")
+        }
+    }
+
+    var criticalAllergies: [AllergyEntry] {
+        allergies.filter {
+            $0.severity.lowercased().contains("anaphylaxis") ||
+            $0.severity.lowercased().contains("severe")
+        }
+    }
+
+    var hasPenicillinAllergy: Bool {
+        allergies.contains {
+            let n = $0.name.lowercased()
+            return n.contains("penicillin") || n.contains("amoxicillin") ||
+                   n.contains("amoxil") || n.contains("co-amoxiclav") ||
+                   n.contains("augmentin")
+        }
+    }
+
+    // MARK: - Anticoagulation helpers
+
+    var activeAnticoagulants: [Prescription] {
+        prescriptions.filter {
+            let n = $0.drug.lowercased()
+            return n.contains("warfarin") || n.contains("rivaroxaban") ||
+                   n.contains("apixaban") || n.contains("dabigatran") ||
+                   n.contains("edoxaban") || n.contains("fondaparinux") ||
+                   n.contains("heparin") || n.contains("enoxaparin") ||
+                   n.contains("aspirin") || n.contains("clopidogrel") ||
+                   n.contains("ticagrelor") || n.contains("prasugrel")
+        }
+    }
+
+    var hasAnticoagulation: Bool { !activeAnticoagulants.isEmpty }
 }
 
 // MARK: - Investigation model (JSON-encoded in Patient.investigationsJson)

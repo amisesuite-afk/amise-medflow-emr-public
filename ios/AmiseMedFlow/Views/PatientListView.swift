@@ -165,7 +165,7 @@ struct PatientRow: View {
                         .lineLimit(1)
                 }
 
-                // Row 4: NEWS2 + POD (ward patients only)
+                // Row 4: NEWS2 + POD (ward patients) or allergy/anticoag badges (all settings)
                 if (patient.setting == .inpatient || patient.setting == .emergency),
                    let v = latestVitals, v.hasAnyValue {
                     HStack(spacing: 6) {
@@ -185,6 +185,24 @@ struct PatientRow: View {
                         Text(v.news2Risk)
                             .font(.system(size: 9))
                             .foregroundStyle(Color(hex: v.news2Color).opacity(0.8))
+                        Spacer()
+                        if patient.hasCriticalAllergy {
+                            Label("Allergy", systemImage: "exclamationmark.shield.fill")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(.red)
+                                .labelStyle(.iconOnly)
+                        } else if !patient.allergies.isEmpty {
+                            Label("Allergy", systemImage: "exclamationmark.shield")
+                                .font(.system(size: 9, weight: .semibold))
+                                .foregroundStyle(.orange)
+                                .labelStyle(.iconOnly)
+                        }
+                        if patient.hasAnticoagulation {
+                            Label("Anticoag", systemImage: "drop.fill")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(.purple)
+                                .labelStyle(.iconOnly)
+                        }
                     }
                 } else if let days = patient.postOpDays {
                     Text("POD \(days)")
