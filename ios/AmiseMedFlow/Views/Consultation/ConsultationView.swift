@@ -1138,22 +1138,21 @@ struct ConsultationView: View {
                 }
                 .buttonStyle(.plain)
 
-                // Condition chip grid
-                ChipFlow(hSpacing: 8, vSpacing: 8) {
-                    ForEach(pmhChips, id: \.self) { chip in
-                        let sel = pmhChipSelections.contains(chip)
-                        Button { pmhChipSelections.formSymmetricDifference([chip]) } label: {
+                // Condition list
+                ForEach(pmhChips, id: \.self) { chip in
+                    let sel = pmhChipSelections.contains(chip)
+                    Button { pmhChipSelections.formSymmetricDifference([chip]) } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: sel ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 13))
+                                .foregroundStyle(sel ? AMColor.accent : Color.secondary)
                             Text(chip)
-                                .font(.system(size: 12, weight: sel ? .semibold : .regular))
-                                .padding(.horizontal, 10).padding(.vertical, 5)
-                                .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
-                                .foregroundStyle(sel ? Color.white : AMColor.accent)
-                                .animation(.easeInOut(duration: 0.12), value: sel)
+                                .font(.callout.weight(sel ? .semibold : .regular))
+                                .foregroundStyle(.primary)
+                            Spacer()
                         }
-                        .buttonStyle(.plain)
-                    }
+                    }.buttonStyle(.plain)
                 }
-                .padding(.vertical, 4)
 
                 // Apply button
                 if !pmhChipSelections.isEmpty {
@@ -1177,7 +1176,7 @@ struct ConsultationView: View {
                                             set: { patient.pmhNotes = $0.isEmpty ? nil : $0; touch() }))
                         .frame(minHeight: 100)
                     if (patient.pmhNotes ?? "").isEmpty {
-                        Text("Free-text PMH — or use chips above")
+                        Text("Free-text PMH — or tick conditions above")
                             .foregroundStyle(.tertiary).font(.caption)
                             .padding(.top, 8).padding(.leading, 4)
                             .allowsHitTesting(false)
@@ -1189,21 +1188,20 @@ struct ConsultationView: View {
             }
 
             Section {
-                ChipFlow(hSpacing: 8, vSpacing: 8) {
-                    ForEach(familyHistoryChips, id: \.self) { chip in
-                        let sel = fhChipSelections.contains(chip)
-                        Button { fhChipSelections.formSymmetricDifference([chip]) } label: {
+                ForEach(familyHistoryChips, id: \.self) { chip in
+                    let sel = fhChipSelections.contains(chip)
+                    Button { fhChipSelections.formSymmetricDifference([chip]) } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: sel ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 13))
+                                .foregroundStyle(sel ? AMColor.accent : Color.secondary)
                             Text(chip)
-                                .font(.system(size: 12, weight: sel ? .semibold : .regular))
-                                .padding(.horizontal, 10).padding(.vertical, 5)
-                                .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
-                                .foregroundStyle(sel ? Color.white : AMColor.accent)
-                                .animation(.easeInOut(duration: 0.12), value: sel)
+                                .font(.callout.weight(sel ? .semibold : .regular))
+                                .foregroundStyle(.primary)
+                            Spacer()
                         }
-                        .buttonStyle(.plain)
-                    }
+                    }.buttonStyle(.plain)
                 }
-                .padding(.vertical, 4)
 
                 if !fhChipSelections.isEmpty {
                     Button {
@@ -1224,7 +1222,7 @@ struct ConsultationView: View {
                                             set: { patient.familyHistoryNotes = $0.isEmpty ? nil : $0; touch() }))
                         .frame(minHeight: 80)
                     if (patient.familyHistoryNotes ?? "").isEmpty {
-                        Text("Free-text — or use chips above")
+                        Text("Free-text — or tick conditions above")
                             .foregroundStyle(.tertiary).font(.caption)
                             .padding(.top, 8).padding(.leading, 4)
                             .allowsHitTesting(false)
@@ -1264,22 +1262,21 @@ struct ConsultationView: View {
                 }
                 .buttonStyle(.plain)
 
-                // Procedure chip grid
-                ChipFlow(hSpacing: 8, vSpacing: 8) {
-                    ForEach(pshxChips, id: \.self) { chip in
-                        let sel = pshxChipSelections.contains(chip)
-                        Button { pshxChipSelections.formSymmetricDifference([chip]) } label: {
+                // Procedure list
+                ForEach(pshxChips, id: \.self) { chip in
+                    let sel = pshxChipSelections.contains(chip)
+                    Button { pshxChipSelections.formSymmetricDifference([chip]) } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: sel ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 13))
+                                .foregroundStyle(sel ? AMColor.accent : Color.secondary)
                             Text(chip)
-                                .font(.system(size: 12, weight: sel ? .semibold : .regular))
-                                .padding(.horizontal, 10).padding(.vertical, 5)
-                                .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
-                                .foregroundStyle(sel ? Color.white : AMColor.accent)
-                                .animation(.easeInOut(duration: 0.12), value: sel)
+                                .font(.callout.weight(sel ? .semibold : .regular))
+                                .foregroundStyle(.primary)
+                            Spacer()
                         }
-                        .buttonStyle(.plain)
-                    }
+                    }.buttonStyle(.plain)
                 }
-                .padding(.vertical, 4)
 
                 // Apply button
                 if !pshxChipSelections.isEmpty {
