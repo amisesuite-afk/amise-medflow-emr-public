@@ -312,6 +312,15 @@ private let ccInvestigations: [String: [CCInv]] = [
     ],
 ]
 
+// Common baseline investigation chips (fallback when no CC-specific set exists)
+private let commonBaselineInvs: [CCInv] = [
+    ("FBC", .blood), ("U&E", .blood), ("LFTs", .blood), ("CRP", .blood),
+    ("Coagulation (INR/APTT)", .blood), ("Blood glucose", .blood),
+    ("Group & Save", .blood), ("Blood cultures", .blood),
+    ("CXR", .imaging), ("AXR", .imaging), ("USS abdomen", .imaging),
+    ("ECG", .other), ("Urinalysis", .other),
+]
+
 // MARK: - SOCRATES HPI builder data
 
 struct SOCRATESDimension: Identifiable {
@@ -1093,6 +1102,32 @@ struct ConsultationView: View {
                 }
             }
 
+            // Common baseline fallback — shown when CC has no matched suggestion set
+            let hasCCMatch = patient.chiefComplaint.flatMap { ccInvestigations[$0] } != nil
+            let existingNames = Set(patient.investigations.map { $0.name })
+            let baselineToShow = commonBaselineInvs.filter { !existingNames.contains($0.name) }
+            if !hasCCMatch && !baselineToShow.isEmpty {
+                Section {
+                    ChipFlow(hSpacing: 8, vSpacing: 8) {
+                        ForEach(baselineToShow, id: \.name) { inv in
+                            Button { addInvestigation(name: inv.name, category: inv.category) } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: inv.category.icon).font(.system(size: 10))
+                                    Text(inv.name).font(.system(size: 12))
+                                }
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(AMColor.accent)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                } header: {
+                    Label("Common Baseline Tests", systemImage: "list.bullet.clipboard")
+                }
+            }
+
             // Ordered / pending / resulted list
             let active = patient.investigations.filter { $0.status != .cancelled }
             if !active.isEmpty {
@@ -1459,18 +1494,22 @@ struct ConsultationView: View {
                         .font(.caption).foregroundStyle(AMColor.accent)
                 }
 
-                examField("General appearance", text: Binding(
-                    get: { patient.examGeneral ?? "" },
-                    set: { patient.examGeneral = $0.isEmpty ? nil : $0; touch() }))
-                examField("Cardiovascular", text: Binding(
-                    get: { patient.examCVS ?? "" },
-                    set: { patient.examCVS = $0.isEmpty ? nil : $0; touch() }))
-                examField("Respiratory", text: Binding(
-                    get: { patient.examResp ?? "" },
-                    set: { patient.examResp = $0.isEmpty ? nil : $0; touch() }))
-                examField("Abdomen", text: Binding(
-                    get: { patient.examAbdo ?? "" },
-                    set: { patient.examAbdo = $0.isEmpty ? nil : $0; touch() }))
+                examField("General appearance",
+                          text: Binding(get: { patient.examGeneral ?? "" },
+                                        set: { patient.examGeneral = $0.isEmpty ? nil : $0; touch() }),
+                          chips: ["Alert, no distress.", "Cachexic.", "Jaundiced.", "Pallor.", "Ankle oedema.", "Unwell."])
+                examField("Cardiovascular",
+                          text: Binding(get: { patient.examCVS ?? "" },
+                                        set: { patient.examCVS = $0.isEmpty ? nil : $0; touch() }),
+                          chips: ["Regular rate and rhythm. No murmurs.", "Dual heart sounds.", "Systolic murmur.", "Pitting oedema ankles.", "Elevated JVP."])
+                examField("Respiratory",
+                          text: Binding(get: { patient.examResp ?? "" },
+                                        set: { patient.examResp = $0.isEmpty ? nil : $0; touch() }),
+                          chips: ["Clear to auscultation bilaterally.", "Reduced air entry.", "Fine crackles.", "Expiratory wheeze.", "Dull to percussion."])
+                examField("Abdomen",
+                          text: Binding(get: { patient.examAbdo ?? "" },
+                                        set: { patient.examAbdo = $0.isEmpty ? nil : $0; touch() }),
+                          chips: ["Soft, non-tender.", "Tender RUQ.", "Tender RLQ.", "Guarding.", "Rigidity.", "Murphy's +ve.", "Bowel sounds normal.", "No organomegaly.", "Hepatomegaly.", "Distended."])
 
                 if examMode == .full {
                     examField("Neurological", text: Binding(
@@ -1507,10 +1546,29 @@ struct ConsultationView: View {
     }
 
     @ViewBuilder
-    private func examField(_ label: String, text: Binding<String>) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
-            TextField("Findings…", text: text, axis: .vertical).lineLimit(2...).font(.callout)
+    private func examField(_ label: String, text: Binding<String>, chips: [String] = []) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(label).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                TextField("Findings…", text: text, axis: .vertical).lineLimit(2...).font(.callout)
+            }
+            if !chips.isEmpty {
+                ChipFlow(hSpacing: 6, vSpacing: 6) {
+                    ForEach(chips, id: \.self) { chip in
+                        Button {
+                            let existing = text.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                            text.wrappedValue = existing.isEmpty ? chip : existing + " " + chip
+                        } label: {
+                            Text(chip)
+                                .font(.system(size: 11))
+                                .padding(.horizontal, 8).padding(.vertical, 4)
+                                .background(Color.secondary.opacity(0.1), in: Capsule())
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
         }
         .padding(.vertical, 2)
     }
