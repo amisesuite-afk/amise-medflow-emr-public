@@ -459,6 +459,7 @@ struct ConsultationView: View {
     @State private var aiMedSuggestions: [String] = []
     @State private var newInvName = ""
     @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
+    @State private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] = []
 
     enum ExamMode { case short, full }
 
@@ -479,6 +480,9 @@ struct ConsultationView: View {
         .onAppear { activeTab = startingTab }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: activeTab) { _, tab in
+            if tab == .diagnosis { refreshBayesian() }
+        }
         .onChange(of: patient.chiefComplaint) { _, newCC in
             guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
             pathwayTask?.cancel()
@@ -1818,10 +1822,59 @@ struct ConsultationView: View {
         .padding(.vertical, 2)
     }
 
+    // MARK: - Bayesian engine refresh
+
+    private func refreshBayesian() {
+        bayesianDx = BayesianDiagnosisEngine.infer(
+            chiefComplaint: patient.chiefComplaint,
+            socratesSelections: socratesSelections,
+            pmhNotes: patient.pmhNotes,
+            surgicalHistory: patient.surgicalHistory,
+            examAbdo: patient.examAbdo,
+            examGeneral: patient.examGeneral,
+            investigations: patient.investigations,
+            ageYears: patient.ageYears,
+            sex: patient.sex
+        )
+    }
+
     // MARK: - Diagnosis tab
 
     private var diagnosisTab: some View {
         List {
+            if !bayesianDx.isEmpty {
+                Section {
+                    ForEach(bayesianDx) { result in
+                        BayesianDxRow(result: result) {
+                            patient.workingDiagnosis = result.name
+                            patient.workingDiagnosisICD = result.icdCode
+                            touch()
+                            icdQuery = "\(result.icdCode) \(result.name)"
+                            icdSuggestions = []
+                        }
+                    }
+                } header: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "brain.head.profile").foregroundStyle(.purple)
+                        Text("Suggested Differentials")
+                            .font(.caption.weight(.semibold))
+                        Spacer()
+                        Button {
+                            refreshBayesian()
+                        } label: {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                } footer: {
+                    Text("Based on CC · SOCRATES · PMH · Exam · Ix · Age/Sex. Apply to confirm.")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             Section {
                 HStack {
                     Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
@@ -2304,5 +2357,66 @@ private struct AddMedicationSheet: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Bayesian differential row
+
+private struct BayesianDxRow: View {
+    let result: BayesianDiagnosisEngine.DiagnosisResult
+    let onApply: () -> Void
+
+    private var barColor: Color {
+        switch result.probability {
+        case 55...: return .green
+        case 30...: return .orange
+        default:    return .secondary
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(result.name)
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary)
+                    Text(result.icdCode)
+                        .font(.caption.monospaced())
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(result.probability)%")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(barColor)
+                    Text(result.confidence.label)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                Button("Apply") { onApply() }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .tint(barColor)
+            }
+
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.secondary.opacity(0.15))
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(barColor.opacity(0.75))
+                        .frame(width: geo.size.width * CGFloat(result.probability) / 100)
+                }
+            }
+            .frame(height: 5)
+
+            if !result.evidence.isEmpty {
+                Text(result.evidence.joined(separator: " · "))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 2)
     }
 }
