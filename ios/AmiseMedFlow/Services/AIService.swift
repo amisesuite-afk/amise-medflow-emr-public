@@ -42,7 +42,7 @@ final class AIService: ObservableObject {
 
     // MARK: - Clinical context builder
 
-    private func clinicalContext(_ patient: Patient) -> String {
+    func clinicalContext(_ patient: Patient) -> String {
         var lines: [String] = []
         lines.append("Patient: \(patient.fullName), \(patient.ageYears)y, \(patient.sex.rawValue)")
         lines.append("Setting: \(patient.setting.rawValue) — \(patient.location.rawValue)")
@@ -92,8 +92,7 @@ final class AIService: ObservableObject {
 
         let invs = patient.investigations
         if !invs.isEmpty {
-            let ordered  = invs.filter { $0.status == .ordered || $0.status == .pending }
-                               .map { $0.name }
+            let ordered  = invs.filter { $0.status == .ordered || $0.status == .pending }.map { $0.name }
             let resulted = invs.filter { $0.status == .resulted }
                                .map { "\($0.name): \($0.result.isEmpty ? "result pending" : $0.result)" }
             if !ordered.isEmpty  { lines.append("Investigations ordered: \(ordered.joined(separator: ", "))") }
@@ -120,14 +119,12 @@ final class AIService: ObservableObject {
         Never fabricate vital signs, investigation results, or operative findings not provided.
         Mark AI-generated content as [AI DRAFT — REVIEW BEFORE SIGNING].
         """
-
         let user = """
         Generate a SOAP note (\(noteType.label)) for this patient:
         \(clinicalContext(patient))
 
         Return JSON: {"s":"...","o":"...","a":"...","p":"..."}
         """
-
         let raw = try await generate(systemPrompt: system, userMessage: user)
         if let start = raw.firstIndex(of: "{"), let end = raw.lastIndex(of: "}") {
             let jsonStr = String(raw[start...end])
@@ -150,7 +147,6 @@ final class AIService: ObservableObject {
         Generate professional surgical documentation. British spelling. Evidence-based.
         Mark output: [AI DRAFT — REVIEW BEFORE SIGNING].
         """
-
         let templates: [NoteType: String] = [
             .operative:      "operative note",
             .endoscopy:      "endoscopy report",
@@ -159,7 +155,6 @@ final class AIService: ObservableObject {
             .referralLetter: "formal referral letter from Dr Dawit Daniel Kabiye MD DM to a specialist colleague"
         ]
         let docType = templates[noteType] ?? "clinical note"
-
         let user = """
         Generate a \(docType).
         \(clinicalContext(patient))
@@ -168,7 +163,6 @@ final class AIService: ObservableObject {
         \(noteType == .endoscopy ? "Include: procedure, indication, bowel preparation, scope used, insertion, findings by anatomic region (with distances), biopsies/interventions, impression, plan, patient tolerance." : "")
         \(noteType == .referralLetter ? "Format as a formal letter. Include relevant history, examination findings, investigations, current medications, reason for referral, and what you are asking the colleague to do." : "")
         """
-
         return try await generate(systemPrompt: system, userMessage: user)
     }
 
@@ -210,62 +204,6 @@ final class AIService: ObservableObject {
         """
         return try await generate(systemPrompt: system, userMessage: user)
     }
-
-    // MARK: - Referral letter
-
-    func generateReferral(patient: Patient, toSpecialty: String, reason: String) async throws -> String {
-        let system = """
-        You are writing a formal medical referral letter on behalf of Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
-        Use professional British-Caribbean medical correspondence style. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
-        """
-        let user = """
-        Write a referral letter to a \(toSpecialty) colleague.
-        Reason for referral: \(reason)
-        \(clinicalContext(patient))
-        Patient DOB: \(patient.dateOfBirth.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .none) } ?? "Not recorded")
-        Format as a formal letter. Include relevant history, examination findings, investigations, current medications, and what you are asking the colleague to do.
-        """
-        return try await generate(systemPrompt: system, userMessage: user)
-    }
-
-    // MARK: - Clinical reasoning
-
-    func generateClinicalReasoning(patient: Patient) async throws -> String {
-        let system = """
-        You are a consultant surgical registrar supporting Dr Dawit Daniel Kabiye MD DM, general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
-        Provide concise, evidence-based clinical reasoning. British spelling. Be precise.
-        Format your response as:
-        1. Clinical Summary (2-3 sentences)
-        2. Differential Diagnosis (ranked most to least likely, with brief rationale)
-        3. Recommended Investigations (if any gaps remain)
-        4. Management Priorities (immediate actions first)
-        Mark the response: [AI DRAFT — CLINICIAN REVIEW REQUIRED]
-        """
-        let user = """
-        Provide structured clinical reasoning for this patient:
-        \(clinicalContext(patient))
-        """
-        return try await generate(systemPrompt: system, userMessage: user)
-    }
-
-    // MARK: - Discharge summary
-
-    func generateDischargeSummary(patient: Patient, treatment: String, followUp: String) async throws -> String {
-        let system = """
-        You are writing a discharge summary for Dr Dawit Daniel Kabiye MD DM.
-        Use British spelling. Include all mandatory discharge summary components. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
-        """
-        let user = """
-        Write a complete discharge summary.
-        Treatment provided: \(treatment)
-        Follow-up plan: \(followUp)
-        \(clinicalContext(patient))
-        Ward: \(patient.ward ?? "Not specified")
-        Include: admission reason, treatment given, discharge diagnosis, discharge condition, medications on discharge, follow-up plan, red flag advice.
-        """
-        return try await generate(systemPrompt: system, userMessage: user)
-    }
-}
 
     // MARK: - Vision: analyse a photo of a lab/imaging result
 
@@ -332,6 +270,61 @@ final class AIService: ObservableObject {
         return decoded.content.first?.text ?? ""
     }
 
+    // MARK: - Referral letter
+
+    func generateReferral(patient: Patient, toSpecialty: String, reason: String) async throws -> String {
+        let system = """
+        You are writing a formal medical referral letter on behalf of Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+        Use professional British-Caribbean medical correspondence style. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
+        """
+        let user = """
+        Write a referral letter to a \(toSpecialty) colleague.
+        Reason for referral: \(reason)
+        \(clinicalContext(patient))
+        Patient DOB: \(patient.dateOfBirth.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .none) } ?? "Not recorded")
+        Format as a formal letter. Include relevant history, examination findings, investigations, current medications, and what you are asking the colleague to do.
+        """
+        return try await generate(systemPrompt: system, userMessage: user)
+    }
+
+    // MARK: - Clinical reasoning
+
+    func generateClinicalReasoning(patient: Patient) async throws -> String {
+        let system = """
+        You are a consultant surgical registrar supporting Dr Dawit Daniel Kabiye MD DM, general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+        Provide concise, evidence-based clinical reasoning. British spelling. Be precise.
+        Format your response as:
+        1. Clinical Summary (2-3 sentences)
+        2. Differential Diagnosis (ranked most to least likely, with brief rationale)
+        3. Recommended Investigations (if any gaps remain)
+        4. Management Priorities (immediate actions first)
+        Mark the response: [AI DRAFT — CLINICIAN REVIEW REQUIRED]
+        """
+        let user = """
+        Provide structured clinical reasoning for this patient:
+        \(clinicalContext(patient))
+        """
+        return try await generate(systemPrompt: system, userMessage: user)
+    }
+
+    // MARK: - Discharge summary
+
+    func generateDischargeSummary(patient: Patient, treatment: String, followUp: String) async throws -> String {
+        let system = """
+        You are writing a discharge summary for Dr Dawit Daniel Kabiye MD DM.
+        Use British spelling. Include all mandatory discharge summary components. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
+        """
+        let user = """
+        Write a complete discharge summary.
+        Treatment provided: \(treatment)
+        Follow-up plan: \(followUp)
+        \(clinicalContext(patient))
+        Ward: \(patient.ward ?? "Not specified")
+        Include: admission reason, treatment given, discharge diagnosis, discharge condition, medications on discharge, follow-up plan, red flag advice.
+        """
+        return try await generate(systemPrompt: system, userMessage: user)
+    }
+
     // MARK: - Diagnosis-driven plan auto-draft
 
     func draftDiagnosisPlan(patient: Patient) async throws -> String {
@@ -353,6 +346,7 @@ final class AIService: ObservableObject {
         """
         return try await generate(systemPrompt: system, userMessage: user)
     }
+}
 
 // MARK: - Response types
 
