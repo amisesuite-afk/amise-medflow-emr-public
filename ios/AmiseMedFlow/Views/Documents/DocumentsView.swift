@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import PhotosUI
+import QuickLook
 
 // MARK: - Camera picker wrapper
 
@@ -43,17 +44,18 @@ struct DocumentsView: View {
     @State private var showCamera = false
     @State private var pendingCameraImage: UIImage? = nil
     @State private var showCategoryPicker = false
-    @State private var pendingCategory = "Imaging"
+    @State private var pendingCategory  = "Imaging"
     @State private var pendingFileName = ""
 
     @State private var selectedDocForSummary: PatientDocument?
-    @State private var summaryText = ""
+    @State private var summaryText     = ""
     @State private var showSummarySheet = false
-    @State private var previewDoc: PatientDocument?
-    @State private var aiError: String?
-    @State private var showError = false
+    @State private var previewDoc:      PatientDocument?
+    @State private var pdfPreviewDoc:   PatientDocument?
+    @State private var aiError:         String?
+    @State private var showError        = false
 
-    private let categories = ["Imaging", "Lab / Bloods", "Pathology", "Referral", "Consent", "Operative", "Other"]
+    private let categories = ["Clinical Notes", "Imaging", "Lab / Bloods", "Pathology", "Referral", "Consent", "Operative", "Other"]
 
     var body: some View {
         List {
@@ -84,6 +86,12 @@ struct DocumentsView: View {
         }
         .sheet(item: $previewDoc) { doc in
             ImagePreviewSheet(document: doc)
+        }
+        .sheet(item: $pdfPreviewDoc) { doc in
+            if let data = doc.localData {
+                PDFPreviewSheet(data: data, fileName: doc.fileName)
+                    .ignoresSafeArea()
+            }
         }
         .fullScreenCover(isPresented: $showCamera) {
             CameraPickerView { image in
@@ -191,7 +199,10 @@ struct DocumentsView: View {
             Section(category) {
                 ForEach(docs) { doc in
                     DocumentRow(doc: doc, ai: ai,
-                                onPreview: { previewDoc = doc },
+                                onPreview: {
+                                    if doc.mimeType.contains("pdf") { pdfPreviewDoc = doc }
+                                    else { previewDoc = doc }
+                                },
                                 onSummarise: { Task { await summarise(doc) } })
                 }
                 .onDelete { indexSet in
@@ -291,11 +302,14 @@ private struct DocumentRow: View {
                     }
                     .buttonStyle(.plain)
                 } else {
-                    Image(systemName: doc.fileIcon)
-                        .font(.title2)
-                        .foregroundStyle(.teal)
-                        .frame(width: 56, height: 56)
-                        .background(Color.teal.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+                    Button(action: onPreview) {
+                        Image(systemName: doc.fileIcon)
+                            .font(.title2)
+                            .foregroundStyle(.teal)
+                            .frame(width: 56, height: 56)
+                            .background(Color.teal.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+                    }
+                    .buttonStyle(.plain)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -389,6 +403,40 @@ struct ImagePreviewSheet: View {
                     }
                 }
             }
+        }
+    }
+}
+
+// MARK: - PDF preview via QuickLook
+
+struct PDFPreviewSheet: UIViewControllerRepresentable {
+    let data: Data
+    let fileName: String
+    @Environment(\.dismiss) private var dismiss
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        try? data.write(to: url)
+        let ql = QLPreviewController()
+        ql.dataSource = context.coordinator
+        let nav = UINavigationController(rootViewController: ql)
+        return nav
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    class Coordinator: NSObject, QLPreviewControllerDataSource {
+        let parent: PDFPreviewSheet
+        init(_ parent: PDFPreviewSheet) { self.parent = parent }
+
+        func numberOfPreviewItems(in controller: QLPreviewController) -> Int { 1 }
+
+        func previewController(_ controller: QLPreviewController,
+                               previewItemAt index: Int) -> any QLPreviewItem {
+            FileManager.default.temporaryDirectory
+                .appendingPathComponent(parent.fileName) as NSURL
         }
     }
 }

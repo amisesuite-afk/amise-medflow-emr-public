@@ -1,11 +1,21 @@
 import SwiftUI
 import SwiftData
 
+private struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
+}
+
 struct NoteListView: View {
     let patient: Patient
     @Environment(\.modelContext) private var context
 
-    @State private var editingNote: ClinicalNote?
+    @State private var editingNote:    ClinicalNote?
+    @State private var shareURL:       URL?
+    @State private var showShareSheet  = false
 
     private var sortedNotes: [ClinicalNote] {
         // Drafts first, then by date descending
@@ -66,6 +76,10 @@ struct NoteListView: View {
                             Button(role: .destructive) { delete(note) } label: {
                                 Label("Delete", systemImage: "trash")
                             }
+                            Button { exportPDF(note) } label: {
+                                Label("PDF", systemImage: "arrow.up.doc.fill")
+                            }
+                            .tint(.indigo)
                         }
                 }
             }
@@ -88,6 +102,32 @@ struct NoteListView: View {
         .sheet(item: $editingNote) { note in
             NoteEditorView(note: note)
         }
+        .sheet(isPresented: $showShareSheet) {
+            if let url = shareURL {
+                ShareSheet(items: [url])
+                    .presentationDetents([.medium, .large])
+            }
+        }
+    }
+
+    private func exportPDF(_ note: ClinicalNote) {
+        let data = ClinicalNotePDF.generate(note: note, patient: patient)
+
+        // Persist as PatientDocument
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd_HHmm"
+        let fileName = "\(note.noteType.label.replacingOccurrences(of: " ", with: "_"))_\(df.string(from: note.createdAt)).pdf"
+        let doc = PatientDocument(fileName: fileName, mimeType: "application/pdf", category: "Clinical Notes")
+        doc.localData = data
+        doc.patient = patient
+        context.insert(doc)
+        patient.updatedAt = .now
+        patient.pendingSync = true
+
+        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        try? data.write(to: tmp)
+        shareURL = tmp
+        showShareSheet = true
     }
 
     private func addNote(type: NoteType) {

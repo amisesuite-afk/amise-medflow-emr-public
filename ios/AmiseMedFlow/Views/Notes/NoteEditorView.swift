@@ -1,14 +1,27 @@
 import SwiftUI
 import SwiftData
 
+// Wraps UIActivityViewController for sharing arbitrary items
+private struct ShareSheet: UIViewControllerRepresentable {
+    let items: [Any]
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    }
+    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
+}
+
 struct NoteEditorView: View {
     @Bindable var note: ClinicalNote
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var context
     @StateObject private var ai = AIService()
 
-    @State private var showAIOptions = false
+    @State private var showAIOptions   = false
     @State private var aiError: String?
-    @State private var showError = false
+    @State private var showError       = false
+    @State private var showShareSheet  = false
+    @State private var shareURL: URL?
+    @State private var isExportingPDF  = false
 
     private let soapPlaceholders = (
         s: "What the patient reports — symptoms, history, concerns",
@@ -44,6 +57,18 @@ struct NoteEditorView: View {
                         statusPicker
                         Spacer()
                         Button {
+                            Task { await exportPDF() }
+                        } label: {
+                            HStack(spacing: 4) {
+                                if isExportingPDF { ProgressView().scaleEffect(0.7) }
+                                Label("PDF", systemImage: "arrow.up.doc.fill")
+                                    .font(.caption)
+                            }
+                        }
+                        .disabled(isExportingPDF || note.isEmpty || note.patient == nil)
+                        .foregroundStyle(.indigo)
+
+                        Button {
                             showAIOptions = true
                         } label: {
                             HStack(spacing: 4) {
@@ -70,6 +95,12 @@ struct NoteEditorView: View {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(aiError ?? "Unknown error")
+            }
+            .sheet(isPresented: $showShareSheet) {
+                if let url = shareURL {
+                    ShareSheet(items: [url])
+                        .presentationDetents([.medium, .large])
+                }
             }
         }
     }
@@ -309,6 +340,33 @@ struct NoteEditorView: View {
             aiError = error.localizedDescription
             showError = true
         }
+    }
+
+    // MARK: - PDF export
+
+    private func exportPDF() async {
+        guard let patient = note.patient else { return }
+        isExportingPDF = true
+        defer { isExportingPDF = false }
+
+        let data = ClinicalNotePDF.generate(note: note, patient: patient)
+
+        // Save as PatientDocument so it appears in Documents tab
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd_HHmm"
+        let fileName = "\(note.noteType.label.replacingOccurrences(of: " ", with: "_"))_\(df.string(from: note.createdAt)).pdf"
+        let doc = PatientDocument(fileName: fileName, mimeType: "application/pdf", category: "Clinical Notes")
+        doc.localData = data
+        doc.patient = patient
+        context.insert(doc)
+        patient.updatedAt = .now
+        patient.pendingSync = true
+
+        // Write to temp file for share sheet
+        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        try? data.write(to: tmp)
+        shareURL = tmp
+        showShareSheet = true
     }
 
     // MARK: - Vitals insert helper
