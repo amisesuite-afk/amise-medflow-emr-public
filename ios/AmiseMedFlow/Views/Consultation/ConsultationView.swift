@@ -1115,8 +1115,6 @@ struct ConsultationView: View {
 
     private var pmhTab: some View {
         List {
-            medicationsSection
-
             Section {
                 // Bypass card — PMH already on record
                 if !(patient.pmhNotes ?? "").isEmpty && !pmhBypassConfirmed {
@@ -1315,6 +1313,8 @@ struct ConsultationView: View {
                 sectionHeader("Past Surgical History", icon: "scissors",
                               filled: !(patient.surgicalHistory ?? "").isEmpty)
             }
+
+            medicationsSection
         }
     }
 
