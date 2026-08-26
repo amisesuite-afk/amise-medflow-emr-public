@@ -1,14 +1,6 @@
 import SwiftUI
 import SwiftData
 
-private struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
-    }
-    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
-}
-
 struct NoteListView: View {
     let patient: Patient
     @Environment(\.modelContext) private var context

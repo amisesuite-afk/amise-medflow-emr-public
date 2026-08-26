@@ -1,15 +1,6 @@
 import SwiftUI
 import SwiftData
 
-// Wraps UIActivityViewController for sharing arbitrary items
-private struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
-    }
-    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
-}
-
 struct NoteEditorView: View {
     @Bindable var note: ClinicalNote
     @Environment(\.dismiss) private var dismiss
