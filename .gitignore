@@ -61,3 +61,4 @@ Thumbs.db
 !.claude/settings.json
 artifacts/front-desk/.next/
 e2e/shots/
+ios/Configuration.xcconfig
