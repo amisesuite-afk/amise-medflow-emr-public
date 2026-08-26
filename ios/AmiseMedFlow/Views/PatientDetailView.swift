@@ -1036,6 +1036,7 @@ struct PatientDetailView: View {
                     .tag(PatientTab.demographics)
                     .tabItem { Label("Details", systemImage: "square.and.pencil") }
             }
+            .background(Color(.systemBackground))
             .navigationTitle(patient.fullName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

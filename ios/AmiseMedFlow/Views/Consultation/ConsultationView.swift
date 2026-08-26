@@ -477,9 +477,12 @@ struct ConsultationView: View {
             }
             tabContent
         }
+        .background(Color(.systemBackground))
         .onAppear { activeTab = startingTab }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarBackground(Color(.systemBackground), for: .navigationBar)
         .onChange(of: activeTab) { _, tab in
             if tab == .diagnosis { refreshBayesian() }
         }
