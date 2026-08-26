@@ -12,4 +12,11 @@ enum AppConfig {
 
     static let anthropicModel = "claude-haiku-4-5-20251001"
     static let supabaseStorageBucket = "patient-documents"
+
+    // API server base URL — set API_SERVER_URL in Xcode scheme env vars,
+    // or replace the string below with your Render deployment URL.
+    static let apiServerURL: String = {
+        ProcessInfo.processInfo.environment["API_SERVER_URL"]
+            ?? "https://amise-medflow-api.onrender.com"
+    }()
 }

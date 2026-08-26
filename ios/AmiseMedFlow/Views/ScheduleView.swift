@@ -3,6 +3,7 @@ import SwiftData
 
 struct ScheduleView: View {
     @Query(sort: \Patient.createdAt, order: .reverse) private var allPatients: [Patient]
+    @StateObject private var calSvc = CalendarService()
     @State private var selectedPatient: Patient?
     @State private var showAdd = false
 
@@ -57,10 +58,20 @@ struct ScheduleView: View {
                                 Image(systemName: "square.and.arrow.up")
                             }
                         }
+                        Button {
+                            Task { await calSvc.sync() }
+                        } label: {
+                            if calSvc.isSyncing {
+                                ProgressView().controlSize(.small)
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                            }
+                        }
                         Button { showAdd = true } label: { Image(systemName: "plus") }
                     }
                 }
             }
+            .task { await calSvc.fetch() }
             .sheet(isPresented: $showAdd) {
                 AddPatientView(initialSetting: .theatre)
             }
@@ -72,34 +83,93 @@ struct ScheduleView: View {
 
     private var scheduleList: some View {
         List {
-            if !todayPatients.isEmpty {
+            // ── Google Calendar events ──────────────────────────────────────
+            if calSvc.isLoading {
                 Section {
-                    ForEach(todayPatients) { patient in
-                        Button { selectedPatient = patient } label: {
-                            ScheduleRow(patient: patient)
-                        }
-                        .buttonStyle(.plain)
+                    HStack {
+                        ProgressView().controlSize(.small)
+                        Text("Loading Google Calendar…")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
-                } header: {
-                    Label("Today — \(Date.now.formatted(date: .abbreviated, time: .omitted))", systemImage: "calendar")
-                        .foregroundStyle(.teal)
+                }
+            } else if let err = calSvc.error {
+                Section {
+                    Label(err, systemImage: "exclamationmark.triangle")
+                        .font(.caption)
+                        .foregroundStyle(.orange)
+                }
+            } else if !calSvc.events.isEmpty {
+                let gcalGroups = googleCalendarGroups(calSvc.events)
+                ForEach(gcalGroups, id: \.date) { group in
+                    Section {
+                        ForEach(group.events) { event in
+                            GoogleCalendarRow(event: event)
+                        }
+                    } header: {
+                        HStack {
+                            Image(systemName: "calendar.badge.checkmark")
+                                .foregroundStyle(.green)
+                            Text(calendarSectionTitle(for: group.date))
+                            Spacer()
+                            if let fetched = calSvc.fetchedAt {
+                                Text("Synced \(fetched, style: .relative) ago")
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
+                            }
+                        }
+                    }
                 }
             }
-            ForEach(groupedByDate, id: \.date) { group in
-                if !calendar.isDateInToday(group.date) {
+
+            // ── Local theatre / endoscopy schedule ─────────────────────────
+            if !scheduledPatients.isEmpty {
+                if !todayPatients.isEmpty {
                     Section {
-                        ForEach(group.patients) { patient in
+                        ForEach(todayPatients) { patient in
                             Button { selectedPatient = patient } label: {
                                 ScheduleRow(patient: patient)
                             }
                             .buttonStyle(.plain)
                         }
                     } header: {
-                        Text(sectionTitle(for: group.date))
+                        Label("Today — \(Date.now.formatted(date: .abbreviated, time: .omitted))", systemImage: "calendar")
+                            .foregroundStyle(.teal)
+                    }
+                }
+                ForEach(groupedByDate, id: \.date) { group in
+                    if !calendar.isDateInToday(group.date) {
+                        Section {
+                            ForEach(group.patients) { patient in
+                                Button { selectedPatient = patient } label: {
+                                    ScheduleRow(patient: patient)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        } header: {
+                            Text(sectionTitle(for: group.date))
+                        }
                     }
                 }
             }
         }
+    }
+
+    private func googleCalendarGroups(_ events: [GoogleCalendarEvent]) -> [(date: Date, events: [GoogleCalendarEvent])] {
+        let grouped = Dictionary(grouping: events) { e -> Date in
+            let d = e.startDate ?? Date.distantFuture
+            return calendar.startOfDay(for: d)
+        }
+        return grouped.keys.sorted().map { date in
+            (date: date, events: grouped[date]!.sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) })
+        }
+    }
+
+    private func calendarSectionTitle(for date: Date) -> String {
+        if calendar.isDateInToday(date)    { return "Today — \(date.formatted(date: .abbreviated, time: .omitted))" }
+        if calendar.isDateInTomorrow(date) { return "Tomorrow — \(date.formatted(date: .abbreviated, time: .omitted))" }
+        let weekday = date.formatted(.dateTime.weekday(.wide))
+        return "\(weekday) · \(date.formatted(date: .abbreviated, time: .omitted))"
     }
 
     private var scheduleExportText: String {
@@ -261,6 +331,59 @@ private struct ScheduleRow: View {
                     }
                 }
             }
+        }
+        .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Google Calendar event row
+
+private struct GoogleCalendarRow: View {
+    let event: GoogleCalendarEvent
+
+    private var typeColor: Color {
+        switch event.type {
+        case "theatre":   return .purple
+        case "endoscopy": return .cyan
+        case "clinic":    return .blue
+        default:          return .secondary
+        }
+    }
+
+    private var timeString: String {
+        guard let start = event.startDate, let end = event.endDate else { return "All day" }
+        return "\(start.formatted(date: .omitted, time: .shortened)) – \(end.formatted(date: .omitted, time: .shortened))"
+    }
+
+    var body: some View {
+        HStack(spacing: 12) {
+            VStack(spacing: 2) {
+                Text(event.typeLabel)
+                    .font(.system(size: 9, weight: .heavy))
+                    .foregroundStyle(typeColor)
+                if let start = event.startDate {
+                    Text(start.formatted(date: .omitted, time: .shortened))
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(typeColor)
+                }
+            }
+            .frame(width: 42)
+            .padding(.vertical, 6)
+            .background(typeColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(event.summary)
+                    .font(.subheadline.weight(.medium))
+                Text(timeString)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "calendar.badge.checkmark")
+                .font(.caption2)
+                .foregroundStyle(.green.opacity(0.7))
         }
         .padding(.vertical, 2)
     }
