@@ -43,9 +43,9 @@ targets:
         SWIFT_VERSION: "5.0"
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         CODE_SIGN_STYLE: Automatic
-        DEVELOPMENT_TEAM: ""
         SWIFT_EMIT_LOC_STRINGS: YES
         ENABLE_PREVIEWS: YES
+        # DEVELOPMENT_TEAM intentionally absent — set via Configuration.xcconfig (git-ignored)
 
     dependencies:
       - package: Supabase
