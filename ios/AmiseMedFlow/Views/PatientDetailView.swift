@@ -9,14 +9,6 @@ struct PDFDataWrapper: Identifiable {
     let data: Data
 }
 
-struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
-    }
-    func updateUIViewController(_ vc: UIActivityViewController, context: Context) {}
-}
-
 // MARK: - Patient detail section enum (iPad/Mac sidebar)
 
 enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
