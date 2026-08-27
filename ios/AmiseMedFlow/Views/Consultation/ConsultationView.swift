@@ -217,6 +217,16 @@ let ccSurgicalChips: [CCSurgicalChip] = [
     CCSurgicalChip(label: "Skin lesion",           icon: "oval.lefthalf.filled"),
     CCSurgicalChip(label: "Anal pain",             icon: "figure.walk"),
     CCSurgicalChip(label: "Nausea / Vomiting",     icon: "arrow.up.circle"),
+    // Medical / non-surgical
+    CCSurgicalChip(label: "Chest pain",            icon: "heart.fill"),
+    CCSurgicalChip(label: "Shortness of breath",   icon: "lungs.fill"),
+    CCSurgicalChip(label: "Fever / Infection",     icon: "thermometer.medium"),
+    CCSurgicalChip(label: "Urinary symptoms",      icon: "drop"),
+    CCSurgicalChip(label: "Joint pain",            icon: "figure.walk.motion"),
+    CCSurgicalChip(label: "Hypertension review",   icon: "waveform.path.ecg.rectangle"),
+    CCSurgicalChip(label: "Diabetes review",       icon: "cross.case"),
+    CCSurgicalChip(label: "Thyroid symptoms",      icon: "staroflife"),
+    // Administrative
     CCSurgicalChip(label: "Follow-up",             icon: "arrow.clockwise"),
     CCSurgicalChip(label: "Screening",             icon: "magnifyingglass"),
     CCSurgicalChip(label: "ERCP / Biliary",        icon: "circle.dotted"),
@@ -351,6 +361,46 @@ private let ccInvestigations: [String: [CCInv]] = [
         ("Colonoscopy", .endoscopy), ("Faecal immunochemical test (FIT)", .other),
         ("Mammogram", .imaging), ("USS abdomen", .imaging),
     ],
+    "Chest pain": [
+        ("FBC", .blood), ("Troponin I/T (serial)", .blood), ("ECG", .other),
+        ("CXR", .imaging), ("D-dimer", .blood), ("BNP / NT-proBNP", .blood),
+        ("Echo", .imaging), ("CT pulmonary angiogram", .imaging),
+    ],
+    "Shortness of breath": [
+        ("FBC", .blood), ("BNP / NT-proBNP", .blood), ("CRP", .blood),
+        ("Spirometry / PFTs", .other), ("CXR", .imaging), ("Echo", .imaging),
+        ("CT thorax", .imaging), ("ABG", .blood), ("Sputum M/C/S", .pathology),
+    ],
+    "Fever / Infection": [
+        ("FBC", .blood), ("CRP / ESR", .blood), ("Blood cultures ×2", .blood),
+        ("Urinalysis + M/C/S", .pathology), ("CXR", .imaging),
+        ("Dengue serology (NS1 + IgM/IgG)", .blood), ("Malaria RDT / thick film", .blood),
+        ("LFT", .blood), ("Leptospira serology", .blood), ("Widal test", .blood),
+    ],
+    "Urinary symptoms": [
+        ("Urinalysis", .blood), ("Urine M/C/S", .pathology),
+        ("FBC", .blood), ("U&E + creatinine", .blood), ("PSA (males)", .blood),
+        ("USS KUB", .imaging), ("CT KUB", .imaging),
+    ],
+    "Joint pain": [
+        ("FBC", .blood), ("CRP / ESR", .blood), ("Uric acid", .blood),
+        ("Rheumatoid factor / anti-CCP", .blood), ("ANA / dsDNA", .blood),
+        ("X-ray affected joint", .imaging), ("Synovial fluid M/C/S + crystals", .pathology),
+    ],
+    "Hypertension review": [
+        ("FBC", .blood), ("U&E + creatinine", .blood), ("Fasting glucose / HbA1c", .blood),
+        ("Fasting lipids", .blood), ("Urinalysis + ACR", .blood),
+        ("ECG", .other), ("Echo", .imaging), ("Fundoscopy", .other),
+    ],
+    "Diabetes review": [
+        ("HbA1c", .blood), ("Fasting glucose", .blood), ("U&E + creatinine", .blood),
+        ("Urinalysis + ACR (microalbuminuria)", .blood), ("Lipids", .blood),
+        ("ECG", .other), ("Foot exam", .other),
+    ],
+    "Thyroid symptoms": [
+        ("TFT (TSH + Free T4 + T3)", .blood), ("Anti-TPO / anti-thyroglobulin", .blood),
+        ("FBC", .blood), ("USS thyroid", .imaging), ("FNA if nodule", .pathology),
+    ],
 ]
 
 // Common baseline investigation chips (fallback when no CC-specific set exists)
@@ -460,6 +510,7 @@ struct ConsultationView: View {
     @State private var newInvName = ""
     @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
     @State private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] = []
+    @State private var dismissedRadiation = false
 
     enum ExamMode { case short, full }
 
@@ -485,6 +536,9 @@ struct ConsultationView: View {
         .toolbarBackground(Color(.systemBackground), for: .navigationBar)
         .onChange(of: activeTab) { _, tab in
             if tab == .diagnosis { refreshBayesian() }
+        }
+        .onChange(of: patient.workingDiagnosis) { _, _ in
+            dismissedRadiation = false
         }
         .onChange(of: patient.chiefComplaint) { _, newCC in
             guard let cc = newCC, !cc.isEmpty else { triageResult = nil; return }
@@ -1940,8 +1994,38 @@ struct ConsultationView: View {
 
     // MARK: - Plan tab
 
+    private var radiationResult: DiagnosisRadiation? {
+        DiagnosisRadiationEngine.radiate(
+            workingDiagnosis: patient.workingDiagnosis,
+            ageYears: patient.ageYears,
+            sex: patient.sex
+        )
+    }
+
     private var planTab: some View {
         List {
+            // Diagnosis radiation card — shown when a working Dx is set and dismissed flag is clear
+            if let radiation = radiationResult, !dismissedRadiation {
+                DiagnosisRadiationCard(
+                    radiation: radiation,
+                    onAddInvestigation: { inv in
+                        let entry = InvestigationEntry(
+                            name: inv.name, category: inv.category,
+                            status: .suggested, suggestedFor: radiation.conditionName
+                        )
+                        patient.investigations.append(entry)
+                        touch()
+                    },
+                    onUsePlan: { planText in
+                        if (patient.managementPlan ?? "").isEmpty {
+                            patient.managementPlan = planText; touch()
+                        }
+                        dismissedRadiation = true
+                    },
+                    onDismiss: { dismissedRadiation = true }
+                )
+            }
+
             Section {
                 ZStack(alignment: .topLeading) {
                     TextEditor(text: Binding(get: { patient.managementPlan ?? "" },

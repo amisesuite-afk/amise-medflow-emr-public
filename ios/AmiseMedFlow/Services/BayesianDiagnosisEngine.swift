@@ -76,6 +76,33 @@ enum BayesianDiagnosisEngine {
              ccL.contains("right upper") || ccL.contains("right lower") ||
              ccL.contains("ruq") || ccL.contains("llq") || ccL.contains("rlq"):
             candidates = abdominalPain
+        case ccL.contains("chest pain") || ccL.contains("chest tightness") ||
+             ccL.contains("chest heaviness") || ccL.contains("palpitation"):
+            candidates = chestPain
+        case ccL.contains("short") && ccL.contains("breath") ||
+             ccL.contains("dyspnoea") || ccL.contains("breathless") ||
+             ccL.contains("sob") || ccL.contains("wheez"):
+            candidates = shortnessOfBreath
+        case ccL.contains("fever") || ccL.contains("infection") || ccL.contains("pyrexia") ||
+             ccL.contains("dengue") || ccL.contains("leptospir") || ccL.contains("typhoid") ||
+             ccL.contains("rigor") || ccL.contains("chills"):
+            candidates = feverInfection
+        case ccL.contains("urinary") || ccL.contains("dysuria") || ccL.contains("haematuria") ||
+             ccL.contains("frequency") || ccL.contains("urine") || ccL.contains("uti"):
+            candidates = urinarySymptoms
+        case ccL.contains("joint") || ccL.contains("arthrit") || ccL.contains("gout") ||
+             ccL.contains("musculoskelet") || ccL.contains("swollen joint") ||
+             ccL.contains("joint pain") || ccL.contains("arthralgia"):
+            candidates = jointPain
+        case ccL.contains("hypertension") || ccL.contains("high blood pressure") ||
+             ccL.contains("htn") || ccL.contains("bp review") || ccL.contains("blood pressure"):
+            candidates = hypertensionReview
+        case ccL.contains("diabetes") || ccL.contains("diabetic") || ccL.contains("glucose") ||
+             ccL.contains("hba1c") || ccL.contains("dm2") || ccL.contains("dm1"):
+            candidates = diabetesReview
+        case ccL.contains("thyroid") || ccL.contains("hypothyroid") || ccL.contains("hyperthyroid") ||
+             ccL.contains("graves") || ccL.contains("goitre"):
+            candidates = neckLump    // existing thyroid candidates
         default:
             candidates = abdominalPain   // safest surgical default
         }
@@ -748,6 +775,364 @@ enum BayesianDiagnosisEngine {
             .init(key: "exam", value: "rubbery", logLR: 10, evidenceLabel: "Rubbery nodes"),
             .init(key: "exam", value: "multiple", logLR: 8, evidenceLabel: "Multiple node groups"),
             .init(key: "exam", value: "generalised", logLR: 8, evidenceLabel: "Generalised lymphadenopathy"),
+        ]),
+    ]
+
+    // MARK: - Chest pain
+
+    private static let chestPain: [Candidate] = [
+        .init(name: "Acute Coronary Syndrome", icd: "I24.9",
+              logPrior: 30, features: [
+            .init(key: "character", value: "Pressure", logLR: 14, evidenceLabel: "Pressure-like pain"),
+            .init(key: "character", value: "Crushing", logLR: 14, evidenceLabel: "Crushing pain"),
+            .init(key: "radiation", value: "Arm", logLR: 14, evidenceLabel: "Radiation to arm"),
+            .init(key: "radiation", value: "Jaw", logLR: 12, evidenceLabel: "Radiation to jaw"),
+            .init(key: "associations", value: "Nausea", logLR: 6, evidenceLabel: "Nausea"),
+            .init(key: "exacerbating", value: "Exertion", logLR: 10, evidenceLabel: "Exertional"),
+            .init(key: "relieving", value: "Nitrates", logLR: 14, evidenceLabel: "Nitrate relief"),
+            .init(key: "onset", value: "Sudden", logLR: 8, evidenceLabel: "Sudden onset"),
+            .init(key: "pmh", value: "ischaemic heart", logLR: 12, evidenceLabel: "IHD history"),
+            .init(key: "pmh", value: "diabetes", logLR: 6, evidenceLabel: "Diabetes"),
+            .init(key: "pmh", value: "hypertension", logLR: 5, evidenceLabel: "Hypertension"),
+            .init(key: "age_over", value: "45", logLR: 8, evidenceLabel: "Age >45"),
+            .init(key: "sex_male", value: "", logLR: 4, evidenceLabel: "Male sex"),
+            .init(key: "inv", value: "troponin", logLR: 18, evidenceLabel: "Troponin elevated"),
+            .init(key: "inv", value: "ecg", logLR: 8, evidenceLabel: "ECG performed"),
+        ]),
+        .init(name: "Stable Angina", icd: "I20.9",
+              logPrior: 20, features: [
+            .init(key: "timing", value: "Episodic", logLR: 10, evidenceLabel: "Episodic"),
+            .init(key: "exacerbating", value: "Exertion", logLR: 14, evidenceLabel: "Exertional"),
+            .init(key: "relieving", value: "Rest", logLR: 10, evidenceLabel: "Relief with rest"),
+            .init(key: "character", value: "Pressure", logLR: 10, evidenceLabel: "Pressure"),
+            .init(key: "pmh", value: "ischaemic heart", logLR: 12, evidenceLabel: "IHD"),
+            .init(key: "pmh", value: "diabetes", logLR: 5, evidenceLabel: "Diabetes"),
+            .init(key: "age_over", value: "50", logLR: 6, evidenceLabel: "Older age"),
+        ]),
+        .init(name: "Pulmonary Embolism", icd: "I26.99",
+              logPrior: 12, features: [
+            .init(key: "character", value: "Sharp", logLR: 10, evidenceLabel: "Pleuritic chest pain"),
+            .init(key: "associations", value: "Shortness of breath", logLR: 12, evidenceLabel: "Dyspnoea"),
+            .init(key: "onset", value: "Sudden", logLR: 10, evidenceLabel: "Sudden onset"),
+            .init(key: "pmh", value: "dvt", logLR: 14, evidenceLabel: "Previous DVT"),
+            .init(key: "pmh", value: "pe", logLR: 14, evidenceLabel: "Previous PE"),
+            .init(key: "pmh", value: "malignancy", logLR: 10, evidenceLabel: "Malignancy"),
+            .init(key: "inv", value: "d-dimer", logLR: 12, evidenceLabel: "Elevated D-dimer"),
+            .init(key: "inv", value: "ctpa", logLR: 18, evidenceLabel: "CTPA performed"),
+        ]),
+        .init(name: "GERD / Oesophagitis", icd: "K21.00",
+              logPrior: 25, features: [
+            .init(key: "character", value: "Burning", logLR: 12, evidenceLabel: "Burning sensation"),
+            .init(key: "exacerbating", value: "Lying flat", logLR: 12, evidenceLabel: "Worse lying flat"),
+            .init(key: "exacerbating", value: "Eating", logLR: 6, evidenceLabel: "After meals"),
+            .init(key: "relieving", value: "Antacids", logLR: 12, evidenceLabel: "Antacid relief"),
+            .init(key: "timing", value: "Post-prandial", logLR: 8, evidenceLabel: "Post-prandial"),
+        ]),
+        .init(name: "Musculoskeletal Chest Pain", icd: "M79.3",
+              logPrior: 20, features: [
+            .init(key: "exacerbating", value: "Movement", logLR: 14, evidenceLabel: "Movement"),
+            .init(key: "exacerbating", value: "Deep breathing", logLR: 10, evidenceLabel: "Deep breathing"),
+            .init(key: "exacerbating", value: "Coughing", logLR: 8, evidenceLabel: "Coughing"),
+            .init(key: "character", value: "Sharp", logLR: 8, evidenceLabel: "Sharp pain"),
+            .init(key: "exam", value: "tender", logLR: 12, evidenceLabel: "Chest wall tenderness"),
+            .init(key: "inv", value: "troponin", logLR: -8, evidenceLabel: ""),
+        ]),
+    ]
+
+    // MARK: - Shortness of breath
+
+    private static let shortnessOfBreath: [Candidate] = [
+        .init(name: "Asthma (Acute Exacerbation)", icd: "J45.901",
+              logPrior: 30, features: [
+            .init(key: "character", value: "Wheeze", logLR: 16, evidenceLabel: "Wheeze"),
+            .init(key: "timing", value: "Episodic", logLR: 8, evidenceLabel: "Episodic"),
+            .init(key: "timing", value: "Nocturnal", logLR: 8, evidenceLabel: "Nocturnal"),
+            .init(key: "exacerbating", value: "Exertion", logLR: 6, evidenceLabel: "Exertional"),
+            .init(key: "pmh", value: "asthma", logLR: 14, evidenceLabel: "Asthma history"),
+            .init(key: "pmh", value: "atopy", logLR: 8, evidenceLabel: "Atopy"),
+            .init(key: "age_under", value: "40", logLR: 4, evidenceLabel: "Younger age"),
+        ]),
+        .init(name: "Heart Failure", icd: "I50.9",
+              logPrior: 20, features: [
+            .init(key: "timing", value: "Progressive", logLR: 10, evidenceLabel: "Progressive dyspnoea"),
+            .init(key: "timing", value: "Nocturnal", logLR: 10, evidenceLabel: "Orthopnoea / PND"),
+            .init(key: "exam", value: "oedema", logLR: 12, evidenceLabel: "Peripheral oedema"),
+            .init(key: "exam", value: "crepitation", logLR: 12, evidenceLabel: "Lung crepitations"),
+            .init(key: "exam", value: "raised jvp", logLR: 12, evidenceLabel: "Raised JVP"),
+            .init(key: "pmh", value: "heart failure", logLR: 14, evidenceLabel: "Known heart failure"),
+            .init(key: "pmh", value: "ischaemic heart", logLR: 10, evidenceLabel: "IHD"),
+            .init(key: "inv", value: "bnp", logLR: 14, evidenceLabel: "Elevated BNP"),
+            .init(key: "age_over", value: "60", logLR: 6, evidenceLabel: "Older age"),
+        ]),
+        .init(name: "Community-Acquired Pneumonia", icd: "J18.9",
+              logPrior: 25, features: [
+            .init(key: "associations", value: "Fever", logLR: 12, evidenceLabel: "Fever"),
+            .init(key: "character", value: "Sharp", logLR: 6, evidenceLabel: "Pleuritic pain"),
+            .init(key: "associations", value: "Cough", logLR: 10, evidenceLabel: "Productive cough"),
+            .init(key: "exam", value: "crepitation", logLR: 12, evidenceLabel: "Crepitations"),
+            .init(key: "exam", value: "consolidation", logLR: 14, evidenceLabel: "Consolidation"),
+            .init(key: "inv", value: "cxr", logLR: 8, evidenceLabel: "CXR performed"),
+            .init(key: "inv", value: "wbc", logLR: 8, evidenceLabel: "Raised WBC"),
+            .init(key: "age_over", value: "65", logLR: 6, evidenceLabel: "Elderly"),
+        ]),
+        .init(name: "COPD Exacerbation", icd: "J44.1",
+              logPrior: 18, features: [
+            .init(key: "timing", value: "Progressive", logLR: 8, evidenceLabel: "Progressive"),
+            .init(key: "character", value: "Wheeze", logLR: 10, evidenceLabel: "Wheeze"),
+            .init(key: "associations", value: "Cough", logLR: 8, evidenceLabel: "Productive cough"),
+            .init(key: "pmh", value: "copd", logLR: 18, evidenceLabel: "COPD history"),
+            .init(key: "pmh", value: "smoking", logLR: 10, evidenceLabel: "Smoking history"),
+            .init(key: "age_over", value: "50", logLR: 8, evidenceLabel: "Age >50"),
+        ]),
+        .init(name: "Pulmonary Tuberculosis", icd: "A15.0",
+              logPrior: 10, features: [
+            .init(key: "timing", value: "Progressive", logLR: 10, evidenceLabel: "Progressive"),
+            .init(key: "associations", value: "Weight loss", logLR: 12, evidenceLabel: "Weight loss"),
+            .init(key: "associations", value: "Night sweats", logLR: 12, evidenceLabel: "Night sweats"),
+            .init(key: "associations", value: "Fever", logLR: 8, evidenceLabel: "Low-grade fever"),
+            .init(key: "associations", value: "Haemoptysis", logLR: 14, evidenceLabel: "Haemoptysis"),
+            .init(key: "pmh", value: "tb", logLR: 12, evidenceLabel: "Previous TB"),
+            .init(key: "pmh", value: "hiv", logLR: 10, evidenceLabel: "Immunocompromised"),
+        ]),
+    ]
+
+    // MARK: - Fever / Infection (Caribbean-weighted)
+
+    private static let feverInfection: [Candidate] = [
+        .init(name: "Dengue Fever", icd: "A90",
+              logPrior: 35, features: [
+            .init(key: "onset", value: "Sudden", logLR: 10, evidenceLabel: "Sudden onset"),
+            .init(key: "character", value: "Severe", logLR: 8, evidenceLabel: "Severe pain"),
+            .init(key: "associations", value: "Bone pain", logLR: 14, evidenceLabel: "Bone/joint pain"),
+            .init(key: "associations", value: "Rash", logLR: 12, evidenceLabel: "Rash"),
+            .init(key: "associations", value: "Headache", logLR: 8, evidenceLabel: "Headache"),
+            .init(key: "associations", value: "Retroorbital pain", logLR: 14, evidenceLabel: "Retroorbital pain"),
+            .init(key: "exam", value: "petechiae", logLR: 14, evidenceLabel: "Petechiae"),
+            .init(key: "inv", value: "thrombocytopenia", logLR: 14, evidenceLabel: "Thrombocytopenia"),
+            .init(key: "inv", value: "platelet", logLR: 10, evidenceLabel: "Low platelets"),
+            .init(key: "inv", value: "ns1", logLR: 18, evidenceLabel: "NS1 antigen positive"),
+            .init(key: "inv", value: "dengue", logLR: 18, evidenceLabel: "Dengue serology positive"),
+        ]),
+        .init(name: "Community-Acquired Pneumonia", icd: "J18.9",
+              logPrior: 25, features: [
+            .init(key: "associations", value: "Cough", logLR: 10, evidenceLabel: "Cough"),
+            .init(key: "character", value: "Sharp", logLR: 6, evidenceLabel: "Pleuritic pain"),
+            .init(key: "exam", value: "crepitation", logLR: 12, evidenceLabel: "Crepitations"),
+            .init(key: "exam", value: "consolidation", logLR: 14, evidenceLabel: "Consolidation"),
+            .init(key: "inv", value: "wbc", logLR: 8, evidenceLabel: "Raised WBC"),
+            .init(key: "age_over", value: "65", logLR: 6, evidenceLabel: "Elderly"),
+        ]),
+        .init(name: "Urinary Tract Infection", icd: "N39.0",
+              logPrior: 20, features: [
+            .init(key: "associations", value: "Dysuria", logLR: 14, evidenceLabel: "Dysuria"),
+            .init(key: "associations", value: "Frequency", logLR: 10, evidenceLabel: "Frequency"),
+            .init(key: "site", value: "Suprapubic", logLR: 8, evidenceLabel: "Suprapubic discomfort"),
+            .init(key: "associations", value: "Haematuria", logLR: 8, evidenceLabel: "Haematuria"),
+            .init(key: "inv", value: "leucocyte", logLR: 12, evidenceLabel: "Leucocytes on urine dip"),
+            .init(key: "sex_female", value: "", logLR: 6, evidenceLabel: "Female sex (higher prevalence)"),
+        ]),
+        .init(name: "Leptospirosis", icd: "A27.9",
+              logPrior: 15, features: [
+            .init(key: "associations", value: "Jaundice", logLR: 10, evidenceLabel: "Jaundice"),
+            .init(key: "associations", value: "Headache", logLR: 6, evidenceLabel: "Headache"),
+            .init(key: "associations", value: "Myalgia", logLR: 10, evidenceLabel: "Severe myalgia"),
+            .init(key: "associations", value: "Conjunctival injection", logLR: 12, evidenceLabel: "Conjunctival suffusion"),
+            .init(key: "pmh", value: "water exposure", logLR: 12, evidenceLabel: "Water/animal exposure"),
+            .init(key: "inv", value: "leptospira", logLR: 18, evidenceLabel: "Leptospira serology"),
+            .init(key: "inv", value: "alt", logLR: 8, evidenceLabel: "Elevated ALT"),
+            .init(key: "inv", value: "creatinine", logLR: 8, evidenceLabel: "Elevated creatinine"),
+        ]),
+        .init(name: "Typhoid Fever", icd: "A01.00",
+              logPrior: 12, features: [
+            .init(key: "onset", value: "Gradual", logLR: 8, evidenceLabel: "Gradual onset"),
+            .init(key: "timing", value: "Progressive", logLR: 8, evidenceLabel: "Step-ladder fever"),
+            .init(key: "associations", value: "Anorexia", logLR: 6, evidenceLabel: "Anorexia"),
+            .init(key: "associations", value: "Constipation", logLR: 6, evidenceLabel: "Early constipation"),
+            .init(key: "associations", value: "Diarrhoea", logLR: 6, evidenceLabel: "Later diarrhoea"),
+            .init(key: "exam", value: "rose spots", logLR: 14, evidenceLabel: "Rose spots"),
+            .init(key: "exam", value: "hepatosplenomegaly", logLR: 10, evidenceLabel: "Hepatosplenomegaly"),
+            .init(key: "inv", value: "widal", logLR: 12, evidenceLabel: "Widal positive"),
+        ]),
+        .init(name: "Cellulitis / SSTI", icd: "L03.90",
+              logPrior: 15, features: [
+            .init(key: "exam", value: "erythema", logLR: 14, evidenceLabel: "Erythema"),
+            .init(key: "exam", value: "warm", logLR: 10, evidenceLabel: "Warmth"),
+            .init(key: "exam", value: "swelling", logLR: 10, evidenceLabel: "Swelling"),
+            .init(key: "exam", value: "tender", logLR: 8, evidenceLabel: "Tenderness"),
+            .init(key: "inv", value: "wbc", logLR: 8, evidenceLabel: "Elevated WBC"),
+            .init(key: "inv", value: "crp", logLR: 8, evidenceLabel: "Elevated CRP"),
+            .init(key: "pmh", value: "diabetes", logLR: 8, evidenceLabel: "Diabetes (risk factor)"),
+        ]),
+    ]
+
+    // MARK: - Urinary symptoms
+
+    private static let urinarySymptoms: [Candidate] = [
+        .init(name: "Urinary Tract Infection", icd: "N39.0",
+              logPrior: 45, features: [
+            .init(key: "associations", value: "Dysuria", logLR: 14, evidenceLabel: "Dysuria"),
+            .init(key: "associations", value: "Frequency", logLR: 10, evidenceLabel: "Frequency"),
+            .init(key: "associations", value: "Haematuria", logLR: 8, evidenceLabel: "Haematuria"),
+            .init(key: "site", value: "Suprapubic", logLR: 8, evidenceLabel: "Suprapubic pain"),
+            .init(key: "associations", value: "Fever", logLR: 8, evidenceLabel: "Fever (pyelonephritis)"),
+            .init(key: "site", value: "Loin", logLR: 8, evidenceLabel: "Loin pain (upper tract)"),
+            .init(key: "inv", value: "leucocyte", logLR: 12, evidenceLabel: "Leucocytes on dipstick"),
+            .init(key: "inv", value: "nitrite", logLR: 10, evidenceLabel: "Nitrites on dipstick"),
+            .init(key: "sex_female", value: "", logLR: 8, evidenceLabel: "Female sex"),
+        ]),
+        .init(name: "Renal / Ureteric Colic", icd: "N20.10",
+              logPrior: 20, features: [
+            .init(key: "character", value: "Colicky", logLR: 12, evidenceLabel: "Colicky pain"),
+            .init(key: "site", value: "Loin", logLR: 12, evidenceLabel: "Loin to groin"),
+            .init(key: "site", value: "Groin", logLR: 10, evidenceLabel: "Radiation to groin"),
+            .init(key: "associations", value: "Haematuria", logLR: 14, evidenceLabel: "Haematuria"),
+            .init(key: "pmh", value: "renal stone", logLR: 14, evidenceLabel: "Previous stones"),
+            .init(key: "inv", value: "ct kub", logLR: 16, evidenceLabel: "CT KUB stone"),
+        ]),
+        .init(name: "Benign Prostatic Hypertrophy", icd: "N40.0",
+              logPrior: 15, features: [
+            .init(key: "associations", value: "Poor stream", logLR: 12, evidenceLabel: "Poor stream"),
+            .init(key: "associations", value: "Frequency", logLR: 8, evidenceLabel: "Frequency"),
+            .init(key: "associations", value: "Nocturia", logLR: 10, evidenceLabel: "Nocturia"),
+            .init(key: "associations", value: "Incomplete emptying", logLR: 10, evidenceLabel: "Incomplete emptying"),
+            .init(key: "age_over", value: "55", logLR: 12, evidenceLabel: "Age >55"),
+            .init(key: "sex_male", value: "", logLR: 20, evidenceLabel: "Male sex"),
+            .init(key: "inv", value: "psa", logLR: 8, evidenceLabel: "PSA checked"),
+        ]),
+        .init(name: "Carcinoma of Prostate", icd: "C61",
+              logPrior: 8, features: [
+            .init(key: "timing", value: "Progressive", logLR: 10, evidenceLabel: "Progressive symptoms"),
+            .init(key: "associations", value: "Haematuria", logLR: 8, evidenceLabel: "Haematuria"),
+            .init(key: "associations", value: "Bone pain", logLR: 10, evidenceLabel: "Bone pain (metastatic)"),
+            .init(key: "age_over", value: "60", logLR: 12, evidenceLabel: "Age >60"),
+            .init(key: "sex_male", value: "", logLR: 20, evidenceLabel: "Male sex"),
+            .init(key: "inv", value: "psa", logLR: 14, evidenceLabel: "Elevated PSA"),
+            .init(key: "exam", value: "hard", logLR: 12, evidenceLabel: "Hard nodule on PR"),
+        ]),
+    ]
+
+    // MARK: - Joint pain / Musculoskeletal
+
+    private static let jointPain: [Candidate] = [
+        .init(name: "Gout", icd: "M10.9",
+              logPrior: 35, features: [
+            .init(key: "onset", value: "Sudden", logLR: 12, evidenceLabel: "Sudden onset"),
+            .init(key: "site", value: "First MTP / big toe", logLR: 16, evidenceLabel: "First MTP joint"),
+            .init(key: "character", value: "Severe", logLR: 10, evidenceLabel: "Severe pain"),
+            .init(key: "exam", value: "erythema", logLR: 10, evidenceLabel: "Erythema"),
+            .init(key: "exam", value: "swelling", logLR: 8, evidenceLabel: "Swelling"),
+            .init(key: "pmh", value: "gout", logLR: 14, evidenceLabel: "Previous gout"),
+            .init(key: "pmh", value: "hyperuricaemia", logLR: 10, evidenceLabel: "Hyperuricaemia"),
+            .init(key: "sex_male", value: "", logLR: 8, evidenceLabel: "Male sex"),
+            .init(key: "age_over", value: "40", logLR: 6, evidenceLabel: "Age >40"),
+            .init(key: "exacerbating", value: "Alcohol", logLR: 8, evidenceLabel: "Alcohol trigger"),
+            .init(key: "inv", value: "uric acid", logLR: 12, evidenceLabel: "Elevated uric acid"),
+        ]),
+        .init(name: "Septic Arthritis", icd: "M00.9",
+              logPrior: 10, features: [
+            .init(key: "onset", value: "Sudden", logLR: 10, evidenceLabel: "Sudden onset"),
+            .init(key: "associations", value: "Fever", logLR: 14, evidenceLabel: "Fever"),
+            .init(key: "character", value: "Severe", logLR: 8, evidenceLabel: "Severe pain"),
+            .init(key: "exam", value: "hot", logLR: 12, evidenceLabel: "Hot joint"),
+            .init(key: "exam", value: "effusion", logLR: 10, evidenceLabel: "Effusion"),
+            .init(key: "inv", value: "wbc", logLR: 10, evidenceLabel: "Elevated WBC"),
+            .init(key: "inv", value: "synovial", logLR: 16, evidenceLabel: "Synovial fluid WBC elevated"),
+        ]),
+        .init(name: "Osteoarthritis", icd: "M19.90",
+              logPrior: 25, features: [
+            .init(key: "timing", value: "Progressive", logLR: 8, evidenceLabel: "Progressive"),
+            .init(key: "timing", value: "Worse over time", logLR: 8, evidenceLabel: "Worsening"),
+            .init(key: "exacerbating", value: "Movement", logLR: 8, evidenceLabel: "Worse with movement"),
+            .init(key: "relieving", value: "Rest", logLR: 6, evidenceLabel: "Better with rest"),
+            .init(key: "associations", value: "Stiffness", logLR: 6, evidenceLabel: "Morning stiffness <1h"),
+            .init(key: "age_over", value: "50", logLR: 10, evidenceLabel: "Age >50"),
+            .init(key: "inv", value: "x-ray", logLR: 8, evidenceLabel: "X-ray changes"),
+        ]),
+        .init(name: "Rheumatoid Arthritis", icd: "M06.9",
+              logPrior: 12, features: [
+            .init(key: "timing", value: "Progressive", logLR: 6, evidenceLabel: "Progressive"),
+            .init(key: "timing", value: "Intermittent", logLR: 4, evidenceLabel: "Flares"),
+            .init(key: "associations", value: "Symmetrical", logLR: 12, evidenceLabel: "Symmetrical joint involvement"),
+            .init(key: "associations", value: "Morning stiffness", logLR: 12, evidenceLabel: "Morning stiffness >1h"),
+            .init(key: "exam", value: "deformity", logLR: 10, evidenceLabel: "Joint deformity"),
+            .init(key: "pmh", value: "rheumatoid", logLR: 16, evidenceLabel: "Known RA"),
+            .init(key: "inv", value: "rf", logLR: 10, evidenceLabel: "Positive RF"),
+            .init(key: "inv", value: "anti-ccp", logLR: 14, evidenceLabel: "Anti-CCP positive"),
+            .init(key: "sex_female", value: "", logLR: 4, evidenceLabel: "Female sex"),
+        ]),
+        .init(name: "Sickle Cell Crisis", icd: "D57.219",
+              logPrior: 10, features: [
+            .init(key: "character", value: "Severe", logLR: 10, evidenceLabel: "Severe pain"),
+            .init(key: "character", value: "Aching", logLR: 8, evidenceLabel: "Bone/joint aching"),
+            .init(key: "onset", value: "Sudden", logLR: 6, evidenceLabel: "Sudden onset"),
+            .init(key: "associations", value: "Fever", logLR: 6, evidenceLabel: "Fever (if infective trigger)"),
+            .init(key: "pmh", value: "sickle", logLR: 20, evidenceLabel: "Sickle cell disease"),
+            .init(key: "inv", value: "sickle", logLR: 20, evidenceLabel: "Sickle cell on film"),
+        ]),
+    ]
+
+    // MARK: - Hypertension review
+
+    private static let hypertensionReview: [Candidate] = [
+        .init(name: "Essential Hypertension", icd: "I10",
+              logPrior: 65, features: [
+            .init(key: "pmh", value: "hypertension", logLR: 16, evidenceLabel: "Known hypertension"),
+            .init(key: "pmh", value: "diabetes", logLR: 5, evidenceLabel: "Diabetes (comorbidity)"),
+            .init(key: "age_over", value: "40", logLR: 6, evidenceLabel: "Age >40"),
+            .init(key: "associations", value: "Headache", logLR: 4, evidenceLabel: "Headache"),
+            .init(key: "associations", value: "Dizziness", logLR: 3, evidenceLabel: "Dizziness"),
+            .init(key: "inv", value: "ecg", logLR: 4, evidenceLabel: "ECG for LVH"),
+            .init(key: "inv", value: "creatinine", logLR: 4, evidenceLabel: "Renal function"),
+        ]),
+        .init(name: "Secondary Hypertension", icd: "I15.9",
+              logPrior: 8, features: [
+            .init(key: "age_under", value: "35", logLR: 8, evidenceLabel: "Young age"),
+            .init(key: "associations", value: "Headache", logLR: 6, evidenceLabel: "Headache"),
+            .init(key: "associations", value: "Sweating", logLR: 8, evidenceLabel: "Episodic sweating (phaeochromocytoma)"),
+            .init(key: "associations", value: "Hypokalaemia", logLR: 8, evidenceLabel: "Hypokalaemia (Conn's)"),
+            .init(key: "pmh", value: "ckd", logLR: 10, evidenceLabel: "CKD (renal HTN)"),
+            .init(key: "inv", value: "renin", logLR: 10, evidenceLabel: "Renin/aldosterone ratio"),
+        ]),
+        .init(name: "Hypertensive Urgency / Emergency", icd: "I16.9",
+              logPrior: 5, features: [
+            .init(key: "character", value: "Severe", logLR: 10, evidenceLabel: "Severe headache"),
+            .init(key: "associations", value: "Visual change", logLR: 12, evidenceLabel: "Visual disturbance"),
+            .init(key: "associations", value: "Chest pain", logLR: 10, evidenceLabel: "Chest pain"),
+            .init(key: "associations", value: "Confusion", logLR: 12, evidenceLabel: "Confusion"),
+            .init(key: "exam", value: "papilloedema", logLR: 16, evidenceLabel: "Papilloedema"),
+        ]),
+    ]
+
+    // MARK: - Diabetes review
+
+    private static let diabetesReview: [Candidate] = [
+        .init(name: "Type 2 Diabetes Mellitus", icd: "E11.9",
+              logPrior: 55, features: [
+            .init(key: "pmh", value: "diabetes", logLR: 16, evidenceLabel: "Known T2DM"),
+            .init(key: "pmh", value: "t2dm", logLR: 16, evidenceLabel: "T2DM"),
+            .init(key: "age_over", value: "40", logLR: 6, evidenceLabel: "Age >40"),
+            .init(key: "associations", value: "Polyuria", logLR: 10, evidenceLabel: "Polyuria"),
+            .init(key: "associations", value: "Polydipsia", logLR: 10, evidenceLabel: "Polydipsia"),
+            .init(key: "associations", value: "Weight loss", logLR: 6, evidenceLabel: "Weight loss"),
+            .init(key: "inv", value: "hba1c", logLR: 16, evidenceLabel: "HbA1c elevated"),
+            .init(key: "inv", value: "glucose", logLR: 12, evidenceLabel: "Fasting glucose elevated"),
+            .init(key: "pmh", value: "hypertension", logLR: 4, evidenceLabel: "Hypertension (comorbidity)"),
+        ]),
+        .init(name: "Type 1 Diabetes Mellitus", icd: "E10.9",
+              logPrior: 10, features: [
+            .init(key: "age_under", value: "35", logLR: 6, evidenceLabel: "Younger onset"),
+            .init(key: "associations", value: "Weight loss", logLR: 8, evidenceLabel: "Weight loss at diagnosis"),
+            .init(key: "pmh", value: "t1dm", logLR: 18, evidenceLabel: "Known T1DM"),
+            .init(key: "inv", value: "c-peptide", logLR: 12, evidenceLabel: "Low C-peptide"),
+        ]),
+        .init(name: "Diabetic Complications", icd: "E11.69",
+              logPrior: 15, features: [
+            .init(key: "associations", value: "Neuropathy", logLR: 12, evidenceLabel: "Peripheral neuropathy"),
+            .init(key: "associations", value: "Visual change", logLR: 10, evidenceLabel: "Retinopathy symptoms"),
+            .init(key: "associations", value: "Foot pain", logLR: 10, evidenceLabel: "Diabetic foot"),
+            .init(key: "pmh", value: "diabetes", logLR: 10, evidenceLabel: "Diabetes"),
+            .init(key: "inv", value: "albumin", logLR: 10, evidenceLabel: "Microalbuminuria"),
+            .init(key: "inv", value: "creatinine", logLR: 8, evidenceLabel: "Renal impairment"),
         ]),
     ]
 }

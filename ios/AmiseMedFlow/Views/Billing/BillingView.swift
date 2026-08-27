@@ -104,9 +104,18 @@ struct BillingView: View {
             .filter { code in !patient.billingItems.contains(where: { $0.cptCode == code.code }) }
     }
 
+    private var radiationCodes: [DiagnosisRadiation.BillingCode] {
+        DiagnosisRadiationEngine.radiate(
+            workingDiagnosis: patient.workingDiagnosis,
+            ageYears: patient.ageYears,
+            sex: patient.sex
+        )?.billingCodes ?? []
+    }
+
     var body: some View {
         List {
             searchSection
+            if !radiationCodes.isEmpty { icdCodesSection }
             if !suggested.isEmpty { suggestedSection }
             if !items.isEmpty { selectedSection }
         }
@@ -153,7 +162,36 @@ struct BillingView: View {
         }
     }
 
-    // MARK: - Suggested
+    // MARK: - ICD-10 Codes from Diagnosis Radiation
+
+    @ViewBuilder
+    private var icdCodesSection: some View {
+        Section {
+            if let dx = patient.workingDiagnosis {
+                Label("ICD-10 codes for: \(dx)", systemImage: "stethoscope")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            ForEach(radiationCodes, id: \.icd10) { code in
+                HStack(spacing: 10) {
+                    Text(code.icd10)
+                        .font(.system(size: 12, weight: .semibold).monospaced())
+                        .foregroundStyle(.green)
+                        .padding(.horizontal, 6).padding(.vertical, 3)
+                        .background(Color.green.opacity(0.1), in: RoundedRectangle(cornerRadius: 5))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(code.icdDescription).font(.subheadline).foregroundStyle(.primary)
+                        if let cpt = code.cpt, let cptDesc = code.cptDescription {
+                            Text("CPT \(cpt) · \(cptDesc)").font(.caption.monospaced()).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+        } header: {
+            Label("Diagnosis ICD-10", systemImage: "list.number").foregroundStyle(.green)
+        }
+    }
+
+    // MARK: - Suggested CPT
 
     @ViewBuilder
     private var suggestedSection: some View {
