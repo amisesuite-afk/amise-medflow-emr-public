@@ -51,7 +51,7 @@ struct NoteListView: View {
                 }
 
                 ForEach(sortedNotes) { note in
-                    NoteRow(note: note)
+                    NoteRow(note: note, onExportPDF: { exportPDF(note) })
                         .contentShape(Rectangle())
                         .onTapGesture { editingNote = note }
                         .swipeActions(edge: .leading, allowsFullSwipe: true) {
@@ -143,6 +143,7 @@ struct NoteListView: View {
 
 struct NoteRow: View {
     let note: ClinicalNote
+    var onExportPDF: (() -> Void)? = nil
 
     private var typeColor: Color {
         switch note.noteType {
@@ -190,6 +191,17 @@ struct NoteRow: View {
                         Image(systemName: "checkmark.seal.fill")
                             .foregroundStyle(.green)
                             .font(.caption)
+                    }
+
+                    if let exportPDF = onExportPDF {
+                        Button {
+                            exportPDF()
+                        } label: {
+                            Image(systemName: "arrow.up.doc.fill")
+                                .font(.system(size: 13))
+                                .foregroundStyle(.indigo.opacity(0.7))
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
 

@@ -11,6 +11,7 @@ struct DiagnosisRadiationCard: View {
     let onDismiss: () -> Void
 
     @State private var expanded = true
+    @State private var addedNames: Set<String> = []
 
     var body: some View {
         Section {
@@ -101,11 +102,18 @@ struct DiagnosisRadiationCard: View {
                                 Text(inv.rationale).font(.system(size: 10)).foregroundStyle(.secondary)
                             }
                             Spacer()
-                            Button("Add") {
-                                onAddInvestigation(inv)
+                            if addedNames.contains(inv.name) {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundStyle(.green)
+                            } else {
+                                Button("Add") {
+                                    addedNames.insert(inv.name)
+                                    onAddInvestigation(inv)
+                                }
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(.teal)
                             }
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(.teal)
                         }
                     }
                 }
