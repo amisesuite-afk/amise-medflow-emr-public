@@ -103,6 +103,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
 
 struct PatientDetailPadView: View {
     @Bindable var patient: Patient
+    var onBack: (() -> Void)? = nil
     @State private var selectedSection: PatientDetailSection? = .overview
     @State private var summaryPDFData: Data? = nil
 
@@ -135,6 +136,14 @@ struct PatientDetailPadView: View {
                 .navigationTitle(patient.fullName)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
+                    if let onBack {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button { onBack() } label: {
+                                Image(systemName: "chevron.left")
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                    }
                     ToolbarItem(placement: .principal) {
                         VStack(spacing: 1) {
                             Text(patient.fullName).font(.headline)

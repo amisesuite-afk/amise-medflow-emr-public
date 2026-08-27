@@ -349,8 +349,12 @@ private struct RegularRootView: View {
                 // Schedule fills the full remaining width (columns 2+3 merged)
                 NavigationStack { ScheduleView() }
                     .frame(maxWidth: .infinity)
+            } else if let patient = selectedPatient {
+                // Patient selected: full-width clinical workspace — list column collapses
+                PatientDetailPadView(patient: patient, onBack: { selectedPatient = nil })
+                    .frame(maxWidth: .infinity)
             } else {
-                // Column 2: Patient list
+                // No patient selected: 296px list + empty state placeholder
                 NavigationStack {
                     SectionPatientListView(section: selectedSection,
                                            selectedPatient: $selectedPatient)
@@ -362,21 +366,17 @@ private struct RegularRootView: View {
                     .frame(width: 0.5)
                     .ignoresSafeArea(edges: .vertical)
 
-                // Column 3: Clinical workspace
-                if let patient = selectedPatient {
-                    PatientDetailPadView(patient: patient)
-                } else {
-                    ContentUnavailableView(
-                        "Select a Patient",
-                        systemImage: "person.text.rectangle",
-                        description: Text("Choose a patient from the list to view their record.")
-                    )
-                    .background(AMColor.bg)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
+                ContentUnavailableView(
+                    "Select a Patient",
+                    systemImage: "person.text.rectangle",
+                    description: Text("Choose a patient from the list to view their record.")
+                )
+                .background(AMColor.bg)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .ignoresSafeArea(.keyboard)
+        .onChange(of: selectedSection) { _, _ in selectedPatient = nil }
         .sheet(isPresented: $showSettings) { SettingsView() }
     }
 
