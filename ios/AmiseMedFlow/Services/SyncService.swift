@@ -104,13 +104,16 @@ final class SyncService: ObservableObject {
         let family_history_notes: String?
         let insurance_provider: String?
         let policy_number: String?
+        let setting: String?
+        let location: String?
+        let acuity: String?
         let created_at: String
     }
 
     private func pullPatients(context: ModelContext) async throws {
         let rows: [RemotePatient] = try await SupabaseConfig.client
             .from("patients")
-            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, created_at")
+            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, created_at")
             .order("created_at", ascending: false)
             .limit(500)
             .execute()
@@ -144,11 +147,43 @@ final class SyncService: ObservableObject {
             patient.familyHistoryNotes = row.family_history_notes
             patient.insuranceProvider = row.insurance_provider
             patient.policyNumber = row.policy_number
+            if let s = row.setting { patient.setting = ClinicalSetting(rawValue: s.capitalized) ?? .outpatient }
+            if let l = row.location { patient.location = ClinicalLocation(rawValue: locationDisplayName(l)) ?? .rodney_bay }
+            if let a = row.acuity { patient.acuity = acuityFromString(a) }
             patient.syncedAt = .now
             patient.pendingSync = false
         }
 
         try context.save()
+    }
+
+    private func locationDisplayName(_ code: String) -> String {
+        switch code {
+        case "rodney_bay": return "Rodney Bay"
+        case "tapion":     return "Tapion"
+        case "okeu":       return "OKEU"
+        case "victoria":   return "Victoria"
+        default:           return "Other"
+        }
+    }
+
+    private func locationCode(_ location: ClinicalLocation) -> String {
+        switch location {
+        case .rodney_bay: return "rodney_bay"
+        case .tapion:     return "tapion"
+        case .okeu:       return "okeu"
+        case .victoria:   return "victoria"
+        case .other:      return "other"
+        }
+    }
+
+    private func acuityFromString(_ s: String) -> Acuity {
+        switch s {
+        case "emergency": return .emergency
+        case "urgent":    return .urgent
+        case "priority":  return .priority
+        default:          return .routine
+        }
     }
 
     private func pushPendingPatients(context: ModelContext) async throws {
@@ -171,6 +206,9 @@ final class SyncService: ObservableObject {
                 let policy_number: String?
                 let pmh_notes: String?
                 let family_history_notes: String?
+                let setting: String
+                let location: String
+                let acuity: String
             }
             let row = InsertRow(
                 full_name: patient.fullName,
@@ -185,7 +223,10 @@ final class SyncService: ObservableObject {
                 insurance_provider: patient.insuranceProvider,
                 policy_number: patient.policyNumber,
                 pmh_notes: patient.pmhNotes,
-                family_history_notes: patient.familyHistoryNotes
+                family_history_notes: patient.familyHistoryNotes,
+                setting: patient.setting.rawValue.lowercased(),
+                location: locationCode(patient.location),
+                acuity: patient.acuity.label.lowercased()
             )
             struct InsertResponse: Decodable { let id: String }
             let response: [InsertResponse] = try await SupabaseConfig.client
@@ -276,6 +317,9 @@ final class SyncService: ObservableObject {
                 let family_history_notes: String?
                 let working_diagnosis: String?
                 let working_diagnosis_icd: String?
+                let setting: String
+                let location: String
+                let acuity: String
             }
             let row = UpdateRow(
                 full_name: patient.fullName,
@@ -292,7 +336,10 @@ final class SyncService: ObservableObject {
                 pmh_notes: patient.pmhNotes,
                 family_history_notes: patient.familyHistoryNotes,
                 working_diagnosis: patient.workingDiagnosis,
-                working_diagnosis_icd: patient.workingDiagnosisICD
+                working_diagnosis_icd: patient.workingDiagnosisICD,
+                setting: patient.setting.rawValue.lowercased(),
+                location: locationCode(patient.location),
+                acuity: patient.acuity.label.lowercased()
             )
             try await SupabaseConfig.client
                 .from("patients")
