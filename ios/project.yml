@@ -28,6 +28,35 @@ targets:
 
     info:
       path: AmiseMedFlow/Info.plist
+      properties:
+        CFBundleDisplayName: "Amise MedFlow"
+        CFBundleName: "$(PRODUCT_NAME)"
+        CFBundleIdentifier: "$(PRODUCT_BUNDLE_IDENTIFIER)"
+        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0"
+        CFBundlePackageType: "$(PRODUCT_BUNDLE_PACKAGE_TYPE)"
+        CFBundleExecutable: "$(EXECUTABLE_NAME)"
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UIRequiredDeviceCapabilities:
+          - armv7
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # Supabase — resolved at build time via Configuration.xcconfig
+        SUPABASE_URL: "$(SUPABASE_URL)"
+        SUPABASE_ANON_KEY: "$(SUPABASE_ANON_KEY)"
+        # Privacy usage strings
+        NSCameraUsageDescription: "Camera is used for patient photo documentation."
+        NSPhotoLibraryUsageDescription: "Photo library is used for attaching clinical images."
 
     entitlements:
       path: AmiseMedFlow/AmiseMedFlow.entitlements
