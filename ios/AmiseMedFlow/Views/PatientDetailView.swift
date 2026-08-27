@@ -106,50 +106,65 @@ struct PatientDetailPadView: View {
     @State private var selectedSection: PatientDetailSection? = .overview
     @State private var summaryPDFData: Data? = nil
 
+    // Clinical sections for the right panel — overview lives in the left panel now
+    private var rightSections: [PatientDetailSection] { PatientDetailSection.allCases }
+
     var body: some View {
-        VStack(spacing: 0) {
-            horizontalSectionNav
-            patientSectionContent
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(AMColor.bg)
-        }
-        .navigationTitle(patient.fullName)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                VStack(spacing: 1) {
-                    Text(patient.fullName).font(.headline)
-                    HStack(spacing: 6) {
-                        AcuityPip(acuity: patient.acuity)
-                        Text([patient.sex.rawValue, patient.ageDisplay, patient.setting.rawValue].compactMap { $0 }.joined(separator: " · "))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        if patient.hasCriticalAllergy {
-                            Image(systemName: "exclamationmark.shield.fill")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(.red)
-                        }
-                        if patient.hasAnticoagulation {
-                            Image(systemName: "drop.fill")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(.purple)
-                        }
-                    }
-                }
+        HStack(spacing: 0) {
+            // ── LEFT PANEL: patient summary, always visible ──────────────
+            ScrollView {
+                PatientOverviewContent(patient: patient)
+                    .padding(16)
             }
-            ToolbarItem(placement: .primaryAction) {
-                HStack(spacing: 12) {
-                    // Summary PDF export
-                    Button {
-                        summaryPDFData = PatientSummaryPDF.generate(for: patient)
-                    } label: {
-                        Image(systemName: "doc.text.fill")
+            .frame(width: 292)
+            .background(Color(.systemBackground))
+
+            Rectangle()
+                .fill(Color(.separator))
+                .frame(width: 0.5)
+                .ignoresSafeArea(edges: .vertical)
+
+            // ── RIGHT PANEL: section nav + clinical content ───────────────
+            NavigationStack {
+                VStack(spacing: 0) {
+                    sectionNav
+                    sectionContent
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(AMColor.bg)
+                }
+                .navigationTitle(patient.fullName)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        VStack(spacing: 1) {
+                            Text(patient.fullName).font(.headline)
+                            HStack(spacing: 6) {
+                                AcuityPip(acuity: patient.acuity)
+                                Text([patient.sex.rawValue, patient.ageDisplay, patient.setting.rawValue]
+                                    .compactMap { $0 }.joined(separator: " · "))
+                                    .font(.caption).foregroundStyle(.secondary)
+                                if patient.hasCriticalAllergy {
+                                    Image(systemName: "exclamationmark.shield.fill")
+                                        .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
+                                }
+                                if patient.hasAnticoagulation {
+                                    Image(systemName: "drop.fill")
+                                        .font(.system(size: 9, weight: .bold)).foregroundStyle(.purple)
+                                }
+                            }
+                        }
                     }
-                    // Handover text share
-                    ShareLink(item: patient.handoverText,
-                              subject: Text("Patient Handover — \(patient.fullName)"),
-                              message: Text(patient.handoverText)) {
-                        Image(systemName: "square.and.arrow.up")
+                    ToolbarItem(placement: .primaryAction) {
+                        HStack(spacing: 12) {
+                            Button { summaryPDFData = PatientSummaryPDF.generate(for: patient) } label: {
+                                Image(systemName: "doc.text.fill")
+                            }
+                            ShareLink(item: patient.handoverText,
+                                      subject: Text("Patient Handover — \(patient.fullName)"),
+                                      message: Text(patient.handoverText)) {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                        }
                     }
                 }
             }
@@ -163,32 +178,28 @@ struct PatientDetailPadView: View {
         }
     }
 
-    // MARK: Horizontal section nav — full width, scrollable, dark strip
+    // MARK: Section nav (right panel)
 
-    private var horizontalSectionNav: some View {
+    private var sectionNav: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 0) {
-                ForEach(PatientDetailSection.allCases) { section in
+                ForEach(rightSections) { section in
                     let sel = selectedSection == section
                     Button { selectedSection = section } label: {
-                        VStack(spacing: 4) {
+                        VStack(spacing: 3) {
                             Image(systemName: section.icon)
-                                .font(.system(size: 16, weight: sel ? .semibold : .regular))
+                                .font(.system(size: 15, weight: sel ? .semibold : .regular))
                             Text(section.shortLabel)
                                 .font(.system(size: 9, weight: sel ? .bold : .semibold))
                                 .lineLimit(1)
                         }
                         .foregroundStyle(sel ? AMColor.sidebarActive : AMColor.sidebarText)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 10)
-                        .frame(minWidth: 68)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 9)
+                        .frame(minWidth: 62)
                         .background(sel ? AMColor.accent.opacity(0.18) : Color.clear)
                         .overlay(alignment: .bottom) {
-                            if sel {
-                                Rectangle()
-                                    .fill(AMColor.accent)
-                                    .frame(height: 2)
-                            }
+                            if sel { Rectangle().fill(AMColor.accent).frame(height: 2) }
                         }
                     }
                     .buttonStyle(.plain)
@@ -201,28 +212,14 @@ struct PatientDetailPadView: View {
         }
     }
 
-    // MARK: Section content
+    // MARK: Section content (right panel)
 
     @ViewBuilder
-    private var patientSectionContent: some View {
+    private var sectionContent: some View {
         switch selectedSection ?? .overview {
         case .overview:
-            HStack(spacing: 0) {
-                // Left: Diagnosis hub (command centre)
-                DiagnosisHubView(patient: patient,
-                                 onNavigate: { selectedSection = $0 })
-                    .frame(maxWidth: .infinity)
-
-                Divider()
-
-                // Right: Patient overview summary
-                ScrollView {
-                    PatientOverviewContent(patient: patient)
-                        .padding(20)
-                }
-                .background(AMColor.bg)
-                .frame(maxWidth: 320)
-            }
+            // Quick-action hub — left panel already shows the full summary
+            DiagnosisHubView(patient: patient, onNavigate: { selectedSection = $0 })
         case .cc:
             ConsultationView(patient: patient, startingTab: .cc, embeddedInNav: true)
         case .hpi:
