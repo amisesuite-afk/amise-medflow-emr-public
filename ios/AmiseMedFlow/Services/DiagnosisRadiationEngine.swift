@@ -29,6 +29,31 @@ struct DiagnosisRadiation {
     let urgencyNote: String?
     let redFlags: [String]
     let followUp: String
+    let guidelineReference: String?   // e.g. "NICE NG12; ASGE 2019"
+
+    init(
+        conditionName: String,
+        icd10Primary: String,
+        investigations: [SuggestedInvestigation],
+        planTemplate: String,
+        billingCodes: [BillingCode],
+        consentCategory: String?,
+        urgencyNote: String?,
+        redFlags: [String],
+        followUp: String,
+        guidelineReference: String? = nil
+    ) {
+        self.conditionName = conditionName
+        self.icd10Primary = icd10Primary
+        self.investigations = investigations
+        self.planTemplate = planTemplate
+        self.billingCodes = billingCodes
+        self.consentCategory = consentCategory
+        self.urgencyNote = urgencyNote
+        self.redFlags = redFlags
+        self.followUp = followUp
+        self.guidelineReference = guidelineReference
+    }
 }
 
 // MARK: - Engine
@@ -86,7 +111,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Laparoscopic Cholecystectomy",
             urgencyNote: nil,
             redFlags: ["Fever → may be cholecystitis", "Jaundice → CBD stone", "Worsening pain → admit"],
-            followUp: "Review 4–6 weeks with repeat USS and LFTs. Book elective cholecystectomy."
+            followUp: "Review 4–6 weeks with repeat USS and LFTs. Book elective cholecystectomy.",
+            guidelineReference: "NICE CG188; SAGES Cholecystectomy Guidelines"
         )),
 
         Entry(keywords: ["acute cholecystitis", "cholecystitis"], radiation: .init(
@@ -117,7 +143,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Laparoscopic Cholecystectomy",
             urgencyNote: "Consider same-day surgical admission. Early cholecystectomy reduces complications.",
             redFlags: ["Septic shock → ICU", "Perforation signs → emergency OT", "CBD dilation → ERCP first"],
-            followUp: "Post-cholecystectomy review 2 weeks."
+            followUp: "Post-cholecystectomy review 2 weeks.",
+            guidelineReference: "Tokyo Guidelines 2018 (TG18)"
         )),
 
         Entry(keywords: ["choledocholithiasis", "cbd stone", "common bile duct stone"], radiation: .init(
@@ -144,7 +171,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "ERCP",
             urgencyNote: "If Charcot's triad (fever + jaundice + RUQ pain): ascending cholangitis — admit urgently.",
             redFlags: ["Charcot's triad → ascending cholangitis → urgent ERCP", "Reynolds' pentad → septic shock → ICU"],
-            followUp: "Review 2 weeks post-ERCP. Schedule cholecystectomy if not done."
+            followUp: "Review 2 weeks post-ERCP. Schedule cholecystectomy if not done.",
+            guidelineReference: "ASGE 2019; ESGE 2019"
         )),
 
         Entry(keywords: ["ascending cholangitis", "cholangitis"], radiation: .init(
@@ -173,7 +201,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "ERCP",
             urgencyNote: "URGENT — Charcot's triad present. Admit. ERCP within 12–24h.",
             redFlags: ["Confusion + hypotension (Reynolds' pentad) → ICU + emergency decompression"],
-            followUp: "Post-ERCP review 48h. Elective cholecystectomy after resolution."
+            followUp: "Post-ERCP review 48h. Elective cholecystectomy after resolution.",
+            guidelineReference: "Tokyo Guidelines 2018 — Grade II/III Cholangitis"
         )),
 
         Entry(keywords: ["acute pancreatitis", "pancreatitis"], radiation: .init(
@@ -206,7 +235,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Admit. Assess severity (Glasgow/Ranson). Review at 24h and 48h.",
             redFlags: ["Glasgow ≥3 → severe → HDU", "Organ failure → ICU", "Infected necrosis → surgery or drainage"],
-            followUp: "Review 4–6 weeks. Cholecystectomy before discharge if gallstone aetiology. Repeat USS."
+            followUp: "Review 4–6 weeks. Cholecystectomy before discharge if gallstone aetiology. Repeat USS.",
+            guidelineReference: "BSG 2022; IAP/APA 2013; Atlanta Classification 2012"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -243,7 +273,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Laparoscopic Appendicectomy",
             urgencyNote: "URGENT — prepare for theatre. NBM. IV antibiotics within 1h of diagnosis.",
             redFlags: ["Perforation signs → emergency OT", "Peritonitis → aggressive fluid resuscitation"],
-            followUp: "Post-op review 2 weeks. Histology review."
+            followUp: "Post-op review 2 weeks. Histology review.",
+            guidelineReference: "NICE NG61; SAGES Guidelines; Alvarado Score"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -280,7 +311,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Colorectal Resection",
             urgencyNote: "Urgent oncology referral. Target 2-week wait for staging CT.",
             redFlags: ["Obstruction → stenting or emergency surgery", "Perforation → emergency OT + peritonitis management"],
-            followUp: "MDT within 2 weeks. Surgery within 4–6 weeks of diagnosis. CEA quarterly."
+            followUp: "MDT within 2 weeks. Surgery within 4–6 weeks of diagnosis. CEA quarterly.",
+            guidelineReference: "NICE NG12; ESMO 2022; ASCO-SSO Guidelines"
         )),
 
         Entry(keywords: ["haemorrhoid", "hemorrhoid", "piles", "internal haemorrhoid", "external haemorrhoid"], radiation: .init(
@@ -306,7 +338,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Haemorrhoidectomy",
             urgencyNote: nil,
             redFlags: ["Haemoglobin <8 g/dL → transfuse", "Age >50 + change in bowel habit → colonoscopy"],
-            followUp: "Review 6 weeks after banding. Colonoscopy if any red flags present."
+            followUp: "Review 6 weeks after banding. Colonoscopy if any red flags present.",
+            guidelineReference: "ASCRS 2020; NICE CKS"
         )),
 
         Entry(keywords: ["anal fissure", "fissure in ano"], radiation: .init(
@@ -332,7 +365,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Lateral Internal Sphincterotomy",
             urgencyNote: nil,
             redFlags: ["Non-healing fissure → Crohn's / carcinoma — biopsy"],
-            followUp: "Review 8 weeks — if not healed on GTN, refer for surgery."
+            followUp: "Review 8 weeks — if not healed on GTN, refer for surgery.",
+            guidelineReference: "ASCRS 2022; NICE CKS; ACPGBI"
         )),
 
         Entry(keywords: ["perianal abscess", "anorectal abscess"], radiation: .init(
@@ -357,7 +391,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Incision and Drainage — Perianal Abscess",
             urgencyNote: "URGENT — arrange I&D within 24h. Do not prescribe antibiotics alone.",
             redFlags: ["Necrotising fasciitis signs → emergency wide debridement + ICU"],
-            followUp: "Review 2 weeks. If fistula: definitive repair."
+            followUp: "Review 2 weeks. If fistula: definitive repair.",
+            guidelineReference: "ASCRS 2022; ACPGBI Guidelines"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -387,7 +422,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Inguinal Hernia Repair",
             urgencyNote: nil,
             redFlags: ["Irreducible → emergency repair", "Obstructed bowel → emergency OT"],
-            followUp: "Review 6 weeks post-repair. Return precautions: sudden pain, non-reducible → ER."
+            followUp: "Review 6 weeks post-repair. Return precautions: sudden pain, non-reducible → ER.",
+            guidelineReference: "HerniaSurge 2018; EHS Guidelines"
         )),
 
         Entry(keywords: ["umbilical hernia", "paraumbilical hernia"], radiation: .init(
@@ -410,7 +446,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Umbilical Hernia Repair",
             urgencyNote: nil,
             redFlags: ["Acute onset irreducibility → emergency OT"],
-            followUp: "Review 6 weeks post-repair."
+            followUp: "Review 6 weeks post-repair.",
+            guidelineReference: "EHS 2019 Guidelines"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -441,7 +478,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: nil,
             redFlags: ["Haematemesis / melaena → urgent OGD within 24h", "Perforation → emergency OT"],
-            followUp: "OGD at 8 weeks for gastric ulcer. Breath test 4 weeks post-eradication."
+            followUp: "OGD at 8 weeks for gastric ulcer. Breath test 4 weeks post-eradication.",
+            guidelineReference: "NICE CG17; ACG 2017; Maastricht VI / Florence 2022"
         )),
 
         Entry(keywords: ["gerd", "gord", "reflux", "oesophagitis", "barrett"], radiation: .init(
@@ -468,7 +506,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: nil,
             redFlags: ["Progressive dysphagia → exclude carcinoma urgently (OGD within 2 weeks)"],
-            followUp: "Review 8 weeks. Barrett's: OGD surveillance per guideline."
+            followUp: "Review 8 weeks. Barrett's: OGD surveillance per guideline.",
+            guidelineReference: "NICE CG30; ACG 2022; BSG Barrett's Guidelines"
         )),
 
         Entry(keywords: ["oesophageal carcinoma", "esophageal cancer", "oesophageal cancer"], radiation: .init(
@@ -497,7 +536,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Oesophagectomy",
             urgencyNote: "URGENT — 2-week wait MDT referral. Nutritional support immediately.",
             redFlags: ["Complete obstruction → urgent stenting", "Haematemesis → urgent endoscopy"],
-            followUp: "MDT within 1 week. Oncology review within 2 weeks."
+            followUp: "MDT within 1 week. Oncology review within 2 weeks.",
+            guidelineReference: "NICE NG83; ESMO 2023"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -531,7 +571,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Mastectomy / Wide Local Excision",
             urgencyNote: "URGENT — 2-week wait. MDT referral today.",
             redFlags: ["Inflammatory breast cancer (skin oedema, erythema) → urgent admit"],
-            followUp: "MDT within 1 week. Surgery within 3 weeks of diagnosis."
+            followUp: "MDT within 1 week. Surgery within 3 weeks of diagnosis.",
+            guidelineReference: "NICE NG101; ASCO/ASTRO 2023; St Gallen 2023"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -571,7 +612,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: nil,
             redFlags: ["BP >180/120 + end-organ damage → hypertensive emergency → ER", "Headache + visual changes → rule out hypertensive encephalopathy"],
-            followUp: "Review 4 weeks (med start), then 3-monthly when stable. Annual: U&E, lipids, glucose, urine ACR."
+            followUp: "Review 4 weeks (med start), then 3-monthly when stable. Annual: U&E, lipids, glucose, urine ACR.",
+            guidelineReference: "NICE NG136; ACC/AHA 2017; ISH 2020"
         )),
 
         Entry(keywords: ["acute coronary syndrome", "acs", "nstemi", "stemi", "myocardial infarction", "mi"], radiation: .init(
@@ -604,7 +646,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "EMERGENCY — STEMI: activate cath lab immediately. NSTEMI: admit CCU.",
             redFlags: ["Cardiogenic shock → vasopressors + urgent PCI", "VF → defibrillation", "Complete heart block → temporary pacing"],
-            followUp: "Cardiology follow-up 4–6 weeks. Cardiac rehab 6–8 weeks. Echo at 3 months."
+            followUp: "Cardiology follow-up 4–6 weeks. Cardiac rehab 6–8 weeks. Echo at 3 months.",
+            guidelineReference: "ESC 2023; NICE NG185; ACC/AHA NSTE-ACS"
         )),
 
         Entry(keywords: ["heart failure", "cardiac failure", "congestive heart failure", "chf", "pulmonary oedema"], radiation: .init(
@@ -637,7 +680,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Admit if acute decompensation. Cardiology referral for new diagnosis.",
             redFlags: ["SaO₂ <90% + respiratory distress → emergency CPAP / NIV", "Cardiogenic shock → inotropes"],
-            followUp: "Cardiology review 2 weeks. Echo 3 months. BNP target-guided therapy."
+            followUp: "Cardiology review 2 weeks. Echo 3 months. BNP target-guided therapy.",
+            guidelineReference: "ESC 2021; NICE NG106"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -677,7 +721,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "CURB-65 ≥3 or SaO₂ <93%: admit urgently.",
             redFlags: ["SaO₂ <90% → O₂ + escalate", "Shock + respiratory failure → ICU + broad-spectrum antibiotics"],
-            followUp: "Chest X-ray 6 weeks to confirm resolution. Pneumococcal vaccine if not vaccinated."
+            followUp: "Chest X-ray 6 weeks to confirm resolution. Pneumococcal vaccine if not vaccinated.",
+            guidelineReference: "NICE NG138; BTS 2009; CURB-65"
         )),
 
         Entry(keywords: ["asthma", "acute asthma", "bronchospasm"], radiation: .init(
@@ -714,7 +759,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "LIFE-THREATENING features: silent chest / SpO₂ <92% / PEF <33% → emergency.",
             redFlags: ["Silent chest + hypoxia + cyanosis → intubation", "Rising CO₂ → ICU immediately"],
-            followUp: "Review 48h after acute attack. Spirometry when well. Asthma Action Plan."
+            followUp: "Review 48h after acute attack. Spirometry when well. Asthma Action Plan.",
+            guidelineReference: "BTS/SIGN 2023; NICE NG80; GINA 2024"
         )),
 
         Entry(keywords: ["pulmonary tuberculosis", "tuberculosis", "tb", "mycobacterium tuberculosis"], radiation: .init(
@@ -747,7 +793,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Notify Public Health. Isolate patient until non-infectious.",
             redFlags: ["Haemoptysis → bronchoscopy", "Miliary / CNS TB → IV steroids + extended treatment", "MDR-TB → specialist centre"],
-            followUp: "Monthly: LFTs, clinical review, sputum smear. CXR at 2 months and end of treatment."
+            followUp: "Monthly: LFTs, clinical review, sputum smear. CXR at 2 months and end of treatment.",
+            guidelineReference: "WHO 2022; NICE NG33"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -793,7 +840,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: nil,
             redFlags: ["HbA1c >12% + symptoms → consider insulin", "DKA → emergency IV fluids + insulin protocol", "Hypoglycaemia <4 mmol/L → 15–20 g fast-acting glucose"],
-            followUp: "HbA1c every 3 months until target, then 6-monthly. Annual: eyes, feet, ACR, eGFR, lipids."
+            followUp: "HbA1c every 3 months until target, then 6-monthly. Annual: eyes, feet, ACR, eGFR, lipids.",
+            guidelineReference: "NICE NG28; ADA 2024; EASD 2023"
         )),
 
         Entry(keywords: ["hyperthyroidism", "thyrotoxicosis", "graves disease", "graves'"], radiation: .init(
@@ -827,7 +875,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: "Total Thyroidectomy",
             urgencyNote: "Thyroid storm: ICU — propranolol IV + carbimazole high-dose + dexamethasone + Lugol's iodine.",
             redFlags: ["Agranulocytosis (fever + sore throat on ATD) → STOP drug → FBC stat → haematology", "Thyroid storm → emergency"],
-            followUp: "TFTs 4–6 weeks. Annual DEXA. Lifelong thyroxine after thyroidectomy or radioiodine."
+            followUp: "TFTs 4–6 weeks. Annual DEXA. Lifelong thyroxine after thyroidectomy or radioiodine.",
+            guidelineReference: "BTA Guidelines; ATA 2016; ETA 2018"
         )),
 
         Entry(keywords: ["hypothyroidism", "hypothyroid", "underactive thyroid"], radiation: .init(
@@ -857,7 +906,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: nil,
             redFlags: ["Myxoedema coma — confusion + hypothermia → IV T4 + steroids + ICU"],
-            followUp: "TFTs 6 weeks after initiating / changing dose. Annual monitoring when stable."
+            followUp: "TFTs 6 weeks after initiating / changing dose. Annual monitoring when stable.",
+            guidelineReference: "BTA Guidelines; ATA 2014"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -897,7 +947,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Monitor for warning signs. Admit if platelet trending down or any warning sign present.",
             redFlags: ["Plasma leakage → dengue shock syndrome → aggressive fluids + ICU", "Platelet <10,000 + bleeding → transfuse"],
-            followUp: "Platelet count at day 6–7. Recovery usually by day 10–14. Avoid NSAIDs for 2 weeks."
+            followUp: "Platelet count at day 6–7. Recovery usually by day 10–14. Avoid NSAIDs for 2 weeks.",
+            guidelineReference: "WHO 2009; PAHO 2010; MOH St Lucia"
         )),
 
         Entry(keywords: ["leptospirosis", "weil's disease", "weil disease"], radiation: .init(
@@ -932,7 +983,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Weil's disease (jaundice + renal failure): ADMIT immediately. IV penicillin.",
             redFlags: ["AKI → nephrology + possible dialysis", "Pulmonary haemorrhage → ICU + mechanical ventilation", "DIC → haematology"],
-            followUp: "Renal function weekly × 4 weeks. LFTs normalise in 4–6 weeks."
+            followUp: "Renal function weekly × 4 weeks. LFTs normalise in 4–6 weeks.",
+            guidelineReference: "WHO Guidelines; PAHO"
         )),
 
         Entry(keywords: ["typhoid", "typhoid fever", "enteric fever", "salmonella typhi"], radiation: .init(
@@ -966,7 +1018,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Admit if toxic / unable to tolerate orals. Blood cultures before antibiotics.",
             redFlags: ["Intestinal perforation → emergency surgery", "Haemorrhage → transfusion + surgery", "Encephalopathy → IV antibiotics + steroids"],
-            followUp: "Stool culture 3 months post-treatment. Typhoid vaccination for household contacts."
+            followUp: "Stool culture 3 months post-treatment. Typhoid vaccination for household contacts.",
+            guidelineReference: "WHO 2011; CDC; IDSA"
         )),
 
         Entry(keywords: ["urinary tract infection", "uti", "cystitis", "pyelonephritis"], radiation: .init(
@@ -1001,7 +1054,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Systemically unwell + sepsis criteria: admit urgently. Blood cultures before antibiotics.",
             redFlags: ["Sepsis criteria → IV antibiotics within 1h", "Obstructed infected kidney → emergency urology + nephrostomy"],
-            followUp: "Urine MC&S 5–7 days post-antibiotic. If recurrent: renal USS + urology referral."
+            followUp: "Urine MC&S 5–7 days post-antibiotic. If recurrent: renal USS + urology referral.",
+            guidelineReference: "NICE NG112; EAU 2022"
         )),
 
         Entry(keywords: ["cellulitis", "soft tissue infection", "erysipelas"], radiation: .init(
@@ -1032,7 +1086,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "If rapidly spreading or systemically unwell: admit urgently. Rule out necrotising fasciitis.",
             redFlags: ["Crepitus / gas on imaging / extreme pain out of proportion → necrotising fasciitis → emergency OT"],
-            followUp: "Review at 48h. If not improving → re-examine edge, consider IV switch or MRI."
+            followUp: "Review at 48h. If not improving → re-examine edge, consider IV switch or MRI.",
+            guidelineReference: "NICE NG141; CREST 2005; IDSA 2014"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -1071,7 +1126,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: nil,
             redFlags: ["Cannot exclude septic arthritis → joint aspiration mandatory", "First MTP joint: classic podagra — treat empirically if typical presentation"],
-            followUp: "Uric acid 6 weeks after starting allopurinol; monthly until target. Annual: U&E, uric acid."
+            followUp: "Uric acid 6 weeks after starting allopurinol; monthly until target. Annual: U&E, uric acid.",
+            guidelineReference: "ACR 2020; EULAR 2016; BSR 2017"
         )),
 
         Entry(keywords: ["sickle cell", "sickle cell disease", "sickle cell crisis", "vaso-occlusive crisis", "hbs"], radiation: .init(
@@ -1111,7 +1167,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Acute chest syndrome: ADMIT + IV antibiotics + O₂ + urgent haematology.",
             redFlags: ["Acute chest syndrome → ICU consider", "Stroke → exchange transfusion + neurology", "Splenic sequestration → transfuse"],
-            followUp: "Haematology review every 3–6 months. Annual: echo, renal function, retinal exam, DEXA."
+            followUp: "Haematology review every 3–6 months. Annual: echo, renal function, retinal exam, DEXA.",
+            guidelineReference: "BSH 2021; NHLBI 2014"
         )),
 
         // ══════════════════════════════════════════════════════════════
@@ -1156,7 +1213,8 @@ enum DiagnosisRadiationEngine {
             consentCategory: nil,
             urgencyNote: "Acute severe colitis (>6 bloody stools/day + fever/tachycardia): ADMIT urgently.",
             redFlags: ["Toxic megacolon → emergency colectomy", "Perforation → emergency OT", "Haemorrhage → transfuse + GI"],
-            followUp: "GI review 4–6 weeks. Colonoscopy surveillance after 8–10 years (CRC risk). Annual FBC/CRP."
+            followUp: "GI review 4–6 weeks. Colonoscopy surveillance after 8–10 years (CRC risk). Annual FBC/CRP.",
+            guidelineReference: "ECCO 2022; NICE NG130; ACG 2019"
         )),
     ]
 }
