@@ -36,7 +36,12 @@ struct OperativePlanView: View {
         let p = OperativePlan()
         p.patient = patient
         if p.consentProcedure.isEmpty, let dx = patient.workingDiagnosis {
-            p.consentProcedure = "Surgery for \(dx)"
+            let category = DiagnosisRadiationEngine.radiate(
+                workingDiagnosis: dx,
+                ageYears: patient.ageYears,
+                sex: patient.sex
+            )?.consentCategory
+            p.consentProcedure = category ?? "Surgery for \(dx)"
         }
         // Safer antibiotic default when penicillin-allergic — clear the beta-lactam default
         if patient.hasPenicillinAllergy {
@@ -61,6 +66,15 @@ private struct PlanForm: View {
     @Binding var showAIError: Bool
     @Binding var aiError: String?
     let context: ModelContext
+
+    private var radiationConsentCategory: String? {
+        guard let dx = patient.workingDiagnosis else { return nil }
+        return DiagnosisRadiationEngine.radiate(
+            workingDiagnosis: dx,
+            ageYears: patient.ageYears,
+            sex: patient.sex
+        )?.consentCategory
+    }
 
     private let antibioticChips = [
         "Cefazolin 1g IV", "Cefazolin 2g IV", "Co-amoxiclav 1.2g IV",
@@ -110,6 +124,22 @@ private struct PlanForm: View {
             if let dx = patient.workingDiagnosis {
                 Label("Diagnosis: \(dx)", systemImage: "stethoscope")
                     .font(.caption).foregroundStyle(.secondary)
+            }
+            if plan.consentProcedure.isEmpty, let cat = radiationConsentCategory {
+                Button {
+                    plan.consentProcedure = cat
+                    touch()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "wand.and.stars")
+                            .font(.system(size: 12))
+                            .foregroundStyle(.teal)
+                        Text("Suggested: \(cat)")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.teal)
+                    }
+                }
+                .buttonStyle(.plain)
             }
             TextField("Procedure to consent for", text: $plan.consentProcedure, axis: .vertical)
                 .lineLimit(2...)
