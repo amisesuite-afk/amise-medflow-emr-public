@@ -214,8 +214,11 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
     case theatre     = "Theatre"
     case endoscopy   = "Endoscopy"
     case outpatients = "Patients"
+    case schedule    = "Schedule"
 
     var id: String { rawValue }
+
+    var isPatientSection: Bool { self != .schedule }
 
     var icon: String {
         switch self {
@@ -223,6 +226,7 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
         case .theatre:     "scissors"
         case .endoscopy:   "circle.dotted"
         case .outpatients: "person.crop.circle"
+        case .schedule:    "calendar"
         }
     }
 
@@ -232,6 +236,7 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
         case .theatre:     .theatre
         case .endoscopy:   .endoscopy
         case .outpatients: .outpatient
+        case .schedule:    .outpatient
         }
     }
 
@@ -241,6 +246,7 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
         case .theatre:     "No theatre cases"
         case .endoscopy:   "No endoscopy cases"
         case .outpatients: "No patients"
+        case .schedule:    "No upcoming events"
         }
     }
 
@@ -250,6 +256,7 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
         case .theatre:     "Add a theatre case to build the list."
         case .endoscopy:   "Add an endoscopy case to build the list."
         case .outpatients: "Add an outpatient to get started."
+        case .schedule:    "Sync to load calendar events."
         }
     }
 
@@ -259,6 +266,7 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
         case .theatre:     "Theatre"
         case .endoscopy:   "Scope"
         case .outpatients: "OPD"
+        case .schedule:    "Schedule"
         }
     }
 }
@@ -311,9 +319,8 @@ private struct RegularRootView: View {
     @State private var selectedSection: AppSection = .outpatients
     @State private var selectedPatient: Patient?
     @State private var showSettings = false
-    @State private var showSchedule = false
 
-    // Count badges per section
+    // Count badges per patient section
     @Query private var allPatients: [Patient]
 
     private func count(for section: AppSection) -> Int {
@@ -322,12 +329,13 @@ private struct RegularRootView: View {
         case .theatre:     allPatients.filter { $0.setting == .theatre }.count
         case .endoscopy:   allPatients.filter { $0.setting == .endoscopy }.count
         case .outpatients: allPatients.filter { $0.setting == .outpatient }.count
+        case .schedule:    0
         }
     }
 
     var body: some View {
         HStack(spacing: 0) {
-            // Column 1: Icon sidebar — wider for readable labels
+            // Column 1: Icon sidebar
             iconSidebar
                 .frame(width: 90)
                 .ignoresSafeArea(edges: .vertical)
@@ -337,37 +345,39 @@ private struct RegularRootView: View {
                 .frame(width: 0.5)
                 .ignoresSafeArea(edges: .vertical)
 
-            // Column 2: Patient list for selected section
-            NavigationStack {
-                SectionPatientListView(section: selectedSection,
-                                       selectedPatient: $selectedPatient)
-            }
-            .frame(width: 296)
-
-            Rectangle()
-                .fill(Color(.separator))
-                .frame(width: 0.5)
-                .ignoresSafeArea(edges: .vertical)
-
-            // Column 3: Clinical workspace — fills all remaining width
-            if let patient = selectedPatient {
-                PatientDetailPadView(patient: patient)
+            if selectedSection == .schedule {
+                // Schedule fills the full remaining width (columns 2+3 merged)
+                NavigationStack { ScheduleView() }
+                    .frame(maxWidth: .infinity)
             } else {
-                ContentUnavailableView(
-                    "Select a Patient",
-                    systemImage: "person.text.rectangle",
-                    description: Text("Choose a patient from the list to view their record.")
-                )
-                .background(AMColor.bg)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // Column 2: Patient list
+                NavigationStack {
+                    SectionPatientListView(section: selectedSection,
+                                           selectedPatient: $selectedPatient)
+                }
+                .frame(width: 296)
+
+                Rectangle()
+                    .fill(Color(.separator))
+                    .frame(width: 0.5)
+                    .ignoresSafeArea(edges: .vertical)
+
+                // Column 3: Clinical workspace
+                if let patient = selectedPatient {
+                    PatientDetailPadView(patient: patient)
+                } else {
+                    ContentUnavailableView(
+                        "Select a Patient",
+                        systemImage: "person.text.rectangle",
+                        description: Text("Choose a patient from the list to view their record.")
+                    )
+                    .background(AMColor.bg)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
         }
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: $showSettings) { SettingsView() }
-        .sheet(isPresented: $showSchedule) {
-            NavigationStack { ScheduleView() }
-                .presentationDetents([.large])
-        }
     }
 
     // MARK: Sidebar
@@ -391,36 +401,13 @@ private struct RegularRootView: View {
                 .fill(AMColor.sidebarGroup.opacity(0.4))
                 .frame(height: 0.5)
 
-            // Clinical section buttons
+            // Section buttons (patient sections + schedule)
             VStack(spacing: 2) {
                 ForEach(AppSection.allCases) { section in
                     iconSidebarButton(section, count: count(for: section))
                 }
             }
-            .padding(.top, 10)
-
-            // Schedule divider + button
-            Rectangle()
-                .fill(AMColor.sidebarGroup.opacity(0.3))
-                .frame(height: 0.5)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-
-            Button { showSchedule = true } label: {
-                VStack(spacing: 4) {
-                    Image(systemName: "calendar")
-                        .font(.system(size: 22, weight: .regular))
-                    Text("Schedule")
-                        .font(.system(size: 10, weight: .medium))
-                        .lineLimit(1)
-                }
-                .foregroundStyle(AMColor.sidebarText)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color.clear, in: RoundedRectangle(cornerRadius: 8))
-            }
-            .buttonStyle(.plain)
-            .padding(.horizontal, 6)
+            .padding(.vertical, 10)
 
             Spacer()
 
