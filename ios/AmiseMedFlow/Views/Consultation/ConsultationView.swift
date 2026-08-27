@@ -422,12 +422,12 @@ enum ConsultTab: String, CaseIterable {
 
 struct ConsultationView: View {
     @Bindable var patient: Patient
-    var startingTab: ConsultTab = .cc
+    var startingTab: ConsultTab = .hpi
     var embeddedInNav: Bool = false
     @Environment(\.modelContext) private var context
     @StateObject private var ai = AIService()
 
-    @State private var activeTab: ConsultTab = .cc
+    @State private var activeTab: ConsultTab = .hpi
     @State private var examMode: ExamMode = .short
     @State private var showAddAllergy = false
     @State private var showAddMedication = false

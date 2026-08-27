@@ -1010,17 +1010,61 @@ struct PatientDetailView: View {
     @State private var selectedTab: PatientTab = .overview
     @State private var showDeleteConfirm = false
 
+    // MARK: Quick-action strip — top of Overview tab
+
+    private var quickActionsStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                quickAction("Consultation", icon: "cross.case.fill", color: .teal,
+                            destination: AnyView(ConsultationView(patient: patient, startingTab: .hpi)))
+                quickAction("Assessment", icon: "brain.head.profile", color: .indigo,
+                            destination: AnyView(AssessmentView(patient: patient)))
+                quickAction("Prescriptions", icon: "pills.fill", color: .purple,
+                            destination: AnyView(PrescriptionView(patient: patient)))
+                quickAction("Documents", icon: "doc.badge.plus", color: .blue,
+                            destination: AnyView(DocumentsView(patient: patient)))
+                quickAction("Billing", icon: "dollarsign.circle.fill", color: .green,
+                            destination: AnyView(BillingView(patient: patient)))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+        }
+        .background(Color(.secondarySystemBackground))
+    }
+
+    @ViewBuilder
+    private func quickAction(_ label: String, icon: String, color: Color, destination: AnyView) -> some View {
+        NavigationLink { destination } label: {
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(color)
+                    .frame(width: 44, height: 44)
+                    .background(color.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+                Text(label)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
     var body: some View {
         NavigationStack {
             TabView(selection: $selectedTab) {
-                ScrollView {
-                    PatientOverviewContent(patient: patient)
-                        .padding()
+                VStack(spacing: 0) {
+                    quickActionsStrip
+                    Divider()
+                    ScrollView {
+                        PatientOverviewContent(patient: patient)
+                            .padding()
+                    }
                 }
                 .tag(PatientTab.overview)
                 .tabItem { Label("Overview", systemImage: "person.text.rectangle") }
 
-                NavigationStack { ClinicalHubView(patient: patient) }
+                ClinicalHubView(patient: patient)
                     .tag(PatientTab.clinical)
                     .tabItem { Label("Clinical", systemImage: "stethoscope") }
 
