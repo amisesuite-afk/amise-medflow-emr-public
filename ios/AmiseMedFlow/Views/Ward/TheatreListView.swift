@@ -190,7 +190,7 @@ struct TheatreRow: View {
 
                 // Row 3: demographics + WHO badge
                 HStack(spacing: 6) {
-                    Text("\(patient.sex.rawValue.prefix(1).uppercased()), \(patient.ageYears)y")
+                    Text(patient.ageDisplay.map { "\(patient.sex.rawValue.prefix(1).uppercased()), \($0)" } ?? String(patient.sex.rawValue.prefix(1).uppercased()))
                         .font(.caption2).foregroundStyle(.secondary)
 
                     if let anaes = plan?.anaesthesiaType, !anaes.isEmpty {

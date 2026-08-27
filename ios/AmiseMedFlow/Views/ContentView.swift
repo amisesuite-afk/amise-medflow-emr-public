@@ -311,12 +311,25 @@ private struct RegularRootView: View {
     @State private var selectedSection: AppSection = .outpatients
     @State private var selectedPatient: Patient?
     @State private var showSettings = false
+    @State private var showSchedule = false
+
+    // Count badges per section
+    @Query private var allPatients: [Patient]
+
+    private func count(for section: AppSection) -> Int {
+        switch section {
+        case .wardRounds:  allPatients.filter { $0.setting == .inpatient || $0.setting == .emergency }.count
+        case .theatre:     allPatients.filter { $0.setting == .theatre }.count
+        case .endoscopy:   allPatients.filter { $0.setting == .endoscopy }.count
+        case .outpatients: allPatients.filter { $0.setting == .outpatient }.count
+        }
+    }
 
     var body: some View {
         HStack(spacing: 0) {
-            // Column 1: Icon-only workflow nav
+            // Column 1: Icon sidebar — wider for readable labels
             iconSidebar
-                .frame(width: 76)
+                .frame(width: 90)
                 .ignoresSafeArea(edges: .vertical)
 
             Rectangle()
@@ -324,12 +337,12 @@ private struct RegularRootView: View {
                 .frame(width: 0.5)
                 .ignoresSafeArea(edges: .vertical)
 
-            // Column 2: Compact patient list
+            // Column 2: Patient list for selected section
             NavigationStack {
                 SectionPatientListView(section: selectedSection,
                                        selectedPatient: $selectedPatient)
             }
-            .frame(width: 280)
+            .frame(width: 296)
 
             Rectangle()
                 .fill(Color(.separator))
@@ -351,21 +364,25 @@ private struct RegularRootView: View {
         }
         .ignoresSafeArea(.keyboard)
         .sheet(isPresented: $showSettings) { SettingsView() }
+        .sheet(isPresented: $showSchedule) {
+            NavigationStack { ScheduleView() }
+                .presentationDetents([.large])
+        }
     }
 
-    // MARK: Icon-only sidebar
+    // MARK: Sidebar
 
     private var iconSidebar: some View {
         VStack(spacing: 0) {
-            // Compact app mark
+            // App mark
             VStack(spacing: 3) {
                 Image(systemName: "cross.case.fill")
-                    .font(.system(size: 20, weight: .semibold))
+                    .font(.system(size: 22, weight: .semibold))
                     .foregroundStyle(AMColor.accent)
                 Text("AMF")
-                    .font(.system(size: 8, weight: .heavy))
+                    .font(.system(size: 9, weight: .heavy))
                     .foregroundStyle(AMColor.sidebarText)
-                    .tracking(1)
+                    .tracking(1.5)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 18)
@@ -374,12 +391,36 @@ private struct RegularRootView: View {
                 .fill(AMColor.sidebarGroup.opacity(0.4))
                 .frame(height: 0.5)
 
+            // Clinical section buttons
             VStack(spacing: 2) {
                 ForEach(AppSection.allCases) { section in
-                    iconSidebarButton(section)
+                    iconSidebarButton(section, count: count(for: section))
                 }
             }
-            .padding(.vertical, 10)
+            .padding(.top, 10)
+
+            // Schedule divider + button
+            Rectangle()
+                .fill(AMColor.sidebarGroup.opacity(0.3))
+                .frame(height: 0.5)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+
+            Button { showSchedule = true } label: {
+                VStack(spacing: 4) {
+                    Image(systemName: "calendar")
+                        .font(.system(size: 22, weight: .regular))
+                    Text("Schedule")
+                        .font(.system(size: 10, weight: .medium))
+                        .lineLimit(1)
+                }
+                .foregroundStyle(AMColor.sidebarText)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.clear, in: RoundedRectangle(cornerRadius: 8))
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 6)
 
             Spacer()
 
@@ -388,11 +429,11 @@ private struct RegularRootView: View {
                 .frame(height: 0.5)
 
             Button { showSettings = true } label: {
-                VStack(spacing: 3) {
+                VStack(spacing: 4) {
                     Image(systemName: "gearshape")
-                        .font(.system(size: 19))
+                        .font(.system(size: 21))
                     Text("Settings")
-                        .font(.system(size: 8, weight: .medium))
+                        .font(.system(size: 10, weight: .medium))
                 }
                 .foregroundStyle(AMColor.sidebarText)
                 .frame(maxWidth: .infinity)
@@ -404,26 +445,39 @@ private struct RegularRootView: View {
     }
 
     @ViewBuilder
-    private func iconSidebarButton(_ section: AppSection) -> some View {
+    private func iconSidebarButton(_ section: AppSection, count: Int) -> some View {
         let isSel = selectedSection == section
         Button { selectedSection = section } label: {
-            VStack(spacing: 4) {
-                Image(systemName: section.icon)
-                    .font(.system(size: 20, weight: isSel ? .semibold : .regular))
-                Text(section.shortLabel)
-                    .font(.system(size: 8, weight: .medium))
-                    .lineLimit(1)
-            }
-            .foregroundStyle(isSel ? AMColor.sidebarActive : AMColor.sidebarText)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 11)
-            .background(isSel ? AMColor.accent.opacity(0.15) : Color.clear,
-                        in: RoundedRectangle(cornerRadius: 8))
-            .overlay(alignment: .leading) {
-                if isSel {
-                    Capsule()
-                        .fill(AMColor.accent)
-                        .frame(width: 3, height: 28)
+            ZStack(alignment: .topTrailing) {
+                VStack(spacing: 4) {
+                    Image(systemName: section.icon)
+                        .font(.system(size: 22, weight: isSel ? .semibold : .regular))
+                    Text(section.shortLabel)
+                        .font(.system(size: 10, weight: .medium))
+                        .lineLimit(1)
+                }
+                .foregroundStyle(isSel ? AMColor.sidebarActive : AMColor.sidebarText)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(isSel ? AMColor.accent.opacity(0.15) : Color.clear,
+                            in: RoundedRectangle(cornerRadius: 8))
+                .overlay(alignment: .leading) {
+                    if isSel {
+                        Capsule()
+                            .fill(AMColor.accent)
+                            .frame(width: 3, height: 28)
+                    }
+                }
+
+                // Patient count badge
+                if count > 0 {
+                    Text("\(count)")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(isSel ? AMColor.accent : Color.secondary.opacity(0.55), in: Capsule())
+                        .offset(x: -6, y: 6)
                 }
             }
         }

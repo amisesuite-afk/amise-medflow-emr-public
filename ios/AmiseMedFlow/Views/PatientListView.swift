@@ -141,8 +141,8 @@ struct PatientRow: View {
 
                 // Row 2: demographics · location pill · time
                 HStack(spacing: 4) {
-                    if patient.ageYears > 0 {
-                        Text("\(patient.sex.rawValue.prefix(1).uppercased()), \(patient.ageYears)y")
+                    if let age = patient.ageDisplay {
+                        Text("\(patient.sex.rawValue.prefix(1).uppercased()), \(age)")
                             .font(.caption2).foregroundStyle(.secondary)
                     } else {
                         Text(patient.sex.rawValue.prefix(1).uppercased())

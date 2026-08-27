@@ -191,7 +191,7 @@ struct EndoscopyRow: View {
                 }
 
                 HStack(spacing: 4) {
-                    Text("\(patient.sex.rawValue.prefix(1).uppercased()), \(patient.ageYears)y")
+                    Text(patient.ageDisplay.map { "\(patient.sex.rawValue.prefix(1).uppercased()), \($0)" } ?? String(patient.sex.rawValue.prefix(1).uppercased()))
                         .font(.caption2).foregroundStyle(.secondary)
                     if let dx = patient.workingDiagnosis {
                         Text("·").font(.caption2).foregroundStyle(.tertiary)

@@ -293,8 +293,8 @@ private struct ScheduleRow: View {
                         .foregroundStyle(.secondary)
                 }
                 HStack(spacing: 6) {
-                    if patient.ageYears > 0 {
-                        Text("\(patient.sex.rawValue.prefix(1)), \(patient.ageYears)y")
+                    if let age = patient.ageDisplay {
+                        Text("\(patient.sex.rawValue.prefix(1)), \(age)")
                             .font(.caption2)
                             .foregroundStyle(.tertiary)
                     }

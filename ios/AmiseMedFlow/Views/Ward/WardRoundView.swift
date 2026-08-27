@@ -228,7 +228,7 @@ struct WardRoundView: View {
             lines.append(String(repeating: "─", count: 48))
             for patient in patients {
                 let reviewed = reviewedIDs.contains(patient.id) ? " ✓" : ""
-                var header = "\(patient.fullName) · \(patient.sex.rawValue) · \(patient.ageYears)y"
+                var header = "\(patient.fullName) · \(patient.sex.rawValue)" + (patient.ageDisplay.map { " · \($0)" } ?? "")
                 if let bed = patient.bedNumber { header += " · Bed \(bed)" }
                 header += " [\(patient.acuity.label.uppercased())]"
                 lines.append(header + reviewed)

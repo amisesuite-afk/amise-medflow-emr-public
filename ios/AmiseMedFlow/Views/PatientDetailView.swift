@@ -121,7 +121,7 @@ struct PatientDetailPadView: View {
                     Text(patient.fullName).font(.headline)
                     HStack(spacing: 6) {
                         AcuityPip(acuity: patient.acuity)
-                        Text("\(patient.sex.rawValue) · \(patient.ageYears)y · \(patient.setting.rawValue)")
+                        Text([patient.sex.rawValue, patient.ageDisplay, patient.setting.rawValue].compactMap { $0 }.joined(separator: " · "))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         if patient.hasCriticalAllergy {
@@ -388,7 +388,7 @@ struct PatientOverviewContent: View {
                         .font(.system(size: 20, weight: .heavy))
                         .foregroundStyle(AMColor.ink)
                     HStack(spacing: 6) {
-                        Text("\(patient.sex.rawValue), \(patient.ageYears)y")
+                        Text(patient.ageDisplay.map { "\(patient.sex.rawValue), \($0)" } ?? patient.sex.rawValue)
                         Text("·")
                         Text(patient.location.rawValue)
                         if let mrn = patient.mrn, !mrn.isEmpty {
@@ -765,7 +765,7 @@ struct PatientDemographicsForm: View {
                     set: { patient.dateOfBirth = $0; touch() }
                 ), displayedComponents: .date)
                 .labelsHidden()
-                LabeledContent("Age") { Text("\(patient.ageYears) y") }
+                LabeledContent("Age") { Text(patient.ageDisplay ?? "—") }
             }
             TextField("MRN (optional)", text: Binding(
                 get: { patient.mrn ?? "" },

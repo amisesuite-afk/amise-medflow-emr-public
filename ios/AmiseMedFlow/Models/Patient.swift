@@ -116,6 +116,14 @@ final class Patient {
         return Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 0
     }
 
+    // nil when DOB is missing or implausible; use this in all UI labels
+    var ageDisplay: String? {
+        guard let dob = dateOfBirth else { return nil }
+        let years = Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 0
+        guard years >= 0, years < 150 else { return nil }
+        return "\(years)y"
+    }
+
     var postOpDays: Int? {
         guard let op = operationDate, op < .now else { return nil }
         return Calendar.current.dateComponents([.day], from: op, to: .now).day
