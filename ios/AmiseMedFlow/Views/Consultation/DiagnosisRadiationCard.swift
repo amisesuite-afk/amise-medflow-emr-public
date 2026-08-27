@@ -102,18 +102,19 @@ struct DiagnosisRadiationCard: View {
                                 Text(inv.rationale).font(.system(size: 10)).foregroundStyle(.secondary)
                             }
                             Spacer()
-                            if addedNames.contains(inv.name) {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 16))
-                                    .foregroundStyle(.green)
-                            } else {
-                                Button("Add") {
+                            Button {
+                                if !addedNames.contains(inv.name) {
                                     addedNames.insert(inv.name)
                                     onAddInvestigation(inv)
                                 }
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(.teal)
+                            } label: {
+                                Image(systemName: addedNames.contains(inv.name)
+                                      ? "checkmark.square.fill" : "square")
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(addedNames.contains(inv.name) ? .green : .secondary)
                             }
+                            .buttonStyle(.plain)
+                            .disabled(addedNames.contains(inv.name))
                         }
                     }
                 }
