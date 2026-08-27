@@ -308,7 +308,7 @@ private struct CompactRootView: View {
 // MARK: - iPad: custom 3-column HStack layout
 
 private struct RegularRootView: View {
-    @State private var selectedSection: AppSection = .wardRounds
+    @State private var selectedSection: AppSection = .outpatients
     @State private var selectedPatient: Patient?
     @State private var showSettings = false
 
