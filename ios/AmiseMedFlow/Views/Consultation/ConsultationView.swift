@@ -498,6 +498,7 @@ struct ConsultationView: View {
     @State private var pshxChipSelections: Set<String> = []
     @State private var pshxBypassConfirmed = false
     @State private var fhChipSelections: Set<String> = []
+    @State private var selectedSocialChips: Set<String> = []
     // PMH — medication history
     @State private var medQuery = ""
     @State private var medSuggestions: [SurgicalDrug] = []
@@ -1696,14 +1697,26 @@ struct ConsultationView: View {
                 ChipFlow(hSpacing: 8, vSpacing: 8) {
                     ForEach(["Non-smoker", "Ex-smoker", "Light smoker (<10/day)",
                              "Moderate smoker (10–20/day)", "Heavy smoker (>20/day)"], id: \.self) { chip in
+                        let key = "Smoking:\(chip)"
+                        let done = selectedSocialChips.contains(key)
                         Button {
-                            appendSocialChip("Smoking: \(chip)")
+                            if !done {
+                                selectedSocialChips.insert(key)
+                                appendSocialChip("Smoking: \(chip)")
+                            }
                         } label: {
-                            Text(chip)
-                                .font(.system(size: 12))
-                                .padding(.horizontal, 10).padding(.vertical, 5)
-                                .background(AMColor.accentLt, in: Capsule())
-                                .foregroundStyle(AMColor.accent)
+                            HStack(spacing: 4) {
+                                if done {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 11))
+                                        .foregroundStyle(.green)
+                                }
+                                Text(chip)
+                                    .font(.system(size: 12))
+                            }
+                            .padding(.horizontal, 10).padding(.vertical, 5)
+                            .background(AMColor.accentLt, in: Capsule())
+                            .foregroundStyle(done ? .green : AMColor.accent)
                         }
                         .buttonStyle(.plain)
                     }
@@ -1718,14 +1731,26 @@ struct ConsultationView: View {
                 ChipFlow(hSpacing: 8, vSpacing: 8) {
                     ForEach(["Non-drinker", "Social drinker (<14 units/wk)",
                              "Moderate (14–21 units/wk)", "Heavy (>21 units/wk)"], id: \.self) { chip in
+                        let key = "Alcohol:\(chip)"
+                        let done = selectedSocialChips.contains(key)
                         Button {
-                            appendSocialChip("Alcohol: \(chip)")
+                            if !done {
+                                selectedSocialChips.insert(key)
+                                appendSocialChip("Alcohol: \(chip)")
+                            }
                         } label: {
-                            Text(chip)
-                                .font(.system(size: 12))
-                                .padding(.horizontal, 10).padding(.vertical, 5)
-                                .background(AMColor.accentLt, in: Capsule())
-                                .foregroundStyle(AMColor.accent)
+                            HStack(spacing: 4) {
+                                if done {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 11))
+                                        .foregroundStyle(.green)
+                                }
+                                Text(chip)
+                                    .font(.system(size: 12))
+                            }
+                            .padding(.horizontal, 10).padding(.vertical, 5)
+                            .background(AMColor.accentLt, in: Capsule())
+                            .foregroundStyle(done ? .green : AMColor.accent)
                         }
                         .buttonStyle(.plain)
                     }
@@ -1741,14 +1766,25 @@ struct ConsultationView: View {
                     ForEach(["Lives alone", "Lives with partner", "Lives with family", "Care home resident",
                              "Retired", "Sedentary / desk work", "Manual labour", "Healthcare worker",
                              "Physically active (>150 min/wk)", "Sedentary lifestyle"], id: \.self) { chip in
+                        let done = selectedSocialChips.contains(chip)
                         Button {
-                            appendSocialChip(chip)
+                            if !done {
+                                selectedSocialChips.insert(chip)
+                                appendSocialChip(chip)
+                            }
                         } label: {
-                            Text(chip)
-                                .font(.system(size: 12))
-                                .padding(.horizontal, 10).padding(.vertical, 5)
-                                .background(AMColor.accentLt, in: Capsule())
-                                .foregroundStyle(AMColor.accent)
+                            HStack(spacing: 4) {
+                                if done {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 11))
+                                        .foregroundStyle(.green)
+                                }
+                                Text(chip)
+                                    .font(.system(size: 12))
+                            }
+                            .padding(.horizontal, 10).padding(.vertical, 5)
+                            .background(AMColor.accentLt, in: Capsule())
+                            .foregroundStyle(done ? .green : AMColor.accent)
                         }
                         .buttonStyle(.plain)
                     }
