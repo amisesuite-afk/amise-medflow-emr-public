@@ -173,6 +173,19 @@ struct DiagnosisRadiationCard: View {
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
+
+            // Guideline citation
+            if let guideline = radiation.guidelineReference {
+                HStack(spacing: 5) {
+                    Image(systemName: "books.vertical")
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary.opacity(0.6))
+                    Text(guideline)
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundStyle(.secondary.opacity(0.6))
+                }
+                .padding(.top, 2)
+            }
         }
         .padding(.vertical, 8)
     }
