@@ -412,7 +412,7 @@ private struct CalTimeline: View {
                                     HStack(spacing: 0) {
                                         Circle().fill(Color.red).frame(width: 8, height: 8)
                                         Rectangle().fill(Color.red)
-                                            .frame(width: colW - 8, minHeight: 1.5, maxHeight: 1.5)
+                                            .frame(width: colW - 8, height: 1.5)
                                     }
                                     .offset(x: CGFloat(ti) * colW, y: nowY - 4)
                                 }
