@@ -1,390 +1,513 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Constants
+
+private let kStartHour = 7
+private let kEndHour   = 21
+private let kHourH: CGFloat   = 60
+private let kGutterW: CGFloat = 48
+private var kTimelineH: CGFloat { CGFloat(kEndHour - kStartHour) * kHourH }
+
+// MARK: - Unified entry
+
+private struct CalEntry: Identifiable {
+    let id: String
+    let title: String
+    let subtitle: String?
+    let start: Date
+    let end: Date
+    let label: String
+    let color: Color
+    var patient: Patient?
+}
+
+private enum CalMode: String, CaseIterable {
+    case day   = "Day"
+    case week  = "Week"
+    case month = "Month"
+}
+
+// MARK: - ScheduleView
+
 struct ScheduleView: View {
     @Query(sort: \Patient.createdAt, order: .reverse) private var allPatients: [Patient]
     @StateObject private var calSvc = CalendarService()
+
+    @State private var mode: CalMode = .week
+    @State private var anchor: Date  = Calendar.current.startOfDay(for: .now)
     @State private var selectedPatient: Patient?
     @State private var showAdd = false
 
-    private let calendar = Calendar.current
+    private let cal = Calendar.current
 
-    private var scheduledPatients: [Patient] {
-        allPatients
-            .filter { ($0.setting == .theatre || $0.setting == .endoscopy) && $0.operationDate != nil }
-            .sorted {
-                switch ($0.operationDate, $1.operationDate) {
-                case let (a?, b?): return a < b
-                case (_?, nil):    return true
-                case (nil, _?):    return false
-                default:           return $0.acuity < $1.acuity
-                }
+    private var weekStart: Date {
+        // Start week on Sunday
+        var comps = cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: anchor)
+        comps.weekday = 1
+        return cal.date(from: comps) ?? anchor
+    }
+
+    private var allEntries: [CalEntry] {
+        var out: [CalEntry] = []
+        for p in allPatients where (p.setting == .theatre || p.setting == .endoscopy) {
+            guard let s = p.operationDate else { continue }
+            let c: Color = p.setting == .endoscopy ? .cyan : .purple
+            let lb = p.setting == .endoscopy ? "ENDO" : "THTR"
+            out.append(CalEntry(id: "L\(p.id.uuidString)", title: p.fullName,
+                subtitle: p.appointmentType ?? p.workingDiagnosis ?? p.chiefComplaint,
+                start: s, end: s.addingTimeInterval(7200), label: lb, color: c, patient: p))
+        }
+        for e in calSvc.events {
+            guard let s = e.startDate else { continue }
+            let c: Color
+            switch e.type {
+            case "theatre":   c = .purple
+            case "endoscopy": c = .cyan
+            case "clinic":    c = .blue
+            default:          c = Color(.systemGray2)
             }
+            out.append(CalEntry(id: "G\(e.id)", title: e.summary, subtitle: nil,
+                start: s, end: e.endDate ?? s.addingTimeInterval(3600), label: e.typeLabel, color: c))
+        }
+        return out.sorted { $0.start < $1.start }
     }
 
-    private var groupedByDate: [(date: Date, patients: [Patient])] {
-        let grouped = Dictionary(grouping: scheduledPatients) { p in
-            calendar.startOfDay(for: p.operationDate!)
-        }
-        return grouped.keys.sorted().map { date in
-            (date: date, patients: grouped[date]!.sorted { ($0.operationDate ?? .distantFuture) < ($1.operationDate ?? .distantFuture) })
+    private var periodLabel: String {
+        switch mode {
+        case .day:
+            return anchor.formatted(.dateTime.weekday(.wide).month(.wide).day().year())
+        case .week:
+            let end = cal.date(byAdding: .day, value: 6, to: weekStart)!
+            return "\(weekStart.formatted(.dateTime.month(.abbreviated).day())) – \(end.formatted(.dateTime.month(.abbreviated).day().year()))"
+        case .month:
+            return anchor.formatted(.dateTime.month(.wide).year())
         }
     }
 
-    private var todayPatients: [Patient] {
-        scheduledPatients.filter { calendar.isDateInToday($0.operationDate!) }
+    private func step(_ n: Int) {
+        let comp: Calendar.Component = mode == .day ? .day : mode == .week ? .weekOfYear : .month
+        anchor = cal.date(byAdding: comp, value: n, to: anchor) ?? anchor
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if scheduledPatients.isEmpty {
-                    ContentUnavailableView(
-                        "No scheduled cases",
-                        systemImage: "calendar.badge.plus",
-                        description: Text("Add a theatre or endoscopy patient and set an operation date.")
-                    )
-                } else {
-                    scheduleList
+        VStack(spacing: 0) {
+            // ── Header ─────────────────────────────────────────────
+            HStack(spacing: 12) {
+                Picker("", selection: $mode) {
+                    ForEach(CalMode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
                 }
-            }
-            .navigationTitle("Schedule")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    HStack {
-                        if !scheduledPatients.isEmpty {
-                            ShareLink(item: scheduleExportText,
-                                      subject: Text("Operating Schedule")) {
-                                Image(systemName: "square.and.arrow.up")
-                            }
-                        }
-                        Button {
-                            Task { await calSvc.sync() }
-                        } label: {
-                            if calSvc.isSyncing {
-                                ProgressView().controlSize(.small)
-                            } else {
-                                Image(systemName: "arrow.clockwise")
-                            }
-                        }
-                        Button { showAdd = true } label: { Image(systemName: "plus") }
-                    }
-                }
-            }
-            .task { await calSvc.fetch() }
-            .sheet(isPresented: $showAdd) {
-                AddPatientView(initialSetting: .theatre)
-            }
-            .sheet(item: $selectedPatient) { p in
-                PatientDetailView(patient: p)
-            }
-        }
-    }
+                .pickerStyle(.segmented)
+                .frame(width: 210)
 
-    private var scheduleList: some View {
-        List {
-            // ── Google Calendar events ──────────────────────────────────────
-            if calSvc.isLoading {
-                Section {
-                    HStack {
-                        ProgressView().controlSize(.small)
-                        Text("Loading Google Calendar…")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            } else if let err = calSvc.error {
-                Section {
-                    Label(err, systemImage: "exclamationmark.triangle")
-                        .font(.caption)
-                        .foregroundStyle(.orange)
-                }
-            } else if !calSvc.events.isEmpty {
-                let gcalGroups = googleCalendarGroups(calSvc.events)
-                ForEach(gcalGroups, id: \.date) { group in
-                    Section {
-                        ForEach(group.events) { event in
-                            GoogleCalendarRow(event: event)
-                        }
-                    } header: {
-                        HStack {
-                            Image(systemName: "calendar.badge.checkmark")
-                                .foregroundStyle(.green)
-                            Text(calendarSectionTitle(for: group.date))
-                            Spacer()
-                            if let fetched = calSvc.fetchedAt {
-                                Text("Synced \(fetched, style: .relative) ago")
-                                    .font(.caption2)
-                                    .foregroundStyle(.tertiary)
-                            }
-                        }
-                    }
-                }
-            }
+                Spacer()
 
-            // ── Local theatre / endoscopy schedule ─────────────────────────
-            if !scheduledPatients.isEmpty {
-                if !todayPatients.isEmpty {
-                    Section {
-                        ForEach(todayPatients) { patient in
-                            Button { selectedPatient = patient } label: {
-                                ScheduleRow(patient: patient)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    } header: {
-                        Label("Today — \(Date.now.formatted(date: .abbreviated, time: .omitted))", systemImage: "calendar")
+                HStack(spacing: 2) {
+                    Button { step(-1) } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 12, weight: .semibold))
+                            .frame(width: 32, height: 32)
+                    }
+                    .buttonStyle(.plain)
+
+                    Button { anchor = cal.startOfDay(for: .now) } label: {
+                        Text("Today")
+                            .font(.system(size: 12, weight: .semibold))
+                            .padding(.horizontal, 12).padding(.vertical, 5)
+                            .background(Color.teal.opacity(0.12), in: Capsule())
                             .foregroundStyle(.teal)
                     }
+                    .buttonStyle(.plain)
+
+                    Button { step(1) } label: {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .frame(width: 32, height: 32)
+                    }
+                    .buttonStyle(.plain)
                 }
-                ForEach(groupedByDate, id: \.date) { group in
-                    if !calendar.isDateInToday(group.date) {
-                        Section {
-                            ForEach(group.patients) { patient in
-                                Button { selectedPatient = patient } label: {
-                                    ScheduleRow(patient: patient)
-                                }
-                                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, 16).padding(.vertical, 10)
+
+            Text(periodLabel)
+                .font(.system(size: 12))
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 16).padding(.bottom, 8)
+
+            if let err = calSvc.error {
+                Label(err, systemImage: "exclamationmark.triangle")
+                    .font(.caption).foregroundStyle(.orange)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16).padding(.bottom, 4)
+            }
+
+            Divider()
+
+            // ── Calendar body ───────────────────────────────────────
+            switch mode {
+            case .day:
+                DayCalView(date: anchor,
+                    entries: allEntries.filter { cal.isDate($0.start, inSameDayAs: anchor) }
+                ) { selectedPatient = $0 }
+
+            case .week:
+                WeekCalView(weekStart: weekStart, entries: allEntries) { selectedPatient = $0 }
+
+            case .month:
+                MonthCalView(monthDate: anchor, entries: allEntries) { d in
+                    anchor = d; mode = .day
+                }
+            }
+        }
+        .navigationTitle("Schedule")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                HStack {
+                    Button { Task { await calSvc.sync() } } label: {
+                        if calSvc.isSyncing { ProgressView().controlSize(.small) }
+                        else { Image(systemName: "arrow.clockwise") }
+                    }
+                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                }
+            }
+        }
+        .task { await calSvc.fetch() }
+        .sheet(isPresented: $showAdd) { AddPatientView(initialSetting: .theatre) }
+        .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
+    }
+}
+
+// MARK: - Month view
+
+private struct MonthCalView: View {
+    let monthDate: Date
+    let entries: [CalEntry]
+    let onSelectDay: (Date) -> Void
+
+    private let cal = Calendar.current
+    private let dayLetters = ["S", "M", "T", "W", "T", "F", "S"]
+
+    private var monthStart: Date {
+        cal.date(from: cal.dateComponents([.year, .month], from: monthDate))!
+    }
+    private var daysInMonth: Int { cal.range(of: .day, in: .month, for: monthDate)!.count }
+    private var leadingBlanks: Int { cal.component(.weekday, from: monthStart) - 1 }
+
+    private var cells: [Date?] {
+        var out: [Date?] = Array(repeating: nil, count: leadingBlanks)
+        for d in 0..<daysInMonth {
+            out.append(cal.date(byAdding: .day, value: d, to: monthStart))
+        }
+        while out.count % 7 != 0 { out.append(nil) }
+        return out
+    }
+
+    private func dayEntries(_ date: Date) -> [CalEntry] {
+        entries.filter { cal.isDate($0.start, inSameDayAs: date) }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Weekday labels
+            HStack(spacing: 0) {
+                ForEach(dayLetters.indices, id: \.self) { i in
+                    Text(dayLetters[i])
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.vertical, 8)
+            Divider()
+            let rows = cells.count / 7
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(0..<rows, id: \.self) { row in
+                        HStack(alignment: .top, spacing: 0) {
+                            ForEach(0..<7, id: \.self) { col in
+                                let idx = row * 7 + col
+                                let cell: Date? = idx < cells.count ? cells[idx] : nil
+                                MonthDayCell(
+                                    date: cell,
+                                    entries: cell.map { dayEntries($0) } ?? [],
+                                    onTap: { if let d = cell { onSelectDay(d) } }
+                                )
                             }
-                        } header: {
-                            Text(sectionTitle(for: group.date))
                         }
+                        if row < rows - 1 { Divider() }
                     }
                 }
             }
         }
-    }
-
-    private func googleCalendarGroups(_ events: [GoogleCalendarEvent]) -> [(date: Date, events: [GoogleCalendarEvent])] {
-        let grouped = Dictionary(grouping: events) { e -> Date in
-            let d = e.startDate ?? Date.distantFuture
-            return calendar.startOfDay(for: d)
-        }
-        return grouped.keys.sorted().map { date in
-            (date: date, events: grouped[date]!.sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) })
-        }
-    }
-
-    private func calendarSectionTitle(for date: Date) -> String {
-        if calendar.isDateInToday(date)    { return "Today — \(date.formatted(date: .abbreviated, time: .omitted))" }
-        if calendar.isDateInTomorrow(date) { return "Tomorrow — \(date.formatted(date: .abbreviated, time: .omitted))" }
-        let weekday = date.formatted(.dateTime.weekday(.wide))
-        return "\(weekday) · \(date.formatted(date: .abbreviated, time: .omitted))"
-    }
-
-    private var scheduleExportText: String {
-        let now = Date.now.formatted(date: .abbreviated, time: .shortened)
-        var lines: [String] = []
-        lines.append("OPERATING SCHEDULE — \(now)")
-        lines.append("Amise Medical Services · Dr Dawit Daniel Kabiye MD DM")
-        lines.append(String(repeating: "═", count: 48))
-
-        for group in groupedByDate {
-            let dateLabel: String
-            if calendar.isDateInToday(group.date) {
-                dateLabel = "TODAY — \(group.date.formatted(date: .abbreviated, time: .omitted))"
-            } else if calendar.isDateInTomorrow(group.date) {
-                dateLabel = "TOMORROW — \(group.date.formatted(date: .abbreviated, time: .omitted))"
-            } else {
-                let weekday = group.date.formatted(.dateTime.weekday(.wide)).uppercased()
-                dateLabel = "\(weekday) — \(group.date.formatted(date: .abbreviated, time: .omitted))"
-            }
-            lines.append("")
-            lines.append(dateLabel)
-            lines.append(String(repeating: "─", count: 48))
-
-            for (i, patient) in group.patients.enumerated() {
-                let setting = patient.setting == .endoscopy ? "ENDO" : "THTR"
-                let timeStr: String
-                if let op = patient.operationDate {
-                    let comps = Calendar.current.dateComponents([.hour, .minute], from: op)
-                    if let h = comps.hour, let m = comps.minute, !(h == 0 && m == 0) {
-                        timeStr = op.formatted(date: .omitted, time: .shortened)
-                    } else {
-                        timeStr = "TBC"
-                    }
-                } else {
-                    timeStr = "TBC"
-                }
-                let proc = patient.appointmentType ?? patient.workingDiagnosis ?? patient.chiefComplaint ?? "TBD"
-                lines.append("\(i + 1). [\(setting)] \(timeStr) — \(patient.fullName), \(patient.sex.rawValue.prefix(1)) \(patient.ageYears)y")
-                lines.append("   \(proc)")
-                let allergies = patient.allergies
-                lines.append("   Allergies: \(allergies.isEmpty ? "NKDA" : allergies.map { "\($0.name) (\($0.severity))" }.joined(separator: ", "))")
-                if patient.hasAnticoagulation {
-                    lines.append("   ⚠ Anticoag/Antiplatelet: \(patient.activeAnticoagulants.map { $0.drug }.joined(separator: ", "))")
-                }
-            }
-        }
-
-        lines.append("")
-        lines.append(String(repeating: "═", count: 48))
-        lines.append("Total cases: \(scheduledPatients.count)")
-        lines.append("This schedule is a summary. Verify all details before proceeding.")
-        return lines.joined(separator: "\n")
-    }
-
-    private func sectionTitle(for date: Date) -> String {
-        if calendar.isDateInTomorrow(date) {
-            return "Tomorrow — \(date.formatted(date: .abbreviated, time: .omitted))"
-        }
-        let weekday = date.formatted(.dateTime.weekday(.wide))
-        return "\(weekday) · \(date.formatted(date: .abbreviated, time: .omitted))"
     }
 }
 
-// MARK: - Schedule row
+private struct MonthDayCell: View {
+    let date: Date?
+    let entries: [CalEntry]
+    let onTap: () -> Void
 
-private struct ScheduleRow: View {
-    let patient: Patient
-
-    private var timeString: String? {
-        guard let date = patient.operationDate else { return nil }
-        let comps = Calendar.current.dateComponents([.hour, .minute], from: date)
-        guard let h = comps.hour, let m = comps.minute, !(h == 0 && m == 0) else { return nil }
-        return date.formatted(date: .omitted, time: .shortened)
-    }
-
-    private var settingColor: Color {
-        patient.setting == .endoscopy ? .cyan : .purple
-    }
-
-    private var settingLabel: String {
-        patient.setting == .endoscopy ? "ENDO" : "THTR"
-    }
+    private let cal = Calendar.current
 
     var body: some View {
-        HStack(spacing: 12) {
-            VStack(spacing: 2) {
-                Text(settingLabel)
-                    .font(.system(size: 9, weight: .heavy))
-                    .foregroundStyle(settingColor)
-                if let t = timeString {
-                    Text(t)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(settingColor)
-                } else {
-                    Text("TBC")
-                        .font(.system(size: 9))
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .frame(width: 42)
-            .padding(.vertical, 6)
-            .background(settingColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 2) {
+                if let date {
+                    let isToday = cal.isDateInToday(date)
+                    ZStack {
+                        if isToday { Circle().fill(Color.teal).frame(width: 24, height: 24) }
+                        Text("\(cal.component(.day, from: date))")
+                            .font(.system(size: 13, weight: isToday ? .bold : .regular))
+                            .foregroundStyle(isToday ? .white : .primary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding(.top, 4)
 
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 6) {
-                    AcuityPip(acuity: patient.acuity)
-                    Text(patient.fullName)
-                        .font(.subheadline.weight(.semibold))
-                    Spacer()
-                    Text(patient.location.shortName)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-                if let proc = patient.appointmentType, !proc.isEmpty {
-                    Text(proc)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } else if let dx = patient.workingDiagnosis {
-                    Text(dx)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                HStack(spacing: 6) {
-                    if let age = patient.ageDisplay {
-                        Text("\(patient.sex.rawValue.prefix(1)), \(age)")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
-                    }
-                    if let plan = patient.operativePlans.first {
-                        let done = plan.whoCompletedCount
-                        let total = plan.whoTotalCount
-                        if done < total {
-                            Label("WHO \(done)/\(total)", systemImage: "checklist")
-                                .font(.caption2)
-                                .foregroundStyle(.orange)
-                        } else {
-                            Label("WHO complete", systemImage: "checkmark.circle")
-                                .font(.caption2)
-                                .foregroundStyle(.green)
+                    ForEach(entries.prefix(3), id: \.id) { e in
+                        HStack(spacing: 3) {
+                            Circle().fill(e.color).frame(width: 5, height: 5)
+                            Text(e.title).font(.system(size: 9)).lineLimit(1).foregroundStyle(.primary)
                         }
+                        .padding(.horizontal, 4).padding(.vertical, 1)
+                        .background(e.color.opacity(0.1), in: RoundedRectangle(cornerRadius: 3))
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    Spacer()
-                    if patient.hasCriticalAllergy {
-                        Label("Allergy", systemImage: "exclamationmark.shield.fill")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(.red)
-                            .labelStyle(.iconOnly)
-                    } else if !patient.allergies.isEmpty {
-                        Label("Allergy", systemImage: "exclamationmark.shield")
-                            .font(.system(size: 9, weight: .semibold))
-                            .foregroundStyle(.orange)
-                            .labelStyle(.iconOnly)
+                    if entries.count > 3 {
+                        Text("+\(entries.count - 3) more")
+                            .font(.system(size: 9)).foregroundStyle(.secondary)
+                            .padding(.horizontal, 4)
                     }
-                    if patient.hasAnticoagulation {
-                        Label("Anticoag", systemImage: "drop.fill")
-                            .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(.purple)
-                            .labelStyle(.iconOnly)
-                    }
+                    Spacer(minLength: 0)
                 }
             }
+            .frame(maxWidth: .infinity, minHeight: 82, alignment: .topLeading)
+            .background((date.map { cal.isDateInToday($0) } ?? false)
+                ? Color.teal.opacity(0.05) : Color.clear)
+            .overlay(Rectangle().fill(Color.secondary.opacity(0.1)).frame(width: 0.5), alignment: .trailing)
         }
-        .padding(.vertical, 2)
+        .buttonStyle(.plain)
     }
 }
 
-// MARK: - Google Calendar event row
+// MARK: - Week view
 
-private struct GoogleCalendarRow: View {
-    let event: GoogleCalendarEvent
+private struct WeekCalView: View {
+    let weekStart: Date
+    let entries: [CalEntry]
+    let onTapPatient: (Patient) -> Void
+    private let cal = Calendar.current
 
-    private var typeColor: Color {
-        switch event.type {
-        case "theatre":   return .purple
-        case "endoscopy": return .cyan
-        case "clinic":    return .blue
-        default:          return .secondary
-        }
-    }
-
-    private var timeString: String {
-        guard let start = event.startDate, let end = event.endDate else { return "All day" }
-        return "\(start.formatted(date: .omitted, time: .shortened)) – \(end.formatted(date: .omitted, time: .shortened))"
+    private var days: [Date] {
+        (0..<7).compactMap { cal.date(byAdding: .day, value: $0, to: weekStart) }
     }
 
     var body: some View {
-        HStack(spacing: 12) {
-            VStack(spacing: 2) {
-                Text(event.typeLabel)
-                    .font(.system(size: 9, weight: .heavy))
-                    .foregroundStyle(typeColor)
-                if let start = event.startDate {
-                    Text(start.formatted(date: .omitted, time: .shortened))
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundStyle(typeColor)
+        VStack(spacing: 0) {
+            // Day column headers
+            HStack(spacing: 0) {
+                Spacer().frame(width: kGutterW)
+                ForEach(days, id: \.self) { day in
+                    let isToday = cal.isDateInToday(day)
+                    VStack(spacing: 2) {
+                        Text(day.formatted(.dateTime.weekday(.short)))
+                            .font(.system(size: 11))
+                            .foregroundStyle(isToday ? .teal : .secondary)
+                        ZStack {
+                            if isToday { Circle().fill(Color.teal).frame(width: 26, height: 26) }
+                            Text("\(cal.component(.day, from: day))")
+                                .font(.system(size: 15, weight: isToday ? .bold : .regular))
+                                .foregroundStyle(isToday ? .white : .primary)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
                 }
             }
-            .frame(width: 42)
             .padding(.vertical, 6)
-            .background(typeColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 8))
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(event.summary)
-                    .font(.subheadline.weight(.medium))
-                Text(timeString)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Image(systemName: "calendar.badge.checkmark")
-                .font(.caption2)
-                .foregroundStyle(.green.opacity(0.7))
+            Divider()
+            CalTimeline(
+                days: days,
+                entries: entries.filter { e in days.contains { cal.isDate(e.start, inSameDayAs: $0) } },
+                onTapPatient: onTapPatient
+            )
         }
-        .padding(.vertical, 2)
+    }
+}
+
+// MARK: - Day view
+
+private struct DayCalView: View {
+    let date: Date
+    let entries: [CalEntry]
+    let onTapPatient: (Patient) -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            CalTimeline(days: [date], entries: entries, onTapPatient: onTapPatient)
+        }
+    }
+}
+
+// MARK: - Shared timeline (used by both Day and Week)
+
+private struct CalTimeline: View {
+    let days: [Date]
+    let entries: [CalEntry]
+    let onTapPatient: (Patient) -> Void
+
+    private let cal = Calendar.current
+
+    var body: some View {
+        GeometryReader { outer in
+            let colW = days.isEmpty
+                ? outer.size.width - kGutterW
+                : (outer.size.width - kGutterW) / CGFloat(days.count)
+
+            ScrollViewReader { svr in
+                ScrollView(.vertical, showsIndicators: true) {
+                    ZStack(alignment: .topLeading) {
+
+                        // ── Hour gutter + horizontal grid lines ───────────
+                        HStack(alignment: .top, spacing: 0) {
+                            // Time labels
+                            VStack(alignment: .trailing, spacing: 0) {
+                                ForEach(Array(kStartHour...kEndHour), id: \.self) { h in
+                                    Text(hourLabel(h))
+                                        .font(.system(size: 9))
+                                        .foregroundStyle(.tertiary)
+                                        .frame(width: kGutterW - 6, height: kHourH, alignment: .topTrailing)
+                                        .id("h\(h)")
+                                }
+                            }
+                            .padding(.trailing, 4)
+
+                            // Grid area
+                            ZStack(alignment: .topLeading) {
+                                // Horizontal hour lines
+                                VStack(spacing: 0) {
+                                    ForEach(Array(kStartHour...kEndHour), id: \.self) { _ in
+                                        Color.secondary.opacity(0.1).frame(height: 0.5)
+                                        Color.clear.frame(height: kHourH - 0.5)
+                                    }
+                                }
+                                .frame(width: colW * CGFloat(days.count))
+
+                                // Vertical column separators (week view only)
+                                if days.count > 1 {
+                                    ForEach(1..<days.count, id: \.self) { i in
+                                        Color.secondary.opacity(0.12)
+                                            .frame(width: 0.5, height: kTimelineH)
+                                            .offset(x: colW * CGFloat(i))
+                                    }
+                                }
+
+                                // Current time indicator
+                                let nowComps = cal.dateComponents([.hour, .minute], from: .now)
+                                let nowMins = (nowComps.hour ?? 0) * 60 + (nowComps.minute ?? 0) - kStartHour * 60
+                                let nowY = CGFloat(nowMins) * kHourH / 60
+                                if nowY >= 0 && nowY <= kTimelineH,
+                                   let ti = days.firstIndex(where: { cal.isDateInToday($0) }) {
+                                    HStack(spacing: 0) {
+                                        Circle().fill(Color.red).frame(width: 8, height: 8)
+                                        Rectangle().fill(Color.red)
+                                            .frame(width: colW - 8, minHeight: 1.5, maxHeight: 1.5)
+                                    }
+                                    .offset(x: CGFloat(ti) * colW, y: nowY - 4)
+                                }
+
+                                // Events
+                                ForEach(entries) { entry in
+                                    if let ci = days.firstIndex(where: {
+                                        cal.isDate(entry.start, inSameDayAs: $0)
+                                    }) {
+                                        let yOff = yPos(entry.start)
+                                        let h = max(26, eventH(entry))
+                                        if yOff >= -kHourH && yOff <= kTimelineH {
+                                            CalEventBlock(entry: entry) {
+                                                if let p = entry.patient { onTapPatient(p) }
+                                            }
+                                            .frame(width: colW - 5, height: h)
+                                            .offset(x: CGFloat(ci) * colW + 2, y: yOff)
+                                        }
+                                    }
+                                }
+                            }
+                            .frame(width: colW * CGFloat(days.count), height: kTimelineH)
+                        }
+                    }
+                    .frame(width: outer.size.width, height: kTimelineH)
+                }
+                .onAppear {
+                    let target = max(kStartHour, min(kEndHour, cal.component(.hour, from: .now) - 1))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        withAnimation(.easeOut(duration: 0.3)) { svr.scrollTo("h\(target)", anchor: .top) }
+                    }
+                }
+            }
+        }
+    }
+
+    private func yPos(_ date: Date) -> CGFloat {
+        let c = cal.dateComponents([.hour, .minute], from: date)
+        let mins = (c.hour ?? kStartHour) * 60 + (c.minute ?? 0) - kStartHour * 60
+        return CGFloat(mins) * kHourH / 60
+    }
+
+    private func eventH(_ e: CalEntry) -> CGFloat {
+        CGFloat(e.end.timeIntervalSince(e.start) / 60) * kHourH / 60
+    }
+
+    private func hourLabel(_ h: Int) -> String {
+        switch h {
+        case 0, 24: return "12am"
+        case 12:    return "12pm"
+        default:    return h < 12 ? "\(h)am" : "\(h - 12)pm"
+        }
+    }
+}
+
+// MARK: - Event block
+
+private struct CalEventBlock: View {
+    let entry: CalEntry
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 1) {
+                HStack(spacing: 4) {
+                    Text(entry.label)
+                        .font(.system(size: 8, weight: .heavy))
+                        .foregroundStyle(entry.color)
+                    Text(entry.start.formatted(date: .omitted, time: .shortened))
+                        .font(.system(size: 8))
+                        .foregroundStyle(entry.color.opacity(0.7))
+                    Spacer(minLength: 0)
+                }
+                Text(entry.title)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                if let sub = entry.subtitle {
+                    Text(sub)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            .padding(.horizontal, 5)
+            .padding(.vertical, 3)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(entry.color.opacity(0.1))
+            .overlay(alignment: .leading) {
+                Rectangle().fill(entry.color).frame(width: 3)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 4))
+            .overlay {
+                RoundedRectangle(cornerRadius: 4).stroke(entry.color.opacity(0.3), lineWidth: 0.5)
+            }
+        }
+        .buttonStyle(.plain)
     }
 }
