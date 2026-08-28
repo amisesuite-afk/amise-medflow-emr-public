@@ -497,6 +497,8 @@ struct SectionPatientListView: View {
             return allPatients.filter { $0.setting == .endoscopy }
         case .outpatients:
             return allPatients.filter { $0.setting == .outpatient }
+        case .schedule:
+            return []
         }
     }
 
