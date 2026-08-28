@@ -424,8 +424,8 @@ struct SOCRATESDimension: Identifiable {
 }
 
 let socrateDimensions: [SOCRATESDimension] = [
-    .init(id: "onset",        title: "Onset",        question: "When did it start?",         icon: "clock",
-          chips: ["Today", "Yesterday", "2–3 days ago", "4–7 days ago", "1–4 weeks ago", "1–6 months ago", "Over a year", "Sudden", "Gradual"],
+    .init(id: "onset",        title: "Duration",     question: "How long has it been present?", icon: "clock",
+          chips: ["Hours", "1 day", "2–3 days", "4–7 days", "1–4 weeks", "1–6 months", "> 1 year", "Sudden onset", "Gradual onset"],
           multiSelect: false),
     .init(id: "site",         title: "Site",         question: "Where exactly?",              icon: "mappin",
           chips: ["RUQ", "LUQ", "RLQ", "LLQ", "Epigastric", "Periumbilical", "Suprapubic", "Diffuse", "Right side", "Left side", "Loin", "Groin", "Perineal", "Chest"],
@@ -932,7 +932,15 @@ struct ConsultationView: View {
             open += ", a \(patient.ageYears)-year-old \(patient.sex.rawValue.lowercased()),"
         }
         open += " presents with \(cc)"
-        if !onset.isEmpty { open += " of \(onset.lowercased()) duration" }
+        if !onset.isEmpty {
+            switch onset {
+            case "Sudden onset": open += " of sudden onset"
+            case "Gradual onset": open += " of gradual onset"
+            case "Hours":        open += " of hours' duration"
+            case "1 day":        open += " of 1 day's duration"
+            default:             open += " of \(onset.lowercased()) duration"
+            }
+        }
         open += "."
         parts.append(open)
 
