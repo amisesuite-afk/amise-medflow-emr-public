@@ -153,6 +153,7 @@ struct NoteRow: View {
         case .discharge:         return Color(hex: "0D9488")
         case .consultation:      return .orange
         case .referralLetter:    return .indigo
+        case .clinicalSummary:   return .purple
         case .other:             return .secondary
         }
     }
