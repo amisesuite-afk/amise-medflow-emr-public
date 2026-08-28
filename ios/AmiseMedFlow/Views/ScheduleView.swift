@@ -38,6 +38,7 @@ struct ScheduleView: View {
     @State private var mode: CalMode = .week
     @State private var anchor: Date  = Calendar.current.startOfDay(for: .now)
     @State private var selectedPatient: Patient?
+    @State private var selectedEntry: CalEntry?
     @State private var showAdd = false
 
     private let cal = Calendar.current
@@ -150,10 +151,16 @@ struct ScheduleView: View {
             case .day:
                 DayCalView(date: anchor,
                     entries: allEntries.filter { cal.isDate($0.start, inSameDayAs: anchor) }
-                ) { selectedPatient = $0 }
+                ) { entry in
+                    if let p = entry.patient { selectedPatient = p }
+                    else { selectedEntry = entry }
+                }
 
             case .week:
-                WeekCalView(weekStart: weekStart, entries: allEntries) { selectedPatient = $0 }
+                WeekCalView(weekStart: weekStart, entries: allEntries) { entry in
+                    if let p = entry.patient { selectedPatient = p }
+                    else { selectedEntry = entry }
+                }
 
             case .month:
                 MonthCalView(monthDate: anchor, entries: allEntries) { d in
@@ -177,6 +184,21 @@ struct ScheduleView: View {
         .task { await calSvc.fetch() }
         .sheet(isPresented: $showAdd) { AddPatientView(initialSetting: .theatre) }
         .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
+        .sheet(item: $selectedEntry) { entry in
+            let setting: ClinicalSetting = {
+                switch entry.label {
+                case "THTR": return .theatre
+                case "ENDO": return .endoscopy
+                default:     return .outpatient
+                }
+            }()
+            AddPatientView(
+                initialSetting: setting,
+                initialName: entry.title,
+                initialProcedure: entry.subtitle ?? "",
+                operationDate: (setting == .theatre || setting == .endoscopy) ? entry.start : nil
+            )
+        }
     }
 }
 
@@ -297,7 +319,7 @@ private struct MonthDayCell: View {
 private struct WeekCalView: View {
     let weekStart: Date
     let entries: [CalEntry]
-    let onTapPatient: (Patient) -> Void
+    let onTap: (CalEntry) -> Void
     private let cal = Calendar.current
 
     private var days: [Date] {
@@ -330,7 +352,7 @@ private struct WeekCalView: View {
             CalTimeline(
                 days: days,
                 entries: entries.filter { e in days.contains { cal.isDate(e.start, inSameDayAs: $0) } },
-                onTapPatient: onTapPatient
+                onTap: onTap
             )
         }
     }
@@ -341,11 +363,11 @@ private struct WeekCalView: View {
 private struct DayCalView: View {
     let date: Date
     let entries: [CalEntry]
-    let onTapPatient: (Patient) -> Void
+    let onTap: (CalEntry) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
-            CalTimeline(days: [date], entries: entries, onTapPatient: onTapPatient)
+            CalTimeline(days: [date], entries: entries, onTap: onTap)
         }
     }
 }
@@ -355,7 +377,7 @@ private struct DayCalView: View {
 private struct CalTimeline: View {
     let days: [Date]
     let entries: [CalEntry]
-    let onTapPatient: (Patient) -> Void
+    let onTap: (CalEntry) -> Void
 
     private let cal = Calendar.current
 
@@ -426,7 +448,7 @@ private struct CalTimeline: View {
                                         let h = max(26, eventH(entry))
                                         if yOff >= -kHourH && yOff <= kTimelineH {
                                             CalEventBlock(entry: entry) {
-                                                if let p = entry.patient { onTapPatient(p) }
+                                                onTap(entry)
                                             }
                                             .frame(width: colW - 5, height: h)
                                             .offset(x: CGFloat(ci) * colW + 2, y: yOff)

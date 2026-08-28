@@ -42,9 +42,18 @@ struct AddPatientView: View {
     @State private var surgicalHistory = ""
     @State private var familyHistoryNotes = ""
 
-    init(initialSetting: ClinicalSetting = .outpatient) {
+    init(initialSetting: ClinicalSetting = .outpatient,
+         initialName: String = "",
+         initialProcedure: String = "",
+         operationDate: Date? = nil) {
         self.initialSetting = initialSetting
         _setting = State(initialValue: initialSetting)
+        _fullName = State(initialValue: initialName)
+        _appointmentType = State(initialValue: initialProcedure)
+        if let d = operationDate {
+            _hasOperationDate = State(initialValue: true)
+            _operationDate = State(initialValue: d)
+        }
     }
 
     private var showAdmission: Bool { setting == .inpatient || setting == .emergency }
