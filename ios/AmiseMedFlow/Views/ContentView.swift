@@ -293,6 +293,8 @@ struct ContentView: View {
             LoginView()
                 .environmentObject(sync)
         }
+        // Show AI/PHI consent gate once per installation, after sign-in
+        .requireAIConsent()
     }
 }
 
