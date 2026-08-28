@@ -4,6 +4,8 @@ import SwiftData
 @Model
 final class BillingLineItem {
     var id: UUID
+    var remoteId: String?
+    var pendingSync: Bool
     var cptCode: String
     var cptDescription: String
     var cptCategory: String
@@ -16,6 +18,7 @@ final class BillingLineItem {
 
     init(code: String, description: String, category: String) {
         self.id = UUID()
+        self.pendingSync = true
         self.cptCode = code
         self.cptDescription = description
         self.cptCategory = category

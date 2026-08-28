@@ -86,6 +86,7 @@ final class SyncService: ObservableObject {
             try await pullVitals(context: context)
             try await pushPendingOperativePlans(context: context)
             try await pullDocumentMetadata(context: context)
+            try await pushPendingBillingItems(context: context)
             lastSyncedAt = .now
             recountPending(context: context)
         } catch {
@@ -947,6 +948,55 @@ final class SyncService: ObservableObject {
         try context.save()
     }
 
+    // MARK: - Billing item sync
+
+    private func pushPendingBillingItems(context: ModelContext) async throws {
+        let pending = try context.fetch(FetchDescriptor<BillingLineItem>())
+            .filter { $0.pendingSync && $0.remoteId == nil }
+        guard !pending.isEmpty else { return }
+
+        let iso = ISO8601DateFormatter()
+
+        for item in pending {
+            guard let patientId = item.patient?.remoteId else { continue }
+
+            struct BilRow: Encodable {
+                let patient_id: String
+                let cpt_code: String
+                let cpt_description: String
+                let cpt_category: String
+                let units: Int
+                let amount_xcd: Double
+                let modifier: String
+                let note: String
+                let added_at: String
+            }
+            let row = BilRow(
+                patient_id: patientId,
+                cpt_code: item.cptCode,
+                cpt_description: item.cptDescription,
+                cpt_category: item.cptCategory,
+                units: item.units,
+                amount_xcd: item.amountXCD,
+                modifier: item.modifier,
+                note: item.note,
+                added_at: iso.string(from: item.addedAt)
+            )
+            struct BilResponse: Decodable { let id: String }
+            let response: [BilResponse] = try await SupabaseConfig.client
+                .from("patient_billing_items")
+                .insert(row)
+                .select("id")
+                .execute()
+                .value
+            if let first = response.first {
+                item.remoteId = first.id
+                item.pendingSync = false
+            }
+        }
+        try context.save()
+    }
+
     // MARK: - Pending count
 
     private func recountPending(context: ModelContext) {
@@ -954,8 +1004,9 @@ final class SyncService: ObservableObject {
         let nCount = (try? context.fetch(FetchDescriptor<ClinicalNote>()))?.filter { $0.pendingSync }.count ?? 0
         let rxCount = (try? context.fetch(FetchDescriptor<Prescription>()))?.filter { $0.pendingSync }.count ?? 0
         let vCount  = (try? context.fetch(FetchDescriptor<VitalsEntry>()))?.filter { $0.pendingSync }.count ?? 0
-        let opCount = (try? context.fetch(FetchDescriptor<OperativePlan>()))?.filter { $0.pendingSync }.count ?? 0
-        pendingCount = pCount + nCount + rxCount + vCount + opCount
+        let opCount  = (try? context.fetch(FetchDescriptor<OperativePlan>()))?.filter { $0.pendingSync }.count ?? 0
+        let bilCount = (try? context.fetch(FetchDescriptor<BillingLineItem>()))?.filter { $0.pendingSync }.count ?? 0
+        pendingCount = pCount + nCount + rxCount + vCount + opCount + bilCount
     }
 
     // MARK: - Offline write queue (persisted in UserDefaults, flushed on reconnect)
@@ -1017,6 +1068,11 @@ final class SyncService: ObservableObject {
                     if let op = all.first(where: { $0.id.uuidString == entry.entityId }) {
                         op.pendingSync = true
                     }
+                case "billing_item":
+                    let all = try ctx.fetch(FetchDescriptor<BillingLineItem>())
+                    if let bil = all.first(where: { $0.id.uuidString == entry.entityId }) {
+                        bil.pendingSync = true
+                    }
                 default:
                     break
                 }
@@ -1034,6 +1090,7 @@ final class SyncService: ObservableObject {
             try? await pushPendingPrescriptions(context: ctx)
             try? await pushPendingVitals(context: ctx)
             try? await pushPendingOperativePlans(context: ctx)
+            try? await pushPendingBillingItems(context: ctx)
         }
     }
 
