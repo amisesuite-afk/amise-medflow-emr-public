@@ -108,13 +108,24 @@ final class SyncService: ObservableObject {
         let setting: String?
         let location: String?
         let acuity: String?
+        let chief_complaint: String?
+        let hpi: String?
+        let assessment_text: String?
+        let management_plan: String?
+        let working_diagnosis: String?
+        let working_diagnosis_icd: String?
+        let allergies_json: String?
+        let social_history: String?
+        let height_cm: Double?
+        let ward: String?
+        let bed_number: String?
         let created_at: String
     }
 
     private func pullPatients(context: ModelContext) async throws {
         let rows: [RemotePatient] = try await SupabaseConfig.client
             .from("patients")
-            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, created_at")
+            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, height_cm, ward, bed_number, created_at")
             .order("created_at", ascending: false)
             .limit(500)
             .execute()
@@ -151,6 +162,34 @@ final class SyncService: ObservableObject {
             if let s = row.setting { patient.setting = ClinicalSetting(rawValue: s.capitalized) ?? .outpatient }
             if let l = row.location { patient.location = ClinicalLocation(rawValue: locationDisplayName(l)) ?? .rodney_bay }
             if let a = row.acuity { patient.acuity = acuityFromString(a) }
+            // Clinical fields — only update from remote if local is still empty
+            // (prefer local edits; remote is the source of truth only on first pull)
+            if let cc = row.chief_complaint, (patient.chiefComplaint ?? "").isEmpty {
+                patient.chiefComplaint = cc
+            }
+            if let hpi = row.hpi, (patient.hpi ?? "").isEmpty {
+                patient.hpi = hpi
+            }
+            if let at = row.assessment_text, (patient.assessmentText ?? "").isEmpty {
+                patient.assessmentText = at
+            }
+            if let mp = row.management_plan, (patient.managementPlan ?? "").isEmpty {
+                patient.managementPlan = mp
+            }
+            if let wd = row.working_diagnosis, (patient.workingDiagnosis ?? "").isEmpty {
+                patient.workingDiagnosis = wd
+                patient.workingDiagnosisICD = row.working_diagnosis_icd
+            }
+            if let aj = row.allergies_json, (patient.allergiesJson ?? "").isEmpty {
+                patient.allergiesJson = aj
+            }
+            if let sh = row.social_history, (patient.socialHistory ?? "").isEmpty {
+                patient.socialHistory = sh
+            }
+            if let h = row.height_cm, patient.heightCm == nil { patient.heightCm = h }
+            if let w = row.ward,   (patient.ward ?? "").isEmpty   { patient.ward = w }
+            if let b = row.bed_number, (patient.bedNumber ?? "").isEmpty { patient.bedNumber = b }
+
             patient.syncedAt = .now
             patient.pendingSync = false
         }
@@ -210,6 +249,15 @@ final class SyncService: ObservableObject {
                 let setting: String
                 let location: String
                 let acuity: String
+                let chief_complaint: String?
+                let hpi: String?
+                let assessment_text: String?
+                let management_plan: String?
+                let allergies_json: String?
+                let social_history: String?
+                let height_cm: Double?
+                let ward: String?
+                let bed_number: String?
             }
             let row = InsertRow(
                 full_name: patient.fullName,
@@ -227,7 +275,16 @@ final class SyncService: ObservableObject {
                 family_history_notes: patient.familyHistoryNotes,
                 setting: patient.setting.rawValue.lowercased(),
                 location: locationCode(patient.location),
-                acuity: patient.acuity.label.lowercased()
+                acuity: patient.acuity.label.lowercased(),
+                chief_complaint: patient.chiefComplaint,
+                hpi: patient.hpi,
+                assessment_text: patient.assessmentText,
+                management_plan: patient.managementPlan,
+                allergies_json: patient.allergiesJson,
+                social_history: patient.socialHistory,
+                height_cm: patient.heightCm,
+                ward: patient.ward,
+                bed_number: patient.bedNumber
             )
             struct InsertResponse: Decodable { let id: String }
             let response: [InsertResponse] = try await SupabaseConfig.client
@@ -321,7 +378,18 @@ final class SyncService: ObservableObject {
                 let setting: String
                 let location: String
                 let acuity: String
+                let chief_complaint: String?
+                let hpi: String?
+                let assessment_text: String?
+                let management_plan: String?
+                let allergies_json: String?
+                let social_history: String?
+                let height_cm: Double?
+                let ward: String?
+                let bed_number: String?
+                let updated_at: String
             }
+            let iso = ISO8601DateFormatter()
             let row = UpdateRow(
                 full_name: patient.fullName,
                 sex: patient.sex.rawValue.lowercased(),
@@ -340,7 +408,17 @@ final class SyncService: ObservableObject {
                 working_diagnosis_icd: patient.workingDiagnosisICD,
                 setting: patient.setting.rawValue.lowercased(),
                 location: locationCode(patient.location),
-                acuity: patient.acuity.label.lowercased()
+                acuity: patient.acuity.label.lowercased(),
+                chief_complaint: patient.chiefComplaint,
+                hpi: patient.hpi,
+                assessment_text: patient.assessmentText,
+                management_plan: patient.managementPlan,
+                allergies_json: patient.allergiesJson,
+                social_history: patient.socialHistory,
+                height_cm: patient.heightCm,
+                ward: patient.ward,
+                bed_number: patient.bedNumber,
+                updated_at: iso.string(from: patient.updatedAt)
             )
             try await SupabaseConfig.client
                 .from("patients")
