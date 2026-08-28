@@ -228,12 +228,16 @@ enum PatientSummaryPDF {
             y = maybeNewPage(ctx: ctx, y: y)
             y = sectionTitle("Operative Plan", y: y)
             var opRows: [(String, String)] = []
-            if let proc = plan.procedureName, !proc.isEmpty { opRows.append(("Procedure", proc)) }
-            if let notes = plan.preOpNotes, !notes.isEmpty { opRows.append(("Pre-op notes", notes)) }
-            if let consent = plan.consentNotes, !consent.isEmpty { opRows.append(("Consent", consent)) }
-            let whoStatus = "\(plan.whoCompletedCount)/\(plan.whoTotalCount) complete"
-            opRows.append(("WHO safety checklist", whoStatus))
-            if !opRows.isEmpty { y = drawRows(ctx: ctx, rows: opRows, y: y) }
+            if !plan.consentProcedure.isEmpty { opRows.append(("Procedure", plan.consentProcedure)) }
+            opRows.append(("Consent signed", plan.consentSigned ? "Yes" : "No"))
+            if !plan.anaesthesiaType.isEmpty { opRows.append(("Anaesthesia", plan.anaesthesiaType)) }
+            if !plan.positioning.isEmpty { opRows.append(("Positioning", plan.positioning)) }
+            if !plan.antibioticProphylaxis.isEmpty { opRows.append(("Antibiotics", plan.antibioticProphylaxis)) }
+            if !plan.vteProphy.isEmpty { opRows.append(("VTE prophylaxis", plan.vteProphy)) }
+            if !plan.specialEquipment.isEmpty { opRows.append(("Special equipment", plan.specialEquipment)) }
+            if !plan.surgicalTeamNote.isEmpty { opRows.append(("Team note", plan.surgicalTeamNote)) }
+            opRows.append(("WHO safety checklist", "\(plan.whoCompletedCount)/\(plan.whoTotalCount) complete"))
+            y = drawRows(ctx: ctx, rows: opRows, y: y)
         }
 
         // Signed clinical notes (most recent 3)
