@@ -175,8 +175,8 @@ enum PatientSummaryPDF {
                 y = maybeNewPage(ctx: ctx, y: y, minSpace: 30)
                 let statusLabel = inv.status.rawValue.capitalized
                 var line = "\(inv.name)"
-                if let result = inv.result, !result.isEmpty {
-                    line += ": \(result.prefix(120))"
+                if !inv.result.isEmpty {
+                    line += ": \(inv.result.prefix(120))"
                 }
                 y = drawRows(ctx: ctx, rows: [("\(inv.category.rawValue) · \(statusLabel)", line)], y: y)
             }
