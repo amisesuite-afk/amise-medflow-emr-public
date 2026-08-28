@@ -242,8 +242,42 @@ struct DocumentsView: View {
                 .upload(path, data: data, options: .init(contentType: doc.mimeType, upsert: true))
             // Store the storage path — never a public URL (PHI must stay access-controlled)
             doc.storageUrl = path
+            // Persist metadata to patient_documents so the doc survives device reinstall
+            await insertDocumentMetadata(doc: doc, patientId: remotePatientId)
         } catch {
             // Non-fatal: doc is saved locally regardless
+        }
+    }
+
+    private func insertDocumentMetadata(doc: PatientDocument, patientId: String) async {
+        guard doc.remoteId == nil else { return }  // already persisted
+        struct DocRow: Encodable {
+            let patient_id: String
+            let file_name: String
+            let mime_type: String
+            let storage_url: String?
+            let ai_summary: String?
+            let extracted_text: String?
+            let category: String?
+        }
+        let row = DocRow(
+            patient_id: patientId,
+            file_name: doc.fileName,
+            mime_type: doc.mimeType,
+            storage_url: doc.storageUrl,
+            ai_summary: doc.aiSummary,
+            extracted_text: doc.extractedText,
+            category: doc.category
+        )
+        struct DocResponse: Decodable { let id: String }
+        if let response = try? await SupabaseConfig.client
+            .from("patient_documents")
+            .insert(row)
+            .select("id")
+            .execute()
+            .value as [DocResponse],
+           let first = response.first {
+            doc.remoteId = first.id
         }
     }
 
@@ -265,6 +299,15 @@ struct DocumentsView: View {
             doc.aiSummary = summary
             patient.updatedAt = .now
             patient.pendingSync = true
+            // Persist AI summary to Supabase if the doc row exists
+            if let remoteId = doc.remoteId {
+                struct SummaryPatch: Encodable { let ai_summary: String }
+                try? await SupabaseConfig.client
+                    .from("patient_documents")
+                    .update(SummaryPatch(ai_summary: summary))
+                    .eq("id", value: remoteId)
+                    .execute()
+            }
             selectedDocForSummary = doc
             summaryText = summary
             showSummarySheet = true
