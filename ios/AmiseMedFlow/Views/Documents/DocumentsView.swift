@@ -302,7 +302,7 @@ struct DocumentsView: View {
             // Persist AI summary to Supabase if the doc row exists
             if let remoteId = doc.remoteId {
                 struct SummaryPatch: Encodable { let ai_summary: String }
-                try? await SupabaseConfig.client
+                _ = try? await SupabaseConfig.client
                     .from("patient_documents")
                     .update(SummaryPatch(ai_summary: summary))
                     .eq("id", value: remoteId)
