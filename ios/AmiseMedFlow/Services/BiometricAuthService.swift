@@ -15,16 +15,21 @@ final class BiometricAuthService: ObservableObject {
     // Auto-lock after this many seconds of backgrounding (0 = always lock)
     private let lockAfterSeconds: TimeInterval = 30
     private var backgroundedAt: Date?
+    // True only until the very first .active scene-phase fires.
+    // Prevents re-locking on every .active event (e.g. Face ID sheet
+    // changes the scene phase, which would otherwise trigger an infinite lock loop).
+    private var isFirstLaunch = true
 
     // MARK: - Public API
 
     /// Call when the app enters the foreground.
     func lockIfTimedOut() {
-        guard let bg = backgroundedAt else {
-            // First launch — always require auth
+        if isFirstLaunch {
+            isFirstLaunch = false
             isLocked = true
             return
         }
+        guard let bg = backgroundedAt else { return }
         if Date().timeIntervalSince(bg) >= lockAfterSeconds {
             isLocked = true
         }
