@@ -249,10 +249,10 @@ final class SyncService: ObservableObject {
     private struct RemoteAppointment: Decodable {
         let id: String
         let patient_name: String?
-        let phone: String?
-        let email: String?
-        let reason_for_visit: String?
-        let preferred_date: String?
+        let patient_phone: String?
+        let patient_email: String?
+        let reason: String?
+        let preferred_slot: String?
         let status: String?
         let created_at: String
     }
@@ -261,8 +261,8 @@ final class SyncService: ObservableObject {
         let oneWeekAgo = ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -7 * 86400))
         let rows: [RemoteAppointment] = try await SupabaseConfig.client
             .from("appointment_requests")
-            .select("id, patient_name, phone, email, reason_for_visit, preferred_date, status, created_at")
-            .in("status", values: ["confirmed", "approved"])
+            .select("id, patient_name, patient_phone, patient_email, reason, preferred_slot, status, created_at")
+            .in("status", values: ["staff_confirmed", "patient_confirmed"])
             .gte("created_at", value: oneWeekAgo)
             .order("created_at", ascending: false)
             .limit(200)
@@ -276,14 +276,14 @@ final class SyncService: ObservableObject {
             // Avoid duplicates: match by appointment_id stored in remoteId, or by name+phone
             let existing = allLocal.first { p in
                 p.remoteId == "appt:\(appt.id)" ||
-                (p.fullName.lowercased() == name.lowercased() && p.phone == appt.phone)
+                (p.fullName.lowercased() == name.lowercased() && p.phone == appt.patient_phone)
             }
             guard existing == nil else { continue }
 
             let p = Patient(fullName: name)
-            p.phone = appt.phone
-            p.email = appt.email
-            p.chiefComplaint = appt.reason_for_visit
+            p.phone = appt.patient_phone
+            p.email = appt.patient_email
+            p.chiefComplaint = appt.reason
             p.remoteId = "appt:\(appt.id)"  // sentinel so we don't push this back
             p.pendingSync = false
             p.syncedAt = .now
