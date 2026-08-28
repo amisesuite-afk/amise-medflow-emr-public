@@ -241,6 +241,7 @@ export async function fetchUpcomingEvents(daysAhead = 30): Promise<CalendarEvent
   const timeMax = new Date(now.getTime() + daysAhead * 86400_000).toISOString();
 
   const calIds = [
+    'amisesuite@gmail.com',                  // primary calendar — always fetch
     process.env.CALENDAR_ID_RODNEY_BAY,
     process.env.CALENDAR_ID_TAPION_ERCP,
   ].filter(Boolean) as string[];
@@ -433,8 +434,10 @@ export function formatOperatingListDescription(
 
 function classifyEvent(summary: string): CalendarEvent['type'] {
   const s = summary.toLowerCase();
-  if (/theatre|\bhernia repair\b|\bla theatre\b|rectal.*excision|excision.*ga|excision.*la|laparotomy|cholecystectomy|appendicectomy|colostomy/.test(s)) return 'theatre';
-  if (/endoscop|colonoscop|ercp|gastroscop|deep sedation/.test(s)) return 'endoscopy';
-  if (/^\s*lunch(\s|$)|^\s*break\s*$/.test(s.trim())) return 'break';
+  if (/theatre|\bhernia repair\b|\bla theatre\b|rectal.*excision|excision.*ga|excision.*la|laparotomy|cholecystectomy|appendicectomy|colostomy|circumcision|keloid/.test(s)) return 'theatre';
+  if (/endoscop|colonoscop|ercp|gastroscop|ogd|deep sedation/.test(s)) return 'endoscopy';
+  if (/^\s*lunch(\s|$)|^\s*break\s*$|holiday/.test(s.trim())) return 'break';
+  // Practice calendar conventions: "new pt", "old pt", "consult", "admission", "results"
+  if (/new pt|old pt|consult|admission|results|review|follow.?up/.test(s)) return 'clinic';
   return 'clinic';
 }

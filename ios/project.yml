@@ -1,0 +1,81 @@
+name: AmiseMedFlow
+
+options:
+  bundleIdPrefix: com.amise
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16"
+  defaultConfig: Debug
+
+packages:
+  Supabase:
+    url: https://github.com/supabase/supabase-swift
+    from: 2.5.1
+
+targets:
+  AmiseMedFlow:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+
+    sources:
+      - path: AmiseMedFlow
+        excludes:
+          - "**/.DS_Store"
+
+    resources:
+      - path: AmiseMedFlow/Assets.xcassets
+
+    info:
+      path: AmiseMedFlow/Info.plist
+      properties:
+        CFBundleDisplayName: "Amise MedFlow"
+        CFBundleName: "$(PRODUCT_NAME)"
+        CFBundleIdentifier: "$(PRODUCT_BUNDLE_IDENTIFIER)"
+        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0"
+        CFBundlePackageType: "$(PRODUCT_BUNDLE_PACKAGE_TYPE)"
+        CFBundleExecutable: "$(EXECUTABLE_NAME)"
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UIRequiredDeviceCapabilities:
+          - armv7
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # Supabase — resolved at build time via Configuration.xcconfig
+        SUPABASE_URL: "$(SUPABASE_URL)"
+        SUPABASE_ANON_KEY: "$(SUPABASE_ANON_KEY)"
+        # Privacy usage strings
+        NSCameraUsageDescription: "Camera is used for patient photo documentation."
+        NSPhotoLibraryUsageDescription: "Photo library is used for attaching clinical images."
+
+    entitlements:
+      path: AmiseMedFlow/AmiseMedFlow.entitlements
+      properties: {}
+
+    settings:
+      configFiles:
+        Debug: Configuration.xcconfig
+        Release: Configuration.xcconfig
+      base:
+        PRODUCT_NAME: AmiseMedFlow
+        PRODUCT_BUNDLE_IDENTIFIER: com.amise.medflow
+        SWIFT_VERSION: "5.0"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_EMIT_LOC_STRINGS: YES
+        ENABLE_PREVIEWS: YES
+        # DEVELOPMENT_TEAM intentionally absent — set via Configuration.xcconfig (git-ignored)
+
+    dependencies:
+      - package: Supabase
+        product: Supabase

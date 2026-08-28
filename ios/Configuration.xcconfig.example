@@ -1,0 +1,12 @@
+// Copy this file to Configuration.xcconfig and fill in your values.
+// Configuration.xcconfig is gitignored — never commit real keys.
+
+// Your Supabase project URL (find it in: Supabase dashboard → Project Settings → API)
+SUPABASE_URL = https://your-project-id.supabase.co
+
+// Your Supabase anon/public JWT key (starts with eyJ...)
+// Find it in: Supabase dashboard → Project Settings → API → Project API keys → anon public
+SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder
+
+// Optional: your Apple Developer Team ID (find it at developer.apple.com → Account → Membership)
+// DEVELOPMENT_TEAM = XXXXXXXXXX

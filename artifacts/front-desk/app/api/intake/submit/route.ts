@@ -19,6 +19,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Name and phone are required' }, { status: 400 });
     }
 
+    const rawPhoneDigits = String(patient.phone).replace(/\D/g, '');
+    if (rawPhoneDigits.length < 10 || rawPhoneDigits.length > 15) {
+      return NextResponse.json(
+        { error: 'Please enter a valid phone number with at least 10 digits (e.g. +1 758 284-0557).' },
+        { status: 400 },
+      );
+    }
+
+    if (patient.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(patient.email))) {
+      return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
+    }
+
     const sb = getClient();
     if (!sb) {
       console.error('[intake/submit] No Supabase credentials configured');

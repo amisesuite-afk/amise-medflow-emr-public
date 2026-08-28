@@ -5,6 +5,8 @@ import { AppProvider } from '@/context/AppContext';
 import { PatientStateProvider } from '@/context/PatientStateContext';
 import { ToastProvider } from '@/components/ToastProvider';
 import HomePage from '@/pages/Home';
+import ReceptionistView from '@/pages/ReceptionistView';
+import NursePreVisitView from '@/pages/NursePreVisitView';
 import LoginPage from '@/components/LoginPage';
 import IdleLock from '@/components/IdleLock';
 import MobileEncounterPage from '@/pages/MobileEncounterPage';
@@ -86,6 +88,13 @@ function AuthGuard() {
 
   if (IS_MOBILE_PATH) return <MobileEncounterPage />;
 
+  // Front desk (amisesuite@gmail.com) → booking/scheduling/check-in
+  if (profile.role === 'front_desk') return <ReceptionistView />;
+
+  // Nurse → pre-visit vitals + symptoms entry
+  if (profile.role === 'nurse') return <NursePreVisitView />;
+
+  // Doctor / admin (dawitson@yahoo.com) → full clinical EMR
   return (
     <>
       {/* Skip-navigation — visually hidden, shown on focus for keyboard users (WCAG 2.4.1) */}

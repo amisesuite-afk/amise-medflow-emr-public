@@ -77,9 +77,9 @@ app.use(cors({
   origin: (origin, cb) => {
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
     // Vercel preview URLs scoped tightly to this project's team slug.
+    // Covers both the front-desk (front-desk-amisesuite-afks-projects.vercel.app)
+    // and dashboard preview branches — no broader amise-* wildcard needed.
     if (/^https:\/\/[\w-]+-amisesuite-afks-projects\.vercel\.app$/.test(origin)) return cb(null, true);
-    // Any amise-* Vercel deployment (dashboard aliases, etc.).
-    if (/^https:\/\/amise[\w-]*\.vercel\.app$/.test(origin)) return cb(null, true);
     // Dashboard production/preview deployments (e.g. rd-lemon-gamma-44.vercel.app
     // and any branch previews of the same Vercel project).
     if (/^https:\/\/[\w-]+-lemon-gamma-44\.vercel\.app$/.test(origin)) return cb(null, true);

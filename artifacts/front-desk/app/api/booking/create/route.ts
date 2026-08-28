@@ -104,6 +104,25 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
+  const rawPhoneDigits = body.patientPhone.replace(/\D/g, '');
+  if (rawPhoneDigits.length < 10 || rawPhoneDigits.length > 15) {
+    return NextResponse.json(
+      { error: 'Please enter a valid phone number with at least 10 digits (e.g. +1 758 284-0557).' },
+      { status: 400 },
+    );
+  }
+
+  if (patientEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(patientEmail)) {
+    return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
+  }
+
+  if (patientDob) {
+    const today = new Date().toISOString().split('T')[0];
+    if (patientDob < '1900-01-01' || patientDob > today) {
+      return NextResponse.json({ error: 'Please enter a valid date of birth.' }, { status: 400 });
+    }
+  }
+
   const patientPhone = toE164(body.patientPhone);
 
   const cfg = TRACK_CONFIG[track] ?? TRACK_CONFIG['routine'];
