@@ -4,7 +4,7 @@ import SwiftData
 struct NoteEditorView: View {
     @Bindable var note: ClinicalNote
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var context
+    @Environment(\.modelContext) var context
     @StateObject private var ai = AIService()
 
     @State private var showAIOptions   = false
@@ -24,7 +24,10 @@ struct NoteEditorView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if note.noteType.isStructured {
+                if note.status == .signed {
+                    // Signed notes are read-only — display only
+                    signedNoteView
+                } else if note.noteType.isStructured {
                     soapForm
                 } else {
                     freeTextForm
@@ -34,18 +37,35 @@ struct NoteEditorView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button(note.status == .signed ? "Close" : "Cancel") { dismiss() }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        note.updatedAt = .now
-                        note.pendingSync = true
-                        dismiss()
+                if note.status != .signed {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") {
+                            note.updatedAt = .now
+                            note.pendingSync = true
+                            dismiss()
+                        }
                     }
                 }
                 ToolbarItem(placement: .bottomBar) {
                     HStack {
-                        statusPicker
+                        if note.status == .signed {
+                            // Signed badge + addendum button
+                            Label("Signed", systemImage: "lock.fill")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.green)
+                            Spacer()
+                            Button {
+                                createAddendum()
+                            } label: {
+                                Label("Addendum", systemImage: "plus.bubble")
+                                    .font(.caption)
+                            }
+                            .foregroundStyle(.teal)
+                        } else {
+                            statusPicker
+                        }
                         Spacer()
                         Button {
                             Task { await exportPDF() }
@@ -59,17 +79,19 @@ struct NoteEditorView: View {
                         .disabled(isExportingPDF || note.isEmpty || note.patient == nil)
                         .foregroundStyle(.indigo)
 
-                        Button {
-                            showAIOptions = true
-                        } label: {
-                            HStack(spacing: 4) {
-                                if ai.isGenerating { ProgressView().scaleEffect(0.7) }
-                                Label("AI Draft", systemImage: "sparkles")
-                                    .font(.caption)
+                        if note.status != .signed {
+                            Button {
+                                showAIOptions = true
+                            } label: {
+                                HStack(spacing: 4) {
+                                    if ai.isGenerating { ProgressView().scaleEffect(0.7) }
+                                    Label("AI Draft", systemImage: "sparkles")
+                                        .font(.caption)
+                                }
                             }
+                            .disabled(ai.isGenerating || note.patient == nil)
+                            .foregroundStyle(.purple)
                         }
-                        .disabled(ai.isGenerating || note.patient == nil)
-                        .foregroundStyle(.purple)
                     }
                 }
             }
@@ -94,6 +116,48 @@ struct NoteEditorView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Signed note (read-only)
+
+    private var signedNoteView: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                HStack(spacing: 6) {
+                    Image(systemName: "lock.fill").foregroundStyle(.green)
+                    Text("This note has been signed and cannot be edited.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(.green.opacity(0.08), in: RoundedRectangle(cornerRadius: 8))
+
+                Text(note.contentForSync)
+                    .font(.body)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .textSelection(.enabled)
+
+                Text("Signed \(note.updatedAt.formatted(date: .long, time: .shortened))")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding()
+        }
+    }
+
+    private func createAddendum() {
+        guard let patient = note.patient else { return }
+        let addendum = ClinicalNote(noteType: note.noteType, patient: patient)
+        let prefix = "ADDENDUM to \(note.noteType.label) dated \(note.createdAt.formatted(date: .abbreviated, time: .omitted)):\n\n"
+        if note.noteType.isStructured {
+            addendum.subjective = prefix
+        } else {
+            addendum.freeText = prefix
+        }
+        context.insert(addendum)
+        try? context.save()
+        dismiss()
     }
 
     // MARK: - SOAP editor

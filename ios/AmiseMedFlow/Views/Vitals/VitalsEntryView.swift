@@ -14,6 +14,8 @@ struct VitalsEntryView: View {
     @State private var spo2 = ""
     @State private var weightKg = ""
     @State private var glucoseMmol = ""
+    @State private var avpu: AVPU = .alert
+    @State private var onSupplementalO2 = false
     @State private var notes = ""
     @State private var recordedAt = Date.now
 
@@ -98,11 +100,36 @@ struct VitalsEntryView: View {
                     quickChips(tempPresets, current: temperatureStr) { temperatureStr = $0 }
                 } header: { Text("Temperature (°C)") }
 
-                // SpO2
+                // SpO2 + supplemental O₂
                 Section {
                     TextField("e.g. 98", text: $spo2).keyboardType(.numberPad)
                     quickChips(spo2Presets, current: spo2) { spo2 = $0 }
+                    Toggle(isOn: $onSupplementalO2) {
+                        Label("On supplemental O₂", systemImage: "wind")
+                            .font(.subheadline)
+                    }
+                    .tint(.blue)
+                    if onSupplementalO2 {
+                        Text("NEWS2 Scale 2 applied · +2 pts for O₂")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 } header: { Text("SpO₂ (%)") }
+
+                // AVPU consciousness
+                Section {
+                    Picker("Consciousness", selection: $avpu) {
+                        ForEach(AVPU.allCases, id: \.self) { level in
+                            Text(level.label).tag(level)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    if avpu != .alert {
+                        Label("AVPU \(avpu.rawValue) adds 3 points — review urgently", systemImage: "exclamationmark.triangle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
+                } header: { Text("Consciousness (AVPU)") }
 
                 // Weight — live BMI preview if height is on record
                 Section("Weight (kg)") {
@@ -165,7 +192,7 @@ struct VitalsEntryView: View {
         }
     }
 
-    // MARK: - Live NEWS2 preview (mirrors VitalsEntry.news2Score)
+    // MARK: - Live NEWS2 preview (full RCP 2017 calculation, mirrors VitalsEntry.news2Score)
 
     private var liveNews2Score: Int {
         var s = 0
@@ -173,8 +200,13 @@ struct VitalsEntryView: View {
             s += rr <= 8 ? 3 : rr <= 11 ? 1 : rr <= 20 ? 0 : rr <= 24 ? 2 : 3
         }
         if let spo = Int(spo2) {
-            s += spo >= 96 ? 0 : spo >= 94 ? 1 : spo >= 92 ? 2 : 3
+            if onSupplementalO2 {
+                s += spo >= 97 ? 3 : spo >= 95 ? 2 : spo >= 93 ? 1 : spo >= 88 ? 0 : 3
+            } else {
+                s += spo >= 96 ? 0 : spo >= 94 ? 1 : spo >= 92 ? 2 : 3
+            }
         }
+        if onSupplementalO2 { s += 2 }
         if let sys = Int(bpSystolic) {
             s += sys <= 90 ? 3 : sys <= 100 ? 2 : sys <= 110 ? 1 : sys <= 219 ? 0 : 3
         }
@@ -184,15 +216,32 @@ struct VitalsEntryView: View {
         if let t = Double(temperatureStr) {
             s += t <= 35.0 ? 3 : t <= 36.0 ? 1 : t <= 38.0 ? 0 : t <= 39.0 ? 1 : 2
         }
+        s += avpu.news2Points
         return s
     }
 
     private var liveNews2Risk: String {
-        liveNews2Score <= 4 ? "Low" : liveNews2Score <= 6 ? "Medium" : "High"
+        if liveNews2Score >= 7 || liveNews2RedFlag { return "High" }
+        if liveNews2Score >= 5                     { return "Medium" }
+        return "Low"
+    }
+
+    private var liveNews2RedFlag: Bool {
+        if let rr = Int(respiratoryRate), rr <= 8 || rr > 24  { return true }
+        if let spo = Int(spo2), spo < 92                       { return true }
+        if let sys = Int(bpSystolic), sys <= 90 || sys > 219   { return true }
+        if let hr  = Int(heartRate),  hr <= 40  || hr > 130    { return true }
+        if let t   = Double(temperatureStr), t <= 35.0          { return true }
+        if avpu != .alert                                       { return true }
+        return false
     }
 
     private var liveNews2Color: Color {
-        liveNews2Score <= 4 ? .green : liveNews2Score <= 6 ? .orange : .red
+        switch liveNews2Risk {
+        case "High":   return .red
+        case "Medium": return .orange
+        default:       return .green
+        }
     }
 
     private var hasScoreableValue: Bool {
@@ -225,6 +274,8 @@ struct VitalsEntryView: View {
         entry.spo2               = Int(spo2)
         entry.weightKg           = Double(weightKg)
         entry.glucoseMmol        = Double(glucoseMmol)
+        entry.avpu               = avpu
+        entry.onSupplementalO2   = onSupplementalO2
         entry.notes              = notes.isEmpty ? nil : notes
         context.insert(entry)
         dismiss()

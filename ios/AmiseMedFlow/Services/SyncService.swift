@@ -63,6 +63,7 @@ final class SyncService: ObservableObject {
 
     func syncIfAuthenticated() async {
         guard isSignedIn, let ctx = modelContext else { return }
+        await flushOutbox()
         await sync(context: ctx)
     }
 
@@ -431,12 +432,52 @@ final class SyncService: ObservableObject {
 
             note.remoteId = row.id
             note.status = NoteStatus(rawValue: row.status) ?? .draft
-            note.freeText = row.content
+            // Restore structured SOAP fields; fall back to freeText for all other types
+            if note.noteType.isStructured, let content = row.content {
+                restoreSOAPFields(note: note, content: content)
+            } else {
+                note.freeText = row.content
+            }
             note.syncedAt = .now
             note.pendingSync = false
         }
 
         try context.save()
+    }
+
+    // MARK: - SOAP content → structured fields
+
+    private func restoreSOAPFields(note: ClinicalNote, content: String) {
+        // Content is formatted by contentForSync: "S:\n...\n\nO:\n...\n\nA:\n...\n\nP:\n..."
+        var s = "", o = "", a = "", p = ""
+        var current: Character? = nil
+        var buffer = ""
+
+        func flush() {
+            switch current {
+            case "S": s = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
+            case "O": o = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
+            case "A": a = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
+            case "P": p = buffer.trimmingCharacters(in: .whitespacesAndNewlines)
+            default: break
+            }
+        }
+
+        for line in content.components(separatedBy: "\n") {
+            if line == "S:" || line == "O:" || line == "A:" || line == "P:" {
+                flush()
+                current = line.first
+                buffer = ""
+            } else {
+                buffer += (buffer.isEmpty ? "" : "\n") + line
+            }
+        }
+        flush()
+
+        note.subjective = s.isEmpty ? nil : s
+        note.objective  = o.isEmpty ? nil : o
+        note.assessment = a.isEmpty ? nil : a
+        note.plan       = p.isEmpty ? nil : p
     }
 
     // MARK: - Pending count
@@ -447,9 +488,77 @@ final class SyncService: ObservableObject {
         pendingCount = pCount + nCount
     }
 
-    // MARK: - Manual enqueue (for offline writes)
+    // MARK: - Offline write queue (persisted in UserDefaults, flushed on reconnect)
+
+    private static let outboxKey = "com.amise.medflow.sync-outbox"
+
+    private struct OutboxEntry: Codable {
+        let entityType: String
+        let entityId:   String
+        let payload:    [String: String]   // values serialised to String for Codable compatibility
+        let enqueuedAt: Date
+    }
 
     func enqueue(entityType: String, entityId: String, payload: [String: Any]) {
+        var entries = loadOutbox()
+        // Serialise Any values to String to survive Codable round-trip
+        let stringPayload = payload.reduce(into: [String: String]()) { dict, pair in
+            dict[pair.key] = "\(pair.value)"
+        }
+        entries.append(OutboxEntry(entityType: entityType, entityId: entityId,
+                                   payload: stringPayload, enqueuedAt: .now))
+        saveOutbox(entries)
         pendingCount += 1
+    }
+
+    private func flushOutbox() async {
+        var entries = loadOutbox()
+        guard !entries.isEmpty else { return }
+
+        var failed: [OutboxEntry] = []
+        for entry in entries {
+            do {
+                // Re-drive the appropriate push by marking the local entity dirty again.
+                // Entities are identified by entityType + entityId (local UUID string).
+                guard let ctx = modelContext else { failed.append(entry); continue }
+                switch entry.entityType {
+                case "patient":
+                    let all = try ctx.fetch(FetchDescriptor<Patient>())
+                    if let p = all.first(where: { $0.id.uuidString == entry.entityId }) {
+                        p.pendingSync = true
+                    }
+                case "clinical_note":
+                    let all = try ctx.fetch(FetchDescriptor<ClinicalNote>())
+                    if let n = all.first(where: { $0.id.uuidString == entry.entityId }) {
+                        n.pendingSync = true
+                    }
+                default:
+                    break
+                }
+            } catch {
+                failed.append(entry)
+            }
+        }
+        saveOutbox(failed)
+        pendingCount = max(0, pendingCount - (entries.count - failed.count))
+
+        // Let the normal sync push handle re-marked entities
+        if let ctx = modelContext {
+            try? await pushPendingPatients(context: ctx)
+            try? await pushPendingNotes(context: ctx)
+        }
+    }
+
+    private func loadOutbox() -> [OutboxEntry] {
+        guard let data = UserDefaults.standard.data(forKey: Self.outboxKey),
+              let entries = try? JSONDecoder().decode([OutboxEntry].self, from: data)
+        else { return [] }
+        return entries
+    }
+
+    private func saveOutbox(_ entries: [OutboxEntry]) {
+        if let data = try? JSONEncoder().encode(entries) {
+            UserDefaults.standard.set(data, forKey: Self.outboxKey)
+        }
     }
 }

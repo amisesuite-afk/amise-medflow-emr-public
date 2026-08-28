@@ -56,6 +56,8 @@
     <string>Calendar access lets MedFlow display your operating schedule alongside patient cases.</string>
     <key>NSCalendarsFullAccessUsageDescription</key>
     <string>Calendar access lets MedFlow display your operating schedule alongside patient cases.</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>Face ID protects patient records and clinical data in Amise MedFlow.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Microphone access is required for voice dictation of clinical notes.</string>
     <key>NSSpeechRecognitionUsageDescription</key>
