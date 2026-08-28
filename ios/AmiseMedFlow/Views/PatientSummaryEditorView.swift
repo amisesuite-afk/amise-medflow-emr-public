@@ -29,6 +29,7 @@ struct PatientSummaryEditorView: View {
                     .padding(.top, 8)
                     .focused($editorFocused)
                     .onChange(of: noteText) { save() }
+                    .medicalDictation(mode: .clinicalSummary, patient: patient, text: $noteText)
 
                 // ── Empty state ──────────────────────────────────────────
                 if noteText.isEmpty && !ai.isGenerating {

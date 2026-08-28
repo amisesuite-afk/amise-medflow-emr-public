@@ -198,6 +198,10 @@ struct AssessmentView: View {
                     }
                 ))
                 .frame(minHeight: 120)
+                .medicalDictation(mode: .assessment, patient: patient,
+                                  text: Binding(get: { patient.assessmentText ?? "" },
+                                               set: { patient.assessmentText = $0.isEmpty ? nil : $0;
+                                                      patient.updatedAt = .now; patient.pendingSync = true }))
                 if (patient.assessmentText ?? "").isEmpty {
                     Text("Clinical impression, differentials, plan summary…")
                         .foregroundStyle(.tertiary)

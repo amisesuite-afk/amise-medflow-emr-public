@@ -784,6 +784,9 @@ struct ConsultationView: View {
                     TextEditor(text: Binding(get: { patient.hpi ?? "" },
                                             set: { patient.hpi = $0.isEmpty ? nil : $0; touch() }))
                         .frame(minHeight: 140)
+                        .medicalDictation(mode: .hpi, patient: patient,
+                                          text: Binding(get: { patient.hpi ?? "" },
+                                                        set: { patient.hpi = $0.isEmpty ? nil : $0; touch() }))
                     if (patient.hpi ?? "").isEmpty {
                         Text("Committed HPI will appear here — or type directly")
                             .foregroundStyle(.tertiary).font(.caption)
@@ -2067,6 +2070,9 @@ struct ConsultationView: View {
                     TextEditor(text: Binding(get: { patient.managementPlan ?? "" },
                                             set: { patient.managementPlan = $0.isEmpty ? nil : $0; touch() }))
                         .frame(minHeight: 160)
+                        .medicalDictation(mode: .plan, patient: patient,
+                                          text: Binding(get: { patient.managementPlan ?? "" },
+                                                        set: { patient.managementPlan = $0.isEmpty ? nil : $0; touch() }))
                     if (patient.managementPlan ?? "").isEmpty {
                         Text("Investigations · Referrals · Prescriptions · Follow-up plan · Red flag advice…")
                             .foregroundStyle(.tertiary).font(.callout)

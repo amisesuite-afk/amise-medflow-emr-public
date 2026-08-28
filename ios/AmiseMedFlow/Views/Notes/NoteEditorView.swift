@@ -283,6 +283,24 @@ struct NoteEditorView: View {
                 ))
                 .frame(minHeight: 300)
                 .font(.body.monospaced())
+                .overlay(alignment: .bottom) {
+                    // Dictation is available when the note belongs to a patient
+                    if let patient = note.patient {
+                        HStack {
+                            MedicalDictationButton(
+                                mode: dictationModeFor(note.noteType),
+                                patient: patient
+                            ) { polished in
+                                note.freeText = (note.freeText ?? "") + (note.freeText?.isEmpty == false ? "\n\n" : "") + polished
+                            }
+                            .padding(8)
+                            .background(.ultraThinMaterial, in: Circle())
+                            Spacer()
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 8)
+                    }
+                }
             } header: {
                 Label(note.noteType.label, systemImage: note.noteType.icon)
             }
@@ -372,6 +390,20 @@ struct NoteEditorView: View {
         if let sp = v.spo2               { parts.append("SpO₂ \(sp)%") }
         if let wt = v.weightKg           { parts.append("Wt \(String(format: "%.1f", wt)) kg") }
         return parts.joined(separator: "  ·  ")
+    }
+
+    // MARK: - Dictation mode mapping
+
+    private func dictationModeFor(_ type: NoteType) -> DictationMode {
+        switch type {
+        case .operative:       return .operativeNote
+        case .endoscopy:       return .endoscopy
+        case .discharge:       return .discharge
+        case .referralLetter:  return .referral
+        case .clinicalSummary: return .clinicalSummary
+        case .soap, .progress: return .hpi
+        default:               return .plan
+        }
     }
 
     // MARK: - Templates
