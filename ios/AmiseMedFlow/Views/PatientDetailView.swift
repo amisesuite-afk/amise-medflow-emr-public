@@ -106,6 +106,7 @@ struct PatientDetailPadView: View {
     var onBack: (() -> Void)? = nil
     @State private var selectedSection: PatientDetailSection? = .overview
     @State private var summaryPDFData: Data? = nil
+    @State private var showSummaryEditor = false
 
     // Clinical sections for the right panel — overview lives in the left panel now
     private var rightSections: [PatientDetailSection] { PatientDetailSection.allCases }
@@ -165,9 +166,10 @@ struct PatientDetailPadView: View {
                     }
                     ToolbarItem(placement: .primaryAction) {
                         HStack(spacing: 12) {
-                            Button { summaryPDFData = PatientSummaryPDF.generate(for: patient) } label: {
+                            Button { showSummaryEditor = true } label: {
                                 Image(systemName: "doc.text.fill")
                             }
+                            .help("Clinical Summary")
                             ShareLink(item: patient.handoverText,
                                       subject: Text("Patient Handover — \(patient.fullName)"),
                                       message: Text(patient.handoverText)) {
@@ -184,6 +186,9 @@ struct PatientDetailPadView: View {
         )) { wrapper in
             ShareSheet(items: [wrapper.data as Any])
                 .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showSummaryEditor) {
+            PatientSummaryEditorView(patient: patient)
         }
     }
 

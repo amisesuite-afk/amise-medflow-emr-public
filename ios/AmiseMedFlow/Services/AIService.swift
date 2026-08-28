@@ -325,6 +325,40 @@ final class AIService: ObservableObject {
         return try await generate(systemPrompt: system, userMessage: user)
     }
 
+    // MARK: - Clinical summary document
+
+    func generateClinicalSummary(patient: Patient) async throws -> String {
+        let system = """
+        You are a surgical registrar producing a structured clinical summary document for Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+        Write in professional British-Caribbean medical style. British spelling. Be precise and concise.
+        Format the document with clear section headings in UPPERCASE followed by a blank line.
+        Mark the document footer: [AI DRAFT — CLINICIAN REVIEW AND SIGNATURE REQUIRED]
+        Never fabricate clinical data not provided. If a section has no data, write "Not documented."
+        """
+        let date = DateFormatter.localizedString(from: .now, dateStyle: .long, timeStyle: .short)
+        let user = """
+        Generate a complete clinical summary document for:
+        \(clinicalContext(patient))
+        Date: \(date)
+
+        Include these sections (only if data is available):
+        - PATIENT DETAILS
+        - PRESENTING COMPLAINT
+        - HISTORY OF PRESENT ILLNESS
+        - PAST MEDICAL & SURGICAL HISTORY
+        - MEDICATIONS
+        - ALLERGIES
+        - EXAMINATION FINDINGS
+        - INVESTIGATIONS
+        - WORKING DIAGNOSIS
+        - MANAGEMENT PLAN
+        - FOLLOW-UP
+
+        Keep each section concise. Do not repeat data across sections.
+        """
+        return try await generate(systemPrompt: system, userMessage: user)
+    }
+
     // MARK: - Diagnosis-driven plan auto-draft
 
     func draftDiagnosisPlan(patient: Patient) async throws -> String {
