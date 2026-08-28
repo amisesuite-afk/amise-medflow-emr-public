@@ -1162,7 +1162,7 @@ final class SyncService: ObservableObject {
     }
 
     private func flushOutbox() async {
-        var entries = loadOutbox()
+        let entries = loadOutbox()
         guard !entries.isEmpty else { return }
 
         var failed: [OutboxEntry] = []
