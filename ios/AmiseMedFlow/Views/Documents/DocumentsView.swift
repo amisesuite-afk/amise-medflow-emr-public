@@ -459,7 +459,7 @@ struct PDFPreviewSheet: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> UINavigationController {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-        try? data.write(to: url)
+        _ = try? data.write(to: url)
         let ql = QLPreviewController()
         ql.dataSource = context.coordinator
         let nav = UINavigationController(rootViewController: ql)

@@ -51,7 +51,7 @@ struct AmiseMedFlowApp: App {
             .animation(.easeInOut(duration: 0.2), value: bioAuth.isLocked)
         }
         .modelContainer(sharedModelContainer)
-        .onChange(of: scenePhase) { newPhase in
+        .onChange(of: scenePhase, initial: false) { _, newPhase in
             switch newPhase {
             case .background:
                 bioAuth.recordBackground()

@@ -200,6 +200,7 @@ struct PatientSummaryEditorView: View {
                 ctx.beginPage()
             }
 
+            @discardableResult
             func drawString(_ s: String, attrs: [NSAttributedString.Key: Any], x: CGFloat, y: CGFloat, width: CGFloat) -> CGFloat {
                 let ns = NSAttributedString(string: s, attributes: attrs)
                 let rect = ns.boundingRect(with: CGSize(width: width, height: .greatestFiniteMagnitude),
