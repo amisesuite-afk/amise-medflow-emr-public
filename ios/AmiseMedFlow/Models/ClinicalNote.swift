@@ -64,6 +64,7 @@ final class ClinicalNote {
     var updatedAt: Date
     var syncedAt: Date?
     var pendingSync: Bool
+    var isAIAssisted: Bool
 
     // SOAP / Progress fields
     var subjective: String?
@@ -84,6 +85,7 @@ final class ClinicalNote {
         self.createdAt = .now
         self.updatedAt = .now
         self.pendingSync = true
+        self.isAIAssisted = false
         self.patient = patient
     }
 

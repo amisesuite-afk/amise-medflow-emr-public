@@ -395,8 +395,9 @@ struct NoteEditorView: View {
             note.objective   = draft.o
             note.assessment  = draft.a
             note.plan        = draft.p
-            note.updatedAt   = .now
-            note.pendingSync = true
+            note.updatedAt    = .now
+            note.isAIAssisted = true
+            note.pendingSync  = true
         } catch {
             aiError = error.localizedDescription
             showError = true
@@ -406,9 +407,10 @@ struct NoteEditorView: View {
     private func generateFreeText(patient: Patient) async {
         do {
             let text = try await ai.generateFreeText(patient: patient, noteType: note.noteType)
-            note.freeText    = text
-            note.updatedAt   = .now
-            note.pendingSync = true
+            note.freeText     = text
+            note.updatedAt    = .now
+            note.isAIAssisted = true
+            note.pendingSync  = true
         } catch {
             aiError = error.localizedDescription
             showError = true

@@ -119,13 +119,21 @@ final class SyncService: ObservableObject {
         let height_cm: Double?
         let ward: String?
         let bed_number: String?
+        let exam_general: String?
+        let exam_cvs: String?
+        let exam_resp: String?
+        let exam_abdo: String?
+        let exam_neuro: String?
+        let exam_msk: String?
+        let exam_skin: String?
+        let exam_other: String?
         let created_at: String
     }
 
     private func pullPatients(context: ModelContext) async throws {
         let rows: [RemotePatient] = try await SupabaseConfig.client
             .from("patients")
-            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, height_cm, ward, bed_number, created_at")
+            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, created_at")
             .order("created_at", ascending: false)
             .limit(500)
             .execute()
@@ -189,6 +197,14 @@ final class SyncService: ObservableObject {
             if let h = row.height_cm, patient.heightCm == nil { patient.heightCm = h }
             if let w = row.ward,   (patient.ward ?? "").isEmpty   { patient.ward = w }
             if let b = row.bed_number, (patient.bedNumber ?? "").isEmpty { patient.bedNumber = b }
+            if let eg = row.exam_general, (patient.examGeneral ?? "").isEmpty { patient.examGeneral = eg }
+            if let ec = row.exam_cvs,    (patient.examCVS ?? "").isEmpty     { patient.examCVS     = ec }
+            if let er = row.exam_resp,   (patient.examResp ?? "").isEmpty    { patient.examResp    = er }
+            if let ea = row.exam_abdo,   (patient.examAbdo ?? "").isEmpty    { patient.examAbdo    = ea }
+            if let en = row.exam_neuro,  (patient.examNeuro ?? "").isEmpty   { patient.examNeuro   = en }
+            if let em = row.exam_msk,    (patient.examMSK ?? "").isEmpty     { patient.examMSK     = em }
+            if let es = row.exam_skin,   (patient.examSkin ?? "").isEmpty    { patient.examSkin    = es }
+            if let eo = row.exam_other,  (patient.examOther ?? "").isEmpty   { patient.examOther   = eo }
 
             patient.syncedAt = .now
             patient.pendingSync = false
@@ -235,6 +251,7 @@ final class SyncService: ObservableObject {
             struct InsertRow: Encodable {
                 let full_name: String
                 let sex: String
+                let date_of_birth: String?
                 let phone: String?
                 let email: String?
                 let address: String?
@@ -258,10 +275,20 @@ final class SyncService: ObservableObject {
                 let height_cm: Double?
                 let ward: String?
                 let bed_number: String?
+                let exam_general: String?
+                let exam_cvs: String?
+                let exam_resp: String?
+                let exam_abdo: String?
+                let exam_neuro: String?
+                let exam_msk: String?
+                let exam_skin: String?
+                let exam_other: String?
             }
+            let isoFmt = ISO8601DateFormatter()
             let row = InsertRow(
                 full_name: patient.fullName,
                 sex: patient.sex.rawValue.lowercased(),
+                date_of_birth: patient.dateOfBirth.map { isoFmt.string(from: $0) },
                 phone: patient.phone,
                 email: patient.email,
                 address: patient.address,
@@ -284,7 +311,15 @@ final class SyncService: ObservableObject {
                 social_history: patient.socialHistory,
                 height_cm: patient.heightCm,
                 ward: patient.ward,
-                bed_number: patient.bedNumber
+                bed_number: patient.bedNumber,
+                exam_general: patient.examGeneral,
+                exam_cvs: patient.examCVS,
+                exam_resp: patient.examResp,
+                exam_abdo: patient.examAbdo,
+                exam_neuro: patient.examNeuro,
+                exam_msk: patient.examMSK,
+                exam_skin: patient.examSkin,
+                exam_other: patient.examOther
             )
             struct InsertResponse: Decodable { let id: String }
             let response: [InsertResponse] = try await SupabaseConfig.client
@@ -387,6 +422,14 @@ final class SyncService: ObservableObject {
                 let height_cm: Double?
                 let ward: String?
                 let bed_number: String?
+                let exam_general: String?
+                let exam_cvs: String?
+                let exam_resp: String?
+                let exam_abdo: String?
+                let exam_neuro: String?
+                let exam_msk: String?
+                let exam_skin: String?
+                let exam_other: String?
                 let updated_at: String
             }
             let iso = ISO8601DateFormatter()
@@ -418,6 +461,14 @@ final class SyncService: ObservableObject {
                 height_cm: patient.heightCm,
                 ward: patient.ward,
                 bed_number: patient.bedNumber,
+                exam_general: patient.examGeneral,
+                exam_cvs: patient.examCVS,
+                exam_resp: patient.examResp,
+                exam_abdo: patient.examAbdo,
+                exam_neuro: patient.examNeuro,
+                exam_msk: patient.examMSK,
+                exam_skin: patient.examSkin,
+                exam_other: patient.examOther,
                 updated_at: iso.string(from: patient.updatedAt)
             )
             try await SupabaseConfig.client
@@ -453,7 +504,7 @@ final class SyncService: ObservableObject {
                 note_type: note.noteType.rawValue,
                 status: note.status.rawValue,
                 content: note.contentForSync,
-                ai_assisted: false
+                ai_assisted: note.isAIAssisted
             )
             struct NoteResponse: Decodable { let id: String }
             let response: [NoteResponse] = try await SupabaseConfig.client
