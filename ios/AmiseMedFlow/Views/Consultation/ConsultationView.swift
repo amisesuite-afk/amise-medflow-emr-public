@@ -490,7 +490,7 @@ struct ConsultationView: View {
     @State private var icdQuery = ""
     @State private var icdSuggestions: [ICDCode] = []
     @State private var showAIError = false
-    @State private var showSavedConfirmation = false
+    @State private var consultationPDFWrapper: PDFDataWrapper?
     @State private var socratesSelections: [String: Set<String>] = [:]
     @State private var socratesExpandedDim: String? = "onset"
     @State private var pmhChipSelections: Set<String> = []
@@ -557,9 +557,9 @@ struct ConsultationView: View {
         .alert("AI Error", isPresented: $showAIError) {
             Button("OK", role: .cancel) {}
         } message: { Text(ai.error ?? "Unknown error") }
-        .alert("SOAP Note Saved", isPresented: $showSavedConfirmation) {
-            Button("OK", role: .cancel) {}
-        } message: { Text("Consultation saved to Notes tab.") }
+        .sheet(item: $consultationPDFWrapper) { wrapper in
+            ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
+        }
     }
 
     // MARK: - Allergy banner
@@ -2055,6 +2055,7 @@ struct ConsultationView: View {
             if let radiation = radiationResult, !dismissedRadiation {
                 DiagnosisRadiationCard(
                     radiation: radiation,
+                    patientAge: computedAge(from: patient.dateOfBirth),
                     onAddInvestigation: { inv in
                         let entry = InvestigationEntry(
                             name: inv.name, category: inv.category,
@@ -2107,9 +2108,9 @@ struct ConsultationView: View {
                 .foregroundStyle(.purple)
 
                 Button {
-                    Task { await saveSoapNote() }
+                    consultationPDFWrapper = exportConsultationPDF()
                 } label: {
-                    Label("Save as SOAP Note", systemImage: "square.and.arrow.down")
+                    Label("Export as PDF", systemImage: "square.and.arrow.up")
                 }
                 .foregroundStyle(.blue)
             }
@@ -2275,6 +2276,11 @@ struct ConsultationView: View {
 
     private func touch() { patient.updatedAt = .now; patient.pendingSync = true }
 
+    private func computedAge(from dob: Date?) -> Int? {
+        guard let dob else { return nil }
+        return Calendar.current.dateComponents([.year], from: dob, to: .now).year
+    }
+
     private func resetAllergyForm() {
         newAllergyName = ""; newAllergySeverity = "Moderate"; newAllergyReaction = ""
     }
@@ -2358,26 +2364,102 @@ struct ConsultationView: View {
         } catch { showAIError = true }
     }
 
-    private func saveSoapNote() async {
+    private func exportConsultationPDF() -> PDFDataWrapper? {
+        let pageW: CGFloat = 595.2
+        let pageH: CGFloat = 841.8
+        let margin: CGFloat = 48
+        let bodyW = pageW - margin * 2
+
+        let renderer = UIGraphicsPDFRenderer(bounds: CGRect(x: 0, y: 0, width: pageW, height: pageH))
+        let data = renderer.pdfData { ctx in
+            let para = NSMutableParagraphStyle(); para.lineSpacing = 2
+
+            let titleAttrs:  [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 14, weight: .bold),    .paragraphStyle: para]
+            let headingAttrs:[NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 11, weight: .semibold), .paragraphStyle: para]
+            let bodyAttrs:   [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 10),                    .paragraphStyle: para]
+            let mutedAttrs:  [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 8),  .foregroundColor: UIColor.secondaryLabel, .paragraphStyle: para]
+
+            func draw(_ s: String, attrs: [NSAttributedString.Key: Any], x: CGFloat, y: inout CGFloat, width: CGFloat) {
+                guard !s.isEmpty else { return }
+                let ns = NSAttributedString(string: s, attributes: attrs)
+                let rect = ns.boundingRect(with: CGSize(width: width, height: .greatestFiniteMagnitude), options: [.usesLineFragmentOrigin], context: nil)
+                if y + rect.height > pageH - margin {
+                    ctx.beginPage(); y = margin
+                }
+                ns.draw(in: CGRect(x: x, y: y, width: width, height: rect.height))
+                y += rect.height + 3
+            }
+
+            func section(_ title: String, body: String, y: inout CGFloat) {
+                guard !body.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                y += 6
+                draw(title.uppercased(), attrs: headingAttrs, x: margin, y: &y, width: bodyW)
+                UIColor.separator.setFill()
+                UIRectFill(CGRect(x: margin, y: y, width: bodyW, height: 0.5))
+                y += 4
+                draw(body, attrs: bodyAttrs, x: margin, y: &y, width: bodyW)
+            }
+
+            ctx.beginPage()
+            var y: CGFloat = margin
+
+            // Header
+            let dob = patient.dateOfBirth.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .none) } ?? "DOB unknown"
+            let ageStr = computedAge(from: patient.dateOfBirth).map { ", \($0)y" } ?? ""
+            draw("CONSULTATION REPORT — \(patient.fullName.uppercased())", attrs: titleAttrs, x: margin, y: &y, width: bodyW)
+            draw("\(patient.sex.rawValue)  ·  \(dob)\(ageStr)  ·  \(DateFormatter.localizedString(from: .now, dateStyle: .long, timeStyle: .short))",
+                 attrs: mutedAttrs, x: margin, y: &y, width: bodyW)
+            y += 4
+            UIColor.separator.setFill(); UIRectFill(CGRect(x: margin, y: y, width: bodyW, height: 1)); y += 10
+
+            // Clinical sections
+            if let cc = patient.chiefComplaint { section("Presenting Complaint", body: cc, y: &y) }
+            if let hpi = patient.hpi { section("History of Presenting Illness", body: hpi, y: &y) }
+            section("Allergies", body: allergySummary(), y: &y)
+
+            let med = medicationSummary()
+            if !med.isEmpty { section("Current Medications", body: med.replacingOccurrences(of: "Medications: ", with: ""), y: &y) }
+
+            if let pmh = patient.pmhNotes { section("Past Medical History", body: pmh, y: &y) }
+            if let psh = patient.surgicalHistory { section("Past Surgical History", body: psh, y: &y) }
+            if let fh = patient.familyHistoryNotes { section("Family History", body: fh, y: &y) }
+            if let sh = patient.socialHistory { section("Social History", body: sh, y: &y) }
+
+            let exam = examSummary()
+            if !exam.isEmpty { section("Examination Findings", body: exam, y: &y) }
+
+            // Investigations
+            let invs = patient.investigations.filter { $0.status != .suggested }
+            if !invs.isEmpty {
+                section("Investigations", body: invs.map { "• \($0.name): \($0.result ?? "Pending")" }.joined(separator: "\n"), y: &y)
+            }
+
+            // Diagnosis
+            if let dx = patient.workingDiagnosis {
+                let icd = patient.workingDiagnosisICD.map { " (\($0))" } ?? ""
+                section("Working Diagnosis", body: "\(dx)\(icd)", y: &y)
+            }
+
+            if let plan = patient.managementPlan { section("Management Plan", body: plan, y: &y) }
+
+            // Footer on last page
+            y = pageH - margin
+            draw("AMISE MEDICAL SERVICES · SAINT LUCIA · Generated \(DateFormatter.localizedString(from: .now, dateStyle: .medium, timeStyle: .short))",
+                 attrs: mutedAttrs, x: margin, y: &y, width: bodyW)
+        }
+
+        // Also archive a record in Notes
+        let note = ClinicalNote(noteType: .soap, patient: patient)
         let parts: [String] = [
             patient.chiefComplaint.map { "CC: \($0)" },
             patient.hpi.map { "HPI:\n\($0)" },
-            patient.pmhNotes.map { "PMH: \($0)" },
-            patient.surgicalHistory.map { "Past Surgical Hx: \($0)" },
-            allergySummary(),
-            medicationSummary(),
-            examSummary(),
-            patient.workingDiagnosis.map { dx -> String in
-                let icdSuffix = patient.workingDiagnosisICD.map { " (\($0))" } ?? ""
-                return "Diagnosis: \(dx)\(icdSuffix)"
-            },
+            patient.workingDiagnosis.map { "Diagnosis: \($0)" },
             patient.managementPlan.map { "Plan:\n\($0)" },
         ].compactMap { $0 }
-
-        let note = ClinicalNote(noteType: .soap, patient: patient)
         note.freeText = parts.joined(separator: "\n\n")
         context.insert(note); touch()
-        showSavedConfirmation = true
+
+        return PDFDataWrapper(data: data)
     }
 
     private func allergySummary() -> String {

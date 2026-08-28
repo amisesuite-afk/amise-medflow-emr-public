@@ -20,16 +20,36 @@ struct DiagnosisRadiation {
         let cptDescription: String?
     }
 
+    // MARK: - Clinical scoring criteria
+    struct ScoreVariable {
+        let id: String
+        let label: String
+        let unit: String
+        let hint: String           // normal range or decision boundary shown as placeholder
+        let cutoffValue: Double    // threshold that scores a point
+        let cutoffIsAbove: Bool    // true = scores if value > cutoff; false = scores if value < cutoff
+        let autoFillAge: Int?      // if set, pre-fills as "1" when patient age > this value
+        let groupId: String?       // "enzymes" → show LDH or AST (either scores)
+    }
+    struct ScoringCriteria {
+        let scoreName: String
+        let variables: [ScoreVariable]
+        let severeThreshold: Int   // ≥ this value = severe
+        let maxScore: Int
+        let timingNote: String     // e.g. "Assess at 48 h"
+    }
+
     let conditionName: String
     let icd10Primary: String
     let investigations: [SuggestedInvestigation]
-    let planTemplate: String          // multiline, surgeon edits before saving
+    let planTemplate: String
     let billingCodes: [BillingCode]
-    let consentCategory: String?      // links to operative plan / consent
+    let consentCategory: String?
     let urgencyNote: String?
     let redFlags: [String]
     let followUp: String
-    let guidelineReference: String?   // e.g. "NICE NG12; ASGE 2019"
+    let guidelineReference: String?
+    let scoringCriteria: ScoringCriteria?
 
     init(
         conditionName: String,
@@ -41,7 +61,8 @@ struct DiagnosisRadiation {
         urgencyNote: String?,
         redFlags: [String],
         followUp: String,
-        guidelineReference: String? = nil
+        guidelineReference: String? = nil,
+        scoringCriteria: ScoringCriteria? = nil
     ) {
         self.conditionName = conditionName
         self.icd10Primary = icd10Primary
@@ -53,6 +74,7 @@ struct DiagnosisRadiation {
         self.redFlags = redFlags
         self.followUp = followUp
         self.guidelineReference = guidelineReference
+        self.scoringCriteria = scoringCriteria
     }
 }
 
@@ -236,7 +258,24 @@ enum DiagnosisRadiationEngine {
             urgencyNote: "Admit. Assess severity (Glasgow/Ranson). Review at 24h and 48h.",
             redFlags: ["Glasgow ≥3 → severe → HDU", "Organ failure → ICU", "Infected necrosis → surgery or drainage"],
             followUp: "Review 4–6 weeks. Cholecystectomy before discharge if gallstone aetiology. Repeat USS.",
-            guidelineReference: "BSG 2022; IAP/APA 2013; Atlanta Classification 2012"
+            guidelineReference: "BSG 2022; IAP/APA 2013; Atlanta Classification 2012",
+            scoringCriteria: .init(
+                scoreName: "Glasgow Pancreatitis Score",
+                variables: [
+                    .init(id: "pao2",     label: "PaO₂",         unit: "mmHg",   hint: "< 60 scores",  cutoffValue: 60,  cutoffIsAbove: false, autoFillAge: nil, groupId: nil),
+                    .init(id: "age",      label: "Age",           unit: "years",  hint: "> 55 scores",  cutoffValue: 55,  cutoffIsAbove: true,  autoFillAge: 55,  groupId: nil),
+                    .init(id: "wbc",      label: "WBC",           unit: "×10⁹/L", hint: "> 15 scores",  cutoffValue: 15,  cutoffIsAbove: true,  autoFillAge: nil, groupId: nil),
+                    .init(id: "calcium",  label: "Calcium",       unit: "mmol/L", hint: "< 2.0 scores", cutoffValue: 2.0, cutoffIsAbove: false, autoFillAge: nil, groupId: nil),
+                    .init(id: "urea",     label: "Urea",          unit: "mmol/L", hint: "> 16 scores",  cutoffValue: 16,  cutoffIsAbove: true,  autoFillAge: nil, groupId: nil),
+                    .init(id: "ldh",      label: "LDH",           unit: "IU/L",   hint: "> 600 scores", cutoffValue: 600, cutoffIsAbove: true,  autoFillAge: nil, groupId: "enzymes"),
+                    .init(id: "ast",      label: "AST",           unit: "IU/L",   hint: "> 200 scores", cutoffValue: 200, cutoffIsAbove: true,  autoFillAge: nil, groupId: "enzymes"),
+                    .init(id: "albumin",  label: "Albumin",       unit: "g/L",    hint: "< 32 scores",  cutoffValue: 32,  cutoffIsAbove: false, autoFillAge: nil, groupId: nil),
+                    .init(id: "glucose",  label: "Glucose",       unit: "mmol/L", hint: "> 10 scores",  cutoffValue: 10,  cutoffIsAbove: true,  autoFillAge: nil, groupId: nil),
+                ],
+                severeThreshold: 3,
+                maxScore: 8,
+                timingNote: "Score at 48 h after admission"
+            )
         )),
 
         // ══════════════════════════════════════════════════════════════

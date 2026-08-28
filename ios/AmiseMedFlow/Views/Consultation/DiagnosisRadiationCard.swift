@@ -6,12 +6,14 @@ import SwiftUI
 
 struct DiagnosisRadiationCard: View {
     let radiation: DiagnosisRadiation
+    let patientAge: Int?
     let onAddInvestigation: (DiagnosisRadiation.SuggestedInvestigation) -> Void
     let onUsePlan: (String) -> Void
     let onDismiss: () -> Void
 
     @State private var expanded = true
     @State private var addedNames: Set<String> = []
+    @State private var scoreValues: [String: String] = [:]
 
     var body: some View {
         Section {
@@ -23,6 +25,7 @@ struct DiagnosisRadiationCard: View {
                 }
             }
         }
+        .onAppear { preloadAgeFields() }
     }
 
     // MARK: - Header
@@ -85,6 +88,11 @@ struct DiagnosisRadiationCard: View {
                         }
                     }
                 }
+            }
+
+            // Clinical score calculator
+            if let criteria = radiation.scoringCriteria {
+                scoringSection(criteria)
             }
 
             // Suggested investigations
@@ -189,5 +197,205 @@ struct DiagnosisRadiationCard: View {
             }
         }
         .padding(.vertical, 8)
+    }
+
+    // MARK: - Score calculator
+
+    @ViewBuilder
+    private func scoringSection(_ criteria: DiagnosisRadiation.ScoringCriteria) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Label(criteria.scoreName, systemImage: "chart.bar.doc.horizontal")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.teal)
+                Spacer()
+                scoreBadge(criteria)
+            }
+            Text(criteria.timingNote)
+                .font(.system(size: 10))
+                .foregroundStyle(.secondary)
+
+            // Variable input rows — skip duplicate groupId entries (show only first in group)
+            let displayedVars = dedupedVariables(criteria.variables)
+            ForEach(displayedVars, id: \.id) { variable in
+                scoreVariableRow(variable)
+            }
+
+            // Pending variables list
+            let pending = pendingVariables(criteria.variables)
+            if !pending.isEmpty {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Pending results:")
+                        .font(.system(size: 10, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                    Text(pending.map { $0.label }.joined(separator: " · "))
+                        .font(.system(size: 10))
+                        .foregroundStyle(.orange)
+                }
+                .padding(6)
+                .background(Color.orange.opacity(0.08), in: RoundedRectangle(cornerRadius: 6))
+            }
+        }
+        .padding(.vertical, 2)
+    }
+
+    @ViewBuilder
+    private func scoreVariableRow(_ variable: DiagnosisRadiation.ScoreVariable) -> some View {
+        HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text(variable.label)
+                    .font(.system(size: 11, weight: .medium))
+                Text(variable.hint)
+                    .font(.system(size: 9))
+                    .foregroundStyle(.secondary)
+            }
+            .frame(minWidth: 80, alignment: .leading)
+
+            Spacer()
+
+            // Value field
+            HStack(spacing: 4) {
+                TextField("—", text: binding(for: variable))
+                    .keyboardType(.decimalPad)
+                    .font(.system(size: 12, weight: .semibold).monospaced())
+                    .multilineTextAlignment(.trailing)
+                    .frame(width: 64)
+                    .padding(.horizontal, 6).padding(.vertical, 4)
+                    .background(Color(.secondarySystemFill), in: RoundedRectangle(cornerRadius: 6))
+                Text(variable.unit)
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 42, alignment: .leading)
+            }
+
+            // Point indicator
+            pointIndicator(for: variable)
+        }
+    }
+
+    @ViewBuilder
+    private func scoreBadge(_ criteria: DiagnosisRadiation.ScoringCriteria) -> some View {
+        let score = computedScore(criteria)
+        let entered = enteredCount(criteria.variables)
+        let total = criteria.variables.count
+
+        HStack(spacing: 5) {
+            if entered > 0 {
+                Text("\(score)/\(criteria.maxScore)")
+                    .font(.system(size: 13, weight: .bold).monospaced())
+                    .foregroundStyle(scoreColor(score, threshold: criteria.severeThreshold))
+                if entered < total {
+                    Text("(\(entered)/\(total) entered)")
+                        .font(.system(size: 9))
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(score >= criteria.severeThreshold ? "SEVERE" : "MILD–MOD")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(scoreColor(score, threshold: criteria.severeThreshold))
+                }
+            } else {
+                Text("Enter results")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.horizontal, 8).padding(.vertical, 4)
+        .background(entered > 0
+            ? scoreColor(score, threshold: criteria.severeThreshold).opacity(0.12)
+            : Color(.secondarySystemFill),
+            in: RoundedRectangle(cornerRadius: 8))
+    }
+
+    @ViewBuilder
+    private func pointIndicator(for variable: DiagnosisRadiation.ScoreVariable) -> some View {
+        let text = scoreValues[variable.id] ?? ""
+        if text.isEmpty {
+            Circle()
+                .fill(Color.secondary.opacity(0.2))
+                .frame(width: 16, height: 16)
+        } else if let val = Double(text) {
+            let scores = variableScores(variable, value: val)
+            Circle()
+                .fill(scores ? Color.red : Color.green)
+                .frame(width: 16, height: 16)
+                .overlay(
+                    Text(scores ? "+1" : "0")
+                        .font(.system(size: 7, weight: .bold))
+                        .foregroundStyle(.white)
+                )
+        } else {
+            Circle()
+                .fill(Color.orange.opacity(0.5))
+                .frame(width: 16, height: 16)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func binding(for variable: DiagnosisRadiation.ScoreVariable) -> Binding<String> {
+        Binding(
+            get: { scoreValues[variable.id] ?? "" },
+            set: { scoreValues[variable.id] = $0 }
+        )
+    }
+
+    private func variableScores(_ variable: DiagnosisRadiation.ScoreVariable, value: Double) -> Bool {
+        variable.cutoffIsAbove ? value > variable.cutoffValue : value < variable.cutoffValue
+    }
+
+    private func computedScore(_ criteria: DiagnosisRadiation.ScoringCriteria) -> Int {
+        var total = 0
+        var countedGroups: Set<String> = []
+        for variable in criteria.variables {
+            guard let text = scoreValues[variable.id], !text.isEmpty,
+                  let val = Double(text) else { continue }
+            if let gid = variable.groupId {
+                guard !countedGroups.contains(gid) else { continue }
+                if variableScores(variable, value: val) {
+                    total += 1
+                    countedGroups.insert(gid)
+                }
+            } else {
+                if variableScores(variable, value: val) { total += 1 }
+            }
+        }
+        return total
+    }
+
+    private func enteredCount(_ variables: [DiagnosisRadiation.ScoreVariable]) -> Int {
+        variables.filter { !(scoreValues[$0.id] ?? "").isEmpty }.count
+    }
+
+    private func pendingVariables(_ variables: [DiagnosisRadiation.ScoreVariable]) -> [DiagnosisRadiation.ScoreVariable] {
+        dedupedVariables(variables).filter { (scoreValues[$0.id] ?? "").isEmpty }
+    }
+
+    // Collapse grouped variables — show only the first in each group
+    private func dedupedVariables(_ variables: [DiagnosisRadiation.ScoreVariable]) -> [DiagnosisRadiation.ScoreVariable] {
+        var seen: Set<String> = []
+        return variables.filter { v in
+            guard let gid = v.groupId else { return true }
+            if seen.contains(gid) { return false }
+            seen.insert(gid)
+            return true
+        }
+    }
+
+    private func scoreColor(_ score: Int, threshold: Int) -> Color {
+        if score >= threshold + 2 { return .red }
+        if score >= threshold { return .orange }
+        return .green
+    }
+
+    private func preloadAgeFields() {
+        guard let age = patientAge else { return }
+        if let criteria = radiation.scoringCriteria {
+            for variable in criteria.variables {
+                if let cutoffAge = variable.autoFillAge, (scoreValues[variable.id] ?? "").isEmpty {
+                    scoreValues[variable.id] = String(age)
+                    _ = cutoffAge  // cutoff is encoded in variable.cutoffValue
+                }
+            }
+        }
     }
 }
