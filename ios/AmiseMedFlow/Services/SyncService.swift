@@ -84,6 +84,7 @@ final class SyncService: ObservableObject {
             try await pullPrescriptions(context: context)
             try await pushPendingVitals(context: context)
             try await pullVitals(context: context)
+            try await pushPendingOperativePlans(context: context)
             lastSyncedAt = .now
             recountPending(context: context)
         } catch {
@@ -819,6 +820,90 @@ final class SyncService: ObservableObject {
         try context.save()
     }
 
+    // MARK: - Operative plan sync (push-only; plan is per-patient and upserted)
+
+    private func pushPendingOperativePlans(context: ModelContext) async throws {
+        let pending = try context.fetch(FetchDescriptor<OperativePlan>())
+            .filter { $0.pendingSync }
+        guard !pending.isEmpty else { return }
+
+        let iso = ISO8601DateFormatter()
+
+        for plan in pending {
+            guard let patientId = plan.patient?.remoteId else { continue }
+
+            let whoDict: [String: Bool] = [
+                "identity":           plan.whoIdentityConfirmed,
+                "site_marked":        plan.whoSiteMarked,
+                "anaesthesia_check":  plan.whoAnaesthesiaCheckDone,
+                "pulse_ox":           plan.whoPulseOxOk,
+                "allergies":          plan.whoAllergiesReviewed,
+                "aspiration_risk":    plan.whoAspirationRisk,
+                "airway_risk":        plan.whoAirwayRisk,
+                "team_introduced":    plan.whoTeamIntroduced,
+                "procedure_confirmed":plan.whoProcedureConfirmed,
+                "antibiotic_given":   plan.whoAntibioticGiven,
+                "critical_steps":     plan.whoCriticalStepsDiscussed,
+                "imaging_displayed":  plan.whoImagingDisplayed,
+                "sterility":          plan.whoSterilityConfirmed,
+                "swabs_counted":      plan.whoSwabsCounted,
+                "specimen_labelled":  plan.whoSpecimenLabelled,
+                "equipment_issues":   plan.whoEquipmentIssues,
+                "recovery_concerns":  plan.whoRecoveryConcerns,
+            ]
+            let whoJSON = (try? JSONSerialization.data(withJSONObject: whoDict))
+                .flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+
+            struct PlanRow: Encodable {
+                let patient_id: String
+                let updated_at: String
+                let consent_procedure: String
+                let consent_signed: Bool
+                let anaesthesia_type: String
+                let positioning: String
+                let antibiotic_prophylaxis: String
+                let vte_prophy: String
+                let special_equipment: String
+                let surgical_team_note: String
+                let who_checklist: String   // raw JSON string; Supabase coerces to JSONB
+            }
+            let row = PlanRow(
+                patient_id: patientId,
+                updated_at: iso.string(from: plan.updatedAt),
+                consent_procedure: plan.consentProcedure,
+                consent_signed: plan.consentSigned,
+                anaesthesia_type: plan.anaesthesiaType,
+                positioning: plan.positioning,
+                antibiotic_prophylaxis: plan.antibioticProphylaxis,
+                vte_prophy: plan.vteProphy,
+                special_equipment: plan.specialEquipment,
+                surgical_team_note: plan.surgicalTeamNote,
+                who_checklist: whoJSON
+            )
+
+            if let remoteId = plan.remoteId {
+                // Update existing row
+                try await SupabaseConfig.client
+                    .from("patient_operative_plans")
+                    .update(row)
+                    .eq("id", value: remoteId)
+                    .execute()
+            } else {
+                // Insert new row
+                struct PlanResponse: Decodable { let id: String }
+                let response: [PlanResponse] = try await SupabaseConfig.client
+                    .from("patient_operative_plans")
+                    .insert(row)
+                    .select("id")
+                    .execute()
+                    .value
+                if let first = response.first { plan.remoteId = first.id }
+            }
+            plan.pendingSync = false
+        }
+        try context.save()
+    }
+
     // MARK: - Pending count
 
     private func recountPending(context: ModelContext) {
@@ -826,7 +911,8 @@ final class SyncService: ObservableObject {
         let nCount = (try? context.fetch(FetchDescriptor<ClinicalNote>()))?.filter { $0.pendingSync }.count ?? 0
         let rxCount = (try? context.fetch(FetchDescriptor<Prescription>()))?.filter { $0.pendingSync }.count ?? 0
         let vCount  = (try? context.fetch(FetchDescriptor<VitalsEntry>()))?.filter { $0.pendingSync }.count ?? 0
-        pendingCount = pCount + nCount + rxCount + vCount
+        let opCount = (try? context.fetch(FetchDescriptor<OperativePlan>()))?.filter { $0.pendingSync }.count ?? 0
+        pendingCount = pCount + nCount + rxCount + vCount + opCount
     }
 
     // MARK: - Offline write queue (persisted in UserDefaults, flushed on reconnect)
@@ -883,6 +969,11 @@ final class SyncService: ObservableObject {
                     if let v = all.first(where: { $0.id.uuidString == entry.entityId }) {
                         v.pendingSync = true
                     }
+                case "operative_plan":
+                    let all = try ctx.fetch(FetchDescriptor<OperativePlan>())
+                    if let op = all.first(where: { $0.id.uuidString == entry.entityId }) {
+                        op.pendingSync = true
+                    }
                 default:
                     break
                 }
@@ -899,6 +990,7 @@ final class SyncService: ObservableObject {
             try? await pushPendingNotes(context: ctx)
             try? await pushPendingPrescriptions(context: ctx)
             try? await pushPendingVitals(context: ctx)
+            try? await pushPendingOperativePlans(context: ctx)
         }
     }
 

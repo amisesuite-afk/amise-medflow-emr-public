@@ -4,6 +4,8 @@ import SwiftData
 @Model
 final class OperativePlan {
     var id: UUID
+    var remoteId: String?
+    var pendingSync: Bool
     var updatedAt: Date
     var patient: Patient?
 
@@ -44,6 +46,7 @@ final class OperativePlan {
 
     init() {
         self.id = UUID()
+        self.pendingSync = true
         self.updatedAt = .now
         self.consentProcedure = ""
         self.consentSigned = false

@@ -302,6 +302,7 @@ private struct PlanForm: View {
 
     private func touch() {
         plan.updatedAt = .now
+        plan.pendingSync = true
     }
 
     private func draftOpNote() async {
