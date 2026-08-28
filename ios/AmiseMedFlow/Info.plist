@@ -52,5 +52,9 @@
     <string>Camera is used for patient photo documentation.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Photo library is used for attaching clinical images.</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Calendar access lets MedFlow display your operating schedule alongside patient cases.</string>
+    <key>NSCalendarsFullAccessUsageDescription</key>
+    <string>Calendar access lets MedFlow display your operating schedule alongside patient cases.</string>
 </dict>
 </plist>

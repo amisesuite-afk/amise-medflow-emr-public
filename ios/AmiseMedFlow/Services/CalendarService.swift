@@ -1,89 +1,87 @@
 import Foundation
+import EventKit
+import SwiftUI
 
-struct GoogleCalendarEvent: Identifiable, Decodable {
-    let id: String
-    let summary: String
-    let start: String
-    let end: String
-    let type: String
-
-    var startDate: Date? { ISO8601DateFormatter().date(from: start) }
-    var endDate: Date?   { ISO8601DateFormatter().date(from: end) }
-
-    var typeColor: String {
-        switch type {
-        case "theatre":   return "purple"
-        case "endoscopy": return "cyan"
-        case "clinic":    return "blue"
-        case "break":     return "gray"
-        default:          return "secondary"
-        }
-    }
-
-    var typeLabel: String {
-        switch type {
-        case "theatre":   return "THTR"
-        case "endoscopy": return "ENDO"
-        case "clinic":    return "CLIN"
-        case "break":     return "BRK"
-        default:          return "EVT"
-        }
-    }
-}
-
-private struct UpcomingResponse: Decodable {
-    let events: [GoogleCalendarEvent]
-    let fetchedAt: String
-}
+// Reads events directly from the iOS Calendar store, which syncs with Google
+// Calendar when the user has added their Google account in iOS Settings →
+// Mail → Accounts (or Settings → Calendar → Accounts).
 
 @MainActor
 final class CalendarService: ObservableObject {
-    @Published var events: [GoogleCalendarEvent] = []
+    @Published var events: [EKEvent] = []
     @Published var isLoading = false
     @Published var isSyncing = false
     @Published var error: String?
-    @Published var fetchedAt: Date?
+
+    private let store = EKEventStore()
 
     func fetch() async {
+        guard !isLoading else { return }
         isLoading = true
         error = nil
         defer { isLoading = false }
-        await load()
+        await authoriseAndLoad()
     }
 
     func sync() async {
         isSyncing = true
         error = nil
         defer { isSyncing = false }
+        await authoriseAndLoad()
+    }
+
+    private func authoriseAndLoad() async {
         do {
-            let token = try await accessToken()
-            guard let url = URL(string: "\(AppConfig.apiServerURL)/api/scheduling/sync") else { return }
-            var req = URLRequest(url: url)
-            req.httpMethod = "POST"
-            req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            _ = try await URLSession.shared.data(for: req)
-            await load()
+            let granted: Bool
+            if #available(iOS 17.0, *) {
+                granted = try await store.requestFullAccessToEvents()
+            } else {
+                granted = try await withCheckedThrowingContinuation { cont in
+                    store.requestAccess(to: .event) { ok, err in
+                        if let err { cont.resume(throwing: err) }
+                        else { cont.resume(returning: ok) }
+                    }
+                }
+            }
+            if granted {
+                loadEvents()
+            } else {
+                error = "Calendar access denied — enable in Settings → Privacy & Security → Calendars."
+            }
         } catch {
             self.error = error.localizedDescription
         }
     }
 
-    private func load() async {
-        do {
-            let token = try await accessToken()
-            guard let url = URL(string: "\(AppConfig.apiServerURL)/api/scheduling/upcoming?days=30") else { return }
-            var req = URLRequest(url: url)
-            req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            let (data, _) = try await URLSession.shared.data(for: req)
-            let decoded = try JSONDecoder().decode(UpcomingResponse.self, from: data)
-            events = decoded.events
-            fetchedAt = ISO8601DateFormatter().date(from: decoded.fetchedAt)
-        } catch {
-            self.error = error.localizedDescription
-        }
+    private func loadEvents() {
+        // Fetch ±1 month in past, +3 months forward
+        let start = Calendar.current.date(byAdding: .month, value: -1, to: .now) ?? .now
+        let end   = Calendar.current.date(byAdding: .month, value: 3,  to: .now) ?? .now
+        let pred  = store.predicateForEvents(withStart: start, end: end, calendars: nil)
+        events = store.events(matching: pred).filter { !$0.isAllDay || $0.startDate != nil }
+            .sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }
+    }
+}
+
+// MARK: - EKEvent helpers used by ScheduleView
+
+extension EKEvent {
+    var calEntryLabel: String {
+        let t = (calendar?.title ?? "").lowercased()
+        if t.contains("theatre") || t.contains("theater") || t.contains("surg") { return "THTR" }
+        if t.contains("endoscopy") || t.contains("scope") || t.contains("ercp") { return "ENDO" }
+        if t.contains("clinic") || t.contains("outpatient") || t.contains("opd") { return "CLIN" }
+        if t.contains("break") || t.contains("lunch") || t.contains("admin") { return "BRK" }
+        return "CAL"
     }
 
-    private func accessToken() async throws -> String {
-        try await SupabaseConfig.client.auth.session.accessToken
+    var calEntryColor: Color {
+        if let cgc = calendar?.cgColor { return Color(cgc) }
+        switch calEntryLabel {
+        case "THTR": return .purple
+        case "ENDO": return .cyan
+        case "CLIN": return .blue
+        default:     return Color(.systemGray2)
+        }
     }
 }

@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import EventKit
 
 // MARK: - Constants
 
@@ -60,15 +61,15 @@ struct ScheduleView: View {
         }
         for e in calSvc.events {
             guard let s = e.startDate else { continue }
-            let c: Color
-            switch e.type {
-            case "theatre":   c = .purple
-            case "endoscopy": c = .cyan
-            case "clinic":    c = .blue
-            default:          c = Color(.systemGray2)
-            }
-            out.append(CalEntry(id: "G\(e.id)", title: e.summary, subtitle: nil,
-                start: s, end: e.endDate ?? s.addingTimeInterval(3600), label: e.typeLabel, color: c))
+            let end = e.endDate ?? s.addingTimeInterval(3600)
+            out.append(CalEntry(
+                id: "K\(e.eventIdentifier ?? UUID().uuidString)",
+                title: e.title ?? "Event",
+                subtitle: e.calendar?.title,
+                start: s, end: end,
+                label: e.calEntryLabel,
+                color: e.calEntryColor
+            ))
         }
         return out.sorted { $0.start < $1.start }
     }
