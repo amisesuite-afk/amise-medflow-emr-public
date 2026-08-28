@@ -278,6 +278,7 @@ struct VitalsEntryView: View {
         entry.onSupplementalO2   = onSupplementalO2
         entry.notes              = notes.isEmpty ? nil : notes
         context.insert(entry)
+        try? context.save()
         dismiss()
     }
 }

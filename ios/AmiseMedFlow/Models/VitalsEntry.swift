@@ -26,6 +26,8 @@ enum AVPU: String, Codable, CaseIterable {
 @Model
 final class VitalsEntry {
     var id: UUID
+    var remoteId: String?
+    var pendingSync: Bool
     var recordedAt: Date
     var bpSystolic: Int?
     var bpDiastolic: Int?
@@ -43,6 +45,7 @@ final class VitalsEntry {
 
     init(patient: Patient, recordedAt: Date = .now) {
         self.id = UUID()
+        self.pendingSync = true
         self.recordedAt = recordedAt
         self.avpu = .alert
         self.onSupplementalO2 = false
