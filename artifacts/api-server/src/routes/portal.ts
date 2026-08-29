@@ -321,6 +321,8 @@ router.post('/api/patient/sms-code/verify', async (req, res) => {
       req.log.error({ err: authLinkErr, patientId: patient.id }, '[portal/sms-code/verify] auth_user_id back-link failed — patient will be locked out');
     }
 
+    void logAudit(req, 'login', 'patient', patient.id, patient.id, { method: 'sms_otp' });
+
     res.json({
       access_token: data.session.access_token,
       refresh_token: data.session.refresh_token,
@@ -565,6 +567,7 @@ router.post('/api/patient/documents/register', async (req, res) => {
 
     if (error) throw error;
 
+    void logAudit(req, 'create', 'document', data.id, auth.patientId, { document_type: docType, source: 'patient_portal' });
     res.json({ status: 'registered', document_id: data.id });
 
     void extractDocumentInsights(data.id);
@@ -952,6 +955,7 @@ router.patch('/api/patient/consultation-requests/:id', async (req, res) => {
       }
     }
 
+    void logAudit(req, 'update', 'consultation_request', id, patientId ?? undefined, { status, staff_notes: staff_notes !== undefined, patient_linked: !!patientId, invited });
     res.json({ success: true, patient_id: patientId, invited });
   } catch (err) {
     req.log.error({ err }, '[portal/consultation-requests/:id] error');
