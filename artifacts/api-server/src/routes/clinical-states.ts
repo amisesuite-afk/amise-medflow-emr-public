@@ -236,6 +236,7 @@ router.patch('/api/clinical-states/:id', async (req, res) => {
     if (error) throw error;
 
     log.info({ id }, '[clinical-states] updated');
+    void logAudit(req, 'update', 'clinical_state', id, undefined, { fields: Object.keys(patch).filter(k => k !== 'updated_at') });
     res.json(data);
   } catch (err) {
     log.error({ err }, '[clinical-states] update error');
@@ -374,6 +375,7 @@ router.delete('/api/clinical-states/:id', async (req, res) => {
     ]);
 
     log.info({ id, reason }, '[clinical-states] marked entered_in_error');
+    void logAudit(req, 'delete', 'clinical_state', id, undefined, { reason });
     res.json({ id, status: 'entered_in_error' });
   } catch (err) {
     log.error({ err }, '[clinical-states] delete error');
