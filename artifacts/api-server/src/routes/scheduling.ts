@@ -7,6 +7,7 @@ import { requireCronSecret, sb } from '../lib/supabase.js';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 // Resolves correctly in both ts-node (src/routes/) and esbuild bundle (dist/)
 const CACHE_PATH = join(process.cwd(), 'src/data/calendar-cache.json');
@@ -313,6 +314,7 @@ router.post('/api/scheduling/book-followup', requireAuth, async (req, res) => {
       },
     });
 
+    void logAudit(req, 'create', 'appointment', data.id ?? undefined, patientId, { entityType: 'follow_up_calendar_event', followUpDate, visitType, patientName });
     res.json({
       eventId:    data.id,
       eventLink:  data.htmlLink ?? null,
