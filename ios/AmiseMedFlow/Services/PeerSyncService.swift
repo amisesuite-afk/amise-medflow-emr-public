@@ -97,6 +97,14 @@ final class PeerSyncService: NSObject, ObservableObject {
         peerSyncStatus = ""
     }
 
+    // Called on user sign-out — stops advertising and clears the stored email so
+    // restart() (called on every foreground) does not resume with a stale identity.
+    func signOut() {
+        stop()
+        storedEmail = ""
+        emailHash   = ""
+    }
+
     // MARK: - Manual controls
 
     func syncNow() {

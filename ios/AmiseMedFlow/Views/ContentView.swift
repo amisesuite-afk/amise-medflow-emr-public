@@ -299,7 +299,9 @@ struct ContentView: View {
         }
         .onChange(of: sync.currentUserEmail) { _, email in
             guard let email, !email.isEmpty else {
-                peerSync.stop()   // signed out — kill peer advertising
+                // Sign-out path: clear storedEmail so restart() on next foreground
+                // doesn't resume advertising under the old account's identity.
+                peerSync.signOut()
                 return
             }
             // Stop any session that may have started with an empty email hash,
