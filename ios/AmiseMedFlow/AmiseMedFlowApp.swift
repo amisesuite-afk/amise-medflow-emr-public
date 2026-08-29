@@ -63,6 +63,9 @@ struct AmiseMedFlowApp: App {
                 // Re-sync every time the app comes to the foreground (picks up changes
                 // made on another device, including iPhone ↔ iPad in the same room)
                 Task { await sync.syncIfAuthenticated() }
+                // peerSync.stop() is called on .background; restart it on .active
+                // using stored credentials (no-op if never started)
+                peerSync.restart()
             default:
                 break
             }

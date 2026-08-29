@@ -298,7 +298,10 @@ struct ContentView: View {
             }
         }
         .onChange(of: sync.currentUserEmail) { _, email in
-            guard let email, !email.isEmpty else { return }
+            guard let email, !email.isEmpty else {
+                peerSync.stop()   // signed out — kill peer advertising
+                return
+            }
             // Stop any session that may have started with an empty email hash,
             // then restart with the real address so peer matching is correct.
             peerSync.stop()
