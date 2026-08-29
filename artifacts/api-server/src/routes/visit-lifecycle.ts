@@ -373,7 +373,7 @@ router.post('/api/visit/medication-reconciliation/:encounterId', async (req, res
 
     // Upsert each medication for this encounter
     for (const med of medications) {
-      await supa.from('medications').upsert({
+      const { error: medUpsertErr } = await supa.from('medications').upsert({
         patient_id: encounter.patient_id,
         encounter_id: encounterId,
         drug_name: med.drugName,
@@ -383,6 +383,7 @@ router.post('/api/visit/medication-reconciliation/:encounterId', async (req, res
         indication: 'consultation-list',
         status: med.status ?? 'active',
       }, { onConflict: 'patient_id,encounter_id,drug_name,indication' });
+      if (medUpsertErr) logger.warn({ err: medUpsertErr, drugName: med.drugName, encounterId }, '[visit/med-recon] medication upsert failed');
     }
 
     await audit({
@@ -528,10 +529,12 @@ router.post('/api/visit/amend-note/:noteId', async (req, res) => {
       return;
     }
 
-    // Mark original as amended
-    await supa.from('clinical_notes')
+    // Mark original as amended — must succeed before inserting the new version
+    // to avoid leaving two signed notes for the same encounter/type combination.
+    const { error: amendErr } = await supa.from('clinical_notes')
       .update({ status: 'amended', updated_at: new Date().toISOString() })
       .eq('id', noteId);
+    if (amendErr) throw amendErr;
 
     // Insert new version
     const { data: newNote, error: insertErr } = await supa

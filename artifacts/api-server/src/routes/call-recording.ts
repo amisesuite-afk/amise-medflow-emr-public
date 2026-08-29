@@ -134,9 +134,10 @@ async function transcribeAndSave(
 ): Promise<void> {
   const transcript = await transcribeWithWhisper(audioBuffer, mimeType, originalName);
   if (transcript) {
-    await sb().from('call_logs')
+    const { error: saveErr } = await sb().from('call_logs')
       .update({ transcript, transcription_status: 'completed' })
       .eq('id', callLogId);
+    if (saveErr) logger.warn({ err: saveErr, callLogId }, '[call-recording] transcript save failed');
     logger.info({ callLogId, chars: transcript.length, isRetry }, '[call-recording] transcript saved');
     return;
   }
@@ -144,9 +145,10 @@ async function transcribeAndSave(
     logger.warn({ callLogId }, '[call-recording] transcription failed — retrying in 60 s');
     setTimeout(() => void transcribeAndSave(callLogId, audioBuffer, mimeType, originalName, true), 60_000);
   } else {
-    await sb().from('call_logs')
+    const { error: failErr } = await sb().from('call_logs')
       .update({ transcription_status: 'failed' })
       .eq('id', callLogId);
+    if (failErr) logger.warn({ err: failErr, callLogId }, '[call-recording] failed-status update failed');
     logger.warn({ callLogId }, '[call-recording] transcription failed after retry — needs manual review');
   }
 }

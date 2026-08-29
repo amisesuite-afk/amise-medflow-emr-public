@@ -489,7 +489,7 @@ router.post('/api/cron/escalate-results', async (req, res) => {
           ? await sendSms({ to: doctorPhone, body })
           : { action: 'dry_run' as const };
 
-        await supa.from('escalation_events').insert({
+        const { error: escalationInsertErr } = await supa.from('escalation_events').insert({
           entity_type: 'investigation_result',
           entity_id: result.id,
           patient_id: result.patient_id ?? null,
@@ -497,6 +497,7 @@ router.post('/api/cron/escalate-results', async (req, res) => {
           escalated_via: smsResult.action === 'sent' ? 'sms' : 'dry_run',
           escalated_to: doctorPhone,
         });
+        if (escalationInsertErr) logger.warn({ err: escalationInsertErr, resultId: result.id }, '[cron/critical-results] escalation_events insert failed');
 
         await audit({
           action: 'escalate',

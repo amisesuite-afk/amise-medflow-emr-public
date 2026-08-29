@@ -1083,7 +1083,8 @@ router.post('/api/investigations/received-documents/:id/match', async (req, res)
     if (insertErr) throw insertErr;
 
     // Update documents.patient_id to link the document to the patient
-    await supa.from('documents').update({ patient_id: patientId }).eq('id', id);
+    const { error: docLinkErr } = await supa.from('documents').update({ patient_id: patientId }).eq('id', id);
+    if (docLinkErr) logger.warn({ err: docLinkErr, docId: id, patientId }, '[investigations/received-documents/match] document patient_id link failed');
 
     await audit({
       action: 'extract',

@@ -824,7 +824,7 @@ router.post('/api/questionnaire/session/:token/consent', async (req, res) => {
     const ipAddress = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ?? req.ip ?? null;
     const userAgent = req.headers['user-agent'] ?? null;
 
-    await sb().from('consent_records').insert({
+    const { error: consentInsertErr } = await sb().from('consent_records').insert({
       session_id: sessionRow.id,
       consent_type: 'data_collection',
       consent_text: CONSENT_TEXT_V1,
@@ -834,6 +834,7 @@ router.post('/api/questionnaire/session/:token/consent', async (req, res) => {
       ip_address: ipAddress,
       user_agent: userAgent,
     });
+    if (consentInsertErr) req.log.warn({ err: consentInsertErr, sessionId: sessionRow.id }, '[questionnaire/consent] consent_records insert failed');
 
     await sb()
       .from('questionnaire_sessions')
