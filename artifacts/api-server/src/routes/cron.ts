@@ -384,7 +384,8 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
         await sendSms({ to: staffPhone, body: smsBody });
       }
 
-      await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).eq('id', booking.id);
+      const { error: escalateUpdateErr } = await supa.from('appointment_requests').update({ staff_escalated_at: now.toISOString() }).eq('id', booking.id);
+      if (escalateUpdateErr) logger.warn({ err: escalateUpdateErr, bookingId: booking.id }, '[cron/staff-escalation] staff_escalated_at update failed');
       await audit({ action: 'escalate', entityType: 'appointment_request', entityId: booking.id, payload: { hours_waiting: hoursWaiting, doc_escalation: isDocEscalation } });
       results.push({ id: booking.id, action: isDocEscalation ? 'doctor_escalated' : 'staff_re_notified' });
     } catch (err) {
@@ -406,7 +407,8 @@ router.post('/api/cron/staff-escalation', async (req, res) => {
   } else {
     for (const booking of stale ?? []) {
       try {
-        await supa.from('appointment_requests').update({ status: 'cancelled', notes: 'Auto-cancelled after 8h with no staff action' }).eq('id', booking.id);
+        const { error: cancelUpdateErr } = await supa.from('appointment_requests').update({ status: 'cancelled', notes: 'Auto-cancelled after 8h with no staff action' }).eq('id', booking.id);
+        if (cancelUpdateErr) logger.warn({ err: cancelUpdateErr, bookingId: booking.id }, '[cron/staff-escalation] auto-cancel update failed');
 
         if (booking.patient_phone) {
           const firstName = (booking.patient_name as string || 'there').split(' ')[0];

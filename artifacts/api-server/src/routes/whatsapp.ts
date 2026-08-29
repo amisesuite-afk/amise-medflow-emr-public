@@ -433,11 +433,12 @@ router.post('/api/whatsapp/inbound', async (req: Request, res: Response) => {
     void (async () => {
       const draft = await generateDraft(patientName, body, appointmentType, portalUrl);
       if (!draft) return;
-      await supa
+      const { error: draftUpdateErr } = await supa
         .from('call_logs')
         .update({ staff_notes: `AI Draft Reply:\n\n${draft}` })
         .eq('id', callLogId);
-      logger.info({ callLogId, chars: draft.length }, '[whatsapp/inbound] Claude draft saved');
+      if (draftUpdateErr) logger.warn({ err: draftUpdateErr, callLogId }, '[whatsapp/inbound] Claude draft save failed');
+      else logger.info({ callLogId, chars: draft.length }, '[whatsapp/inbound] Claude draft saved');
     })();
   }
 });
@@ -484,7 +485,7 @@ router.patch('/api/whatsapp/:id/reply', async (req: Request, res: Response) => {
     }
   }
 
-  await supa
+  const { error: resolveErr } = await supa
     .from('call_logs')
     .update({
       status:      'called_back',
@@ -492,6 +493,7 @@ router.patch('/api/whatsapp/:id/reply', async (req: Request, res: Response) => {
       staff_notes: `[Replied]\n${reply_text.trim()}`,
     })
     .eq('id', id);
+  if (resolveErr) logger.warn({ err: resolveErr, id }, '[whatsapp/reply] call_log resolve update failed');
 
   logger.info({ id, to }, '[whatsapp/reply] reply sent and log resolved');
   res.json({ ok: true });
