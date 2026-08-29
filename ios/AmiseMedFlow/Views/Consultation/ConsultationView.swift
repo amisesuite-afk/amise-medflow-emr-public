@@ -2284,6 +2284,11 @@ struct ConsultationView: View {
 
     private func touch() { patient.updatedAt = .now; patient.pendingSync = true }
 
+    private func computedAge(from dob: Date?) -> Int? {
+        guard let dob else { return nil }
+        return Calendar.current.dateComponents([.year], from: dob, to: .now).year
+    }
+
     private func resetAllergyForm() {
         newAllergyName = ""; newAllergySeverity = "Moderate"; newAllergyReaction = ""
     }
