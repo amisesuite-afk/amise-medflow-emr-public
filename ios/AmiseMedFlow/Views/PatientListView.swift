@@ -9,14 +9,10 @@ struct PatientListView: View {
     @State private var searchText = ""
     @State private var selectedPatient: Patient?
 
-    private var outpatients: [Patient] {
-        allPatients.filter { $0.setting == .outpatient }
-    }
-
     private var filtered: [Patient] {
-        guard !searchText.isEmpty else { return outpatients }
+        guard !searchText.isEmpty else { return allPatients }
         let q = searchText.lowercased()
-        return outpatients.filter {
+        return allPatients.filter {
             $0.fullName.lowercased().contains(q) ||
             ($0.chiefComplaint?.lowercased().contains(q) ?? false) ||
             ($0.workingDiagnosis?.lowercased().contains(q) ?? false) ||
@@ -32,7 +28,7 @@ struct PatientListView: View {
                     ContentUnavailableView(
                         "No patients",
                         systemImage: "person.crop.circle",
-                        description: Text("Add an outpatient to get started.")
+                        description: Text("Add a patient to get started.")
                     )
                 } else {
                     ForEach(filtered) { patient in
