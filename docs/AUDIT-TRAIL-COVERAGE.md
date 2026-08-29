@@ -35,20 +35,26 @@ but out of scope here — noted so a future pass doesn't repeat the same underco
   mapping for the same route (`'letter'` for `generate-letter`, `'clinical_note'` for the other
   four) for consistency between view-audits and mutation-audits of the same resource.
 
-## Confirmed complete gap — zero audit calls of any kind (19 files)
+## Fixed in follow-up pass (2026-08-29)
+
+- **`theatre.ts`** — session create, case add, case delete, and publish all now emit `logAudit` calls.
+- **`workflow-tasks.ts`** — task create, resolve, and dismiss now emit `logAudit` with `task_resolve`/`task_dismiss` actions.
+- **`scheduling.ts`** — follow-up calendar event booking now emits a `logAudit` call.
+- **`ai-consult.ts`** — AI consultation requests now emit an `ai_call` audit event with `consultationType` and `patientId`.
+
+## Confirmed complete gap — zero audit calls of any kind (15 files)
 
 Administrative/scheduling routes, not patient-record clinical data — lower priority per the
 backlog's own prioritization, left for a follow-up pass:
 
-`admin.ts`, `ai-consult.ts`, `call-recording.ts`, `calls.ts`, `clinical-states.ts`,
+`admin.ts`, `call-recording.ts`, `calls.ts`, `clinical-states.ts`,
 `email-intake.ts`, `endoscopy-capture.ts`, `narrative.ts`, `patient-auth.ts`,
-`patient-messages.ts`, `previsit.ts`, `scheduling.ts`, `suggest-codes.ts`, `summary.ts`,
-`theatre.ts`, `triage-preview.ts`, `voice.ts`, `workflow-tasks.ts`, `document-scan.ts`
+`patient-messages.ts`, `previsit.ts`, `suggest-codes.ts`, `summary.ts`,
+`triage-preview.ts`, `voice.ts`, `document-scan.ts`
 
-Two worth flagging specifically for whoever picks this up: `patient-auth.ts` mutates login/logout
+One worth flagging specifically: `patient-auth.ts` mutates login/logout
 state (the `action` taxonomy in `lib/audit.ts` already documents `login`/`logout`/`access_denied`
-for exactly this), and `theatre.ts` mutates operating list data — both closer to the
-patient-record tier than the rest of this list.
+for exactly this).
 
 ## Partial coverage — has some audit calls, but fewer than mutating routes (needs a route-by-route check, not a file-level count)
 
