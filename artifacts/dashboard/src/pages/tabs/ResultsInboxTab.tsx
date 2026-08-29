@@ -1123,10 +1123,10 @@ export default function ResultsInboxTab() {
         const docs = (recBody.documents ?? []).map(d => ({
           ...d,
           ai_extracted_data: typeof d.ai_extracted_data === 'string'
-            ? JSON.parse(d.ai_extracted_data) as AiExtractedData
+            ? (() => { try { return JSON.parse(d.ai_extracted_data as string) as AiExtractedData; } catch { return null; } })()
             : (d.ai_extracted_data ?? null),
           ai_flags: typeof d.ai_flags === 'string'
-            ? JSON.parse(d.ai_flags) as AiFlag[]
+            ? (() => { try { return JSON.parse(d.ai_flags as string) as AiFlag[]; } catch { return null; } })()
             : (d.ai_flags ?? null),
         }));
         setReceivedDocs(docs);
