@@ -33,6 +33,8 @@ final class SyncService: ObservableObject {
 
     func setModelContext(_ context: ModelContext) {
         self.modelContext = context
+        // If network was already up (and auto-sync fired before the context arrived), sync now.
+        Task { await syncIfAuthenticated() }
     }
 
     // MARK: - Auth
