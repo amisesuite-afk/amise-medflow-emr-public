@@ -255,15 +255,15 @@ export default function CheckInTab() {
     return sameName || samePhone;
   }
 
-  async function handleCheckIn() {
+  async function handleCheckIn(bypass = false) {
     setSaving(true); setSaveError(null);
 
+    try {
     // Pre-save duplicate check (skip if user already confirmed bypass)
-    if (!bypassDuplicate && patientName.trim()) {
+    if (!bypass && !bypassDuplicate && patientName.trim()) {
       const candidates = await searchPatients(patientName.trim());
       const matches = candidates.filter(isDuplicateCandidate);
       if (matches.length > 0) {
-        setSaving(false);
         setDuplicateCandidates(matches);
         return;
       }
@@ -275,7 +275,6 @@ export default function CheckInTab() {
       policyNumber, nhiNumber, preAuthStatus,
       occupation, nokName, nokRelation, nokTel,
     });
-    setSaving(false);
     if (error) {
       if (error.includes('not configured')) {
         const localId = `local_${Date.now()}`;
@@ -297,6 +296,9 @@ export default function CheckInTab() {
     setBypassDuplicate(false);
     setPreVisitStatus('registered');
     setStep('patient-ready');
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleStartEncounter() {
@@ -606,7 +608,7 @@ export default function CheckInTab() {
                     onClick={() => {
                       setDuplicateCandidates(null);
                       setBypassDuplicate(true);
-                      void handleCheckIn();
+                      void handleCheckIn(true);
                     }}
                     style={{ flex: '1 1 180px', padding: '11px 16px', borderRadius: 9, border: '2px solid #dc2626', background: '#fff', color: '#dc2626', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
                     Register as New (Different Person)
