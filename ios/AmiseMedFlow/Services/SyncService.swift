@@ -85,8 +85,10 @@ final class SyncService: ObservableObject {
             try await pushPendingVitals(context: context)
             try await pullVitals(context: context)
             try await pushPendingOperativePlans(context: context)
+            try await pullOperativePlans(context: context)
             try await pullDocumentMetadata(context: context)
             try await pushPendingBillingItems(context: context)
+            try await pullBillingItems(context: context)
             lastSyncedAt = .now
             recountPending(context: context)
         } catch {
@@ -948,6 +950,87 @@ final class SyncService: ObservableObject {
         try context.save()
     }
 
+    private struct RemoteOperativePlan: Decodable {
+        let id: String
+        let patient_id: String
+        let consent_procedure: String
+        let consent_signed: Bool
+        let anaesthesia_type: String
+        let positioning: String
+        let antibiotic_prophylaxis: String
+        let vte_prophy: String
+        let special_equipment: String
+        let surgical_team_note: String
+        let who_checklist: String?   // JSONB arrives as a JSON string
+        let updated_at: String
+    }
+
+    private func pullOperativePlans(context: ModelContext) async throws {
+        let rows: [RemoteOperativePlan] = try await SupabaseConfig.client
+            .from("patient_operative_plans")
+            .select("id, patient_id, consent_procedure, consent_signed, anaesthesia_type, positioning, antibiotic_prophylaxis, vte_prophy, special_equipment, surgical_team_note, who_checklist, updated_at")
+            .order("updated_at", ascending: false)
+            .limit(500)
+            .execute()
+            .value
+
+        let allLocal = try context.fetch(FetchDescriptor<OperativePlan>())
+        let allPatients = try context.fetch(FetchDescriptor<Patient>())
+        let iso = ISO8601DateFormatter()
+
+        for row in rows {
+            guard let patient = allPatients.first(where: { $0.remoteId == row.patient_id }) else { continue }
+
+            let plan: OperativePlan
+            if let existing = allLocal.first(where: { $0.remoteId == row.id }) {
+                plan = existing
+            } else if let existing = allLocal.first(where: { $0.patient?.remoteId == row.patient_id }) {
+                // Match by patient when remoteId not yet set locally
+                plan = existing
+            } else {
+                plan = OperativePlan()
+                plan.patient = patient
+                context.insert(plan)
+            }
+
+            plan.remoteId = row.id
+            if (plan.consentProcedure).isEmpty     { plan.consentProcedure      = row.consent_procedure }
+            plan.consentSigned                     = row.consent_signed
+            if (plan.anaesthesiaType).isEmpty      { plan.anaesthesiaType       = row.anaesthesia_type }
+            if (plan.positioning).isEmpty          { plan.positioning            = row.positioning }
+            if (plan.antibioticProphylaxis).isEmpty { plan.antibioticProphylaxis = row.antibiotic_prophylaxis }
+            if (plan.vteProphy).isEmpty            { plan.vteProphy             = row.vte_prophy }
+            if (plan.specialEquipment).isEmpty     { plan.specialEquipment      = row.special_equipment }
+            if (plan.surgicalTeamNote).isEmpty     { plan.surgicalTeamNote      = row.surgical_team_note }
+            plan.updatedAt = iso.date(from: row.updated_at) ?? .now
+
+            // Restore WHO checklist booleans from JSONB
+            if let jsonStr = row.who_checklist,
+               let data = jsonStr.data(using: .utf8),
+               let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Bool] {
+                plan.whoIdentityConfirmed         = dict["identity"] ?? plan.whoIdentityConfirmed
+                plan.whoSiteMarked                = dict["site_marked"] ?? plan.whoSiteMarked
+                plan.whoAnaesthesiaCheckDone      = dict["anaesthesia_check"] ?? plan.whoAnaesthesiaCheckDone
+                plan.whoPulseOxOk                 = dict["pulse_ox"] ?? plan.whoPulseOxOk
+                plan.whoAllergiesReviewed         = dict["allergies"] ?? plan.whoAllergiesReviewed
+                plan.whoAspirationRisk            = dict["aspiration_risk"] ?? plan.whoAspirationRisk
+                plan.whoAirwayRisk                = dict["airway_risk"] ?? plan.whoAirwayRisk
+                plan.whoTeamIntroduced            = dict["team_introduced"] ?? plan.whoTeamIntroduced
+                plan.whoProcedureConfirmed        = dict["procedure_confirmed"] ?? plan.whoProcedureConfirmed
+                plan.whoAntibioticGiven           = dict["antibiotic_given"] ?? plan.whoAntibioticGiven
+                plan.whoCriticalStepsDiscussed    = dict["critical_steps"] ?? plan.whoCriticalStepsDiscussed
+                plan.whoImagingDisplayed          = dict["imaging_displayed"] ?? plan.whoImagingDisplayed
+                plan.whoSterilityConfirmed        = dict["sterility"] ?? plan.whoSterilityConfirmed
+                plan.whoSwabsCounted              = dict["swabs_counted"] ?? plan.whoSwabsCounted
+                plan.whoSpecimenLabelled          = dict["specimen_labelled"] ?? plan.whoSpecimenLabelled
+                plan.whoEquipmentIssues           = dict["equipment_issues"] ?? plan.whoEquipmentIssues
+                plan.whoRecoveryConcerns          = dict["recovery_concerns"] ?? plan.whoRecoveryConcerns
+            }
+            plan.pendingSync = false
+        }
+        try context.save()
+    }
+
     // MARK: - Billing item sync
 
     private func pushPendingBillingItems(context: ModelContext) async throws {
@@ -997,6 +1080,52 @@ final class SyncService: ObservableObject {
         try context.save()
     }
 
+    private struct RemoteBillingItem: Decodable {
+        let id: String
+        let patient_id: String
+        let cpt_code: String
+        let cpt_description: String
+        let cpt_category: String
+        let units: Int
+        let amount_xcd: Double
+        let modifier: String
+        let note: String
+        let added_at: String
+    }
+
+    private func pullBillingItems(context: ModelContext) async throws {
+        let rows: [RemoteBillingItem] = try await SupabaseConfig.client
+            .from("patient_billing_items")
+            .select("id, patient_id, cpt_code, cpt_description, cpt_category, units, amount_xcd, modifier, note, added_at")
+            .order("added_at", ascending: false)
+            .limit(1000)
+            .execute()
+            .value
+
+        let allLocal = try context.fetch(FetchDescriptor<BillingLineItem>())
+        let allPatients = try context.fetch(FetchDescriptor<Patient>())
+        let iso = ISO8601DateFormatter()
+
+        for row in rows {
+            guard allLocal.first(where: { $0.remoteId == row.id }) == nil else { continue }
+            guard let patient = allPatients.first(where: { $0.remoteId == row.patient_id }) else { continue }
+
+            let item = BillingLineItem(code: row.cpt_code,
+                                      description: row.cpt_description,
+                                      category: row.cpt_category)
+            item.units      = row.units
+            item.amountXCD  = row.amount_xcd
+            item.modifier   = row.modifier
+            item.note       = row.note
+            item.addedAt    = iso.date(from: row.added_at) ?? .now
+            item.patient    = patient
+            item.remoteId   = row.id
+            item.pendingSync = false
+            context.insert(item)
+        }
+        try context.save()
+    }
+
     // MARK: - Pending count
 
     private func recountPending(context: ModelContext) {
@@ -1033,7 +1162,7 @@ final class SyncService: ObservableObject {
     }
 
     private func flushOutbox() async {
-        var entries = loadOutbox()
+        let entries = loadOutbox()
         guard !entries.isEmpty else { return }
 
         var failed: [OutboxEntry] = []
@@ -1090,7 +1219,9 @@ final class SyncService: ObservableObject {
             try? await pushPendingPrescriptions(context: ctx)
             try? await pushPendingVitals(context: ctx)
             try? await pushPendingOperativePlans(context: ctx)
+            try? await pullOperativePlans(context: ctx)
             try? await pushPendingBillingItems(context: ctx)
+            try? await pullBillingItems(context: ctx)
         }
     }
 

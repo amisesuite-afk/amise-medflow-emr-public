@@ -302,7 +302,7 @@ struct DocumentsView: View {
             // Persist AI summary to Supabase if the doc row exists
             if let remoteId = doc.remoteId {
                 struct SummaryPatch: Encodable { let ai_summary: String }
-                try? await SupabaseConfig.client
+                _ = try? await SupabaseConfig.client
                     .from("patient_documents")
                     .update(SummaryPatch(ai_summary: summary))
                     .eq("id", value: remoteId)
@@ -459,7 +459,7 @@ struct PDFPreviewSheet: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> UINavigationController {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-        try? data.write(to: url)
+        _ = try? data.write(to: url)
         let ql = QLPreviewController()
         ql.dataSource = context.coordinator
         let nav = UINavigationController(rootViewController: ql)
