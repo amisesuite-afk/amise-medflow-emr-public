@@ -10,8 +10,11 @@ struct DiagnosisRadiationCard: View {
     let onUsePlan: (String) -> Void
     let onDismiss: () -> Void
 
+    var patientAge: Int? = nil
+
     @State private var expanded = true
     @State private var addedNames: Set<String> = []
+    @State private var scoreValues: [String: String] = [:]
 
     var body: some View {
         Section {
@@ -85,6 +88,12 @@ struct DiagnosisRadiationCard: View {
                         }
                     }
                 }
+            }
+
+            // Scoring calculator
+            if let criteria = radiation.scoringCriteria {
+                scoringSection(criteria)
+                Divider()
             }
 
             // Suggested investigations
@@ -189,6 +198,7 @@ struct DiagnosisRadiationCard: View {
             }
         }
         .padding(.vertical, 8)
+        .onAppear { preloadAgeFields() }
     }
 
     // MARK: - Score calculator
