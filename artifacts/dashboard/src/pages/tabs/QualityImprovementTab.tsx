@@ -771,7 +771,40 @@ export default function QualityImprovementTab() {
     for (const cat of CATEGORIES) catCount[cat.id] = cases.filter(c => c.category === cat.id).length;
     const factorCount: Record<string, number> = {};
     for (const f of FACTORS) factorCount[f.id] = cases.filter(c => c.contributing.includes(f.id)).length;
-    return { n, deaths, reOps, icu, pending, gradeCount, catCount, factorCount };
+
+    // Trend — cases per month, last 12 months
+    const now = new Date();
+    const months: Array<{ label: string; count: number }> = [];
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const label = d.toLocaleDateString('en-GB', { month: 'short', year: '2-digit' });
+      const count = cases.filter(c => {
+        const cd = new Date(c.date);
+        return cd.getFullYear() === d.getFullYear() && cd.getMonth() === d.getMonth();
+      }).length;
+      months.push({ label, count });
+    }
+
+    // Action items across all cases
+    const allActions = cases.flatMap(c => c.structuredActions ?? []);
+    const actionsOpen       = allActions.filter(a => a.status === 'open').length;
+    const actionsInProgress = allActions.filter(a => a.status === 'in_progress').length;
+    const actionsDone       = allActions.filter(a => a.status === 'done').length;
+
+    // RCA completion
+    const withTimeline = cases.filter(c => (c.timelineEvents ?? []).length > 0).length;
+    const withWhys     = cases.filter(c => (c.fiveWhys ?? []).some(w => w.why?.trim())).length;
+    const withSummary  = cases.filter(c => c.rcaSummary?.trim()).length;
+
+    // High-severity pending review
+    const highGrades = new Set<string>(['IIIb', 'IVa', 'IVb', 'V']);
+    const urgentPending = cases.filter(c => highGrades.has(c.grade) && c.reviewStatus === 'pending');
+
+    return {
+      n, deaths, reOps, icu, pending, gradeCount, catCount, factorCount,
+      months, actionsOpen, actionsInProgress, actionsDone,
+      withTimeline, withWhys, withSummary, urgentPending,
+    };
   }, [cases]);
 
   const pill: React.CSSProperties = {
@@ -1072,6 +1105,120 @@ export default function QualityImprovementTab() {
                   Rates reflect logged M&M cases only — not all procedures. Log completeness determines accuracy.
                 </div>
               </div>
+
+              {/* Trend — cases per month */}
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 14 }}>
+                  Cases logged — last 12 months
+                </div>
+                {(() => {
+                  const maxCount = Math.max(...metrics.months.map(m => m.count), 1);
+                  return (
+                    <>
+                      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 64, paddingBottom: 0 }}>
+                        {metrics.months.map((m, i) => {
+                          const pct = (m.count / maxCount) * 100;
+                          return (
+                            <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 2, height: '100%' }}>
+                              <span style={{ fontSize: 9, color: '#6366f1', fontWeight: 800, visibility: m.count > 0 ? 'visible' : 'hidden', lineHeight: 1 }}>{m.count}</span>
+                              <div style={{ width: '100%', background: '#6366f1', height: `${pct}%`, minHeight: m.count > 0 ? 4 : 1, borderRadius: '2px 2px 0 0', opacity: m.count > 0 ? 1 : 0.12 }} />
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div style={{ display: 'flex', gap: 3, borderTop: '1px solid var(--border)', paddingTop: 4 }}>
+                        {metrics.months.map((m, i) => (
+                          <span key={i} style={{ flex: 1, fontSize: 8, textAlign: 'center', color: '#94a3b8', overflow: 'hidden', textOverflow: 'clip', whiteSpace: 'nowrap' }}>{m.label}</span>
+                        ))}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+
+              {/* Action item tracker */}
+              {(metrics.actionsOpen + metrics.actionsInProgress + metrics.actionsDone) > 0 && (
+                <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+                    Action items — aggregate across all cases
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 12 }}>
+                    {[
+                      { label: 'Open', n: metrics.actionsOpen,       bg: '#fffbeb', fg: '#92400e', bd: '#fcd34d' },
+                      { label: 'In progress', n: metrics.actionsInProgress, bg: '#eff6ff', fg: '#1e40af', bd: '#bfdbfe' },
+                      { label: 'Done', n: metrics.actionsDone,       bg: '#f0fdf4', fg: '#166534', bd: '#86efac' },
+                    ].map(({ label, n, bg, fg, bd }) => (
+                      <div key={label} style={{ textAlign: 'center', padding: '10px 8px', background: bg, borderRadius: 7, border: `1px solid ${bd}` }}>
+                        <div style={{ fontSize: 26, fontWeight: 800, color: fg, fontVariantNumeric: 'tabular-nums' }}>{n}</div>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: fg, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 2 }}>{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Progress bar */}
+                  {(() => {
+                    const total = metrics.actionsOpen + metrics.actionsInProgress + metrics.actionsDone;
+                    const donePct = total > 0 ? (metrics.actionsDone / total) * 100 : 0;
+                    const inPct   = total > 0 ? (metrics.actionsInProgress / total) * 100 : 0;
+                    return (
+                      <div style={{ height: 8, borderRadius: 4, background: '#fcd34d', overflow: 'hidden', display: 'flex' }}>
+                        <div style={{ width: `${donePct}%`, background: '#86efac' }} />
+                        <div style={{ width: `${inPct}%`, background: '#bfdbfe' }} />
+                      </div>
+                    );
+                  })()}
+                  <div style={{ marginTop: 4, fontSize: 11, color: 'var(--muted)' }}>
+                    {(metrics.actionsOpen + metrics.actionsInProgress + metrics.actionsDone)} total structured action items logged
+                  </div>
+                </div>
+              )}
+
+              {/* RCA completion */}
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 16px' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 12 }}>
+                  Postmortem / RCA completion
+                </div>
+                {[
+                  { label: 'Timeline reconstruction', n: metrics.withTimeline },
+                  { label: '5 Whys analysis', n: metrics.withWhys },
+                  { label: 'AI postmortem summary', n: metrics.withSummary },
+                ].map(({ label, n }) => {
+                  const pct = metrics.n > 0 ? (n / metrics.n) * 100 : 0;
+                  return (
+                    <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 7 }}>
+                      <span style={{ width: 190, fontSize: 12, color: 'var(--fg)' }}>{label}</span>
+                      <div style={{ flex: 1, height: 8, background: 'var(--border)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${pct}%`, background: '#6366f1', borderRadius: 4 }} />
+                      </div>
+                      <span style={{ width: 50, fontSize: 12, fontVariantNumeric: 'tabular-nums', color: pct > 0 ? '#6366f1' : 'var(--muted)', textAlign: 'right', fontWeight: pct > 0 ? 700 : 400 }}>
+                        {n}/{metrics.n}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* High-severity pending alert */}
+              {metrics.urgentPending.length > 0 && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 10, padding: '14px 16px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#b91c1c', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>
+                    High-severity cases pending review ({metrics.urgentPending.length})
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {metrics.urgentPending.map(c => (
+                      <div key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
+                        <GradeChip grade={c.grade} />
+                        <span style={{ fontWeight: 600, color: '#7f1d1d' }}>{c.procedure}</span>
+                        <span style={{ color: '#b91c1c' }}>— {c.complication}</span>
+                        <span style={{ marginLeft: 'auto', color: '#94a3b8', fontSize: 11 }}>{c.date}</span>
+                        <button onClick={() => { setPostmortemId(c.id); setView('postmortem'); }} style={{
+                          fontSize: 10, padding: '2px 8px', borderRadius: 4,
+                          border: '1px solid #fca5a5', background: '#fff', color: '#b91c1c', cursor: 'pointer', fontWeight: 700,
+                        }}>Review →</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

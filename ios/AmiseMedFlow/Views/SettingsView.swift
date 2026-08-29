@@ -101,6 +101,42 @@ struct SettingsView: View {
                             Text(last, style: .relative).foregroundStyle(.secondary)
                         }
                     }
+
+                    if !peerSync.syncHistory.isEmpty {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Recent syncs")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            ForEach(peerSync.syncHistory.prefix(5)) { event in
+                                HStack {
+                                    Image(systemName: event.direction == .received ? "arrow.down.circle" : "arrow.up.circle")
+                                        .foregroundStyle(event.direction == .received ? Color.accentColor : Color.orange)
+                                        .font(.caption)
+                                    Text(event.label)
+                                        .font(.caption)
+                                    Spacer()
+                                    Text(event.at, style: .relative)
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 2)
+                    }
+
+                    HStack {
+                        Button("Sync Now") {
+                            peerSync.syncNow()
+                        }
+                        .disabled(peerSync.connectedCount == 0)
+
+                        Spacer()
+
+                        Button("Restart") {
+                            peerSync.restart()
+                        }
+                        .foregroundStyle(.orange)
+                    }
                 } header: {
                     Text("Proximity Sync")
                 } footer: {

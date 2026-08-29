@@ -9,6 +9,20 @@ import UIKit
 // signed-in account discover each other automatically and exchange
 // whichever records each side is missing. Safe to run alongside Supabase sync.
 
+struct PeerSyncEvent: Identifiable {
+    let id = UUID()
+    let peerName:    String
+    let recordCount: Int
+    let direction:   Direction
+    let at:          Date
+
+    enum Direction { case received, sent }
+
+    var label: String {
+        "\(recordCount) record\(recordCount == 1 ? "" : "s") \(direction == .received ? "from" : "to") \(peerName)"
+    }
+}
+
 @MainActor
 final class PeerSyncService: NSObject, ObservableObject {
 
@@ -16,6 +30,7 @@ final class PeerSyncService: NSObject, ObservableObject {
     @Published var connectedCount = 0   // devices actively exchanging data
     @Published var lastPeerSyncAt: Date?
     @Published var peerSyncStatus: String = ""
+    @Published var syncHistory: [PeerSyncEvent] = []   // last 20 sync events
 
     private static let serviceType = "amise-medflow"   // ≤15 chars, alphanumeric+hyphen
 
@@ -26,9 +41,14 @@ final class PeerSyncService: NSObject, ObservableObject {
 
     private var modelContext: ModelContext?
     private var emailHash: String = ""        // used to gate auto-accept
+    private var storedEmail: String = ""      // cached for restart()
 
     // Peers we found but haven't connected yet (used for count badge)
     private var foundPeers: Set<MCPeerID> = []
+
+    // Accumulated record count per peer for the current sync session
+    private var receivedCount: [MCPeerID: Int] = [:]
+    private var sentCount:     [MCPeerID: Int] = [:]
 
     override init() {
         // Include device name so the surgeon can tell devices apart in logs
@@ -41,6 +61,7 @@ final class PeerSyncService: NSObject, ObservableObject {
     func start(context: ModelContext, email: String) {
         guard session == nil else { return }   // already running
         modelContext = context
+        storedEmail = email
         emailHash = String(email.lowercased().hashValue)
 
         session = MCSession(peer: myPeer, securityIdentity: nil,
@@ -69,9 +90,32 @@ final class PeerSyncService: NSObject, ObservableObject {
         advertiser = nil
         browser    = nil
         foundPeers.removeAll()
+        receivedCount.removeAll()
+        sentCount.removeAll()
         nearbyCount    = 0
         connectedCount = 0
         peerSyncStatus = ""
+    }
+
+    // MARK: - Manual controls
+
+    func syncNow() {
+        guard let sess = session else {
+            peerSyncStatus = "Proximity sync not running"
+            return
+        }
+        guard !sess.connectedPeers.isEmpty else {
+            peerSyncStatus = "No peers connected"
+            return
+        }
+        for peer in sess.connectedPeers { sendManifest(to: peer) }
+        peerSyncStatus = "Sync triggered…"
+    }
+
+    func restart() {
+        guard let ctx = modelContext, !storedEmail.isEmpty else { return }
+        stop()
+        start(context: ctx, email: storedEmail)
     }
 
     // MARK: - Send manifest on connect
@@ -137,6 +181,7 @@ final class PeerSyncService: NSObject, ObservableObject {
             if !missingPatients.isEmpty,
                let data = try? JSONEncoder().encode(PeerMessage.patients(missingPatients)) {
                 try? sess.send(data, toPeers: [peer], with: .reliable)
+                self.sentCount[peer, default: 0] += missingPatients.count
             }
 
             let allNotes = (try? ctx.fetch(FetchDescriptor<ClinicalNote>())) ?? []
@@ -149,6 +194,7 @@ final class PeerSyncService: NSObject, ObservableObject {
             if !missingNotes.isEmpty,
                let data = try? JSONEncoder().encode(PeerMessage.notes(missingNotes)) {
                 try? sess.send(data, toPeers: [peer], with: .reliable)
+                self.sentCount[peer, default: 0] += missingNotes.count
             }
 
             let allRxs = (try? ctx.fetch(FetchDescriptor<Prescription>())) ?? []
@@ -161,6 +207,7 @@ final class PeerSyncService: NSObject, ObservableObject {
             if !missingRxs.isEmpty,
                let data = try? JSONEncoder().encode(PeerMessage.prescriptions(missingRxs)) {
                 try? sess.send(data, toPeers: [peer], with: .reliable)
+                self.sentCount[peer, default: 0] += missingRxs.count
             }
 
             let allVitals = (try? ctx.fetch(FetchDescriptor<VitalsEntry>())) ?? []
@@ -173,6 +220,7 @@ final class PeerSyncService: NSObject, ObservableObject {
             if !missingVitals.isEmpty,
                let data = try? JSONEncoder().encode(PeerMessage.vitals(missingVitals)) {
                 try? sess.send(data, toPeers: [peer], with: .reliable)
+                self.sentCount[peer, default: 0] += missingVitals.count
             }
 
             let allBilling = (try? ctx.fetch(FetchDescriptor<BillingLineItem>())) ?? []
@@ -185,6 +233,7 @@ final class PeerSyncService: NSObject, ObservableObject {
             if !missingBilling.isEmpty,
                let data = try? JSONEncoder().encode(PeerMessage.billingItems(missingBilling)) {
                 try? sess.send(data, toPeers: [peer], with: .reliable)
+                self.sentCount[peer, default: 0] += missingBilling.count
             }
         }
     }
@@ -429,6 +478,20 @@ extension PeerSyncService: MCSessionDelegate {
                 self.peerSyncStatus = "Syncing with \(peerID.displayName)…"
                 self.sendManifest(to: peerID)
             case .notConnected:
+                // Flush per-session counters into the history log
+                func appendHistory(_ count: Int, direction: PeerSyncEvent.Direction) {
+                    guard count > 0 else { return }
+                    let event = PeerSyncEvent(peerName: peerID.displayName,
+                                              recordCount: count,
+                                              direction: direction,
+                                              at: .now)
+                    self.syncHistory.insert(event, at: 0)
+                    if self.syncHistory.count > 20 {
+                        self.syncHistory = Array(self.syncHistory.prefix(20))
+                    }
+                }
+                appendHistory(self.receivedCount.removeValue(forKey: peerID) ?? 0, direction: .received)
+                appendHistory(self.sentCount.removeValue(forKey: peerID) ?? 0,     direction: .sent)
                 if session.connectedPeers.isEmpty { self.peerSyncStatus = "Looking for nearby devices…" }
             default: break
             }
@@ -448,20 +511,25 @@ extension PeerSyncService: MCSessionDelegate {
 
             case .patients(let recs):
                 try? self.applyPatients(recs, context: ctx)
+                self.receivedCount[peerID, default: 0] += recs.count
                 self.lastPeerSyncAt = .now
                 self.peerSyncStatus = "Synced \(recs.count) patients from \(peerID.displayName)"
 
             case .notes(let recs):
                 try? self.applyNotes(recs, context: ctx)
+                self.receivedCount[peerID, default: 0] += recs.count
 
             case .prescriptions(let recs):
                 try? self.applyPrescriptions(recs, context: ctx)
+                self.receivedCount[peerID, default: 0] += recs.count
 
             case .vitals(let recs):
                 try? self.applyVitals(recs, context: ctx)
+                self.receivedCount[peerID, default: 0] += recs.count
 
             case .billingItems(let recs):
                 try? self.applyBillingItems(recs, context: ctx)
+                self.receivedCount[peerID, default: 0] += recs.count
             }
         }
     }

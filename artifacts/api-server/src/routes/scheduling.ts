@@ -120,12 +120,22 @@ async function syncCalendarCache(): Promise<{ synced: boolean; eventCount?: numb
 }
 
 router.post('/api/scheduling/sync', requireAuth, async (_req, res) => {
-  res.json(await syncCalendarCache());
+  try {
+    res.json(await syncCalendarCache());
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: msg });
+  }
 });
 
 router.post('/api/cron/calendar-sync', async (req, res) => {
   if (!requireCronSecret(req, res)) return;
-  res.json(await syncCalendarCache());
+  try {
+    res.json(await syncCalendarCache());
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: msg });
+  }
 });
 
 // ── /api/scheduling/upcoming ─────────────────────────────────────────────────
@@ -180,27 +190,33 @@ async function loadCache(): Promise<CalendarCache | null> {
 }
 
 router.get('/api/scheduling/upcoming', requireAuth, async (req, res) => {
-  const cache = await loadCache();
-  if (!cache) {
-    res.status(503).json({ error: 'Calendar cache not available' });
-    return;
+  try {
+    const cache = await loadCache();
+    if (!cache) {
+      res.status(503).json({ error: 'Calendar cache not available' });
+      return;
+    }
+
+    const dateFilter = req.query.date as string | undefined;
+    const daysAhead = Math.min(Number(req.query.days ?? 14), 60);
+    const now = new Date();
+    const cutoff = new Date(now.getTime() + daysAhead * 86400_000);
+
+    let events = cache.events.filter(e => {
+      const start = new Date(e.start);
+      return start >= now && start < cutoff;
+    });
+
+    if (dateFilter) {
+      events = events.filter(e => e.start.startsWith(dateFilter));
+    }
+
+    res.json({ events, fetchedAt: cache.fetchedAt, calendarId: cache.calendarId });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    logger.error({ err }, 'scheduling/upcoming error');
+    res.status(503).json({ error: msg });
   }
-
-  const dateFilter = req.query.date as string | undefined;
-  const daysAhead = Math.min(Number(req.query.days ?? 14), 60);
-  const now = new Date();
-  const cutoff = new Date(now.getTime() + daysAhead * 86400_000);
-
-  let events = cache.events.filter(e => {
-    const start = new Date(e.start);
-    return start >= now && start < cutoff;
-  });
-
-  if (dateFilter) {
-    events = events.filter(e => e.start.startsWith(dateFilter));
-  }
-
-  res.json({ events, fetchedAt: cache.fetchedAt, calendarId: cache.calendarId });
 });
 
 // ── /api/scheduling/book-followup ────────────────────────────────────────────
