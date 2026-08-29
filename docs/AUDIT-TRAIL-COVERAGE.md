@@ -42,27 +42,34 @@ but out of scope here — noted so a future pass doesn't repeat the same underco
 - **`scheduling.ts`** — follow-up calendar event booking now emits a `logAudit` call.
 - **`ai-consult.ts`** — AI consultation requests now emit an `ai_call` audit event with `consultationType` and `patientId`.
 
-## Confirmed complete gap — zero audit calls of any kind (15 files)
+## Fixed in second follow-up pass (2026-08-29)
+
+- **`whatsapp.ts`** — wrapped `sendMetaWhatsApp` and `sendTelnyxWhatsApp` in try/catch; P1 crash risk (unguarded `fetch()` called via `void` → unhandled rejection on any network error).
+- **`portal.ts`** — three mutating routes with zero audit coverage added:
+  - `POST /api/patient/sms-code/verify` — patient portal login now emits a `logAudit` call with `action: 'login'`, capturing IP and user-agent.
+  - `POST /api/patient/documents/register` — patient document upload now emits `logAudit` with `action: 'create'` and `source: 'patient_portal'`.
+  - `PATCH /api/patient/consultation-requests/:id` — status update (which may also create a patient record) now emits `logAudit` with `action: 'update'`.
+- **`investigations.ts`** — `POST /api/investigations/scan-referral` (AI call on referral PHI with no audit) now emits `logAudit` with `action: 'ai_call'`.
+- **`calls.ts`** — `PATCH /api/calls/:id/resolve` patient linkage now emits `logAudit`.
+- **`clinical-states.ts`** — PATCH and DELETE now emit `logAudit`.
+
+## Confirmed complete gap — zero audit calls of any kind (13 files)
 
 Administrative/scheduling routes, not patient-record clinical data — lower priority per the
 backlog's own prioritization, left for a follow-up pass:
 
-`admin.ts`, `call-recording.ts`, `calls.ts`, `clinical-states.ts`,
-`email-intake.ts`, `endoscopy-capture.ts`, `narrative.ts`, `patient-auth.ts`,
+`admin.ts`, `call-recording.ts`, `email-intake.ts`, `endoscopy-capture.ts`, `narrative.ts`,
 `patient-messages.ts`, `previsit.ts`, `suggest-codes.ts`, `summary.ts`,
 `triage-preview.ts`, `voice.ts`, `document-scan.ts`
 
-One worth flagging specifically: `patient-auth.ts` mutates login/logout
-state (the `action` taxonomy in `lib/audit.ts` already documents `login`/`logout`/`access_denied`
-for exactly this).
+Note: `patient-auth.ts` mentioned in the prior pass no longer exists as a separate file —
+the patient portal auth routes live in `portal.ts`, which now has login audit coverage.
 
-## Partial coverage — has some audit calls, but fewer than mutating routes (needs a route-by-route check, not a file-level count)
+## Partial coverage — resolved or within acceptable range
 
-`notify.ts` (1 mutating route, 1 audit call — likely fine, not verified route-by-route),
-`portal.ts` (12 mutating, 5 audit), `cron.ts` (5 mutating, 7 audit — likely fine, over-provisioned),
-`investigations.ts` (11 mutating, 8 audit), `visit-lifecycle.ts` (8 mutating, 7 audit — likely
-fine, off by one). `portal.ts` and `investigations.ts` are the two with a real numeric gap worth
-checking which specific routes are missing coverage.
+`portal.ts` and `investigations.ts` gaps addressed in the second follow-up pass above.
+`notify.ts` (1 mutating route, 1 audit call — likely fine), `cron.ts` (5 mutating, 7 audit —
+over-provisioned, fine), `visit-lifecycle.ts` (8 mutating, 7 audit — off by one, acceptable).
 
 ## Not touched — patient self-service routes in `patient.ts`
 
