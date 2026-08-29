@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getSupabaseAdmin, requireStaffAuth } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 import {
   fetchEventsForDate, updateEventDescription,
   formatOperatingListDescription, type TheatreCaseSummary,
@@ -167,6 +168,7 @@ router.post('/api/theatre/sessions', async (req, res) => {
       session_date: date, session_type: sessionType, location_key: locationKey,
     }).select('*').single();
     if (error) throw error;
+    void logAudit(req, 'create', 'appointment', data.id as string, undefined, { entityType: 'theatre_session', date, sessionType, locationKey });
     res.json({ session: data });
   } catch (err) {
     logger.error({ err }, '[theatre/sessions] POST error');
@@ -221,6 +223,8 @@ router.post('/api/theatre/sessions/:id/cases', async (req, res) => {
     }).select('*').single();
 
     if (cErr) throw cErr;
+
+    void logAudit(req, 'create', 'appointment', newCase.id as string, undefined, { entityType: 'theatre_case', sessionId: id, patientName, procedure });
 
     res.json({
       case: {
@@ -277,6 +281,7 @@ router.delete('/api/theatre/cases/:caseId', async (req, res) => {
     const supa = getSupabaseAdmin();
     const { error } = await supa.from('theatre_cases').delete().eq('id', caseId);
     if (error) throw error;
+    void logAudit(req, 'delete', 'appointment', caseId, undefined, { entityType: 'theatre_case' });
     res.json({ ok: true });
   } catch (err) {
     logger.error({ err }, '[theatre/cases] DELETE error');
@@ -370,6 +375,7 @@ router.post('/api/theatre/sessions/:id/publish', async (req, res) => {
     }).eq('id', id);
     if (publishErr) throw publishErr;
 
+    void logAudit(req, 'update', 'appointment', id, undefined, { entityType: 'theatre_session', action: 'publish', calendarUpdated: !!(calId && evId) });
     res.json({ ok: true, calendarUpdated: !!(calId && evId), description });
   } catch (err) {
     logger.error({ err }, '[theatre/sessions] publish error');

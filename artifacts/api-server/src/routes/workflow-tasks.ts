@@ -9,6 +9,7 @@
 import { Router } from 'express';
 import { sb, requireStaffAuth, getStaffUserId } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 
@@ -113,6 +114,7 @@ router.post('/api/workflow-tasks', async (req, res) => {
     }
 
     log.info({ id: data.id, taskType, patientId }, '[workflow-tasks] created');
+    void logAudit(req, 'create', 'workflow_task', data.id as string, patientId, { taskType, title, priority });
     res.status(201).json(data);
   } catch (err) {
     log.error({ err }, '[workflow-tasks] create error');
@@ -171,6 +173,7 @@ router.post('/api/workflow-tasks/:id/resolve', async (req, res) => {
     if (error) throw error;
 
     log.info({ id, action, resolvedBy }, '[workflow-tasks] resolved');
+    void logAudit(req, action === 'dismissed' ? 'task_dismiss' : 'task_resolve', 'workflow_task', id, undefined, { action, resolutionNote });
     res.json(data);
   } catch (err) {
     log.error({ err }, '[workflow-tasks] resolve error');
