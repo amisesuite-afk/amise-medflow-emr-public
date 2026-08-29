@@ -66,13 +66,17 @@ function sectionText(text: string, headings: string[]): string | null {
 // ─── main parser ────────────────────────────────────────────────────────────
 
 export function parseClinicalDocument(markdown: string): ParseResult {
-  const t = markdown;
+  // Strip markdown bold/italic/header markers so patterns match clean text
+  const t = markdown
+    .replace(/\*\*([^*]+)\*\*/g, '$1')  // **bold**
+    .replace(/\*([^*]+)\*/g, '$1')       // *italic*
+    .replace(/^#{1,6}\s*/gm, '');        // # headings
 
-  // Patient name — try common label patterns, then "Re:" / salutation lines
+  // Patient name — allow titles (Mrs./Mr./Dr.) and hyphenated surnames
   const patientName = firstMatch(t, [
-    /(?:patient\s*name|patient|name|full\s*name)\s*[:\-]\s*([A-Z][a-zA-Z'\- ]{2,60})/i,
-    /\bRe\s*:\s*([A-Z][a-zA-Z'\- ]{2,60})/i,
-    /Dear\s+(?:Dr\.?\s+\w+\s*,\s*)?(?:re\s*:\s*)?([A-Z][a-zA-Z'\- ]{2,60})/i,
+    /(?:patient\s*name|full\s*name)\s*[:\-]\s*((?:Mrs?\.?\s+|Dr\.?\s+|Miss\s+)?[A-Z][a-zA-Z'\-. ]{2,60})/i,
+    /\bRe\s*:\s*((?:Mrs?\.?\s+|Dr\.?\s+|Miss\s+)?[A-Z][a-zA-Z'\-. ]{2,60})/i,
+    /Dear\s+(?:Dr\.?\s+\w+\s*,\s*)?(?:re\s*:\s*)?((?:Mrs?\.?\s+|Dr\.?\s+)?[A-Z][a-zA-Z'\-. ]{2,60})/i,
   ]);
 
   // Diagnosis
@@ -120,9 +124,9 @@ export function parseClinicalDocument(markdown: string): ParseResult {
     /(?:surveillance|follow[- ]up\s*plan|monitoring)\s*[:\-]\s*([\s\S]{5,400}?)(?=\n[A-Z][A-Za-z ]{2,30}:|$)/i,
   ]);
 
-  // Pending actions
+  // Pending actions — stop before signature lines ("Yours sincerely", "Dr.")
   const pendingActions = listMatches(t, [
-    /(?:pending|outstanding|action\s*items?|to\s*do)\s*[:\-]\s*([\s\S]{5,400}?)(?=\n[A-Z][A-Za-z ]{2,30}:|$)/i,
+    /(?:pending|outstanding|action\s*items?|to\s*do)\s*[:\-]\s*([\s\S]{5,400}?)(?=\n(?:[A-Z][A-Za-z ]{2,30}:|Yours|Kind\s*regards|Sincerely|Dr\.|---)|$)/i,
   ]);
 
   // Prognosis
@@ -138,7 +142,7 @@ export function parseClinicalDocument(markdown: string): ParseResult {
     [/\bwarfarin\b|\banticoagulat/i,                    'Anticoagulation — check INR before procedure'],
     [/\bimmunosuppress/i,                               'Immunosuppressed — infection risk'],
     [/\bdiabetes\b|\bT2DM\b|\bT1DM\b/i,                'Diabetes — perioperative glucose management'],
-    [/\bpenicillin\s+allerg/i,                          'Penicillin allergy'],
+    [/\bpenicillin\b/i,                                  'Penicillin allergy — use alternative antibiotic'],
     [/\blatex\s+allerg/i,                               'Latex allergy'],
     [/\bpregnant\b|\bpregnancy\b/i,                     'Pregnancy documented'],
     [/\bCKD\b|\brenal\s+fail/i,                         'Renal impairment — dose-adjust renally cleared drugs'],
