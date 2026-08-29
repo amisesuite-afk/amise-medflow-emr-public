@@ -245,19 +245,23 @@ async function sendMetaWhatsApp(to: string, text: string, phoneNumberId?: string
     logger.warn('[whatsapp/reply] WHATSAPP_ACCESS_TOKEN or WHATSAPP_PHONE_NUMBER_ID not set');
     return;
   }
-  const r = await fetch(`https://graph.facebook.com/v19.0/${numId}/messages`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      messaging_product: 'whatsapp',
-      to: to.replace(/^\+/, ''),
-      type: 'text',
-      text: { body: text },
-    }),
-  });
-  if (!r.ok) {
-    const err = await r.text().catch(() => '');
-    logger.warn({ status: r.status, err }, '[whatsapp/reply] Meta send failed');
+  try {
+    const r = await fetch(`https://graph.facebook.com/v19.0/${numId}/messages`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: to.replace(/^\+/, ''),
+        type: 'text',
+        text: { body: text },
+      }),
+    });
+    if (!r.ok) {
+      const err = await r.text().catch(() => '');
+      logger.warn({ status: r.status, err }, '[whatsapp/reply] Meta send failed');
+    }
+  } catch (err) {
+    logger.warn({ err }, '[whatsapp/reply] Meta send network error');
   }
 }
 
@@ -267,12 +271,16 @@ async function sendTelnyxWhatsApp(to: string, text: string): Promise<void> {
   const apiKey = process.env.TELNYX_API_KEY;
   const from   = process.env.TWILIO_FROM_NUMBER; // same env var, same number
   if (!apiKey || !from) return;
-  const r = await fetch('https://api.telnyx.com/v2/messages', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: `whatsapp:${from}`, to: `whatsapp:${to}`, text }),
-  });
-  if (!r.ok) logger.warn({ status: r.status }, '[whatsapp] Telnyx send failed');
+  try {
+    const r = await fetch('https://api.telnyx.com/v2/messages', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: `whatsapp:${from}`, to: `whatsapp:${to}`, text }),
+    });
+    if (!r.ok) logger.warn({ status: r.status }, '[whatsapp] Telnyx send failed');
+  } catch (err) {
+    logger.warn({ err }, '[whatsapp] Telnyx send network error');
+  }
 }
 
 // ── TwiML helpers (Twilio) ────────────────────────────────────────────────────
