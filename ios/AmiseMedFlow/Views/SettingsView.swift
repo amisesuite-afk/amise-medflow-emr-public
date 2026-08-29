@@ -3,6 +3,7 @@ import SwiftData
 
 struct SettingsView: View {
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var peerSync: PeerSyncService
     @Environment(\.modelContext) private var context
 
     @State private var showLogin = false
@@ -74,6 +75,36 @@ struct SettingsView: View {
                             Task { await sync.sync(context: context) }
                         }
                     }
+                }
+
+                // MARK: Proximity Sync
+                Section {
+                    LabeledContent("Nearby devices") {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(peerSync.connectedCount > 0 ? Color.green : Color.secondary.opacity(0.4))
+                                .frame(width: 8, height: 8)
+                            Text(peerSync.connectedCount > 0
+                                 ? "\(peerSync.connectedCount) connected"
+                                 : (peerSync.nearbyCount > 0 ? "\(peerSync.nearbyCount) found" : "None"))
+                        }
+                    }
+
+                    if !peerSync.peerSyncStatus.isEmpty {
+                        Text(peerSync.peerSyncStatus)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if let last = peerSync.lastPeerSyncAt {
+                        LabeledContent("Last device sync") {
+                            Text(last, style: .relative).foregroundStyle(.secondary)
+                        }
+                    }
+                } header: {
+                    Text("Proximity Sync")
+                } footer: {
+                    Text("Syncs directly between your iPhone and iPad over Bluetooth or WiFi — no internet required.")
                 }
 
                 // MARK: Practice

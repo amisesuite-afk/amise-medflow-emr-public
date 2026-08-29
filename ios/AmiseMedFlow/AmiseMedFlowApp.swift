@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct AmiseMedFlowApp: App {
     @StateObject private var sync = SyncService()
+    @StateObject private var peerSync = PeerSyncService()
     @StateObject private var bioAuth = BiometricAuthService()
     @Environment(\.scenePhase) private var scenePhase
 
@@ -39,6 +40,7 @@ struct AmiseMedFlowApp: App {
             ZStack {
                 ContentView()
                     .environmentObject(sync)
+                    .environmentObject(peerSync)
                     .tint(AMColor.accent)
                     .disabled(bioAuth.isLocked)
                     .blur(radius: bioAuth.isLocked ? 12 : 0)
@@ -55,6 +57,7 @@ struct AmiseMedFlowApp: App {
             switch newPhase {
             case .background:
                 bioAuth.recordBackground()
+                peerSync.stop()
             case .active:
                 bioAuth.lockIfTimedOut()
                 // Re-sync every time the app comes to the foreground (picks up changes

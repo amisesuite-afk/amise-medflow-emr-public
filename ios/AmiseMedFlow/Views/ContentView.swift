@@ -275,6 +275,7 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
 
 struct ContentView: View {
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var peerSync: PeerSyncService
     @Environment(\.modelContext) private var modelContext
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
@@ -288,8 +289,10 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            // Inject context here so sync works even if Settings is never opened
+            // Inject context so cloud sync works even if Settings is never opened
             sync.setModelContext(modelContext)
+            // Start peer-to-peer sync over Bluetooth/WiFi with nearby devices
+            peerSync.start(context: modelContext, email: sync.currentUserEmail ?? "")
         }
         .fullScreenCover(isPresented: Binding(
             get: { !sync.isSignedIn },
@@ -624,5 +627,6 @@ struct SectionPatientListView: View {
 #Preview {
     ContentView()
         .environmentObject(SyncService())
+        .environmentObject(PeerSyncService())
         .modelContainer(for: Patient.self, inMemory: true)
 }
