@@ -7,6 +7,21 @@ type ClavienGrade = 'I' | 'II' | 'IIIa' | 'IIIb' | 'IVa' | 'IVb' | 'V';
 type CompCategory = 'intraoperative' | 'early_postop' | 'late_postop' | 'near_miss' | 'adverse_event';
 type ReviewStatus = 'pending' | 'reviewed' | 'actioned';
 type ContribFactor = 'technical' | 'judgment' | 'system' | 'communication' | 'protocol' | 'patient';
+type ActionStatus = 'open' | 'in_progress' | 'done';
+
+interface TimelineEvent { time: string; event: string; }
+interface WhyEntry     { why: string; answer: string; }
+interface ActionItem   { text: string; owner: string; dueDate: string; status: ActionStatus; }
+
+interface RCAAnalysis {
+  rootCause: string;
+  systemFactors: string[];
+  contributingAnalysis: string;
+  preventionStrategies: string[];
+  learningPoints: string[];
+  riskReduction: string;
+  summary: string;
+}
 
 interface MMCase {
   id: string;
@@ -26,6 +41,11 @@ interface MMCase {
   reviewStatus: ReviewStatus;
   reviewDate: string;
   reviewedBy: string;
+  // RCA / postmortem
+  timelineEvents: TimelineEvent[];
+  fiveWhys: WhyEntry[];
+  structuredActions: ActionItem[];
+  rcaSummary: string;
 }
 
 /* ── Constants ──────────────────────────────────────────────────────────── */
@@ -65,23 +85,27 @@ const REVIEW_STYLE: Record<ReviewStatus, { bg: string; fg: string; bd: string; l
 
 function dbRowToCase(r: Record<string, unknown>): MMCase {
   return {
-    id:             r.id as string,
-    date:           r.date as string,
-    patientRef:     (r.patient_ref as string) ?? '',
-    procedure:      (r.procedure as string) ?? '',
-    complication:   (r.complication as string) ?? '',
-    category:       (r.category as CompCategory) ?? 'early_postop',
-    grade:          (r.grade as ClavienGrade | '') ?? '',
-    gradeSuffix:    (r.grade_suffix as boolean) ?? false,
-    contributing:   (r.contributing as ContribFactor[]) ?? [],
-    reOperation:    (r.re_operation as boolean) ?? false,
-    icuAdmission:   (r.icu_admission as boolean) ?? false,
-    death:          (r.death as boolean) ?? false,
-    lessonsLearned: (r.lessons_learned as string) ?? '',
-    actionItems:    (r.action_items as string) ?? '',
-    reviewStatus:   (r.review_status as ReviewStatus) ?? 'pending',
-    reviewDate:     (r.review_date as string) ?? '',
-    reviewedBy:     (r.reviewed_by as string) ?? '',
+    id:               r.id as string,
+    date:             r.date as string,
+    patientRef:       (r.patient_ref as string) ?? '',
+    procedure:        (r.procedure as string) ?? '',
+    complication:     (r.complication as string) ?? '',
+    category:         (r.category as CompCategory) ?? 'early_postop',
+    grade:            (r.grade as ClavienGrade | '') ?? '',
+    gradeSuffix:      (r.grade_suffix as boolean) ?? false,
+    contributing:     (r.contributing as ContribFactor[]) ?? [],
+    reOperation:      (r.re_operation as boolean) ?? false,
+    icuAdmission:     (r.icu_admission as boolean) ?? false,
+    death:            (r.death as boolean) ?? false,
+    lessonsLearned:   (r.lessons_learned as string) ?? '',
+    actionItems:      (r.action_items as string) ?? '',
+    reviewStatus:     (r.review_status as ReviewStatus) ?? 'pending',
+    reviewDate:       (r.review_date as string) ?? '',
+    reviewedBy:       (r.reviewed_by as string) ?? '',
+    timelineEvents:   (r.timeline_events as TimelineEvent[]) ?? [],
+    fiveWhys:         (r.five_whys as WhyEntry[]) ?? [],
+    structuredActions:(r.structured_actions as ActionItem[]) ?? [],
+    rcaSummary:       (r.rca_summary as string) ?? '',
   };
 }
 
@@ -92,6 +116,7 @@ const EMPTY_CASE: Omit<MMCase, 'id'> = {
   contributing: [], reOperation: false, icuAdmission: false, death: false,
   lessonsLearned: '', actionItems: '',
   reviewStatus: 'pending', reviewDate: '', reviewedBy: '',
+  timelineEvents: [], fiveWhys: [], structuredActions: [], rcaSummary: '',
 };
 
 /* ── Sub-components ─────────────────────────────────────────────────────── */
@@ -278,9 +303,369 @@ function CaseForm({ initial, onSave, onCancel }: {
   );
 }
 
+/* ── Postmortem / RCA panel ─────────────────────────────────────────────── */
+
+function CasePostmortem({ caseData, onBack, onSave }: {
+  caseData: MMCase;
+  onBack: () => void;
+  onSave: (updated: MMCase) => void;
+}) {
+  const [timeline, setTimeline]   = useState<TimelineEvent[]>(caseData.timelineEvents ?? []);
+  const [fiveWhys, setFiveWhys]   = useState<WhyEntry[]>(
+    caseData.fiveWhys?.length ? caseData.fiveWhys : [{ why: '', answer: '' }]
+  );
+  const [actions, setActions]     = useState<ActionItem[]>(caseData.structuredActions ?? []);
+  const [analysis, setAnalysis]   = useState<RCAAnalysis | null>(null);
+  const [analysing, setAnalysing] = useState(false);
+  const [analyseErr, setAnalyseErr] = useState('');
+  const [saving, setSaving]       = useState(false);
+  const gradeInfo = GRADES.find(g => g.id === caseData.grade);
+
+  const inp: React.CSSProperties = {
+    padding: '6px 9px', border: '1px solid var(--border)', borderRadius: 5,
+    fontSize: 12, background: 'var(--surface)', color: 'var(--fg)', width: '100%',
+  };
+
+  /* helpers */
+  function addTimelineEvent() {
+    setTimeline(v => [...v, { time: '', event: '' }]);
+  }
+  function updateTimeline(i: number, field: keyof TimelineEvent, val: string) {
+    setTimeline(v => v.map((e, idx) => idx === i ? { ...e, [field]: val } : e));
+  }
+  function removeTimeline(i: number) {
+    setTimeline(v => v.filter((_, idx) => idx !== i));
+  }
+
+  function addWhy() {
+    if (fiveWhys.length >= 5) return;
+    setFiveWhys(v => [...v, { why: '', answer: '' }]);
+  }
+  function updateWhy(i: number, field: keyof WhyEntry, val: string) {
+    setFiveWhys(v => v.map((e, idx) => idx === i ? { ...e, [field]: val } : e));
+  }
+  function removeWhy(i: number) {
+    setFiveWhys(v => v.filter((_, idx) => idx !== i));
+  }
+
+  function addAction() {
+    setActions(v => [...v, { text: '', owner: '', dueDate: '', status: 'open' }]);
+  }
+  function updateAction(i: number, field: keyof ActionItem, val: string) {
+    setActions(v => v.map((e, idx) => idx === i ? { ...e, [field]: val } : e));
+  }
+  function removeAction(i: number) {
+    setActions(v => v.filter((_, idx) => idx !== i));
+  }
+  function cycleActionStatus(i: number) {
+    const order: ActionStatus[] = ['open', 'in_progress', 'done'];
+    setActions(v => v.map((e, idx) => idx === i
+      ? { ...e, status: order[(order.indexOf(e.status) + 1) % order.length] }
+      : e));
+  }
+
+  const ACTION_STATUS_STYLE: Record<ActionStatus, { bg: string; fg: string; bd: string; label: string }> = {
+    open:        { bg: '#fffbeb', fg: '#92400e', bd: '#fcd34d', label: 'Open' },
+    in_progress: { bg: '#eff6ff', fg: '#1e40af', bd: '#bfdbfe', label: 'In progress' },
+    done:        { bg: '#f0fdf4', fg: '#166534', bd: '#86efac', label: 'Done' },
+  };
+
+  async function runAnalysis() {
+    setAnalysing(true);
+    setAnalyseErr('');
+    try {
+      // Save current RCA data first so the API has the latest timeline + 5 Whys
+      await fetch(`/api/mm-cases/${caseData.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ timelineEvents: timeline, fiveWhys, structuredActions: actions }),
+      });
+      const resp = await fetch(`/api/mm-cases/${caseData.id}/analysis`, { method: 'POST' });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const body = await resp.json() as { analysis: RCAAnalysis };
+      setAnalysis(body.analysis);
+    } catch (e) {
+      setAnalyseErr(e instanceof Error ? e.message : 'Analysis failed');
+    } finally {
+      setAnalysing(false);
+    }
+  }
+
+  async function save() {
+    setSaving(true);
+    const updated: MMCase = {
+      ...caseData,
+      timelineEvents: timeline,
+      fiveWhys,
+      structuredActions: actions,
+      rcaSummary: analysis?.summary ?? caseData.rcaSummary,
+    };
+    try {
+      await fetch(`/api/mm-cases/${caseData.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          timelineEvents: timeline,
+          fiveWhys,
+          structuredActions: actions,
+          rcaSummary: updated.rcaSummary,
+        }),
+      });
+    } catch { /* optimistic */ }
+    onSave(updated);
+    setSaving(false);
+  }
+
+  const sectionStyle: React.CSSProperties = {
+    background: 'var(--surface)', border: '1px solid var(--border)',
+    borderRadius: 10, padding: '14px 16px', marginBottom: 12,
+  };
+  const sectionHd: React.CSSProperties = {
+    fontSize: 11, fontWeight: 700, letterSpacing: '0.07em',
+    textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 10,
+  };
+
+  return (
+    <div style={{ maxWidth: 860 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+        <button onClick={onBack} style={{
+          padding: '5px 12px', borderRadius: 6, border: '1px solid var(--border)',
+          background: 'var(--surface)', color: 'var(--muted)', fontSize: 12, cursor: 'pointer',
+        }}>← Register</button>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--fg)' }}>{caseData.procedure}</div>
+          <div style={{ fontSize: 12, color: 'var(--muted)' }}>{caseData.complication} · {caseData.date}</div>
+        </div>
+        {caseData.grade && gradeInfo && (
+          <span style={{
+            fontSize: 11, fontWeight: 800, padding: '3px 9px', borderRadius: 5,
+            background: gradeInfo.bg, color: gradeInfo.color, border: `1px solid ${gradeInfo.color}40`,
+          }}>{caseData.grade}{caseData.gradeSuffix ? '(d)' : ''}</span>
+        )}
+        <button onClick={save} disabled={saving} style={{
+          padding: '7px 14px', borderRadius: 6, border: 'none',
+          background: 'var(--accent)', color: '#fff', fontWeight: 700, fontSize: 12, cursor: 'pointer',
+        }}>{saving ? 'Saving…' : 'Save RCA'}</button>
+      </div>
+
+      {/* ── Timeline ── */}
+      <div style={sectionStyle}>
+        <div style={sectionHd}>Timeline reconstruction</div>
+        {timeline.length === 0 && (
+          <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>
+            Document the chronological sequence of events leading to the complication.
+          </div>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {timeline.map((e, i) => (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '120px 1fr 28px', gap: 6, alignItems: 'center' }}>
+              <input
+                placeholder="HH:MM or stage"
+                style={{ ...inp, fontFamily: 'monospace', fontSize: 11 }}
+                value={e.time}
+                onChange={ev => updateTimeline(i, 'time', ev.target.value)}
+              />
+              <input
+                placeholder="Event description…"
+                style={inp}
+                value={e.event}
+                onChange={ev => updateTimeline(i, 'event', ev.target.value)}
+              />
+              <button onClick={() => removeTimeline(i)} style={{
+                width: 28, height: 28, borderRadius: 4, border: '1px solid #fca5a5',
+                background: '#fef2f2', color: '#b91c1c', fontSize: 14, cursor: 'pointer', lineHeight: 1,
+              }}>×</button>
+            </div>
+          ))}
+        </div>
+        <button onClick={addTimelineEvent} style={{
+          marginTop: 8, padding: '5px 12px', borderRadius: 5, border: '1px dashed var(--border)',
+          background: 'transparent', color: 'var(--accent)', fontSize: 12, cursor: 'pointer',
+        }}>+ Add event</button>
+      </div>
+
+      {/* ── 5 Whys ── */}
+      <div style={sectionStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+          <div style={sectionHd}>5 Whys analysis</div>
+          {fiveWhys.length < 5 && (
+            <button onClick={addWhy} style={{
+              padding: '3px 10px', borderRadius: 5, border: '1px dashed var(--border)',
+              background: 'transparent', color: 'var(--accent)', fontSize: 11, cursor: 'pointer',
+            }}>+ Why</button>
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {fiveWhys.map((w, i) => (
+            <div key={i} style={{
+              padding: '10px 12px', borderRadius: 7, border: '1px solid var(--border)',
+              background: 'var(--bg, #f8f9fb)', position: 'relative',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
+                <span style={{
+                  fontSize: 10, fontWeight: 800, color: 'var(--accent)',
+                  letterSpacing: '0.06em', textTransform: 'uppercase',
+                }}>Why {i + 1}</span>
+                {fiveWhys.length > 1 && (
+                  <button onClick={() => removeWhy(i)} style={{
+                    background: 'none', border: 'none', color: 'var(--muted)',
+                    fontSize: 14, cursor: 'pointer', lineHeight: 1,
+                  }}>×</button>
+                )}
+              </div>
+              <input
+                placeholder="Why did this happen?"
+                style={{ ...inp, marginBottom: 6, fontWeight: 600 }}
+                value={w.why}
+                onChange={e => updateWhy(i, 'why', e.target.value)}
+              />
+              <input
+                placeholder="Because…"
+                style={{ ...inp, color: 'var(--fg)', fontStyle: w.answer ? 'normal' : 'italic' }}
+                value={w.answer}
+                onChange={e => updateWhy(i, 'answer', e.target.value)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Structured actions ── */}
+      <div style={sectionStyle}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 }}>
+          <div style={sectionHd}>Action items</div>
+          <button onClick={addAction} style={{
+            padding: '3px 10px', borderRadius: 5, border: '1px dashed var(--border)',
+            background: 'transparent', color: 'var(--accent)', fontSize: 11, cursor: 'pointer',
+          }}>+ Action</button>
+        </div>
+        {actions.length === 0 && (
+          <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+            Add specific actions with owners and due dates to drive accountability.
+          </div>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {actions.map((a, i) => {
+            const st = ACTION_STATUS_STYLE[a.status];
+            return (
+              <div key={i} style={{
+                display: 'grid', gridTemplateColumns: '1fr 140px 130px auto 28px',
+                gap: 6, alignItems: 'center',
+              }}>
+                <input placeholder="Action description…" style={inp} value={a.text}
+                  onChange={e => updateAction(i, 'text', e.target.value)} />
+                <input placeholder="Owner (Dr / Nurse)" style={inp} value={a.owner}
+                  onChange={e => updateAction(i, 'owner', e.target.value)} />
+                <input type="date" style={inp} value={a.dueDate}
+                  onChange={e => updateAction(i, 'dueDate', e.target.value)} />
+                <button onClick={() => cycleActionStatus(i)} style={{
+                  padding: '4px 9px', borderRadius: 5, cursor: 'pointer', fontSize: 11, fontWeight: 700,
+                  background: st.bg, color: st.fg, border: `1px solid ${st.bd}`, whiteSpace: 'nowrap',
+                }}>{st.label}</button>
+                <button onClick={() => removeAction(i)} style={{
+                  width: 28, height: 28, borderRadius: 4, border: '1px solid #fca5a5',
+                  background: '#fef2f2', color: '#b91c1c', fontSize: 14, cursor: 'pointer', lineHeight: 1,
+                }}>×</button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── AI Analysis ── */}
+      <div style={sectionStyle}>
+        <div style={sectionHd}>AI postmortem analysis</div>
+
+        {!analysis && !caseData.rcaSummary && (
+          <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 12 }}>
+            Complete the timeline and 5 Whys above, then generate a structured root-cause analysis using AI.
+            The analysis is advisory — it does not replace clinical judgement.
+          </div>
+        )}
+
+        {/* Previously saved summary */}
+        {!analysis && caseData.rcaSummary && (
+          <div style={{
+            padding: 12, borderRadius: 7, background: 'var(--bg, #f8f9fb)',
+            border: '1px solid var(--border)', fontSize: 13, color: 'var(--fg)',
+            lineHeight: 1.6, marginBottom: 12,
+          }}>
+            <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+              Previously generated summary
+            </div>
+            {caseData.rcaSummary}
+          </div>
+        )}
+
+        {/* Fresh analysis result */}
+        {analysis && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
+            <AnalysisBlock label="Root cause" content={analysis.rootCause} accent="var(--severity-high, #dc2626)" />
+            <AnalysisBlock label="Contributing factor analysis" content={analysis.contributingAnalysis} />
+            <AnalysisListBlock label="System factors" items={analysis.systemFactors} />
+            <AnalysisListBlock label="Prevention strategies" items={analysis.preventionStrategies} accent="#0d9488" />
+            <AnalysisListBlock label="Learning points" items={analysis.learningPoints} accent="#6366f1" />
+            <AnalysisBlock label="Highest-yield risk reduction" content={analysis.riskReduction} accent="#d97706" />
+            <div style={{
+              padding: 12, borderRadius: 7, background: '#f0f9ff',
+              border: '1px solid #bae6fd', fontSize: 13, color: '#0c4a6e', lineHeight: 1.65,
+            }}>
+              <div style={{ fontSize: 10, fontWeight: 700, color: '#0369a1', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                M&M presentation summary
+              </div>
+              {analysis.summary}
+            </div>
+          </div>
+        )}
+
+        {analyseErr && (
+          <div style={{ fontSize: 12, color: '#dc2626', marginBottom: 10 }}>
+            Error: {analyseErr}
+          </div>
+        )}
+
+        <button onClick={runAnalysis} disabled={analysing || !caseData.id} style={{
+          padding: '9px 18px', borderRadius: 7, border: 'none',
+          background: analysing ? '#d1d5db' : '#6366f1',
+          color: '#fff', fontWeight: 700, fontSize: 13, cursor: analysing ? 'default' : 'pointer',
+        }}>
+          {analysing ? 'Analysing…' : (analysis || caseData.rcaSummary) ? 'Regenerate analysis' : 'Generate AI analysis'}
+        </button>
+        <div style={{ marginTop: 6, fontSize: 11, color: 'var(--muted)', fontStyle: 'italic' }}>
+          AI-generated analysis is advisory only. Always apply clinical judgement before acting on any suggestion.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AnalysisBlock({ label, content, accent = 'var(--fg)' }: { label: string; content: string; accent?: string }) {
+  return (
+    <div style={{ padding: '10px 12px', borderRadius: 7, background: 'var(--bg, #f8f9fb)', border: '1px solid var(--border)' }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: accent, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 13, color: 'var(--fg)', lineHeight: 1.55 }}>{content}</div>
+    </div>
+  );
+}
+
+function AnalysisListBlock({ label, items, accent = '#374151' }: { label: string; items: string[]; accent?: string }) {
+  if (!items?.length) return null;
+  return (
+    <div style={{ padding: '10px 12px', borderRadius: 7, background: 'var(--bg, #f8f9fb)', border: '1px solid var(--border)' }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: accent, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>{label}</div>
+      <ul style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {items.map((item, i) => (
+          <li key={i} style={{ fontSize: 12, color: 'var(--fg)', lineHeight: 1.5 }}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 /* ── Main component ─────────────────────────────────────────────────────── */
 
-type QIView = 'register' | 'metrics';
+type QIView = 'register' | 'metrics' | 'postmortem';
 
 export default function QualityImprovementTab() {
   const { patientName } = useAppContext();
@@ -290,6 +675,7 @@ export default function QualityImprovementTab() {
   const [view, setView] = useState<QIView>('register');
   const [adding, setAdding] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
+  const [postmortemId, setPostmortemId] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<ReviewStatus | 'all'>('all');
   const [filterGrade, setFilterGrade] = useState<ClavienGrade | 'all'>('all');
 
@@ -428,11 +814,16 @@ export default function QualityImprovementTab() {
 
       {/* View tabs */}
       <div style={{ display: 'flex', gap: 6, marginBottom: 16 }}>
-        <button style={view === 'register' ? pillActive : pill} onClick={() => setView('register')}>
+        <button style={view === 'register' ? pillActive : pill} onClick={() => { setView('register'); setPostmortemId(null); }}>
           Case register
           {metrics?.pending ? <span style={{ marginLeft: 6, background: '#dc2626', color: '#fff', fontSize: 10, fontWeight: 800, padding: '1px 5px', borderRadius: 10 }}>{metrics.pending}</span> : null}
         </button>
-        <button style={view === 'metrics' ? pillActive : pill} onClick={() => setView('metrics')}>QI metrics</button>
+        <button style={view === 'metrics' ? pillActive : pill} onClick={() => { setView('metrics'); setPostmortemId(null); }}>QI metrics</button>
+        {postmortemId && (
+          <button style={view === 'postmortem' ? pillActive : pill} onClick={() => setView('postmortem')}>
+            ⚕ Postmortem analysis
+          </button>
+        )}
       </div>
 
       {/* ── Register view ── */}
@@ -550,9 +941,15 @@ export default function QualityImprovementTab() {
                     )}
 
                     {/* Actions */}
-                    <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                    <div style={{ marginTop: 8, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       <button onClick={() => setEditId(c.id)} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 4, border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--muted)', cursor: 'pointer' }}>
                         Edit
+                      </button>
+                      <button onClick={() => { setPostmortemId(c.id); setView('postmortem'); }} style={{
+                        fontSize: 11, padding: '3px 9px', borderRadius: 4,
+                        border: '1px solid #c7d2fe', background: '#eef2ff', color: '#4338ca', cursor: 'pointer', fontWeight: 600,
+                      }}>
+                        Analyse →
                       </button>
                       <button onClick={() => { if (confirm('Remove this case?')) deleteCase(c.id); }} style={{ fontSize: 11, padding: '3px 9px', borderRadius: 4, border: '1px solid #fca5a5', background: '#fef2f2', color: '#b91c1c', cursor: 'pointer' }}>
                         Remove
@@ -565,6 +962,23 @@ export default function QualityImprovementTab() {
           )}
         </>
       )}
+
+      {/* ── Postmortem view ── */}
+      {view === 'postmortem' && postmortemId && (() => {
+        const c = cases.find(x => x.id === postmortemId);
+        if (!c) return (
+          <div style={{ textAlign: 'center', padding: 48, color: 'var(--muted)', fontSize: 13 }}>
+            Case not found.
+          </div>
+        );
+        return (
+          <CasePostmortem
+            caseData={c}
+            onBack={() => setView('register')}
+            onSave={updated => setCases(prev => prev.map(x => x.id === updated.id ? updated : x))}
+          />
+        );
+      })()}
 
       {/* ── Metrics view ── */}
       {view === 'metrics' && (
