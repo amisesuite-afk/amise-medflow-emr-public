@@ -235,7 +235,12 @@ final class SyncService: ObservableObject {
             if let eo = row.exam_other,  (patient.examOther ?? "").isEmpty   { patient.examOther   = eo }
 
             patient.syncedAt = .now
-            patient.pendingSync = false
+            // Only mark clean for patients created from this pull.
+            // Existing dirty patients keep pendingSync=true so pushPatientEdits
+            // can still flush their local edits in the same sync cycle.
+            if existing == nil {
+                patient.pendingSync = false
+            }
         }
 
         try context.save()
