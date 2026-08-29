@@ -175,6 +175,7 @@ export default function LetterGeneratorTab() {
   async function saveToRecord() {
     if (!patientId || !output) return;
     setSaving(true);
+    setError(null);
     try {
       const session = supabase ? (await supabase.auth.getSession()).data.session : null;
       const authHeaders: Record<string, string> = session?.access_token
@@ -191,7 +192,15 @@ export default function LetterGeneratorTab() {
           aiModelUsed: 'claude',
         }),
       });
-      if (res.ok) { setSaved(true); setTimeout(() => setSaved(false), 3000); }
+      if (res.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        const d = await res.json().catch(() => ({})) as { error?: string };
+        setError(d.error ?? `Failed to save note (HTTP ${res.status})`);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save note');
     } finally {
       setSaving(false);
     }
