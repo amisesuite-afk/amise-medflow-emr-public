@@ -166,6 +166,38 @@ final class AIService: ObservableObject {
         return try await generate(systemPrompt: system, userMessage: user)
     }
 
+    // MARK: - First-visit consultation letter
+
+    func generateFirstVisitLetter(patient: Patient) async throws -> String {
+        let system = """
+        You are a surgical registrar AI assistant to Dr Dawit Daniel Kabiye, MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+        Draft a formal first-visit consultation letter to the referring doctor. British spelling, professional surgical register.
+        Mark the letter [AI DRAFT — REVIEW BEFORE SIGNING].
+        """
+        let today = Date.now.formatted(date: .long, time: .omitted)
+        let user = """
+        Draft a formal first-visit consultation letter for the patient below.
+        Date: \(today)
+        From: Dr Dawit Daniel Kabiye, MD DM — Consultant General & Endoscopic Surgeon, Amise Medical Services, Saint Lucia
+
+        \(clinicalContext(patient))
+
+        Structure the letter as follows:
+        1. Opening — thank referring physician, introduce the patient (name, age, sex)
+        2. History of presenting complaint — concise narrative
+        3. Past medical and surgical history, medications, allergies
+        4. Physical examination findings — by system; note positive and relevant negative findings
+        5. Investigations — ordered and any results available
+        6. Assessment — working diagnosis with ICD code if known; clinical reasoning
+        7. Management plan — what has been started or arranged
+        8. Follow-up — proposed review timeframe; when you will write again
+        9. Closing — professional sign-off
+
+        Keep to 500–700 words. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
+        """
+        return try await generate(systemPrompt: system, userMessage: user)
+    }
+
     func generateOpNote(patient: Patient, procedure: String, findings: String) async throws -> String {
         let system = """
         You are drafting an operative note for Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon.
