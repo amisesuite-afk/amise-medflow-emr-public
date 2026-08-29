@@ -74,6 +74,7 @@ struct DiagnosisRadiation {
     let redFlags: [String]
     let followUp: String
     let guidelineReference: String?   // e.g. "NICE NG12; ASGE 2019"
+    let scoringCriteria: ScoringCriteria?
 
     init(
         conditionName: String,
@@ -85,7 +86,8 @@ struct DiagnosisRadiation {
         urgencyNote: String?,
         redFlags: [String],
         followUp: String,
-        guidelineReference: String? = nil
+        guidelineReference: String? = nil,
+        scoringCriteria: ScoringCriteria? = nil
     ) {
         self.conditionName = conditionName
         self.icd10Primary = icd10Primary
@@ -97,6 +99,7 @@ struct DiagnosisRadiation {
         self.redFlags = redFlags
         self.followUp = followUp
         self.guidelineReference = guidelineReference
+        self.scoringCriteria = scoringCriteria
     }
 }
 

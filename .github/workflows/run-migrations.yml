@@ -23,7 +23,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 1: Clinical records"
         run: |
@@ -31,7 +31,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 2: Patient portal"
         run: |
@@ -39,7 +39,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 3: APCQ questionnaires"
         run: |
@@ -47,7 +47,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 4: Questionnaire token expiry"
         run: |
@@ -55,7 +55,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 5: EMR persistence"
         run: |
@@ -63,7 +63,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 6: Portal self-service"
         run: |
@@ -71,7 +71,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 7: AI adaptive intake"
         run: |
@@ -79,7 +79,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 8: Booking notifications"
         run: |
@@ -87,7 +87,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 9: Booking source"
         run: |
@@ -95,7 +95,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 10: Email document intake"
         run: |
@@ -103,7 +103,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 11: Document AI extraction"
         run: |
@@ -111,7 +111,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 12: Documents clinical photo"
         run: |
@@ -119,7 +119,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 13: Vitals photo"
         run: |
@@ -127,7 +127,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 14: Service role grants"
         run: |
@@ -135,7 +135,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 15: Appointment email optional"
         run: |
@@ -143,7 +143,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 16: Referring doctors seed"
         run: |
@@ -151,7 +151,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 17: Confirmed appointments"
         run: |
@@ -159,7 +159,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 18: Intake reminder"
         run: |
@@ -167,7 +167,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 19: Booking waitlist"
         run: |
@@ -175,7 +175,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 20: Patients quarter"
         run: |
@@ -183,7 +183,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 21: Procedure prep drafts"
         run: |
@@ -191,7 +191,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 22: Post-visit followup"
         run: |
@@ -199,7 +199,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 23: Appointment change requests"
         run: |
@@ -207,7 +207,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 24: User default site"
         run: |
@@ -215,7 +215,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 25: Preferred slot text"
         run: |
@@ -223,7 +223,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 26: Staff review timestamps"
         run: |
@@ -231,7 +231,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 27: Anonymous intake support"
         run: |
@@ -239,7 +239,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 28: Appointment questionnaire link"
         run: |
@@ -247,7 +247,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 29: Appointment requests align"
         run: |
@@ -255,7 +255,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 30: Web intake delivery method"
         run: |
@@ -263,7 +263,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 31: Clinical persistence (surgical history, ROS, prescriptions, trauma)"
         run: |
@@ -271,7 +271,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 32: EMR enhancements (formulary, procedure catalog, ICD-10)"
         run: |
@@ -279,7 +279,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 33: Performance indexes"
         run: |
@@ -287,7 +287,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 34: Patient auth accounts"
         run: |
@@ -295,7 +295,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 35: Storage buckets"
         run: |
@@ -303,7 +303,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 36: Phase 2 schema fixes"
         run: |
@@ -311,7 +311,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 37: Phase 4 follow-up loop (referrals, orders, results)"
         run: |
@@ -319,7 +319,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 38: Phase 6 patient identity & entry pipeline hardening"
         run: |
@@ -327,7 +327,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 39: Phase 8 calendar event cache"
         run: |
@@ -335,7 +335,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 40: Call logs"
         run: |
@@ -343,7 +343,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 41: Call logs — missing columns used by the API server"
         run: |
@@ -351,7 +351,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 42: Call logs — practice_line & patient auto-MRN"
         run: |
@@ -359,7 +359,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 43: Call logs — voicemail & callback queue"
         run: |
@@ -367,7 +367,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 44: Call recordings storage bucket"
         run: |
@@ -375,7 +375,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 45: Seam fixes"
         run: |
@@ -383,7 +383,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 46: Patient token blacklist"
         run: |
@@ -391,7 +391,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 47: Patients full fields + photo storage bucket"
         run: |
@@ -399,7 +399,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 48: Patient photo_url column"
         run: |
@@ -407,7 +407,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 49: Clinical scores (Tokyo/Ranson/BISAP/ASA/POSSUM/Child-Pugh/MELD/NEWS2)"
         run: |
@@ -415,7 +415,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 50: Dual-confirmation booking gate"
         run: |
@@ -423,7 +423,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 51: Local folder document source"
         run: |
@@ -431,7 +431,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 52: Results inbox fix"
         run: |
@@ -439,7 +439,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 53: Revoke anon access to appointment_requests"
         run: |
@@ -447,7 +447,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 54: Slice A — AI proposals + note versioning"
         run: |
@@ -455,7 +455,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 55: Slice B — workflow tasks"
         run: |
@@ -463,7 +463,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 56: Slice C — clinical state engine"
         run: |
@@ -471,7 +471,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 57: Slice F — loop closure"
         run: |
@@ -479,7 +479,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 58: Slice H — referral lifecycle"
         run: |
@@ -487,7 +487,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 59: Slices L/M/N/O — encounter, notes, search, billing APIs"
         run: |
@@ -495,7 +495,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 60: Slices P/Q/R/S — API routes only (no schema changes)"
         run: |
@@ -503,7 +503,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 61: Staff scheduling module"
         run: |
@@ -511,7 +511,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 62: Tax planner state"
         run: |
@@ -519,7 +519,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 63: Theatre sessions + cases"
         run: |
@@ -527,7 +527,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 64: Encounters closed_at (reopen-for-edit grace period)"
         run: |
@@ -535,7 +535,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 65: Remove 'castries' as a valid site"
         run: |
@@ -543,7 +543,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 66: Clinical audit-log trigger (dashboard writes)"
         run: |
@@ -551,7 +551,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 67: Atomic replace-all RPCs (medications/surgical_history/toxic_habits/operative_notes sync)"
         run: |
@@ -559,7 +559,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 68: iOS EMR — working_diagnosis + assessment fields on patients; prescriptions + patient_documents tables"
         run: |
@@ -567,7 +567,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 69: iOS Consultation form — HPI, surgical hx, allergies, per-system exam, management plan columns on patients"
         run: |
@@ -575,7 +575,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 70: patients — pmh_notes + family_history_notes columns"
         run: |
@@ -583,7 +583,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 71: patients — setting, location, acuity columns for iOS multi-device sync"
         run: |
@@ -591,7 +591,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 72: patients — clinical consultation fields (iOS ConsultationView / AssessmentView)"
         run: |
@@ -599,7 +599,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 73: patients — physical exam fields (iOS per-system exam sync)"
         run: |
@@ -607,7 +607,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 74: patient_vitals — encounter-free vitals table for iOS VitalsEntry sync"
         run: |
@@ -615,7 +615,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 75: patient_operative_plans — consent, anaesthesia prep, WHO surgical checklist (JSONB)"
         run: |
@@ -623,7 +623,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 76: patient_billing_items — CPT-coded billing items for iOS BillingLineItem sync"
         run: |
@@ -631,7 +631,7 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: "Migration 77: prescriptions — add iOS flat-column schema (drug, dose, route, frequency, duration, indication, instructions, prescribed_at)"
         run: |
@@ -639,7 +639,31 @@ jobs:
           curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
             -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"query\": $QUERY}" | jq .
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      - name: "Migration 78: prescriptions — re-apply flat-column additions without backfill UPDATE (fixes migration 77 rollback)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-prescriptions-flat-columns-fix-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      - name: "Migration 79: patient_documents — iOS document metadata table"
+        run: |
+          QUERY=$(jq -Rs . < supabase-patient-documents-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      - name: "Migration 77: prescriptions — add iOS flat-column schema (drug, dose, route, frequency, duration, indication, instructions, prescribed_at)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-prescriptions-drug-columns-migration.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
       - name: Done
-        run: echo "All 77 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
+        run: echo "All 79 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
