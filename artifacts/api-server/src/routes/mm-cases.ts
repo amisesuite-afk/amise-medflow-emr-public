@@ -289,7 +289,8 @@ Return ONLY valid JSON with this exact schema:
 
     // Persist the generated summary so it can be displayed without re-generating
     const rcaSummary = analysis.summary;
-    await supa.from('mm_cases').update({ rca_summary: rcaSummary, updated_at: new Date().toISOString() }).eq('id', id);
+    const { error: rcaPersistErr } = await supa.from('mm_cases').update({ rca_summary: rcaSummary, updated_at: new Date().toISOString() }).eq('id', id);
+    if (rcaPersistErr) logger.warn({ err: rcaPersistErr, id }, '[mm-cases/analysis] rca_summary persist failed — analysis returned but not stored');
 
     await audit({
       action: 'change_request', entityType: 'mm_case', entityId: id,
