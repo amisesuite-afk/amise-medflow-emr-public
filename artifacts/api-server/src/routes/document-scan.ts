@@ -12,6 +12,7 @@ import { Router, type Request, type Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { convertToMarkdown } from '../lib/markitdown.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -81,55 +82,56 @@ router.post('/', async (req: Request, res: Response) => {
     return;
   }
 
-  // Validate accepted MIME types
+  // Accepted MIME types
   const supportedImages = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-  const isPdf = mimeType === 'application/pdf';
-  const isImage = supportedImages.includes(mimeType);
+  const isPdf    = mimeType === 'application/pdf';
+  const isImage  = supportedImages.includes(mimeType);
+  // Office / text formats handled via markitdown text extraction
+  const isOffice = ['application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'application/vnd.ms-excel',
+                    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                    'text/html', 'text/csv', 'text/plain'].includes(mimeType);
 
-  if (!isImage && !isPdf) {
-    res.status(400).json({ error: `Unsupported file type: ${mimeType}. Send image/jpeg, image/png, or application/pdf.` });
+  if (!isImage && !isPdf && !isOffice) {
+    res.status(400).json({ error: `Unsupported file type: ${mimeType}` });
     return;
   }
 
   log.info({ model: MODEL, mimeType }, 'document-scan: starting extraction');
 
   try {
-    // Build the content block based on type
     type ImageMediaType = 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
-    const contentBlock = isPdf
-      ? {
-          type: 'document' as const,
-          source: {
-            type: 'base64' as const,
-            media_type: 'application/pdf' as const,
-            data: imageBase64,
-          },
-        }
-      : {
-          type: 'image' as const,
-          source: {
-            type: 'base64' as const,
-            media_type: mimeType as ImageMediaType,
-            data: imageBase64,
-          },
-        };
+    // For Office docs, and optionally PDFs, extract text via markitdown first
+    // then send as plain text — cheaper than vision tokens for text-heavy docs.
+    let markdownText: string | null = null;
+    if (isOffice || isPdf) {
+      markdownText = await convertToMarkdown(imageBase64, mimeType);
+      if (markdownText) log.info({ chars: markdownText.length }, 'document-scan: markitdown extraction ok');
+    }
+
+    // Build Claude message content
+    let messageContent: Anthropic.MessageParam['content'];
+
+    if (markdownText) {
+      // Text path — no vision tokens
+      messageContent = [
+        { type: 'text', text: `Document content (extracted as Markdown):\n\n${markdownText}\n\n---\n${EXTRACTION_PROMPT}` },
+      ];
+    } else {
+      // Vision path — images and PDFs that markitdown couldn't convert
+      const contentBlock = isPdf
+        ? { type: 'document' as const, source: { type: 'base64' as const, media_type: 'application/pdf' as const, data: imageBase64 } }
+        : { type: 'image'    as const, source: { type: 'base64' as const, media_type: mimeType as ImageMediaType,             data: imageBase64 } };
+      messageContent = [contentBlock, { type: 'text', text: EXTRACTION_PROMPT }];
+    }
 
     const response = await client.messages.create({
       model: MODEL,
       max_tokens: 2048,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            contentBlock,
-            {
-              type: 'text',
-              text: EXTRACTION_PROMPT,
-            },
-          ],
-        },
-      ],
+      messages: [{ role: 'user', content: messageContent }],
     });
 
     const raw = response.content[0].type === 'text' ? response.content[0].text : '';
