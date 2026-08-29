@@ -838,7 +838,7 @@ router.post('/api/calls/status', async (req, res) => {
       }
     }
 
-    await sb()
+    const { error: upsertErr } = await sb()
       .from('call_logs')
       .upsert({
         twilio_call_sid: CallSid,
@@ -850,6 +850,7 @@ router.post('/api/calls/status', async (req, res) => {
         duration_s:      durationS,
         practice_line:   practiceLine,
       }, { onConflict: 'twilio_call_sid', ignoreDuplicates: false });
+    if (upsertErr) logger.warn({ err: upsertErr, CallSid }, '[calls/status] call_log upsert failed');
 
     logger.info({ CallSid, callStatus, mappedStatus, practiceLine }, '[calls/status] logged');
   } catch (err) {
