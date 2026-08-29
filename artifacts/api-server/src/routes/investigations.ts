@@ -858,6 +858,7 @@ router.post('/api/investigations/scan-referral', async (req, res) => {
 
     const extracted = JSON.parse(jsonMatch[0]) as Record<string, unknown>;
     logger.info({ extracted }, '[scan-referral] extracted');
+    void logAudit(req, 'ai_call', 'document', undefined, undefined, { action: 'scan_referral', contentType });
     res.json({ extracted });
   } catch (err) {
     logger.error({ err }, '[scan-referral] error');
