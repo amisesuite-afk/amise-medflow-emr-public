@@ -26,6 +26,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 
@@ -430,6 +431,7 @@ router.patch('/api/calls/:id/resolve', async (req, res) => {
   }
 
   logger.info({ call_log_id: req.params.id, patient_id: resolvedPatientId }, '[calls/resolve] ok');
+  void logAudit(req, 'update', 'patient', resolvedPatientId ?? undefined, resolvedPatientId ?? undefined, { action: 'call_resolved', callLogId: req.params.id, newPatientCreated: !!new_patient });
   res.json({ patient_id: resolvedPatientId, resolved: true });
 });
 
