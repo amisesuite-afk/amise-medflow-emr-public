@@ -275,6 +275,7 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
 
 struct ContentView: View {
     @EnvironmentObject private var sync: SyncService
+    @Environment(\.modelContext) private var modelContext
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
@@ -285,6 +286,10 @@ struct ContentView: View {
             } else {
                 CompactRootView()
             }
+        }
+        .onAppear {
+            // Inject context here so sync works even if Settings is never opened
+            sync.setModelContext(modelContext)
         }
         .fullScreenCover(isPresented: Binding(
             get: { !sync.isSignedIn },

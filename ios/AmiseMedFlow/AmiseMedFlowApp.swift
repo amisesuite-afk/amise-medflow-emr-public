@@ -57,6 +57,9 @@ struct AmiseMedFlowApp: App {
                 bioAuth.recordBackground()
             case .active:
                 bioAuth.lockIfTimedOut()
+                // Re-sync every time the app comes to the foreground (picks up changes
+                // made on another device, including iPhone ↔ iPad in the same room)
+                Task { await sync.syncIfAuthenticated() }
             default:
                 break
             }
