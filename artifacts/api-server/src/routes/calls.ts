@@ -154,84 +154,90 @@ router.post('/api/calls/ingest', async (req, res) => {
 
   const d = parsed.data;
 
-  // 1. Resolve patient_id — phone first, then email
-  let patientId: string | null = d.patient_id ?? null;
-  let patientContext: PatientSummary | null = null;
-  let isNew = false;
+  try {
+    // 1. Resolve patient_id — phone first, then email
+    let patientId: string | null = d.patient_id ?? null;
+    let patientContext: PatientSummary | null = null;
+    let isNew = false;
 
-  if (!patientId) {
-    // Try phone lookup
-    if (d.caller_number) {
-      patientContext = await lookupPatientByPhone(d.caller_number);
-      if (patientContext) patientId = patientContext.id;
+    if (!patientId) {
+      // Try phone lookup
+      if (d.caller_number) {
+        patientContext = await lookupPatientByPhone(d.caller_number);
+        if (patientContext) patientId = patientContext.id;
+      }
+      // Fallback to email lookup
+      if (!patientId && d.caller_email) {
+        patientContext = await lookupPatientByEmail(d.caller_email);
+        if (patientContext) patientId = patientContext.id;
+      }
+      if (!patientId) isNew = true;
+    } else {
+      const { data } = await sb()
+        .from('patients')
+        .select('id, full_name, mrn')
+        .eq('id', patientId)
+        .single();
+      patientContext = data as PatientSummary ?? null;
     }
-    // Fallback to email lookup
-    if (!patientId && d.caller_email) {
-      patientContext = await lookupPatientByEmail(d.caller_email);
-      if (patientContext) patientId = patientContext.id;
-    }
-    if (!patientId) isNew = true;
-  } else {
-    const { data } = await sb()
-      .from('patients')
-      .select('id, full_name, mrn')
-      .eq('id', patientId)
+
+    // 2. Detect practice line from caller_number if not supplied
+    const practiceLine = d.practice_line
+      ?? (d.caller_number ? detectPracticeLine(d.caller_number)?.label ?? null : null);
+
+    // 3. Write call_log
+    const { data: log, error: logErr } = await sb()
+      .from('call_logs')
+      .insert({
+        caller_number:  d.caller_number ?? null,
+        caller_email:   d.caller_email  ?? null,
+        patient_id:     patientId,
+        source:         d.source,
+        direction:      d.direction,
+        transcript:     d.transcript ?? null,
+        soap_segmented: d.soap_segmented ?? null,
+        audio_path:     d.audio_path ?? null,
+        duration_s:     d.duration_s ?? null,
+        practice_line:  practiceLine,
+      })
+      .select('id')
       .single();
-    patientContext = data as PatientSummary ?? null;
-  }
 
-  // 2. Detect practice line from caller_number if not supplied
-  const practiceLine = d.practice_line
-    ?? (d.caller_number ? detectPracticeLine(d.caller_number)?.label ?? null : null);
+    if (logErr) {
+      logger.error({ logErr }, '[calls/ingest] insert failed');
+      res.status(502).json({ error: logErr.message });
+      return;
+    }
 
-  // 3. Write call_log
-  const { data: log, error: logErr } = await sb()
-    .from('call_logs')
-    .insert({
-      caller_number:  d.caller_number ?? null,
-      caller_email:   d.caller_email  ?? null,
-      patient_id:     patientId,
-      source:         d.source,
-      direction:      d.direction,
-      transcript:     d.transcript ?? null,
-      soap_segmented: d.soap_segmented ?? null,
-      audio_path:     d.audio_path ?? null,
-      duration_s:     d.duration_s ?? null,
-      practice_line:  practiceLine,
-    })
-    .select('id')
-    .single();
+    // 4. If unresolved and has caller number/email, also create a booking inquiry
+    if (isNew && (d.caller_number || d.caller_email)) {
+      const snippetText: string = typeof d.transcript === 'string'
+        ? `Voice message: ${(d.transcript as string).slice(0, 200)}`
+        : 'Incoming phone call — no transcript';
+      const { error: reqInsertErr } = await sb().from('appointment_requests').insert({
+        patient_name:     d.caller_number ?? d.caller_email ?? 'Unknown',
+        patient_phone:    d.caller_number ?? null,
+        source:           'phone',
+        status:           'pending',
+        reason:           snippetText,
+        appointment_type: 'new_patient',
+      });
+      if (reqInsertErr) logger.warn({ err: reqInsertErr }, '[calls/ingest] appointment_request create failed — call logged but no booking inquiry');
+    }
 
-  if (logErr) {
-    logger.error({ logErr }, '[calls/ingest] insert failed');
-    res.status(502).json({ error: logErr.message });
-    return;
-  }
+    logger.info({ call_log_id: log!.id, patient_id: patientId, is_new: isNew, practice_line: practiceLine }, '[calls/ingest] ok');
 
-  // 4. If unresolved and has caller number/email, also create a booking inquiry
-  if (isNew && (d.caller_number || d.caller_email)) {
-    const snippetText: string = typeof d.transcript === 'string'
-      ? `Voice message: ${(d.transcript as string).slice(0, 200)}`
-      : 'Incoming phone call — no transcript';
-    await sb().from('appointment_requests').insert({
-      patient_name:     d.caller_number ?? d.caller_email ?? 'Unknown',
-      patient_phone:    d.caller_number ?? null,
-      source:           'phone',
-      status:           'pending',
-      reason:           snippetText,
-      appointment_type: 'new_patient',
+    res.json({
+      call_log_id:   log!.id,
+      patient_id:    patientId,
+      patient:       patientContext,
+      is_new:        isNew,
+      practice_line: practiceLine,
     });
+  } catch (err) {
+    logger.error({ err }, '[calls/ingest] error');
+    res.status(502).json({ error: err instanceof Error ? err.message : String(err) });
   }
-
-  logger.info({ call_log_id: log!.id, patient_id: patientId, is_new: isNew, practice_line: practiceLine }, '[calls/ingest] ok');
-
-  res.json({
-    call_log_id:   log!.id,
-    patient_id:    patientId,
-    patient:       patientContext,
-    is_new:        isNew,
-    practice_line: practiceLine,
-  });
 });
 
 // ── GET /api/calls/unresolved ─────────────────────────────────────────────────

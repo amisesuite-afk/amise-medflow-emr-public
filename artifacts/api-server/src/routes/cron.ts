@@ -148,9 +148,9 @@ router.post('/api/cron/daily-summary', async (req, res) => {
 
   // Run all queries in parallel
   const [
-    { data: appointments },
-    { data: escalations },
-    { data: pending },
+    { data: appointments, error: apptErr },
+    { data: escalations, error: escErr },
+    { data: pending, error: pendingErr },
   ] = await Promise.all([
     sb()
       .from('appointment_requests')
@@ -169,6 +169,9 @@ router.post('/api/cron/daily-summary', async (req, res) => {
       .select('id')
       .eq('status', 'pending'),
   ]);
+  if (apptErr) req.log.warn({ err: apptErr }, '[cron/daily-summary] appointments query error');
+  if (escErr) req.log.warn({ err: escErr }, '[cron/daily-summary] escalations query error');
+  if (pendingErr) req.log.warn({ err: pendingErr }, '[cron/daily-summary] pending query error');
 
   // Fetch today's schedule from Google Calendar (all 3 calendars, all event types)
   let calEvents: Awaited<ReturnType<typeof fetchAllEventsForDate>> = [];
@@ -179,11 +182,12 @@ router.post('/api/cron/daily-summary', async (req, res) => {
   }
 
   // Mark any open/in_progress tasks whose due_date has passed as overdue.
-  await sb()
+  const { error: overdueErr } = await sb()
     .from('patient_tasks')
     .update({ status: 'overdue' })
     .in('status', ['open', 'in_progress'])
     .lt('due_date', todayEctDateString);
+  if (overdueErr) req.log.warn({ err: overdueErr }, '[cron/daily-summary] overdue task update error');
 
   const { data: overdueTasks } = await sb()
     .from('patient_tasks')
@@ -296,12 +300,14 @@ router.post('/api/cron/booking-reminders', async (req, res) => {
         const body = `Hi ${req.patient_name.split(' ')[0]}, your appointment with Dr Kabiye is on ${slotStr}. Reply YES to confirm or call us to reschedule.${prepLine} – Amise Medical`;
         const result = await sendSms({ to: req.patient_phone, body });
         if (result.action === 'sent' || result.action === 'skipped') {
-          await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString(), prep_sms_sent: !!prepInstructions }).eq('id', req.id);
+          const { error: reminderUpdateErr } = await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString(), prep_sms_sent: !!prepInstructions }).eq('id', req.id);
+          if (reminderUpdateErr) logger.warn({ err: reminderUpdateErr, requestId: req.id }, '[cron/booking-reminders] reminder_sent_at update failed');
           await audit({ action: 'remind', entityType: 'appointment_request', entityId: req.id, payload: { kind: 'sms_48h_confirmation', prep_included: !!prepInstructions } });
           results.push({ id: req.id, action: result.action === 'sent' ? 'sms_sent' : 'sms_dry_run' });
         }
       } else {
-        await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', req.id);
+        const { error: noPhoneUpdateErr } = await supa.from('appointment_requests').update({ reminder_sent_at: now.toISOString() }).eq('id', req.id);
+        if (noPhoneUpdateErr) logger.warn({ err: noPhoneUpdateErr, requestId: req.id }, '[cron/booking-reminders] no-phone reminder_sent_at update failed');
         results.push({ id: req.id, action: 'no_phone' });
       }
     } catch (err) {

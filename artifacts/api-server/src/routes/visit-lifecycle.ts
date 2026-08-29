@@ -75,10 +75,11 @@ router.post('/api/visit/check-in/:appointmentId', async (req, res) => {
           }
 
           // Back-link the booking to the resolved patient
-          await supa
+          const { error: backLinkErr } = await supa
             .from('appointment_requests')
             .update({ patient_id: patientId })
             .eq('id', appointmentId);
+          if (backLinkErr) logger.warn({ err: backLinkErr, appointmentId }, '[visit/check-in] appointment patient_id back-link failed');
         }
       }
     }
@@ -111,10 +112,12 @@ router.post('/api/visit/check-in/:appointmentId', async (req, res) => {
 
     // Update appointment status to 'attended'
     if (confirmed) {
-      await supa.from('confirmed_appointments').update({ status: 'completed' }).eq('id', appointmentId);
+      const { error: apptUpdateErr } = await supa.from('confirmed_appointments').update({ status: 'completed' }).eq('id', appointmentId);
+      if (apptUpdateErr) logger.warn({ err: apptUpdateErr, appointmentId }, '[visit/check-in] confirmed_appointment status update failed');
     } else {
       // For appointment_requests, we just mark it checked in via notes
-      await supa.from('appointment_requests').update({ notes: 'Patient checked in' }).eq('id', appointmentId);
+      const { error: reqUpdateErr } = await supa.from('appointment_requests').update({ notes: 'Patient checked in' }).eq('id', appointmentId);
+      if (reqUpdateErr) logger.warn({ err: reqUpdateErr, appointmentId }, '[visit/check-in] appointment_request notes update failed');
     }
 
     await audit({
@@ -171,7 +174,7 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
 
     // Create referral if specified
     if (referralTo) {
-      await supa.from('referrals').insert({
+      const { error: referralErr } = await supa.from('referrals').insert({
         patient_id: encounter.patient_id,
         encounter_id: encounterId,
         referral_to: referralTo,
@@ -180,14 +183,16 @@ router.post('/api/visit/complete/:encounterId', async (req, res) => {
         urgency: referralUrgency ?? 'routine',
         status: 'pending',
       });
+      if (referralErr) logger.warn({ err: referralErr, encounterId }, '[visit/complete] referral insert failed');
     }
 
     // Sign all draft clinical notes before closing
-    await supa
+    const { error: signNotesErr } = await supa
       .from('clinical_notes')
       .update({ status: 'signed', updated_at: new Date().toISOString() })
       .eq('encounter_id', encounterId)
       .eq('status', 'draft');
+    if (signNotesErr) logger.warn({ err: signNotesErr, encounterId }, '[visit/complete] clinical_notes sign failed');
 
     // Close encounter
     const { error: closeErr } = await supa
