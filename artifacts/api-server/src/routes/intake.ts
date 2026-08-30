@@ -118,7 +118,7 @@ router.post('/api/intake/run', async (req, res) => {
 
       const sendResult = await sendOrDraft({ to: msg.from, subject: reply.subject, body: reply.body, threadId: msg.threadId }, intakeMode);
 
-      await sb().from('pending_bookings').insert({
+      const { error: bookingInsertErr } = await sb().from('pending_bookings').insert({
         patient_id: patientId,
         patient_email: msg.from,
         appointment_type: triageResult.appointmentType,
@@ -127,6 +127,7 @@ router.post('/api/intake/run', async (req, res) => {
         gmail_message_id: id,
         status: 'awaiting_reply',
       });
+      if (bookingInsertErr) req.log.warn({ err: bookingInsertErr, messageId: id }, '[intake] pending_bookings insert failed');
 
       await audit({ action: 'send', entityType: 'gmail_message', entityId: id, payload: { action: sendResult.action, gmailId: sendResult.gmailId } });
       results.push({ id, action: sendResult.action });

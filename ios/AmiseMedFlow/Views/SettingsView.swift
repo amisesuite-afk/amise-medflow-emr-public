@@ -3,6 +3,7 @@ import SwiftData
 
 struct SettingsView: View {
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var peerSync: PeerSyncService
     @Environment(\.modelContext) private var context
 
     @State private var showLogin = false
@@ -74,6 +75,72 @@ struct SettingsView: View {
                             Task { await sync.sync(context: context) }
                         }
                     }
+                }
+
+                // MARK: Proximity Sync
+                Section {
+                    LabeledContent("Nearby devices") {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(peerSync.connectedCount > 0 ? Color.green : Color.secondary.opacity(0.4))
+                                .frame(width: 8, height: 8)
+                            Text(peerSync.connectedCount > 0
+                                 ? "\(peerSync.connectedCount) connected"
+                                 : (peerSync.nearbyCount > 0 ? "\(peerSync.nearbyCount) found" : "None"))
+                        }
+                    }
+
+                    if !peerSync.peerSyncStatus.isEmpty {
+                        Text(peerSync.peerSyncStatus)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if let last = peerSync.lastPeerSyncAt {
+                        LabeledContent("Last device sync") {
+                            Text(last, style: .relative).foregroundStyle(.secondary)
+                        }
+                    }
+
+                    if !peerSync.syncHistory.isEmpty {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Recent syncs")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            ForEach(peerSync.syncHistory.prefix(5)) { event in
+                                HStack {
+                                    Image(systemName: event.direction == .received ? "arrow.down.circle" : "arrow.up.circle")
+                                        .foregroundStyle(event.direction == .received ? Color.accentColor : Color.orange)
+                                        .font(.caption)
+                                    Text(event.label)
+                                        .font(.caption)
+                                    Spacer()
+                                    Text(event.at, style: .relative)
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                        .padding(.vertical, 2)
+                    }
+
+                    HStack {
+                        Button("Sync Now") {
+                            peerSync.syncNow()
+                        }
+                        .disabled(peerSync.connectedCount == 0)
+
+                        Spacer()
+
+                        Button("Restart") {
+                            peerSync.restart()
+                        }
+                        .foregroundStyle(.orange)
+                    }
+                } header: {
+                    Text("Proximity Sync")
+                } footer: {
+                    Text("Syncs directly between your iPhone and iPad over Bluetooth or WiFi — no internet required.")
                 }
 
                 // MARK: Practice

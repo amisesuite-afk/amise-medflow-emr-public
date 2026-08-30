@@ -4,6 +4,7 @@ import { requireStaffAuth, sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { AI_DISABLED } from '../lib/ai-guard.js';
 import { assemblePatientContext, formatContextBlock } from '../lib/patient-context.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -279,6 +280,7 @@ Respond with ONLY a JSON object (no markdown fences, no preamble). Follow the re
       }
     }
 
+    void logAudit(req, 'ai_call', 'patient', patientId, patientId, { consultationType, specificQuestion: specificQuestion?.slice(0, 200), encounterId });
     res.json({
       success: true,
       consultation: aiResponse,

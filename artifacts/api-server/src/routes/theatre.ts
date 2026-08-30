@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getSupabaseAdmin, requireStaffAuth } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 import {
   fetchEventsForDate, updateEventDescription,
   formatOperatingListDescription, type TheatreCaseSummary,
@@ -83,7 +84,7 @@ router.get('/api/theatre/sessions', async (req, res) => {
     for (const ev of calEvents) {
       const sessionType = inferSessionType(ev.start, ev.summary);
       const locationKey = inferLocation(ev.calendarId, ev.summary);
-      await supa.from('theatre_sessions').upsert({
+      const { error: upsertErr } = await supa.from('theatre_sessions').upsert({
         google_event_id:    ev.id,
         google_calendar_id: ev.calendarId,
         session_date:       dateStr,
@@ -93,6 +94,7 @@ router.get('/api/theatre/sessions', async (req, res) => {
         cal_end_time:       ev.end   || null,
         cal_summary:        ev.summary,
       }, { onConflict: 'google_event_id', ignoreDuplicates: false });
+      if (upsertErr) logger.warn({ err: upsertErr, eventId: ev.id }, '[theatre/sessions] calendar event upsert failed');
     }
 
     // Fetch all sessions for this date (calendar-sourced + manually created)
@@ -166,6 +168,7 @@ router.post('/api/theatre/sessions', async (req, res) => {
       session_date: date, session_type: sessionType, location_key: locationKey,
     }).select('*').single();
     if (error) throw error;
+    void logAudit(req, 'create', 'appointment', data.id as string, undefined, { entityType: 'theatre_session', date, sessionType, locationKey });
     res.json({ session: data });
   } catch (err) {
     logger.error({ err }, '[theatre/sessions] POST error');
@@ -220,6 +223,8 @@ router.post('/api/theatre/sessions/:id/cases', async (req, res) => {
     }).select('*').single();
 
     if (cErr) throw cErr;
+
+    void logAudit(req, 'create', 'appointment', newCase.id as string, undefined, { entityType: 'theatre_case', sessionId: id, patientName, procedure });
 
     res.json({
       case: {
@@ -276,6 +281,7 @@ router.delete('/api/theatre/cases/:caseId', async (req, res) => {
     const supa = getSupabaseAdmin();
     const { error } = await supa.from('theatre_cases').delete().eq('id', caseId);
     if (error) throw error;
+    void logAudit(req, 'delete', 'appointment', caseId, undefined, { entityType: 'theatre_case' });
     res.json({ ok: true });
   } catch (err) {
     logger.error({ err }, '[theatre/cases] DELETE error');
@@ -362,12 +368,14 @@ router.post('/api/theatre/sessions/:id/publish', async (req, res) => {
 
     // Update status in DB
     const userId = (req as unknown as { userId?: string }).userId ?? null;
-    await supa.from('theatre_sessions').update({
+    const { error: publishErr } = await supa.from('theatre_sessions').update({
       status: 'published',
       published_at: new Date().toISOString(),
       ...(userId ? { published_by: userId } : {}),
     }).eq('id', id);
+    if (publishErr) throw publishErr;
 
+    void logAudit(req, 'update', 'appointment', id, undefined, { entityType: 'theatre_session', action: 'publish', calendarUpdated: !!(calId && evId) });
     res.json({ ok: true, calendarUpdated: !!(calId && evId), description });
   } catch (err) {
     logger.error({ err }, '[theatre/sessions] publish error');

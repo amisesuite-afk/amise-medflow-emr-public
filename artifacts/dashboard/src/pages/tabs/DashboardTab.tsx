@@ -190,12 +190,12 @@ export default function DashboardTab() {
 
     // Try live API sync — if available, override bundled data
     fetch(apiUrl('/api/scheduling/sync'), { method: 'POST' })
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
       .then((d: { synced?: boolean }) => { setSyncStatus(d.synced ? 'live' : 'cached'); })
       .catch(() => { setSyncStatus('cached'); })
       .finally(() => {
         fetch(apiUrl('/api/scheduling/upcoming?days=45'))
-          .then(r => r.json())
+          .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
           .then((d: { events?: CalEvent[] }) => {
             if (d.events && d.events.length > 0) {
               setUpcoming(d.events);

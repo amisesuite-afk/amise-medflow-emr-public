@@ -104,15 +104,16 @@ router.post('/api/voice/segment', async (req, res) => {
     await (async () => {
       try {
         // Save call log
-        await sb().from('call_logs').insert({
+        const { error: callLogErr } = await sb().from('call_logs').insert({
           patient_id:     patientId ?? null,
           source:         'ambient',
           direction:      'ambient',
           transcript:     transcript.trim(),
           soap_segmented: segmented,
         });
+        if (callLogErr) log.warn({ err: callLogErr }, 'voice segment: call_log save failed (non-fatal)');
         // Save AI proposal for clinician review
-        const { data: proposal } = await sb()
+        const { data: proposal, error: proposalErr } = await sb()
           .from('ai_proposals')
           .insert({
             patient_id:     patientId   ?? null,
@@ -126,9 +127,10 @@ router.post('/api/voice/segment', async (req, res) => {
           })
           .select('id')
           .single();
+        if (proposalErr) log.warn({ err: proposalErr }, 'voice segment: ai_proposal save failed (non-fatal)');
         if (proposal?.id) proposalId = proposal.id as string;
       } catch (saveErr) {
-        log.warn({ saveErr }, 'voice segment: proposal save failed (non-fatal)');
+        log.warn({ saveErr }, 'voice segment: DB save failed (non-fatal)');
       }
     })();
 

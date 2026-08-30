@@ -275,6 +275,8 @@ enum AppSection: String, CaseIterable, Hashable, Identifiable {
 
 struct ContentView: View {
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var peerSync: PeerSyncService
+    @Environment(\.modelContext) private var modelContext
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
@@ -285,6 +287,27 @@ struct ContentView: View {
             } else {
                 CompactRootView()
             }
+        }
+        .onAppear {
+            // Inject context so cloud sync works even if Settings is never opened
+            sync.setModelContext(modelContext)
+            // Start peer-to-peer sync only if email is already resolved (cached session).
+            // If nil, the onChange below will start it once restoreSession() finishes.
+            if let email = sync.currentUserEmail, !email.isEmpty {
+                peerSync.start(context: modelContext, email: email)
+            }
+        }
+        .onChange(of: sync.currentUserEmail) { _, email in
+            guard let email, !email.isEmpty else {
+                // Sign-out path: clear storedEmail so restart() on next foreground
+                // doesn't resume advertising under the old account's identity.
+                peerSync.signOut()
+                return
+            }
+            // Stop any session that may have started with an empty email hash,
+            // then restart with the real address so peer matching is correct.
+            peerSync.stop()
+            peerSync.start(context: modelContext, email: email)
         }
         .fullScreenCover(isPresented: Binding(
             get: { !sync.isSignedIn },
@@ -619,5 +642,6 @@ struct SectionPatientListView: View {
 #Preview {
     ContentView()
         .environmentObject(SyncService())
+        .environmentObject(PeerSyncService())
         .modelContainer(for: Patient.self, inMemory: true)
 }

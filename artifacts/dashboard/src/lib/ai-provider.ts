@@ -84,7 +84,11 @@ export async function parseWithOllama(
   if (!r.ok) throw new Error(`Ollama ${r.status}: ${await r.text()}`);
 
   const data = await r.json() as { response: string };
-  return JSON.parse(data.response) as Record<string, unknown>;
+  try {
+    return JSON.parse(data.response) as Record<string, unknown>;
+  } catch {
+    throw new Error(`Ollama returned invalid JSON for section "${section}"`);
+  }
 }
 
 // ── SOAP segmentation via Ollama ──────────────────────────────────────────────
@@ -127,7 +131,11 @@ export async function segmentSoapWithOllama(
   const d = await r.json() as { response: string };
   const match = d.response.trim().match(/\{[\s\S]*\}/);
   if (!match) throw new Error('No JSON in Ollama SOAP response');
-  return JSON.parse(match[0]) as SegmentedSoap;
+  try {
+    return JSON.parse(match[0]) as SegmentedSoap;
+  } catch {
+    throw new Error('Malformed JSON in Ollama SOAP response');
+  }
 }
 
 // ── SOAP polish via Ollama ────────────────────────────────────────────────────
@@ -163,7 +171,11 @@ export async function polishSoapWithOllama(
   const d = await r.json() as { response: string };
   const match = d.response.trim().match(/\{[\s\S]*\}/);
   if (!match) throw new Error('No JSON in Ollama polish response');
-  return JSON.parse(match[0]) as SoapPolishInput;
+  try {
+    return JSON.parse(match[0]) as SoapPolishInput;
+  } catch {
+    throw new Error('Malformed JSON in Ollama polish response');
+  }
 }
 
 // ── Connectivity check ────────────────────────────────────────────────────────

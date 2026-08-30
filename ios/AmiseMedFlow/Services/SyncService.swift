@@ -7,6 +7,7 @@ import Supabase
 @MainActor
 final class SyncService: ObservableObject {
     @Published var isConnected: Bool = false
+    @Published var isOnWiFi: Bool = false
     @Published var pendingCount: Int = 0
     @Published var lastSyncedAt: Date?
     @Published var currentUserEmail: String?
@@ -16,23 +17,41 @@ final class SyncService: ObservableObject {
     private let monitor = NWPathMonitor()
     private let networkQueue = DispatchQueue(label: "com.amise.network")
     private var modelContext: ModelContext?
+    private var periodicSyncTask: Task<Void, Never>?
 
     init() {
         monitor.pathUpdateHandler = { [weak self] path in
             Task { @MainActor in
                 let connected = path.status == .satisfied
+                let onWiFi    = path.usesInterfaceType(.wifi)
                 self?.isConnected = connected
+                self?.isOnWiFi    = onWiFi
                 if connected { await self?.syncIfAuthenticated() }
             }
         }
         monitor.start(queue: networkQueue)
         Task { await restoreSession() }
+        startPeriodicSync()
     }
 
     // MARK: - Session context (injected after ModelContainer is ready)
 
     func setModelContext(_ context: ModelContext) {
         self.modelContext = context
+        // If network was already up (and auto-sync fired before the context arrived), sync now.
+        Task { await syncIfAuthenticated() }
+    }
+
+    // MARK: - Periodic WiFi sync (30 s on WiFi / local network, pauses on cellular)
+
+    private func startPeriodicSync() {
+        periodicSyncTask = Task { [weak self] in
+            while !Task.isCancelled {
+                do { try await Task.sleep(for: .seconds(30)) } catch { break }
+                guard let self, self.isOnWiFi else { continue }
+                await self.syncIfAuthenticated()
+            }
+        }
     }
 
     // MARK: - Auth
@@ -216,7 +235,12 @@ final class SyncService: ObservableObject {
             if let eo = row.exam_other,  (patient.examOther ?? "").isEmpty   { patient.examOther   = eo }
 
             patient.syncedAt = .now
-            patient.pendingSync = false
+            // Only mark clean for patients created from this pull.
+            // Existing dirty patients keep pendingSync=true so pushPatientEdits
+            // can still flush their local edits in the same sync cycle.
+            if existing == nil {
+                patient.pendingSync = false
+            }
         }
 
         try context.save()
@@ -361,15 +385,21 @@ final class SyncService: ObservableObject {
 
     private func pullConfirmedAppointments(context: ModelContext) async throws {
         let oneWeekAgo = ISO8601DateFormatter().string(from: Date(timeIntervalSinceNow: -7 * 86400))
-        let rows: [RemoteAppointment] = try await SupabaseConfig.client
-            .from("appointment_requests")
-            .select("id, patient_name, patient_phone, patient_email, reason, preferred_slot, status, created_at")
-            .in("status", values: ["staff_confirmed", "patient_confirmed"])
-            .gte("created_at", value: oneWeekAgo)
-            .order("created_at", ascending: false)
-            .limit(200)
-            .execute()
-            .value
+        let rows: [RemoteAppointment]
+        do {
+            rows = try await SupabaseConfig.client
+                .from("appointment_requests")
+                .select("id, patient_name, patient_phone, patient_email, reason, preferred_slot, status, created_at")
+                .in("status", values: ["staff_confirmed", "patient_confirmed"])
+                .gte("created_at", value: oneWeekAgo)
+                .order("created_at", ascending: false)
+                .limit(200)
+                .execute()
+                .value
+        } catch {
+            // appointment_requests schema varies across deployments — skip without failing the whole sync
+            return
+        }
 
         let allLocal = try context.fetch(FetchDescriptor<Patient>())
 
