@@ -180,9 +180,8 @@ struct PatientRow: View {
                     }
                 }
 
-                // Row 4: NEWS2 + POD (ward patients) or allergy/anticoag badges (all settings)
-                if (patient.setting == .inpatient || patient.setting == .emergency),
-                   let v = latestVitals, v.hasAnyValue {
+                // Row 4: NEWS2 (all settings when vitals exist) + POD + safety badges
+                if let v = latestVitals, v.hasAnyValue {
                     HStack(spacing: 6) {
                         if let days = patient.postOpDays {
                             Text("POD \(days)")
