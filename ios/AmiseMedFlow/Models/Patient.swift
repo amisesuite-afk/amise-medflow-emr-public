@@ -7,6 +7,7 @@ import SwiftData
 final class Patient {
     var id: UUID
     var remoteId: String?
+    var syncCode: String = ""  // stable offline peer-sync ID, set in init()
     var fullName: String
     var dateOfBirth: Date?
     var sex: Sex
@@ -95,6 +96,7 @@ final class Patient {
         acuity: Acuity = .routine
     ) {
         self.id = UUID()
+        self.syncCode = UUID().uuidString
         self.fullName = fullName
         self.sex = sex
         self.setting = setting

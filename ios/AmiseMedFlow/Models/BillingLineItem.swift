@@ -6,6 +6,7 @@ final class BillingLineItem {
     var id: UUID
     var remoteId: String?
     var pendingSync: Bool
+    var syncCode: String = ""  // stable offline peer-sync ID, set in init()
     var syncedAt: Date?
     var cptCode: String
     var cptDescription: String
@@ -19,6 +20,7 @@ final class BillingLineItem {
 
     init(code: String, description: String, category: String) {
         self.id = UUID()
+        self.syncCode = UUID().uuidString
         self.pendingSync = true
         self.cptCode = code
         self.cptDescription = description

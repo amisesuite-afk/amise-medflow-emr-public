@@ -28,6 +28,7 @@ final class VitalsEntry {
     var id: UUID
     var remoteId: String?
     var pendingSync: Bool
+    var syncCode: String = ""  // stable offline peer-sync ID, set in init()
     var syncedAt: Date?
     var recordedAt: Date
     var bpSystolic: Int?
@@ -46,6 +47,7 @@ final class VitalsEntry {
 
     init(patient: Patient, recordedAt: Date = .now) {
         self.id = UUID()
+        self.syncCode = UUID().uuidString
         self.pendingSync = true
         self.recordedAt = recordedAt
         self.avpu = .alert
