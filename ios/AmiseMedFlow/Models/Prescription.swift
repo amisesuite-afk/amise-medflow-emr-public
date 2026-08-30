@@ -14,6 +14,7 @@ final class Prescription {
     var prescribedAt: Date
     var pendingSync: Bool
     var remoteId: String?
+    var syncedAt: Date?
     var patient: Patient?
 
     init(

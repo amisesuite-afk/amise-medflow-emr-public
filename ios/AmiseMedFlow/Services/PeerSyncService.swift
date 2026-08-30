@@ -487,7 +487,7 @@ extension PeerSyncService: MCSessionDelegate {
                 self.sendManifest(to: peerID)
             case .notConnected:
                 // Flush per-session counters into the history log
-                func appendHistory(_ count: Int, direction: PeerSyncEvent.Direction) {
+                @MainActor func appendHistory(_ count: Int, direction: PeerSyncEvent.Direction) {
                     guard count > 0 else { return }
                     let event = PeerSyncEvent(peerName: peerID.displayName,
                                               recordCount: count,

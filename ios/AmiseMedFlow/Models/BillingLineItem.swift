@@ -6,6 +6,7 @@ final class BillingLineItem {
     var id: UUID
     var remoteId: String?
     var pendingSync: Bool
+    var syncedAt: Date?
     var cptCode: String
     var cptDescription: String
     var cptCategory: String

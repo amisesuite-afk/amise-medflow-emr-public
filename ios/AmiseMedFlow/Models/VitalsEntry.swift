@@ -28,6 +28,7 @@ final class VitalsEntry {
     var id: UUID
     var remoteId: String?
     var pendingSync: Bool
+    var syncedAt: Date?
     var recordedAt: Date
     var bpSystolic: Int?
     var bpDiastolic: Int?
