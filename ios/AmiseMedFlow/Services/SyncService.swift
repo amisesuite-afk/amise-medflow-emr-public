@@ -692,6 +692,7 @@ final class SyncService: ObservableObject {
             if let first = response.first {
                 rx.remoteId = first.id
                 rx.pendingSync = false
+                rx.syncedAt = .now
             }
         }
         try context.save()
@@ -738,6 +739,7 @@ final class SyncService: ObservableObject {
             rx.patient = patient
             rx.remoteId = row.id
             rx.pendingSync = false
+            rx.syncedAt = .now
             context.insert(rx)
         }
         try context.save()
@@ -795,6 +797,7 @@ final class SyncService: ObservableObject {
             if let first = response.first {
                 v.remoteId = first.id
                 v.pendingSync = false
+                v.syncedAt = .now
             }
         }
         try context.save()
@@ -849,6 +852,7 @@ final class SyncService: ObservableObject {
             entry.notes            = row.notes
             entry.remoteId         = row.id
             entry.pendingSync      = false
+            entry.syncedAt         = .now
             context.insert(entry)
         }
         try context.save()
@@ -1105,6 +1109,7 @@ final class SyncService: ObservableObject {
             if let first = response.first {
                 item.remoteId = first.id
                 item.pendingSync = false
+                item.syncedAt = .now
             }
         }
         try context.save()
@@ -1151,6 +1156,7 @@ final class SyncService: ObservableObject {
             item.patient    = patient
             item.remoteId   = row.id
             item.pendingSync = false
+            item.syncedAt   = .now
             context.insert(item)
         }
         try context.save()
