@@ -440,6 +440,15 @@ private struct RegularRootView: View {
                 .fill(AMColor.sidebarGroup.opacity(0.4))
                 .frame(height: 0.5)
 
+            // Compact sync status in sidebar
+            SyncStatusBar()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+
+            Rectangle()
+                .fill(AMColor.sidebarGroup.opacity(0.4))
+                .frame(height: 0.5)
+
             Button { showSettings = true } label: {
                 VStack(spacing: 4) {
                     Image(systemName: "gearshape")
@@ -610,7 +619,10 @@ struct SectionPatientListView: View {
         .searchable(text: $searchText, prompt: "Search name or complaint")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
-                Button { showAdd = true } label: { Image(systemName: "plus") }
+                HStack {
+                    SyncStatusBar()
+                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                }
             }
         }
         .sheet(isPresented: $showAdd) {

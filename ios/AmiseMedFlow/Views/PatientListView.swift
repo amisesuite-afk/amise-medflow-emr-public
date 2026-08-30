@@ -44,7 +44,10 @@ struct PatientListView: View {
             .searchable(text: $searchText, prompt: "Search name or complaint")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                    HStack {
+                        SyncStatusBar()
+                        Button { showAdd = true } label: { Image(systemName: "plus") }
+                    }
                 }
             }
             .sheet(isPresented: $showAdd) {
