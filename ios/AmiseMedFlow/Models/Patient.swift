@@ -88,6 +88,12 @@ final class Patient {
     var heightCm: Double?
     var aiClinicalReasoning: String?   // Persisted AI reasoning summary
 
+    // MARK: - Procedure / specialty form data (JSON-encoded)
+    var traumaDataJson: String?     // TraumaData
+    var ogdDataJson: String?        // OGDData
+    var surgeryDataJson: String?    // SurgeryNoteData
+    var ercpDataJson: String?       // ERCPData
+
     init(
         fullName: String,
         sex: Sex = .unspecified,

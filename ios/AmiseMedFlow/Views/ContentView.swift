@@ -178,6 +178,40 @@ struct ClinicalHubView: View {
                 }
             }
 
+            // Procedure-specific forms (shown based on visitType)
+            if let vt = patient.visitType {
+                let showTrauma  = vt == .trauma
+                let showOGD     = vt == .endoscopy
+                let showSurgery = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showERCP    = vt == .endoscopy
+
+                if showTrauma || showOGD || showSurgery || showERCP {
+                    Section("Procedure Forms") {
+                        if showTrauma {
+                            NavigationLink { TraumaAssessmentView(patient: patient) } label: {
+                                Label("Trauma Assessment (ATLS)", systemImage: "cross.case.fill")
+                                    .foregroundStyle(.red)
+                            }
+                        }
+                        if showSurgery {
+                            NavigationLink { SurgeryNoteView(patient: patient) } label: {
+                                Label("Operative Note", systemImage: "scissors")
+                            }
+                        }
+                        if showOGD {
+                            NavigationLink { OGDFormView(patient: patient) } label: {
+                                Label("OGD Report", systemImage: "scope")
+                            }
+                        }
+                        if showERCP {
+                            NavigationLink { ERCPFormView(patient: patient) } label: {
+                                Label("ERCP Report", systemImage: "waveform.and.magnifyingglass")
+                            }
+                        }
+                    }
+                }
+            }
+
             if unsignedDraftCount > 0 {
                 Section {
                     HStack(spacing: 8) {

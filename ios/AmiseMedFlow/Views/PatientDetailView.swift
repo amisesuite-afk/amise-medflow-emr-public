@@ -33,6 +33,10 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case operative      = "Operative Plan"
     case documents      = "Documents"
     case demographics   = "Demographics"
+    case trauma         = "Trauma / ATLS"
+    case ogd            = "OGD Report"
+    case surgery        = "Operative Note"
+    case ercp           = "ERCP Report"
 
     var id: String { rawValue }
 
@@ -56,6 +60,10 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .operative:      "scissors"
         case .documents:      "doc.badge.plus"
         case .demographics:   "square.and.pencil"
+        case .trauma:         "cross.case.fill"
+        case .ogd:            "scope"
+        case .surgery:        "scissors"
+        case .ercp:           "waveform.and.magnifyingglass"
         }
     }
 
@@ -79,6 +87,10 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .operative:      "Op Plan"
         case .documents:      "Docs"
         case .demographics:   "Details"
+        case .trauma:         "Trauma"
+        case .ogd:            "OGD"
+        case .surgery:        "Op Note"
+        case .ercp:           "ERCP"
         }
     }
 
@@ -108,8 +120,19 @@ struct PatientDetailPadView: View {
     @State private var summaryPDFData: Data? = nil
     @State private var showSummaryEditor = false
 
-    // Clinical sections for the right panel — overview lives in the left panel now
-    private var rightSections: [PatientDetailSection] { PatientDetailSection.allCases }
+    // Clinical sections — core always visible; procedure forms appear when visit type matches
+    private var rightSections: [PatientDetailSection] {
+        var sections = PatientDetailSection.allCases.filter { section in
+            switch section {
+            case .trauma:  return patient.visitType == .trauma
+            case .ogd:     return patient.visitType == .endoscopy || patient.visitType == .dayOfSurgery
+            case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
+            case .ercp:    return patient.visitType == .endoscopy || patient.visitType == .dayOfSurgery
+            default:       return true
+            }
+        }
+        return sections
+    }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -268,6 +291,14 @@ struct PatientDetailPadView: View {
             DocumentsView(patient: patient)
         case .demographics:
             PatientDemographicsForm(patient: patient)
+        case .trauma:
+            TraumaAssessmentView(patient: patient)
+        case .ogd:
+            OGDFormView(patient: patient)
+        case .surgery:
+            SurgeryNoteView(patient: patient)
+        case .ercp:
+            ERCPFormView(patient: patient)
         }
     }
 }
@@ -1030,6 +1061,21 @@ struct PatientDetailView: View {
                             destination: AnyView(ConsultationView(patient: patient, startingTab: .hpi)))
                 quickAction("Assessment", icon: "brain.head.profile", color: .indigo,
                             destination: AnyView(AssessmentView(patient: patient)))
+                // Procedure-specific quick actions
+                if patient.visitType == .trauma {
+                    quickAction("Trauma ATLS", icon: "cross.case.fill", color: .red,
+                                destination: AnyView(TraumaAssessmentView(patient: patient)))
+                }
+                if patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery {
+                    quickAction("Op Note", icon: "scissors", color: .purple,
+                                destination: AnyView(SurgeryNoteView(patient: patient)))
+                }
+                if patient.visitType == .endoscopy {
+                    quickAction("OGD Report", icon: "scope", color: .cyan,
+                                destination: AnyView(OGDFormView(patient: patient)))
+                    quickAction("ERCP Report", icon: "waveform.and.magnifyingglass", color: .blue,
+                                destination: AnyView(ERCPFormView(patient: patient)))
+                }
                 quickAction("Prescriptions", icon: "pills.fill", color: .purple,
                             destination: AnyView(PrescriptionView(patient: patient)))
                 quickAction("Documents", icon: "doc.badge.plus", color: .blue,
