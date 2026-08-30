@@ -1,12 +1,57 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
   <!-- Background -->
-  <rect width="180" height="180" rx="36" fill="#0d2520"/>
-  <!-- Accent ring -->
-  <rect x="2" y="2" width="176" height="176" rx="34" stroke="#2ec486" stroke-width="2" stroke-opacity="0.35" fill="none"/>
-  <!-- Medical cross — vertical arm -->
-  <rect x="76" y="43" width="28" height="94" rx="14" fill="white"/>
-  <!-- Medical cross — horizontal arm -->
-  <rect x="43" y="76" width="94" height="28" rx="14" fill="white"/>
-  <!-- Teal accent dot -->
-  <circle cx="118" cy="62" r="7" fill="#2ec486"/>
+  <rect width="180" height="180" rx="36" fill="#030C12"/>
+
+  <!-- 7 concentric rings -->
+  <circle cx="90" cy="90" r="11" stroke="#0A3C4B" stroke-width="1" stroke-opacity="0.55"/>
+  <circle cx="90" cy="90" r="22" stroke="#0A3C4B" stroke-width="1" stroke-opacity="0.55"/>
+  <circle cx="90" cy="90" r="33" stroke="#0A3C4B" stroke-width="1" stroke-opacity="0.55"/>
+  <circle cx="90" cy="90" r="44" stroke="#0A3C4B" stroke-width="1" stroke-opacity="0.55"/>
+  <circle cx="90" cy="90" r="55" stroke="#0A3C4B" stroke-width="1" stroke-opacity="0.55"/>
+  <circle cx="90" cy="90" r="66" stroke="#0A3C4B" stroke-width="1" stroke-opacity="0.55"/>
+  <!-- outer ring heavier -->
+  <circle cx="90" cy="90" r="77" stroke="#0F5A6E" stroke-width="2" stroke-opacity="0.9"/>
+
+  <!-- 20 minor spokes (every 18°, skip cardinal 0/90/180/270) -->
+  <g stroke="#0A3C4B" stroke-width="0.8" stroke-opacity="0.35">
+    <line x1="90" y1="90" x2="90" y2="13"/>
+    <line x1="90" y1="90" x2="114.6" y2="15.7"/>
+    <line x1="90" y1="90" x2="136.1" y2="23.9"/>
+    <line x1="90" y1="90" x2="152.4" y2="37.6"/>
+    <line x1="90" y1="90" x2="161.5" y2="55.4"/>
+    <line x1="90" y1="90" x2="162.8" y2="75.5"/>
+    <line x1="90" y1="90" x2="155.9" y2="115.9"/>
+    <line x1="90" y1="90" x2="140.9" y2="131.9"/>
+    <line x1="90" y1="90" x2="119.4" y2="142.8"/>
+    <line x1="90" y1="90" x2="95" y2="147"/>
+    <line x1="90" y1="90" x2="65.4" y2="15.7"/>
+    <line x1="90" y1="90" x2="43.9" y2="23.9"/>
+    <line x1="90" y1="90" x2="27.6" y2="37.6"/>
+    <line x1="90" y1="90" x2="18.5" y2="55.4"/>
+    <line x1="90" y1="90" x2="17.2" y2="75.5"/>
+    <line x1="90" y1="90" x2="24.1" y2="115.9"/>
+    <line x1="90" y1="90" x2="39.1" y2="131.9"/>
+    <line x1="90" y1="90" x2="60.6" y2="142.8"/>
+    <line x1="90" y1="90" x2="85" y2="147"/>
+    <line x1="90" y1="90" x2="90" y2="167"/>
+  </g>
+
+  <!-- 4 cardinal spokes — bright teal -->
+  <g stroke="#00D4E8" stroke-width="1.2" stroke-opacity="0.85">
+    <line x1="90" y1="90" x2="90" y2="13"/>
+    <line x1="90" y1="90" x2="167" y2="90"/>
+    <line x1="90" y1="90" x2="90" y2="167"/>
+    <line x1="90" y1="90" x2="13" y2="90"/>
+  </g>
+
+  <!-- Center crosshair -->
+  <line x1="76" y1="90" x2="104" y2="90" stroke="#00D4E8" stroke-width="1" stroke-opacity="0.7"/>
+  <line x1="90" y1="76" x2="90" y2="104" stroke="#00D4E8" stroke-width="1" stroke-opacity="0.7"/>
+
+  <!-- Glowing center dot — layered circles -->
+  <circle cx="90" cy="90" r="12" fill="#00D4E8" fill-opacity="0.07"/>
+  <circle cx="90" cy="90" r="8"  fill="#00D4E8" fill-opacity="0.14"/>
+  <circle cx="90" cy="90" r="5"  fill="#00D4E8" fill-opacity="0.35"/>
+  <circle cx="90" cy="90" r="3"  fill="#00D4E8" fill-opacity="0.7"/>
+  <circle cx="90" cy="90" r="2"  fill="#00D4E8"/>
 </svg>
