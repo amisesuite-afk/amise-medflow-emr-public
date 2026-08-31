@@ -537,7 +537,7 @@ struct ERCPFormView: View {
     // MARK: Impression
 
     private var impressionSection: some View {
-        Section("Impression & Plan") {
+        Section {
             TextField("Endoscopic impression", text: $data.impression, axis: .vertical)
                 .lineLimit(3...)
                 .onChange(of: data.impression) { _, _ in save() }
@@ -551,6 +551,15 @@ struct ERCPFormView: View {
                     .multilineTextAlignment(.trailing).frame(width: 50)
                     .onChange(of: data.followUpWeeks) { _, _ in save() }
                 Text("weeks").foregroundStyle(.secondary)
+            }
+        } header: {
+            HStack {
+                Text("Impression & Plan")
+                Spacer()
+                MedicalDictationButton(mode: .endoscopy, patient: patient) { polished in
+                    data.impression += (data.impression.isEmpty ? "" : "\n\n") + polished
+                    save()
+                }
             }
         }
     }

@@ -181,6 +181,22 @@ private struct PlanForm: View {
                     }
                 }
             }
+            Picker("ASA Class", selection: Binding<Int>(
+                get: { patient.asaClass ?? 0 },
+                set: {
+                    patient.asaClass = $0 == 0 ? nil : $0
+                    patient.updatedAt = .now
+                    patient.pendingSync = true
+                }
+            )) {
+                Text("Not set").tag(0)
+                Text("ASA I — Healthy").tag(1)
+                Text("ASA II — Mild systemic disease").tag(2)
+                Text("ASA III — Severe systemic disease").tag(3)
+                Text("ASA IV — Life-threatening disease").tag(4)
+                Text("ASA V — Moribund").tag(5)
+            }
+
             Picker("Anaesthesia type", selection: $plan.anaesthesiaType) {
                 ForEach(["General", "Spinal", "Epidural", "Local + Sedation", "Local only", "Regional"], id: \.self) { Text($0).tag($0) }
             }

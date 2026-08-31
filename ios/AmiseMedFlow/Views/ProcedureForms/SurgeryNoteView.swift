@@ -335,18 +335,27 @@ struct SurgeryNoteView: View {
     }
 
     private var findingsSection: some View {
-        Section("Indication & Findings") {
+        Section {
             TextField("Indication", text: $data.indication, axis: .vertical)
                 .lineLimit(2...)
                 .onChange(of: data.indication) { _, _ in save() }
             TextField("Intraoperative findings", text: $data.findingsIntraoperative, axis: .vertical)
                 .lineLimit(4...)
                 .onChange(of: data.findingsIntraoperative) { _, _ in save() }
+        } header: {
+            HStack {
+                Text("Indication & Findings")
+                Spacer()
+                MedicalDictationButton(mode: .operativeNote, patient: patient) { polished in
+                    data.findingsIntraoperative += (data.findingsIntraoperative.isEmpty ? "" : "\n\n") + polished
+                    save()
+                }
+            }
         }
     }
 
     private var descriptionSection: some View {
-        Section("Operative Description") {
+        Section {
             TextField("Incision", text: $data.incision)
                 .onChange(of: data.incision) { _, _ in save() }
             TextField("Procedure description", text: $data.procedureDescription, axis: .vertical)
@@ -357,6 +366,16 @@ struct SurgeryNoteView: View {
             TextField("Closure", text: $data.closure, axis: .vertical)
                 .lineLimit(2...)
                 .onChange(of: data.closure) { _, _ in save() }
+        } header: {
+            HStack {
+                Text("Operative Description")
+                Spacer()
+                MedicalDictationButton(mode: .operativeNote, patient: patient) { polished in
+                    data.procedureDescription += (data.procedureDescription.isEmpty ? "" : "\n\n") + polished
+                    save()
+                }
+            }
+        }
             Toggle("Drain inserted", isOn: $data.drainInserted)
                 .onChange(of: data.drainInserted) { _, _ in save() }
             if data.drainInserted {
