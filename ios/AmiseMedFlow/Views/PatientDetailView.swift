@@ -1173,11 +1173,11 @@ struct PatientDetailView: View {
                     .tag(PatientTab.clinical)
                     .tabItem { Label("Clinical", systemImage: "stethoscope") }
 
-                List { NoteListView(patient: patient) }
+                NoteListView(patient: patient)
                     .tag(PatientTab.notes)
                     .tabItem { Label("Notes", systemImage: "note.text") }
 
-                List { VitalsHistoryView(patient: patient) }
+                VitalsHistoryView(patient: patient)
                     .tag(PatientTab.vitals)
                     .tabItem { Label("Vitals", systemImage: "waveform.path.ecg") }
 
