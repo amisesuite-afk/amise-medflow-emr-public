@@ -23,7 +23,7 @@ struct NoteListView: View {
     }
 
     var body: some View {
-        Group {
+        List {
             if sortedNotes.isEmpty {
                 ContentUnavailableView(
                     "No notes",

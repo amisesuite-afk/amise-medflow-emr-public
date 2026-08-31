@@ -307,9 +307,9 @@ struct PatientDetailPadView: View {
         case .plan:
             ConsultationView(patient: patient, startingTab: .plan, embeddedInNav: true)
         case .notes:
-            List { NoteListView(patient: patient) }
+            NoteListView(patient: patient)
         case .vitals:
-            List { VitalsHistoryView(patient: patient) }
+            VitalsHistoryView(patient: patient)
         case .prescriptions:
             PrescriptionView(patient: patient)
         case .billing:

@@ -11,7 +11,7 @@ struct VitalsHistoryView: View {
     }
 
     var body: some View {
-        Group {
+        List {
             if sortedEntries.isEmpty {
                 ContentUnavailableView(
                     "No vitals recorded",
