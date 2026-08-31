@@ -488,7 +488,7 @@ extension PeerSyncService: MCSessionDelegate {
                 self.peerSyncStatus = "Syncing with \(peerID.displayName)…"
                 self.sendManifest(to: peerID)
             case .notConnected:
-                @MainActor func appendHistory(_ count: Int, direction: PeerSyncEvent.Direction) {
+                func appendHistory(_ count: Int, direction: PeerSyncEvent.Direction) {
                     guard count > 0 else { return }
                     let event = PeerSyncEvent(peerName: peerID.displayName,
                                               recordCount: count,
