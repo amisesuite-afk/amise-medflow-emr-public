@@ -1138,6 +1138,12 @@ struct PatientDetailView: View {
         .buttonStyle(.plain)
     }
 
+    private var latestNews2: (score: Int, color: Color, risk: String)? {
+        guard let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+              v.hasAnyValue else { return nil }
+        return (v.news2Score, Color(hex: v.news2Color), v.news2Risk)
+    }
+
     var body: some View {
         NavigationStack {
             TabView(selection: $selectedTab) {
@@ -1175,6 +1181,28 @@ struct PatientDetailView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(role: .destructive) { showDeleteConfirm = true } label: {
                         Image(systemName: "trash")
+                    }
+                }
+                ToolbarItem(placement: .principal) {
+                    VStack(spacing: 1) {
+                        Text(patient.fullName)
+                            .font(.system(size: 14, weight: .semibold))
+                            .lineLimit(1)
+                        if let n = latestNews2 {
+                            HStack(spacing: 3) {
+                                Circle().fill(n.color).frame(width: 5, height: 5)
+                                Text("NEWS2 \(n.score) · \(n.risk)")
+                                    .font(.system(size: 9, weight: .semibold))
+                                    .foregroundStyle(n.color)
+                            }
+                        } else {
+                            HStack(spacing: 3) {
+                                Circle().fill(Color.secondary.opacity(0.4)).frame(width: 5, height: 5)
+                                Text("No vitals")
+                                    .font(.system(size: 9))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
                 }
                 ToolbarItem(placement: .primaryAction) {

@@ -102,6 +102,10 @@ struct SurgeryNoteView: View {
     @State private var hasStartTime = false
     @State private var hasEndTime = false
 
+    @StateObject private var ai = AIService()
+    @State private var aiError: String?
+    @State private var showAIOverwriteConfirm = false
+
     private let positionOptions = ["Supine", "Lithotomy", "Lateral decubitus (R)", "Lateral decubitus (L)",
                                    "Prone", "Beach chair", "Lloyd-Davies", "Reverse Trendelenburg", "Trendelenburg"]
     private let positioningExtras = ["Gel pads", "Bean bag", "Shoulder roll", "Arm board", "Leg stirrups",
@@ -117,6 +121,7 @@ struct SurgeryNoteView: View {
             anaesthesiaSection
             whoChecklistSection
             procedureSection
+            aiGenerateSection
             findingsSection
             descriptionSection
             specimensSection
@@ -133,9 +138,113 @@ struct SurgeryNoteView: View {
             hasStartTime = data.startTime != nil
             hasEndTime = data.endTime != nil
         }
+        .alert("AI Error", isPresented: Binding(
+            get: { aiError != nil },
+            set: { if !$0 { aiError = nil } }
+        )) {
+            Button("OK") { aiError = nil }
+        } message: {
+            Text(aiError ?? "")
+        }
+        .confirmationDialog(
+            "Overwrite existing technique?",
+            isPresented: $showAIOverwriteConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Overwrite", role: .destructive) { Task { await runAIGeneration() } }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Some fields already contain content. AI-generated text will replace them.")
+        }
+    }
+
+    private var canGenerateAI: Bool {
+        !data.procedureName.isEmpty || patient.workingDiagnosis != nil
+    }
+
+    private var hasExistingTechniqueContent: Bool {
+        !data.indication.isEmpty || !data.procedureDescription.isEmpty || !data.findingsIntraoperative.isEmpty
+    }
+
+    private func triggerAIGeneration() {
+        if hasExistingTechniqueContent {
+            showAIOverwriteConfirm = true
+        } else {
+            Task { await runAIGeneration() }
+        }
+    }
+
+    @MainActor
+    private func runAIGeneration() async {
+        do {
+            let result = try await ai.generateOperativeTechnique(
+                patient: patient,
+                procedureName: data.procedureName.isEmpty ? (patient.workingDiagnosis ?? "surgery") : data.procedureName,
+                position: data.position,
+                anaesthesiaType: data.anaesthesiaType
+            )
+            if !result.indication.isEmpty            { data.indication = result.indication }
+            if !result.findingsIntraoperative.isEmpty { data.findingsIntraoperative = result.findingsIntraoperative }
+            if !result.incision.isEmpty              { data.incision = result.incision }
+            if !result.procedureDescription.isEmpty  { data.procedureDescription = result.procedureDescription }
+            if !result.closure.isEmpty               { data.closure = result.closure }
+            if !result.postOpOrders.isEmpty          { data.postOpOrders = result.postOpOrders }
+            save()
+        } catch {
+            aiError = error.localizedDescription
+        }
     }
 
     // MARK: Sections
+
+    private var aiGenerateSection: some View {
+        Section {
+            let hasContext = canGenerateAI
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 10) {
+                    if ai.isGenerating {
+                        ProgressView()
+                            .controlSize(.small)
+                        Text("Generating operative technique…")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Image(systemName: "wand.and.sparkles")
+                            .font(.system(size: 16))
+                            .foregroundStyle(hasContext ? AMColor.accent : .secondary)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("AI Generate Technique")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(hasContext ? .primary : .secondary)
+                            Text(hasContext
+                                 ? "Auto-fills indication, technique, findings & post-op orders"
+                                 : "Enter a procedure name or working diagnosis first")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if hasContext {
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    guard hasContext && !ai.isGenerating else { return }
+                    triggerAIGeneration()
+                }
+                .disabled(!hasContext || ai.isGenerating)
+            }
+            .padding(.vertical, 2)
+        } header: {
+            Text("AI Assistance")
+        } footer: {
+            Text("AI-generated content is pre-filled as a draft. Review and edit before signing.")
+                .font(.caption2)
+        }
+    }
 
     private var teamSection: some View {
         Section("Surgical Team") {

@@ -83,6 +83,9 @@ struct OGDFormView: View {
 
     @State private var data: OGDData = OGDData()
     @State private var hasProcedureDate = false
+    @StateObject private var ai = AIService()
+    @State private var aiError: String?
+    @State private var showAIOverwriteConfirm = false
 
     private let indications = [
         "Dyspepsia / reflux", "Dysphagia", "Haematemesis / melaena",
@@ -115,6 +118,7 @@ struct OGDFormView: View {
         Form {
             preProcedureSection
             procedureSection
+            aiGenerateSection
             oesophagusSection
             stomachSection
             duodenumSection
@@ -128,6 +132,107 @@ struct OGDFormView: View {
         .onAppear {
             data = patient.ogdData
             hasProcedureDate = data.dateOfProcedure != nil
+        }
+        .alert("AI Error", isPresented: Binding(
+            get: { aiError != nil },
+            set: { if !$0 { aiError = nil } }
+        )) {
+            Button("OK") { aiError = nil }
+        } message: {
+            Text(aiError ?? "")
+        }
+        .confirmationDialog(
+            "Overwrite existing report?",
+            isPresented: $showAIOverwriteConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Overwrite", role: .destructive) { Task { await runAIGeneration() } }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Some fields already contain content. AI-generated text will replace them.")
+        }
+    }
+
+    private var canGenerateAI: Bool {
+        !data.indication.isEmpty || patient.workingDiagnosis != nil
+    }
+
+    private var hasExistingContent: Bool {
+        !data.impression.isEmpty || !data.oesophagusNotes.isEmpty || !data.stomachNotes.isEmpty
+    }
+
+    private func triggerAIGeneration() {
+        if hasExistingContent {
+            showAIOverwriteConfirm = true
+        } else {
+            Task { await runAIGeneration() }
+        }
+    }
+
+    @MainActor
+    private func runAIGeneration() async {
+        do {
+            let result = try await ai.generateOGDReport(
+                patient: patient,
+                indications: data.indication,
+                indicationOther: data.indicationOther
+            )
+            if !result.oesophagusNotes.isEmpty { data.oesophagusNotes = result.oesophagusNotes }
+            if !result.stomachNotes.isEmpty    { data.stomachNotes = result.stomachNotes }
+            if !result.duodenumNotes.isEmpty   { data.duodenumNotes = result.duodenumNotes }
+            if !result.impression.isEmpty      { data.impression = result.impression }
+            if !result.recommendations.isEmpty { data.recommendations = result.recommendations }
+            save()
+        } catch {
+            aiError = error.localizedDescription
+        }
+    }
+
+    // MARK: AI generation
+
+    private var aiGenerateSection: some View {
+        Section {
+            let hasContext = canGenerateAI
+            HStack(spacing: 10) {
+                if ai.isGenerating {
+                    ProgressView().controlSize(.small)
+                    Text("Generating OGD report…")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                } else {
+                    Image(systemName: "wand.and.sparkles")
+                        .font(.system(size: 16))
+                        .foregroundStyle(hasContext ? AMColor.accent : .secondary)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("AI Generate Report")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(hasContext ? .primary : .secondary)
+                        Text(hasContext
+                             ? "Auto-fills findings, impression & recommendations"
+                             : "Select an indication or set a working diagnosis first")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    if hasContext {
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                guard hasContext && !ai.isGenerating else { return }
+                triggerAIGeneration()
+            }
+            .disabled(!hasContext || ai.isGenerating)
+            .padding(.vertical, 2)
+        } header: {
+            Text("AI Assistance")
+        } footer: {
+            Text("AI-generated content is pre-filled as a draft. Review and edit before signing.")
+                .font(.caption2)
         }
     }
 
