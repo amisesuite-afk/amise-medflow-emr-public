@@ -122,7 +122,7 @@ struct PatientDetailPadView: View {
 
     // Clinical sections — core always visible; procedure forms appear when visit type matches
     private var rightSections: [PatientDetailSection] {
-        var sections = PatientDetailSection.allCases.filter { section in
+        let sections = PatientDetailSection.allCases.filter { section in
             switch section {
             case .trauma:  return patient.visitType == .trauma
             case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
