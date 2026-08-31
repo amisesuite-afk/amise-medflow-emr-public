@@ -8,6 +8,7 @@ struct SyncStatusBar: View {
     @EnvironmentObject private var sync: SyncService
     @EnvironmentObject private var peerSync: PeerSyncService
     @State private var showPopover = false
+    @State private var spinAngle: Double = 0
 
     private var cloudColor: Color {
         if sync.isSyncing            { return .accentColor }
@@ -33,7 +34,15 @@ struct SyncStatusBar: View {
                     Image(systemName: sync.isSyncing ? "arrow.triangle.2.circlepath" : "cloud")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(cloudColor)
-                        .symbolEffect(.rotate, isActive: sync.isSyncing)
+                        .rotationEffect(.degrees(sync.isSyncing ? spinAngle : 0))
+                        .animation(sync.isSyncing
+                            ? .linear(duration: 1).repeatForever(autoreverses: false)
+                            : .default,
+                            value: spinAngle)
+                        .onAppear { if sync.isSyncing { spinAngle = 360 } }
+                        .onChange(of: sync.isSyncing) { _, syncing in
+                            spinAngle = syncing ? 360 : 0
+                        }
                     if sync.pendingCount > 0 && !sync.isSyncing {
                         Text("\(min(sync.pendingCount, 9))")
                             .font(.system(size: 7, weight: .bold))
