@@ -375,9 +375,12 @@ private struct CompactRootView: View {
 // MARK: - iPad: custom 3-column HStack layout
 
 private struct RegularRootView: View {
+    @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var peerSync: PeerSyncService
     @State private var selectedSection: AppSection = .outpatients
     @State private var selectedPatient: Patient?
     @State private var showSettings = false
+    @State private var showDashboard = false
 
     // Count badges per patient section
     @Query private var allPatients: [Patient]
@@ -437,24 +440,32 @@ private struct RegularRootView: View {
         .ignoresSafeArea(.keyboard)
         .onChange(of: selectedSection) { _, _ in selectedPatient = nil }
         .sheet(isPresented: $showSettings) { SettingsView() }
+        .sheet(isPresented: $showDashboard) {
+            DashboardView()
+                .environmentObject(sync)
+                .environmentObject(peerSync)
+        }
     }
 
     // MARK: Sidebar
 
     private var iconSidebar: some View {
         VStack(spacing: 0) {
-            // App mark
-            VStack(spacing: 3) {
-                Image(systemName: "cross.case.fill")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(AMColor.accent)
-                Text("AMF")
-                    .font(.system(size: 9, weight: .heavy))
-                    .foregroundStyle(AMColor.sidebarText)
-                    .tracking(1.5)
+            // App mark — tap for clinical dashboard
+            Button { showDashboard = true } label: {
+                VStack(spacing: 3) {
+                    Image(systemName: "cross.case.fill")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(AMColor.accent)
+                    Text("AMF")
+                        .font(.system(size: 9, weight: .heavy))
+                        .foregroundStyle(AMColor.sidebarText)
+                        .tracking(1.5)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 18)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 18)
+            .buttonStyle(.plain)
 
             Rectangle()
                 .fill(AMColor.sidebarGroup.opacity(0.4))

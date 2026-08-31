@@ -94,6 +94,11 @@ final class Patient {
     var surgeryDataJson: String?    // SurgeryNoteData
     var ercpDataJson: String?       // ERCPData
 
+    // MARK: - Perioperative checklist
+    var asaClass: Int?                       // ASA physical status 1–5
+    var consentSent: Bool = false            // Consent form given to patient
+    var preOpInstructionsSent: Bool = false  // Pre-op instructions sent to patient
+
     init(
         fullName: String,
         sex: Sex = .unspecified,

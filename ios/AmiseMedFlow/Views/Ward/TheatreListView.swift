@@ -144,7 +144,7 @@ struct TheatreListView: View {
 // MARK: - Theatre case row
 
 struct TheatreRow: View {
-    let patient: Patient
+    @Bindable var patient: Patient
 
     private var plan: OperativePlan? {
         patient.operativePlans.sorted { $0.updatedAt > $1.updatedAt }.first
@@ -161,15 +161,29 @@ struct TheatreRow: View {
         return date.formatted(.dateTime.month(.abbreviated).day().hour().minute())
     }
 
+    private var news2Label: (score: Int, color: Color, risk: String)? {
+        guard let v = patient.vitalsEntries.sorted(by: { $0.recordedAt > $1.recordedAt }).first,
+              v.hasAnyValue else { return nil }
+        return (v.news2Score, Color(hex: v.news2Color), v.news2Risk)
+    }
+
+    private var asaColor: Color {
+        switch patient.asaClass ?? 0 {
+        case 1, 2: return .green
+        case 3:    return .orange
+        default:   return .red
+        }
+    }
+
     var body: some View {
         HStack(spacing: 0) {
             Rectangle()
-                .fill(Color(hex: "8B5CF6"))  // theatre purple
+                .fill(Color(hex: "8B5CF6"))
                 .frame(width: 3)
                 .padding(.vertical, -8)
 
             VStack(alignment: .leading, spacing: 4) {
-                // Row 1: time + name + acuity
+                // Row 1: time · name · acuity
                 HStack(spacing: 6) {
                     Text(timeText)
                         .font(.system(size: 11, weight: .semibold, design: .monospaced))
@@ -178,60 +192,125 @@ struct TheatreRow: View {
                     AcuityPip(acuity: patient.acuity)
                     Text(patient.fullName)
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.primary)
                         .lineLimit(1)
                 }
 
-                // Row 2: procedure
+                // Row 2: procedure + indication
                 Text(procedureText)
                     .font(.subheadline)
                     .foregroundStyle(.primary)
                     .lineLimit(2)
 
-                // Row 3: demographics + WHO badge
-                HStack(spacing: 6) {
-                    Text(patient.ageDisplay.map { "\(patient.sex.rawValue.prefix(1).uppercased()), \($0)" } ?? String(patient.sex.rawValue.prefix(1).uppercased()))
-                        .font(.caption2).foregroundStyle(.secondary)
+                // Row 3: status badges (ASA · consent · instructions · WHO · alerts)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        Text(patient.ageDisplay.map { "\(patient.sex.rawValue.prefix(1).uppercased()), \($0)" } ?? String(patient.sex.rawValue.prefix(1).uppercased()))
+                            .font(.caption2).foregroundStyle(.secondary)
 
-                    if let anaes = plan?.anaesthesiaType, !anaes.isEmpty {
-                        Text("·").font(.caption2).foregroundStyle(.tertiary)
-                        Text(anaes).font(.caption2).foregroundStyle(.secondary)
-                    }
-
-                    if patient.hasCriticalAllergy {
-                        Label("Allergy", systemImage: "exclamationmark.shield.fill")
-                            .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
-                            .labelStyle(.iconOnly)
-                    } else if !patient.allergies.isEmpty {
-                        Label("Allergy", systemImage: "exclamationmark.shield")
-                            .font(.system(size: 9, weight: .semibold)).foregroundStyle(.orange)
-                            .labelStyle(.iconOnly)
-                    }
-                    if patient.hasAnticoagulation {
-                        Label("Anticoag", systemImage: "drop.fill")
-                            .font(.system(size: 9, weight: .bold)).foregroundStyle(.purple)
-                            .labelStyle(.iconOnly)
-                    }
-
-                    Spacer()
-
-                    if let p = plan {
-                        let done = p.whoCompletedCount
-                        let total = p.whoTotalCount
-                        let allDone = done == total
-                        HStack(spacing: 3) {
-                            Image(systemName: allDone ? "checkmark.shield.fill" : "shield")
-                                .font(.system(size: 9))
-                            Text("WHO \(done)/\(total)")
-                                .font(.system(size: 9, weight: .semibold))
+                        if let anaes = plan?.anaesthesiaType, !anaes.isEmpty {
+                            Text("·").font(.caption2).foregroundStyle(.tertiary)
+                            Text(anaes).font(.caption2).foregroundStyle(.secondary)
                         }
-                        .foregroundStyle(allDone ? .green : .orange)
-                        .padding(.horizontal, 5).padding(.vertical, 2)
-                        .background(
-                            (allDone ? Color.green : Color.orange).opacity(0.1),
-                            in: Capsule()
-                        )
+
+                        // ASA class badge
+                        if let asa = patient.asaClass {
+                            Text("ASA \(["I","II","III","IV","V"][min(asa-1, 4)])")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(asaColor)
+                                .padding(.horizontal, 5).padding(.vertical, 2)
+                                .background(asaColor.opacity(0.1), in: Capsule())
+                        } else {
+                            Text("ASA ?")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 5).padding(.vertical, 2)
+                                .background(Color.secondary.opacity(0.08), in: Capsule())
+                        }
+
+                        // Consent badge — tap to toggle
+                        Button {
+                            patient.consentSent.toggle()
+                            patient.updatedAt = .now
+                            patient.pendingSync = true
+                        } label: {
+                            HStack(spacing: 3) {
+                                Image(systemName: patient.consentSent ? "checkmark.circle.fill" : "xmark.circle")
+                                    .font(.system(size: 8))
+                                Text("Consent")
+                                    .font(.system(size: 9, weight: .semibold))
+                            }
+                            .foregroundStyle(patient.consentSent ? .green : .orange)
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background((patient.consentSent ? Color.green : Color.orange).opacity(0.1), in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+
+                        // Instructions badge — tap to toggle
+                        Button {
+                            patient.preOpInstructionsSent.toggle()
+                            patient.updatedAt = .now
+                            patient.pendingSync = true
+                        } label: {
+                            HStack(spacing: 3) {
+                                Image(systemName: patient.preOpInstructionsSent ? "checkmark.circle.fill" : "xmark.circle")
+                                    .font(.system(size: 8))
+                                Text("Instructions")
+                                    .font(.system(size: 9, weight: .semibold))
+                            }
+                            .foregroundStyle(patient.preOpInstructionsSent ? .green : .orange)
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background((patient.preOpInstructionsSent ? Color.green : Color.orange).opacity(0.1), in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+
+                        // WHO checklist badge
+                        if let p = plan {
+                            let done = p.whoCompletedCount
+                            let total = p.whoTotalCount
+                            let allDone = done == total
+                            HStack(spacing: 3) {
+                                Image(systemName: allDone ? "checkmark.shield.fill" : "shield")
+                                    .font(.system(size: 9))
+                                Text("WHO \(done)/\(total)")
+                                    .font(.system(size: 9, weight: .semibold))
+                            }
+                            .foregroundStyle(allDone ? .green : .orange)
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background((allDone ? Color.green : Color.orange).opacity(0.1), in: Capsule())
+                        }
+
+                        // Safety badges
+                        if patient.hasCriticalAllergy {
+                            Image(systemName: "exclamationmark.shield.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
+                        } else if !patient.allergies.isEmpty {
+                            Image(systemName: "exclamationmark.shield")
+                                .font(.system(size: 9, weight: .semibold)).foregroundStyle(.orange)
+                        }
+                        if patient.hasAnticoagulation {
+                            Image(systemName: "drop.fill")
+                                .font(.system(size: 9, weight: .bold)).foregroundStyle(.purple)
+                        }
                     }
+                }
+
+                // Row 4: NEWS2 (always shown)
+                HStack(spacing: 4) {
+                    if let n = news2Label {
+                        Circle().fill(n.color).frame(width: 6, height: 6)
+                        Text("NEWS2 \(n.score)")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(n.color)
+                        Text("· \(n.risk)")
+                            .font(.system(size: 9))
+                            .foregroundStyle(n.color.opacity(0.8))
+                    } else {
+                        Circle().fill(Color.secondary.opacity(0.3)).frame(width: 6, height: 6)
+                        Text("No vitals recorded")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
                 }
             }
             .padding(.leading, 10)
