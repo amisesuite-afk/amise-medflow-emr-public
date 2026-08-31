@@ -135,73 +135,21 @@ struct PatientDetailPadView: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
-            // ── LEFT PANEL: patient summary, always visible ──────────────
-            ScrollView {
-                PatientOverviewContent(patient: patient)
-                    .padding(16)
-            }
-            .frame(width: 292)
-            .background(Color(.systemBackground))
+        VStack(spacing: 0) {
+            // ── TOP: compact patient identifier strip ──────────────────────
+            patientHeader
+                .background(Color(.systemBackground))
 
-            Rectangle()
-                .fill(Color(.separator))
-                .frame(width: 0.5)
-                .ignoresSafeArea(edges: .vertical)
+            Divider()
 
-            // ── RIGHT PANEL: section nav + clinical content ───────────────
-            NavigationStack {
-                VStack(spacing: 0) {
-                    sectionNav
-                    sectionContent
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(AMColor.bg)
-                }
-                .navigationTitle(patient.fullName)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    if let onBack {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Button { onBack() } label: {
-                                Image(systemName: "chevron.left")
-                                    .fontWeight(.semibold)
-                            }
-                        }
-                    }
-                    ToolbarItem(placement: .principal) {
-                        VStack(spacing: 1) {
-                            Text(patient.fullName).font(.headline)
-                            HStack(spacing: 6) {
-                                AcuityPip(acuity: patient.acuity)
-                                Text([patient.sex.rawValue, patient.ageDisplay, patient.setting.rawValue]
-                                    .compactMap { $0 }.joined(separator: " · "))
-                                    .font(.caption).foregroundStyle(.secondary)
-                                if patient.hasCriticalAllergy {
-                                    Image(systemName: "exclamationmark.shield.fill")
-                                        .font(.system(size: 9, weight: .bold)).foregroundStyle(.red)
-                                }
-                                if patient.hasAnticoagulation {
-                                    Image(systemName: "drop.fill")
-                                        .font(.system(size: 9, weight: .bold)).foregroundStyle(.purple)
-                                }
-                            }
-                        }
-                    }
-                    ToolbarItem(placement: .primaryAction) {
-                        HStack(spacing: 12) {
-                            Button { showSummaryEditor = true } label: {
-                                Image(systemName: "doc.text.fill")
-                            }
-                            .help("Clinical Summary")
-                            ShareLink(item: patient.handoverText,
-                                      subject: Text("Patient Handover — \(patient.fullName)"),
-                                      message: Text(patient.handoverText)) {
-                                Image(systemName: "square.and.arrow.up")
-                            }
-                        }
-                    }
-                }
+            // ── BOTTOM: full-width section nav + clinical content ─────────
+            VStack(spacing: 0) {
+                sectionNav
+                sectionContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(AMColor.bg)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .sheet(item: Binding(
             get: { summaryPDFData.map { PDFDataWrapper(data: $0) } },
@@ -213,6 +161,87 @@ struct PatientDetailPadView: View {
         .sheet(isPresented: $showSummaryEditor) {
             PatientSummaryEditorView(patient: patient)
         }
+    }
+
+    // MARK: Compact patient header strip
+
+    private var patientHeader: some View {
+        HStack(spacing: 12) {
+            if let onBack {
+                Button { onBack() } label: {
+                    Image(systemName: "chevron.left")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AMColor.accent)
+                }
+                .buttonStyle(.plain)
+            }
+
+            AcuityPip(acuity: patient.acuity)
+
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(patient.fullName)
+                        .font(.headline)
+                        .lineLimit(1)
+                    if patient.hasCriticalAllergy {
+                        Image(systemName: "exclamationmark.shield.fill")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(.red)
+                    }
+                    if patient.hasAnticoagulation {
+                        Image(systemName: "drop.fill")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(.purple)
+                    }
+                }
+                HStack(spacing: 8) {
+                    Text([patient.sex.rawValue, patient.ageDisplay, patient.setting.rawValue]
+                        .compactMap { $0 }.joined(separator: " · "))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    if let mrn = patient.mrn, !mrn.isEmpty {
+                        Text("MRN \(mrn)")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    if let dob = patient.dateOfBirth {
+                        Text(dob, format: .dateTime.day().month(.abbreviated).year())
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
+            if let dx = patient.workingDiagnosis {
+                Text(dx)
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.teal)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.teal.opacity(0.1), in: Capsule())
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            HStack(spacing: 14) {
+                Button { showSummaryEditor = true } label: {
+                    Image(systemName: "doc.text.fill")
+                        .foregroundStyle(AMColor.accent)
+                }
+                .buttonStyle(.plain)
+                .help("Clinical Summary")
+
+                ShareLink(item: patient.handoverText,
+                          subject: Text("Patient Handover — \(patient.fullName)"),
+                          message: Text(patient.handoverText)) {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundStyle(AMColor.accent)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
     }
 
     // MARK: Section nav (right panel)

@@ -394,26 +394,16 @@ private struct RegularRootView: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            // Column 1: Icon sidebar
-            iconSidebar
-                .frame(width: 90)
-                .ignoresSafeArea(edges: .vertical)
-
-            Rectangle()
-                .fill(AMColor.sidebarGroup.opacity(0.4))
-                .frame(width: 0.5)
-                .ignoresSafeArea(edges: .vertical)
-
             if selectedSection == .schedule {
-                // Schedule fills the full remaining width (columns 2+3 merged)
+                // Schedule fills the full remaining width
                 NavigationStack { ScheduleView() }
                     .frame(maxWidth: .infinity)
             } else if let patient = selectedPatient {
-                // Patient selected: full-width clinical workspace — list column collapses
+                // Patient selected: full-width clinical workspace
                 PatientDetailPadView(patient: patient, onBack: { selectedPatient = nil })
                     .frame(maxWidth: .infinity)
             } else {
-                // No patient selected: 296px list + empty state placeholder
+                // No patient selected: patient list + empty state placeholder
                 NavigationStack {
                     SectionPatientListView(section: selectedSection,
                                            selectedPatient: $selectedPatient)
@@ -433,6 +423,16 @@ private struct RegularRootView: View {
                 .background(AMColor.bg)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+
+            Rectangle()
+                .fill(AMColor.sidebarGroup.opacity(0.4))
+                .frame(width: 0.5)
+                .ignoresSafeArea(edges: .vertical)
+
+            // Rightmost column: icon navigation sidebar
+            iconSidebar
+                .frame(width: 90)
+                .ignoresSafeArea(edges: .vertical)
         }
         .ignoresSafeArea(.keyboard)
         .onChange(of: selectedSection) { _, _ in selectedPatient = nil }
@@ -516,7 +516,7 @@ private struct RegularRootView: View {
                 .padding(.vertical, 12)
                 .background(isSel ? AMColor.accent.opacity(0.15) : Color.clear,
                             in: RoundedRectangle(cornerRadius: 8))
-                .overlay(alignment: .leading) {
+                .overlay(alignment: .trailing) {
                     if isSel {
                         Capsule()
                             .fill(AMColor.accent)
