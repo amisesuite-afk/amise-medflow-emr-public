@@ -181,9 +181,9 @@ struct ClinicalHubView: View {
             // Procedure-specific forms (shown based on visitType)
             if let vt = patient.visitType {
                 let showTrauma  = vt == .trauma
-                let showOGD     = vt == .endoscopy
+                let showOGD     = vt == .ogd || vt == .colonoscopy || vt == .dayOfSurgery
                 let showSurgery = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
-                let showERCP    = vt == .endoscopy
+                let showERCP    = vt == .ercp || vt == .dayOfSurgery
 
                 if showTrauma || showOGD || showSurgery || showERCP {
                     Section("Procedure Forms") {

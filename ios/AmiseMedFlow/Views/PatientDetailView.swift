@@ -125,9 +125,9 @@ struct PatientDetailPadView: View {
         var sections = PatientDetailSection.allCases.filter { section in
             switch section {
             case .trauma:  return patient.visitType == .trauma
-            case .ogd:     return patient.visitType == .endoscopy || patient.visitType == .dayOfSurgery
+            case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
-            case .ercp:    return patient.visitType == .endoscopy || patient.visitType == .dayOfSurgery
+            case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
             default:       return true
             }
         }
@@ -1070,9 +1070,11 @@ struct PatientDetailView: View {
                     quickAction("Op Note", icon: "scissors", color: .purple,
                                 destination: AnyView(SurgeryNoteView(patient: patient)))
                 }
-                if patient.visitType == .endoscopy {
+                if patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery {
                     quickAction("OGD Report", icon: "scope", color: .cyan,
                                 destination: AnyView(OGDFormView(patient: patient)))
+                }
+                if patient.visitType == .ercp || patient.visitType == .dayOfSurgery {
                     quickAction("ERCP Report", icon: "waveform.and.magnifyingglass", color: .blue,
                                 destination: AnyView(ERCPFormView(patient: patient)))
                 }
