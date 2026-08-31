@@ -10,8 +10,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.116.0",
-    "@supabase/supabase-js": "^2.112.3",
+    "@anthropic-ai/sdk": "^0.122.0",
+    "@supabase/supabase-js": "^2.112.4",
     "@workspace/triage-engine": "workspace:*",
     "googleapis": "^173.0.0",
     "next": "^14.2.35",

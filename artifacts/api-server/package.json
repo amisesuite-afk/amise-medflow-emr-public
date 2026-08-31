@@ -12,9 +12,9 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.116.0",
-    "@sentry/node": "^10.70.0",
-    "@supabase/supabase-js": "^2.112.3",
+    "@anthropic-ai/sdk": "^0.122.0",
+    "@sentry/node": "^10.72.0",
+    "@supabase/supabase-js": "^2.112.4",
     "@workspace/api-zod": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/triage-engine": "workspace:*",
