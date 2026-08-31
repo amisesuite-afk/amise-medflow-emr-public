@@ -360,6 +360,8 @@ struct ContentView: View {
 private struct CompactRootView: View {
     var body: some View {
         TabView {
+            TodayDashboardView()
+                .tabItem { Label("Today", systemImage: "calendar.day.timeline.left") }
             WardRoundView()
                 .tabItem { Label("Ward", systemImage: "bed.double") }
             ScheduleView()
