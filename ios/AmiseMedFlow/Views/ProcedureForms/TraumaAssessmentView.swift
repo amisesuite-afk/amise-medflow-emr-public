@@ -202,7 +202,7 @@ struct TraumaAssessmentView: View {
                 burnsSection
             }
 
-            Section("Interventions & Notes") {
+            Section {
                 multiSelectRow("Interventions", options: [
                     "IV access", "Arterial line", "CVP line", "Urinary catheter",
                     "NG tube", "Chest drain", "Pericardiocentesis",
@@ -210,6 +210,15 @@ struct TraumaAssessmentView: View {
                 ], selected: $data.interventions)
                 TextField("Additional notes", text: $data.notes, axis: .vertical)
                     .lineLimit(3...)
+            } header: {
+                HStack {
+                    Text("Interventions & Notes")
+                    Spacer()
+                    MedicalDictationButton(mode: .assessment, patient: patient) { polished in
+                        data.notes += (data.notes.isEmpty ? "" : "\n\n") + polished
+                        save()
+                    }
+                }
             }
             .onChange(of: data.interventions) { _, _ in save() }
             .onChange(of: data.notes) { _, _ in save() }
