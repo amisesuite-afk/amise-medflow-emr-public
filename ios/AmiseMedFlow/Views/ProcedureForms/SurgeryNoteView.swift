@@ -366,6 +366,14 @@ struct SurgeryNoteView: View {
             TextField("Closure", text: $data.closure, axis: .vertical)
                 .lineLimit(2...)
                 .onChange(of: data.closure) { _, _ in save() }
+            Toggle("Drain inserted", isOn: $data.drainInserted)
+                .onChange(of: data.drainInserted) { _, _ in save() }
+            if data.drainInserted {
+                TextField("Drain type/site", text: $data.drainType)
+                    .onChange(of: data.drainType) { _, _ in save() }
+            }
+            Toggle("Urinary catheter", isOn: $data.catheterInserted)
+                .onChange(of: data.catheterInserted) { _, _ in save() }
         } header: {
             HStack {
                 Text("Operative Description")
@@ -375,15 +383,6 @@ struct SurgeryNoteView: View {
                     save()
                 }
             }
-        }
-            Toggle("Drain inserted", isOn: $data.drainInserted)
-                .onChange(of: data.drainInserted) { _, _ in save() }
-            if data.drainInserted {
-                TextField("Drain type/site", text: $data.drainType)
-                    .onChange(of: data.drainType) { _, _ in save() }
-            }
-            Toggle("Urinary catheter", isOn: $data.catheterInserted)
-                .onChange(of: data.catheterInserted) { _, _ in save() }
         }
     }
 
