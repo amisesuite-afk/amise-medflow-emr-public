@@ -248,7 +248,7 @@ final class PeerSyncService: NSObject, ObservableObject {
         for rec in records {
             // Match by syncCode first; fall back to remoteId for records synced before this feature
             let patient = existing.first { $0.syncCode == rec.syncCode }
-                ?? existing.first { rid in rec.remoteId != nil && $0.remoteId == rec.remoteId }
+                ?? existing.first { rid in rec.remoteId != nil && rid.remoteId == rec.remoteId }
                 ?? {
                     let p = Patient(fullName: rec.fullName)
                     context.insert(p)
@@ -488,8 +488,10 @@ extension PeerSyncService: MCSessionDelegate {
                 self.peerSyncStatus = "Syncing with \(peerID.displayName)…"
                 self.sendManifest(to: peerID)
             case .notConnected:
-                func appendHistory(_ count: Int, direction: PeerSyncEvent.Direction) {
-                    guard count > 0 else { return }
+                let rcvd = self.receivedCount.removeValue(forKey: peerID) ?? 0
+                let sent  = self.sentCount.removeValue(forKey: peerID) ?? 0
+                for (count, direction) in [(rcvd, PeerSyncEvent.Direction.received), (sent, .sent)] {
+                    guard count > 0 else { continue }
                     let event = PeerSyncEvent(peerName: peerID.displayName,
                                               recordCount: count,
                                               direction: direction,
@@ -499,8 +501,6 @@ extension PeerSyncService: MCSessionDelegate {
                         self.syncHistory = Array(self.syncHistory.prefix(20))
                     }
                 }
-                appendHistory(self.receivedCount.removeValue(forKey: peerID) ?? 0, direction: .received)
-                appendHistory(self.sentCount.removeValue(forKey: peerID) ?? 0,     direction: .sent)
                 if session.connectedPeers.isEmpty { self.peerSyncStatus = "Looking for nearby devices…" }
             default: break
             }
