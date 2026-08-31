@@ -63,7 +63,7 @@ final class PeerSyncService: NSObject, ObservableObject {
         guard session == nil else { return }
         modelContext = context
         storedEmail = email
-        emailHash = String(email.lowercased().hashValue)
+        emailHash = Self.stableHash(email.lowercased())
 
         session = MCSession(peer: myPeer, securityIdentity: nil,
                             encryptionPreference: .required)
@@ -405,6 +405,13 @@ final class PeerSyncService: NSObject, ObservableObject {
     }
 
     // MARK: - Helpers
+
+    // DJB2 — stable across devices/processes, unlike Swift's randomized hashValue
+    private static func stableHash(_ s: String) -> String {
+        var h: UInt64 = 5381
+        for byte in s.utf8 { h = h &* 33 &+ UInt64(byte) }
+        return String(h)
+    }
 
     private func acuityFrom(_ s: String) -> Acuity {
         switch s {
