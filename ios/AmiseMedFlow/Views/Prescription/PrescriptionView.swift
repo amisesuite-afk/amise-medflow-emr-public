@@ -5,10 +5,19 @@ struct PrescriptionView: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
     @State private var showAddSheet = false
+    @State private var radiationExpanded = false
 
     private var interactions: [DrugInteractionAlert] {
         let names = patient.prescriptions.map { $0.drug }
         return DrugInteractionService.check(drugs: names)
+    }
+
+    private var radiationPlan: DiagnosisRadiation? {
+        DiagnosisRadiationEngine.radiate(
+            workingDiagnosis: patient.workingDiagnosis,
+            ageYears: patient.ageYears,
+            sex: patient.sex
+        )
     }
 
     var body: some View {
@@ -18,9 +27,13 @@ struct PrescriptionView: View {
                     interactionsSection
                 }
 
+                if let plan = radiationPlan {
+                    radiationPlanSection(plan)
+                }
+
                 prescriptionsSection
 
-                if let dx = patient.workingDiagnosis {
+                if let dx = patient.workingDiagnosis, radiationPlan == nil {
                     Section {
                         Label(dx, systemImage: "stethoscope")
                             .font(.caption)
@@ -107,6 +120,75 @@ struct PrescriptionView: View {
         lines.append("Total: \(sorted.count) medication\(sorted.count == 1 ? "" : "s")")
         lines.append("Verify all doses and indications before dispensing.")
         return lines.joined(separator: "\n")
+    }
+
+    // MARK: - Radiation plan suggestion
+
+    @ViewBuilder
+    private func radiationPlanSection(_ plan: DiagnosisRadiation) -> some View {
+        Section {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Image(systemName: "wand.and.stars")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.teal)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Suggested Management")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.teal)
+                        Text(plan.conditionName)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) { radiationExpanded.toggle() }
+                    } label: {
+                        Image(systemName: radiationExpanded ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if !plan.planTemplate.isEmpty {
+                    if radiationExpanded {
+                        Text(plan.planTemplate)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text(plan.planTemplate)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(3)
+                    }
+                }
+
+                if !plan.redFlags.isEmpty {
+                    VStack(alignment: .leading, spacing: 3) {
+                        ForEach(plan.redFlags.prefix(2), id: \.self) { flag in
+                            HStack(alignment: .top, spacing: 5) {
+                                Image(systemName: "flag.fill")
+                                    .font(.system(size: 8))
+                                    .foregroundStyle(.red)
+                                    .padding(.top, 2)
+                                Text(flag)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.red.opacity(0.8))
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        } header: {
+            Label("Rx Guidance · \(plan.conditionName)", systemImage: "wand.and.stars")
+                .foregroundStyle(.teal)
+        } footer: {
+            if let ref = plan.guidelineReference {
+                Text(ref).font(.caption2).foregroundStyle(.tertiary)
+            }
+        }
     }
 
     // MARK: - Interaction alerts

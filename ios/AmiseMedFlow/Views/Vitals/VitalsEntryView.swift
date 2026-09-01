@@ -18,6 +18,7 @@ struct VitalsEntryView: View {
     @State private var onSupplementalO2 = false
     @State private var notes = ""
     @State private var recordedAt = Date.now
+    @State private var scoreToggles: [String: Bool] = [:]
 
     // Quick-fill presets
     private let bpPresets: [(sys: String, dia: String)] = [
@@ -160,6 +161,14 @@ struct VitalsEntryView: View {
                     TextField("Any additional observations", text: $notes, axis: .vertical)
                         .lineLimit(3...)
                 }
+
+                if let radiation = DiagnosisRadiationEngine.radiate(
+                    workingDiagnosis: patient.workingDiagnosis,
+                    ageYears: patient.ageYears,
+                    sex: patient.sex
+                ), let scoring = radiation.scoringCriteria {
+                    clinicalScoringSection(radiation: radiation, scoring: scoring)
+                }
             }
             .navigationTitle("Record Vitals")
             .navigationBarTitleDisplayMode(.inline)
@@ -189,6 +198,77 @@ struct VitalsEntryView: View {
                 }
             }
             .padding(.vertical, 2)
+        }
+    }
+
+    // MARK: - Clinical scoring section (diagnosis-radiation driven)
+
+    @ViewBuilder
+    private func clinicalScoringSection(
+        radiation: DiagnosisRadiation,
+        scoring: DiagnosisRadiation.ScoringCriteria
+    ) -> some View {
+        let liveScore = scoring.variables.reduce(0) { acc, v in
+            acc + ((scoreToggles[v.id] == true) ? v.points : 0)
+        }
+        let isSevere = liveScore >= scoring.severeThreshold
+        Section {
+            HStack(spacing: 10) {
+                Image(systemName: isSevere ? "exclamationmark.triangle.fill" : "checklist")
+                    .foregroundStyle(isSevere ? .red : .teal)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(scoring.scoreName)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(isSevere ? .red : .primary)
+                    Text(scoring.timingNote)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 1) {
+                    Text("\(liveScore) / \(scoring.maxScore)")
+                        .font(.title3.weight(.bold).monospacedDigit())
+                        .foregroundStyle(isSevere ? .red : .teal)
+                    Text(isSevere ? scoring.aboveThresholdLabel : scoring.belowThresholdLabel)
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(isSevere ? .red : .secondary)
+                }
+            }
+            .padding(.vertical, 4)
+            .animation(.easeInOut(duration: 0.15), value: liveScore)
+
+            ForEach(scoring.variables, id: \.id) { variable in
+                let isOn = Binding(
+                    get: { scoreToggles[variable.id] ?? false },
+                    set: { scoreToggles[variable.id] = $0 }
+                )
+                Toggle(isOn: isOn) {
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(variable.label)
+                            .font(.subheadline)
+                        if let hint = variable.hint {
+                            Text(hint)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .tint(.teal)
+            }
+        } header: {
+            HStack(spacing: 4) {
+                Image(systemName: "brain.head.profile")
+                    .font(.caption)
+                    .foregroundStyle(.teal)
+                Text("Clinical Scoring · \(radiation.conditionName)")
+            }
+            .foregroundStyle(.teal)
+        } footer: {
+            if let ref = radiation.guidelineReference {
+                Text(ref)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 

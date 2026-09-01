@@ -362,6 +362,24 @@ struct NoteEditorView: View {
                     }
                     .foregroundStyle(.teal)
                 }
+                if let patient = note.patient,
+                   let radiationPlan = DiagnosisRadiationEngine.radiate(
+                       workingDiagnosis: patient.workingDiagnosis,
+                       ageYears: patient.ageYears,
+                       sex: patient.sex
+                   ),
+                   !radiationPlan.planTemplate.isEmpty {
+                    Button {
+                        let existing = (note.plan ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                        let template = radiationPlan.planTemplate.trimmingCharacters(in: .whitespacesAndNewlines)
+                        note.plan = existing.isEmpty ? template : existing + "\n\n" + template
+                    } label: {
+                        Label("Insert \(radiationPlan.conditionName) plan", systemImage: "wand.and.stars")
+                            .font(.caption)
+                            .lineLimit(1)
+                    }
+                    .foregroundStyle(.teal)
+                }
             } header: {
                 Label("Plan", systemImage: "list.bullet.clipboard")
             }
