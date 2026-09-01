@@ -172,7 +172,7 @@ enum DiagnosisRadiationEngine {
     private typealias RS = DiagnosisRadiation.ReferralSuggestion
     private typealias RU = DiagnosisRadiation.ReferralSuggestion.ReferralUrgency
 
-    static let referralTable: [String: [RS]] = [
+    private static let referralTable: [String: [RS]] = [
         "Biliary Colic": [
             RS(specialty: "General / HPB Surgery", urgency: .urgent, reason: "Elective cholecystectomy referral", notes: "Laparoscopic cholecystectomy within 6 weeks of acute episode")
         ],
