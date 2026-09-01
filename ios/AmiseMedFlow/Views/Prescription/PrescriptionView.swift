@@ -12,39 +12,54 @@ struct PrescriptionView: View {
     }
 
     var body: some View {
-        List {
-            if !interactions.isEmpty {
-                interactionsSection
-            }
-
-            prescriptionsSection
-
-            // Diagnosis context
-            if let dx = patient.workingDiagnosis {
-                Section {
-                    Label(dx, systemImage: "stethoscope")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } header: {
-                    Text("Context: working diagnosis")
+        ZStack(alignment: .bottomTrailing) {
+            List {
+                if !interactions.isEmpty {
+                    interactionsSection
                 }
-            }
-        }
-        .navigationTitle("Prescriptions")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                HStack {
-                    if !patient.prescriptions.isEmpty {
-                        ShareLink(item: medicationListText,
-                                  subject: Text("Medication List — \(patient.fullName)")) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
+
+                prescriptionsSection
+
+                if let dx = patient.workingDiagnosis {
+                    Section {
+                        Label(dx, systemImage: "stethoscope")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } header: {
+                        Text("Context: working diagnosis")
                     }
-                    Button { showAddSheet = true }
-                        label: { Image(systemName: "plus") }
                 }
             }
+            .navigationTitle("Prescriptions")
+            .navigationBarTitleDisplayMode(.inline)
+
+            // FAB stack — share + add
+            VStack(spacing: 12) {
+                if !patient.prescriptions.isEmpty {
+                    ShareLink(item: medicationListText,
+                              subject: Text("Medication List — \(patient.fullName)")) {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(AMColor.accent)
+                            .frame(width: 44, height: 44)
+                            .background(AMColor.accentLt, in: Circle())
+                            .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                Button { showAddSheet = true } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 56, height: 56)
+                        .background(AMColor.accent, in: Circle())
+                        .shadow(color: AMColor.accent.opacity(0.4), radius: 8, y: 4)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.trailing, 20)
+            .padding(.bottom, 24)
         }
         .sheet(isPresented: $showAddSheet) {
             AddPrescriptionSheet(patient: patient)
