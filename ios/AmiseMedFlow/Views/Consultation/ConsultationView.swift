@@ -625,10 +625,10 @@ struct ConsultationView: View {
                         }
                         Text(alarm.detail)
                             .font(.system(size: 11))
-                            .foregroundStyle(Color.white.opacity(0.9))
+                            .foregroundStyle(.white.opacity(0.9))
                         Text(alarm.action)
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(Color.white.opacity(0.75))
+                            .foregroundStyle(.white.opacity(0.75))
                             .padding(.top, 1)
                     }
                     Spacer()
@@ -639,7 +639,7 @@ struct ConsultationView: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(Color.white.opacity(0.7))
+                            .foregroundStyle(.white.opacity(0.7))
                     }
                     .buttonStyle(.plain)
                 }
