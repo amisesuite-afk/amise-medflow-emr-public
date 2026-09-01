@@ -67,6 +67,18 @@ echo "==> Saved to Configuration.xcconfig (DEVELOPMENT_TEAM = $TEAM_ID)"
 if command -v xcodegen &>/dev/null; then
     echo "==> Running xcodegen..."
     cd "$SCRIPT_DIR" && xcodegen generate
+
+    # Patch DEVELOPMENT_TEAM into the generated pbxproj so Xcode's
+    # Signing & Capabilities dropdown shows the team without manual selection.
+    # (Xcode reads the dropdown value from pbxproj, not from xcconfig.)
+    PBXPROJ="$SCRIPT_DIR/AmiseMedFlow.xcodeproj/project.pbxproj"
+    if [ -f "$PBXPROJ" ]; then
+        # Replace every DEVELOPMENT_TEAM = ""; line with the real team ID
+        sed -i '' "s/DEVELOPMENT_TEAM = \"\";/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ"
+        # Also patch any pre-existing team lines in case xcodegen wrote a different value
+        sed -i '' "s/DEVELOPMENT_TEAM = [A-Z0-9]*;/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ"
+        echo "==> Patched DEVELOPMENT_TEAM = $TEAM_ID into project.pbxproj"
+    fi
     echo "==> Project regenerated with team $TEAM_ID"
 else
     echo "WARN: xcodegen not found. Install with: brew install xcodegen"
