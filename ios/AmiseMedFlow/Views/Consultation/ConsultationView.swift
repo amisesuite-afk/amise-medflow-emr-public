@@ -605,49 +605,53 @@ struct ConsultationView: View {
     }
 
     @ViewBuilder
+    private func alarmRow(_ alarm: ClinicalTextParser.ClinicalAlarm, isLast: Bool) -> some View {
+        let isEmergency = alarm.severity == .emergency
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: alarm.systemImage)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 18)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(alarm.title)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text(isEmergency ? "EMERGENCY" : "CRITICAL")
+                        .font(.system(size: 9, weight: .black))
+                        .foregroundStyle(isEmergency ? .red : .orange)
+                        .padding(.horizontal, 4).padding(.vertical, 1)
+                        .background(Color.white, in: Capsule())
+                }
+                Text(alarm.detail)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.white.opacity(0.9))
+                Text(alarm.action)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.75))
+                    .padding(.top, 1)
+            }
+            Spacer()
+            Button {
+                withAnimation(.easeOut(duration: 0.15)) {
+                    dismissedAlarmIds.insert(alarm.id)
+                }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.7))
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 14).padding(.vertical, 9)
+        .background { alarmBannerColor(isEmergency: isEmergency) }
+        if !isLast { Divider().background { Color(white: 1, opacity: 0.3) } }
+    }
+
     private func clinicalAlarmBanner(_ alarms: [ClinicalTextParser.ClinicalAlarm]) -> some View {
         VStack(spacing: 0) {
             ForEach(alarms) { alarm in
-                let isEmergency = alarm.severity == .emergency
-                HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: alarm.systemImage)
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 18)
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 6) {
-                            Text(alarm.title)
-                                .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(.white)
-                            Text(isEmergency ? "EMERGENCY" : "CRITICAL")
-                                .font(.system(size: 9, weight: .black))
-                                .foregroundStyle(isEmergency ? .red : .orange)
-                                .padding(.horizontal, 4).padding(.vertical, 1)
-                                .background(Color.white, in: Capsule())
-                        }
-                        Text(alarm.detail)
-                            .font(.system(size: 11))
-                            .foregroundStyle(.white.opacity(0.9))
-                        Text(alarm.action)
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.75))
-                            .padding(.top, 1)
-                    }
-                    Spacer()
-                    Button {
-                        withAnimation(.easeOut(duration: 0.15)) {
-                            dismissedAlarmIds.insert(alarm.id)
-                        }
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(.white.opacity(0.7))
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, 14).padding(.vertical, 9)
-                .background { alarmBannerColor(isEmergency: isEmergency) }
-                if alarm.id != alarms.last?.id { Divider().background { Color(white: 1, opacity: 0.3) } }
+                alarmRow(alarm, isLast: alarm.id == alarms.last?.id)
             }
         }
         .transition(.move(edge: .top).combined(with: .opacity))
