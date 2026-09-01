@@ -7,6 +7,7 @@ import SwiftData
 final class Patient {
     var id: UUID
     var remoteId: String?
+    var syncCode: String = ""  // stable offline peer-sync ID, set in init()
     var fullName: String
     var dateOfBirth: Date?
     var sex: Sex
@@ -87,6 +88,17 @@ final class Patient {
     var heightCm: Double?
     var aiClinicalReasoning: String?   // Persisted AI reasoning summary
 
+    // MARK: - Procedure / specialty form data (JSON-encoded)
+    var traumaDataJson: String?     // TraumaData
+    var ogdDataJson: String?        // OGDData
+    var surgeryDataJson: String?    // SurgeryNoteData
+    var ercpDataJson: String?       // ERCPData
+
+    // MARK: - Perioperative checklist
+    var asaClass: Int?                       // ASA physical status 1–5
+    var consentSent: Bool = false            // Consent form given to patient
+    var preOpInstructionsSent: Bool = false  // Pre-op instructions sent to patient
+
     init(
         fullName: String,
         sex: Sex = .unspecified,
@@ -95,6 +107,7 @@ final class Patient {
         acuity: Acuity = .routine
     ) {
         self.id = UUID()
+        self.syncCode = UUID().uuidString
         self.fullName = fullName
         self.sex = sex
         self.setting = setting

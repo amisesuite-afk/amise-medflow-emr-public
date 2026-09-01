@@ -5,46 +5,80 @@ struct PrescriptionView: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
     @State private var showAddSheet = false
+    @State private var radiationExpanded = false
+    @State private var dosingExpanded = false
 
     private var interactions: [DrugInteractionAlert] {
         let names = patient.prescriptions.map { $0.drug }
         return DrugInteractionService.check(drugs: names)
     }
 
+    private var radiationPlan: DiagnosisRadiation? {
+        DiagnosisRadiationEngine.radiate(
+            workingDiagnosis: patient.workingDiagnosis,
+            ageYears: patient.ageYears,
+            sex: patient.sex
+        )
+    }
+
     var body: some View {
-        List {
-            if !interactions.isEmpty {
-                interactionsSection
-            }
-
-            prescriptionsSection
-
-            // Diagnosis context
-            if let dx = patient.workingDiagnosis {
-                Section {
-                    Label(dx, systemImage: "stethoscope")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                } header: {
-                    Text("Context: working diagnosis")
+        ZStack(alignment: .bottomTrailing) {
+            List {
+                if !interactions.isEmpty {
+                    interactionsSection
                 }
-            }
-        }
-        .navigationTitle("Prescriptions")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                HStack {
-                    if !patient.prescriptions.isEmpty {
-                        ShareLink(item: medicationListText,
-                                  subject: Text("Medication List — \(patient.fullName)")) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
+
+                if let plan = radiationPlan {
+                    radiationPlanSection(plan)
+                }
+
+                if let dx = patient.workingDiagnosis {
+                    let dosing = DiagnosisDosingGuide.lookup(diagnosis: dx)
+                    if !dosing.isEmpty { dosingGuideSection(entries: dosing, dx: dx) }
+                }
+
+                prescriptionsSection
+
+                if let dx = patient.workingDiagnosis, radiationPlan == nil {
+                    Section {
+                        Label(dx, systemImage: "stethoscope")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } header: {
+                        Text("Context: working diagnosis")
                     }
-                    Button { showAddSheet = true }
-                        label: { Image(systemName: "plus") }
                 }
             }
+            .navigationTitle("Prescriptions")
+            .navigationBarTitleDisplayMode(.inline)
+
+            // FAB stack — share + add
+            VStack(spacing: 12) {
+                if !patient.prescriptions.isEmpty {
+                    ShareLink(item: medicationListText,
+                              subject: Text("Medication List — \(patient.fullName)")) {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(AMColor.accent)
+                            .frame(width: 44, height: 44)
+                            .background(AMColor.accentLt, in: Circle())
+                            .shadow(color: .black.opacity(0.12), radius: 4, y: 2)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                Button { showAddSheet = true } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 56, height: 56)
+                        .background(AMColor.accent, in: Circle())
+                        .shadow(color: AMColor.accent.opacity(0.4), radius: 8, y: 4)
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.trailing, 20)
+            .padding(.bottom, 24)
         }
         .sheet(isPresented: $showAddSheet) {
             AddPrescriptionSheet(patient: patient)
@@ -92,6 +126,233 @@ struct PrescriptionView: View {
         lines.append("Total: \(sorted.count) medication\(sorted.count == 1 ? "" : "s")")
         lines.append("Verify all doses and indications before dispensing.")
         return lines.joined(separator: "\n")
+    }
+
+    // MARK: - Radiation plan suggestion
+
+    @ViewBuilder
+    private func radiationPlanSection(_ plan: DiagnosisRadiation) -> some View {
+        Section {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Image(systemName: "wand.and.stars")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.teal)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("Suggested Management")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.teal)
+                        Text(plan.conditionName)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) { radiationExpanded.toggle() }
+                    } label: {
+                        Image(systemName: radiationExpanded ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if !plan.planTemplate.isEmpty {
+                    if radiationExpanded {
+                        Text(plan.planTemplate)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text(plan.planTemplate)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                            .lineLimit(3)
+                    }
+                }
+
+                if !plan.redFlags.isEmpty {
+                    VStack(alignment: .leading, spacing: 3) {
+                        ForEach(plan.redFlags.prefix(2), id: \.self) { flag in
+                            HStack(alignment: .top, spacing: 5) {
+                                Image(systemName: "flag.fill")
+                                    .font(.system(size: 8))
+                                    .foregroundStyle(.red)
+                                    .padding(.top, 2)
+                                Text(flag)
+                                    .font(.system(size: 10))
+                                    .foregroundStyle(.red.opacity(0.8))
+                            }
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        } header: {
+            Label("Rx Guidance · \(plan.conditionName)", systemImage: "wand.and.stars")
+                .foregroundStyle(.teal)
+        } footer: {
+            if let ref = plan.guidelineReference {
+                Text(ref).font(.caption2).foregroundStyle(.tertiary)
+            }
+        }
+    }
+
+    // MARK: - Diagnosis dosing guide
+
+    @ViewBuilder
+    private func dosingGuideSection(entries: [DosingEntry], dx: String) -> some View {
+        let allergyNames = patient.allergies.map { $0.name.lowercased() }
+        let weightKg = patient.vitalsEntries
+            .sorted { $0.recordedAt > $1.recordedAt }
+            .first(where: { $0.weightKg != nil })?.weightKg
+
+        Section {
+            VStack(alignment: .leading, spacing: 0) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) { dosingExpanded.toggle() }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "pills.fill")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.indigo)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Dosing Guide")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(.indigo)
+                            Text("\(entries.count) drug\(entries.count == 1 ? "" : "s") for \(dx)")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if let wt = weightKg {
+                            Text(String(format: "%.0f kg", wt))
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 6).padding(.vertical, 2)
+                                .background(Color(.systemGray5), in: Capsule())
+                        }
+                        Image(systemName: dosingExpanded ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                if dosingExpanded {
+                    Divider().padding(.top, 6)
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(entries) { entry in
+                            let isContraindicated = allergyNames.contains(where: { name in
+                                entry.allergyKeywords.contains(where: { name.contains($0) })
+                            })
+                            dosingRow(entry: entry, weightKg: weightKg, contraindicated: isContraindicated)
+                            if entry.id != entries.last?.id {
+                                Divider().padding(.leading, 8)
+                            }
+                        }
+                    }
+                    .padding(.top, 6)
+                }
+            }
+            .padding(.vertical, 2)
+        } header: {
+            Label("Dosing Reference · \(dx)", systemImage: "pills")
+                .foregroundStyle(.indigo)
+        } footer: {
+            Text("Reference guide only — verify dose, renal function, and allergies before prescribing.")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
+    }
+
+    @ViewBuilder
+    private func dosingRow(entry: DosingEntry, weightKg: Double?, contraindicated: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(alignment: .top, spacing: 6) {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 5) {
+                        Text(entry.drug)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(contraindicated ? .red : .primary)
+                        if contraindicated {
+                            Label("CONTRAINDICATED", systemImage: "exclamationmark.triangle.fill")
+                                .font(.system(size: 9, weight: .black))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 5).padding(.vertical, 2)
+                                .background(Color.red, in: Capsule())
+                        }
+                    }
+                    Text(entry.indication)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    // Weight-adjusted dose if weight is known
+                    if entry.weightBased, let wt = weightKg,
+                       let num = parseWeightDoseMultiplier(entry.dose) {
+                        let computed = num * wt
+                        Text(String(format: "≈ %.0f mg", computed))
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.indigo)
+                        Text(entry.dose)
+                            .font(.system(size: 10))
+                            .foregroundStyle(.tertiary)
+                    } else {
+                        Text(entry.dose)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.primary)
+                    }
+                    Text(entry.route)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            // Caution badges
+            let badges = cautionBadges(entry: entry)
+            if !badges.isEmpty {
+                HStack(spacing: 5) {
+                    ForEach(badges, id: \.0) { (label, color) in
+                        Text(label)
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background(color, in: Capsule())
+                    }
+                }
+            }
+
+            if let note = entry.notes {
+                Text(note)
+                    .font(.system(size: 10))
+                    .foregroundStyle(.orange)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.vertical, 7)
+        .padding(.horizontal, 2)
+        .opacity(contraindicated ? 0.8 : 1.0)
+    }
+
+    private func cautionBadges(entry: DosingEntry) -> [(String, Color)] {
+        var badges: [(String, Color)] = []
+        if entry.renalCaution   { badges.append(("RENAL CAUTION", .orange)) }
+        if entry.hepaticCaution { badges.append(("HEPATIC CAUTION", .purple)) }
+        if entry.weightBased    { badges.append(("WEIGHT-BASED", .blue)) }
+        return badges
+    }
+
+    private func parseWeightDoseMultiplier(_ doseString: String) -> Double? {
+        // Parse "X mg/kg" patterns like "5 mg/kg" → 5.0
+        let pattern = #"(\d+(?:\.\d+)?)\s*mg/kg"#
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+              let match = regex.firstMatch(in: doseString, range: NSRange(doseString.startIndex..., in: doseString)),
+              let range = Range(match.range(at: 1), in: doseString)
+        else { return nil }
+        return Double(doseString[range])
     }
 
     // MARK: - Interaction alerts

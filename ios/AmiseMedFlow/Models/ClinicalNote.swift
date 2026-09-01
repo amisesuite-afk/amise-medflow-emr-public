@@ -58,6 +58,7 @@ enum NoteStatus: String, Codable, CaseIterable {
 final class ClinicalNote {
     var id: UUID
     var remoteId: String?
+    var syncCode: String = ""  // stable offline peer-sync ID, set in init()
     var noteType: NoteType
     var status: NoteStatus
     var createdAt: Date
@@ -80,6 +81,7 @@ final class ClinicalNote {
 
     init(noteType: NoteType, patient: Patient) {
         self.id = UUID()
+        self.syncCode = UUID().uuidString
         self.noteType = noteType
         self.status = .draft
         self.createdAt = .now

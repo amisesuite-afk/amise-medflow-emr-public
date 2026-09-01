@@ -18,6 +18,7 @@ struct SettingsView: View {
                 Section("Account") {
                     if let email = sync.currentUserEmail {
                         LabeledContent("Signed in as", value: email)
+                        LabeledContent("Role", value: sync.currentUserRole.displayName)
                         Button(role: .destructive) {
                             showSignOutConfirm = true
                         } label: {

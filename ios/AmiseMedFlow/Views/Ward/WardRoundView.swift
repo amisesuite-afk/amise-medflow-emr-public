@@ -164,6 +164,7 @@ struct WardRoundView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     HStack {
+                        SyncStatusBar()
                         Button { showTriage = true } label: {
                             Image(systemName: "chart.bar.xaxis.ascending")
                         }

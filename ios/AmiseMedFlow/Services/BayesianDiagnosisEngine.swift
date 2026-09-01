@@ -103,6 +103,31 @@ enum BayesianDiagnosisEngine {
         case ccL.contains("thyroid") || ccL.contains("hypothyroid") || ccL.contains("hyperthyroid") ||
              ccL.contains("graves") || ccL.contains("goitre"):
             candidates = neckLump    // existing thyroid candidates
+        case ccL.contains("vascular") || ccL.contains("mesenteric") ||
+             ccL.contains("ischaemia") || ccL.contains("ischemia") ||
+             ccL.contains("aortic") || ccL.contains("claudicat") ||
+             ccL.contains("limb ischaemia") || ccL.contains("peripheral arterial"):
+            candidates = vascularSurgical
+        case ccL.contains("bowel obstruct") || ccL.contains("small bowel") ||
+             ccL.contains("volvulus") || ccL.contains("intussuscep") ||
+             (ccL.contains("obstruction") && (ccL.contains("bowel") || ccL.contains("intesti"))):
+            candidates = smallBowelObstruction
+        case ccL.contains("pilonidal") || ccL.contains("coccyx") || ccL.contains("sacrococcygeal"):
+            candidates = pilonidalDisease
+        case ccL.contains("renal colic") || ccL.contains("kidney stone") ||
+             ccL.contains("ureteric") || ccL.contains("nephrolithiasis") ||
+             ccL.contains("loin to groin") || ccL.contains("renal calcul"):
+            candidates = renalColic
+        case ccL.contains("stroke") || ccL.contains("tia") || ccL.contains("transient ischaem") ||
+             ccL.contains("facial droop") || ccL.contains("hemiplegia") || ccL.contains("hemiparesis"):
+            candidates = strokeTIA
+        case ccL.contains("anaemia") || ccL.contains("anemia") ||
+             (ccL.contains("fatigue") && ccL.contains("pallor")) ||
+             ccL.contains("low haemoglobin") || ccL.contains("low hemoglobin"):
+            candidates = anaemia
+        case (ccL.contains("wound") || ccL.contains("surgical site")) &&
+             (ccL.contains("infect") || ccL.contains("discharge") || ccL.contains("dehisc")):
+            candidates = woundInfection
         default:
             candidates = abdominalPain   // safest surgical default
         }
@@ -1133,6 +1158,289 @@ enum BayesianDiagnosisEngine {
             .init(key: "pmh", value: "diabetes", logLR: 10, evidenceLabel: "Diabetes"),
             .init(key: "inv", value: "albumin", logLR: 10, evidenceLabel: "Microalbuminuria"),
             .init(key: "inv", value: "creatinine", logLR: 8, evidenceLabel: "Renal impairment"),
+        ]),
+    ]
+
+    // MARK: - Vascular surgical
+
+    private static let vascularSurgical: [Candidate] = [
+        .init(name: "Acute Mesenteric Ischaemia", icd: "K55.0",
+              logPrior: 8, features: [
+            .init(key: "onset", value: "Sudden", logLR: 12, evidenceLabel: "Sudden onset"),
+            .init(key: "character", value: "Severe", logLR: 10, evidenceLabel: "Severe pain"),
+            .init(key: "character", value: "Constant", logLR: 8, evidenceLabel: "Constant pain"),
+            .init(key: "associations", value: "Vomiting", logLR: 6, evidenceLabel: "Vomiting"),
+            .init(key: "associations", value: "Bloody stool", logLR: 14, evidenceLabel: "Bloody stool (late sign)"),
+            .init(key: "pmh", value: "atrial fibrillation", logLR: 14, evidenceLabel: "Atrial fibrillation (embolic risk)"),
+            .init(key: "pmh", value: "af", logLR: 14, evidenceLabel: "AF"),
+            .init(key: "pmh", value: "vascular", logLR: 8, evidenceLabel: "Vascular disease"),
+            .init(key: "exam", value: "periton", logLR: 12, evidenceLabel: "Peritonism"),
+            .init(key: "age_over", value: "60", logLR: 8, evidenceLabel: "Age >60"),
+        ]),
+        .init(name: "Abdominal Aortic Aneurysm", icd: "I71.4",
+              logPrior: 10, features: [
+            .init(key: "onset", value: "Sudden", logLR: 10, evidenceLabel: "Sudden onset"),
+            .init(key: "character", value: "Tearing", logLR: 16, evidenceLabel: "Tearing pain"),
+            .init(key: "radiation", value: "Back", logLR: 12, evidenceLabel: "Radiation to back"),
+            .init(key: "radiation", value: "Flank", logLR: 10, evidenceLabel: "Flank radiation"),
+            .init(key: "exam", value: "pulsatile", logLR: 18, evidenceLabel: "Pulsatile mass"),
+            .init(key: "pmh", value: "smoking", logLR: 8, evidenceLabel: "Smoking history"),
+            .init(key: "pmh", value: "hypertension", logLR: 6, evidenceLabel: "Hypertension"),
+            .init(key: "sex_male", value: "", logLR: 8, evidenceLabel: "Male sex"),
+            .init(key: "age_over", value: "60", logLR: 8, evidenceLabel: "Age >60"),
+        ]),
+        .init(name: "Peripheral Arterial Disease", icd: "I70.209",
+              logPrior: 14, features: [
+            .init(key: "character", value: "Cramping", logLR: 10, evidenceLabel: "Cramping pain"),
+            .init(key: "associations", value: "Claudication", logLR: 16, evidenceLabel: "Intermittent claudication"),
+            .init(key: "exacerbating", value: "Walking", logLR: 14, evidenceLabel: "Walking exacerbates"),
+            .init(key: "relieving", value: "Rest", logLR: 10, evidenceLabel: "Rest relieves"),
+            .init(key: "exam", value: "cold", logLR: 10, evidenceLabel: "Cold limb"),
+            .init(key: "exam", value: "absent pulse", logLR: 14, evidenceLabel: "Absent pulses"),
+            .init(key: "exam", value: "ulcer", logLR: 10, evidenceLabel: "Ischaemic ulcer"),
+            .init(key: "pmh", value: "diabetes", logLR: 8, evidenceLabel: "Diabetes"),
+            .init(key: "pmh", value: "smoking", logLR: 8, evidenceLabel: "Smoking"),
+        ]),
+        .init(name: "Critical Limb Ischaemia", icd: "I70.249",
+              logPrior: 6, features: [
+            .init(key: "character", value: "Rest pain", logLR: 18, evidenceLabel: "Rest pain"),
+            .init(key: "timing", value: "Constant", logLR: 10, evidenceLabel: "Constant pain"),
+            .init(key: "exam", value: "gangrene", logLR: 20, evidenceLabel: "Gangrene / tissue loss"),
+            .init(key: "exam", value: "ulcer", logLR: 12, evidenceLabel: "Non-healing ulcer"),
+            .init(key: "exam", value: "cold", logLR: 10, evidenceLabel: "Cold limb"),
+            .init(key: "pmh", value: "diabetes", logLR: 8, evidenceLabel: "Diabetes"),
+            .init(key: "pmh", value: "vascular", logLR: 10, evidenceLabel: "Peripheral vascular disease"),
+        ]),
+        .init(name: "Aortic Dissection", icd: "I71.00",
+              logPrior: 5, features: [
+            .init(key: "onset", value: "Sudden", logLR: 14, evidenceLabel: "Sudden onset"),
+            .init(key: "character", value: "Tearing", logLR: 18, evidenceLabel: "Tearing / ripping pain"),
+            .init(key: "radiation", value: "Back", logLR: 14, evidenceLabel: "Interscapular radiation"),
+            .init(key: "radiation", value: "Chest", logLR: 10, evidenceLabel: "Chest radiation"),
+            .init(key: "pmh", value: "hypertension", logLR: 10, evidenceLabel: "Hypertension"),
+            .init(key: "pmh", value: "marfan", logLR: 14, evidenceLabel: "Marfan syndrome"),
+        ]),
+    ]
+
+    // MARK: - Small bowel obstruction / volvulus
+
+    private static let smallBowelObstruction: [Candidate] = [
+        .init(name: "Small Bowel Obstruction", icd: "K56.60",
+              logPrior: 25, features: [
+            .init(key: "character", value: "Colicky", logLR: 14, evidenceLabel: "Colicky pain"),
+            .init(key: "associations", value: "Vomiting", logLR: 12, evidenceLabel: "Vomiting"),
+            .init(key: "associations", value: "Distension", logLR: 14, evidenceLabel: "Abdominal distension"),
+            .init(key: "associations", value: "No bowel motion", logLR: 14, evidenceLabel: "Absolute constipation"),
+            .init(key: "exam", value: "distension", logLR: 12, evidenceLabel: "Distended abdomen"),
+            .init(key: "exam", value: "high pitched", logLR: 14, evidenceLabel: "Tinkling / high-pitched bowel sounds"),
+            .init(key: "exam", value: "scar", logLR: 10, evidenceLabel: "Laparotomy scar"),
+            .init(key: "pshx", value: "laparotomy", logLR: 12, evidenceLabel: "Previous laparotomy (adhesions)"),
+            .init(key: "pshx", value: "abdominal surgery", logLR: 10, evidenceLabel: "Previous abdominal surgery"),
+            .init(key: "inv", value: "dilated loops", logLR: 16, evidenceLabel: "Dilated bowel on imaging"),
+        ]),
+        .init(name: "Large Bowel Obstruction", icd: "K56.609",
+              logPrior: 14, features: [
+            .init(key: "character", value: "Colicky", logLR: 10, evidenceLabel: "Colicky pain"),
+            .init(key: "associations", value: "Distension", logLR: 14, evidenceLabel: "Marked distension"),
+            .init(key: "associations", value: "No bowel motion", logLR: 12, evidenceLabel: "Absolute constipation"),
+            .init(key: "onset", value: "Gradual", logLR: 8, evidenceLabel: "Gradual onset"),
+            .init(key: "pmh", value: "colorectal", logLR: 14, evidenceLabel: "Colorectal cancer"),
+            .init(key: "age_over", value: "60", logLR: 6, evidenceLabel: "Age >60"),
+            .init(key: "exam", value: "mass", logLR: 12, evidenceLabel: "Palpable mass"),
+        ]),
+        .init(name: "Sigmoid Volvulus", icd: "K56.2",
+              logPrior: 10, features: [
+            .init(key: "onset", value: "Sudden", logLR: 10, evidenceLabel: "Sudden onset"),
+            .init(key: "associations", value: "Distension", logLR: 16, evidenceLabel: "Massive distension"),
+            .init(key: "associations", value: "No bowel motion", logLR: 12, evidenceLabel: "Absolute constipation"),
+            .init(key: "pmh", value: "constipation", logLR: 8, evidenceLabel: "Chronic constipation"),
+            .init(key: "age_over", value: "60", logLR: 6, evidenceLabel: "Elderly"),
+            .init(key: "inv", value: "coffee bean", logLR: 18, evidenceLabel: "Coffee-bean sign on AXR"),
+        ]),
+        .init(name: "Paralytic Ileus", icd: "K56.0",
+              logPrior: 12, features: [
+            .init(key: "associations", value: "Distension", logLR: 10, evidenceLabel: "Distension"),
+            .init(key: "associations", value: "Nausea", logLR: 6, evidenceLabel: "Nausea"),
+            .init(key: "exam", value: "absent bowel sounds", logLR: 14, evidenceLabel: "Absent bowel sounds"),
+            .init(key: "pshx", value: "surgery", logLR: 12, evidenceLabel: "Recent surgery"),
+            .init(key: "pmh", value: "pancreatitis", logLR: 8, evidenceLabel: "Pancreatitis"),
+        ]),
+    ]
+
+    // MARK: - Pilonidal disease
+
+    private static let pilonidalDisease: [Candidate] = [
+        .init(name: "Pilonidal Sinus", icd: "L05.91",
+              logPrior: 30, features: [
+            .init(key: "site", value: "Natal cleft", logLR: 20, evidenceLabel: "Natal cleft / coccyx"),
+            .init(key: "site", value: "Coccyx", logLR: 16, evidenceLabel: "Coccyx"),
+            .init(key: "character", value: "Dull ache", logLR: 8, evidenceLabel: "Dull aching pain"),
+            .init(key: "exam", value: "sinus", logLR: 18, evidenceLabel: "Sinus/pit visible"),
+            .init(key: "sex_male", value: "", logLR: 8, evidenceLabel: "Male sex"),
+            .init(key: "age_under", value: "35", logLR: 6, evidenceLabel: "Young adult"),
+            .init(key: "associations", value: "Hair", logLR: 10, evidenceLabel: "Hair in sinus"),
+        ]),
+        .init(name: "Pilonidal Abscess", icd: "L05.01",
+              logPrior: 20, features: [
+            .init(key: "onset", value: "Rapid", logLR: 12, evidenceLabel: "Rapid onset of pain"),
+            .init(key: "character", value: "Throbbing", logLR: 10, evidenceLabel: "Throbbing pain"),
+            .init(key: "site", value: "Natal cleft", logLR: 20, evidenceLabel: "Natal cleft"),
+            .init(key: "exam", value: "swelling", logLR: 14, evidenceLabel: "Fluctuant swelling"),
+            .init(key: "exam", value: "erythema", logLR: 12, evidenceLabel: "Surrounding erythema"),
+            .init(key: "associations", value: "Fever", logLR: 8, evidenceLabel: "Systemic fever"),
+            .init(key: "pshx", value: "pilonidal", logLR: 14, evidenceLabel: "Previous pilonidal disease"),
+        ]),
+    ]
+
+    // MARK: - Renal colic
+
+    private static let renalColic: [Candidate] = [
+        .init(name: "Renal Colic / Ureteric Calculus", icd: "N20.1",
+              logPrior: 35, features: [
+            .init(key: "onset", value: "Sudden", logLR: 12, evidenceLabel: "Sudden onset"),
+            .init(key: "character", value: "Colicky", logLR: 16, evidenceLabel: "Colicky pain"),
+            .init(key: "radiation", value: "Loin to groin", logLR: 20, evidenceLabel: "Loin-to-groin radiation"),
+            .init(key: "radiation", value: "Groin", logLR: 14, evidenceLabel: "Groin radiation"),
+            .init(key: "associations", value: "Haematuria", logLR: 16, evidenceLabel: "Haematuria"),
+            .init(key: "associations", value: "Nausea", logLR: 6, evidenceLabel: "Nausea/vomiting"),
+            .init(key: "associations", value: "Restless", logLR: 10, evidenceLabel: "Patient writhing/restless"),
+            .init(key: "pmh", value: "kidney stone", logLR: 16, evidenceLabel: "Previous kidney stones"),
+            .init(key: "inv", value: "haematuria", logLR: 14, evidenceLabel: "Haematuria on urine dipstick"),
+        ]),
+        .init(name: "Pyelonephritis", icd: "N10",
+              logPrior: 20, features: [
+            .init(key: "site", value: "Loin", logLR: 12, evidenceLabel: "Loin pain"),
+            .init(key: "associations", value: "Fever", logLR: 12, evidenceLabel: "Fever"),
+            .init(key: "associations", value: "Dysuria", logLR: 10, evidenceLabel: "Dysuria"),
+            .init(key: "associations", value: "Frequency", logLR: 8, evidenceLabel: "Urinary frequency"),
+            .init(key: "exam", value: "renal angle", logLR: 14, evidenceLabel: "Renal angle tenderness"),
+            .init(key: "sex_female", value: "", logLR: 6, evidenceLabel: "Female sex"),
+        ]),
+        .init(name: "Renal Cell Carcinoma", icd: "C64.9",
+              logPrior: 8, features: [
+            .init(key: "associations", value: "Haematuria", logLR: 14, evidenceLabel: "Painless haematuria"),
+            .init(key: "associations", value: "Weight loss", logLR: 10, evidenceLabel: "Weight loss"),
+            .init(key: "exam", value: "mass", logLR: 14, evidenceLabel: "Flank mass"),
+            .init(key: "timing", value: "Progressive", logLR: 8, evidenceLabel: "Progressive"),
+            .init(key: "age_over", value: "50", logLR: 6, evidenceLabel: "Age >50"),
+            .init(key: "pmh", value: "smoking", logLR: 8, evidenceLabel: "Smoking"),
+        ]),
+    ]
+
+    // MARK: - Stroke / TIA
+
+    private static let strokeTIA: [Candidate] = [
+        .init(name: "Ischaemic Stroke", icd: "I63.9",
+              logPrior: 25, features: [
+            .init(key: "onset", value: "Sudden", logLR: 16, evidenceLabel: "Sudden onset — FAST"),
+            .init(key: "associations", value: "Facial droop", logLR: 18, evidenceLabel: "Facial droop"),
+            .init(key: "associations", value: "Arm weakness", logLR: 16, evidenceLabel: "Arm weakness"),
+            .init(key: "associations", value: "Speech difficulty", logLR: 16, evidenceLabel: "Speech difficulty"),
+            .init(key: "associations", value: "Visual change", logLR: 12, evidenceLabel: "Visual disturbance"),
+            .init(key: "pmh", value: "atrial fibrillation", logLR: 14, evidenceLabel: "Atrial fibrillation"),
+            .init(key: "pmh", value: "hypertension", logLR: 8, evidenceLabel: "Hypertension"),
+            .init(key: "pmh", value: "diabetes", logLR: 6, evidenceLabel: "Diabetes"),
+            .init(key: "age_over", value: "55", logLR: 8, evidenceLabel: "Age >55"),
+        ]),
+        .init(name: "Transient Ischaemic Attack", icd: "G45.9",
+              logPrior: 15, features: [
+            .init(key: "timing", value: "Resolved", logLR: 16, evidenceLabel: "Symptoms resolved (<24h)"),
+            .init(key: "onset", value: "Sudden", logLR: 14, evidenceLabel: "Sudden onset"),
+            .init(key: "associations", value: "Facial droop", logLR: 12, evidenceLabel: "Transient facial droop"),
+            .init(key: "associations", value: "Arm weakness", logLR: 12, evidenceLabel: "Transient limb weakness"),
+            .init(key: "associations", value: "Speech difficulty", logLR: 12, evidenceLabel: "Transient dysphasia"),
+            .init(key: "pmh", value: "hypertension", logLR: 8, evidenceLabel: "Hypertension"),
+            .init(key: "pmh", value: "atrial fibrillation", logLR: 12, evidenceLabel: "Atrial fibrillation"),
+        ]),
+        .init(name: "Intracranial Haemorrhage", icd: "I61.9",
+              logPrior: 8, features: [
+            .init(key: "character", value: "Thunderclap", logLR: 20, evidenceLabel: "Thunderclap headache"),
+            .init(key: "onset", value: "Sudden", logLR: 14, evidenceLabel: "Sudden onset"),
+            .init(key: "associations", value: "Vomiting", logLR: 10, evidenceLabel: "Vomiting"),
+            .init(key: "associations", value: "Decreased GCS", logLR: 16, evidenceLabel: "Reduced consciousness"),
+            .init(key: "pmh", value: "hypertension", logLR: 10, evidenceLabel: "Hypertension"),
+            .init(key: "pmh", value: "anticoagul", logLR: 12, evidenceLabel: "On anticoagulation"),
+        ]),
+    ]
+
+    // MARK: - Anaemia
+
+    private static let anaemia: [Candidate] = [
+        .init(name: "Iron Deficiency Anaemia", icd: "D50.9",
+              logPrior: 40, features: [
+            .init(key: "character", value: "Fatigue", logLR: 8, evidenceLabel: "Fatigue"),
+            .init(key: "associations", value: "Breathlessness", logLR: 8, evidenceLabel: "Exertional dyspnoea"),
+            .init(key: "associations", value: "Pallor", logLR: 10, evidenceLabel: "Pallor"),
+            .init(key: "associations", value: "Palpitations", logLR: 6, evidenceLabel: "Palpitations"),
+            .init(key: "pmh", value: "rectal bleed", logLR: 12, evidenceLabel: "Rectal bleeding"),
+            .init(key: "pmh", value: "menorrhagia", logLR: 12, evidenceLabel: "Menorrhagia"),
+            .init(key: "pmh", value: "gastrointestinal", logLR: 8, evidenceLabel: "GI pathology"),
+            .init(key: "inv", value: "ferritin", logLR: 14, evidenceLabel: "Low ferritin"),
+            .init(key: "inv", value: "microcytic", logLR: 12, evidenceLabel: "Microcytic anaemia"),
+            .init(key: "sex_female", value: "", logLR: 6, evidenceLabel: "Female sex"),
+        ]),
+        .init(name: "Macrocytic Anaemia (B12 / Folate)", icd: "D51.9",
+              logPrior: 20, features: [
+            .init(key: "associations", value: "Neuropathy", logLR: 12, evidenceLabel: "Peripheral neuropathy"),
+            .init(key: "associations", value: "Sore tongue", logLR: 10, evidenceLabel: "Glossitis"),
+            .init(key: "pmh", value: "gastric", logLR: 10, evidenceLabel: "Gastric surgery / atrophic gastritis"),
+            .init(key: "pmh", value: "crohn", logLR: 8, evidenceLabel: "Crohn's (terminal ileum)"),
+            .init(key: "pmh", value: "alcohol", logLR: 8, evidenceLabel: "Alcohol use"),
+            .init(key: "inv", value: "macrocytic", logLR: 14, evidenceLabel: "Macrocytic anaemia"),
+            .init(key: "inv", value: "b12", logLR: 16, evidenceLabel: "Low B12"),
+            .init(key: "inv", value: "folate", logLR: 14, evidenceLabel: "Low folate"),
+        ]),
+        .init(name: "Anaemia of Chronic Disease", icd: "D63.1",
+              logPrior: 18, features: [
+            .init(key: "pmh", value: "chronic", logLR: 8, evidenceLabel: "Chronic illness"),
+            .init(key: "pmh", value: "rheumatoid", logLR: 10, evidenceLabel: "Rheumatoid arthritis"),
+            .init(key: "pmh", value: "malignancy", logLR: 12, evidenceLabel: "Malignancy"),
+            .init(key: "pmh", value: "ckd", logLR: 10, evidenceLabel: "CKD"),
+            .init(key: "inv", value: "normocytic", logLR: 10, evidenceLabel: "Normocytic anaemia"),
+            .init(key: "inv", value: "esr", logLR: 8, evidenceLabel: "Elevated ESR/CRP"),
+        ]),
+        .init(name: "Haemolytic Anaemia", icd: "D59.9",
+              logPrior: 8, features: [
+            .init(key: "associations", value: "Jaundice", logLR: 14, evidenceLabel: "Jaundice"),
+            .init(key: "associations", value: "Dark urine", logLR: 12, evidenceLabel: "Dark urine (haemoglobinuria)"),
+            .init(key: "pmh", value: "sickle", logLR: 14, evidenceLabel: "Sickle cell disease"),
+            .init(key: "pmh", value: "autoimmune", logLR: 10, evidenceLabel: "Autoimmune disease"),
+            .init(key: "inv", value: "reticulocyte", logLR: 12, evidenceLabel: "Raised reticulocyte count"),
+            .init(key: "inv", value: "ldh", logLR: 10, evidenceLabel: "Elevated LDH"),
+            .init(key: "inv", value: "direct coombs", logLR: 14, evidenceLabel: "Positive direct Coombs"),
+        ]),
+    ]
+
+    // MARK: - Wound infection / surgical site
+
+    private static let woundInfection: [Candidate] = [
+        .init(name: "Surgical Site Infection (SSI)", icd: "T81.40XA",
+              logPrior: 35, features: [
+            .init(key: "associations", value: "Discharge", logLR: 16, evidenceLabel: "Wound discharge"),
+            .init(key: "associations", value: "Redness", logLR: 12, evidenceLabel: "Wound erythema"),
+            .init(key: "associations", value: "Fever", logLR: 10, evidenceLabel: "Systemic fever"),
+            .init(key: "exam", value: "erythema", logLR: 12, evidenceLabel: "Perioperative erythema"),
+            .init(key: "exam", value: "swelling", logLR: 10, evidenceLabel: "Wound swelling"),
+            .init(key: "exam", value: "fluctuant", logLR: 14, evidenceLabel: "Fluctuant collection"),
+            .init(key: "pshx", value: "surgery", logLR: 16, evidenceLabel: "Recent surgery"),
+            .init(key: "pmh", value: "diabetes", logLR: 8, evidenceLabel: "Diabetes (risk factor)"),
+        ]),
+        .init(name: "Wound Dehiscence", icd: "T81.31XA",
+              logPrior: 10, features: [
+            .init(key: "associations", value: "Burst", logLR: 18, evidenceLabel: "Wound burst / opening"),
+            .init(key: "associations", value: "Pink tissue visible", logLR: 16, evidenceLabel: "Viscera visible"),
+            .init(key: "pshx", value: "laparotomy", logLR: 14, evidenceLabel: "Midline laparotomy"),
+            .init(key: "pmh", value: "diabetes", logLR: 8, evidenceLabel: "Diabetes"),
+            .init(key: "pmh", value: "malnutrition", logLR: 8, evidenceLabel: "Malnutrition"),
+            .init(key: "pmh", value: "steroid", logLR: 8, evidenceLabel: "Steroid use"),
+        ]),
+        .init(name: "Mesh Infection (Post-Hernioplasty)", icd: "T85.698A",
+              logPrior: 8, features: [
+            .init(key: "pshx", value: "hernia", logLR: 16, evidenceLabel: "Previous hernia repair"),
+            .init(key: "pshx", value: "mesh", logLR: 18, evidenceLabel: "Mesh implant"),
+            .init(key: "associations", value: "Sinus", logLR: 14, evidenceLabel: "Persistent sinus"),
+            .init(key: "associations", value: "Discharge", logLR: 12, evidenceLabel: "Purulent discharge"),
+            .init(key: "timing", value: "Months", logLR: 10, evidenceLabel: "Delayed presentation (months)"),
         ]),
     ]
 }

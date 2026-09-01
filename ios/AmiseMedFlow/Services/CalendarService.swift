@@ -53,6 +53,45 @@ final class CalendarService: ObservableObject {
         }
     }
 
+    // MARK: - Create theatre / procedure booking
+
+    @discardableResult
+    func createTheatreBooking(
+        procedure: String,
+        patientName: String,
+        date: Date,
+        duration: TimeInterval,
+        notes: String,
+        calendar: EKCalendar? = nil
+    ) async throws -> EKEvent {
+        let granted: Bool
+        if #available(iOS 17.0, *) {
+            granted = try await store.requestFullAccessToEvents()
+        } else {
+            granted = try await withCheckedThrowingContinuation { cont in
+                store.requestAccess(to: .event) { ok, err in
+                    if let err { cont.resume(throwing: err) }
+                    else { cont.resume(returning: ok) }
+                }
+            }
+        }
+        guard granted else { throw CalendarError.accessDenied }
+
+        let event = EKEvent(eventStore: store)
+        event.title = "\(patientName) — \(procedure)"
+        event.startDate = date
+        event.endDate = date.addingTimeInterval(duration)
+        event.notes = notes.isEmpty ? nil : notes
+        event.calendar = calendar ?? store.defaultCalendarForNewEvents
+        try store.save(event, span: .thisEvent)
+        loadEvents()
+        return event
+    }
+
+    func availableCalendars() -> [EKCalendar] {
+        store.calendars(for: .event).filter { $0.allowsContentModifications }
+    }
+
     private func loadEvents() {
         // Fetch ±1 month in past, +3 months forward
         let start = Calendar.current.date(byAdding: .month, value: -1, to: .now) ?? .now
@@ -60,6 +99,15 @@ final class CalendarService: ObservableObject {
         let pred  = store.predicateForEvents(withStart: start, end: end, calendars: nil)
         events = store.events(matching: pred).filter { !$0.isAllDay || $0.startDate != nil }
             .sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }
+    }
+}
+
+// MARK: - Calendar errors
+
+enum CalendarError: LocalizedError {
+    case accessDenied
+    var errorDescription: String? {
+        "Calendar access denied — enable in Settings → Privacy & Security → Calendars."
     }
 }
 

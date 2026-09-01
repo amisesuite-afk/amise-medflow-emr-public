@@ -14,6 +14,8 @@ final class Prescription {
     var prescribedAt: Date
     var pendingSync: Bool
     var remoteId: String?
+    var syncCode: String = ""  // stable offline peer-sync ID, set in init()
+    var syncedAt: Date?
     var patient: Patient?
 
     init(
@@ -25,6 +27,7 @@ final class Prescription {
         indication: String = ""
     ) {
         self.id = UUID()
+        self.syncCode = UUID().uuidString
         self.drug = drug
         self.dose = dose
         self.route = route

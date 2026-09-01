@@ -44,7 +44,10 @@ struct PatientListView: View {
             .searchable(text: $searchText, prompt: "Search name or complaint")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                    HStack {
+                        SyncStatusBar()
+                        Button { showAdd = true } label: { Image(systemName: "plus") }
+                    }
                 }
             }
             .sheet(isPresented: $showAdd) {
@@ -177,15 +180,17 @@ struct PatientRow: View {
                     }
                 }
 
-                // Row 4: NEWS2 + POD (ward patients) or allergy/anticoag badges (all settings)
-                if (patient.setting == .inpatient || patient.setting == .emergency),
-                   let v = latestVitals, v.hasAnyValue {
-                    HStack(spacing: 6) {
-                        if let days = patient.postOpDays {
-                            Text("POD \(days)")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(AMColor.accent)
-                        }
+                // Row 4: NEWS2 (always shown) + POD + safety badges
+                HStack(spacing: 6) {
+                    if let days = patient.postOpDays {
+                        Text("POD \(days)")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(AMColor.accent)
+                    }
+                    if let v = latestVitals, v.hasAnyValue {
+                        Circle()
+                            .fill(Color(hex: v.news2Color))
+                            .frame(width: 6, height: 6)
                         Text("NEWS2 \(v.news2Score)")
                             .font(.system(size: 9, weight: .bold))
                             .foregroundStyle(Color(hex: v.news2Color))
@@ -197,29 +202,32 @@ struct PatientRow: View {
                         Text(v.news2Risk)
                             .font(.system(size: 9))
                             .foregroundStyle(Color(hex: v.news2Color).opacity(0.8))
-                        Spacer()
-                        if patient.hasCriticalAllergy {
-                            Label("Allergy", systemImage: "exclamationmark.shield.fill")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(.red)
-                                .labelStyle(.iconOnly)
-                        } else if !patient.allergies.isEmpty {
-                            Label("Allergy", systemImage: "exclamationmark.shield")
-                                .font(.system(size: 9, weight: .semibold))
-                                .foregroundStyle(.orange)
-                                .labelStyle(.iconOnly)
-                        }
-                        if patient.hasAnticoagulation {
-                            Label("Anticoag", systemImage: "drop.fill")
-                                .font(.system(size: 9, weight: .bold))
-                                .foregroundStyle(.purple)
-                                .labelStyle(.iconOnly)
-                        }
+                    } else {
+                        Circle()
+                            .fill(Color.secondary.opacity(0.3))
+                            .frame(width: 6, height: 6)
+                        Text("No vitals")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
                     }
-                } else if let days = patient.postOpDays {
-                    Text("POD \(days)")
-                        .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(accentColor)
+                    Spacer()
+                    if patient.hasCriticalAllergy {
+                        Label("Allergy", systemImage: "exclamationmark.shield.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.red)
+                            .labelStyle(.iconOnly)
+                    } else if !patient.allergies.isEmpty {
+                        Label("Allergy", systemImage: "exclamationmark.shield")
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(.orange)
+                            .labelStyle(.iconOnly)
+                    }
+                    if patient.hasAnticoagulation {
+                        Label("Anticoag", systemImage: "drop.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(.purple)
+                            .labelStyle(.iconOnly)
+                    }
                 }
             }
             .padding(.leading, 10)

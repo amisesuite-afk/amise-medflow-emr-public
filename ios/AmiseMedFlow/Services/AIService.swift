@@ -391,6 +391,168 @@ final class AIService: ObservableObject {
         return try await generate(systemPrompt: system, userMessage: user)
     }
 
+    // MARK: - Operative technique auto-generation
+
+    struct OperativeTechniqueResult {
+        var indication: String
+        var findingsIntraoperative: String
+        var incision: String
+        var procedureDescription: String
+        var closure: String
+        var postOpOrders: String
+    }
+
+    func generateOperativeTechnique(
+        patient: Patient,
+        procedureName: String,
+        position: String,
+        anaesthesiaType: String
+    ) async throws -> OperativeTechniqueResult {
+        let system = """
+        You are a consultant surgical registrar generating an operative note template for Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+        Generate realistic, evidence-based operative note content. British spelling.
+        The content MUST be marked as [AI DRAFT — REVIEW BEFORE SIGNING] so the surgeon knows to verify and edit it.
+        Never fabricate intraoperative findings — use realistic expected findings for the stated indication.
+        """
+        let dx = patient.workingDiagnosis ?? patient.chiefComplaint ?? "unspecified"
+        let user = """
+        Generate an operative note for the following case. Return ONLY a JSON object with these exact keys:
+        {
+          "indication": "brief clinical indication for the procedure",
+          "findingsIntraoperative": "expected intraoperative findings for this diagnosis/procedure",
+          "incision": "incision type and location",
+          "procedureDescription": "detailed step-by-step operative technique (8-15 numbered steps)",
+          "closure": "layer-by-layer closure technique",
+          "postOpOrders": "standard post-operative orders and patient instructions"
+        }
+
+        Procedure: \(procedureName)
+        Diagnosis / indication: \(dx)
+        Patient: \(patient.ageYears)y \(patient.sex.rawValue)
+        Position: \(position)
+        Anaesthesia: \(anaesthesiaType)
+        Additional context: \(clinicalContext(patient))
+
+        Each field should be 1-5 concise sentences or numbered steps. Mark each value with [AI DRAFT — REVIEW BEFORE SIGNING] at the end.
+        """
+        let raw = try await generate(systemPrompt: system, userMessage: user)
+        if let start = raw.firstIndex(of: "{"), let end = raw.lastIndex(of: "}") {
+            let jsonStr = String(raw[start...end])
+            if let data = jsonStr.data(using: .utf8),
+               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: String] {
+                return OperativeTechniqueResult(
+                    indication:              obj["indication"]              ?? "",
+                    findingsIntraoperative:  obj["findingsIntraoperative"]  ?? "",
+                    incision:                obj["incision"]                ?? "",
+                    procedureDescription:    obj["procedureDescription"]    ?? "",
+                    closure:                 obj["closure"]                 ?? "",
+                    postOpOrders:            obj["postOpOrders"]            ?? ""
+                )
+            }
+        }
+        return OperativeTechniqueResult(indication: raw, findingsIntraoperative: "", incision: "", procedureDescription: "", closure: "", postOpOrders: "")
+    }
+
+    // MARK: - Endoscopy report auto-generation
+
+    struct EndoscopyReportResult {
+        var oesophagusNotes: String
+        var stomachNotes: String
+        var duodenumNotes: String
+        var impression: String
+        var recommendations: String
+    }
+
+    func generateOGDReport(
+        patient: Patient,
+        indications: [String],
+        indicationOther: String
+    ) async throws -> EndoscopyReportResult {
+        let system = """
+        You are a consultant endoscopist generating an OGD (upper GI endoscopy) report for Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon, Amise Medical Services, Saint Lucia.
+        Generate realistic endoscopy findings. British spelling. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
+        Never invent specific measurements or pathology beyond what is typical for the stated indication.
+        """
+        let indicationList = (indications + (indicationOther.isEmpty ? [] : [indicationOther])).joined(separator: ", ")
+        let dx = patient.workingDiagnosis ?? patient.chiefComplaint ?? "unspecified"
+        let user = """
+        Generate OGD report findings. Return ONLY a JSON object with these exact keys:
+        {
+          "oesophagusNotes": "oesophagus macroscopic description",
+          "stomachNotes": "stomach macroscopic description",
+          "duodenumNotes": "duodenum macroscopic description",
+          "impression": "2-4 sentence endoscopic impression",
+          "recommendations": "management recommendations and follow-up plan"
+        }
+
+        Indication(s): \(indicationList)
+        Working diagnosis: \(dx)
+        Patient: \(patient.ageYears)y \(patient.sex.rawValue)
+        Context: \(clinicalContext(patient))
+
+        Base the findings on what would realistically be seen for these indications. Mark each value with [AI DRAFT — REVIEW BEFORE SIGNING].
+        """
+        let raw = try await generate(systemPrompt: system, userMessage: user)
+        if let start = raw.firstIndex(of: "{"), let end = raw.lastIndex(of: "}") {
+            let jsonStr = String(raw[start...end])
+            if let data = jsonStr.data(using: .utf8),
+               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: String] {
+                return EndoscopyReportResult(
+                    oesophagusNotes: obj["oesophagusNotes"] ?? "",
+                    stomachNotes:    obj["stomachNotes"]    ?? "",
+                    duodenumNotes:   obj["duodenumNotes"]   ?? "",
+                    impression:      obj["impression"]      ?? "",
+                    recommendations: obj["recommendations"] ?? ""
+                )
+            }
+        }
+        return EndoscopyReportResult(oesophagusNotes: "", stomachNotes: "", duodenumNotes: "", impression: raw, recommendations: "")
+    }
+
+    struct ERCPReportResult {
+        var impression: String
+        var recommendations: String
+    }
+
+    func generateERCPReport(
+        patient: Patient,
+        indications: [String],
+        indicationOther: String
+    ) async throws -> ERCPReportResult {
+        let system = """
+        You are a consultant endoscopist generating an ERCP report for Dr Dawit Daniel Kabiye MD DM, consultant general and endoscopic surgeon / interventional endoscopist, Amise Medical Services, Saint Lucia.
+        Generate realistic, evidence-based ERCP report content. British spelling. Mark as [AI DRAFT — REVIEW BEFORE SIGNING].
+        """
+        let indicationList = (indications + (indicationOther.isEmpty ? [] : [indicationOther])).joined(separator: ", ")
+        let dx = patient.workingDiagnosis ?? patient.chiefComplaint ?? "unspecified"
+        let user = """
+        Generate ERCP report impression and recommendations. Return ONLY a JSON object:
+        {
+          "impression": "2-4 sentence ERCP impression based on the indication and working diagnosis",
+          "recommendations": "post-ERCP management recommendations, follow-up plan, and PEP monitoring"
+        }
+
+        Indication(s): \(indicationList)
+        Working diagnosis: \(dx)
+        Patient: \(patient.ageYears)y \(patient.sex.rawValue)
+        Context: \(clinicalContext(patient))
+
+        Mark each value with [AI DRAFT — REVIEW BEFORE SIGNING].
+        """
+        let raw = try await generate(systemPrompt: system, userMessage: user)
+        if let start = raw.firstIndex(of: "{"), let end = raw.lastIndex(of: "}") {
+            let jsonStr = String(raw[start...end])
+            if let data = jsonStr.data(using: .utf8),
+               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: String] {
+                return ERCPReportResult(
+                    impression:      obj["impression"]      ?? "",
+                    recommendations: obj["recommendations"] ?? ""
+                )
+            }
+        }
+        return ERCPReportResult(impression: raw, recommendations: "")
+    }
+
     // MARK: - Diagnosis-driven plan auto-draft
 
     func draftDiagnosisPlan(patient: Patient) async throws -> String {

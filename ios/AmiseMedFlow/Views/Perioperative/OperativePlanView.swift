@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import EventKit
 
 struct OperativePlanView: View {
     @Bindable var patient: Patient
@@ -67,6 +68,15 @@ private struct PlanForm: View {
     @Binding var aiError: String?
     let context: ModelContext
 
+    @StateObject private var calSvc = CalendarService()
+    @State private var bookingDate = Date().addingTimeInterval(86400)  // default: tomorrow
+    @State private var bookingDurationMins: Double = 90
+    @State private var bookingNotes = ""
+    @State private var bookingCalendar: EKCalendar? = nil
+    @State private var isBooking = false
+    @State private var bookingMessage: String? = nil
+    @State private var bookingSuccess = false
+
     private var radiationConsentCategory: String? {
         guard let dx = patient.workingDiagnosis else { return nil }
         return DiagnosisRadiationEngine.radiate(
@@ -106,6 +116,7 @@ private struct PlanForm: View {
     var body: some View {
         List {
             consentSection
+            theatreBookingSection
             anaesthesiaSection
             whoSignIn
             whoTimeOut
@@ -113,6 +124,138 @@ private struct PlanForm: View {
             progressSection
             teamSection
             aiSection
+        }
+    }
+
+    // MARK: - Theatre / procedure booking
+
+    @ViewBuilder
+    private var theatreBookingSection: some View {
+        Section {
+            // Procedure field (mirrors consent, editable here)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("PROCEDURE").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                Text(plan.consentProcedure.isEmpty ? "Set procedure in Consent section" : plan.consentProcedure)
+                    .font(.callout)
+                    .foregroundStyle(plan.consentProcedure.isEmpty ? .tertiary : .primary)
+            }
+
+            // Patient
+            VStack(alignment: .leading, spacing: 4) {
+                Text("PATIENT").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                Text(patient.fullName)
+                    .font(.callout)
+            }
+
+            // Date & time
+            DatePicker("Date & time", selection: $bookingDate, in: Date()...)
+                .datePickerStyle(.compact)
+                .font(.callout)
+
+            // Duration
+            VStack(alignment: .leading, spacing: 8) {
+                Text("ESTIMATED DURATION").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach([30, 60, 90, 120, 150, 180, 240], id: \.self) { mins in
+                            let label = mins < 60 ? "\(mins) min" : (mins % 60 == 0 ? "\(mins/60)h" : "\(mins/60)h \(mins%60)m")
+                            let sel = Int(bookingDurationMins) == mins
+                            Button(label) { bookingDurationMins = Double(mins) }
+                                .font(.caption2.weight(sel ? .semibold : .regular))
+                                .padding(.horizontal, 8).padding(.vertical, 3)
+                                .background(sel ? AMColor.accent : AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(sel ? Color.white : AMColor.accent)
+                                .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+
+            // Theatre notes
+            ZStack(alignment: .topLeading) {
+                TextEditor(text: $bookingNotes)
+                    .frame(minHeight: 60)
+                    .font(.callout)
+                if bookingNotes.isEmpty {
+                    Text("Special instructions, equipment, implants…")
+                        .foregroundStyle(.tertiary).font(.caption)
+                        .padding(.top, 8).padding(.leading, 4)
+                        .allowsHitTesting(false)
+                }
+            }
+
+            // Feedback
+            if let msg = bookingMessage {
+                HStack(spacing: 8) {
+                    Image(systemName: bookingSuccess ? "checkmark.circle.fill" : "xmark.circle.fill")
+                        .foregroundStyle(bookingSuccess ? .green : .red)
+                    Text(msg)
+                        .font(.caption)
+                        .foregroundStyle(bookingSuccess ? .green : .red)
+                }
+            }
+
+            // Book button
+            Button {
+                Task { await requestBooking() }
+            } label: {
+                HStack(spacing: 8) {
+                    if isBooking {
+                        ProgressView().scaleEffect(0.8)
+                    } else {
+                        Image(systemName: "calendar.badge.plus")
+                    }
+                    Text(isBooking ? "Booking…" : "Add to iOS Calendar")
+                        .font(.callout.weight(.semibold))
+                    Spacer()
+                    let dur = Int(bookingDurationMins)
+                    let label = dur < 60 ? "\(dur) min" : (dur % 60 == 0 ? "\(dur/60)h" : "\(dur/60)h \(dur%60)m")
+                    Text(label)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .foregroundStyle(plan.consentProcedure.isEmpty || isBooking ? Color.secondary : AMColor.accent)
+            .disabled(plan.consentProcedure.isEmpty || isBooking)
+            .buttonStyle(.plain)
+        } header: {
+            Label("Theatre / Procedure Booking", systemImage: "calendar.badge.plus")
+        } footer: {
+            Text("Creates an event in your iOS Calendar (synced to Google Calendar if connected).")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
+    }
+
+    private func requestBooking() async {
+        isBooking = true
+        bookingMessage = nil
+        defer { isBooking = false }
+
+        let notes = [
+            "Patient: \(patient.fullName)",
+            patient.ageYears > 0 ? "Age: \(patient.ageYears) yrs · \(patient.sex.rawValue)" : nil,
+            patient.mrn.flatMap { $0.isEmpty ? nil : "MRN: \($0)" },
+            plan.anaesthesiaType.isEmpty ? nil : "Anaesthesia: \(plan.anaesthesiaType)",
+            plan.antibioticProphylaxis.isEmpty ? nil : "Abx: \(plan.antibioticProphylaxis)",
+            plan.specialEquipment.isEmpty ? nil : "Equipment: \(plan.specialEquipment)",
+            bookingNotes.isEmpty ? nil : bookingNotes,
+        ].compactMap { $0 }.joined(separator: "\n")
+
+        do {
+            try await calSvc.createTheatreBooking(
+                procedure: plan.consentProcedure,
+                patientName: patient.fullName,
+                date: bookingDate,
+                duration: bookingDurationMins * 60,
+                notes: notes,
+                calendar: bookingCalendar
+            )
+            bookingSuccess = true
+            bookingMessage = "Booking added to iOS Calendar for \(bookingDate.formatted(date: .abbreviated, time: .shortened))"
+        } catch {
+            bookingSuccess = false
+            bookingMessage = error.localizedDescription
         }
     }
 
@@ -181,6 +324,22 @@ private struct PlanForm: View {
                     }
                 }
             }
+            Picker("ASA Class", selection: Binding<Int>(
+                get: { patient.asaClass ?? 0 },
+                set: {
+                    patient.asaClass = $0 == 0 ? nil : $0
+                    patient.updatedAt = .now
+                    patient.pendingSync = true
+                }
+            )) {
+                Text("Not set").tag(0)
+                Text("ASA I — Healthy").tag(1)
+                Text("ASA II — Mild systemic disease").tag(2)
+                Text("ASA III — Severe systemic disease").tag(3)
+                Text("ASA IV — Life-threatening disease").tag(4)
+                Text("ASA V — Moribund").tag(5)
+            }
+
             Picker("Anaesthesia type", selection: $plan.anaesthesiaType) {
                 ForEach(["General", "Spinal", "Epidural", "Local + Sedation", "Local only", "Regional"], id: \.self) { Text($0).tag($0) }
             }
