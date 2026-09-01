@@ -18,9 +18,9 @@ fi
 
 # Method 2: from provisioning profiles on this Mac
 if [ -z "$TEAM_ID" ]; then
-    PROFILE_DIR=~/Library/MobileDevice/Provisioning\ Profiles
-    for profile in "$PROFILE_DIR"/*.mobileprovision 2>/dev/null; do
-        [ -f "$profile" ] || continue
+    PROFILE_DIR="${HOME}/Library/MobileDevice/Provisioning Profiles"
+    for profile in "$PROFILE_DIR"/*.mobileprovision; do
+        [ -f "$profile" ] || continue  # skip glob no-match
         T=$(security cms -D -i "$profile" 2>/dev/null | python3 -c "
 import sys, plistlib
 try:
