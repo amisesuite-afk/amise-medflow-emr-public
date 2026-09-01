@@ -70,14 +70,17 @@ if command -v xcodegen &>/dev/null; then
 
     # Patch DEVELOPMENT_TEAM into the generated pbxproj so Xcode's
     # Signing & Capabilities dropdown shows the team without manual selection.
-    # (Xcode reads the dropdown value from pbxproj, not from xcconfig.)
+    # Xcode reads the dropdown from the project-level `attributes` dict AND
+    # the per-config buildSettings — both must carry the team ID.
     PBXPROJ="$SCRIPT_DIR/AmiseMedFlow.xcodeproj/project.pbxproj"
     if [ -f "$PBXPROJ" ]; then
-        # Replace every DEVELOPMENT_TEAM = ""; line with the real team ID
+        # 1. Patch build settings (quoted empty string form and bare form)
         sed -i '' "s/DEVELOPMENT_TEAM = \"\";/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ"
-        # Also patch any pre-existing team lines in case xcodegen wrote a different value
-        sed -i '' "s/DEVELOPMENT_TEAM = [A-Z0-9]*;/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ"
-        echo "==> Patched DEVELOPMENT_TEAM = $TEAM_ID into project.pbxproj"
+        sed -i '' "s/DEVELOPMENT_TEAM = [A-Z0-9][A-Z0-9]*;/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ"
+        # 2. Patch project-level attributes dict — this is what the Xcode UI dropdown reads
+        #    Pattern: DEVELOPMENT_TEAM = ""; inside the attributes = { ... }; block
+        sed -i '' '/attributes = {/,/};/{s/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = '"$TEAM_ID"';/g}' "$PBXPROJ"
+        echo "==> Patched DEVELOPMENT_TEAM = $TEAM_ID into project.pbxproj (build settings + attributes)"
     fi
     echo "==> Project regenerated with team $TEAM_ID"
 else
