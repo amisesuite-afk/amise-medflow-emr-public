@@ -593,7 +593,7 @@ struct ConsultationView: View {
         }
         .padding(.horizontal, 16).padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.red.opacity(0.85) as Color)
+        .background { Color.red.opacity(0.85) }
     }
 
     // MARK: - Clinical alarm banner
@@ -644,8 +644,8 @@ struct ConsultationView: View {
                     .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 14).padding(.vertical, 9)
-                .background(alarmBannerColor(isEmergency: isEmergency))
-                if alarm.id != alarms.last?.id { Divider().background(Color.white.opacity(0.3) as Color) }
+                .background { alarmBannerColor(isEmergency: isEmergency) }
+                if alarm.id != alarms.last?.id { Divider().background { Color.white.opacity(0.3) } }
             }
         }
         .transition(.move(edge: .top).combined(with: .opacity))
