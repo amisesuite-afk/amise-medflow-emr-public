@@ -640,7 +640,9 @@ struct ConsultationView: View {
                     .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 14).padding(.vertical, 9)
-                .background((isEmergency ? Color.red.opacity(0.92) : Color.orange.opacity(0.88)) as Color)
+                .background {
+                    if isEmergency { Color.red.opacity(0.92) } else { Color.orange.opacity(0.88) }
+                }
                 if alarm.id != alarms.last?.id { Divider().background(Color.white.opacity(0.3)) }
             }
         }
