@@ -11,39 +11,64 @@ struct VitalsHistoryView: View {
     }
 
     var body: some View {
-        List {
-            if sortedEntries.isEmpty {
-                ContentUnavailableView(
-                    "No vitals recorded",
-                    systemImage: "waveform.path.ecg",
-                    description: Text("Tap + to record the first set of vitals.")
-                )
-                .listRowBackground(Color.clear)
-            } else {
-                if sortedEntries.filter({ $0.hasAnyValue }).count >= 2 {
-                    NEWS2Sparkline(entries: sortedEntries)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                    VitalsMultiSparkline(entries: sortedEntries)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 8, trailing: 16))
-                }
-
-                ForEach(sortedEntries) { entry in
-                    VitalsRow(entry: entry)
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                context.delete(entry)
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
+        ZStack(alignment: .bottomTrailing) {
+            List {
+                if sortedEntries.isEmpty {
+                    VStack(spacing: 20) {
+                        Image(systemName: "waveform.path.ecg")
+                            .font(.system(size: 52))
+                            .foregroundStyle(.secondary.opacity(0.5))
+                        Text("No vitals recorded")
+                            .font(.title3.weight(.semibold))
+                        Button { showEntry = true } label: {
+                            Label("Record Vitals", systemImage: "plus")
+                                .font(.subheadline.weight(.semibold))
+                                .padding(.horizontal, 22)
+                                .padding(.vertical, 11)
+                                .background(AMColor.accent, in: Capsule())
+                                .foregroundStyle(.white)
                         }
+                        .buttonStyle(.plain)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 60)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                } else {
+                    if sortedEntries.filter({ $0.hasAnyValue }).count >= 2 {
+                        NEWS2Sparkline(entries: sortedEntries)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        VitalsMultiSparkline(entries: sortedEntries)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 8, trailing: 16))
+                    }
+
+                    ForEach(sortedEntries) { entry in
+                        VitalsRow(entry: entry)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    context.delete(entry)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                    }
                 }
             }
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button { showEntry = true } label: { Image(systemName: "plus") }
+
+            if !sortedEntries.isEmpty {
+                Button { showEntry = true } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 56, height: 56)
+                        .background(AMColor.accent, in: Circle())
+                        .shadow(color: AMColor.accent.opacity(0.4), radius: 8, y: 4)
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, 20)
+                .padding(.bottom, 24)
             }
         }
         .sheet(isPresented: $showEntry) {
