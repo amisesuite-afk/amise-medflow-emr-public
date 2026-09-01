@@ -634,7 +634,7 @@ struct ConsultationView: View {
             Spacer()
             Button {
                 withAnimation(.easeOut(duration: 0.15)) {
-                    dismissedAlarmIds.insert(alarm.id)
+                    _ = dismissedAlarmIds.insert(alarm.id)
                 }
             } label: {
                 Image(systemName: "xmark")
