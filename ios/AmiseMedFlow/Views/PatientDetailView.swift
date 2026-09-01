@@ -119,10 +119,13 @@ struct PatientDetailPadView: View {
     @State private var selectedSection: PatientDetailSection? = .overview
     @State private var summaryPDFData: Data? = nil
     @State private var showSummaryEditor = false
+    @EnvironmentObject private var sync: SyncService
 
-    // Clinical sections — core always visible; procedure forms appear when visit type matches
+    // Clinical sections — filtered by role and visit type
     private var rightSections: [PatientDetailSection] {
+        let allowed = sync.currentUserRole.visiblePatientSections
         let sections = PatientDetailSection.allCases.filter { section in
+            guard allowed.contains(section) else { return false }
             switch section {
             case .trauma:  return patient.visitType == .trauma
             case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
@@ -160,6 +163,12 @@ struct PatientDetailPadView: View {
         }
         .sheet(isPresented: $showSummaryEditor) {
             PatientSummaryEditorView(patient: patient)
+        }
+        .onAppear {
+            // If the saved selection is not visible for this role, reset to the first allowed section
+            if let sel = selectedSection, !rightSections.contains(sel) {
+                selectedSection = rightSections.first
+            }
         }
     }
 

@@ -11,6 +11,7 @@ final class SyncService: ObservableObject {
     @Published var pendingCount: Int = 0
     @Published var lastSyncedAt: Date?
     @Published var currentUserEmail: String?
+    @Published var currentUserRole: UserRole = .frontDesk
     @Published var isSyncing: Bool = false
     @Published var syncError: String?
 
@@ -60,6 +61,7 @@ final class SyncService: ObservableObject {
         do {
             let session = try await SupabaseConfig.client.auth.session
             currentUserEmail = session.user.email
+            await fetchUserRole(userId: session.user.id)
         } catch {
             currentUserEmail = nil
         }
@@ -68,12 +70,34 @@ final class SyncService: ObservableObject {
     func signIn(email: String, password: String) async throws {
         let session = try await SupabaseConfig.client.auth.signIn(email: email, password: password)
         currentUserEmail = session.user.email
+        await fetchUserRole(userId: session.user.id)
         await syncIfAuthenticated()
     }
 
     func signOut() async throws {
         try await SupabaseConfig.client.auth.signOut()
         currentUserEmail = nil
+        currentUserRole = .frontDesk
+    }
+
+    private func fetchUserRole(userId: UUID) async {
+        struct ProfileRow: Decodable { let role: String? }
+        do {
+            let rows: [ProfileRow] = try await SupabaseConfig.client
+                .from("user_profiles")
+                .select("role")
+                .eq("id", value: userId.uuidString)
+                .limit(1)
+                .execute()
+                .value
+            if let raw = rows.first?.role, let role = UserRole(rawValue: raw) {
+                currentUserRole = role
+            } else {
+                currentUserRole = .frontDesk
+            }
+        } catch {
+            currentUserRole = .frontDesk
+        }
     }
 
     var isSignedIn: Bool { currentUserEmail != nil }

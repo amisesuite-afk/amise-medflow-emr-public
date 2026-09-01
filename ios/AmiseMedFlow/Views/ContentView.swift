@@ -317,7 +317,12 @@ struct ContentView: View {
     var body: some View {
         Group {
             if isPad {
-                RegularRootView()
+                switch sync.currentUserRole {
+                case .frontDesk:
+                    FrontDeskPadView()
+                default:
+                    RegularRootView()
+                }
             } else {
                 CompactRootView()
             }
