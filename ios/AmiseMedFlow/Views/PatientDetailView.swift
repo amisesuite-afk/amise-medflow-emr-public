@@ -1216,14 +1216,14 @@ struct PatientDetailView: View {
                         }
                     }
                 }
-                ToolbarItem(placement: .primaryAction) {
-                    HStack {
-                        ShareLink(item: patient.handoverText,
-                                  subject: Text("Patient Handover — \(patient.fullName)"),
-                                  message: Text(patient.handoverText)) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        Button("Done") { dismiss() }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    ShareLink(item: patient.handoverText,
+                              subject: Text("Patient Handover — \(patient.fullName)"),
+                              message: Text(patient.handoverText)) {
+                        Image(systemName: "square.and.arrow.up")
                     }
                 }
             }
