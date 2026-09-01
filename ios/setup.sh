@@ -12,7 +12,7 @@ TEAM_ID=""
 
 # Method 1: from project.pbxproj after user has selected team in Xcode
 if [ -f "$PBXPROJ" ]; then
-    TEAM_ID=$(grep 'DEVELOPMENT_TEAM = ' "$PBXPROJ" | grep -v '= "";' | grep -oE '[A-Z0-9]{10}' | head -1)
+    TEAM_ID=$(grep 'DEVELOPMENT_TEAM = ' "$PBXPROJ" | grep -v '= "";' | grep -oE '[A-Z0-9]{10}' | head -1 || true)
     [ -n "$TEAM_ID" ] && echo "Found from project.pbxproj: $TEAM_ID"
 fi
 
@@ -41,7 +41,7 @@ fi
 if [ -z "$TEAM_ID" ]; then
     TEAM_ID=$(security find-identity -v -p codesigning 2>/dev/null \
         | grep "Apple Development" | head -1 \
-        | grep -oE '\([A-Z0-9]+\)' | tr -d '()')
+        | grep -oE '\([A-Z0-9]+\)' | tr -d '()' || true)
     [ -n "$TEAM_ID" ] && echo "Found from certificate: $TEAM_ID"
 fi
 
