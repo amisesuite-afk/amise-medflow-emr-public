@@ -260,6 +260,34 @@ let familyHistoryChips: [String] = [
     "Familial hypercholesterolaemia", "AAA", "IBD", "BRCA1/BRCA2 mutation",
 ]
 
+// MARK: - PMH → common medication deterministic map
+// Drug names must match ClinicalSearchService.searchDrugs() entries exactly.
+let pmhToCommonMeds: [String: [String]] = [
+    "Hypertension":              ["Amlodipine", "Lisinopril", "Atenolol", "Hydrochlorothiazide", "Ramipril"],
+    "T2DM":                      ["Metformin", "Gliclazide", "Sitagliptin", "Empagliflozin", "Insulin glargine"],
+    "T1DM":                      ["Insulin glargine", "Insulin aspart", "Metformin"],
+    "Ischaemic heart disease":   ["Aspirin", "Atorvastatin", "Bisoprolol", "GTN spray", "Clopidogrel"],
+    "Atrial fibrillation":       ["Apixaban", "Warfarin", "Bisoprolol", "Digoxin", "Rivaroxaban"],
+    "Heart failure":             ["Furosemide", "Spironolactone", "Ramipril", "Bisoprolol", "Eplerenone"],
+    "Stroke / TIA":              ["Aspirin", "Clopidogrel", "Atorvastatin", "Ramipril"],
+    "CKD":                       ["Furosemide", "Amlodipine", "Calcium carbonate", "Alfacalcidol", "Erythropoietin"],
+    "COPD":                      ["Salbutamol", "Tiotropium", "Salmeterol", "Prednisolone", "Ipratropium"],
+    "Asthma":                    ["Salbutamol", "Beclomethasone inhaler", "Montelukast", "Prednisolone"],
+    "Liver disease / Cirrhosis": ["Spironolactone", "Furosemide", "Lactulose", "Rifaximin", "Propranolol"],
+    "Peptic ulcer disease":      ["Omeprazole", "Amoxicillin", "Clarithromycin", "Metronidazole"],
+    "GORD / Reflux":             ["Omeprazole", "Lansoprazole", "Ranitidine", "Gaviscon"],
+    "IBD (Crohn's / UC)":        ["Mesalazine", "Prednisolone", "Azathioprine", "Budesonide"],
+    "Malignancy":                ["Dexamethasone", "Ondansetron", "Morphine", "Omeprazole"],
+    "Thyroid disease":           ["Levothyroxine", "Carbimazole", "Propranolol"],
+    "DVT / PE":                  ["Apixaban", "Rivaroxaban", "Warfarin", "Enoxaparin"],
+    "Anaemia":                   ["Ferrous sulfate", "Folic acid", "Hydroxocobalamin"],
+    "Epilepsy":                  ["Levetiracetam", "Sodium valproate", "Carbamazepine", "Lamotrigine"],
+    "Depression / Anxiety":      ["Sertraline", "Fluoxetine", "Amitriptyline", "Diazepam"],
+    "Rheumatoid arthritis":      ["Methotrexate", "Hydroxychloroquine", "Prednisolone", "Naproxen"],
+    "Osteoporosis":              ["Alendronate", "Calcium carbonate", "Colecalciferol", "Denosumab"],
+    "Immunocompromised":         ["Trimethoprim", "Fluconazole", "Aciclovir", "Cotrimoxazole"],
+]
+
 // MARK: - Common allergen quick-chip data
 
 struct AllergenChip {
@@ -521,6 +549,28 @@ struct ConsultationView: View {
 
     private var interactions: [DrugInteractionAlert] {
         DrugInteractionService.check(drugs: patient.prescriptions.map { $0.drug })
+    }
+
+    // Deterministic PMH → medication quick-picks.
+    // Unions all selected PMH chips, de-dupes, excludes already-added drugs,
+    // and excludes any drug the patient is allergic to (name match, case-insensitive).
+    private var pmhDerivedMedSuggestions: [String] {
+        let allergyNames = Set(patient.allergies.map { $0.name.lowercased() })
+        let addedNames   = Set(patient.prescriptions.map { $0.drug.lowercased() })
+        var seen = Set<String>()
+        var result: [String] = []
+        for chip in pmhChipSelections {
+            for med in pmhToCommonMeds[chip] ?? [] {
+                let lower = med.lowercased()
+                guard !seen.contains(lower),
+                      !addedNames.contains(lower),
+                      !allergyNames.contains(where: { lower.contains($0) || $0.contains(lower) })
+                else { continue }
+                seen.insert(lower)
+                result.append(med)
+            }
+        }
+        return result
     }
 
     var body: some View {
@@ -1069,6 +1119,43 @@ struct ConsultationView: View {
 
     private var medicationsSection: some View {
         Section {
+            // PMH-derived quick-picks — deterministic, no AI
+            let pmhMeds = pmhDerivedMedSuggestions
+            if !pmhMeds.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("From your PMH — tap to add", systemImage: "cross.case")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(pmhMeds, id: \.self) { name in
+                                Button {
+                                    let match = ClinicalSearchService.searchDrugs(name).first
+                                    if let drug = match {
+                                        medQuery = drug.name
+                                        expandedMed = drug
+                                        medDose = drug.commonDoses
+                                        medRoute = drug.route
+                                        medFreq = "OD"
+                                        medSuggestions = []
+                                    } else {
+                                        addMedicationEntry(name: name, dose: "", route: "Oral", freq: "OD")
+                                    }
+                                } label: {
+                                    Text(name)
+                                        .font(.caption.weight(.medium))
+                                        .padding(.horizontal, 10).padding(.vertical, 5)
+                                        .background(AMColor.accentLt, in: Capsule())
+                                        .foregroundStyle(AMColor.accent)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+
             // Drug search field
             HStack(spacing: 8) {
                 Image(systemName: "pills").foregroundStyle(.secondary)
@@ -1214,20 +1301,8 @@ struct ConsultationView: View {
                 }
             }
 
-            // AI auto-suggest trigger
-            Button {
-                Task { await suggestMedicationsForDiagnosis() }
-            } label: {
-                HStack(spacing: 6) {
-                    if isSuggestingMeds { ProgressView().scaleEffect(0.75) }
-                    else { Image(systemName: "brain") }
-                    Text(isSuggestingMeds ? "Suggesting…" : "AI Suggest Medications")
-                        .font(.callout)
-                }
-                .foregroundStyle(patient.workingDiagnosis == nil ? Color.secondary : AMColor.accent)
-            }
-            .buttonStyle(.plain)
-            .disabled(isSuggestingMeds || patient.workingDiagnosis == nil)
+            // AI Suggest Medications — on hold (HIPAA compliance)
+            // Button hidden; re-enable when clinical AI clearance is in place.
 
             // Current medication list
             if !patient.prescriptions.isEmpty {
