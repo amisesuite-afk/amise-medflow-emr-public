@@ -2,6 +2,34 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 import QuickLook
+import UniformTypeIdentifiers
+
+// MARK: - PDF / file picker wrapper (Files app integration)
+
+private struct FilePicker: UIViewControllerRepresentable {
+    let allowedTypes: [UTType]
+    var onPicked: ([URL]) -> Void
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: allowedTypes, asCopy: true)
+        picker.allowsMultipleSelection = true
+        picker.delegate = context.coordinator
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {}
+
+    class Coordinator: NSObject, UIDocumentPickerDelegate {
+        let parent: FilePicker
+        init(_ parent: FilePicker) { self.parent = parent }
+
+        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+            parent.onPicked(urls)
+        }
+    }
+}
 
 // MARK: - Camera picker wrapper
 
@@ -54,6 +82,8 @@ struct DocumentsView: View {
     @State private var pdfPreviewDoc:   PatientDocument?
     @State private var aiError:         String?
     @State private var showError        = false
+    @State private var showFilePicker   = false
+    @State private var pendingFileCategory = "Lab / Bloods"
 
     private let categories = ["Clinical Notes", "Imaging", "Lab / Bloods", "Pathology", "Referral", "Consent", "Operative", "Other"]
 
@@ -178,6 +208,60 @@ struct DocumentsView: View {
                     Label("Take Photo (Camera)", systemImage: "camera.fill")
                 }
             }
+
+            Button {
+                showFilePicker = true
+            } label: {
+                Label("Import PDF / File", systemImage: "doc.badge.plus")
+            }
+        }
+        .sheet(isPresented: $showFilePicker) {
+            pdfCategoryPicker
+        }
+    }
+
+    // MARK: - PDF / file picker sheet (category selection → Files picker)
+
+    @State private var showDocumentPicker = false
+
+    private var pdfCategoryPicker: some View {
+        NavigationStack {
+            Form {
+                Section("Select category first, then choose the file") {
+                    Picker("Category", selection: $pendingFileCategory) {
+                        ForEach(categories, id: \.self) { Text($0).tag($0) }
+                    }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
+                }
+                Section {
+                    Button {
+                        showDocumentPicker = true
+                    } label: {
+                        Label("Choose File from Files App…", systemImage: "folder.badge.plus")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+            }
+            .navigationTitle("Import File")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { showFilePicker = false }
+                }
+            }
+            .fullScreenCover(isPresented: $showDocumentPicker) {
+                FilePicker(
+                    allowedTypes: [.pdf, .image, .plainText, .data,
+                                   UTType(filenameExtension: "docx") ?? .data,
+                                   UTType(filenameExtension: "xlsx") ?? .data]
+                ) { urls in
+                    Task { await handlePickedFiles(urls, category: pendingFileCategory) }
+                    showDocumentPicker = false
+                    showFilePicker = false
+                }
+                .ignoresSafeArea()
+            }
         }
     }
 
@@ -213,6 +297,29 @@ struct DocumentsView: View {
     }
 
     // MARK: - Handlers
+
+    private func handlePickedFiles(_ urls: [URL], category: String) async {
+        for url in urls {
+            guard url.startAccessingSecurityScopedResource() else { continue }
+            defer { url.stopAccessingSecurityScopedResource() }
+            guard let data = try? Data(contentsOf: url) else { continue }
+            let fileName = url.lastPathComponent
+            let mimeType: String
+            if fileName.lowercased().hasSuffix(".pdf") { mimeType = "application/pdf" }
+            else if fileName.lowercased().hasSuffix(".jpg") || fileName.lowercased().hasSuffix(".jpeg") { mimeType = "image/jpeg" }
+            else if fileName.lowercased().hasSuffix(".png") { mimeType = "image/png" }
+            else { mimeType = "application/octet-stream" }
+            let doc = PatientDocument(fileName: fileName, mimeType: mimeType, category: category)
+            doc.localData = data
+            doc.patient = patient
+            await MainActor.run {
+                context.insert(doc)
+                patient.updatedAt = .now
+                patient.pendingSync = true
+            }
+            await uploadToStorage(doc: doc, data: data)
+        }
+    }
 
     private func handlePickedItems(_ items: [PhotosPickerItem]) async {
         let ts = Date.now.formatted(.dateTime.month(.abbreviated).day().hour().minute())

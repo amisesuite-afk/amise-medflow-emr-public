@@ -174,6 +174,12 @@ struct DiagnosisRadiationCard: View {
                 }
             }
 
+            // Referral suggestions
+            if !radiation.referralSuggestions.isEmpty {
+                referralsSection
+                Divider()
+            }
+
             // Follow-up note
             if !radiation.followUp.isEmpty {
                 HStack(alignment: .top, spacing: 8) {
@@ -399,6 +405,50 @@ struct DiagnosisRadiationCard: View {
         } else {
             Circle().fill(Color.orange.opacity(0.5)).frame(width: 16, height: 16)
         }
+    }
+
+    // MARK: - Referrals
+
+    private var referralsSection: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Label("Referral Suggestions", systemImage: "person.badge.clock.fill")
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.blue)
+            ForEach(radiation.referralSuggestions) { ref in
+                HStack(alignment: .top, spacing: 8) {
+                    urgencyPill(ref.urgency)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(ref.specialty)
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(ref.reason)
+                            .font(.system(size: 10))
+                            .foregroundStyle(.secondary)
+                        if let notes = ref.notes {
+                            Text(notes)
+                                .font(.system(size: 9))
+                                .foregroundStyle(.secondary.opacity(0.7))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func urgencyPill(_ urgency: DiagnosisRadiation.ReferralSuggestion.ReferralUrgency) -> some View {
+        let (bg, fg): (Color, Color) = {
+            switch urgency {
+            case .emergency: return (.red, .white)
+            case .urgent:    return (.orange, .white)
+            case .routine:   return (Color(.systemGray5), .primary)
+            }
+        }()
+        Text(urgency.rawValue)
+            .font(.system(size: 8, weight: .bold))
+            .foregroundStyle(fg)
+            .padding(.horizontal, 5).padding(.vertical, 2)
+            .background(bg, in: Capsule())
+            .fixedSize()
     }
 
     // MARK: - Helpers

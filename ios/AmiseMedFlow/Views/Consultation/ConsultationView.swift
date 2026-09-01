@@ -514,6 +514,8 @@ struct ConsultationView: View {
     @State private var newInvCategory: InvestigationEntry.InvCategory = .blood
     @State private var bayesianDx: [BayesianDiagnosisEngine.DiagnosisResult] = []
     @State private var dismissedRadiation = false
+    @State private var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
+    @State private var dismissedAlarmIds: Set<UUID> = []
 
     enum ExamMode { case short, full }
 
@@ -524,6 +526,9 @@ struct ConsultationView: View {
     var body: some View {
         VStack(spacing: 0) {
             if !patient.allergies.isEmpty { allergyBanner }
+            // Clinical alarm banner — fires from free text parsing
+            let activeAlarms = clinicalAlarms.filter { !dismissedAlarmIds.contains($0.id) }
+            if !activeAlarms.isEmpty { clinicalAlarmBanner(activeAlarms) }
             if !embeddedInNav {
                 completenessBar
                 tabBar
@@ -549,9 +554,12 @@ struct ConsultationView: View {
             pathwayTask = Task {
                 try? await Task.sleep(nanoseconds: 800_000_000)
                 guard !Task.isCancelled else { return }
-                await MainActor.run { runPathway() }
+                await MainActor.run { runPathway(); refreshBayesian() }
             }
         }
+        .onChange(of: patient.hpi) { _, _ in refreshBayesian() }
+        .onChange(of: patient.examGeneral) { _, _ in refreshBayesian() }
+        .onChange(of: patient.examAbdo) { _, _ in refreshBayesian() }
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
         .sheet(isPresented: $showAddMedication) {
             AddMedicationSheet(patient: patient, context: context)
@@ -585,6 +593,58 @@ struct ConsultationView: View {
         .padding(.horizontal, 16).padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.red.opacity(0.85))
+    }
+
+    // MARK: - Clinical alarm banner
+
+    @ViewBuilder
+    private func clinicalAlarmBanner(_ alarms: [ClinicalTextParser.ClinicalAlarm]) -> some View {
+        VStack(spacing: 0) {
+            ForEach(alarms) { alarm in
+                let isEmergency = alarm.severity == .emergency
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: alarm.systemImage)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(.white)
+                        .frame(width: 18)
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 6) {
+                            Text(alarm.title)
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(.white)
+                            Text(isEmergency ? "EMERGENCY" : "CRITICAL")
+                                .font(.system(size: 9, weight: .black))
+                                .foregroundStyle(isEmergency ? .red : .orange)
+                                .padding(.horizontal, 4).padding(.vertical, 1)
+                                .background(Color.white, in: Capsule())
+                        }
+                        Text(alarm.detail)
+                            .font(.system(size: 11))
+                            .foregroundStyle(.white.opacity(0.9))
+                        Text(alarm.action)
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.white.opacity(0.75))
+                            .padding(.top, 1)
+                    }
+                    Spacer()
+                    Button {
+                        withAnimation(.easeOut(duration: 0.15)) {
+                            dismissedAlarmIds.insert(alarm.id)
+                        }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, 14).padding(.vertical, 9)
+                .background(isEmergency ? Color.red.opacity(0.92) : Color.orange.opacity(0.88))
+                if alarm.id != alarms.last?.id { Divider().background(.white.opacity(0.3)) }
+            }
+        }
+        .transition(.move(edge: .top).combined(with: .opacity))
+        .animation(.easeInOut(duration: 0.2), value: alarms.count)
     }
 
     // MARK: - Completeness bar
@@ -1924,11 +1984,33 @@ struct ConsultationView: View {
     }
 
     // MARK: - Bayesian engine refresh
+    // Augments SOCRATES selections with clinical features extracted from free text
+    // (HPI, exam findings, notes) so the engine fires from any typed data, not
+    // only structured chip selections.
 
     private func refreshBayesian() {
+        let parsed = ClinicalTextParser.parse(
+            hpi: patient.hpi,
+            examGeneral: patient.examGeneral,
+            examAbdo: patient.examAbdo,
+            examOther: nil,
+            notes: nil
+        )
+
+        // Merge parser-extracted features into the chip-selection dict
+        var augmented = socratesSelections
+        for (dim, chips) in parsed.featureAugments {
+            augmented[dim, default: []].formUnion(chips)
+        }
+
+        // Offer a CC hint only when no CC is set yet
+        if (patient.chiefComplaint ?? "").isEmpty, let hint = parsed.ccHint {
+            patient.chiefComplaint = hint
+        }
+
         bayesianDx = BayesianDiagnosisEngine.infer(
             chiefComplaint: patient.chiefComplaint,
-            socratesSelections: socratesSelections,
+            socratesSelections: augmented,
             pmhNotes: patient.pmhNotes,
             surgicalHistory: patient.surgicalHistory,
             examAbdo: patient.examAbdo,
@@ -1937,6 +2019,9 @@ struct ConsultationView: View {
             ageYears: patient.ageYears,
             sex: patient.sex
         )
+
+        // Update alarm list (keep dismissed state across refreshes)
+        clinicalAlarms = parsed.clinicalAlarms
     }
 
     // MARK: - Diagnosis tab
