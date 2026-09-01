@@ -585,7 +585,7 @@ struct ConsultationView: View {
                 .foregroundStyle(.white)
             ForEach(patient.allergies) { a in
                 HStack(spacing: 5) {
-                    Circle().fill(Color.white.opacity(0.7)).frame(width: 5, height: 5)
+                    Circle().fill(Color(white: 1, opacity: 0.7)).frame(width: 5, height: 5)
                     Text("\(a.name)  [\(a.severity)]  — \(a.reaction)")
                         .font(.caption2).foregroundStyle(.white)
                 }
@@ -593,10 +593,12 @@ struct ConsultationView: View {
         }
         .padding(.horizontal, 16).padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background { Color.red.opacity(0.85) }
+        .background { allergyBannerBg }
     }
 
     // MARK: - Clinical alarm banner
+
+    private var allergyBannerBg: Color { Color.red.opacity(0.85) }
 
     private func alarmBannerColor(isEmergency: Bool) -> Color {
         isEmergency ? Color.red.opacity(0.92) : Color.orange.opacity(0.88)
@@ -645,7 +647,7 @@ struct ConsultationView: View {
                 }
                 .padding(.horizontal, 14).padding(.vertical, 9)
                 .background { alarmBannerColor(isEmergency: isEmergency) }
-                if alarm.id != alarms.last?.id { Divider().background { Color.white.opacity(0.3) } }
+                if alarm.id != alarms.last?.id { Divider().background { Color(white: 1, opacity: 0.3) } }
             }
         }
         .transition(.move(edge: .top).combined(with: .opacity))
