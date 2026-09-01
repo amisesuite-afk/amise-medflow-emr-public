@@ -118,7 +118,7 @@ private struct FDCheckInView: View {
                 List(selection: $selectedPatient) {
                     if filteredPatients.isEmpty && !searchQuery.isEmpty {
                         VStack(spacing: 12) {
-                            Text("No patient found for "\(searchQuery)"")
+                            Text("No patient found for \"\(searchQuery)\"")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             Button("Register New Patient") { showAddPatient = true }
