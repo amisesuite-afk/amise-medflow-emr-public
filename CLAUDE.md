@@ -284,10 +284,13 @@ narrow the base type to one conformance, it reports "Ambiguous use of 'opacity'"
   `ShapeStyle` context (not from `Color`), making `.opacity()` unambiguous.
 - `Color.red.opacity(0.15)` in `.background(_ style: ShapeStyle, in: Shape)` — the two-argument
   form uniquely matches the `ShapeStyle` + `Shape` overload.
-- `.background { Color.red.opacity(0.85) }` closure form — the `@ViewBuilder` closure uses
-  the unambiguous `View` content overload; `View.opacity -> some View` resolves cleanly there.
-- A private helper with explicit `-> Color` return type for the value, then
-  `.background { helperFunc() }` closure for the modifier.
+- `Color(white: 1, opacity: 0.3)` or `Color(red:green:blue:opacity:)` initializer — avoids
+  calling `.opacity()` on `Color` entirely; no ambiguity possible.
+- A private helper/property with explicit `-> Color` return type: `private var bg: Color { Color.red.opacity(0.85) }`.
+  The `-> Color` annotation forces the compiler to use `Color.opacity()->Color`, unambiguous.
+  Use it as `.background { bg }` in call sites.
+- `.background { Color.red.opacity(0.85) }` closure form MAY still be ambiguous in some Xcode
+  versions even with `@ViewBuilder` — prefer the two patterns above when you get cascades.
 
 **Fix strategy for `.background(Color.X.opacity(...))`:**
 Use the `@ViewBuilder` closure form instead of passing the color directly:
