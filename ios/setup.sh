@@ -78,8 +78,21 @@ if command -v xcodegen &>/dev/null; then
         sed -i '' "s/DEVELOPMENT_TEAM = \"\";/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ"
         sed -i '' "s/DEVELOPMENT_TEAM = [A-Z0-9][A-Z0-9]*;/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ"
         # 2. Patch project-level attributes dict — this is what the Xcode UI dropdown reads
-        #    Pattern: DEVELOPMENT_TEAM = ""; inside the attributes = { ... }; block
-        sed -i '' '/attributes = {/,/};/{s/DEVELOPMENT_TEAM = "";/DEVELOPMENT_TEAM = '"$TEAM_ID"';/g}' "$PBXPROJ"
+        #    BSD sed on macOS can't handle range + block syntax; use python3 instead.
+        python3 - "$PBXPROJ" "$TEAM_ID" << 'PYEOF'
+import sys, re
+path, team_id = sys.argv[1], sys.argv[2]
+with open(path, 'r') as f:
+    content = f.read()
+# Replace DEVELOPMENT_TEAM = ""; inside the attributes = { ... } block
+content = re.sub(
+    r'(attributes\s*=\s*\{(?:[^{}]|\{[^{}]*\})*?)DEVELOPMENT_TEAM\s*=\s*"";',
+    lambda m: m.group(1) + f'DEVELOPMENT_TEAM = {team_id};',
+    content, flags=re.DOTALL
+)
+with open(path, 'w') as f:
+    f.write(content)
+PYEOF
         echo "==> Patched DEVELOPMENT_TEAM = $TEAM_ID into project.pbxproj (build settings + attributes)"
     fi
     echo "==> Project regenerated with team $TEAM_ID"
