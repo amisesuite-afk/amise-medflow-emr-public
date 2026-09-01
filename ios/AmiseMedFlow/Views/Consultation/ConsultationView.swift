@@ -585,7 +585,7 @@ struct ConsultationView: View {
                 .foregroundStyle(.white)
             ForEach(patient.allergies) { a in
                 HStack(spacing: 5) {
-                    Circle().fill(.white.opacity(0.7)).frame(width: 5, height: 5)
+                    Circle().fill(Color.white.opacity(0.7)).frame(width: 5, height: 5)
                     Text("\(a.name)  [\(a.severity)]  — \(a.reaction)")
                         .font(.caption2).foregroundStyle(.white)
                 }
@@ -621,10 +621,10 @@ struct ConsultationView: View {
                         }
                         Text(alarm.detail)
                             .font(.system(size: 11))
-                            .foregroundStyle(.white.opacity(0.9))
+                            .foregroundStyle(Color.white.opacity(0.9))
                         Text(alarm.action)
                             .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.75))
+                            .foregroundStyle(Color.white.opacity(0.75))
                             .padding(.top, 1)
                     }
                     Spacer()
@@ -635,13 +635,13 @@ struct ConsultationView: View {
                     } label: {
                         Image(systemName: "xmark")
                             .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(.white.opacity(0.7))
+                            .foregroundStyle(Color.white.opacity(0.7))
                     }
                     .buttonStyle(.plain)
                 }
                 .padding(.horizontal, 14).padding(.vertical, 9)
                 .background(isEmergency ? Color.red.opacity(0.92) : Color.orange.opacity(0.88))
-                if alarm.id != alarms.last?.id { Divider().background(.white.opacity(0.3)) }
+                if alarm.id != alarms.last?.id { Divider().background(Color.white.opacity(0.3)) }
             }
         }
         .transition(.move(edge: .top).combined(with: .opacity))
