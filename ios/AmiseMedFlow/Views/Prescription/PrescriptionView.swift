@@ -6,6 +6,7 @@ struct PrescriptionView: View {
     @Environment(\.modelContext) private var context
     @State private var showAddSheet = false
     @State private var radiationExpanded = false
+    @State private var dosingExpanded = false
 
     private var interactions: [DrugInteractionAlert] {
         let names = patient.prescriptions.map { $0.drug }
@@ -29,6 +30,11 @@ struct PrescriptionView: View {
 
                 if let plan = radiationPlan {
                     radiationPlanSection(plan)
+                }
+
+                if let dx = patient.workingDiagnosis {
+                    let dosing = DiagnosisDosingGuide.lookup(diagnosis: dx)
+                    if !dosing.isEmpty { dosingGuideSection(entries: dosing, dx: dx) }
                 }
 
                 prescriptionsSection
@@ -189,6 +195,164 @@ struct PrescriptionView: View {
                 Text(ref).font(.caption2).foregroundStyle(.tertiary)
             }
         }
+    }
+
+    // MARK: - Diagnosis dosing guide
+
+    @ViewBuilder
+    private func dosingGuideSection(entries: [DosingEntry], dx: String) -> some View {
+        let allergyNames = patient.allergies.map { $0.name.lowercased() }
+        let weightKg = patient.vitalsEntries
+            .sorted { $0.recordedAt > $1.recordedAt }
+            .first(where: { $0.weightKg != nil })?.weightKg
+
+        Section {
+            VStack(alignment: .leading, spacing: 0) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) { dosingExpanded.toggle() }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "pills.fill")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.indigo)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text("Dosing Guide")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(.indigo)
+                            Text("\(entries.count) drug\(entries.count == 1 ? "" : "s") for \(dx)")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if let wt = weightKg {
+                            Text(String(format: "%.0f kg", wt))
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 6).padding(.vertical, 2)
+                                .background(Color(.systemGray5), in: Capsule())
+                        }
+                        Image(systemName: dosingExpanded ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                if dosingExpanded {
+                    Divider().padding(.top, 6)
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(entries) { entry in
+                            let isContraindicated = allergyNames.contains(where: { name in
+                                entry.allergyKeywords.contains(where: { name.contains($0) })
+                            })
+                            dosingRow(entry: entry, weightKg: weightKg, contraindicated: isContraindicated)
+                            if entry.id != entries.last?.id {
+                                Divider().padding(.leading, 8)
+                            }
+                        }
+                    }
+                    .padding(.top, 6)
+                }
+            }
+            .padding(.vertical, 2)
+        } header: {
+            Label("Dosing Reference · \(dx)", systemImage: "pills")
+                .foregroundStyle(.indigo)
+        } footer: {
+            Text("Reference guide only — verify dose, renal function, and allergies before prescribing.")
+                .font(.caption2)
+                .foregroundStyle(.tertiary)
+        }
+    }
+
+    @ViewBuilder
+    private func dosingRow(entry: DosingEntry, weightKg: Double?, contraindicated: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(alignment: .top, spacing: 6) {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 5) {
+                        Text(entry.drug)
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(contraindicated ? .red : .primary)
+                        if contraindicated {
+                            Label("CONTRAINDICATED", systemImage: "exclamationmark.triangle.fill")
+                                .font(.system(size: 9, weight: .black))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 5).padding(.vertical, 2)
+                                .background(Color.red, in: Capsule())
+                        }
+                    }
+                    Text(entry.indication)
+                        .font(.system(size: 11))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 2) {
+                    // Weight-adjusted dose if weight is known
+                    if entry.weightBased, let wt = weightKg,
+                       let num = parseWeightDoseMultiplier(entry.dose) {
+                        let computed = num * wt
+                        Text(String(format: "≈ %.0f mg", computed))
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.indigo)
+                        Text(entry.dose)
+                            .font(.system(size: 10))
+                            .foregroundStyle(.tertiary)
+                    } else {
+                        Text(entry.dose)
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(.primary)
+                    }
+                    Text(entry.route)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            // Caution badges
+            let badges = cautionBadges(entry: entry)
+            if !badges.isEmpty {
+                HStack(spacing: 5) {
+                    ForEach(badges, id: \.0) { (label, color) in
+                        Text(label)
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5).padding(.vertical, 2)
+                            .background(color, in: Capsule())
+                    }
+                }
+            }
+
+            if let note = entry.notes {
+                Text(note)
+                    .font(.system(size: 10))
+                    .foregroundStyle(.orange)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.vertical, 7)
+        .padding(.horizontal, 2)
+        .opacity(contraindicated ? 0.8 : 1.0)
+    }
+
+    private func cautionBadges(entry: DosingEntry) -> [(String, Color)] {
+        var badges: [(String, Color)] = []
+        if entry.renalCaution   { badges.append(("RENAL CAUTION", .orange)) }
+        if entry.hepaticCaution { badges.append(("HEPATIC CAUTION", .purple)) }
+        if entry.weightBased    { badges.append(("WEIGHT-BASED", .blue)) }
+        return badges
+    }
+
+    private func parseWeightDoseMultiplier(_ doseString: String) -> Double? {
+        // Parse "X mg/kg" patterns like "5 mg/kg" → 5.0
+        let pattern = #"(\d+(?:\.\d+)?)\s*mg/kg"#
+        guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+              let match = regex.firstMatch(in: doseString, range: NSRange(doseString.startIndex..., in: doseString)),
+              let range = Range(match.range(at: 1), in: doseString)
+        else { return nil }
+        return Double(doseString[range])
     }
 
     // MARK: - Interaction alerts

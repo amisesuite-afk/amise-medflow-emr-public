@@ -560,6 +560,7 @@ struct ConsultationView: View {
         .onChange(of: patient.hpi) { _, _ in refreshBayesian() }
         .onChange(of: patient.examGeneral) { _, _ in refreshBayesian() }
         .onChange(of: patient.examAbdo) { _, _ in refreshBayesian() }
+        .onChange(of: patient.investigationsJson) { _, _ in refreshBayesian() }
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
         .sheet(isPresented: $showAddMedication) {
             AddMedicationSheet(patient: patient, context: context)
