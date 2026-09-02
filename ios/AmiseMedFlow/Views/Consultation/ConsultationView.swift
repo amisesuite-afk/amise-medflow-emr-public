@@ -995,7 +995,7 @@ struct ConsultationView: View {
         case .hpi:       hpiTab
         case .pmh:       pmhTab
         case .pshx:      pshxTab
-        case .meds:      medicationsSection
+        case .meds:      List { medicationsSection }
         case .allergies: allergiesTab
         case .social:    socialTab
         case .exam:           examTab
