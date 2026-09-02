@@ -288,6 +288,76 @@ let familyHistoryChips: [String] = [
     "Familial hypercholesterolaemia", "AAA", "IBD", "BRCA1/BRCA2 mutation",
 ]
 
+// MARK: - Cross-class allergy exclusion rules
+// Returns true if a drug name should be excluded given the patient's allergy list.
+// Handles drug class cross-reactivity (penicillin → all beta-lactams, etc.)
+func crossClassAllergyExcludes(_ drug: String, allergies: [AllergyEntry]) -> Bool {
+    let d = drug.lowercased()
+    for allergy in allergies {
+        let a = allergy.name.lowercased()
+        // Direct name match
+        if d.contains(a) || a.contains(d) { return true }
+        // Penicillin allergy → exclude all beta-lactams
+        if a.contains("penicillin") || a.contains("amoxicillin") || a.contains("co-amoxiclav") {
+            let betaLactams = ["amoxicillin", "ampicillin", "flucloxacillin", "piperacillin",
+                               "co-amoxiclav", "augmentin", "cephalexin", "cefalexin",
+                               "cefazolin", "cefuroxime", "ceftriaxone", "ertapenem", "meropenem"]
+            if betaLactams.contains(where: { d.contains($0) }) { return true }
+        }
+        // NSAID allergy/intolerance → exclude all NSAIDs
+        if a.contains("nsaid") || a.contains("aspirin") || a.contains("ibuprofen") || a.contains("naproxen") || a.contains("diclofenac") {
+            let nsaids = ["ibuprofen", "naproxen", "diclofenac", "indomethacin",
+                          "celecoxib", "etoricoxib", "meloxicam", "ketorolac", "piroxicam"]
+            if nsaids.contains(where: { d.contains($0) }) { return true }
+        }
+        // Sulfonamide allergy → exclude sulpha drugs
+        if a.contains("sulfonamide") || a.contains("sulfamethoxazole") || a.contains("sulpha") {
+            let sulpha = ["trimethoprim", "cotrimoxazole", "co-trimoxazole", "sulfamethoxazole",
+                          "sulfasalazine", "sulphasalazine"]
+            if sulpha.contains(where: { d.contains($0) }) { return true }
+        }
+        // Codeine allergy → exclude opioids with similar structure
+        if a.contains("codeine") || a.contains("morphine") {
+            let opioids = ["codeine", "dihydrocodeine", "tramadol"]
+            if opioids.contains(where: { d.contains($0) }) { return true }
+        }
+    }
+    return false
+}
+
+// MARK: - PMH → Investigations deterministic map
+
+let pmhInvestigations: [String: [CCInv]] = [
+    "Hypertension":            [("U&E", .blood), ("Creatinine / eGFR", .blood), ("ECG", .other),
+                                ("Urinalysis", .blood), ("Fasting lipids", .blood)],
+    "T2DM":                    [("HbA1c", .blood), ("Fasting glucose", .blood), ("U&E", .blood),
+                                ("Fasting lipids", .blood), ("eGFR / Creatinine", .blood),
+                                ("Urinary ACR", .blood), ("ECG", .other)],
+    "T1DM":                    [("HbA1c", .blood), ("Fasting glucose", .blood), ("U&E", .blood), ("eGFR", .blood)],
+    "Ischaemic heart disease": [("ECG", .other), ("Troponin", .blood), ("FBC", .blood),
+                                ("Fasting lipids", .blood), ("Echocardiogram", .imaging)],
+    "Atrial fibrillation":     [("ECG", .other), ("TFT", .blood), ("INR", .blood),
+                                ("Echocardiogram", .imaging), ("U&E", .blood)],
+    "Heart failure":           [("BNP / NT-proBNP", .blood), ("ECG", .other), ("FBC", .blood),
+                                ("U&E", .blood), ("Echocardiogram", .imaging), ("CXR", .imaging)],
+    "CKD":                     [("U&E", .blood), ("eGFR / Creatinine", .blood), ("FBC", .blood),
+                                ("Phosphate", .blood), ("PTH", .blood), ("Urinalysis", .blood)],
+    "Liver disease / Cirrhosis": [("LFT", .blood), ("INR / coagulation", .blood), ("FBC", .blood),
+                                  ("Albumin", .blood), ("USS abdomen", .imaging)],
+    "COPD":                    [("Spirometry", .other), ("CXR", .imaging), ("FBC", .blood), ("ABG", .blood)],
+    "Asthma":                  [("Spirometry / PEFR", .other), ("CXR", .imaging), ("FBC", .blood)],
+    "Malignancy":              [("FBC", .blood), ("LFT", .blood), ("U&E", .blood), ("Albumin", .blood),
+                                ("CRP / ESR", .blood), ("CT chest/abdomen/pelvis", .imaging)],
+    "DVT / PE":                [("INR", .blood), ("Anti-Xa", .blood), ("USS Doppler legs", .imaging),
+                                ("CTPA", .imaging), ("FBC", .blood), ("D-dimer", .blood)],
+    "Anaemia":                 [("FBC", .blood), ("Iron studies", .blood), ("B12 / Folate", .blood),
+                                ("Reticulocytes", .blood), ("Blood film", .pathology)],
+    "Rheumatoid arthritis":    [("FBC", .blood), ("CRP / ESR", .blood), ("LFT", .blood),
+                                ("Rheumatoid factor", .blood), ("Anti-CCP", .blood)],
+    "Thyroid disease":         [("TFT", .blood), ("TSH", .blood), ("Thyroid USS", .imaging)],
+    "OSA":                     [("Sleep study / oximetry", .other), ("ABG", .blood), ("CXR", .imaging)],
+]
+
 // MARK: - PMH → common medication deterministic map
 // Drug names must match ClinicalSearchService.searchDrugs() entries exactly.
 let pmhToCommonMeds: [String: [String]] = [
@@ -598,8 +668,8 @@ struct ConsultationView: View {
     // Unions all selected PMH chips, de-dupes, excludes already-added drugs,
     // and excludes any drug the patient is allergic to (name match, case-insensitive).
     private var pmhDerivedMedSuggestions: [String] {
-        let allergyNames = Set(patient.allergies.map { $0.name.lowercased() })
-        let addedNames   = Set(patient.prescriptions.map { $0.drug.lowercased() })
+        let addedNames = Set(patient.prescriptions.map { $0.drug.lowercased() })
+        let allergies  = patient.allergies
         var seen = Set<String>()
         var result: [String] = []
         for chip in pmhChipSelections {
@@ -607,10 +677,25 @@ struct ConsultationView: View {
                 let lower = med.lowercased()
                 guard !seen.contains(lower),
                       !addedNames.contains(lower),
-                      !allergyNames.contains(where: { lower.contains($0) || $0.contains(lower) })
+                      !crossClassAllergyExcludes(lower, allergies: allergies)
                 else { continue }
                 seen.insert(lower)
                 result.append(med)
+            }
+        }
+        return result
+    }
+
+    // Deterministic PMH → Investigations quick-suggest.
+    private var pmhDerivedIxSuggestions: [(name: String, category: InvestigationEntry.InvCategory)] {
+        let existing = Set(patient.investigations.map { $0.name })
+        var seen = Set<String>()
+        var result: [(name: String, category: InvestigationEntry.InvCategory)] = []
+        for chip in pmhChipSelections {
+            for inv in pmhInvestigations[chip] ?? [] {
+                guard !seen.contains(inv.name), !existing.contains(inv.name) else { continue }
+                seen.insert(inv.name)
+                result.append(inv)
             }
         }
         return result
@@ -1690,6 +1775,30 @@ struct ConsultationView: View {
                     } header: {
                         Label("Suggested for \(cc)", systemImage: "sparkles")
                     }
+                }
+            }
+
+            // PMH-matched suggestions
+            let pmhIx = pmhDerivedIxSuggestions
+            if !pmhIx.isEmpty {
+                Section {
+                    ChipFlow(hSpacing: 8, vSpacing: 8) {
+                        ForEach(pmhIx, id: \.name) { inv in
+                            Button { addInvestigation(name: inv.name, category: inv.category) } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: inv.category.icon).font(.system(size: 10))
+                                    Text(inv.name).font(.system(size: 12))
+                                }
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(AMColor.accent)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                } header: {
+                    Label("From your PMH", systemImage: "cross.case")
                 }
             }
 

@@ -196,6 +196,39 @@ private struct PlanForm: View {
             ))
         }
 
+        // PSHx → adhesion / anatomy flags (keyword scan of persisted surgicalHistory)
+        let pshx = (patient.surgicalHistory ?? "").lowercased()
+        let adhesionKeywords = ["laparotomy", "bowel resection", "anterior resection", "hartmann",
+                                "apr", "whipple", "liver resection", "pancreatectomy"]
+        if adhesionKeywords.contains(where: { pshx.contains($0) }) {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Previous abdominal surgery — adhesions likely",
+                detail: "Prior major abdominal procedure documented in surgical history.",
+                action: "Counsel patient on adhesion risk. Consider laparoscopic-first approach with low threshold for conversion. Ensure bowel prep discussed if indicated."
+            ))
+        }
+
+        // Gastric bypass / sleeve — anatomy altered
+        if pshx.contains("gastric bypass") || pshx.contains("sleeve") || pshx.contains("bariatric") {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Altered upper GI anatomy — bariatric surgery",
+                detail: "Gastric bypass or sleeve gastrectomy in surgical history.",
+                action: "Standard NG/OG placement may not be suitable. ERCP approach altered. Inform anaesthetist and scrub team."
+            ))
+        }
+
+        // Splenectomy — asplenic immunocompromise
+        if pshx.contains("splenectomy") {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Asplenic patient — infection risk",
+                detail: "Splenectomy documented. Increased risk of overwhelming post-splenectomy infection (OPSI).",
+                action: "Confirm vaccinations (pneumococcal, Hib, meningococcal). Antibiotic prophylaxis per local protocol if not already on it."
+            ))
+        }
+
         return flags
     }
 
@@ -209,7 +242,7 @@ private struct PlanForm: View {
             Label("Perioperative Alerts", systemImage: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
         } footer: {
-            Text("Deterministic flags from prescriptions and PMH. Verify and document actions before proceeding.")
+            Text("Deterministic flags from prescriptions, PMH, and surgical history. Verify and document actions before proceeding.")
                 .font(.caption2).foregroundStyle(.tertiary)
         }
     }
