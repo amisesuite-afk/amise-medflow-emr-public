@@ -544,11 +544,25 @@ struct ConsultationView: View {
     @State private var dismissedRadiation = false
     @State private var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
     @State private var dismissedAlarmIds: Set<UUID> = []
+    @State private var surgicalRiskAlerts: [SurgicalRiskAlert] = []
 
     enum ExamMode { case short, full }
 
     private var interactions: [DrugInteractionAlert] {
         DrugInteractionService.check(drugs: patient.prescriptions.map { $0.drug })
+    }
+
+    // Recompute surgical risk alerts from current state. Call whenever PMH,
+    // medications, social chips, or vitals change.
+    private func recomputeRisk() {
+        let inputs = SurgicalRiskInputs(
+            pmh: pmhChipSelections,
+            medicationNames: patient.prescriptions.map { $0.drug },
+            ageYears: patient.ageYears,
+            bmiKgM2: patient.latestBMI(),
+            socialChips: selectedSocialChips
+        )
+        surgicalRiskAlerts = SurgicalRiskEngine.assess(inputs)
     }
 
     // Deterministic PMH → medication quick-picks.
@@ -623,6 +637,85 @@ struct ConsultationView: View {
         }
         .sheet(isPresented: $showLetterSheet) {
             ConsultationLetterSheet(letterText: generatedLetterText, patient: patient)
+        }
+    }
+
+    // MARK: - Allergy banner
+
+    // MARK: - Surgical risk profile section
+
+    @ViewBuilder
+    private func riskAlertRow(_ alert: SurgicalRiskAlert) -> some View {
+        let bandColor: Color = {
+            switch alert.band {
+            case .advisory:  .teal
+            case .moderate:  .orange
+            case .high:      Color(red: 0.85, green: 0.2, blue: 0.1)
+            case .critical:  .red
+            }
+        }()
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Image(systemName: alert.domain.icon)
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(bandColor)
+                    .frame(width: 16)
+                Text(alert.title)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.primary)
+                Spacer()
+                Text(alert.band.label.uppercased())
+                    .font(.system(size: 9, weight: .black))
+                    .foregroundStyle(bandColor)
+                    .padding(.horizontal, 5).padding(.vertical, 2)
+                    .background(bandColor.opacity(0.12), in: Capsule())
+            }
+            Text(alert.detail)
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 4) {
+                Image(systemName: "arrow.right.circle")
+                    .font(.system(size: 10))
+                    .foregroundStyle(bandColor)
+                Text(alert.action)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 6)
+    }
+
+    private var surgicalRiskSection: some View {
+        Section {
+            ForEach(surgicalRiskAlerts) { alert in
+                riskAlertRow(alert)
+            }
+        } header: {
+            HStack(spacing: 6) {
+                Image(systemName: "shield.lefthalf.filled.trianglebadge.exclamationmark")
+                    .font(.system(size: 11, weight: .semibold))
+                Text("Surgical Risk Profile")
+                    .font(.system(size: 11, weight: .semibold))
+                    .textCase(nil)
+                Spacer()
+                let maxBand = surgicalRiskAlerts.map { $0.band }.max()
+                if let top = maxBand {
+                    let topColor: Color = {
+                        switch top {
+                        case .advisory:  .teal
+                        case .moderate:  .orange
+                        case .high:      Color(red: 0.85, green: 0.2, blue: 0.1)
+                        case .critical:  .red
+                        }
+                    }()
+                    Text("\(surgicalRiskAlerts.count) alert\(surgicalRiskAlerts.count == 1 ? "" : "s") · \(top.label)")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(topColor)
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(topColor.opacity(0.12), in: Capsule())
+                }
+            }
+            .foregroundStyle(.secondary)
         }
     }
 
@@ -1357,7 +1450,10 @@ struct ConsultationView: View {
                 // Condition list
                 ForEach(pmhChips, id: \.self) { chip in
                     let sel = pmhChipSelections.contains(chip)
-                    Button { pmhChipSelections.formSymmetricDifference([chip]) } label: {
+                    Button {
+                        pmhChipSelections.formSymmetricDifference([chip])
+                        recomputeRisk()
+                    } label: {
                         HStack(spacing: 10) {
                             Image(systemName: sel ? "checkmark.circle.fill" : "circle")
                                 .font(.system(size: 13))
@@ -1401,6 +1497,11 @@ struct ConsultationView: View {
             } header: {
                 sectionHeader("Past Medical History", icon: "clock.arrow.circlepath",
                               filled: !(patient.pmhNotes ?? "").isEmpty)
+            }
+
+            // Surgical risk profile — reactive to PMH chips, medications, age, BMI, social
+            if !surgicalRiskAlerts.isEmpty {
+                surgicalRiskSection
             }
 
             Section {
@@ -1972,6 +2073,7 @@ struct ConsultationView: View {
         let existing = (patient.socialHistory ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         patient.socialHistory = existing.isEmpty ? "· \(item)" : existing + "\n· \(item)"
         touch()
+        recomputeRisk()
     }
 
     // MARK: - Exam tab
@@ -2431,6 +2533,7 @@ struct ConsultationView: View {
         rx.patient = patient
         context.insert(rx)
         touch()
+        recomputeRisk()
     }
 
     @MainActor
