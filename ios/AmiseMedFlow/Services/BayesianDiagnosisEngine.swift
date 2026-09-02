@@ -128,6 +128,21 @@ enum BayesianDiagnosisEngine {
         case (ccL.contains("wound") || ccL.contains("surgical site")) &&
              (ccL.contains("infect") || ccL.contains("discharge") || ccL.contains("dehisc")):
             candidates = woundInfection
+        case ccL.contains("sepsis") || ccL.contains("septic") || ccL.contains("bacteraemia") ||
+             ccL.contains("sirs") || (ccL.contains("fever") && ccL.contains("shock")):
+            candidates = sepsisConditions
+        case ccL.contains("necrotis") || ccL.contains("fasciitis") || ccL.contains("fournier") ||
+             (ccL.contains("wound") && ccL.contains("necrot")) ||
+             (ccL.contains("skin") && ccL.contains("infect") && ccL.contains("severe")):
+            candidates = necrotizingInfection
+        case ccL.contains("pulmonary embol") || ccL.contains("pe ") || ccL == "pe" ||
+             ccL.contains("haemoptysis") || ccL.contains("hemoptysis") ||
+             (ccL.contains("breathless") && ccL.contains("chest pain") && ccL.contains("leg")):
+            candidates = venousThromboEmbolism
+        case ccL.contains("limb ischaem") || ccL.contains("acute ischaem") ||
+             ccL.contains("cold leg") || ccL.contains("cold foot") || ccL.contains("cold limb") ||
+             (ccL.contains("limb") && (ccL.contains("pale") || ccL.contains("pulseless"))):
+            candidates = acuteLimbIschaemia
         default:
             candidates = abdominalPain   // safest surgical default
         }
@@ -1441,6 +1456,204 @@ enum BayesianDiagnosisEngine {
             .init(key: "associations", value: "Sinus", logLR: 14, evidenceLabel: "Persistent sinus"),
             .init(key: "associations", value: "Discharge", logLR: 12, evidenceLabel: "Purulent discharge"),
             .init(key: "timing", value: "Months", logLR: 10, evidenceLabel: "Delayed presentation (months)"),
+        ]),
+    ]
+
+    // MARK: - Sepsis / SIRS
+
+    private static let sepsisConditions: [Candidate] = [
+        .init(name: "Sepsis (Intra-abdominal Source)", icd: "A41.9",
+              logPrior: 30, features: [
+            .init(key: "associations", value: "Fever", logLR: 10, evidenceLabel: "Fever >38°C"),
+            .init(key: "associations", value: "Tachycardia", logLR: 10, evidenceLabel: "Heart rate >90"),
+            .init(key: "associations", value: "Hypotension", logLR: 16, evidenceLabel: "SBP <100 mmHg"),
+            .init(key: "associations", value: "Confusion", logLR: 12, evidenceLabel: "Altered mentation"),
+            .init(key: "associations", value: "Oliguria", logLR: 12, evidenceLabel: "Urine output <0.5 mL/kg/h"),
+            .init(key: "exam", value: "periton", logLR: 12, evidenceLabel: "Peritonism"),
+            .init(key: "inv", value: "lactate", logLR: 16, evidenceLabel: "Lactate ≥2 mmol/L"),
+            .init(key: "inv", value: "wbc", logLR: 10, evidenceLabel: "WBC >12 or <4 ×10⁹/L"),
+            .init(key: "inv", value: "crp", logLR: 8, evidenceLabel: "Elevated CRP"),
+            .init(key: "pmh", value: "diabetes", logLR: 6, evidenceLabel: "Diabetes (risk factor)"),
+            .init(key: "age_over", value: "65", logLR: 6, evidenceLabel: "Elderly"),
+        ]),
+        .init(name: "Septic Shock", icd: "R65.21",
+              logPrior: 12, features: [
+            .init(key: "associations", value: "Hypotension", logLR: 18, evidenceLabel: "MAP <65 mmHg despite resuscitation"),
+            .init(key: "associations", value: "Fever", logLR: 10, evidenceLabel: "Fever or hypothermia"),
+            .init(key: "associations", value: "Confusion", logLR: 14, evidenceLabel: "Encephalopathy"),
+            .init(key: "associations", value: "Oliguria", logLR: 14, evidenceLabel: "Oliguria / renal failure"),
+            .init(key: "inv", value: "lactate", logLR: 20, evidenceLabel: "Lactate ≥4 mmol/L"),
+            .init(key: "inv", value: "creatinine", logLR: 10, evidenceLabel: "Rising creatinine"),
+            .init(key: "inv", value: "blood culture", logLR: 14, evidenceLabel: "Positive blood cultures"),
+        ]),
+        .init(name: "Ascending Cholangitis (Sepsis)", icd: "K83.0",
+              logPrior: 20, features: [
+            .init(key: "associations", value: "Jaundice", logLR: 14, evidenceLabel: "Jaundice — Charcot's triad"),
+            .init(key: "associations", value: "Fever", logLR: 12, evidenceLabel: "Fever — Charcot's triad"),
+            .init(key: "site", value: "Right upper quadrant", logLR: 12, evidenceLabel: "RUQ pain — Charcot's triad"),
+            .init(key: "associations", value: "Confusion", logLR: 14, evidenceLabel: "Confusion — Reynolds' pentad"),
+            .init(key: "associations", value: "Hypotension", logLR: 14, evidenceLabel: "Shock — Reynolds' pentad"),
+            .init(key: "inv", value: "bili", logLR: 12, evidenceLabel: "Raised bilirubin"),
+            .init(key: "inv", value: "alp", logLR: 10, evidenceLabel: "Raised ALP"),
+            .init(key: "pmh", value: "gallstone", logLR: 12, evidenceLabel: "Gallstone history"),
+        ]),
+        .init(name: "Urosepsis", icd: "A41.51",
+              logPrior: 18, features: [
+            .init(key: "associations", value: "Dysuria", logLR: 10, evidenceLabel: "Dysuria / LUTS"),
+            .init(key: "associations", value: "Fever", logLR: 10, evidenceLabel: "Fever"),
+            .init(key: "associations", value: "Loin pain", logLR: 10, evidenceLabel: "Loin / renal angle pain"),
+            .init(key: "exam", value: "renal angle", logLR: 12, evidenceLabel: "Renal angle tenderness"),
+            .init(key: "inv", value: "leucocyte", logLR: 12, evidenceLabel: "Leucocytes on urine dip"),
+            .init(key: "inv", value: "nitrite", logLR: 10, evidenceLabel: "Nitrites on urine dip"),
+            .init(key: "pmh", value: "uti", logLR: 8, evidenceLabel: "Recurrent UTI history"),
+            .init(key: "sex_female", value: "", logLR: 4, evidenceLabel: "Female sex"),
+        ]),
+    ]
+
+    // MARK: - Necrotising Soft Tissue Infection
+
+    private static let necrotizingInfection: [Candidate] = [
+        .init(name: "Necrotising Fasciitis", icd: "M72.6",
+              logPrior: 20, features: [
+            .init(key: "onset", value: "Rapid", logLR: 12, evidenceLabel: "Rapid progression (hours)"),
+            .init(key: "character", value: "Severe", logLR: 12, evidenceLabel: "Severe pain disproportionate to appearance"),
+            .init(key: "exam", value: "crepitus", logLR: 20, evidenceLabel: "Crepitus (gas in tissue)"),
+            .init(key: "exam", value: "skin necrosis", logLR: 18, evidenceLabel: "Skin necrosis / bullae"),
+            .init(key: "exam", value: "dishwater fluid", logLR: 18, evidenceLabel: "Thin grey / dishwater discharge"),
+            .init(key: "associations", value: "Fever", logLR: 10, evidenceLabel: "Fever / systemic toxicity"),
+            .init(key: "associations", value: "Hypotension", logLR: 14, evidenceLabel: "Haemodynamic instability"),
+            .init(key: "inv", value: "crp", logLR: 14, evidenceLabel: "CRP >150 mg/L (LRINEC)"),
+            .init(key: "inv", value: "wbc", logLR: 10, evidenceLabel: "WBC >15 ×10⁹/L"),
+            .init(key: "inv", value: "gas", logLR: 20, evidenceLabel: "Gas in soft tissue on CT"),
+            .init(key: "pmh", value: "diabetes", logLR: 10, evidenceLabel: "Diabetes (key risk factor)"),
+            .init(key: "pmh", value: "immunosuppression", logLR: 8, evidenceLabel: "Immunosuppression"),
+        ]),
+        .init(name: "Fournier's Gangrene", icd: "N49.3",
+              logPrior: 10, features: [
+            .init(key: "site", value: "Scrotum", logLR: 20, evidenceLabel: "Scrotal / perineal involvement"),
+            .init(key: "site", value: "Perineum", logLR: 18, evidenceLabel: "Perineal necrosis"),
+            .init(key: "onset", value: "Rapid", logLR: 12, evidenceLabel: "Rapid onset"),
+            .init(key: "character", value: "Severe", logLR: 12, evidenceLabel: "Severe pain"),
+            .init(key: "exam", value: "crepitus", logLR: 20, evidenceLabel: "Perineal crepitus"),
+            .init(key: "exam", value: "swelling", logLR: 10, evidenceLabel: "Scrotal swelling and erythema"),
+            .init(key: "associations", value: "Fever", logLR: 10, evidenceLabel: "Fever"),
+            .init(key: "pmh", value: "diabetes", logLR: 14, evidenceLabel: "Diabetes (major risk factor)"),
+            .init(key: "sex_male", value: "", logLR: 10, evidenceLabel: "Male sex (10:1 ratio)"),
+        ]),
+        .init(name: "Severe Cellulitis / SSTI", icd: "L03.90",
+              logPrior: 30, features: [
+            .init(key: "onset", value: "Gradual", logLR: 6, evidenceLabel: "Gradual onset over days"),
+            .init(key: "exam", value: "erythema", logLR: 12, evidenceLabel: "Demarcated erythema"),
+            .init(key: "exam", value: "warm", logLR: 10, evidenceLabel: "Warmth"),
+            .init(key: "exam", value: "tender", logLR: 8, evidenceLabel: "Tenderness"),
+            .init(key: "associations", value: "Fever", logLR: 8, evidenceLabel: "Systemic fever"),
+            .init(key: "inv", value: "wbc", logLR: 8, evidenceLabel: "Elevated WBC"),
+            .init(key: "pmh", value: "diabetes", logLR: 6, evidenceLabel: "Diabetes"),
+            .init(key: "pmh", value: "lymphoedema", logLR: 10, evidenceLabel: "Lymphoedema / venous disease"),
+        ]),
+        .init(name: "Gas Gangrene (Clostridial Myonecrosis)", icd: "A48.0",
+              logPrior: 6, features: [
+            .init(key: "onset", value: "Sudden", logLR: 12, evidenceLabel: "Sudden onset, rapid progression"),
+            .init(key: "character", value: "Severe", logLR: 12, evidenceLabel: "Extreme pain"),
+            .init(key: "exam", value: "crepitus", logLR: 20, evidenceLabel: "Crepitus in muscle"),
+            .init(key: "exam", value: "bronze skin", logLR: 16, evidenceLabel: "Bronze / mottled skin discolouration"),
+            .init(key: "associations", value: "Fever", logLR: 8, evidenceLabel: "Systemic toxicity"),
+            .init(key: "pshx", value: "surgery", logLR: 10, evidenceLabel: "Recent surgery or trauma"),
+            .init(key: "pmh", value: "vascular", logLR: 8, evidenceLabel: "Vascular disease"),
+        ]),
+    ]
+
+    // MARK: - Venous Thromboembolism (DVT / PE)
+
+    private static let venousThromboEmbolism: [Candidate] = [
+        .init(name: "Pulmonary Embolism", icd: "I26.99",
+              logPrior: 20, features: [
+            .init(key: "onset", value: "Sudden", logLR: 10, evidenceLabel: "Sudden onset"),
+            .init(key: "character", value: "Pleuritic", logLR: 12, evidenceLabel: "Pleuritic chest pain"),
+            .init(key: "associations", value: "Breathlessness", logLR: 12, evidenceLabel: "Dyspnoea"),
+            .init(key: "associations", value: "Haemoptysis", logLR: 14, evidenceLabel: "Haemoptysis"),
+            .init(key: "associations", value: "Leg swelling", logLR: 12, evidenceLabel: "Leg swelling (DVT)"),
+            .init(key: "associations", value: "Hypoxia", logLR: 14, evidenceLabel: "SpO₂ <94%"),
+            .init(key: "associations", value: "Tachycardia", logLR: 12, evidenceLabel: "Heart rate >100"),
+            .init(key: "pmh", value: "dvt", logLR: 14, evidenceLabel: "Previous DVT / PE"),
+            .init(key: "pmh", value: "malignancy", logLR: 10, evidenceLabel: "Active malignancy"),
+            .init(key: "pshx", value: "surgery", logLR: 10, evidenceLabel: "Recent surgery (<4 weeks)"),
+            .init(key: "inv", value: "d-dimer", logLR: 12, evidenceLabel: "Elevated D-dimer"),
+            .init(key: "inv", value: "ctpa", logLR: 20, evidenceLabel: "CTPA positive for PE"),
+            .init(key: "inv", value: "s1q3t3", logLR: 10, evidenceLabel: "S1Q3T3 on ECG"),
+        ]),
+        .init(name: "Deep Vein Thrombosis (Proximal)", icd: "I82.409",
+              logPrior: 25, features: [
+            .init(key: "site", value: "Leg", logLR: 12, evidenceLabel: "Leg / calf"),
+            .init(key: "associations", value: "Calf swelling", logLR: 14, evidenceLabel: "Calf swelling >3 cm"),
+            .init(key: "associations", value: "Pitting oedema", logLR: 10, evidenceLabel: "Pitting oedema"),
+            .init(key: "exam", value: "tender", logLR: 10, evidenceLabel: "Deep vein tenderness"),
+            .init(key: "exam", value: "warm", logLR: 8, evidenceLabel: "Warmth over calf"),
+            .init(key: "pmh", value: "dvt", logLR: 14, evidenceLabel: "Previous DVT"),
+            .init(key: "pmh", value: "malignancy", logLR: 10, evidenceLabel: "Active malignancy"),
+            .init(key: "pshx", value: "surgery", logLR: 10, evidenceLabel: "Recent surgery"),
+            .init(key: "inv", value: "d-dimer", logLR: 10, evidenceLabel: "Elevated D-dimer"),
+            .init(key: "inv", value: "duplex", logLR: 20, evidenceLabel: "Compression duplex positive"),
+        ]),
+        .init(name: "Massive Pulmonary Embolism", icd: "I26.09",
+              logPrior: 5, features: [
+            .init(key: "associations", value: "Hypotension", logLR: 18, evidenceLabel: "SBP <90 mmHg"),
+            .init(key: "associations", value: "Syncope", logLR: 14, evidenceLabel: "Syncope / near-syncope"),
+            .init(key: "associations", value: "Breathlessness", logLR: 12, evidenceLabel: "Severe dyspnoea"),
+            .init(key: "associations", value: "Tachycardia", logLR: 14, evidenceLabel: "HR >100"),
+            .init(key: "associations", value: "Cyanosis", logLR: 14, evidenceLabel: "Cyanosis"),
+            .init(key: "exam", value: "rv strain", logLR: 18, evidenceLabel: "RV strain on ECHO"),
+            .init(key: "inv", value: "troponin", logLR: 12, evidenceLabel: "Raised troponin (RV injury)"),
+            .init(key: "inv", value: "bnp", logLR: 10, evidenceLabel: "Raised BNP (RV failure)"),
+            .init(key: "inv", value: "ctpa", logLR: 20, evidenceLabel: "Bilateral / saddle PE on CTPA"),
+        ]),
+    ]
+
+    // MARK: - Acute Limb Ischaemia
+
+    private static let acuteLimbIschaemia: [Candidate] = [
+        .init(name: "Acute Limb Ischaemia", icd: "I74.3",
+              logPrior: 20, features: [
+            .init(key: "onset", value: "Sudden", logLR: 14, evidenceLabel: "Sudden onset"),
+            .init(key: "character", value: "Severe", logLR: 12, evidenceLabel: "Severe pain"),
+            .init(key: "associations", value: "Cold limb", logLR: 16, evidenceLabel: "Cold limb"),
+            .init(key: "associations", value: "Pallor", logLR: 14, evidenceLabel: "Limb pallor"),
+            .init(key: "associations", value: "Paraesthesia", logLR: 14, evidenceLabel: "Paraesthesia (neural ischaemia)"),
+            .init(key: "associations", value: "Paralysis", logLR: 18, evidenceLabel: "Paralysis (late — severe)"),
+            .init(key: "exam", value: "absent pulse", logLR: 18, evidenceLabel: "Absent distal pulses"),
+            .init(key: "exam", value: "cold", logLR: 14, evidenceLabel: "Cold compared to contralateral"),
+            .init(key: "pmh", value: "atrial fibrillation", logLR: 14, evidenceLabel: "AF (embolic source)"),
+            .init(key: "pmh", value: "af", logLR: 14, evidenceLabel: "AF"),
+            .init(key: "pmh", value: "vascular", logLR: 10, evidenceLabel: "Peripheral arterial disease"),
+        ]),
+        .init(name: "Arterial Embolism (Limb)", icd: "I74.4",
+              logPrior: 15, features: [
+            .init(key: "onset", value: "Sudden", logLR: 16, evidenceLabel: "Abrupt onset — minutes"),
+            .init(key: "character", value: "Severe", logLR: 12, evidenceLabel: "Severe pain"),
+            .init(key: "exam", value: "absent pulse", logLR: 18, evidenceLabel: "Absent pulse to level of occlusion"),
+            .init(key: "pmh", value: "atrial fibrillation", logLR: 16, evidenceLabel: "Atrial fibrillation"),
+            .init(key: "pmh", value: "cardiac", logLR: 10, evidenceLabel: "Cardiac disease (thrombus source)"),
+            .init(key: "pmh", value: "aortic aneurysm", logLR: 12, evidenceLabel: "Known AAA (thrombus source)"),
+        ]),
+        .init(name: "Acute-on-Chronic Limb Ischaemia", icd: "I70.209",
+              logPrior: 18, features: [
+            .init(key: "timing", value: "Gradual then acute", logLR: 10, evidenceLabel: "Gradual onset on background claudication"),
+            .init(key: "pmh", value: "claudication", logLR: 14, evidenceLabel: "Pre-existing claudication"),
+            .init(key: "pmh", value: "diabetes", logLR: 8, evidenceLabel: "Diabetes"),
+            .init(key: "pmh", value: "smoking", logLR: 8, evidenceLabel: "Smoking"),
+            .init(key: "pmh", value: "vascular", logLR: 10, evidenceLabel: "Peripheral arterial disease"),
+            .init(key: "exam", value: "ulcer", logLR: 12, evidenceLabel: "Non-healing ulcer"),
+            .init(key: "exam", value: "absent pulse", logLR: 14, evidenceLabel: "Absent distal pulses"),
+        ]),
+        .init(name: "Compartment Syndrome", icd: "M79.A10",
+              logPrior: 10, features: [
+            .init(key: "character", value: "Severe", logLR: 14, evidenceLabel: "Pain out of proportion to injury"),
+            .init(key: "associations", value: "Tightness", logLR: 12, evidenceLabel: "Tense / tight compartment"),
+            .init(key: "associations", value: "Paraesthesia", logLR: 14, evidenceLabel: "Paraesthesia in compartment distribution"),
+            .init(key: "exacerbating", value: "Passive stretch", logLR: 16, evidenceLabel: "Pain on passive stretch of muscles"),
+            .init(key: "pshx", value: "trauma", logLR: 12, evidenceLabel: "Trauma / fracture"),
+            .init(key: "pshx", value: "reperfusion", logLR: 14, evidenceLabel: "Reperfusion after ischaemia"),
+            .init(key: "inv", value: "ck", logLR: 10, evidenceLabel: "Markedly elevated CK"),
         ]),
     ]
 }
