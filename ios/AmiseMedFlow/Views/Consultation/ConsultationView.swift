@@ -516,6 +516,7 @@ enum ConsultTab: String, CaseIterable {
     case hpi       = "HPI"
     case pmh       = "PMH"
     case pshx      = "PSHx"
+    case meds      = "Meds"
     case allergies = "Allergies"
     case social    = "Social"
     case exam           = "Exam"
@@ -890,6 +891,7 @@ struct ConsultationView: View {
         case .hpi:       return !(patient.hpi ?? "").isEmpty
         case .pmh:       return !(patient.pmhNotes ?? "").isEmpty
         case .pshx:      return !(patient.surgicalHistory ?? "").isEmpty
+        case .meds:      return !patient.prescriptions.isEmpty
         case .allergies: return !patient.allergies.isEmpty
         case .social:    return !(patient.socialHistory ?? "").isEmpty
         case .exam:           return !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
@@ -908,6 +910,7 @@ struct ConsultationView: View {
         case .hpi:       hpiTab
         case .pmh:       pmhTab
         case .pshx:      pshxTab
+        case .meds:      medicationsSection
         case .allergies: allergiesTab
         case .social:    socialTab
         case .exam:           examTab
@@ -1655,8 +1658,6 @@ struct ConsultationView: View {
                 sectionHeader("Past Surgical History", icon: "scissors",
                               filled: !(patient.surgicalHistory ?? "").isEmpty)
             }
-
-            medicationsSection
         }
     }
 
