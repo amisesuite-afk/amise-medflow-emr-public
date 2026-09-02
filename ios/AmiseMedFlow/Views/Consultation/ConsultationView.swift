@@ -638,6 +638,7 @@ struct ConsultationView: View {
     var embeddedInNav: Bool = false
     @Environment(\.modelContext) private var context
     @StateObject private var ai = AIService()
+    @StateObject private var pipeline = ClinicalPipelineOrchestrator()
 
     @State private var activeTab: ConsultTab = .hpi
     @State private var examMode: ExamMode = .short
@@ -750,7 +751,10 @@ struct ConsultationView: View {
             tabContent
         }
         .background(Color(.systemBackground))
-        .onAppear { activeTab = startingTab }
+        .onAppear {
+            activeTab = startingTab
+            pipeline.runNow(for: patient, socratesSelections: socratesSelections)
+        }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
@@ -770,10 +774,25 @@ struct ConsultationView: View {
                 await MainActor.run { runPathway(); refreshBayesian() }
             }
         }
-        .onChange(of: patient.hpi) { _, _ in refreshBayesian() }
-        .onChange(of: patient.examGeneral) { _, _ in refreshBayesian() }
-        .onChange(of: patient.examAbdo) { _, _ in refreshBayesian() }
-        .onChange(of: patient.investigationsJson) { _, _ in refreshBayesian() }
+        .onChange(of: patient.hpi) { _, _ in
+            refreshBayesian()
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
+        .onChange(of: patient.examGeneral) { _, _ in
+            refreshBayesian()
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
+        .onChange(of: patient.examAbdo) { _, _ in
+            refreshBayesian()
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
+        .onChange(of: patient.investigationsJson) { _, _ in
+            refreshBayesian()
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
+        .onChange(of: socratesSelections) { _, _ in
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
         .sheet(isPresented: $showAddMedication) {
             AddMedicationSheet(patient: patient, context: context)
@@ -2567,6 +2586,62 @@ struct ConsultationView: View {
                     Text("Based on CC · SOCRATES · PMH · Exam · Ix · Age/Sex. Apply to confirm.")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
+                }
+            }
+
+            // ── AutoFunction Action Panel ──────────────────────────────────
+            let visibleActions = pipeline.filteredAutoActions(for: patient.visitType)
+            if !visibleActions.isEmpty {
+                Section {
+                    ForEach(visibleActions.prefix(6)) { action in
+                        AutoActionRow(action: action)
+                    }
+                } header: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "wand.and.sparkles").foregroundStyle(.indigo)
+                        Text("Clinical Actions")
+                            .font(.caption.weight(.semibold))
+                        Spacer()
+                        if pipeline.isRunning {
+                            ProgressView().scaleEffect(0.7)
+                        }
+                    }
+                } footer: {
+                    Text("Deterministic pipeline — SOCRATES · Exam · Ix · Vitals trend · Decision network.")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
+            }
+
+            // ── DBN Trajectory Panel ───────────────────────────────────────
+            if !pipeline.trajectories.isEmpty {
+                Section {
+                    ForEach(pipeline.trajectories) { traj in
+                        TrajectoryRow(trajectory: traj)
+                    }
+                } header: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "chart.line.uptrend.xyaxis").foregroundStyle(.orange)
+                        Text("Disease Trajectories (12h projection)")
+                            .font(.caption.weight(.semibold))
+                    }
+                }
+            }
+
+            // ── Value of Information Panel ─────────────────────────────────
+            if !pipeline.informationItems.isEmpty {
+                Section {
+                    ForEach(pipeline.informationItems.prefix(5)) { item in
+                        VOIRow(item: item)
+                    }
+                } header: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "lightbulb.min").foregroundStyle(.yellow)
+                        Text("Highest-Value Next Investigations (EVPI)")
+                            .font(.caption.weight(.semibold))
+                    }
+                } footer: {
+                    Text("Expected value of perfect information — ranked by bits of diagnostic uncertainty resolved.")
+                        .font(.caption2).foregroundStyle(.secondary)
                 }
             }
 
