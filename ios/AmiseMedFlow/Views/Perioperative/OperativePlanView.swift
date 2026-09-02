@@ -116,6 +116,7 @@ private struct PlanForm: View {
     var body: some View {
         List {
             consentSection
+            if !perioperativeFlags.isEmpty { perioperativeFlagsSection }
             theatreBookingSection
             anaesthesiaSection
             whoSignIn
@@ -125,6 +126,126 @@ private struct PlanForm: View {
             teamSection
             aiSection
         }
+    }
+
+    // MARK: - Perioperative flags (deterministic, derived from prescriptions + PMH notes)
+
+    private struct PeriopFlag: Identifiable {
+        let id = UUID()
+        enum Band { case moderate, high, critical }
+        let band: Band
+        let title: String
+        let detail: String
+        let action: String
+    }
+
+    private var perioperativeFlags: [PeriopFlag] {
+        var flags: [PeriopFlag] = []
+
+        // Steroid stress-dose
+        if patient.hasSteroidTherapy {
+            let drugs = patient.activeSteroids.map { $0.drug }.joined(separator: ", ")
+            flags.append(PeriopFlag(
+                band: .high,
+                title: "Steroid stress-dose required",
+                detail: "Patient on \(drugs). Risk of adrenal insufficiency perioperatively.",
+                action: "Hydrocortisone 50–100 mg IV at induction; double maintenance dose post-op × 48 h."
+            ))
+        }
+
+        // Anticoagulation bridging — enhanced (already noted in anaesthesia section too)
+        if patient.hasAnticoagulation {
+            let drugs = patient.activeAnticoagulants.map { $0.drug }.joined(separator: ", ")
+            flags.append(PeriopFlag(
+                band: .high,
+                title: "Anticoagulation — bridging protocol",
+                detail: "On \(drugs). Perioperative management required.",
+                action: "Stop per drug protocol. Consider LMWH bridging if high thrombotic risk. Document post-op restart plan."
+            ))
+        }
+
+        // OSA / CPAP continuation
+        if patient.hasOSAinHistory {
+            let bmi = patient.latestBMI() ?? 0
+            let band: PeriopFlag.Band = bmi >= 35 ? .high : .moderate
+            flags.append(PeriopFlag(
+                band: band,
+                title: "OSA — CPAP continuation required",
+                detail: bmi >= 35 ? "OSA with BMI ≥35 — significantly elevated airway and aspiration risk." : "Obstructive sleep apnoea noted in history.",
+                action: "Instruct patient to bring CPAP machine. Apply in recovery. Inform anaesthetist pre-op. Avoid sedative pre-medication."
+            ))
+        }
+
+        // Obesity — aspiration / airway risk
+        if let bmi = patient.latestBMI(), bmi >= 35, !patient.hasOSAinHistory {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Obesity — aspiration & airway risk",
+                detail: String(format: "BMI %.0f kg/m².", bmi),
+                action: "RSI induction indicated. Ramped position. Inform anaesthetist."
+            ))
+        }
+
+        // Diabetes — perioperative glucose management
+        if patient.hasDiabetesInHistory {
+            flags.append(PeriopFlag(
+                band: .moderate,
+                title: "Diabetes — glucose monitoring required",
+                detail: "Diabetes mellitus noted. Risk of hypo/hyperglycaemia perioperatively.",
+                action: "VRIII sliding scale if glucose >12 mmol/L or >2 h NPO. Monitor 1–2 hourly."
+            ))
+        }
+
+        return flags
+    }
+
+    @ViewBuilder
+    private var perioperativeFlagsSection: some View {
+        Section {
+            ForEach(perioperativeFlags) { flag in
+                perioperativeFlagRow(flag)
+            }
+        } header: {
+            Label("Perioperative Alerts", systemImage: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+        } footer: {
+            Text("Deterministic flags from prescriptions and PMH. Verify and document actions before proceeding.")
+                .font(.caption2).foregroundStyle(.tertiary)
+        }
+    }
+
+    @ViewBuilder
+    private func perioperativeFlagRow(_ flag: PeriopFlag) -> some View {
+        let bandColor: Color = {
+            switch flag.band {
+            case .moderate: return .orange
+            case .high:     return Color(red: 0.85, green: 0.2, blue: 0.1)
+            case .critical: return .red
+            }
+        }()
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 11))
+                    .foregroundStyle(bandColor)
+                Text(flag.title)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(bandColor)
+            }
+            Text(flag.detail)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 4) {
+                Image(systemName: "arrow.right.circle.fill")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.teal)
+                    .padding(.top, 1)
+                Text(flag.action)
+                    .font(.caption)
+                    .foregroundStyle(.teal)
+            }
+        }
+        .padding(.vertical, 4)
     }
 
     // MARK: - Theatre / procedure booking

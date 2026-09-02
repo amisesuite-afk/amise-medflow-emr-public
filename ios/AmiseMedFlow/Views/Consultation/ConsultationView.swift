@@ -75,6 +75,34 @@ extension Patient {
     }
 
     var hasAnticoagulation: Bool { !activeAnticoagulants.isEmpty }
+
+    // MARK: - Steroid therapy helpers
+
+    var activeSteroids: [Prescription] {
+        prescriptions.filter {
+            let n = $0.drug.lowercased()
+            return n.contains("prednisolone") || n.contains("prednisone") ||
+                   n.contains("dexamethasone") || n.contains("hydrocortisone") ||
+                   n.contains("methylprednisolone") || n.contains("fludrocortisone") ||
+                   n.contains("betamethasone")
+        }
+    }
+
+    var hasSteroidTherapy: Bool { !activeSteroids.isEmpty }
+
+    // MARK: - PMH text helpers (keyword scan on persisted pmhNotes)
+
+    var hasOSAinHistory: Bool {
+        let text = (pmhNotes ?? "").lowercased()
+        return text.contains(" osa") || text.contains("osa\n") ||
+               text.contains("osa,") || text.contains("obstructive sleep") ||
+               text.contains("sleep apnoea") || text.contains("sleep apnea")
+    }
+
+    var hasDiabetesInHistory: Bool {
+        let text = (pmhNotes ?? "").lowercased()
+        return text.contains("t2dm") || text.contains("t1dm") || text.contains("diabetes")
+    }
 }
 
 // MARK: - Investigation model (JSON-encoded in Patient.investigationsJson)
