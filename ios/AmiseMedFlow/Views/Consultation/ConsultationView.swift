@@ -327,7 +327,7 @@ func crossClassAllergyExcludes(_ drug: String, allergies: [AllergyEntry]) -> Boo
 
 // MARK: - PMH → Investigations deterministic map
 
-let pmhInvestigations: [String: [CCInv]] = [
+private let pmhInvestigations: [String: [CCInv]] = [
     "Hypertension":            [("U&E", .blood), ("Creatinine / eGFR", .blood), ("ECG", .other),
                                 ("Urinalysis", .blood), ("Fasting lipids", .blood)],
     "T2DM":                    [("HbA1c", .blood), ("Fasting glucose", .blood), ("U&E", .blood),
