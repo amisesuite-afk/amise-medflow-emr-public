@@ -333,19 +333,21 @@ final class SequentialDiagnosisEngine: ObservableObject {
 
         for i in hypotheses.indices {
             let name = hypotheses[i].name
-            var rawLR = LogLRTable.logLR(key: evidence.key, value: evidence.value, forDiagnosis: name)
+            let baseLogLR = LogLRTable.logLR(key: evidence.key, value: evidence.value, forDiagnosis: name)
+            guard baseLogLR != 0 else { continue }
 
-            // Correlation dampening
-            if rawLR != 0 {
-                let prevKeys = observedKeys[name] ?? []
-                let maxRho = prevKeys.map { correlationCoefficient(alreadyObserved: $0, newKey: evidence.key) }.max() ?? 0.0
-                rawLR *= (1.0 - maxRho)
-            }
+            // BayesianFeatureNetwork CPT adjustment: if a parent of this feature
+            // has already been observed, use the DAG-adjusted LR (principled over flat ρ-dampening)
+            let prevKeys = Set(observedKeys[name] ?? [])
+            let adjustedLR = BayesianFeatureNetwork.adjustedLogLR(
+                featureID: evidence.key,
+                featurePresent: true,
+                observedIDs: prevKeys,
+                baseLogLR: baseLogLR
+            )
 
-            hypotheses[i].logPosterior += rawLR
-            if rawLR != 0 {
-                hypotheses[i].contributingEvidence.append((evidence.displayLabel, rawLR))
-            }
+            hypotheses[i].logPosterior += adjustedLR
+            hypotheses[i].contributingEvidence.append((evidence.displayLabel, adjustedLR))
         }
 
         // Record key as observed for each hypothesis
