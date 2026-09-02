@@ -99,6 +99,10 @@ final class Patient {
     var consentSent: Bool = false            // Consent form given to patient
     var preOpInstructionsSent: Bool = false  // Pre-op instructions sent to patient
 
+    // MARK: - Structured clinical history (JSON-encoded)
+    var pmhEntriesJson: String?    // JSON: [PMHEntry]
+    var pshxEntriesJson: String?   // JSON: [PSHxEntry]
+
     init(
         fullName: String,
         sex: Sex = .unspecified,

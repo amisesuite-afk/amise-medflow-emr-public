@@ -10,6 +10,19 @@ struct AllergyEntry: Codable, Identifiable {
     var reaction: String
 }
 
+struct PMHEntry: Codable, Identifiable {
+    var id: UUID = UUID()
+    var condition: String
+    var yearText: String = ""   // e.g. "2018", "~2015", "" if unknown
+}
+
+struct PSHxEntry: Codable, Identifiable {
+    var id: UUID = UUID()
+    var procedure: String
+    var yearText: String = ""       // e.g. "2019", "Mar 2020"
+    var anaesthetic: String = ""    // "GA" | "Spinal" | "Epidural" | "Local" | "Sedation" | "Regional"
+}
+
 extension Patient {
     var allergies: [AllergyEntry] {
         get {
@@ -25,7 +38,7 @@ extension Patient {
         let checks: [Bool] = [
             !(chiefComplaint ?? "").isEmpty,
             !(hpi ?? "").isEmpty,
-            !(pmhNotes ?? "").isEmpty || !(surgicalHistory ?? "").isEmpty,
+            !(pmhNotes ?? "").isEmpty || !(surgicalHistory ?? "").isEmpty || !pmhEntries.isEmpty || !pshxEntries.isEmpty,
             !allergies.isEmpty,
             !prescriptions.isEmpty,
             !(examGeneral ?? "").isEmpty || !(examAbdo ?? "").isEmpty,
@@ -170,6 +183,28 @@ extension Patient {
         }
         set {
             investigationsJson = (try? String(data: JSONEncoder().encode(newValue), encoding: .utf8)) ?? nil
+        }
+    }
+}
+
+extension Patient {
+    var pmhEntries: [PMHEntry] {
+        get {
+            guard let json = pmhEntriesJson, let data = json.data(using: .utf8) else { return [] }
+            return (try? JSONDecoder().decode([PMHEntry].self, from: data)) ?? []
+        }
+        set {
+            pmhEntriesJson = (try? String(data: JSONEncoder().encode(newValue), encoding: .utf8)) ?? nil
+        }
+    }
+
+    var pshxEntries: [PSHxEntry] {
+        get {
+            guard let json = pshxEntriesJson, let data = json.data(using: .utf8) else { return [] }
+            return (try? JSONDecoder().decode([PSHxEntry].self, from: data)) ?? []
+        }
+        set {
+            pshxEntriesJson = (try? String(data: JSONEncoder().encode(newValue), encoding: .utf8)) ?? nil
         }
     }
 }
@@ -974,8 +1009,8 @@ struct ConsultationView: View {
         switch tab {
         case .cc:        return !(patient.chiefComplaint ?? "").isEmpty
         case .hpi:       return !(patient.hpi ?? "").isEmpty
-        case .pmh:       return !(patient.pmhNotes ?? "").isEmpty
-        case .pshx:      return !(patient.surgicalHistory ?? "").isEmpty
+        case .pmh:       return !(patient.pmhNotes ?? "").isEmpty || !patient.pmhEntries.isEmpty
+        case .pshx:      return !(patient.surgicalHistory ?? "").isEmpty || !patient.pshxEntries.isEmpty
         case .meds:      return !patient.prescriptions.isEmpty
         case .allergies: return !patient.allergies.isEmpty
         case .social:    return !(patient.socialHistory ?? "").isEmpty
@@ -1516,7 +1551,8 @@ struct ConsultationView: View {
             // Current medication list
             if !patient.prescriptions.isEmpty {
                 Divider()
-                ForEach(patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }) { rx in
+                let sortedRx = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
+                ForEach(sortedRx) { rx in
                     HStack(spacing: 10) {
                         Image(systemName: "pill")
                             .font(.system(size: 11))
@@ -1524,12 +1560,19 @@ struct ConsultationView: View {
                             .frame(width: 16)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(rx.drug).font(.callout.weight(.semibold))
-                            if rx.displayLine != rx.drug {
-                                Text(rx.displayLine).font(.caption).foregroundStyle(.secondary)
-                            }
+                            Text(rx.displayLine)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                         Spacer()
+                        Text(rx.prescribedAt.formatted(.dateTime.month(.abbreviated).year()))
+                            .font(.caption2.monospacedDigit())
+                            .foregroundStyle(.tertiary)
                     }
+                }
+                .onDelete { idxSet in
+                    for i in idxSet { context.delete(sortedRx[i]) }
+                    touch()
                 }
             }
         } header: {
@@ -1540,6 +1583,24 @@ struct ConsultationView: View {
 
     private var pmhTab: some View {
         List {
+            // Structured entries — one row per condition
+            if !patient.pmhEntries.isEmpty {
+                Section {
+                    ForEach(patient.pmhEntries.indices, id: \.self) { i in
+                        pmhEntryRow(index: i)
+                    }
+                    .onDelete { idxSet in
+                        var list = patient.pmhEntries
+                        list.remove(atOffsets: idxSet)
+                        patient.pmhEntries = list
+                        touch()
+                    }
+                } header: {
+                    sectionHeader("Medical History (\(patient.pmhEntries.count))",
+                                  icon: "stethoscope", filled: true)
+                }
+            }
+
             Section {
                 // Bypass card — PMH already on record
                 if !(patient.pmhNotes ?? "").isEmpty && !pmhBypassConfirmed {
@@ -1588,6 +1649,14 @@ struct ConsultationView: View {
                         appendHistory(existing: patient.pmhNotes, chips: pmhChipSelections) {
                             patient.pmhNotes = $0
                         }
+                        // Create structured entries for each new condition
+                        var entries = patient.pmhEntries
+                        for chip in pmhChipSelections.sorted() {
+                            if !entries.contains(where: { $0.condition == chip }) {
+                                entries.append(PMHEntry(condition: chip))
+                            }
+                        }
+                        patient.pmhEntries = entries
                         pmhChipSelections = []
                         pmhBypassConfirmed = true
                         touch()
@@ -1672,6 +1741,24 @@ struct ConsultationView: View {
 
     private var pshxTab: some View {
         List {
+            // Structured entries — one row per procedure
+            if !patient.pshxEntries.isEmpty {
+                Section {
+                    ForEach(patient.pshxEntries.indices, id: \.self) { i in
+                        pshxEntryRow(index: i)
+                    }
+                    .onDelete { idxSet in
+                        var list = patient.pshxEntries
+                        list.remove(atOffsets: idxSet)
+                        patient.pshxEntries = list
+                        touch()
+                    }
+                } header: {
+                    sectionHeader("Surgical History (\(patient.pshxEntries.count))",
+                                  icon: "scissors", filled: true)
+                }
+            }
+
             Section {
                 // Bypass card
                 if !(patient.surgicalHistory ?? "").isEmpty && !pshxBypassConfirmed {
@@ -1717,6 +1804,14 @@ struct ConsultationView: View {
                         appendHistory(existing: patient.surgicalHistory, chips: pshxChipSelections) {
                             patient.surgicalHistory = $0
                         }
+                        // Create structured entries for each new procedure
+                        var entries = patient.pshxEntries
+                        for chip in pshxChipSelections.sorted() {
+                            if !entries.contains(where: { $0.procedure == chip }) {
+                                entries.append(PSHxEntry(procedure: chip))
+                            }
+                        }
+                        patient.pshxEntries = entries
                         pshxChipSelections = []
                         pshxBypassConfirmed = true
                         touch()
@@ -1743,6 +1838,94 @@ struct ConsultationView: View {
                 sectionHeader("Past Surgical History", icon: "scissors",
                               filled: !(patient.surgicalHistory ?? "").isEmpty)
             }
+        }
+    }
+
+    // MARK: - Structured history entry rows
+
+    @ViewBuilder
+    private func pmhEntryRow(index i: Int) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: "stethoscope")
+                .font(.system(size: 11))
+                .foregroundStyle(AMColor.accent)
+                .frame(width: 16)
+            Text(i < patient.pmhEntries.count ? patient.pmhEntries[i].condition : "")
+                .font(.callout)
+                .foregroundStyle(.primary)
+            Spacer()
+            TextField("Year", text: Binding(
+                get: { i < patient.pmhEntries.count ? patient.pmhEntries[i].yearText : "" },
+                set: { v in
+                    guard i < patient.pmhEntries.count else { return }
+                    var list = patient.pmhEntries
+                    list[i].yearText = v
+                    patient.pmhEntries = list
+                    touch()
+                }
+            ))
+            .keyboardType(.numberPad)
+            .font(.system(size: 12).monospacedDigit())
+            .foregroundStyle(.secondary)
+            .frame(width: 52)
+            .multilineTextAlignment(.trailing)
+        }
+    }
+
+    @ViewBuilder
+    private func pshxEntryRow(index i: Int) -> some View {
+        let entry = i < patient.pshxEntries.count ? patient.pshxEntries[i] : PSHxEntry(procedure: "")
+        HStack(spacing: 8) {
+            Image(systemName: "scissors")
+                .font(.system(size: 11))
+                .foregroundStyle(AMColor.accent)
+                .frame(width: 16)
+            Text(entry.procedure)
+                .font(.callout)
+                .foregroundStyle(.primary)
+            Spacer()
+            TextField("Year", text: Binding(
+                get: { i < patient.pshxEntries.count ? patient.pshxEntries[i].yearText : "" },
+                set: { v in
+                    guard i < patient.pshxEntries.count else { return }
+                    var list = patient.pshxEntries
+                    list[i].yearText = v
+                    patient.pshxEntries = list
+                    touch()
+                }
+            ))
+            .keyboardType(.numberPad)
+            .font(.system(size: 12).monospacedDigit())
+            .foregroundStyle(.secondary)
+            .frame(width: 48)
+            .multilineTextAlignment(.trailing)
+
+            Menu {
+                Button("Unknown / Not recorded") {
+                    guard i < patient.pshxEntries.count else { return }
+                    var list = patient.pshxEntries
+                    list[i].anaesthetic = ""
+                    patient.pshxEntries = list; touch()
+                }
+                ForEach(["GA", "Spinal", "Epidural", "Local", "Sedation", "Regional"], id: \.self) { type in
+                    Button(type) {
+                        guard i < patient.pshxEntries.count else { return }
+                        var list = patient.pshxEntries
+                        list[i].anaesthetic = type
+                        patient.pshxEntries = list; touch()
+                    }
+                }
+            } label: {
+                Text(entry.anaesthetic.isEmpty ? "Anaesth." : entry.anaesthetic)
+                    .font(.caption2.weight(.medium))
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(
+                        entry.anaesthetic.isEmpty ? Color(.systemGray5) : AMColor.accentLt,
+                        in: Capsule()
+                    )
+                    .foregroundStyle(entry.anaesthetic.isEmpty ? .secondary : AMColor.accent)
+            }
+            .menuStyle(.button)
         }
     }
 
