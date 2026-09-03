@@ -753,6 +753,10 @@ struct ConsultationView: View {
         .background(Color(.systemBackground))
         .onAppear {
             activeTab = startingTab
+            // Pre-populate SOCRATES from questionnaire HPI if not yet filled
+            if socratesSelections.isEmpty, let hpi = patient.hpi {
+                socratesSelections = parseSocratesFromHPI(hpi)
+            }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
         }
         .navigationTitle("Consultation")
@@ -2509,6 +2513,45 @@ struct ConsultationView: View {
             }
         }
         .padding(.vertical, 2)
+    }
+
+    // MARK: - Pre-encounter questionnaire SOCRATES parser
+    // Reads the structured KEY: value lines written by EncounterAnswers.hpiText
+    // and converts them to the socratesSelections dictionary format so the
+    // Bayesian engine and SOCRATES chips are pre-populated from front-desk data.
+    // This is a one-time seed on .onAppear — the doctor can override chips freely.
+
+    private func parseSocratesFromHPI(_ hpi: String) -> [String: Set<String>] {
+        var result: [String: Set<String>] = [:]
+        for line in hpi.components(separatedBy: "\n") {
+            let parts = line.split(separator: ":", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
+            guard parts.count == 2 else { continue }
+            let key = parts[0].lowercased()
+            let val = parts[1]
+            switch key {
+            case "site":
+                result["site"] = [val]
+            case "onset":
+                result["onset"] = [val]
+            case "character":
+                result["character"] = [val]
+            case "radiation":
+                if !val.lowercased().contains("none") { result["radiation"] = [val] }
+            case "severity":
+                result["severity"] = [val]
+            case "timing":
+                result["timing"] = [val]
+            case "worse":
+                result["exacerbating"] = Set(val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
+            case "better":
+                result["relieving"] = Set(val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
+            case "associated":
+                result["associations"] = Set(val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
+            default:
+                break
+            }
+        }
+        return result
     }
 
     // MARK: - Bayesian engine refresh

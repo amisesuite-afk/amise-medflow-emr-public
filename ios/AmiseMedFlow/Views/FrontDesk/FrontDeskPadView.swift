@@ -282,7 +282,7 @@ private struct FDQuestionnaireView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $showForm) {
-            WalkInQuestionnaireSheet(patient: selectedPatient)
+            AdaptiveQuestionnaireSheet(patient: selectedPatient)
         }
     }
 }
@@ -481,234 +481,442 @@ struct PatientDemographicsForm: View {
     }
 }
 
-// MARK: - Walk-in questionnaire sheet
+// MARK: - Adaptive pre-encounter questionnaire
+// Replaces the old static WalkInQuestionnaireSheet.
+//
+// Design principles (single-value-per-variable rule):
+//   • EncounterAnswers is the ONE authoritative data store for this session.
+//   • On save, it writes directly to patient.chiefComplaint / hpi / pmhNotes —
+//     these fields are never written by any other code path during the same
+//     encounter (AddPatientView sets them only on registration, before an
+//     encounter starts).
+//   • socratesSelections is emitted directly to BayesianDiagnosisEngine so
+//     the engine receives structured data, not parsed free text.
+//
+// Adaptive branching (radiation principle):
+//   Phase 1 → CC category selection drives Phase 2 and Phase 3 content.
+//   Phase 2 (SOCRATES) → visible only for pain-type CCs.
+//   Phase 3 → CC-specific associated symptom list, not a universal checkbox wall.
+//   Phase 4 → red flags, gated by sex and age at display time.
+//   Phases 5–6 → always shown (PMHx, social, last meal).
 
-struct WalkInQuestionnaireSheet: View {
+struct AdaptiveQuestionnaireSheet: View {
     var patient: Patient?
+
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+    @EnvironmentObject private var sync: SyncService
 
-    // Chief complaint
-    @State private var chiefComplaint = ""
-    @State private var duration = ""
-    @State private var severity = 5
-    @State private var onset = OnsetType.gradual
+    @State private var answers = EncounterAnswers()
 
-    // Associated symptoms
-    @State private var symptoms: Set<String> = []
-    @State private var otherSymptom = ""
-
-    // History
-    @State private var pmhx: Set<String> = []
-    @State private var currentMedications = ""
-    @State private var knownAllergies = ""
-    @State private var surgicalHistory = ""
-
-    // Social
-    @State private var smokingStatus = SmokingStatus.never
-    @State private var alcoholUse = AlcoholUse.none
-
-    // Additional
-    @State private var lastMeal = Date()
-    @State private var hasLastMeal = false
-    @State private var additionalNotes = ""
-
-    enum OnsetType: String, CaseIterable {
-        case sudden = "Sudden"
-        case gradual = "Gradual"
-        case progressive = "Progressive"
+    // Patient demographics used for gating — resolved once from the model
+    private var patientSex: Sex { patient?.sex ?? .unknown }
+    private var patientAge: Int {
+        guard let dob = patient?.dateOfBirth else { return 99 }
+        return Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 99
     }
 
-    enum SmokingStatus: String, CaseIterable {
-        case never = "Never"
-        case ex = "Ex-smoker"
-        case current = "Current"
-    }
-
-    enum AlcoholUse: String, CaseIterable {
-        case none = "None"
-        case social = "Social"
-        case regular = "Regular"
-        case heavy = "Heavy"
-    }
-
-    private let symptomOptions = [
-        "Nausea", "Vomiting", "Fever", "Weight loss", "Loss of appetite",
-        "Diarrhoea", "Constipation", "Rectal bleeding", "Blood in vomit",
-        "Jaundice", "Abdominal swelling", "Night sweats", "Fatigue",
-        "Difficulty swallowing", "Heartburn / reflux", "Chest pain", "Shortness of breath"
-    ]
-
-    private let pmhxOptions = [
-        "Hypertension", "Diabetes", "Heart disease", "Stroke", "Asthma / COPD",
-        "Kidney disease", "Liver disease", "Cancer", "HIV / AIDS",
-        "Thyroid disease", "Previous DVT / PE", "Sickle cell disease"
-    ]
-
-    private var summary: String {
-        var parts: [String] = []
-        if !chiefComplaint.isEmpty { parts.append("CC: \(chiefComplaint)") }
-        if !duration.isEmpty { parts.append("Duration: \(duration)") }
-        parts.append("Severity: \(severity)/10")
-        parts.append("Onset: \(onset.rawValue)")
-        if !symptoms.isEmpty { parts.append("Symptoms: \(symptoms.sorted().joined(separator: ", "))") }
-        if !pmhx.isEmpty { parts.append("PMHx: \(pmhx.sorted().joined(separator: ", "))") }
-        if !currentMedications.isEmpty { parts.append("Medications: \(currentMedications)") }
-        if !knownAllergies.isEmpty { parts.append("Allergies: \(knownAllergies)") }
-        if !surgicalHistory.isEmpty { parts.append("Surgical Hx: \(surgicalHistory)") }
-        parts.append("Smoking: \(smokingStatus.rawValue) · Alcohol: \(alcoholUse.rawValue)")
-        if !additionalNotes.isEmpty { parts.append("Notes: \(additionalNotes)") }
-        return parts.joined(separator: "\n")
-    }
+    private var ccSelected: Bool { answers.ccCategory != nil }
 
     var body: some View {
         NavigationStack {
             Form {
-                if let patient {
-                    Section {
-                        HStack(spacing: 8) {
-                            AcuityPip(acuity: patient.acuity)
-                            Text(patient.fullName).font(.subheadline.weight(.semibold))
-                            if let mrn = patient.mrn, !mrn.isEmpty {
-                                Text("MRN \(mrn)").font(.caption).foregroundStyle(.secondary)
-                            }
-                        }
-                    } header: { Text("Patient") }
-                }
-
-                Section("Chief Complaint") {
-                    TextField("Main reason for visit", text: $chiefComplaint, axis: .vertical)
-                        .lineLimit(2...)
-                    TextField("Duration (e.g. 3 days, 2 weeks)", text: $duration)
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Pain / Symptom severity: \(severity)/10")
-                            .font(.subheadline)
-                        Slider(value: Binding(
-                            get: { Double(severity) },
-                            set: { severity = Int($0) }
-                        ), in: 1...10, step: 1)
-                        .tint(severity >= 8 ? .red : severity >= 5 ? .orange : .green)
+                patientHeaderSection
+                phase1CCSection
+                if ccSelected {
+                    if let cc = answers.ccCategory, cc.isPainType {
+                        phase2SocratesSection(cc: cc)
                     }
-
-                    Picker("Onset", selection: $onset) {
-                        ForEach(OnsetType.allCases, id: \.self) {
-                            Text($0.rawValue).tag($0)
-                        }
-                    }
-                    .pickerStyle(.segmented)
+                    phase3AssociatedSection
+                    phase4RedFlagsSection
                 }
-
-                Section("Associated Symptoms") {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                        ForEach(symptomOptions, id: \.self) { sym in
-                            let sel = symptoms.contains(sym)
-                            Button {
-                                if sel { symptoms.remove(sym) } else { symptoms.insert(sym) }
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Image(systemName: sel ? "checkmark.circle.fill" : "circle")
-                                        .foregroundStyle(sel ? AMColor.accent : .secondary)
-                                        .font(.system(size: 14))
-                                    Text(sym)
-                                        .font(.caption)
-                                        .foregroundStyle(.primary)
-                                        .multilineTextAlignment(.leading)
-                                    Spacer()
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.vertical, 4)
-
-                    TextField("Other symptoms…", text: $otherSymptom)
-                }
-
-                Section("Past Medical History") {
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                        ForEach(pmhxOptions, id: \.self) { cond in
-                            let sel = pmhx.contains(cond)
-                            Button {
-                                if sel { pmhx.remove(cond) } else { pmhx.insert(cond) }
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Image(systemName: sel ? "checkmark.circle.fill" : "circle")
-                                        .foregroundStyle(sel ? AMColor.accent : .secondary)
-                                        .font(.system(size: 14))
-                                    Text(cond)
-                                        .font(.caption)
-                                        .foregroundStyle(.primary)
-                                        .multilineTextAlignment(.leading)
-                                    Spacer()
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.vertical, 4)
-
-                    TextField("Current medications", text: $currentMedications, axis: .vertical)
-                        .lineLimit(2...)
-                    TextField("Known allergies (drug, food, other)", text: $knownAllergies, axis: .vertical)
-                        .lineLimit(2...)
-                    TextField("Previous surgeries / procedures", text: $surgicalHistory, axis: .vertical)
-                        .lineLimit(2...)
-                }
-
-                Section("Social History") {
-                    Picker("Smoking", selection: $smokingStatus) {
-                        ForEach(SmokingStatus.allCases, id: \.self) {
-                            Text($0.rawValue).tag($0)
-                        }
-                    }
-                    Picker("Alcohol use", selection: $alcoholUse) {
-                        ForEach(AlcoholUse.allCases, id: \.self) {
-                            Text($0.rawValue).tag($0)
-                        }
-                    }
-                }
-
-                Section("Last Meal") {
-                    Toggle("Record last meal time", isOn: $hasLastMeal)
-                    if hasLastMeal {
-                        DatePicker("Last meal", selection: $lastMeal, displayedComponents: [.date, .hourAndMinute])
-                    }
-                }
-
-                Section("Additional Notes") {
-                    TextField("Any other relevant information…", text: $additionalNotes, axis: .vertical)
-                        .lineLimit(3...)
-                }
+                phase5PMHxSection
+                phase6SocialSection
             }
-            .navigationTitle(patient != nil ? "Questionnaire — \(patient!.fullName)" : "Walk-In Questionnaire")
+            .navigationTitle(patient.map { "Questionnaire — \($0.fullName)" } ?? "Walk-In Questionnaire")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    ShareLink(item: summary,
-                              subject: Text("Pre-Visit Questionnaire")) {
-                        Label("Export", systemImage: "square.and.arrow.up")
-                    }
-                }
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Save to Notes") { saveToNotes() }
-                        .disabled(chiefComplaint.trimmingCharacters(in: .whitespaces).isEmpty)
+                    Button("Save") { save() }
+                        .disabled(answers.ccCategory == nil &&
+                                  answers.ccClarification.trimmingCharacters(in: .whitespaces).isEmpty)
                         .tint(AMColor.accent)
+                        .fontWeight(.semibold)
                 }
             }
         }
     }
 
-    private func saveToNotes() {
-        guard let patient else { dismiss(); return }
+    // ── Phase 0: patient header ───────────────────────────────────────────────
+
+    @ViewBuilder
+    private var patientHeaderSection: some View {
+        if let patient {
+            Section {
+                HStack(spacing: 8) {
+                    AcuityPip(acuity: patient.acuity)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(patient.fullName).font(.subheadline.weight(.semibold))
+                        HStack(spacing: 6) {
+                            if let mrn = patient.mrn, !mrn.isEmpty {
+                                Text("MRN \(mrn)")
+                                    .font(.caption2).foregroundStyle(AMColor.accent)
+                            }
+                            Text(patient.ageDisplay ?? "").font(.caption2).foregroundStyle(.secondary)
+                            Text(patient.sex.rawValue).font(.caption2).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            } header: {
+                Label("Patient", systemImage: "person.crop.circle")
+                    .textCase(nil).font(.system(size: 11, weight: .semibold))
+            }
+        }
+    }
+
+    // ── Phase 1: Chief complaint ──────────────────────────────────────────────
+
+    @ViewBuilder
+    private var phase1CCSection: some View {
+        Section {
+            // Structured CC picker — maps directly to Bayesian routing
+            Picker("Chief complaint", selection: $answers.ccCategory) {
+                Text("Select…").tag(Optional<CCCategory>.none)
+                ForEach(visibleCCCategories, id: \.self) { cc in
+                    Text(cc.rawValue).tag(Optional(cc))
+                }
+            }
+            .pickerStyle(.menu)
+            .onChange(of: answers.ccCategory) { _, _ in
+                // Reset CC-dependent answers when category changes
+                answers.associatedSymptoms = []
+                answers.painSite = ""
+                answers.painCharacter = nil
+                answers.painOnset = nil
+                answers.painTiming = nil
+                answers.painWorsenedBy = []
+                answers.painRelievedBy = []
+                answers.painRadiates = false
+                answers.painRadiationSite = ""
+            }
+
+            let placeholder = answers.ccCategory == .other
+                ? "Describe the complaint…"
+                : "Additional detail (optional)"
+            TextField(placeholder, text: $answers.ccClarification, axis: .vertical)
+                .lineLimit(2...)
+        } header: {
+            Label("Chief Complaint", systemImage: "1.circle.fill")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
+        } footer: {
+            if answers.ccCategory == nil {
+                Text("Select the primary reason for today's visit. All subsequent questions adapt to this selection.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    // Demographic gating for CC picker
+    private var visibleCCCategories: [CCCategory] {
+        CCCategory.allCases.filter { cc in
+            if cc == .breastSymptom && patientSex == .male { return false }
+            return true
+        }
+    }
+
+    // ── Phase 2: SOCRATES (pain CCs only) ────────────────────────────────────
+
+    @ViewBuilder
+    private func phase2SocratesSection(cc: CCCategory) -> some View {
+        Section {
+            TextField("Location (e.g. right lower abdomen, central, diffuse)",
+                      text: $answers.painSite, axis: .vertical)
+                .lineLimit(1...)
+
+            Picker("Onset speed", selection: $answers.painOnset) {
+                Text("Select…").tag(Optional<PainOnset>.none)
+                ForEach(PainOnset.allCases, id: \.self) { o in Text(o.rawValue).tag(Optional(o)) }
+            }
+
+            if answers.painOnset != nil {
+                HStack {
+                    Text("Hours since onset")
+                    Spacer()
+                    TextField("e.g. 6", value: $answers.painOnsetHoursAgo, format: .number)
+                        .keyboardType(.numberPad)
+                        .multilineTextAlignment(.trailing)
+                        .frame(width: 80)
+                }
+            }
+
+            Picker("Character", selection: $answers.painCharacter) {
+                Text("Select…").tag(Optional<PainCharacter>.none)
+                ForEach(PainCharacter.allCases, id: \.self) { c in Text(c.rawValue).tag(Optional(c)) }
+            }
+        } header: {
+            Label("Pain — Site & Onset", systemImage: "2.circle.fill")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
+        }
+
+        Section {
+            Toggle("Does the pain spread to another area?", isOn: $answers.painRadiates)
+            if answers.painRadiates {
+                TextField("Where does it spread to?", text: $answers.painRadiationSite)
+            }
+
+            Picker("Timing pattern", selection: $answers.painTiming) {
+                Text("Select…").tag(Optional<PainTiming>.none)
+                ForEach(PainTiming.allCases, id: \.self) { t in Text(t.rawValue).tag(Optional(t)) }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Severity: \(answers.severityAnswered ? "\(answers.painSeverity)/10" : "not yet set")")
+                    .font(.subheadline)
+                Slider(value: Binding(
+                    get: { Double(answers.painSeverity) },
+                    set: { answers.painSeverity = Int($0); answers.severityAnswered = true }
+                ), in: 0...10, step: 1)
+                .tint(answers.painSeverity >= 8 ? .red : answers.painSeverity >= 5 ? .orange : .green)
+            }
+        } header: {
+            Label("Pain — Radiation, Timing & Severity", systemImage: "3.circle.fill")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
+        }
+
+        Section {
+            QCheckboxGrid(label: "Makes it WORSE", options: cc.worsening, selection: $answers.painWorsenedBy)
+            QCheckboxGrid(label: "Makes it BETTER", options: cc.relieving, selection: $answers.painRelievedBy)
+        } header: {
+            Label("Exacerbating & Relieving Factors", systemImage: "arrow.up.arrow.down")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
+        }
+    }
+
+    // ── Phase 3: Associated symptoms (CC-specific list) ───────────────────────
+
+    @ViewBuilder
+    private var phase3AssociatedSection: some View {
+        if let cc = answers.ccCategory {
+            Section {
+                QCheckboxGrid(label: nil,
+                              options: cc.associatedSymptoms,
+                              selection: $answers.associatedSymptoms)
+                TextField("Other associated symptoms…", text: $answers.associatedOther, axis: .vertical)
+                    .lineLimit(2...)
+            } header: {
+                Label("Associated Symptoms", systemImage: "list.bullet")
+                    .textCase(nil).font(.system(size: 11, weight: .semibold))
+            } footer: {
+                Text("Only symptoms relevant to \(cc.rawValue.lowercased()) are shown.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    // ── Phase 4: Red flags (demographic-gated) ────────────────────────────────
+
+    @ViewBuilder
+    private var phase4RedFlagsSection: some View {
+        Section {
+            Toggle("Unexplained weight loss", isOn: $answers.unexplainedWeightLoss)
+            Toggle("Night sweats", isOn: $answers.nightSweats)
+            Toggle("Change in a mole or skin lesion", isOn: $answers.changeInMole)
+            if patientAge >= 18 {
+                Toggle("Coughing up blood (haemoptysis)", isOn: $answers.haemoptysis)
+            }
+            if patientAge >= 25 {
+                Toggle("Blood in urine (haematuria)", isOn: $answers.haematuria)
+            }
+            if patientSex == .female {
+                Toggle("Recent breast change (lump, skin, discharge)", isOn: $answers.breastChange)
+            }
+        } header: {
+            Label("Red Flag Symptoms", systemImage: "exclamationmark.triangle.fill")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(.orange)
+        } footer: {
+            Text("Report any that apply, even if not the main reason for today's visit.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
+    // ── Phase 5: Past medical history ─────────────────────────────────────────
+
+    @ViewBuilder
+    private var phase5PMHxSection: some View {
+        Section {
+            QCheckboxGrid(label: nil,
+                          options: PMHxCondition.allCases.map(\.rawValue),
+                          rawSelection: Binding(
+                            get: { Set(answers.pmhxConditions.map(\.rawValue)) },
+                            set: { raws in
+                                answers.pmhxConditions = Set(
+                                    PMHxCondition.allCases.filter { raws.contains($0.rawValue) }
+                                )
+                            }
+                          ))
+            TextField("Current medications (name and dose)", text: $answers.medications, axis: .vertical)
+                .lineLimit(2...)
+            TextField("Known allergies (drug, food, latex, other)", text: $answers.allergies, axis: .vertical)
+                .lineLimit(2...)
+            TextField("Previous operations / procedures", text: $answers.surgicalHistory, axis: .vertical)
+                .lineLimit(2...)
+        } header: {
+            Label("Past Medical History", systemImage: "cross.case")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
+        }
+    }
+
+    // ── Phase 6: Social history & last meal ───────────────────────────────────
+
+    @ViewBuilder
+    private var phase6SocialSection: some View {
+        Section {
+            Picker("Smoking status", selection: $answers.smokingStatus) {
+                ForEach(SmokingStatus.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            }
+            Picker("Alcohol use", selection: $answers.alcoholUse) {
+                ForEach(AlcoholUse.allCases, id: \.self) { Text($0.rawValue).tag($0) }
+            }
+            TextField("Occupation (optional)", text: $answers.occupation)
+        } header: {
+            Label("Social History", systemImage: "person.2")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
+        }
+
+        Section {
+            Toggle("Record last meal time", isOn: Binding(
+                get: { answers.lastMealTime != nil },
+                set: { answers.lastMealTime = $0 ? .now : nil }
+            ))
+            if let _ = answers.lastMealTime {
+                DatePicker("Last meal",
+                           selection: Binding(
+                            get: { answers.lastMealTime ?? .now },
+                            set: { answers.lastMealTime = $0 }
+                           ),
+                           displayedComponents: [.date, .hourAndMinute])
+            }
+        } header: {
+            Label("Last Meal", systemImage: "fork.knife")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
+        } footer: {
+            Text("Required if the patient may need surgery or anaesthesia today.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+    }
+
+    // ── Save: single write to canonical Patient fields ────────────────────────
+    // This is the ONLY place questionnaire data is written to the patient model.
+    // Enforces the single-value-per-variable rule: no other path writes
+    // chiefComplaint / hpi / pmhNotes during an encounter session.
+
+    private func save() {
+        guard let patient else {
+            // Walk-in without a registered patient: questionnaire data cannot be
+            // persisted without a patient record. Dismiss — front desk should
+            // register the patient first, then open the questionnaire from their record.
+            dismiss()
+            return
+        }
+
+        // Structured fields — direct write, no concatenation ambiguity.
+        // These are the canonical values for chiefComplaint / hpi / pmhNotes.
+        patient.chiefComplaint = answers.chiefComplaintText.isEmpty ? nil : answers.chiefComplaintText
+        patient.hpi            = answers.hpiText.isEmpty ? nil : answers.hpiText
+        patient.pmhNotes       = answers.pmhxText.isEmpty ? nil : answers.pmhxText
+
+        // Human-readable pre-visit note for the doctor
         let note = ClinicalNote(noteType: .other, patient: patient)
-        note.freeText = "PRE-VISIT QUESTIONNAIRE\n\n" + summary
+        note.freeText = buildReadableNote()
         context.insert(note)
-        patient.updatedAt = .now
+
+        patient.updatedAt   = .now
         patient.pendingSync = true
+        try? context.save()
+        Task { await sync.syncIfAuthenticated() }
         dismiss()
+    }
+
+    private func buildReadableNote() -> String {
+        var lines = ["PRE-VISIT QUESTIONNAIRE — \(Date.now.formatted(date: .abbreviated, time: .shortened))"]
+        lines.append("")
+        lines.append("CHIEF COMPLAINT: \(answers.chiefComplaintText)")
+        if !answers.hpiText.isEmpty {
+            lines.append("")
+            lines.append(answers.hpiText)
+        }
+        if !answers.pmhxText.isEmpty {
+            lines.append("")
+            lines.append("PAST HISTORY & SOCIAL")
+            lines.append(answers.pmhxText)
+        }
+        if let t = answers.lastMealTime {
+            lines.append("LAST MEAL: \(t.formatted(date: .abbreviated, time: .shortened))")
+        }
+        return lines.joined(separator: "\n")
+    }
+}
+
+// MARK: - Reusable checkbox grid
+
+private struct QCheckboxGrid: View {
+    let label: String?
+    let options: [String]
+    var selection: Binding<Set<String>>?
+    var rawSelection: Binding<Set<String>>?
+
+    init(label: String?, options: [String], selection: Binding<Set<String>>) {
+        self.label = label
+        self.options = options
+        self.selection = selection
+        self.rawSelection = nil
+    }
+
+    init(label: String?, options: [String], rawSelection: Binding<Set<String>>) {
+        self.label = label
+        self.options = options
+        self.selection = nil
+        self.rawSelection = rawSelection
+    }
+
+    private var activeBinding: Binding<Set<String>> {
+        selection ?? rawSelection!
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if let label {
+                Text(label)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 4)
+            }
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                ForEach(options, id: \.self) { opt in
+                    let sel = activeBinding.wrappedValue.contains(opt)
+                    Button {
+                        if sel { activeBinding.wrappedValue.remove(opt) }
+                        else   { activeBinding.wrappedValue.insert(opt) }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: sel ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(sel ? AMColor.accent : .secondary)
+                                .font(.system(size: 14))
+                            Text(opt)
+                                .font(.caption)
+                                .foregroundStyle(.primary)
+                                .multilineTextAlignment(.leading)
+                            Spacer()
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(.vertical, 2)
     }
 }
