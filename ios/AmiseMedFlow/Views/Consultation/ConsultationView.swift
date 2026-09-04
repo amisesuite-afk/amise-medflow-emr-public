@@ -769,6 +769,15 @@ struct ConsultationView: View {
             if pmhChipSelections.isEmpty, let notes = patient.pmhNotes {
                 pmhChipSelections = parsePMHChipsFromNotes(notes)
             }
+            // P9: Pre-populate PSHx chips from persisted surgicalHistory
+            if pshxChipSelections.isEmpty, let pshx = patient.surgicalHistory {
+                pshxChipSelections = parsePSHxChipsFromSurgicalHistory(pshx)
+            }
+            // P8: Re-populate social chips so SurgicalRiskEngine sees correct state
+            if selectedSocialChips.isEmpty, let social = patient.socialHistory {
+                selectedSocialChips = parseSocialChipsFromHistory(social)
+                recomputeRisk()
+            }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
         }
         .navigationTitle("Consultation")
@@ -2695,6 +2704,79 @@ struct ConsultationView: View {
             }
         }
         return matched
+    }
+
+    // MARK: - P9: surgicalHistory text → PSHx chip pre-population
+    // Matches free-text surgical history (from questionnaire or typed notes) against
+    // the pshxChips labels by keyword. Called on .onAppear — doctor can modify freely.
+
+    private func parsePSHxChipsFromSurgicalHistory(_ text: String) -> Set<String> {
+        let lower = text.lowercased()
+        var matched = Set<String>()
+        let mapping: [(keywords: [String], chip: String)] = [
+            (["cholecystectomy", "gallbladder removal"],          "Cholecystectomy"),
+            (["appendicectomy", "appendectomy"],                  "Appendicectomy"),
+            (["inguinal hernia"],                                 "Inguinal hernia repair"),
+            (["umbilical hernia"],                                 "Umbilical hernia repair"),
+            (["bowel resection", "small bowel resection"],        "Bowel resection"),
+            (["anterior resection", "low anterior"],              "Anterior resection"),
+            (["apr", "abdominoperineal"],                         "APR"),
+            (["hartmann"],                                        "Hartmann's procedure"),
+            (["gastric bypass", "sleeve gastrectomy", "bariatric"], "Gastric bypass / sleeve"),
+            (["fundoplication", "nissen"],                        "Fundoplication"),
+            (["whipple", "pancreaticoduodenectomy"],              "Whipple's procedure"),
+            (["liver resection", "hepatectomy"],                  "Liver resection"),
+            (["splenectomy"],                                     "Splenectomy"),
+            (["thyroidectomy"],                                   "Thyroidectomy"),
+            (["parathyroidectomy"],                               "Parathyroidectomy"),
+            (["mastectomy"],                                      "Mastectomy"),
+            (["sentinel node", "sentinel lymph"],                 "Sentinel node biopsy"),
+            (["laparotomy"],                                      "Laparotomy"),
+            (["diagnostic laparoscopy"],                          "Diagnostic laparoscopy"),
+            (["ercp"],                                            "ERCP"),
+            (["ogd", "gastroscopy", "upper gi endoscopy"],       "OGD / Gastroscopy"),
+            (["colonoscopy"],                                     "Colonoscopy"),
+            (["haemorrhoidectomy", "hemorrhoidectomy"],           "Haemorrhoidectomy"),
+            (["fistula", "fistulotomy", "perianal abscess"],      "Fistula / abscess repair"),
+            (["caesarean", "cesarean", "c-section"],              "Caesarean section"),
+            (["hysterectomy"],                                    "Hysterectomy"),
+        ]
+        for rule in mapping {
+            if rule.keywords.contains(where: { lower.contains($0) }) {
+                matched.insert(rule.chip)
+            }
+        }
+        return matched
+    }
+
+    // MARK: - P8: socialHistory text → social chip pre-population
+    // Rebuilds the selectedSocialChips set from the "· Key: Value" lines written by
+    // appendSocialChip(). This restores the chip state so SurgicalRiskEngine receives
+    // the correct smoking/alcohol/lifestyle signals on every ConsultationView open.
+
+    private func parseSocialChipsFromHistory(_ text: String) -> Set<String> {
+        var chips = Set<String>()
+        let lines = text.components(separatedBy: "\n").map {
+            $0.trimmingCharacters(in: .whitespaces).trimmingCharacters(in: CharacterSet(charactersIn: "·").union(.whitespaces))
+        }
+        let smokingOptions = ["Non-smoker", "Ex-smoker", "Light smoker (<10/day)",
+                              "Moderate smoker (10–20/day)", "Heavy smoker (>20/day)"]
+        let alcoholOptions = ["Non-drinker", "Social drinker (<14 units/wk)",
+                              "Moderate (14–21 units/wk)", "Heavy (>21 units/wk)"]
+        for line in lines {
+            // Keyed chips: "Smoking: Ex-smoker" → key = "Smoking:Ex-smoker"
+            if line.hasPrefix("Smoking: ") {
+                let val = String(line.dropFirst("Smoking: ".count))
+                if smokingOptions.contains(val) { chips.insert("Smoking:\(val)") }
+            } else if line.hasPrefix("Alcohol: ") {
+                let val = String(line.dropFirst("Alcohol: ".count))
+                if alcoholOptions.contains(val) { chips.insert("Alcohol:\(val)") }
+            } else {
+                // Lifestyle / living chips are stored without a prefix key
+                chips.insert(line)
+            }
+        }
+        return chips
     }
 
     // MARK: - Bayesian engine refresh
