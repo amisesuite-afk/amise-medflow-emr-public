@@ -44,8 +44,14 @@ struct TodayDashboardView: View {
         }
     }
 
+    private var readyForDoctorPatients: [Patient] {
+        allPatients
+            .filter { $0.encounterStatus == .waiting && isToday($0.checkInTime) }
+            .sorted { ($0.checkInTime ?? .distantPast) < ($1.checkInTime ?? .distantPast) }
+    }
+
     private var isAnythingOn: Bool {
-        !wardPatients.isEmpty || !theatreToday.isEmpty || !endoscopyToday.isEmpty || !clinicToday.isEmpty
+        !readyForDoctorPatients.isEmpty || !wardPatients.isEmpty || !theatreToday.isEmpty || !endoscopyToday.isEmpty || !clinicToday.isEmpty
     }
 
     // MARK: - Body
@@ -55,6 +61,7 @@ struct TodayDashboardView: View {
             Group {
                 if isAnythingOn {
                     List {
+                        if !readyForDoctorPatients.isEmpty { waitingSection }
                         if !highAcuityWard.isEmpty { alertSection }
                         if !wardPatients.isEmpty   { wardSection }
                         if !theatreToday.isEmpty   { theatreSection }
@@ -79,6 +86,69 @@ struct TodayDashboardView: View {
             }
             .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
             .sheet(isPresented: $showAdd) { AddPatientView() }
+        }
+    }
+
+    // MARK: - Waiting (checked in by front desk) Section
+
+    @ViewBuilder
+    private var waitingSection: some View {
+        Section {
+            ForEach(readyForDoctorPatients) { patient in
+                Button { selectedPatient = patient } label: {
+                    HStack(spacing: 10) {
+                        Circle()
+                            .fill(Color.orange)
+                            .frame(width: 8, height: 8)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(patient.fullName)
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(.primary)
+                            HStack(spacing: 6) {
+                                if let cc = patient.chiefComplaint, !cc.isEmpty {
+                                    Text(cc)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(1)
+                                }
+                                if let vt = patient.visitType {
+                                    Text(vt.shortLabel)
+                                        .font(.caption2)
+                                        .foregroundStyle(.orange)
+                                        .padding(.horizontal, 5)
+                                        .padding(.vertical, 1)
+                                        .background(Color.orange.opacity(0.12), in: Capsule())
+                                }
+                            }
+                        }
+                        Spacer()
+                        if let ct = patient.checkInTime {
+                            Text(ct.formatted(date: .omitted, time: .shortened))
+                                .font(.caption2.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        }
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(.vertical, 2)
+                }
+                .buttonStyle(.plain)
+                .listRowBackground(Color.orange.opacity(0.05))
+            }
+        } header: {
+            HStack {
+                Label("Ready for Doctor", systemImage: "person.fill.checkmark")
+                    .foregroundStyle(.orange)
+                    .font(.system(size: 11, weight: .heavy))
+                    .textCase(nil)
+                Spacer()
+                Text("\(readyForDoctorPatients.count)")
+                    .font(.caption2.monospacedDigit())
+                    .foregroundStyle(.orange)
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(Color.orange.opacity(0.15), in: Capsule())
+            }
         }
     }
 

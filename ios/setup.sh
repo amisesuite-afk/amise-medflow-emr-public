@@ -12,15 +12,15 @@ TEAM_ID=""
 
 # Method 1: from project.pbxproj after user has selected team in Xcode
 if [ -f "$PBXPROJ" ]; then
-    TEAM_ID=$(grep 'DEVELOPMENT_TEAM = ' "$PBXPROJ" | grep -v '= "";' | grep -oE '[A-Z0-9]{10}' | head -1)
+    TEAM_ID=$(grep 'DEVELOPMENT_TEAM = ' "$PBXPROJ" | grep -v '= "";' | grep -oE '[A-Z0-9]{10}' | head -1 || true)
     [ -n "$TEAM_ID" ] && echo "Found from project.pbxproj: $TEAM_ID"
 fi
 
 # Method 2: from provisioning profiles on this Mac
 if [ -z "$TEAM_ID" ]; then
-    PROFILE_DIR=~/Library/MobileDevice/Provisioning\ Profiles
-    for profile in "$PROFILE_DIR"/*.mobileprovision 2>/dev/null; do
-        [ -f "$profile" ] || continue
+    PROFILE_DIR="${HOME}/Library/MobileDevice/Provisioning Profiles"
+    for profile in "$PROFILE_DIR"/*.mobileprovision; do
+        [ -f "$profile" ] || continue  # skip glob no-match
         T=$(security cms -D -i "$profile" 2>/dev/null | python3 -c "
 import sys, plistlib
 try:
@@ -41,7 +41,7 @@ fi
 if [ -z "$TEAM_ID" ]; then
     TEAM_ID=$(security find-identity -v -p codesigning 2>/dev/null \
         | grep "Apple Development" | head -1 \
-        | grep -oE '\([A-Z0-9]+\)' | tr -d '()')
+        | grep -oE '\([A-Z0-9]+\)' | tr -d '()' || true)
     [ -n "$TEAM_ID" ] && echo "Found from certificate: $TEAM_ID"
 fi
 
@@ -67,6 +67,34 @@ echo "==> Saved to Configuration.xcconfig (DEVELOPMENT_TEAM = $TEAM_ID)"
 if command -v xcodegen &>/dev/null; then
     echo "==> Running xcodegen..."
     cd "$SCRIPT_DIR" && xcodegen generate
+
+    # Patch DEVELOPMENT_TEAM into the generated pbxproj so Xcode's
+    # Signing & Capabilities dropdown shows the team without manual selection.
+    # Xcode reads the dropdown from the project-level `attributes` dict AND
+    # the per-config buildSettings — both must carry the team ID.
+    PBXPROJ="$SCRIPT_DIR/AmiseMedFlow.xcodeproj/project.pbxproj"
+    if [ -f "$PBXPROJ" ]; then
+        # 1. Patch build settings (quoted empty string form and bare form)
+        sed -i '' "s/DEVELOPMENT_TEAM = \"\";/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ"
+        sed -i '' "s/DEVELOPMENT_TEAM = [A-Z0-9][A-Z0-9]*;/DEVELOPMENT_TEAM = $TEAM_ID;/g" "$PBXPROJ"
+        # 2. Patch project-level attributes dict — this is what the Xcode UI dropdown reads
+        #    BSD sed on macOS can't handle range + block syntax; use python3 instead.
+        python3 - "$PBXPROJ" "$TEAM_ID" << 'PYEOF'
+import sys, re
+path, team_id = sys.argv[1], sys.argv[2]
+with open(path, 'r') as f:
+    content = f.read()
+# Replace DEVELOPMENT_TEAM = ""; inside the attributes = { ... } block
+content = re.sub(
+    r'(attributes\s*=\s*\{(?:[^{}]|\{[^{}]*\})*?)DEVELOPMENT_TEAM\s*=\s*"";',
+    lambda m: m.group(1) + f'DEVELOPMENT_TEAM = {team_id};',
+    content, flags=re.DOTALL
+)
+with open(path, 'w') as f:
+    f.write(content)
+PYEOF
+        echo "==> Patched DEVELOPMENT_TEAM = $TEAM_ID into project.pbxproj (build settings + attributes)"
+    fi
     echo "==> Project regenerated with team $TEAM_ID"
 else
     echo "WARN: xcodegen not found. Install with: brew install xcodegen"

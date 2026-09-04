@@ -19,6 +19,7 @@ final class SyncService: ObservableObject {
     private let networkQueue = DispatchQueue(label: "com.amise.network")
     private var modelContext: ModelContext?
     private var periodicSyncTask: Task<Void, Never>?
+    private var realtimeTask: Task<Void, Never>?
 
     init() {
         monitor.pathUpdateHandler = { [weak self] path in
@@ -41,6 +42,7 @@ final class SyncService: ObservableObject {
         self.modelContext = context
         // If network was already up (and auto-sync fired before the context arrived), sync now.
         Task { await syncIfAuthenticated() }
+        if isSignedIn { startRealtime() }
     }
 
     // MARK: - Periodic WiFi sync (30 s on WiFi / local network, pauses on cellular)
@@ -53,6 +55,27 @@ final class SyncService: ObservableObject {
                 await self.syncIfAuthenticated()
             }
         }
+    }
+
+    // MARK: - Realtime subscription (doctor device gets instant update on check-in)
+
+    func startRealtime() {
+        realtimeTask?.cancel()
+        realtimeTask = Task { [weak self] in
+            guard let self else { return }
+            let channel = SupabaseConfig.client.realtimeV2.channel("patient-encounter-sync")
+            let changes = await channel.postgresChange(AnyAction.self, schema: "public", table: "patients")
+            await channel.subscribe()
+            for await _ in changes {
+                guard !Task.isCancelled else { break }
+                await self.syncIfAuthenticated()
+            }
+        }
+    }
+
+    func stopRealtime() {
+        realtimeTask?.cancel()
+        realtimeTask = nil
     }
 
     // MARK: - Auth
@@ -72,6 +95,7 @@ final class SyncService: ObservableObject {
         currentUserEmail = session.user.email
         await fetchUserRole(userId: session.user.id)
         await syncIfAuthenticated()
+        startRealtime()
     }
 
     func signOut() async throws {
@@ -168,6 +192,7 @@ final class SyncService: ObservableObject {
         let working_diagnosis_icd: String?
         let allergies_json: String?
         let social_history: String?
+        let surgical_history: String?
         let height_cm: Double?
         let ward: String?
         let bed_number: String?
@@ -179,13 +204,15 @@ final class SyncService: ObservableObject {
         let exam_msk: String?
         let exam_skin: String?
         let exam_other: String?
+        let encounter_status: String?
+        let check_in_time: String?
         let created_at: String
     }
 
     private func pullPatients(context: ModelContext) async throws {
         let rows: [RemotePatient] = try await SupabaseConfig.client
             .from("patients")
-            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, created_at")
+            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, surgical_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, encounter_status, check_in_time, created_at")
             .order("created_at", ascending: false)
             .limit(500)
             .execute()
@@ -246,6 +273,9 @@ final class SyncService: ObservableObject {
             if let sh = row.social_history, (patient.socialHistory ?? "").isEmpty {
                 patient.socialHistory = sh
             }
+            if let sx = row.surgical_history, (patient.surgicalHistory ?? "").isEmpty {
+                patient.surgicalHistory = sx
+            }
             if let h = row.height_cm, patient.heightCm == nil { patient.heightCm = h }
             if let w = row.ward,   (patient.ward ?? "").isEmpty   { patient.ward = w }
             if let b = row.bed_number, (patient.bedNumber ?? "").isEmpty { patient.bedNumber = b }
@@ -258,6 +288,12 @@ final class SyncService: ObservableObject {
             if let es = row.exam_skin,   (patient.examSkin ?? "").isEmpty    { patient.examSkin    = es }
             if let eo = row.exam_other,  (patient.examOther ?? "").isEmpty   { patient.examOther   = eo }
 
+            if let es = row.encounter_status {
+                patient.encounterStatus = EncounterStatus(rawValue: es) ?? .notCheckedIn
+            }
+            if let ct = row.check_in_time {
+                patient.checkInTime = iso.date(from: ct)
+            }
             patient.syncedAt = .now
             // Only mark clean for patients created from this pull.
             // Existing dirty patients keep pendingSync=true so pushPatientEdits
@@ -329,6 +365,7 @@ final class SyncService: ObservableObject {
                 let management_plan: String?
                 let allergies_json: String?
                 let social_history: String?
+                let surgical_history: String?
                 let height_cm: Double?
                 let ward: String?
                 let bed_number: String?
@@ -340,6 +377,8 @@ final class SyncService: ObservableObject {
                 let exam_msk: String?
                 let exam_skin: String?
                 let exam_other: String?
+                let encounter_status: String
+                let check_in_time: String?
             }
             let isoFmt = ISO8601DateFormatter()
             let row = InsertRow(
@@ -366,6 +405,7 @@ final class SyncService: ObservableObject {
                 management_plan: patient.managementPlan,
                 allergies_json: patient.allergiesJson,
                 social_history: patient.socialHistory,
+                surgical_history: patient.surgicalHistory,
                 height_cm: patient.heightCm,
                 ward: patient.ward,
                 bed_number: patient.bedNumber,
@@ -376,7 +416,9 @@ final class SyncService: ObservableObject {
                 exam_neuro: patient.examNeuro,
                 exam_msk: patient.examMSK,
                 exam_skin: patient.examSkin,
-                exam_other: patient.examOther
+                exam_other: patient.examOther,
+                encounter_status: patient.encounterStatus.rawValue,
+                check_in_time: patient.checkInTime.map { isoFmt.string(from: $0) }
             )
             struct InsertResponse: Decodable { let id: String }
             let response: [InsertResponse] = try await SupabaseConfig.client
@@ -482,6 +524,7 @@ final class SyncService: ObservableObject {
                 let management_plan: String?
                 let allergies_json: String?
                 let social_history: String?
+                let surgical_history: String?
                 let height_cm: Double?
                 let ward: String?
                 let bed_number: String?
@@ -493,6 +536,8 @@ final class SyncService: ObservableObject {
                 let exam_msk: String?
                 let exam_skin: String?
                 let exam_other: String?
+                let encounter_status: String
+                let check_in_time: String?
                 let updated_at: String
             }
             let iso = ISO8601DateFormatter()
@@ -521,6 +566,7 @@ final class SyncService: ObservableObject {
                 management_plan: patient.managementPlan,
                 allergies_json: patient.allergiesJson,
                 social_history: patient.socialHistory,
+                surgical_history: patient.surgicalHistory,
                 height_cm: patient.heightCm,
                 ward: patient.ward,
                 bed_number: patient.bedNumber,
@@ -532,6 +578,8 @@ final class SyncService: ObservableObject {
                 exam_msk: patient.examMSK,
                 exam_skin: patient.examSkin,
                 exam_other: patient.examOther,
+                encounter_status: patient.encounterStatus.rawValue,
+                check_in_time: patient.checkInTime.map { iso.string(from: $0) },
                 updated_at: iso.string(from: patient.updatedAt)
             )
             try await SupabaseConfig.client

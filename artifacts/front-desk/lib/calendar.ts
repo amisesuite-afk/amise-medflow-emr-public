@@ -62,9 +62,13 @@ export interface FoundSlot {
 
 function setTime(d: Date, hhmm: string): Date {
   const [h, m] = hhmm.split(':').map(Number);
-  const out = new Date(d);
-  out.setHours(h, m, 0, 0);
-  return out;
+  // Interpret hhmm as ECT (UTC-4). Compute ECT midnight for the ECT calendar
+  // day that d falls in, then add h:m as ECT-local minutes.
+  const ectDate = new Date(d.getTime() + ECT_OFFSET_MS);
+  const ectMidnightUtc = Date.UTC(
+    ectDate.getUTCFullYear(), ectDate.getUTCMonth(), ectDate.getUTCDate(),
+  ) - ECT_OFFSET_MS;
+  return new Date(ectMidnightUtc + (h * 60 + m) * 60_000);
 }
 
 function overlapsBusy(start: Date, end: Date, busy: { start: Date; end: Date }[]): boolean {
@@ -74,11 +78,12 @@ function overlapsBusy(start: Date, end: Date, busy: { start: Date; end: Date }[]
 function formatSlot(slot: { start: Date; location: string }): string {
   const dayNames  = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const monthNames= ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const { start } = slot;
-  const hh = start.getHours().toString().padStart(2,'0');
-  const mm = start.getMinutes().toString().padStart(2,'0');
+  // Convert to ECT for display — server runs UTC, times must show in ECT.
+  const ect = new Date(slot.start.getTime() + ECT_OFFSET_MS);
+  const hh  = ect.getUTCHours().toString().padStart(2,'0');
+  const mm  = ect.getUTCMinutes().toString().padStart(2,'0');
   const loc = LOCATION_LABELS[slot.location] ?? slot.location;
-  return `${dayNames[start.getDay()]} ${start.getDate()} ${monthNames[start.getMonth()]} ${start.getFullYear()} at ${hh}:${mm} — ${loc}`;
+  return `${dayNames[ect.getUTCDay()]} ${ect.getUTCDate()} ${monthNames[ect.getUTCMonth()]} ${ect.getUTCFullYear()} at ${hh}:${mm} ECT — ${loc}`;
 }
 
 export async function findSlotsInWindow(

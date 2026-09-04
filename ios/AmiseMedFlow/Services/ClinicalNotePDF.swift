@@ -75,9 +75,7 @@ enum ClinicalNotePDF {
         teal.withAlphaComponent(0.1).setFill()
         UIRectFill(CGRect(x: 0, y: y, width: page.width, height: h))
 
-        let dob = patient.dateOfBirth.map {
-            DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .none)
-        } ?? ""
+        let dob = patient.dateOfBirth.map { DateFormatter.ectDate.string(from: $0) } ?? ""
         let parts: [String] = [
             patient.fullName,
             "\(patient.sex.rawValue)\(patient.ageYears > 0 ? ", \(patient.ageYears)y" : "")",
@@ -98,8 +96,8 @@ enum ClinicalNotePDF {
 
     @discardableResult
     private static func drawMeta(page: CGRect, y: CGFloat, note: ClinicalNote, teal: UIColor) -> CGFloat {
-        let dateStr = DateFormatter.localizedString(from: note.createdAt, dateStyle: .long, timeStyle: .short)
-        "Created: \(dateStr)   ·   Author: Dr Dawit Daniel Kabiye MD DM".draw(
+        let dateStr = DateFormatter.ectLong.string(from: note.createdAt)
+        "Created: \(dateStr) ECT   ·   Author: Dr Dawit Daniel Kabiye MD DM".draw(
             in: CGRect(x: 24, y: y, width: page.width - 48, height: 13),
             withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
                              .foregroundColor: UIColor.secondaryLabel])
@@ -198,6 +196,8 @@ enum ClinicalNotePDF {
         }
 
         let df = DateFormatter()
+        df.locale     = Locale(identifier: "en_LC")
+        df.timeZone   = .ect
         df.dateFormat = "dd MMM yyyy  HH:mm"
 
         for (i, n) in notes.enumerated() {
@@ -246,7 +246,7 @@ enum ClinicalNotePDF {
 
         let isDraft = note.status == .draft
         let suffix  = isDraft ? " · DRAFT — NOT VALID UNTIL SIGNED" : ""
-        let text    = "Generated \(DateFormatter.localizedString(from: .now, dateStyle: .medium, timeStyle: .short)) · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia\(suffix)"
+        let text    = "Generated \(DateFormatter.ectDateTime.string(from: .now)) ECT · Dr Dawit Daniel Kabiye MD DM · Amise Medical Services, Saint Lucia\(suffix)"
         text.draw(
             in: CGRect(x: 24, y: footerY, width: page.width - 48, height: 14),
             withAttributes: [.font: UIFont.systemFont(ofSize: 7),

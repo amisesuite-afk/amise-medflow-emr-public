@@ -93,9 +93,9 @@ final class CalendarService: ObservableObject {
     }
 
     private func loadEvents() {
-        // Fetch ±1 month in past, +3 months forward
-        let start = Calendar.current.date(byAdding: .month, value: -1, to: .now) ?? .now
-        let end   = Calendar.current.date(byAdding: .month, value: 3,  to: .now) ?? .now
+        // Fetch ±1 month in past, +3 months forward — anchored in ECT
+        let start = Calendar.ect.date(byAdding: .month, value: -1, to: .now) ?? .now
+        let end   = Calendar.ect.date(byAdding: .month, value: 3,  to: .now) ?? .now
         let pred  = store.predicateForEvents(withStart: start, end: end, calendars: nil)
         events = store.events(matching: pred).filter { !$0.isAllDay || $0.startDate != nil }
             .sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }

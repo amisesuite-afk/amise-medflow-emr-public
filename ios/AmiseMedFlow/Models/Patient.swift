@@ -94,10 +94,18 @@ final class Patient {
     var surgeryDataJson: String?    // SurgeryNoteData
     var ercpDataJson: String?       // ERCPData
 
+    // MARK: - Encounter status (front desk → doctor handoff)
+    var checkInTime: Date?
+    var encounterStatus: EncounterStatus = .notCheckedIn
+
     // MARK: - Perioperative checklist
     var asaClass: Int?                       // ASA physical status 1–5
     var consentSent: Bool = false            // Consent form given to patient
     var preOpInstructionsSent: Bool = false  // Pre-op instructions sent to patient
+
+    // MARK: - Structured clinical history (JSON-encoded)
+    var pmhEntriesJson: String?    // JSON: [PMHEntry]
+    var pshxEntriesJson: String?   // JSON: [PSHxEntry]
 
     init(
         fullName: String,
@@ -315,6 +323,22 @@ enum ReferralSource: String, Codable, CaseIterable {
     case specialist   = "Specialist"
     case emergency    = "Emergency"
     case other        = "Other"
+}
+
+enum EncounterStatus: String, Codable {
+    case notCheckedIn = "not_checked_in"
+    case waiting      = "waiting"
+    case withDoctor   = "with_doctor"
+    case complete     = "complete"
+
+    var label: String {
+        switch self {
+        case .notCheckedIn: return "Not checked in"
+        case .waiting:      return "Waiting"
+        case .withDoctor:   return "With doctor"
+        case .complete:     return "Complete"
+        }
+    }
 }
 
 // MARK: - Clinical handover summary

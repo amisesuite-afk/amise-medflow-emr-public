@@ -57,6 +57,11 @@ targets:
         # Privacy usage strings
         NSCameraUsageDescription: "Camera is used for patient photo documentation."
         NSPhotoLibraryUsageDescription: "Photo library is used for attaching clinical images."
+        NSCalendarsUsageDescription: "Calendar access lets MedFlow display your operating schedule alongside patient cases."
+        NSCalendarsFullAccessUsageDescription: "Full calendar access lets MedFlow create theatre bookings and display your operating schedule alongside clinical data."
+        NSFaceIDUsageDescription: "Face ID projects patient records and clinical data in Amise MedFlow."
+        NSMicrophoneUsageDescription: "Microphone access enables voice dictation for clinical notes and operative documentation."
+        NSSpeechRecognitionUsageDescription: "Speech recognition converts your dictation into structured clinical notes."
 
     entitlements:
       path: AmiseMedFlow/AmiseMedFlow.entitlements
@@ -74,7 +79,7 @@ targets:
         CODE_SIGN_STYLE: Automatic
         SWIFT_EMIT_LOC_STRINGS: YES
         ENABLE_PREVIEWS: YES
-        # DEVELOPMENT_TEAM intentionally absent — set via Configuration.xcconfig (git-ignored)
+        # DEVELOPMENT_TEAM set by setup.sh → patched into pbxproj after xcodegen
 
     dependencies:
       - package: Supabase

@@ -10,6 +10,19 @@ struct AllergyEntry: Codable, Identifiable {
     var reaction: String
 }
 
+struct PMHEntry: Codable, Identifiable {
+    var id: UUID = UUID()
+    var condition: String
+    var yearText: String = ""   // e.g. "2018", "~2015", "" if unknown
+}
+
+struct PSHxEntry: Codable, Identifiable {
+    var id: UUID = UUID()
+    var procedure: String
+    var yearText: String = ""       // e.g. "2019", "Mar 2020"
+    var anaesthetic: String = ""    // "GA" | "Spinal" | "Epidural" | "Local" | "Sedation" | "Regional"
+}
+
 extension Patient {
     var allergies: [AllergyEntry] {
         get {
@@ -25,7 +38,7 @@ extension Patient {
         let checks: [Bool] = [
             !(chiefComplaint ?? "").isEmpty,
             !(hpi ?? "").isEmpty,
-            !(pmhNotes ?? "").isEmpty || !(surgicalHistory ?? "").isEmpty,
+            !(pmhNotes ?? "").isEmpty || !(surgicalHistory ?? "").isEmpty || !pmhEntries.isEmpty || !pshxEntries.isEmpty,
             !allergies.isEmpty,
             !prescriptions.isEmpty,
             !(examGeneral ?? "").isEmpty || !(examAbdo ?? "").isEmpty,
@@ -75,6 +88,34 @@ extension Patient {
     }
 
     var hasAnticoagulation: Bool { !activeAnticoagulants.isEmpty }
+
+    // MARK: - Steroid therapy helpers
+
+    var activeSteroids: [Prescription] {
+        prescriptions.filter {
+            let n = $0.drug.lowercased()
+            return n.contains("prednisolone") || n.contains("prednisone") ||
+                   n.contains("dexamethasone") || n.contains("hydrocortisone") ||
+                   n.contains("methylprednisolone") || n.contains("fludrocortisone") ||
+                   n.contains("betamethasone")
+        }
+    }
+
+    var hasSteroidTherapy: Bool { !activeSteroids.isEmpty }
+
+    // MARK: - PMH text helpers (keyword scan on persisted pmhNotes)
+
+    var hasOSAinHistory: Bool {
+        let text = (pmhNotes ?? "").lowercased()
+        return text.contains(" osa") || text.contains("osa\n") ||
+               text.contains("osa,") || text.contains("obstructive sleep") ||
+               text.contains("sleep apnoea") || text.contains("sleep apnea")
+    }
+
+    var hasDiabetesInHistory: Bool {
+        let text = (pmhNotes ?? "").lowercased()
+        return text.contains("t2dm") || text.contains("t1dm") || text.contains("diabetes")
+    }
 }
 
 // MARK: - Investigation model (JSON-encoded in Patient.investigationsJson)
@@ -142,6 +183,28 @@ extension Patient {
         }
         set {
             investigationsJson = (try? String(data: JSONEncoder().encode(newValue), encoding: .utf8)) ?? nil
+        }
+    }
+}
+
+extension Patient {
+    var pmhEntries: [PMHEntry] {
+        get {
+            guard let json = pmhEntriesJson, let data = json.data(using: .utf8) else { return [] }
+            return (try? JSONDecoder().decode([PMHEntry].self, from: data)) ?? []
+        }
+        set {
+            pmhEntriesJson = (try? String(data: JSONEncoder().encode(newValue), encoding: .utf8)) ?? nil
+        }
+    }
+
+    var pshxEntries: [PSHxEntry] {
+        get {
+            guard let json = pshxEntriesJson, let data = json.data(using: .utf8) else { return [] }
+            return (try? JSONDecoder().decode([PSHxEntry].self, from: data)) ?? []
+        }
+        set {
+            pshxEntriesJson = (try? String(data: JSONEncoder().encode(newValue), encoding: .utf8)) ?? nil
         }
     }
 }
@@ -258,6 +321,104 @@ let familyHistoryChips: [String] = [
     "Pancreatic cancer", "Hepatocellular carcinoma", "Lynch syndrome",
     "Ischaemic heart disease", "Stroke", "Hypertension", "T2DM",
     "Familial hypercholesterolaemia", "AAA", "IBD", "BRCA1/BRCA2 mutation",
+]
+
+// MARK: - Cross-class allergy exclusion rules
+// Returns true if a drug name should be excluded given the patient's allergy list.
+// Handles drug class cross-reactivity (penicillin → all beta-lactams, etc.)
+func crossClassAllergyExcludes(_ drug: String, allergies: [AllergyEntry]) -> Bool {
+    let d = drug.lowercased()
+    for allergy in allergies {
+        let a = allergy.name.lowercased()
+        // Direct name match
+        if d.contains(a) || a.contains(d) { return true }
+        // Penicillin allergy → exclude all beta-lactams
+        if a.contains("penicillin") || a.contains("amoxicillin") || a.contains("co-amoxiclav") {
+            let betaLactams = ["amoxicillin", "ampicillin", "flucloxacillin", "piperacillin",
+                               "co-amoxiclav", "augmentin", "cephalexin", "cefalexin",
+                               "cefazolin", "cefuroxime", "ceftriaxone", "ertapenem", "meropenem"]
+            if betaLactams.contains(where: { d.contains($0) }) { return true }
+        }
+        // NSAID allergy/intolerance → exclude all NSAIDs
+        if a.contains("nsaid") || a.contains("aspirin") || a.contains("ibuprofen") || a.contains("naproxen") || a.contains("diclofenac") {
+            let nsaids = ["ibuprofen", "naproxen", "diclofenac", "indomethacin",
+                          "celecoxib", "etoricoxib", "meloxicam", "ketorolac", "piroxicam"]
+            if nsaids.contains(where: { d.contains($0) }) { return true }
+        }
+        // Sulfonamide allergy → exclude sulpha drugs
+        if a.contains("sulfonamide") || a.contains("sulfamethoxazole") || a.contains("sulpha") {
+            let sulpha = ["trimethoprim", "cotrimoxazole", "co-trimoxazole", "sulfamethoxazole",
+                          "sulfasalazine", "sulphasalazine"]
+            if sulpha.contains(where: { d.contains($0) }) { return true }
+        }
+        // Codeine allergy → exclude opioids with similar structure
+        if a.contains("codeine") || a.contains("morphine") {
+            let opioids = ["codeine", "dihydrocodeine", "tramadol"]
+            if opioids.contains(where: { d.contains($0) }) { return true }
+        }
+    }
+    return false
+}
+
+// MARK: - PMH → Investigations deterministic map
+
+private let pmhInvestigations: [String: [CCInv]] = [
+    "Hypertension":            [("U&E", .blood), ("Creatinine / eGFR", .blood), ("ECG", .other),
+                                ("Urinalysis", .blood), ("Fasting lipids", .blood)],
+    "T2DM":                    [("HbA1c", .blood), ("Fasting glucose", .blood), ("U&E", .blood),
+                                ("Fasting lipids", .blood), ("eGFR / Creatinine", .blood),
+                                ("Urinary ACR", .blood), ("ECG", .other)],
+    "T1DM":                    [("HbA1c", .blood), ("Fasting glucose", .blood), ("U&E", .blood), ("eGFR", .blood)],
+    "Ischaemic heart disease": [("ECG", .other), ("Troponin", .blood), ("FBC", .blood),
+                                ("Fasting lipids", .blood), ("Echocardiogram", .imaging)],
+    "Atrial fibrillation":     [("ECG", .other), ("TFT", .blood), ("INR", .blood),
+                                ("Echocardiogram", .imaging), ("U&E", .blood)],
+    "Heart failure":           [("BNP / NT-proBNP", .blood), ("ECG", .other), ("FBC", .blood),
+                                ("U&E", .blood), ("Echocardiogram", .imaging), ("CXR", .imaging)],
+    "CKD":                     [("U&E", .blood), ("eGFR / Creatinine", .blood), ("FBC", .blood),
+                                ("Phosphate", .blood), ("PTH", .blood), ("Urinalysis", .blood)],
+    "Liver disease / Cirrhosis": [("LFT", .blood), ("INR / coagulation", .blood), ("FBC", .blood),
+                                  ("Albumin", .blood), ("USS abdomen", .imaging)],
+    "COPD":                    [("Spirometry", .other), ("CXR", .imaging), ("FBC", .blood), ("ABG", .blood)],
+    "Asthma":                  [("Spirometry / PEFR", .other), ("CXR", .imaging), ("FBC", .blood)],
+    "Malignancy":              [("FBC", .blood), ("LFT", .blood), ("U&E", .blood), ("Albumin", .blood),
+                                ("CRP / ESR", .blood), ("CT chest/abdomen/pelvis", .imaging)],
+    "DVT / PE":                [("INR", .blood), ("Anti-Xa", .blood), ("USS Doppler legs", .imaging),
+                                ("CTPA", .imaging), ("FBC", .blood), ("D-dimer", .blood)],
+    "Anaemia":                 [("FBC", .blood), ("Iron studies", .blood), ("B12 / Folate", .blood),
+                                ("Reticulocytes", .blood), ("Blood film", .pathology)],
+    "Rheumatoid arthritis":    [("FBC", .blood), ("CRP / ESR", .blood), ("LFT", .blood),
+                                ("Rheumatoid factor", .blood), ("Anti-CCP", .blood)],
+    "Thyroid disease":         [("TFT", .blood), ("TSH", .blood), ("Thyroid USS", .imaging)],
+    "OSA":                     [("Sleep study / oximetry", .other), ("ABG", .blood), ("CXR", .imaging)],
+]
+
+// MARK: - PMH → common medication deterministic map
+// Drug names must match ClinicalSearchService.searchDrugs() entries exactly.
+let pmhToCommonMeds: [String: [String]] = [
+    "Hypertension":              ["Amlodipine", "Lisinopril", "Atenolol", "Hydrochlorothiazide", "Ramipril"],
+    "T2DM":                      ["Metformin", "Gliclazide", "Sitagliptin", "Empagliflozin", "Insulin glargine"],
+    "T1DM":                      ["Insulin glargine", "Insulin aspart", "Metformin"],
+    "Ischaemic heart disease":   ["Aspirin", "Atorvastatin", "Bisoprolol", "GTN spray", "Clopidogrel"],
+    "Atrial fibrillation":       ["Apixaban", "Warfarin", "Bisoprolol", "Digoxin", "Rivaroxaban"],
+    "Heart failure":             ["Furosemide", "Spironolactone", "Ramipril", "Bisoprolol", "Eplerenone"],
+    "Stroke / TIA":              ["Aspirin", "Clopidogrel", "Atorvastatin", "Ramipril"],
+    "CKD":                       ["Furosemide", "Amlodipine", "Calcium carbonate", "Alfacalcidol", "Erythropoietin"],
+    "COPD":                      ["Salbutamol", "Tiotropium", "Salmeterol", "Prednisolone", "Ipratropium"],
+    "Asthma":                    ["Salbutamol", "Beclomethasone inhaler", "Montelukast", "Prednisolone"],
+    "Liver disease / Cirrhosis": ["Spironolactone", "Furosemide", "Lactulose", "Rifaximin", "Propranolol"],
+    "Peptic ulcer disease":      ["Omeprazole", "Amoxicillin", "Clarithromycin", "Metronidazole"],
+    "GORD / Reflux":             ["Omeprazole", "Lansoprazole", "Ranitidine", "Gaviscon"],
+    "IBD (Crohn's / UC)":        ["Mesalazine", "Prednisolone", "Azathioprine", "Budesonide"],
+    "Malignancy":                ["Dexamethasone", "Ondansetron", "Morphine", "Omeprazole"],
+    "Thyroid disease":           ["Levothyroxine", "Carbimazole", "Propranolol"],
+    "DVT / PE":                  ["Apixaban", "Rivaroxaban", "Warfarin", "Enoxaparin"],
+    "Anaemia":                   ["Ferrous sulfate", "Folic acid", "Hydroxocobalamin"],
+    "Epilepsy":                  ["Levetiracetam", "Sodium valproate", "Carbamazepine", "Lamotrigine"],
+    "Depression / Anxiety":      ["Sertraline", "Fluoxetine", "Amitriptyline", "Diazepam"],
+    "Rheumatoid arthritis":      ["Methotrexate", "Hydroxychloroquine", "Prednisolone", "Naproxen"],
+    "Osteoporosis":              ["Alendronate", "Calcium carbonate", "Colecalciferol", "Denosumab"],
+    "Immunocompromised":         ["Trimethoprim", "Fluconazole", "Aciclovir", "Cotrimoxazole"],
 ]
 
 // MARK: - Common allergen quick-chip data
@@ -460,6 +621,7 @@ enum ConsultTab: String, CaseIterable {
     case hpi       = "HPI"
     case pmh       = "PMH"
     case pshx      = "PSHx"
+    case meds      = "Meds"
     case allergies = "Allergies"
     case social    = "Social"
     case exam           = "Exam"
@@ -476,6 +638,7 @@ struct ConsultationView: View {
     var embeddedInNav: Bool = false
     @Environment(\.modelContext) private var context
     @StateObject private var ai = AIService()
+    @StateObject private var pipeline = ClinicalPipelineOrchestrator()
 
     @State private var activeTab: ConsultTab = .hpi
     @State private var examMode: ExamMode = .short
@@ -516,11 +679,63 @@ struct ConsultationView: View {
     @State private var dismissedRadiation = false
     @State private var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
     @State private var dismissedAlarmIds: Set<UUID> = []
+    @State private var surgicalRiskAlerts: [SurgicalRiskAlert] = []
+    @State private var showCompleteEncounterConfirm = false
 
     enum ExamMode { case short, full }
 
     private var interactions: [DrugInteractionAlert] {
         DrugInteractionService.check(drugs: patient.prescriptions.map { $0.drug })
+    }
+
+    // Recompute surgical risk alerts from current state. Call whenever PMH,
+    // medications, social chips, or vitals change.
+    private func recomputeRisk() {
+        let inputs = SurgicalRiskInputs(
+            pmh: pmhChipSelections,
+            medicationNames: patient.prescriptions.map { $0.drug },
+            ageYears: patient.ageYears,
+            bmiKgM2: patient.latestBMI(),
+            socialChips: selectedSocialChips
+        )
+        surgicalRiskAlerts = SurgicalRiskEngine.assess(inputs)
+    }
+
+    // Deterministic PMH → medication quick-picks.
+    // Unions all selected PMH chips, de-dupes, excludes already-added drugs,
+    // and excludes any drug the patient is allergic to (name match, case-insensitive).
+    private var pmhDerivedMedSuggestions: [String] {
+        let addedNames = Set(patient.prescriptions.map { $0.drug.lowercased() })
+        let allergies  = patient.allergies
+        var seen = Set<String>()
+        var result: [String] = []
+        for chip in pmhChipSelections {
+            for med in pmhToCommonMeds[chip] ?? [] {
+                let lower = med.lowercased()
+                guard !seen.contains(lower),
+                      !addedNames.contains(lower),
+                      !crossClassAllergyExcludes(lower, allergies: allergies)
+                else { continue }
+                seen.insert(lower)
+                result.append(med)
+            }
+        }
+        return result
+    }
+
+    // Deterministic PMH → Investigations quick-suggest.
+    private var pmhDerivedIxSuggestions: [(name: String, category: InvestigationEntry.InvCategory)] {
+        let existing = Set(patient.investigations.map { $0.name })
+        var seen = Set<String>()
+        var result: [(name: String, category: InvestigationEntry.InvCategory)] = []
+        for chip in pmhChipSelections {
+            for inv in pmhInvestigations[chip] ?? [] {
+                guard !seen.contains(inv.name), !existing.contains(inv.name) else { continue }
+                seen.insert(inv.name)
+                result.append(inv)
+            }
+        }
+        return result
     }
 
     var body: some View {
@@ -537,7 +752,34 @@ struct ConsultationView: View {
             tabContent
         }
         .background(Color(.systemBackground))
-        .onAppear { activeTab = startingTab }
+        .onAppear {
+            activeTab = startingTab
+            // Advance encounter status to withDoctor the moment the doctor opens the record
+            if patient.encounterStatus == .waiting || patient.encounterStatus == .notCheckedIn {
+                patient.encounterStatus = .withDoctor
+                patient.updatedAt = .now
+                patient.pendingSync = true
+                try? context.save()
+            }
+            // Pre-populate SOCRATES from questionnaire HPI if not yet filled
+            if socratesSelections.isEmpty, let hpi = patient.hpi {
+                socratesSelections = parseSocratesFromHPI(hpi)
+            }
+            // Pre-populate PMH chips from persisted pmhNotes (questionnaire write-back)
+            if pmhChipSelections.isEmpty, let notes = patient.pmhNotes {
+                pmhChipSelections = parsePMHChipsFromNotes(notes)
+            }
+            // P9: Pre-populate PSHx chips from persisted surgicalHistory
+            if pshxChipSelections.isEmpty, let pshx = patient.surgicalHistory {
+                pshxChipSelections = parsePSHxChipsFromSurgicalHistory(pshx)
+            }
+            // P8: Re-populate social chips so SurgicalRiskEngine sees correct state
+            if selectedSocialChips.isEmpty, let social = patient.socialHistory {
+                selectedSocialChips = parseSocialChipsFromHistory(social)
+                recomputeRisk()
+            }
+            pipeline.runNow(for: patient, socratesSelections: socratesSelections)
+        }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
@@ -557,10 +799,25 @@ struct ConsultationView: View {
                 await MainActor.run { runPathway(); refreshBayesian() }
             }
         }
-        .onChange(of: patient.hpi) { _, _ in refreshBayesian() }
-        .onChange(of: patient.examGeneral) { _, _ in refreshBayesian() }
-        .onChange(of: patient.examAbdo) { _, _ in refreshBayesian() }
-        .onChange(of: patient.investigationsJson) { _, _ in refreshBayesian() }
+        .onChange(of: patient.hpi) { _, _ in
+            refreshBayesian()
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
+        .onChange(of: patient.examGeneral) { _, _ in
+            refreshBayesian()
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
+        .onChange(of: patient.examAbdo) { _, _ in
+            refreshBayesian()
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
+        .onChange(of: patient.investigationsJson) { _, _ in
+            refreshBayesian()
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
+        .onChange(of: socratesSelections) { _, _ in
+            pipeline.schedule(for: patient, socratesSelections: socratesSelections)
+        }
         .sheet(isPresented: $showAddAllergy) { addAllergySheet }
         .sheet(isPresented: $showAddMedication) {
             AddMedicationSheet(patient: patient, context: context)
@@ -574,6 +831,155 @@ struct ConsultationView: View {
         .sheet(isPresented: $showLetterSheet) {
             ConsultationLetterSheet(letterText: generatedLetterText, patient: patient)
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if patient.encounterStatus != .complete {
+                    let completeness = patient.consultationCompleteness
+                    Button {
+                        showCompleteEncounterConfirm = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: completeness.filled == completeness.total
+                                ? "checkmark.circle.fill" : "checkmark.circle")
+                            Text("Complete")
+                                .font(.system(size: 13, weight: .semibold))
+                        }
+                        .foregroundStyle(completeness.filled >= 6 ? Color.green : Color(.tertiaryLabel))
+                    }
+                } else {
+                    Label("Encounter complete", systemImage: "checkmark.seal.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.green)
+                        .labelStyle(.iconOnly)
+                }
+            }
+        }
+        .confirmationDialog(completeEncounterDialogTitle,
+                            isPresented: $showCompleteEncounterConfirm,
+                            titleVisibility: .visible) {
+            Button("Mark as Complete") {
+                patient.encounterStatus = .complete
+                patient.updatedAt = .now
+                patient.pendingSync = true
+                try? context.save()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text(completeEncounterDialogMessage)
+        }
+    }
+
+    // P5: Complete encounter dialog helpers
+    private var completeEncounterDialogTitle: String {
+        let c = patient.consultationCompleteness
+        if c.filled < c.total {
+            return "Complete encounter (\(c.filled)/\(c.total) items filled)?"
+        }
+        return "Mark encounter as complete?"
+    }
+
+    private var completeEncounterDialogMessage: String {
+        let c = patient.consultationCompleteness
+        if c.filled < c.total {
+            let missing = incompleteConsultationItems()
+            return "Missing: \(missing.joined(separator: ", ")). You can still complete the encounter — record will remain editable."
+        }
+        return "The encounter will be marked complete. The record remains editable."
+    }
+
+    private func incompleteConsultationItems() -> [String] {
+        var missing: [String] = []
+        if (patient.chiefComplaint ?? "").isEmpty { missing.append("chief complaint") }
+        if (patient.hpi ?? "").isEmpty            { missing.append("HPI") }
+        let hasPMH = !(patient.pmhNotes ?? "").isEmpty || !(patient.surgicalHistory ?? "").isEmpty
+            || !patient.pmhEntries.isEmpty || !patient.pshxEntries.isEmpty
+        if !hasPMH                                { missing.append("PMH") }
+        if patient.allergies.isEmpty              { missing.append("allergies") }
+        if patient.prescriptions.isEmpty          { missing.append("medications") }
+        let hasExam = !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
+        if !hasExam                               { missing.append("examination") }
+        if patient.workingDiagnosis == nil        { missing.append("working diagnosis") }
+        if (patient.managementPlan ?? "").isEmpty { missing.append("management plan") }
+        return missing
+    }
+
+    // MARK: - Allergy banner
+
+    // MARK: - Surgical risk profile section
+
+    @ViewBuilder
+    private func riskAlertRow(_ alert: SurgicalRiskAlert) -> some View {
+        let bandColor: Color = {
+            switch alert.band {
+            case .advisory:  .teal
+            case .moderate:  .orange
+            case .high:      Color(red: 0.85, green: 0.2, blue: 0.1)
+            case .critical:  .red
+            }
+        }()
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Image(systemName: alert.domain.icon)
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(bandColor)
+                    .frame(width: 16)
+                Text(alert.title)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(.primary)
+                Spacer()
+                Text(alert.band.label.uppercased())
+                    .font(.system(size: 9, weight: .black))
+                    .foregroundStyle(bandColor)
+                    .padding(.horizontal, 5).padding(.vertical, 2)
+                    .background(bandColor.opacity(0.12), in: Capsule())
+            }
+            Text(alert.detail)
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: 4) {
+                Image(systemName: "arrow.right.circle")
+                    .font(.system(size: 10))
+                    .foregroundStyle(bandColor)
+                Text(alert.action)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 6)
+    }
+
+    private var surgicalRiskSection: some View {
+        Section {
+            ForEach(surgicalRiskAlerts) { alert in
+                riskAlertRow(alert)
+            }
+        } header: {
+            HStack(spacing: 6) {
+                Image(systemName: "shield.lefthalf.filled.trianglebadge.exclamationmark")
+                    .font(.system(size: 11, weight: .semibold))
+                Text("Surgical Risk Profile")
+                    .font(.system(size: 11, weight: .semibold))
+                    .textCase(nil)
+                Spacer()
+                let maxBand = surgicalRiskAlerts.map { $0.band }.max()
+                if let top = maxBand {
+                    let topColor: Color = {
+                        switch top {
+                        case .advisory:  .teal
+                        case .moderate:  .orange
+                        case .high:      Color(red: 0.85, green: 0.2, blue: 0.1)
+                        case .critical:  .red
+                        }
+                    }()
+                    Text("\(surgicalRiskAlerts.count) alert\(surgicalRiskAlerts.count == 1 ? "" : "s") · \(top.label)")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(topColor)
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(topColor.opacity(0.12), in: Capsule())
+                }
+            }
+            .foregroundStyle(.secondary)
+        }
     }
 
     // MARK: - Allergy banner
@@ -585,7 +991,7 @@ struct ConsultationView: View {
                 .foregroundStyle(.white)
             ForEach(patient.allergies) { a in
                 HStack(spacing: 5) {
-                    Circle().fill(.white.opacity(0.7)).frame(width: 5, height: 5)
+                    Circle().fill(Color(white: 1, opacity: 0.7)).frame(width: 5, height: 5)
                     Text("\(a.name)  [\(a.severity)]  — \(a.reaction)")
                         .font(.caption2).foregroundStyle(.white)
                 }
@@ -593,55 +999,65 @@ struct ConsultationView: View {
         }
         .padding(.horizontal, 16).padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.red.opacity(0.85))
+        .background { allergyBannerBg }
     }
 
     // MARK: - Clinical alarm banner
 
+    private var allergyBannerBg: Color { Color.red.opacity(0.85) }
+
+    private func alarmBannerColor(isEmergency: Bool) -> Color {
+        isEmergency ? Color.red.opacity(0.92) : Color.orange.opacity(0.88)
+    }
+
     @ViewBuilder
+    private func alarmRow(_ alarm: ClinicalTextParser.ClinicalAlarm, isLast: Bool) -> some View {
+        let isEmergency = alarm.severity == .emergency
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: alarm.systemImage)
+                .font(.system(size: 13, weight: .bold))
+                .foregroundStyle(.white)
+                .frame(width: 18)
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(alarm.title)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text(isEmergency ? "EMERGENCY" : "CRITICAL")
+                        .font(.system(size: 9, weight: .black))
+                        .foregroundStyle(isEmergency ? .red : .orange)
+                        .padding(.horizontal, 4).padding(.vertical, 1)
+                        .background(Color.white, in: Capsule())
+                }
+                Text(alarm.detail)
+                    .font(.system(size: 11))
+                    .foregroundStyle(.white.opacity(0.9))
+                Text(alarm.action)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.75))
+                    .padding(.top, 1)
+            }
+            Spacer()
+            Button {
+                withAnimation(.easeOut(duration: 0.15)) {
+                    _ = dismissedAlarmIds.insert(alarm.id)
+                }
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.white.opacity(0.7))
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 14).padding(.vertical, 9)
+        .background { alarmBannerColor(isEmergency: isEmergency) }
+        if !isLast { Divider().background { Color(white: 1, opacity: 0.3) } }
+    }
+
     private func clinicalAlarmBanner(_ alarms: [ClinicalTextParser.ClinicalAlarm]) -> some View {
         VStack(spacing: 0) {
             ForEach(alarms) { alarm in
-                let isEmergency = alarm.severity == .emergency
-                HStack(alignment: .top, spacing: 10) {
-                    Image(systemName: alarm.systemImage)
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(.white)
-                        .frame(width: 18)
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 6) {
-                            Text(alarm.title)
-                                .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(.white)
-                            Text(isEmergency ? "EMERGENCY" : "CRITICAL")
-                                .font(.system(size: 9, weight: .black))
-                                .foregroundStyle(isEmergency ? .red : .orange)
-                                .padding(.horizontal, 4).padding(.vertical, 1)
-                                .background(Color.white, in: Capsule())
-                        }
-                        Text(alarm.detail)
-                            .font(.system(size: 11))
-                            .foregroundStyle(.white.opacity(0.9))
-                        Text(alarm.action)
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.white.opacity(0.75))
-                            .padding(.top, 1)
-                    }
-                    Spacer()
-                    Button {
-                        withAnimation(.easeOut(duration: 0.15)) {
-                            dismissedAlarmIds.insert(alarm.id)
-                        }
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 10, weight: .semibold))
-                            .foregroundStyle(.white.opacity(0.7))
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, 14).padding(.vertical, 9)
-                .background(isEmergency ? Color.red.opacity(0.92) : Color.orange.opacity(0.88))
-                if alarm.id != alarms.last?.id { Divider().background(.white.opacity(0.3)) }
+                alarmRow(alarm, isLast: alarm.id == alarms.last?.id)
             }
         }
         .transition(.move(edge: .top).combined(with: .opacity))
@@ -707,8 +1123,9 @@ struct ConsultationView: View {
         switch tab {
         case .cc:        return !(patient.chiefComplaint ?? "").isEmpty
         case .hpi:       return !(patient.hpi ?? "").isEmpty
-        case .pmh:       return !(patient.pmhNotes ?? "").isEmpty
-        case .pshx:      return !(patient.surgicalHistory ?? "").isEmpty
+        case .pmh:       return !(patient.pmhNotes ?? "").isEmpty || !patient.pmhEntries.isEmpty
+        case .pshx:      return !(patient.surgicalHistory ?? "").isEmpty || !patient.pshxEntries.isEmpty
+        case .meds:      return !patient.prescriptions.isEmpty
         case .allergies: return !patient.allergies.isEmpty
         case .social:    return !(patient.socialHistory ?? "").isEmpty
         case .exam:           return !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
@@ -727,6 +1144,7 @@ struct ConsultationView: View {
         case .hpi:       hpiTab
         case .pmh:       pmhTab
         case .pshx:      pshxTab
+        case .meds:      List { medicationsSection }
         case .allergies: allergiesTab
         case .social:    socialTab
         case .exam:           examTab
@@ -1059,6 +1477,43 @@ struct ConsultationView: View {
 
     private var medicationsSection: some View {
         Section {
+            // PMH-derived quick-picks — deterministic, no AI
+            let pmhMeds = pmhDerivedMedSuggestions
+            if !pmhMeds.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Label("From your PMH — tap to add", systemImage: "cross.case")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(pmhMeds, id: \.self) { name in
+                                Button {
+                                    let match = ClinicalSearchService.searchDrugs(name).first
+                                    if let drug = match {
+                                        medQuery = drug.name
+                                        expandedMed = drug
+                                        medDose = drug.commonDoses
+                                        medRoute = drug.route
+                                        medFreq = "OD"
+                                        medSuggestions = []
+                                    } else {
+                                        addMedicationEntry(name: name, dose: "", route: "Oral", freq: "OD")
+                                    }
+                                } label: {
+                                    Text(name)
+                                        .font(.caption.weight(.medium))
+                                        .padding(.horizontal, 10).padding(.vertical, 5)
+                                        .background(AMColor.accentLt, in: Capsule())
+                                        .foregroundStyle(AMColor.accent)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+
             // Drug search field
             HStack(spacing: 8) {
                 Image(systemName: "pills").foregroundStyle(.secondary)
@@ -1204,25 +1659,14 @@ struct ConsultationView: View {
                 }
             }
 
-            // AI auto-suggest trigger
-            Button {
-                Task { await suggestMedicationsForDiagnosis() }
-            } label: {
-                HStack(spacing: 6) {
-                    if isSuggestingMeds { ProgressView().scaleEffect(0.75) }
-                    else { Image(systemName: "brain") }
-                    Text(isSuggestingMeds ? "Suggesting…" : "AI Suggest Medications")
-                        .font(.callout)
-                }
-                .foregroundStyle(patient.workingDiagnosis == nil ? Color.secondary : AMColor.accent)
-            }
-            .buttonStyle(.plain)
-            .disabled(isSuggestingMeds || patient.workingDiagnosis == nil)
+            // AI Suggest Medications — on hold (HIPAA compliance)
+            // Button hidden; re-enable when clinical AI clearance is in place.
 
             // Current medication list
             if !patient.prescriptions.isEmpty {
                 Divider()
-                ForEach(patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }) { rx in
+                let sortedRx = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
+                ForEach(sortedRx) { rx in
                     HStack(spacing: 10) {
                         Image(systemName: "pill")
                             .font(.system(size: 11))
@@ -1230,12 +1674,19 @@ struct ConsultationView: View {
                             .frame(width: 16)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(rx.drug).font(.callout.weight(.semibold))
-                            if rx.displayLine != rx.drug {
-                                Text(rx.displayLine).font(.caption).foregroundStyle(.secondary)
-                            }
+                            Text(rx.displayLine)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                         Spacer()
+                        Text(rx.prescribedAt.formatted(.dateTime.month(.abbreviated).year()))
+                            .font(.caption2.monospacedDigit())
+                            .foregroundStyle(.tertiary)
                     }
+                }
+                .onDelete { idxSet in
+                    for i in idxSet { context.delete(sortedRx[i]) }
+                    touch()
                 }
             }
         } header: {
@@ -1246,6 +1697,24 @@ struct ConsultationView: View {
 
     private var pmhTab: some View {
         List {
+            // Structured entries — one row per condition
+            if !patient.pmhEntries.isEmpty {
+                Section {
+                    ForEach(patient.pmhEntries.indices, id: \.self) { i in
+                        pmhEntryRow(index: i)
+                    }
+                    .onDelete { idxSet in
+                        var list = patient.pmhEntries
+                        list.remove(atOffsets: idxSet)
+                        patient.pmhEntries = list
+                        touch()
+                    }
+                } header: {
+                    sectionHeader("Medical History (\(patient.pmhEntries.count))",
+                                  icon: "stethoscope", filled: true)
+                }
+            }
+
             Section {
                 // Bypass card — PMH already on record
                 if !(patient.pmhNotes ?? "").isEmpty && !pmhBypassConfirmed {
@@ -1272,7 +1741,10 @@ struct ConsultationView: View {
                 // Condition list
                 ForEach(pmhChips, id: \.self) { chip in
                     let sel = pmhChipSelections.contains(chip)
-                    Button { pmhChipSelections.formSymmetricDifference([chip]) } label: {
+                    Button {
+                        pmhChipSelections.formSymmetricDifference([chip])
+                        recomputeRisk()
+                    } label: {
                         HStack(spacing: 10) {
                             Image(systemName: sel ? "checkmark.circle.fill" : "circle")
                                 .font(.system(size: 13))
@@ -1291,6 +1763,14 @@ struct ConsultationView: View {
                         appendHistory(existing: patient.pmhNotes, chips: pmhChipSelections) {
                             patient.pmhNotes = $0
                         }
+                        // Create structured entries for each new condition
+                        var entries = patient.pmhEntries
+                        for chip in pmhChipSelections.sorted() {
+                            if !entries.contains(where: { $0.condition == chip }) {
+                                entries.append(PMHEntry(condition: chip))
+                            }
+                        }
+                        patient.pmhEntries = entries
                         pmhChipSelections = []
                         pmhBypassConfirmed = true
                         touch()
@@ -1316,6 +1796,11 @@ struct ConsultationView: View {
             } header: {
                 sectionHeader("Past Medical History", icon: "clock.arrow.circlepath",
                               filled: !(patient.pmhNotes ?? "").isEmpty)
+            }
+
+            // Surgical risk profile — reactive to PMH chips, medications, age, BMI, social
+            if !surgicalRiskAlerts.isEmpty {
+                surgicalRiskSection
             }
 
             Section {
@@ -1370,6 +1855,24 @@ struct ConsultationView: View {
 
     private var pshxTab: some View {
         List {
+            // Structured entries — one row per procedure
+            if !patient.pshxEntries.isEmpty {
+                Section {
+                    ForEach(patient.pshxEntries.indices, id: \.self) { i in
+                        pshxEntryRow(index: i)
+                    }
+                    .onDelete { idxSet in
+                        var list = patient.pshxEntries
+                        list.remove(atOffsets: idxSet)
+                        patient.pshxEntries = list
+                        touch()
+                    }
+                } header: {
+                    sectionHeader("Surgical History (\(patient.pshxEntries.count))",
+                                  icon: "scissors", filled: true)
+                }
+            }
+
             Section {
                 // Bypass card
                 if !(patient.surgicalHistory ?? "").isEmpty && !pshxBypassConfirmed {
@@ -1415,6 +1918,14 @@ struct ConsultationView: View {
                         appendHistory(existing: patient.surgicalHistory, chips: pshxChipSelections) {
                             patient.surgicalHistory = $0
                         }
+                        // Create structured entries for each new procedure
+                        var entries = patient.pshxEntries
+                        for chip in pshxChipSelections.sorted() {
+                            if !entries.contains(where: { $0.procedure == chip }) {
+                                entries.append(PSHxEntry(procedure: chip))
+                            }
+                        }
+                        patient.pshxEntries = entries
                         pshxChipSelections = []
                         pshxBypassConfirmed = true
                         touch()
@@ -1441,8 +1952,94 @@ struct ConsultationView: View {
                 sectionHeader("Past Surgical History", icon: "scissors",
                               filled: !(patient.surgicalHistory ?? "").isEmpty)
             }
+        }
+    }
 
-            medicationsSection
+    // MARK: - Structured history entry rows
+
+    @ViewBuilder
+    private func pmhEntryRow(index i: Int) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: "stethoscope")
+                .font(.system(size: 11))
+                .foregroundStyle(AMColor.accent)
+                .frame(width: 16)
+            Text(i < patient.pmhEntries.count ? patient.pmhEntries[i].condition : "")
+                .font(.callout)
+                .foregroundStyle(.primary)
+            Spacer()
+            TextField("Year", text: Binding(
+                get: { i < patient.pmhEntries.count ? patient.pmhEntries[i].yearText : "" },
+                set: { v in
+                    guard i < patient.pmhEntries.count else { return }
+                    var list = patient.pmhEntries
+                    list[i].yearText = v
+                    patient.pmhEntries = list
+                    touch()
+                }
+            ))
+            .keyboardType(.numberPad)
+            .font(.system(size: 12).monospacedDigit())
+            .foregroundStyle(.secondary)
+            .frame(width: 52)
+            .multilineTextAlignment(.trailing)
+        }
+    }
+
+    @ViewBuilder
+    private func pshxEntryRow(index i: Int) -> some View {
+        let entry = i < patient.pshxEntries.count ? patient.pshxEntries[i] : PSHxEntry(procedure: "")
+        HStack(spacing: 8) {
+            Image(systemName: "scissors")
+                .font(.system(size: 11))
+                .foregroundStyle(AMColor.accent)
+                .frame(width: 16)
+            Text(entry.procedure)
+                .font(.callout)
+                .foregroundStyle(.primary)
+            Spacer()
+            TextField("Year", text: Binding(
+                get: { i < patient.pshxEntries.count ? patient.pshxEntries[i].yearText : "" },
+                set: { v in
+                    guard i < patient.pshxEntries.count else { return }
+                    var list = patient.pshxEntries
+                    list[i].yearText = v
+                    patient.pshxEntries = list
+                    touch()
+                }
+            ))
+            .keyboardType(.numberPad)
+            .font(.system(size: 12).monospacedDigit())
+            .foregroundStyle(.secondary)
+            .frame(width: 48)
+            .multilineTextAlignment(.trailing)
+
+            Menu {
+                Button("Unknown / Not recorded") {
+                    guard i < patient.pshxEntries.count else { return }
+                    var list = patient.pshxEntries
+                    list[i].anaesthetic = ""
+                    patient.pshxEntries = list; touch()
+                }
+                ForEach(["GA", "Spinal", "Epidural", "Local", "Sedation", "Regional"], id: \.self) { type in
+                    Button(type) {
+                        guard i < patient.pshxEntries.count else { return }
+                        var list = patient.pshxEntries
+                        list[i].anaesthetic = type
+                        patient.pshxEntries = list; touch()
+                    }
+                }
+            } label: {
+                Text(entry.anaesthetic.isEmpty ? "Anaesth." : entry.anaesthetic)
+                    .font(.caption2.weight(.medium))
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(
+                        entry.anaesthetic.isEmpty ? Color(.systemGray5) : AMColor.accentLt,
+                        in: Capsule()
+                    )
+                    .foregroundStyle(entry.anaesthetic.isEmpty ? .secondary : AMColor.accent)
+            }
+            .menuStyle(.button)
         }
     }
 
@@ -1475,6 +2072,30 @@ struct ConsultationView: View {
                     } header: {
                         Label("Suggested for \(cc)", systemImage: "sparkles")
                     }
+                }
+            }
+
+            // PMH-matched suggestions
+            let pmhIx = pmhDerivedIxSuggestions
+            if !pmhIx.isEmpty {
+                Section {
+                    ChipFlow(hSpacing: 8, vSpacing: 8) {
+                        ForEach(pmhIx, id: \.name) { inv in
+                            Button { addInvestigation(name: inv.name, category: inv.category) } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: inv.category.icon).font(.system(size: 10))
+                                    Text(inv.name).font(.system(size: 12))
+                                }
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(AMColor.accentLt, in: Capsule())
+                                .foregroundStyle(AMColor.accent)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                } header: {
+                    Label("From your PMH", systemImage: "cross.case")
                 }
             }
 
@@ -1887,6 +2508,7 @@ struct ConsultationView: View {
         let existing = (patient.socialHistory ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
         patient.socialHistory = existing.isEmpty ? "· \(item)" : existing + "\n· \(item)"
         touch()
+        recomputeRisk()
     }
 
     // MARK: - Exam tab
@@ -1984,6 +2606,179 @@ struct ConsultationView: View {
         .padding(.vertical, 2)
     }
 
+    // MARK: - Pre-encounter questionnaire SOCRATES parser
+    // Reads the structured KEY: value lines written by EncounterAnswers.hpiText
+    // and converts them to the socratesSelections dictionary format so the
+    // Bayesian engine and SOCRATES chips are pre-populated from front-desk data.
+    // This is a one-time seed on .onAppear — the doctor can override chips freely.
+
+    private func parseSocratesFromHPI(_ hpi: String) -> [String: Set<String>] {
+        var result: [String: Set<String>] = [:]
+        for line in hpi.components(separatedBy: "\n") {
+            let parts = line.split(separator: ":", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
+            guard parts.count == 2 else { continue }
+            let key = parts[0].lowercased()
+            let val = parts[1]
+            switch key {
+            case "site":
+                result["site"] = [val]
+            case "onset":
+                result["onset"] = [val]
+            case "character":
+                result["character"] = [val]
+            case "radiation":
+                if !val.lowercased().contains("none") { result["radiation"] = [val] }
+            case "severity":
+                result["severity"] = [val]
+            case "timing":
+                result["timing"] = [val]
+            case "worse":
+                result["exacerbating"] = Set(val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
+            case "better":
+                result["relieving"] = Set(val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
+            case "associated":
+                result["associations"] = Set(val.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) })
+            default:
+                break
+            }
+        }
+        return result
+    }
+
+    // MARK: - PMH notes → chip pre-population
+    // Maps structured CONDITIONS: line written by EncounterAnswers.pmhxText to the
+    // pmhChips display labels so the PMH section is pre-selected on first open.
+    // Handles label mismatches between PMHxCondition.rawValue and pmhChips (e.g.
+    // "Diabetes mellitus" → both "T2DM" and "T1DM"; "Cancer (any)" → "Malignancy").
+
+    private func parsePMHChipsFromNotes(_ notes: String) -> Set<String> {
+        var matched = Set<String>()
+        // Extract conditions from the structured "CONDITIONS: a, b, c" line
+        let conditionLine: String? = notes.components(separatedBy: "\n").first(where: {
+            $0.uppercased().hasPrefix("CONDITIONS:")
+        }).map { String($0.dropFirst("CONDITIONS:".count)).trimmingCharacters(in: .whitespaces) }
+
+        let conditions: [String]
+        if let line = conditionLine {
+            conditions = line.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        } else {
+            // Fallback: scan all lines for any text that matches a known condition
+            conditions = notes.components(separatedBy: "\n")
+        }
+
+        // Mapping rules: PMHxCondition.rawValue (or keywords) → pmhChips label
+        let mapping: [(keywords: [String], chip: String)] = [
+            (["Hypertension", "hypertension"],                     "Hypertension"),
+            (["Diabetes mellitus", "T2DM", "Type 2"],              "T2DM"),
+            (["Diabetes mellitus", "T1DM", "Type 1"],              "T1DM"),
+            (["Heart disease", "IHD", "Ischaemic heart"],          "Ischaemic heart disease"),
+            (["Atrial fibrillation", "AF", "atrial fibrillation"], "Atrial fibrillation"),
+            (["Heart failure"],                                     "Heart failure"),
+            (["Stroke", "TIA"],                                     "Stroke / TIA"),
+            (["Chronic kidney disease", "CKD"],                    "CKD"),
+            (["COPD", "Chronic obstructive"],                      "COPD"),
+            (["Asthma"],                                           "Asthma"),
+            (["Liver disease", "Cirrhosis"],                       "Liver disease / Cirrhosis"),
+            (["Peptic ulcer"],                                     "Peptic ulcer disease"),
+            (["GORD", "Reflux", "GERD"],                          "GORD / Reflux"),
+            (["Inflammatory bowel", "IBD", "Crohn", "Colitis"],   "IBD (Crohn's / UC)"),
+            (["Cancer", "Malignancy", "Tumour", "Tumor"],         "Malignancy"),
+            (["Thyroid"],                                          "Thyroid disease"),
+            (["OSA", "Sleep apn", "Obstructive sleep"],           "OSA"),
+            (["DVT", "PE", "pulmonary embolism", "thrombosis"],   "DVT / PE"),
+            (["Anaemia", "Anemia"],                               "Anaemia"),
+            (["Epilepsy", "seizure"],                             "Epilepsy"),
+            (["Depression", "Anxiety", "Mental health"],          "Depression / Anxiety"),
+            (["Dementia", "Alzheimer"],                           "Dementia"),
+            (["Osteoporosis"],                                    "Osteoporosis"),
+            (["Rheumatoid arthritis", "Rheumatoid"],              "Rheumatoid arthritis"),
+            (["Immunocompromised", "HIV", "AIDS"],                "Immunocompromised"),
+        ]
+
+        let lowerConditions = conditions.map { $0.lowercased() }
+        for rule in mapping {
+            if rule.keywords.contains(where: { kw in
+                lowerConditions.contains(where: { $0.contains(kw.lowercased()) })
+            }) {
+                matched.insert(rule.chip)
+            }
+        }
+        return matched
+    }
+
+    // MARK: - P9: surgicalHistory text → PSHx chip pre-population
+    // Matches free-text surgical history (from questionnaire or typed notes) against
+    // the pshxChips labels by keyword. Called on .onAppear — doctor can modify freely.
+
+    private func parsePSHxChipsFromSurgicalHistory(_ text: String) -> Set<String> {
+        let lower = text.lowercased()
+        var matched = Set<String>()
+        let mapping: [(keywords: [String], chip: String)] = [
+            (["cholecystectomy", "gallbladder removal"],          "Cholecystectomy"),
+            (["appendicectomy", "appendectomy"],                  "Appendicectomy"),
+            (["inguinal hernia"],                                 "Inguinal hernia repair"),
+            (["umbilical hernia"],                                 "Umbilical hernia repair"),
+            (["bowel resection", "small bowel resection"],        "Bowel resection"),
+            (["anterior resection", "low anterior"],              "Anterior resection"),
+            (["apr", "abdominoperineal"],                         "APR"),
+            (["hartmann"],                                        "Hartmann's procedure"),
+            (["gastric bypass", "sleeve gastrectomy", "bariatric"], "Gastric bypass / sleeve"),
+            (["fundoplication", "nissen"],                        "Fundoplication"),
+            (["whipple", "pancreaticoduodenectomy"],              "Whipple's procedure"),
+            (["liver resection", "hepatectomy"],                  "Liver resection"),
+            (["splenectomy"],                                     "Splenectomy"),
+            (["thyroidectomy"],                                   "Thyroidectomy"),
+            (["parathyroidectomy"],                               "Parathyroidectomy"),
+            (["mastectomy"],                                      "Mastectomy"),
+            (["sentinel node", "sentinel lymph"],                 "Sentinel node biopsy"),
+            (["laparotomy"],                                      "Laparotomy"),
+            (["diagnostic laparoscopy"],                          "Diagnostic laparoscopy"),
+            (["ercp"],                                            "ERCP"),
+            (["ogd", "gastroscopy", "upper gi endoscopy"],       "OGD / Gastroscopy"),
+            (["colonoscopy"],                                     "Colonoscopy"),
+            (["haemorrhoidectomy", "hemorrhoidectomy"],           "Haemorrhoidectomy"),
+            (["fistula", "fistulotomy", "perianal abscess"],      "Fistula / abscess repair"),
+            (["caesarean", "cesarean", "c-section"],              "Caesarean section"),
+            (["hysterectomy"],                                    "Hysterectomy"),
+        ]
+        for rule in mapping {
+            if rule.keywords.contains(where: { lower.contains($0) }) {
+                matched.insert(rule.chip)
+            }
+        }
+        return matched
+    }
+
+    // MARK: - P8: socialHistory text → social chip pre-population
+    // Rebuilds the selectedSocialChips set from the "· Key: Value" lines written by
+    // appendSocialChip(). This restores the chip state so SurgicalRiskEngine receives
+    // the correct smoking/alcohol/lifestyle signals on every ConsultationView open.
+
+    private func parseSocialChipsFromHistory(_ text: String) -> Set<String> {
+        var chips = Set<String>()
+        let lines = text.components(separatedBy: "\n").map {
+            $0.trimmingCharacters(in: .whitespaces).trimmingCharacters(in: CharacterSet(charactersIn: "·").union(.whitespaces))
+        }
+        let smokingOptions = ["Non-smoker", "Ex-smoker", "Light smoker (<10/day)",
+                              "Moderate smoker (10–20/day)", "Heavy smoker (>20/day)"]
+        let alcoholOptions = ["Non-drinker", "Social drinker (<14 units/wk)",
+                              "Moderate (14–21 units/wk)", "Heavy (>21 units/wk)"]
+        for line in lines {
+            // Keyed chips: "Smoking: Ex-smoker" → key = "Smoking:Ex-smoker"
+            if line.hasPrefix("Smoking: ") {
+                let val = String(line.dropFirst("Smoking: ".count))
+                if smokingOptions.contains(val) { chips.insert("Smoking:\(val)") }
+            } else if line.hasPrefix("Alcohol: ") {
+                let val = String(line.dropFirst("Alcohol: ".count))
+                if alcoholOptions.contains(val) { chips.insert("Alcohol:\(val)") }
+            } else {
+                // Lifestyle / living chips are stored without a prefix key
+                chips.insert(line)
+            }
+        }
+        return chips
+    }
+
     // MARK: - Bayesian engine refresh
     // Augments SOCRATES selections with clinical features extracted from free text
     // (HPI, exam findings, notes) so the engine fires from any typed data, not
@@ -2059,6 +2854,62 @@ struct ConsultationView: View {
                     Text("Based on CC · SOCRATES · PMH · Exam · Ix · Age/Sex. Apply to confirm.")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
+                }
+            }
+
+            // ── AutoFunction Action Panel ──────────────────────────────────
+            let visibleActions = pipeline.filteredAutoActions(for: patient.visitType)
+            if !visibleActions.isEmpty {
+                Section {
+                    ForEach(visibleActions.prefix(6)) { action in
+                        AutoActionRow(action: action)
+                    }
+                } header: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "wand.and.sparkles").foregroundStyle(.indigo)
+                        Text("Clinical Actions")
+                            .font(.caption.weight(.semibold))
+                        Spacer()
+                        if pipeline.isRunning {
+                            ProgressView().scaleEffect(0.7)
+                        }
+                    }
+                } footer: {
+                    Text("Deterministic pipeline — SOCRATES · Exam · Ix · Vitals trend · Decision network.")
+                        .font(.caption2).foregroundStyle(.secondary)
+                }
+            }
+
+            // ── DBN Trajectory Panel ───────────────────────────────────────
+            if !pipeline.trajectories.isEmpty {
+                Section {
+                    ForEach(pipeline.trajectories) { traj in
+                        TrajectoryRow(trajectory: traj)
+                    }
+                } header: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "chart.line.uptrend.xyaxis").foregroundStyle(.orange)
+                        Text("Disease Trajectories (12h projection)")
+                            .font(.caption.weight(.semibold))
+                    }
+                }
+            }
+
+            // ── Value of Information Panel ─────────────────────────────────
+            if !pipeline.informationItems.isEmpty {
+                Section {
+                    ForEach(pipeline.informationItems.prefix(5)) { item in
+                        VOIRow(item: item)
+                    }
+                } header: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "lightbulb.min").foregroundStyle(.yellow)
+                        Text("Highest-Value Next Investigations (EVPI)")
+                            .font(.caption.weight(.semibold))
+                    }
+                } footer: {
+                    Text("Expected value of perfect information — ranked by bits of diagnostic uncertainty resolved.")
+                        .font(.caption2).foregroundStyle(.secondary)
                 }
             }
 
@@ -2346,6 +3197,7 @@ struct ConsultationView: View {
         rx.patient = patient
         context.insert(rx)
         touch()
+        recomputeRisk()
     }
 
     @MainActor

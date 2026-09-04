@@ -15,6 +15,23 @@ const CACHE_KEY = 'combined';
 
 const router = Router();
 
+const ECT_OFFSET_MS = -4 * 60 * 60_000; // UTC-4, no DST
+
+function ectDayOfWeek(d: Date): number {
+  return new Date(d.getTime() + ECT_OFFSET_MS).getDay();
+}
+
+function setTimeECT(d: Date, hhmm: string): Date {
+  const [h, m] = hhmm.split(':').map(Number);
+  // Interpret hhmm as ECT — compute ECT midnight in UTC for the ECT calendar
+  // day that d falls in, then add h:m as ECT-local minutes.
+  const ectDate = new Date(d.getTime() + ECT_OFFSET_MS);
+  const ectMidnightUtc = Date.UTC(
+    ectDate.getUTCFullYear(), ectDate.getUTCMonth(), ectDate.getUTCDate(),
+  ) - ECT_OFFSET_MS;
+  return new Date(ectMidnightUtc + (h * 60 + m) * 60_000);
+}
+
 function generateMockSlots(
   appointmentType: AppointmentType,
   rule: SlotRule,
@@ -23,23 +40,22 @@ function generateMockSlots(
 ): AvailableSlot[] {
   const slots: AvailableSlot[] = [];
   const twoHoursFromNow = new Date(fromDate.getTime() + 2 * 60 * 60_000);
+  // Advance cursor day by day in ECT
   const cursor = new Date(fromDate);
-  cursor.setSeconds(0, 0);
-
-  const [startH, startM] = rule.windowStart.split(':').map(Number);
 
   while (slots.length < max && cursor.getTime() < fromDate.getTime() + 60 * 86400_000) {
-    const dow = cursor.getDay();
-    if (rule.days.includes(dow)) {
-      const slotStart = new Date(cursor);
-      slotStart.setHours(startH, startM, 0, 0);
-      const slotEnd = new Date(slotStart.getTime() + rule.durationMin * 60_000);
+    if (rule.days.includes(ectDayOfWeek(cursor))) {
+      const slotStart = setTimeECT(cursor, rule.windowStart);
+      const slotEnd   = new Date(slotStart.getTime() + rule.durationMin * 60_000);
       if (slotStart > twoHoursFromNow) {
         slots.push({ start: slotStart, end: slotEnd, location: rule.location as Location, appointmentType });
       }
     }
-    cursor.setDate(cursor.getDate() + 1);
-    cursor.setHours(0, 0, 0, 0);
+    // Advance to next ECT midnight → next UTC day start
+    const nextEctDay = new Date(cursor.getTime() + ECT_OFFSET_MS);
+    nextEctDay.setUTCHours(0, 0, 0, 0);
+    nextEctDay.setUTCDate(nextEctDay.getUTCDate() + 1);
+    cursor.setTime(nextEctDay.getTime() - ECT_OFFSET_MS);
   }
 
   return slots;

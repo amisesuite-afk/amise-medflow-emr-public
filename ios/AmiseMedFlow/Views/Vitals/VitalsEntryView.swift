@@ -246,8 +246,8 @@ struct VitalsEntryView: View {
                     VStack(alignment: .leading, spacing: 1) {
                         Text(variable.label)
                             .font(.subheadline)
-                        if let hint = variable.hint {
-                            Text(hint)
+                        if !variable.hint.isEmpty {
+                            Text(variable.hint)
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }

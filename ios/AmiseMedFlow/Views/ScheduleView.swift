@@ -36,12 +36,12 @@ struct ScheduleView: View {
     @StateObject private var calSvc = CalendarService()
 
     @State private var mode: CalMode = .week
-    @State private var anchor: Date  = Calendar.current.startOfDay(for: .now)
+    @State private var anchor: Date  = Calendar.ect.startOfDay(for: .now)
     @State private var selectedPatient: Patient?
     @State private var selectedEntry: CalEntry?
     @State private var showAdd = false
 
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
 
     private var weekStart: Date {
         // Start week on Sunday
@@ -209,7 +209,7 @@ private struct MonthCalView: View {
     let entries: [CalEntry]
     let onSelectDay: (Date) -> Void
 
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
     private let dayLetters = ["S", "M", "T", "W", "T", "F", "S"]
 
     private var monthStart: Date {
@@ -272,7 +272,7 @@ private struct MonthDayCell: View {
     let entries: [CalEntry]
     let onTap: () -> Void
 
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
 
     var body: some View {
         Button(action: onTap) {
@@ -320,7 +320,7 @@ private struct WeekCalView: View {
     let weekStart: Date
     let entries: [CalEntry]
     let onTap: (CalEntry) -> Void
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
 
     private var days: [Date] {
         (0..<7).compactMap { cal.date(byAdding: .day, value: $0, to: weekStart) }
@@ -379,7 +379,7 @@ private struct CalTimeline: View {
     let entries: [CalEntry]
     let onTap: (CalEntry) -> Void
 
-    private let cal = Calendar.current
+    private let cal = Calendar.ect
 
     var body: some View {
         GeometryReader { outer in

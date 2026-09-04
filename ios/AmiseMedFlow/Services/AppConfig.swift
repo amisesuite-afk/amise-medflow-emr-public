@@ -14,6 +14,69 @@ import Foundation
 //   ANTHROPIC_API_KEY  → $(ANTHROPIC_API_KEY)
 //   API_SERVER_URL     → $(API_SERVER_URL)
 
+// MARK: - Practice timezone + shared formatters
+//
+// Saint Lucia — Eastern Caribbean Time, UTC-4, no DST.
+// All clinical documents and display strings must use this timezone so
+// that timestamps are correct regardless of the device's regional setting.
+
+extension TimeZone {
+    /// Eastern Caribbean Time — the practice's canonical timezone.
+    static let ect = TimeZone(identifier: "America/St_Lucia")!
+}
+
+extension Calendar {
+    /// Gregorian calendar fixed to ECT — use for all clinical date arithmetic.
+    static let ect: Calendar = {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = .ect
+        cal.locale   = Locale(identifier: "en_LC")
+        return cal
+    }()
+}
+
+extension DateFormatter {
+    /// Medium date, short time — "Sep 4, 2026 · 14:32" — in ECT.
+    static let ectDateTime: DateFormatter = {
+        let df = DateFormatter()
+        df.locale     = Locale(identifier: "en_LC")
+        df.timeZone   = .ect
+        df.dateStyle  = .medium
+        df.timeStyle  = .short
+        return df
+    }()
+
+    /// Medium date only — "Sep 4, 2026" — in ECT.
+    static let ectDate: DateFormatter = {
+        let df = DateFormatter()
+        df.locale     = Locale(identifier: "en_LC")
+        df.timeZone   = .ect
+        df.dateStyle  = .medium
+        df.timeStyle  = .none
+        return df
+    }()
+
+    /// Short date + short time — "9/4/26, 14:32" — in ECT. For compact UI labels.
+    static let ectShort: DateFormatter = {
+        let df = DateFormatter()
+        df.locale     = Locale(identifier: "en_LC")
+        df.timeZone   = .ect
+        df.dateStyle  = .short
+        df.timeStyle  = .short
+        return df
+    }()
+
+    /// Long date + short time — "September 4, 2026 at 14:32" — in ECT. For document headers.
+    static let ectLong: DateFormatter = {
+        let df = DateFormatter()
+        df.locale     = Locale(identifier: "en_LC")
+        df.timeZone   = .ect
+        df.dateStyle  = .long
+        df.timeStyle  = .short
+        return df
+    }()
+}
+
 enum AppConfig {
     static let anthropicAPIKey: String = {
         // 1. xcconfig / Info.plist (preferred for production builds)
