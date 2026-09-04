@@ -79,9 +79,33 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
         }
 
         // ── Stage 2: Sequential Bayesian seeding ──────────────────────────
+        // Augment SOCRATES selections with vitals-derived and lab-derived features
+        // so Stage 2 benefits from objective findings, not just typed symptoms.
+        var augmentedSocrates = psv.socratesSelections
+        if let v = psv.vitals {
+            var extraAssoc = augmentedSocrates["associations"] ?? []
+            if v.hasFever         { extraAssoc.insert("fever") }
+            if v.hasTachycardia   { extraAssoc.insert("tachycardia") }
+            if v.hasHypotension   { extraAssoc.insert("hypotension") }
+            if v.hasTachypnoea    { extraAssoc.insert("tachypnoea") }
+            if v.hasHypoxia       { extraAssoc.insert("hypoxia") }
+            if !extraAssoc.isEmpty { augmentedSocrates["associations"] = extraAssoc }
+        }
+        if let lab = psv.labs {
+            var extraAssoc = augmentedSocrates["associations"] ?? []
+            if lab.wbcElevated      { extraAssoc.insert("raised wbc") }
+            if lab.crpHigh          { extraAssoc.insert("markedly elevated crp") }
+            else if lab.crpElevated { extraAssoc.insert("elevated crp") }
+            if lab.lactateElevated  { extraAssoc.insert("elevated lactate") }
+            if lab.amylaseElevated  { extraAssoc.insert("elevated amylase") }
+            if lab.bilirubinElevated{ extraAssoc.insert("raised bilirubin") }
+            if lab.dDimerElevated   { extraAssoc.insert("elevated d-dimer") }
+            if !extraAssoc.isEmpty { augmentedSocrates["associations"] = extraAssoc }
+        }
+
         sequentialEngine.seed(
             chiefComplaint:    patient.chiefComplaint,
-            socratesSelections: psv.socratesSelections,
+            socratesSelections: augmentedSocrates,
             pmhNotes:           patient.pmhNotes,
             surgicalHistory:    patient.surgicalHistory,
             examAbdo:           patient.examAbdo,

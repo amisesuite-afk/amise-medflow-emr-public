@@ -680,6 +680,7 @@ struct ConsultationView: View {
     @State private var clinicalAlarms: [ClinicalTextParser.ClinicalAlarm] = []
     @State private var dismissedAlarmIds: Set<UUID> = []
     @State private var surgicalRiskAlerts: [SurgicalRiskAlert] = []
+    @State private var showCompleteEncounterConfirm = false
 
     enum ExamMode { case short, full }
 
@@ -753,9 +754,20 @@ struct ConsultationView: View {
         .background(Color(.systemBackground))
         .onAppear {
             activeTab = startingTab
+            // Advance encounter status to withDoctor the moment the doctor opens the record
+            if patient.encounterStatus == .waiting || patient.encounterStatus == .notCheckedIn {
+                patient.encounterStatus = .withDoctor
+                patient.updatedAt = .now
+                patient.pendingSync = true
+                try? context.save()
+            }
             // Pre-populate SOCRATES from questionnaire HPI if not yet filled
             if socratesSelections.isEmpty, let hpi = patient.hpi {
                 socratesSelections = parseSocratesFromHPI(hpi)
+            }
+            // Pre-populate PMH chips from persisted pmhNotes (questionnaire write-back)
+            if pmhChipSelections.isEmpty, let notes = patient.pmhNotes {
+                pmhChipSelections = parsePMHChipsFromNotes(notes)
             }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
         }
@@ -810,6 +822,76 @@ struct ConsultationView: View {
         .sheet(isPresented: $showLetterSheet) {
             ConsultationLetterSheet(letterText: generatedLetterText, patient: patient)
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if patient.encounterStatus != .complete {
+                    let completeness = patient.consultationCompleteness
+                    Button {
+                        showCompleteEncounterConfirm = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: completeness.filled == completeness.total
+                                ? "checkmark.circle.fill" : "checkmark.circle")
+                            Text("Complete")
+                                .font(.system(size: 13, weight: .semibold))
+                        }
+                        .foregroundStyle(completeness.filled >= 6 ? Color.green : Color(.tertiaryLabel))
+                    }
+                } else {
+                    Label("Encounter complete", systemImage: "checkmark.seal.fill")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.green)
+                        .labelStyle(.iconOnly)
+                }
+            }
+        }
+        .confirmationDialog(completeEncounterDialogTitle,
+                            isPresented: $showCompleteEncounterConfirm,
+                            titleVisibility: .visible) {
+            Button("Mark as Complete") {
+                patient.encounterStatus = .complete
+                patient.updatedAt = .now
+                patient.pendingSync = true
+                try? context.save()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text(completeEncounterDialogMessage)
+        }
+    }
+
+    // P5: Complete encounter dialog helpers
+    private var completeEncounterDialogTitle: String {
+        let c = patient.consultationCompleteness
+        if c.filled < c.total {
+            return "Complete encounter (\(c.filled)/\(c.total) items filled)?"
+        }
+        return "Mark encounter as complete?"
+    }
+
+    private var completeEncounterDialogMessage: String {
+        let c = patient.consultationCompleteness
+        if c.filled < c.total {
+            let missing = incompleteConsultationItems()
+            return "Missing: \(missing.joined(separator: ", ")). You can still complete the encounter — record will remain editable."
+        }
+        return "The encounter will be marked complete. The record remains editable."
+    }
+
+    private func incompleteConsultationItems() -> [String] {
+        var missing: [String] = []
+        if (patient.chiefComplaint ?? "").isEmpty { missing.append("chief complaint") }
+        if (patient.hpi ?? "").isEmpty            { missing.append("HPI") }
+        let hasPMH = !(patient.pmhNotes ?? "").isEmpty || !(patient.surgicalHistory ?? "").isEmpty
+            || !patient.pmhEntries.isEmpty || !patient.pshxEntries.isEmpty
+        if !hasPMH                                { missing.append("PMH") }
+        if patient.allergies.isEmpty              { missing.append("allergies") }
+        if patient.prescriptions.isEmpty          { missing.append("medications") }
+        let hasExam = !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
+        if !hasExam                               { missing.append("examination") }
+        if patient.workingDiagnosis == nil        { missing.append("working diagnosis") }
+        if (patient.managementPlan ?? "").isEmpty { missing.append("management plan") }
+        return missing
     }
 
     // MARK: - Allergy banner
@@ -2552,6 +2634,67 @@ struct ConsultationView: View {
             }
         }
         return result
+    }
+
+    // MARK: - PMH notes → chip pre-population
+    // Maps structured CONDITIONS: line written by EncounterAnswers.pmhxText to the
+    // pmhChips display labels so the PMH section is pre-selected on first open.
+    // Handles label mismatches between PMHxCondition.rawValue and pmhChips (e.g.
+    // "Diabetes mellitus" → both "T2DM" and "T1DM"; "Cancer (any)" → "Malignancy").
+
+    private func parsePMHChipsFromNotes(_ notes: String) -> Set<String> {
+        var matched = Set<String>()
+        // Extract conditions from the structured "CONDITIONS: a, b, c" line
+        let conditionLine: String? = notes.components(separatedBy: "\n").first(where: {
+            $0.uppercased().hasPrefix("CONDITIONS:")
+        }).map { String($0.dropFirst("CONDITIONS:".count)).trimmingCharacters(in: .whitespaces) }
+
+        let conditions: [String]
+        if let line = conditionLine {
+            conditions = line.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespaces) }
+        } else {
+            // Fallback: scan all lines for any text that matches a known condition
+            conditions = notes.components(separatedBy: "\n")
+        }
+
+        // Mapping rules: PMHxCondition.rawValue (or keywords) → pmhChips label
+        let mapping: [(keywords: [String], chip: String)] = [
+            (["Hypertension", "hypertension"],                     "Hypertension"),
+            (["Diabetes mellitus", "T2DM", "Type 2"],              "T2DM"),
+            (["Diabetes mellitus", "T1DM", "Type 1"],              "T1DM"),
+            (["Heart disease", "IHD", "Ischaemic heart"],          "Ischaemic heart disease"),
+            (["Atrial fibrillation", "AF", "atrial fibrillation"], "Atrial fibrillation"),
+            (["Heart failure"],                                     "Heart failure"),
+            (["Stroke", "TIA"],                                     "Stroke / TIA"),
+            (["Chronic kidney disease", "CKD"],                    "CKD"),
+            (["COPD", "Chronic obstructive"],                      "COPD"),
+            (["Asthma"],                                           "Asthma"),
+            (["Liver disease", "Cirrhosis"],                       "Liver disease / Cirrhosis"),
+            (["Peptic ulcer"],                                     "Peptic ulcer disease"),
+            (["GORD", "Reflux", "GERD"],                          "GORD / Reflux"),
+            (["Inflammatory bowel", "IBD", "Crohn", "Colitis"],   "IBD (Crohn's / UC)"),
+            (["Cancer", "Malignancy", "Tumour", "Tumor"],         "Malignancy"),
+            (["Thyroid"],                                          "Thyroid disease"),
+            (["OSA", "Sleep apn", "Obstructive sleep"],           "OSA"),
+            (["DVT", "PE", "pulmonary embolism", "thrombosis"],   "DVT / PE"),
+            (["Anaemia", "Anemia"],                               "Anaemia"),
+            (["Epilepsy", "seizure"],                             "Epilepsy"),
+            (["Depression", "Anxiety", "Mental health"],          "Depression / Anxiety"),
+            (["Dementia", "Alzheimer"],                           "Dementia"),
+            (["Osteoporosis"],                                    "Osteoporosis"),
+            (["Rheumatoid arthritis", "Rheumatoid"],              "Rheumatoid arthritis"),
+            (["Immunocompromised", "HIV", "AIDS"],                "Immunocompromised"),
+        ]
+
+        let lowerConditions = conditions.map { $0.lowercased() }
+        for rule in mapping {
+            if rule.keywords.contains(where: { kw in
+                lowerConditions.contains(where: { $0.contains(kw.lowercased()) })
+            }) {
+                matched.insert(rule.chip)
+            }
+        }
+        return matched
     }
 
     // MARK: - Bayesian engine refresh
