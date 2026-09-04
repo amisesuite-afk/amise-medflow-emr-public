@@ -131,9 +131,15 @@ export async function findSlots(
 
 function setTime(d: Date, hhmm: string): Date {
   const [h, m] = hhmm.split(':').map(Number);
-  const out = new Date(d);
-  out.setHours(h, m, 0, 0);
-  return out;
+  // Interpret hhmm as ECT (UTC-4). Compute ECT midnight for the ECT calendar
+  // day that d falls in, then add h:m as ECT-local minutes.
+  const ectMs   = d.getTime() + ECT_OFFSET_MS;
+  const ectDate = new Date(ectMs);
+  // ECT midnight expressed in UTC = UTC(year,month,date) + 4 h
+  const ectMidnightUtc = Date.UTC(
+    ectDate.getUTCFullYear(), ectDate.getUTCMonth(), ectDate.getUTCDate(),
+  ) - ECT_OFFSET_MS;
+  return new Date(ectMidnightUtc + (h * 60 + m) * 60_000);
 }
 
 function overlapsBusy(start: Date, end: Date, busy: { start: Date; end: Date }[]): boolean {
