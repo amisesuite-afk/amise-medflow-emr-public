@@ -414,7 +414,7 @@ struct PatientDemographicsForm: View {
             )
         } else {
             Button("Add Date of Birth") {
-                patient.dateOfBirth = Calendar.current.date(byAdding: .year, value: -40, to: .now)
+                patient.dateOfBirth = Calendar.ect.date(byAdding: .year, value: -40, to: .now)
                 markDirty()
             }
             .foregroundStyle(AMColor.accent)
@@ -440,7 +440,7 @@ struct PatientDemographicsForm: View {
                     Label("Waiting for doctor", systemImage: "clock.fill")
                         .foregroundStyle(.orange)
                     if let ct = patient.checkInTime {
-                        Text("Checked in \(ct.formatted(date: .omitted, time: .shortened))")
+                        Text("Checked in \(DateFormatter.ectShort.string(from: ct)) ECT")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
@@ -513,7 +513,7 @@ struct AdaptiveQuestionnaireSheet: View {
     private var patientSex: Sex { patient?.sex ?? .unknown }
     private var patientAge: Int {
         guard let dob = patient?.dateOfBirth else { return 99 }
-        return Calendar.current.dateComponents([.year], from: dob, to: .now).year ?? 99
+        return Calendar.ect.dateComponents([.year], from: dob, to: .now).year ?? 99
     }
 
     private var ccSelected: Bool { answers.ccCategory != nil }
@@ -874,7 +874,7 @@ struct AdaptiveQuestionnaireSheet: View {
     }
 
     private func buildReadableNote() -> String {
-        var lines = ["PRE-VISIT QUESTIONNAIRE — \(Date.now.formatted(date: .abbreviated, time: .shortened))"]
+        var lines = ["PRE-VISIT QUESTIONNAIRE — \(DateFormatter.ectDateTime.string(from: .now)) ECT"]
         lines.append("")
         lines.append("CHIEF COMPLAINT: \(answers.chiefComplaintText)")
         if !answers.hpiText.isEmpty {
@@ -887,7 +887,7 @@ struct AdaptiveQuestionnaireSheet: View {
             lines.append(answers.pmhxText)
         }
         if let t = answers.lastMealTime {
-            lines.append("LAST MEAL: \(t.formatted(date: .abbreviated, time: .shortened))")
+            lines.append("LAST MEAL: \(DateFormatter.ectDateTime.string(from: t)) ECT")
         }
         return lines.joined(separator: "\n")
     }
