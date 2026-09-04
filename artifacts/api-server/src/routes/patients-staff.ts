@@ -229,7 +229,16 @@ router.patch('/api/patients/:id', async (req, res) => {
   const { id } = req.params;
   const body = (req.body ?? {}) as Record<string, unknown>;
 
-  if (body.sex !== undefined) body.sex = normalizeSex(body.sex);
+  if (body.sex !== undefined) {
+    const raw = typeof body.sex === 'string' ? body.sex.toLowerCase().trim() : '';
+    const normalized = normalizeSex(body.sex);
+    // normalizeSex falls back to 'unknown' for unrecognised values — reject those explicitly
+    if (normalized === 'unknown' && raw !== '' && raw !== 'unknown') {
+      res.status(400).json({ error: `Invalid sex value: ${body.sex}` });
+      return;
+    }
+    body.sex = normalized;
+  }
 
   try {
     const supa = getSupabaseAdmin();
