@@ -256,50 +256,69 @@ final class PeerSyncService: NSObject, ObservableObject {
                 }()
 
             let peerTime = Date(timeIntervalSince1970: rec.syncedAt)
-            if let mySyncedAt = patient.syncedAt, mySyncedAt >= peerTime { continue }
+            let myTime   = patient.syncedAt ?? .distantPast
+            let remoteIsNewer = peerTime > myTime
 
-            // Preserve the original syncCode (and migrate legacy "" records)
-            patient.syncCode      = rec.syncCode
-            // Only overwrite remoteId if peer has one and we don't
+            // Identity — always propagate syncCode; fill in remoteId if missing
+            patient.syncCode = rec.syncCode
             if patient.remoteId == nil, let rid = rec.remoteId { patient.remoteId = rid }
-            patient.fullName      = rec.fullName
-            patient.sex           = Sex(rawValue: (rec.sex ?? "").capitalized) ?? .unspecified
-            if let d = rec.dob    { patient.dateOfBirth = iso.date(from: d) }
-            patient.phone         = rec.phone
-            patient.email         = rec.email
-            patient.address       = rec.address
-            patient.mrn           = rec.mrn
-            patient.nokName       = rec.nokName
-            patient.nokRelation   = rec.nokRelation
-            patient.nokPhone      = rec.nokPhone
-            patient.pmhNotes      = rec.pmhNotes
-            patient.familyHistoryNotes  = rec.familyHistoryNotes
-            patient.insuranceProvider   = rec.insuranceProvider
-            patient.policyNumber        = rec.policyNumber
-            if let s = rec.setting  { patient.setting  = ClinicalSetting(rawValue: s.capitalized) ?? .outpatient }
-            if let l = rec.location { patient.location  = ClinicalLocation(rawValue: l) ?? .rodney_bay }
-            if let a = rec.acuity   { patient.acuity    = acuityFrom(a) }
-            patient.chiefComplaint      = rec.chiefComplaint
-            patient.hpi                 = rec.hpi
-            patient.assessmentText      = rec.assessmentText
-            patient.managementPlan      = rec.managementPlan
-            patient.workingDiagnosis    = rec.workingDiagnosis
-            patient.workingDiagnosisICD = rec.workingDiagnosisICD
-            patient.allergiesJson       = rec.allergiesJson
-            patient.socialHistory       = rec.socialHistory
-            patient.heightCm            = rec.heightCm
-            patient.ward                = rec.ward
-            patient.bedNumber           = rec.bedNumber
-            patient.examGeneral         = rec.examGeneral
-            patient.examCVS             = rec.examCVS
-            patient.examResp            = rec.examResp
-            patient.examAbdo            = rec.examAbdo
-            patient.examNeuro           = rec.examNeuro
-            patient.examMSK             = rec.examMSK
-            patient.examSkin            = rec.examSkin
-            patient.examOther           = rec.examOther
-            patient.syncedAt            = peerTime
-            patient.pendingSync         = false
+
+            // ── Administrative fields: remote wins when it is newer ──────────
+            if remoteIsNewer {
+                patient.fullName    = rec.fullName
+                patient.sex         = Sex(rawValue: (rec.sex ?? "").capitalized) ?? .unspecified
+                if let d = rec.dob  { patient.dateOfBirth = iso.date(from: d) }
+                patient.phone       = rec.phone
+                patient.email       = rec.email
+                patient.address     = rec.address
+                patient.mrn         = rec.mrn
+                patient.nokName     = rec.nokName
+                patient.nokRelation = rec.nokRelation
+                patient.nokPhone    = rec.nokPhone
+                patient.insuranceProvider = rec.insuranceProvider
+                patient.policyNumber      = rec.policyNumber
+                if let s = rec.setting  { patient.setting  = ClinicalSetting(rawValue: s.capitalized) ?? .outpatient }
+                if let l = rec.location { patient.location  = ClinicalLocation(rawValue: l) ?? .rodney_bay }
+                if let a = rec.acuity   { patient.acuity    = acuityFrom(a) }
+                if let h = rec.heightCm { patient.heightCm  = h }
+                if let w = rec.ward,        !w.isEmpty { patient.ward       = w }
+                if let b = rec.bedNumber,   !b.isEmpty { patient.bedNumber  = b }
+            }
+
+            // ── Clinical narrative: longer value wins regardless of timestamp ─
+            // Questionnaire data is multi-line structured text; booking stubs are
+            // short phrases. The longer string is reliably the more clinically
+            // informative source, so length is a safe proxy for richness.
+            patient.chiefComplaint     = peerMerge(patient.chiefComplaint,     rec.chiefComplaint)
+            patient.hpi                = peerMerge(patient.hpi,                rec.hpi)
+            patient.pmhNotes           = peerMerge(patient.pmhNotes,           rec.pmhNotes)
+            patient.familyHistoryNotes = peerMerge(patient.familyHistoryNotes, rec.familyHistoryNotes)
+            patient.allergiesJson      = peerMerge(patient.allergiesJson,      rec.allergiesJson)
+            patient.socialHistory      = peerMerge(patient.socialHistory,      rec.socialHistory)
+            patient.surgicalHistory    = peerMerge(patient.surgicalHistory,    rec.surgicalHistory)
+
+            // ── Doctor-assessed fields: non-empty on first fill; newer wins for updates ──
+            patient.assessmentText = mergeDoc(patient.assessmentText, rec.assessmentText, remoteIsNewer: remoteIsNewer)
+            patient.managementPlan = mergeDoc(patient.managementPlan, rec.managementPlan, remoteIsNewer: remoteIsNewer)
+            if let r = rec.workingDiagnosis, !r.isEmpty {
+                if (patient.workingDiagnosis ?? "").isEmpty || remoteIsNewer {
+                    patient.workingDiagnosis    = r
+                    patient.workingDiagnosisICD = rec.workingDiagnosisICD
+                }
+            }
+
+            // ── Exam findings: non-empty on first fill; newer wins for updates ─
+            patient.examGeneral = mergeDoc(patient.examGeneral, rec.examGeneral, remoteIsNewer: remoteIsNewer)
+            patient.examCVS     = mergeDoc(patient.examCVS,     rec.examCVS,     remoteIsNewer: remoteIsNewer)
+            patient.examResp    = mergeDoc(patient.examResp,    rec.examResp,    remoteIsNewer: remoteIsNewer)
+            patient.examAbdo    = mergeDoc(patient.examAbdo,    rec.examAbdo,    remoteIsNewer: remoteIsNewer)
+            patient.examNeuro   = mergeDoc(patient.examNeuro,   rec.examNeuro,   remoteIsNewer: remoteIsNewer)
+            patient.examMSK     = mergeDoc(patient.examMSK,     rec.examMSK,     remoteIsNewer: remoteIsNewer)
+            patient.examSkin    = mergeDoc(patient.examSkin,    rec.examSkin,    remoteIsNewer: remoteIsNewer)
+            patient.examOther   = mergeDoc(patient.examOther,   rec.examOther,   remoteIsNewer: remoteIsNewer)
+
+            patient.syncedAt    = max(myTime, peerTime)
+            patient.pendingSync = false
         }
         try context.save()
     }
@@ -420,6 +439,27 @@ final class PeerSyncService: NSObject, ObservableObject {
         case "priority":  return .priority
         default:          return .routine
         }
+    }
+
+    // Non-empty wins; on both-non-empty, keeps the longer (more structured) value.
+    // Used for questionnaire narrative fields where length correlates with clinical richness.
+    private func peerMerge(_ local: String?, _ remote: String?) -> String? {
+        let loc = (local ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let rem = (remote ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if loc.isEmpty && rem.isEmpty { return nil }
+        if loc.isEmpty { return rem }
+        if rem.isEmpty { return loc }
+        return loc.count >= rem.count ? loc : rem
+    }
+
+    // Non-empty wins on first fill; newer timestamp wins when both sides have content.
+    // Used for doctor-entered fields (assessment, exam) that may be revised on any device.
+    private func mergeDoc(_ local: String?, _ remote: String?, remoteIsNewer: Bool) -> String? {
+        let loc = (local ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let rem = (remote ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if rem.isEmpty { return local }   // Never overwrite existing content with empty
+        if loc.isEmpty { return rem }     // Fill from remote if local is empty
+        return remoteIsNewer ? rem : loc  // Both have content: newer device wins
     }
 }
 
@@ -621,7 +661,7 @@ private struct PeerPatient: Codable {
     let setting, location, acuity: String?
     let chiefComplaint, hpi, assessmentText, managementPlan: String?
     let workingDiagnosis, workingDiagnosisICD: String?
-    let allergiesJson, socialHistory: String?
+    let allergiesJson, socialHistory, surgicalHistory: String?
     let heightCm: Double?
     let ward, bedNumber: String?
     let examGeneral, examCVS, examResp, examAbdo: String?
@@ -646,6 +686,7 @@ private struct PeerPatient: Codable {
         assessmentText  = p.assessmentText; managementPlan = p.managementPlan
         workingDiagnosis = p.workingDiagnosis; workingDiagnosisICD = p.workingDiagnosisICD
         allergiesJson   = p.allergiesJson; socialHistory = p.socialHistory
+        surgicalHistory = p.surgicalHistory
         heightCm        = p.heightCm; ward = p.ward; bedNumber = p.bedNumber
         examGeneral     = p.examGeneral; examCVS = p.examCVS; examResp = p.examResp
         examAbdo        = p.examAbdo; examNeuro = p.examNeuro; examMSK = p.examMSK

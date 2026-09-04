@@ -192,6 +192,7 @@ final class SyncService: ObservableObject {
         let working_diagnosis_icd: String?
         let allergies_json: String?
         let social_history: String?
+        let surgical_history: String?
         let height_cm: Double?
         let ward: String?
         let bed_number: String?
@@ -211,7 +212,7 @@ final class SyncService: ObservableObject {
     private func pullPatients(context: ModelContext) async throws {
         let rows: [RemotePatient] = try await SupabaseConfig.client
             .from("patients")
-            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, encounter_status, check_in_time, created_at")
+            .select("id, full_name, sex, date_of_birth, phone, email, address, mrn, nok_name, nok_relation, nok_phone, pmh_notes, family_history_notes, insurance_provider, policy_number, setting, location, acuity, chief_complaint, hpi, assessment_text, management_plan, working_diagnosis, working_diagnosis_icd, allergies_json, social_history, surgical_history, height_cm, ward, bed_number, exam_general, exam_cvs, exam_resp, exam_abdo, exam_neuro, exam_msk, exam_skin, exam_other, encounter_status, check_in_time, created_at")
             .order("created_at", ascending: false)
             .limit(500)
             .execute()
@@ -271,6 +272,9 @@ final class SyncService: ObservableObject {
             }
             if let sh = row.social_history, (patient.socialHistory ?? "").isEmpty {
                 patient.socialHistory = sh
+            }
+            if let sx = row.surgical_history, (patient.surgicalHistory ?? "").isEmpty {
+                patient.surgicalHistory = sx
             }
             if let h = row.height_cm, patient.heightCm == nil { patient.heightCm = h }
             if let w = row.ward,   (patient.ward ?? "").isEmpty   { patient.ward = w }
@@ -361,6 +365,7 @@ final class SyncService: ObservableObject {
                 let management_plan: String?
                 let allergies_json: String?
                 let social_history: String?
+                let surgical_history: String?
                 let height_cm: Double?
                 let ward: String?
                 let bed_number: String?
@@ -400,6 +405,7 @@ final class SyncService: ObservableObject {
                 management_plan: patient.managementPlan,
                 allergies_json: patient.allergiesJson,
                 social_history: patient.socialHistory,
+                surgical_history: patient.surgicalHistory,
                 height_cm: patient.heightCm,
                 ward: patient.ward,
                 bed_number: patient.bedNumber,
@@ -518,6 +524,7 @@ final class SyncService: ObservableObject {
                 let management_plan: String?
                 let allergies_json: String?
                 let social_history: String?
+                let surgical_history: String?
                 let height_cm: Double?
                 let ward: String?
                 let bed_number: String?
@@ -559,6 +566,7 @@ final class SyncService: ObservableObject {
                 management_plan: patient.managementPlan,
                 allergies_json: patient.allergiesJson,
                 social_history: patient.socialHistory,
+                surgical_history: patient.surgicalHistory,
                 height_cm: patient.heightCm,
                 ward: patient.ward,
                 bed_number: patient.bedNumber,
