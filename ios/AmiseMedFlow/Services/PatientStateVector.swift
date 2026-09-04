@@ -242,6 +242,10 @@ extension PatientStateVector {
         // Investigations
         psv.investigationEntries = patient.investigations
 
+        // P7: Parse resulted investigation values into LabPanel numeric fields.
+        // Matches by test name keyword; takes the most recent resulted entry per field.
+        psv.labs = LabPanel.parse(from: patient.investigations)
+
         // Exam flags from free text
         psv.exam = ExamFindings.parse(from: [patient.examAbdo, patient.examGeneral].compactMap { $0 }.joined(separator: " "))
 
@@ -286,6 +290,66 @@ extension VitalsSnapshot {
         s.spo2 = entry.spo2.map { FusedValue(value: $0, confidence: 0.95, source: .device, timestamp: entry.recordedAt) }
         s.news2 = FusedValue(value: entry.news2Score, confidence: 0.99, source: .derived, timestamp: entry.recordedAt)
         return s
+    }
+}
+
+// MARK: - P7: LabPanel population from InvestigationEntry results
+// Matches resulted investigations by test-name keyword and parses the numeric
+// result string. Uses the most recent resulted entry per field.
+// Confidence 0.85 reflects that the value is manually typed, not device-fed.
+
+extension LabPanel {
+    static func parse(from entries: [InvestigationEntry]) -> LabPanel {
+        var lab = LabPanel()
+        let resulted = entries
+            .filter { $0.status == .resulted && !$0.result.isEmpty }
+            .sorted { ($0.resultedAt ?? $0.orderedAt) > ($1.resultedAt ?? $1.orderedAt) }
+
+        func fv(_ raw: String, at date: Date) -> FusedValue<Double>? {
+            // Extract first numeric token (handles "12.3 ×10⁹/L", ">500", "< 3" etc.)
+            let digits = raw.components(separatedBy: .whitespaces).first {
+                $0.replacingOccurrences(of: ".", with: "")
+                  .replacingOccurrences(of: "<", with: "")
+                  .replacingOccurrences(of: ">", with: "")
+                  .replacingOccurrences(of: ",", with: ".")
+                  .allSatisfy { $0.isNumber || $0 == "." }
+            }
+            guard let s = digits, let v = Double(s
+                .replacingOccurrences(of: "<", with: "")
+                .replacingOccurrences(of: ">", with: "")
+                .replacingOccurrences(of: ",", with: "."))
+            else { return nil }
+            return FusedValue(value: v, confidence: 0.85, source: .lab, timestamp: date)
+        }
+
+        for entry in resulted {
+            let n = entry.name.lowercased()
+            let date = entry.resultedAt ?? entry.orderedAt
+            guard let val = fv(entry.result, at: date) else { continue }
+
+            if n.contains("wbc") || n.contains("white cell") || n.contains("white blood")                     { if lab.wbc == nil { lab.wbc = val } }
+            else if n.contains("haemoglobin") || n.contains("hemoglobin") || n == "hb"                        { if lab.haemoglobin == nil { lab.haemoglobin = val } }
+            else if n.contains("platelet")                                                                     { if lab.platelets == nil { lab.platelets = val } }
+            else if n.contains("crp") || n.contains("c-reactive")                                             { if lab.crp == nil { lab.crp = val } }
+            else if n.contains("esr")                                                                          { if lab.esr == nil { lab.esr = val } }
+            else if n.contains("sodium") || n == "na"                                                          { if lab.sodium == nil { lab.sodium = val } }
+            else if n.contains("potassium") || n == "k"                                                        { if lab.potassium == nil { lab.potassium = val } }
+            else if n.contains("creatinine") && !n.contains("egfr")                                           { if lab.creatinine == nil { lab.creatinine = val } }
+            else if n.contains("urea") || n.contains("bun")                                                   { if lab.urea == nil { lab.urea = val } }
+            else if n.contains("bilirubin")                                                                    { if lab.bilirubin == nil { lab.bilirubin = val } }
+            else if n.contains("alt") || n.contains("alanine")                                                 { if lab.alt == nil { lab.alt = val } }
+            else if n.contains("alp") || n.contains("alkaline phosphatase")                                    { if lab.alp == nil { lab.alp = val } }
+            else if n.contains("albumin")                                                                      { if lab.albumin == nil { lab.albumin = val } }
+            else if n.contains("amylase") && !n.contains("lipase")                                             { if lab.amylase == nil { lab.amylase = val } }
+            else if n.contains("lipase")                                                                       { if lab.lipase == nil { lab.lipase = val } }
+            else if n.contains("lactate")                                                                      { if lab.lactate == nil { lab.lactate = val } }
+            else if n.contains("d-dimer") || n.contains("ddimer") || n.contains("d dimer")                    { if lab.dDimer == nil { lab.dDimer = val } }
+            else if n.contains("troponin")                                                                     { if lab.troponin == nil { lab.troponin = val } }
+            else if n.contains("inr")                                                                          { if lab.inr == nil { lab.inr = val } }
+            else if n.contains("glucose") && !n.contains("hba1c")                                             { if lab.glucose == nil { lab.glucose = val } }
+            else if n.contains("hba1c") || n.contains("haemoglobin a1c")                                      { if lab.hba1c == nil { lab.hba1c = val } }
+        }
+        return lab
     }
 }
 

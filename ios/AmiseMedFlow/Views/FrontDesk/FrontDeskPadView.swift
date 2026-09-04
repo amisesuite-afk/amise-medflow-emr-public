@@ -829,6 +829,38 @@ struct AdaptiveQuestionnaireSheet: View {
         patient.hpi            = answers.hpiText.isEmpty ? nil : answers.hpiText
         patient.pmhNotes       = answers.pmhxText.isEmpty ? nil : answers.pmhxText
 
+        // P6: surgical history, allergies, and medications from questionnaire.
+        // Only write when the questionnaire captured data — never overwrite with blank.
+        if !answers.surgicalHistory.isEmpty {
+            patient.surgicalHistory = answers.surgicalHistory
+        }
+        if !answers.allergies.isEmpty {
+            // Append questionnaire allergy text as a single AllergyEntry (severity unknown
+            // at this stage — front desk captures name only, severity confirmed by clinician).
+            let existing = patient.allergies
+            let names = answers.allergies
+                .components(separatedBy: CharacterSet(charactersIn: ",;"))
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter { !$0.isEmpty }
+            let existingNames = Set(existing.map { $0.name.lowercased() })
+            let newEntries = names.compactMap { name -> AllergyEntry? in
+                guard !existingNames.contains(name.lowercased()) else { return nil }
+                return AllergyEntry(name: name, severity: "Unknown", reaction: "Not specified")
+            }
+            if !newEntries.isEmpty {
+                patient.allergies = existing + newEntries
+            }
+        }
+        if !answers.medications.isEmpty {
+            // Append to pmhNotes as a MEDICATIONS: line so the pipeline can read it.
+            let medLine = "MEDICATIONS: \(answers.medications)"
+            if let existing = patient.pmhNotes, !existing.contains("MEDICATIONS:") {
+                patient.pmhNotes = existing + "\n" + medLine
+            } else if patient.pmhNotes == nil {
+                patient.pmhNotes = medLine
+            }
+        }
+
         // Human-readable pre-visit note for the doctor
         let note = ClinicalNote(noteType: .other, patient: patient)
         note.freeText = buildReadableNote()
