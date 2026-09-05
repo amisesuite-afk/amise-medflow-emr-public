@@ -220,7 +220,7 @@ private struct FDQuestionnaireView: View {
 
     private var filteredPatients: [Patient] {
         let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !q.isEmpty else { return [] }
+        if q.isEmpty { return Array(allPatients.prefix(30)) }
         return allPatients.filter {
             $0.fullName.lowercased().contains(q) ||
             ($0.mrn?.lowercased().contains(q) ?? false)
