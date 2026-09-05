@@ -7,6 +7,7 @@ import SwiftData
 
 struct FrontDeskPadView: View {
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var calendarService: CalendarService
     @State private var selectedTab: FDTab = .checkIn
 
     enum FDTab: String, CaseIterable {
@@ -219,7 +220,7 @@ private struct FDQuestionnaireView: View {
 
     private var filteredPatients: [Patient] {
         let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !q.isEmpty else { return [] }
+        if q.isEmpty { return Array(allPatients.prefix(30)) }
         return allPatients.filter {
             $0.fullName.lowercased().contains(q) ||
             ($0.mrn?.lowercased().contains(q) ?? false)
@@ -293,6 +294,12 @@ struct PatientDemographicsForm: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var calendarService: CalendarService
+
+    @State private var showScheduler = false
+    @State private var showQuestionnaire = false
+    @State private var showMailComposer = false
+    @State private var showSMSComposer = false
 
     var body: some View {
         Form {
@@ -399,6 +406,69 @@ struct PatientDemographicsForm: View {
         .onChange(of: patient.nokPhone)           { _, _ in markDirty() }
         .onChange(of: patient.insuranceProvider)  { _, _ in markDirty() }
         .onChange(of: patient.policyNumber)       { _, _ in markDirty() }
+        .toolbar {
+            ToolbarItemGroup(placement: .primaryAction) {
+                // Pre-consult questionnaire
+                Button {
+                    showQuestionnaire = true
+                } label: {
+                    Label("Questionnaire", systemImage: "list.clipboard")
+                }
+
+                // Schedule appointment
+                Button {
+                    showScheduler = true
+                } label: {
+                    Label("Schedule", systemImage: "calendar.badge.plus")
+                }
+
+                // Email
+                if MailComposer.canSendMail, let email = patient.email, !email.isEmpty {
+                    Button {
+                        showMailComposer = true
+                    } label: {
+                        Label("Email", systemImage: "envelope")
+                    }
+                }
+
+                // SMS
+                if SMSComposer.canSendText, let phone = patient.phone, !phone.isEmpty {
+                    Button {
+                        showSMSComposer = true
+                    } label: {
+                        Label("SMS", systemImage: "message")
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showScheduler) {
+            AppointmentSchedulerView(initialPatient: patient)
+        }
+        .sheet(isPresented: $showQuestionnaire) {
+            AdaptiveQuestionnaireSheet(patient: patient)
+        }
+        .sheet(isPresented: $showMailComposer) {
+            if let email = patient.email, !email.isEmpty {
+                MailComposer(
+                    to: [email],
+                    subject: "Your appointment — Amise Medical Services",
+                    body: AppointmentMessage.preConsultEmailBody(
+                        patientName: patient.fullName,
+                        date: .now.addingTimeInterval(86400)
+                    ),
+                    isPresented: $showMailComposer
+                )
+            }
+        }
+        .sheet(isPresented: $showSMSComposer) {
+            if let phone = patient.phone, !phone.isEmpty {
+                SMSComposer(
+                    recipients: [phone],
+                    body: "Amise Medical: Please complete your pre-visit questionnaire with our front desk staff. Call +1(758)284-0557 for info.",
+                    isPresented: $showSMSComposer
+                )
+            }
+        }
     }
 
     @ViewBuilder
@@ -468,10 +538,21 @@ struct PatientDemographicsForm: View {
     }
 
     private func checkIn() {
+        let now = Date.now
         patient.encounterStatus = .waiting
-        patient.checkInTime = .now
+        patient.checkInTime = now
         markDirty()
-        Task { await sync.syncIfAuthenticated() }
+        Task {
+            await sync.syncIfAuthenticated()
+            try? await calendarService.createCheckInEvent(
+                patientName: patient.fullName,
+                checkInTime: now,
+                notes: [patient.chiefComplaint, patient.hpi]
+                    .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+                    .joined(separator: " · ")
+            )
+        }
     }
 
     private func markDirty() {

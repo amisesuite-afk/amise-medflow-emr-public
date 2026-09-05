@@ -394,11 +394,12 @@ private struct CompactFrontDeskView: View {
     @State private var searchQuery = ""
     @State private var selectedTab = 0
 
-    private let cal = Calendar.current
-
     private var filteredPatients: [Patient] {
         let q = searchQuery.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !q.isEmpty else { return [] }
+        if q.isEmpty {
+            // Show most-recent 30 patients when no query — never a blank screen
+            return Array(allPatients.prefix(30))
+        }
         return allPatients.filter {
             $0.fullName.lowercased().contains(q) ||
             ($0.mrn?.lowercased().contains(q) ?? false) ||
@@ -408,7 +409,7 @@ private struct CompactFrontDeskView: View {
 
     private var waitingPatients: [Patient] {
         allPatients
-            .filter { $0.encounterStatus == .waiting && cal.isDateInToday($0.checkInTime ?? .distantPast) }
+            .filter { $0.encounterStatus == .waiting && Calendar.ect.isDateInToday($0.checkInTime ?? .distantPast) }
             .sorted { ($0.checkInTime ?? .distantPast) < ($1.checkInTime ?? .distantPast) }
     }
 
@@ -514,7 +515,7 @@ private struct CompactFrontDeskView: View {
                                 }
                                 Spacer()
                                 if let ct = patient.checkInTime {
-                                    Text(ct.formatted(date: .omitted, time: .shortened))
+                                    Text(DateFormatter.ectShort.string(from: ct))
                                         .font(.caption2.monospacedDigit())
                                         .foregroundStyle(.secondary)
                                 }

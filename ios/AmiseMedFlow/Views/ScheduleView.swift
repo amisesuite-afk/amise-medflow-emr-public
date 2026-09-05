@@ -33,7 +33,7 @@ private enum CalMode: String, CaseIterable {
 
 struct ScheduleView: View {
     @Query(sort: \Patient.createdAt, order: .reverse) private var allPatients: [Patient]
-    @StateObject private var calSvc = CalendarService()
+    @EnvironmentObject private var calSvc: CalendarService
 
     @State private var mode: CalMode = .week
     @State private var anchor: Date  = Calendar.ect.startOfDay(for: .now)
@@ -182,7 +182,7 @@ struct ScheduleView: View {
             }
         }
         .task { await calSvc.fetch() }
-        .sheet(isPresented: $showAdd) { AddPatientView(initialSetting: .theatre) }
+        .sheet(isPresented: $showAdd) { AppointmentSchedulerView() }
         .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
         .sheet(item: $selectedEntry) { entry in
             let setting: ClinicalSetting = {
@@ -503,7 +503,7 @@ private struct CalEventBlock: View {
                     Text(entry.label)
                         .font(.system(size: 8, weight: .heavy))
                         .foregroundStyle(entry.color)
-                    Text(entry.start.formatted(date: .omitted, time: .shortened))
+                    Text(DateFormatter.ectShort.string(from: entry.start))
                         .font(.system(size: 8))
                         .foregroundStyle(entry.color.opacity(0.7))
                     Spacer(minLength: 0)
