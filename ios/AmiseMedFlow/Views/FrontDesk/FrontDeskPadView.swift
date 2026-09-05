@@ -296,6 +296,11 @@ struct PatientDemographicsForm: View {
     @EnvironmentObject private var sync: SyncService
     @EnvironmentObject private var calendarService: CalendarService
 
+    @State private var showScheduler = false
+    @State private var showQuestionnaire = false
+    @State private var showMailComposer = false
+    @State private var showSMSComposer = false
+
     var body: some View {
         Form {
             Section {
@@ -401,6 +406,69 @@ struct PatientDemographicsForm: View {
         .onChange(of: patient.nokPhone)           { _, _ in markDirty() }
         .onChange(of: patient.insuranceProvider)  { _, _ in markDirty() }
         .onChange(of: patient.policyNumber)       { _, _ in markDirty() }
+        .toolbar {
+            ToolbarItemGroup(placement: .primaryAction) {
+                // Pre-consult questionnaire
+                Button {
+                    showQuestionnaire = true
+                } label: {
+                    Label("Questionnaire", systemImage: "list.clipboard")
+                }
+
+                // Schedule appointment
+                Button {
+                    showScheduler = true
+                } label: {
+                    Label("Schedule", systemImage: "calendar.badge.plus")
+                }
+
+                // Email
+                if MailComposer.canSendMail, let email = patient.email, !email.isEmpty {
+                    Button {
+                        showMailComposer = true
+                    } label: {
+                        Label("Email", systemImage: "envelope")
+                    }
+                }
+
+                // SMS
+                if SMSComposer.canSendText, let phone = patient.phone, !phone.isEmpty {
+                    Button {
+                        showSMSComposer = true
+                    } label: {
+                        Label("SMS", systemImage: "message")
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $showScheduler) {
+            AppointmentSchedulerView(initialPatient: patient)
+        }
+        .sheet(isPresented: $showQuestionnaire) {
+            AdaptiveQuestionnaireSheet(patient: patient)
+        }
+        .sheet(isPresented: $showMailComposer) {
+            if let email = patient.email, !email.isEmpty {
+                MailComposer(
+                    to: [email],
+                    subject: "Your appointment — Amise Medical Services",
+                    body: AppointmentMessage.preConsultEmailBody(
+                        patientName: patient.fullName,
+                        date: .now.addingTimeInterval(86400)
+                    ),
+                    isPresented: $showMailComposer
+                )
+            }
+        }
+        .sheet(isPresented: $showSMSComposer) {
+            if let phone = patient.phone, !phone.isEmpty {
+                SMSComposer(
+                    recipients: [phone],
+                    body: "Amise Medical: Please complete your pre-visit questionnaire with our front desk staff. Call +1(758)284-0557 for info.",
+                    isPresented: $showSMSComposer
+                )
+            }
+        }
     }
 
     @ViewBuilder

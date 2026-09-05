@@ -182,7 +182,7 @@ struct ScheduleView: View {
             }
         }
         .task { await calSvc.fetch() }
-        .sheet(isPresented: $showAdd) { AddPatientView(initialSetting: .theatre) }
+        .sheet(isPresented: $showAdd) { AppointmentSchedulerView() }
         .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
         .sheet(item: $selectedEntry) { entry in
             let setting: ClinicalSetting = {

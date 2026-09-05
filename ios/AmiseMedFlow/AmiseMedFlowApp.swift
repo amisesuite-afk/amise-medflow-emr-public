@@ -7,6 +7,7 @@ struct AmiseMedFlowApp: App {
     @StateObject private var peerSync = PeerSyncService()
     @StateObject private var bioAuth = BiometricAuthService()
     @StateObject private var calendarService = CalendarService()
+    @StateObject private var notifications = NotificationService()
     @Environment(\.scenePhase) private var scenePhase
 
     var sharedModelContainer: ModelContainer = {
@@ -43,6 +44,7 @@ struct AmiseMedFlowApp: App {
                     .environmentObject(sync)
                     .environmentObject(peerSync)
                     .environmentObject(calendarService)
+                    .environmentObject(notifications)
                     .tint(AMColor.accent)
                     .disabled(bioAuth.isLocked)
                     .blur(radius: bioAuth.isLocked ? 12 : 0)
@@ -68,6 +70,8 @@ struct AmiseMedFlowApp: App {
                 // peerSync.stop() is called on .background; restart it on .active
                 // using stored credentials (no-op if never started)
                 peerSync.restart()
+                // Check notification authorization state (may have changed in Settings)
+                Task { await notifications.checkAuthorization() }
             default:
                 break
             }
