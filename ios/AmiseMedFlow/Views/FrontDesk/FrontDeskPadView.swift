@@ -7,6 +7,7 @@ import SwiftData
 
 struct FrontDeskPadView: View {
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var calendarService: CalendarService
     @State private var selectedTab: FDTab = .checkIn
 
     enum FDTab: String, CaseIterable {
@@ -293,6 +294,7 @@ struct PatientDemographicsForm: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService
+    @EnvironmentObject private var calendarService: CalendarService
 
     var body: some View {
         Form {
@@ -468,10 +470,21 @@ struct PatientDemographicsForm: View {
     }
 
     private func checkIn() {
+        let now = Date.now
         patient.encounterStatus = .waiting
-        patient.checkInTime = .now
+        patient.checkInTime = now
         markDirty()
-        Task { await sync.syncIfAuthenticated() }
+        Task {
+            await sync.syncIfAuthenticated()
+            try? await calendarService.createCheckInEvent(
+                patientName: patient.fullName,
+                checkInTime: now,
+                notes: [patient.chiefComplaint, patient.hpi]
+                    .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+                    .filter { !$0.isEmpty }
+                    .joined(separator: " · ")
+            )
+        }
     }
 
     private func markDirty() {

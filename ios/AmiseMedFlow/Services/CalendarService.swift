@@ -88,6 +88,64 @@ final class CalendarService: ObservableObject {
         return event
     }
 
+    // MARK: - Check-in event (front-desk → Apple Calendar)
+
+    /// Creates a 30-minute "Checked In" block for the patient starting at checkInTime.
+    @discardableResult
+    func createCheckInEvent(patientName: String, checkInTime: Date, notes: String = "") async throws -> EKEvent {
+        let granted: Bool
+        if #available(iOS 17.0, *) {
+            granted = try await store.requestFullAccessToEvents()
+        } else {
+            granted = try await withCheckedThrowingContinuation { cont in
+                store.requestAccess(to: .event) { ok, err in
+                    if let err { cont.resume(throwing: err) }
+                    else { cont.resume(returning: ok) }
+                }
+            }
+        }
+        guard granted else { throw CalendarError.accessDenied }
+
+        let event = EKEvent(eventStore: store)
+        event.title = "Check-In — \(patientName)"
+        event.startDate = checkInTime
+        event.endDate = checkInTime.addingTimeInterval(1800) // 30 min slot
+        if !notes.isEmpty { event.notes = notes }
+        event.calendar = store.defaultCalendarForNewEvents
+        try store.save(event, span: .thisEvent)
+        loadEvents()
+        return event
+    }
+
+    // MARK: - Follow-up event
+
+    /// Creates a follow-up appointment block on the given date.
+    @discardableResult
+    func createFollowUpEvent(patientName: String, date: Date, duration: TimeInterval = 1800, notes: String = "") async throws -> EKEvent {
+        let granted: Bool
+        if #available(iOS 17.0, *) {
+            granted = try await store.requestFullAccessToEvents()
+        } else {
+            granted = try await withCheckedThrowingContinuation { cont in
+                store.requestAccess(to: .event) { ok, err in
+                    if let err { cont.resume(throwing: err) }
+                    else { cont.resume(returning: ok) }
+                }
+            }
+        }
+        guard granted else { throw CalendarError.accessDenied }
+
+        let event = EKEvent(eventStore: store)
+        event.title = "Follow-Up — \(patientName)"
+        event.startDate = date
+        event.endDate = date.addingTimeInterval(duration)
+        if !notes.isEmpty { event.notes = notes }
+        event.calendar = store.defaultCalendarForNewEvents
+        try store.save(event, span: .thisEvent)
+        loadEvents()
+        return event
+    }
+
     func availableCalendars() -> [EKCalendar] {
         store.calendars(for: .event).filter { $0.allowsContentModifications }
     }

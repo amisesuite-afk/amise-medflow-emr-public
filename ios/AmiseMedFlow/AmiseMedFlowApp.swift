@@ -6,6 +6,7 @@ struct AmiseMedFlowApp: App {
     @StateObject private var sync = SyncService()
     @StateObject private var peerSync = PeerSyncService()
     @StateObject private var bioAuth = BiometricAuthService()
+    @StateObject private var calendarService = CalendarService()
     @Environment(\.scenePhase) private var scenePhase
 
     var sharedModelContainer: ModelContainer = {
@@ -41,6 +42,7 @@ struct AmiseMedFlowApp: App {
                 ContentView()
                     .environmentObject(sync)
                     .environmentObject(peerSync)
+                    .environmentObject(calendarService)
                     .tint(AMColor.accent)
                     .disabled(bioAuth.isLocked)
                     .blur(radius: bioAuth.isLocked ? 12 : 0)
