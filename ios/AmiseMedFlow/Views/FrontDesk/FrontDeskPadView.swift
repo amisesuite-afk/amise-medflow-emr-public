@@ -116,7 +116,7 @@ private struct FDCheckInView: View {
         NavigationStack {
             HStack(spacing: 0) {
                 // Patient list
-                List(selection: $selectedPatient) {
+                List {
                     if filteredPatients.isEmpty && !searchQuery.isEmpty {
                         VStack(spacing: 12) {
                             Text("No patient found for \"\(searchQuery)\"")
@@ -131,8 +131,14 @@ private struct FDCheckInView: View {
                         .listRowBackground(Color.clear)
                     } else {
                         ForEach(filteredPatients) { patient in
-                            FDPatientRow(patient: patient)
-                                .tag(patient as Patient?)
+                            let isSelected = selectedPatient?.persistentModelID == patient.persistentModelID
+                            Button { selectedPatient = patient } label: {
+                                FDPatientRow(patient: patient)
+                            }
+                            .buttonStyle(.plain)
+                            .listRowBackground(isSelected
+                                ? AMColor.accent.opacity(0.10)
+                                : Color.clear)
                         }
                     }
                 }
@@ -589,6 +595,8 @@ struct AdaptiveQuestionnaireSheet: View {
     @EnvironmentObject private var sync: SyncService
 
     @State private var answers = EncounterAnswers()
+    @State private var currentStepIndex = 0
+    @State private var symptomFilter = ""
 
     // Patient demographics used for gating — resolved once from the model
     private var patientSex: Sex { patient?.sex ?? .unknown }
@@ -597,22 +605,124 @@ struct AdaptiveQuestionnaireSheet: View {
         return Calendar.ect.dateComponents([.year], from: dob, to: .now).year ?? 99
     }
 
-    private var ccSelected: Bool { answers.ccCategory != nil }
+    // MARK: Step sequencing
+
+    private enum QPhase: Equatable {
+        case cc, socrates, symptoms, redFlags, pmhx, social
+        var title: String {
+            switch self {
+            case .cc:       "Chief Complaint"
+            case .socrates: "Pain Details"
+            case .symptoms: "Associated Symptoms"
+            case .redFlags: "Red Flags"
+            case .pmhx:     "Medical History"
+            case .social:   "Social History"
+            }
+        }
+        var icon: String {
+            switch self {
+            case .cc:       "text.bubble"
+            case .socrates: "waveform.path.ecg"
+            case .symptoms: "checklist"
+            case .redFlags: "exclamationmark.triangle"
+            case .pmhx:     "cross.case"
+            case .social:   "person.2"
+            }
+        }
+    }
+
+    private var phases: [QPhase] {
+        var result: [QPhase] = [.cc]
+        if let cc = answers.ccCategory {
+            if cc.isPainType { result.append(.socrates) }
+            result += [.symptoms, .redFlags]
+        }
+        result += [.pmhx, .social]
+        return result
+    }
+
+    private var safeIndex: Int { min(currentStepIndex, phases.count - 1) }
+    private var currentPhase: QPhase { phases[safeIndex] }
+    private var isLastStep: Bool { safeIndex >= phases.count - 1 }
+
+    private var canAdvance: Bool {
+        if currentPhase == .cc {
+            return answers.ccCategory != nil ||
+                   !answers.ccClarification.trimmingCharacters(in: .whitespaces).isEmpty
+        }
+        return true
+    }
 
     var body: some View {
         NavigationStack {
-            Form {
-                patientHeaderSection
-                phase1CCSection
-                if ccSelected {
-                    if let cc = answers.ccCategory, cc.isPainType {
-                        phase2SocratesSection(cc: cc)
+            VStack(spacing: 0) {
+                // ── Step progress strip ───────────────────────────────────
+                stepProgressStrip
+
+                Divider()
+
+                // ── Phase content ─────────────────────────────────────────
+                Form {
+                    if let patient {
+                        patientHeaderSection(patient)
                     }
-                    phase3AssociatedSection
-                    phase4RedFlagsSection
+                    switch currentPhase {
+                    case .cc:
+                        phase1CCSection
+                    case .socrates:
+                        if let cc = answers.ccCategory, cc.isPainType {
+                            phase2SocratesSection(cc: cc)
+                        }
+                    case .symptoms:
+                        phase3AssociatedSection
+                    case .redFlags:
+                        phase4RedFlagsSection
+                    case .pmhx:
+                        phase5PMHxSection
+                    case .social:
+                        phase6SocialSection
+                    }
                 }
-                phase5PMHxSection
-                phase6SocialSection
+
+                Divider()
+
+                // ── Navigation bar ────────────────────────────────────────
+                HStack(spacing: 16) {
+                    if safeIndex > 0 {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.18)) { currentStepIndex -= 1 }
+                        } label: {
+                            Label("Back", systemImage: "chevron.left")
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.secondary)
+                    }
+                    Spacer()
+                    if isLastStep {
+                        Button("Save & Close") { save() }
+                            .buttonStyle(.borderedProminent)
+                            .tint(AMColor.accent)
+                            .fontWeight(.semibold)
+                            .disabled(answers.ccCategory == nil &&
+                                      answers.ccClarification.trimmingCharacters(in: .whitespaces).isEmpty)
+                    } else {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.18)) {
+                                currentStepIndex += 1
+                                symptomFilter = ""
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text(currentPhase == .cc && answers.ccCategory == nil ? "Skip" : "Next")
+                                Image(systemName: "chevron.right")
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(canAdvance ? AMColor.accent : .secondary)
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 14)
             }
             .navigationTitle(patient.map { "Questionnaire — \($0.fullName)" } ?? "Walk-In Questionnaire")
             .navigationBarTitleDisplayMode(.inline)
@@ -620,41 +730,80 @@ struct AdaptiveQuestionnaireSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Save") { save() }
-                        .disabled(answers.ccCategory == nil &&
-                                  answers.ccClarification.trimmingCharacters(in: .whitespaces).isEmpty)
-                        .tint(AMColor.accent)
-                        .fontWeight(.semibold)
-                }
+            }
+            .onChange(of: answers.ccCategory) { _, _ in
+                // When CC changes, clamp the step index to the new phase list length
+                currentStepIndex = min(currentStepIndex, phases.count - 1)
             }
         }
+    }
+
+    // MARK: Step progress strip
+
+    private var stepProgressStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 0) {
+                ForEach(Array(phases.enumerated()), id: \.offset) { idx, phase in
+                    let done    = idx < safeIndex
+                    let current = idx == safeIndex
+                    HStack(spacing: 0) {
+                        VStack(spacing: 3) {
+                            ZStack {
+                                Circle()
+                                    .fill(done ? AMColor.accent : (current ? AMColor.accent.opacity(0.15) : Color.secondary.opacity(0.1)))
+                                    .frame(width: 28, height: 28)
+                                if done {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 11, weight: .bold))
+                                        .foregroundStyle(.white)
+                                } else {
+                                    Image(systemName: phase.icon)
+                                        .font(.system(size: 11, weight: current ? .semibold : .regular))
+                                        .foregroundStyle(current ? AMColor.accent : .secondary)
+                                }
+                            }
+                            Text(phase.title)
+                                .font(.system(size: 8, weight: current ? .bold : .regular))
+                                .foregroundStyle(current ? AMColor.accent : (done ? AMColor.accent.opacity(0.6) : .secondary))
+                                .lineLimit(1)
+                        }
+                        .frame(minWidth: 64)
+                        if idx < phases.count - 1 {
+                            Rectangle()
+                                .fill(done ? AMColor.accent.opacity(0.5) : Color.secondary.opacity(0.2))
+                                .frame(width: 20, height: 1.5)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+        }
+        .background(Color(.secondarySystemBackground))
     }
 
     // ── Phase 0: patient header ───────────────────────────────────────────────
 
     @ViewBuilder
-    private var patientHeaderSection: some View {
-        if let patient {
-            Section {
-                HStack(spacing: 8) {
-                    AcuityPip(acuity: patient.acuity)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(patient.fullName).font(.subheadline.weight(.semibold))
-                        HStack(spacing: 6) {
-                            if let mrn = patient.mrn, !mrn.isEmpty {
-                                Text("MRN \(mrn)")
-                                    .font(.caption2).foregroundStyle(AMColor.accent)
-                            }
-                            Text(patient.ageDisplay ?? "").font(.caption2).foregroundStyle(.secondary)
-                            Text(patient.sex.rawValue).font(.caption2).foregroundStyle(.secondary)
+    private func patientHeaderSection(_ patient: Patient) -> some View {
+        Section {
+            HStack(spacing: 8) {
+                AcuityPip(acuity: patient.acuity)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(patient.fullName).font(.subheadline.weight(.semibold))
+                    HStack(spacing: 6) {
+                        if let mrn = patient.mrn, !mrn.isEmpty {
+                            Text("MRN \(mrn)")
+                                .font(.caption2).foregroundStyle(AMColor.accent)
                         }
+                        Text(patient.ageDisplay ?? "").font(.caption2).foregroundStyle(.secondary)
+                        Text(patient.sex.rawValue).font(.caption2).foregroundStyle(.secondary)
                     }
                 }
-            } header: {
-                Label("Patient", systemImage: "person.crop.circle")
-                    .textCase(nil).font(.system(size: 11, weight: .semibold))
             }
+        } header: {
+            Label("Patient", systemImage: "person.crop.circle")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
         }
     }
 
@@ -776,22 +925,60 @@ struct AdaptiveQuestionnaireSheet: View {
         }
     }
 
-    // ── Phase 3: Associated symptoms (CC-specific list) ───────────────────────
+    // ── Phase 3: Associated symptoms (CC-specific list, with type-to-search) ───
 
     @ViewBuilder
     private var phase3AssociatedSection: some View {
         if let cc = answers.ccCategory {
             Section {
-                QCheckboxGrid(label: nil,
-                              options: cc.associatedSymptoms,
-                              selection: $answers.associatedSymptoms)
-                TextField("Other associated symptoms…", text: $answers.associatedOther, axis: .vertical)
-                    .lineLimit(2...)
+                // Type-to-filter (matches web version's symptom entry)
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                        .font(.system(size: 14))
+                    TextField("Type to search or add a symptom…", text: $symptomFilter)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.words)
+                }
+
+                let q = symptomFilter.trimmingCharacters(in: .whitespaces)
+                let filtered = q.isEmpty
+                    ? cc.associatedSymptoms
+                    : cc.associatedSymptoms.filter { $0.lowercased().contains(q.lowercased()) }
+
+                if !filtered.isEmpty {
+                    QCheckboxGrid(label: nil, options: filtered, selection: $answers.associatedSymptoms)
+                }
+
+                // Show already-selected custom symptoms not in the filtered list
+                let custom = answers.associatedSymptoms.filter { !cc.associatedSymptoms.contains($0) }
+                if !custom.isEmpty {
+                    QCheckboxGrid(label: "Added", options: custom.sorted(), selection: $answers.associatedSymptoms)
+                }
+
+                // "Add custom" when query doesn't match any preset
+                if !q.isEmpty && !cc.associatedSymptoms.contains(where: { $0.lowercased() == q.lowercased() }) {
+                    Button {
+                        answers.associatedSymptoms.insert(q)
+                        symptomFilter = ""
+                    } label: {
+                        Label("Add \"\(q)\"", systemImage: "plus.circle.fill")
+                            .foregroundStyle(AMColor.accent)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if !answers.associatedSymptoms.isEmpty {
+                    Text("Selected: \(answers.associatedSymptoms.sorted().joined(separator: " · "))")
+                        .font(.caption2)
+                        .foregroundStyle(AMColor.accent)
+                }
+
             } header: {
                 Label("Associated Symptoms", systemImage: "list.bullet")
                     .textCase(nil).font(.system(size: 11, weight: .semibold))
             } footer: {
-                Text("Only symptoms relevant to \(cc.rawValue.lowercased()) are shown.")
+                Text("Search or tap to select. Showing symptoms relevant to \(cc.rawValue.lowercased()).")
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
