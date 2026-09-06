@@ -99,7 +99,18 @@ struct AddPatientView: View {
             TextField("Email", text: $email)
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
-            TextField("MRN (optional)", text: $mrn)
+            HStack(spacing: 8) {
+                TextField("MRN (optional)", text: $mrn)
+                if mrn.isEmpty {
+                    Button("Generate") {
+                        let digits = (0..<6).map { _ in String(Int.random(in: 0...9)) }.joined()
+                        mrn = "AMI-\(digits)"
+                    }
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AMColor.accent)
+                    .buttonStyle(.bordered)
+                }
+            }
         }
     }
 

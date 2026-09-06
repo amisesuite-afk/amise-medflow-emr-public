@@ -193,7 +193,7 @@ private struct FDCheckInView: View {
                 // ── Right panel: demographics ──────────────────────────────
                 if let patient = selectedPatient {
                     NavigationStack {
-                        PatientDemographicsForm(patient: patient)
+                        FDPatientDemographicsPanel(patient: patient)
                             .navigationTitle(patient.fullName)
                             .navigationBarTitleDisplayMode(.inline)
                     }
@@ -343,9 +343,10 @@ private struct FDQuestionnaireView: View {
     }
 }
 
-// MARK: - Patient demographics form (front desk: demographics + check-in gate)
+// MARK: - Front-desk demographics panel (check-in gate + encounter actions)
+// Named distinctly from the clinical PatientDemographicsForm in PatientDetailView.swift.
 
-struct PatientDemographicsForm: View {
+struct FDPatientDemographicsPanel: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService

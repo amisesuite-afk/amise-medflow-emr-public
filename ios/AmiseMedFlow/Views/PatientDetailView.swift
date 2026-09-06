@@ -820,6 +820,11 @@ struct PatientDemographicsForm: View {
         try? context.save()
     }
 
+    private static func generateMRN() -> String {
+        let digits = (0..<6).map { _ in String(Int.random(in: 0...9)) }.joined()
+        return "AMI-\(digits)"
+    }
+
     // MARK: Identity
 
     @ViewBuilder
@@ -847,10 +852,21 @@ struct PatientDemographicsForm: View {
                 .labelsHidden()
                 LabeledContent("Age") { Text(patient.ageDisplay ?? "—") }
             }
-            TextField("MRN (optional)", text: Binding(
-                get: { patient.mrn ?? "" },
-                set: { patient.mrn = $0.isEmpty ? nil : $0; touch() }
-            ))
+            HStack(spacing: 8) {
+                TextField("MRN (optional)", text: Binding(
+                    get: { patient.mrn ?? "" },
+                    set: { patient.mrn = $0.isEmpty ? nil : $0; touch() }
+                ))
+                if patient.mrn == nil || (patient.mrn?.isEmpty == true) {
+                    Button("Generate") {
+                        patient.mrn = Self.generateMRN()
+                        touch()
+                    }
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AMColor.accent)
+                    .buttonStyle(.bordered)
+                }
+            }
         }
         Section("Contact") {
             TextField("Phone", text: Binding(
