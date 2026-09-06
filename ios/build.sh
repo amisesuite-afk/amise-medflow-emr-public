@@ -17,6 +17,13 @@ ARCHIVE="$SCRIPT_DIR/build/AmiseMedFlow.xcarchive"
 EXPORT_DIR="$SCRIPT_DIR/build/export"
 MODE="${1:-device}"
 
+# ── Guard: xcodeproj must exist ────────────────────────────────────────────────
+if [ ! -d "$PROJECT" ]; then
+    echo "ERROR: AmiseMedFlow.xcodeproj not found."
+    echo "       Run: xcodegen generate  (then ./setup.sh)"
+    exit 1
+fi
+
 # ── Guard: Configuration.xcconfig must exist ───────────────────────────────
 if [ ! -f "$SCRIPT_DIR/Configuration.xcconfig" ]; then
     echo "ERROR: Configuration.xcconfig not found. Run ./setup.sh first."
@@ -37,9 +44,6 @@ echo ""
 
 mkdir -p "$SCRIPT_DIR/build"
 
-# NOTE: xcodegen is NOT run here — setup.sh already generated and patched
-# the project. Re-running xcodegen would overwrite the patched scheme.
-
 # ── Helper: run xcodebuild, pretty-print if xcpretty is available ──────────
 run_build() {
     if command -v xcpretty &>/dev/null; then
@@ -49,20 +53,55 @@ run_build() {
     fi
 }
 
-# ── Specific UDID ────────────────────────────────────────────────────────────
-if [[ "$MODE" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4} ]] || \
-   [[ "$MODE" =~ ^[0-9A-Fa-f]{40}$ ]] || \
-   [[ "$MODE" =~ ^[0-9A-F]{25,}$ ]]; then
-    echo "==> Building for device UDID: $MODE"
-    # Use -target (not -scheme) to bypass scheme platform resolution entirely
+# ── Helper: install .app onto a device ─────────────────────────────────────
+install_app() {
+    local UDID="$1"
+    echo "==> Locating built .app..."
+    APP=$(find ~/Library/Developer/Xcode/DerivedData -name "${SCHEME}.app" \
+        -path "*/Debug-iphoneos/*" 2>/dev/null | head -1 || true)
+
+    if [ -z "$APP" ]; then
+        echo "ERROR: Could not find ${SCHEME}.app in DerivedData."
+        echo "       Build may have failed. Check output above."
+        exit 1
+    fi
+
+    echo "==> Found: $APP"
+    echo "==> Installing on device $UDID..."
+
+    if xcrun devicectl device install app --device "$UDID" "$APP" 2>/dev/null; then
+        echo "==> Installed via devicectl."
+    elif command -v ios-deploy &>/dev/null; then
+        ios-deploy --id "$UDID" --bundle "$APP"
+        echo "==> Installed via ios-deploy."
+    else
+        echo "==> App built at: $APP"
+        echo "    Drag it into Xcode Devices window to install manually,"
+        echo "    or: brew install ios-deploy"
+    fi
+}
+
+# ── Core build command (NO -destination flag — avoids scheme platform check) ─
+build_device() {
     run_build xcodebuild build \
         -project "$PROJECT" \
         -target "$SCHEME" \
         -configuration Debug \
         -sdk iphoneos \
-        -destination "id=$MODE" \
+        ARCHS="arm64" \
+        ONLY_ACTIVE_ARCH=YES \
         CODE_SIGN_STYLE=Automatic \
-        DEVELOPMENT_TEAM="$TEAM_ID"
+        DEVELOPMENT_TEAM="$TEAM_ID" \
+        IPHONEOS_DEPLOYMENT_TARGET=17.0
+}
+
+# ── Specific UDID ────────────────────────────────────────────────────────────
+if [[ "$MODE" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4} ]] || \
+   [[ "$MODE" =~ ^[0-9A-Fa-f]{40}$ ]] || \
+   [[ "$MODE" =~ ^[0-9A-F]{25,}$ ]]; then
+    echo "==> Building for device UDID: $MODE"
+    build_device
+    install_app "$MODE"
 
 # ── First connected device ───────────────────────────────────────────────────
 elif [ "$MODE" = "device" ]; then
@@ -81,14 +120,8 @@ elif [ "$MODE" = "device" ]; then
         exit 1
     fi
     echo "==> Found device: $UDID"
-    run_build xcodebuild build \
-        -project "$PROJECT" \
-        -target "$SCHEME" \
-        -configuration Debug \
-        -sdk iphoneos \
-        -destination "id=$UDID" \
-        CODE_SIGN_STYLE=Automatic \
-        DEVELOPMENT_TEAM="$TEAM_ID"
+    build_device
+    install_app "$UDID"
 
 # ── Archive (Release) ─────────────────────────────────────────────────────────
 elif [ "$MODE" = "archive" ] || [ "$MODE" = "testflight" ]; then
