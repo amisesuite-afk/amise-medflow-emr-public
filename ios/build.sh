@@ -71,7 +71,8 @@ if [ "$MODE" = "device" ]; then
             -project "$PROJECT" \
             -scheme "$SCHEME" \
             -configuration Debug \
-            -destination "id=$DEST" \
+            -sdk iphoneos \
+            -destination "platform=iOS,id=$DEST" \
             -xcconfig "$SCRIPT_DIR/Configuration.xcconfig" \
             | xcpretty 2>/dev/null || cat
     fi
@@ -83,7 +84,8 @@ elif [[ "$MODE" =~ ^[0-9A-Fa-f-]{25,}$ ]]; then
         -project "$PROJECT" \
         -scheme "$SCHEME" \
         -configuration Debug \
-        -destination "id=$MODE" \
+        -sdk iphoneos \
+        -destination "platform=iOS,id=$MODE" \
         -xcconfig "$SCRIPT_DIR/Configuration.xcconfig" \
         | xcpretty 2>/dev/null || cat
 
