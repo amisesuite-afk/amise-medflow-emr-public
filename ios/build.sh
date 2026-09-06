@@ -1,12 +1,12 @@
 #!/bin/bash
 # Automated build script for AmiseMedFlow
 # Usage:
-#   ./build.sh device            — build + install on connected device (Debug)
-#   ./build.sh archive           — archive for export (Release)
-#   ./build.sh testflight        — archive + upload to TestFlight
 #   ./build.sh <device-udid>     — build + install on specific device UDID
+#   ./build.sh device            — build + install on first connected device
+#   ./build.sh archive           — archive for IPA export (Release)
+#   ./build.sh testflight        — archive + upload to TestFlight (Release)
 #
-# Run ./setup.sh first on a new Mac.
+# Run ./setup.sh first on a new Mac to patch your Apple Team ID.
 
 set -euo pipefail
 
@@ -17,10 +17,9 @@ ARCHIVE="$SCRIPT_DIR/build/AmiseMedFlow.xcarchive"
 EXPORT_DIR="$SCRIPT_DIR/build/export"
 MODE="${1:-device}"
 
-# ── Guard: xcconfig must exist ──────────────────────────────────────────────
+# ── Guard: Configuration.xcconfig must exist ───────────────────────────────
 if [ ! -f "$SCRIPT_DIR/Configuration.xcconfig" ]; then
-    echo "ERROR: Configuration.xcconfig not found."
-    echo "       Run ./setup.sh first to patch your Apple Team ID."
+    echo "ERROR: Configuration.xcconfig not found. Run ./setup.sh first."
     exit 1
 fi
 
@@ -28,8 +27,7 @@ TEAM_ID=$(grep 'DEVELOPMENT_TEAM' "$SCRIPT_DIR/Configuration.xcconfig" \
     | grep -oE '[A-Z0-9]{10}' | head -1 || true)
 
 if [ -z "$TEAM_ID" ]; then
-    echo "ERROR: DEVELOPMENT_TEAM not set in Configuration.xcconfig."
-    echo "       Run ./setup.sh first."
+    echo "ERROR: DEVELOPMENT_TEAM not set. Run ./setup.sh first."
     exit 1
 fi
 
@@ -39,81 +37,81 @@ echo ""
 
 mkdir -p "$SCRIPT_DIR/build"
 
-# ── Regenerate xcodeproj ────────────────────────────────────────────────────
-if command -v xcodegen &>/dev/null; then
-    echo "==> xcodegen generate..."
-    cd "$SCRIPT_DIR" && xcodegen generate --quiet
-fi
+# NOTE: xcodegen is NOT run here — setup.sh already generated and patched
+# the project. Re-running xcodegen would overwrite the patched scheme.
 
-# ── Device build (Debug, direct install) ────────────────────────────────────
-if [ "$MODE" = "device" ]; then
-    # Find first connected iPad/iPhone
-    DEST=$(xcrun devicectl list devices 2>/dev/null \
-        | grep -E 'iPad|iPhone' | grep 'connected' \
-        | head -1 | grep -oE '[0-9A-F-]{36}' | head -1 || true)
-
-    if [ -z "$DEST" ]; then
-        # Fallback: first booted simulator
-        DEST=$(xcrun simctl list devices booted | grep -oE '\([0-9A-F-]{36}\)' \
-            | head -1 | tr -d '()' || true)
-        PLATFORM="iphonesimulator"
-        echo "==> No physical device found — using simulator: $DEST"
-        xcodebuild build \
-            -project "$PROJECT" \
-            -scheme "$SCHEME" \
-            -configuration Debug \
-            -destination "platform=iOS Simulator,id=$DEST" \
-            -xcconfig "$SCRIPT_DIR/Configuration.xcconfig" \
-            | xcpretty 2>/dev/null || cat
+# ── Helper: run xcodebuild, pretty-print if xcpretty is available ──────────
+run_build() {
+    if command -v xcpretty &>/dev/null; then
+        "$@" | xcpretty
     else
-        echo "==> Building for device: $DEST"
-        xcodebuild build \
-            -project "$PROJECT" \
-            -scheme "$SCHEME" \
-            -configuration Debug \
-            -sdk iphoneos \
-            -destination "platform=iOS,id=$DEST" \
-            -xcconfig "$SCRIPT_DIR/Configuration.xcconfig" \
-            | xcpretty 2>/dev/null || cat
+        "$@"
     fi
+}
 
 # ── Specific UDID ────────────────────────────────────────────────────────────
-elif [[ "$MODE" =~ ^[0-9A-Fa-f-]{25,}$ ]]; then
-    echo "==> Building for UDID: $MODE"
-    xcodebuild build \
+if [[ "$MODE" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4} ]] || \
+   [[ "$MODE" =~ ^[0-9A-Fa-f]{40}$ ]] || \
+   [[ "$MODE" =~ ^[0-9A-F]{25,}$ ]]; then
+    echo "==> Building for device UDID: $MODE"
+    run_build xcodebuild build \
         -project "$PROJECT" \
         -scheme "$SCHEME" \
         -configuration Debug \
-        -sdk iphoneos \
-        -destination "platform=iOS,id=$MODE" \
-        -xcconfig "$SCRIPT_DIR/Configuration.xcconfig" \
-        | xcpretty 2>/dev/null || cat
+        -destination "id=$MODE" \
+        CODE_SIGN_STYLE=Automatic \
+        DEVELOPMENT_TEAM="$TEAM_ID"
 
-# ── Archive (Release) ────────────────────────────────────────────────────────
+# ── First connected device ───────────────────────────────────────────────────
+elif [ "$MODE" = "device" ]; then
+    echo "==> Detecting connected devices..."
+    # Try Xcode 15+ devicectl first
+    UDID=$(xcrun devicectl list devices 2>/dev/null \
+        | grep -i 'connected' | grep -oE '[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}' \
+        | head -1 || true)
+
+    # Fallback: instruments (older Xcode)
+    if [ -z "$UDID" ]; then
+        UDID=$(instruments -s devices 2>/dev/null \
+            | grep 'iPad\|iPhone' | grep -v Simulator \
+            | grep -oE '[0-9a-f]{40}' | head -1 || true)
+    fi
+
+    if [ -z "$UDID" ]; then
+        echo "ERROR: No physical device found. Connect your iPad and unlock it."
+        echo "       Or run: ./build.sh <udid>"
+        exit 1
+    fi
+
+    echo "==> Found device: $UDID"
+    run_build xcodebuild build \
+        -project "$PROJECT" \
+        -scheme "$SCHEME" \
+        -configuration Debug \
+        -destination "id=$UDID" \
+        CODE_SIGN_STYLE=Automatic \
+        DEVELOPMENT_TEAM="$TEAM_ID"
+
+# ── Archive (Release) ─────────────────────────────────────────────────────────
 elif [ "$MODE" = "archive" ] || [ "$MODE" = "testflight" ]; then
     echo "==> Archiving (Release)..."
-    xcodebuild archive \
+    run_build xcodebuild archive \
         -project "$PROJECT" \
         -scheme "$SCHEME" \
         -configuration Release \
         -destination "generic/platform=iOS" \
         -archivePath "$ARCHIVE" \
-        -xcconfig "$SCRIPT_DIR/Configuration.xcconfig" \
-        DEVELOPMENT_TEAM="$TEAM_ID" \
-        | xcpretty 2>/dev/null || cat
+        CODE_SIGN_STYLE=Automatic \
+        DEVELOPMENT_TEAM="$TEAM_ID"
 
     if [ "$MODE" = "archive" ]; then
-        echo "==> Exporting IPA (Development)..."
-        # Patch team ID into export options
-        sed "s|<!-- TEAM_ID -->|$TEAM_ID|g" \
-            "$SCRIPT_DIR/ExportOptions-Development.plist" \
-            > /tmp/ExportOptions-patched.plist
+        echo "==> Exporting IPA..."
         xcodebuild -exportArchive \
             -archivePath "$ARCHIVE" \
-            -exportOptionsPlist /tmp/ExportOptions-patched.plist \
+            -exportOptionsPlist "$SCRIPT_DIR/ExportOptions-Development.plist" \
             -exportPath "$EXPORT_DIR" \
             DEVELOPMENT_TEAM="$TEAM_ID"
-        echo "==> IPA exported to: $EXPORT_DIR"
+        echo "==> IPA at: $EXPORT_DIR"
 
     elif [ "$MODE" = "testflight" ]; then
         echo "==> Uploading to TestFlight..."
@@ -122,12 +120,12 @@ elif [ "$MODE" = "archive" ] || [ "$MODE" = "testflight" ]; then
             -exportOptionsPlist "$SCRIPT_DIR/ExportOptions-TestFlight.plist" \
             -exportPath "$EXPORT_DIR" \
             DEVELOPMENT_TEAM="$TEAM_ID"
-        echo "==> Uploaded. Check App Store Connect → TestFlight."
+        echo "==> Done — check App Store Connect → TestFlight."
     fi
 
 else
     echo "ERROR: Unknown mode '$MODE'"
-    echo "Usage: ./build.sh [device|archive|testflight|<udid>]"
+    echo "Usage: ./build.sh [<udid>|device|archive|testflight]"
     exit 1
 fi
 
