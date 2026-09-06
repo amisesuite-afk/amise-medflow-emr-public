@@ -54,10 +54,12 @@ if [[ "$MODE" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4} ]] || \
    [[ "$MODE" =~ ^[0-9A-Fa-f]{40}$ ]] || \
    [[ "$MODE" =~ ^[0-9A-F]{25,}$ ]]; then
     echo "==> Building for device UDID: $MODE"
+    # Use -target (not -scheme) to bypass scheme platform resolution entirely
     run_build xcodebuild build \
         -project "$PROJECT" \
-        -scheme "$SCHEME" \
+        -target "$SCHEME" \
         -configuration Debug \
+        -sdk iphoneos \
         -destination "id=$MODE" \
         CODE_SIGN_STYLE=Automatic \
         DEVELOPMENT_TEAM="$TEAM_ID"
@@ -65,29 +67,25 @@ if [[ "$MODE" =~ ^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4} ]] || \
 # ── First connected device ───────────────────────────────────────────────────
 elif [ "$MODE" = "device" ]; then
     echo "==> Detecting connected devices..."
-    # Try Xcode 15+ devicectl first
     UDID=$(xcrun devicectl list devices 2>/dev/null \
         | grep -i 'connected' | grep -oE '[0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}' \
         | head -1 || true)
-
-    # Fallback: instruments (older Xcode)
     if [ -z "$UDID" ]; then
         UDID=$(instruments -s devices 2>/dev/null \
             | grep 'iPad\|iPhone' | grep -v Simulator \
             | grep -oE '[0-9a-f]{40}' | head -1 || true)
     fi
-
     if [ -z "$UDID" ]; then
         echo "ERROR: No physical device found. Connect your iPad and unlock it."
         echo "       Or run: ./build.sh <udid>"
         exit 1
     fi
-
     echo "==> Found device: $UDID"
     run_build xcodebuild build \
         -project "$PROJECT" \
-        -scheme "$SCHEME" \
+        -target "$SCHEME" \
         -configuration Debug \
+        -sdk iphoneos \
         -destination "id=$UDID" \
         CODE_SIGN_STYLE=Automatic \
         DEVELOPMENT_TEAM="$TEAM_ID"
