@@ -13,6 +13,7 @@ import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { requireStaffAuth } from '../lib/supabase.js';
 import { logger, errStr } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -196,6 +197,7 @@ router.post('/api/narrative/parse', async (req, res) => {
 
     const parsed = JSON.parse(match[0]) as Record<string, unknown>;
     logger.info({ section, keys: Object.keys(parsed) }, '[narrative/parse] ok');
+    void logAudit(req, 'ai_call', 'clinical_note', undefined, undefined, { section, model: MODEL });
     res.json({ parsed });
   } catch (err) {
     logger.error({ err }, '[narrative/parse] error');

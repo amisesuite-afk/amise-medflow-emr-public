@@ -53,14 +53,62 @@ but out of scope here — noted so a future pass doesn't repeat the same underco
 - **`calls.ts`** — `PATCH /api/calls/:id/resolve` patient linkage now emits `logAudit`.
 - **`clinical-states.ts`** — PATCH and DELETE now emit `logAudit`.
 
-## Confirmed complete gap — zero audit calls of any kind (13 files)
+## Fixed in third follow-up pass (2026-09-10)
 
-Administrative/scheduling routes, not patient-record clinical data — lower priority per the
-backlog's own prioritization, left for a follow-up pass:
+Seven of the thirteen zero-coverage files from the previous pass are now covered:
 
-`admin.ts`, `call-recording.ts`, `email-intake.ts`, `endoscopy-capture.ts`, `narrative.ts`,
-`patient-messages.ts`, `previsit.ts`, `suggest-codes.ts`, `summary.ts`,
-`triage-preview.ts`, `voice.ts`, `document-scan.ts`
+- **`narrative.ts`** — `POST /api/narrative/parse` (sends clinical narrative PHI to Claude across
+  6 sections) now emits `logAudit` with `action: 'ai_call'`, `resourceType: 'clinical_note'` and
+  the section name in details.
+- **`voice.ts`** — `POST /api/voice/segment` (sends voice transcript PHI to Claude, stores in
+  `call_logs` and `ai_proposals`) now emits `logAudit` with `action: 'ai_call'`,
+  `resourceType: 'voice_transcript'`, `patientId`, and char count in details.
+- **`document-scan.ts`** — `POST /api/document-scan` (sends document PHI to Claude fallback when
+  native parser confidence < 0.75) now emits `logAudit` with `action: 'ai_call'`,
+  `resourceType: 'document'`, and `{ mimeType, usedClaude }` so it's clear when the AI was
+  actually invoked vs. when the native parser alone handled extraction.
+- **`suggest-codes.ts`** — `POST /api/suggest-codes` (sends clinical assessment PHI to Claude for
+  ICD-10/CPT code suggestions) now emits `logAudit` with `action: 'ai_call'`,
+  `resourceType: 'invoice'`.
+- **`summary.ts`** — three AI routes now covered:
+  - `POST /api/summary/generate` — SOAP summary generation from structured intake data.
+  - `POST /api/ai/refine` — clinical encounter record refinement by Claude.
+  - `POST /api/soap/polish` — structured SOAP data polishing into prose.
+  All three emit `logAudit` with `action: 'ai_call'`, `resourceType: 'clinical_note'`, and
+  `action` name in details.
+- **`previsit.ts`** — two mutating routes now covered:
+  - `POST /api/previsit/create` — staff creates a pre-visit submission row; emits `logAudit` with
+    `action: 'create'`, `resourceType: 'appointment'`, `patientId`.
+  - `POST /api/previsit/ai-format` — sends patient-submitted PHI to Claude for clinical
+    formatting; emits `logAudit` with `action: 'ai_call'`, `resourceType: 'clinical_note'`,
+    `patientId`.
+- **`admin.ts`** — three mutating routes now covered:
+  - `POST /api/admin/patient-accounts/:id/link` — patient account linkage; emits `update` on
+    `patient`.
+  - `DELETE /api/admin/patient-accounts/:id` — unlinked portal account deletion; emits `delete`
+    on `patient`.
+  - `POST /api/admin/patients/quick-create` — minimal patient record creation; emits `create` on
+    `patient` with the new patient's ID as both `resourceId` and `patientId`.
+- **`call-recording.ts`** — `POST /api/calls/recording-upload` (RECORDING_UPLOAD_KEY auth,
+  not staff JWT — userId will be null in the audit record but IP and device metadata are still
+  captured) now emits `logAudit` with `action: 'create'`, `resourceType: 'appointment'`,
+  `patientId` where resolvable, and `{ direction, deviceLabel, practiceLine }` in details.
+
+## Confirmed complete gap — zero audit calls of any kind (5 files)
+
+Left intentionally for future passes with notes on priority/rationale:
+
+`email-intake.ts` — cron-keyed routes processing inbound referral emails; not patient-record
+clinical mutations but does write to `appointment_requests`. Medium priority for a dedicated
+email-intake audit pass.
+
+`endoscopy-capture.ts` — uses in-memory store with `CRON_SECRET` auth; no PHI persisted to DB,
+so no immediate audit need.
+
+`triage-preview.ts` — no auth, pure computation, no PHI stored; skip.
+
+`patient-messages.ts` — patient-facing SMS/message routes; worth a dedicated review pass
+to confirm which mutations touch PHI.
 
 Note: `patient-auth.ts` mentioned in the prior pass no longer exists as a separate file —
 the patient portal auth routes live in `portal.ts`, which now has login audit coverage.

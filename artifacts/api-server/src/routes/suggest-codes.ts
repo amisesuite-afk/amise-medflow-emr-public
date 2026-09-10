@@ -2,6 +2,7 @@ import { Router, type Request, type Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -59,6 +60,7 @@ router.post('/', async (req: Request, res: Response) => {
 
   try {
     log.info('suggest-codes request');
+    void logAudit(req, 'ai_call', 'invoice', undefined, undefined, { model: MODEL, action: 'suggest_codes' });
     const message = await client.messages.create({
       model: MODEL,
       max_tokens: 800,
