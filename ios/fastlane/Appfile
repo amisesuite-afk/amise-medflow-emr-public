@@ -1,0 +1,4 @@
+app_identifier "com.amise.medflow"
+apple_id ENV["APPLE_ID"] || ""
+team_id ENV["DEVELOPER_TEAM_ID"] || ""
+itc_team_id ENV["DEVELOPER_TEAM_ID"] || ""
