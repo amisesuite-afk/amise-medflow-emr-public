@@ -591,4 +591,85 @@ router.get('/api/cron/backup-status', async (req, res) => {
   });
 });
 
+// POST /api/cron/backup-usb-complete
+// Called by nas-usb-copy.sh on the Synology NAS when a USB drive copy finishes.
+// Emails the doctor with drive details and logs to backup_runs.
+router.post('/api/cron/backup-usb-complete', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const { drive, files, size, date, status, error: errorMsg } = req.body as {
+    drive?: string;
+    files?: number;
+    size?: string;
+    date?: string;
+    status?: 'success' | 'failed';
+    error?: string;
+  };
+
+  const doctorEmail = process.env.DOCTOR_NOTIFY_EMAIL;
+  const isSuccess = status === 'success';
+
+  req.log.info({ drive, files, size, date, status }, '[cron/backup-usb-complete] USB copy event');
+
+  if (doctorEmail) {
+    try {
+      if (isSuccess) {
+        await sendOrDraft({
+          to: doctorEmail,
+          subject: `MedFlow Backup — USB Drive ${drive ?? 'UNKNOWN'} verified OK (${date ?? 'today'})`,
+          body: [
+            `USB drive backup completed and verified successfully.`,
+            '',
+            `Drive:  ${drive ?? 'UNKNOWN'}`,
+            `Date:   ${date ?? new Date().toISOString().slice(0, 10)}`,
+            `Files:  ${files ?? '—'}`,
+            `Size:   ${size ?? '—'}`,
+            `Status: VERIFIED OK`,
+            '',
+            'The drive has been safely ejected from the NAS and is ready to remove.',
+            '',
+            '-- Amise MedFlow automated notification',
+          ].join('\n'),
+        }, 'auto');
+      } else {
+        await sendOrDraft({
+          to: doctorEmail,
+          subject: `ALERT: MedFlow USB Backup FAILED — Drive ${drive ?? 'UNKNOWN'}`,
+          body: [
+            'The USB drive backup on the Synology NAS FAILED.',
+            '',
+            `Drive:  ${drive ?? 'UNKNOWN'}`,
+            `Date:   ${date ?? new Date().toISOString().slice(0, 10)}`,
+            `Error:  ${errorMsg ?? 'unknown error'}`,
+            '',
+            'Action required: Check the NAS system log in DSM for details.',
+            'Do NOT use this drive for recovery until a successful copy is confirmed.',
+            '',
+            '-- Amise MedFlow automated alert',
+          ].join('\n'),
+        }, 'auto');
+      }
+    } catch (err) {
+      req.log.error({ err }, '[cron/backup-usb-complete] failed to send email');
+    }
+  }
+
+  // Log to backup_runs so the dashboard can show USB copy history
+  try {
+    await sb().from('backup_runs').insert({
+      status: isSuccess ? 'success' : 'failed',
+      backup_type: 'storage',
+      triggered_by: `usb_drive_${drive ?? 'UNKNOWN'}`,
+      finished_at: new Date().toISOString(),
+      nas_path: drive ? `/volumeUSB/medflow-backups (drive ${drive})` : null,
+      error_message: isSuccess ? null : (errorMsg ?? 'NAS USB copy failed'),
+    });
+  } catch (err) {
+    req.log.warn({ err }, '[cron/backup-usb-complete] backup_runs insert failed');
+  }
+
+  res.json({ received: true, alerted: !!doctorEmail });
+});
+
 export default router;
+
