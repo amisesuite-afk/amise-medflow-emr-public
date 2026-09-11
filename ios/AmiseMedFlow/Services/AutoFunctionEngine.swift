@@ -24,7 +24,7 @@ struct AutoAction: Identifiable {
     let title: String
     let detail: String
     let urgency: AutoUrgency
-    let targetSection: AppSection?    // which tab to navigate to
+    let targetSection: ClinicalTab?    // which tab to navigate to
     let payload: AutoPayload?         // pre-populated data to hand to the target UI
 }
 
@@ -69,7 +69,7 @@ enum AutoUrgency: Int, Comparable {
     }
 }
 
-enum AppSection: String {
+enum ClinicalTab: String {
     case history      = "History"
     case examination  = "Examination"
     case investigations = "Investigations"
