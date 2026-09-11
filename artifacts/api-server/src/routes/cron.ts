@@ -522,4 +522,73 @@ router.post('/api/cron/escalate-results', async (req, res) => {
   }
 });
 
+// POST /api/cron/backup-alert
+// Called by GitHub Actions when a nightly backup fails.
+// Emails the doctor with the Actions log URL.
+router.post('/api/cron/backup-alert', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const { run_id, log_url } = req.body as { run_id?: string; log_url?: string };
+  const doctorEmail = process.env.DOCTOR_NOTIFY_EMAIL;
+
+  req.log.error({ run_id, log_url }, '[cron/backup-alert] NAS backup FAILED');
+
+  if (doctorEmail) {
+    try {
+      await sendOrDraft({
+        to: doctorEmail,
+        subject: 'ALERT: Amise MedFlow nightly NAS backup FAILED',
+        body: [
+          'The nightly Supabase → NAS backup failed.',
+          '',
+          `GitHub Actions run ID: ${run_id ?? 'unknown'}`,
+          `Log URL: ${log_url ?? 'check GitHub Actions tab'}`,
+          '',
+          'Action required: Check the Actions log above, investigate the failure,',
+          'and run the backup manually once fixed.',
+          '',
+          'If the NAS is unreachable, verify the Synology is online and the SSH key',
+          'in GitHub Secrets (NAS_SSH_KEY) matches the key installed on the NAS.',
+          '',
+          '-- Amise MedFlow automated alert',
+        ].join('\n'),
+      }, 'auto');
+    } catch (err) {
+      req.log.error({ err }, '[cron/backup-alert] failed to send alert email');
+    }
+  }
+
+  res.json({ alerted: !!doctorEmail });
+});
+
+// GET /api/cron/backup-status
+// Returns the last 10 backup_runs rows so the dashboard can show backup health.
+router.get('/api/cron/backup-status', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const { data, error } = await sb()
+    .from('backup_runs')
+    .select('id, status, backup_type, triggered_by, run_id, size_bytes, nas_path, error_message, started_at, finished_at')
+    .order('started_at', { ascending: false })
+    .limit(10);
+
+  if (error) {
+    req.log.error({ error }, '[cron/backup-status] db error');
+    res.status(502).json({ error: 'DB error' });
+    return;
+  }
+
+  const lastSuccess = data?.find(r => r.status === 'success');
+  const lastFailed  = data?.find(r => r.status === 'failed');
+
+  res.json({
+    runs: data ?? [],
+    lastSuccessAt:  lastSuccess?.started_at ?? null,
+    lastFailureAt:  lastFailed?.started_at  ?? null,
+    consecutiveFails: data
+      ? data.findIndex(r => r.status === 'success')  // -1 if no success in last 10
+      : -1,
+  });
+});
+
 export default router;
