@@ -77,9 +77,9 @@ targets:
         SWIFT_VERSION: "5.0"
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
         CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: SKRG3P2X9X
         SWIFT_EMIT_LOC_STRINGS: YES
         ENABLE_PREVIEWS: YES
-        # DEVELOPMENT_TEAM set by setup.sh → patched into pbxproj after xcodegen
 
     dependencies:
       - package: Supabase
