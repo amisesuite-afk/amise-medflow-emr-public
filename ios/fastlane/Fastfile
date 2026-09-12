@@ -64,13 +64,16 @@ platform :ios do
       scheme:              SCHEME,
       configuration:       "Release",
       export_method:       "app-store",
+      sdk:                 "iphoneos",
       output_directory:    "build/export",
       output_name:         "AmiseMedFlow.ipa",
       clean:               true,
       include_bitcode:     false,
+      xcargs:              "CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER='match AppStore #{APP_ID}' CODE_SIGN_IDENTITY='Apple Distribution'",
       export_options: {
         teamID:              ENV["DEVELOPER_TEAM_ID"],
         method:              "app-store",
+        signingStyle:        "manual",
         provisioningProfiles: { APP_ID => "match AppStore #{APP_ID}" }
       }
     )
