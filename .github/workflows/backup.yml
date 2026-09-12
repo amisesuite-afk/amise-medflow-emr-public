@@ -32,7 +32,7 @@ jobs:
     steps:
       # ── Tools ─────────────────────────────────────────────────────────────
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install rclone + postgresql-client
         run: |
