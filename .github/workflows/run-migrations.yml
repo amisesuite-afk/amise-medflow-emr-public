@@ -689,5 +689,21 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
 
+      - name: "Migration 83: pmh_items — fix service_role grant (permission denied 42501 fix)"
+        run: |
+          QUERY=$(jq -Rs . < supabase-pmh-items-grant-fix.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
+      - name: "Migration 84: user_profiles — seed role assignments for known staff accounts"
+        run: |
+          QUERY=$(jq -Rs . < supabase-user-profiles-seed.sql)
+          curl -sf -X POST "https://api.supabase.com/v1/projects/$PROJECT_REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"query\": $QUERY}" | jq -e 'if type == "array" then . else error(.message // "SQL error") end'
+
       - name: Done
-        run: echo "All 82 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
+        run: echo "All 84 migrations completed successfully. See migrations/README.md for files intentionally excluded (conflicting duplicate table definitions) and how to add the next migration."
