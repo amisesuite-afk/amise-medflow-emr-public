@@ -65,6 +65,10 @@ platform :ios do
     archive_path = "#{ios_dir}/build/AmiseMedFlow.xcarchive"
     export_dir   = "#{ios_dir}/build/export"
 
+    # CODE_SIGN_IDENTITY and PROVISIONING_PROFILE_SPECIFIER are set in
+    # project.yml under configs.Release so they apply only to the app
+    # target, not to SPM package dependencies (swift-crypto etc.) which
+    # error when a provisioning profile is set on them.
     sh "xcodebuild " \
        "-scheme #{SCHEME} " \
        "-project '#{ios_dir}/#{PROJECT}' " \
@@ -72,9 +76,6 @@ platform :ios do
        "-sdk iphoneos " \
        "-destination 'generic/platform=iOS' " \
        "-archivePath '#{archive_path}' " \
-       "CODE_SIGN_STYLE=Manual " \
-       "PROVISIONING_PROFILE_SPECIFIER='match AppStore #{APP_ID}' " \
-       "CODE_SIGN_IDENTITY='Apple Distribution' " \
        "DEVELOPMENT_TEAM='#{team_id}' " \
        "clean archive"
 
