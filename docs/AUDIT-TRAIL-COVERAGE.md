@@ -94,13 +94,23 @@ Seven of the thirteen zero-coverage files from the previous pass are now covered
   captured) now emits `logAudit` with `action: 'create'`, `resourceType: 'appointment'`,
   `patientId` where resolvable, and `{ direction, deviceLabel, practiceLine }` in details.
 
-## Confirmed complete gap — zero audit calls of any kind (5 files)
+## Fixed in fourth follow-up pass (2026-09-12)
+
+- **`email-intake.ts`** — four mutating routes now covered:
+  - `POST /api/investigations/manual-upload-document` — staff uploads a physical lab/imaging
+    document; emits `logAudit` with `action: 'create'`, `resourceType: 'document'`, and
+    `{ source: 'manual_upload', mimeType, providerName, documentType }` in details.
+  - `POST /api/admin/referring-providers` — referring provider creation; emits `logAudit` with
+    `action: 'create'`, `resourceType: 'referring_provider'`, and `{ name, provider_type }`.
+  - `PATCH /api/admin/referring-providers/:id` — provider update; emits `logAudit` with
+    `action: 'update'` and `{ fields: [...keys changed] }`.
+  - `DELETE /api/admin/referring-providers/:id` — provider deletion; emits `logAudit` with
+    `action: 'delete'`. Cron routes (`/api/cron/email-documents`, `/api/cron/email-documents/backfill`)
+    are service-to-service calls with no user JWT — skipped per the existing pattern for cron routes.
+
+## Confirmed complete gap — zero audit calls of any kind (4 files)
 
 Left intentionally for future passes with notes on priority/rationale:
-
-`email-intake.ts` — cron-keyed routes processing inbound referral emails; not patient-record
-clinical mutations but does write to `appointment_requests`. Medium priority for a dedicated
-email-intake audit pass.
 
 `endoscopy-capture.ts` — uses in-memory store with `CRON_SECRET` auth; no PHI persisted to DB,
 so no immediate audit need.
