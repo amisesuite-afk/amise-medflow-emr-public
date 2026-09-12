@@ -58,24 +58,27 @@ platform :ios do
       readonly:       is_ci
     )
 
-    # Build the archive — call xcodebuild directly so we never get
-    # `-destination 'generic/platform=iOS'` injected by gym (which requires
-    # iOS platform support files not present on GitHub Actions runners).
+    # fastlane sh runs from ios/fastlane/ — use absolute paths throughout
+    # so xcodebuild finds the project and the archive lands where upload expects it.
     team_id      = ENV["DEVELOPER_TEAM_ID"]
-    archive_path = "build/AmiseMedFlow.xcarchive"
-    export_dir   = "build/export"
+    ios_dir      = File.expand_path("..", __dir__)  # → .../ios
+    archive_path = "#{ios_dir}/build/AmiseMedFlow.xcarchive"
+    export_dir   = "#{ios_dir}/build/export"
 
-    sh "set -o pipefail && xcodebuild " \
-       "-scheme #{SCHEME} -project #{PROJECT} -configuration Release " \
-       "-sdk iphoneos -archivePath #{archive_path} " \
+    sh "xcodebuild " \
+       "-scheme #{SCHEME} " \
+       "-project '#{ios_dir}/#{PROJECT}' " \
+       "-configuration Release " \
+       "-sdk iphoneos " \
+       "-archivePath '#{archive_path}' " \
        "CODE_SIGN_STYLE=Manual " \
        "PROVISIONING_PROFILE_SPECIFIER='match AppStore #{APP_ID}' " \
        "CODE_SIGN_IDENTITY='Apple Distribution' " \
        "DEVELOPMENT_TEAM='#{team_id}' " \
-       "clean archive | xcpretty || true"
+       "clean archive"
 
-    # Write the export options plist (manual signing, app-store).
-    export_plist = File.expand_path("../ExportOptions-TestFlight.plist", __dir__)
+    # Write export plist at runtime so team ID and profile name are always correct.
+    export_plist = "#{ios_dir}/ExportOptions-TestFlight.plist"
     File.write(export_plist, <<~PLIST)
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -102,11 +105,11 @@ platform :ios do
       </plist>
     PLIST
 
-    sh "set -o pipefail && xcodebuild " \
+    sh "xcodebuild " \
        "-exportArchive " \
-       "-archivePath #{archive_path} " \
-       "-exportPath #{export_dir} " \
-       "-exportOptionsPlist #{export_plist} | xcpretty || true"
+       "-archivePath '#{archive_path}' " \
+       "-exportPath '#{export_dir}' " \
+       "-exportOptionsPlist '#{export_plist}'"
 
     # Upload to TestFlight.
     # skip_waiting_for_build_processing: CI doesn't wait — builds appear
@@ -114,7 +117,7 @@ platform :ios do
     upload_to_testflight(
       api_key:                           api_key,
       app_identifier:                    APP_ID,
-      ipa:                               "build/export/AmiseMedFlow.ipa",
+      ipa:                               "#{export_dir}/AmiseMedFlow.ipa",
       skip_waiting_for_build_processing: true,
       distribute_external:               false
     )
