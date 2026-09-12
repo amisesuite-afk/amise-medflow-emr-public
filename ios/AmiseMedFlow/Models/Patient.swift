@@ -96,7 +96,7 @@ final class Patient {
 
     // MARK: - Encounter status (front desk → doctor handoff)
     var checkInTime: Date?
-    var encounterStatus: EncounterStatus = .notCheckedIn
+    var encounterStatus: EncounterStatus
 
     // MARK: - Perioperative checklist
     var asaClass: Int?                       // ASA physical status 1–5
@@ -121,6 +121,7 @@ final class Patient {
         self.setting = setting
         self.location = location
         self.acuity = acuity
+        self.encounterStatus = .notCheckedIn
         self.createdAt = .now
         self.updatedAt = .now
         self.pendingSync = true

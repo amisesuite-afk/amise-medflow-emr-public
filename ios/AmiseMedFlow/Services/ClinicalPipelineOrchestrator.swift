@@ -82,7 +82,8 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
         // Augment SOCRATES selections with vitals-derived and lab-derived features
         // so Stage 2 benefits from objective findings, not just typed symptoms.
         var augmentedSocrates = psv.socratesSelections
-        if let v = psv.vitals {
+        do {
+            let v = psv.vitals
             var extraAssoc = augmentedSocrates["associations"] ?? []
             if v.hasFever         { extraAssoc.insert("fever") }
             if v.hasTachycardia   { extraAssoc.insert("tachycardia") }
@@ -91,7 +92,8 @@ final class ClinicalPipelineOrchestrator: ObservableObject {
             if v.hasHypoxia       { extraAssoc.insert("hypoxia") }
             if !extraAssoc.isEmpty { augmentedSocrates["associations"] = extraAssoc }
         }
-        if let lab = psv.labs {
+        do {
+            let lab = psv.labs
             var extraAssoc = augmentedSocrates["associations"] ?? []
             if lab.wbcElevated      { extraAssoc.insert("raised wbc") }
             if lab.crpHigh          { extraAssoc.insert("markedly elevated crp") }
@@ -190,7 +192,7 @@ extension ClinicalPipelineOrchestrator {
     var hasUrgentFlag: Bool {
         decisions.contains { $0.priority == .emergency } ||
         deteriorationAlerts.contains { $0.priority == .emergency } ||
-        changePointAlerts.contains { $0.priority == .emergency }
+        changePointAlerts.contains { ($0.news2AtDetection ?? 0) >= 7 }
     }
 
     /// Top-n AutoActions filtered by urgency

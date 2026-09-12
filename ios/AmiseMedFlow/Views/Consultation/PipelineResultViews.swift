@@ -47,9 +47,10 @@ struct AutoActionRow: View {
 
     private var urgencyColor: Color {
         switch action.urgency {
-        case .stat:    return .red
-        case .urgent:  return .orange
-        case .routine: return .blue
+        case .critical:  return .red
+        case .urgent:    return .orange
+        case .standard:  return .blue
+        case .elective:  return .green
         }
     }
 }
@@ -179,7 +180,7 @@ struct VOIRow: View {
                         .font(.system(size: 10))
                         .foregroundStyle(.secondary)
                 }
-                Text(item.clinicalNote)
+                Text(item.clinicalNote ?? "")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
