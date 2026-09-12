@@ -7,6 +7,7 @@
 import { Router } from 'express';
 import { sb, requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 
@@ -90,6 +91,7 @@ router.post('/api/admin/patient-accounts/:id/link', async (req, res) => {
       .maybeSingle();
 
     log.info({ accountId: id, patient_id }, 'patient account linked to patient record');
+    void logAudit(req, 'update', 'patient', patient_id, undefined, { accountId: id });
     res.json({ success: true, patient_name: patient?.full_name ?? null });
   } catch (err) {
     log.error({ err }, 'admin link patient account error');
@@ -131,6 +133,7 @@ router.delete('/api/admin/patient-accounts/:id', async (req, res) => {
     if (delErr) throw delErr;
 
     log.info({ accountId: id, email: account.email }, 'unlinked portal account deleted by staff');
+    void logAudit(req, 'delete', 'patient', id, undefined, { email: account.email as string });
     res.json({ success: true });
   } catch (err) {
     log.error({ err }, 'admin delete patient account error');
@@ -178,6 +181,7 @@ router.post('/api/admin/patients/quick-create', async (req, res) => {
     if (error) throw error;
 
     log.info({ id: data.id, mrn: data.mrn, fullName }, '[admin/patients/quick-create] created');
+    void logAudit(req, 'create', 'patient', data.id as string, data.id as string);
     res.json({ id: data.id, mrn: data.mrn, full_name: data.full_name });
   } catch (err) {
     log.error({ err }, '[admin/patients/quick-create] error');

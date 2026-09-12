@@ -522,4 +522,154 @@ router.post('/api/cron/escalate-results', async (req, res) => {
   }
 });
 
+// POST /api/cron/backup-alert
+// Called by GitHub Actions when a nightly backup fails.
+// Emails the doctor with the Actions log URL.
+router.post('/api/cron/backup-alert', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const { run_id, log_url } = req.body as { run_id?: string; log_url?: string };
+  const doctorEmail = process.env.DOCTOR_NOTIFY_EMAIL;
+
+  req.log.error({ run_id, log_url }, '[cron/backup-alert] NAS backup FAILED');
+
+  if (doctorEmail) {
+    try {
+      await sendOrDraft({
+        to: doctorEmail,
+        subject: 'ALERT: Amise MedFlow nightly NAS backup FAILED',
+        body: [
+          'The nightly Supabase → NAS backup failed.',
+          '',
+          `GitHub Actions run ID: ${run_id ?? 'unknown'}`,
+          `Log URL: ${log_url ?? 'check GitHub Actions tab'}`,
+          '',
+          'Action required: Check the Actions log above, investigate the failure,',
+          'and run the backup manually once fixed.',
+          '',
+          'If the NAS is unreachable, verify the Synology is online and the SSH key',
+          'in GitHub Secrets (NAS_SSH_KEY) matches the key installed on the NAS.',
+          '',
+          '-- Amise MedFlow automated alert',
+        ].join('\n'),
+      }, 'auto');
+    } catch (err) {
+      req.log.error({ err }, '[cron/backup-alert] failed to send alert email');
+    }
+  }
+
+  res.json({ alerted: !!doctorEmail });
+});
+
+// GET /api/cron/backup-status
+// Returns the last 10 backup_runs rows so the dashboard can show backup health.
+router.get('/api/cron/backup-status', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const { data, error } = await sb()
+    .from('backup_runs')
+    .select('id, status, backup_type, triggered_by, run_id, size_bytes, nas_path, error_message, started_at, finished_at')
+    .order('started_at', { ascending: false })
+    .limit(10);
+
+  if (error) {
+    req.log.error({ error }, '[cron/backup-status] db error');
+    res.status(502).json({ error: 'DB error' });
+    return;
+  }
+
+  const lastSuccess = data?.find(r => r.status === 'success');
+  const lastFailed  = data?.find(r => r.status === 'failed');
+
+  res.json({
+    runs: data ?? [],
+    lastSuccessAt:  lastSuccess?.started_at ?? null,
+    lastFailureAt:  lastFailed?.started_at  ?? null,
+    consecutiveFails: data
+      ? data.findIndex(r => r.status === 'success')  // -1 if no success in last 10
+      : -1,
+  });
+});
+
+// POST /api/cron/backup-usb-complete
+// Called by nas-usb-copy.sh on the Synology NAS when a USB drive copy finishes.
+// Emails the doctor with drive details and logs to backup_runs.
+router.post('/api/cron/backup-usb-complete', async (req, res) => {
+  if (!requireCronSecret(req, res)) return;
+
+  const { drive, files, size, date, status, error: errorMsg } = req.body as {
+    drive?: string;
+    files?: number;
+    size?: string;
+    date?: string;
+    status?: 'success' | 'failed';
+    error?: string;
+  };
+
+  const doctorEmail = process.env.DOCTOR_NOTIFY_EMAIL;
+  const isSuccess = status === 'success';
+
+  req.log.info({ drive, files, size, date, status }, '[cron/backup-usb-complete] USB copy event');
+
+  if (doctorEmail) {
+    try {
+      if (isSuccess) {
+        await sendOrDraft({
+          to: doctorEmail,
+          subject: `MedFlow Backup — USB Drive ${drive ?? 'UNKNOWN'} verified OK (${date ?? 'today'})`,
+          body: [
+            `USB drive backup completed and verified successfully.`,
+            '',
+            `Drive:  ${drive ?? 'UNKNOWN'}`,
+            `Date:   ${date ?? new Date().toISOString().slice(0, 10)}`,
+            `Files:  ${files ?? '—'}`,
+            `Size:   ${size ?? '—'}`,
+            `Status: VERIFIED OK`,
+            '',
+            'The drive has been safely ejected from the NAS and is ready to remove.',
+            '',
+            '-- Amise MedFlow automated notification',
+          ].join('\n'),
+        }, 'auto');
+      } else {
+        await sendOrDraft({
+          to: doctorEmail,
+          subject: `ALERT: MedFlow USB Backup FAILED — Drive ${drive ?? 'UNKNOWN'}`,
+          body: [
+            'The USB drive backup on the Synology NAS FAILED.',
+            '',
+            `Drive:  ${drive ?? 'UNKNOWN'}`,
+            `Date:   ${date ?? new Date().toISOString().slice(0, 10)}`,
+            `Error:  ${errorMsg ?? 'unknown error'}`,
+            '',
+            'Action required: Check the NAS system log in DSM for details.',
+            'Do NOT use this drive for recovery until a successful copy is confirmed.',
+            '',
+            '-- Amise MedFlow automated alert',
+          ].join('\n'),
+        }, 'auto');
+      }
+    } catch (err) {
+      req.log.error({ err }, '[cron/backup-usb-complete] failed to send email');
+    }
+  }
+
+  // Log to backup_runs so the dashboard can show USB copy history
+  try {
+    await sb().from('backup_runs').insert({
+      status: isSuccess ? 'success' : 'failed',
+      backup_type: 'storage',
+      triggered_by: `usb_drive_${drive ?? 'UNKNOWN'}`,
+      finished_at: new Date().toISOString(),
+      nas_path: drive ? `/volumeUSB/medflow-backups (drive ${drive})` : null,
+      error_message: isSuccess ? null : (errorMsg ?? 'NAS USB copy failed'),
+    });
+  } catch (err) {
+    req.log.warn({ err }, '[cron/backup-usb-complete] backup_runs insert failed');
+  }
+
+  res.json({ received: true, alerted: !!doctorEmail });
+});
+
 export default router;
+

@@ -120,6 +120,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'radiology',         label: 'Imaging'       },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
+    { id: 'scales',            label: 'Scales'        },
     { id: 'brief',             label: 'Overview'      },
   ],
   // ── Follow-up — SOAP: Subjective → Objective → Assessment → Plan ────────────
@@ -130,6 +131,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'radiology',         label: 'Imaging'       },
     { id: 'assessment',        label: 'A — Assess'    },
     { id: 'plan',              label: 'P — Plan'      },
+    { id: 'scales',            label: 'Scales'        },
     { id: 'brief',             label: 'Overview'      },
   ],
   // ── Pre-op assessment — fitness for surgery + consent ────────────────────────
@@ -143,6 +145,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'examination',       label: 'Exam'          },
     { id: 'investigations',    label: 'Labs'          },
     { id: 'radiology',         label: 'Imaging'       },
+    { id: 'scales',            label: 'Risk Scores'   },
     { id: 'assessment',        label: 'Risk / ASA'    },
     { id: 'plan',              label: 'Consent / Plan'},
   ],
@@ -154,6 +157,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'investigations',    label: 'Labs'          },
     { id: 'assessment',        label: 'A — Assess'    },
     { id: 'plan',              label: 'P — Plan'      },
+    { id: 'scales',            label: 'Scales'        },
     { id: 'monitoring',        label: 'Vitals'        },
   ],
   // ── Day of surgery — procedural ────────────────────────────────────────────────
@@ -211,6 +215,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'ros',               label: 'ROS'           },
     { id: 'examination',       label: 'CBE'           },
     { id: 'investigations',    label: 'Imaging'       },
+    { id: 'scales',            label: 'Scales'        },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
   ],
@@ -246,6 +251,7 @@ const VISIT_TYPE_TABS: Record<string, Array<{ id: Section; label: string }>> = {
     { id: 'examination',       label: 'Exam'          },
     { id: 'investigations',    label: 'Labs'          },
     { id: 'radiology',         label: 'Imaging'       },
+    { id: 'scales',            label: 'Scores'        },
     { id: 'assessment',        label: 'Assess'        },
     { id: 'plan',              label: 'Plan'          },
   ],

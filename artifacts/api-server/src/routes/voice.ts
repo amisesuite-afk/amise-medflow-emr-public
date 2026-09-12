@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { requireStaffAuth, sb } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
 import { assemblePatientContext, formatContextBlock } from '../lib/patient-context.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
@@ -135,6 +136,7 @@ router.post('/api/voice/segment', async (req, res) => {
     })();
 
     log.info({ chars: transcript.length, patientId: patientId ?? 'anon' }, 'voice transcript segmented');
+    void logAudit(req, 'ai_call', 'voice_transcript', proposalId ?? undefined, patientId ?? undefined, { model: MODEL, chars: transcript.length });
     res.json({ success: true, segmented, proposalId });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Voice segmentation failed';

@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import PhotosUI
 
 // MARK: - iPad front-desk shell (role: front_desk)
 // Tabs: Check-In · Questionnaire · Schedule
@@ -115,58 +116,112 @@ private struct FDCheckInView: View {
     var body: some View {
         NavigationStack {
             HStack(spacing: 0) {
-                // Patient list
-                List(selection: $selectedPatient) {
-                    if filteredPatients.isEmpty && !searchQuery.isEmpty {
-                        VStack(spacing: 12) {
-                            Text("No patient found for \"\(searchQuery)\"")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                            Button("Register New Patient") { showAddPatient = true }
-                                .buttonStyle(.borderedProminent)
-                                .tint(AMColor.accent)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 40)
-                        .listRowBackground(Color.clear)
-                    } else {
-                        ForEach(filteredPatients) { patient in
-                            FDPatientRow(patient: patient)
-                                .tag(patient as Patient?)
+                // ── Left column: search + patient list ──────────────────────
+                VStack(spacing: 0) {
+                    // Explicit search bar — does NOT auto-focus on appear
+                    HStack(spacing: 8) {
+                        Image(systemName: "magnifyingglass")
+                            .foregroundStyle(.secondary)
+                            .font(.system(size: 14))
+                        TextField("Search name, MRN or phone…", text: $searchQuery)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                        if !searchQuery.isEmpty {
+                            Button { searchQuery = "" } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                }
-                .listStyle(.plain)
-                .searchable(text: $searchQuery, prompt: "Search name, MRN, phone…")
-                .navigationTitle("Check-In")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button { showAddPatient = true } label: {
-                            Label("New Patient", systemImage: "person.badge.plus")
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 9)
+                    .background(Color(.secondarySystemBackground))
+
+                    Divider()
+
+                    if filteredPatients.isEmpty {
+                        VStack(spacing: 12) {
+                            Spacer()
+                            if searchQuery.isEmpty {
+                                Image(systemName: "person.crop.circle")
+                                    .font(.system(size: 36)).foregroundStyle(.tertiary)
+                                Text("No patients registered yet")
+                                    .font(.subheadline).foregroundStyle(.secondary)
+                            } else {
+                                Text("No match for \"\(searchQuery)\"")
+                                    .font(.subheadline).foregroundStyle(.secondary)
+                                Button("Register New Patient") { showAddPatient = true }
+                                    .buttonStyle(.borderedProminent).tint(AMColor.accent)
+                            }
+                            Spacer()
                         }
-                        .tint(AMColor.accent)
+                        .frame(maxWidth: .infinity)
+                    } else {
+                        List {
+                            Section {
+                                ForEach(filteredPatients) { patient in
+                                    let isSelected = selectedPatient?.persistentModelID == patient.persistentModelID
+                                    Button { selectedPatient = patient } label: {
+                                        HStack(spacing: 0) {
+                                            FDPatientRow(patient: patient)
+                                            Spacer(minLength: 4)
+                                            Image(systemName: "chevron.right")
+                                                .font(.system(size: 11, weight: .semibold))
+                                                .foregroundStyle(.tertiary)
+                                        }
+                                    }
+                                    .buttonStyle(.plain)
+                                    .listRowBackground(
+                                        isSelected
+                                            ? AMColor.accent.opacity(0.12)
+                                            : Color.clear
+                                    )
+                                }
+                            } header: {
+                                Text("Tap a patient to open their details →")
+                                    .font(.caption2).foregroundStyle(.tertiary).textCase(nil)
+                            }
+                        }
+                        .listStyle(.plain)
                     }
                 }
                 .frame(width: 300)
 
                 Rectangle().fill(Color(.separator)).frame(width: 1)
 
-                // Demographics panel
+                // ── Right panel: demographics ──────────────────────────────
                 if let patient = selectedPatient {
                     NavigationStack {
-                        PatientDemographicsForm(patient: patient)
+                        FDPatientDemographicsPanel(patient: patient)
                             .navigationTitle(patient.fullName)
                             .navigationBarTitleDisplayMode(.inline)
                     }
                     .frame(maxWidth: .infinity)
                 } else {
-                    ContentUnavailableView(
-                        "Select a Patient",
-                        systemImage: "person.crop.circle",
-                        description: Text("Search and tap a patient to view or edit their demographics.")
-                    )
+                    VStack(spacing: 16) {
+                        Image(systemName: "hand.tap")
+                            .font(.system(size: 48))
+                            .foregroundStyle(AMColor.accent.opacity(0.45))
+                        Text("Select a Patient")
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        Text("Use the search on the left to find a patient,\nthen tap their row to open their details here.")
+                            .font(.subheadline)
+                            .foregroundStyle(.tertiary)
+                            .multilineTextAlignment(.center)
+                    }
                     .frame(maxWidth: .infinity)
+                }
+            }
+            .navigationTitle("Check-In")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button { showAddPatient = true } label: {
+                        Label("New Patient", systemImage: "person.badge.plus")
+                    }
+                    .tint(AMColor.accent)
                 }
             }
         }
@@ -288,9 +343,10 @@ private struct FDQuestionnaireView: View {
     }
 }
 
-// MARK: - Patient demographics form (front desk: demographics + check-in gate)
+// MARK: - Front-desk demographics panel (check-in gate + encounter actions)
+// Named distinctly from the clinical PatientDemographicsForm in PatientDetailView.swift.
 
-struct PatientDemographicsForm: View {
+struct FDPatientDemographicsPanel: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService
@@ -346,9 +402,20 @@ struct PatientDemographicsForm: View {
             }
 
             Section {
-                TextField("MRN", text: Binding(
-                    get: { patient.mrn ?? "" },
-                    set: { patient.mrn = $0.isEmpty ? nil : $0 }))
+                HStack(spacing: 8) {
+                    TextField("MRN", text: Binding(
+                        get: { patient.mrn ?? "" },
+                        set: { patient.mrn = $0.isEmpty ? nil : $0 }))
+                    if patient.mrn == nil || (patient.mrn?.isEmpty == true) {
+                        Button("Generate") {
+                            patient.mrn = Self.generateMRN()
+                            markDirty()
+                        }
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(AMColor.accent)
+                        .buttonStyle(.bordered)
+                    }
+                }
                 TextField("Chief complaint", text: Binding(
                     get: { patient.chiefComplaint ?? "" },
                     set: { patient.chiefComplaint = $0.isEmpty ? nil : $0 }))
@@ -560,6 +627,11 @@ struct PatientDemographicsForm: View {
         patient.pendingSync = true
         try? context.save()
     }
+
+    private static func generateMRN() -> String {
+        let digits = (0..<6).map { _ in String(Int.random(in: 0...9)) }.joined()
+        return "AMI-\(digits)"
+    }
 }
 
 // MARK: - Adaptive pre-encounter questionnaire
@@ -589,6 +661,10 @@ struct AdaptiveQuestionnaireSheet: View {
     @EnvironmentObject private var sync: SyncService
 
     @State private var answers = EncounterAnswers()
+    @State private var currentStepIndex = 0
+    @State private var symptomFilter = ""
+    @State private var prescriptionPhotoItem: PhotosPickerItem?
+    @State private var prescriptionImageData: Data?
 
     // Patient demographics used for gating — resolved once from the model
     private var patientSex: Sex { patient?.sex ?? .unknown }
@@ -597,22 +673,125 @@ struct AdaptiveQuestionnaireSheet: View {
         return Calendar.ect.dateComponents([.year], from: dob, to: .now).year ?? 99
     }
 
-    private var ccSelected: Bool { answers.ccCategory != nil }
+    // MARK: Step sequencing
+
+    private enum QPhase: Equatable {
+        case cc, socrates, symptoms, redFlags, pmhx, social
+        var title: String {
+            switch self {
+            case .cc:       "Chief Complaint"
+            case .socrates: "Pain Details"
+            case .symptoms: "Associated Symptoms"
+            case .redFlags: "Red Flags"
+            case .pmhx:     "Medical History"
+            case .social:   "Social History"
+            }
+        }
+        var icon: String {
+            switch self {
+            case .cc:       "text.bubble"
+            case .socrates: "waveform.path.ecg"
+            case .symptoms: "checklist"
+            case .redFlags: "exclamationmark.triangle"
+            case .pmhx:     "cross.case"
+            case .social:   "person.2"
+            }
+        }
+    }
+
+    private var phases: [QPhase] {
+        var result: [QPhase] = [.cc]
+        if let cc = answers.ccCategory {
+            if cc.isPainType { result.append(.socrates) }
+            result += [.symptoms, .redFlags]
+        }
+        result += [.pmhx, .social]
+        return result
+    }
+
+    private var safeIndex: Int { min(currentStepIndex, phases.count - 1) }
+    private var currentPhase: QPhase { phases[safeIndex] }
+    private var isLastStep: Bool { safeIndex >= phases.count - 1 }
+
+    private var canAdvance: Bool {
+        if currentPhase == .cc {
+            return answers.ccCategory != nil ||
+                   !answers.ccClarification.trimmingCharacters(in: .whitespaces).isEmpty
+        }
+        return true
+    }
 
     var body: some View {
         NavigationStack {
-            Form {
-                patientHeaderSection
-                phase1CCSection
-                if ccSelected {
-                    if let cc = answers.ccCategory, cc.isPainType {
-                        phase2SocratesSection(cc: cc)
+            VStack(spacing: 0) {
+                // ── Step progress strip ───────────────────────────────────
+                stepProgressStrip
+
+                Divider()
+
+                // ── Phase content ─────────────────────────────────────────
+                Form {
+                    if let patient {
+                        patientHeaderSection(patient)
                     }
-                    phase3AssociatedSection
-                    phase4RedFlagsSection
+                    phaseGuidanceBanner
+                    switch currentPhase {
+                    case .cc:
+                        phase1CCSection
+                    case .socrates:
+                        if let cc = answers.ccCategory, cc.isPainType {
+                            phase2SocratesSection(cc: cc)
+                        }
+                    case .symptoms:
+                        phase3AssociatedSection
+                    case .redFlags:
+                        phase4RedFlagsSection
+                    case .pmhx:
+                        phase5PMHxSection
+                    case .social:
+                        phase6SocialSection
+                    }
                 }
-                phase5PMHxSection
-                phase6SocialSection
+
+                Divider()
+
+                // ── Navigation bar ────────────────────────────────────────
+                HStack(spacing: 16) {
+                    if safeIndex > 0 {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.18)) { currentStepIndex -= 1 }
+                        } label: {
+                            Label("Back", systemImage: "chevron.left")
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.secondary)
+                    }
+                    Spacer()
+                    if isLastStep {
+                        Button("Save & Close") { save() }
+                            .buttonStyle(.borderedProminent)
+                            .tint(AMColor.accent)
+                            .fontWeight(.semibold)
+                            .disabled(answers.ccCategory == nil &&
+                                      answers.ccClarification.trimmingCharacters(in: .whitespaces).isEmpty)
+                    } else {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.18)) {
+                                currentStepIndex += 1
+                                symptomFilter = ""
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text(currentPhase == .cc && answers.ccCategory == nil ? "Skip" : "Next")
+                                Image(systemName: "chevron.right")
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(canAdvance ? AMColor.accent : .secondary)
+                    }
+                }
+                .padding(.horizontal, 24)
+                .padding(.vertical, 14)
             }
             .navigationTitle(patient.map { "Questionnaire — \($0.fullName)" } ?? "Walk-In Questionnaire")
             .navigationBarTitleDisplayMode(.inline)
@@ -620,41 +799,134 @@ struct AdaptiveQuestionnaireSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                 }
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Save") { save() }
-                        .disabled(answers.ccCategory == nil &&
-                                  answers.ccClarification.trimmingCharacters(in: .whitespaces).isEmpty)
-                        .tint(AMColor.accent)
-                        .fontWeight(.semibold)
-                }
+            }
+            .onChange(of: answers.ccCategory) { _, _ in
+                // When CC changes, clamp the step index to the new phase list length
+                currentStepIndex = min(currentStepIndex, phases.count - 1)
             }
         }
+    }
+
+    // MARK: Step progress strip
+
+    private var stepProgressStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 0) {
+                ForEach(Array(phases.enumerated()), id: \.offset) { idx, phase in
+                    let done    = idx < safeIndex
+                    let current = idx == safeIndex
+                    HStack(spacing: 0) {
+                        VStack(spacing: 3) {
+                            ZStack {
+                                Circle()
+                                    .fill(done ? AMColor.accent : (current ? AMColor.accent.opacity(0.15) : Color.secondary.opacity(0.1)))
+                                    .frame(width: 28, height: 28)
+                                if done {
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 11, weight: .bold))
+                                        .foregroundStyle(.white)
+                                } else {
+                                    Image(systemName: phase.icon)
+                                        .font(.system(size: 11, weight: current ? .semibold : .regular))
+                                        .foregroundStyle(current ? AMColor.accent : .secondary)
+                                }
+                            }
+                            Text(phase.title)
+                                .font(.system(size: 8, weight: current ? .bold : .regular))
+                                .foregroundStyle(current ? AMColor.accent : (done ? AMColor.accent.opacity(0.6) : .secondary))
+                                .lineLimit(1)
+                        }
+                        .frame(minWidth: 64)
+                        if idx < phases.count - 1 {
+                            Rectangle()
+                                .fill(done ? AMColor.accent.opacity(0.5) : Color.secondary.opacity(0.2))
+                                .frame(width: 20, height: 1.5)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+        }
+        .background(Color(.secondarySystemBackground))
+    }
+
+    // ── Phase guidance banner ─────────────────────────────────────────────────
+    // Shown at the top of every phase to guide patients through each step.
+
+    @ViewBuilder
+    private var phaseGuidanceBanner: some View {
+        let info: (icon: String, headline: String, detail: String) = {
+            switch currentPhase {
+            case .cc:
+                return ("1.circle.fill",
+                        "What brings you in today?",
+                        "Choose the option that best describes your main reason for this visit. If your complaint isn't listed, select \"Other\" and describe it in the text box below.")
+            case .socrates:
+                return ("waveform.path.ecg",
+                        "Tell us about your pain",
+                        "Answer as many questions as you can. Tap a choice to select it. Use the slider at the bottom to rate your pain from 0 (no pain) to 10 (worst imaginable).")
+            case .symptoms:
+                return ("checklist",
+                        "Other symptoms you have noticed",
+                        "Tap any that apply — even if they seem unrelated to your main problem. Use the search box to find something not listed, or type your own and tap \"Add\".")
+            case .redFlags:
+                return ("exclamationmark.triangle.fill",
+                        "Important warning signs",
+                        "Please answer honestly. These questions help us spot symptoms that may need urgent attention. Turn on the toggle next to any that apply to you.")
+            case .pmhx:
+                return ("cross.case",
+                        "Your past health history",
+                        "Tick any conditions you have been diagnosed with. For medications, type the names below — or photograph your prescription / medication bag using the camera button.")
+            case .social:
+                return ("person.2",
+                        "Lifestyle & last meal",
+                        "These details help us plan your care safely. The \"Last meal\" question is especially important if you may need a procedure or anaesthesia today.")
+            }
+        }()
+
+        Section {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: info.icon)
+                    .font(.system(size: 22))
+                    .foregroundStyle(AMColor.accent)
+                    .frame(width: 30)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(info.headline)
+                        .font(.system(size: 14, weight: .semibold))
+                    Text(info.detail)
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(.vertical, 4)
+        }
+        .listRowBackground(AMColor.accent.opacity(0.07))
     }
 
     // ── Phase 0: patient header ───────────────────────────────────────────────
 
     @ViewBuilder
-    private var patientHeaderSection: some View {
-        if let patient {
-            Section {
-                HStack(spacing: 8) {
-                    AcuityPip(acuity: patient.acuity)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(patient.fullName).font(.subheadline.weight(.semibold))
-                        HStack(spacing: 6) {
-                            if let mrn = patient.mrn, !mrn.isEmpty {
-                                Text("MRN \(mrn)")
-                                    .font(.caption2).foregroundStyle(AMColor.accent)
-                            }
-                            Text(patient.ageDisplay ?? "").font(.caption2).foregroundStyle(.secondary)
-                            Text(patient.sex.rawValue).font(.caption2).foregroundStyle(.secondary)
+    private func patientHeaderSection(_ patient: Patient) -> some View {
+        Section {
+            HStack(spacing: 8) {
+                AcuityPip(acuity: patient.acuity)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(patient.fullName).font(.subheadline.weight(.semibold))
+                    HStack(spacing: 6) {
+                        if let mrn = patient.mrn, !mrn.isEmpty {
+                            Text("MRN \(mrn)")
+                                .font(.caption2).foregroundStyle(AMColor.accent)
                         }
+                        Text(patient.ageDisplay ?? "").font(.caption2).foregroundStyle(.secondary)
+                        Text(patient.sex.rawValue).font(.caption2).foregroundStyle(.secondary)
                     }
                 }
-            } header: {
-                Label("Patient", systemImage: "person.crop.circle")
-                    .textCase(nil).font(.system(size: 11, weight: .semibold))
             }
+        } header: {
+            Label("Patient", systemImage: "person.crop.circle")
+                .textCase(nil).font(.system(size: 11, weight: .semibold))
         }
     }
 
@@ -776,22 +1048,60 @@ struct AdaptiveQuestionnaireSheet: View {
         }
     }
 
-    // ── Phase 3: Associated symptoms (CC-specific list) ───────────────────────
+    // ── Phase 3: Associated symptoms (CC-specific list, with type-to-search) ───
 
     @ViewBuilder
     private var phase3AssociatedSection: some View {
         if let cc = answers.ccCategory {
             Section {
-                QCheckboxGrid(label: nil,
-                              options: cc.associatedSymptoms,
-                              selection: $answers.associatedSymptoms)
-                TextField("Other associated symptoms…", text: $answers.associatedOther, axis: .vertical)
-                    .lineLimit(2...)
+                // Type-to-filter (matches web version's symptom entry)
+                HStack(spacing: 8) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                        .font(.system(size: 14))
+                    TextField("Type to search or add a symptom…", text: $symptomFilter)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.words)
+                }
+
+                let q = symptomFilter.trimmingCharacters(in: .whitespaces)
+                let filtered = q.isEmpty
+                    ? cc.associatedSymptoms
+                    : cc.associatedSymptoms.filter { $0.lowercased().contains(q.lowercased()) }
+
+                if !filtered.isEmpty {
+                    QCheckboxGrid(label: nil, options: filtered, selection: $answers.associatedSymptoms)
+                }
+
+                // Show already-selected custom symptoms not in the filtered list
+                let custom = answers.associatedSymptoms.filter { !cc.associatedSymptoms.contains($0) }
+                if !custom.isEmpty {
+                    QCheckboxGrid(label: "Added", options: custom.sorted(), selection: $answers.associatedSymptoms)
+                }
+
+                // "Add custom" when query doesn't match any preset
+                if !q.isEmpty && !cc.associatedSymptoms.contains(where: { $0.lowercased() == q.lowercased() }) {
+                    Button {
+                        answers.associatedSymptoms.insert(q)
+                        symptomFilter = ""
+                    } label: {
+                        Label("Add \"\(q)\"", systemImage: "plus.circle.fill")
+                            .foregroundStyle(AMColor.accent)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if !answers.associatedSymptoms.isEmpty {
+                    Text("Selected: \(answers.associatedSymptoms.sorted().joined(separator: " · "))")
+                        .font(.caption2)
+                        .foregroundStyle(AMColor.accent)
+                }
+
             } header: {
                 Label("Associated Symptoms", systemImage: "list.bullet")
                     .textCase(nil).font(.system(size: 11, weight: .semibold))
             } footer: {
-                Text("Only symptoms relevant to \(cc.rawValue.lowercased()) are shown.")
+                Text("Search or tap to select. Showing symptoms relevant to \(cc.rawValue.lowercased()).")
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
@@ -839,8 +1149,34 @@ struct AdaptiveQuestionnaireSheet: View {
                                 )
                             }
                           ))
-            TextField("Current medications (name and dose)", text: $answers.medications, axis: .vertical)
-                .lineLimit(2...)
+            VStack(alignment: .leading, spacing: 8) {
+                TextField("Current medications (name and dose)", text: $answers.medications, axis: .vertical)
+                    .lineLimit(2...)
+                HStack(spacing: 12) {
+                    PhotosPicker(
+                        selection: $prescriptionPhotoItem,
+                        matching: .images,
+                        photoLibrary: .shared()
+                    ) {
+                        Label("Photo of prescription / medication bag",
+                              systemImage: "camera.badge.plus")
+                            .font(.system(size: 12))
+                            .foregroundStyle(AMColor.accent)
+                    }
+                    .onChange(of: prescriptionPhotoItem) { _, newItem in
+                        Task {
+                            if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                                prescriptionImageData = data
+                            }
+                        }
+                    }
+                    if prescriptionImageData != nil {
+                        Label("Photo captured", systemImage: "checkmark.circle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.green)
+                    }
+                }
+            }
             TextField("Known allergies (drug, food, latex, other)", text: $answers.allergies, axis: .vertical)
                 .lineLimit(2...)
             TextField("Previous operations / procedures", text: $answers.surgicalHistory, axis: .vertical)
@@ -939,6 +1275,26 @@ struct AdaptiveQuestionnaireSheet: View {
                 patient.pmhNotes = existing + "\n" + medLine
             } else if patient.pmhNotes == nil {
                 patient.pmhNotes = medLine
+            }
+        }
+
+        // Prescription photo — stored as PatientDocument for later clinical review.
+        // AI extraction deferred per HIPAA compliance gate; document is flagged "Other"
+        // and the medications free-text field notes a photo is attached.
+        if let imageData = prescriptionImageData {
+            let doc = PatientDocument(
+                fileName: "rx-photo-\(Int(Date.now.timeIntervalSince1970)).jpg",
+                mimeType: "image/jpeg",
+                category: "Other"
+            )
+            doc.localData = imageData
+            doc.patient = patient
+            context.insert(doc)
+            let photoNote = "[Prescription photo captured — awaiting clinical review]"
+            if !answers.medications.isEmpty {
+                answers.medications += "\n" + photoNote
+            } else {
+                answers.medications = photoNote
             }
         }
 

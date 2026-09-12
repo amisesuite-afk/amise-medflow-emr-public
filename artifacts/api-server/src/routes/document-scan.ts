@@ -14,6 +14,7 @@ import { Router, type Request, type Response } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
 import { requireStaffAuth } from '../lib/supabase.js';
 import { logger as log } from '../lib/logger.js';
+import { logAudit } from '../lib/audit.js';
 import { convertToMarkdown } from '../lib/markitdown.js';
 import { parseClinicalDocument, type ExtractedData } from '../lib/clinical-parser.js';
 
@@ -161,6 +162,7 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     log.info({ patientName: extracted.patientName, usedClaude }, 'document-scan: complete');
+    void logAudit(req, 'ai_call', 'document', undefined, undefined, { mimeType, usedClaude, model: usedClaude ? MODEL : 'native-parser' });
     res.json({ extracted, _meta: { usedClaude } });
 
   } catch (err) {

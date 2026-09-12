@@ -1,0 +1,41 @@
+# rclone-nas.conf.example
+# Copy to ~/.config/rclone/rclone.conf on your Mac and fill in real values.
+# NEVER commit a file with real credentials.
+#
+# Set up Synology NAS SFTP:
+#   DSM → Control Panel → Terminal & SNMP → Enable SSH
+#   DSM → Control Panel → User → Edit → SSH Keys → paste the public key
+#   (recommended: create a dedicated 'backup' user with read-write access
+#    only to /volume1/medflow-backups — no shell login needed)
+#
+# Generate a keypair (run once on your Mac):
+#   ssh-keygen -t ed25519 -f ~/.ssh/nas_backup -N ""
+#   cat ~/.ssh/nas_backup.pub   ← paste into DSM SSH Keys
+#   cat ~/.ssh/nas_backup       ← store in GitHub Secret NAS_SSH_KEY
+#
+# Supabase Storage S3-compatible endpoint:
+#   Find your project ref in Supabase → Settings → General → Reference ID
+#   endpoint = https://<project-ref>.supabase.co/storage/v1/s3
+
+[supabase-storage]
+type = s3
+provider = Other
+# Use your Supabase service role key for both access_key_id and secret_access_key
+access_key_id     = SUPABASE_SERVICE_ROLE_KEY_HERE
+secret_access_key = SUPABASE_SERVICE_ROLE_KEY_HERE
+endpoint          = https://YOUR_PROJECT_REF.supabase.co/storage/v1/s3
+region            = us-east-1
+no_check_bucket   = true
+
+[nas]
+type     = sftp
+host     = YOUR_NAS_IP_OR_HOSTNAME
+user     = backup
+port     = 22
+key_file = /Users/yourname/.ssh/nas_backup
+# Synology DSM needs this:
+shell_type = unix
+
+# ── Verify the config works ────────────────────────────────────────────────
+# rclone ls supabase-storage:patient-documents --config rclone-nas.conf.example
+# rclone lsd nas:/volume1/medflow-backups     --config rclone-nas.conf.example

@@ -1,0 +1,138 @@
+name: Nightly NAS Backup
+
+# Runs daily at 02:00 UTC = 22:00 ECT (America/St_Lucia, UTC-4)
+# Covers: Supabase Postgres DB + Supabase Storage documents
+# Destination: Synology NAS via SFTP (rclone)
+# Retention: 30 daily | 12 monthly | 7 yearly
+# Failure alert: email to DOCTOR_NOTIFY_EMAIL via the API server
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (no upload, no delete)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: nightly-backup
+  cancel-in-progress: false   # never cancel a running backup
+
+jobs:
+  backup:
+    name: Backup DB + Storage → NAS
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      DRY_RUN: ${{ github.event.inputs.dry_run == 'true' && '1' || '0' }}
+
+    steps:
+      # ── Tools ─────────────────────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install rclone + postgresql-client
+        run: |
+          curl https://rclone.org/install.sh | sudo bash
+          sudo apt-get install -y postgresql-client gnupg
+
+      # ── NAS SSH key ────────────────────────────────────────────────────────
+      # Secret: NAS_SSH_KEY — private key content (OpenSSH format, no passphrase)
+      # Generate on your Mac: ssh-keygen -t ed25519 -f ~/.ssh/nas_backup -N ""
+      # Add the .pub to Synology DSM → Control Panel → User → Edit → SSH Keys
+      - name: Write NAS SSH key
+        run: |
+          echo "${{ secrets.NAS_SSH_KEY }}" > /tmp/nas_key
+          chmod 600 /tmp/nas_key
+
+      # ── rclone config ─────────────────────────────────────────────────────
+      # Two remotes:
+      #   supabase-storage → Supabase Storage (S3-compatible endpoint)
+      #   nas              → Synology NAS SFTP
+      - name: Write rclone config
+        run: |
+          mkdir -p ~/.config/rclone
+          cat > ~/.config/rclone/rclone.conf << 'RCLONE_EOF'
+          [supabase-storage]
+          type = s3
+          provider = Other
+          access_key_id = $NAS_SUPABASE_SERVICE_ROLE_KEY
+          secret_access_key = $NAS_SUPABASE_SERVICE_ROLE_KEY
+          endpoint = $NAS_SUPABASE_STORAGE_ENDPOINT
+          region = us-east-1
+
+          [nas]
+          type = sftp
+          host = $NAS_HOST
+          user = $NAS_USER
+          port = $NAS_PORT
+          key_file = /tmp/nas_key
+          shell_type = unix
+          RCLONE_EOF
+
+          # Substitute env vars into the config (rclone doesn't expand $ in config)
+          sed -i \
+            -e "s|\$NAS_SUPABASE_SERVICE_ROLE_KEY|${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}|g" \
+            -e "s|\$NAS_SUPABASE_STORAGE_ENDPOINT|https://${{ secrets.SUPABASE_PROJECT_REF }}.supabase.co/storage/v1/s3|g" \
+            -e "s|\$NAS_HOST|${{ secrets.NAS_HOST }}|g" \
+            -e "s|\$NAS_USER|${{ secrets.NAS_USER }}|g" \
+            -e "s|\$NAS_PORT|${{ secrets.NAS_PORT || '22' }}|g" \
+            ~/.config/rclone/rclone.conf
+
+      # ── Database backup ────────────────────────────────────────────────────
+      - name: Backup Supabase database
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_DATABASE_URL }}
+          NAS_BACKUP_PATH: ${{ secrets.NAS_BACKUP_PATH }}
+          BACKUP_GPG_PASSPHRASE: ${{ secrets.BACKUP_GPG_PASSPHRASE }}
+        run: bash scripts/backup/backup-db.sh
+
+      # ── Storage backup ─────────────────────────────────────────────────────
+      - name: Mirror Supabase Storage documents
+        env:
+          NAS_BACKUP_PATH: ${{ secrets.NAS_BACKUP_PATH }}
+          SUPABASE_STORAGE_BUCKET: patient-documents
+        run: bash scripts/backup/backup-storage.sh
+
+      # ── Retention sweep ────────────────────────────────────────────────────
+      - name: Enforce retention policy
+        env:
+          NAS_BACKUP_PATH: ${{ secrets.NAS_BACKUP_PATH }}
+        run: bash scripts/backup/retain.sh
+
+      # ── Report status to Supabase ──────────────────────────────────────────
+      - name: Record backup_run success
+        if: success()
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          curl -s -X POST "${SUPABASE_URL}/rest/v1/backup_runs" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{\"status\":\"success\",\"backup_type\":\"full\",\"triggered_by\":\"github_actions\",\"run_id\":\"${GITHUB_RUN_ID}\"}"
+
+      - name: Record backup_run failure + alert
+        if: failure()
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          API_SERVER_URL: ${{ secrets.API_SERVER_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl -s -X POST "${SUPABASE_URL}/rest/v1/backup_runs" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{\"status\":\"failed\",\"backup_type\":\"full\",\"triggered_by\":\"github_actions\",\"run_id\":\"${GITHUB_RUN_ID}\",\"error_message\":\"Workflow step failed — check Actions log: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}"
+
+          # Ping the API server's backup-alert endpoint so it emails the doctor
+          curl -s -X POST "${API_SERVER_URL}/api/cron/backup-alert" \
+            -H "x-cron-secret: ${CRON_SECRET}" \
+            -H "Content-Type: application/json" \
+            -d "{\"run_id\":\"${GITHUB_RUN_ID}\",\"log_url\":\"${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
+            || true   # don't fail the step if the API server itself is down

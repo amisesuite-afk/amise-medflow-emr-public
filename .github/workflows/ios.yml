@@ -1,0 +1,91 @@
+name: iOS — Build & Upload to TestFlight
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios.yml'
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip tests (use only if already green)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ios-testflight
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Upload
+    runs-on: macos-15
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Xcode version ────────────────────────────────────────────────────────
+      - name: Select Xcode 16
+        run: sudo xcode-select -switch /Applications/Xcode_16.app
+
+      # ── Dependencies ─────────────────────────────────────────────────────────
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Set up Ruby (for fastlane)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+          working-directory: ios
+
+      # ── Xcode project generation ──────────────────────────────────────────
+      - name: Generate Xcode project
+        working-directory: ios
+        run: xcodegen generate
+
+      # ── App Store Connect API key (no 2FA required) ───────────────────────
+      # Store this key in GitHub → Settings → Secrets → Actions:
+      #   APP_STORE_API_KEY_ID      : Your key ID (10 chars, e.g. ABC1234567)
+      #   APP_STORE_API_ISSUER_ID   : Issuer UUID from App Store Connect
+      #   APP_STORE_API_KEY_CONTENT : Base64-encoded contents of the .p8 file
+      #     Generate with: base64 -i AuthKey_KEYID.p8 | tr -d '\n'
+      - name: Write App Store Connect API key
+        run: |
+          mkdir -p ~/private_keys
+          echo "${{ secrets.APP_STORE_API_KEY_CONTENT }}" | base64 --decode \
+            > ~/private_keys/AuthKey_${{ secrets.APP_STORE_API_KEY_ID }}.p8
+
+      # ── Code signing via fastlane match ──────────────────────────────────
+      # match stores encrypted certificates + profiles in a private git repo.
+      # Secrets needed:
+      #   MATCH_GIT_URL      : SSH or HTTPS URL of your private certs repo
+      #   MATCH_PASSWORD     : Passphrase used when running `match init`
+      #   DEVELOPER_TEAM_ID  : 10-char Apple Developer Team ID
+
+      # ── Build & upload ────────────────────────────────────────────────────
+      - name: Build and upload to TestFlight
+        working-directory: ios
+        run: bundle exec fastlane beta
+        env:
+          APP_STORE_API_KEY_ID: ${{ secrets.APP_STORE_API_KEY_ID }}
+          APP_STORE_API_ISSUER_ID: ${{ secrets.APP_STORE_API_ISSUER_ID }}
+          APP_STORE_API_KEY_CONTENT: ${{ secrets.APP_STORE_API_KEY_CONTENT }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          DEVELOPER_TEAM_ID: ${{ secrets.DEVELOPER_TEAM_ID }}
+          # Supabase — public anon key (safe to store as secret for CI isolation)
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+      # ── Upload IPA as artifact (optional download for ad-hoc sideload) ────
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: AmiseMedFlow-${{ github.sha }}
+          path: ios/build/export/*.ipa
+          retention-days: 14

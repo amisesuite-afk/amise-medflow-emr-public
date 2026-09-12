@@ -29,6 +29,7 @@ import multer, { type StorageEngine } from 'multer';
 import { sb } from '../lib/supabase.js';
 import { logger } from '../lib/logger.js';
 import { toE164 } from '../lib/sms.js';
+import { logAudit } from '../lib/audit.js';
 
 const router = Router();
 
@@ -273,6 +274,7 @@ router.post(
 
     const callLogId = (log as { id: string }).id;
     logger.info({ callLogId, callerNumber, direction, patientId, durationSecs }, '[call-recording] uploaded');
+    void logAudit(req, 'create', 'appointment', callLogId, patientId ?? undefined, { direction, deviceLabel, practiceLine });
 
     res.json({ call_log_id: callLogId, audio_url: publicUrl, patient_id: patientId });
 

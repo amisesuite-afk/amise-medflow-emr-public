@@ -2382,7 +2382,7 @@ struct ConsultationView: View {
 
     private var socialTab: some View {
         List {
-            // Smoking status
+            // Smoking status — single choice
             Section {
                 ChipFlow(hSpacing: 8, vSpacing: 8) {
                     ForEach(["Non-smoker", "Ex-smoker", "Light smoker (<10/day)",
@@ -2390,23 +2390,9 @@ struct ConsultationView: View {
                         let key = "Smoking:\(chip)"
                         let done = selectedSocialChips.contains(key)
                         Button {
-                            if !done {
-                                selectedSocialChips.insert(key)
-                                appendSocialChip("Smoking: \(chip)")
-                            }
+                            selectSingleSocialChip(prefix: "Smoking", value: chip, displayText: chip)
                         } label: {
-                            HStack(spacing: 4) {
-                                if done {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .font(.system(size: 11))
-                                        .foregroundStyle(.green)
-                                }
-                                Text(chip)
-                                    .font(.system(size: 12))
-                            }
-                            .padding(.horizontal, 10).padding(.vertical, 5)
-                            .background(AMColor.accentLt, in: Capsule())
-                            .foregroundStyle(done ? .green : AMColor.accent)
+                            socialChipLabel(chip, selected: done)
                         }
                         .buttonStyle(.plain)
                     }
@@ -2416,7 +2402,7 @@ struct ConsultationView: View {
                 Label("Smoking", systemImage: "smoke")
             }
 
-            // Alcohol
+            // Alcohol — single choice
             Section {
                 ChipFlow(hSpacing: 8, vSpacing: 8) {
                     ForEach(["Non-drinker", "Social drinker (<14 units/wk)",
@@ -2424,23 +2410,9 @@ struct ConsultationView: View {
                         let key = "Alcohol:\(chip)"
                         let done = selectedSocialChips.contains(key)
                         Button {
-                            if !done {
-                                selectedSocialChips.insert(key)
-                                appendSocialChip("Alcohol: \(chip)")
-                            }
+                            selectSingleSocialChip(prefix: "Alcohol", value: chip, displayText: chip)
                         } label: {
-                            HStack(spacing: 4) {
-                                if done {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .font(.system(size: 11))
-                                        .foregroundStyle(.green)
-                                }
-                                Text(chip)
-                                    .font(.system(size: 12))
-                            }
-                            .padding(.horizontal, 10).padding(.vertical, 5)
-                            .background(AMColor.accentLt, in: Capsule())
-                            .foregroundStyle(done ? .green : AMColor.accent)
+                            socialChipLabel(chip, selected: done)
                         }
                         .buttonStyle(.plain)
                     }
@@ -2450,38 +2422,63 @@ struct ConsultationView: View {
                 Label("Alcohol", systemImage: "wineglass")
             }
 
-            // Occupation & lifestyle
+            // Living situation — single choice
             Section {
                 ChipFlow(hSpacing: 8, vSpacing: 8) {
-                    ForEach(["Lives alone", "Lives with partner", "Lives with family", "Care home resident",
-                             "Retired", "Sedentary / desk work", "Manual labour", "Healthcare worker",
-                             "Physically active (>150 min/wk)", "Sedentary lifestyle"], id: \.self) { chip in
-                        let done = selectedSocialChips.contains(chip)
+                    ForEach(["Lives alone", "Lives with partner", "Lives with family", "Care home resident"],
+                            id: \.self) { chip in
+                        let key = "Living:\(chip)"
+                        let done = selectedSocialChips.contains(key)
                         Button {
-                            if !done {
-                                selectedSocialChips.insert(chip)
-                                appendSocialChip(chip)
-                            }
+                            selectSingleSocialChip(prefix: "Living", value: chip, displayText: chip)
                         } label: {
-                            HStack(spacing: 4) {
-                                if done {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .font(.system(size: 11))
-                                        .foregroundStyle(.green)
-                                }
-                                Text(chip)
-                                    .font(.system(size: 12))
-                            }
-                            .padding(.horizontal, 10).padding(.vertical, 5)
-                            .background(AMColor.accentLt, in: Capsule())
-                            .foregroundStyle(done ? .green : AMColor.accent)
+                            socialChipLabel(chip, selected: done)
                         }
                         .buttonStyle(.plain)
                     }
                 }
                 .padding(.vertical, 4)
             } header: {
-                Label("Occupation & Lifestyle", systemImage: "figure.walk")
+                Label("Living Situation", systemImage: "house")
+            }
+
+            // Occupation — single choice
+            Section {
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(["Retired", "Sedentary / desk work", "Manual labour", "Healthcare worker"],
+                            id: \.self) { chip in
+                        let key = "Occ:\(chip)"
+                        let done = selectedSocialChips.contains(key)
+                        Button {
+                            selectSingleSocialChip(prefix: "Occ", value: chip, displayText: chip)
+                        } label: {
+                            socialChipLabel(chip, selected: done)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+            } header: {
+                Label("Occupation", systemImage: "briefcase")
+            }
+
+            // Activity level — single choice
+            Section {
+                ChipFlow(hSpacing: 8, vSpacing: 8) {
+                    ForEach(["Physically active (>150 min/wk)", "Sedentary lifestyle"], id: \.self) { chip in
+                        let key = "Activity:\(chip)"
+                        let done = selectedSocialChips.contains(key)
+                        Button {
+                            selectSingleSocialChip(prefix: "Activity", value: chip, displayText: chip)
+                        } label: {
+                            socialChipLabel(chip, selected: done)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
+            } header: {
+                Label("Activity Level", systemImage: "figure.walk")
             }
 
             // Free text notes
@@ -2502,6 +2499,51 @@ struct ConsultationView: View {
                               filled: !(patient.socialHistory ?? "").isEmpty)
             }
         }
+    }
+
+    // Shared chip label for the social tab (radio-select style)
+    @ViewBuilder
+    private func socialChipLabel(_ text: String, selected: Bool) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                .font(.system(size: 11))
+                .foregroundStyle(selected ? .green : AMColor.accent.opacity(0.5))
+            Text(text)
+                .font(.system(size: 12))
+        }
+        .padding(.horizontal, 10).padding(.vertical, 5)
+        .background(selected ? Color.green.opacity(0.12) : AMColor.accentLt, in: Capsule())
+        .foregroundStyle(selected ? .green : AMColor.accent)
+    }
+
+    // Selects one chip within a prefix group (radio behaviour).
+    // Tapping the already-selected chip deselects it.
+    private func selectSingleSocialChip(prefix: String, value: String, displayText: String) {
+        let key = "\(prefix):\(value)"
+        let isCurrentlySelected = selectedSocialChips.contains(key)
+
+        // Remove all chips with this prefix from the in-memory set
+        selectedSocialChips = selectedSocialChips.filter { !$0.hasPrefix("\(prefix):") }
+
+        // Remove matching lines from stored social history
+        var lines = (patient.socialHistory ?? "")
+            .components(separatedBy: "\n")
+            .filter { line in
+                let trimmed = line.trimmingCharacters(in: .whitespaces)
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "·").union(.whitespaces))
+                return !trimmed.hasPrefix("\(prefix): ")
+            }
+
+        // If not deselecting, add the new selection
+        if !isCurrentlySelected {
+            selectedSocialChips.insert(key)
+            lines.append("· \(prefix): \(displayText)")
+        }
+
+        let joined = lines.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+        patient.socialHistory = joined.isEmpty ? nil : joined
+        touch()
+        recomputeRisk()
     }
 
     private func appendSocialChip(_ item: String) {
@@ -2759,20 +2801,32 @@ struct ConsultationView: View {
         let lines = text.components(separatedBy: "\n").map {
             $0.trimmingCharacters(in: .whitespaces).trimmingCharacters(in: CharacterSet(charactersIn: "·").union(.whitespaces))
         }
-        let smokingOptions = ["Non-smoker", "Ex-smoker", "Light smoker (<10/day)",
-                              "Moderate smoker (10–20/day)", "Heavy smoker (>20/day)"]
-        let alcoholOptions = ["Non-drinker", "Social drinker (<14 units/wk)",
-                              "Moderate (14–21 units/wk)", "Heavy (>21 units/wk)"]
-        for line in lines {
-            // Keyed chips: "Smoking: Ex-smoker" → key = "Smoking:Ex-smoker"
+        let smokingOptions  = ["Non-smoker", "Ex-smoker", "Light smoker (<10/day)",
+                               "Moderate smoker (10–20/day)", "Heavy smoker (>20/day)"]
+        let alcoholOptions  = ["Non-drinker", "Social drinker (<14 units/wk)",
+                               "Moderate (14–21 units/wk)", "Heavy (>21 units/wk)"]
+        let livingOptions   = ["Lives alone", "Lives with partner", "Lives with family", "Care home resident"]
+        let occOptions      = ["Retired", "Sedentary / desk work", "Manual labour", "Healthcare worker"]
+        let activityOptions = ["Physically active (>150 min/wk)", "Sedentary lifestyle"]
+
+        for line in lines where !line.isEmpty {
             if line.hasPrefix("Smoking: ") {
                 let val = String(line.dropFirst("Smoking: ".count))
                 if smokingOptions.contains(val) { chips.insert("Smoking:\(val)") }
             } else if line.hasPrefix("Alcohol: ") {
                 let val = String(line.dropFirst("Alcohol: ".count))
                 if alcoholOptions.contains(val) { chips.insert("Alcohol:\(val)") }
+            } else if line.hasPrefix("Living: ") {
+                let val = String(line.dropFirst("Living: ".count))
+                if livingOptions.contains(val) { chips.insert("Living:\(val)") }
+            } else if line.hasPrefix("Occ: ") {
+                let val = String(line.dropFirst("Occ: ".count))
+                if occOptions.contains(val) { chips.insert("Occ:\(val)") }
+            } else if line.hasPrefix("Activity: ") {
+                let val = String(line.dropFirst("Activity: ".count))
+                if activityOptions.contains(val) { chips.insert("Activity:\(val)") }
             } else {
-                // Lifestyle / living chips are stored without a prefix key
+                // Free text or legacy unkeyed entries
                 chips.insert(line)
             }
         }
