@@ -31,12 +31,14 @@ jobs:
       - name: Select Xcode 16
         run: sudo xcode-select -switch /Applications/Xcode_16.app
 
-      # Ensures iOS SDK platform files are present on every runner instance.
-      # macos-15 runners vary: some have iOS 18 platform initialized, some don't.
-      # -runFirstLaunch installs missing components (including the iphoneos platform)
-      # and is idempotent — safe to run even on already-initialized runners.
-      - name: Initialize Xcode iOS platform
-        run: sudo xcodebuild -runFirstLaunch
+      # macos-15 runners vary: some have the iOS 18 platform SDK installed, some don't.
+      # -runFirstLaunch handles general initialization (fast, ~4s) but does NOT install
+      # the iOS platform. -downloadPlatform iOS explicitly installs it (~2-4 min) and
+      # is idempotent — skips the download if the platform is already present.
+      - name: Initialize Xcode and install iOS platform
+        run: |
+          sudo xcodebuild -runFirstLaunch
+          sudo xcodebuild -downloadPlatform iOS
 
       # ── Dependencies ─────────────────────────────────────────────────────────
       - name: Install XcodeGen
