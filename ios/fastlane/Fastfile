@@ -70,6 +70,7 @@ platform :ios do
        "-project '#{ios_dir}/#{PROJECT}' " \
        "-configuration Release " \
        "-sdk iphoneos " \
+       "-destination 'generic/platform=iOS' " \
        "-archivePath '#{archive_path}' " \
        "CODE_SIGN_STYLE=Manual " \
        "PROVISIONING_PROFILE_SPECIFIER='match AppStore #{APP_ID}' " \
