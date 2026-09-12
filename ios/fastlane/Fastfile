@@ -58,25 +58,55 @@ platform :ios do
       readonly:       is_ci
     )
 
-    # Build the archive.
-    build_app(
-      project:             PROJECT,
-      scheme:              SCHEME,
-      configuration:       "Release",
-      export_method:       "app-store",
-      sdk:                 "iphoneos",
-      output_directory:    "build/export",
-      output_name:         "AmiseMedFlow.ipa",
-      clean:               true,
-      include_bitcode:     false,
-      xcargs:              "CODE_SIGN_STYLE=Manual PROVISIONING_PROFILE_SPECIFIER='match AppStore #{APP_ID}' CODE_SIGN_IDENTITY='Apple Distribution'",
-      export_options: {
-        teamID:              ENV["DEVELOPER_TEAM_ID"],
-        method:              "app-store",
-        signingStyle:        "manual",
-        provisioningProfiles: { APP_ID => "match AppStore #{APP_ID}" }
-      }
-    )
+    # Build the archive — call xcodebuild directly so we never get
+    # `-destination 'generic/platform=iOS'` injected by gym (which requires
+    # iOS platform support files not present on GitHub Actions runners).
+    team_id      = ENV["DEVELOPER_TEAM_ID"]
+    archive_path = "build/AmiseMedFlow.xcarchive"
+    export_dir   = "build/export"
+
+    sh "set -o pipefail && xcodebuild " \
+       "-scheme #{SCHEME} -project #{PROJECT} -configuration Release " \
+       "-sdk iphoneos -archivePath #{archive_path} " \
+       "CODE_SIGN_STYLE=Manual " \
+       "PROVISIONING_PROFILE_SPECIFIER='match AppStore #{APP_ID}' " \
+       "CODE_SIGN_IDENTITY='Apple Distribution' " \
+       "DEVELOPMENT_TEAM='#{team_id}' " \
+       "clean archive | xcpretty || true"
+
+    # Write the export options plist (manual signing, app-store).
+    export_plist = File.expand_path("../ExportOptions-TestFlight.plist", __dir__)
+    File.write(export_plist, <<~PLIST)
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+          <key>method</key>
+          <string>app-store</string>
+          <key>teamID</key>
+          <string>#{team_id}</string>
+          <key>signingStyle</key>
+          <string>manual</string>
+          <key>provisioningProfiles</key>
+          <dict>
+              <key>#{APP_ID}</key>
+              <string>match AppStore #{APP_ID}</string>
+          </dict>
+          <key>stripSwiftSymbols</key>
+          <true/>
+          <key>uploadBitcode</key>
+          <false/>
+          <key>uploadSymbols</key>
+          <true/>
+      </dict>
+      </plist>
+    PLIST
+
+    sh "set -o pipefail && xcodebuild " \
+       "-exportArchive " \
+       "-archivePath #{archive_path} " \
+       "-exportPath #{export_dir} " \
+       "-exportOptionsPlist #{export_plist} | xcpretty || true"
 
     # Upload to TestFlight.
     # skip_waiting_for_build_processing: CI doesn't wait — builds appear

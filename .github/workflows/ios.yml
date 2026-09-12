@@ -31,12 +31,6 @@ jobs:
       - name: Select Xcode 16
         run: sudo xcode-select -switch /Applications/Xcode_16.app
 
-      # Install iOS 18 platform support files — required for generic/platform=iOS
-      # destination used by gym during archive. The macos-15 runner has Xcode 16
-      # but the iOS platform files are not pre-installed; this downloads them.
-      - name: Install iOS platform
-        run: sudo xcodebuild -downloadPlatform iOS
-
       # ── Dependencies ─────────────────────────────────────────────────────────
       - name: Install XcodeGen
         run: brew install xcodegen
