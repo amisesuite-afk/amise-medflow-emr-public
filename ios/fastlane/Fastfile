@@ -77,7 +77,7 @@ platform :ios do
        "-destination 'generic/platform=iOS' " \
        "-archivePath '#{archive_path}' " \
        "DEVELOPMENT_TEAM='#{team_id}' " \
-       "clean archive"
+       "archive"
 
     # Write export plist at runtime so team ID and profile name are always correct.
     export_plist = "#{ios_dir}/ExportOptions-TestFlight.plist"

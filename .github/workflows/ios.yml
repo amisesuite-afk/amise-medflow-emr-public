@@ -75,6 +75,7 @@ jobs:
       # ── Build & upload ────────────────────────────────────────────────────
       - name: Build and upload to TestFlight
         working-directory: ios
+        timeout-minutes: 60
         run: bundle exec fastlane beta
         env:
           APP_STORE_API_KEY_ID: ${{ secrets.APP_STORE_API_KEY_ID }}
