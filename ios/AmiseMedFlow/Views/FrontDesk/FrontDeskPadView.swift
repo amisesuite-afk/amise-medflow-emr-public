@@ -667,7 +667,7 @@ struct AdaptiveQuestionnaireSheet: View {
     @State private var prescriptionImageData: Data?
 
     // Patient demographics used for gating — resolved once from the model
-    private var patientSex: Sex { patient?.sex ?? .unknown }
+    private var patientSex: Sex { patient?.sex ?? .unspecified }
     private var patientAge: Int {
         guard let dob = patient?.dateOfBirth else { return 99 }
         return Calendar.ect.dateComponents([.year], from: dob, to: .now).year ?? 99
