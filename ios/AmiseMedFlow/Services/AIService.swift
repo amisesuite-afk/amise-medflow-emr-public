@@ -192,7 +192,7 @@ enum AIError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .disabled:
-            return "AI generation is not available at this time."
+            return "AI note generation is not enabled in this build. Please type or dictate the note manually."
         case .apiError(let msg):
             return "AI error: \(msg)"
         }
