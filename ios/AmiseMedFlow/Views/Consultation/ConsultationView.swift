@@ -789,6 +789,7 @@ struct ConsultationView: View {
     @State private var showCompleteEncounterConfirm = false
     @State private var showSaveEncounterConfirm = false
     @State private var encounterSavedFeedback = false
+    @State private var selectedEncounter: Encounter? = nil
 
     enum ExamMode { case short, full }
 
@@ -3954,10 +3955,16 @@ private struct ConsultationLetterSheet: View {
             } else {
                 List {
                     ForEach(sorted, id: \.id) { enc in
-                        EncounterHistoryRow(encounter: enc)
+                        Button { selectedEncounter = enc } label: {
+                            EncounterHistoryRow(encounter: enc)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .listStyle(.insetGrouped)
+                .sheet(item: $selectedEncounter) { enc in
+                    EncounterDetailSheet(encounter: enc)
+                }
             }
         }
     }
