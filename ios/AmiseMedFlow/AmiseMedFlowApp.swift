@@ -12,16 +12,18 @@ struct AmiseMedFlowApp: App {
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Patient.self, ClinicalNote.self, VitalsEntry.self, Prescription.self, PatientDocument.self, OperativePlan.self, BillingLineItem.self])
-        func makeContainer(cloudKit: Bool) throws -> ModelContainer {
+
+        // CloudKit sync requires iCloud entitlement — not configured, so use local store only.
+        func makePersistentContainer() throws -> ModelContainer {
             let config = ModelConfiguration(
                 schema: schema,
                 isStoredInMemoryOnly: false,
-                cloudKitDatabase: cloudKit ? .automatic : .none
+                cloudKitDatabase: .none
             )
             do {
                 return try ModelContainer(for: schema, configurations: [config])
             } catch {
-                // Schema mismatch — export pending data before wiping, then retry
+                // Schema changed — back up the corrupted store and start fresh.
                 let backupURL = config.url.deletingLastPathComponent()
                     .appendingPathComponent("medflow-backup-\(Int(Date().timeIntervalSince1970)).store")
                 try? FileManager.default.copyItem(at: config.url, to: backupURL)
@@ -29,12 +31,13 @@ struct AmiseMedFlowApp: App {
                 return try ModelContainer(for: schema, configurations: [config])
             }
         }
-        do {
-            if let container = try? makeContainer(cloudKit: true) { return container }
-            return try makeContainer(cloudKit: false)
-        } catch {
-            fatalError("ModelContainer init failed: \(error)")
-        }
+
+        if let container = try? makePersistentContainer() { return container }
+
+        // Last-resort in-memory store: app stays functional, data won't persist this session.
+        let fallbackConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        return (try? ModelContainer(for: schema, configurations: [fallbackConfig]))
+            ?? { fatalError("SwiftData: even an in-memory container failed to initialize.") }()
     }()
 
     var body: some Scene {
