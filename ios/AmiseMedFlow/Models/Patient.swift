@@ -52,6 +52,9 @@ final class Patient {
     @Relationship(deleteRule: .cascade, inverse: \BillingLineItem.patient)
     var billingItems: [BillingLineItem] = []
 
+    @Relationship(deleteRule: .cascade, inverse: \Encounter.patient)
+    var encounters: [Encounter] = []
+
     // MARK: - Clinical intelligence fields
     var workingDiagnosis: String?
     var workingDiagnosisICD: String?
@@ -125,6 +128,31 @@ final class Patient {
         self.createdAt = .now
         self.updatedAt = .now
         self.pendingSync = true
+        self.mrn = MRNGenerator.next()
+    }
+
+    // MARK: - Longitudinal context from closed encounters
+
+    var longitudinalContext: BayesianDiagnosisEngine.LongitudinalContext {
+        let closed = encounters.filter(\.isComplete).sorted { $0.encounterDate < $1.encounterDate }
+        let confirmedDx = closed.compactMap(\.workingDiagnosis).filter { !$0.isEmpty }
+        let allInvestigations = closed.flatMap { $0.decodedInvestigations }
+        let pmhAccumulated = closed.compactMap(\.pmhNotes).joined(separator: " ")
+        let pshxAccumulated = closed.compactMap(\.surgicalHistory).joined(separator: " ")
+
+        let daysSinceLast: Int? = closed.last.map {
+            Calendar.current.dateComponents([.day], from: $0.encounterDate, to: .now).day
+        }
+
+        return BayesianDiagnosisEngine.LongitudinalContext(
+            confirmedDiagnoses: confirmedDx,
+            cumulativeInvestigations: allInvestigations,
+            accumulatedPMH: pmhAccumulated,
+            accumulatedPSHx: pshxAccumulated,
+            encounterCount: closed.count,
+            lastVisitType: closed.last?.visitType,
+            daysSinceLastEncounter: daysSinceLast
+        )
     }
 
     var initials: String {

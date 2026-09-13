@@ -28,6 +28,28 @@ enum BayesianDiagnosisEngine {
         }
     }
 
+    // MARK: - Longitudinal context (aggregated from closed encounters)
+
+    struct LongitudinalContext {
+        let confirmedDiagnoses: [String]
+        let cumulativeInvestigations: [InvestigationEntry]
+        let accumulatedPMH: String
+        let accumulatedPSHx: String
+        let encounterCount: Int
+        let lastVisitType: VisitType?
+        let daysSinceLastEncounter: Int?
+
+        static let empty = LongitudinalContext(
+            confirmedDiagnoses: [],
+            cumulativeInvestigations: [],
+            accumulatedPMH: "",
+            accumulatedPSHx: "",
+            encounterCount: 0,
+            lastVisitType: nil,
+            daysSinceLastEncounter: nil
+        )
+    }
+
     // MARK: - Public entry point
 
     static func infer(
@@ -45,7 +67,8 @@ enum BayesianDiagnosisEngine {
         examOther: String? = nil,
         investigations: [InvestigationEntry],
         ageYears: Int,
-        sex: Sex
+        sex: Sex,
+        longitudinal: LongitudinalContext = .empty
     ) -> [DiagnosisResult] {
         guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
         let ccL = cc.lowercased()
@@ -173,11 +196,22 @@ enum BayesianDiagnosisEngine {
             candidates = abdominalPain   // safest surgical default
         }
 
-        let scored = score(
+        // Merge longitudinal context into scoring inputs.
+        // Confirmed past diagnoses are appended to pmh so existing "pmh" feature
+        // keys fire naturally (e.g. a past "Cholelithiasis" feeds the gallstone
+        // features in abdominalPain candidates).
+        let mergedPMH = [pmhNotes ?? "", longitudinal.accumulatedPMH,
+                         longitudinal.confirmedDiagnoses.joined(separator: " ")]
+            .filter { !$0.isEmpty }.joined(separator: " ")
+        let mergedPSHx = [surgicalHistory ?? "", longitudinal.accumulatedPSHx]
+            .filter { !$0.isEmpty }.joined(separator: " ")
+        let mergedInvestigations = investigations + longitudinal.cumulativeInvestigations
+
+        var scored = score(
             candidates: candidates,
             socrates: socratesSelections,
-            pmh: pmhNotes ?? "",
-            pshx: surgicalHistory ?? "",
+            pmh: mergedPMH,
+            pshx: mergedPSHx,
             examAbdo: examAbdo ?? "",
             examGeneral: examGeneral ?? "",
             examCVS: examCVS ?? "",
@@ -186,10 +220,24 @@ enum BayesianDiagnosisEngine {
             examMSK: examMSK ?? "",
             examSkin: examSkin ?? "",
             examOther: examOther ?? "",
-            investigations: investigations,
+            investigations: mergedInvestigations,
             age: ageYears,
             sex: sex
         )
+
+        // Confirmed prior diagnoses boost the matching candidate's prior by 20 log
+        // units — equivalent to a strong positive finding — so follow-up encounters
+        // for a known disease don't start from scratch.
+        if !longitudinal.confirmedDiagnoses.isEmpty {
+            let confirmedL = longitudinal.confirmedDiagnoses.map { $0.lowercased() }
+            for i in scored.indices {
+                let nameL = scored[i].candidate.name.lowercased()
+                if confirmedL.contains(where: { nameL.contains($0) || $0.contains(nameL) }) {
+                    scored[i].logPosterior += 20
+                    scored[i].evidence.insert("Previously confirmed diagnosis", at: 0)
+                }
+            }
+        }
 
         return topResults(from: scored)
     }

@@ -733,6 +733,7 @@ enum ConsultTab: String, CaseIterable {
     case investigations = "Ix"
     case diagnosis      = "Diagnosis"
     case plan      = "Plan"
+    case history   = "History"
 }
 
 // MARK: - ConsultationView
@@ -786,6 +787,8 @@ struct ConsultationView: View {
     @State private var dismissedAlarmIds: Set<UUID> = []
     @State private var surgicalRiskAlerts: [SurgicalRiskAlert] = []
     @State private var showCompleteEncounterConfirm = false
+    @State private var showSaveEncounterConfirm = false
+    @State private var encounterSavedFeedback = false
 
     enum ExamMode { case short, full }
 
@@ -884,6 +887,7 @@ struct ConsultationView: View {
                 recomputeRisk()
             }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
+            MRNGenerator.backfillIfNeeded(patient)
         }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
@@ -937,6 +941,18 @@ struct ConsultationView: View {
             ConsultationLetterSheet(letterText: generatedLetterText, patient: patient)
         }
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    showSaveEncounterConfirm = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: encounterSavedFeedback ? "archivebox.fill" : "archivebox")
+                        Text("Save Visit")
+                            .font(.system(size: 13, weight: .semibold))
+                    }
+                    .foregroundStyle(encounterSavedFeedback ? Color.green : AMColor.accent)
+                }
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 if patient.encounterStatus != .complete {
                     let completeness = patient.consultationCompleteness
@@ -971,6 +987,40 @@ struct ConsultationView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text(completeEncounterDialogMessage)
+        }
+        .confirmationDialog(
+            "Save this visit to encounter history?",
+            isPresented: $showSaveEncounterConfirm,
+            titleVisibility: .visible
+        ) {
+            Button("Save Visit") { saveEncounter() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("A snapshot of the current clinical data will be saved to the patient's encounter history. The working record stays editable.")
+        }
+    }
+
+    // MARK: - Save Encounter
+
+    private func saveEncounter() {
+        let encounter = Encounter(
+            visitType: patient.visitType ?? .newConsult,
+            acuity: patient.acuity,
+            setting: patient.setting,
+            location: patient.location
+        )
+        encounter.snapshot(
+            from: patient,
+            socratesSelections: socratesSelections,
+            bayesianDx: bayesianDx
+        )
+        encounter.isComplete = true
+        patient.encounters.append(encounter)
+        context.insert(encounter)
+        try? context.save()
+        encounterSavedFeedback = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            encounterSavedFeedback = false
         }
     }
 
@@ -1237,6 +1287,7 @@ struct ConsultationView: View {
         case .investigations: return !patient.investigations.isEmpty
         case .diagnosis:      return patient.workingDiagnosis != nil
         case .plan:      return !(patient.managementPlan ?? "").isEmpty
+        case .history:   return !patient.encounters.isEmpty
         }
     }
 
@@ -1256,6 +1307,7 @@ struct ConsultationView: View {
         case .investigations: investigationsTab
         case .diagnosis:      diagnosisTab
         case .plan:      planTab
+        case .history:   encounterHistoryTab
         }
     }
 
@@ -1269,6 +1321,24 @@ struct ConsultationView: View {
     private var ccTab: some View {
         List {
             Section {
+                HStack(spacing: 6) {
+                    Image(systemName: "person.text.rectangle")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    if let mrn = patient.mrn, !mrn.isEmpty {
+                        Text(mrn)
+                            .font(.system(.caption, design: .monospaced).weight(.medium))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text("Assigning MRN…")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
+                    Spacer()
+                    Text("\(patient.encounters.filter(\.isComplete).count) saved visit(s)")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
                 if let vt = patient.visitType {
                     HStack(spacing: 6) {
                         Image(systemName: vt.icon).foregroundStyle(AMColor.accent)
@@ -3043,7 +3113,8 @@ struct ConsultationView: View {
             examOther: patient.examOther,
             investigations: patient.investigations,
             ageYears: patient.ageYears,
-            sex: patient.sex
+            sex: patient.sex,
+            longitudinal: patient.longitudinalContext
         )
 
         // Update alarm list (keep dismissed state across refreshes)
@@ -3865,5 +3936,80 @@ private struct ConsultationLetterSheet: View {
                 ShareSheet(items: [letterText]).ignoresSafeArea()
             }
         }
+    }
+
+    // MARK: - Encounter History Tab
+
+    private var encounterHistoryTab: some View {
+        let sorted = patient.encounters
+            .filter(\.isComplete)
+            .sorted { $0.encounterDate > $1.encounterDate }
+        return Group {
+            if sorted.isEmpty {
+                ContentUnavailableView(
+                    "No Saved Visits",
+                    systemImage: "clock.badge.questionmark",
+                    description: Text("Tap "Save Visit" to snapshot the current consultation into history.")
+                )
+            } else {
+                List {
+                    ForEach(sorted, id: \.id) { enc in
+                        EncounterHistoryRow(encounter: enc)
+                    }
+                }
+                .listStyle(.insetGrouped)
+            }
+        }
+    }
+}
+
+// MARK: - EncounterHistoryRow
+
+private struct EncounterHistoryRow: View {
+    let encounter: Encounter
+
+    private var dateText: String {
+        encounter.encounterDate.formatted(date: .abbreviated, time: .omitted)
+    }
+
+    private var topDx: String? {
+        if let dx = encounter.workingDiagnosis, !dx.isEmpty { return dx }
+        let snap = encounter.decodedBayesianSnapshot
+        return snap.first.map { "\($0.name) (\($0.probability)%)" }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                Image(systemName: encounter.visitType.icon)
+                    .font(.caption)
+                    .foregroundStyle(AMColor.accent)
+                Text(encounter.visitType.rawValue)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(AMColor.accent)
+                Spacer()
+                Text(dateText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            if let cc = encounter.chiefComplaint {
+                Text(cc)
+                    .font(.subheadline.weight(.medium))
+                    .lineLimit(1)
+            }
+            if let dx = topDx {
+                Text(dx)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            if let plan = encounter.managementPlan, !plan.isEmpty {
+                Text(plan)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .lineLimit(2)
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
