@@ -62,6 +62,8 @@ targets:
         NSFaceIDUsageDescription: "Face ID projects patient records and clinical data in Amise MedFlow."
         NSMicrophoneUsageDescription: "Microphone access enables voice dictation for clinical notes and operative documentation."
         NSSpeechRecognitionUsageDescription: "Speech recognition converts your dictation into structured clinical notes."
+        # Encryption compliance — app uses HTTPS (exempt from export regs)
+        ITSAppUsesNonExemptEncryption: false
 
     entitlements:
       path: AmiseMedFlow/AmiseMedFlow.entitlements
