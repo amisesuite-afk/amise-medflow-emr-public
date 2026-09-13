@@ -37,6 +37,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case ogd            = "OGD Report"
     case surgery        = "Operative Note"
     case ercp           = "ERCP Report"
+    case history        = "Visit History"
 
     var id: String { rawValue }
 
@@ -64,6 +65,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .ogd:            "scope"
         case .surgery:        "scissors"
         case .ercp:           "waveform.and.magnifyingglass"
+        case .history:        "clock.badge.checkmark"
         }
     }
 
@@ -91,6 +93,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .ogd:            "OGD"
         case .surgery:        "Op Note"
         case .ercp:           "ERCP"
+        case .history:        "History"
         }
     }
 
@@ -119,6 +122,9 @@ struct PatientDetailPadView: View {
     @State private var selectedSection: PatientDetailSection? = .overview
     @State private var summaryPDFData: Data? = nil
     @State private var showSummaryEditor = false
+    @State private var showSaveVisitConfirm = false
+    @State private var saveVisitFeedback = false
+    @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService
 
     // Clinical sections — filtered by role and visit type
@@ -131,6 +137,7 @@ struct PatientDetailPadView: View {
             case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
+            case .history: return !patient.encounters.filter(\.isComplete).isEmpty
             default:       return true
             }
         }
@@ -234,6 +241,27 @@ struct PatientDetailPadView: View {
             Spacer()
 
             HStack(spacing: 14) {
+                Button {
+                    showSaveVisitConfirm = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: saveVisitFeedback ? "archivebox.fill" : "archivebox")
+                        Text("Save Visit")
+                            .font(.system(size: 12, weight: .semibold))
+                    }
+                    .foregroundStyle(saveVisitFeedback ? Color.green : AMColor.accent)
+                }
+                .buttonStyle(.plain)
+                .help("Save Visit Snapshot")
+                .confirmationDialog("Save visit snapshot for \(patient.fullName)?",
+                                    isPresented: $showSaveVisitConfirm,
+                                    titleVisibility: .visible) {
+                    Button("Save Visit") { padSaveEncounter() }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("Freezes the current consultation into the patient's history.")
+                }
+
                 Button { showSummaryEditor = true } label: {
                     Image(systemName: "doc.text.fill")
                         .foregroundStyle(AMColor.accent)
@@ -337,7 +365,30 @@ struct PatientDetailPadView: View {
             SurgeryNoteView(patient: patient)
         case .ercp:
             ERCPFormView(patient: patient)
+        case .history:
+            ConsultationView(patient: patient, startingTab: .history, embeddedInNav: true)
         }
+    }
+
+    // MARK: - Save Visit (iPad path — captures patient.* fields; SOCRATES chip state
+    // is not captured here since it lives in ConsultationView @State, but committed
+    // HPI text and all other structured fields are included)
+
+    private func padSaveEncounter() {
+        MRNGenerator.backfillIfNeeded(patient)
+        let encounter = Encounter(
+            visitType: patient.visitType ?? .newConsult,
+            acuity: patient.acuity,
+            setting: patient.setting,
+            location: patient.location
+        )
+        encounter.snapshot(from: patient, socratesSelections: [:], bayesianDx: [])
+        encounter.isComplete = true
+        patient.encounters.append(encounter)
+        context.insert(encounter)
+        try? context.save()
+        saveVisitFeedback = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { saveVisitFeedback = false }
     }
 }
 
