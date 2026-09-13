@@ -69,6 +69,16 @@ platform :ios do
     archive_path = "#{ios_dir}/build/AmiseMedFlow.xcarchive"
     export_dir   = "#{ios_dir}/build/export"
 
+    # Stamp build number from the CI run counter so every upload is unique.
+    # GITHUB_RUN_NUMBER increments automatically; falls back to 1 locally.
+    build_number = ENV.fetch("GITHUB_RUN_NUMBER", "1")
+    set_info_plist_value(
+      path:  "#{ios_dir}/AmiseMedFlow/Info.plist",
+      key:   "CFBundleVersion",
+      value: build_number
+    )
+    UI.message "📦 CFBundleVersion → #{build_number}"
+
     # CODE_SIGN_IDENTITY and PROVISIONING_PROFILE_SPECIFIER are set in
     # project.yml under configs.Release so they apply only to the app
     # target, not to SPM package dependencies (swift-crypto etc.) which
