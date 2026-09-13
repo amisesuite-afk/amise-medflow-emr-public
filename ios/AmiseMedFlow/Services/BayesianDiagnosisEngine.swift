@@ -28,6 +28,28 @@ enum BayesianDiagnosisEngine {
         }
     }
 
+    // MARK: - Longitudinal context (aggregated from closed encounters)
+
+    struct LongitudinalContext {
+        let confirmedDiagnoses: [String]
+        let cumulativeInvestigations: [InvestigationEntry]
+        let accumulatedPMH: String
+        let accumulatedPSHx: String
+        let encounterCount: Int
+        let lastVisitType: VisitType?
+        let daysSinceLastEncounter: Int?
+
+        static let empty = LongitudinalContext(
+            confirmedDiagnoses: [],
+            cumulativeInvestigations: [],
+            accumulatedPMH: "",
+            accumulatedPSHx: "",
+            encounterCount: 0,
+            lastVisitType: nil,
+            daysSinceLastEncounter: nil
+        )
+    }
+
     // MARK: - Public entry point
 
     static func infer(
@@ -37,9 +59,16 @@ enum BayesianDiagnosisEngine {
         surgicalHistory: String?,
         examAbdo: String?,
         examGeneral: String?,
+        examCVS: String? = nil,
+        examResp: String? = nil,
+        examNeuro: String? = nil,
+        examMSK: String? = nil,
+        examSkin: String? = nil,
+        examOther: String? = nil,
         investigations: [InvestigationEntry],
         ageYears: Int,
-        sex: Sex
+        sex: Sex,
+        longitudinal: LongitudinalContext = .empty
     ) -> [DiagnosisResult] {
         guard let cc = chiefComplaint, !cc.isEmpty else { return [] }
         let ccL = cc.lowercased()
@@ -143,21 +172,72 @@ enum BayesianDiagnosisEngine {
              ccL.contains("cold leg") || ccL.contains("cold foot") || ccL.contains("cold limb") ||
              (ccL.contains("limb") && (ccL.contains("pale") || ccL.contains("pulseless"))):
             candidates = acuteLimbIschaemia
+        case ccL.contains("skin") && (ccL.contains("lump") || ccL.contains("lesion") || ccL.contains("mole") || ccL.contains("growth")) ||
+             ccL.contains("melanoma") || ccL.contains("bcc") || ccL.contains("scc") ||
+             ccL.contains("sebaceous") || ccL.contains("lipoma") ||
+             (ccL.contains("lump") && (ccL.contains("back") || ccL.contains("arm") || ccL.contains("scalp") || ccL.contains("face"))):
+            candidates = skinLesion
+        case ccL.contains("scrotum") || ccL.contains("testicular") || ccL.contains("testicle") ||
+             ccL.contains("orchit") || ccL.contains("hydrocele") || ccL.contains("varicocele") ||
+             ccL.contains("epididym") || (ccL.contains("scrotal") && ccL.contains("lump")):
+            candidates = scrotalTesticular
+        case ccL.contains("urinary retention") || ccL.contains("unable to void") ||
+             ccL.contains("acute retention") || ccL.contains("retention of urine") ||
+             (ccL.contains("prostate") && !ccL.contains("cancer")) ||
+             ccL.contains("bph") || ccL.contains("urethral stricture") || ccL.contains("lower urinary"):
+            candidates = urinaryRetention
+        case ccL.contains("rectal prolapse") || ccL.contains("prolapse") && ccL.contains("rectum") ||
+             (ccL.contains("protrusion") && ccL.contains("anus")):
+            candidates = rectalProlapse
+        case ccL.contains("parotid") || ccL.contains("salivary") || ccL.contains("submandibular gland") ||
+             ccL.contains("sublingual gland") || (ccL.contains("jaw") && ccL.contains("swelling")):
+            candidates = parotidSalivary
         default:
             candidates = abdominalPain   // safest surgical default
         }
 
-        let scored = score(
+        // Merge longitudinal context into scoring inputs.
+        // Confirmed past diagnoses are appended to pmh so existing "pmh" feature
+        // keys fire naturally (e.g. a past "Cholelithiasis" feeds the gallstone
+        // features in abdominalPain candidates).
+        let mergedPMH = [pmhNotes ?? "", longitudinal.accumulatedPMH,
+                         longitudinal.confirmedDiagnoses.joined(separator: " ")]
+            .filter { !$0.isEmpty }.joined(separator: " ")
+        let mergedPSHx = [surgicalHistory ?? "", longitudinal.accumulatedPSHx]
+            .filter { !$0.isEmpty }.joined(separator: " ")
+        let mergedInvestigations = investigations + longitudinal.cumulativeInvestigations
+
+        var scored = score(
             candidates: candidates,
             socrates: socratesSelections,
-            pmh: pmhNotes ?? "",
-            pshx: surgicalHistory ?? "",
+            pmh: mergedPMH,
+            pshx: mergedPSHx,
             examAbdo: examAbdo ?? "",
             examGeneral: examGeneral ?? "",
-            investigations: investigations,
+            examCVS: examCVS ?? "",
+            examResp: examResp ?? "",
+            examNeuro: examNeuro ?? "",
+            examMSK: examMSK ?? "",
+            examSkin: examSkin ?? "",
+            examOther: examOther ?? "",
+            investigations: mergedInvestigations,
             age: ageYears,
             sex: sex
         )
+
+        // Confirmed prior diagnoses boost the matching candidate's prior by 20 log
+        // units — equivalent to a strong positive finding — so follow-up encounters
+        // for a known disease don't start from scratch.
+        if !longitudinal.confirmedDiagnoses.isEmpty {
+            let confirmedL = longitudinal.confirmedDiagnoses.map { $0.lowercased() }
+            for i in scored.indices {
+                let nameL = scored[i].candidate.name.lowercased()
+                if confirmedL.contains(where: { nameL.contains($0) || $0.contains(nameL) }) {
+                    scored[i].logPosterior += 20
+                    scored[i].evidence.insert("Previously confirmed diagnosis", at: 0)
+                }
+            }
+        }
 
         return topResults(from: scored)
     }
@@ -191,12 +271,16 @@ enum BayesianDiagnosisEngine {
         socrates: [String: Set<String>],
         pmh: String, pshx: String,
         examAbdo: String, examGeneral: String,
+        examCVS: String = "", examResp: String = "",
+        examNeuro: String = "", examMSK: String = "",
+        examSkin: String = "", examOther: String = "",
         investigations: [InvestigationEntry],
         age: Int, sex: Sex
     ) -> [ScoredCandidate] {
         let pmhL = pmh.lowercased()
         let pshxL = pshx.lowercased()
-        let examL = (examAbdo + " " + examGeneral).lowercased()
+        let examL = [examAbdo, examGeneral, examCVS, examResp, examNeuro, examMSK, examSkin, examOther]
+            .joined(separator: " ").lowercased()
         let invNames = investigations.map { $0.name.lowercased() }
         let invResults = investigations.filter { $0.status == .resulted }
             .map { $0.name.lowercased() + " " + $0.result.lowercased() }
@@ -780,6 +864,23 @@ enum BayesianDiagnosisEngine {
             .init(key: "exam", value: "fluctuant", logLR: 14, evidenceLabel: "Fluctuant swelling"),
             .init(key: "exam", value: "erythema", logLR: 12, evidenceLabel: "Erythema"),
         ]),
+        .init(name: "Fat Necrosis", icd: "N64.1",
+              logPrior: 8, features: [
+            .init(key: "pshx", value: "trauma", logLR: 14, evidenceLabel: "History of trauma"),
+            .init(key: "pshx", value: "surgery", logLR: 10, evidenceLabel: "Previous breast surgery"),
+            .init(key: "exam", value: "hard", logLR: 8, evidenceLabel: "Hard lump"),
+            .init(key: "exam", value: "skin", logLR: 6, evidenceLabel: "Skin tethering"),
+            .init(key: "timing", value: "Gradual", logLR: 6, evidenceLabel: "Develops weeks after injury"),
+        ]),
+        .init(name: "Phyllodes Tumour", icd: "D48.6",
+              logPrior: 4, features: [
+            .init(key: "timing", value: "Progressive", logLR: 12, evidenceLabel: "Rapidly enlarging"),
+            .init(key: "exam", value: "large", logLR: 10, evidenceLabel: "Large lump"),
+            .init(key: "exam", value: "lobulated", logLR: 8, evidenceLabel: "Lobulated surface"),
+            .init(key: "exam", value: "mobile", logLR: 6, evidenceLabel: "Mobile"),
+            .init(key: "age_over", value: "35", logLR: 6, evidenceLabel: "Middle age"),
+            .init(key: "age_under", value: "55", logLR: 4, evidenceLabel: "Pre-menopausal / peri-menopausal"),
+        ]),
     ]
 
     // ── Neck / thyroid lump ───────────────────────────────────────────
@@ -815,6 +916,32 @@ enum BayesianDiagnosisEngine {
             .init(key: "exam", value: "rubbery", logLR: 10, evidenceLabel: "Rubbery nodes"),
             .init(key: "exam", value: "multiple", logLR: 8, evidenceLabel: "Multiple node groups"),
             .init(key: "exam", value: "generalised", logLR: 8, evidenceLabel: "Generalised lymphadenopathy"),
+        ]),
+        .init(name: "Branchial Cyst", icd: "Q18.0",
+              logPrior: 12, features: [
+            .init(key: "site", value: "Anterior triangle", logLR: 14, evidenceLabel: "Anterior triangle of neck"),
+            .init(key: "age_under", value: "30", logLR: 10, evidenceLabel: "Young adult"),
+            .init(key: "character", value: "Cystic", logLR: 14, evidenceLabel: "Cystic / fluctuant"),
+            .init(key: "exam", value: "smooth", logLR: 8, evidenceLabel: "Smooth, fluctuant"),
+            .init(key: "exam", value: "transilluminates", logLR: 10, evidenceLabel: "Transilluminates"),
+            .init(key: "timing", value: "Progressive", logLR: 6, evidenceLabel: "Slowly enlarging"),
+        ]),
+        .init(name: "Thyroglossal Duct Cyst", icd: "Q89.2",
+              logPrior: 12, features: [
+            .init(key: "site", value: "Midline", logLR: 16, evidenceLabel: "Midline neck"),
+            .init(key: "exam", value: "moves on swallow", logLR: 16, evidenceLabel: "Moves on swallowing"),
+            .init(key: "exam", value: "moves on tongue protrusion", logLR: 18, evidenceLabel: "Moves on tongue protrusion"),
+            .init(key: "age_under", value: "25", logLR: 8, evidenceLabel: "Young patient"),
+            .init(key: "character", value: "Cystic", logLR: 10, evidenceLabel: "Cystic texture"),
+        ]),
+        .init(name: "Carotid Body Tumour", icd: "D44.6",
+              logPrior: 5, features: [
+            .init(key: "site", value: "Anterior triangle", logLR: 12, evidenceLabel: "Anterior triangle, carotid bifurcation level"),
+            .init(key: "exam", value: "pulsatile", logLR: 16, evidenceLabel: "Pulsatile lump"),
+            .init(key: "exam", value: "bruit", logLR: 14, evidenceLabel: "Bruit audible"),
+            .init(key: "exam", value: "transmits pulse", logLR: 14, evidenceLabel: "Transmits arterial pulsation"),
+            .init(key: "character", value: "Firm", logLR: 6, evidenceLabel: "Firm, compressible"),
+            .init(key: "age_over", value: "40", logLR: 6, evidenceLabel: "Middle-age/older"),
         ]),
     ]
 
@@ -1654,6 +1781,249 @@ enum BayesianDiagnosisEngine {
             .init(key: "pshx", value: "trauma", logLR: 12, evidenceLabel: "Trauma / fracture"),
             .init(key: "pshx", value: "reperfusion", logLR: 14, evidenceLabel: "Reperfusion after ischaemia"),
             .init(key: "inv", value: "ck", logLR: 10, evidenceLabel: "Markedly elevated CK"),
+        ]),
+    ]
+
+    // ── Skin lesion ───────────────────────────────────────────────────
+
+    private static let skinLesion: [Candidate] = [
+        .init(name: "Melanoma", icd: "C43.9",
+              logPrior: 12, features: [
+            .init(key: "timing", value: "Progressive", logLR: 12, evidenceLabel: "Enlarging lesion"),
+            .init(key: "character", value: "Irregular borders", logLR: 14, evidenceLabel: "Irregular borders (ABCDE)"),
+            .init(key: "character", value: "Pigmented", logLR: 8, evidenceLabel: "Pigmented lesion"),
+            .init(key: "exam", value: "ill-defined", logLR: 12, evidenceLabel: "Ill-defined border"),
+            .init(key: "exam", value: "regional nodes", logLR: 16, evidenceLabel: "Regional lymphadenopathy"),
+            .init(key: "exam", value: "satellite", logLR: 14, evidenceLabel: "Satellite lesions"),
+            .init(key: "exam", value: "ulcerated", logLR: 10, evidenceLabel: "Ulcerated surface"),
+            .init(key: "age_over", value: "40", logLR: 6, evidenceLabel: "Age >40"),
+            .init(key: "pmh", value: "sun", logLR: 8, evidenceLabel: "Sun exposure history"),
+        ]),
+        .init(name: "Basal Cell Carcinoma", icd: "C44.91",
+              logPrior: 20, features: [
+            .init(key: "character", value: "Non-pigmented", logLR: 6, evidenceLabel: "Non-pigmented"),
+            .init(key: "exam", value: "well-defined", logLR: 8, evidenceLabel: "Pearly / rolled border"),
+            .init(key: "exam", value: "ulcerated", logLR: 10, evidenceLabel: "Central ulceration (rodent ulcer)"),
+            .init(key: "timing", value: "Progressive", logLR: 8, evidenceLabel: "Slowly enlarging"),
+            .init(key: "age_over", value: "50", logLR: 8, evidenceLabel: "Older patient"),
+            .init(key: "site", value: "Face", logLR: 10, evidenceLabel: "Head / neck location"),
+        ]),
+        .init(name: "Squamous Cell Carcinoma", icd: "C44.92",
+              logPrior: 15, features: [
+            .init(key: "exam", value: "ulcerated", logLR: 12, evidenceLabel: "Ulcerated"),
+            .init(key: "exam", value: "raised", logLR: 8, evidenceLabel: "Raised / indurated"),
+            .init(key: "exam", value: "crusted", logLR: 10, evidenceLabel: "Crusting"),
+            .init(key: "pmh", value: "radiation", logLR: 12, evidenceLabel: "Radiation history"),
+            .init(key: "pmh", value: "immunosuppressed", logLR: 10, evidenceLabel: "Immunosuppression"),
+            .init(key: "age_over", value: "50", logLR: 8, evidenceLabel: "Older patient"),
+        ]),
+        .init(name: "Lipoma", icd: "D17.9",
+              logPrior: 30, features: [
+            .init(key: "character", value: "Soft", logLR: 12, evidenceLabel: "Soft, compressible"),
+            .init(key: "exam", value: "mobile", logLR: 8, evidenceLabel: "Mobile, subcutaneous"),
+            .init(key: "exam", value: "non-tender", logLR: 6, evidenceLabel: "Non-tender"),
+            .init(key: "exam", value: "well-defined", logLR: 8, evidenceLabel: "Well-defined border"),
+            .init(key: "timing", value: "Progressive", logLR: 4, evidenceLabel: "Slow growth"),
+        ]),
+        .init(name: "Sebaceous Cyst (Epidermoid)", icd: "L72.0",
+              logPrior: 25, features: [
+            .init(key: "exam", value: "punctum", logLR: 16, evidenceLabel: "Punctum visible"),
+            .init(key: "exam", value: "smooth", logLR: 6, evidenceLabel: "Smooth, dome-shaped"),
+            .init(key: "exam", value: "mobile", logLR: 6, evidenceLabel: "Mobile over underlying tissue"),
+            .init(key: "associations", value: "Discharge", logLR: 10, evidenceLabel: "Cheesy discharge"),
+            .init(key: "associations", value: "Itching", logLR: 4, evidenceLabel: "Itching"),
+        ]),
+        .init(name: "Dermatofibroma", icd: "D23.9",
+              logPrior: 15, features: [
+            .init(key: "character", value: "Flat", logLR: 10, evidenceLabel: "Flat firm papule"),
+            .init(key: "exam", value: "dimple sign", logLR: 14, evidenceLabel: "Dimple sign positive"),
+            .init(key: "exam", value: "firm", logLR: 6, evidenceLabel: "Firm"),
+            .init(key: "site", value: "Thigh", logLR: 8, evidenceLabel: "Lower extremity"),
+            .init(key: "site", value: "Lower leg", logLR: 8, evidenceLabel: "Lower extremity"),
+        ]),
+    ]
+
+    // ── Scrotal / testicular ──────────────────────────────────────────
+
+    private static let scrotalTesticular: [Candidate] = [
+        .init(name: "Testicular Torsion", icd: "N44.00",
+              logPrior: 20, features: [
+            .init(key: "onset", value: "Sudden", logLR: 16, evidenceLabel: "Sudden onset"),
+            .init(key: "character", value: "Severe", logLR: 12, evidenceLabel: "Severe pain"),
+            .init(key: "associations", value: "Nausea", logLR: 10, evidenceLabel: "Nausea / vomiting"),
+            .init(key: "exam", value: "absent cremasteric reflex", logLR: 18, evidenceLabel: "Absent cremasteric reflex"),
+            .init(key: "exam", value: "tender testis", logLR: 12, evidenceLabel: "Tender, high-riding testis"),
+            .init(key: "exam", value: "warm", logLR: 6, evidenceLabel: "Warm scrotum"),
+            .init(key: "age_under", value: "25", logLR: 12, evidenceLabel: "Peak incidence < 25 yr"),
+        ]),
+        .init(name: "Epididymo-Orchitis", icd: "N45.3",
+              logPrior: 25, features: [
+            .init(key: "associations", value: "Fever", logLR: 12, evidenceLabel: "Fever"),
+            .init(key: "associations", value: "Dysuria", logLR: 10, evidenceLabel: "Dysuria"),
+            .init(key: "exam", value: "tender", logLR: 10, evidenceLabel: "Tender epididymis / testis"),
+            .init(key: "exam", value: "warm and erythematous", logLR: 12, evidenceLabel: "Erythema"),
+            .init(key: "exam", value: "normal cremasteric reflex", logLR: 8, evidenceLabel: "Cremasteric reflex present"),
+            .init(key: "age_over", value: "30", logLR: 6, evidenceLabel: "Adult — STI or UTI source"),
+            .init(key: "inv", value: "wbc", logLR: 8, evidenceLabel: "Leukocytosis"),
+        ]),
+        .init(name: "Hydrocele", icd: "N43.3",
+              logPrior: 25, features: [
+            .init(key: "exam", value: "transilluminates", logLR: 16, evidenceLabel: "Transillumination positive"),
+            .init(key: "exam", value: "scrotal oedema", logLR: 6, evidenceLabel: "Diffuse scrotal swelling"),
+            .init(key: "exam", value: "non-tender", logLR: 6, evidenceLabel: "Non-tender"),
+            .init(key: "character", value: "Smooth", logLR: 8, evidenceLabel: "Smooth swelling surrounding testis"),
+            .init(key: "timing", value: "Progressive", logLR: 6, evidenceLabel: "Slowly enlarging"),
+        ]),
+        .init(name: "Varicocele", icd: "I86.1",
+              logPrior: 15, features: [
+            .init(key: "character", value: "Dull", logLR: 8, evidenceLabel: "Dull aching dragging pain"),
+            .init(key: "exacerbating", value: "Standing", logLR: 12, evidenceLabel: "Worse on standing / Valsalva"),
+            .init(key: "relieving", value: "Lying down", logLR: 10, evidenceLabel: "Relieved by lying"),
+            .init(key: "exam", value: "bag of worms", logLR: 16, evidenceLabel: "'Bag of worms' on palpation"),
+            .init(key: "site", value: "Left", logLR: 8, evidenceLabel: "Left-sided (most common)"),
+        ]),
+        .init(name: "Testicular Tumour", icd: "C62.90",
+              logPrior: 10, features: [
+            .init(key: "timing", value: "Progressive", logLR: 12, evidenceLabel: "Enlarging, painless mass"),
+            .init(key: "exam", value: "non-tender", logLR: 8, evidenceLabel: "Non-tender hard mass"),
+            .init(key: "exam", value: "no transillumination", logLR: 10, evidenceLabel: "No transillumination"),
+            .init(key: "exam", value: "mass separate", logLR: 8, evidenceLabel: "Epididymis separate from mass"),
+            .init(key: "age_over", value: "15", logLR: 6, evidenceLabel: "Peak 15–35 yr"),
+            .init(key: "age_under", value: "40", logLR: 6, evidenceLabel: "Young male"),
+            .init(key: "inv", value: "afp", logLR: 14, evidenceLabel: "Elevated AFP / β-hCG"),
+            .init(key: "inv", value: "ldh", logLR: 8, evidenceLabel: "Elevated LDH"),
+        ]),
+    ]
+
+    // ── Urinary retention / LUTS ──────────────────────────────────────
+
+    private static let urinaryRetention: [Candidate] = [
+        .init(name: "Benign Prostatic Hyperplasia", icd: "N40.1",
+              logPrior: 35, features: [
+            .init(key: "timing", value: "Progressive", logLR: 10, evidenceLabel: "Progressive LUTS"),
+            .init(key: "associations", value: "Hesitancy", logLR: 10, evidenceLabel: "Hesitancy"),
+            .init(key: "associations", value: "Poor stream", logLR: 10, evidenceLabel: "Poor stream"),
+            .init(key: "associations", value: "Nocturia", logLR: 8, evidenceLabel: "Nocturia"),
+            .init(key: "age_over", value: "50", logLR: 12, evidenceLabel: "Age >50"),
+            .init(key: "sex_male", value: "", logLR: 8, evidenceLabel: "Male sex"),
+            .init(key: "exam", value: "enlarged, benign", logLR: 14, evidenceLabel: "Smooth, enlarged prostate on DRE"),
+            .init(key: "inv", value: "psa", logLR: 8, evidenceLabel: "PSA measured"),
+            .init(key: "inv", value: "ultrasound", logLR: 6, evidenceLabel: "Bladder/prostate USS"),
+        ]),
+        .init(name: "Prostate Carcinoma", icd: "C61",
+              logPrior: 12, features: [
+            .init(key: "exam", value: "hard, irregular", logLR: 16, evidenceLabel: "Hard, irregular prostate on DRE"),
+            .init(key: "age_over", value: "60", logLR: 10, evidenceLabel: "Age >60"),
+            .init(key: "sex_male", value: "", logLR: 8, evidenceLabel: "Male sex"),
+            .init(key: "associations", value: "Weight loss", logLR: 10, evidenceLabel: "Weight loss / constitutional symptoms"),
+            .init(key: "associations", value: "Haematuria", logLR: 8, evidenceLabel: "Haematuria"),
+            .init(key: "pmh", value: "prostate", logLR: 10, evidenceLabel: "Family history"),
+            .init(key: "inv", value: "psa", logLR: 14, evidenceLabel: "Elevated PSA"),
+        ]),
+        .init(name: "Urethral Stricture", icd: "N35.9",
+              logPrior: 10, features: [
+            .init(key: "associations", value: "Poor stream", logLR: 14, evidenceLabel: "Poor or spraying stream"),
+            .init(key: "associations", value: "Hesitancy", logLR: 8, evidenceLabel: "Hesitancy"),
+            .init(key: "pmh", value: "sti", logLR: 12, evidenceLabel: "STI (gonococcal) history"),
+            .init(key: "pshx", value: "urethral", logLR: 12, evidenceLabel: "Urethral instrumentation / catheterisation"),
+            .init(key: "pshx", value: "trauma", logLR: 10, evidenceLabel: "Pelvic trauma"),
+            .init(key: "sex_male", value: "", logLR: 8, evidenceLabel: "Male sex"),
+        ]),
+        .init(name: "Neurogenic Bladder", icd: "N31.9",
+              logPrior: 8, features: [
+            .init(key: "pmh", value: "spinal", logLR: 14, evidenceLabel: "Spinal cord injury / disease"),
+            .init(key: "pmh", value: "diabetes", logLR: 8, evidenceLabel: "Diabetic neuropathy"),
+            .init(key: "pmh", value: "multiple sclerosis", logLR: 12, evidenceLabel: "Multiple sclerosis"),
+            .init(key: "exam", value: "bladder palpable", logLR: 12, evidenceLabel: "Palpable bladder"),
+            .init(key: "inv", value: "urodynamics", logLR: 12, evidenceLabel: "Urodynamic studies"),
+        ]),
+    ]
+
+    // ── Rectal prolapse ───────────────────────────────────────────────
+
+    private static let rectalProlapse: [Candidate] = [
+        .init(name: "Full-Thickness Rectal Prolapse", icd: "K62.3",
+              logPrior: 25, features: [
+            .init(key: "character", value: "Protrusion", logLR: 16, evidenceLabel: "Visible protrusion through anus"),
+            .init(key: "exacerbating", value: "Defaecation", logLR: 12, evidenceLabel: "Worse on defaecation"),
+            .init(key: "exacerbating", value: "Straining", logLR: 10, evidenceLabel: "Straining"),
+            .init(key: "relieving", value: "Manual reduction", logLR: 14, evidenceLabel: "Manually reducible"),
+            .init(key: "associations", value: "Soiling", logLR: 10, evidenceLabel: "Faecal soiling"),
+            .init(key: "associations", value: "Mucus discharge", logLR: 8, evidenceLabel: "Mucus discharge"),
+            .init(key: "age_over", value: "60", logLR: 8, evidenceLabel: "Older patient"),
+            .init(key: "sex_female", value: "", logLR: 6, evidenceLabel: "Female sex (multiparous)"),
+        ]),
+        .init(name: "Third/Fourth-Degree Haemorrhoids", icd: "K64.2",
+              logPrior: 30, features: [
+            .init(key: "character", value: "Soft protrusion", logLR: 10, evidenceLabel: "Soft, reducible lump at anus"),
+            .init(key: "associations", value: "Rectal bleeding", logLR: 12, evidenceLabel: "Bright red bleeding"),
+            .init(key: "exacerbating", value: "Defaecation", logLR: 8, evidenceLabel: "Worse on defaecation"),
+            .init(key: "exam", value: "external haemorrhoids", logLR: 10, evidenceLabel: "Haemorrhoids visible"),
+            .init(key: "relieving", value: "Manual reduction", logLR: 8, evidenceLabel: "Reducible"),
+        ]),
+        .init(name: "Rectocele", icd: "N81.6",
+              logPrior: 12, features: [
+            .init(key: "sex_female", value: "", logLR: 14, evidenceLabel: "Female sex"),
+            .init(key: "associations", value: "Incomplete emptying", logLR: 12, evidenceLabel: "Incomplete evacuation"),
+            .init(key: "associations", value: "Straining", logLR: 8, evidenceLabel: "Straining at stool"),
+            .init(key: "pmh", value: "obstetric", logLR: 10, evidenceLabel: "Obstetric trauma"),
+            .init(key: "exam", value: "anterior wall bulge", logLR: 14, evidenceLabel: "Anterior rectal wall bulge on PR"),
+        ]),
+        .init(name: "Rectal Polyp (prolapsing)", icd: "K62.1",
+              logPrior: 10, features: [
+            .init(key: "character", value: "Intermittent protrusion", logLR: 10, evidenceLabel: "Intermittent prolapse"),
+            .init(key: "associations", value: "Rectal bleeding", logLR: 10, evidenceLabel: "Rectal bleeding"),
+            .init(key: "associations", value: "Mucus discharge", logLR: 8, evidenceLabel: "Mucus per rectum"),
+            .init(key: "exam", value: "blood on glove", logLR: 8, evidenceLabel: "Blood on glove"),
+        ]),
+    ]
+
+    // ── Parotid / salivary gland ──────────────────────────────────────
+
+    private static let parotidSalivary: [Candidate] = [
+        .init(name: "Pleomorphic Adenoma", icd: "D11.0",
+              logPrior: 35, features: [
+            .init(key: "timing", value: "Progressive", logLR: 10, evidenceLabel: "Slowly enlarging"),
+            .init(key: "exam", value: "smooth", logLR: 8, evidenceLabel: "Smooth, lobulated"),
+            .init(key: "exam", value: "mobile", logLR: 10, evidenceLabel: "Mobile"),
+            .init(key: "exam", value: "non-tender", logLR: 6, evidenceLabel: "Non-tender"),
+            .init(key: "exam", value: "facial nerve intact", logLR: 8, evidenceLabel: "Facial nerve function preserved"),
+            .init(key: "age_over", value: "30", logLR: 4, evidenceLabel: "Middle-age peak"),
+        ]),
+        .init(name: "Sialadenitis (Parotid)", icd: "K11.20",
+              logPrior: 20, features: [
+            .init(key: "exacerbating", value: "Eating", logLR: 14, evidenceLabel: "Worse on eating / salivary stimulation"),
+            .init(key: "character", value: "Painful", logLR: 10, evidenceLabel: "Painful swelling"),
+            .init(key: "associations", value: "Fever", logLR: 10, evidenceLabel: "Fever"),
+            .init(key: "exam", value: "tender", logLR: 10, evidenceLabel: "Tender gland"),
+            .init(key: "exam", value: "erythema", logLR: 8, evidenceLabel: "Overlying skin erythema"),
+            .init(key: "inv", value: "wbc", logLR: 8, evidenceLabel: "Leukocytosis"),
+        ]),
+        .init(name: "Sialolithiasis (Duct Stone)", icd: "K11.5",
+              logPrior: 15, features: [
+            .init(key: "exacerbating", value: "Eating", logLR: 14, evidenceLabel: "Colicky swelling with meals"),
+            .init(key: "character", value: "Colicky", logLR: 12, evidenceLabel: "Episodic / colicky"),
+            .init(key: "exam", value: "stone palpable", logLR: 16, evidenceLabel: "Stone bimanually palpable in duct"),
+            .init(key: "exam", value: "firm", logLR: 6, evidenceLabel: "Firm, tender gland"),
+            .init(key: "inv", value: "ultrasound", logLR: 12, evidenceLabel: "USS — ductal calculus"),
+        ]),
+        .init(name: "Parotid Carcinoma", icd: "C07",
+              logPrior: 5, features: [
+            .init(key: "exam", value: "firm, fixed", logLR: 14, evidenceLabel: "Fixed, hard mass"),
+            .init(key: "timing", value: "Progressive", logLR: 10, evidenceLabel: "Rapidly enlarging"),
+            .init(key: "exam", value: "facial nerve", logLR: 16, evidenceLabel: "Facial nerve palsy"),
+            .init(key: "associations", value: "Pain", logLR: 8, evidenceLabel: "Pain"),
+            .init(key: "age_over", value: "50", logLR: 8, evidenceLabel: "Older patient"),
+            .init(key: "inv", value: "fnac", logLR: 14, evidenceLabel: "FNAC suspicious"),
+        ]),
+        .init(name: "Warthin's Tumour", icd: "D11.0",
+              logPrior: 10, features: [
+            .init(key: "exam", value: "smooth", logLR: 6, evidenceLabel: "Smooth, soft"),
+            .init(key: "exam", value: "mobile", logLR: 6, evidenceLabel: "Mobile"),
+            .init(key: "exam", value: "non-tender", logLR: 6, evidenceLabel: "Non-tender"),
+            .init(key: "age_over", value: "50", logLR: 10, evidenceLabel: "Older male"),
+            .init(key: "sex_male", value: "", logLR: 6, evidenceLabel: "Male sex"),
+            .init(key: "pmh", value: "smoking", logLR: 10, evidenceLabel: "Smoking history"),
         ]),
     ]
 }
