@@ -233,7 +233,7 @@ final class SyncService: ObservableObject {
 
             patient.remoteId = row.id
             patient.fullName = row.full_name
-            patient.sex = Sex(rawValue: row.sex?.capitalized ?? "") ?? .unspecified
+            patient.sex = Sex.fromSupabase(row.sex)
             if let dob = row.date_of_birth { patient.dateOfBirth = iso.date(from: dob) }
             patient.phone = row.phone
             patient.email = row.email
@@ -383,7 +383,7 @@ final class SyncService: ObservableObject {
             let isoFmt = ISO8601DateFormatter()
             let row = InsertRow(
                 full_name: patient.fullName,
-                sex: patient.sex.rawValue.lowercased(),
+                sex: patient.sex.supabaseValue,
                 date_of_birth: patient.dateOfBirth.map { isoFmt.string(from: $0) },
                 phone: patient.phone,
                 email: patient.email,
@@ -543,7 +543,7 @@ final class SyncService: ObservableObject {
             let iso = ISO8601DateFormatter()
             let row = UpdateRow(
                 full_name: patient.fullName,
-                sex: patient.sex.rawValue.lowercased(),
+                sex: patient.sex.supabaseValue,
                 phone: patient.phone,
                 email: patient.email,
                 address: patient.address,

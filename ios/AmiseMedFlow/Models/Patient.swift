@@ -205,6 +205,21 @@ enum Sex: String, Codable, CaseIterable {
     case male = "Male"
     case female = "Female"
     case unspecified = "Unspecified"
+
+    // Supabase stores lowercase; "unspecified" is not in the CHECK constraint
+    // so we map it to "unknown" (which IS allowed) and back.
+    var supabaseValue: String {
+        self == .unspecified ? "unknown" : rawValue.lowercased()
+    }
+
+    static func fromSupabase(_ value: String?) -> Sex {
+        switch value?.lowercased() {
+        case "male":             return .male
+        case "female":           return .female
+        case "unknown", "other": return .unspecified
+        default:                 return .unspecified
+        }
+    }
 }
 
 enum ClinicalSetting: String, Codable, CaseIterable {
