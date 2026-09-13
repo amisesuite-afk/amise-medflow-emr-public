@@ -1336,6 +1336,66 @@ struct ConsultationView: View {
         socrateDimensions(for: patient.chiefComplaint ?? "")
     }
 
+    // MARK: - Exam adaptive chips
+
+    private var primaryExamLabel: String {
+        let lc = (patient.chiefComplaint ?? "").lowercased()
+        if lc.contains("neck") || lc.contains("thyroid") || lc.contains("goitre") || lc.contains("lymph") || lc.contains("goiter") { return "Neck Examination" }
+        if lc.contains("breast") || lc.contains("nipple") || lc.contains("mastalgia") { return "Breast Examination" }
+        if (lc.contains("chest") && lc.contains("pain")) || lc.contains("angina") || lc.contains("palpitation") { return "Chest / Cardiac" }
+        if lc.contains("hernia") || lc.contains("inguinal") || lc.contains("femoral") || lc.contains("groin") { return "Groin / Hernia" }
+        if lc.contains("dysphagia") || lc.contains("swallow") { return "Oropharynx / Neck" }
+        if lc.contains("perianal") || lc.contains("anal") || lc.contains("haemorrhoid") || lc.contains("hemorrhoid") || lc.contains("rectal") || lc.contains("fissure") || lc.contains("fistula") { return "Perianal / PR Examination" }
+        if lc.contains("skin") || lc.contains("mole") || lc.contains("melanoma") || lc.contains("lesion") || lc.contains("lipoma") { return "Skin Lesion" }
+        if lc.contains("scrotum") || lc.contains("testicular") || lc.contains("testicle") || lc.contains("orchit") || lc.contains("hydrocele") || lc.contains("scrotal") { return "Scrotal / Testicular" }
+        if lc.contains("haematuria") || lc.contains("urinary") || lc.contains("retention") || lc.contains("prostate") { return "Renal / Urological" }
+        if lc.contains("parotid") || lc.contains("salivary") { return "Salivary Gland / Jaw" }
+        return "Abdomen"
+    }
+
+    private var primaryExamChips: [String] {
+        let lc = (patient.chiefComplaint ?? "").lowercased()
+        if lc.contains("neck") || lc.contains("thyroid") || lc.contains("goitre") || lc.contains("lymph") || lc.contains("goiter") {
+            return ["Mobile, non-tender.", "Fixed to deep tissue.", "Moves on swallowing.", "Pulsatile; bruit present.", "Hard and irregular.", "Smooth and soft.", "Tender.", "Non-tender.", "Thyroid diffusely enlarged.", "Single nodule.", "Multiple nodes palpable.", "No palpable lymphadenopathy."]
+        }
+        if lc.contains("breast") || lc.contains("nipple") || lc.contains("mastalgia") {
+            return ["Mobile, non-tender.", "Fixed to overlying skin.", "Fixed to pectoral muscle.", "Irregular, hard.", "Smooth, soft.", "Nipple inversion.", "Skin dimpling / peau d'orange.", "Axillary nodes palpable.", "Axillary nodes not palpable.", "Nipple discharge.", "No skin changes."]
+        }
+        if (lc.contains("chest") && lc.contains("pain")) || lc.contains("angina") || lc.contains("palpitation") {
+            return ["No chest wall tenderness.", "Reproducible on palpation.", "Apex beat non-displaced.", "Bilateral air entry.", "No peripheral oedema.", "Peripheral pulses present.", "JVP not elevated."]
+        }
+        if lc.contains("hernia") || lc.contains("inguinal") || lc.contains("femoral") || lc.contains("groin") {
+            return ["Cough impulse present.", "Reducible.", "Irreducible.", "Above inguinal ligament.", "Below inguinal ligament.", "Extending into scrotum.", "Transilluminates.", "No transillumination.", "Tender on palpation.", "Soft, easily reducible."]
+        }
+        if lc.contains("dysphagia") || lc.contains("swallow") {
+            return ["Oropharynx clear.", "No neck mass.", "Moves on swallowing.", "Cervical lymphadenopathy.", "Voice normal on exam.", "Hoarse voice."]
+        }
+        if lc.contains("perianal") || lc.contains("anal") || lc.contains("haemorrhoid") || lc.contains("hemorrhoid") || lc.contains("rectal") || lc.contains("fissure") || lc.contains("fistula") {
+            return ["Perianal skin normal.", "External haemorrhoids visible.", "Perianal erythema.", "Fluctuant perianal mass.", "Skin tag.", "External fistula opening.", "Posterior midline fissure.", "Normal rectal tone on DRE.", "Tender on DRE.", "Blood on glove.", "Mucosa normal on PR."]
+        }
+        if lc.contains("skin") || lc.contains("mole") || lc.contains("melanoma") || lc.contains("lesion") || lc.contains("lipoma") {
+            return ["Well-defined border.", "Ill-defined border.", "Pigmented lesion.", "Non-pigmented.", "Raised >2 mm.", "Flat.", "Ulcerated.", "Smooth surface.", "Regional nodes not palpable.", "Regional nodes enlarged.", "Satellite lesions."]
+        }
+        if lc.contains("scrotum") || lc.contains("testicular") || lc.contains("testicle") || lc.contains("orchit") || lc.contains("hydrocele") || lc.contains("scrotal") {
+            return ["Tender testis.", "Non-tender.", "Transilluminates (hydrocele).", "No transillumination.", "Warm and erythematous.", "Normal cremasteric reflex.", "Absent cremasteric reflex.", "Epididymal cyst.", "Scrotal oedema.", "Mass separate from testis."]
+        }
+        if lc.contains("haematuria") || lc.contains("urinary") || lc.contains("retention") || lc.contains("prostate") {
+            return ["No renal angle tenderness.", "Right renal angle tender.", "Left renal angle tender.", "Bladder palpable to umbilicus.", "Suprapubic tenderness.", "Prostate smooth, not enlarged (DRE).", "Prostate enlarged, benign (DRE).", "Prostate hard, irregular (DRE)."]
+        }
+        if lc.contains("parotid") || lc.contains("salivary") {
+            return ["Soft, mobile.", "Firm, fixed.", "Tender.", "Non-tender.", "Facial nerve intact.", "Bimanual — stone palpable.", "No stone palpable.", "Erythema overlying skin."]
+        }
+        return ["Soft, non-tender.", "Tender RUQ.", "Tender RLQ.", "Guarding.", "Rigidity.", "Murphy's +ve.", "Bowel sounds normal.", "No organomegaly.", "Hepatomegaly.", "Distended."]
+    }
+
+    private var primaryCVSChips: [String] {
+        let lc = (patient.chiefComplaint ?? "").lowercased()
+        if (lc.contains("chest") && lc.contains("pain")) || lc.contains("angina") || lc.contains("palpitation") || lc.contains("cardiac") {
+            return ["Regular rate and rhythm.", "Irregular (AF).", "Dual heart sounds.", "Systolic murmur.", "Ejection systolic murmur.", "S3 gallop.", "Elevated JVP.", "Pitting oedema ankles.", "Peripheral pulses present bilaterally.", "Absent left radial pulse."]
+        }
+        return ["Regular rate and rhythm. No murmurs.", "Dual heart sounds.", "Systolic murmur.", "Pitting oedema ankles.", "Elevated JVP."]
+    }
+
     private var hpiTab: some View {
         List {
             // SOCRATES builder accordion
@@ -2686,15 +2746,15 @@ struct ConsultationView: View {
                 examField("Cardiovascular",
                           text: Binding(get: { patient.examCVS ?? "" },
                                         set: { patient.examCVS = $0.isEmpty ? nil : $0; touch() }),
-                          chips: ["Regular rate and rhythm. No murmurs.", "Dual heart sounds.", "Systolic murmur.", "Pitting oedema ankles.", "Elevated JVP."])
+                          chips: primaryCVSChips)
                 examField("Respiratory",
                           text: Binding(get: { patient.examResp ?? "" },
                                         set: { patient.examResp = $0.isEmpty ? nil : $0; touch() }),
                           chips: ["Clear to auscultation bilaterally.", "Reduced air entry.", "Fine crackles.", "Expiratory wheeze.", "Dull to percussion."])
-                examField("Abdomen",
+                examField(primaryExamLabel,
                           text: Binding(get: { patient.examAbdo ?? "" },
                                         set: { patient.examAbdo = $0.isEmpty ? nil : $0; touch() }),
-                          chips: ["Soft, non-tender.", "Tender RUQ.", "Tender RLQ.", "Guarding.", "Rigidity.", "Murphy's +ve.", "Bowel sounds normal.", "No organomegaly.", "Hepatomegaly.", "Distended."])
+                          chips: primaryExamChips)
 
                 if examMode == .full {
                     examField("Neurological", text: Binding(
@@ -2975,6 +3035,12 @@ struct ConsultationView: View {
             surgicalHistory: patient.surgicalHistory,
             examAbdo: patient.examAbdo,
             examGeneral: patient.examGeneral,
+            examCVS: patient.examCVS,
+            examResp: patient.examResp,
+            examNeuro: patient.examNeuro,
+            examMSK: patient.examMSK,
+            examSkin: patient.examSkin,
+            examOther: patient.examOther,
             investigations: patient.investigations,
             ageYears: patient.ageYears,
             sex: patient.sex
