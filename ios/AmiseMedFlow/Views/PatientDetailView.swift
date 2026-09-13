@@ -48,7 +48,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .cc:             "text.bubble"
         case .hpi:            "doc.text"
         case .pmh:            "clock.arrow.circlepath"
-        case .pshx:           "bandage"
+        case .pshx:           "scissors"
         case .medications:    "pills"
         case .allergies:      "exclamationmark.shield"
         case .social:         "person.2"
