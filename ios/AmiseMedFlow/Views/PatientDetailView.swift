@@ -19,6 +19,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case hpi            = "History of Present Illness"
     case pmh            = "Past Medical History"
     case pshx           = "Surgical History"
+    case medications    = "Drug / Medication History"
     case allergies      = "Allergies"
     case social         = "Social History"
     case exam           = "Examination"
@@ -48,6 +49,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .hpi:            "doc.text"
         case .pmh:            "clock.arrow.circlepath"
         case .pshx:           "bandage"
+        case .medications:    "pills"
         case .allergies:      "exclamationmark.shield"
         case .social:         "person.2"
         case .exam:           "stethoscope"
@@ -74,8 +76,9 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .overview:       "Overview"
         case .cc:             "CC"
         case .hpi:            "HPI"
-        case .pmh:            "PMH"
+        case .pmh:            "PMH/FHx"
         case .pshx:           "PSHx"
+        case .medications:    "Meds/Drugs"
         case .allergies:      "Allergies"
         case .social:         "Social"
         case .exam:           "Exam"
@@ -103,6 +106,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .hpi:            .hpi
         case .pmh:            .pmh
         case .pshx:           .pshx
+        case .medications:    .meds
         case .allergies:      .allergies
         case .social:         .social
         case .exam:           .exam
@@ -331,6 +335,8 @@ struct PatientDetailPadView: View {
             ConsultationView(patient: patient, startingTab: .pmh, embeddedInNav: true)
         case .pshx:
             ConsultationView(patient: patient, startingTab: .pshx, embeddedInNav: true)
+        case .medications:
+            ConsultationView(patient: patient, startingTab: .meds, embeddedInNav: true)
         case .allergies:
             ConsultationView(patient: patient, startingTab: .allergies, embeddedInNav: true)
         case .social:
