@@ -42,6 +42,10 @@ platform :ios do
   # Run in CI:    triggered automatically by GitHub Actions on push to main
   # ────────────────────────────────────────────────────────────────────────
   lane :beta do
+    # Create a temporary unlocked keychain in CI so codesign never blocks
+    # waiting for a keychain password prompt that never arrives.
+    setup_ci if is_ci
+
     ensure_xcconfig
 
     api_key = connect_api_key
