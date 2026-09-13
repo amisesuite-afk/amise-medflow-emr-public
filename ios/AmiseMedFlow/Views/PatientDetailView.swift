@@ -19,7 +19,6 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case hpi            = "History of Present Illness"
     case pmh            = "Past Medical History"
     case pshx           = "Surgical History"
-    case medications    = "Drug / Medication History"
     case allergies      = "Allergies"
     case social         = "Social History"
     case exam           = "Examination"
@@ -27,7 +26,6 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case assessment     = "Assessment / Dx"
     case plan           = "Management Plan"
     // Clinical
-    case scores         = "Clinical Scores"
     case notes          = "Notes"
     case vitals         = "Vitals"
     case prescriptions  = "Prescriptions"
@@ -37,15 +35,8 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case demographics   = "Demographics"
     case trauma         = "Trauma / ATLS"
     case ogd            = "OGD Report"
-    case colonoscopy    = "Colonoscopy Report"
     case surgery        = "Operative Note"
-    case patientInstructions = "Patient Instructions"
-    case preOpChecklist = "Pre-Op Checklist"
-    case consent        = "Surgical Consent"
     case ercp           = "ERCP Report"
-    case postOpReview   = "Post-op Review"
-    case dischargeSummary = "Discharge Summary"
-    case referralLetter = "Referral Letter"
     case history        = "Visit History"
 
     var id: String { rawValue }
@@ -56,15 +47,13 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .cc:             "text.bubble"
         case .hpi:            "doc.text"
         case .pmh:            "clock.arrow.circlepath"
-        case .pshx:           "scissors"
-        case .medications:    "pills"
+        case .pshx:           "bandage"
         case .allergies:      "exclamationmark.shield"
         case .social:         "person.2"
         case .exam:           "stethoscope"
         case .investigations: "testtube.2"
         case .assessment:     "brain.head.profile"
         case .plan:           "list.bullet.clipboard"
-        case .scores:         "chart.bar.doc.horizontal"
         case .notes:          "note.text"
         case .vitals:         "waveform.path.ecg"
         case .prescriptions:  "pills"
@@ -74,15 +63,8 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .demographics:   "square.and.pencil"
         case .trauma:         "cross.case.fill"
         case .ogd:            "scope"
-        case .colonoscopy:    "circle.dotted.and.circle"
         case .surgery:        "scissors"
-        case .patientInstructions: "doc.text.fill"
-        case .preOpChecklist: "checklist"
-        case .consent:        "signature"
         case .ercp:           "waveform.and.magnifyingglass"
-        case .postOpReview:   "bandage"
-        case .dischargeSummary: "rectangle.portrait.and.arrow.right"
-        case .referralLetter: "envelope.open"
         case .history:        "clock.badge.checkmark"
         }
     }
@@ -92,16 +74,14 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .overview:       "Overview"
         case .cc:             "CC"
         case .hpi:            "HPI"
-        case .pmh:            "PMH/FHx"
+        case .pmh:            "PMH"
         case .pshx:           "PSHx"
-        case .medications:    "Meds/Drugs"
         case .allergies:      "Allergies"
         case .social:         "Social"
         case .exam:           "Exam"
         case .investigations: "Ix"
         case .assessment:     "Assess"
         case .plan:           "Plan"
-        case .scores:         "Scores"
         case .notes:          "Notes"
         case .vitals:         "Vitals"
         case .prescriptions:  "Rx"
@@ -111,15 +91,8 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .demographics:   "Details"
         case .trauma:         "Trauma"
         case .ogd:            "OGD"
-        case .colonoscopy:    "Scope"
         case .surgery:        "Op Note"
-        case .patientInstructions: "Instruct."
-        case .preOpChecklist: "Pre-Op"
-        case .consent:        "Consent"
         case .ercp:           "ERCP"
-        case .postOpReview:   "Post-op"
-        case .dischargeSummary: "Discharge"
-        case .referralLetter: "Referral"
         case .history:        "History"
         }
     }
@@ -130,12 +103,10 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .hpi:            .hpi
         case .pmh:            .pmh
         case .pshx:           .pshx
-        case .medications:    .meds
         case .allergies:      .allergies
         case .social:         .social
         case .exam:           .exam
         case .investigations: .investigations
-        case .scores:         .scores
         case .assessment:     .diagnosis
         case .plan:           .plan
         default:              nil
@@ -155,8 +126,6 @@ struct PatientDetailPadView: View {
     @State private var saveVisitFeedback = false
     @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService
-    @EnvironmentObject private var calSvc: CalendarService
-    @State private var calendarSavedFeedback = false
 
     // Clinical sections — filtered by role and visit type
     private var rightSections: [PatientDetailSection] {
@@ -165,16 +134,9 @@ struct PatientDetailPadView: View {
             guard allowed.contains(section) else { return false }
             switch section {
             case .trauma:  return patient.visitType == .trauma
-            case .ogd:          return patient.visitType == .ogd || patient.visitType == .dayOfSurgery
-            case .colonoscopy:  return patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
+            case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
-            case .patientInstructions: return true
-            case .preOpChecklist: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
-            case .consent: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
-            case .postOpReview: return patient.visitType == .postOp
-            case .dischargeSummary: return patient.visitType == .postOp || patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
-            case .referralLetter: return patient.visitType == .newConsult || patient.visitType == .followUp || patient.visitType == .urgentReview || patient.visitType == .postOp
             case .history: return !patient.encounters.filter(\.isComplete).isEmpty
             default:       return true
             }
@@ -338,7 +300,7 @@ struct PatientDetailPadView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 9)
                         .frame(minWidth: 62)
-                        .background { sel ? AMColor.accent.opacity(0.18) : Color.clear }
+                        .background(sel ? AMColor.accent.opacity(0.18) : Color.clear)
                         .overlay(alignment: .bottom) {
                             if sel { Rectangle().fill(AMColor.accent).frame(height: 2) }
                         }
@@ -369,8 +331,6 @@ struct PatientDetailPadView: View {
             ConsultationView(patient: patient, startingTab: .pmh, embeddedInNav: true)
         case .pshx:
             ConsultationView(patient: patient, startingTab: .pshx, embeddedInNav: true)
-        case .medications:
-            ConsultationView(patient: patient, startingTab: .meds, embeddedInNav: true)
         case .allergies:
             ConsultationView(patient: patient, startingTab: .allergies, embeddedInNav: true)
         case .social:
@@ -379,8 +339,6 @@ struct PatientDetailPadView: View {
             ConsultationView(patient: patient, startingTab: .exam, embeddedInNav: true)
         case .investigations:
             ConsultationView(patient: patient, startingTab: .investigations, embeddedInNav: true)
-        case .scores:
-            ClinicalScoresView(patient: patient)
         case .assessment:
             ConsultationView(patient: patient, startingTab: .diagnosis, embeddedInNav: true)
         case .plan:
@@ -403,24 +361,10 @@ struct PatientDetailPadView: View {
             TraumaAssessmentView(patient: patient)
         case .ogd:
             OGDFormView(patient: patient)
-        case .colonoscopy:
-            ColonoscopyFormView(patient: patient)
         case .surgery:
             SurgeryNoteView(patient: patient)
-        case .patientInstructions:
-            PatientInstructionsView(patient: patient)
-        case .preOpChecklist:
-            PreOpChecklistView(patient: patient)
-        case .consent:
-            ConsentFormView(patient: patient)
         case .ercp:
             ERCPFormView(patient: patient)
-        case .postOpReview:
-            PostOpReviewView(patient: patient)
-        case .dischargeSummary:
-            DischargeSummaryView(patient: patient)
-        case .referralLetter:
-            ReferralLetterView(patient: patient)
         case .history:
             ConsultationView(patient: patient, startingTab: .history, embeddedInNav: true)
         }
@@ -442,7 +386,7 @@ struct PatientDetailPadView: View {
         encounter.isComplete = true
         patient.encounters.append(encounter)
         context.insert(encounter)
-        _ = try? context.save()
+        try? context.save()
         saveVisitFeedback = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { saveVisitFeedback = false }
     }
@@ -741,7 +685,7 @@ struct PatientOverviewContent: View {
                         let los = max(0, Calendar.current.dateComponents([.day], from: admitted, to: .now).day ?? 0)
                         LabeledContent("Admitted") {
                             Text(admitted, style: .date) +
-                            Text("  (Day \(los + 1))").foregroundStyle(.secondary)
+                            Text("  (Day \(los + 1))").foregroundColor(.secondary)
                         }
                     }
                     if let exp = patient.expectedDischarge {
@@ -897,11 +841,9 @@ struct PatientOverviewContent: View {
 struct PatientDemographicsForm: View {
     @Bindable var patient: Patient
     @Environment(\.modelContext) private var context
-    @EnvironmentObject private var calSvc: CalendarService
 
     @State private var hasDOB: Bool = false
     @State private var heightStr: String = ""
-    @State private var calendarSavedFeedback = false
 
     var body: some View {
         Form {
@@ -926,7 +868,7 @@ struct PatientDemographicsForm: View {
     private func touch() {
         patient.updatedAt = .now
         patient.pendingSync = true
-        _ = try? context.save()
+        try? context.save()
     }
 
     private static func generateMRN() -> String {
@@ -1121,28 +1063,6 @@ struct PatientDemographicsForm: View {
                            set: { patient.operationDate = $0; touch() }
                        ),
                        displayedComponents: [.date, .hourAndMinute])
-            if patient.operationDate != nil {
-                Button {
-                    guard let opDate = patient.operationDate else { return }
-                    let procedure = patient.appointmentType ?? patient.chiefComplaint ?? "Procedure"
-                    Task {
-                        _ = try? await calSvc.createTheatreBooking(
-                            procedure: procedure,
-                            patientName: patient.fullName,
-                            date: opDate,
-                            duration: 5400,
-                            notes: patient.workingDiagnosis.map { "Indication: \($0)" } ?? ""
-                        )
-                        await MainActor.run { calendarSavedFeedback = true }
-                        try? await Task.sleep(nanoseconds: 2_000_000_000)
-                        await MainActor.run { calendarSavedFeedback = false }
-                    }
-                } label: {
-                    Label(calendarSavedFeedback ? "Saved to Calendar" : "Save to Calendar",
-                          systemImage: calendarSavedFeedback ? "checkmark.circle.fill" : "calendar.badge.plus")
-                        .foregroundStyle(calendarSavedFeedback ? .green : .accentColor)
-                }
-            }
             if let days = patient.postOpDays {
                 LabeledContent("Post-op day", value: "POD \(days)")
             }
@@ -1262,39 +1182,17 @@ struct PatientDetailView: View {
                     quickAction("Trauma ATLS", icon: "cross.case.fill", color: .red,
                                 destination: AnyView(TraumaAssessmentView(patient: patient)))
                 }
-                quickAction("Instructions", icon: "doc.text.fill", color: .mint,
-                            destination: AnyView(PatientInstructionsView(patient: patient)))
                 if patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery {
-                    quickAction("Pre-Op", icon: "checklist", color: .teal,
-                                destination: AnyView(PreOpChecklistView(patient: patient)))
-                    quickAction("Consent", icon: "signature", color: .indigo,
-                                destination: AnyView(ConsentFormView(patient: patient)))
                     quickAction("Op Note", icon: "scissors", color: .purple,
                                 destination: AnyView(SurgeryNoteView(patient: patient)))
                 }
-                if patient.visitType == .ogd || patient.visitType == .dayOfSurgery {
+                if patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery {
                     quickAction("OGD Report", icon: "scope", color: .cyan,
                                 destination: AnyView(OGDFormView(patient: patient)))
-                }
-                if patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery {
-                    quickAction("Colonoscopy", icon: "circle.dotted.and.circle", color: .cyan,
-                                destination: AnyView(ColonoscopyFormView(patient: patient)))
                 }
                 if patient.visitType == .ercp || patient.visitType == .dayOfSurgery {
                     quickAction("ERCP Report", icon: "waveform.and.magnifyingglass", color: .blue,
                                 destination: AnyView(ERCPFormView(patient: patient)))
-                }
-                if patient.visitType == .postOp {
-                    quickAction("Post-op Review", icon: "bandage", color: .purple,
-                                destination: AnyView(PostOpReviewView(patient: patient)))
-                }
-                if patient.visitType == .postOp || patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery {
-                    quickAction("Discharge", icon: "rectangle.portrait.and.arrow.right", color: .orange,
-                                destination: AnyView(DischargeSummaryView(patient: patient)))
-                }
-                if patient.visitType == .newConsult || patient.visitType == .followUp || patient.visitType == .urgentReview || patient.visitType == .postOp {
-                    quickAction("Referral Letter", icon: "envelope.open", color: .teal,
-                                destination: AnyView(ReferralLetterView(patient: patient)))
                 }
                 quickAction("Prescriptions", icon: "pills.fill", color: .purple,
                             destination: AnyView(PrescriptionView(patient: patient)))
@@ -1410,7 +1308,7 @@ struct PatientDetailView: View {
                                 titleVisibility: .visible) {
                 Button("Delete Patient", role: .destructive) {
                     context.delete(patient)
-                    _ = try? context.save()
+                    try? context.save()
                     dismiss()
                 }
                 Button("Cancel", role: .cancel) {}
