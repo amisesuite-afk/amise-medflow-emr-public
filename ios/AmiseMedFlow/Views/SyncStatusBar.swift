@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - Compact sync status indicator for toolbars
 
@@ -160,7 +161,24 @@ private struct SyncStatusPopover: View {
                                 .foregroundStyle(.secondary)
                         }
 
-                        if !peerSync.peerSyncStatus.isEmpty {
+                        if peerSync.peerSyncStatus == "Proximity sync unavailable" {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("Local network access required.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Button {
+                                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                                        UIApplication.shared.open(url)
+                                    }
+                                } label: {
+                                    Label("Open Settings", systemImage: "gear")
+                                        .font(.caption.weight(.medium))
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.mini)
+                                .tint(.orange)
+                            }
+                        } else if !peerSync.peerSyncStatus.isEmpty {
                             Text(peerSync.peerSyncStatus)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
