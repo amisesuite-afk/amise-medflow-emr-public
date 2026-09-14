@@ -394,14 +394,7 @@ struct ClinicalScoresView: View {
             scoreToggle("WBC >10,000/μL", binding: $alv.wbcElevated, points: "+2")
             scoreToggle("Neutrophilia >75%", binding: $alv.neutrophiliaShift, points: "+1")
         }
-        .onChange(of: alv.migrationToRIF)     { _, _ in recalculate() }
-        .onChange(of: alv.anorexia)           { _, _ in recalculate() }
-        .onChange(of: alv.nauseaVomiting)     { _, _ in recalculate() }
-        .onChange(of: alv.tendernessRIF)      { _, _ in recalculate() }
-        .onChange(of: alv.reboundTenderness)  { _, _ in recalculate() }
-        .onChange(of: alv.elevatedTemperature){ _, _ in recalculate() }
-        .onChange(of: alv.wbcElevated)        { _, _ in recalculate() }
-        .onChange(of: alv.neutrophiliaShift)  { _, _ in recalculate() }
+        .onChange(of: alv) { _, _ in recalculate() }
     }
 
     // MARK: - Tokyo Cholecystitis
@@ -421,16 +414,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Hepatic (PT-INR >1.5)", binding: $tkyC.hepaticDysfunction, points: "III")
             scoreToggle("Haematological (platelets <100k)", binding: $tkyC.haematologicalDysfunction, points: "III")
         }
-        .onChange(of: tkyC.localInflammationSignsMild)    { _, _ in recalculate() }
-        .onChange(of: tkyC.wbcAbove18)                   { _, _ in recalculate() }
-        .onChange(of: tkyC.durationOver72h)               { _, _ in recalculate() }
-        .onChange(of: tkyC.markedLocalInflammation)       { _, _ in recalculate() }
-        .onChange(of: tkyC.cardiovascularDysfunction)     { _, _ in recalculate() }
-        .onChange(of: tkyC.neurologicalDysfunction)       { _, _ in recalculate() }
-        .onChange(of: tkyC.respiratoryDysfunction)        { _, _ in recalculate() }
-        .onChange(of: tkyC.renalDysfunction)              { _, _ in recalculate() }
-        .onChange(of: tkyC.hepaticDysfunction)            { _, _ in recalculate() }
-        .onChange(of: tkyC.haematologicalDysfunction)     { _, _ in recalculate() }
+        .onChange(of: tkyC) { _, _ in recalculate() }
     }
 
     // MARK: - Tokyo Cholangitis
@@ -452,12 +436,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Bilirubin >85 μmol/L (>5 mg/dL)", binding: $tkyG.bilirubinAbove5, points: "II")
             scoreToggle("Albumin <0.7 × LLN", binding: $tkyG.albuminBelow0_7xLLN, points: "II")
         }
-        .onChange(of: tkyG.cholangitisConfirmed)  { _, _ in recalculate() }
-        .onChange(of: tkyG.wbcAbove12OrBelow4)    { _, _ in recalculate() }
-        .onChange(of: tkyG.temperatureAbove39)    { _, _ in recalculate() }
-        .onChange(of: tkyG.ageAbove75)            { _, _ in recalculate() }
-        .onChange(of: tkyG.bilirubinAbove5)       { _, _ in recalculate() }
-        .onChange(of: tkyG.albuminBelow0_7xLLN)   { _, _ in recalculate() }
+        .onChange(of: tkyG) { _, _ in recalculate() }
     }
 
     @ViewBuilder private var tokyoCholangitisGrade3: some View {
@@ -470,12 +449,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Hepatic dysfunction", binding: $tkyG.hepaticDysfunction, points: "III")
             scoreToggle("Haematological dysfunction", binding: $tkyG.haematologicalDysfunction, points: "III")
         }
-        .onChange(of: tkyG.cardiovascularDysfunction) { _, _ in recalculate() }
-        .onChange(of: tkyG.neurologicalDysfunction)   { _, _ in recalculate() }
-        .onChange(of: tkyG.respiratoryDysfunction)    { _, _ in recalculate() }
-        .onChange(of: tkyG.renalDysfunction)          { _, _ in recalculate() }
-        .onChange(of: tkyG.hepaticDysfunction)        { _, _ in recalculate() }
-        .onChange(of: tkyG.haematologicalDysfunction) { _, _ in recalculate() }
+        .onChange(of: tkyG) { _, _ in recalculate() }
     }
 
     // MARK: - Ranson
@@ -494,15 +468,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Calcium <2 mmol/L", binding: $ran.calciumBelow8, points: "+1")
             scoreToggle("PaO₂ <60 mmHg", binding: $ran.pao2Below60, points: "+1")
         }
-        .onChange(of: ran.ageOver55)     { _, _ in recalculate() }
-        .onChange(of: ran.wbcOver16k)    { _, _ in recalculate() }
-        .onChange(of: ran.glucoseOver200){ _, _ in recalculate() }
-        .onChange(of: ran.ldhOver350)    { _, _ in recalculate() }
-        .onChange(of: ran.astOver250)    { _, _ in recalculate() }
-        .onChange(of: ran.hctFallOver10) { _, _ in recalculate() }
-        .onChange(of: ran.bunRiseOver5)  { _, _ in recalculate() }
-        .onChange(of: ran.calciumBelow8) { _, _ in recalculate() }
-        .onChange(of: ran.pao2Below60)   { _, _ in recalculate() }
+        .onChange(of: ran) { _, _ in recalculate() }
     }
 
     // MARK: - Glasgow Pancreatitis
@@ -520,14 +486,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Albumin <32 g/L", binding: $glas.albuminBelow32, points: "+1")
             scoreToggle("LDH >600 IU/L or AST >200 IU/L", binding: $glas.ldhOver600OrAstOver200, points: "+1")
         }
-        .onChange(of: glas.ageOver55)            { _, _ in recalculate() }
-        .onChange(of: glas.wbcOver15k)           { _, _ in recalculate() }
-        .onChange(of: glas.glucoseOver10)         { _, _ in recalculate() }
-        .onChange(of: glas.ureaOver16)            { _, _ in recalculate() }
-        .onChange(of: glas.pao2Below60)           { _, _ in recalculate() }
-        .onChange(of: glas.calciumBelow2)         { _, _ in recalculate() }
-        .onChange(of: glas.albuminBelow32)        { _, _ in recalculate() }
-        .onChange(of: glas.ldhOver600OrAstOver200){ _, _ in recalculate() }
+        .onChange(of: glas) { _, _ in recalculate() }
     }
 
     // MARK: - Rockall
@@ -586,12 +545,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Suspected infection source", binding: $sirsI.suspectedInfection, points: "Req.")
             scoreToggle("Positive blood culture", binding: $sirsI.positiveBloodCulture, points: "Bacteraemia")
         }
-        .onChange(of: sirsI.tempAbove38OrBelow36)            { _, _ in recalculate() }
-        .onChange(of: sirsI.heartRateOver90)                 { _, _ in recalculate() }
-        .onChange(of: sirsI.rrOver20OrPaCO2Below32)          { _, _ in recalculate() }
-        .onChange(of: sirsI.wbcOver12kOrBelow4kOr10PctBands){ _, _ in recalculate() }
-        .onChange(of: sirsI.suspectedInfection)              { _, _ in recalculate() }
-        .onChange(of: sirsI.positiveBloodCulture)            { _, _ in recalculate() }
+        .onChange(of: sirsI) { _, _ in recalculate() }
     }
 
     // MARK: - qSOFA
@@ -607,10 +561,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Respiratory rate >22/min", binding: $qsofaI.rrOver22, points: "+1")
             scoreToggle("Systolic BP <100 mmHg", binding: $qsofaI.sbpUnder100, points: "+1")
         }
-        .onChange(of: qsofaI.suspectedInfection) { _, _ in recalculate() }
-        .onChange(of: qsofaI.alteredMentation)   { _, _ in recalculate() }
-        .onChange(of: qsofaI.rrOver22)           { _, _ in recalculate() }
-        .onChange(of: qsofaI.sbpUnder100)        { _, _ in recalculate() }
+        .onChange(of: qsofaI) { _, _ in recalculate() }
     }
 
     // MARK: - Wells DVT
@@ -628,16 +579,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Alternative diagnosis at least as likely as DVT", binding: $wDVT.alternativeDiagnosisAsLikely, points: "−2")
             scoreToggle("Previously documented DVT", binding: $wDVT.previousDVT, points: "+1")
         }
-        .onChange(of: wDVT.activeCancer)                   { _, _ in recalculate() }
-        .onChange(of: wDVT.paralysisParesisPlastercast)    { _, _ in recalculate() }
-        .onChange(of: wDVT.bedridden3dOrSurgery12w)        { _, _ in recalculate() }
-        .onChange(of: wDVT.localizedTendernessDeepVein)    { _, _ in recalculate() }
-        .onChange(of: wDVT.entireLegSwollen)               { _, _ in recalculate() }
-        .onChange(of: wDVT.calfSwellingOver3cm)            { _, _ in recalculate() }
-        .onChange(of: wDVT.pittingOedema)                  { _, _ in recalculate() }
-        .onChange(of: wDVT.collateralSuperficialVeins)     { _, _ in recalculate() }
-        .onChange(of: wDVT.alternativeDiagnosisAsLikely)   { _, _ in recalculate() }
-        .onChange(of: wDVT.previousDVT)                    { _, _ in recalculate() }
+        .onChange(of: wDVT) { _, _ in recalculate() }
     }
 
     // MARK: - Wells PE
@@ -652,13 +594,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Haemoptysis", binding: $wPE.haemoptysis, points: "+1")
             scoreToggle("Malignancy (treatment ≤6 months or palliative)", binding: $wPE.malignancyActive, points: "+1")
         }
-        .onChange(of: wPE.clinicalSignsDVT)        { _, _ in recalculate() }
-        .onChange(of: wPE.alternativeDxLessLikely) { _, _ in recalculate() }
-        .onChange(of: wPE.hrOver100)               { _, _ in recalculate() }
-        .onChange(of: wPE.immobilisationOrSurgery4w){ _, _ in recalculate() }
-        .onChange(of: wPE.previousDVTOrPE)         { _, _ in recalculate() }
-        .onChange(of: wPE.haemoptysis)             { _, _ in recalculate() }
-        .onChange(of: wPE.malignancyActive)        { _, _ in recalculate() }
+        .onChange(of: wPE) { _, _ in recalculate() }
     }
 
     // MARK: - ABCD2
@@ -728,15 +664,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Creatinine 141–177 μmol/L", binding: $lrin.creatinine141to177, points: "+2")
             scoreToggle("Glucose >10 mmol/L", binding: $lrin.glucoseOver10, points: "+1")
         }
-        .onChange(of: lrin.crpOver150)          { _, _ in recalculate() }
-        .onChange(of: lrin.wbcOver25)           { _, _ in recalculate() }
-        .onChange(of: lrin.wbc15to25)           { _, _ in recalculate() }
-        .onChange(of: lrin.hbBelow11)           { _, _ in recalculate() }
-        .onChange(of: lrin.hb11to13_5)          { _, _ in recalculate() }
-        .onChange(of: lrin.sodiumBelow135)      { _, _ in recalculate() }
-        .onChange(of: lrin.creatinineOver177)   { _, _ in recalculate() }
-        .onChange(of: lrin.creatinine141to177)  { _, _ in recalculate() }
-        .onChange(of: lrin.glucoseOver10)       { _, _ in recalculate() }
+        .onChange(of: lrin) { _, _ in recalculate() }
     }
 
     // MARK: - RCRI
@@ -754,12 +682,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Insulin-dependent diabetes mellitus", binding: $rcriI.insulinDependentDiabetes, points: "+1")
             scoreToggle("Pre-op creatinine >177 μmol/L (>2 mg/dL)", binding: $rcriI.preopCreatinineOver2, points: "+1")
         }
-        .onChange(of: rcriI.highRiskSurgery)           { _, _ in recalculate() }
-        .onChange(of: rcriI.ischemicHeartDisease)      { _, _ in recalculate() }
-        .onChange(of: rcriI.congestiveHeartFailure)    { _, _ in recalculate() }
-        .onChange(of: rcriI.cerebrovascularDisease)    { _, _ in recalculate() }
-        .onChange(of: rcriI.insulinDependentDiabetes)  { _, _ in recalculate() }
-        .onChange(of: rcriI.preopCreatinineOver2)      { _, _ in recalculate() }
+        .onChange(of: rcriI) { _, _ in recalculate() }
     }
 
     // MARK: - Caprini
@@ -779,9 +702,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Age 60–74 years", binding: $cap.age60to74, points: "+2")
             scoreToggle("Age ≥75 years", binding: $cap.ageOver75, points: "+3")
         }
-        .onChange(of: cap.age41to59)  { _, _ in recalculate() }
-        .onChange(of: cap.age60to74)  { _, _ in recalculate() }
-        .onChange(of: cap.ageOver75)  { _, _ in recalculate() }
+        .onChange(of: cap) { _, _ in recalculate() }
     }
 
     @ViewBuilder private var capriniRiskSection: some View {
@@ -799,12 +720,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Central venous access", binding: $cap.centralVenousAccess, points: "+2")
             scoreToggle("Active / prior malignancy", binding: $cap.activeOrPriorMalignancy, points: "+2")
         }
-        .onChange(of: cap.minorSurgery)              { _, _ in recalculate() }
-        .onChange(of: cap.majorSurgery)              { _, _ in recalculate() }
-        .onChange(of: cap.laparoscopicSurgeryOver45min) { _, _ in recalculate() }
-        .onChange(of: cap.immobilityBedridden)       { _, _ in recalculate() }
-        .onChange(of: cap.centralVenousAccess)       { _, _ in recalculate() }
-        .onChange(of: cap.activeOrPriorMalignancy)   { _, _ in recalculate() }
+        .onChange(of: cap) { _, _ in recalculate() }
     }
 
     @ViewBuilder private var capriniRiskSectionB: some View {
@@ -816,12 +732,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Sepsis within 30 days", binding: $cap.sepsis30d, points: "+1")
             scoreToggle("BMI ≥40 kg/m²", binding: $cap.bmi40Plus, points: "+1")
         }
-        .onChange(of: cap.priorVTE)       { _, _ in recalculate() }
-        .onChange(of: cap.familyHistoryVTE) { _, _ in recalculate() }
-        .onChange(of: cap.thrombophilia)  { _, _ in recalculate() }
-        .onChange(of: cap.hormonalTherapy){ _, _ in recalculate() }
-        .onChange(of: cap.sepsis30d)      { _, _ in recalculate() }
-        .onChange(of: cap.bmi40Plus)      { _, _ in recalculate() }
+        .onChange(of: cap) { _, _ in recalculate() }
     }
 
     @ViewBuilder private var capriniHighRiskSection: some View {
@@ -833,11 +744,7 @@ struct ClinicalScoresView: View {
             scoreToggle("Pelvis fracture / hip or knee replacement", binding: $cap.pelvisFractureOrHipKneeReplacement, points: "+5")
             scoreToggle("Multiple trauma", binding: $cap.multipleTrauma, points: "+5")
         }
-        .onChange(of: cap.stroke)                        { _, _ in recalculate() }
-        .onChange(of: cap.mi)                            { _, _ in recalculate() }
-        .onChange(of: cap.spinalCordInjury)              { _, _ in recalculate() }
-        .onChange(of: cap.pelvisFractureOrHipKneeReplacement) { _, _ in recalculate() }
-        .onChange(of: cap.multipleTrauma)                { _, _ in recalculate() }
+        .onChange(of: cap) { _, _ in recalculate() }
     }
 
     // MARK: - Child-Pugh
