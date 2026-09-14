@@ -3686,7 +3686,7 @@ struct ConsultationView: View {
             // Investigations
             let invs = patient.investigations.filter { $0.status != .suggested }
             if !invs.isEmpty {
-                section("Investigations", body: invs.map { "• \($0.name): \($0.result ?? "Pending")" }.joined(separator: "\n"), y: &y)
+                section("Investigations", body: invs.map { "• \($0.name): \($0.result.isEmpty ? "Pending" : $0.result)" }.joined(separator: "\n"), y: &y)
             }
 
             // Diagnosis
@@ -3901,6 +3901,36 @@ private struct BayesianDxRow: View {
         }
         .padding(.vertical, 2)
     }
+
+    // MARK: - Encounter History Tab
+
+    private var encounterHistoryTab: some View {
+        let sorted = patient.encounters
+            .filter(\.isComplete)
+            .sorted { $0.encounterDate > $1.encounterDate }
+        return Group {
+            if sorted.isEmpty {
+                ContentUnavailableView(
+                    "No Saved Visits",
+                    systemImage: "clock.badge.questionmark",
+                    description: Text("Tap \"Save Visit\" to snapshot the current consultation into history.")
+                )
+            } else {
+                List {
+                    ForEach(sorted, id: \.id) { enc in
+                        Button { selectedEncounter = enc } label: {
+                            EncounterHistoryRow(encounter: enc)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .listStyle(.insetGrouped)
+                .sheet(item: $selectedEncounter) { enc in
+                    EncounterDetailSheet(encounter: enc)
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Consultation Letter Sheet
@@ -3935,36 +3965,6 @@ private struct ConsultationLetterSheet: View {
             }
             .sheet(isPresented: $showShare) {
                 ShareSheet(items: [letterText]).ignoresSafeArea()
-            }
-        }
-    }
-
-    // MARK: - Encounter History Tab
-
-    private var encounterHistoryTab: some View {
-        let sorted = patient.encounters
-            .filter(\.isComplete)
-            .sorted { $0.encounterDate > $1.encounterDate }
-        return Group {
-            if sorted.isEmpty {
-                ContentUnavailableView(
-                    "No Saved Visits",
-                    systemImage: "clock.badge.questionmark",
-                    description: Text("Tap \"Save Visit\" to snapshot the current consultation into history.")
-                )
-            } else {
-                List {
-                    ForEach(sorted, id: \.id) { enc in
-                        Button { selectedEncounter = enc } label: {
-                            EncounterHistoryRow(encounter: enc)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .listStyle(.insetGrouped)
-                .sheet(item: $selectedEncounter) { enc in
-                    EncounterDetailSheet(encounter: enc)
-                }
             }
         }
     }
