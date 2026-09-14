@@ -500,7 +500,6 @@ struct ClinicalScoresView: View {
                 Text("≥ 80 years (+2)").tag(RockallInput.AgeGroup.over80)
             }
             .pickerStyle(.segmented)
-            .onChange(of: rock.ageGroup) { _, _ in recalculate() }
 
             sectionHeader("Shock")
             Picker("Shock", selection: $rock.shock) {
@@ -509,7 +508,6 @@ struct ClinicalScoresView: View {
                 Text("SBP <100 (+2)").tag(RockallInput.ShockStatus.sbpBelow100)
             }
             .pickerStyle(.segmented)
-            .onChange(of: rock.shock) { _, _ in recalculate() }
 
             sectionHeader("Comorbidity")
             Picker("Comorbidity", selection: $rock.comorbidity) {
@@ -518,7 +516,6 @@ struct ClinicalScoresView: View {
                 Text("Renal / Liver / Malignancy (+3)").tag(RockallInput.Comorbidity.renalOrLiverOrMalignancy)
             }
             .pickerStyle(.segmented)
-            .onChange(of: rock.comorbidity) { _, _ in recalculate() }
 
             sectionHeader("Endoscopy Diagnosis (post-scope)")
             Picker("Diagnosis", selection: $rock.diagnosis) {
@@ -527,11 +524,10 @@ struct ClinicalScoresView: View {
                 Text("Upper GI malignancy (+2)").tag(RockallInput.EndoscopyDiagnosis.upperGIMalignancy)
             }
             .pickerStyle(.segmented)
-            .onChange(of: rock.diagnosis) { _, _ in recalculate() }
 
             scoreToggle("Major stigmata of haemorrhage", binding: $rock.majorStigmata, points: "+2")
-                .onChange(of: rock.majorStigmata) { _, _ in recalculate() }
         }
+        .onChange(of: rock) { _, _ in recalculate() }
     }
 
     // MARK: - SIRS
@@ -607,7 +603,6 @@ struct ClinicalScoresView: View {
                 Text("≥ 60 years (+1)").tag(true)
             }
             .pickerStyle(.segmented)
-            .onChange(of: abcd.ageOver60) { _, _ in recalculate() }
 
             sectionHeader("BP at Presentation")
             Picker("BP", selection: $abcd.bpOver140_90) {
@@ -615,7 +610,6 @@ struct ClinicalScoresView: View {
                 Text("SBP ≥140 or DBP ≥90 (+1)").tag(true)
             }
             .pickerStyle(.segmented)
-            .onChange(of: abcd.bpOver140_90) { _, _ in recalculate() }
 
             sectionHeader("Clinical Features of TIA")
             VStack(spacing: 0) {
@@ -645,8 +639,8 @@ struct ClinicalScoresView: View {
             }
 
             scoreToggle("Diabetes mellitus", binding: $abcd.diabetes, points: "+1")
-                .onChange(of: abcd.diabetes) { _, _ in recalculate() }
         }
+        .onChange(of: abcd) { _, _ in recalculate() }
     }
 
     // MARK: - LRINEC
@@ -758,7 +752,6 @@ struct ClinicalScoresView: View {
                 Text("Refractory (3)").tag(ChildPughInput.AscitesGrade.refractory)
             }
             .pickerStyle(.segmented)
-            .onChange(of: cp.ascites) { _, _ in recalculate() }
 
             sectionHeader("Encephalopathy Grade")
             Picker("Encephalopathy", selection: $cp.encephalopathy) {
@@ -767,12 +760,10 @@ struct ClinicalScoresView: View {
                 Text("Grade 3–4 (3)").tag(ChildPughInput.EncephalopathyGrade.grade3to4)
             }
             .pickerStyle(.segmented)
-            .onChange(of: cp.encephalopathy) { _, _ in recalculate() }
 
             sectionHeader("Bilirubin (μmol/L)")
             HStack {
                 Slider(value: $cp.bilirubinUmolL, in: 0...400, step: 5)
-                    .onChange(of: cp.bilirubinUmolL) { _, _ in recalculate() }
                 Text("\(Int(cp.bilirubinUmolL)) μmol/L")
                     .font(.caption.monospacedDigit())
                     .frame(width: 80, alignment: .trailing)
@@ -781,7 +772,6 @@ struct ClinicalScoresView: View {
             sectionHeader("Albumin (g/dL)")
             HStack {
                 Slider(value: $cp.albuminGdL, in: 1.0...5.0, step: 0.1)
-                    .onChange(of: cp.albuminGdL) { _, _ in recalculate() }
                 Text(String(format: "%.1f g/dL", cp.albuminGdL))
                     .font(.caption.monospacedDigit())
                     .frame(width: 80, alignment: .trailing)
@@ -790,12 +780,12 @@ struct ClinicalScoresView: View {
             sectionHeader("PT-INR")
             HStack {
                 Slider(value: $cp.ptINR, in: 0.8...5.0, step: 0.1)
-                    .onChange(of: cp.ptINR) { _, _ in recalculate() }
                 Text(String(format: "%.1f", cp.ptINR))
                     .font(.caption.monospacedDigit())
                     .frame(width: 80, alignment: .trailing)
             }
         }
+        .onChange(of: cp) { _, _ in recalculate() }
     }
 
     // MARK: - Shared helpers
