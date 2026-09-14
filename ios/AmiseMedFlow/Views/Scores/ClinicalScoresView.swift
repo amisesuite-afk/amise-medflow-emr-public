@@ -340,7 +340,6 @@ struct ClinicalScoresView: View {
     @ViewBuilder
     private func inputForm(for score: ActiveScore) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Back / title header
             HStack {
                 Button {
                     selectedScore = nil
@@ -354,28 +353,32 @@ struct ClinicalScoresView: View {
                     .font(.headline)
             }
             .padding(.bottom, 12)
-
-            switch score {
-            case .alvarado:     alvaradoForm
-            case .tokyoChole:   tokyoCholecystitisForm
-            case .tokyoCholang: tokyoCholangitisForm
-            case .ranson:       ransonForm
-            case .glasgow:      glasgowForm
-            case .rockall:      rockallForm
-            case .sirs:         sirsForm
-            case .qsofa:        qsofaForm
-            case .wellsDVT:     wellsDVTForm
-            case .wellsPE:      wellsPEForm
-            case .abcd2:        abcd2Form
-            case .lrinec:       lrinecForm
-            case .rcri:         rcriForm
-            case .caprini:      capriniForm
-            case .childPugh:    childPughForm
-            }
+            formBody(for: score)
         }
         .padding(16)
         .background(.background, in: RoundedRectangle(cornerRadius: 14))
         .shadow(color: .black.opacity(0.06), radius: 4, y: 2)
+    }
+
+    @ViewBuilder
+    private func formBody(for score: ActiveScore) -> some View {
+        switch score {
+        case .alvarado:     alvaradoForm
+        case .tokyoChole:   tokyoCholecystitisForm
+        case .tokyoCholang: tokyoCholangitisForm
+        case .ranson:       ransonForm
+        case .glasgow:      glasgowForm
+        case .rockall:      rockallForm
+        case .sirs:         sirsForm
+        case .qsofa:        qsofaForm
+        case .wellsDVT:     wellsDVTForm
+        case .wellsPE:      wellsPEForm
+        case .abcd2:        abcd2Form
+        case .lrinec:       lrinecForm
+        case .rcri:         rcriForm
+        case .caprini:      capriniForm
+        case .childPugh:    childPughForm
+        }
     }
 
     // MARK: - Alvarado
