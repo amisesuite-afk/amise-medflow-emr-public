@@ -268,7 +268,7 @@ enum ClinicalNotePDF {
         let line = (note.freeText ?? "")
             .components(separatedBy: "\n")
             .map { $0.trimmingCharacters(in: .whitespaces) }
-            .first(where: { !$0.isEmpty && !skip.contains(where: { $0.hasPrefix($0) }) }) ?? ""
+            .first(where: { line in !line.isEmpty && !skip.contains(where: { line.hasPrefix($0) }) }) ?? ""
         return String(line.prefix(55))
     }
 }

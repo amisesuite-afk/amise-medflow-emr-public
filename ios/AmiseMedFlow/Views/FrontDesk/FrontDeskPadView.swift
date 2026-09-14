@@ -49,7 +49,7 @@ struct FrontDeskPadView: View {
                         }
                         .foregroundStyle(sel ? AMColor.accent : AMColor.sidebarText)
                         .frame(width: 80, height: 60)
-                        .background(sel ? AMColor.accent.opacity(0.12) : Color.clear)
+                        .background { sel ? AMColor.accent.opacity(0.12) : Color.clear }
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)

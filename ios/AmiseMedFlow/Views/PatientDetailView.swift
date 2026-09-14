@@ -308,7 +308,7 @@ struct PatientDetailPadView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 9)
                         .frame(minWidth: 62)
-                        .background(sel ? AMColor.accent.opacity(0.18) : Color.clear)
+                        .background { sel ? AMColor.accent.opacity(0.18) : Color.clear }
                         .overlay(alignment: .bottom) {
                             if sel { Rectangle().fill(AMColor.accent).frame(height: 2) }
                         }
@@ -697,7 +697,7 @@ struct PatientOverviewContent: View {
                         let los = max(0, Calendar.current.dateComponents([.day], from: admitted, to: .now).day ?? 0)
                         LabeledContent("Admitted") {
                             Text(admitted, style: .date) +
-                            Text("  (Day \(los + 1))").foregroundColor(.secondary)
+                            Text("  (Day \(los + 1))").foregroundStyle(.secondary)
                         }
                     }
                     if let exp = patient.expectedDischarge {
