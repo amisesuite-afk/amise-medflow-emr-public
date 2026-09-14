@@ -865,6 +865,7 @@ struct ConsultationView: View {
     @State private var showAIError = false
     @State private var consultationPDFWrapper: PDFDataWrapper?
     @State private var preConsultPDFWrapper: PDFDataWrapper?
+    @State private var showPreConsultEntry = false
     @State private var showLetterSheet = false
     @State private var generatedLetterText = ""
     @State private var socratesSelections: [String: Set<String>] = [:]
@@ -1045,6 +1046,9 @@ struct ConsultationView: View {
         }
         .sheet(item: $preConsultPDFWrapper) { wrapper in
             ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
+        }
+        .sheet(isPresented: $showPreConsultEntry) {
+            PreConsultEntrySheet(patient: patient)
         }
         .sheet(isPresented: $showLetterSheet) {
             ConsultationLetterSheet(letterText: generatedLetterText, patient: patient)
@@ -1543,8 +1547,9 @@ struct ConsultationView: View {
                 }
             }
 
-            // Pre-consult questionnaire generator
+            // Pre-consult questionnaire — send form or enter patient's answers
             Section {
+                // Row 1: generate blank form
                 Button {
                     sharePreConsultForm()
                 } label: {
@@ -1558,10 +1563,39 @@ struct ConsultationView: View {
                                 .foregroundStyle(AMColor.accent)
                         }
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Send Pre-consult Form")
+                            Text("Send Blank Form to Patient")
                                 .font(.subheadline.weight(.medium))
                                 .foregroundStyle(.primary)
-                            Text("Patient completes before the visit")
+                            Text("Share / print the questionnaire before the visit")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .buttonStyle(.plain)
+
+                // Row 2: record patient's completed answers
+                Button {
+                    showPreConsultEntry = true
+                } label: {
+                    HStack(spacing: 10) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 7)
+                                .fill(Color.green.opacity(0.12))
+                                .frame(width: 32, height: 32)
+                            Image(systemName: "square.and.pencil")
+                                .font(.system(size: 14))
+                                .foregroundStyle(.green)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Enter Patient's Answers")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(.primary)
+                            Text("Record completed form — pre-fills consultation fields")
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
@@ -1575,7 +1609,7 @@ struct ConsultationView: View {
             } header: {
                 sectionHeader("Pre-Consult", icon: "square.and.pencil", filled: false)
             } footer: {
-                Text("Generates a printable questionnaire the patient fills in ahead of their appointment. No clinical data is included.")
+                Text("Send the blank form before the appointment, then enter the patient's answers to pre-fill the consultation. Existing data is never overwritten.")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
