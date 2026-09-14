@@ -64,8 +64,8 @@ final class SyncService: ObservableObject {
         realtimeTask = Task { [weak self] in
             guard let self else { return }
             let channel = SupabaseConfig.client.realtimeV2.channel("patient-encounter-sync")
-            let changes = await channel.postgresChange(AnyAction.self, schema: "public", table: "patients")
-            try? channel.subscribeWithError()
+            let changes = channel.postgresChange(AnyAction.self, schema: "public", table: "patients")
+            try? await channel.subscribeWithError()
             for await _ in changes {
                 guard !Task.isCancelled else { break }
                 await self.syncIfAuthenticated()
