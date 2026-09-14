@@ -357,7 +357,7 @@ enum ClinicalScoringEngine {
                     "ERCP or MRCP if bile duct stones suspected",
                     "HDU monitoring if WBC markedly elevated or haemodynamically unstable"]
         } else if i.localInflammationSignsMild {
-            grade = 1; risk = .moderate
+            grade = 1; risk = .low
             interpretation = "Tokyo Grade I — Mild acute cholecystitis; elective or early laparoscopic cholecystectomy"
             recs = ["Oral or IV antibiotics (if febrile)",
                     "Analgesia + IV fluids",
@@ -426,7 +426,7 @@ enum ClinicalScoringEngine {
                     "Blood cultures × 2 before antibiotics",
                     "MRCP if ERCP contraindicated"]
         } else if i.cholangitisConfirmed {
-            grade = 1; risk = .moderate
+            grade = 1; risk = .low
             interpretation = "Tokyo Grade I — Mild acute cholangitis; respond to initial medical treatment"
             recs = ["IV antibiotics with close observation",
                     "Elective ERCP within 72 h if stable",
@@ -615,14 +615,20 @@ enum ClinicalScoringEngine {
             recs = ["Admit for observation post-endoscopy", "IV PPI (omeprazole 80 mg bolus then 8 mg/h × 72 h) if high-risk ulcer",
                     "Repeat endoscopy if rebleeding", "Transfuse to Hb 70–80 g/L (90 in cardiac disease)",
                     "Correct coagulopathy"]
-        default:
+        case 5..<8:
             risk = .high
             interpretation = "Rockall \(Int(total)) — High risk; rebleeding >40%, mortality >14%"
             recs = ["ITU / HDU admission", "Resuscitation: cross-match ×4 units, FFP, platelets",
                     "IV PPI infusion", "Repeat endoscopy ± haemostasis",
                     "IR angioembolisation if endoscopy fails",
                     "Emergency surgery if all else fails"]
-            if total >= 8 { redFlags.append("Score ≥8 — very high risk of in-hospital mortality") }
+        default:
+            risk = .critical
+            interpretation = "Rockall \(Int(total)) — Critical risk; very high in-hospital mortality"
+            redFlags = ["Score ≥8 — extremely high risk of in-hospital mortality"]
+            recs = ["Immediate ITU admission", "Resuscitation: cross-match ≥6 units, FFP, platelets",
+                    "Emergency endoscopy with haemostasis", "IR angioembolisation on standby",
+                    "Emergency surgery if all else fails", "Palliative discussion if patient unfit for intervention"]
         }
 
         return ClinicalScore(
@@ -726,7 +732,7 @@ enum ClinicalScoringEngine {
             systemName: "qSOFA Score",
             abbreviation: "qSOFA",
             score: score, maxScore: 3,
-            risk: highRisk ? .high : (score == 1 ? .moderate : .low),
+            risk: (score == 3 && i.suspectedInfection) ? .critical : (highRisk ? .high : (score == 1 ? .moderate : .low)),
             interpretation: score >= 2
                 ? "qSOFA \(Int(score))/3 — HIGH risk of organ dysfunction if infection present"
                 : "qSOFA \(Int(score))/3 — Lower risk, but reassess if clinical status changes",
@@ -821,7 +827,7 @@ enum ClinicalScoringEngine {
             recs = ["D-dimer: if negative → PE excluded",
                     "If D-dimer positive → CT pulmonary angiography (CTPA)",
                     "Consider V/Q if contrast allergy or pregnancy"]
-        } else if score <= 6 {
+        } else if score <= 4 {
             risk = .moderate
             interpretation = "Wells PE \(score) — Moderate probability (~28%); CTPA or D-dimer"
             recs = ["CTPA (preferred) or age-adjusted D-dimer",
