@@ -176,6 +176,7 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
     let commonDoses: String
     let route: String
     let notes: String
+    var sideEffects: String = ""
 
     static func search(_ query: String) -> [SurgicalDrug] {
         guard query.count >= 2 else { return [] }
@@ -187,85 +188,167 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
     }
 
     static let allDrugs: [SurgicalDrug] = [
-        // Analgesics — Opioids
-        .init(name: "Morphine",       category: "Opioid Analgesic",  commonDoses: "2.5–10 mg",  route: "IV/SC/PO", notes: "Titrate to pain; caution in renal impairment"),
-        .init(name: "Fentanyl",       category: "Opioid Analgesic",  commonDoses: "25–100 mcg", route: "IV/transdermal", notes: "Rapid onset; preferred in renal failure"),
-        .init(name: "Oxycodone",      category: "Opioid Analgesic",  commonDoses: "5–10 mg",    route: "PO",       notes: "IR q4-6h or SR q12h"),
-        .init(name: "Tramadol",       category: "Opioid Analgesic",  commonDoses: "50–100 mg",  route: "PO/IV",    notes: "Avoid with SSRIs/SNRIs (serotonin syndrome)"),
-        .init(name: "Codeine",        category: "Opioid Analgesic",  commonDoses: "30–60 mg",   route: "PO",       notes: "Prodrug — variable metabolism"),
-        .init(name: "Pethidine",      category: "Opioid Analgesic",  commonDoses: "25–50 mg",   route: "IV/IM",    notes: "Avoid in renal failure (norpethidine accumulation)"),
 
-        // Analgesics — Non-opioid
-        .init(name: "Paracetamol",    category: "Non-opioid Analgesic", commonDoses: "500–1000 mg q4-6h", route: "PO/IV/PR", notes: "Max 4 g/day; reduce in hepatic impairment"),
-        .init(name: "Ibuprofen",      category: "NSAID",               commonDoses: "400–800 mg TDS",    route: "PO",       notes: "Avoid post-op GI bleed, renal failure"),
-        .init(name: "Diclofenac",     category: "NSAID",               commonDoses: "50–75 mg",          route: "PO/PR/IM", notes: "Avoid in renal failure; 75 mg IM once"),
-        .init(name: "Ketorolac",      category: "NSAID",               commonDoses: "15–30 mg",          route: "IV/IM",    notes: "Max 5 days; avoid in renal impairment"),
-        .init(name: "Celecoxib",      category: "COX-2 Inhibitor",     commonDoses: "100–200 mg BD",     route: "PO",       notes: "Preferred NSAID post cardiac/bowel surgery"),
+        // ─── ANALGESICS — Opioids ────────────────────────────────────────────
+        .init(name: "Morphine",       category: "Opioid Analgesic",  commonDoses: "2.5–10 mg",  route: "IV/SC/PO",  notes: "Titrate to pain; caution in renal impairment", sideEffects: "Nausea, constipation, respiratory depression, sedation, pruritus"),
+        .init(name: "Fentanyl",       category: "Opioid Analgesic",  commonDoses: "25–100 mcg", route: "IV/transdermal", notes: "Rapid onset; preferred in renal failure", sideEffects: "Respiratory depression, sedation, nausea, pruritus, chest wall rigidity (rapid IV)"),
+        .init(name: "Oxycodone",      category: "Opioid Analgesic",  commonDoses: "5–10 mg",    route: "PO",        notes: "IR q4-6h or SR q12h", sideEffects: "Constipation, nausea, sedation, dizziness, urinary retention"),
+        .init(name: "Tramadol",       category: "Opioid Analgesic",  commonDoses: "50–100 mg",  route: "PO/IV",     notes: "Avoid with SSRIs/SNRIs (serotonin syndrome)", sideEffects: "Nausea, dizziness, serotonin syndrome risk, seizures, constipation"),
+        .init(name: "Codeine",        category: "Opioid Analgesic",  commonDoses: "30–60 mg",   route: "PO",        notes: "Prodrug — variable CYP2D6 metabolism", sideEffects: "Constipation, nausea, sedation; variable efficacy due to CYP2D6 polymorphism"),
+        .init(name: "Pethidine",      category: "Opioid Analgesic",  commonDoses: "25–50 mg",   route: "IV/IM",     notes: "Avoid in renal failure (norpethidine accumulation)", sideEffects: "Norpethidine accumulation (seizures in renal failure), nausea, respiratory depression"),
+        .init(name: "Buprenorphine",  category: "Opioid Analgesic",  commonDoses: "5–20 mcg/h patch; 0.3 mg SL", route: "Transdermal/SL/IV", notes: "Partial agonist; ceiling effect; useful in opioid-tolerant patients", sideEffects: "Nausea, dizziness, constipation, skin reactions (patch), headache"),
 
-        // Antibiotics — Surgical Prophylaxis
-        .init(name: "Cefazolin",      category: "Antibiotic — Prophylaxis", commonDoses: "1–2 g",       route: "IV",  notes: "First-line prophylaxis; repeat if >3h surgery"),
-        .init(name: "Cefuroxime",     category: "Antibiotic — Prophylaxis", commonDoses: "1.5 g",       route: "IV",  notes: "Colorectal prophylaxis with metronidazole"),
-        .init(name: "Metronidazole",  category: "Antibiotic",               commonDoses: "500 mg TDS",  route: "IV/PO", notes: "Anaerobic cover; avoid alcohol; ↑ warfarin INR"),
-        .init(name: "Co-amoxiclav",   category: "Antibiotic",               commonDoses: "1.2 g TDS",   route: "IV",  notes: "Broad spectrum; biliary/abdominal sepsis"),
-        .init(name: "Piperacillin/tazobactam", category: "Antibiotic",     commonDoses: "4.5 g QDS",   route: "IV",  notes: "Broad-spectrum; complicated intra-abdominal"),
-        .init(name: "Ciprofloxacin",  category: "Antibiotic",               commonDoses: "400 mg BD",   route: "IV",  notes: "Gram-negative cover; ↑ warfarin INR"),
-        .init(name: "Gentamicin",     category: "Antibiotic — Aminoglycoside", commonDoses: "3–5 mg/kg once daily", route: "IV", notes: "Monitor levels; nephrotoxic; ototoxic"),
-        .init(name: "Vancomycin",     category: "Antibiotic",               commonDoses: "15–20 mg/kg BD", route: "IV", notes: "MRSA; monitor troughs; infuse over ≥60 min"),
-        .init(name: "Meropenem",      category: "Antibiotic — Carbapenem",  commonDoses: "500 mg–1 g TDS", route: "IV", notes: "Reserve for resistant organisms/sepsis"),
-        .init(name: "Ertapenem",      category: "Antibiotic — Carbapenem",  commonDoses: "1 g once daily",  route: "IV/IM", notes: "Community-acquired intra-abdominal infections"),
-        .init(name: "Fluconazole",    category: "Antifungal",               commonDoses: "200–400 mg OD",   route: "IV/PO", notes: "Candida; ↑ warfarin INR significantly"),
+        // ─── ANALGESICS — Non-opioid ─────────────────────────────────────────
+        .init(name: "Paracetamol",    category: "Non-opioid Analgesic", commonDoses: "500–1000 mg q4-6h", route: "PO/IV/PR", notes: "Max 4 g/day; reduce in hepatic impairment", sideEffects: "Hepatotoxicity in overdose; safe and well tolerated at therapeutic doses"),
+        .init(name: "Ibuprofen",      category: "NSAID",               commonDoses: "400–800 mg TDS",    route: "PO",       notes: "Avoid post-op GI bleed, renal failure", sideEffects: "GI irritation/ulceration, renal impairment, fluid retention, hypertension"),
+        .init(name: "Diclofenac",     category: "NSAID",               commonDoses: "50–75 mg",          route: "PO/PR/IM", notes: "Avoid in renal failure; 75 mg IM once", sideEffects: "GI irritation, renal impairment, elevated LFTs, cardiovascular risk"),
+        .init(name: "Ketorolac",      category: "NSAID",               commonDoses: "15–30 mg",          route: "IV/IM",    notes: "Max 5 days; avoid in renal impairment", sideEffects: "GI bleeding risk, renal impairment, platelet inhibition"),
+        .init(name: "Celecoxib",      category: "COX-2 Inhibitor",     commonDoses: "100–200 mg BD",     route: "PO",       notes: "Preferred NSAID post cardiac/bowel surgery", sideEffects: "GI irritation (less than non-selective NSAIDs), cardiovascular risk, fluid retention"),
+        .init(name: "Gabapentin",     category: "Neuropathic Analgesic", commonDoses: "100–300 mg TDS",  route: "PO",       notes: "Peri-op opioid-sparing; neuropathic pain; dose-titrate", sideEffects: "Dizziness, somnolence, peripheral oedema, weight gain, ataxia"),
+        .init(name: "Pregabalin",     category: "Neuropathic Analgesic", commonDoses: "75–150 mg BD",    route: "PO",       notes: "Neuropathic pain; anxiety; peri-op opioid-sparing", sideEffects: "Dizziness, somnolence, weight gain, peripheral oedema, dependence potential"),
+        .init(name: "Amitriptyline",  category: "Neuropathic Analgesic", commonDoses: "10–75 mg nocte",  route: "PO",       notes: "Neuropathic pain (low 10–25 mg); depression (full dose); sleep", sideEffects: "Sedation, dry mouth, constipation, urinary retention, QT prolongation, orthostatic hypotension"),
 
-        // Anticoagulants
-        .init(name: "Enoxaparin",     category: "LMWH",               commonDoses: "20–40 mg OD (prophylaxis); 1 mg/kg BD (treatment)", route: "SC", notes: "Adjust in renal failure; anti-Xa monitoring"),
-        .init(name: "Heparin (unfractionated)", category: "Anticoagulant", commonDoses: "5000 units TDS (prophylaxis)", route: "SC/IV", notes: "Monitor APTT; reversible with protamine"),
-        .init(name: "Warfarin",       category: "Anticoagulant",      commonDoses: "Dose by INR",             route: "PO",  notes: "Multiple interactions; monitor INR; reverse with Vit K or FFP"),
-        .init(name: "Rivaroxaban",    category: "DOAC",               commonDoses: "10 mg OD (VTE prophylaxis)", route: "PO", notes: "Omit 24–48h before surgery; reverse with andexanet alfa"),
-        .init(name: "Apixaban",       category: "DOAC",               commonDoses: "2.5–5 mg BD",             route: "PO",  notes: "Omit 24–48h before surgery"),
-        .init(name: "Dabigatran",     category: "DOAC",               commonDoses: "110–150 mg BD",           route: "PO",  notes: "Reverse with idarucizumab"),
+        // ─── ANTIBIOTICS ─────────────────────────────────────────────────────
+        .init(name: "Cefazolin",      category: "Antibiotic — Prophylaxis", commonDoses: "1–2 g",       route: "IV",    notes: "First-line surgical prophylaxis; repeat if >3h surgery", sideEffects: "Rash, diarrhoea, rare anaphylaxis"),
+        .init(name: "Cefuroxime",     category: "Antibiotic — Prophylaxis", commonDoses: "1.5 g",       route: "IV",    notes: "Colorectal prophylaxis (with metronidazole)", sideEffects: "Rash, diarrhoea, rare anaphylaxis"),
+        .init(name: "Cefalexin",      category: "Antibiotic",               commonDoses: "500 mg QDS",  route: "PO",    notes: "Skin/soft tissue infections; UTI", sideEffects: "Diarrhoea, nausea, rash; ~1% cross-reactivity with penicillin"),
+        .init(name: "Metronidazole",  category: "Antibiotic",               commonDoses: "500 mg TDS",  route: "IV/PO", notes: "Anaerobic cover; avoid alcohol; ↑ warfarin INR", sideEffects: "Metallic taste, nausea, disulfiram-like reaction with alcohol, peripheral neuropathy (prolonged)"),
+        .init(name: "Amoxicillin",    category: "Antibiotic — Penicillin",  commonDoses: "500 mg TDS",  route: "PO/IV", notes: "Common outpatient antibiotic; broad coverage", sideEffects: "Diarrhoea, maculopapular rash (in EBV), urticaria, rare anaphylaxis"),
+        .init(name: "Co-amoxiclav",   category: "Antibiotic",               commonDoses: "1.2 g TDS",   route: "IV",    notes: "Broad spectrum; biliary/abdominal sepsis; skin/soft tissue", sideEffects: "Diarrhoea, cholestatic jaundice, rash, nausea; avoid if previous co-amoxiclav hepatotoxicity"),
+        .init(name: "Piperacillin/tazobactam", category: "Antibiotic",     commonDoses: "4.5 g QDS",   route: "IV",    notes: "Broad-spectrum; complicated intra-abdominal infections", sideEffects: "Diarrhoea, hypokalaemia, rash, elevated LFTs, neurotoxicity (renal failure/high doses)"),
+        .init(name: "Ciprofloxacin",  category: "Antibiotic",               commonDoses: "400 mg BD",   route: "IV",    notes: "Gram-negative cover; ↑ warfarin INR; avoid with macrolides/steroids", sideEffects: "Tendonitis/tendon rupture, QT prolongation, GI upset, photosensitivity, CNS effects (dizziness, confusion)"),
+        .init(name: "Gentamicin",     category: "Antibiotic — Aminoglycoside", commonDoses: "3–5 mg/kg OD", route: "IV", notes: "Gram-negative sepsis; monitor levels; nephrotoxic/ototoxic", sideEffects: "Nephrotoxicity, irreversible ototoxicity, vestibular toxicity; monitor levels closely"),
+        .init(name: "Vancomycin",     category: "Antibiotic",               commonDoses: "15–20 mg/kg BD", route: "IV", notes: "MRSA; monitor troughs; infuse over ≥60 min", sideEffects: "Red man syndrome (rapid infusion), nephrotoxicity, ototoxicity, thrombophlebitis"),
+        .init(name: "Meropenem",      category: "Antibiotic — Carbapenem",  commonDoses: "500 mg–1 g TDS", route: "IV", notes: "Reserve for resistant organisms/sepsis", sideEffects: "Diarrhoea, nausea, headache, seizures (high doses/renal failure), C. difficile"),
+        .init(name: "Ertapenem",      category: "Antibiotic — Carbapenem",  commonDoses: "1 g OD",          route: "IV/IM", notes: "Community-acquired intra-abdominal infections", sideEffects: "Diarrhoea, nausea, headache, infusion-site reactions"),
+        .init(name: "Fluconazole",    category: "Antifungal",               commonDoses: "200–400 mg OD",   route: "IV/PO", notes: "Candida; ↑ warfarin INR significantly; CYP2C9/3A4 inhibitor", sideEffects: "Nausea, headache, QT prolongation, hepatotoxicity; major drug interactions"),
+        .init(name: "Azithromycin",   category: "Antibiotic — Macrolide",   commonDoses: "500 mg OD x3 or 250 mg OD x5", route: "PO/IV", notes: "Atypical cover; CAP; STIs; H. pylori second-line", sideEffects: "QT prolongation, GI upset, hepatotoxicity; cardiac risk with pre-existing heart disease"),
+        .init(name: "Doxycycline",    category: "Antibiotic — Tetracycline", commonDoses: "100 mg BD",       route: "PO",    notes: "Atypical/intracellular organisms; malaria prophylaxis; MRSA SSTIs", sideEffects: "Photosensitivity, oesophageal ulceration (take with water upright), GI upset, teratogenic"),
+        .init(name: "Trimethoprim",   category: "Antibiotic",               commonDoses: "200 mg BD",         route: "PO",    notes: "Uncomplicated UTI; 7 days", sideEffects: "Nausea, rash, hyperkalaemia, folate deficiency (prolonged use); avoid in first trimester"),
+        .init(name: "Nitrofurantoin", category: "Antibiotic",               commonDoses: "100 mg BD (modified-release)", route: "PO", notes: "Lower UTI only; avoid eGFR <45 mL/min", sideEffects: "Nausea, pulmonary reactions (long-term use), peripheral neuropathy, hepatotoxicity"),
+        .init(name: "Clindamycin",    category: "Antibiotic",               commonDoses: "300–450 mg QDS",   route: "PO/IV", notes: "Skin/soft tissue MRSA; anaerobes; dental prophylaxis", sideEffects: "C. difficile colitis (highest risk among antibiotics), diarrhoea, pseudomembranous colitis"),
 
-        // Reversal Agents
-        .init(name: "Vitamin K",      category: "Anticoagulant Reversal", commonDoses: "1–10 mg",          route: "IV/PO", notes: "Reverses warfarin; IV onset 4–6h"),
-        .init(name: "Protamine",      category: "Anticoagulant Reversal", commonDoses: "1 mg per 100 units heparin", route: "IV slow", notes: "Reverses UFH; partial LMWH reversal"),
-        .init(name: "Idarucizumab",   category: "Anticoagulant Reversal", commonDoses: "5 g IV",           route: "IV",    notes: "Specific reversal of dabigatran"),
-        .init(name: "Tranexamic acid", category: "Antifibrinolytic",      commonDoses: "1 g TDS",           route: "IV/PO", notes: "Trauma/major haemorrhage; early use"),
+        // ─── ANTICOAGULANTS ──────────────────────────────────────────────────
+        .init(name: "Enoxaparin",     category: "LMWH",               commonDoses: "20–40 mg OD (prophylaxis); 1 mg/kg BD (treatment)", route: "SC", notes: "Adjust in renal failure; anti-Xa monitoring if BMI >35 or eGFR <30", sideEffects: "Bleeding, HIT (lower risk than UFH), injection-site bruising"),
+        .init(name: "Heparin (unfractionated)", category: "Anticoagulant", commonDoses: "5000 units TDS (prophylaxis)", route: "SC/IV", notes: "Monitor APTT for treatment; reversible with protamine", sideEffects: "Bleeding, HIT Type II (thrombocytopenia + thrombosis), osteoporosis (long-term)"),
+        .init(name: "Warfarin",       category: "Anticoagulant",      commonDoses: "Dose by INR",             route: "PO",  notes: "Multiple interactions; monitor INR; reverse with Vit K or FFP", sideEffects: "Bleeding, skin necrosis (early initiation), teratogenic; extensive drug and food interactions"),
+        .init(name: "Rivaroxaban",    category: "DOAC",               commonDoses: "10 mg OD (VTE prophylaxis); 15–20 mg OD (AF/treatment)", route: "PO", notes: "Omit 24–48h before surgery; reverse with andexanet alfa", sideEffects: "Bleeding, nausea, elevated LFTs; limited reversal options"),
+        .init(name: "Apixaban",       category: "DOAC",               commonDoses: "2.5–5 mg BD",             route: "PO",  notes: "Omit 24–48h before surgery; fewer GI bleeds than rivaroxaban", sideEffects: "Bleeding, nausea; lower GI bleed risk than rivaroxaban or dabigatran"),
+        .init(name: "Dabigatran",     category: "DOAC",               commonDoses: "110–150 mg BD",           route: "PO",  notes: "Reverse with idarucizumab; higher GI bleed risk", sideEffects: "GI bleeding, dyspepsia, oesophagitis; higher GI bleed rate than VKA"),
+        .init(name: "Fondaparinux",   category: "Anticoagulant",      commonDoses: "2.5 mg OD (prophylaxis); 5–10 mg OD (treatment)", route: "SC", notes: "No HIT risk; avoid eGFR <20 mL/min; no antidote", sideEffects: "Bleeding; no reversal agent; accumulates in renal failure"),
 
-        // GI / PPI
-        .init(name: "Omeprazole",     category: "PPI",                commonDoses: "20–40 mg OD",  route: "PO/IV",  notes: "GI protection with NSAIDs/steroids"),
-        .init(name: "Pantoprazole",   category: "PPI",                commonDoses: "40–80 mg OD",  route: "PO/IV",  notes: "IV available; 80 mg bolus + infusion for UGIB"),
-        .init(name: "Lansoprazole",   category: "PPI",                commonDoses: "15–30 mg OD",  route: "PO",     notes: "Standard PPI"),
-        .init(name: "Ranitidine",     category: "H2 Antagonist",      commonDoses: "150 mg BD",    route: "PO/IV",  notes: "H2 blocker; less potent than PPI"),
-        .init(name: "Ondansetron",    category: "Antiemetic",         commonDoses: "4–8 mg TDS",   route: "PO/IV",  notes: "Post-op nausea; QT prolongation risk"),
-        .init(name: "Metoclopramide", category: "Antiemetic / Prokinetic", commonDoses: "10 mg TDS", route: "PO/IV/IM", notes: "Prokinetic; max 5 days; extrapyramidal SE"),
-        .init(name: "Cyclizine",      category: "Antiemetic",         commonDoses: "50 mg TDS",    route: "PO/IV/IM", notes: "First-line post-op nausea"),
-        .init(name: "Hyoscine butylbromide", category: "Antispasmodic", commonDoses: "20 mg QDS", route: "PO/IV/IM", notes: "Bowel colic/spasm"),
+        // ─── ANTICOAGULANT REVERSAL ───────────────────────────────────────────
+        .init(name: "Vitamin K",      category: "Anticoagulant Reversal", commonDoses: "1–10 mg",           route: "IV/PO", notes: "Reverses warfarin; IV onset 4–6h; flush IV slowly over 20 min", sideEffects: "Anaphylaxis (IV — rare), prolonged warfarin resistance after large doses"),
+        .init(name: "Protamine",      category: "Anticoagulant Reversal", commonDoses: "1 mg per 100 units heparin", route: "IV slow", notes: "Reverses UFH; partial LMWH reversal only", sideEffects: "Hypotension, bradycardia, anaphylaxis (fish allergy/protamine insulin risk), pulmonary hypertension"),
+        .init(name: "Idarucizumab",   category: "Anticoagulant Reversal", commonDoses: "5 g IV",            route: "IV",    notes: "Specific reversal of dabigatran; approved for urgent surgery/bleeding", sideEffects: "Hypersensitivity reactions, headache, constipation; generally well-tolerated"),
+        .init(name: "Tranexamic acid", category: "Antifibrinolytic",      commonDoses: "1 g IV then 1 g over 8h; 1 g TDS PO", route: "IV/PO", notes: "Trauma/major haemorrhage; give within 3h of injury for best effect", sideEffects: "Nausea, diarrhoea, visual disturbances; thromboembolic risk if given late post-injury"),
 
-        // Bowel Prep
-        .init(name: "Polyethylene glycol (PEG)", category: "Bowel Prep", commonDoses: "2–4 L",    route: "PO",    notes: "Colonoscopy/bowel prep; day before procedure"),
-        .init(name: "Sodium picosulfate", category: "Bowel Prep",        commonDoses: "1 sachet x2", route: "PO", notes: "Split-dose bowel prep (Picolax/Picoprep)"),
-        .init(name: "Bisacodyl",      category: "Laxative",            commonDoses: "5–10 mg",    route: "PO/PR", notes: "Stimulant; bowel prep/constipation"),
-        .init(name: "Lactulose",      category: "Laxative",            commonDoses: "15–30 mL BD", route: "PO",   notes: "Osmotic; hepatic encephalopathy"),
-        .init(name: "Docusate sodium", category: "Laxative",           commonDoses: "100–200 mg BD", route: "PO", notes: "Stool softener; post-op opioid constipation"),
-        .init(name: "Senna",          category: "Laxative",            commonDoses: "2–4 tablets nocte", route: "PO", notes: "Stimulant laxative"),
+        // ─── GI / PPI / ANTIEMETICS ──────────────────────────────────────────
+        .init(name: "Omeprazole",     category: "PPI",                commonDoses: "20–40 mg OD",  route: "PO/IV",  notes: "GI protection with NSAIDs/steroids; UGIB", sideEffects: "Headache, diarrhoea, nausea, hypomagnesaemia (long-term), C. difficile risk, B12 deficiency (long-term)"),
+        .init(name: "Pantoprazole",   category: "PPI",                commonDoses: "40–80 mg OD",  route: "PO/IV",  notes: "IV available; 80 mg bolus + infusion for UGIB", sideEffects: "Headache, diarrhoea, nausea, hypomagnesaemia (long-term), C. difficile risk"),
+        .init(name: "Lansoprazole",   category: "PPI",                commonDoses: "15–30 mg OD",  route: "PO",     notes: "Standard PPI; 30 mg for H. pylori eradication", sideEffects: "Headache, diarrhoea, nausea, hypomagnesaemia (long-term)"),
+        .init(name: "Ranitidine",     category: "H2 Antagonist",      commonDoses: "150 mg BD",    route: "PO/IV",  notes: "H2 blocker; less potent than PPI; stress ulcer prophylaxis IV", sideEffects: "Headache, dizziness, constipation; note previous market withdrawal (NDMA contamination)"),
+        .init(name: "Ondansetron",    category: "Antiemetic",         commonDoses: "4–8 mg TDS",   route: "PO/IV",  notes: "Post-op nausea; QT prolongation risk", sideEffects: "Headache, constipation, QT prolongation; serotonin syndrome risk with SSRIs"),
+        .init(name: "Metoclopramide", category: "Antiemetic / Prokinetic", commonDoses: "10 mg TDS", route: "PO/IV/IM", notes: "Prokinetic; max 5 days; extrapyramidal side effects", sideEffects: "Extrapyramidal reactions (esp. young women), tardive dyskinesia (long-term), sedation, QT prolongation"),
+        .init(name: "Cyclizine",      category: "Antiemetic",         commonDoses: "50 mg TDS",    route: "PO/IV/IM", notes: "First-line post-op nausea; antihistamine mechanism", sideEffects: "Sedation, dry mouth, blurred vision, urinary retention"),
+        .init(name: "Domperidone",    category: "Antiemetic / Prokinetic", commonDoses: "10 mg TDS before meals", route: "PO", notes: "Gastroparesis; nausea; max 1 week continuous use", sideEffects: "QT prolongation (avoid in cardiac disease), galactorrhoea, headache"),
+        .init(name: "Prochlorperazine", category: "Antiemetic",       commonDoses: "5–10 mg TDS or 3 mg BD buccal", route: "PO/IM/buccal", notes: "Vertigo, labyrinthitis, nausea", sideEffects: "Extrapyramidal reactions, sedation, postural hypotension, tardive dyskinesia (long-term)"),
+        .init(name: "Hyoscine butylbromide", category: "Antispasmodic", commonDoses: "20 mg QDS", route: "PO/IV/IM", notes: "Bowel colic/spasm; endoscopy prep (gut relaxation)", sideEffects: "Dry mouth, blurred vision, tachycardia, urinary retention; minimal CNS effects (does not cross BBB)"),
+        .init(name: "Sucralfate",     category: "Mucosal Protectant",  commonDoses: "1 g QDS, 1h before meals", route: "PO", notes: "Stress ulcer prophylaxis; peptic ulcer; UGIB adjunct", sideEffects: "Constipation, dry mouth; binds other medications — space by 2 hours"),
+        .init(name: "Loperamide",     category: "Antidiarrhoeal",      commonDoses: "2 mg after each loose stool; max 16 mg/day", route: "PO", notes: "Acute/chronic diarrhoea; high-output stoma management", sideEffects: "Constipation, abdominal cramps; avoid in infective diarrhoea with bloody stools/fever"),
 
-        // Fluids
-        .init(name: "Normal Saline (0.9% NaCl)", category: "IV Fluid", commonDoses: "1 L over 4–8h", route: "IV", notes: "Maintenance/resuscitation; hyperchloraemic acidosis with excess"),
-        .init(name: "Hartmann's (Ringer's Lactate)", category: "IV Fluid", commonDoses: "1 L over 4–8h", route: "IV", notes: "Balanced crystalloid; preferred for surgical patients"),
-        .init(name: "Human Albumin 4.5%", category: "IV Colloid",       commonDoses: "250–500 mL",  route: "IV",  notes: "Hepatic failure, perioperative hypoalbuminaemia"),
-        .init(name: "Gelofusine",     category: "IV Colloid",           commonDoses: "500 mL bolus", route: "IV",  notes: "Plasma expander; anaphylaxis risk"),
+        // ─── BOWEL PREP / LAXATIVES ──────────────────────────────────────────
+        .init(name: "Polyethylene glycol (PEG)", category: "Bowel Prep", commonDoses: "2–4 L",    route: "PO",    notes: "Colonoscopy/bowel prep; day before procedure; split-dose preferred", sideEffects: "Bloating, nausea, cramping; electrolyte disturbance with large volumes"),
+        .init(name: "Sodium picosulfate", category: "Bowel Prep",        commonDoses: "1 sachet × 2", route: "PO", notes: "Split-dose bowel prep (Picolax/Picoprep); ensure adequate hydration", sideEffects: "Abdominal cramping, dehydration, electrolyte disturbance; ensure adequate fluid intake"),
+        .init(name: "Bisacodyl",      category: "Laxative",            commonDoses: "5–10 mg",    route: "PO/PR", notes: "Stimulant laxative; bowel prep adjunct; constipation", sideEffects: "Abdominal cramping, electrolyte disturbance; avoid long-term use"),
+        .init(name: "Lactulose",      category: "Laxative",            commonDoses: "15–30 mL BD", route: "PO",   notes: "Osmotic laxative; hepatic encephalopathy (50 mL TDS until 2–3 stools/day)", sideEffects: "Bloating, flatulence, abdominal cramps, diarrhoea with excess"),
+        .init(name: "Docusate sodium", category: "Laxative",           commonDoses: "100–200 mg BD", route: "PO", notes: "Stool softener; post-op opioid-induced constipation", sideEffects: "Diarrhoea with excess; minimal side effects at therapeutic doses"),
+        .init(name: "Senna",          category: "Laxative",            commonDoses: "2–4 tablets nocte", route: "PO", notes: "Stimulant laxative; constipation; post-op bowel care", sideEffects: "Abdominal cramping, brown discoloration of urine; avoid in bowel obstruction"),
+        .init(name: "Macrogol (Movicol)", category: "Laxative",        commonDoses: "1–2 sachets OD–BD", route: "PO", notes: "Osmotic laxative; well tolerated in elderly; faecal impaction (8 sachets/day x3)", sideEffects: "Bloating, abdominal cramps, nausea; generally mild and well-tolerated"),
 
-        // Thromboprophylaxis add-on
-        .init(name: "TED stockings",  category: "Mechanical DVT Prophylaxis", commonDoses: "Apply on admission", route: "External", notes: "Combine with LMWH for high-risk surgical patients"),
-        .init(name: "Pneumatic compression device", category: "Mechanical DVT Prophylaxis", commonDoses: "Intraoperative + post-op", route: "External", notes: "Reduced bleeding risk vs LMWH"),
+        // ─── IV FLUIDS ────────────────────────────────────────────────────────
+        .init(name: "Normal Saline (0.9% NaCl)", category: "IV Fluid", commonDoses: "1 L over 4–8h", route: "IV", notes: "Maintenance/resuscitation; use Hartmann's in preference for large volumes", sideEffects: "Hyperchloraemic metabolic acidosis (excess volumes), fluid overload, peripheral oedema"),
+        .init(name: "Hartmann's (Ringer's Lactate)", category: "IV Fluid", commonDoses: "1 L over 4–8h", route: "IV", notes: "Balanced crystalloid; preferred for surgical patients and large-volume resuscitation", sideEffects: "Fluid overload; avoid in hyperkalaemia (K+ 4 mmol/L); negligible lactate load clinically"),
+        .init(name: "5% Dextrose",    category: "IV Fluid",            commonDoses: "1 L over 8–12h", route: "IV",  notes: "Hypoglycaemia; maintenance alongside electrolyte replacement; drug vehicle", sideEffects: "Hyperglycaemia (in diabetics), hyponatraemia (dilutional), cerebral oedema (if over-infused)"),
+        .init(name: "Human Albumin 4.5%", category: "IV Colloid",       commonDoses: "250–500 mL",  route: "IV",  notes: "Hepatic failure; perioperative hypoalbuminaemia; SBP prophylaxis", sideEffects: "Fluid overload, coagulopathy (large volumes), rare anaphylaxis"),
+        .init(name: "Gelofusine",     category: "IV Colloid",           commonDoses: "500 mL bolus", route: "IV",  notes: "Plasma expander for hypovolaemia; anaphylaxis risk", sideEffects: "Anaphylactic/anaphylactoid reactions, coagulopathy with large volumes, pruritus"),
 
-        // Steroids
-        .init(name: "Hydrocortisone", category: "Corticosteroid",      commonDoses: "100 mg TDS",  route: "IV",  notes: "Adrenal crisis; peri-op steroid cover"),
-        .init(name: "Dexamethasone",  category: "Corticosteroid",      commonDoses: "4–8 mg",      route: "IV/PO", notes: "Post-op nausea; reduce oedema; 4 mg with anaesthesia"),
-        .init(name: "Prednisolone",   category: "Corticosteroid",      commonDoses: "10–40 mg OD", route: "PO",  notes: "IBD/autoimmune; stress-dose coverage peri-op"),
+        // ─── DVT PROPHYLAXIS ─────────────────────────────────────────────────
+        .init(name: "TED stockings",  category: "Mechanical DVT Prophylaxis", commonDoses: "Apply on admission", route: "External", notes: "Combine with LMWH for high-risk surgical patients; correct sizing essential", sideEffects: "Pressure ulcers if incorrectly sized; contraindicated in peripheral arterial disease"),
+        .init(name: "Pneumatic compression device", category: "Mechanical DVT Prophylaxis", commonDoses: "Intraoperative + post-op until mobilising", route: "External", notes: "Preferred when LMWH contraindicated (high bleeding risk)", sideEffects: "Discomfort; compartment syndrome risk if applied too tightly (rare)"),
 
-        // Insulin
-        .init(name: "Actrapid (soluble insulin)", category: "Insulin", commonDoses: "Variable by sliding scale", route: "IV/SC", notes: "Post-op glycaemic control; peri-op sliding scale"),
-        .init(name: "Insulin detemir", category: "Insulin (Long-acting)", commonDoses: "Individualised", route: "SC", notes: "Continue at 80% of usual dose peri-operatively"),
-        .init(name: "Metformin",      category: "Hypoglycaemic",       commonDoses: "500–1000 mg BD-TDS", route: "PO", notes: "HOLD 24–48h before contrast/surgery; lactic acidosis risk"),
+        // ─── STEROIDS ────────────────────────────────────────────────────────
+        .init(name: "Hydrocortisone", category: "Corticosteroid",      commonDoses: "100 mg TDS",  route: "IV",    notes: "Adrenal crisis; peri-op steroid cover; severe asthma/anaphylaxis", sideEffects: "Hyperglycaemia, hypertension, fluid retention, immunosuppression, GI ulceration (with NSAIDs)"),
+        .init(name: "Dexamethasone",  category: "Corticosteroid",      commonDoses: "4–8 mg",      route: "IV/PO", notes: "Post-op nausea; cerebral oedema; croup; 4 mg intraoperative single dose", sideEffects: "Hyperglycaemia, insomnia, mood changes, fluid retention; full steroid SE with repeated use"),
+        .init(name: "Prednisolone",   category: "Corticosteroid",      commonDoses: "10–40 mg OD", route: "PO",    notes: "IBD; autoimmune; stress-dose coverage peri-op if on >5 mg/day chronically", sideEffects: "Hyperglycaemia, weight gain, osteoporosis (long-term), adrenal suppression, immunosuppression, peptic ulceration"),
+        .init(name: "Methylprednisolone", category: "Corticosteroid",  commonDoses: "125–500 mg OD", route: "IV/IM/PO", notes: "IBD flare; acute inflammatory; acute spinal cord injury (3h window)", sideEffects: "Hyperglycaemia, insomnia, immunosuppression, GI ulceration, avascular necrosis (high/prolonged doses)"),
+
+        // ─── INSULIN / GLYCAEMIC CONTROL ─────────────────────────────────────
+        .init(name: "Actrapid (soluble insulin)", category: "Insulin", commonDoses: "Variable by sliding scale", route: "IV/SC", notes: "Peri-op glycaemic control; variable rate insulin infusion", sideEffects: "Hypoglycaemia, hypokalaemia (IV infusion), lipodystrophy at injection site"),
+        .init(name: "Insulin detemir", category: "Insulin (Long-acting)", commonDoses: "Individualised",         route: "SC",    notes: "Continue at 80% of usual dose peri-operatively", sideEffects: "Hypoglycaemia, weight gain, injection-site lipodystrophy, oedema"),
+        .init(name: "Insulin glargine (Lantus)", category: "Insulin (Long-acting)", commonDoses: "Individualised OD", route: "SC", notes: "Once daily basal insulin; continue peri-operatively at reduced dose", sideEffects: "Hypoglycaemia, injection-site reactions, oedema, weight gain"),
+        .init(name: "Metformin",      category: "Hypoglycaemic",       commonDoses: "500–1000 mg BD–TDS", route: "PO", notes: "HOLD 24–48h before contrast/surgery; lactic acidosis risk", sideEffects: "GI upset (nausea, diarrhoea), lactic acidosis (rare — hold in renal failure/contrast), B12 deficiency (long-term)"),
+        .init(name: "Gliclazide",     category: "Sulphonylurea",       commonDoses: "40–320 mg OD–BD",    route: "PO", notes: "HOLD on day of surgery (hypoglycaemia risk); lower hypoglycaemia risk than glibenclamide", sideEffects: "Hypoglycaemia, weight gain, nausea"),
+        .init(name: "Glibenclamide",  category: "Sulphonylurea",       commonDoses: "2.5–15 mg OD",       route: "PO", notes: "Avoid in elderly — prolonged hypoglycaemia risk; HOLD perioperatively", sideEffects: "Prolonged severe hypoglycaemia (especially in elderly/renal impairment), weight gain"),
+
+        // ─── ANTIHYPERTENSIVES ───────────────────────────────────────────────
+        .init(name: "Amlodipine",     category: "Calcium Channel Blocker", commonDoses: "5–10 mg OD",     route: "PO", notes: "Hypertension; angina; continue peri-operatively", sideEffects: "Ankle oedema, flushing, headache, palpitations, gingival hyperplasia"),
+        .init(name: "Nifedipine",     category: "Calcium Channel Blocker", commonDoses: "30–60 mg OD (SR)", route: "PO", notes: "Hypertension; Raynaud's; use SR/LA formulation only", sideEffects: "Flushing, headache, ankle oedema, reflex tachycardia; avoid immediate-release in ischaemic heart disease"),
+        .init(name: "Lisinopril",     category: "ACE Inhibitor",       commonDoses: "2.5–40 mg OD",      route: "PO", notes: "Heart failure; diabetic nephropathy; HOLD 24h pre-op if hypotension risk", sideEffects: "Dry cough (10–15%), hyperkalaemia, renal impairment, angioedema (rare), first-dose hypotension"),
+        .init(name: "Ramipril",       category: "ACE Inhibitor",       commonDoses: "1.25–10 mg OD",     route: "PO", notes: "Heart failure; post-MI; nephroprotection", sideEffects: "Dry cough, hyperkalaemia, renal impairment, angioedema, hypotension; HOLD 24h pre-op"),
+        .init(name: "Losartan",       category: "ARB",                 commonDoses: "25–100 mg OD",      route: "PO", notes: "ACE inhibitor cough alternative; nephroprotection in T2DM; hepatic elimination", sideEffects: "Hyperkalaemia, renal impairment, dizziness, hypotension; HOLD 24h pre-op"),
+        .init(name: "Atenolol",       category: "Beta-blocker",        commonDoses: "25–100 mg OD",      route: "PO", notes: "Hypertension; angina; continue peri-operatively", sideEffects: "Bradycardia, fatigue, cold extremities, bronchospasm (avoid in asthma), impaired hypoglycaemia awareness"),
+        .init(name: "Metoprolol",     category: "Beta-blocker (β1-selective)", commonDoses: "25–200 mg BD; 47.5–190 mg OD (XL)", route: "PO/IV", notes: "Hypertension; heart failure; perioperative cardiac protection", sideEffects: "Bradycardia, fatigue, cold extremities, dizziness; less bronchospasm than non-selective agents"),
+        .init(name: "Carvedilol",     category: "Alpha/Beta-blocker",  commonDoses: "3.125–25 mg BD",    route: "PO", notes: "Heart failure (preferred beta-blocker); portal hypertension in cirrhosis", sideEffects: "Postural hypotension, bradycardia, fatigue, dizziness, oedema, bronchospasm"),
+        .init(name: "Bisoprolol",     category: "Beta-blocker (β1-selective)", commonDoses: "1.25–10 mg OD", route: "PO", notes: "Heart failure; rate control AF; highly β1-selective", sideEffects: "Bradycardia, fatigue, cold extremities, dizziness; minimal bronchospasm risk"),
+        .init(name: "Furosemide",     category: "Loop Diuretic",       commonDoses: "20–80 mg OD–BD",    route: "PO/IV", notes: "Fluid overload; heart failure; acute pulmonary oedema (80–120 mg IV)", sideEffects: "Hypokalaemia, hyponatraemia, hypomagnesaemia, ototoxicity (high IV doses), dehydration, gout"),
+        .init(name: "Spironolactone", category: "Potassium-sparing Diuretic", commonDoses: "25–100 mg OD", route: "PO", notes: "Heart failure; ascites/cirrhosis; primary hyperaldosteronism", sideEffects: "Hyperkalaemia, gynaecomastia, menstrual irregularities, impotence, GI upset"),
+        .init(name: "Hydrochlorothiazide", category: "Thiazide Diuretic", commonDoses: "12.5–25 mg OD", route: "PO", notes: "Hypertension; usually combined with ACE inhibitor/ARB", sideEffects: "Hypokalaemia, hyponatraemia, hyperuricaemia/gout, hyperglycaemia, photosensitivity"),
+
+        // ─── STATINS / LIPID-LOWERING ─────────────────────────────────────────
+        .init(name: "Atorvastatin",   category: "Statin",              commonDoses: "10–80 mg nocte",    route: "PO", notes: "Cardiovascular risk reduction; first-line statin; continue peri-operatively", sideEffects: "Myalgia, myopathy, rhabdomyolysis (rare), elevated LFTs, new-onset diabetes (long-term)"),
+        .init(name: "Simvastatin",    category: "Statin",              commonDoses: "10–40 mg nocte",    route: "PO", notes: "Cardiovascular risk reduction; CYP3A4 interactions with macrolides/azoles", sideEffects: "Myalgia, rhabdomyolysis (dose-dependent, especially with CYP3A4 inhibitors), elevated LFTs"),
+        .init(name: "Rosuvastatin",   category: "Statin",              commonDoses: "5–40 mg OD",        route: "PO", notes: "High-potency statin; less CYP3A4 interaction than simvastatin", sideEffects: "Myalgia, proteinuria (high doses), elevated LFTs, headache"),
+
+        // ─── ANTIPLATELETS ───────────────────────────────────────────────────
+        .init(name: "Aspirin",        category: "Antiplatelet / NSAID", commonDoses: "75–300 mg OD (antiplatelet); 300–600 mg loading", route: "PO", notes: "Continue low-dose for cardiac stents; consider holding for major surgery", sideEffects: "GI irritation/ulceration, bleeding, bronchospasm (aspirin-sensitive asthma)"),
+        .init(name: "Clopidogrel",    category: "Antiplatelet",        commonDoses: "75 mg OD; 300–600 mg loading dose",               route: "PO", notes: "Dual antiplatelet post-ACS/PCI; stop 5–7 days pre-surgery", sideEffects: "Bleeding, bruising, TTP (rare), rash, GI upset"),
+
+        // ─── THYROID MEDICATIONS ─────────────────────────────────────────────
+        .init(name: "Levothyroxine",  category: "Thyroid Hormone",     commonDoses: "25–200 mcg OD (titrate to TSH)", route: "PO", notes: "Hypothyroidism; take 30 min before food on empty stomach", sideEffects: "Palpitations, tremor, insomnia, weight loss, angina — if overdosed or dose increased too rapidly"),
+        .init(name: "Carbimazole",    category: "Antithyroid",         commonDoses: "10–40 mg OD (initial); 5–15 mg OD (maintenance)", route: "PO", notes: "Hyperthyroidism; Graves' disease; WARN re agranulocytosis (report sore throat immediately)", sideEffects: "Agranulocytosis (0.2–0.5% — warn patient), rash, nausea, arthralgia, hepatotoxicity"),
+        .init(name: "Propylthiouracil", category: "Antithyroid",       commonDoses: "100–200 mg TDS (initial)",         route: "PO", notes: "Preferred in first trimester and thyroid storm; risk of hepatotoxicity", sideEffects: "Agranulocytosis, fulminant hepatotoxicity (rare but serious), rash, arthralgia"),
+
+        // ─── CARDIAC ─────────────────────────────────────────────────────────
+        .init(name: "Digoxin",        category: "Cardiac Glycoside",   commonDoses: "62.5–250 mcg OD",   route: "PO/IV", notes: "Rate control in AF; heart failure; narrow therapeutic index — monitor levels", sideEffects: "Nausea, vomiting, yellow/green visual disturbances, bradycardia, heart block; digitalis toxicity"),
+        .init(name: "Amiodarone",     category: "Antiarrhythmic",      commonDoses: "200 mg TDS (loading 1 week); 200 mg OD (maintenance)", route: "PO/IV", notes: "AF/flutter/VT/VF; many interactions; long half-life (40–55 days)", sideEffects: "Thyroid dysfunction, photosensitivity, corneal deposits, pulmonary toxicity, hepatotoxicity, peripheral neuropathy"),
+
+        // ─── PRE-OP / ENDOSCOPY / ANAESTHETIC ADJUNCTS ───────────────────────
+        .init(name: "Midazolam",      category: "Benzodiazepine / Sedative", commonDoses: "1–5 mg titrated IV; 0.05–0.1 mg/kg IM pre-op", route: "IV/IM/oral", notes: "Endoscopy/procedure sedation; anxiolysis; anterograde amnesia", sideEffects: "Respiratory depression (with opioids), paradoxical agitation, anterograde amnesia, hypotension"),
+        .init(name: "Propofol",       category: "IV Anaesthetic",      commonDoses: "1–2.5 mg/kg induction; 4–12 mg/kg/h TIVA",     route: "IV",    notes: "Anaesthetic induction/maintenance; procedural sedation; rapid recovery", sideEffects: "Pain on injection, hypotension, bradycardia, respiratory depression, propofol infusion syndrome (high-dose prolonged)"),
+        .init(name: "Glucagon",       category: "GI Adjunct",          commonDoses: "0.5–1 mg IV/IM",                               route: "IV/IM", notes: "GI smooth muscle relaxation for endoscopy/ERCP; hypoglycaemia rescue", sideEffects: "Nausea, vomiting, tachycardia; rebound hypoglycaemia after hypoglycaemia rescue"),
+        .init(name: "Neostigmine",    category: "Neuromuscular Reversal", commonDoses: "2.5–5 mg with atropine 1.2 mg IV",           route: "IV slow", notes: "Reversal of non-depolarising muscle relaxants; ALWAYS give with atropine", sideEffects: "Bradycardia, bronchospasm, increased secretions, bowel cramps, nausea (prevented by atropine)"),
+        .init(name: "Atropine",       category: "Anticholinergic",     commonDoses: "0.3–0.6 mg IV (bradycardia); 1.2 mg with neostigmine", route: "IV/IM", notes: "Bradycardia; pre-op anti-sialagogue; neostigmine reversal cover", sideEffects: "Tachycardia, dry mouth, blurred vision, urinary retention, confusion (elderly), pyrexia"),
+        .init(name: "Sugammadex",     category: "Neuromuscular Reversal", commonDoses: "2–16 mg/kg IV (dose by block depth)",        route: "IV",    notes: "Specific reversal of rocuronium/vecuronium; superior to neostigmine", sideEffects: "Hypersensitivity/anaphylaxis (1:3,000–1:10,000), bradycardia, recurrence of block if underdosed"),
+        .init(name: "Naloxone",       category: "Opioid Reversal",     commonDoses: "100–200 mcg IV titrated; 0.4 mg IM/IN",         route: "IV/IM/IN", notes: "Opioid overdose reversal; short half-life (repeat dosing/infusion may be needed)", sideEffects: "Acute opioid withdrawal (agitation, tachycardia, pulmonary oedema), abrupt pain recurrence, vomiting"),
+
+        // ─── ELECTROLYTES ────────────────────────────────────────────────────
+        .init(name: "Potassium chloride IV", category: "Electrolyte",  commonDoses: "20–40 mmol in 1 L over 4h (max 20 mmol/h via peripheral)", route: "IV", notes: "Hypokalaemia correction; NEVER give as bolus — fatal arrhythmia; MUST be diluted", sideEffects: "Hyperkalaemia (cardiac arrest if rapid), infusion-site pain/phlebitis; MUST be diluted and given slowly"),
+        .init(name: "Magnesium sulfate", category: "Electrolyte",      commonDoses: "2–4 g IV over 20 min; 1–2 g for hypomagnesaemia", route: "IV/IM", notes: "Pre-eclampsia/eclampsia; refractory VF; torsades de pointes; hypomagnesaemia", sideEffects: "Flushing, hypotension, loss of patellar reflex (toxicity precursor), respiratory depression, cardiac arrest (severe toxicity)"),
+        .init(name: "Calcium gluconate", category: "Electrolyte",      commonDoses: "10 mL of 10% IV (1 g); repeat as needed",       route: "IV slow", notes: "Hypocalcaemia; hyperkalaemia cardioprotection; CCB toxicity; transfusion with citrated blood", sideEffects: "Bradycardia/arrhythmia (rapid infusion), venous irritation/necrosis (extravasation), hypercalcaemia with excess"),
+        .init(name: "Sodium bicarbonate", category: "Electrolyte",     commonDoses: "50 mmol (50 mL 8.4%) IV; dose = BE × weight × 0.3", route: "IV", notes: "Severe metabolic acidosis (pH <7.1); TCA overdose; hyperkalaemia (temporising)", sideEffects: "Hyperosmolality, metabolic alkalosis, paradoxical CNS acidosis, hypokalaemia, fluid overload"),
+
+        // ─── WOUND CARE / TOPICAL ────────────────────────────────────────────
+        .init(name: "Silver sulfadiazine 1% cream", category: "Topical Antimicrobial", commonDoses: "Apply BD to burns/wounds", route: "Topical", notes: "Burns management; infected wounds; broad-spectrum including Pseudomonas", sideEffects: "Transient leucopenia, argyria (rare, prolonged use), sulfonamide hypersensitivity, pain on application"),
+        .init(name: "Mupirocin (Bactroban)", category: "Topical Antibiotic", commonDoses: "Apply TDS for 5–7 days", route: "Topical", notes: "MRSA nasal decolonisation; skin/wound infections; impetigo", sideEffects: "Local irritation, stinging, contact dermatitis; avoid eyes and mucous membranes"),
+        .init(name: "Chlorhexidine gluconate", category: "Antiseptic", commonDoses: "0.5–2% solution or 4% surgical scrub", route: "Topical", notes: "Surgical site prep; wound irrigation; catheter care; CRBSI prevention", sideEffects: "Skin staining (0.5%), rare anaphylaxis (especially in body cavities/catheters); avoid contact with middle ear"),
+
+        // ─── HAEMATINICS / VITAMINS ──────────────────────────────────────────
+        .init(name: "Ferrous sulfate", category: "Iron Supplement",    commonDoses: "200 mg TDS (treatment); 200 mg OD (prophylaxis)", route: "PO", notes: "Iron deficiency anaemia; pre-op haemoglobin optimisation; take with vitamin C", sideEffects: "Constipation, nausea, black stools, GI cramping, epigastric pain; take after food if intolerant"),
+        .init(name: "Folic acid",      category: "Vitamin",            commonDoses: "5 mg OD (treatment); 400 mcg OD (prophylaxis)",   route: "PO", notes: "Folate deficiency anaemia; methotrexate co-prescription; pre-conception", sideEffects: "Generally very well tolerated; may mask B12 deficiency neurological complications if given alone"),
+        .init(name: "Vitamin B12 (cyanocobalamin)", category: "Vitamin", commonDoses: "1000 mcg IM every 3 months (malabsorption/pernicious anaemia)", route: "IM/PO", notes: "B12 deficiency; post gastrectomy/ileal resection; pernicious anaemia", sideEffects: "Minimal; injection-site reactions; acne (rare); polycythaemia with high doses"),
+        .init(name: "Vitamin D3 (cholecalciferol)", category: "Vitamin", commonDoses: "800–4000 IU OD (maintenance); 50,000 IU weekly x 6–12 (loading)", route: "PO", notes: "Vitamin D deficiency; bone health; post-bariatric surgery supplementation", sideEffects: "Hypercalcaemia in excess (nausea, confusion, renal stones, polyuria), weakness"),
+        .init(name: "Thiamine (Vitamin B1)", category: "Vitamin",      commonDoses: "100 mg TDS PO; 100–200 mg IV (Wernicke's prevention)",              route: "PO/IV", notes: "Alcohol-related disease; malnutrition; Wernicke's — give BEFORE glucose in alcoholics", sideEffects: "Anaphylaxis (IV Pabrinex — rare but potentially fatal); GI upset; well tolerated orally"),
     ]
 }
 

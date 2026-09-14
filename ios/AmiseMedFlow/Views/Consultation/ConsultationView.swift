@@ -3314,6 +3314,25 @@ struct ConsultationView: View {
 
             Section {
                 ZStack(alignment: .topLeading) {
+                    TextEditor(text: Binding(
+                        get: { patient.notes ?? "" },
+                        set: { patient.notes = $0.isEmpty ? nil : $0; touch() }
+                    ))
+                    .frame(minHeight: 100)
+                    if (patient.notes ?? "").isEmpty {
+                        Text("Quick capture — impressions, raw dictation, things to look up, anything to structure later…")
+                            .foregroundStyle(.tertiary).font(.callout)
+                            .padding(.top, 8).padding(.leading, 4)
+                            .allowsHitTesting(false)
+                    }
+                }
+            } header: {
+                sectionHeader("Quick Notes", icon: "pencil.and.scribble",
+                              filled: !(patient.notes ?? "").isEmpty)
+            }
+
+            Section {
+                ZStack(alignment: .topLeading) {
                     TextEditor(text: Binding(get: { patient.managementPlan ?? "" },
                                             set: { patient.managementPlan = $0.isEmpty ? nil : $0; touch() }))
                         .frame(minHeight: 160)

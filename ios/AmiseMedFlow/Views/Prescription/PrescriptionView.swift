@@ -536,6 +536,19 @@ struct AddPrescriptionSheet: View {
                             .buttonStyle(.bordered)
                             .tint(dose == drug.commonDoses ? .teal : .secondary)
                     }
+
+                    if let drug = selectedDrug, !drug.sideEffects.isEmpty {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Label("Common side effects", systemImage: "exclamationmark.circle")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.orange)
+                            Text(drug.sideEffects)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding(.vertical, 4)
+                    }
                 }
 
                 if !allergyMatches.isEmpty {
