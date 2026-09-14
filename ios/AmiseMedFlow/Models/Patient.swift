@@ -140,7 +140,7 @@ final class Patient {
         let pmhAccumulated = closed.compactMap(\.pmhNotes).joined(separator: " ")
         let pshxAccumulated = closed.compactMap(\.surgicalHistory).joined(separator: " ")
 
-        let daysSinceLast: Int? = closed.last.map {
+        let daysSinceLast: Int? = closed.last.flatMap {
             Calendar.current.dateComponents([.day], from: $0.encounterDate, to: .now).day
         }
 
