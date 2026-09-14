@@ -18,6 +18,7 @@ final class Patient {
     var location: ClinicalLocation
     var acuity: Acuity
     var chiefComplaint: String?
+    var associatedSymptoms: String?     // Comma-separated selected associated symptoms (CC tab)
     var referralSource: ReferralSource?
     var referringDoctor: String?
     var referringPractice: String?
