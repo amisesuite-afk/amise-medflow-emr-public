@@ -273,7 +273,7 @@ enum ClinicalScoringEngine {
     // MARK: Alvarado (Appendicitis)
 
     static func alvarado(_ i: AlvaradoInput) -> ClinicalScore {
-        var items: [ScoredItem] = [
+        let items: [ScoredItem] = [
             .init(label: "Pain migration to RIF", points: 1, present: i.migrationToRIF),
             .init(label: "Anorexia", points: 1, present: i.anorexia),
             .init(label: "Nausea / vomiting", points: 1, present: i.nauseaVomiting),
@@ -852,7 +852,7 @@ enum ClinicalScoringEngine {
     // MARK: ABCD2 Score (TIA)
 
     static func abcd2(_ i: ABCD2Input) -> ClinicalScore {
-        var items: [ScoredItem] = [
+        let items: [ScoredItem] = [
             .init(label: "Age ≥60 years", points: 1, present: i.ageOver60),
             .init(label: "BP ≥140/90 mmHg at presentation", points: 1, present: i.bpOver140_90),
             .init(label: "Unilateral weakness", points: 2, present: i.unilateralWeakness),

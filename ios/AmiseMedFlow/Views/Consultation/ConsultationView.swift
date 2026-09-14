@@ -731,6 +731,7 @@ enum ConsultTab: String, CaseIterable {
     case social    = "Social"
     case exam           = "Exam"
     case investigations = "Ix"
+    case scores         = "Scores"
     case diagnosis      = "Diagnosis"
     case plan      = "Plan"
     case history   = "History"
@@ -1286,6 +1287,7 @@ struct ConsultationView: View {
         case .social:    return !(patient.socialHistory ?? "").isEmpty
         case .exam:           return !(patient.examGeneral ?? "").isEmpty || !(patient.examAbdo ?? "").isEmpty
         case .investigations: return !patient.investigations.isEmpty
+        case .scores:         return false  // always available, no completion state
         case .diagnosis:      return patient.workingDiagnosis != nil
         case .plan:      return !(patient.managementPlan ?? "").isEmpty
         case .history:   return !patient.encounters.isEmpty
@@ -1306,6 +1308,7 @@ struct ConsultationView: View {
         case .social:    socialTab
         case .exam:           examTab
         case .investigations: investigationsTab
+        case .scores:         ClinicalScoresView(patient: patient)
         case .diagnosis:      diagnosisTab
         case .plan:      planTab
         case .history:   encounterHistoryTab

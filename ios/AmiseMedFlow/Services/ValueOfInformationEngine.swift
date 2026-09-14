@@ -200,7 +200,7 @@ enum ValueOfInformationEngine {
         candidate: CandidateEvidence,
         positive: Bool
     ) -> [Double] {
-        var updated = hypotheses.map { h -> Double in
+        let updated = hypotheses.map { h -> Double in
             let lr = candidate.lr[h.name] ?? 1.0
             let p0 = candidate.baseProbPositive
             let odds0 = p0 / (1 - p0)

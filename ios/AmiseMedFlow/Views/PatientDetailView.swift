@@ -27,6 +27,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case assessment     = "Assessment / Dx"
     case plan           = "Management Plan"
     // Clinical
+    case scores         = "Clinical Scores"
     case notes          = "Notes"
     case vitals         = "Vitals"
     case prescriptions  = "Prescriptions"
@@ -56,6 +57,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .investigations: "testtube.2"
         case .assessment:     "brain.head.profile"
         case .plan:           "list.bullet.clipboard"
+        case .scores:         "chart.bar.doc.horizontal"
         case .notes:          "note.text"
         case .vitals:         "waveform.path.ecg"
         case .prescriptions:  "pills"
@@ -85,6 +87,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .investigations: "Ix"
         case .assessment:     "Assess"
         case .plan:           "Plan"
+        case .scores:         "Scores"
         case .notes:          "Notes"
         case .vitals:         "Vitals"
         case .prescriptions:  "Rx"
@@ -111,6 +114,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .social:         .social
         case .exam:           .exam
         case .investigations: .investigations
+        case .scores:         .scores
         case .assessment:     .diagnosis
         case .plan:           .plan
         default:              nil
@@ -345,6 +349,8 @@ struct PatientDetailPadView: View {
             ConsultationView(patient: patient, startingTab: .exam, embeddedInNav: true)
         case .investigations:
             ConsultationView(patient: patient, startingTab: .investigations, embeddedInNav: true)
+        case .scores:
+            ClinicalScoresView(patient: patient)
         case .assessment:
             ConsultationView(patient: patient, startingTab: .diagnosis, embeddedInNav: true)
         case .plan:
