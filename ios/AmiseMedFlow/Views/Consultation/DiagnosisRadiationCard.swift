@@ -261,7 +261,7 @@ struct DiagnosisRadiationCard: View {
                     .foregroundStyle(current == "0" ? Color.primary : Color.secondary)
                     .frame(width: 34)
                     .padding(.vertical, 5)
-                    .background(current == "0" ? Color.secondary.opacity(0.2) : Color.clear)
+                    .background { current == "0" ? Color.secondary.opacity(0.2) : Color.clear }
             }
             .buttonStyle(.plain)
             Divider().frame(height: 22)
@@ -273,7 +273,7 @@ struct DiagnosisRadiationCard: View {
                     .foregroundStyle(isYes ? (isNeg ? Color.orange : Color.green) : Color.secondary)
                     .frame(width: 34)
                     .padding(.vertical, 5)
-                    .background(isYes ? (isNeg ? Color.orange.opacity(0.15) : Color.green.opacity(0.15)) : Color.clear)
+                    .background { isYes ? (isNeg ? Color.orange.opacity(0.15) : Color.green.opacity(0.15)) : Color.clear }
             }
             .buttonStyle(.plain)
         }

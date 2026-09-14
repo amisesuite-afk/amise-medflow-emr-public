@@ -306,8 +306,9 @@ private struct MonthDayCell: View {
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 82, alignment: .topLeading)
-            .background((date.map { cal.isDateInToday($0) } ?? false)
-                ? Color.teal.opacity(0.05) : Color.clear)
+            .background {
+                (date.map { cal.isDateInToday($0) } ?? false) ? Color.teal.opacity(0.05) : Color.clear
+            }
             .overlay(Rectangle().fill(Color.secondary.opacity(0.1)).frame(width: 0.5), alignment: .trailing)
         }
         .buttonStyle(.plain)
@@ -522,7 +523,7 @@ private struct CalEventBlock: View {
             .padding(.horizontal, 5)
             .padding(.vertical, 3)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .background(entry.color.opacity(0.1))
+            .background { entry.color.opacity(0.1) }
             .overlay(alignment: .leading) {
                 Rectangle().fill(entry.color).frame(width: 3)
             }

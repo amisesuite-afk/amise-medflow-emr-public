@@ -19,6 +19,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case hpi            = "History of Present Illness"
     case pmh            = "Past Medical History"
     case pshx           = "Surgical History"
+    case medications    = "Drug / Medication History"
     case allergies      = "Allergies"
     case social         = "Social History"
     case exam           = "Examination"
@@ -26,6 +27,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case assessment     = "Assessment / Dx"
     case plan           = "Management Plan"
     // Clinical
+    case scores         = "Clinical Scores"
     case notes          = "Notes"
     case vitals         = "Vitals"
     case prescriptions  = "Prescriptions"
@@ -37,6 +39,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case ogd            = "OGD Report"
     case surgery        = "Operative Note"
     case ercp           = "ERCP Report"
+    case history        = "Visit History"
 
     var id: String { rawValue }
 
@@ -46,13 +49,15 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .cc:             "text.bubble"
         case .hpi:            "doc.text"
         case .pmh:            "clock.arrow.circlepath"
-        case .pshx:           "bandage"
+        case .pshx:           "scissors"
+        case .medications:    "pills"
         case .allergies:      "exclamationmark.shield"
         case .social:         "person.2"
         case .exam:           "stethoscope"
         case .investigations: "testtube.2"
         case .assessment:     "brain.head.profile"
         case .plan:           "list.bullet.clipboard"
+        case .scores:         "chart.bar.doc.horizontal"
         case .notes:          "note.text"
         case .vitals:         "waveform.path.ecg"
         case .prescriptions:  "pills"
@@ -64,6 +69,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .ogd:            "scope"
         case .surgery:        "scissors"
         case .ercp:           "waveform.and.magnifyingglass"
+        case .history:        "clock.badge.checkmark"
         }
     }
 
@@ -72,14 +78,16 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .overview:       "Overview"
         case .cc:             "CC"
         case .hpi:            "HPI"
-        case .pmh:            "PMH"
+        case .pmh:            "PMH/FHx"
         case .pshx:           "PSHx"
+        case .medications:    "Meds/Drugs"
         case .allergies:      "Allergies"
         case .social:         "Social"
         case .exam:           "Exam"
         case .investigations: "Ix"
         case .assessment:     "Assess"
         case .plan:           "Plan"
+        case .scores:         "Scores"
         case .notes:          "Notes"
         case .vitals:         "Vitals"
         case .prescriptions:  "Rx"
@@ -91,6 +99,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .ogd:            "OGD"
         case .surgery:        "Op Note"
         case .ercp:           "ERCP"
+        case .history:        "History"
         }
     }
 
@@ -100,10 +109,12 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .hpi:            .hpi
         case .pmh:            .pmh
         case .pshx:           .pshx
+        case .medications:    .meds
         case .allergies:      .allergies
         case .social:         .social
         case .exam:           .exam
         case .investigations: .investigations
+        case .scores:         .scores
         case .assessment:     .diagnosis
         case .plan:           .plan
         default:              nil
@@ -119,6 +130,9 @@ struct PatientDetailPadView: View {
     @State private var selectedSection: PatientDetailSection? = .overview
     @State private var summaryPDFData: Data? = nil
     @State private var showSummaryEditor = false
+    @State private var showSaveVisitConfirm = false
+    @State private var saveVisitFeedback = false
+    @Environment(\.modelContext) private var context
     @EnvironmentObject private var sync: SyncService
 
     // Clinical sections — filtered by role and visit type
@@ -131,6 +145,7 @@ struct PatientDetailPadView: View {
             case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
+            case .history: return !patient.encounters.filter(\.isComplete).isEmpty
             default:       return true
             }
         }
@@ -234,6 +249,27 @@ struct PatientDetailPadView: View {
             Spacer()
 
             HStack(spacing: 14) {
+                Button {
+                    showSaveVisitConfirm = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: saveVisitFeedback ? "archivebox.fill" : "archivebox")
+                        Text("Save Visit")
+                            .font(.system(size: 12, weight: .semibold))
+                    }
+                    .foregroundStyle(saveVisitFeedback ? Color.green : AMColor.accent)
+                }
+                .buttonStyle(.plain)
+                .help("Save Visit Snapshot")
+                .confirmationDialog("Save visit snapshot for \(patient.fullName)?",
+                                    isPresented: $showSaveVisitConfirm,
+                                    titleVisibility: .visible) {
+                    Button("Save Visit") { padSaveEncounter() }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("Freezes the current consultation into the patient's history.")
+                }
+
                 Button { showSummaryEditor = true } label: {
                     Image(systemName: "doc.text.fill")
                         .foregroundStyle(AMColor.accent)
@@ -272,7 +308,7 @@ struct PatientDetailPadView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 9)
                         .frame(minWidth: 62)
-                        .background(sel ? AMColor.accent.opacity(0.18) : Color.clear)
+                        .background { sel ? AMColor.accent.opacity(0.18) : Color.clear }
                         .overlay(alignment: .bottom) {
                             if sel { Rectangle().fill(AMColor.accent).frame(height: 2) }
                         }
@@ -303,6 +339,8 @@ struct PatientDetailPadView: View {
             ConsultationView(patient: patient, startingTab: .pmh, embeddedInNav: true)
         case .pshx:
             ConsultationView(patient: patient, startingTab: .pshx, embeddedInNav: true)
+        case .medications:
+            ConsultationView(patient: patient, startingTab: .meds, embeddedInNav: true)
         case .allergies:
             ConsultationView(patient: patient, startingTab: .allergies, embeddedInNav: true)
         case .social:
@@ -311,6 +349,8 @@ struct PatientDetailPadView: View {
             ConsultationView(patient: patient, startingTab: .exam, embeddedInNav: true)
         case .investigations:
             ConsultationView(patient: patient, startingTab: .investigations, embeddedInNav: true)
+        case .scores:
+            ClinicalScoresView(patient: patient)
         case .assessment:
             ConsultationView(patient: patient, startingTab: .diagnosis, embeddedInNav: true)
         case .plan:
@@ -337,7 +377,30 @@ struct PatientDetailPadView: View {
             SurgeryNoteView(patient: patient)
         case .ercp:
             ERCPFormView(patient: patient)
+        case .history:
+            ConsultationView(patient: patient, startingTab: .history, embeddedInNav: true)
         }
+    }
+
+    // MARK: - Save Visit (iPad path — captures patient.* fields; SOCRATES chip state
+    // is not captured here since it lives in ConsultationView @State, but committed
+    // HPI text and all other structured fields are included)
+
+    private func padSaveEncounter() {
+        MRNGenerator.backfillIfNeeded(patient)
+        let encounter = Encounter(
+            visitType: patient.visitType ?? .newConsult,
+            acuity: patient.acuity,
+            setting: patient.setting,
+            location: patient.location
+        )
+        encounter.snapshot(from: patient, socratesSelections: [:], bayesianDx: [])
+        encounter.isComplete = true
+        patient.encounters.append(encounter)
+        context.insert(encounter)
+        try? context.save()
+        saveVisitFeedback = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { saveVisitFeedback = false }
     }
 }
 
@@ -634,7 +697,7 @@ struct PatientOverviewContent: View {
                         let los = max(0, Calendar.current.dateComponents([.day], from: admitted, to: .now).day ?? 0)
                         LabeledContent("Admitted") {
                             Text(admitted, style: .date) +
-                            Text("  (Day \(los + 1))").foregroundColor(.secondary)
+                            Text("  (Day \(los + 1))").foregroundStyle(.secondary)
                         }
                     }
                     if let exp = patient.expectedDischarge {

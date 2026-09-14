@@ -83,12 +83,14 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.amise.medflow
         SWIFT_VERSION: "5.0"
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
-        CODE_SIGN_STYLE: Manual
         DEVELOPMENT_TEAM: A5KKWX89SG
         SWIFT_EMIT_LOC_STRINGS: YES
         ENABLE_PREVIEWS: YES
       configs:
+        Debug:
+          CODE_SIGN_STYLE: Automatic
         Release:
+          CODE_SIGN_STYLE: Manual
           CODE_SIGN_IDENTITY: Apple Distribution
           PROVISIONING_PROFILE_SPECIFIER: match AppStore com.amise.medflow
           ENABLE_PREVIEWS: "NO"
@@ -97,15 +99,41 @@ targets:
       - package: Supabase
         product: Supabase
 
+  AmiseMedFlowTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+
+    sources:
+      - path: AmiseMedFlowTests
+        excludes:
+          - "**/.DS_Store"
+
+    settings:
+      base:
+        PRODUCT_NAME: AmiseMedFlowTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.amise.medflow.tests
+        SWIFT_VERSION: "5.0"
+        DEVELOPMENT_TEAM: A5KKWX89SG
+        GENERATE_INFOPLIST_FILE: "YES"
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/AmiseMedFlow.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AmiseMedFlow
+        BUNDLE_LOADER: $(TEST_HOST)
+
+    dependencies:
+      - target: AmiseMedFlow
+
 schemes:
   AmiseMedFlow:
     build:
       targets:
         AmiseMedFlow: all
+        AmiseMedFlowTests: [test]
     run:
       config: Debug
     test:
       config: Debug
+      targets:
+        - AmiseMedFlowTests
     profile:
       config: Release
     analyze:

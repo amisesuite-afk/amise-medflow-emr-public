@@ -88,6 +88,9 @@ struct ClinicalHubView: View {
                         }
                     }
                 }
+                NavigationLink { ClinicalScoresView(patient: patient) } label: {
+                    Label("Clinical Scores & Scales", systemImage: "chart.bar.doc.horizontal")
+                }
             }
 
             Section("Workflow") {

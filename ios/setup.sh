@@ -11,8 +11,12 @@ echo "==> Detecting Apple Development Team ID..."
 TEAM_ID=""
 
 # Method 1: from project.pbxproj after user has selected team in Xcode
+# Extract the VALUE on the right side of '= ' (not the key name itself)
 if [ -f "$PBXPROJ" ]; then
-    TEAM_ID=$(grep 'DEVELOPMENT_TEAM = ' "$PBXPROJ" | grep -v '= "";' | grep -oE '[A-Z0-9]{10}' | head -1 || true)
+    TEAM_ID=$(grep 'DEVELOPMENT_TEAM = ' "$PBXPROJ" \
+        | sed 's/.*DEVELOPMENT_TEAM = \([A-Z0-9]*\).*/\1/' \
+        | grep -E '^[A-Z0-9]{10}$' \
+        | head -1 || true)
     [ -n "$TEAM_ID" ] && echo "Found from project.pbxproj: $TEAM_ID"
 fi
 

@@ -12,8 +12,11 @@ struct SyncStatusBar: View {
     @State private var spinAngle: Double = 0
 
     private var cloudColor: Color {
-        if sync.isSyncing            { return .accentColor }
-        if sync.pendingCount > 0     { return .orange }
+        if sync.isSyncing             { return .accentColor }
+        if !sync.isSignedIn           { return .red }
+        if sync.syncError != nil      { return .red }
+        if sync.pendingCount > 0      { return .orange }
+        if sync.lastSyncedAt == nil   { return .orange }
         return .secondary
     }
 
@@ -132,11 +135,42 @@ private struct SyncStatusPopover: View {
                                 .font(.subheadline)
                         }
 
+                        if let email = sync.currentUserEmail {
+                            Text(email)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        } else {
+                            Text("Not signed in — sync disabled")
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                        }
+
                         if let last = sync.lastSyncedAt {
                             Text("Last sync \(last, style: .relative)")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                        } else if sync.isSignedIn {
+                            Text("Sync has not completed yet")
+                                .font(.caption)
+                                .foregroundStyle(.orange)
                         }
+
+                        if let err = sync.syncError {
+                            Text("Error: \(err)")
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                                .lineLimit(3)
+                        }
+
+                        Button {
+                            Task { await sync.syncIfAuthenticated() }
+                        } label: {
+                            Label("Sync Now", systemImage: "arrow.clockwise")
+                                .font(.caption.weight(.medium))
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.mini)
+                        .disabled(sync.isSyncing || !sync.isSignedIn)
                     }
 
                     Divider()
@@ -227,16 +261,22 @@ private struct SyncStatusPopover: View {
         .presentationCompactAdaptation(.popover)
     }
 
-    private var cloudStatusColor: Color {
-        if sync.isSyncing        { return .accentColor }
-        if sync.pendingCount > 0 { return .orange }
-        return .green
+    private var cloudStatusText: String {
+        if sync.isSyncing         { return "Syncing…" }
+        if !sync.isSignedIn       { return "Not signed in" }
+        if sync.syncError != nil  { return "Sync error" }
+        if sync.pendingCount > 0  { return "\(sync.pendingCount) pending" }
+        if sync.lastSyncedAt == nil { return "Waiting to sync…" }
+        return "Up to date"
     }
 
-    private var cloudStatusText: String {
-        if sync.isSyncing        { return "Syncing…" }
-        if sync.pendingCount > 0 { return "\(sync.pendingCount) pending" }
-        return "Up to date"
+    private var cloudStatusColor: Color {
+        if sync.isSyncing         { return .accentColor }
+        if !sync.isSignedIn       { return .red }
+        if sync.syncError != nil  { return .red }
+        if sync.pendingCount > 0  { return .orange }
+        if sync.lastSyncedAt == nil { return .orange }
+        return .green
     }
 
     private var peerStatusColor: Color {

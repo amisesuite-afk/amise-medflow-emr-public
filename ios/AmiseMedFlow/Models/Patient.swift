@@ -18,6 +18,7 @@ final class Patient {
     var location: ClinicalLocation
     var acuity: Acuity
     var chiefComplaint: String?
+    var associatedSymptoms: String?     // Comma-separated selected associated symptoms (CC tab)
     var referralSource: ReferralSource?
     var referringDoctor: String?
     var referringPractice: String?
@@ -140,7 +141,7 @@ final class Patient {
         let pmhAccumulated = closed.compactMap(\.pmhNotes).joined(separator: " ")
         let pshxAccumulated = closed.compactMap(\.surgicalHistory).joined(separator: " ")
 
-        let daysSinceLast: Int? = closed.last.map {
+        let daysSinceLast: Int? = closed.last.flatMap {
             Calendar.current.dateComponents([.day], from: $0.encounterDate, to: .now).day
         }
 
@@ -205,6 +206,21 @@ enum Sex: String, Codable, CaseIterable {
     case male = "Male"
     case female = "Female"
     case unspecified = "Unspecified"
+
+    // Supabase stores lowercase; "unspecified" is not in the CHECK constraint
+    // so we map it to "unknown" (which IS allowed) and back.
+    var supabaseValue: String {
+        self == .unspecified ? "unknown" : rawValue.lowercased()
+    }
+
+    static func fromSupabase(_ value: String?) -> Sex {
+        switch value?.lowercased() {
+        case "male":             return .male
+        case "female":           return .female
+        case "unknown", "other": return .unspecified
+        default:                 return .unspecified
+        }
+    }
 }
 
 enum ClinicalSetting: String, Codable, CaseIterable {

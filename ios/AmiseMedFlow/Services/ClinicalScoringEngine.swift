@@ -62,7 +62,7 @@ struct ClinicalScore: Identifiable {
 // Each input struct maps directly to what can be collected at bedside
 // without laboratory confirmation (unless noted).
 
-struct AlvaradoInput {
+struct AlvaradoInput: Equatable {
     var migrationToRIF: Bool = false     // 1
     var anorexia: Bool = false           // 1
     var nauseaVomiting: Bool = false     // 1
@@ -73,7 +73,7 @@ struct AlvaradoInput {
     var neutrophiliaShift: Bool = false  // >75% neutrophils — 1
 }
 
-struct TokyoCholecystitisInput {
+struct TokyoCholecystitisInput: Equatable {
     // Local signs/symptoms
     var localInflammationSignsMild: Bool = false    // tenderness, RUQ mass/pain
     var wbcAbove18: Bool = false                    // WBC >18,000
@@ -88,7 +88,7 @@ struct TokyoCholecystitisInput {
     var haematologicalDysfunction: Bool = false    // platelets <100,000
 }
 
-struct TokyoCholangitisInput {
+struct TokyoCholangitisInput: Equatable {
     // Severity Grade II criteria (any = Grade II or above)
     var wbcAbove12OrBelow4: Bool = false
     var temperatureAbove39: Bool = false
@@ -106,7 +106,7 @@ struct TokyoCholangitisInput {
     var cholangitisConfirmed: Bool = false   // Charcot's triad or imaging
 }
 
-struct RansonInput {
+struct RansonInput: Equatable {
     // At admission
     var ageOver55: Bool = false
     var wbcOver16k: Bool = false         // >16,000/μL
@@ -122,7 +122,7 @@ struct RansonInput {
     var fluidSequestrationOver6L: Bool = false
 }
 
-struct GlasgowPancreatitisInput {
+struct GlasgowPancreatitisInput: Equatable {
     // PANCREAS score — all at 48h
     var pao2Below60: Bool = false         // P
     var ageOver55: Bool = false           // A
@@ -134,7 +134,7 @@ struct GlasgowPancreatitisInput {
     var glucoseOver10: Bool = false       // S  (>10 mmol/L)
 }
 
-struct RockallInput {
+struct RockallInput: Equatable {
     // Pre-endoscopy
     var ageGroup: AgeGroup = .under60
     var shock: ShockStatus = .none
@@ -157,7 +157,7 @@ struct RockallInput {
     }
 }
 
-struct SIRSInput {
+struct SIRSInput: Equatable {
     var tempAbove38OrBelow36: Bool = false   // °C
     var heartRateOver90: Bool = false
     var rrOver20OrPaCO2Below32: Bool = false
@@ -166,14 +166,14 @@ struct SIRSInput {
     var positiveBloodCulture: Bool = false
 }
 
-struct QSOFAInput {
+struct QSOFAInput: Equatable {
     var alteredMentation: Bool = false   // GCS <15
     var rrOver22: Bool = false
     var sbpUnder100: Bool = false
     var suspectedInfection: Bool = false
 }
 
-struct WellsDVTInput {
+struct WellsDVTInput: Equatable {
     var activeCancer: Bool = false                    // +1
     var paralysisParesisPlastercast: Bool = false     // +1
     var bedridden3dOrSurgery12w: Bool = false         // +1
@@ -186,7 +186,7 @@ struct WellsDVTInput {
     var alternativeDiagnosisAsLikely: Bool = false    // -2
 }
 
-struct WellsPEInput {
+struct WellsPEInput: Equatable {
     var clinicalSignsDVT: Bool = false           // +3
     var hrOver100: Bool = false                  // +1.5
     var immobilisationOrSurgery4w: Bool = false  // +1.5
@@ -196,7 +196,7 @@ struct WellsPEInput {
     var alternativeDxLessLikely: Bool = false    // +3
 }
 
-struct ABCD2Input {
+struct ABCD2Input: Equatable {
     var ageOver60: Bool = false          // +1
     var bpOver140_90: Bool = false       // +1
     var unilateralWeakness: Bool = false // +2
@@ -206,7 +206,7 @@ struct ABCD2Input {
     var diabetes: Bool = false           // +1
 }
 
-struct LRINECInput {
+struct LRINECInput: Equatable {
     // Laboratory Risk Indicator for Necrotising Fasciitis
     var crpOver150: Bool = false         // CRP >150 mg/L — +4
     var wbc15to25: Bool = false          // WBC 15–25×10⁹/L — +1
@@ -220,7 +220,7 @@ struct LRINECInput {
     var glucoseOver10: Bool = false      // >10 mmol/L — +1
 }
 
-struct RCRIInput {
+struct RCRIInput: Equatable {
     // Revised Cardiac Risk Index (Lee 1999)
     var highRiskSurgery: Bool = false          // intraperitoneal/intrathoracic/suprainguinal vascular — +1
     var ischemicHeartDisease: Bool = false     // Hx MI, angina, +ve stress, nitrate use, Q waves — +1
@@ -230,7 +230,7 @@ struct RCRIInput {
     var preopCreatinineOver2: Bool = false     // Cr >177 μmol/L — +1
 }
 
-struct CapriniInput {
+struct CapriniInput: Equatable {
     // Major risk factors
     var ageOver75: Bool = false             // +3
     var age60to74: Bool = false             // +2
@@ -254,7 +254,7 @@ struct CapriniInput {
     var multipleTrauma: Bool = false        // +5
 }
 
-struct ChildPughInput {
+struct ChildPughInput: Equatable {
     // Child-Pugh Score for liver disease / cirrhosis
     var ascites: AscitesGrade = .none
     var encephalopathy: EncephalopathyGrade = .none
@@ -273,7 +273,7 @@ enum ClinicalScoringEngine {
     // MARK: Alvarado (Appendicitis)
 
     static func alvarado(_ i: AlvaradoInput) -> ClinicalScore {
-        var items: [ScoredItem] = [
+        let items: [ScoredItem] = [
             .init(label: "Pain migration to RIF", points: 1, present: i.migrationToRIF),
             .init(label: "Anorexia", points: 1, present: i.anorexia),
             .init(label: "Nausea / vomiting", points: 1, present: i.nauseaVomiting),
@@ -357,7 +357,7 @@ enum ClinicalScoringEngine {
                     "ERCP or MRCP if bile duct stones suspected",
                     "HDU monitoring if WBC markedly elevated or haemodynamically unstable"]
         } else if i.localInflammationSignsMild {
-            grade = 1; risk = .moderate
+            grade = 1; risk = .low
             interpretation = "Tokyo Grade I — Mild acute cholecystitis; elective or early laparoscopic cholecystectomy"
             recs = ["Oral or IV antibiotics (if febrile)",
                     "Analgesia + IV fluids",
@@ -426,7 +426,7 @@ enum ClinicalScoringEngine {
                     "Blood cultures × 2 before antibiotics",
                     "MRCP if ERCP contraindicated"]
         } else if i.cholangitisConfirmed {
-            grade = 1; risk = .moderate
+            grade = 1; risk = .low
             interpretation = "Tokyo Grade I — Mild acute cholangitis; respond to initial medical treatment"
             recs = ["IV antibiotics with close observation",
                     "Elective ERCP within 72 h if stable",
@@ -615,14 +615,20 @@ enum ClinicalScoringEngine {
             recs = ["Admit for observation post-endoscopy", "IV PPI (omeprazole 80 mg bolus then 8 mg/h × 72 h) if high-risk ulcer",
                     "Repeat endoscopy if rebleeding", "Transfuse to Hb 70–80 g/L (90 in cardiac disease)",
                     "Correct coagulopathy"]
-        default:
+        case 5..<8:
             risk = .high
             interpretation = "Rockall \(Int(total)) — High risk; rebleeding >40%, mortality >14%"
             recs = ["ITU / HDU admission", "Resuscitation: cross-match ×4 units, FFP, platelets",
                     "IV PPI infusion", "Repeat endoscopy ± haemostasis",
                     "IR angioembolisation if endoscopy fails",
                     "Emergency surgery if all else fails"]
-            if total >= 8 { redFlags.append("Score ≥8 — very high risk of in-hospital mortality") }
+        default:
+            risk = .critical
+            interpretation = "Rockall \(Int(total)) — Critical risk; very high in-hospital mortality"
+            redFlags = ["Score ≥8 — extremely high risk of in-hospital mortality"]
+            recs = ["Immediate ITU admission", "Resuscitation: cross-match ≥6 units, FFP, platelets",
+                    "Emergency endoscopy with haemostasis", "IR angioembolisation on standby",
+                    "Emergency surgery if all else fails", "Palliative discussion if patient unfit for intervention"]
         }
 
         return ClinicalScore(
@@ -726,7 +732,7 @@ enum ClinicalScoringEngine {
             systemName: "qSOFA Score",
             abbreviation: "qSOFA",
             score: score, maxScore: 3,
-            risk: highRisk ? .high : (score == 1 ? .moderate : .low),
+            risk: (score == 3 && i.suspectedInfection) ? .critical : (highRisk ? .high : (score == 1 ? .moderate : .low)),
             interpretation: score >= 2
                 ? "qSOFA \(Int(score))/3 — HIGH risk of organ dysfunction if infection present"
                 : "qSOFA \(Int(score))/3 — Lower risk, but reassess if clinical status changes",
@@ -821,7 +827,7 @@ enum ClinicalScoringEngine {
             recs = ["D-dimer: if negative → PE excluded",
                     "If D-dimer positive → CT pulmonary angiography (CTPA)",
                     "Consider V/Q if contrast allergy or pregnancy"]
-        } else if score <= 6 {
+        } else if score <= 4 {
             risk = .moderate
             interpretation = "Wells PE \(score) — Moderate probability (~28%); CTPA or D-dimer"
             recs = ["CTPA (preferred) or age-adjusted D-dimer",

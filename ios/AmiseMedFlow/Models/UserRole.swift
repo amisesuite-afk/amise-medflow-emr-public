@@ -36,7 +36,7 @@ enum UserRole: String, Codable {
         case .nurse:
             return [
                 .overview, .demographics,
-                .cc, .hpi, .pmh, .pshx, .allergies, .social,
+                .cc, .hpi, .pmh, .pshx, .medications, .allergies, .social,
                 .exam, .investigations,
                 .notes, .vitals, .documents
             ]
