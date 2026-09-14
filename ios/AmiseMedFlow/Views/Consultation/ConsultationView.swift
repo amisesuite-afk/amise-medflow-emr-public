@@ -3950,7 +3950,7 @@ private struct ConsultationLetterSheet: View {
                 ContentUnavailableView(
                     "No Saved Visits",
                     systemImage: "clock.badge.questionmark",
-                    description: Text("Tap "Save Visit" to snapshot the current consultation into history.")
+                    description: Text("Tap \"Save Visit\" to snapshot the current consultation into history.")
                 )
             } else {
                 List {
