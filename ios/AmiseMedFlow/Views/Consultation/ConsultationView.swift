@@ -864,6 +864,7 @@ struct ConsultationView: View {
     @State private var icdSuggestions: [ICDCode] = []
     @State private var showAIError = false
     @State private var consultationPDFWrapper: PDFDataWrapper?
+    @State private var preConsultPDFWrapper: PDFDataWrapper?
     @State private var showLetterSheet = false
     @State private var generatedLetterText = ""
     @State private var socratesSelections: [String: Set<String>] = [:]
@@ -1040,6 +1041,9 @@ struct ConsultationView: View {
             Button("OK", role: .cancel) {}
         } message: { Text(ai.error ?? "Unknown error") }
         .sheet(item: $consultationPDFWrapper) { wrapper in
+            ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
+        }
+        .sheet(item: $preConsultPDFWrapper) { wrapper in
             ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
         }
         .sheet(isPresented: $showLetterSheet) {
@@ -1538,7 +1542,58 @@ struct ConsultationView: View {
                                   filled: !(patient.associatedSymptoms ?? "").isEmpty)
                 }
             }
+
+            // Pre-consult questionnaire generator
+            Section {
+                Button {
+                    sharePreConsultForm()
+                } label: {
+                    HStack(spacing: 10) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 7)
+                                .fill(AMColor.accentLt)
+                                .frame(width: 32, height: 32)
+                            Image(systemName: "doc.badge.arrow.up")
+                                .font(.system(size: 14))
+                                .foregroundStyle(AMColor.accent)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Send Pre-consult Form")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(.primary)
+                            Text("Patient completes before the visit")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .buttonStyle(.plain)
+            } header: {
+                sectionHeader("Pre-Consult", icon: "square.and.pencil", filled: false)
+            } footer: {
+                Text("Generates a printable questionnaire the patient fills in ahead of their appointment. No clinical data is included.")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
         }
+    }
+
+    private func sharePreConsultForm() {
+        let data = PreConsultQuestionnairePDF.generate(
+            patientName: patient.fullName.isEmpty ? nil : patient.fullName,
+            patientDOB: patient.dateOfBirth.map { DateFormatter.ectDate.string(from: $0) },
+            patientMRN: patient.mrn
+        )
+        let df = DateFormatter()
+        df.dateFormat = "yyyy-MM-dd"
+        let fileName = "PreConsult_\(patient.fullName.replacingOccurrences(of: " ", with: "_"))_\(df.string(from: .now)).pdf"
+        let tmp = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        try? data.write(to: tmp)
+        preConsultPDFWrapper = PDFDataWrapper(data: data)
     }
 
     // MARK: - HPI tab (SOCRATES chip builder)
