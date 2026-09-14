@@ -879,6 +879,7 @@ struct ConsultationView: View {
     // PMH — medication history
     @State private var medQuery = ""
     @State private var medSuggestions: [SurgicalDrug] = []
+    @FocusState private var medFieldFocused: Bool
     @State private var expandedMed: SurgicalDrug? = nil
     @State private var medDose = ""
     @State private var medRoute = "Oral"
@@ -2036,23 +2037,41 @@ struct ConsultationView: View {
             // Drug search field
             HStack(spacing: 8) {
                 Image(systemName: "pills").foregroundStyle(.secondary)
-                TextField("Search medication…", text: $medQuery)
+                TextField("Type a drug name or browse below…", text: $medQuery)
                     .autocorrectionDisabled()
+                    .focused($medFieldFocused)
                     .onChange(of: medQuery) { _, q in
-                        medSuggestions = q.count >= 2 ? ClinicalSearchService.searchDrugs(q) : []
+                        if q.isEmpty {
+                            medSuggestions = medFieldFocused ? SurgicalDrug.popular : []
+                        } else {
+                            medSuggestions = ClinicalSearchService.searchDrugs(q)
+                        }
                         if expandedMed != nil && expandedMed?.name.lowercased() != q.lowercased() {
                             expandedMed = nil
                         }
                     }
+                    .onChange(of: medFieldFocused) { _, focused in
+                        if focused && medQuery.isEmpty {
+                            medSuggestions = SurgicalDrug.popular
+                        } else if !focused && medQuery.isEmpty {
+                            medSuggestions = []
+                        }
+                    }
                 if !medQuery.isEmpty {
-                    Button { medQuery = ""; medSuggestions = []; expandedMed = nil } label: {
+                    Button { medQuery = ""; medSuggestions = SurgicalDrug.popular; expandedMed = nil } label: {
                         Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
                     }.buttonStyle(.plain)
                 }
             }
 
-            // Drug suggestion list
-            ForEach(medSuggestions.prefix(6)) { drug in
+            // Drug suggestion / browse list (popular when empty, filtered when typing)
+            if !medSuggestions.isEmpty {
+                Text(medQuery.isEmpty ? "Common medications — tap to select" : "Tap to select")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .listRowSeparator(.hidden)
+            }
+            ForEach(medSuggestions.prefix(medQuery.isEmpty ? 30 : 8)) { drug in
                 Button {
                     medQuery  = drug.name
                     expandedMed = drug
@@ -4096,13 +4115,14 @@ private struct AddMedicationSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var drugQuery = ""
-    @State private var suggestions: [SurgicalDrug] = []
+    @State private var suggestions: [SurgicalDrug] = SurgicalDrug.popular
     @State private var selectedDrug: SurgicalDrug?
     @State private var dose = ""
     @State private var route = "Oral"
     @State private var frequency = "Once daily"
     @State private var duration = "7 days"
     @State private var indication = ""
+    @FocusState private var fieldFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -4110,25 +4130,38 @@ private struct AddMedicationSheet: View {
                 Section {
                     HStack {
                         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                        TextField("Drug name", text: $drugQuery)
+                        TextField("Type a drug name or browse below…", text: $drugQuery)
                             .autocorrectionDisabled()
+                            .focused($fieldFocused)
                             .onChange(of: drugQuery) { _, q in
-                                suggestions = q.count >= 2 ? ClinicalSearchService.searchDrugs(q) : []
+                                suggestions = q.isEmpty
+                                    ? SurgicalDrug.popular
+                                    : ClinicalSearchService.searchDrugs(q)
                             }
                         if !drugQuery.isEmpty {
-                            Button { drugQuery = ""; suggestions = [] }
+                            Button { drugQuery = ""; suggestions = SurgicalDrug.popular }
                                 label: { Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary) }
                         }
                     }
-                    ForEach(suggestions.prefix(6)) { drug in
+                    if !suggestions.isEmpty {
+                        Text(drugQuery.isEmpty ? "Common medications — tap to select" : "Tap to select")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .listRowSeparator(.hidden)
+                    }
+                    ForEach(suggestions.prefix(drugQuery.isEmpty ? 30 : 8)) { drug in
                         Button {
                             selectedDrug = drug; drugQuery = drug.name
                             dose = drug.commonDoses; indication = patient.workingDiagnosis ?? ""
                             suggestions = []
                         } label: {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(drug.name).foregroundStyle(.primary).font(.subheadline)
-                                Text(drug.commonDoses).font(.caption).foregroundStyle(.secondary)
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(drug.name).foregroundStyle(.primary).font(.subheadline)
+                                    Text(drug.category).font(.caption).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Text(drug.commonDoses).font(.caption2).foregroundStyle(.tertiary)
                             }
                         }
                     }

@@ -179,12 +179,28 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
     var sideEffects: String = ""
 
     static func search(_ query: String) -> [SurgicalDrug] {
-        guard query.count >= 2 else { return [] }
+        guard query.count >= 1 else { return [] }
         let q = query.lowercased()
         return allDrugs.filter {
             $0.name.lowercased().contains(q) ||
             $0.category.lowercased().contains(q)
         }.prefix(20).map { $0 }
+    }
+
+    // Curated subset shown when the search field is focused but empty — the
+    // most commonly prescribed drugs in a general/endoscopic surgical practice.
+    private static let _popularNames: Set<String> = [
+        "Amlodipine", "Losartan", "Lisinopril", "Ramipril", "Atenolol",
+        "Bisoprolol", "Metoprolol", "Furosemide", "Hydrochlorothiazide",
+        "Spironolactone", "Valsartan", "Candesartan", "Perindopril",
+        "Atorvastatin", "Simvastatin", "Aspirin", "Clopidogrel",
+        "Metformin", "Gliclazide", "Paracetamol", "Ibuprofen",
+        "Omeprazole", "Pantoprazole", "Enoxaparin", "Warfarin",
+        "Levothyroxine", "Prednisolone", "Metoclopramide", "Ondansetron",
+    ]
+    static var popular: [SurgicalDrug] {
+        allDrugs.filter { _popularNames.contains($0.name) }
+                .sorted { $0.name < $1.name }
     }
 
     static let allDrugs: [SurgicalDrug] = [
@@ -304,6 +320,26 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
         .init(name: "Furosemide",     category: "Loop Diuretic",       commonDoses: "20–80 mg OD–BD",    route: "PO/IV", notes: "Fluid overload; heart failure; acute pulmonary oedema (80–120 mg IV)", sideEffects: "Hypokalaemia, hyponatraemia, hypomagnesaemia, ototoxicity (high IV doses), dehydration, gout"),
         .init(name: "Spironolactone", category: "Potassium-sparing Diuretic", commonDoses: "25–100 mg OD", route: "PO", notes: "Heart failure; ascites/cirrhosis; primary hyperaldosteronism", sideEffects: "Hyperkalaemia, gynaecomastia, menstrual irregularities, impotence, GI upset"),
         .init(name: "Hydrochlorothiazide", category: "Thiazide Diuretic", commonDoses: "12.5–25 mg OD", route: "PO", notes: "Hypertension; usually combined with ACE inhibitor/ARB", sideEffects: "Hypokalaemia, hyponatraemia, hyperuricaemia/gout, hyperglycaemia, photosensitivity"),
+        .init(name: "Indapamide",         category: "Thiazide-like Diuretic", commonDoses: "1.5 mg OD (SR); 2.5 mg OD",   route: "PO", notes: "Preferred thiazide in elderly; less metabolic disturbance than HCTZ", sideEffects: "Hypokalaemia, hyponatraemia, hyperuricaemia; less hyperglycaemia than thiazides"),
+        .init(name: "Chlorthalidone",     category: "Thiazide Diuretic",      commonDoses: "12.5–25 mg OD",               route: "PO", notes: "Longer-acting than HCTZ; preferred in cardiovascular risk reduction", sideEffects: "Hypokalaemia, hyponatraemia, hyperuricaemia, hyperglycaemia, photosensitivity"),
+        .init(name: "Valsartan",          category: "ARB",                    commonDoses: "80–320 mg OD",                 route: "PO", notes: "Hypertension; heart failure post-MI; no ACE inhibitor cough", sideEffects: "Hyperkalaemia, renal impairment, dizziness, hypotension; HOLD 24h pre-op"),
+        .init(name: "Candesartan",        category: "ARB",                    commonDoses: "4–32 mg OD",                   route: "PO", notes: "Hypertension; heart failure with reduced EF", sideEffects: "Hyperkalaemia, renal impairment, dizziness, hypotension, raised creatinine"),
+        .init(name: "Telmisartan",        category: "ARB",                    commonDoses: "20–80 mg OD",                  route: "PO", notes: "Long-acting ARB; once daily; hepatic elimination (safe in renal failure)", sideEffects: "Hyperkalaemia, renal impairment, dizziness, back pain; HOLD 24h pre-op"),
+        .init(name: "Irbesartan",         category: "ARB",                    commonDoses: "150–300 mg OD",                route: "PO", notes: "Hypertension; diabetic nephropathy in type 2 DM", sideEffects: "Hyperkalaemia, renal impairment, dizziness, musculoskeletal pain"),
+        .init(name: "Olmesartan",         category: "ARB",                    commonDoses: "10–40 mg OD",                  route: "PO", notes: "Hypertension; associated with sprue-like enteropathy (rare)", sideEffects: "Hyperkalaemia, renal impairment, dizziness; sprue-like enteropathy (rare)"),
+        .init(name: "Perindopril",        category: "ACE Inhibitor",          commonDoses: "2–10 mg OD",                   route: "PO", notes: "Hypertension; stable coronary artery disease; heart failure", sideEffects: "Dry cough, hyperkalaemia, renal impairment, angioedema, hypotension"),
+        .init(name: "Enalapril",          category: "ACE Inhibitor",          commonDoses: "2.5–40 mg OD–BD",             route: "PO/IV", notes: "Hypertension; heart failure; IV available for hypertensive urgency", sideEffects: "Dry cough, hyperkalaemia, renal impairment, angioedema; HOLD 24h pre-op"),
+        .init(name: "Captopril",          category: "ACE Inhibitor",          commonDoses: "6.25–50 mg TDS",               route: "PO", notes: "Short-acting; used in hypertensive crisis (acute dose); nephroprotective", sideEffects: "Dry cough, hyperkalaemia, renal impairment, taste disturbance, rash, angioedema"),
+        .init(name: "Doxazosin",          category: "Alpha-1 Blocker",        commonDoses: "1–16 mg OD (XL: 4–8 mg OD)",  route: "PO", notes: "Hypertension; BPH; first dose hypotension — start 1 mg nocte", sideEffects: "Postural hypotension (first dose), dizziness, oedema, drowsiness, rhinitis"),
+        .init(name: "Prazosin",           category: "Alpha-1 Blocker",        commonDoses: "0.5–20 mg BD–TDS",             route: "PO", notes: "Hypertension; phaeochromocytoma pre-op; first-dose hypotension risk", sideEffects: "First-dose postural hypotension (syncope risk), dizziness, oedema, palpitations"),
+        .init(name: "Diltiazem",          category: "Calcium Channel Blocker (non-DHP)", commonDoses: "60–120 mg TDS (standard); 120–360 mg OD (SR)", route: "PO/IV", notes: "Rate control AF; angina; avoid with beta-blockers (bradycardia risk)", sideEffects: "Bradycardia, heart block (with beta-blockers), ankle oedema, constipation, flushing"),
+        .init(name: "Verapamil",          category: "Calcium Channel Blocker (non-DHP)", commonDoses: "40–120 mg TDS or 120–480 mg OD (SR)", route: "PO/IV", notes: "Rate control AF/SVT; angina; AVOID with beta-blockers (fatal bradycardia)", sideEffects: "Constipation, bradycardia, heart block, hypotension; NEVER combine with IV beta-blockers"),
+        .init(name: "Labetalol",          category: "Alpha/Beta-blocker",     commonDoses: "100–400 mg BD–TDS PO; 50 mg IV bolus or 2 mg/min infusion", route: "PO/IV", notes: "Hypertensive emergency; pregnancy-induced hypertension; IV preferred inpatient", sideEffects: "Postural hypotension, bradycardia, bronchospasm, fatigue, scalp tingling (IV), nausea"),
+        .init(name: "Hydralazine",        category: "Vasodilator",            commonDoses: "25–75 mg BD–QDS PO; 5–20 mg slow IV bolus", route: "PO/IV", notes: "Hypertensive emergency (IV); pregnancy hypertension; usually with beta-blocker", sideEffects: "Reflex tachycardia, fluid retention, lupus-like syndrome (prolonged use), headache, flushing"),
+        .init(name: "Methyldopa",         category: "Centrally-acting Antihypertensive", commonDoses: "250–500 mg TDS",  route: "PO", notes: "Safe in pregnancy (drug of choice); sedating; Coombs-positive haemolysis risk", sideEffects: "Sedation, dry mouth, postural hypotension, positive Coombs test, hepatotoxicity (rare)"),
+        .init(name: "Clonidine",          category: "Centrally-acting Antihypertensive", commonDoses: "50–300 mcg TDS",  route: "PO", notes: "Hypertension; AVOID abrupt withdrawal (rebound crisis); peri-op pain adjunct", sideEffects: "Sedation, dry mouth, rebound hypertension on abrupt withdrawal, bradycardia"),
+        .init(name: "Minoxidil",          category: "Vasodilator",            commonDoses: "5–10 mg OD–BD",                route: "PO", notes: "Resistant hypertension; always with diuretic + beta-blocker; hair growth SE", sideEffects: "Fluid retention, reflex tachycardia, hypertrichosis, pericardial effusion (high dose)"),
+        .init(name: "Sacubitril/Valsartan (Entresto)", category: "ARNI",     commonDoses: "24/26 mg BD → 49/51 mg BD → 97/103 mg BD", route: "PO", notes: "HFrEF; start after ACE inhibitor washout (≥36h); superior to ACE inhibitor in HF", sideEffects: "Hypotension, hyperkalaemia, renal impairment, angioedema (especially if switching from ACE inhibitor)"),
 
         // ─── STATINS / LIPID-LOWERING ─────────────────────────────────────────
         .init(name: "Atorvastatin",   category: "Statin",              commonDoses: "10–80 mg nocte",    route: "PO", notes: "Cardiovascular risk reduction; first-line statin; continue peri-operatively", sideEffects: "Myalgia, myopathy, rhabdomyolysis (rare), elevated LFTs, new-onset diabetes (long-term)"),
