@@ -436,6 +436,13 @@ struct ClinicalScoresView: View {
     // MARK: - Tokyo Cholangitis
 
     private var tokyoCholangitisForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            tokyoCholangitisGrade1and2
+            tokyoCholangitisGrade3
+        }
+    }
+
+    @ViewBuilder private var tokyoCholangitisGrade1and2: some View {
         Group {
             scoreToggle("Cholangitis confirmed (Charcot's / imaging)", binding: $tkyG.cholangitisConfirmed, points: "Req.")
             sectionHeader("Grade II Criteria (any = at least Grade II)")
@@ -444,6 +451,17 @@ struct ClinicalScoresView: View {
             scoreToggle("Age >75 years", binding: $tkyG.ageAbove75, points: "II")
             scoreToggle("Bilirubin >85 μmol/L (>5 mg/dL)", binding: $tkyG.bilirubinAbove5, points: "II")
             scoreToggle("Albumin <0.7 × LLN", binding: $tkyG.albuminBelow0_7xLLN, points: "II")
+        }
+        .onChange(of: tkyG.cholangitisConfirmed)  { _, _ in recalculate() }
+        .onChange(of: tkyG.wbcAbove12OrBelow4)    { _, _ in recalculate() }
+        .onChange(of: tkyG.temperatureAbove39)    { _, _ in recalculate() }
+        .onChange(of: tkyG.ageAbove75)            { _, _ in recalculate() }
+        .onChange(of: tkyG.bilirubinAbove5)       { _, _ in recalculate() }
+        .onChange(of: tkyG.albuminBelow0_7xLLN)   { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var tokyoCholangitisGrade3: some View {
+        Group {
             sectionHeader("Grade III Organ Dysfunction")
             scoreToggle("Cardiovascular dysfunction", binding: $tkyG.cardiovascularDysfunction, points: "III")
             scoreToggle("Neurological dysfunction", binding: $tkyG.neurologicalDysfunction, points: "III")
@@ -452,12 +470,6 @@ struct ClinicalScoresView: View {
             scoreToggle("Hepatic dysfunction", binding: $tkyG.hepaticDysfunction, points: "III")
             scoreToggle("Haematological dysfunction", binding: $tkyG.haematologicalDysfunction, points: "III")
         }
-        .onChange(of: tkyG.cholangitisConfirmed)      { _, _ in recalculate() }
-        .onChange(of: tkyG.wbcAbove12OrBelow4)        { _, _ in recalculate() }
-        .onChange(of: tkyG.temperatureAbove39)        { _, _ in recalculate() }
-        .onChange(of: tkyG.ageAbove75)                { _, _ in recalculate() }
-        .onChange(of: tkyG.bilirubinAbove5)           { _, _ in recalculate() }
-        .onChange(of: tkyG.albuminBelow0_7xLLN)       { _, _ in recalculate() }
         .onChange(of: tkyG.cardiovascularDysfunction) { _, _ in recalculate() }
         .onChange(of: tkyG.neurologicalDysfunction)   { _, _ in recalculate() }
         .onChange(of: tkyG.respiratoryDysfunction)    { _, _ in recalculate() }
@@ -753,11 +765,32 @@ struct ClinicalScoresView: View {
     // MARK: - Caprini
 
     private var capriniForm: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            capriniAgeSection
+            capriniRiskSection
+            capriniHighRiskSection
+        }
+    }
+
+    @ViewBuilder private var capriniAgeSection: some View {
         Group {
             sectionHeader("Age")
             scoreToggle("Age 41–59 years", binding: $cap.age41to59, points: "+1")
             scoreToggle("Age 60–74 years", binding: $cap.age60to74, points: "+2")
             scoreToggle("Age ≥75 years", binding: $cap.ageOver75, points: "+3")
+        }
+        .onChange(of: cap.age41to59)  { _, _ in recalculate() }
+        .onChange(of: cap.age60to74)  { _, _ in recalculate() }
+        .onChange(of: cap.ageOver75)  { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var capriniRiskSection: some View {
+        capriniRiskSectionA
+        capriniRiskSectionB
+    }
+
+    @ViewBuilder private var capriniRiskSectionA: some View {
+        Group {
             sectionHeader("Risk Factors")
             scoreToggle("Minor surgery (current)", binding: $cap.minorSurgery, points: "+1")
             scoreToggle("Major surgery (>45 min)", binding: $cap.majorSurgery, points: "+2")
@@ -765,12 +798,34 @@ struct ClinicalScoresView: View {
             scoreToggle("Immobility / bed-rest", binding: $cap.immobilityBedridden, points: "+1")
             scoreToggle("Central venous access", binding: $cap.centralVenousAccess, points: "+2")
             scoreToggle("Active / prior malignancy", binding: $cap.activeOrPriorMalignancy, points: "+2")
+        }
+        .onChange(of: cap.minorSurgery)              { _, _ in recalculate() }
+        .onChange(of: cap.majorSurgery)              { _, _ in recalculate() }
+        .onChange(of: cap.laparoscopicSurgeryOver45min) { _, _ in recalculate() }
+        .onChange(of: cap.immobilityBedridden)       { _, _ in recalculate() }
+        .onChange(of: cap.centralVenousAccess)       { _, _ in recalculate() }
+        .onChange(of: cap.activeOrPriorMalignancy)   { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var capriniRiskSectionB: some View {
+        Group {
             scoreToggle("Prior VTE", binding: $cap.priorVTE, points: "+3")
             scoreToggle("Family history of VTE", binding: $cap.familyHistoryVTE, points: "+3")
             scoreToggle("Thrombophilia", binding: $cap.thrombophilia, points: "+3")
             scoreToggle("Hormonal therapy / OCP", binding: $cap.hormonalTherapy, points: "+1")
             scoreToggle("Sepsis within 30 days", binding: $cap.sepsis30d, points: "+1")
             scoreToggle("BMI ≥40 kg/m²", binding: $cap.bmi40Plus, points: "+1")
+        }
+        .onChange(of: cap.priorVTE)       { _, _ in recalculate() }
+        .onChange(of: cap.familyHistoryVTE) { _, _ in recalculate() }
+        .onChange(of: cap.thrombophilia)  { _, _ in recalculate() }
+        .onChange(of: cap.hormonalTherapy){ _, _ in recalculate() }
+        .onChange(of: cap.sepsis30d)      { _, _ in recalculate() }
+        .onChange(of: cap.bmi40Plus)      { _, _ in recalculate() }
+    }
+
+    @ViewBuilder private var capriniHighRiskSection: some View {
+        Group {
             sectionHeader("High-Risk Events (+5 each)")
             scoreToggle("Stroke", binding: $cap.stroke, points: "+5")
             scoreToggle("Myocardial infarction", binding: $cap.mi, points: "+5")
@@ -778,26 +833,11 @@ struct ClinicalScoresView: View {
             scoreToggle("Pelvis fracture / hip or knee replacement", binding: $cap.pelvisFractureOrHipKneeReplacement, points: "+5")
             scoreToggle("Multiple trauma", binding: $cap.multipleTrauma, points: "+5")
         }
-        .onChange(of: cap.ageOver75)                        { _, _ in recalculate() }
-        .onChange(of: cap.age60to74)                        { _, _ in recalculate() }
-        .onChange(of: cap.age41to59)                        { _, _ in recalculate() }
-        .onChange(of: cap.activeOrPriorMalignancy)          { _, _ in recalculate() }
-        .onChange(of: cap.priorVTE)                         { _, _ in recalculate() }
-        .onChange(of: cap.familyHistoryVTE)                 { _, _ in recalculate() }
-        .onChange(of: cap.thrombophilia)                    { _, _ in recalculate() }
-        .onChange(of: cap.minorSurgery)                     { _, _ in recalculate() }
-        .onChange(of: cap.majorSurgery)                     { _, _ in recalculate() }
-        .onChange(of: cap.laparoscopicSurgeryOver45min)     { _, _ in recalculate() }
-        .onChange(of: cap.immobilityBedridden)              { _, _ in recalculate() }
-        .onChange(of: cap.centralVenousAccess)              { _, _ in recalculate() }
-        .onChange(of: cap.hormonalTherapy)                  { _, _ in recalculate() }
-        .onChange(of: cap.sepsis30d)                        { _, _ in recalculate() }
-        .onChange(of: cap.bmi40Plus)                        { _, _ in recalculate() }
-        .onChange(of: cap.stroke)                           { _, _ in recalculate() }
-        .onChange(of: cap.mi)                               { _, _ in recalculate() }
-        .onChange(of: cap.spinalCordInjury)                 { _, _ in recalculate() }
-        .onChange(of: cap.pelvisFractureOrHipKneeReplacement){ _, _ in recalculate() }
-        .onChange(of: cap.multipleTrauma)                   { _, _ in recalculate() }
+        .onChange(of: cap.stroke)                        { _, _ in recalculate() }
+        .onChange(of: cap.mi)                            { _, _ in recalculate() }
+        .onChange(of: cap.spinalCordInjury)              { _, _ in recalculate() }
+        .onChange(of: cap.pelvisFractureOrHipKneeReplacement) { _, _ in recalculate() }
+        .onChange(of: cap.multipleTrauma)                { _, _ in recalculate() }
     }
 
     // MARK: - Child-Pugh
