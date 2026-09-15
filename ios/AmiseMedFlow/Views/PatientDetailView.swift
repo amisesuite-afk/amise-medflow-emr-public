@@ -38,6 +38,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case trauma         = "Trauma / ATLS"
     case ogd            = "OGD Report"
     case surgery        = "Operative Note"
+    case consent        = "Surgical Consent"
     case ercp           = "ERCP Report"
     case history        = "Visit History"
 
@@ -68,6 +69,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .trauma:         "cross.case.fill"
         case .ogd:            "scope"
         case .surgery:        "scissors"
+        case .consent:        "signature"
         case .ercp:           "waveform.and.magnifyingglass"
         case .history:        "clock.badge.checkmark"
         }
@@ -98,6 +100,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .trauma:         "Trauma"
         case .ogd:            "OGD"
         case .surgery:        "Op Note"
+        case .consent:        "Consent"
         case .ercp:           "ERCP"
         case .history:        "History"
         }
@@ -144,6 +147,7 @@ struct PatientDetailPadView: View {
             case .trauma:  return patient.visitType == .trauma
             case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
+            case .consent: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
             case .history: return !patient.encounters.filter(\.isComplete).isEmpty
             default:       return true
@@ -375,6 +379,8 @@ struct PatientDetailPadView: View {
             OGDFormView(patient: patient)
         case .surgery:
             SurgeryNoteView(patient: patient)
+        case .consent:
+            ConsentFormView(patient: patient)
         case .ercp:
             ERCPFormView(patient: patient)
         case .history:
@@ -1195,6 +1201,8 @@ struct PatientDetailView: View {
                                 destination: AnyView(TraumaAssessmentView(patient: patient)))
                 }
                 if patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery {
+                    quickAction("Consent", icon: "signature", color: .indigo,
+                                destination: AnyView(ConsentFormView(patient: patient)))
                     quickAction("Op Note", icon: "scissors", color: .purple,
                                 destination: AnyView(SurgeryNoteView(patient: patient)))
                 }

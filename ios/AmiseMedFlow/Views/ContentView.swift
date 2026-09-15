@@ -183,17 +183,27 @@ struct ClinicalHubView: View {
 
             // Procedure-specific forms (shown based on visitType)
             if let vt = patient.visitType {
-                let showTrauma  = vt == .trauma
-                let showOGD     = vt == .ogd || vt == .colonoscopy || vt == .dayOfSurgery
-                let showSurgery = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
-                let showERCP    = vt == .ercp || vt == .dayOfSurgery
+                let showTrauma       = vt == .trauma
+                let showOGD          = vt == .ogd || vt == .dayOfSurgery
+                let showColonoscopy  = vt == .colonoscopy || vt == .dayOfSurgery
+                let showSurgery      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showERCP         = vt == .ercp || vt == .dayOfSurgery
+                let showPostOp       = vt == .postOp
+                let showDischarge    = vt == .postOp || vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showReferral     = vt == .newConsult || vt == .followUp || vt == .urgentReview || vt == .postOp
+                let showConsent      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
 
-                if showTrauma || showOGD || showSurgery || showERCP {
+                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showPostOp || showDischarge || showReferral || showConsent {
                     Section("Procedure Forms") {
                         if showTrauma {
                             NavigationLink { TraumaAssessmentView(patient: patient) } label: {
                                 Label("Trauma Assessment (ATLS)", systemImage: "cross.case.fill")
                                     .foregroundStyle(.red)
+                            }
+                        }
+                        if showConsent {
+                            NavigationLink { ConsentFormView(patient: patient) } label: {
+                                Label("Surgical Consent", systemImage: "signature")
                             }
                         }
                         if showSurgery {
