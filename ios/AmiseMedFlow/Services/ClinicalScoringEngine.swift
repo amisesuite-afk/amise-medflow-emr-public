@@ -266,6 +266,126 @@ struct ChildPughInput: Equatable {
     enum EncephalopathyGrade: Int { case none = 1, grade1to2 = 2, grade3to4 = 3 }
 }
 
+struct MEWSInput: Equatable {
+    // Modified Early Warning Score — bedside vital signs
+    var respiratoryRate: Int = 14      // breaths/min
+    var oxygenSaturation: Int = 98    // SpO₂ %
+    var heartRate: Int = 75            // bpm
+    var systolicBP: Int = 120          // mmHg
+    var temperature: Double = 36.8    // °C
+    var consciousnessAVPU: AVPULevel = .alert
+    var urineOutput: UrineOutput = .normal // per hour
+
+    enum AVPULevel: Int { case alert = 0, voice = 1, pain = 2, unresponsive = 3 }
+    enum UrineOutput: Int { case normal = 0, low = 1, nil_ = 2 } // nil = <10 mL/hr
+}
+
+struct GCSInput: Equatable {
+    // Glasgow Coma Scale
+    var eyeOpening: EyeScore = .spontaneous      // 4 = spontaneous, 3 = to voice, 2 = to pain, 1 = none
+    var verbalResponse: VerbalScore = .oriented  // 5 oriented … 1 none
+    var motorResponse: MotorScore = .obeys       // 6 obeys … 1 none
+
+    enum EyeScore: Int, CaseIterable { case spontaneous = 4, toVoice = 3, toPain = 2, none = 1 }
+    enum VerbalScore: Int, CaseIterable { case oriented = 5, confused = 4, inappropriateWords = 3, sounds = 2, none = 1 }
+    enum MotorScore: Int, CaseIterable { case obeys = 6, localises = 5, withdraws = 4, abnormalFlexion = 3, extension_ = 2, none = 1 }
+}
+
+struct ASAInput: Equatable {
+    var asaClass: ASAClass = .i
+
+    enum ASAClass: Int, CaseIterable {
+        case i = 1, ii = 2, iii = 3, iv = 4, v = 5
+    }
+}
+
+struct MELDInput: Equatable {
+    // MELD-Na Score (Kamath 2001 + sodium update)
+    var bilirubinMgDL: Double = 1.0     // mg/dL
+    var creatinineMgDL: Double = 1.0   // mg/dL
+    var inrValue: Double = 1.0
+    var sodiumMmolL: Double = 138.0    // mmol/L (for MELD-Na)
+    var onDialysis: Bool = false       // creatinine capped at 4.0 if true
+}
+
+struct CHA2DS2VAScInput: Equatable {
+    // CHA₂DS₂-VASc — AF stroke risk
+    var congestiveHeartFailure: Bool = false    // +1
+    var hypertension: Bool = false              // +1
+    var ageOver75: Bool = false                 // +2 (overrides age65to74)
+    var age65to74: Bool = false                 // +1
+    var diabetes: Bool = false                  // +1
+    var strokeOrTIA: Bool = false               // +2
+    var vascularDisease: Bool = false           // MI, PAD, aortic plaque — +1
+    var femaleSex: Bool = false                 // +1
+}
+
+struct HASBLEDInput: Equatable {
+    // HAS-BLED bleeding risk with anticoagulation
+    var hypertensionUncontrolled: Bool = false  // SBP >160 — +1
+    var renalDysfunction: Bool = false          // dialysis, Cr >200 μmol/L — +1
+    var liverDysfunction: Bool = false          // cirrhosis or bili >×2 + AST/ALT >×3 — +1
+    var strokeHistory: Bool = false             // +1
+    var priorBleeding: Bool = false             // or predisposition — +1
+    var labileINR: Bool = false                 // TTR <60% — +1
+    var ageOver65: Bool = false                 // +1
+    var drugsOrAlcohol: Bool = false            // antiplatelets/NSAIDs or ≥8 units/wk — +1 each (max +2)
+    var alcoholUse: Bool = false                // counted separately from drugs
+}
+
+struct BlatchfordInput: Equatable {
+    // Glasgow-Blatchford Score — upper GI bleed pre-endoscopy
+    var bloodUreaNitrogen: BlatchfordBUN = .under6_5
+    var haemoglobin: BlatchfordHb = .male13plus    // set gender-appropriate field
+    var isMale: Bool = true
+    var sbp: BlatchfordSBP = .over109
+    var heartRateOver100: Bool = false
+    var melaena: Bool = false
+    var syncope: Bool = false
+    var hepaticDisease: Bool = false
+    var cardiacFailure: Bool = false
+
+    enum BlatchfordBUN: Int {
+        case under6_5 = 0, bun6_5to7_9 = 2, bun8to9_9 = 3, bun10to24_9 = 4, bunOver25 = 6
+    }
+    enum BlatchfordHb: Int {
+        case male13plus = 0
+        case male12to12_9 = 1
+        case male10to11_9 = 3
+        case maleSub10 = 6
+        case female12plus = 10
+        case female10to11_9 = 11
+        case femaleSub10 = 16
+    }
+
+    var haemoglobinPoints: Int {
+        switch haemoglobin {
+        case .male13plus:    return 0
+        case .male12to12_9:  return 1
+        case .male10to11_9:  return 3
+        case .maleSub10:     return 6
+        case .female12plus:  return 0
+        case .female10to11_9: return 1
+        case .femaleSub10:   return 6
+        }
+    }
+    enum BlatchfordSBP: Int {
+        case over109 = 0, sbp100to109 = 1, sbp90to99 = 2, under90 = 3
+    }
+}
+
+struct STOPBANGInput: Equatable {
+    // STOP-BANG — OSA screening pre-operatively
+    var snoring: Bool = false           // S
+    var tired: Bool = false             // T — often tired during day
+    var observed: Bool = false          // O — observed to stop breathing
+    var pressureTreated: Bool = false   // P — high blood pressure or treated
+    var bmiOver35: Bool = false         // B
+    var ageOver50: Bool = false         // A
+    var neckOver40cm: Bool = false      // N — neck circumference
+    var male: Bool = false              // G — gender male
+}
+
 // MARK: - ClinicalScoringEngine
 
 enum ClinicalScoringEngine {
@@ -1209,5 +1329,394 @@ enum ClinicalScoringEngine {
     }
     private static func encephLabel(_ e: ChildPughInput.EncephalopathyGrade) -> String {
         switch e { case .none: "None"; case .grade1to2: "Grade 1–2"; case .grade3to4: "Grade 3–4" }
+    }
+
+    // MARK: MEWS (Modified Early Warning Score)
+
+    static func mews(_ i: MEWSInput) -> ClinicalScore {
+        var rrPoints = 0
+        switch i.respiratoryRate {
+        case ..<9:   rrPoints = 2
+        case 9...14: rrPoints = 0
+        case 15...20: rrPoints = 1
+        case 21...29: rrPoints = 2
+        default:     rrPoints = 3
+        }
+        var spo2Points = 0
+        switch i.oxygenSaturation {
+        case ..<85:  spo2Points = 3
+        case 85...89: spo2Points = 2
+        case 90...93: spo2Points = 1
+        default:     spo2Points = 0
+        }
+        var hrPoints = 0
+        switch i.heartRate {
+        case ..<40:  hrPoints = 2
+        case 40...50: hrPoints = 1
+        case 51...100: hrPoints = 0
+        case 101...110: hrPoints = 1
+        case 111...130: hrPoints = 2
+        default:     hrPoints = 3
+        }
+        var sbpPoints = 0
+        switch i.systolicBP {
+        case ..<70:  sbpPoints = 3
+        case 70...80: sbpPoints = 2
+        case 81...100: sbpPoints = 1
+        case 101...199: sbpPoints = 0
+        default:     sbpPoints = 2
+        }
+        var tempPoints = 0
+        switch i.temperature {
+        case ..<35.0:  tempPoints = 2
+        case 35.0..<36.0: tempPoints = 1
+        case 36.0..<38.0: tempPoints = 0
+        case 38.0..<38.5: tempPoints = 1
+        default:       tempPoints = 2
+        }
+        let avpuPoints = i.consciousnessAVPU.rawValue
+        let urinePoints = i.urineOutput.rawValue
+        let total = Double(rrPoints + spo2Points + hrPoints + sbpPoints + tempPoints + avpuPoints + urinePoints)
+
+        let (risk, interp, recs) = mewsRisk(total)
+        let items: [ScoredItem] = [
+            .init(label: "Respiratory rate", points: Double(rrPoints), present: rrPoints > 0),
+            .init(label: "SpO₂", points: Double(spo2Points), present: spo2Points > 0),
+            .init(label: "Heart rate", points: Double(hrPoints), present: hrPoints > 0),
+            .init(label: "Systolic BP", points: Double(sbpPoints), present: sbpPoints > 0),
+            .init(label: "Temperature", points: Double(tempPoints), present: tempPoints > 0),
+            .init(label: "AVPU consciousness", points: Double(avpuPoints), present: avpuPoints > 0),
+            .init(label: "Urine output", points: Double(urinePoints), present: urinePoints > 0),
+        ]
+        let redFlags = total >= 5 ? ["MEWS ≥5: immediate senior review and consider ICU referral"] : []
+        return ClinicalScore(
+            systemName: "Modified Early Warning Score",
+            abbreviation: "MEWS \(Int(total))",
+            score: total, maxScore: 14,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Subbe 2001. MEWS ≥5 associated with significantly increased risk of ICU admission and death."
+        )
+    }
+
+    private static func mewsRisk(_ s: Double) -> (ScoreRisk, String, [String]) {
+        switch s {
+        case 0...1: return (.low, "MEWS \(Int(s))/14 — Stable: routine monitoring", ["Routine obs 4–6 hourly"])
+        case 2...3: return (.moderate, "MEWS \(Int(s))/14 — Increased risk: enhanced monitoring", ["Increase obs to 1–2 hourly", "Inform nurse in charge", "Review hydration and medications"])
+        case 4...5: return (.high, "MEWS \(Int(s))/14 — Urgent: senior review needed", ["Immediate nursing review", "Contact junior doctor", "Consider bloods + ABG", "Increase obs to hourly"])
+        default:    return (.critical, "MEWS \(Int(s))/14 — Critical: immediate intervention required", ["Immediate senior/ICU review", "Activate rapid response/MET", "IV access, bloods, ABG now", "Consider resuscitation protocol"])
+        }
+    }
+
+    // MARK: GCS (Glasgow Coma Scale)
+
+    static func gcs(_ i: GCSInput) -> ClinicalScore {
+        let total = Double(i.eyeOpening.rawValue + i.verbalResponse.rawValue + i.motorResponse.rawValue)
+        let eyeLabel: String
+        switch i.eyeOpening {
+        case .spontaneous: eyeLabel = "Spontaneous (4)"
+        case .toVoice:     eyeLabel = "To voice (3)"
+        case .toPain:      eyeLabel = "To pain (2)"
+        case .none:        eyeLabel = "None (1)"
+        }
+        let verbalLabel: String
+        switch i.verbalResponse {
+        case .oriented:            verbalLabel = "Oriented (5)"
+        case .confused:            verbalLabel = "Confused (4)"
+        case .inappropriateWords:  verbalLabel = "Inappropriate words (3)"
+        case .sounds:              verbalLabel = "Incomprehensible sounds (2)"
+        case .none:                verbalLabel = "None (1)"
+        }
+        let motorLabel: String
+        switch i.motorResponse {
+        case .obeys:          motorLabel = "Obeys commands (6)"
+        case .localises:      motorLabel = "Localises pain (5)"
+        case .withdraws:      motorLabel = "Withdraws (4)"
+        case .abnormalFlexion: motorLabel = "Abnormal flexion (3)"
+        case .extension_:     motorLabel = "Extension (2)"
+        case .none:           motorLabel = "None (1)"
+        }
+        let items: [ScoredItem] = [
+            .init(label: "Eye opening — \(eyeLabel)", points: Double(i.eyeOpening.rawValue), present: i.eyeOpening != .spontaneous),
+            .init(label: "Verbal — \(verbalLabel)", points: Double(i.verbalResponse.rawValue), present: i.verbalResponse != .oriented),
+            .init(label: "Motor — \(motorLabel)", points: Double(i.motorResponse.rawValue), present: i.motorResponse != .obeys),
+        ]
+        let (risk, interp, recs) = gcsRisk(total)
+        let redFlags: [String] = total <= 8 ? ["GCS ≤8: protect airway — intubation threshold reached"] : []
+        return ClinicalScore(
+            systemName: "Glasgow Coma Scale",
+            abbreviation: "GCS \(Int(total))/15",
+            score: total, maxScore: 15,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Teasdale & Jennett 1974. Revised 2014. GCS ≤8: airway at risk. Normal = 15."
+        )
+    }
+
+    private static func gcsRisk(_ s: Double) -> (ScoreRisk, String, [String]) {
+        switch s {
+        case 14...15: return (.low, "GCS \(Int(s))/15 — Normal or minimal impairment", ["Document baseline", "Monitor for deterioration"])
+        case 9...13:  return (.moderate, "GCS \(Int(s))/15 — Moderate impairment", ["Senior review", "CT head if trauma or focal deficit", "Monitored environment", "Neurological obs every 30 min"])
+        case 3...8:   return (.critical, "GCS \(Int(s))/15 — Severe impairment: airway at risk", ["Immediate senior/anaesthetic review", "RSI intubation if GCS ≤8 or falling", "CT head urgently", "ICU referral", "Neurosurgical review if trauma"])
+        default:      return (.critical, "GCS \(Int(s))/15 — Severe impairment", ["Immediate resuscitation"])
+        }
+    }
+
+    // MARK: ASA Physical Status
+
+    static func asa(_ i: ASAInput) -> ClinicalScore {
+        let (risk, description, mortality, recs) = asaDetails(i.asaClass)
+        let items: [ScoredItem] = [
+            .init(label: "ASA Class \(i.asaClass.rawValue): \(description)", points: Double(i.asaClass.rawValue), present: true)
+        ]
+        return ClinicalScore(
+            systemName: "ASA Physical Status Classification",
+            abbreviation: "ASA \(i.asaClass.rawValue)",
+            score: Double(i.asaClass.rawValue), maxScore: 5,
+            risk: risk,
+            interpretation: "ASA Class \(i.asaClass.rawValue): \(description). Perioperative mortality ~\(mortality)",
+            recommendations: recs, items: items, redFlags: [],
+            evidenceNote: "ASA 1963, revised 2020. Widely used for pre-operative risk stratification."
+        )
+    }
+
+    private static func asaDetails(_ c: ASAInput.ASAClass) -> (ScoreRisk, String, String, [String]) {
+        switch c {
+        case .i:
+            return (.low, "Healthy patient, no systemic disease", "<0.1%",
+                    ["Proceed with planned anaesthesia and surgery"])
+        case .ii:
+            return (.low, "Mild systemic disease — well-controlled DM/HTN, obesity BMI 30–40, mild lung disease, social smoker, pregnancy",
+                    "0.2–0.4%",
+                    ["Routine pre-op assessment", "Optimise comorbidities pre-operatively"])
+        case .iii:
+            return (.moderate, "Severe systemic disease — poorly controlled DM/HTN, COPD, morbid obesity, active hepatitis, ESRD on dialysis, Hx MI/CVA/TIA >3 months ago, EF 20–40%",
+                    "1.8–4.3%",
+                    ["Cardiology / specialist review if not recently seen", "Optimise before elective surgery", "Pre-op ECG, FBC, U&E, LFTs", "Discuss risk/benefit with patient"])
+        case .iv:
+            return (.high, "Severe systemic disease, constant threat to life — recent MI/CVA/TIA (<3 months), severe valve disease, EF <20%, sepsis, ongoing anticoagulation",
+                    "7.8–23%",
+                    ["Surgery only if life-saving or essential", "Multi-disciplinary pre-op meeting", "ICU post-op plan", "Detailed informed consent"])
+        case .v:
+            return (.critical, "Moribund, not expected to survive without surgery — ruptured AAA, massive PE, intracranial bleed with herniation, ischaemic bowel with MOSF",
+                    ">50%",
+                    ["Emergency surgery only", "Senior surgeon + anaesthetist", "ICU/HDU reserved", "Family/NOK informed of mortality risk"])
+        }
+    }
+
+    // MARK: MELD Score (MELD-Na)
+
+    static func meld(_ i: MELDInput) -> ClinicalScore {
+        let cr = i.onDialysis ? 4.0 : min(i.creatinineMgDL, 4.0)
+        let bili = max(i.bilirubinMgDL, 1.0)
+        let inr = max(i.inrValue, 1.0)
+        let rawMELD = 3.78 * log(bili) + 11.2 * log(inr) + 9.57 * log(cr) + 6.43
+        let meldScore = max(6.0, rawMELD)
+        // MELD-Na correction
+        let na = max(125.0, min(i.sodiumMmolL, 137.0))
+        let meldNa = meldScore + 1.32 * (137 - na) - (0.033 * meldScore * (137 - na))
+        let finalScore = max(meldScore, meldNa)
+
+        let items: [ScoredItem] = [
+            .init(label: "Bilirubin \(String(format: "%.1f", i.bilirubinMgDL)) mg/dL", points: 3.78 * log(bili), present: i.bilirubinMgDL > 1),
+            .init(label: "INR \(String(format: "%.2f", i.inrValue))", points: 11.2 * log(inr), present: i.inrValue > 1),
+            .init(label: "Creatinine \(String(format: "%.1f", cr)) mg/dL\(i.onDialysis ? " (dialysis)" : "")", points: 9.57 * log(cr), present: cr > 1),
+            .init(label: "Sodium \(Int(i.sodiumMmolL)) mmol/L (MELD-Na adjustment)", points: meldNa - meldScore, present: i.sodiumMmolL < 137),
+        ]
+        let (risk, interp, recs) = meldRisk(finalScore)
+        let redFlags: [String] = finalScore >= 20 ? ["MELD ≥20: discuss liver transplant listing with hepatology"] : []
+        return ClinicalScore(
+            systemName: "MELD-Na Score",
+            abbreviation: "MELD-Na \(Int(finalScore.rounded()))",
+            score: finalScore.rounded(), maxScore: 40,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Kamath 2001, Kim 2008 (MELD-Na). 90-day transplant waiting list mortality. Used for surgical risk in cirrhosis."
+        )
+    }
+
+    private static func meldRisk(_ s: Double) -> (ScoreRisk, String, [String]) {
+        switch s {
+        case ..<10: return (.low, "MELD-Na \(Int(s.rounded())): 90-day mortality ~1.9%", ["Elective surgery generally safe with optimisation", "Standard anaesthetic risk", "Monitor LFTs post-op"])
+        case 10..<20: return (.moderate, "MELD-Na \(Int(s.rounded())): 90-day mortality ~6%", ["Hepatology input pre-operatively", "Optimise nutrition, coagulopathy, renal function", "Avoid hepatotoxic drugs", "Post-op HDU consideration"])
+        case 20..<25: return (.high, "MELD-Na \(Int(s.rounded())): 90-day mortality ~20–25%", ["High surgical risk — consider non-operative management if possible", "Hepatology + transplant surgery review", "ICU post-op planning", "Detailed consent with documented mortality risk"])
+        default:     return (.critical, "MELD-Na \(Int(s.rounded())): 90-day mortality >50%", ["Surgery contraindicated unless life-saving", "Transplant evaluation urgently", "Palliative care discussion if appropriate", "ICU-level perioperative support required"])
+        }
+    }
+
+    // MARK: CHA₂DS₂-VASc
+
+    static func cha2ds2vasc(_ i: CHA2DS2VAScInput) -> ClinicalScore {
+        var score = 0.0
+        var items: [ScoredItem] = []
+        items.append(.init(label: "Congestive heart failure", points: 1, present: i.congestiveHeartFailure))
+        if i.congestiveHeartFailure { score += 1 }
+        items.append(.init(label: "Hypertension", points: 1, present: i.hypertension))
+        if i.hypertension { score += 1 }
+        if i.ageOver75 {
+            items.append(.init(label: "Age ≥75 years", points: 2, present: true))
+            score += 2
+        } else {
+            items.append(.init(label: "Age 65–74 years", points: 1, present: i.age65to74))
+            if i.age65to74 { score += 1 }
+        }
+        items.append(.init(label: "Diabetes mellitus", points: 1, present: i.diabetes))
+        if i.diabetes { score += 1 }
+        items.append(.init(label: "Stroke / TIA / thromboembolism", points: 2, present: i.strokeOrTIA))
+        if i.strokeOrTIA { score += 2 }
+        items.append(.init(label: "Vascular disease (MI, PAD, aortic plaque)", points: 1, present: i.vascularDisease))
+        if i.vascularDisease { score += 1 }
+        items.append(.init(label: "Female sex", points: 1, present: i.femaleSex))
+        if i.femaleSex { score += 1 }
+
+        let (risk, interp, recs) = cha2ds2vascRisk(score, female: i.femaleSex)
+        let redFlags: [String] = score >= 2 ? ["CHA₂DS₂-VASc ≥2 (male) or ≥3 (female): anticoagulation recommended by ESC/AHA"] : []
+        return ClinicalScore(
+            systemName: "CHA₂DS₂-VASc Score",
+            abbreviation: "CHA₂DS₂-VASc \(Int(score))",
+            score: score, maxScore: 9,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Lip 2010, ESC 2020 AF guidelines. For non-valvular AF only. Score ≥2 (male) or ≥3 (female): OAC recommended."
+        )
+    }
+
+    private static func cha2ds2vascRisk(_ s: Double, female: Bool) -> (ScoreRisk, String, [String]) {
+        let threshold = female ? 3.0 : 2.0
+        switch s {
+        case 0: return (.low, "CHA₂DS₂-VASc 0 (male) — Very low stroke risk (~0%/yr)", ["No anticoagulation needed", "Reassess annually"])
+        case 1: return (female ? .low : .moderate, "CHA₂DS₂-VASc 1 — Annual stroke risk ~1.3%", ["Consider anticoagulation (male)", "Female sex alone does not require OAC", "Individualise risk–benefit"])
+        case _ where s >= threshold:
+            let annualRisk = s >= 6 ? ">10" : s >= 4 ? "4–8" : "2–3"
+            return (.high, "CHA₂DS₂-VASc \(Int(s)) — Annual stroke risk ~\(annualRisk)%",
+                    ["Anticoagulation recommended (OAC preferred over aspirin)", "DOAC first-line unless contraindicated (e.g. mechanical valve, moderate–severe mitral stenosis → warfarin)", "Check HAS-BLED score before prescribing", "Baseline renal function, LFTs, FBC"])
+        default:
+            return (.moderate, "CHA₂DS₂-VASc \(Int(s))", ["Individualise anticoagulation decision"])
+        }
+    }
+
+    // MARK: HAS-BLED
+
+    static func hasBled(_ i: HASBLEDInput) -> ClinicalScore {
+        var score = 0.0
+        var items: [ScoredItem] = []
+        items.append(.init(label: "H — Hypertension (uncontrolled, SBP >160)", points: 1, present: i.hypertensionUncontrolled))
+        if i.hypertensionUncontrolled { score += 1 }
+        items.append(.init(label: "A — Abnormal renal function", points: 1, present: i.renalDysfunction))
+        if i.renalDysfunction { score += 1 }
+        items.append(.init(label: "A — Abnormal liver function", points: 1, present: i.liverDysfunction))
+        if i.liverDysfunction { score += 1 }
+        items.append(.init(label: "S — Stroke history", points: 1, present: i.strokeHistory))
+        if i.strokeHistory { score += 1 }
+        items.append(.init(label: "B — Bleeding predisposition / history", points: 1, present: i.priorBleeding))
+        if i.priorBleeding { score += 1 }
+        items.append(.init(label: "L — Labile INR (TTR <60%)", points: 1, present: i.labileINR))
+        if i.labileINR { score += 1 }
+        items.append(.init(label: "E — Elderly (age >65)", points: 1, present: i.ageOver65))
+        if i.ageOver65 { score += 1 }
+        items.append(.init(label: "D — Drugs (antiplatelets/NSAIDs)", points: 1, present: i.drugsOrAlcohol))
+        if i.drugsOrAlcohol { score += 1 }
+        items.append(.init(label: "D — Alcohol (≥8 units/wk)", points: 1, present: i.alcoholUse))
+        if i.alcoholUse { score += 1 }
+
+        let (risk, interp, recs) = hasBledRisk(score)
+        let redFlags: [String] = score >= 3 ? ["HAS-BLED ≥3: high bleeding risk — review modifiable factors before anticoagulation"] : []
+        return ClinicalScore(
+            systemName: "HAS-BLED Bleeding Risk Score",
+            abbreviation: "HAS-BLED \(Int(score))",
+            score: score, maxScore: 9,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Pisters 2010. Predicts 1-year major bleeding risk in patients on anticoagulation for AF. Used alongside CHA₂DS₂-VASc."
+        )
+    }
+
+    private static func hasBledRisk(_ s: Double) -> (ScoreRisk, String, [String]) {
+        switch s {
+        case 0...1: return (.low, "HAS-BLED \(Int(s)): Low bleeding risk (~1%/yr)", ["Anticoagulation appropriate if CHA₂DS₂-VASc indicates", "Routine monitoring"])
+        case 2:     return (.moderate, "HAS-BLED 2: Moderate bleeding risk (~1.9%/yr)", ["Anticoagulation can be considered — weigh against stroke risk", "Address modifiable risk factors (BP control, avoid NSAIDs)", "Frequent INR monitoring if on warfarin"])
+        default:    return (.high, "HAS-BLED \(Int(s)): High bleeding risk (≥3%/yr)", ["Does NOT mean anticoagulation is contraindicated — stroke risk often still exceeds bleeding risk", "Address ALL modifiable factors: hypertension, labile INR, alcohol, NSAIDs", "Consider DOAC over warfarin", "Regular review; involve haematology if complex"])
+        }
+    }
+
+    // MARK: Glasgow-Blatchford Score
+
+    static func blatchford(_ i: BlatchfordInput) -> ClinicalScore {
+        var score = 0.0
+        score += Double(i.bloodUreaNitrogen.rawValue)
+        score += Double(i.sbp.rawValue)
+        if i.heartRateOver100  { score += 1 }
+        if i.melaena           { score += 1 }
+        if i.syncope           { score += 2 }
+        if i.hepaticDisease    { score += 2 }
+        if i.cardiacFailure    { score += 2 }
+
+        let hbPoints = i.haemoglobinPoints
+        score += Double(hbPoints)
+
+        let items: [ScoredItem] = [
+            .init(label: "Blood urea nitrogen", points: Double(i.bloodUreaNitrogen.rawValue), present: i.bloodUreaNitrogen != .under6_5),
+            .init(label: "Haemoglobin", points: Double(hbPoints), present: hbPoints > 0),
+            .init(label: "Systolic BP", points: Double(i.sbp.rawValue), present: i.sbp != .over109),
+            .init(label: "Heart rate >100 bpm", points: 1, present: i.heartRateOver100),
+            .init(label: "Melaena", points: 1, present: i.melaena),
+            .init(label: "Syncope", points: 2, present: i.syncope),
+            .init(label: "Hepatic disease", points: 2, present: i.hepaticDisease),
+            .init(label: "Cardiac failure", points: 2, present: i.cardiacFailure),
+        ]
+        let (risk, interp, recs) = blatchfordRisk(score)
+        let redFlags = score >= 6 ? ["Blatchford ≥6: high risk — urgent endoscopy within 24h"] : []
+        return ClinicalScore(
+            systemName: "Glasgow-Blatchford Score",
+            abbreviation: "Blatchford \(Int(score))",
+            score: score, maxScore: 23,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Blatchford 2000. Predicts need for intervention in upper GI bleed before endoscopy. Score 0 = safe for outpatient management."
+        )
+    }
+
+    private static func blatchfordRisk(_ s: Double) -> (ScoreRisk, String, [String]) {
+        switch s {
+        case 0:     return (.low, "Blatchford 0: Very low risk — safe for outpatient management", ["Consider early discharge if no other concerns", "Outpatient endoscopy within 1–2 weeks", "Clear discharge advice on return criteria"])
+        case 1...5: return (.moderate, "Blatchford \(Int(s)): Moderate risk — admit for observation", ["Admit and monitor", "Endoscopy within 24 hours", "IV access + group & screen", "NBM if high suspicion of variceal bleed"])
+        default:    return (.high, "Blatchford \(Int(s)): High risk — urgent intervention likely", ["Urgent endoscopy within 12–24 hours", "ICU/HDU if haemodynamically unstable", "Correct coagulopathy pre-procedure", "Gastroenterology/GI surgery review", "Consider PPI infusion"])
+        }
+    }
+
+    // MARK: STOP-BANG (OSA)
+
+    static func stopBang(_ i: STOPBANGInput) -> ClinicalScore {
+        let flags = [i.snoring, i.tired, i.observed, i.pressureTreated,
+                     i.bmiOver35, i.ageOver50, i.neckOver40cm, i.male]
+        let score = Double(flags.filter { $0 }.count)
+        let items: [ScoredItem] = [
+            .init(label: "S — Snoring loudly", points: 1, present: i.snoring),
+            .init(label: "T — Tired / fatigued during day", points: 1, present: i.tired),
+            .init(label: "O — Observed apnoea (partner/witness)", points: 1, present: i.observed),
+            .init(label: "P — Pressure / hypertension (treated or BP >140/90)", points: 1, present: i.pressureTreated),
+            .init(label: "B — BMI >35 kg/m²", points: 1, present: i.bmiOver35),
+            .init(label: "A — Age >50 years", points: 1, present: i.ageOver50),
+            .init(label: "N — Neck circumference >40 cm", points: 1, present: i.neckOver40cm),
+            .init(label: "G — Gender male", points: 1, present: i.male),
+        ]
+        let (risk, interp, recs) = stopBangRisk(score)
+        let redFlags = i.observed ? ["Observed apnoea: high pre-test probability of OSA regardless of total score"] : []
+        return ClinicalScore(
+            systemName: "STOP-BANG Questionnaire",
+            abbreviation: "STOP-BANG \(Int(score))/8",
+            score: score, maxScore: 8,
+            risk: risk, interpretation: interp,
+            recommendations: recs, items: items, redFlags: redFlags,
+            evidenceNote: "Chung 2008. Pre-operative OSA screening. Sensitivity 84% for moderate–severe OSA (AHI ≥15) at score ≥3."
+        )
+    }
+
+    private static func stopBangRisk(_ s: Double) -> (ScoreRisk, String, [String]) {
+        switch s {
+        case 0...2: return (.low, "STOP-BANG \(Int(s))/8: Low OSA risk", ["Routine anaesthetic assessment", "Standard post-op oxygen monitoring"])
+        case 3...4: return (.moderate, "STOP-BANG \(Int(s))/8: Intermediate OSA risk", ["Pre-op sleep study or SpO₂ overnight if time allows", "Discuss with anaesthesia team pre-op", "Avoid benzodiazepines if possible", "PACU monitoring; consider extended post-op SpO₂"])
+        default:    return (.high, "STOP-BANG \(Int(s))/8: High OSA risk", ["Formal sleep study / polysomnography", "If CPAP user: bring CPAP to hospital", "Inform anaesthetist pre-op", "Avoid opioids where possible; use multimodal analgesia", "Extended PACU stay / HDU post-op consideration", "Nurse semi-upright post-operatively"])
+        }
     }
 }
