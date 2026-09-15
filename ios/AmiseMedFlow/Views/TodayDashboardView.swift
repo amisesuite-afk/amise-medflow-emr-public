@@ -1,9 +1,11 @@
 import SwiftUI
 import SwiftData
+import EventKit
 
 struct TodayDashboardView: View {
     @Query private var allPatients: [Patient]
     @Environment(\.modelContext) private var context
+    @StateObject private var calSvc = CalendarService()
 
     @State private var selectedPatient: Patient?
     @State private var showAdd = false
@@ -50,8 +52,18 @@ struct TodayDashboardView: View {
             .sorted { ($0.checkInTime ?? .distantPast) < ($1.checkInTime ?? .distantPast) }
     }
 
+    // Calendar events from iOS EventKit (syncs with Google Calendar when
+    // the user adds their Google account in iOS Settings → Calendar → Accounts)
+    private var todayCalEvents: [EKEvent] {
+        calSvc.events
+            .filter { isToday($0.startDate) && !$0.isAllDay }
+            .sorted { ($0.startDate ?? .distantFuture) < ($1.startDate ?? .distantFuture) }
+    }
+
     private var isAnythingOn: Bool {
-        !readyForDoctorPatients.isEmpty || !wardPatients.isEmpty || !theatreToday.isEmpty || !endoscopyToday.isEmpty || !clinicToday.isEmpty
+        !readyForDoctorPatients.isEmpty || !wardPatients.isEmpty ||
+        !theatreToday.isEmpty || !endoscopyToday.isEmpty || !clinicToday.isEmpty ||
+        !todayCalEvents.isEmpty
     }
 
     // MARK: - Body
@@ -67,6 +79,7 @@ struct TodayDashboardView: View {
                         if !theatreToday.isEmpty   { theatreSection }
                         if !endoscopyToday.isEmpty { endoscopySection }
                         if !clinicToday.isEmpty    { clinicSection }
+                        if !todayCalEvents.isEmpty { calendarSection }
                     }
                     .listStyle(.insetGrouped)
                 } else {
@@ -74,6 +87,7 @@ struct TodayDashboardView: View {
                 }
             }
             .navigationTitle("Today")
+            .task { await calSvc.fetch() }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text(Date.now.formatted(.dateTime.weekday(.wide).day().month(.wide)))
@@ -81,7 +95,19 @@ struct TodayDashboardView: View {
                         .foregroundStyle(.secondary)
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button { showAdd = true } label: { Image(systemName: "plus") }
+                    HStack(spacing: 16) {
+                        Button {
+                            Task { await calSvc.sync() }
+                        } label: {
+                            if calSvc.isSyncing {
+                                ProgressView().scaleEffect(0.7)
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                            }
+                        }
+                        .help("Refresh calendar")
+                        Button { showAdd = true } label: { Image(systemName: "plus") }
+                    }
                 }
             }
             .sheet(item: $selectedPatient) { PatientDetailView(patient: $0) }
@@ -292,6 +318,70 @@ struct TodayDashboardView: View {
                     .font(.system(size: 11, weight: .semibold))
                 Spacer()
                 Text("\(clinicToday.count)")
+                    .font(.caption2.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 6).padding(.vertical, 2)
+                    .background(Color.secondary.opacity(0.12), in: Capsule())
+            }
+        }
+    }
+
+    // MARK: - Calendar Section (iOS EventKit / Google Calendar sync)
+
+    @ViewBuilder
+    private var calendarSection: some View {
+        Section {
+            if let err = calSvc.error {
+                HStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundStyle(.orange)
+                    Text(err)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.vertical, 4)
+            }
+            ForEach(todayCalEvents, id: \.eventIdentifier) { event in
+                HStack(spacing: 10) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(event.calEntryColor)
+                        .frame(width: 3, height: 32)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(event.title ?? "Untitled")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                        HStack(spacing: 6) {
+                            if let start = event.startDate {
+                                Text(start.formatted(date: .omitted, time: .shortened))
+                                    .font(.caption2.monospacedDigit())
+                                    .foregroundStyle(.secondary)
+                            }
+                            if let calName = event.calendar?.title {
+                                Text(calName)
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 5).padding(.vertical, 1)
+                                    .background(event.calEntryColor.opacity(0.12), in: Capsule())
+                            }
+                        }
+                    }
+                    Spacer()
+                    Text(event.calEntryLabel)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(event.calEntryColor)
+                        .padding(.horizontal, 6).padding(.vertical, 2)
+                        .background(event.calEntryColor.opacity(0.12), in: Capsule())
+                }
+                .padding(.vertical, 2)
+            }
+        } header: {
+            HStack {
+                Label("Calendar", systemImage: "calendar")
+                    .textCase(nil)
+                    .font(.system(size: 11, weight: .semibold))
+                Spacer()
+                Text("\(todayCalEvents.count)")
                     .font(.caption2.monospacedDigit())
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 6).padding(.vertical, 2)

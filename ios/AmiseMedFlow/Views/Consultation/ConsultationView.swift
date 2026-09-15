@@ -865,6 +865,7 @@ struct ConsultationView: View {
     @State private var showAIError = false
     @State private var consultationPDFWrapper: PDFDataWrapper?
     @State private var preConsultPDFWrapper: PDFDataWrapper?
+    @State private var showPreConsultEntry = false
     @State private var showLetterSheet = false
     @State private var generatedLetterText = ""
     @State private var socratesSelections: [String: Set<String>] = [:]
@@ -878,6 +879,7 @@ struct ConsultationView: View {
     // PMH — medication history
     @State private var medQuery = ""
     @State private var medSuggestions: [SurgicalDrug] = []
+    @FocusState private var medFieldFocused: Bool
     @State private var expandedMed: SurgicalDrug? = nil
     @State private var medDose = ""
     @State private var medRoute = "Oral"
@@ -994,6 +996,12 @@ struct ConsultationView: View {
             }
             pipeline.runNow(for: patient, socratesSelections: socratesSelections)
             MRNGenerator.backfillIfNeeded(patient)
+            // Pre-load popular drugs when landing directly on the meds tab (iPad nav path).
+            // On iPhone the focus onChange handles this, but on iPad the keyboard never
+            // auto-focuses so medSuggestions stays empty until the user taps.
+            if startingTab == .meds && medSuggestions.isEmpty {
+                medSuggestions = SurgicalDrug.popular
+            }
         }
         .navigationTitle("Consultation")
         .navigationBarTitleDisplayMode(.inline)
@@ -1001,6 +1009,10 @@ struct ConsultationView: View {
         .toolbarBackground(Color(.systemBackground), for: .navigationBar)
         .onChange(of: activeTab) { _, tab in
             if tab == .diagnosis { refreshBayesian() }
+            // Pre-load browse list when switching to meds tab (iPhone tab bar path).
+            if tab == .meds && medSuggestions.isEmpty && medQuery.isEmpty {
+                medSuggestions = SurgicalDrug.popular
+            }
         }
         .onChange(of: patient.workingDiagnosis) { _, _ in
             dismissedRadiation = false
@@ -1045,6 +1057,9 @@ struct ConsultationView: View {
         }
         .sheet(item: $preConsultPDFWrapper) { wrapper in
             ShareSheet(items: [wrapper.data as Any]).ignoresSafeArea()
+        }
+        .sheet(isPresented: $showPreConsultEntry) {
+            PreConsultEntrySheet(patient: patient)
         }
         .sheet(isPresented: $showLetterSheet) {
             ConsultationLetterSheet(letterText: generatedLetterText, patient: patient)
@@ -1410,7 +1425,7 @@ struct ConsultationView: View {
         case .hpi:       hpiTab
         case .pmh:       pmhTab
         case .pshx:      pshxTab
-        case .meds:      List { medicationsSection }
+        case .meds:      embeddedInNav ? medsSplitPanel : List { medicationsSection }
         case .allergies: allergiesTab
         case .social:    socialTab
         case .exam:           examTab
@@ -1543,8 +1558,9 @@ struct ConsultationView: View {
                 }
             }
 
-            // Pre-consult questionnaire generator
+            // Pre-consult questionnaire — send form or enter patient's answers
             Section {
+                // Row 1: generate blank form
                 Button {
                     sharePreConsultForm()
                 } label: {
@@ -1558,10 +1574,39 @@ struct ConsultationView: View {
                                 .foregroundStyle(AMColor.accent)
                         }
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Send Pre-consult Form")
+                            Text("Send Blank Form to Patient")
                                 .font(.subheadline.weight(.medium))
                                 .foregroundStyle(.primary)
-                            Text("Patient completes before the visit")
+                            Text("Share / print the questionnaire before the visit")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .buttonStyle(.plain)
+
+                // Row 2: record patient's completed answers
+                Button {
+                    showPreConsultEntry = true
+                } label: {
+                    HStack(spacing: 10) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 7)
+                                .fill(Color.green.opacity(0.12))
+                                .frame(width: 32, height: 32)
+                            Image(systemName: "square.and.pencil")
+                                .font(.system(size: 14))
+                                .foregroundStyle(.green)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Enter Patient's Answers")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(.primary)
+                            Text("Record completed form — pre-fills consultation fields")
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
                         }
@@ -1575,7 +1620,7 @@ struct ConsultationView: View {
             } header: {
                 sectionHeader("Pre-Consult", icon: "square.and.pencil", filled: false)
             } footer: {
-                Text("Generates a printable questionnaire the patient fills in ahead of their appointment. No clinical data is included.")
+                Text("Send the blank form before the appointment, then enter the patient's answers to pre-fill the consultation. Existing data is never overwritten.")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
@@ -1958,6 +2003,136 @@ struct ConsultationView: View {
 
     // MARK: - PMH tab
 
+    // MARK: - iPad split-panel drug chart (embeddedInNav path)
+
+    private var medsSplitPanel: some View {
+        HStack(spacing: 0) {
+            // ── LEFT: drug search + browse ───────────────────────────────
+            List { medicationsSection }
+                .frame(minWidth: 320, maxWidth: 420)
+
+            Divider()
+
+            // ── RIGHT: current drug chart ────────────────────────────────
+            VStack(spacing: 0) {
+                HStack(spacing: 8) {
+                    Image(systemName: "pills.fill")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(AMColor.accent)
+                    Text("Current Drug Chart")
+                        .font(.system(size: 14, weight: .semibold))
+                    Spacer()
+                    Text("\(patient.prescriptions.count) item\(patient.prescriptions.count == 1 ? "" : "s")")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Color(.systemBackground))
+
+                Divider()
+
+                if patient.prescriptions.isEmpty {
+                    ContentUnavailableView(
+                        "No Medications",
+                        systemImage: "pills",
+                        description: Text("Add medications using the search panel.")
+                    )
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    List {
+                        let sorted = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
+                        ForEach(sorted) { rx in
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "pill.fill")
+                                        .font(.system(size: 11, weight: .bold))
+                                        .foregroundStyle(AMColor.accent)
+                                        .frame(width: 18)
+                                    Text(rx.drug)
+                                        .font(.system(size: 14, weight: .semibold))
+                                    Spacer()
+                                    Text(rx.prescribedAt.formatted(.dateTime.day().month(.abbreviated).year()))
+                                        .font(.caption2.monospacedDigit())
+                                        .foregroundStyle(.tertiary)
+                                }
+                                if !rx.displayLine.isEmpty {
+                                    Text(rx.displayLine)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .padding(.leading, 26)
+                                }
+                                let alerts = DrugInteractionService.check(drugs: [rx.drug] + patient.prescriptions.filter { $0.id != rx.id }.map { $0.drug })
+                                    .filter { $0.drugA == rx.drug || $0.drugB == rx.drug }
+                                ForEach(alerts) { alert in
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "exclamationmark.triangle.fill")
+                                            .font(.caption2)
+                                            .foregroundStyle(alert.interaction.severity.color)
+                                        Text("\(alert.interaction.severity.rawValue): \(alert.interaction.clinicalEffect)")
+                                            .font(.caption2)
+                                            .foregroundStyle(alert.interaction.severity.color)
+                                    }
+                                    .padding(.leading, 26)
+                                }
+                                if let formularyDrug = SurgicalDrug.allDrugs.first(where: {
+                                    $0.name.lowercased() == rx.drug.lowercased() ||
+                                    $0.name.lowercased().hasPrefix(rx.drug.lowercased())
+                                }) {
+                                    formularyDetailRows(for: formularyDrug)
+                                }
+                            }
+                            .padding(.vertical, 2)
+                        }
+                        .onDelete { idxSet in
+                            let sorted2 = patient.prescriptions.sorted { $0.prescribedAt > $1.prescribedAt }
+                            for i in idxSet { context.delete(sorted2[i]) }
+                            touch()
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .background(AMColor.bg)
+        }
+    }
+
+    @ViewBuilder
+    private func formularyDetailRows(for drug: SurgicalDrug) -> some View {
+        let fields: [(label: String, icon: String, value: String, color: Color)] = [
+            ("Monitoring", "waveform.path.ecg", drug.monitoring, .blue),
+            ("Contraindications", "exclamationmark.octagon", drug.contraindications, .red),
+            ("Renal dosing", "drop.triangle", drug.renalDosing, .orange),
+            ("Hepatic dosing", "arrow.triangle.2.circlepath", drug.hepaticDosing, .purple),
+        ].filter { !$0.value.isEmpty }
+
+        if !fields.isEmpty {
+            VStack(alignment: .leading, spacing: 3) {
+                ForEach(fields, id: \.label) { field in
+                    HStack(alignment: .top, spacing: 5) {
+                        Image(systemName: field.icon)
+                            .font(.system(size: 9, weight: .semibold))
+                            .foregroundStyle(field.color)
+                            .frame(width: 14, alignment: .center)
+                            .padding(.top, 1)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(field.label.uppercased())
+                                .font(.system(size: 8.5, weight: .semibold))
+                                .foregroundStyle(field.color)
+                                .kerning(0.4)
+                            Text(field.value)
+                                .font(.system(size: 10.5))
+                                .foregroundStyle(.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                }
+            }
+            .padding(.leading, 26)
+            .padding(.top, 2)
+        }
+    }
+
     // MARK: - PMH medications section
 
     private var medicationsSection: some View {
@@ -2002,23 +2177,41 @@ struct ConsultationView: View {
             // Drug search field
             HStack(spacing: 8) {
                 Image(systemName: "pills").foregroundStyle(.secondary)
-                TextField("Search medication…", text: $medQuery)
+                TextField("Type a drug name or browse below…", text: $medQuery)
                     .autocorrectionDisabled()
+                    .focused($medFieldFocused)
                     .onChange(of: medQuery) { _, q in
-                        medSuggestions = q.count >= 2 ? ClinicalSearchService.searchDrugs(q) : []
+                        if q.isEmpty {
+                            medSuggestions = medFieldFocused ? SurgicalDrug.popular : []
+                        } else {
+                            medSuggestions = ClinicalSearchService.searchDrugs(q)
+                        }
                         if expandedMed != nil && expandedMed?.name.lowercased() != q.lowercased() {
                             expandedMed = nil
                         }
                     }
+                    .onChange(of: medFieldFocused) { _, focused in
+                        if focused && medQuery.isEmpty {
+                            medSuggestions = SurgicalDrug.popular
+                        } else if !focused && medQuery.isEmpty {
+                            medSuggestions = []
+                        }
+                    }
                 if !medQuery.isEmpty {
-                    Button { medQuery = ""; medSuggestions = []; expandedMed = nil } label: {
+                    Button { medQuery = ""; medSuggestions = SurgicalDrug.popular; expandedMed = nil } label: {
                         Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
                     }.buttonStyle(.plain)
                 }
             }
 
-            // Drug suggestion list
-            ForEach(medSuggestions.prefix(6)) { drug in
+            // Drug suggestion / browse list (popular when empty, filtered when typing)
+            if !medSuggestions.isEmpty {
+                Text(medQuery.isEmpty ? "Common medications — tap to select" : "Tap to select")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .listRowSeparator(.hidden)
+            }
+            ForEach(medSuggestions.prefix(medQuery.isEmpty ? 30 : 8)) { drug in
                 Button {
                     medQuery  = drug.name
                     expandedMed = drug
@@ -4062,13 +4255,14 @@ private struct AddMedicationSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var drugQuery = ""
-    @State private var suggestions: [SurgicalDrug] = []
+    @State private var suggestions: [SurgicalDrug] = SurgicalDrug.popular
     @State private var selectedDrug: SurgicalDrug?
     @State private var dose = ""
     @State private var route = "Oral"
     @State private var frequency = "Once daily"
     @State private var duration = "7 days"
     @State private var indication = ""
+    @FocusState private var fieldFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -4076,25 +4270,38 @@ private struct AddMedicationSheet: View {
                 Section {
                     HStack {
                         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-                        TextField("Drug name", text: $drugQuery)
+                        TextField("Type a drug name or browse below…", text: $drugQuery)
                             .autocorrectionDisabled()
+                            .focused($fieldFocused)
                             .onChange(of: drugQuery) { _, q in
-                                suggestions = q.count >= 2 ? ClinicalSearchService.searchDrugs(q) : []
+                                suggestions = q.isEmpty
+                                    ? SurgicalDrug.popular
+                                    : ClinicalSearchService.searchDrugs(q)
                             }
                         if !drugQuery.isEmpty {
-                            Button { drugQuery = ""; suggestions = [] }
+                            Button { drugQuery = ""; suggestions = SurgicalDrug.popular }
                                 label: { Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary) }
                         }
                     }
-                    ForEach(suggestions.prefix(6)) { drug in
+                    if !suggestions.isEmpty {
+                        Text(drugQuery.isEmpty ? "Common medications — tap to select" : "Tap to select")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .listRowSeparator(.hidden)
+                    }
+                    ForEach(suggestions.prefix(drugQuery.isEmpty ? 30 : 8)) { drug in
                         Button {
                             selectedDrug = drug; drugQuery = drug.name
                             dose = drug.commonDoses; indication = patient.workingDiagnosis ?? ""
                             suggestions = []
                         } label: {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(drug.name).foregroundStyle(.primary).font(.subheadline)
-                                Text(drug.commonDoses).font(.caption).foregroundStyle(.secondary)
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(drug.name).foregroundStyle(.primary).font(.subheadline)
+                                    Text(drug.category).font(.caption).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Text(drug.commonDoses).font(.caption2).foregroundStyle(.tertiary)
                             }
                         }
                     }

@@ -183,12 +183,16 @@ struct ClinicalHubView: View {
 
             // Procedure-specific forms (shown based on visitType)
             if let vt = patient.visitType {
-                let showTrauma  = vt == .trauma
-                let showOGD     = vt == .ogd || vt == .colonoscopy || vt == .dayOfSurgery
-                let showSurgery = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
-                let showERCP    = vt == .ercp || vt == .dayOfSurgery
+                let showTrauma       = vt == .trauma
+                let showOGD          = vt == .ogd || vt == .dayOfSurgery
+                let showColonoscopy  = vt == .colonoscopy || vt == .dayOfSurgery
+                let showSurgery      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showERCP         = vt == .ercp || vt == .dayOfSurgery
+                let showPostOp       = vt == .postOp
+                let showDischarge    = vt == .postOp || vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showReferral     = vt == .newConsult || vt == .followUp || vt == .urgentReview || vt == .postOp
 
-                if showTrauma || showOGD || showSurgery || showERCP {
+                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showPostOp || showDischarge || showReferral {
                     Section("Procedure Forms") {
                         if showTrauma {
                             NavigationLink { TraumaAssessmentView(patient: patient) } label: {
@@ -203,12 +207,32 @@ struct ClinicalHubView: View {
                         }
                         if showOGD {
                             NavigationLink { OGDFormView(patient: patient) } label: {
-                                Label("OGD Report", systemImage: "scope")
+                                Label("OGD / Gastroscopy Report", systemImage: "scope")
+                            }
+                        }
+                        if showColonoscopy {
+                            NavigationLink { ColonoscopyFormView(patient: patient) } label: {
+                                Label("Colonoscopy Report", systemImage: "circle.dotted.and.circle")
                             }
                         }
                         if showERCP {
                             NavigationLink { ERCPFormView(patient: patient) } label: {
                                 Label("ERCP Report", systemImage: "waveform.and.magnifyingglass")
+                            }
+                        }
+                        if showPostOp {
+                            NavigationLink { PostOpReviewView(patient: patient) } label: {
+                                Label("Post-op Review", systemImage: "bandage")
+                            }
+                        }
+                        if showDischarge {
+                            NavigationLink { DischargeSummaryView(patient: patient) } label: {
+                                Label("Discharge Summary", systemImage: "rectangle.portrait.and.arrow.right")
+                            }
+                        }
+                        if showReferral {
+                            NavigationLink { ReferralLetterView(patient: patient) } label: {
+                                Label("Referral / Reply Letter", systemImage: "envelope.open")
                             }
                         }
                     }

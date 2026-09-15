@@ -37,8 +37,12 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case demographics   = "Demographics"
     case trauma         = "Trauma / ATLS"
     case ogd            = "OGD Report"
+    case colonoscopy    = "Colonoscopy Report"
     case surgery        = "Operative Note"
     case ercp           = "ERCP Report"
+    case postOpReview   = "Post-op Review"
+    case dischargeSummary = "Discharge Summary"
+    case referralLetter = "Referral Letter"
     case history        = "Visit History"
 
     var id: String { rawValue }
@@ -67,8 +71,12 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .demographics:   "square.and.pencil"
         case .trauma:         "cross.case.fill"
         case .ogd:            "scope"
+        case .colonoscopy:    "circle.dotted.and.circle"
         case .surgery:        "scissors"
         case .ercp:           "waveform.and.magnifyingglass"
+        case .postOpReview:   "bandage"
+        case .dischargeSummary: "rectangle.portrait.and.arrow.right"
+        case .referralLetter: "envelope.open"
         case .history:        "clock.badge.checkmark"
         }
     }
@@ -97,8 +105,12 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .demographics:   "Details"
         case .trauma:         "Trauma"
         case .ogd:            "OGD"
+        case .colonoscopy:    "Scope"
         case .surgery:        "Op Note"
         case .ercp:           "ERCP"
+        case .postOpReview:   "Post-op"
+        case .dischargeSummary: "Discharge"
+        case .referralLetter: "Referral"
         case .history:        "History"
         }
     }
@@ -142,9 +154,13 @@ struct PatientDetailPadView: View {
             guard allowed.contains(section) else { return false }
             switch section {
             case .trauma:  return patient.visitType == .trauma
-            case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
+            case .ogd:          return patient.visitType == .ogd || patient.visitType == .dayOfSurgery
+            case .colonoscopy:  return patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
+            case .postOpReview: return patient.visitType == .postOp
+            case .dischargeSummary: return patient.visitType == .postOp || patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
+            case .referralLetter: return patient.visitType == .newConsult || patient.visitType == .followUp || patient.visitType == .urgentReview || patient.visitType == .postOp
             case .history: return !patient.encounters.filter(\.isComplete).isEmpty
             default:       return true
             }
@@ -373,10 +389,18 @@ struct PatientDetailPadView: View {
             TraumaAssessmentView(patient: patient)
         case .ogd:
             OGDFormView(patient: patient)
+        case .colonoscopy:
+            ColonoscopyFormView(patient: patient)
         case .surgery:
             SurgeryNoteView(patient: patient)
         case .ercp:
             ERCPFormView(patient: patient)
+        case .postOpReview:
+            PostOpReviewView(patient: patient)
+        case .dischargeSummary:
+            DischargeSummaryView(patient: patient)
+        case .referralLetter:
+            ReferralLetterView(patient: patient)
         case .history:
             ConsultationView(patient: patient, startingTab: .history, embeddedInNav: true)
         }
@@ -1198,13 +1222,29 @@ struct PatientDetailView: View {
                     quickAction("Op Note", icon: "scissors", color: .purple,
                                 destination: AnyView(SurgeryNoteView(patient: patient)))
                 }
-                if patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery {
+                if patient.visitType == .ogd || patient.visitType == .dayOfSurgery {
                     quickAction("OGD Report", icon: "scope", color: .cyan,
                                 destination: AnyView(OGDFormView(patient: patient)))
+                }
+                if patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery {
+                    quickAction("Colonoscopy", icon: "circle.dotted.and.circle", color: .cyan,
+                                destination: AnyView(ColonoscopyFormView(patient: patient)))
                 }
                 if patient.visitType == .ercp || patient.visitType == .dayOfSurgery {
                     quickAction("ERCP Report", icon: "waveform.and.magnifyingglass", color: .blue,
                                 destination: AnyView(ERCPFormView(patient: patient)))
+                }
+                if patient.visitType == .postOp {
+                    quickAction("Post-op Review", icon: "bandage", color: .purple,
+                                destination: AnyView(PostOpReviewView(patient: patient)))
+                }
+                if patient.visitType == .postOp || patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery {
+                    quickAction("Discharge", icon: "rectangle.portrait.and.arrow.right", color: .orange,
+                                destination: AnyView(DischargeSummaryView(patient: patient)))
+                }
+                if patient.visitType == .newConsult || patient.visitType == .followUp || patient.visitType == .urgentReview || patient.visitType == .postOp {
+                    quickAction("Referral Letter", icon: "envelope.open", color: .teal,
+                                destination: AnyView(ReferralLetterView(patient: patient)))
                 }
                 quickAction("Prescriptions", icon: "pills.fill", color: .purple,
                             destination: AnyView(PrescriptionView(patient: patient)))

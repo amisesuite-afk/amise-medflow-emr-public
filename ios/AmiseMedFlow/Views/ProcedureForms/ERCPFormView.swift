@@ -112,6 +112,7 @@ struct ERCPFormView: View {
     @StateObject private var ai = AIService()
     @State private var aiError: String?
     @State private var showAIOverwriteConfirm = false
+    @State private var pdfWrapper: PDFDataWrapper?
 
     private let indications = [
         "Choledocholithiasis", "Cholangitis", "Biliary stricture (benign)",
@@ -159,6 +160,18 @@ struct ERCPFormView: View {
         }
         .navigationTitle("ERCP Report")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    pdfWrapper = PDFDataWrapper(data: ProcedureFormPDF.ercpReport(patient: patient, data: data))
+                } label: {
+                    Label("Export PDF", systemImage: "arrow.up.doc.fill")
+                }
+            }
+        }
+        .sheet(item: $pdfWrapper) { wrapper in
+            ShareSheet(items: [wrapper.data])
+        }
         .onAppear {
             data = patient.ercpData
             hasProcedureDate = data.dateOfProcedure != nil

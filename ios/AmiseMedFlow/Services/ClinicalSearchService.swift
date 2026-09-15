@@ -177,9 +177,13 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
     let route: String
     let notes: String
     var sideEffects: String = ""
+    var contraindications: String = ""
+    var renalDosing: String = ""
+    var hepaticDosing: String = ""
+    var monitoring: String = ""
 
     static func search(_ query: String) -> [SurgicalDrug] {
-        guard query.count >= 2 else { return [] }
+        guard query.count >= 1 else { return [] }
         let q = query.lowercased()
         return allDrugs.filter {
             $0.name.lowercased().contains(q) ||
@@ -187,7 +191,50 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
         }.prefix(20).map { $0 }
     }
 
-    static let allDrugs: [SurgicalDrug] = [
+    // Curated subset shown when the search field is focused but empty — the
+    // most commonly prescribed drugs in a general/endoscopic surgical practice.
+    private static let _popularNames: Set<String> = [
+        // Antihypertensives / Cardiac
+        "Amlodipine", "Losartan", "Lisinopril", "Ramipril", "Atenolol",
+        "Bisoprolol", "Metoprolol", "Furosemide", "Hydrochlorothiazide",
+        "Spironolactone", "Valsartan", "Candesartan", "Perindopril",
+        // Lipid / Antiplatelet
+        "Atorvastatin", "Simvastatin", "Rosuvastatin", "Aspirin", "Clopidogrel",
+        // Diabetes
+        "Metformin", "Gliclazide", "Insulin aspart (NovoRapid)", "Empagliflozin (Jardiance)",
+        // Analgesics / GI
+        "Paracetamol", "Ibuprofen", "Naproxen",
+        "Omeprazole", "Pantoprazole", "Esomeprazole (Nexium)",
+        // Anticoagulants
+        "Enoxaparin", "Warfarin",
+        // Endocrine
+        "Levothyroxine", "Prednisolone",
+        // Antiemetics
+        "Metoclopramide", "Ondansetron",
+        // Respiratory
+        "Salbutamol (Albuterol)", "Beclometasone (Clenil, QVAR)",
+        // CNS / Psychiatry
+        "Sertraline", "Diazepam",
+        // Urology
+        "Tamsulosin (Flomax)",
+        // Allergy
+        "Cetirizine (Zyrtec)", "Loratadine (Claritin)", "Chlorphenamine (Piriton)",
+        // Antibiotics (common)
+        "Amoxicillin", "Co-amoxiclav (Augmentin)", "Doxycycline", "Metronidazole",
+        "Ciprofloxacin", "Flucloxacillin",
+        // Anaesthetic adjuncts
+        "Morphine", "Tramadol",
+    ]
+    static var popular: [SurgicalDrug] {
+        allDrugs.filter { _popularNames.contains($0.name) }
+                .sorted { $0.name < $1.name }
+    }
+
+    // Split into private sub-arrays to avoid Swift type-checker timeout on large literals.
+    static let allDrugs: [SurgicalDrug] =
+        _drugs1 + _drugs2 + _drugs3 + _drugs4 + _drugs5 + _drugs6 + _drugs7 + _drugs8
+
+    private static let _drugs1: [SurgicalDrug] = [
 
         // ─── ANALGESICS — Opioids ────────────────────────────────────────────
         .init(name: "Morphine",       category: "Opioid Analgesic",  commonDoses: "2.5–10 mg",  route: "IV/SC/PO",  notes: "Titrate to pain; caution in renal impairment", sideEffects: "Nausea, constipation, respiratory depression, sedation, pruritus"),
@@ -304,6 +351,29 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
         .init(name: "Furosemide",     category: "Loop Diuretic",       commonDoses: "20–80 mg OD–BD",    route: "PO/IV", notes: "Fluid overload; heart failure; acute pulmonary oedema (80–120 mg IV)", sideEffects: "Hypokalaemia, hyponatraemia, hypomagnesaemia, ototoxicity (high IV doses), dehydration, gout"),
         .init(name: "Spironolactone", category: "Potassium-sparing Diuretic", commonDoses: "25–100 mg OD", route: "PO", notes: "Heart failure; ascites/cirrhosis; primary hyperaldosteronism", sideEffects: "Hyperkalaemia, gynaecomastia, menstrual irregularities, impotence, GI upset"),
         .init(name: "Hydrochlorothiazide", category: "Thiazide Diuretic", commonDoses: "12.5–25 mg OD", route: "PO", notes: "Hypertension; usually combined with ACE inhibitor/ARB", sideEffects: "Hypokalaemia, hyponatraemia, hyperuricaemia/gout, hyperglycaemia, photosensitivity"),
+        .init(name: "Indapamide",         category: "Thiazide-like Diuretic", commonDoses: "1.5 mg OD (SR); 2.5 mg OD",   route: "PO", notes: "Preferred thiazide in elderly; less metabolic disturbance than HCTZ", sideEffects: "Hypokalaemia, hyponatraemia, hyperuricaemia; less hyperglycaemia than thiazides"),
+        .init(name: "Chlorthalidone",     category: "Thiazide Diuretic",      commonDoses: "12.5–25 mg OD",               route: "PO", notes: "Longer-acting than HCTZ; preferred in cardiovascular risk reduction", sideEffects: "Hypokalaemia, hyponatraemia, hyperuricaemia, hyperglycaemia, photosensitivity"),
+        .init(name: "Valsartan",          category: "ARB",                    commonDoses: "80–320 mg OD",                 route: "PO", notes: "Hypertension; heart failure post-MI; no ACE inhibitor cough", sideEffects: "Hyperkalaemia, renal impairment, dizziness, hypotension; HOLD 24h pre-op"),
+        .init(name: "Candesartan",        category: "ARB",                    commonDoses: "4–32 mg OD",                   route: "PO", notes: "Hypertension; heart failure with reduced EF", sideEffects: "Hyperkalaemia, renal impairment, dizziness, hypotension, raised creatinine"),
+        .init(name: "Telmisartan",        category: "ARB",                    commonDoses: "20–80 mg OD",                  route: "PO", notes: "Long-acting ARB; once daily; hepatic elimination (safe in renal failure)", sideEffects: "Hyperkalaemia, renal impairment, dizziness, back pain; HOLD 24h pre-op"),
+        .init(name: "Irbesartan",         category: "ARB",                    commonDoses: "150–300 mg OD",                route: "PO", notes: "Hypertension; diabetic nephropathy in type 2 DM", sideEffects: "Hyperkalaemia, renal impairment, dizziness, musculoskeletal pain"),
+        .init(name: "Olmesartan",         category: "ARB",                    commonDoses: "10–40 mg OD",                  route: "PO", notes: "Hypertension; associated with sprue-like enteropathy (rare)", sideEffects: "Hyperkalaemia, renal impairment, dizziness; sprue-like enteropathy (rare)"),
+        .init(name: "Perindopril",        category: "ACE Inhibitor",          commonDoses: "2–10 mg OD",                   route: "PO", notes: "Hypertension; stable coronary artery disease; heart failure", sideEffects: "Dry cough, hyperkalaemia, renal impairment, angioedema, hypotension"),
+        .init(name: "Enalapril",          category: "ACE Inhibitor",          commonDoses: "2.5–40 mg OD–BD",             route: "PO/IV", notes: "Hypertension; heart failure; IV available for hypertensive urgency", sideEffects: "Dry cough, hyperkalaemia, renal impairment, angioedema; HOLD 24h pre-op"),
+        .init(name: "Captopril",          category: "ACE Inhibitor",          commonDoses: "6.25–50 mg TDS",               route: "PO", notes: "Short-acting; used in hypertensive crisis (acute dose); nephroprotective", sideEffects: "Dry cough, hyperkalaemia, renal impairment, taste disturbance, rash, angioedema"),
+        .init(name: "Doxazosin",          category: "Alpha-1 Blocker",        commonDoses: "1–16 mg OD (XL: 4–8 mg OD)",  route: "PO", notes: "Hypertension; BPH; first dose hypotension — start 1 mg nocte", sideEffects: "Postural hypotension (first dose), dizziness, oedema, drowsiness, rhinitis"),
+        .init(name: "Prazosin",           category: "Alpha-1 Blocker",        commonDoses: "0.5–20 mg BD–TDS",             route: "PO", notes: "Hypertension; phaeochromocytoma pre-op; first-dose hypotension risk", sideEffects: "First-dose postural hypotension (syncope risk), dizziness, oedema, palpitations"),
+        .init(name: "Diltiazem",          category: "Calcium Channel Blocker (non-DHP)", commonDoses: "60–120 mg TDS (standard); 120–360 mg OD (SR)", route: "PO/IV", notes: "Rate control AF; angina; avoid with beta-blockers (bradycardia risk)", sideEffects: "Bradycardia, heart block (with beta-blockers), ankle oedema, constipation, flushing"),
+        .init(name: "Verapamil",          category: "Calcium Channel Blocker (non-DHP)", commonDoses: "40–120 mg TDS or 120–480 mg OD (SR)", route: "PO/IV", notes: "Rate control AF/SVT; angina; AVOID with beta-blockers (fatal bradycardia)", sideEffects: "Constipation, bradycardia, heart block, hypotension; NEVER combine with IV beta-blockers"),
+        .init(name: "Labetalol",          category: "Alpha/Beta-blocker",     commonDoses: "100–400 mg BD–TDS PO; 50 mg IV bolus or 2 mg/min infusion", route: "PO/IV", notes: "Hypertensive emergency; pregnancy-induced hypertension; IV preferred inpatient", sideEffects: "Postural hypotension, bradycardia, bronchospasm, fatigue, scalp tingling (IV), nausea"),
+        .init(name: "Hydralazine",        category: "Vasodilator",            commonDoses: "25–75 mg BD–QDS PO; 5–20 mg slow IV bolus", route: "PO/IV", notes: "Hypertensive emergency (IV); pregnancy hypertension; usually with beta-blocker", sideEffects: "Reflex tachycardia, fluid retention, lupus-like syndrome (prolonged use), headache, flushing"),
+        .init(name: "Methyldopa",         category: "Centrally-acting Antihypertensive", commonDoses: "250–500 mg TDS",  route: "PO", notes: "Safe in pregnancy (drug of choice); sedating; Coombs-positive haemolysis risk", sideEffects: "Sedation, dry mouth, postural hypotension, positive Coombs test, hepatotoxicity (rare)"),
+        .init(name: "Clonidine",          category: "Centrally-acting Antihypertensive", commonDoses: "50–300 mcg TDS",  route: "PO", notes: "Hypertension; AVOID abrupt withdrawal (rebound crisis); peri-op pain adjunct", sideEffects: "Sedation, dry mouth, rebound hypertension on abrupt withdrawal, bradycardia"),
+        .init(name: "Minoxidil",          category: "Vasodilator",            commonDoses: "5–10 mg OD–BD",                route: "PO", notes: "Resistant hypertension; always with diuretic + beta-blocker; hair growth SE", sideEffects: "Fluid retention, reflex tachycardia, hypertrichosis, pericardial effusion (high dose)"),
+        .init(name: "Sacubitril/Valsartan (Entresto)", category: "ARNI",     commonDoses: "24/26 mg BD → 49/51 mg BD → 97/103 mg BD", route: "PO", notes: "HFrEF; start after ACE inhibitor washout (≥36h); superior to ACE inhibitor in HF", sideEffects: "Hypotension, hyperkalaemia, renal impairment, angioedema (especially if switching from ACE inhibitor)"),
+    ]
+
+    private static let _drugs2: [SurgicalDrug] = [
 
         // ─── STATINS / LIPID-LOWERING ─────────────────────────────────────────
         .init(name: "Atorvastatin",   category: "Statin",              commonDoses: "10–80 mg nocte",    route: "PO", notes: "Cardiovascular risk reduction; first-line statin; continue peri-operatively", sideEffects: "Myalgia, myopathy, rhabdomyolysis (rare), elevated LFTs, new-onset diabetes (long-term)"),
@@ -349,6 +419,952 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
         .init(name: "Vitamin B12 (cyanocobalamin)", category: "Vitamin", commonDoses: "1000 mcg IM every 3 months (malabsorption/pernicious anaemia)", route: "IM/PO", notes: "B12 deficiency; post gastrectomy/ileal resection; pernicious anaemia", sideEffects: "Minimal; injection-site reactions; acne (rare); polycythaemia with high doses"),
         .init(name: "Vitamin D3 (cholecalciferol)", category: "Vitamin", commonDoses: "800–4000 IU OD (maintenance); 50,000 IU weekly x 6–12 (loading)", route: "PO", notes: "Vitamin D deficiency; bone health; post-bariatric surgery supplementation", sideEffects: "Hypercalcaemia in excess (nausea, confusion, renal stones, polyuria), weakness"),
         .init(name: "Thiamine (Vitamin B1)", category: "Vitamin",      commonDoses: "100 mg TDS PO; 100–200 mg IV (Wernicke's prevention)",              route: "PO/IV", notes: "Alcohol-related disease; malnutrition; Wernicke's — give BEFORE glucose in alcoholics", sideEffects: "Anaphylaxis (IV Pabrinex — rare but potentially fatal); GI upset; well tolerated orally"),
+    ]
+
+    private static let _drugs3: [SurgicalDrug] = [
+
+        // ─── ANTIBIOTICS — Additional ─────────────────────────────────────────
+        .init(name: "Flucloxacillin",     category: "Antibiotic — Penicillin", commonDoses: "500 mg QDS (mild-mod); 1–2 g QDS IV (severe)", route: "PO/IV", notes: "Staphylococcal infections (MSSA); cellulitis; wound infections; take on empty stomach", sideEffects: "GI upset, cholestatic jaundice (avoid if previous hepatic reaction), hypersensitivity, C. difficile"),
+        .init(name: "Benzylpenicillin (Penicillin G)", category: "Antibiotic — Penicillin", commonDoses: "600 mg – 2.4 g QDS IV",    route: "IV/IM", notes: "Meningococcal disease; streptococcal sepsis; syphilis; actinomycosis", sideEffects: "Hypersensitivity (anaphylaxis), neurotoxicity (seizures at very high doses), hyperkalaemia (potassium salt)"),
+        .init(name: "Phenoxymethylpenicillin (Penicillin V)", category: "Antibiotic — Penicillin", commonDoses: "500 mg QDS PO",      route: "PO", notes: "Streptococcal tonsillitis; prophylaxis post-splenectomy; mild streptococcal cellulitis", sideEffects: "Hypersensitivity, nausea, diarrhoea, oral candidiasis (prolonged use)"),
+        .init(name: "Ceftriaxone",        category: "Antibiotic — Cephalosporin", commonDoses: "1–2 g OD IV/IM; 4 g OD (meningitis)", route: "IV/IM", notes: "Community pneumonia; meningitis; gonorrhoea; surgical prophylaxis; biliary excretion", sideEffects: "Biliary sludge/gallstones (prolonged use), hypersensitivity, C. difficile, precipitates with calcium IV"),
+        .init(name: "Levofloxacin",       category: "Antibiotic — Fluoroquinolone", commonDoses: "500 mg OD–BD PO/IV",              route: "PO/IV", notes: "Atypical/CAP; UTI; HAP; use with caution — tendon risk, QTc prolongation, disabling ADRs", sideEffects: "Tendon rupture (especially Achilles), QTc prolongation, peripheral neuropathy (may be irreversible), seizures, C. difficile"),
+        .init(name: "Clarithromycin",     category: "Antibiotic — Macrolide", commonDoses: "250–500 mg BD PO; 500 mg BD IV",        route: "PO/IV", notes: "Atypical pneumonia; H. pylori eradication; skin infections; CYP3A4 inhibitor — check interactions", sideEffects: "GI upset, taste disturbance, QTc prolongation, hepatotoxicity, many CYP3A4 drug interactions"),
+        .init(name: "Erythromycin",       category: "Antibiotic — Macrolide", commonDoses: "250–500 mg QDS PO; 6.25–12.5 mg/kg QDS IV", route: "PO/IV", notes: "Penicillin allergy alternative; gastroparesis prokinetic (low dose IV); Campylobacter", sideEffects: "GI upset (most common), QTc prolongation, phlebitis (IV), hepatotoxicity, ototoxicity (high dose IV)"),
+        .init(name: "Co-trimoxazole (Trimethoprim/Sulfamethoxazole)", category: "Antibiotic — Sulfonamide", commonDoses: "960 mg BD PO/IV; 480 mg BD (prophylaxis)", route: "PO/IV", notes: "PCP (pneumocystis) treatment/prophylaxis; MRSA (community); Nocardia; Toxoplasma", sideEffects: "Rash (SJS/TEN risk), hyperkalaemia, renal impairment, folate antagonism (megaloblastic anaemia), G6PD haemolysis"),
+        .init(name: "Teicoplanin",        category: "Antibiotic — Glycopeptide", commonDoses: "400 mg OD IV/IM (loading 12-hourly × 3 doses)", route: "IV/IM", notes: "MRSA; Gram-positive infections; CDI (oral); once-daily dosing advantage over vancomycin", sideEffects: "Red man syndrome (less than vancomycin), ototoxicity, nephrotoxicity (less than vancomycin), thrombocytopenia"),
+        .init(name: "Linezolid",          category: "Antibiotic — Oxazolidinone", commonDoses: "600 mg BD PO/IV",                    route: "PO/IV", notes: "MRSA (including VRE); equal oral/IV bioavailability; MAO inhibitor — avoid tyramine-rich foods", sideEffects: "Thrombocytopenia (≥2 weeks), serotonin syndrome (with SSRIs/MAOIs), optic neuropathy (prolonged), lactic acidosis"),
+        .init(name: "Rifampicin",         category: "Antibiotic — Rifamycin",   commonDoses: "450–600 mg OD PO (30 min before food); 600 mg BD (TB)", route: "PO/IV", notes: "TB (always in combination); MRSA decolonisation; prosthetic joint infections; induces CYP — many interactions", sideEffects: "Orange discolouration of body fluids, hepatotoxicity, powerful CYP inducer (OCP failure, warfarin, etc.), flu-like syndrome"),
+        .init(name: "Imipenem/Cilastatin", category: "Antibiotic — Carbapenem", commonDoses: "500 mg QDS IV; 1 g QDS (severe)",       route: "IV", notes: "Broad-spectrum reserve antibiotic; ESBL/AmpC organisms; restrict to MDR infections", sideEffects: "Seizures (especially with renal impairment), nausea, C. difficile, hypersensitivity (cross-react penicillin)"),
+        .init(name: "Colistin (Polymyxin E)", category: "Antibiotic — Polymyxin", commonDoses: "9 MU loading, then 4.5 MU BD IV (weight-adjusted)", route: "IV/nebulised", notes: "Last-resort for carbapenem-resistant Gram-negatives (Acinetobacter, Pseudomonas, Klebsiella)", sideEffects: "Nephrotoxicity (dose-limiting, ~50%), neurotoxicity, bronchoconstriction (nebulised), QTc prolongation"),
+        .init(name: "Daptomycin",         category: "Antibiotic — Lipopeptide", commonDoses: "4–6 mg/kg OD IV; 6–10 mg/kg (endocarditis/bacteraemia)", route: "IV", notes: "MRSA bacteraemia; right-sided endocarditis; NOT for pulmonary infections (inactivated by surfactant)", sideEffects: "Myopathy/rhabdomyolysis (monitor CK weekly), peripheral neuropathy, eosinophilic pneumonitis, hepatotoxicity"),
+        .init(name: "Tigecycline",        category: "Antibiotic — Glycylcycline", commonDoses: "100 mg loading, then 50 mg BD IV",   route: "IV", notes: "MDR Gram-positive and Gram-negative (except Pseudomonas); complicated skin/abdominal infections; resist. pneumonia", sideEffects: "Nausea and vomiting (very common), increased all-cause mortality vs comparators, photosensitivity, pancreatitis"),
+        .init(name: "Fusidic acid",       category: "Antibiotic — Fusidane",    commonDoses: "500 mg TDS PO (with food); 580 mg TDS IV", route: "PO/IV/topical", notes: "Staphylococcal infections; MRSA (with rifampicin); skin/soft tissue; bone infections; never as monotherapy (resistance)", sideEffects: "Hepatotoxicity (IV form), jaundice, GI upset, thrombophlebitis (IV), resistance develops rapidly if used alone"),
+
+        // ─── ANTIFUNGALS — Additional ─────────────────────────────────────────
+        .init(name: "Nystatin",           category: "Antifungal — Polyene",     commonDoses: "100,000 units QDS oral suspension; 1 pessary/cream OD–BD", route: "Topical/oral", notes: "Oral/oesophageal candidiasis; vaginal candidiasis; NOT absorbed systemically (topical only)", sideEffects: "Nausea, vomiting (oral), contact dermatitis (topical); generally very well tolerated"),
+        .init(name: "Itraconazole",       category: "Antifungal — Azole",       commonDoses: "100–200 mg OD–BD PO; 200 mg BD IV (7 days)", route: "PO/IV", notes: "Aspergillosis; histoplasmosis; onychomycosis; CYP3A4 inhibitor — check interactions", sideEffects: "Negative inotropy (avoid in heart failure), CYP3A4 interactions, hepatotoxicity, oedema, GI upset"),
+        .init(name: "Voriconazole",       category: "Antifungal — Azole",       commonDoses: "6 mg/kg BD IV × 2 (loading), then 4 mg/kg BD; 200–300 mg BD PO", route: "PO/IV", notes: "Invasive aspergillosis (first-line); Candida; Fusarium; TDM required; CYP interactions", sideEffects: "Visual disturbances (transient, very common), photosensitivity, hallucinations, hepatotoxicity, QTc prolongation, fluorosis (long-term IV)"),
+        .init(name: "Caspofungin",        category: "Antifungal — Echinocandin", commonDoses: "70 mg loading IV, then 50 mg OD",      route: "IV", notes: "Invasive candidiasis (including azole-resistant); salvage aspergillosis; minimal drug interactions", sideEffects: "Fever, phlebitis, elevated LFTs, rash, hypokalemia; generally well tolerated"),
+        .init(name: "Micafungin",         category: "Antifungal — Echinocandin", commonDoses: "100–150 mg OD IV (treatment); 50 mg OD (prophylaxis)", route: "IV", notes: "Invasive candidiasis/candidaemia; oesophageal candidiasis; prophylaxis in HSCT", sideEffects: "Elevated LFTs, phlebitis, rash, nausea; hepatocellular carcinoma signal in animal studies (not confirmed in humans)"),
+
+        // ─── ANTIVIRALS ───────────────────────────────────────────────────────
+        .init(name: "Aciclovir",          category: "Antiviral — Herpesvirus",  commonDoses: "200–400 mg 5×/day PO; 5–10 mg/kg TDS IV", route: "PO/IV/topical", notes: "HSV/VZV treatment and suppression; herpes encephalitis (IV); ensure adequate hydration IV", sideEffects: "Nephrotoxicity (IV — ensure hydration), neurotoxicity (high dose/renal impairment), nausea, headache, phlebitis"),
+        .init(name: "Valaciclovir",       category: "Antiviral — Herpesvirus",  commonDoses: "500 mg BD (HSV suppression); 1 g TDS × 7 days (zoster)", route: "PO", notes: "Oral prodrug of aciclovir; higher bioavailability; herpes zoster; genital HSV", sideEffects: "Nausea, headache, thrombotic microangiopathy (immunocompromised, high dose), nephrotoxicity (high dose)"),
+        .init(name: "Oseltamivir (Tamiflu)", category: "Antiviral — Influenza", commonDoses: "75 mg BD × 5 days (treatment); 75 mg OD (prophylaxis)",  route: "PO", notes: "Influenza A/B; start within 48h of symptom onset; adjust for renal impairment", sideEffects: "Nausea, vomiting (take with food), headache, insomnia; rare neuropsychiatric effects (monitor)"),
+
+        // ─── LOCAL ANAESTHETICS ───────────────────────────────────────────────
+        .init(name: "Lidocaine",          category: "Local Anaesthetic",        commonDoses: "Infiltration: up to 3 mg/kg (plain) or 7 mg/kg (with adrenaline); topical 1–4%", route: "Local infiltration/topical/IV", notes: "Surgical infiltration; topical; epidural; IV antiarrhythmic (1–1.5 mg/kg); max dose critical", sideEffects: "CNS toxicity (tinnitus → seizures → coma), cardiovascular collapse (LAST — use lipid rescue 20%), methaemoglobinaemia"),
+        .init(name: "Bupivacaine",        category: "Local Anaesthetic",        commonDoses: "Up to 2 mg/kg; 0.25–0.5% solution; spinal: 2–4 mL 0.5% heavy", route: "Local infiltration/spinal/epidural", notes: "Longer duration (4–8h); spinal/epidural; wound infiltration; higher cardiac toxicity than lidocaine", sideEffects: "Cardiac toxicity (severe — refractory VF if IV administered), CNS toxicity; LAST — lipid rescue; avoid IV use"),
+        .init(name: "Ropivacaine",        category: "Local Anaesthetic",        commonDoses: "Up to 3 mg/kg; 0.2–0.75% solution; TAP block: 20 mL each side 0.25%", route: "Local infiltration/epidural/nerve block", notes: "Epidural analgesia; peripheral nerve blocks; TAP blocks; less cardiac toxicity than bupivacaine", sideEffects: "Less cardiotoxic than bupivacaine; CNS toxicity; sensory > motor block at low concentrations"),
+        .init(name: "Levobupivacaine",    category: "Local Anaesthetic",        commonDoses: "Up to 2 mg/kg; 0.25–0.75% solution (spinal/epidural/blocks)", route: "Local infiltration/spinal/epidural", notes: "S(-) enantiomer of bupivacaine; similar duration with improved safety profile vs racemic bupivacaine", sideEffects: "Cardiac and CNS toxicity (less than bupivacaine); hypotension with epidural/spinal"),
+
+        // ─── ANAESTHETIC / NEUROMUSCULAR AGENTS ──────────────────────────────
+        .init(name: "Rocuronium",         category: "Neuromuscular Blocker — Non-depolarising", commonDoses: "0.6 mg/kg IV (intubating); 1.2 mg/kg (RSI); 0.1–0.2 mg/kg (maintenance)", route: "IV", notes: "Non-depolarising NMB; RSI alternative to suxamethonium; reversible with sugammadex", sideEffects: "Residual paralysis (must monitor NMT), anaphylaxis (rare but most common NMB cause), tachycardia"),
+        .init(name: "Vecuronium",         category: "Neuromuscular Blocker — Non-depolarising", commonDoses: "0.1 mg/kg IV (intubating); 0.02 mg/kg (maintenance)",                       route: "IV", notes: "Cardiovascular stability; hepatic elimination (caution in liver failure); reversible with neostigmine/sugammadex", sideEffects: "Residual paralysis, anaphylaxis (rare), histamine release (uncommon vs vecuronium), accumulation in hepatic failure"),
+        .init(name: "Suxamethonium (Succinylcholine)", category: "Neuromuscular Blocker — Depolarising", commonDoses: "1–1.5 mg/kg IV; 4 mg/kg IM",                          route: "IV/IM", notes: "Rapid onset (60s) for RSI; brief duration (~10 min); not reversible by sugammadex or neostigmine", sideEffects: "Hyperkalaemia (dangerous in burns/crush/denervation), malignant hyperthermia trigger, bradycardia, myalgia, raised IOP/ICP"),
+        .init(name: "Ketamine",           category: "Dissociative Anaesthetic", commonDoses: "1–2 mg/kg IV (induction); 0.1–0.5 mg/kg IV (sedation/analgesia); IM: 4–5 mg/kg", route: "IV/IM", notes: "Anaesthetic induction; procedural sedation; bronchodilator (asthma); haemodynamically stable; analgesic adjunct", sideEffects: "Emergence hallucinations/dysphoria (reduced by midazolam), hypertension, tachycardia, increased secretions, PONV, raised IOP"),
+        .init(name: "Etomidate",          category: "IV Anaesthetic",           commonDoses: "0.2–0.3 mg/kg IV",                                                                    route: "IV", notes: "Haemodynamically stable induction (cardiogenic shock, aortic stenosis); single dose for RSI", sideEffects: "Adrenocortical suppression (avoid infusion; single induction dose acceptable), myoclonus, pain on injection, PONV"),
+        .init(name: "Thiopentone (Thiopental)", category: "IV Anaesthetic — Barbiturate", commonDoses: "3–5 mg/kg IV (induction); lower in elderly/shocked",                    route: "IV", notes: "Anaesthetic induction (largely replaced by propofol); neuroprotection; status epilepticus (last resort)", sideEffects: "Cardiovascular depression, laryngospasm, histamine release, porphyria exacerbation, necrosis if intra-arterial"),
+    ]
+
+    private static let _drugs4: [SurgicalDrug] = [
+
+        // ─── VASOACTIVE / CARDIAC EMERGENCY ──────────────────────────────────
+        .init(name: "Epinephrine (Adrenaline)", category: "Vasopressor / Emergency", commonDoses: "Cardiac arrest: 1 mg IV q3-5min; Anaphylaxis: 0.5 mg IM (0.5 mL 1:1000); Infusion: 0.05–2 mcg/kg/min", route: "IV/IM/ET", notes: "Cardiac arrest; anaphylaxis (IM); vasopressor/inotrope infusion; bronchospasm nebulised", sideEffects: "Tachycardia, hypertension, arrhythmia, myocardial ischaemia, peripheral ischaemia (infusion), anxiety, tremor"),
+        .init(name: "Noradrenaline (Norepinephrine)", category: "Vasopressor",      commonDoses: "0.01–3 mcg/kg/min IV infusion (via central line)",                                route: "IV central", notes: "Vasodilatory/distributive shock (first-line vasopressor in sepsis); increases SVR with moderate inotropy", sideEffects: "Peripheral ischaemia/digital necrosis (high dose), reflex bradycardia, arrhythmia, hypertension, tissue necrosis if extravasated"),
+        .init(name: "Dopamine",           category: "Vasopressor / Inotrope",   commonDoses: "2–20 mcg/kg/min IV infusion",                                                         route: "IV", notes: "Cardiogenic/septic shock; dose-dependent: 2–5 (renal), 5–10 (cardiac), >10 (vasopressor); not preferred over noradrenaline in sepsis", sideEffects: "Tachycardia, arrhythmia (common), ischaemia, nausea, increased pulmonary wedge pressure"),
+        .init(name: "Dobutamine",         category: "Inotrope",                 commonDoses: "2.5–20 mcg/kg/min IV infusion",                                                        route: "IV", notes: "Cardiogenic shock; low-output heart failure; stress echocardiography; tachyphylaxis with prolonged use", sideEffects: "Tachycardia, arrhythmia, hypotension (vasodilatory), myocardial ischaemia, tachyphylaxis (>72h)"),
+        .init(name: "Vasopressin",        category: "Vasopressor",              commonDoses: "0.03–0.04 units/min IV fixed dose (septic shock adjunct)",                             route: "IV", notes: "Adjunct vasopressor in refractory septic shock (reduces noradrenaline requirements); ADH for diabetes insipidus", sideEffects: "Digital/mesenteric ischaemia, hyponatraemia (excess), coronary ischaemia, decreased cardiac output"),
+        .init(name: "GTN (Glyceryl trinitrate)", category: "Nitrate",           commonDoses: "0.4 mg SL PRN; 10–200 mcg/min IV; patch 5–15 mg/24h",                                 route: "SL/IV/topical/buccal", notes: "Acute angina (SL); LVF/pulmonary oedema; hypertensive emergency; oesophageal spasm", sideEffects: "Headache (very common, dose-limiting), hypotension, flushing, tachycardia (reflex), tolerance (nitrate-free interval required)"),
+        .init(name: "Isosorbide Mononitrate", category: "Nitrate",              commonDoses: "20 mg BD (asymmetric: morning + afternoon); SR 30–120 mg OD",                          route: "PO", notes: "Chronic angina prophylaxis; nitrate-free interval mandatory (8h) to prevent tolerance", sideEffects: "Headache, flushing, hypotension, dizziness; tolerance with continuous use (use asymmetric dosing)"),
+        .init(name: "Adenosine",          category: "Antiarrhythmic",           commonDoses: "6 mg rapid IV → 12 mg → 18 mg if no response",                                         route: "IV rapid bolus", notes: "SVT cardioversion; WPW diagnosis; very short half-life (10s); give as rapid bolus into large vein", sideEffects: "Chest tightness, dyspnoea, flushing (very common, transient), bronchospasm (avoid in asthma — use verapamil), AF (if accessory pathway)"),
+        .init(name: "Ticagrelor",         category: "Antiplatelet — P2Y12 inhibitor", commonDoses: "180 mg loading; 90 mg BD maintenance",                                           route: "PO", notes: "ACS/PCI (first-line over clopidogrel in ACS); reversible binding; stop 5 days pre-surgery", sideEffects: "Dyspnoea (common, often resolves), bleeding, bradycardia (first week), gout exacerbation"),
+        .init(name: "Prasugrel",          category: "Antiplatelet — P2Y12 inhibitor", commonDoses: "60 mg loading; 10 mg OD maintenance (5 mg if <60 kg or >75 yrs)", route: "PO", notes: "ACS undergoing PCI; avoid if prior TIA/stroke/age >75/weight <60 kg — higher bleeding risk; stop 7 days pre-op", sideEffects: "Bleeding (higher than clopidogrel), TTP (rare), rash, hypotension"),
+        .init(name: "Ezetimibe",          category: "Lipid-lowering — Cholesterol Absorption Inhibitor", commonDoses: "10 mg OD",                                             route: "PO", notes: "Hypercholesterolaemia (add-on to statin or monotherapy); reduces LDL ~18%; well tolerated", sideEffects: "GI upset, headache, myalgia (especially with statin combination), hepatotoxicity (rare), elevated LFTs"),
+        .init(name: "Fenofibrate",        category: "Lipid-lowering — Fibrate",  commonDoses: "145–200 mg OD",                                                                       route: "PO", notes: "Hypertriglyceridaemia; mixed dyslipidaemia; pancreatitis risk reduction; combine cautiously with statins", sideEffects: "GI upset, myopathy (with statins — lower risk than gemfibrozil), elevated creatinine, cholelithiasis, hepatotoxicity"),
+        .init(name: "Ivabradine",         category: "Heart Rate-lowering",       commonDoses: "2.5–7.5 mg BD",                                                                       route: "PO", notes: "Symptomatic angina (sinus rhythm); HFrEF (HR >70 bpm in sinus rhythm, on BB); sinus node inhibitor only", sideEffects: "Visual phosphenes/blurred vision (If-channel), bradycardia, AF (increased risk in HF), headache"),
+        .init(name: "Flecainide",         category: "Antiarrhythmic — Class Ic", commonDoses: "50–200 mg BD PO; 2 mg/kg IV (max 150 mg) over 30 min",                               route: "PO/IV", notes: "AF/flutter cardioversion (pill-in-pocket); paroxysmal SVT; AVOID in structural heart disease/post-MI (proarrhythmic)", sideEffects: "Proarrhythmic (severe — contraindicated in structural heart disease), dizziness, visual disturbances, bradycardia/AV block"),
+        .init(name: "Sotalol",            category: "Antiarrhythmic — Class III / Beta-blocker", commonDoses: "40–160 mg BD PO",                                              route: "PO", notes: "AF/flutter; ventricular arrhythmia; non-selective beta-blocker + potassium channel blocker; monitor QTc", sideEffects: "QTc prolongation (torsades — dose-related), bradycardia, bronchospasm, fatigue, hypoglycaemia masking"),
+
+        // ─── RESPIRATORY ──────────────────────────────────────────────────────
+        .init(name: "Salbutamol (Albuterol)", category: "Bronchodilator — SABA", commonDoses: "2.5–5 mg nebulised PRN; 100–200 mcg MDI (1–2 puffs); 250–500 mcg IV for severe", route: "Inhaled/IV/nebulised", notes: "Acute bronchospasm; asthma; COPD acute exacerbation; hyperkalaemia (high-dose nebulised)", sideEffects: "Tremor, tachycardia, palpitations, hypokalaemia (high dose/repeated), paradoxical bronchospasm"),
+        .init(name: "Ipratropium (Atrovent)", category: "Bronchodilator — SAMA", commonDoses: "0.5 mg nebulised QDS; 20–40 mcg MDI (2–4 puffs) QDS",                               route: "Inhaled/nebulised", notes: "COPD; acute asthma (in combination with salbutamol); bronchodilator via anticholinergic mechanism", sideEffects: "Dry mouth, urinary retention, constipation, glaucoma (nebulised — protect eyes), paradoxical bronchospasm"),
+        .init(name: "Tiotropium (Spiriva)", category: "Bronchodilator — LAMA",   commonDoses: "18 mcg OD (Handihaler); 5 mcg OD (Respimat)",                                         route: "Inhaled", notes: "COPD maintenance (first-line LAMA); once-daily dosing; reduces exacerbations; not for acute relief", sideEffects: "Dry mouth (most common), urinary retention, constipation, AF, cognitive effects (elderly)"),
+        .init(name: "Salmeterol",         category: "Bronchodilator — LABA",     commonDoses: "50 mcg BD inhaled (usually in combination ICS/LABA)",                                 route: "Inhaled", notes: "Asthma maintenance (always with ICS); COPD; NEVER use as monotherapy in asthma (increased mortality risk)", sideEffects: "Tremor, tachycardia, hypokalaemia, paradoxical bronchospasm; increased asthma mortality if used without ICS"),
+        .init(name: "Formoterol (Eformoterol)", category: "Bronchodilator — LABA", commonDoses: "6–12 mcg BD inhaled; also used as PRN in asthma SMART regimes",                   route: "Inhaled", notes: "COPD/asthma maintenance; faster onset than salmeterol (also usable PRN); SMART therapy (with budesonide)", sideEffects: "Tremor, tachycardia, hypokalaemia, headache; similar cautions to salmeterol re: monotherapy in asthma"),
+        .init(name: "Beclometasone (Clenil, QVAR)", category: "Inhaled Corticosteroid", commonDoses: "100–800 mcg BD (varies by device/indication)",                                 route: "Inhaled", notes: "Asthma controller; rinse mouth after use to prevent oral candidiasis; CFC vs HFA devices: dose NOT interchangeable", sideEffects: "Oral candidiasis, dysphonia, paradoxical bronchospasm, reduced growth velocity in children (high dose), adrenal suppression (very high dose)"),
+        .init(name: "Fluticasone (Flixotide, Flovent)", category: "Inhaled Corticosteroid", commonDoses: "100–500 mcg BD",                                                            route: "Inhaled", notes: "Asthma controller (high-potency ICS); often used in combination (Seretide/Symbicort equivalent); rinse mouth", sideEffects: "Oral candidiasis, dysphonia, HPA suppression (higher systemic absorption than beclometasone), adrenal crisis (abrupt cessation)"),
+        .init(name: "Budesonide (Pulmicort)", category: "Inhaled Corticosteroid / Nebulised Steroid", commonDoses: "200–1600 mcg BD inhaled; 1–2 mg nebulised BD–QDS (croup)",        route: "Inhaled/nebulised", notes: "Asthma/COPD controller; nebulised for croup in children; used in SMART therapy (with formoterol)", sideEffects: "Oral candidiasis, dysphonia, growth suppression (children), adrenal suppression (high dose)"),
+        .init(name: "Montelukast (Singulair)", category: "Leukotriene Receptor Antagonist", commonDoses: "10 mg OD nocte (adult); 5 mg (6–14 yrs); 4 mg (2–5 yrs)",                  route: "PO", notes: "Asthma add-on; allergic rhinitis; aspirin-exacerbated respiratory disease; nocturnal symptoms", sideEffects: "Neuropsychiatric effects (depression, suicidal ideation — FDA black box); GI upset, headache, elevated LFTs"),
+        .init(name: "Aminophylline",      category: "Bronchodilator — Xanthine", commonDoses: "5 mg/kg IV loading over 20 min (if not on theophylline); 0.5 mg/kg/h infusion",       route: "IV/PO", notes: "Severe acute asthma/COPD (IV); narrow therapeutic index; TDM required; multiple drug interactions", sideEffects: "Tachycardia, arrhythmia, seizures, nausea/vomiting, tremor; toxicity risk with erythromycin/ciprofloxacin"),
+        .init(name: "N-acetylcysteine (Parvolex)", category: "Antidote / Mucolytic", commonDoses: "Paracetamol OD: 150 mg/kg IV over 1h → 50 mg/kg/4h → 100 mg/kg/16h; Mucolytic: 200 mg TDS PO", route: "IV/PO/nebulised", notes: "Paracetamol overdose antidote (first-line); COPD mucolytic; hepatic protection; contrast nephropathy prevention", sideEffects: "Anaphylactoid reaction (IV loading dose — stop, treat, restart at slower rate), nausea, flushing"),
+
+        // ─── GI / HEPATIC — Additional ────────────────────────────────────────
+        .init(name: "Esomeprazole (Nexium)", category: "PPI",                    commonDoses: "20–40 mg OD PO; 40–80 mg BD IV (active GI bleed)",                                    route: "PO/IV", notes: "GORD; peptic ulcer; GI bleed prophylaxis; co-prescribe with NSAIDs; H. pylori eradication", sideEffects: "Headache, GI upset, hypomagnesaemia (long-term), C. difficile, osteoporosis/fracture risk (long-term)"),
+        .init(name: "Misoprostol",        category: "Prostaglandin / GI Cytoprotective", commonDoses: "200 mcg QDS (with NSAID); 200 mcg PR (labour induction/PPH); 400 mcg SL/vaginal", route: "PO/SL/vaginal/PR", notes: "GI cytoprotection with NSAIDs; cervical ripening; PPH treatment; medical management of miscarriage", sideEffects: "Diarrhoea, nausea, abdominal pain, uterine contractions/cramping, fever, shivering (prostaglandin effect)"),
+        .init(name: "Ursodeoxycholic acid (UDCA)", category: "Hepatic Agent",   commonDoses: "8–15 mg/kg/day in 2–3 divided doses",                                                  route: "PO", notes: "Primary biliary cholangitis; gallstone dissolution; intrahepatic cholestasis of pregnancy; NAFLD", sideEffects: "Diarrhoea (especially at high doses), nausea, pruritus, hepatic decompensation (in decompensated cirrhosis)"),
+        .init(name: "Mesalazine (5-ASA, Pentasa)", category: "GI Anti-inflammatory", commonDoses: "800 mg TDS (UC active); 400 mg TDS (maintenance)",                                route: "PO/PR", notes: "Ulcerative colitis (treatment and maintenance); Crohn's colitis; rectal preparations for distal disease", sideEffects: "GI upset, headache, hypersensitivity (rare — fever, rash), nephrotoxicity (monitor creatinine), interstitial nephritis"),
+        .init(name: "Cholestyramine (Questran)", category: "Bile Acid Sequestrant", commonDoses: "4 g 1–6 times daily (before meals)",                                                route: "PO", notes: "Hypercholesterolaemia; cholestatic pruritus; C. difficile (alternative); take 1h before or 4h after other drugs", sideEffects: "Constipation (most common), flatulence, bloating, fat-soluble vitamin malabsorption (A, D, E, K), drug interactions"),
+        .init(name: "Rifaximin",          category: "Antibiotic — GI Non-absorbable", commonDoses: "400 mg TDS (hepatic encephalopathy); 200 mg TDS (traveller's diarrhoea × 3 days)", route: "PO", notes: "Hepatic encephalopathy (with lactulose); prevention of recurrence; minimal systemic absorption", sideEffects: "GI upset (minimal), peripheral oedema; generally very well tolerated; theoretical C. difficile risk"),
+        .init(name: "Octreotide",         category: "Somatostatin Analogue",    commonDoses: "50–200 mcg SC/IV TDS; 25–50 mcg/h IV infusion (variceal bleed)",                       route: "SC/IV", notes: "Variceal/oesophageal bleeding; VIPoma/carcinoid syndrome; acromegaly; acute pancreatitis; dump. syndrome post-GI surgery", sideEffects: "GI upset (diarrhoea, steatorrhoea, gallstones on long-term use), bradycardia, hyperglycaemia, injection-site pain"),
+    ]
+
+    private static let _drugs5: [SurgicalDrug] = [
+
+        // ─── SEDATION / PSYCHIATRY / CNS ──────────────────────────────────────
+        .init(name: "Diazepam",           category: "Benzodiazepine",           commonDoses: "2–10 mg BD–QDS PO; 5–10 mg IV (status epilepticus)",                                    route: "PO/IV/PR/IM", notes: "Anxiety; alcohol withdrawal (CIWA protocol); muscle relaxant; status epilepticus; procedural sedation", sideEffects: "Sedation, respiratory depression (with opioids), dependence (physical + psychological), tolerance, falls in elderly"),
+        .init(name: "Lorazepam",          category: "Benzodiazepine",           commonDoses: "1–4 mg IV/IM (status epilepticus); 0.5–2 mg PO/SL (anxiety/pre-op)",                   route: "PO/IV/IM/SL", notes: "First-line for status epilepticus (IV); pre-operative anxiolysis; alcohol withdrawal; amnesic effect", sideEffects: "Respiratory depression (especially IV), sedation, amnesia, paradoxical agitation (elderly), dependence"),
+        .init(name: "Temazepam",          category: "Benzodiazepine — Hypnotic", commonDoses: "10–20 mg at bedtime",                                                                  route: "PO", notes: "Short-term insomnia; pre-operative anxiolysis; short duration; avoid in elderly (falls, cognitive impairment)", sideEffects: "Sedation, hangover effect, confusion (elderly), dependence, rebound insomnia on withdrawal"),
+        .init(name: "Zopiclone",          category: "Non-benzodiazepine Hypnotic (Z-drug)", commonDoses: "3.75–7.5 mg at bedtime (3.75 mg if elderly/hepatic impairment)",              route: "PO", notes: "Short-term insomnia; avoid long-term use (dependence); bitter metallic taste; avoid in sleep apnoea", sideEffects: "Bitter taste (very common), sedation, hangover, dependence, rebound insomnia, paradoxical agitation (rare)"),
+        .init(name: "Zolpidem (Stilnoct)", category: "Non-benzodiazepine Hypnotic (Z-drug)", commonDoses: "5–10 mg at bedtime (5 mg if elderly)",                                      route: "PO", notes: "Short-term insomnia; complex sleep behaviours reported (sleep-driving); not recommended in elderly", sideEffects: "Next-day sedation, complex sleep behaviours (sleep-walking/-driving), dependence, amnesia, hallucinations"),
+        .init(name: "Haloperidol",        category: "Antipsychotic — Typical",  commonDoses: "0.5–5 mg BD–TDS PO; 5–10 mg IM/IV (acute psychosis/agitation)",                         route: "PO/IM/IV", notes: "Acute psychosis; delirium; antiemetic (low dose 0.5–1 mg); Tourette's; palliative agitation", sideEffects: "EPS/akathisia/tardive dyskinesia, QTc prolongation (IV), NMS, drowsiness, postural hypotension, hyperprolactinaemia"),
+        .init(name: "Olanzapine",         category: "Antipsychotic — Atypical", commonDoses: "5–20 mg OD; 5–10 mg IM (acute agitation)",                                               route: "PO/IM", notes: "Schizophrenia; bipolar mania; delirium; antiemetic (unlicensed, low dose); significant metabolic risk", sideEffects: "Weight gain (marked), metabolic syndrome, sedation, glucose dysregulation, EPS (less than typicals), QTc prolongation"),
+        .init(name: "Quetiapine",         category: "Antipsychotic — Atypical", commonDoses: "25–800 mg OD–BD (schizophrenia); 25 mg nocte (delirium/off-label insomnia)",             route: "PO", notes: "Schizophrenia; bipolar; adjunct in depression; low-dose for delirium/insomnia (off-label); sedating at low doses", sideEffects: "Sedation, weight gain, metabolic syndrome, postural hypotension, QTc prolongation, cataracts (long-term — eye checks)"),
+        .init(name: "Sertraline",         category: "Antidepressant — SSRI",    commonDoses: "50–200 mg OD (depression); 25–200 mg OD (OCD)",                                         route: "PO", notes: "Depression; OCD; PTSD; panic disorder; social anxiety; preferred SSRI in cardiac disease", sideEffects: "GI upset (nausea early), sexual dysfunction, insomnia/agitation initially, SIADH, serotonin syndrome (combinations), QTc (high dose)"),
+        .init(name: "Fluoxetine (Prozac)", category: "Antidepressant — SSRI",   commonDoses: "20–60 mg OD (depression); 60 mg OD (bulimia)",                                           route: "PO", notes: "Depression; OCD; bulimia; long half-life (useful if adherence concern); CYP2D6 inhibitor", sideEffects: "GI upset, insomnia, sexual dysfunction, headache, serotonin syndrome, prolonged half-life (drug interactions persist longer)"),
+        .init(name: "Citalopram",         category: "Antidepressant — SSRI",    commonDoses: "20–40 mg OD (max 20 mg if >65 yrs or hepatic impairment — QTc)",                        route: "PO", notes: "Depression; panic disorder; max 20 mg in elderly due to QTc risk; fewer drug interactions than fluoxetine", sideEffects: "GI upset, insomnia/sedation, sexual dysfunction, QTc prolongation (dose-dependent), SIADH, serotonin syndrome"),
+        .init(name: "Escitalopram (Lexapro)", category: "Antidepressant — SSRI", commonDoses: "10–20 mg OD (max 10 mg if >65 yrs or hepatic impairment)",                              route: "PO", notes: "Depression; generalised anxiety disorder; S-enantiomer of citalopram; slightly better tolerability; QTc monitoring", sideEffects: "GI upset, insomnia, sexual dysfunction, QTc prolongation, SIADH, serotonin syndrome (with other serotonergic drugs)"),
+        .init(name: "Venlafaxine (Efexor)", category: "Antidepressant — SNRI",  commonDoses: "75–375 mg OD (XR formulation); 37.5–225 mg BD (immediate release)",                     route: "PO", notes: "Depression; GAD; social anxiety; panic; pain conditions; discontinuation syndrome on abrupt cessation", sideEffects: "GI upset, hypertension (dose-related), tachycardia, sweating, sexual dysfunction, discontinuation syndrome, QTc"),
+        .init(name: "Mirtazapine (Zispin)", category: "Antidepressant — NaSSA", commonDoses: "15–45 mg nocte",                                                                          route: "PO", notes: "Depression (especially with insomnia/poor appetite); antiemetic properties; weight gain; no sexual dysfunction", sideEffects: "Sedation (most at 15 mg — paradoxically less at higher doses), weight gain/increased appetite, agranulocytosis (rare), elevated cholesterol"),
+
+        // ─── ANTICONVULSANTS ──────────────────────────────────────────────────
+        .init(name: "Levetiracetam (Keppra)", category: "Anticonvulsant",       commonDoses: "500–3000 mg BD PO/IV",                                                                   route: "PO/IV", notes: "Focal and generalised epilepsy; status epilepticus (IV); no hepatic metabolism; few drug interactions", sideEffects: "Behavioural changes/irritability (most common, esp. in children), somnolence, headache, thrombocytopenia, psychosis"),
+        .init(name: "Sodium Valproate (Epilim)", category: "Anticonvulsant / Mood Stabiliser", commonDoses: "200–2500 mg daily in 2 divided doses; target level 50–100 mg/L",       route: "PO/IV", notes: "Focal/generalised epilepsy; bipolar; migraine prophylaxis; AVOID in women of childbearing potential (teratogen)", sideEffects: "Hepatotoxicity (especially <2 yrs), pancreatitis, thrombocytopenia, weight gain, hair loss, tremor, PCOS, teratogen (spina bifida, neurodevelopmental)"),
+        .init(name: "Carbamazepine (Tegretol)", category: "Anticonvulsant / Mood Stabiliser", commonDoses: "100–1800 mg daily in 2–3 divided doses; target level 4–12 mg/L",          route: "PO", notes: "Focal epilepsy; trigeminal neuralgia; bipolar disorder (off-label); auto-inducer (reduces own levels); many CYP interactions", sideEffects: "Drowsiness, diplopia, ataxia, rash (SJS risk — HLA-B*1502 screen in Han Chinese), hyponatraemia, agranulocytosis/aplastic anaemia, many drug interactions"),
+        .init(name: "Phenytoin (Dilantin, Epanutin)", category: "Anticonvulsant", commonDoses: "150–300 mg nocte PO (TDM essential; target 10–20 mg/L); 15–18 mg/kg IV (loading, STATUS)", route: "PO/IV", notes: "Status epilepticus (IV with ECG monitoring); focal epilepsy; zero-order (saturable) kinetics — small dose change → large level change", sideEffects: "Gingival hyperplasia, hirsutism, acne, cerebellar atrophy (long-term), osteoporosis, SJS, nystagmus/ataxia (toxicity), arrhythmia (rapid IV)"),
+        .init(name: "Lamotrigine (Lamictal)", category: "Anticonvulsant / Mood Stabiliser", commonDoses: "25–500 mg OD–BD (titrate slowly to reduce SJS risk; faster if on valproate)",route: "PO", notes: "Focal/generalised epilepsy; bipolar disorder; slow titration mandatory; OCP reduces levels; valproate doubles levels", sideEffects: "Rash (SJS/DRESS — slow titration reduces risk), headache, dizziness, diplopia, insomnia, tremor, blood dyscrasias"),
+        .init(name: "Clonazepam (Rivotril)", category: "Benzodiazepine / Anticonvulsant", commonDoses: "0.5–20 mg/day in divided doses; 0.5–1 mg slow IV (status epilepticus)",       route: "PO/IV/IM/SL", notes: "Epilepsy; status epilepticus; myoclonic jerks; panic disorder; restless legs syndrome", sideEffects: "Sedation, ataxia, cognitive impairment, tolerance, dependence, respiratory depression (IV), paradoxical agitation"),
+
+        // ─── MUSCULOSKELETAL / RHEUMATOLOGY ───────────────────────────────────
+        .init(name: "Naproxen",           category: "NSAID",                    commonDoses: "250–500 mg BD (max 1250 mg/day)",                                                         route: "PO", notes: "Pain/inflammation; cardiovascular neutral NSAID (vs. other selective NSAIDs); protect GI with PPI", sideEffects: "GI irritation/ulceration, renal impairment, fluid retention, CVS risk (lower than some NSAIDs), hepatotoxicity"),
+        .init(name: "Meloxicam (Mobic)",  category: "NSAID — COX-2 preferential", commonDoses: "7.5–15 mg OD",                                                                         route: "PO/IM", notes: "OA/RA/ankylosing spondylitis; preferentially COX-2 (reduced GI side effects vs non-selective); avoid in renal impairment", sideEffects: "GI upset (less than non-selective NSAIDs), fluid retention, renal impairment, cardiovascular risk"),
+        .init(name: "Allopurinol (Zyloric)", category: "Uricosuric / XO Inhibitor", commonDoses: "100 mg OD initially (titrate to 300–900 mg/day); START 2–4 weeks after acute gout resolves", route: "PO", notes: "Gout prevention; never start during acute attack (worsens); may worsen acute attack initially — cover with colchicine", sideEffects: "SJS/TEN/DRESS (especially HLA-B*5801 — screen in Han Chinese/Thai); rash, GI upset, hepatotoxicity, allopurinol hypersensitivity syndrome"),
+        .init(name: "Colchicine",         category: "Anti-gout",                commonDoses: "500 mcg BD–TDS (acute gout, max 3 days); 500 mcg OD–BD (prophylaxis)",                  route: "PO", notes: "Acute gout; gout prophylaxis when starting allopurinol; familial Mediterranean fever; pericarditis", sideEffects: "Diarrhoea/nausea (dose-limiting, very common), myopathy, peripheral neuropathy, bone marrow suppression (overdose is fatal — narrow TI)"),
+        .init(name: "Hydroxychloroquine (Plaquenil)", category: "DMARD / Antimalarial", commonDoses: "200–400 mg OD (max 5 mg/kg/day — retinal toxicity)",                             route: "PO", notes: "SLE; RA; Sjögren's; malaria prophylaxis; anti-inflammatory; annual ophthalmology review for retinopathy", sideEffects: "Retinal toxicity (cumulative dose — annual screening mandatory), GI upset, rash, headache, QTc prolongation"),
+        .init(name: "Methotrexate (MTX)", category: "DMARD / Antimetabolite",   commonDoses: "7.5–25 mg ONCE weekly PO/IM/SC (NOT daily — fatal error)",                               route: "PO/IM/SC", notes: "RA; psoriatic arthritis; Crohn's; ectopic pregnancy; ONCE WEEKLY only — daily dosing is fatal; give folic acid 5 mg/week", sideEffects: "Hepatotoxicity (monitor LFTs), pulmonary fibrosis, bone marrow suppression, mucositis, nausea, teratogen; WEEKLY DOSE — daily is fatal"),
+        .init(name: "Sulfasalazine (Salazopyrin)", category: "DMARD / Anti-inflammatory", commonDoses: "500 mg OD initially, increase to 1–2 g BD–TDS over 4 weeks",                 route: "PO", notes: "RA; ankylosing spondylitis; ulcerative colitis; slow-acting DMARD (3–6 months for effect); sulfa component", sideEffects: "GI upset (enteric-coated formulation), rash, headache, male infertility (reversible), agranulocytosis, hepatotoxicity, orange urine"),
+
+        // ─── DIABETES — Additional Agents ─────────────────────────────────────
+        .init(name: "Insulin aspart (NovoRapid)", category: "Insulin — Rapid-acting", commonDoses: "Individualized SC; inject 0–15 min before meals; usually 4–20 units per meal",   route: "SC/IV", notes: "Mealtime insulin; rapid onset (15 min), peak 1–3h, duration 3–5h; can be used in CSII/pump therapy", sideEffects: "Hypoglycaemia (most common), weight gain, lipodystrophy at injection sites, local reactions"),
+        .init(name: "Insulin lispro (Humalog)", category: "Insulin — Rapid-acting",  commonDoses: "Individualized SC; inject 0–15 min before meals",                                   route: "SC/IV", notes: "Mealtime insulin; similar profile to aspart; alternative rapid-acting insulin option", sideEffects: "Hypoglycaemia, weight gain, lipodystrophy, local injection-site reactions"),
+        .init(name: "Insulin NPH (Humulin I, Insulatard)", category: "Insulin — Intermediate-acting", commonDoses: "Individualized SC; usually BD (morning + evening)",               route: "SC", notes: "Intermediate-acting background insulin; cloudy suspension — must be mixed before use; twice-daily dosing", sideEffects: "Nocturnal hypoglycaemia (if evening dose too high), weight gain, lipodystrophy, variable absorption"),
+        .init(name: "Empagliflozin (Jardiance)", category: "Antidiabetic — SGLT2 inhibitor", commonDoses: "10–25 mg OD (with or without food)",                                        route: "PO", notes: "T2DM; HFrEF (independent of diabetes — 10 mg OD); CKD protection; cardiovascular mortality benefit; HOLD peri-op (DKA risk)", sideEffects: "Genital mycotic infections (very common), UTI, polyuria, euglycaemic DKA (especially peri-op — stop 3–5 days before surgery), Fournier's gangrene (rare)"),
+        .init(name: "Dapagliflozin (Forxiga)", category: "Antidiabetic — SGLT2 inhibitor", commonDoses: "10 mg OD",                                                                    route: "PO", notes: "T2DM; HFrEF; CKD; similar benefits to empagliflozin; HOLD peri-operatively (euglycaemic DKA risk)", sideEffects: "Genital mycotic infections, UTI, polyuria, euglycaemic DKA (peri-op — stop 3–5 days before surgery), Fournier's gangrene (rare)"),
+        .init(name: "Sitagliptin (Januvia)", category: "Antidiabetic — DPP-4 inhibitor", commonDoses: "100 mg OD (adjust for renal impairment: 50 mg if eGFR 30–45; 25 mg if <30)",  route: "PO", notes: "T2DM; well tolerated; weight neutral; adjust dose in renal impairment; small pancreatitis signal", sideEffects: "Upper respiratory tract infection, nasopharyngitis, pancreatitis (rare), joint pain (rare), hypoglycaemia (only if combined with insulin/sulphonylurea)"),
+        .init(name: "Semaglutide (Ozempic/Rybelsus/Wegovy)", category: "Antidiabetic / Anti-obesity — GLP-1 agonist", commonDoses: "0.25–1 mg SC weekly (T2DM); 2.4 mg SC weekly (obesity); 3–14 mg PO OD", route: "SC/PO", notes: "T2DM; obesity; cardiovascular risk reduction; significant weight loss; HOLD week before surgery (aspiration risk)", sideEffects: "Nausea/vomiting/diarrhoea (very common, especially initially), pancreatitis, gallstones, thyroid C-cell tumours (rodents — human significance unclear)"),
+        .init(name: "Liraglutide (Victoza/Saxenda)", category: "Antidiabetic / Anti-obesity — GLP-1 agonist", commonDoses: "0.6–1.8 mg SC OD (T2DM); 3 mg OD (obesity)",                route: "SC", notes: "T2DM; obesity; cardiovascular risk reduction; HOLD before surgery; once-daily SC injection", sideEffects: "Nausea, vomiting, diarrhoea, pancreatitis (rare), gallstones, injection-site reactions, thyroid tumours (rodent data)"),
+        .init(name: "Pioglitazone (Actos)", category: "Antidiabetic — Thiazolidinedione", commonDoses: "15–45 mg OD",                                                                  route: "PO", notes: "T2DM; NASH (fatty liver, off-label); NOT for bladder cancer risk patients or heart failure; weight gain expected", sideEffects: "Fluid retention/oedema (avoid in HF), weight gain, fracture risk (especially women), bladder cancer signal, hepatotoxicity (rare)"),
+
+        // ─── UROLOGY ──────────────────────────────────────────────────────────
+        .init(name: "Tamsulosin (Flomax)", category: "Alpha-blocker — Uroselective", commonDoses: "400 mcg OD (30 min after same meal daily)",                                          route: "PO", notes: "BPH lower urinary tract symptoms; alpha-1a selective; warn about intraoperative floppy iris syndrome (IFIS) before cataract surgery", sideEffects: "Retrograde ejaculation (most common), orthostatic hypotension (less than non-selective), IFIS (cataract surgery), dizziness, rhinitis"),
+        .init(name: "Finasteride (Proscar, Propecia)", category: "5-alpha-Reductase Inhibitor", commonDoses: "5 mg OD (BPH); 1 mg OD (male pattern baldness)",                        route: "PO", notes: "BPH (reduces prostate volume over 3–6 months); male pattern alopecia; affects PSA (halves PSA — double value for interpretation)", sideEffects: "Sexual dysfunction (impotence, reduced libido, ejaculatory dysfunction — may be irreversible), gynaecomastia, post-finasteride syndrome (contested), PSA reduction"),
+        .init(name: "Dutasteride (Avodart)", category: "5-alpha-Reductase Inhibitor", commonDoses: "500 mcg OD",                                                                        route: "PO", notes: "BPH (dual 5-AR inhibitor — more complete DHT suppression than finasteride); reduces PSA by ~50%", sideEffects: "Sexual dysfunction, gynaecomastia, reduced ejaculate volume; stored in fat — levels persist months after stopping"),
+        .init(name: "Oxybutynin (Ditropan)", category: "Anticholinergic / Bladder Antispasmodic", commonDoses: "2.5–5 mg BD–TDS PO; 3.9 mg/day transdermal patch",                   route: "PO/transdermal", notes: "Overactive bladder/urge incontinence; antimuscarinic; significant anticholinergic burden — avoid in elderly if possible", sideEffects: "Dry mouth, constipation, urinary retention, blurred vision, confusion (high anticholinergic burden), heat intolerance"),
+        .init(name: "Mirabegron (Betmiga)", category: "Beta-3 Agonist — Bladder",    commonDoses: "25–50 mg OD",                                                                        route: "PO", notes: "Overactive bladder/urge incontinence; alternative to antimuscarinics; avoid in uncontrolled hypertension", sideEffects: "Hypertension (modest), tachycardia, urinary retention (rare), nasopharyngitis, UTI; generally better tolerated than oxybutynin"),
+
+        // ─── ANTIHISTAMINES / ALLERGY ─────────────────────────────────────────
+        .init(name: "Chlorphenamine (Piriton)", category: "Antihistamine — First Generation", commonDoses: "4 mg QDS PO; 10–20 mg IV/IM (anaphylaxis adjunct)",                        route: "PO/IV/IM", notes: "Allergic reactions; anaphylaxis (adjunct to adrenaline); urticaria; pre-medication; sedating", sideEffects: "Sedation (significant), antimuscarinic effects (dry mouth, urinary retention), paradoxical excitation (children)"),
+        .init(name: "Cetirizine (Zyrtec)", category: "Antihistamine — Second Generation", commonDoses: "10 mg OD",                                                                      route: "PO", notes: "Allergic rhinitis; urticaria; chronic pruritus; low sedation; once-daily dosing; mild sedation vs loratadine", sideEffects: "Mild sedation (more than loratadine, less than first-generation), dry mouth, headache, dizziness"),
+        .init(name: "Loratadine (Claritin)", category: "Antihistamine — Second Generation", commonDoses: "10 mg OD",                                                                    route: "PO", notes: "Allergic rhinitis; urticaria; non-sedating; safe in pilots/drivers; least sedating oral antihistamine", sideEffects: "Headache, dry mouth; minimal sedation; generally well tolerated"),
+        .init(name: "Fexofenadine (Telfast)", category: "Antihistamine — Second Generation", commonDoses: "120 mg OD (rhinitis); 180 mg OD (urticaria)",                                route: "PO", notes: "Allergic rhinitis; chronic urticaria; non-sedating; does not cross BBB significantly; safe in occupational settings", sideEffects: "Headache, nausea, dizziness; essentially non-sedating; avoid grapefruit/apple juice (reduces absorption)"),
+        .init(name: "Promethazine (Phenergan)", category: "Antihistamine / Antiemetic — First Generation", commonDoses: "12.5–25 mg PO/IM/PR; 25 mg IV (slow)",                        route: "PO/IM/PR/IV", notes: "Antiemetic; sedation; allergic conditions; pre-medication; motion sickness; avoid IV (caustic — risk of gangrene)", sideEffects: "Sedation (profound), antimuscarinic effects, respiratory depression (children <2), paradoxical agitation; avoid IV injection — tissue necrosis"),
+
+        // ─── IMMUNOSUPPRESSANTS ────────────────────────────────────────────────
+        .init(name: "Azathioprine (Imuran)", category: "Immunosuppressant — Antimetabolite", commonDoses: "1–3 mg/kg OD",                                                               route: "PO", notes: "Organ transplant rejection; autoimmune disease (SLE, IBD, myasthenia gravis); check TPMT before starting (toxicity risk)", sideEffects: "Myelosuppression (dose-related), nausea/GI upset, hepatotoxicity, pancreatitis, malignancy risk (lymphoma), TPMT deficiency → severe toxicity"),
+        .init(name: "Ciclosporin (Cyclosporine)", category: "Immunosuppressant — Calcineurin inhibitor", commonDoses: "2.5–15 mg/kg/day in 2 divided doses (TDM-guided; target trough 100–400 ng/mL)", route: "PO/IV", notes: "Solid organ transplant; autoimmune diseases (psoriasis, RA); nephrotoxicity limits long-term use; many CYP3A4/P-gp interactions", sideEffects: "Nephrotoxicity (cumulative, dose-related), hypertension, hypertrichosis, gingival hyperplasia, tremor, neurotoxicity, hyperlipidaemia, diabetes"),
+        .init(name: "Tacrolimus (Prograf, Advagraf)", category: "Immunosuppressant — Calcineurin inhibitor", commonDoses: "0.1–0.3 mg/kg/day in 2 divided doses (TDM; target trough 5–15 ng/mL)", route: "PO/IV", notes: "Transplant rejection (superior to ciclosporin in most transplants); topical for atopic dermatitis; many drug interactions", sideEffects: "Nephrotoxicity, neurotoxicity (tremor, headache), diabetes (more than ciclosporin), hypertension, GI upset, alopecia, PTLD/malignancy"),
+        .init(name: "Mycophenolate mofetil (CellCept)", category: "Immunosuppressant — Antimetabolite", commonDoses: "1–1.5 g BD (transplant); 500 mg–1 g BD (autoimmune)",            route: "PO/IV", notes: "Transplant (with ciclosporin/tacrolimus); lupus nephritis; myasthenia gravis; teratogen — contraception mandatory", sideEffects: "GI upset (diarrhoea, nausea, vomiting — very common), bone marrow suppression, PML risk, teratogenicity (Category D — contraception required)"),
+        .init(name: "Infliximab (Remicade)", category: "Immunosuppressant — Anti-TNF (biologic)", commonDoses: "5 mg/kg IV at 0, 2, 6 weeks, then every 8 weeks",                     route: "IV infusion", notes: "Crohn's disease; ulcerative colitis; RA; psoriatic arthritis; screen for TB and hepatitis B before starting", sideEffects: "Infusion reactions, serious infections (reactivation TB — ALWAYS screen), demyelination, congestive heart failure, lymphoma, lupus-like syndrome, antibody formation"),
+
+        // ─── IV IRON / HAEMATINICS ─────────────────────────────────────────────
+        .init(name: "Ferric carboxymaltose (Ferinject)", category: "IV Iron",    commonDoses: "500–1000 mg IV over 15 min (max 20 mg/kg/dose); repeat in 7 days if needed",             route: "IV", notes: "Iron deficiency anaemia when PO intolerant/inadequate; pre-op optimisation; CKD; inflammatory bowel disease", sideEffects: "Hypophosphataemia (common, monitor in high-dose regimens), flushing, hypotension, nausea, anaphylaxis (rare — test dose not required)"),
+        .init(name: "Iron sucrose (Venofer)",   category: "IV Iron",             commonDoses: "200 mg IV over 15–30 min; 2–3 times per week",                                           route: "IV", notes: "Iron deficiency in CKD; pre-op anaemia; dialysis patients; more frequent administration than ferric carboxymaltose", sideEffects: "Nausea, hypotension, muscle cramps, hypersensitivity reactions, flushing; anaphylaxis (rare)"),
+
+        // ─── BLOOD PRODUCTS / COAGULATION ─────────────────────────────────────
+        .init(name: "Tranexamic acid (Cyklokapron)", category: "Antifibrinolytic", commonDoses: "1 g IV over 10 min (trauma — within 3h); 15–25 mg/kg TDS PO/IV",                       route: "PO/IV/topical", notes: "Major haemorrhage; trauma (CRASH-2 trial); surgical blood loss; menorrhagia; post-partum haemorrhage", sideEffects: "Nausea, diarrhoea, thromboembolic risk (seizures at high IV doses — do not exceed 1 g bolus), colour vision changes"),
+        .init(name: "Phytomenadione (Vitamin K1)", category: "Coagulation Factor / Antidote", commonDoses: "1–5 mg IV slow (INR reversal); 10 mg IV (life-threatening bleed); 5–10 mg PO",route: "PO/IV/SC", notes: "Warfarin reversal; Vitamin K deficiency; IV onset 6–12h (full effect); PO takes 12–24h; not for dabigatran/rivaroxaban", sideEffects: "Anaphylaxis (IV — give slowly, dilute); PO/SC generally safe; over-correction locks patient into warfarin resistance for weeks"),
+        .init(name: "Prothrombin Complex Concentrate (Beriplex/Octaplex)", category: "Clotting Factor Concentrate", commonDoses: "25–50 units/kg IV (weight and INR guided)",           route: "IV", notes: "Urgent warfarin/VKA reversal; major bleeding; factor replacement; faster reversal than FFP", sideEffects: "Thrombotic events (arterial/venous), DIC (rare), anaphylaxis; monitor INR after administration"),
+        .init(name: "Desmopressin (DDAVP)",   category: "Vasopressin Analogue / Haemostatic", commonDoses: "0.3 mcg/kg IV/SC; 150–300 mcg intranasal",                                  route: "IV/SC/intranasal", notes: "Mild haemophilia A / vWD type 1 (test response first); uremic bleeding; central DI; nocturia (intranasal)", sideEffects: "Hyponatraemia/water retention (restrict fluids), facial flushing, tachycardia, headache, hypertension; tachyphylaxis with repeated doses"),
+
+        // ─── EMERGENCY / CRITICAL CARE ────────────────────────────────────────
+        .init(name: "Mannitol 20%",       category: "Osmotic Diuretic",          commonDoses: "0.25–1 g/kg IV over 15–30 min",                                                           route: "IV", notes: "Raised ICP (head injury/stroke); cerebral oedema; acute glaucoma; renal protection (controversial)", sideEffects: "Acute renal failure (high dose), fluid overload/pulmonary oedema (rebound), electrolyte disturbances, rebound ICP rise"),
+        .init(name: "Alteplase (tPA, Actilyse)", category: "Thrombolytic",       commonDoses: "0.9 mg/kg IV (max 90 mg) for ischaemic stroke; STEMI regimen: 15 mg bolus + infusion", route: "IV", notes: "Acute ischaemic stroke (within 4.5h); STEMI; massive PE; central line occlusion (2 mg intraluminally)", sideEffects: "Intracranial haemorrhage (major risk in stroke), systemic bleeding, anaphylaxis, angioedema (especially with ACE inhibitor)"),
+        .init(name: "Hydrocortisone (emergency dose)", category: "Corticosteroid — IV Emergency", commonDoses: "100–200 mg IV (septic shock/adrenal crisis); 50–100 mg QDS IV (severe illness)", route: "IV/IM", notes: "Adrenal crisis; Addisonian crisis; refractory septic shock (adjunct, if on chronic steroids or suspected AI); peri-op steroid cover", sideEffects: "Hyperglycaemia, hypertension, hypokalaemia, immunosuppression, GI haemorrhage (with NSAIDs), fluid retention"),
+        .init(name: "Sildenafil (Viagra, Revatio)", category: "PDE5 Inhibitor",  commonDoses: "25–100 mg PRN (erectile dysfunction, 1h before); 20 mg TDS (pulmonary hypertension)",   route: "PO", notes: "Erectile dysfunction; pulmonary arterial hypertension (Revatio); ABSOLUTE CONTRAINDICATION with nitrates (severe hypotension)", sideEffects: "Headache, flushing, dyspepsia, visual disturbances (blue-tinged vision), hypotension (especially with nitrates/alpha-blockers), priapism"),
+        .init(name: "Tadalafil (Cialis)",  category: "PDE5 Inhibitor",           commonDoses: "10–20 mg PRN (ED); 5 mg OD (BPH/daily ED); 40 mg OD (pulmonary hypertension)",          route: "PO", notes: "Erectile dysfunction; BPH (5 mg OD); pulmonary hypertension; longest duration (36h — 'weekend pill'); ABSOLUTE contraindication with nitrates", sideEffects: "Headache, myalgia/back pain (characteristic of tadalafil), flushing, dyspepsia, hypotension (with nitrates — absolute CI), visual disturbances"),
+    ]
+
+    private static let _drugs6: [SurgicalDrug] = [
+
+        // ─── BONE HEALTH / OSTEOPOROSIS ───────────────────────────────────────
+        .init(name: "Alendronate (Fosamax)", category: "Bisphosphonate",
+              commonDoses: "70 mg once weekly PO (osteoporosis); 10 mg OD (Paget's)",
+              route: "PO",
+              notes: "Take fasting with full glass of water; remain upright ≥30 min post-dose; dental review before starting",
+              sideEffects: "Oesophageal ulceration/oesophagitis, musculoskeletal pain, osteonecrosis of jaw (ONJ), atypical femoral fracture (long-term)",
+              contraindications: "Oesophageal stricture/achalasia, inability to sit/stand upright for 30 min, hypocalcaemia, eGFR <35 mL/min",
+              renalDosing: "Avoid if eGFR <35 mL/min — risk of renal toxicity and bisphosphonate accumulation",
+              hepaticDosing: "No dose adjustment required (not hepatically metabolised)",
+              monitoring: "Dental review before starting; correct hypocalcaemia/vitamin D deficiency first; BMD (DEXA) every 1–2 years; renal function before starting"),
+
+        .init(name: "Risedronate (Actonel)", category: "Bisphosphonate",
+              commonDoses: "35 mg once weekly PO; 5 mg OD",
+              route: "PO",
+              notes: "As per alendronate (upright 30 min post-dose, fasting); alternative if GI intolerance to alendronate",
+              sideEffects: "Oesophageal/GI irritation (less than alendronate), musculoskeletal pain, ONJ, atypical femoral fracture",
+              contraindications: "Oesophageal disorders, inability to remain upright 30 min, hypocalcaemia, eGFR <30 mL/min",
+              renalDosing: "Avoid if eGFR <30 mL/min",
+              hepaticDosing: "No adjustment needed",
+              monitoring: "Dental review; correct vitamin D/calcium deficiency; BMD monitoring; renal function"),
+
+        .init(name: "Zoledronic acid (Aclasta/Zometa)", category: "Bisphosphonate — IV",
+              commonDoses: "5 mg IV over ≥15 min once yearly (osteoporosis); 4 mg IV q3–4 weeks (bone mets/hypercalcaemia)",
+              route: "IV infusion",
+              notes: "Annual IV dosing for osteoporosis (superior adherence); potent; pre-hydrate; fracture prevention in Paget's disease",
+              sideEffects: "Acute-phase reaction (flu-like: fever, myalgia — first dose, 24–72h, treat with paracetamol); ONJ; atypical femoral fracture; hypocalcaemia; renal toxicity",
+              contraindications: "eGFR <35 mL/min (osteoporosis indication); hypocalcaemia; pregnancy",
+              renalDosing: "Avoid if eGFR <35 mL/min for osteoporosis; oncology use requires dose reduction (consult SPC)",
+              hepaticDosing: "No hepatic dose adjustment",
+              monitoring: "Renal function, calcium/phosphate, FBC before each dose; dental review before starting; calcium + vitamin D supplementation required"),
+
+        .init(name: "Denosumab (Prolia/Xgeva)", category: "RANK-L Inhibitor — Bone",
+              commonDoses: "60 mg SC every 6 months (osteoporosis — Prolia); 120 mg SC every 4 weeks (bone mets — Xgeva)",
+              route: "SC",
+              notes: "No renal dose adjustment needed (unlike bisphosphonates); reversal of bone loss on discontinuation — switch to bisphosphonate before stopping",
+              sideEffects: "Hypocalcaemia (risk with renal impairment — supplement calcium/D3), ONJ, atypical femoral fracture, serious infections (cellulitis), back pain, rebound vertebral fractures on discontinuation",
+              contraindications: "Hypocalcaemia (correct before starting); pregnancy; known hypersensitivity",
+              renalDosing: "No dose adjustment required; however, severe CKD (eGFR <30) has HIGH risk of hypocalcaemia — monitor calcium closely and supplement",
+              hepaticDosing: "No hepatic metabolism; no dose adjustment",
+              monitoring: "Calcium and vitamin D levels before each injection and after (especially in renal impairment); dental review before starting; BMD at 2 years"),
+
+        .init(name: "Calcium carbonate + D3 (Adcal-D3)", category: "Calcium / Vitamin D Supplement",
+              commonDoses: "2 tablets BD (1500 mg calcium carbonate = 600 mg elemental Ca, 400 IU D3)",
+              route: "PO (chewable)",
+              notes: "Bone health supplementation; co-prescribe with bisphosphonates/denosumab; take with meals (PO absorption); separate from levothyroxine by ≥4h",
+              sideEffects: "Constipation, nausea, flatulence, hypercalcaemia in excess; milk-alkali syndrome (high-dose prolonged use)",
+              contraindications: "Hypercalcaemia, hypercalciuria (calcium oxalate nephrolithiasis risk), sarcoidosis, vitamin D toxicity",
+              renalDosing: "Use with caution in CKD — calcium load may worsen vascular calcification; monitor calcium; activated vitamin D (alfacalcidol) preferred in eGFR <30",
+              hepaticDosing: "No hepatic adjustment needed",
+              monitoring: "Serum calcium (avoid hypercalcaemia); urine calcium if long-term high-dose"),
+
+        // ─── UTI / LOWER URINARY TRACT ANTIBIOTICS ────────────────────────────
+        .init(name: "Nitrofurantoin (Macrobid)", category: "Antibiotic — Urinary",
+              commonDoses: "50–100 mg QDS × 7 days (treatment); 50–100 mg nocte (prophylaxis)",
+              route: "PO",
+              notes: "Lower UTI only (achieves urinary but NOT tissue concentrations — not for pyelonephritis); take with food; urine turns brown",
+              sideEffects: "Nausea (take with food), pulmonary reactions (acute pneumonitis or chronic fibrosis — prolonged use), peripheral neuropathy, hepatotoxicity, brown urine discolouration",
+              contraindications: "eGFR <45 mL/min (inadequate urinary concentrations, accumulates systemically); G6PD deficiency; neonates <3 months",
+              renalDosing: "AVOID if eGFR <45 mL/min — no urinary efficacy and systemic accumulation increases toxicity risk",
+              hepaticDosing: "Use with caution in hepatic disease (hepatotoxicity risk); avoid in severe hepatic impairment",
+              monitoring: "LFTs and CXR if pulmonary symptoms during long-term use; renal function before prescribing"),
+
+        .init(name: "Trimethoprim", category: "Antibiotic — Urinary",
+              commonDoses: "200 mg BD × 7 days (treatment); 100 mg nocte (prophylaxis)",
+              route: "PO",
+              notes: "Lower UTI; avoid in first trimester (folate antagonist); resistance now ~20–30% in many regions — check local sensitivities",
+              sideEffects: "GI upset, rash, hyperkalaemia (blocks tubular potassium secretion — risk with ACE inhibitors/ARBs/potassium-sparing diuretics), raised creatinine (inhibits tubular secretion, not true renal impairment), megaloblastic anaemia (prolonged use)",
+              contraindications: "First trimester pregnancy (folate antagonist); concurrent methotrexate; severe renal impairment",
+              renalDosing: "eGFR 15–30: use half dose. eGFR <15: avoid. Monitor potassium if combined with ACE inhibitor/ARB",
+              hepaticDosing: "No dose adjustment required",
+              monitoring: "U&E if on ACE inhibitor/ARB (hyperkalaemia); FBC for prolonged courses"),
+
+        .init(name: "Fosfomycin (Monurol)", category: "Antibiotic — Urinary",
+              commonDoses: "3 g oral granules single dose (uncomplicated UTI); 8 g IV TDS (complicated/systemic)",
+              route: "PO/IV",
+              notes: "Single-dose convenience for uncomplicated UTI in women; active against ESBL-producing E. coli and MRSA (IV use); IV for complicated/resistant UTI",
+              sideEffects: "Diarrhoea (oral), nausea, headache; IV: hyponatraemia, hypokalaemia (contains sodium), elevated LFTs",
+              contraindications: "Severe renal impairment (oral single-dose: eGFR <10); known hypersensitivity",
+              renalDosing: "Oral single dose: avoid if eGFR <10. IV: dose reduction required in CKD — adjust to renal function per SPC",
+              hepaticDosing: "No dose adjustment for oral; caution with IV in hepatic impairment (monitor LFTs)",
+              monitoring: "No routine monitoring for single oral dose; IV: U&E (sodium, potassium), LFTs, cultures"),
+
+        // ─── ANTISPASMODICS ───────────────────────────────────────────────────
+        .init(name: "Hyoscine butylbromide (Buscopan)", category: "Antispasmodic",
+              commonDoses: "10–20 mg QDS PO; 20 mg IV/IM (acute spasm)",
+              route: "PO/IV/IM",
+              notes: "Smooth muscle spasm (IBS, biliary colic, ureteric colic, post-op); does NOT cross BBB (quaternary amine — no CNS sedation); IV onset immediate",
+              sideEffects: "Dry mouth, tachycardia, urinary retention, constipation, blurred vision (antimuscarinic); minimal CNS effects (unlike hyoscine hydrobromide)",
+              contraindications: "Myasthenia gravis, paralytic ileus, megacolon, narrow-angle glaucoma, tachyarrhythmia, urinary retention (BPH)",
+              renalDosing: "No dose adjustment needed",
+              hepaticDosing: "No dose adjustment needed",
+              monitoring: "HR (IV use can cause tachycardia); symptom response"),
+
+        .init(name: "Mebeverine (Colofac)", category: "Antispasmodic — Direct",
+              commonDoses: "135 mg TDS (20 min before meals); 200 mg BD (prolonged-release)",
+              route: "PO",
+              notes: "IBS abdominal cramping; selective smooth muscle relaxant (no antimuscarinic side effects — useful in elderly, BPH, glaucoma)",
+              sideEffects: "Generally very well tolerated; rare: allergic reactions (rash, urticaria, angioedema); no antimuscarinic effects",
+              contraindications: "Paralytic ileus; known hypersensitivity",
+              renalDosing: "No adjustment required",
+              hepaticDosing: "No adjustment required",
+              monitoring: "Clinical response — no laboratory monitoring needed"),
+
+        // ─── TOPICAL STEROIDS ─────────────────────────────────────────────────
+        .init(name: "Hydrocortisone 1% cream", category: "Topical Corticosteroid — Mild",
+              commonDoses: "Apply sparingly BD–QDS; thin layer",
+              route: "Topical",
+              notes: "Mild potency — safe for face, flexures, infants; eczema, contact/seborrhoeic dermatitis, insect bites; limit to 1–2 weeks on face",
+              sideEffects: "Skin atrophy, striae, telangiectasias, perioral dermatitis (prolonged facial use), acneiform eruption, systemic absorption (extensive/occluded sites), adrenal suppression (rare)",
+              contraindications: "Infected skin (apply only after treating infection); rosacea; peri-orbital (glaucoma risk); varicella/herpes simplex",
+              renalDosing: "Not applicable (topical)",
+              hepaticDosing: "Not applicable (topical)",
+              monitoring: "Assess for skin atrophy with prolonged use; no lab monitoring for mild potency topicals"),
+
+        .init(name: "Betamethasone valerate 0.1% (Betnovate)", category: "Topical Corticosteroid — Potent",
+              commonDoses: "Apply sparingly OD–BD; thin layer; limit duration",
+              route: "Topical",
+              notes: "Potent topical steroid; eczema (not face), psoriasis, lichen planus; avoid face and flexures; fingertip unit (FTU) for dosing",
+              sideEffects: "Skin atrophy, striae, telangiectasias, perioral dermatitis (if used on face), tachyphylaxis, HPA suppression (large surface areas/occlusion), secondary infection",
+              contraindications: "Infected skin, rosacea, acne vulgaris, perioral dermatitis, face/flexures (long-term), nappy area in infants",
+              renalDosing: "Not applicable (topical)",
+              hepaticDosing: "Not applicable (topical)",
+              monitoring: "Weigh risks of prolonged use against benefits; no lab monitoring for appropriate topical use"),
+
+        .init(name: "Clobetasol propionate 0.05% (Dermovate)", category: "Topical Corticosteroid — Very Potent",
+              commonDoses: "Apply sparingly OD–BD; maximum 2 weeks; maximum 50 g/week",
+              route: "Topical",
+              notes: "Very potent — reserve for severe/resistant eczema, psoriasis, lichen sclerosus; AVOID on face; max 50 g/week; step down to lower potency as soon as possible",
+              sideEffects: "Significant adrenal suppression, skin atrophy, striae (irreversible), Cushing's syndrome (systemic absorption), secondary infection (especially tinea), hypertrichosis",
+              contraindications: "Face/flexures/groin, infections, rosacea, widespread plaque psoriasis (rebound risk), neonates",
+              renalDosing: "Not applicable",
+              hepaticDosing: "Potential increased systemic absorption in severe hepatic impairment — use minimum effective amount",
+              monitoring: "Limit to 2-week courses; reassess regularly; children: suppress HPA — minimize use"),
+
+        // ─── ANTICOAGULATION — Additional ─────────────────────────────────────
+        .init(name: "Fondaparinux (Arixtra)", category: "Anticoagulant — Factor Xa Inhibitor",
+              commonDoses: "2.5 mg SC OD (VTE prophylaxis); 5–10 mg SC OD (treatment, weight-adjusted: <50 kg: 5 mg; 50–100 kg: 7.5 mg; >100 kg: 10 mg)",
+              route: "SC",
+              notes: "Synthetic pentasaccharide; HIT-safe alternative to heparin (no platelet factor 4 binding); no reversal agent licensed (andexanet alfa off-label); renal excretion",
+              sideEffects: "Bleeding (no reversal agent — use PCC or rFVIIa in emergencies), thrombocytopenia (less than heparin — HIT extremely rare), injection-site reactions, elevated LFTs",
+              contraindications: "eGFR <20 mL/min (prophylaxis); eGFR <30 mL/min (treatment); body weight <50 kg (prophylaxis); bacterial endocarditis; active bleeding",
+              renalDosing: "Prophylaxis: avoid if eGFR <20 mL/min. Treatment: avoid if eGFR <30 mL/min. Half-life markedly prolonged in renal impairment",
+              hepaticDosing: "Hepatic impairment: no dose adjustment; however, liver disease may worsen bleeding risk",
+              monitoring: "Anti-Xa activity (for treatment doses or extremes of weight/renal function); renal function before starting; platelets (lower HIT risk than UFH/LMWH)"),
+
+        .init(name: "Edoxaban (Lixiana/Savaysa)", category: "Anticoagulant — DOAC (Factor Xa inhibitor)",
+              commonDoses: "60 mg OD (AF/VTE treatment); 30 mg OD if weight ≤60 kg, eGFR 15–50, or P-gp inhibitor co-prescribed",
+              route: "PO",
+              notes: "VTE treatment (after ≥5–10 days parenteral anticoagulation) and secondary prevention; non-valvular AF; dose reduce in low weight/renal impairment/P-gp inhibitors",
+              sideEffects: "Bleeding (major/minor), anaemia, rash, elevated LFTs, GI upset; reversal: andexanet alfa (licensed), 4-factor PCC (unlicensed)",
+              contraindications: "Mechanical heart valves, haemodynamically significant mitral stenosis, eGFR <15 mL/min, active bleeding, pregnancy/breastfeeding, antiphospholipid syndrome",
+              renalDosing: "eGFR 15–50 mL/min: reduce to 30 mg OD. eGFR <15 mL/min: avoid. Renal function at least annually (3–6 monthly if eGFR <60)",
+              hepaticDosing: "Moderate–severe hepatic impairment: avoid (altered haemostasis). Mild: use with caution",
+              monitoring: "Renal function (annually, or more frequently if borderline); LFTs; signs of bleeding; weight; check for P-gp inhibitors/inducers"),
+
+        // ─── PROKINETICS ──────────────────────────────────────────────────────
+        .init(name: "Domperidone (Motilium)", category: "Prokinetic / Antiemetic",
+              commonDoses: "10 mg TDS (before meals and at bedtime); maximum 30 mg/day; maximum 1 week",
+              route: "PO/PR (suppository)",
+              notes: "Gastroparesis; post-op nausea; GORD in infants/elderly; does NOT cross BBB (unlike metoclopramide — no EPS/tardive dyskinesia); cardiac risk at higher doses",
+              sideEffects: "QTc prolongation (especially if CYP3A4 inhibitors co-prescribed), gynaecomastia/galactorrhoea (dopamine antagonism on pituitary), dry mouth",
+              contraindications: "GI perforation/obstruction, prolactinoma, QTc >470 ms (male) or >450 ms (female), concomitant CYP3A4 inhibitors (ketoconazole, clarithromycin, amiodarone), serious hepatic impairment",
+              renalDosing: "Dose reduce in severe renal impairment (eGFR <30); use BD instead of TDS",
+              hepaticDosing: "Avoid in moderate–severe hepatic impairment (reduced first-pass — higher plasma levels)",
+              monitoring: "ECG if at cardiac risk (QTc); minimum effective dose, maximum 1 week; avoid CYP3A4 inhibitors concurrently"),
+
+        // ─── ONCOLOGY SUPPORTIVE CARE ─────────────────────────────────────────
+        .init(name: "Filgrastim (G-CSF, Neupogen/Zarzio)", category: "Colony-Stimulating Factor",
+              commonDoses: "5 mcg/kg SC OD (starting 24h after chemotherapy, for up to 14 days); prophylaxis: 5 mcg/kg OD × 5–7 days",
+              route: "SC/IV",
+              notes: "Prevention/treatment of febrile neutropenia after myelosuppressive chemotherapy; bone marrow failure; stem cell mobilisation; NOT for concurrent chemo",
+              sideEffects: "Bone pain (very common — treat with paracetamol, NOT NSAIDs in oncology), splenomegaly/rupture (rare), leucocytosis, thrombocytopenia, allergic reactions, ARDS (rare)",
+              contraindications: "Concurrent myelosuppressive chemotherapy or radiotherapy; AML (caution — may stimulate leukaemia growth); hypersensitivity to E. coli-derived proteins",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "No dose adjustment required",
+              monitoring: "FBC (WBC, neutrophil count) during therapy — stop when neutrophil count adequate (>2×10⁹/L); spleen size if prolonged use"),
+
+        .init(name: "Granisetron (Kytril)", category: "Antiemetic — 5-HT3 Antagonist",
+              commonDoses: "1–2 mg IV before chemotherapy; 1 mg BD PO × 5 days (chemo); 3 mg patch (transdermal, 7-day)",
+              route: "PO/IV/transdermal",
+              notes: "CINV prevention and treatment; post-op nausea; transdermal patch for prolonged coverage; similar efficacy to ondansetron",
+              sideEffects: "Headache, constipation, QTc prolongation, elevated LFTs, dizziness",
+              contraindications: "Congenital long QT syndrome; concomitant QT-prolonging drugs with caution; hypersensitivity",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "No dose adjustment in mild–moderate; use with caution in severe hepatic impairment",
+              monitoring: "ECG if QTc risk; LFTs with prolonged use; electrolytes (hypokalaemia/hypomagnesaemia worsen QTc risk)"),
+
+        // ─── PALLIATIVE CARE ──────────────────────────────────────────────────
+        .init(name: "Hyoscine hydrobromide (Kwells/Scopoderm patch)", category: "Anticholinergic — Sedating",
+              commonDoses: "200–400 mcg SC/IV (death rattle/secretion control); 1.5 mg patch 72h (motion sickness)",
+              route: "SC/IV/transdermal/oral",
+              notes: "Palliative care (\"death rattle\" — terminal secretions); motion sickness; centrally-acting (crosses BBB) — sedating. Distinct from hyoscine BUTYLBROMIDE (Buscopan) which does NOT cross BBB",
+              sideEffects: "Sedation/drowsiness (useful in palliative context), dry mouth, urinary retention, confusion (elderly), tachycardia, blurred vision, paradoxical agitation (children)",
+              contraindications: "Narrow-angle glaucoma, urinary retention (BPH), myasthenia gravis, pyloric stenosis",
+              renalDosing: "No formal adjustment; use minimum effective dose in renal impairment",
+              hepaticDosing: "Reduce dose in hepatic impairment (prolonged half-life)",
+              monitoring: "Symptom control; secretion reduction (palliative use); avoid confusion in elderly"),
+
+        .init(name: "Cyclizine", category: "Antiemetic — H1 Antihistamine / Anticholinergic",
+              commonDoses: "50 mg TDS PO/IV/IM; 150 mg/24h CSCI (syringe driver)",
+              route: "PO/IV/IM/SC (CSCI)",
+              notes: "Nausea/vomiting; palliative care (CSCI); vestibular causes of nausea; motion sickness; post-op N&V; compatible with most syringe-driver drugs",
+              sideEffects: "Sedation, dry mouth, urinary retention, tachycardia, blurred vision, constipation; tachycardia may be undesirable in IHD",
+              contraindications: "Narrow-angle glaucoma, urinary retention (BPH), severe hepatic failure, porphyria",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "Avoid in severe hepatic impairment (porphyria precipitation risk, prolonged sedation)",
+              monitoring: "Symptom control; HR if cardiac concerns; check syringe-driver compatibility if CSCI"),
+
+        // ─── DIABETES — Kidney-Safe Options ───────────────────────────────────
+        .init(name: "Linagliptin (Trajenta)", category: "Antidiabetic — DPP-4 inhibitor",
+              commonDoses: "5 mg OD",
+              route: "PO",
+              notes: "Unique DPP-4 inhibitor with NO renal dose adjustment required (primarily biliary/GI excretion); T2DM; useful in advanced CKD",
+              sideEffects: "Nasopharyngitis, arthralgia (rare), pancreatitis (rare signal), bullous pemphigoid (rare), hypoglycaemia only if combined with insulin/sulphonylurea",
+              contraindications: "Type 1 DM, history of pancreatitis (caution — signal not proven), diabetic ketoacidosis",
+              renalDosing: "NO dose adjustment required at any level of renal impairment — key advantage over other DPP-4 inhibitors",
+              hepaticDosing: "No dose adjustment required",
+              monitoring: "HbA1c; signs of pancreatitis; skin changes (bullous pemphigoid — rare)"),
+
+        // ─── ADDITIONAL ANTIBIOTICS ───────────────────────────────────────────
+        .init(name: "Ceftazidime", category: "Antibiotic — Cephalosporin (Anti-pseudomonal)",
+              commonDoses: "1–2 g TDS IV/IM; 3 g TDS (serious infection/cystic fibrosis)",
+              route: "IV/IM",
+              notes: "Anti-pseudomonal cephalosporin; HAP, VAP, febrile neutropenia, meningitis; weaker Gram-positive activity than ceftriaxone",
+              sideEffects: "Rash, diarrhoea, C. difficile, hypersensitivity, phlebitis, elevated LFTs, transient leucopenia",
+              contraindications: "Cephalosporin hypersensitivity; caution in penicillin allergy (cross-reactivity ~1–2%)",
+              renalDosing: "eGFR 30–50: 1 g BD. eGFR 15–30: 500 mg BD. eGFR <15: 500 mg OD. Renal impairment increases seizure risk at high doses",
+              hepaticDosing: "No dose adjustment required",
+              monitoring: "Renal function; levels if prolonged use/renal impairment; culture and sensitivity"),
+
+        .init(name: "Amikacin", category: "Antibiotic — Aminoglycoside",
+              commonDoses: "15–20 mg/kg OD IV (actual body weight; extended interval dosing); adjust in renal impairment",
+              route: "IV",
+              notes: "Gram-negative infections including Pseudomonas, ESBL organisms resistant to gentamicin; broader spectrum than gentamicin; TDM essential",
+              sideEffects: "Nephrotoxicity (irreversible — ACR monitoring), irreversible ototoxicity/vestibular toxicity, neuromuscular blockade",
+              contraindications: "Pre-existing significant hearing impairment (relative); myasthenia gravis (relative — neuromuscular blockade); concurrent nephrotoxic drugs without careful monitoring",
+              renalDosing: "Dose adjustment based on TDM (target trough <5 mg/L and peak 20–30 mg/L); interval extended in renal impairment; TDM is MANDATORY",
+              hepaticDosing: "No hepatic dose adjustment (eliminated renally); however, liver disease often coexists with renal impairment — adjust per renal function",
+              monitoring: "TDM (peak and trough levels); renal function (daily in ICU); audiology if prolonged use; urinalysis for nephrotoxicity"),
+
+        .init(name: "Piperacillin/tazobactam (Tazocin) Extended Infusion", category: "Antibiotic — Extended Infusion",
+              commonDoses: "4.5 g over 4h TDS (extended infusion preferred); 4.5 g QDS standard",
+              route: "IV",
+              notes: "Extended infusion (EI) optimises pharmacodynamics for time-dependent killing — superior to standard bolus for severe infections and higher MIC organisms; same total daily dose",
+              sideEffects: "Same as standard piperacillin/tazobactam; stability limit 12h at room temperature — prepare fresh",
+              contraindications: "Penicillin hypersensitivity; SAMBA protocol — check local guidelines for EI use",
+              renalDosing: "eGFR 20–40: 4.5 g TDS standard dosing. eGFR <20: 4.5 g BD. Adjust further by TDM if available",
+              hepaticDosing: "No hepatic dose adjustment",
+              monitoring: "Renal function; electrolytes (contains sodium); clinical response; drug compatibility (give separately from other infusions)"),
+
+        // ─── HAEMOSTASIS / OBSTETRICS ─────────────────────────────────────────
+        .init(name: "Oxytocin (Syntocinon)", category: "Uterotonic / Haemostatic",
+              commonDoses: "5 units slow IV (active management 3rd stage / PPH); 10 units IM; 10–40 units/L infusion at 10–40 mU/min (augmentation)",
+              route: "IV/IM",
+              notes: "Uterotonic for PPH prevention/treatment; augmentation of labour; caesarean section; SLOW IV injection — bolus causes hypotension/tachycardia; NOT for induction in women with previous uterine surgery (prefer titrated regimes)",
+              sideEffects: "Hypotension/cardiovascular collapse (rapid IV bolus), tachycardia, fluid retention/hyponatraemia (prolonged high-dose — antidiuretic effect), uterine hyperstimulation, fetal distress",
+              contraindications: "Hypertonic uterine contractions, foetal distress, cephalopelvic disproportion, placenta praevia; rapid IV bolus contraindicated (give slowly)",
+              renalDosing: "No dose adjustment; monitor fluid balance (antidiuretic effect with high doses)",
+              hepaticDosing: "No dose adjustment; hepatic metabolism (short half-life ~5 min)",
+              monitoring: "Continuous fetal monitoring (CTG) during augmentation; fluid balance (hyponatraemia risk with prolonged use); BP and HR after IV administration"),
+
+        // ─── IRON / ANAEMIA ───────────────────────────────────────────────────
+        .init(name: "Ferrous fumarate (Fersamal)", category: "Iron Supplement",
+              commonDoses: "210 mg BD–TDS (treatment); 210 mg OD (prophylaxis)",
+              route: "PO",
+              notes: "Iron deficiency anaemia; better tolerated than ferrous sulfate (less GI irritation); take with vitamin C to enhance absorption; pre-op Hb optimisation",
+              sideEffects: "Constipation, nausea, epigastric pain, black stools, diarrhoea; better GI profile than ferrous sulfate in some patients",
+              contraindications: "Haemochromatosis, haemosiderosis, repeated blood transfusions, anaemia not due to iron deficiency, concomitant parenteral iron",
+              renalDosing: "No dose adjustment; accumulation of iron stores possible in advanced CKD — check iron studies before prescribing",
+              hepaticDosing: "Caution in hepatic disease (iron metabolism altered); check iron stores",
+              monitoring: "Ferritin and transferrin saturation after 4–6 weeks; Hb response (rise ≥20 g/L in 4 weeks expected); reticulocyte count"),
+
+        // ─── CALCIUM CHANNEL BLOCKER — Additional ─────────────────────────────
+        .init(name: "Nifedipine (Adalat)", category: "Calcium Channel Blocker (DHP)",
+              commonDoses: "5–10 mg TDS (standard-release); 30–90 mg OD (SR); 10 mg SL/buccal (hypertensive urgency — bite and swallow)",
+              route: "PO",
+              notes: "Hypertension; angina; Raynaud's; tocolysis (off-label); SR formulation preferred; reflex tachycardia less with SR form",
+              sideEffects: "Peripheral oedema (dose-related, common), headache, flushing, reflex tachycardia, gingival hyperplasia (long-term)",
+              contraindications: "Cardiogenic shock, haemodynamically significant aortic stenosis, within 1 month of acute MI, unstable angina; avoid short-acting in MI (harmful)",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "Reduce dose in hepatic impairment (increased plasma levels — longer dosing interval or lower dose); SR form more predictable",
+              monitoring: "BP and HR; ankle oedema; avoid grapefruit juice (CYP3A4 inhibition)"),
+    ]
+
+    private static let _drugs7: [SurgicalDrug] = [
+
+        // ─── ANTIBIOTICS — Key Additions ──────────────────────────────────────
+        .init(name: "Clindamycin", category: "Antibiotic — Lincosamide",
+              commonDoses: "150–450 mg QDS PO; 300–900 mg TDS–QDS IV",
+              route: "PO/IV/topical",
+              notes: "Anaerobic and Gram-positive cover; skin/soft tissue (MRSA community strains); dental infections; bone/joint; C. difficile risk; NOT for CNS infections (poor penetration)",
+              sideEffects: "C. difficile colitis (high risk — use minimum necessary duration), GI upset, oesophageal ulceration (take with water upright), rash, hepatotoxicity (rare)",
+              contraindications: "Previous clindamycin-associated diarrhoea/colitis; avoid unnecessary prolonged courses (C. diff risk)",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "Reduce dose and frequency in severe hepatic impairment (active liver disease — accumulation); monitor LFTs",
+              monitoring: "Stool for C. difficile if diarrhoea develops; LFTs with prolonged IV use; local sensitivities"),
+
+        .init(name: "Benzathine penicillin G (Bicillin L-A)", category: "Antibiotic — Long-acting Penicillin",
+              commonDoses: "1.2 MU IM single dose (syphilis primary/secondary/latent <1yr); 2.4 MU IM × 3 doses weekly (late latent/tertiary); 1.2 MU IM monthly (rheumatic fever prophylaxis)",
+              route: "Deep IM only",
+              notes: "Long-acting depot penicillin; syphilis treatment; rheumatic fever secondary prophylaxis (critical in Caribbean); NEVER IV (cardiac arrest); deep gluteal IM only",
+              sideEffects: "Injection-site pain (very common), Jarisch-Herxheimer reaction (syphilis — fever/chills 2–8h post first dose), anaphylaxis",
+              contraindications: "Penicillin allergy (anaphylaxis); NEVER administer IV — fatal; not for neurosyphilis (use IV penicillin G)",
+              renalDosing: "No dose adjustment for standard dosing; caution in severe renal failure with very high doses",
+              hepaticDosing: "No dose adjustment",
+              monitoring: "VDRL/RPR titres at 3, 6, 12 months (syphilis); Jarisch-Herxheimer reaction — pre-warn patient; observe 30 min post injection (anaphylaxis)"),
+
+        .init(name: "Cefepime", category: "Antibiotic — Cephalosporin (4th generation)",
+              commonDoses: "1–2 g BD–TDS IV; 2 g TDS (febrile neutropenia/meningitis/Pseudomonas)",
+              route: "IV/IM",
+              notes: "Broad-spectrum including Pseudomonas and ESBL (partial); febrile neutropenia; HAP/VAP; meningitis; overcomes many AmpC-mediated resistances",
+              sideEffects: "Neurotoxicity (encephalopathy, seizures — especially in renal impairment; risk higher than other cephalosporins), rash, C. difficile, elevated LFTs",
+              contraindications: "Cephalosporin hypersensitivity; use with extreme caution in seizure history/renal impairment (neurotoxicity)",
+              renalDosing: "eGFR 30–60: 1–2 g BD. eGFR 11–29: 1–2 g OD. eGFR <11: 500 mg–1 g OD. Neurotoxicity risk increases with renal impairment — reduce dose",
+              hepaticDosing: "No dose adjustment",
+              monitoring: "Renal function (neurotoxicity risk proportional to exposure); neuro status in ICU; cultures and sensitivities"),
+
+        .init(name: "Aztreonam", category: "Antibiotic — Monobactam",
+              commonDoses: "1–2 g TDS–QDS IV/IM; 500 mg TDS–QDS (urinary tract)",
+              route: "IV/IM",
+              notes: "Gram-negative aerobic coverage only (like gentamicin without renal toxicity); safe in penicillin/cephalosporin allergy; no anaerobic or Gram-positive activity — combine accordingly",
+              sideEffects: "GI upset, elevated LFTs, rash (cross-reactivity with ceftazidime — caution), phlebitis (IV), C. difficile (rare)",
+              contraindications: "Aztreonam hypersensitivity; caution if ceftazidime allergy (some cross-reactivity due to identical R1 side chain)",
+              renalDosing: "eGFR 10–30: 50% dose. eGFR <10: 25% dose or 500 mg after loading dose",
+              hepaticDosing: "No dose adjustment in mild–moderate; use with caution in severe hepatic impairment",
+              monitoring: "Renal function; LFTs with prolonged use; culture and sensitivity"),
+
+        .init(name: "Ceftolozane/tazobactam (Zerbaxa)", category: "Antibiotic — Reserve Cephalosporin",
+              commonDoses: "1.5 g TDS IV (over 1h); 3 g TDS (HAP/VAP)",
+              route: "IV",
+              notes: "Reserve antibiotic for MDR Pseudomonas aeruginosa (including those resistant to carbapenems); complicated intra-abdominal infections (with metronidazole); HAP/VAP",
+              sideEffects: "GI upset, elevated LFTs, headache, hypokalaemia, fever, C. difficile",
+              contraindications: "Cephalosporin hypersensitivity; only use for confirmed/suspected MDR Gram-negative infections — antimicrobial stewardship",
+              renalDosing: "eGFR 30–50: 750 mg TDS. eGFR 15–29: 375 mg TDS. CRRT: specialist guidance required",
+              hepaticDosing: "No hepatic dose adjustment",
+              monitoring: "Culture and sensitivity (resistance confirmation before use); renal function; LFTs; antimicrobial stewardship review"),
+
+        // ─── ANALGESICS — Additional ──────────────────────────────────────────
+        .init(name: "Hydromorphone (Dilaudid)", category: "Opioid Analgesic",
+              commonDoses: "1–4 mg PO q4–6h; 0.2–1 mg IV/SC q4–6h",
+              route: "PO/IV/SC",
+              notes: "5–7× more potent than morphine; useful when morphine poorly tolerated (less histamine release, less nausea in some patients); renally eliminated — accumulates in renal failure",
+              sideEffects: "Respiratory depression, sedation, constipation, nausea, pruritus (less than morphine), confusion/myoclonus in renal failure (metabolite accumulation)",
+              contraindications: "Opioid-naive patients without appropriate monitoring; severe respiratory depression; avoid in renal failure (active metabolite accumulation)",
+              renalDosing: "Avoid or use extreme caution in eGFR <30 — hydromorphone-3-glucuronide accumulates and causes neuroexcitatory effects (myoclonus, seizures). Fentanyl preferred in renal failure",
+              hepaticDosing: "Reduce initial dose in hepatic impairment (reduced first-pass/clearance); titrate carefully",
+              monitoring: "Pain scores; sedation scale; respiratory rate; renal function if prolonged use"),
+
+        .init(name: "Tapentadol (Palexia)", category: "Opioid Analgesic / NRI",
+              commonDoses: "50–250 mg BD (SR); 50–100 mg q4–6h (IR); max 500 mg/day",
+              route: "PO",
+              notes: "Dual mechanism: mu-opioid agonist + noradrenaline reuptake inhibitor; less constipation and nausea than equianalgesic oxycodone; neuropathic and nociceptive pain",
+              sideEffects: "Nausea, dizziness, constipation (less than oxycodone), somnolence, headache, serotonin syndrome risk (with SSRIs/SNRIs/MAOIs — less than tramadol)",
+              contraindications: "MAO inhibitors (within 14 days), seizure disorder (relative), severe respiratory depression, severe hepatic/renal impairment (IR: eGFR <30)",
+              renalDosing: "IR formulation: avoid if eGFR <30. SR: use with caution; dose reduce",
+              hepaticDosing: "Severe hepatic impairment (Child-Pugh C): avoid IR; SR max 50 mg TDS",
+              monitoring: "Pain scores; respiratory function; avoid concomitant serotonergic drugs"),
+
+        // ─── INSULIN — Long-acting / Basal ────────────────────────────────────
+        .init(name: "Insulin glargine (Lantus/Toujeo)", category: "Insulin — Long-acting Basal",
+              commonDoses: "Individualised SC; typically 0.2–0.4 units/kg OD at same time each day; titrate by 2 units every 3 days to fasting target",
+              route: "SC only",
+              notes: "Peakless 24h basal insulin; once-daily injection; do NOT mix with other insulins in syringe; Toujeo (300 units/mL) ≠ Lantus (100 units/mL) — not interchangeable",
+              sideEffects: "Hypoglycaemia (nocturnal less common than NPH), lipodystrophy at injection sites, weight gain, injection-site reactions, local allergy",
+              contraindications: "Hypoglycaemia episode; never given IV (concentration/acidity — fatal); do not mix with other insulins",
+              renalDosing: "Reduce dose in renal impairment (reduced insulin clearance increases hypoglycaemia risk); frequent glucose monitoring required",
+              hepaticDosing: "Reduce dose in hepatic impairment (reduced gluconeogenesis + insulin degradation altered); titrate carefully",
+              monitoring: "Fasting glucose (target 4–7 mmol/L); HbA1c; hypoglycaemic episodes; injection-site rotation; annual eye/foot/renal review"),
+
+        .init(name: "Insulin detemir (Levemir)", category: "Insulin — Long-acting Basal",
+              commonDoses: "Individualised SC; typically OD or BD; start 0.1–0.2 units/kg OD; adjust every 3 days",
+              route: "SC only",
+              notes: "Long-acting basal insulin (18–24h); weight-neutral advantage over glargine/NPH; predictable absorption (albumin binding reduces variability); BD dosing possible",
+              sideEffects: "Hypoglycaemia, lipodystrophy, weight gain (less than glargine/NPH), injection-site reactions",
+              contraindications: "Never IV; do not mix with other insulins",
+              renalDosing: "Dose reduce in renal impairment; monitor closely (hypoglycaemia risk)",
+              hepaticDosing: "Reduce dose; careful titration in hepatic impairment",
+              monitoring: "Fasting/pre-dose glucose; HbA1c every 3 months; hypoglycaemia frequency"),
+
+        .init(name: "Insulin degludec (Tresiba)", category: "Insulin — Ultra-long-acting Basal",
+              commonDoses: "Individualised SC; typically OD at any time (consistent); titrate to fasting glucose target",
+              route: "SC only",
+              notes: "Ultra-long-acting (>42h half-life); very flat profile; lowest hypoglycaemia risk of all basal insulins; dose can be changed by ≥8h if needed; available 100 and 200 units/mL",
+              sideEffects: "Hypoglycaemia (lowest rate of all basal insulins), weight gain, injection-site reactions, lipodystrophy",
+              contraindications: "Never IV; do not mix with other insulins; 200 units/mL pen max 160 units/dose",
+              renalDosing: "Reduce dose in renal impairment; less affected by renal clearance than older insulins but still monitor",
+              hepaticDosing: "Reduce dose; monitor glucose closely",
+              monitoring: "Fasting glucose; HbA1c; hypoglycaemia diary — often used to convert patients from NPH with hypoglycaemia problems"),
+
+        .init(name: "Insulin regular (Actrapid/Humulin R)", category: "Insulin — Short-acting",
+              commonDoses: "SC: 4–20 units 30 min before meals (patient-specific); IV infusion: 0.05–0.1 units/kg/h (DKA/perioperative); variable rate IV (VRIII/sliding scale)",
+              route: "SC/IV",
+              notes: "Only insulin that can be used IV (DKA, hyperkalaemia, peri-op); inject SC 30 min before meals (slower onset than rapid-acting); available for VRIII sliding scales",
+              sideEffects: "Hypoglycaemia, weight gain, hypokalaemia (IV use — especially DKA protocol), lipodystrophy",
+              contraindications: "Active hypoglycaemia; always use with dextrose for IV hyperkalaemia management",
+              renalDosing: "Reduce dose; renal impairment prolongs insulin action (reduced renal clearance + insulin sensitivity changes)",
+              hepaticDosing: "Reduce dose; hepatic impairment increases hypoglycaemia risk (reduced gluconeogenesis)",
+              monitoring: "Glucose hourly during IV infusion; potassium in DKA protocol (replacement essential); fluid balance"),
+
+        // ─── ANTI-MALARIALS ────────────────────────────────────────────────────
+        .init(name: "Artemether/lumefantrine (Riamet/Coartem)", category: "Antimalarial — ACT",
+              commonDoses: "4 tablets (80/480 mg) at 0, 8, 24, 36, 48, 60 h (adult >35 kg); always take with fat-containing food/milk",
+              route: "PO",
+              notes: "First-line treatment for uncomplicated Plasmodium falciparum malaria; artemisinin combination therapy (ACT); MUST take with food (poor absorption when fasted); complete 6-dose course",
+              sideEffects: "Headache, dizziness, sleep disturbance, arthralgia/myalgia, palpitations, QTc prolongation, anorexia, nausea; generally well tolerated",
+              contraindications: "Severe malaria (use IV artesunate), first trimester of pregnancy (teratogenicity — use quinine+doxycycline), QTc >500 ms, concomitant QT-prolonging drugs, mefloquine within 12h",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "Use with caution in severe hepatic impairment; no formal dose recommendation",
+              monitoring: "Repeat blood film at day 3, 7, 28 to confirm clearance; ECG if cardiac risk (QTc); glucose in children (hypoglycaemia risk)"),
+
+        .init(name: "Artesunate IV (Malacef)", category: "Antimalarial — Artesunate IV",
+              commonDoses: "2.4 mg/kg IV at 0, 12, 24h then OD until PO possible (minimum 3 days); then switch to ACT oral",
+              route: "IV",
+              notes: "Treatment of severe/complicated malaria (P. falciparum); superior to IV quinine (AQUAMAT/SEAQUAMAT trials); always follow with 3-day oral ACT on recovery",
+              sideEffects: "Post-artesunate delayed haemolysis (PADH — occurs 2–4 weeks post treatment, especially in hyperparasitaemia; monitor Hb); hepatotoxicity, neurotoxicity (rare at therapeutic doses)",
+              contraindications: "Not for uncomplicated malaria; hypersensitivity to artemisinins",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "No dose adjustment; monitor LFTs",
+              monitoring: "Blood film for parasitaemia daily until negative; Hb at day 7, 14, 28 (PADH); renal function; blood glucose; LFTs"),
+
+        .init(name: "Chloroquine phosphate", category: "Antimalarial / DMARD",
+              commonDoses: "Treatment: 600 mg base loading, then 300 mg at 6h, then 300 mg OD × 2 days; Prophylaxis: 300 mg weekly (start 1 week before travel, 4 weeks after); SLE/RA: 150–300 mg OD",
+              route: "PO",
+              notes: "Prophylaxis where sensitive (now limited areas); SLE; RA; amoebic liver abscess; NOT for P. falciparum in most regions (widespread resistance). Caribbean: P. vivax/P. malariae still sensitive",
+              sideEffects: "GI upset, headache, pruritus (common in Black African patients), retinal toxicity (cumulative dose — annual ophthalmology screen), cardiomyopathy (rare, high dose), QTc prolongation",
+              contraindications: "Retinal disease/macular degeneration, G6PD deficiency (haemolysis), porphyria, pre-existing cardiac conduction defects",
+              renalDosing: "eGFR <10: reduce dose (accumulation); avoid if severe renal failure",
+              hepaticDosing: "Caution in hepatic impairment (hepatotoxicity risk, reduced clearance)",
+              monitoring: "Baseline ophthalmology + annual review (retinal toxicity); G6PD screen in at-risk populations; ECG if cardiac risk; LFTs"),
+
+        .init(name: "Atovaquone/proguanil (Malarone)", category: "Antimalarial — Prophylaxis/Treatment",
+              commonDoses: "Prophylaxis: 1 adult tablet (250/100 mg) OD starting 1–2 days before travel, continue 7 days after. Treatment: 4 tablets OD × 3 days",
+              route: "PO",
+              notes: "Preferred prophylaxis for short trips to endemic areas (short pre/post travel dosing); treatment of uncomplicated falciparum malaria; take with food/milk",
+              sideEffects: "GI upset (nausea, vomiting, abdominal pain), headache, dizziness, mouth ulcers, elevated LFTs; generally well tolerated",
+              contraindications: "eGFR <30 mL/min (treatment); eGFR <30 (prophylaxis — use doxycycline or chloroquine if sensitive); pregnancy (limited data — avoid unless benefit outweighs risk); severe hepatic impairment",
+              renalDosing: "Treatment: avoid if eGFR <30 (proguanil accumulates). Prophylaxis: avoid if eGFR <30",
+              hepaticDosing: "Caution in severe hepatic impairment (proguanil conversion to active metabolite reduced)",
+              monitoring: "LFTs; renal function before prescribing; adherence counselling (must take with food for absorption)"),
+
+        .init(name: "Quinine sulfate", category: "Antimalarial",
+              commonDoses: "Treatment: 600 mg TDS × 5–7 days (+ doxycycline 7 days); IV quinine: 20 mg/kg loading over 4h then 10 mg/kg q8h (HDU/ICU); Cramps: 200–300 mg nocte",
+              route: "PO/IV",
+              notes: "Oral: second-line uncomplicated malaria; IV: second-line severe malaria (if artesunate unavailable); leg cramps (unlicensed, last resort); narrow therapeutic index; cardiac monitoring required IV",
+              sideEffects: "Cinchonism (tinnitus, dizziness, nausea, visual disturbances, headache), QTc prolongation, hypoglycaemia (stimulates insulin), thrombocytopenia, haemolysis (G6PD), tinnitus",
+              contraindications: "Haemoglobinuria (blackwater fever), optic neuritis, tinnitus, G6PD deficiency (relative), haemolytic anaemia",
+              renalDosing: "Reduce IV maintenance dose (by 1/3) in renal failure; accumulation of metabolites",
+              hepaticDosing: "Reduce dose in hepatic impairment (prolonged half-life)",
+              monitoring: "Continuous cardiac monitoring (QTc) during IV infusion; blood glucose every 4–6h (hypoglycaemia risk); blood film; blood quinine levels if available"),
+
+        .init(name: "Primaquine", category: "Antimalarial — Anti-hypnozoite",
+              commonDoses: "P. vivax/ovale radical cure: 15 mg base OD × 14 days; Pneumocystis: 30 mg OD with clindamycin",
+              route: "PO",
+              notes: "Eradicates dormant liver stages (hypnozoites) of P. vivax and P. ovale — prevents relapse; G6PD TESTING MANDATORY before prescribing (life-threatening haemolysis)",
+              sideEffects: "Haemolytic anaemia (severe/life-threatening in G6PD deficiency), methaemoglobinaemia, GI upset, abdominal pain",
+              contraindications: "G6PD deficiency (ABSOLUTE — test first), pregnancy, breastfeeding (unless infant G6PD normal), rheumatoid arthritis/SLE",
+              renalDosing: "No formal dose adjustment, but avoid in severe renal impairment",
+              hepaticDosing: "Avoid in active hepatic disease",
+              monitoring: "G6PD level BEFORE starting — mandatory; FBC (Hb, haematocrit) weekly during treatment; methaemoglobin if cyanosis"),
+
+        // ─── GI — Additional ──────────────────────────────────────────────────
+        .init(name: "Famotidine (Pepcid)", category: "H2-receptor Antagonist",
+              commonDoses: "20–40 mg BD (active ulcer); 20 mg OD (maintenance/prophylaxis); 20 mg IV BD (inpatient acid suppression when PO not possible)",
+              route: "PO/IV",
+              notes: "Peptic ulcer; GORD; alternative to PPI (fewer drug interactions); useful when PPI causes side effects; less cimetidine-type drug interactions than ranitidine",
+              sideEffects: "Headache, dizziness, constipation/diarrhoea, elevated LFTs (rare), QTc prolongation (IV high-dose), thrombocytopenia (rare)",
+              contraindications: "Hypersensitivity to H2 blockers; caution in QTc prolongation (IV); phenylketonuria (some formulations contain phenylalanine)",
+              renalDosing: "eGFR <50: 50% dose reduction or double interval (accumulation); eGFR <30: 50% dose, 36–48h intervals",
+              hepaticDosing: "No dose adjustment in hepatic impairment",
+              monitoring: "Renal function before dosing in renal impairment; symptom response; ECG if IV in at-risk patients"),
+
+        .init(name: "Pancreatin (Creon)", category: "Pancreatic Enzyme Supplement",
+              commonDoses: "Creon 10,000–25,000 units lipase with each main meal; 5,000–10,000 with snacks; titrate to symptoms",
+              route: "PO",
+              notes: "Exocrine pancreatic insufficiency (chronic pancreatitis, pancreatic cancer, post-pancreatectomy, cystic fibrosis); swallow whole or open capsule and mix with food; do NOT crush (inactivated by acid)",
+              sideEffects: "GI discomfort, nausea, constipation/diarrhoea (dose-dependent), fibrosing colonopathy (very high doses in CF), hyperuricaemia (high doses), perioral soreness (if powder contacts mucosa)",
+              contraindications: "Acute pancreatitis; known porcine allergy; early stages of acute pancreatitis",
+              renalDosing: "No renal dose adjustment needed",
+              hepaticDosing: "No hepatic dose adjustment",
+              monitoring: "Stool frequency and consistency; weight; nutritional status; fat-soluble vitamins (A, D, E, K) in chronic use; consider fibrosing colonopathy if doses >10,000 units/kg/day in CF"),
+
+        .init(name: "Loperamide (Imodium)", category: "Antidiarrhoeal",
+              commonDoses: "4 mg initially (loading), then 2 mg after each loose stool; max 16 mg/day (adults); ileostomy output management: titrate to output",
+              route: "PO",
+              notes: "Acute diarrhoea; ileostomy/colostomy high output management; post-op diarrhoea; peripheral mu-opioid agonist (does NOT cross BBB at therapeutic doses); avoid in infectious diarrhoea until culture",
+              sideEffects: "Constipation, abdominal cramping, nausea, bloating; toxic megacolon risk (infectious colitis with bloody/fever diarrhoea — avoid), QTc prolongation (very high/illegal doses)",
+              contraindications: "Bloody diarrhoea, high fever (possible infectious colitis — exclude first), pseudomembranous colitis, ileus, bowel obstruction, acute inflammatory bowel disease",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "Use with caution in severe hepatic impairment (reduced first-pass; risk of CNS effects at therapeutic doses)",
+              monitoring: "Stool frequency and consistency; avoid if diarrhoea is bloody/febrile; ileostomy output volume"),
+
+        .init(name: "Sucralfate (Antepsin)", category: "Mucosal Protective Agent",
+              commonDoses: "1 g QDS (1h before meals and at bedtime, on empty stomach) for 4–8 weeks",
+              route: "PO",
+              notes: "Peptic ulcer treatment (alternative to PPIs); stress ulcer prophylaxis (lower C. diff risk than PPIs in ICU); take on empty stomach (1h before food); binds many drugs — space administration",
+              sideEffects: "Constipation (most common), nausea, aluminium accumulation (renal failure — avoid), drug binding (decreases absorption of many drugs if taken simultaneously)",
+              contraindications: "Severe renal failure (aluminium toxicity — accumulation); avoid concomitant antacids",
+              renalDosing: "Avoid in eGFR <30 (aluminium accumulation — encephalopathy, osteomalacia, anaemia)",
+              hepaticDosing: "No dose adjustment needed",
+              monitoring: "Aluminium levels in renal impairment; space other drug doses by ≥2h; symptom response"),
+    ]
+
+    private static let _drugs8: [SurgicalDrug] = [
+
+        // ─── LUPUS / SYSTEMIC AUTOIMMUNE ──────────────────────────────────────
+        .init(name: "Belimumab (Benlysta)", category: "Immunosuppressant — Anti-BLyS (Biologic)",
+              commonDoses: "10 mg/kg IV over 1h at 0, 2, 4 weeks then monthly; 200 mg SC weekly",
+              route: "IV infusion / SC",
+              notes: "Systemic lupus erythematosus (SLE) with active disease despite standard therapy; do not use in severe active lupus nephritis or CNS lupus; screen for TB, hepatitis B before starting",
+              sideEffects: "Infusion/injection-site reactions, serious infections, depression/suicidal ideation (monitor), nausea, diarrhoea, hypersensitivity reactions, progressive multifocal leukoencephalopathy (PML — rare)",
+              contraindications: "Active or prior history of PML, severe active lupus nephritis or CNS lupus (excluded from trials), active serious infection, live vaccines within 30 days",
+              renalDosing: "No dose adjustment recommended (limited data in severe renal impairment)",
+              hepaticDosing: "No dose adjustment (not hepatically cleared)",
+              monitoring: "Disease activity scores (SLEDAI); full blood count; renal function; complement (C3, C4, dsDNA) every 3–6 months; depression screening; TB screening before starting"),
+
+        .init(name: "Cyclophosphamide (Cytoxan/Endoxan)", category: "Immunosuppressant / Alkylating Agent",
+              commonDoses: "IV pulse: 500–1000 mg/m² every 4 weeks (lupus nephritis — Euro-Lupus: 500 mg fortnightly × 6 doses); PO: 1–2 mg/kg/day",
+              route: "IV/PO",
+              notes: "Lupus nephritis (induction); vasculitis; oncology; always use MESNA for haemorrhagic cystitis prophylaxis (IV doses); adequate hydration essential; teratogen — contraception mandatory",
+              sideEffects: "Haemorrhagic cystitis (MESNA prevents — mandatory with IV doses), myelosuppression, nausea/vomiting (use 5-HT3 antiemetic), alopecia, infertility (consider egg/sperm banking), bladder cancer (long-term), immunosuppression, SIADH",
+              contraindications: "Pregnancy (teratogen), breastfeeding, active infections, severe myelosuppression, haemorrhagic cystitis, severe renal/hepatic impairment",
+              renalDosing: "eGFR 10–50: 75% dose. eGFR <10: 50% dose; avoid if possible",
+              hepaticDosing: "Reduce dose in hepatic impairment (prodrug — requires hepatic conversion to active metabolite)",
+              monitoring: "FBC and U&E before each pulse; urinalysis (haematuria); LFTs; pregnancy test before treatment; urine cytology annually (bladder cancer); fertility counselling"),
+
+        .init(name: "Rituximab (MabThera/Rituxan)", category: "Immunosuppressant — Anti-CD20 (Biologic)",
+              commonDoses: "SLE/vasculitis: 375 mg/m² weekly × 4 or 1 g × 2 (2 weeks apart); lymphoma: 375 mg/m² OD × 4–8 cycles",
+              route: "IV infusion",
+              notes: "Refractory SLE/lupus nephritis; ANCA vasculitis (licensed); RA; B-cell lymphoma; always pre-medicate with paracetamol + antihistamine + methylprednisolone; screen for hepatitis B/TB before starting",
+              sideEffects: "Infusion reactions (first infusion — pre-medicate), progressive multifocal leukoencephalopathy (PML — rare), serious infections, hypogammaglobulinaemia, hepatitis B reactivation, tumour lysis syndrome (lymphoma)",
+              contraindications: "Active severe infection; hepatitis B surface antigen positivity without prophylaxis; live vaccines within 4 weeks; pregnancy (avoid)",
+              renalDosing: "No dose adjustment; monitor for tumour lysis syndrome in haematological disease",
+              hepaticDosing: "No formal dose adjustment; monitor for hepatitis B reactivation (prophylax if coreAb positive)",
+              monitoring: "FBC and immunoglobulins; hepatitis B serology before treatment; PML screening (JC virus antibodies); infection screening; CD19/CD20 B cell counts"),
+
+        // ─── DERMATOLOGY / SKIN ───────────────────────────────────────────────
+        .init(name: "Isotretinoin (Roaccutane/Accutane)", category: "Retinoid — Systemic",
+              commonDoses: "0.5–1 mg/kg/day PO in 1–2 divided doses; cumulative dose 120–150 mg/kg total course",
+              route: "PO",
+              notes: "Severe nodulocystic/scarring acne; teratogen — mandatory pregnancy prevention programme (iPLEDGE/pregnancy test monthly); with food (fat-enhanced absorption); course typically 4–6 months",
+              sideEffects: "Teratogenicity (Category X — mandatory contraception), cheilitis/dry lips (very common — use emollient), dry skin, photosensitivity, elevated triglycerides/LFTs, mood changes/depression (monitor), myalgia, night blindness, pseudotumour cerebri (with tetracyclines)",
+              contraindications: "Pregnancy (Category X — ABSOLUTE), breastfeeding, concurrent tetracyclines (pseudotumour cerebri), liver disease, hyperlipidaemia",
+              renalDosing: "Use with caution; no formal renal dose adjustment",
+              hepaticDosing: "Contraindicated in significant hepatic impairment; avoid if LFTs >3× upper limit normal",
+              monitoring: "Pregnancy test monthly (female); LFTs and fasting lipids at baseline, 6–8 weeks, then 3-monthly; mood assessment; ophthalmic review if night blindness"),
+
+        .init(name: "Permethrin 5% cream (Lyclear)", category: "Antiparasitic — Topical",
+              commonDoses: "Scabies: apply from neck down, leave 8–12h, wash off; repeat after 1 week. Head lice: apply to scalp 10 min, rinse",
+              route: "Topical",
+              notes: "Scabies (first-line); head lice; crusted/Norwegian scabies requires systemic ivermectin in addition; treat all household contacts simultaneously; wash/bag all clothing/bedding",
+              sideEffects: "Local burning/stinging/pruritus on application (common — not allergy), temporary worsening of itch (post-scabicide reaction lasts 2–4 weeks — do not re-treat immediately), rarely contact dermatitis",
+              contraindications: "Hypersensitivity to pyrethrins/chrysanthemums; avoid mucosal surfaces and eyes",
+              renalDosing: "Not applicable (topical; negligible systemic absorption)",
+              hepaticDosing: "Not applicable (topical)",
+              monitoring: "Clinical resolution at 4 weeks (itch may persist 4 weeks after successful treatment — do not retreat unless new lesions); treat all contacts"),
+
+        .init(name: "Ivermectin (Stromectol)", category: "Antiparasitic — Systemic",
+              commonDoses: "Scabies: 200 mcg/kg PO single dose, repeat in 2 weeks; Crusted scabies: multiple doses (specialist guidance); Strongyloides: 200 mcg/kg OD × 2 days",
+              route: "PO",
+              notes: "Crusted/Norwegian scabies (systemic required alongside topical); strongyloidiasis; filariasis; Caribbean-relevant (filariasis, strongyloides endemic); take fasting",
+              sideEffects: "Mazzotti reaction (fever, rash, pruritus, oedema — from dying microfilariae, especially filariasis treatment), dizziness, headache, GI upset, transient visual disturbances",
+              contraindications: "Pregnancy (teratogen — use permethrin topically); CNS conditions (blood-brain barrier disruption — drugs increasing BBB permeability); children <15 kg",
+              renalDosing: "No dose adjustment required",
+              hepaticDosing: "Use with caution in severe hepatic impairment",
+              monitoring: "Clinical resolution; microfilaria counts (filariasis); Mazzotti reaction monitoring; repeat stool examination (strongyloides)"),
+
+        .init(name: "Tacrolimus 0.1% ointment (Protopic)", category: "Topical Immunomodulator",
+              commonDoses: "Apply BD to affected skin until clear; use minimum effective amount; reduce to OD or PRN as symptoms improve",
+              route: "Topical",
+              notes: "Atopic dermatitis (moderate–severe, adults; steroid-sparing); face/flexures where topical steroids cause atrophy; does NOT cause skin atrophy (unlike steroids); FDA black-box: theoretical malignancy risk (not confirmed in humans)",
+              sideEffects: "Burning/stinging/pruritus on application (common, improves after first few days), increased risk of infections (local), photosensitivity; theoretical lymphoma risk (Black Box Warning — not confirmed in humans at recommended doses)",
+              contraindications: "Active skin infections (bacterial/viral/fungal — treat first), immunocompromised patients (relative), active malignancy at site, Netherton syndrome",
+              renalDosing: "Not applicable (topical; minimal systemic absorption)",
+              hepaticDosing: "Not applicable (topical; caution in severe hepatic impairment — increased systemic exposure)",
+              monitoring: "Skin response; use minimum effective dose; sun protection (photosensitivity); review every 3–6 months; reassess if not responding at 6 weeks"),
+
+        .init(name: "Terbinafine (Lamisil)", category: "Antifungal — Allylamine",
+              commonDoses: "Onychomycosis: 250 mg OD × 6 weeks (fingernails), 12 weeks (toenails); Tinea: 250 mg OD × 2–6 weeks PO; Cream/gel: apply OD–BD × 1–2 weeks",
+              route: "PO/topical",
+              notes: "Dermatophyte fungal infections (tinea pedis/corporis/capitis/unguium); NOT effective against Candida; hepatotoxicity risk with systemic — liver function test recommended",
+              sideEffects: "GI upset, headache, rash, taste/smell disturbance (may be prolonged or permanent — WARN patient), hepatotoxicity (rare but serious), bone marrow suppression (rare)",
+              contraindications: "Active hepatic disease, taste/smell disorders (worsens), avoid in hepatic/renal impairment without monitoring",
+              renalDosing: "eGFR <50: 50% dose (PO); avoid if severe renal impairment",
+              hepaticDosing: "Avoid in chronic or active hepatic disease — hepatotoxicity risk; no dose adjustment if using topical form",
+              monitoring: "LFTs before starting (PO systemic courses); repeat at 6 weeks if prolonged course; taste/smell — warn before prescribing; culture/sensitivity before starting"),
+
+        .init(name: "Clotrimazole 1% cream/pessary (Canesten)", category: "Antifungal — Topical Azole",
+              commonDoses: "Skin: apply BD–TDS × 2–4 weeks. Vaginal: 500 mg pessary single dose or 200 mg × 3 days; 1% cream intravaginally × 6 nights",
+              route: "Topical/intravaginal",
+              notes: "Superficial dermatophyte and candidal infections; vaginal candidiasis (thrush); oral candidiasis (lozenges — Canesten Oral); safe in pregnancy (topical/vaginal)",
+              sideEffects: "Local burning/stinging/erythema (mild); contact dermatitis (rare); systemic absorption negligible",
+              contraindications: "Hypersensitivity to imidazoles; avoid eyes; vaginal pessaries may damage condoms/diaphragms",
+              renalDosing: "Not applicable (topical)",
+              hepaticDosing: "Not applicable (topical)",
+              monitoring: "Clinical response at 2 weeks; consider oral fluconazole for recurrent vaginal candidiasis; diabetes screening if recurrent"),
+
+        // ─── EYE MEDICATIONS ─────────────────────────────────────────────────
+        .init(name: "Chloramphenicol eye drops 0.5%", category: "Ophthalmic Antibiotic",
+              commonDoses: "1 drop every 2h (acute infection — reduce to QDS once improving); ointment 1% apply at night × 5 days",
+              route: "Ophthalmic (topical)",
+              notes: "Bacterial conjunctivitis (first-line OTC/primary care); blepharitis; broad-spectrum including Staphylococci, H. influenzae; systemic absorption minimal but aplastic anaemia reported (idiosyncratic — extremely rare)",
+              sideEffects: "Local stinging/burning on instillation, hypersensitivity reactions; aplastic anaemia (extremely rare — reported with topical eye drops, mechanism unclear)",
+              contraindications: "Known hypersensitivity; contact lens wearers (remove lenses before instillation — reinsert 15 min later); avoid in pregnancy (1st trimester)",
+              renalDosing: "Not applicable (ophthalmic topical)",
+              hepaticDosing: "Not applicable (ophthalmic topical)",
+              monitoring: "Clinical response in 48h; no improvement → culture and sensitivity; contact lens advice"),
+
+        .init(name: "Fusidic acid 1% eye drops (Fucithalmic)", category: "Ophthalmic Antibiotic",
+              commonDoses: "1 drop BD (viscous gel vehicle — prolongs contact time) × 7 days",
+              route: "Ophthalmic (topical)",
+              notes: "Bacterial conjunctivitis (especially staphylococcal); BD dosing advantage (viscous gel); less broad-spectrum than chloramphenicol but targeted for Gram-positive organisms",
+              sideEffects: "Transient blurred vision after instillation (gel vehicle — temporary), local stinging/burning, hypersensitivity (rare)",
+              contraindications: "Hypersensitivity to fusidic acid; contact lens wearers (remove before instillation)",
+              renalDosing: "Not applicable",
+              hepaticDosing: "Not applicable",
+              monitoring: "Clinical response; blurred vision is expected transiently after instillation (advise patient)"),
+
+        .init(name: "Latanoprost 0.005% eye drops (Xalatan)", category: "Ophthalmic — Prostaglandin Analogue",
+              commonDoses: "1 drop OD in affected eye(s), preferably in the evening",
+              route: "Ophthalmic (topical)",
+              notes: "Open-angle glaucoma; ocular hypertension (first-line); increases uveoscleral outflow; irreversible iris pigmentation change — warn patients; evening dosing more effective",
+              sideEffects: "Iris pigmentation change (permanent brownish discolouration — warn before prescribing), increased eyelash growth (hypertrichosis), conjunctival hyperaemia, periorbital skin darkening, macular oedema (aphakic/pseudophakic eyes)",
+              contraindications: "Aphakic eyes without posterior lens capsule (macular oedema risk); uveitis/anterior segment inflammation; contact lens wearers (instill without lenses — wait 15 min before reinserting)",
+              renalDosing: "Not applicable (ophthalmic topical)",
+              hepaticDosing: "Not applicable (ophthalmic topical)",
+              monitoring: "IOP at 4–6 weeks (response assessment); iris colour at each visit; annual optic disc and visual field; systemic absorption can cause bradycardia — caution with systemic beta-blockers"),
+
+        .init(name: "Timolol 0.25%/0.5% eye drops (Timoptol)", category: "Ophthalmic — Beta-blocker",
+              commonDoses: "1 drop BD (0.25% initially — increase to 0.5% if needed); once-daily formulation (gel) available",
+              route: "Ophthalmic (topical)",
+              notes: "Open-angle glaucoma; ocular hypertension; reduces aqueous humour production; systemic absorption occurs — cardiac/respiratory side effects possible despite topical use",
+              sideEffects: "Bronchospasm (contraindicated in asthma/COPD), bradycardia, hypotension, masking of hypoglycaemia symptoms, corneal anaesthesia, dry eyes, contact dermatitis",
+              contraindications: "Asthma, COPD, severe bradycardia, 2nd/3rd degree AV block, cardiogenic shock; caution in diabetes mellitus (hypoglycaemia masking); use lacrimal punctal occlusion to minimise systemic absorption",
+              renalDosing: "Not applicable (topical); however systemic effects accumulate in renal failure",
+              hepaticDosing: "Not applicable (topical); systemic effects more pronounced in hepatic impairment",
+              monitoring: "IOP; pulse and BP (systemic absorption); respiratory function; advise nasolacrimal occlusion after instillation to reduce systemic absorption"),
+
+        .init(name: "Prednisolone sodium phosphate 0.5% eye drops", category: "Ophthalmic Corticosteroid",
+              commonDoses: "1 drop QDS–hourly (acute inflammation); taper as response occurs; post-operative: QDS × 4 weeks then taper",
+              route: "Ophthalmic (topical)",
+              notes: "Post-operative ocular inflammation (cataract/vitreoretinal surgery); uveitis; anterior segment inflammation; DO NOT use for infective conjunctivitis (worsens); ophthalmologist supervision for prolonged use",
+              sideEffects: "Raised IOP (steroid-induced glaucoma — especially with prolonged use), posterior subcapsular cataract (prolonged use), secondary infections (masked symptoms), delayed wound healing, corneal thinning",
+              contraindications: "Ocular viral infections (herpes simplex — dangerous, fungal, bacterial — unless covered), untreated glaucoma (raises IOP), acute purulent conjunctivitis; avoid without ophthalmologist supervision beyond 2 weeks",
+              renalDosing: "Not applicable",
+              hepaticDosing: "Not applicable",
+              monitoring: "IOP at 2–4 weeks (steroid responders can develop dangerous rise); slit-lamp exam; clinical response; taper slowly; ophthalmology follow-up"),
+
+        .init(name: "Hypromellose 0.3% eye drops (artificial tears)", category: "Ophthalmic — Lubricant",
+              commonDoses: "1–2 drops PRN as needed (typically 4–6× daily or more); no maximum dose",
+              route: "Ophthalmic (topical)",
+              notes: "Dry eye syndrome (keratoconjunctivitis sicca); post-operative lubrication; preservative-free formulations preferred for frequent use or contact lens wear; safe in pregnancy",
+              sideEffects: "Transient blurred vision immediately after instillation; preservative (benzalkonium chloride) toxicity with very frequent use (prefer preservative-free unit doses)",
+              contraindications: "Hypersensitivity to components; preservative-containing drops: avoid contact lens wear (wait 15 min)",
+              renalDosing: "Not applicable",
+              hepaticDosing: "Not applicable",
+              monitoring: "Use preservative-free formulation if >4× daily or contact lens wear; Schirmer's test for dry eye diagnosis"),
+
+        // ─── NEBULISER MEDICATIONS — Additional ───────────────────────────────
+        .init(name: "Tobramycin nebulised (TOBI/Bramitob)", category: "Antibiotic — Inhaled Aminoglycoside",
+              commonDoses: "300 mg nebulised BD (28 days on, 28 days off cycling); administer with jet nebuliser (not ultrasonic)",
+              route: "Nebulised",
+              notes: "Cystic fibrosis with chronic Pseudomonas aeruginosa colonisation; not for acute infections; alternating cycle reduces resistance emergence; use after airway clearance physiotherapy",
+              sideEffects: "Tinnitus/hearing loss (monitor audiology), voice alteration/dysphonia, bronchospasm (pre-treat with SABA), cough, sputum increase (initially), renal toxicity (minimal with inhalation — less than IV)",
+              contraindications: "Hypersensitivity to aminoglycosides; monitor for ototoxicity; not for acute exacerbations",
+              renalDosing: "Minimal systemic absorption with inhalation; however, systemic levels should be checked if renal impairment pre-exists",
+              hepaticDosing: "Not applicable (inhaled route)",
+              monitoring: "Audiometry and vestibular function before each cycle and at 6 months; renal function and drug levels if impairment; lung function (FEV1)"),
+
+        .init(name: "Ipratropium/salbutamol (Combivent)", category: "Bronchodilator — Combined SAMA+SABA",
+              commonDoses: "1 unit dose (2.5 mL: salbutamol 2.5 mg + ipratropium 500 mcg) nebulised TDS–QDS; MDI: 2 puffs QDS",
+              route: "Nebulised/MDI",
+              notes: "Acute COPD exacerbation; severe acute asthma (add ipratropium to salbutamol); greater bronchodilation than either agent alone; more convenient than separate nebulisation",
+              sideEffects: "Tachycardia, tremor, palpitations, hypokalaemia (salbutamol component), dry mouth, urinary retention (ipratropium component), paradoxical bronchospasm",
+              contraindications: "Hypersensitivity to soya lecithin (MDI — contains soya); narrow-angle glaucoma (protect eyes during nebulisation); urinary retention (BPH)",
+              renalDosing: "No dose adjustment",
+              hepaticDosing: "No dose adjustment",
+              monitoring: "SpO2 and respiratory rate; HR (tachycardia); serum potassium (hypokalaemia risk — especially with concurrent steroids/diuretics/xanthines)"),
+
+        .init(name: "Dornase alfa (Pulmozyme/DNase)", category: "Mucolytic — Recombinant DNase",
+              commonDoses: "2.5 mg nebulised OD (CF); some patients benefit from BD dosing; use jet nebuliser",
+              route: "Nebulised",
+              notes: "Cystic fibrosis (reduces sputum viscosity — cleaves extracellular DNA from neutrophils); use after airway clearance physiotherapy; keep refrigerated (2–8°C); bring to room temperature before use",
+              sideEffects: "Voice alteration, pharyngitis, chest pain (pleuritic), rash, conjunctivitis, rhinitis; generally well tolerated",
+              contraindications: "Hypersensitivity to dornase alfa or CHO cell-derived products",
+              renalDosing: "Not applicable (inhaled — no systemic effect)",
+              hepaticDosing: "Not applicable",
+              monitoring: "FEV1 and FVC (lung function); pulmonary exacerbation frequency; microbiological cultures"),
+
+        // ─── VACCINES ─────────────────────────────────────────────────────────
+        .init(name: "Yellow Fever vaccine (Stamaril)", category: "Vaccine — Live Attenuated",
+              commonDoses: "0.5 mL SC single dose (lifelong immunity from 2017 WHO update); booster if at ongoing risk; minimum age 9 months",
+              route: "SC",
+              notes: "Required for entry to many endemic countries (incl. parts of Caribbean, South/Central America, Africa); administered ONLY at designated Yellow Fever vaccination centres; valid 10 days after vaccination",
+              sideEffects: "Injection-site reactions, headache, myalgia, mild fever; viscerotropic disease (rare but potentially fatal — avoid in immunocompromised/elderly/thymus disorders); neurotropic disease (encephalitis — rare in infants)",
+              contraindications: "Immunocompromised (HIV CD4 <200, chemotherapy), age <6 months (absolute), 6–9 months (generally avoid), thymus disorders (thymoma, myasthenia), age >60 years (elevated viscerotropic disease risk — weigh risk/benefit), pregnancy (relative — vaccinate if travel unavoidable)",
+              renalDosing: "Not applicable",
+              hepaticDosing: "Not applicable; avoid in severe hepatic impairment",
+              monitoring: "Observe 30 min post-vaccination (anaphylaxis); issue international certificate of vaccination; record batch number; enquire re thymus/immune status before administration"),
+
+        .init(name: "Hepatitis B vaccine (Engerix-B/HBvaxPRO)", category: "Vaccine — Recombinant",
+              commonDoses: "Primary: 3 doses at 0, 1, 6 months (standard); accelerated: 0, 1, 2 months + booster 12 months; rapid: 0, 7, 21 days + booster 12 months (travel). HBvaxPRO 40 mcg for haemodialysis",
+              route: "IM (deltoid)",
+              notes: "Prevention of hepatitis B; part of childhood immunisation schedule (most countries); occupational (healthcare workers); post-exposure prophylaxis (with HBIG); check anti-HBs at 4–8 weeks post-primary course",
+              sideEffects: "Injection-site reactions, mild fever, headache, fatigue; anaphylaxis (rare)",
+              contraindications: "Hypersensitivity to yeast or any vaccine component; defer if febrile illness (mild illness not a contraindication)",
+              renalDosing: "Standard schedule; however, immunocompromised/CKD patients may need double dose or additional booster (check anti-HBs titre); 40 mcg formulation for haemodialysis patients",
+              hepaticDosing: "Not applicable",
+              monitoring: "Anti-HBs titre 4–8 weeks after completing primary course (target >10 mIU/mL); repeat 3-dose course if non-responder; annual anti-HBs in haemodialysis patients"),
+
+        .init(name: "Hepatitis A vaccine (Havrix/Avaxim)", category: "Vaccine — Inactivated",
+              commonDoses: "Primary: 2 doses at 0 and 6–12 months; single dose gives protection from 2 weeks onwards (14 days before travel)",
+              route: "IM (deltoid)",
+              notes: "Travellers to endemic areas; post-exposure prophylaxis (within 14 days of exposure); long-lasting immunity after 2-dose course (potentially lifelong after booster); combined with Hep B (Twinrix) available",
+              sideEffects: "Injection-site reactions, mild fever, headache, fatigue; anaphylaxis (rare)",
+              contraindications: "Hypersensitivity to vaccine components or formaldehyde; defer in febrile illness",
+              renalDosing: "No dose adjustment; immunocompromised patients may have reduced immune response",
+              hepaticDosing: "Not applicable",
+              monitoring: "Serological testing not routine (high seroconversion rate); check if immunocompromised (may need additional dose)"),
+
+        .init(name: "Typhoid vaccine (Typherix/Typhim Vi)", category: "Vaccine — Polysaccharide",
+              commonDoses: "0.5 mL IM single dose; booster every 3 years if ongoing exposure. Oral: Vivotif 1 capsule alternate days × 3 doses (give 3 days before travel)",
+              route: "IM (injected) / PO (oral live)",
+              notes: "Caribbean travel prophylaxis; also relevant to food handlers, laboratory workers; oral vaccine (live) requires refrigeration; oral vaccine reduces adherence to antibiotics after taking",
+              sideEffects: "IM: injection-site pain, mild fever, myalgia; oral (live): GI upset (nausea, abdominal pain, diarrhoea)",
+              contraindications: "Oral live: immunocompromised, antibiotics within 24h of oral dose, antimalarials (proguanil/mefloquine — reduces efficacy; take ≥3 days apart). IM: hypersensitivity",
+              renalDosing: "Not applicable",
+              hepaticDosing: "Not applicable",
+              monitoring: "No post-vaccination serology required; oral vaccine — ensure cold chain compliance; spacing of antimalarials"),
+
+        .init(name: "HPV vaccine (Gardasil-9/Cervarix)", category: "Vaccine — Recombinant VLP",
+              commonDoses: "9–14 years: 2 doses 6–12 months apart; 15–26 years: 3 doses at 0, 2, 6 months; 27–45 years: shared decision-making",
+              route: "IM (deltoid)",
+              notes: "Prevention of HPV-related cervical/anal/oropharyngeal/penile/vulval/vaginal cancers and genital warts (Gardasil-9: 9 strains); most effective before sexual debut; males and females",
+              sideEffects: "Injection-site reactions (pain, swelling — most common), syncope (post-vaccination — observe 15 min), fever, headache, dizziness",
+              contraindications: "Hypersensitivity to yeast (Gardasil) or any component; pregnancy (defer until after — no evidence of harm but not routinely given)",
+              renalDosing: "Not applicable",
+              hepaticDosing: "Not applicable",
+              monitoring: "Observe 15 min (syncope risk — especially adolescents); no serology required; does not replace cervical screening"),
+
+        .init(name: "Pneumococcal vaccine — Conjugate (Prevenar 13/PCV15/PCV20)", category: "Vaccine — Conjugate",
+              commonDoses: "Single dose IM (adults at risk/≥65 yrs); infant schedule varies by national programme (primary 2/3 doses + booster); immunocompromised: 2 doses of PCV13 then PPSV23 (8 weeks later)",
+              route: "IM",
+              notes: "High-risk adults: asplenia, CKD, immunocompromised, diabetes, chronic liver/heart/lung disease, CSF leaks; post-splenectomy mandatory; may require PPSV23 sequentially",
+              sideEffects: "Injection-site reactions, mild fever, myalgia; anaphylaxis (rare)",
+              contraindications: "Hypersensitivity to diphtheria toxoid (conjugate carrier); febrile illness (defer)",
+              renalDosing: "No dose adjustment; CKD is an indication for vaccination",
+              hepaticDosing: "No dose adjustment; cirrhosis/chronic liver disease is an indication",
+              monitoring: "High-risk patients: consider anti-pneumococcal antibody levels after vaccination to confirm response; PPSV23 5 years after PCV13 in asplenic patients"),
+
+        .init(name: "Tetanus/Diphtheria/Pertussis (Td/IPV or Tdap — Boostrix/Adacel)", category: "Vaccine — Inactivated Combination",
+              commonDoses: "Booster: single dose IM/SC every 10 years (or when wound management requires); pregnancy: 1 dose each pregnancy (27–36 weeks gestation for infant pertussis protection)",
+              route: "IM",
+              notes: "Tetanus prophylaxis in wounds (assess last vaccination; consider HTIG if >10 years or high-risk wound); pertussis booster in pregnancy (cocoon strategy for neonate); diphtheria prophylaxis",
+              sideEffects: "Injection-site reactions (pain, redness, swelling), fever, myalgia, headache; arthus reaction (severe local reaction if too many boosters — avoid giving >1 tetanus-containing vaccine in 5 years)",
+              contraindications: "Previous anaphylaxis to this vaccine or components; severe local reaction (arthus) within 10 years: postpone tetanus boosters; encephalopathy within 7 days of pertussis component",
+              renalDosing: "Not applicable",
+              hepaticDosing: "Not applicable",
+              monitoring: "Document date of all tetanus doses; assess wound characteristics (clean/tetanus-prone); consider HTIG if >10 years since last dose for contaminated wounds; avoid >1 tetanus dose in 5-year window"),
+
+        .init(name: "Meningococcal ACWY vaccine (Menveo/Nimenrix)", category: "Vaccine — Conjugate",
+              commonDoses: "Single dose IM (adolescents, travellers, asplenic/complement deficiency); booster every 5 years for ongoing high-risk (asplenia, meningitis belt travel)",
+              route: "IM",
+              notes: "Meningococcal disease prevention; mandatory for Hajj/Umrah; sub-Saharan Africa travel (meningitis belt); asplenia/complement deficiency; adolescent programme in many countries; add MenB (Bexsero) for comprehensive cover",
+              sideEffects: "Injection-site reactions, headache, mild fever, myalgia, fatigue; anaphylaxis (rare)",
+              contraindications: "Hypersensitivity to diphtheria toxoid or any component; defer if febrile illness",
+              renalDosing: "Not applicable",
+              hepaticDosing: "Not applicable",
+              monitoring: "Ensure conjugate (not plain polysaccharide) for long-term protection; post-splenectomy: give ≥2 weeks before elective splenectomy if possible; document on patient's record"),
     ]
 }
 
