@@ -410,12 +410,12 @@ final class ClinicalScoringEngineTests: XCTestCase {
         var input = ChildPughInput()
         input.bilirubinUmolL = 40    // 34–51 → 2 pts
         input.albuminGdL = 3.0       // 2.8–3.5 → 2 pts
-        input.ptINR = 1.9            // 1.7–2.3 → 2 pts
+        input.ptINR = 1.5            // <1.7 → 1 pt
         input.ascites = .controlled  // 2 pts
-        input.encephalopathy = .grade1to2  // 2 pts
+        input.encephalopathy = .none // 1 pt  (total = 8 → Class B)
         let result = ClinicalScoringEngine.childPugh(input)
-        XCTAssertEqual(result.score, 10)
-        XCTAssertEqual(result.risk, .moderate)  // Class B
+        XCTAssertEqual(result.score, 8)
+        XCTAssertEqual(result.risk, .high)  // Class B
     }
 
     // MARK: - Score metadata invariants

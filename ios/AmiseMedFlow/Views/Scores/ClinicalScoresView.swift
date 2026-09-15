@@ -14,6 +14,8 @@ enum ScoreCategory: String, CaseIterable, Identifiable {
     case sepsis       = "Sepsis"
     case preop        = "Pre-op Risk"
     case neuro        = "Neuro / Stroke"
+    case cardiac      = "Cardiac / AF"
+    case monitoring   = "Monitoring"
 }
 
 enum ActiveScore: String, CaseIterable, Identifiable {
@@ -24,46 +26,66 @@ enum ActiveScore: String, CaseIterable, Identifiable {
     case ranson           = "Ranson (Pancreatitis)"
     case glasgow          = "Glasgow (Pancreatitis)"
     case rockall          = "Rockall (GI Bleed)"
+    case blatchford       = "Blatchford (GI Bleed)"
     case sirs             = "SIRS / Sepsis"
     case qsofa            = "qSOFA (Sepsis)"
+    case mews             = "MEWS (Early Warning)"
     case wellsDVT         = "Wells DVT"
     case wellsPE          = "Wells PE"
     case abcd2            = "ABCD² (TIA/Stroke)"
+    case gcs              = "GCS (Coma Scale)"
     case lrinec           = "LRINEC (Necrotising Fasciitis)"
     case rcri             = "RCRI (Cardiac Risk)"
+    case asa              = "ASA Physical Status"
     case caprini          = "Caprini (VTE Risk)"
     case childPugh        = "Child-Pugh (Liver)"
+    case meld             = "MELD-Na (Liver)"
+    case cha2ds2vasc      = "CHA₂DS₂-VASc (AF Stroke)"
+    case hasBled          = "HAS-BLED (Bleeding)"
+    case stopBang         = "STOP-BANG (OSA)"
 
     var category: ScoreCategory {
         switch self {
         case .alvarado, .tokyoChole, .tokyoCholang, .ranson, .glasgow:
             return .acute
-        case .rockall:
+        case .rockall, .blatchford:
             return .gi
         case .wellsDVT, .wellsPE, .caprini:
             return .vascular
         case .sirs, .qsofa:
             return .sepsis
-        case .rcri, .childPugh:
+        case .rcri, .asa, .childPugh, .meld, .stopBang:
             return .preop
-        case .abcd2, .lrinec:
+        case .abcd2, .lrinec, .gcs:
             return .neuro
+        case .cha2ds2vasc, .hasBled:
+            return .cardiac
+        case .mews:
+            return .monitoring
         }
     }
 
     var icon: String {
         switch self {
-        case .alvarado:    return "bandage"
-        case .tokyoChole:  return "drop.fill"
-        case .tokyoCholang: return "drop.halffull"
+        case .alvarado:       return "bandage"
+        case .tokyoChole:     return "drop.fill"
+        case .tokyoCholang:   return "drop.halffull"
         case .ranson, .glasgow: return "flame"
-        case .rockall:     return "scope"
-        case .sirs, .qsofa: return "thermometer.medium"
+        case .rockall:        return "scope"
+        case .blatchford:     return "drop.triangle"
+        case .sirs, .qsofa:   return "thermometer.medium"
+        case .mews:           return "waveform.path.ecg.rectangle"
         case .wellsDVT, .wellsPE, .caprini: return "heart.fill"
-        case .abcd2:       return "brain.head.profile"
-        case .lrinec:      return "cross.case.fill"
-        case .rcri:        return "waveform.path.ecg"
-        case .childPugh:   return "staroflife"
+        case .abcd2:          return "brain.head.profile"
+        case .gcs:            return "eye"
+        case .lrinec:         return "cross.case.fill"
+        case .rcri:           return "waveform.path.ecg"
+        case .asa:            return "person.badge.shield.checkmark"
+        case .childPugh:      return "staroflife"
+        case .meld:           return "staroflife.fill"
+        case .cha2ds2vasc:    return "heart.circle"
+        case .hasBled:        return "bandage.fill"
+        case .stopBang:       return "moon.zzz"
         }
     }
 }
@@ -109,6 +131,22 @@ struct ClinicalScoresView: View {
     @State private var cap = CapriniInput()
     // Child-Pugh
     @State private var cp = ChildPughInput()
+    // MEWS
+    @State private var mewsI = MEWSInput()
+    // GCS
+    @State private var gcsI = GCSInput()
+    // ASA
+    @State private var asaI = ASAInput()
+    // MELD
+    @State private var meldI = MELDInput()
+    // CHA2DS2-VASc
+    @State private var cha2I = CHA2DS2VAScInput()
+    // HAS-BLED
+    @State private var hblI = HASBLEDInput()
+    // Blatchford
+    @State private var blatchI = BlatchfordInput()
+    // STOP-BANG
+    @State private var sbangI = STOPBANGInput()
 
     var filteredScores: [ActiveScore] {
         guard selectedCategory != .all else { return ActiveScore.allCases }
@@ -323,15 +361,23 @@ struct ClinicalScoresView: View {
         case .ranson:       ClinicalScoringEngine.ranson(ran)
         case .glasgow:      ClinicalScoringEngine.glasgowPancreatitis(glas)
         case .rockall:      ClinicalScoringEngine.rockall(rock)
+        case .blatchford:   ClinicalScoringEngine.blatchford(blatchI)
         case .sirs:         ClinicalScoringEngine.sirs(sirsI)
         case .qsofa:        ClinicalScoringEngine.qsofa(qsofaI)
+        case .mews:         ClinicalScoringEngine.mews(mewsI)
         case .wellsDVT:     ClinicalScoringEngine.wellsDVT(wDVT)
         case .wellsPE:      ClinicalScoringEngine.wellsPE(wPE)
         case .abcd2:        ClinicalScoringEngine.abcd2(abcd)
+        case .gcs:          ClinicalScoringEngine.gcs(gcsI)
         case .lrinec:       ClinicalScoringEngine.lrinec(lrin)
         case .rcri:         ClinicalScoringEngine.rcri(rcriI)
+        case .asa:          ClinicalScoringEngine.asa(asaI)
         case .caprini:      ClinicalScoringEngine.caprini(cap)
         case .childPugh:    ClinicalScoringEngine.childPugh(cp)
+        case .meld:         ClinicalScoringEngine.meld(meldI)
+        case .cha2ds2vasc:  ClinicalScoringEngine.cha2ds2vasc(cha2I)
+        case .hasBled:      ClinicalScoringEngine.hasBled(hblI)
+        case .stopBang:     ClinicalScoringEngine.stopBang(sbangI)
         }
     }
 
@@ -369,15 +415,23 @@ struct ClinicalScoresView: View {
         case .ranson:       ransonForm
         case .glasgow:      glasgowForm
         case .rockall:      rockallForm
+        case .blatchford:   blatchfordForm
         case .sirs:         sirsForm
         case .qsofa:        qsofaForm
+        case .mews:         mewsForm
         case .wellsDVT:     wellsDVTForm
         case .wellsPE:      wellsPEForm
         case .abcd2:        abcd2Form
+        case .gcs:          gcsForm
         case .lrinec:       lrinecForm
         case .rcri:         rcriForm
+        case .asa:          asaForm
         case .caprini:      capriniForm
         case .childPugh:    childPughForm
+        case .meld:         meldForm
+        case .cha2ds2vasc:  cha2ds2vascForm
+        case .hasBled:      hasBledForm
+        case .stopBang:     stopBangForm
         }
     }
 
@@ -786,6 +840,260 @@ struct ClinicalScoresView: View {
             }
         }
         .onChange(of: cp) { _, _ in recalculate() }
+    }
+
+    // MARK: - MEWS
+
+    private var mewsForm: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader("Respiratory Rate (breaths/min)")
+            HStack {
+                Slider(value: Binding(get: { Double(mewsI.respiratoryRate) },
+                                      set: { mewsI.respiratoryRate = Int($0) }),
+                       in: 4...50, step: 1)
+                Text("\(mewsI.respiratoryRate)").font(.caption.monospacedDigit()).frame(width: 36, alignment: .trailing)
+            }
+            sectionHeader("SpO₂ (%)")
+            HStack {
+                Slider(value: Binding(get: { Double(mewsI.oxygenSaturation) },
+                                      set: { mewsI.oxygenSaturation = Int($0) }),
+                       in: 70...100, step: 1)
+                Text("\(mewsI.oxygenSaturation)%").font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
+            }
+            sectionHeader("Heart Rate (bpm)")
+            HStack {
+                Slider(value: Binding(get: { Double(mewsI.heartRate) },
+                                      set: { mewsI.heartRate = Int($0) }),
+                       in: 20...200, step: 1)
+                Text("\(mewsI.heartRate)").font(.caption.monospacedDigit()).frame(width: 36, alignment: .trailing)
+            }
+            sectionHeader("Systolic BP (mmHg)")
+            HStack {
+                Slider(value: Binding(get: { Double(mewsI.systolicBP) },
+                                      set: { mewsI.systolicBP = Int($0) }),
+                       in: 40...240, step: 2)
+                Text("\(mewsI.systolicBP)").font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
+            }
+            sectionHeader("Temperature (°C)")
+            HStack {
+                Slider(value: $mewsI.temperature, in: 33.0...42.0, step: 0.1)
+                Text(String(format: "%.1f°C", mewsI.temperature)).font(.caption.monospacedDigit()).frame(width: 54, alignment: .trailing)
+            }
+            sectionHeader("AVPU — Consciousness")
+            Picker("AVPU", selection: $mewsI.consciousnessAVPU) {
+                Text("Alert (0)").tag(MEWSInput.AVPULevel.alert)
+                Text("Voice (1)").tag(MEWSInput.AVPULevel.voice)
+                Text("Pain (2)").tag(MEWSInput.AVPULevel.pain)
+                Text("Unresponsive (3)").tag(MEWSInput.AVPULevel.unresponsive)
+            }
+            .pickerStyle(.segmented)
+            sectionHeader("Urine Output")
+            Picker("Urine", selection: $mewsI.urineOutput) {
+                Text("Normal (0)").tag(MEWSInput.UrineOutput.normal)
+                Text("Low (1)").tag(MEWSInput.UrineOutput.low)
+                Text("Nil <10mL/hr (2)").tag(MEWSInput.UrineOutput.nil_)
+            }
+            .pickerStyle(.segmented)
+        }
+        .onChange(of: mewsI) { _, _ in recalculate() }
+    }
+
+    // MARK: - GCS
+
+    private var gcsForm: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader("Eye Opening")
+            Picker("Eye", selection: $gcsI.eyeOpening) {
+                Text("Spontaneous (4)").tag(GCSInput.EyeScore.spontaneous)
+                Text("To Voice (3)").tag(GCSInput.EyeScore.toVoice)
+                Text("To Pain (2)").tag(GCSInput.EyeScore.toPain)
+                Text("None (1)").tag(GCSInput.EyeScore.none)
+            }
+            .pickerStyle(.segmented)
+            sectionHeader("Verbal Response")
+            Picker("Verbal", selection: $gcsI.verbalResponse) {
+                Text("Oriented (5)").tag(GCSInput.VerbalScore.oriented)
+                Text("Confused (4)").tag(GCSInput.VerbalScore.confused)
+                Text("Words (3)").tag(GCSInput.VerbalScore.inappropriateWords)
+                Text("Sounds (2)").tag(GCSInput.VerbalScore.sounds)
+                Text("None (1)").tag(GCSInput.VerbalScore.none)
+            }
+            .pickerStyle(.wheel)
+            .frame(height: 100)
+            sectionHeader("Motor Response")
+            Picker("Motor", selection: $gcsI.motorResponse) {
+                Text("Obeys (6)").tag(GCSInput.MotorScore.obeys)
+                Text("Localises (5)").tag(GCSInput.MotorScore.localises)
+                Text("Withdraws (4)").tag(GCSInput.MotorScore.withdraws)
+                Text("Flexion (3)").tag(GCSInput.MotorScore.abnormalFlexion)
+                Text("Extension (2)").tag(GCSInput.MotorScore.extension_)
+                Text("None (1)").tag(GCSInput.MotorScore.none)
+            }
+            .pickerStyle(.wheel)
+            .frame(height: 100)
+        }
+        .onChange(of: gcsI) { _, _ in recalculate() }
+    }
+
+    // MARK: - ASA
+
+    private var asaForm: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader("ASA Physical Status Class")
+            ForEach(ASAInput.ASAClass.allCases, id: \.rawValue) { c in
+                let desc: String = switch c {
+                case .i:   "I — Healthy, no systemic disease"
+                case .ii:  "II — Mild systemic disease, well controlled"
+                case .iii: "III — Severe systemic disease"
+                case .iv:  "IV — Severe disease, constant threat to life"
+                case .v:   "V — Moribund, not expected to survive without surgery"
+                }
+                Button {
+                    asaI.asaClass = c
+                    recalculate()
+                } label: {
+                    HStack {
+                        Image(systemName: asaI.asaClass == c ? "largecircle.fill.circle" : "circle")
+                            .foregroundStyle(asaI.asaClass == c ? AMColor.accent : .secondary)
+                        Text(desc).font(.subheadline).foregroundStyle(.primary)
+                        Spacer()
+                    }
+                    .padding(.vertical, 4)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    // MARK: - MELD
+
+    private var meldForm: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionHeader("Bilirubin (mg/dL)")
+            HStack {
+                Slider(value: $meldI.bilirubinMgDL, in: 0.1...40.0, step: 0.1)
+                Text(String(format: "%.1f", meldI.bilirubinMgDL)).font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
+            }
+            sectionHeader("Creatinine (mg/dL)")
+            HStack {
+                Slider(value: $meldI.creatinineMgDL, in: 0.1...10.0, step: 0.1)
+                Text(String(format: "%.1f", meldI.creatinineMgDL)).font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
+            }
+            sectionHeader("INR")
+            HStack {
+                Slider(value: $meldI.inrValue, in: 0.8...8.0, step: 0.1)
+                Text(String(format: "%.1f", meldI.inrValue)).font(.caption.monospacedDigit()).frame(width: 44, alignment: .trailing)
+            }
+            sectionHeader("Sodium (mmol/L)")
+            HStack {
+                Slider(value: $meldI.sodiumMmolL, in: 110.0...145.0, step: 1)
+                Text("\(Int(meldI.sodiumMmolL)) mmol/L").font(.caption.monospacedDigit()).frame(width: 80, alignment: .trailing)
+            }
+            scoreToggle("On dialysis (creatinine capped at 4.0)", binding: $meldI.onDialysis, points: "")
+        }
+        .onChange(of: meldI) { _, _ in recalculate() }
+    }
+
+    // MARK: - CHA₂DS₂-VASc
+
+    private var cha2ds2vascForm: some View {
+        Group {
+            scoreToggle("Congestive heart failure", binding: $cha2I.congestiveHeartFailure, points: "+1")
+            scoreToggle("Hypertension (treated or BP >140/90)", binding: $cha2I.hypertension, points: "+1")
+            scoreToggle("Age ≥75 years", binding: $cha2I.ageOver75, points: "+2")
+            scoreToggle("Age 65–74 years (if not ≥75)", binding: $cha2I.age65to74, points: "+1")
+            scoreToggle("Diabetes mellitus", binding: $cha2I.diabetes, points: "+1")
+            scoreToggle("Stroke / TIA / thromboembolism", binding: $cha2I.strokeOrTIA, points: "+2")
+            scoreToggle("Vascular disease (MI, PAD, aortic plaque)", binding: $cha2I.vascularDisease, points: "+1")
+            scoreToggle("Female sex", binding: $cha2I.femaleSex, points: "+1")
+        }
+        .onChange(of: cha2I) { _, _ in recalculate() }
+    }
+
+    // MARK: - HAS-BLED
+
+    private var hasBledForm: some View {
+        Group {
+            scoreToggle("H — Hypertension uncontrolled (SBP >160)", binding: $hblI.hypertensionUncontrolled, points: "+1")
+            scoreToggle("A — Abnormal renal function (dialysis / Cr >200 μmol/L)", binding: $hblI.renalDysfunction, points: "+1")
+            scoreToggle("A — Abnormal liver function (cirrhosis / bili ×2 / AST ×3)", binding: $hblI.liverDysfunction, points: "+1")
+            scoreToggle("S — Stroke history", binding: $hblI.strokeHistory, points: "+1")
+            scoreToggle("B — Bleeding (prior or predisposition)", binding: $hblI.priorBleeding, points: "+1")
+            scoreToggle("L — Labile INR (TTR <60%)", binding: $hblI.labileINR, points: "+1")
+            scoreToggle("E — Elderly (age >65)", binding: $hblI.ageOver65, points: "+1")
+            scoreToggle("D — Drugs (antiplatelets / NSAIDs)", binding: $hblI.drugsOrAlcohol, points: "+1")
+            scoreToggle("D — Alcohol (≥8 units/week)", binding: $hblI.alcoholUse, points: "+1")
+        }
+        .onChange(of: hblI) { _, _ in recalculate() }
+    }
+
+    // MARK: - Glasgow-Blatchford
+
+    private var blatchfordForm: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            scoreToggle("Patient is male", binding: $blatchI.isMale, points: "")
+
+            sectionHeader("Blood Urea Nitrogen")
+            Picker("BUN", selection: $blatchI.bloodUreaNitrogen) {
+                Text("<6.5 mmol/L (0)").tag(BlatchfordInput.BlatchfordBUN.under6_5)
+                Text("6.5–7.9 (2)").tag(BlatchfordInput.BlatchfordBUN.bun6_5to7_9)
+                Text("8–9.9 (3)").tag(BlatchfordInput.BlatchfordBUN.bun8to9_9)
+                Text("10–24.9 (4)").tag(BlatchfordInput.BlatchfordBUN.bun10to24_9)
+                Text("≥25 (6)").tag(BlatchfordInput.BlatchfordBUN.bunOver25)
+            }
+            .pickerStyle(.wheel)
+            .frame(height: 100)
+
+            sectionHeader("Haemoglobin")
+            if blatchI.isMale {
+                Picker("Hb (male)", selection: $blatchI.haemoglobin) {
+                    Text("≥13 g/dL (0)").tag(BlatchfordInput.BlatchfordHb.male13plus)
+                    Text("12–12.9 (1)").tag(BlatchfordInput.BlatchfordHb.male12to12_9)
+                    Text("10–11.9 (3)").tag(BlatchfordInput.BlatchfordHb.male10to11_9)
+                    Text("<10 (6)").tag(BlatchfordInput.BlatchfordHb.maleSub10)
+                }
+                .pickerStyle(.segmented)
+            } else {
+                Picker("Hb (female)", selection: $blatchI.haemoglobin) {
+                    Text("≥12 g/dL (0)").tag(BlatchfordInput.BlatchfordHb.female12plus)
+                    Text("10–11.9 (1)").tag(BlatchfordInput.BlatchfordHb.female10to11_9)
+                    Text("<10 (6)").tag(BlatchfordInput.BlatchfordHb.femaleSub10)
+                }
+                .pickerStyle(.segmented)
+            }
+
+            sectionHeader("Systolic BP")
+            Picker("SBP", selection: $blatchI.sbp) {
+                Text(">109 mmHg (0)").tag(BlatchfordInput.BlatchfordSBP.over109)
+                Text("100–109 (1)").tag(BlatchfordInput.BlatchfordSBP.sbp100to109)
+                Text("90–99 (2)").tag(BlatchfordInput.BlatchfordSBP.sbp90to99)
+                Text("<90 (3)").tag(BlatchfordInput.BlatchfordSBP.under90)
+            }
+            .pickerStyle(.segmented)
+
+            scoreToggle("Heart rate >100 bpm", binding: $blatchI.heartRateOver100, points: "+1")
+            scoreToggle("Melaena on presentation", binding: $blatchI.melaena, points: "+1")
+            scoreToggle("Syncope", binding: $blatchI.syncope, points: "+2")
+            scoreToggle("Hepatic disease", binding: $blatchI.hepaticDisease, points: "+2")
+            scoreToggle("Cardiac failure", binding: $blatchI.cardiacFailure, points: "+2")
+        }
+        .onChange(of: blatchI) { _, _ in recalculate() }
+    }
+
+    // MARK: - STOP-BANG
+
+    private var stopBangForm: some View {
+        Group {
+            scoreToggle("S — Snoring loudly", binding: $sbangI.snoring, points: "+1")
+            scoreToggle("T — Tired / fatigued during day", binding: $sbangI.tired, points: "+1")
+            scoreToggle("O — Observed apnoea (partner / witness)", binding: $sbangI.observed, points: "+1")
+            scoreToggle("P — Pressure / hypertension (treated or >140/90)", binding: $sbangI.pressureTreated, points: "+1")
+            scoreToggle("B — BMI >35 kg/m²", binding: $sbangI.bmiOver35, points: "+1")
+            scoreToggle("A — Age >50 years", binding: $sbangI.ageOver50, points: "+1")
+            scoreToggle("N — Neck circumference >40 cm", binding: $sbangI.neckOver40cm, points: "+1")
+            scoreToggle("G — Gender: male", binding: $sbangI.male, points: "+1")
+        }
+        .onChange(of: sbangI) { _, _ in recalculate() }
     }
 
     // MARK: - Shared helpers
