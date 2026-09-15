@@ -93,11 +93,14 @@ final class Patient {
     var aiClinicalReasoning: String?   // Persisted AI reasoning summary
 
     // MARK: - Procedure / specialty form data (JSON-encoded)
-    var traumaDataJson: String?        // TraumaData
-    var ogdDataJson: String?           // OGDData
-    var colonoscopyDataJson: String?   // ColonoscopyData
-    var surgeryDataJson: String?       // SurgeryNoteData
-    var ercpDataJson: String?          // ERCPData
+    var traumaDataJson: String?           // TraumaData
+    var ogdDataJson: String?              // OGDData
+    var colonoscopyDataJson: String?      // ColonoscopyData
+    var surgeryDataJson: String?          // SurgeryNoteData
+    var ercpDataJson: String?             // ERCPData
+    var dischargeSummaryDataJson: String? // DischargeSummaryData
+    var postOpReviewDataJson: String?     // PostOpReviewData
+    var referralLetterDataJson: String?   // ReferralLetterData
 
     // MARK: - Encounter status (front desk → doctor handoff)
     var checkInTime: Date?

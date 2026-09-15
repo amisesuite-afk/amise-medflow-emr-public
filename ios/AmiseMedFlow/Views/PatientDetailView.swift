@@ -40,6 +40,9 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case colonoscopy    = "Colonoscopy Report"
     case surgery        = "Operative Note"
     case ercp           = "ERCP Report"
+    case postOpReview   = "Post-op Review"
+    case dischargeSummary = "Discharge Summary"
+    case referralLetter = "Referral Letter"
     case history        = "Visit History"
 
     var id: String { rawValue }
@@ -71,6 +74,9 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .colonoscopy:    "circle.dotted.and.circle"
         case .surgery:        "scissors"
         case .ercp:           "waveform.and.magnifyingglass"
+        case .postOpReview:   "bandage"
+        case .dischargeSummary: "rectangle.portrait.and.arrow.right"
+        case .referralLetter: "envelope.open"
         case .history:        "clock.badge.checkmark"
         }
     }
@@ -102,6 +108,9 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .colonoscopy:    "Scope"
         case .surgery:        "Op Note"
         case .ercp:           "ERCP"
+        case .postOpReview:   "Post-op"
+        case .dischargeSummary: "Discharge"
+        case .referralLetter: "Referral"
         case .history:        "History"
         }
     }
@@ -149,6 +158,9 @@ struct PatientDetailPadView: View {
             case .colonoscopy:  return patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
+            case .postOpReview: return patient.visitType == .postOp
+            case .dischargeSummary: return patient.visitType == .postOp || patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
+            case .referralLetter: return patient.visitType == .newConsult || patient.visitType == .followUp || patient.visitType == .urgentReview || patient.visitType == .postOp
             case .history: return !patient.encounters.filter(\.isComplete).isEmpty
             default:       return true
             }
@@ -383,6 +395,12 @@ struct PatientDetailPadView: View {
             SurgeryNoteView(patient: patient)
         case .ercp:
             ERCPFormView(patient: patient)
+        case .postOpReview:
+            PostOpReviewView(patient: patient)
+        case .dischargeSummary:
+            DischargeSummaryView(patient: patient)
+        case .referralLetter:
+            ReferralLetterView(patient: patient)
         case .history:
             ConsultationView(patient: patient, startingTab: .history, embeddedInNav: true)
         }
@@ -1215,6 +1233,18 @@ struct PatientDetailView: View {
                 if patient.visitType == .ercp || patient.visitType == .dayOfSurgery {
                     quickAction("ERCP Report", icon: "waveform.and.magnifyingglass", color: .blue,
                                 destination: AnyView(ERCPFormView(patient: patient)))
+                }
+                if patient.visitType == .postOp {
+                    quickAction("Post-op Review", icon: "bandage", color: .purple,
+                                destination: AnyView(PostOpReviewView(patient: patient)))
+                }
+                if patient.visitType == .postOp || patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery {
+                    quickAction("Discharge", icon: "rectangle.portrait.and.arrow.right", color: .orange,
+                                destination: AnyView(DischargeSummaryView(patient: patient)))
+                }
+                if patient.visitType == .newConsult || patient.visitType == .followUp || patient.visitType == .urgentReview || patient.visitType == .postOp {
+                    quickAction("Referral Letter", icon: "envelope.open", color: .teal,
+                                destination: AnyView(ReferralLetterView(patient: patient)))
                 }
                 quickAction("Prescriptions", icon: "pills.fill", color: .purple,
                             destination: AnyView(PrescriptionView(patient: patient)))

@@ -101,6 +101,7 @@ struct SurgeryNoteView: View {
     @State private var hasSurgeryDate = false
     @State private var hasStartTime = false
     @State private var hasEndTime = false
+    @State private var pdfWrapper: PDFDataWrapper?
 
     @StateObject private var ai = AIService()
     @State private var aiError: String?
@@ -132,6 +133,18 @@ struct SurgeryNoteView: View {
         }
         .navigationTitle("Operative Note")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    pdfWrapper = PDFDataWrapper(data: ProcedureFormPDF.operativeNote(patient: patient, data: data))
+                } label: {
+                    Label("Export PDF", systemImage: "arrow.up.doc.fill")
+                }
+            }
+        }
+        .sheet(item: $pdfWrapper) { wrapper in
+            ShareSheet(items: [wrapper.data])
+        }
         .onAppear {
             data = patient.surgeryData
             hasSurgeryDate = data.dateOfSurgery != nil

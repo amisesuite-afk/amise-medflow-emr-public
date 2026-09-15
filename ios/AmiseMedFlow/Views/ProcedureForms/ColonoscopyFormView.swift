@@ -114,6 +114,7 @@ struct ColonoscopyFormView: View {
 
     @State private var data: ColonoscopyData = ColonoscopyData()
     @State private var hasProcedureDate = false
+    @State private var pdfWrapper: PDFDataWrapper?
 
     // Common finding chips shared across colon segments
     private let colonFindingOptions = [
@@ -168,6 +169,18 @@ struct ColonoscopyFormView: View {
         }
         .navigationTitle("Colonoscopy Report")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    pdfWrapper = PDFDataWrapper(data: ProcedureFormPDF.colonoscopyReport(patient: patient, data: data))
+                } label: {
+                    Label("Export PDF", systemImage: "arrow.up.doc.fill")
+                }
+            }
+        }
+        .sheet(item: $pdfWrapper) { wrapper in
+            ShareSheet(items: [wrapper.data])
+        }
         .onAppear {
             data = patient.colonoscopyData
             hasProcedureDate = data.dateOfProcedure != nil

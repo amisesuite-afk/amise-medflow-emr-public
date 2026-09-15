@@ -86,6 +86,7 @@ struct OGDFormView: View {
     @StateObject private var ai = AIService()
     @State private var aiError: String?
     @State private var showAIOverwriteConfirm = false
+    @State private var pdfWrapper: PDFDataWrapper?
 
     private let indications = [
         "Dyspepsia / reflux", "Dysphagia", "Haematemesis / melaena",
@@ -129,6 +130,18 @@ struct OGDFormView: View {
         }
         .navigationTitle("OGD Report")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    pdfWrapper = PDFDataWrapper(data: ProcedureFormPDF.ogdReport(patient: patient, data: data))
+                } label: {
+                    Label("Export PDF", systemImage: "arrow.up.doc.fill")
+                }
+            }
+        }
+        .sheet(item: $pdfWrapper) { wrapper in
+            ShareSheet(items: [wrapper.data])
+        }
         .onAppear {
             data = patient.ogdData
             hasProcedureDate = data.dateOfProcedure != nil
