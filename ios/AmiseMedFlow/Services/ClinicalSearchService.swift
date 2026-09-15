@@ -226,7 +226,11 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
                 .sorted { $0.name < $1.name }
     }
 
-    static let allDrugs: [SurgicalDrug] = [
+    // Split into private sub-arrays to avoid Swift type-checker timeout on large literals.
+    static let allDrugs: [SurgicalDrug] =
+        _drugs1 + _drugs2 + _drugs3 + _drugs4 + _drugs5
+
+    private static let _drugs1: [SurgicalDrug] = [
 
         // ─── ANALGESICS — Opioids ────────────────────────────────────────────
         .init(name: "Morphine",       category: "Opioid Analgesic",  commonDoses: "2.5–10 mg",  route: "IV/SC/PO",  notes: "Titrate to pain; caution in renal impairment", sideEffects: "Nausea, constipation, respiratory depression, sedation, pruritus"),
@@ -363,6 +367,9 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
         .init(name: "Clonidine",          category: "Centrally-acting Antihypertensive", commonDoses: "50–300 mcg TDS",  route: "PO", notes: "Hypertension; AVOID abrupt withdrawal (rebound crisis); peri-op pain adjunct", sideEffects: "Sedation, dry mouth, rebound hypertension on abrupt withdrawal, bradycardia"),
         .init(name: "Minoxidil",          category: "Vasodilator",            commonDoses: "5–10 mg OD–BD",                route: "PO", notes: "Resistant hypertension; always with diuretic + beta-blocker; hair growth SE", sideEffects: "Fluid retention, reflex tachycardia, hypertrichosis, pericardial effusion (high dose)"),
         .init(name: "Sacubitril/Valsartan (Entresto)", category: "ARNI",     commonDoses: "24/26 mg BD → 49/51 mg BD → 97/103 mg BD", route: "PO", notes: "HFrEF; start after ACE inhibitor washout (≥36h); superior to ACE inhibitor in HF", sideEffects: "Hypotension, hyperkalaemia, renal impairment, angioedema (especially if switching from ACE inhibitor)"),
+    ]
+
+    private static let _drugs2: [SurgicalDrug] = [
 
         // ─── STATINS / LIPID-LOWERING ─────────────────────────────────────────
         .init(name: "Atorvastatin",   category: "Statin",              commonDoses: "10–80 mg nocte",    route: "PO", notes: "Cardiovascular risk reduction; first-line statin; continue peri-operatively", sideEffects: "Myalgia, myopathy, rhabdomyolysis (rare), elevated LFTs, new-onset diabetes (long-term)"),
@@ -408,6 +415,9 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
         .init(name: "Vitamin B12 (cyanocobalamin)", category: "Vitamin", commonDoses: "1000 mcg IM every 3 months (malabsorption/pernicious anaemia)", route: "IM/PO", notes: "B12 deficiency; post gastrectomy/ileal resection; pernicious anaemia", sideEffects: "Minimal; injection-site reactions; acne (rare); polycythaemia with high doses"),
         .init(name: "Vitamin D3 (cholecalciferol)", category: "Vitamin", commonDoses: "800–4000 IU OD (maintenance); 50,000 IU weekly x 6–12 (loading)", route: "PO", notes: "Vitamin D deficiency; bone health; post-bariatric surgery supplementation", sideEffects: "Hypercalcaemia in excess (nausea, confusion, renal stones, polyuria), weakness"),
         .init(name: "Thiamine (Vitamin B1)", category: "Vitamin",      commonDoses: "100 mg TDS PO; 100–200 mg IV (Wernicke's prevention)",              route: "PO/IV", notes: "Alcohol-related disease; malnutrition; Wernicke's — give BEFORE glucose in alcoholics", sideEffects: "Anaphylaxis (IV Pabrinex — rare but potentially fatal); GI upset; well tolerated orally"),
+    ]
+
+    private static let _drugs3: [SurgicalDrug] = [
 
         // ─── ANTIBIOTICS — Additional ─────────────────────────────────────────
         .init(name: "Flucloxacillin",     category: "Antibiotic — Penicillin", commonDoses: "500 mg QDS (mild-mod); 1–2 g QDS IV (severe)", route: "PO/IV", notes: "Staphylococcal infections (MSSA); cellulitis; wound infections; take on empty stomach", sideEffects: "GI upset, cholestatic jaundice (avoid if previous hepatic reaction), hypersensitivity, C. difficile"),
@@ -452,6 +462,9 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
         .init(name: "Ketamine",           category: "Dissociative Anaesthetic", commonDoses: "1–2 mg/kg IV (induction); 0.1–0.5 mg/kg IV (sedation/analgesia); IM: 4–5 mg/kg", route: "IV/IM", notes: "Anaesthetic induction; procedural sedation; bronchodilator (asthma); haemodynamically stable; analgesic adjunct", sideEffects: "Emergence hallucinations/dysphoria (reduced by midazolam), hypertension, tachycardia, increased secretions, PONV, raised IOP"),
         .init(name: "Etomidate",          category: "IV Anaesthetic",           commonDoses: "0.2–0.3 mg/kg IV",                                                                    route: "IV", notes: "Haemodynamically stable induction (cardiogenic shock, aortic stenosis); single dose for RSI", sideEffects: "Adrenocortical suppression (avoid infusion; single induction dose acceptable), myoclonus, pain on injection, PONV"),
         .init(name: "Thiopentone (Thiopental)", category: "IV Anaesthetic — Barbiturate", commonDoses: "3–5 mg/kg IV (induction); lower in elderly/shocked",                    route: "IV", notes: "Anaesthetic induction (largely replaced by propofol); neuroprotection; status epilepticus (last resort)", sideEffects: "Cardiovascular depression, laryngospasm, histamine release, porphyria exacerbation, necrosis if intra-arterial"),
+    ]
+
+    private static let _drugs4: [SurgicalDrug] = [
 
         // ─── VASOACTIVE / CARDIAC EMERGENCY ──────────────────────────────────
         .init(name: "Epinephrine (Adrenaline)", category: "Vasopressor / Emergency", commonDoses: "Cardiac arrest: 1 mg IV q3-5min; Anaphylaxis: 0.5 mg IM (0.5 mL 1:1000); Infusion: 0.05–2 mcg/kg/min", route: "IV/IM/ET", notes: "Cardiac arrest; anaphylaxis (IM); vasopressor/inotrope infusion; bronchospasm nebulised", sideEffects: "Tachycardia, hypertension, arrhythmia, myocardial ischaemia, peripheral ischaemia (infusion), anxiety, tremor"),
@@ -491,6 +504,9 @@ struct SurgicalDrug: Identifiable, Equatable, Hashable {
         .init(name: "Cholestyramine (Questran)", category: "Bile Acid Sequestrant", commonDoses: "4 g 1–6 times daily (before meals)",                                                route: "PO", notes: "Hypercholesterolaemia; cholestatic pruritus; C. difficile (alternative); take 1h before or 4h after other drugs", sideEffects: "Constipation (most common), flatulence, bloating, fat-soluble vitamin malabsorption (A, D, E, K), drug interactions"),
         .init(name: "Rifaximin",          category: "Antibiotic — GI Non-absorbable", commonDoses: "400 mg TDS (hepatic encephalopathy); 200 mg TDS (traveller's diarrhoea × 3 days)", route: "PO", notes: "Hepatic encephalopathy (with lactulose); prevention of recurrence; minimal systemic absorption", sideEffects: "GI upset (minimal), peripheral oedema; generally very well tolerated; theoretical C. difficile risk"),
         .init(name: "Octreotide",         category: "Somatostatin Analogue",    commonDoses: "50–200 mcg SC/IV TDS; 25–50 mcg/h IV infusion (variceal bleed)",                       route: "SC/IV", notes: "Variceal/oesophageal bleeding; VIPoma/carcinoid syndrome; acromegaly; acute pancreatitis; dump. syndrome post-GI surgery", sideEffects: "GI upset (diarrhoea, steatorrhoea, gallstones on long-term use), bradycardia, hyperglycaemia, injection-site pain"),
+    ]
+
+    private static let _drugs5: [SurgicalDrug] = [
 
         // ─── SEDATION / PSYCHIATRY / CNS ──────────────────────────────────────
         .init(name: "Diazepam",           category: "Benzodiazepine",           commonDoses: "2–10 mg BD–QDS PO; 5–10 mg IV (status epilepticus)",                                    route: "PO/IV/PR/IM", notes: "Anxiety; alcohol withdrawal (CIWA protocol); muscle relaxant; status epilepticus; procedural sedation", sideEffects: "Sedation, respiratory depression (with opioids), dependence (physical + psychological), tolerance, falls in elderly"),
