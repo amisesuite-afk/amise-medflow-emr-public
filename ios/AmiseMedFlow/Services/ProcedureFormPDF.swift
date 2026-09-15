@@ -463,6 +463,88 @@ enum ProcedureFormPDF {
         return h
     }
 
+    // MARK: - Surgical Consent Form
+
+    static func consentForm(patient: Patient, data: ConsentFormData) -> Data {
+        UIGraphicsPDFRenderer(bounds: page).pdfData { ctx in
+            ctx.beginPage()
+            var y = drawHeader(type: "SURGICAL CONSENT FORM")
+            y = drawPatientStrip(patient: patient, y: y)
+            y = drawMeta(date: data.consentDate, y: y)
+
+            y = drawRowSection(ctx: ctx, title: "Consent Details", rows: [
+                ("Consent type", data.consentType),
+                ("Surgeon",      data.surgeonName),
+                ("Anaesthetist", data.anaesthetistName),
+            ], y: y)
+
+            y = drawRowSection(ctx: ctx, title: "Proposed Procedure", rows: [
+                ("Procedure",    data.procedureName),
+                ("Indication",   data.indication),
+                ("Side / site",  data.sideOrSite),
+            ], y: y)
+            if !data.procedureDescription.isEmpty {
+                y = drawTextSection(ctx: ctx, title: nil, body: data.procedureDescription, y: y)
+            }
+
+            let allRisks = data.generalRisks + data.specificRisks + (data.specificRisksOther.isEmpty ? [] : [data.specificRisksOther])
+            if !allRisks.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Risks Discussed", body: allRisks.map { "• \($0)" }.joined(separator: "\n"), y: y)
+            }
+
+            let alts = data.alternativesTreated + (data.alternativesOther.isEmpty ? [] : [data.alternativesOther])
+            if !alts.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Alternative Treatments Discussed", body: alts.map { "• \($0)" }.joined(separator: "\n"), y: y)
+            }
+
+            var anaesRows: [(String, String)] = [("Anaesthesia type", data.anaesthesiaType)]
+            anaesRows.append(("Anaesthesia risks", data.anaesthesiaRisksDiscussed ? "Discussed" : "Not discussed"))
+            y = drawRowSection(ctx: ctx, title: "Anaesthesia", rows: anaesRows, y: y)
+
+            var bpRows: [(String, String)] = [("Blood products discussed", data.bloodProductsDiscussed ? "Yes" : "No")]
+            if data.bloodProductsDeclined { bpRows.append(("Patient declines blood products", "YES — documented")) }
+            y = drawRowSection(ctx: ctx, title: "Blood Products", rows: bpRows, y: y)
+
+            var capRows: [(String, String)] = [("Decision-making capacity", data.capacityConfirmed ? "Confirmed" : "Not confirmed — see notes")]
+            if data.interpreterRequired {
+                capRows.append(("Interpreter", data.interpreterName.isEmpty ? "Required" : data.interpreterName))
+            }
+            capRows.append(("Questions answered", data.questionsAnswered ? "Yes, to patient's satisfaction" : "Ongoing — see notes"))
+            if !data.questionsAsked.isEmpty { capRows.append(("Questions asked", data.questionsAsked)) }
+            y = drawRowSection(ctx: ctx, title: "Patient Capacity & Understanding", rows: capRows, y: y)
+
+            if !data.additionalNotes.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Additional Notes", body: data.additionalNotes, y: y)
+            }
+
+            // Signature block
+            y = maybeNewPage(ctx: ctx, y: y, minSpace: 120)
+            y = drawSectionHeader(title: "Signatures", y: y)
+            let sigAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 8.5), .foregroundColor: UIColor.label]
+            let lineAttrs: [NSAttributedString.Key: Any] = [.font: UIFont.systemFont(ofSize: 8), .foregroundColor: UIColor.secondaryLabel]
+            let col1: CGFloat = lm, col2: CGFloat = page.width / 2 + 10, lineW: CGFloat = (bodyW / 2) - 20
+
+            for (label, name, col) in [
+                ("Patient", data.patientPrintedName, col1),
+                ("Witness (\(data.witnessDesignation.isEmpty ? "staff" : data.witnessDesignation))", data.witnessName, col2),
+                ("Surgeon", data.surgeonName, col1)
+            ] {
+                "Signature:".draw(in: CGRect(x: col, y: y, width: 60, height: 12), withAttributes: lineAttrs)
+                teal.withAlphaComponent(0.3).setFill()
+                UIRectFill(CGRect(x: col + 64, y: y + 10, width: lineW - 64, height: 0.5))
+                y += 16
+                label.draw(in: CGRect(x: col, y: y, width: 80, height: 12), withAttributes: lineAttrs)
+                if !name.isEmpty { name.draw(in: CGRect(x: col + 84, y: y, width: lineW - 84, height: 12), withAttributes: sigAttrs) }
+                "Date:".draw(in: CGRect(x: col, y: y + 16, width: 40, height: 12), withAttributes: lineAttrs)
+                teal.withAlphaComponent(0.3).setFill()
+                UIRectFill(CGRect(x: col + 44, y: y + 26, width: lineW - 44, height: 0.5))
+                y += 36
+            }
+
+            drawFooter()
+        }
+    }
+
     @discardableResult
     private static func drawPatientStrip(patient: Patient, y: CGFloat) -> CGFloat {
         let h: CGFloat = 34

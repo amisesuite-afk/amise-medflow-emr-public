@@ -191,13 +191,19 @@ struct ClinicalHubView: View {
                 let showPostOp       = vt == .postOp
                 let showDischarge    = vt == .postOp || vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
                 let showReferral     = vt == .newConsult || vt == .followUp || vt == .urgentReview || vt == .postOp
+                let showConsent      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
 
-                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showPostOp || showDischarge || showReferral {
+                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP || showPostOp || showDischarge || showReferral || showConsent {
                     Section("Procedure Forms") {
                         if showTrauma {
                             NavigationLink { TraumaAssessmentView(patient: patient) } label: {
                                 Label("Trauma Assessment (ATLS)", systemImage: "cross.case.fill")
                                     .foregroundStyle(.red)
+                            }
+                        }
+                        if showConsent {
+                            NavigationLink { ConsentFormView(patient: patient) } label: {
+                                Label("Surgical Consent", systemImage: "signature")
                             }
                         }
                         if showSurgery {
