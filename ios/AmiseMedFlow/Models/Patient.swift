@@ -102,6 +102,7 @@ final class Patient {
     var postOpReviewDataJson: String?     // PostOpReviewData
     var referralLetterDataJson: String?   // ReferralLetterData
     var consentFormDataJson: String?      // ConsentFormData
+    var preOpChecklistDataJson: String?   // PreOpChecklistData
 
     // MARK: - Encounter status (front desk → doctor handoff)
     var checkInTime: Date?

@@ -637,4 +637,182 @@ enum ProcedureFormPDF {
         if !notes.isEmpty { parts.append(notes) }
         return parts.isEmpty ? "Abnormal (no details)" : parts.joined(separator: " — ")
     }
+
+    // MARK: - Pre-operative Checklist
+
+    static func preOpChecklist(patient: Patient, data: PreOpChecklistData) -> Data {
+        let renderer = UIGraphicsPDFRenderer(bounds: page)
+        return renderer.pdfData { ctx in
+            ctx.beginPage()
+            var y: CGFloat = drawHeader(title: "WHO SURGICAL SAFETY CHECKLIST", y: 0)
+            y = drawPatientStrip(patient: patient, y: y)
+
+            // Team
+            y = drawMeta(date: data.checklistDate, y: y)
+            y = drawRowSection(rows: [
+                ("Location / Theatre", data.location.isEmpty ? "—" : data.location),
+                ("Surgeon",            data.surgeonName),
+                ("Anaesthetist",       data.anaesthetistName.isEmpty ? "—" : data.anaesthetistName),
+                ("Scrub nurse",        data.scrubNurseName.isEmpty ? "—" : data.scrubNurseName),
+                ("Circulating nurse",  data.circulatingNurseName.isEmpty ? "—" : data.circulatingNurseName),
+            ], y: y)
+
+            // Sign In
+            y = maybeNewPage(ctx: ctx, y: y, minSpace: 80)
+            y = drawPhaseHeader(ctx: ctx, title: "SIGN IN", subtitle: "Before induction of anaesthesia",
+                                complete: checklistSignInComplete(data), y: y)
+            y = drawChecklistItems(ctx: ctx, items: [
+                (data.si_identityConfirmed,        "Patient identity confirmed (name, DOB, MRN)"),
+                (data.si_siteProcedureConfirmed,   "Site and procedure confirmed"),
+                (data.si_consentConfirmed,         "Consent obtained and signed"),
+                (data.si_siteMarked || data.si_siteMarkingNA,
+                                                    "Surgical site marked" + (data.si_siteMarkingNA ? " (N/A)" : "")),
+                (data.si_anaesthesiaCheckComplete, "Anaesthesia machine / medication check complete"),
+                (data.si_pulseOxFunctioning,       "Pulse oximeter on and functioning"),
+            ], y: y)
+            if data.si_knownAllergy {
+                y = drawChecklistItem(ctx: ctx, checked: true,
+                                      label: "Known allergy — \(data.si_allergyDetails.isEmpty ? "see notes" : data.si_allergyDetails)",
+                                      accent: true, y: y)
+            }
+            if data.si_difficultAirway {
+                y = drawChecklistItem(ctx: ctx, checked: true,
+                                      label: "Difficult airway / aspiration risk — \(data.si_airwayDetails.isEmpty ? "plan in notes" : data.si_airwayDetails)",
+                                      accent: true, y: y)
+            }
+            if data.si_bloodLossRisk {
+                y = drawChecklistItem(ctx: ctx, checked: true,
+                                      label: "Blood loss risk >500 mL — \(data.si_bloodLossPrep.isEmpty ? "see preparation" : data.si_bloodLossPrep)",
+                                      accent: true, y: y)
+            }
+            if data.si_timeRecorded {
+                let tf = DateFormatter(); tf.timeStyle = .short
+                y = drawRowSection(rows: [
+                    ("Sign In time",  tf.string(from: data.si_time)),
+                    ("Confirmed by",  data.si_confirmedBy.isEmpty ? "—" : data.si_confirmedBy),
+                ], y: y)
+            }
+
+            // Time Out
+            y = maybeNewPage(ctx: ctx, y: y, minSpace: 80)
+            y = drawPhaseHeader(ctx: ctx, title: "TIME OUT", subtitle: "Before skin incision",
+                                complete: checklistTimeOutComplete(data), y: y)
+            y = drawChecklistItems(ctx: ctx, items: [
+                (data.to_teamIntroduced,                 "All team members introduced by name and role"),
+                (data.to_patientSiteProcedureConfirmed,  "Patient identity, site and procedure confirmed by all"),
+                (data.to_surgeonCriticalSteps,           "Surgeon: critical steps, duration, anticipated blood loss stated"),
+                (data.to_anaesthesiaConcerns,            "Anaesthesia: patient-specific concerns stated"),
+                (data.to_nursingEquipmentReady,          "Nursing: sterility confirmed, equipment issues stated"),
+                (data.to_antibioticGiven || data.to_antibioticNA,
+                                                          "Antibiotic prophylaxis" +
+                                                          (data.to_antibioticNA ? " (N/A)" : data.to_antibioticName.isEmpty ? "" : " — \(data.to_antibioticName)")),
+                (data.to_imagingDisplayed || data.to_imagingNA,
+                                                          "Essential imaging displayed" + (data.to_imagingNA ? " (N/A)" : "")),
+            ], y: y)
+            if data.to_timeRecorded {
+                let tf = DateFormatter(); tf.timeStyle = .short
+                y = drawRowSection(rows: [
+                    ("Time Out time", tf.string(from: data.to_time)),
+                    ("Confirmed by",  data.to_confirmedBy.isEmpty ? "—" : data.to_confirmedBy),
+                ], y: y)
+            }
+
+            // Sign Out
+            y = maybeNewPage(ctx: ctx, y: y, minSpace: 80)
+            y = drawPhaseHeader(ctx: ctx, title: "SIGN OUT", subtitle: "Before patient leaves operating room",
+                                complete: checklistSignOutComplete(data), y: y)
+            var countLabel = "Instrument / sponge / needle counts correct"
+            if !data.so_countDiscrepancy.isEmpty { countLabel += " — DISCREPANCY: \(data.so_countDiscrepancy)" }
+            y = drawChecklistItems(ctx: ctx, items: [
+                (data.so_procedureDocumented,       "Procedure name documented"),
+                (data.so_instrumentCountCorrect,    "Instrument count correct"),
+                (data.so_spongeCountCorrect,        "Sponge count correct"),
+                (data.so_needleCountCorrect,        "Needle / sharps count correct"),
+                (data.so_specimenLabelled || data.so_specimenNA,
+                                                     "Specimen labelled" +
+                                                     (data.so_specimenNA ? " (N/A)" : data.so_specimenDetails.isEmpty ? "" : " — \(data.so_specimenDetails)")),
+            ], y: y)
+            if data.so_equipmentIssues && !data.so_equipmentNotes.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Equipment issues", body: data.so_equipmentNotes, y: y)
+            }
+            if !data.so_recoveryConcerns.isEmpty {
+                y = drawTextSection(ctx: ctx, title: "Recovery / handover concerns", body: data.so_recoveryConcerns, y: y)
+            }
+            if data.so_timeRecorded {
+                let tf = DateFormatter(); tf.timeStyle = .short
+                y = drawRowSection(rows: [
+                    ("Sign Out time", tf.string(from: data.so_time)),
+                    ("Confirmed by",  data.so_confirmedBy.isEmpty ? "—" : data.so_confirmedBy),
+                ], y: y)
+            }
+
+            drawFooter()
+        }
+    }
+
+    private static func checklistSignInComplete(_ d: PreOpChecklistData) -> Bool {
+        d.si_identityConfirmed && d.si_siteProcedureConfirmed && d.si_consentConfirmed &&
+        (d.si_siteMarked || d.si_siteMarkingNA) &&
+        d.si_anaesthesiaCheckComplete && d.si_pulseOxFunctioning && d.si_timeRecorded
+    }
+
+    private static func checklistTimeOutComplete(_ d: PreOpChecklistData) -> Bool {
+        d.to_teamIntroduced && d.to_patientSiteProcedureConfirmed &&
+        d.to_surgeonCriticalSteps && d.to_anaesthesiaConcerns && d.to_nursingEquipmentReady &&
+        (d.to_antibioticGiven || d.to_antibioticNA) &&
+        (d.to_imagingDisplayed || d.to_imagingNA) && d.to_timeRecorded
+    }
+
+    private static func checklistSignOutComplete(_ d: PreOpChecklistData) -> Bool {
+        d.so_procedureDocumented && d.so_instrumentCountCorrect &&
+        d.so_spongeCountCorrect && d.so_needleCountCorrect &&
+        (d.so_specimenLabelled || d.so_specimenNA) && d.so_timeRecorded
+    }
+
+    private static func drawPhaseHeader(ctx: UIGraphicsPDFRendererContext,
+                                        title: String, subtitle: String,
+                                        complete: Bool, y: CGFloat) -> CGFloat {
+        let bg: UIColor = complete ? UIColor.systemGreen.withAlphaComponent(0.12)
+                                   : UIColor.systemOrange.withAlphaComponent(0.10)
+        bg.setFill()
+        UIRectFill(CGRect(x: lm - 4, y: y, width: bodyW + 8, height: 22))
+        let badge = complete ? "✓ COMPLETE" : "PENDING"
+        let badgeColor: UIColor = complete ? .systemGreen : .systemOrange
+        title.draw(in: CGRect(x: lm, y: y + 3, width: bodyW - 80, height: 14),
+                   withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .bold),
+                                    .foregroundColor: UIColor.label])
+        badge.draw(in: CGRect(x: lm + bodyW - 74, y: y + 3, width: 74, height: 14),
+                   withAttributes: [.font: UIFont.systemFont(ofSize: 7.5, weight: .semibold),
+                                    .foregroundColor: badgeColor])
+        subtitle.draw(in: CGRect(x: lm, y: y + 13, width: bodyW, height: 11),
+                      withAttributes: [.font: UIFont.italicSystemFont(ofSize: 7),
+                                       .foregroundColor: UIColor.secondaryLabel])
+        return y + 28
+    }
+
+    @discardableResult
+    private static func drawChecklistItems(ctx: UIGraphicsPDFRendererContext,
+                                           items: [(Bool, String)], y: CGFloat) -> CGFloat {
+        var y = y
+        for (checked, label) in items {
+            y = drawChecklistItem(ctx: ctx, checked: checked, label: label, accent: false, y: y)
+        }
+        return y + 4
+    }
+
+    @discardableResult
+    private static func drawChecklistItem(ctx: UIGraphicsPDFRendererContext,
+                                          checked: Bool, label: String,
+                                          accent: Bool, y: CGFloat) -> CGFloat {
+        var y = maybeNewPage(ctx: ctx, y: y, minSpace: 20)
+        let symbol = checked ? "☑" : "☐"
+        let symColor: UIColor = checked ? (accent ? .systemOrange : teal) : .secondaryLabel
+        symbol.draw(at: CGPoint(x: lm, y: y),
+                    withAttributes: [.font: UIFont.systemFont(ofSize: 9, weight: .medium),
+                                     .foregroundColor: symColor])
+        label.draw(in: CGRect(x: lm + 14, y: y, width: bodyW - 14, height: 14),
+                   withAttributes: [.font: UIFont.systemFont(ofSize: 8.5),
+                                    .foregroundColor: UIColor.label])
+        return y + 14
+    }
 }
