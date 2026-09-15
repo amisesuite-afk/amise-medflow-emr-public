@@ -184,11 +184,12 @@ struct ClinicalHubView: View {
             // Procedure-specific forms (shown based on visitType)
             if let vt = patient.visitType {
                 let showTrauma  = vt == .trauma
-                let showOGD     = vt == .ogd || vt == .colonoscopy || vt == .dayOfSurgery
-                let showSurgery = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
-                let showERCP    = vt == .ercp || vt == .dayOfSurgery
+                let showOGD          = vt == .ogd || vt == .dayOfSurgery
+                let showColonoscopy  = vt == .colonoscopy || vt == .dayOfSurgery
+                let showSurgery      = vt == .surgeryElective || vt == .surgeryEmergency || vt == .dayOfSurgery
+                let showERCP         = vt == .ercp || vt == .dayOfSurgery
 
-                if showTrauma || showOGD || showSurgery || showERCP {
+                if showTrauma || showOGD || showColonoscopy || showSurgery || showERCP {
                     Section("Procedure Forms") {
                         if showTrauma {
                             NavigationLink { TraumaAssessmentView(patient: patient) } label: {
@@ -203,7 +204,12 @@ struct ClinicalHubView: View {
                         }
                         if showOGD {
                             NavigationLink { OGDFormView(patient: patient) } label: {
-                                Label("OGD Report", systemImage: "scope")
+                                Label("OGD / Gastroscopy Report", systemImage: "scope")
+                            }
+                        }
+                        if showColonoscopy {
+                            NavigationLink { ColonoscopyFormView(patient: patient) } label: {
+                                Label("Colonoscopy Report", systemImage: "circle.dotted.and.circle")
                             }
                         }
                         if showERCP {

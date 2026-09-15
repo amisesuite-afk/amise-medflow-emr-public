@@ -37,6 +37,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
     case demographics   = "Demographics"
     case trauma         = "Trauma / ATLS"
     case ogd            = "OGD Report"
+    case colonoscopy    = "Colonoscopy Report"
     case surgery        = "Operative Note"
     case ercp           = "ERCP Report"
     case history        = "Visit History"
@@ -67,6 +68,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .demographics:   "square.and.pencil"
         case .trauma:         "cross.case.fill"
         case .ogd:            "scope"
+        case .colonoscopy:    "circle.dotted.and.circle"
         case .surgery:        "scissors"
         case .ercp:           "waveform.and.magnifyingglass"
         case .history:        "clock.badge.checkmark"
@@ -97,6 +99,7 @@ enum PatientDetailSection: String, CaseIterable, Identifiable, Hashable {
         case .demographics:   "Details"
         case .trauma:         "Trauma"
         case .ogd:            "OGD"
+        case .colonoscopy:    "Scope"
         case .surgery:        "Op Note"
         case .ercp:           "ERCP"
         case .history:        "History"
@@ -142,7 +145,8 @@ struct PatientDetailPadView: View {
             guard allowed.contains(section) else { return false }
             switch section {
             case .trauma:  return patient.visitType == .trauma
-            case .ogd:     return patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
+            case .ogd:          return patient.visitType == .ogd || patient.visitType == .dayOfSurgery
+            case .colonoscopy:  return patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery
             case .surgery: return patient.visitType == .surgeryElective || patient.visitType == .surgeryEmergency || patient.visitType == .dayOfSurgery
             case .ercp:    return patient.visitType == .ercp || patient.visitType == .dayOfSurgery
             case .history: return !patient.encounters.filter(\.isComplete).isEmpty
@@ -373,6 +377,8 @@ struct PatientDetailPadView: View {
             TraumaAssessmentView(patient: patient)
         case .ogd:
             OGDFormView(patient: patient)
+        case .colonoscopy:
+            ColonoscopyFormView(patient: patient)
         case .surgery:
             SurgeryNoteView(patient: patient)
         case .ercp:
@@ -1198,9 +1204,13 @@ struct PatientDetailView: View {
                     quickAction("Op Note", icon: "scissors", color: .purple,
                                 destination: AnyView(SurgeryNoteView(patient: patient)))
                 }
-                if patient.visitType == .ogd || patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery {
+                if patient.visitType == .ogd || patient.visitType == .dayOfSurgery {
                     quickAction("OGD Report", icon: "scope", color: .cyan,
                                 destination: AnyView(OGDFormView(patient: patient)))
+                }
+                if patient.visitType == .colonoscopy || patient.visitType == .dayOfSurgery {
+                    quickAction("Colonoscopy", icon: "circle.dotted.and.circle", color: .cyan,
+                                destination: AnyView(ColonoscopyFormView(patient: patient)))
                 }
                 if patient.visitType == .ercp || patient.visitType == .dayOfSurgery {
                     quickAction("ERCP Report", icon: "waveform.and.magnifyingglass", color: .blue,
